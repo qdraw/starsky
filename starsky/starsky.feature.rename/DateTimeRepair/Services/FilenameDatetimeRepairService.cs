@@ -42,9 +42,9 @@ public class FilenameDatetimeRepairService(
 
 		var fileItems = fileItemsQuery.FileItemsQuery(
 			filePaths, collections, mappings);
-		var validMappings = 
+		var validMappings =
 			GenerateValidMappings(correctionRequest,
-			fileItems, collections, mappings);
+				fileItems, collections, mappings);
 
 		mappings.AddRange(validMappings);
 		return mappings;
@@ -210,7 +210,7 @@ public class FilenameDatetimeRepairService(
 						}
 					}
 				}
-				
+
 				// Reset Cache for the item that is renamed
 				query.ResetItemByHash(mapping.FileIndexItem!.FileHash!);
 
@@ -241,7 +241,7 @@ public class FilenameDatetimeRepairService(
 	/// <summary>
 	///     Extract datetime from filename using detected pattern
 	/// </summary>
-	private static DateTime? ExtractDateTime(string fileName, DateTimePattern pattern)
+	internal static DateTime? ExtractDateTime(string fileName, DateTimePattern pattern)
 	{
 		var match = pattern.Regex.Match(fileName);
 		if ( !match.Success )
@@ -263,7 +263,7 @@ public class FilenameDatetimeRepairService(
 	/// <summary>
 	///     Replace datetime in filename with corrected datetime
 	/// </summary>
-	private static string ReplaceDateTime(string fileName, DateTimePattern pattern,
+	internal static string ReplaceDateTime(string fileName, DateTimePattern pattern,
 		DateTime correctedDateTime)
 	{
 		var match = pattern.Regex.Match(fileName);

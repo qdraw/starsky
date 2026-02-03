@@ -55,9 +55,10 @@ public class FileItemsQueryHelpers(IQuery query, IWebLogger logger)
 					}
 				}
 			}
-			catch ( Exception )
+			catch ( Exception exception )
 			{
-				logger.LogError($"PreviewBatchRename: Failed to get item for {filePath}");
+				logger.LogError($"[FileItemsQueryHelpers]: Failed to get item for {filePath}",
+					exception);
 			}
 		}
 

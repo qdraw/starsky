@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.rename.DateTimeRepair.Models;
 using starsky.feature.rename.DateTimeRepair.Services;
 using starsky.feature.rename.Models;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Models;
 using starsky.foundation.platform.Models;
@@ -16,11 +20,11 @@ namespace starskytest.starsky.feature.rename.DateTimeRepair.Services;
 public class FilenameDatetimeRepairServiceTest
 {
 	private static FilenameDatetimeRepairService CreateSut(FakeIStorage? storage = null,
-		FakeIQuery? query = null)
+		IQuery? query = null, FakeIWebLogger? logger = null)
 	{
 		query ??= new FakeIQuery();
 		storage ??= new FakeIStorage();
-		var logger = new FakeIWebLogger();
+		logger ??= new FakeIWebLogger();
 		return new FilenameDatetimeRepairService(query, storage, logger,
 			new AppSettings { ReadOnlyFolders = ["/readonly"] });
 	}
@@ -602,11 +606,13 @@ public class FilenameDatetimeRepairServiceTest
 	[TestMethod]
 	[DataRow("/readonly/20230101_120000.jpg", "Read-only location")]
 	[DataRow("/test", "Is a directory")]
+	[DataRow("/test/file_without_pattern.txt", "No datetime pattern detected in filename")]
 	public void PreviewRepair_Errors(string filePath, string expectedErrorMessage)
 	{
 		// Arrange
 		var sut = CreateSut(null, new FakeIQuery([
 			new FileIndexItem("/readonly/20230101_120000.jpg"),
+			new FileIndexItem("/test/file_without_pattern.txt"),
 			new FileIndexItem("/test") { IsDirectory = true }
 		]));
 
@@ -624,5 +630,126 @@ public class FilenameDatetimeRepairServiceTest
 		Assert.IsTrue(result[0].HasError);
 		Assert.AreEqual(expectedErrorMessage, result[0].ErrorMessage);
 		Assert.AreEqual(filePath, result[0].SourceFilePath);
+	}
+
+	[TestMethod]
+	public void PreviewRepair_TestIfExceptionIsCatched()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var sut = CreateSut(null,
+			new FakeIQueryException(new ApplicationException()), logger);
+
+		var filePaths = new List<string> { "/test/20230101_120000.jpg" };
+		var correctionRequest = new ExifTimezoneBasedCorrectionRequest
+		{
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "UTC"
+		};
+
+		// Act
+		sut.PreviewRepair(filePaths, correctionRequest);
+
+		// Assert
+		Assert.Contains("[FileItemsQueryHelpers]: Failed",
+			logger.TrackedExceptions.LastOrDefault().Item2!);
+	}
+
+	private static DateTimePattern CreatePattern(string regex, string format,
+		string description = "")
+	{
+		return new DateTimePattern
+		{
+			Regex = new Regex(regex, RegexOptions.Compiled),
+			Format = format,
+			Description = description
+		};
+	}
+
+	[TestMethod]
+	public void ExtractDateTime_ValidPattern_ValidDateTime()
+	{
+		var pattern = CreatePattern(@"\\d{8}_\\d{6}", "yyyyMMdd_HHmmss");
+		const string fileName = "20240313_011530_IMG_001.jpg";
+		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(new DateTime(2024, 3, 13,
+			1, 15, 30, DateTimeKind.Local), result.Value);
+	}
+
+	[TestMethod]
+	public void ExtractDateTime_ValidPattern_ValidDateTime_OnlyDate()
+	{
+		var pattern = CreatePattern(@"\\d{8}", "yyyyMMdd");
+		const string fileName = "20240313_vacation.jpg";
+		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(new DateTime(2024, 3, 13,
+			0, 0, 0, DateTimeKind.Local), result.Value);
+	}
+
+	[TestMethod]
+	public void ExtractDateTime_InvalidPattern_NoMatch_ReturnsNull()
+	{
+		var pattern = CreatePattern(@"\\d{8}_\\d{6}", "yyyyMMdd_HHmmss");
+		const string fileName = "IMG_001.jpg";
+		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public void ExtractDateTime_ValidPattern_InvalidDateTime_ReturnsNull()
+	{
+		var pattern = CreatePattern(@"\\d{8}_\\d{6}", "yyyyMMdd_HHmmss");
+		const string fileName = "20241313_011530_IMG_001.jpg"; // Invalid month 13
+		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public void ExtractDateTime_ValidPattern_ValidDateTime_WithDifferentFormat()
+	{
+		var pattern = CreatePattern(@"\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}",
+			"yyyy-MM-dd_HH-mm-ss");
+		const string fileName = "2024-03-13_01-15-30_IMG_001.jpg";
+		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(new DateTime(2024, 3, 13,
+			1, 15, 30, DateTimeKind.Local), result.Value);
+	}
+
+	[TestMethod]
+	public void ExtractDateTime_ValidPattern_ValidDateTime_WithTimeOnly()
+	{
+		var pattern = CreatePattern(@"\\d{6}", "HHmmss");
+		const string fileName = "011530_IMG_001.jpg";
+		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(new DateTime(1, 1, 1,
+			1, 15, 30, DateTimeKind.Local), result.Value); // Date part is default
+	}
+
+	[TestMethod]
+	[DataRow("20240313_011530_IMG_001.jpg", "20240313_021530_IMG_001.jpg", @"\d{8}_\d{6}",
+		"yyyyMMdd_HHmmss", 2024, 3, 13, 2, 15, 30)]
+	[DataRow("20240313_vacation.jpg", "20240414_vacation.jpg", "\\d{8}", "yyyyMMdd", 2024, 4, 14, 0,
+		0, 0)]
+	[DataRow("IMG_001.jpg", "IMG_001.jpg", "\\d{8}_\\d{6}", "yyyyMMdd_HHmmss", 2024, 3, 13, 2, 15,
+		30)] // No match, should return original
+	[DataRow("2024-03-13_01-15-30_IMG_001.jpg", "2025-04-14_03-46-15_IMG_001.jpg",
+		@"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}", "yyyy-MM-dd_HH-mm-ss", 2025, 4, 14, 3, 46, 15)]
+	[DataRow("011530_IMG_001.jpg", "121530_IMG_001.jpg", "\\d{6}", "HHmmss", 12, 1, 1, 12, 15,
+		30)] // Time only, date part is default
+	[SuppressMessage("Usage",
+		"S107: Constructor has 10 parameters, which is greater than the 7 authorized")]
+	public void ReplaceDateTime_VariousCases_ReturnsExpected(
+		string fileName, string expected, string regex, string format,
+		int year, int month, int day, int hour, int minute, int second)
+	{
+		var pattern = CreatePattern(regex, format);
+		var correctedDateTime =
+			new DateTime(year, month, day, hour, minute, second, DateTimeKind.Local);
+		var result =
+			FilenameDatetimeRepairService.ReplaceDateTime(fileName, pattern, correctedDateTime);
+		Assert.AreEqual(expected, result);
 	}
 }
