@@ -56,4 +56,26 @@ describe("useShiftMode", () => {
     });
     expect(result.current.currentStep).toBe("mode-selection");
   });
+
+  it("handleBack goes to timezone from file-rename-timezone", () => {
+    const { result } = renderHook(() => useShiftMode());
+    act(() => {
+      result.current.setCurrentStep("file-rename-timezone");
+    });
+    act(() => {
+      result.current.handleBack();
+    });
+    expect(result.current.currentStep).toBe("timezone");
+  });
+
+  it("handleBack goes to offset from file-rename-offset", () => {
+    const { result } = renderHook(() => useShiftMode());
+    act(() => {
+      result.current.setCurrentStep("file-rename-offset");
+    });
+    act(() => {
+      result.current.handleBack();
+    });
+    expect(result.current.currentStep).toBe("offset");
+  });
 });

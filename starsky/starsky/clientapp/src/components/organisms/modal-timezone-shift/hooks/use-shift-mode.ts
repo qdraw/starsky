@@ -14,6 +14,7 @@ export function useShiftMode() {
     if (currentStep === "offset" || currentStep === "timezone") {
       setCurrentStep("mode-selection");
     }
+    // Currently back is not enabled for file-rename steps, but adding for completeness
     if (currentStep === "file-rename-timezone") {
       setCurrentStep("timezone");
     }
