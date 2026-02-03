@@ -752,6 +752,15 @@ public class FilenameDatetimeRepairServiceTest
 		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
 		Assert.IsNull(result);
 	}
+	
+	[TestMethod]
+	public void ExtractDateTime_InvalidPattern_NoDateTimeMatch_ReturnsNull()
+	{
+		var pattern = CreatePattern(@"\w", "word");
+		const string fileName = "IMG_001.jpg";
+		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
+		Assert.IsNull(result);
+	}
 
 	[TestMethod]
 	public void ExtractDateTime_ValidPattern_InvalidDateTime_ReturnsNull()

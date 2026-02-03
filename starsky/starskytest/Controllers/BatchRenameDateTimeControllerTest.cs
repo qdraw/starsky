@@ -10,7 +10,7 @@ using starsky.foundation.metaupdate.Models;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.Controllers;
+namespace starskytest.Controllers;
 
 [TestClass]
 public class BatchRenameDateTimeControllerDatetimeRepairTest
@@ -243,6 +243,16 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		// Assert
 		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
 	}
+	
+	private static BatchRenameDateTimeController CreateController()
+	{
+		return new BatchRenameDateTimeController(
+			new FakeIQuery(),
+			new FakeSelectorStorage(),
+			new FakeIWebLogger(),
+			new AppSettings()
+		);
+	}
 
 	[TestMethod]
 	public async Task ExecuteDatetimeRepairAsync_MultipleFiles_ProcessesAll()
@@ -292,5 +302,48 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		Assert.HasCount(2,
 			fileItems.Where(p
 				=> p.Status == FileIndexItem.ExifStatus.Deleted).ToList());
+	}
+	
+	[TestMethod]
+	public void PreviewCustomOffsetDatetimeRepair_ModelStateInvalid_ReturnsBadRequest()
+	{
+		var controller = CreateController();
+		controller.ModelState.AddModelError("FilePaths", "Required");
+		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
+		{
+			FilePaths = ["/test/file.jpg"],
+			CorrectionRequest = new ExifCustomOffsetCorrectionRequest(),
+			Collections = false
+		};
+		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
+		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+	}
+
+	[TestMethod]
+	public void PreviewCustomOffsetDatetimeRepair_CorrectionRequestNull_ReturnsBadRequest()
+	{
+		var controller = CreateController();
+		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
+		{
+			FilePaths = ["/test/file.jpg"],
+			CorrectionRequest = null!,
+			Collections = false
+		};
+		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
+		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+	}
+
+	[TestMethod]
+	public void PreviewCustomOffsetDatetimeRepair_ModelStateValid_ReturnsOk()
+	{
+		var controller = CreateController();
+		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
+		{
+			FilePaths = ["/test/file.jpg"],
+			CorrectionRequest = new ExifCustomOffsetCorrectionRequest(),
+			Collections = false
+		};
+		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
+		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
 	}
 }
