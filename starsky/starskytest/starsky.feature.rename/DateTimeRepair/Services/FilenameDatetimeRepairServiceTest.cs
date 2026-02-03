@@ -10,7 +10,7 @@ using starsky.foundation.metaupdate.Models;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.rename.Services;
+namespace starskytest.starsky.feature.rename.DateTimeRepair.Services;
 
 [TestClass]
 public class FilenameDatetimeRepairServiceTest
@@ -21,7 +21,8 @@ public class FilenameDatetimeRepairServiceTest
 		query ??= new FakeIQuery();
 		storage ??= new FakeIStorage();
 		var logger = new FakeIWebLogger();
-		return new FilenameDatetimeRepairService(query, storage, logger, new AppSettings());
+		return new FilenameDatetimeRepairService(query, storage, logger,
+			new AppSettings { ReadOnlyFolders = ["/readonly"] });
 	}
 
 	[TestMethod]
@@ -596,5 +597,32 @@ public class FilenameDatetimeRepairServiceTest
 			3, 15, 30, DateTimeKind.Local), result[0].CorrectedDateTime);
 		Assert.AreEqual("/test/20240313_031530_IMG_001.jpg", result[0].TargetFilePath);
 		Assert.AreEqual(-2.0, result[0].OffsetHours);
+	}
+
+	[TestMethod]
+	[DataRow("/readonly/20230101_120000.jpg", "Read-only location")]
+	[DataRow("/test", "Is a directory")]
+	public void PreviewRepair_Errors(string filePath, string expectedErrorMessage)
+	{
+		// Arrange
+		var sut = CreateSut(null, new FakeIQuery([
+			new FileIndexItem("/readonly/20230101_120000.jpg"),
+			new FileIndexItem("/test") { IsDirectory = true }
+		]));
+
+		var filePaths = new List<string> { filePath };
+		var correctionRequest = new ExifTimezoneBasedCorrectionRequest
+		{
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "UTC"
+		};
+
+		// Act
+		var result = sut.PreviewRepair(filePaths, correctionRequest);
+
+		// Assert
+		Assert.HasCount(1, result);
+		Assert.IsTrue(result[0].HasError);
+		Assert.AreEqual(expectedErrorMessage, result[0].ErrorMessage);
+		Assert.AreEqual(filePath, result[0].SourceFilePath);
 	}
 }
