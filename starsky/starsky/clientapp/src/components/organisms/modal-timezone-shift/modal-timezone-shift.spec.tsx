@@ -1019,4 +1019,201 @@ describe("ModalTimezoneShift", () => {
     expect(screen.getByText(/Shift Photo Time/i)).toBeTruthy();
     expect(screen.getByText(/What do you want to do/i)).toBeTruthy();
   });
+
+  it("walks through offset mode and completes execute-shift with batch-rename-datetime execute", async () => {
+    const mockOffsetPreview = [
+      {
+        success: true,
+        originalDateTime: "2024-08-12T14:32:00",
+        correctedDateTime: "2024-08-12T17:32:00",
+        delta: "+03:00:00",
+        warning: "",
+        error: ""
+      }
+    ];
+
+    const mockExecuteResponse = {
+      statusCode: 200,
+      data: [
+        {
+          filePath: "/test.jpg",
+          fileName: "test.jpg",
+          parentDirectory: "/",
+          status: IExifStatus.Ok
+        }
+      ]
+    };
+
+    const mockRenamePreview = [
+      {
+        sourceFilePath: "/test.jpg",
+        targetFilePath: "/test_2024-08-12.jpg",
+        hasError: false,
+        errorMessage: "",
+        warning: "",
+        fileIndexItem: mockExecuteResponse.data[0]
+      }
+    ];
+
+    const mockRenameExecuteResponse = {
+      statusCode: 200,
+      data: [
+        {
+          filePath: "/test.jpg",
+          fileName: "test_2024-08-12.jpg",
+          parentDirectory: "/",
+          status: IExifStatus.Ok
+        }
+      ]
+    };
+
+    // Mock fetch for offset preview and subsequent API calls
+    const postSpy = jest.spyOn(FetchPost, "default").mockReset().mockResolvedValue({
+      statusCode: 200,
+      data: mockOffsetPreview
+    });
+
+    jest.spyOn(ClearSearchCache, "ClearSearchCache").mockImplementationOnce(() => {});
+
+    const mockHandleExit = jest.fn();
+
+    const component = render(
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={mockHandleExit}
+        select={["test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+        collections={true}
+      />
+    );
+
+    // Step 1: Select offset mode
+    const offsetRadio = screen.getByRole("radio", {
+      name: /Correct incorrect camera timezone/i
+    });
+    await act(async () => {
+      fireEvent.click(offsetRadio);
+    });
+
+    expect(screen.getByText(/Correct Camera Time/i)).toBeTruthy();
+    expect(screen.getByText(/Time offsets/i)).toBeTruthy();
+
+    // Step 2: Set offset field
+    const hoursInput = screen.getByLabelText(/Hour/i);
+    await act(async () => {
+      fireEvent.change(hoursInput, { target: { value: "3" } });
+    });
+
+    // Step 3: Wait for preview to load
+    await screen.findByText(/Preview/i);
+    expect(screen.getByText(/Original:/i)).toBeTruthy();
+    expect(screen.getByText(/Result:/i)).toBeTruthy();
+
+    // Verify the preview API was called
+    expect(postSpy).toHaveBeenCalled();
+
+    // Step 4: Mock execute-shift response
+    postSpy.mockResolvedValueOnce({
+      statusCode: 200,
+      data: mockExecuteResponse.data
+    });
+
+    // Step 5: Mock batch-rename-preview response
+    postSpy.mockResolvedValueOnce({
+      statusCode: 200,
+      data: mockRenamePreview
+    });
+
+    // Step 6: Click "Apply Shift" button to navigate to rename step
+    const applyShiftButton = screen.getByText(/Apply Shift/i);
+    expect(applyShiftButton).not.toBeDisabled();
+
+    await act(async () => {
+      fireEvent.click(applyShiftButton);
+    });
+
+    // Wait for rename step to load
+    await waitFor(() => {
+      const subheader = document.querySelector(".modal.content--subheader");
+      expect(subheader?.textContent).toBe("Rename Files");
+    });
+
+    // Step 7: Mock batch-rename-execute response
+    postSpy.mockResolvedValueOnce({
+      statusCode: 200,
+      data: mockRenameExecuteResponse.data
+    });
+
+    // Step 8: Keep the rename checkbox checked (enabled) to execute rename
+    const renameCheckbox = screen.getByRole("checkbox");
+    expect(renameCheckbox).toBeChecked();
+
+    // Step 9: Click "Finish" button to execute rename
+    const finishButton = screen.getByTestId("execute-rename-button");
+
+    await act(async () => {
+      fireEvent.click(finishButton);
+    });
+
+    // Step 10: Verify execution was called and modal exits
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
+
+    // Now we expect 4 API calls: offset-preview, offset-execute, batch-rename-preview, batch-rename-execute
+    expect(postSpy).toHaveBeenCalledTimes(4);
+
+    // Verify offset-preview call
+    expect(postSpy).toHaveBeenNthCalledWith(
+      1,
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=true",
+      '{"year":0,"month":0,"day":0,"hour":3,"minute":0,"second":0}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    // Verify offset-execute call
+    expect(postSpy).toHaveBeenNthCalledWith(
+      2,
+      "/starsky/api/meta-time-correct/offset-execute?f=/test.jpg&collections=true",
+      '{"year":0,"month":0,"day":0,"hour":3,"minute":0,"second":0}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    // Verify batch-rename-preview call
+    expect(postSpy).toHaveBeenNthCalledWith(
+      3,
+      "/starsky/api/batch-rename-datetime/offset-preview",
+      JSON.stringify({
+        filePaths: ["/test.jpg"],
+        collections: true,
+        correctionRequest: { year: 0, month: 0, day: 0, hour: 3, minute: 0, second: 0 }
+      }),
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    // Verify batch-rename-execute call (UrlBatchRenameOffsetExecute)
+    expect(postSpy).toHaveBeenNthCalledWith(
+      4,
+      "/starsky/api/batch-rename-datetime/offset-execute",
+      JSON.stringify({
+        filePaths: ["/test.jpg"],
+        collections: true,
+        correctionRequest: { year: 0, month: 0, day: 0, hour: 3, minute: 0, second: 0 }
+      }),
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(mockDispatch).toHaveBeenCalled();
+    expect(mockHandleExit).toHaveBeenCalled();
+    expect(ClearSearchCache.ClearSearchCache).toHaveBeenCalled();
+
+    component.unmount();
+  }, 10000);
 });

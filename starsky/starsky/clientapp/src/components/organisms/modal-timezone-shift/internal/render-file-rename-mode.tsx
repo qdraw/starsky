@@ -233,6 +233,7 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
           {/* // you can continue if errors exist but not loading or executing */}
           <button
             className="btn btn--default"
+            data-test="execute-rename-button"
             onClick={handleExecuteRename}
             disabled={isExecutingRename || (shouldRename && isLoadingRename)}
           >
