@@ -119,7 +119,7 @@ public sealed class NotificationQuery : INotificationQuery
 	{
 		try
 		{
-
+			return await LocalAddQuery(item);
 		}
 		catch ( DbUpdateException updateException )
 		{
@@ -146,8 +146,7 @@ public sealed class NotificationQuery : INotificationQuery
 			{
 				_logger.LogInformation($"[AddNotification] MySqlException retry next: " +
 				                       $"{updateException.InnerException.Message}");
-				item = NewNotificationItem(content);
-				return await LocalAddQuery();
+				return await LocalAddQuery(NewNotificationItem(content));
 			}
 			else if ( updateException.InnerException is SqliteException
 			         {
@@ -158,7 +157,7 @@ public sealed class NotificationQuery : INotificationQuery
 				                       $"{updateException.InnerException.Message}");
 
 				item.Id = 0;
-				return await LocalAddQuery();
+				return await LocalAddQuery(item);
 			}
 			else
 			{
@@ -170,23 +169,23 @@ public sealed class NotificationQuery : INotificationQuery
 
 		return item;
 
-		async Task<NotificationItem> LocalAddQuery()
+		async Task<NotificationItem> LocalAddQuery(NotificationItem addItem)
 		{
 			try
 			{
-				context.Entry(item).State = EntityState.Added;
-				await context.Notifications.AddAsync(item);
+				context.Entry(addItem).State = EntityState.Added;
+				await context.Notifications.AddAsync(addItem);
 				await context.SaveChangesAsync();
-				return item;
+				return addItem;
 			}
 			catch ( ObjectDisposedException )
 			{
 				// Include create new scope factory
 				var dbContext = new InjectServiceScope(_scopeFactory).Context();
-				dbContext.Entry(item).State = EntityState.Added;
-				await dbContext.Notifications.AddAsync(item);
+				dbContext.Entry(addItem).State = EntityState.Added;
+				await dbContext.Notifications.AddAsync(addItem);
 				await dbContext.SaveChangesAsync();
-				return item;
+				return addItem;
 			}
 		}
 	}

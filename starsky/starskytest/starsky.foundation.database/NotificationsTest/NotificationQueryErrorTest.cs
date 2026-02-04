@@ -31,7 +31,7 @@ public sealed class NotificationQueryErrorTest
 	{
 		IsCalledDbUpdateConcurrency = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase("MovieListDatabase")
+			.UseInMemoryDatabase(nameof(AddNotification_ConcurrencyException))
 			.Options;
 
 		var fakeQuery = new NotificationQuery(
@@ -47,7 +47,7 @@ public sealed class NotificationQueryErrorTest
 	{
 		IsCalledDbUpdateConcurrency = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase("MovieListDatabase")
+			.UseInMemoryDatabase(nameof(AddNotification_DoubleConcurrencyException))
 			.Options;
 
 		var fakeQuery = new NotificationQuery(
@@ -63,7 +63,7 @@ public sealed class NotificationQueryErrorTest
 	{
 		IsCalledDbUpdateConcurrency = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase("MovieListDatabase")
+			.UseInMemoryDatabase(nameof(AddNotification_3ConcurrencyException))
 			.Options;
 
 		var fakeQuery = new NotificationQuery(
@@ -112,7 +112,7 @@ public sealed class NotificationQueryErrorTest
 
 		var instance =
 			( MySqlException? ) ctor?.Invoke(
-				new object[] { code, "test", message, new Exception() });
+				[code, "test", message, new Exception()]);
 		return instance!;
 	}
 
@@ -135,6 +135,8 @@ public sealed class NotificationQueryErrorTest
 		// Act
 		var sut = new NotificationQuery(context, new FakeIWebLogger(), null!);
 		var result = await sut.AddNotification(content);
+
+		await context.DisposeAsync();
 
 		// Assert
 		Assert.IsNotNull(result);

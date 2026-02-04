@@ -110,13 +110,15 @@ public sealed class NotificationQueryTest
 		await dbContextDisposed.DisposeAsync();
 		
 		// Act
-		var sut = new NotificationQuery(dbContextDisposed, new FakeIWebLogger(), null!);
+		var sut = new NotificationQuery(dbContextDisposed, new FakeIWebLogger(), serviceScopeFactory);
 		var result = await sut.AddNotification(dbContextDisposed,
 			NotificationQuery.NewNotificationItem(content), content);
 
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(content, result.Content);
+		
+		scope.Dispose();
 	}
 
 	[TestMethod]
