@@ -41,10 +41,94 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.5 - _(Unreleased)_ - 2025-?-? {#v0.7.5}
+## version 0.7.11 - _(Unreleased)_ - 2026-02-03 {#v0.7.11}
+
+- [x] (Fixed) _Back-end_ IsValidZipFile handles IO Exceptions (PR #2705)
+- [x] (Fixed) _Back-end_ Add notification handeling for duplicate keys (PR #2704)
+- [x] (Fixed) _Back-end_ Issue where cache is disposed (PR #2703)
+- [x] (Added) _Back-end_ Add IPTC Artist field for Import and FileIndex (PR #2698)
+
+## version 0.7.10 - 2026-02-03 {#v0.7.10}
+
+- [x] (Added) _Front-end_ UI to repair filenames after offset/timezone change (Issue #76 PR #2682)
+- [x] (Added) _Back-end_ Repairing filenames after offset/timezone change (Issue #76 PR #2682)
+- [x] (Added) _Front-end_ Use Execute API for offsetData and timezoneData  (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Use Preview API for offsetData and timezoneData (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Display preview of timezone correction  (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Added UI Timezone Shift for Custom offset shift (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Added UI Timezone Shift for Exif Timezone Correction (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Added Searchable Dropdown (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Timezone detection for daylight saving time (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Add seed service for Geo Names Cities (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Store Geo Names Cities in the database (Issue #76 PR #2670)
+- [x] (Fixed) _Front-end_ Pressing `[` or `]` when focussed on an input it should save (PR #2678)
+- [x] (Fixed) _Front-end_ prevent rendering errors when an image source is missing (PR #2677)
+- [x] (Changed) _Back-end_ Timezone display functionality in the meta update module (PR #2671)
+
+## version 0.7.9 - 2026-01-26 {#v0.7.9}
+
+- [x] (Added) _Back-end_ Added auto code sign for macOS in `pm2-new-instance.sh` (PR #2640)
+- [x] (Fixed) _Back-end_ Fix for issues with database index sizes in MariaDB (PR #2653)
+- [x] (Fixed) _Back-end _ IX_Thumbnails_Missing_And_FileHash, IX_FileIndex_ParentDirectory_Tags
+  should be removed when running SqLite, when running MariaDB this not needed (PR #2653)
+- [x] (Added) _Back-end _ Added `-lensmodel` and `-makecameraserial` fields to search (PR #2655)
+
+## version 0.7.8 - 2026-01-23 {#v0.7.8}
+
+**Skip v0.7.8 due index size issues see #2653**
+
+- [x] (Changed) _Back-end_ Update Meta Correct Timezone names to be shorter (PR #2632)
+- [x] (Added) _Back-end_ Add API for List of timezones for moved to different place (PR #2596)
+- [x] (Added) _Back-end_ Add API for List of timezones for incorrect camera timezones (PR #2596)
+- [x] (Added) _Back-end_ Add API endpoint for Exif Timezone Correction Preview (PR #2596)
+- [x] (Added) _Back-end_ Add API endpoint for Exif Timezone Correction Execute (PR #2596)
+- [x] (Fixed) _Back-end_ Added new database indexes to the FileIndex and Thumbnails (PR #2627)
+- [x] (Fixed) _Back-end_ Increase timeout for regex used in tags (PR #2627)
+- [x] (Fixed) _Back-end_ Add database indexes for faster search (PR #2627)
+- [x] (Added) _Back-end_ In Import cli find camera storage flag (PR #2614)
+- [x] (Breaking change) _Back-end_ Hashes for mp4 changed to avoid video duplicates (PR #2617 #2604)
+
+## version 0.7.7 - 2026-01-17 {#v0.7.7}
+
+- [x] (Fixed) _Back-end_ Dropbox client wrapper test when running offline (PR #2603)
+- [x] (Fixed) _Back-end_ Add support for macOS and external drive in tests (PR #2602)
+- [x] (Fixed) _Back-end_ Sync Race Condition Fix (PR #2550)
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.417 (Runtime: 8.0.23) (PR #2588)
+- [x] (Added) _Front-end_ Batch rename feature (PR #2585) (Issue #72)
+- [x] (Added) _Back-end_ Batch rename feature (PR #2577) (Issue #72)
+
+## version 0.7.6 - 2026-01-08 {#v0.7.6}
+
+- [x] (Fixed) _Back-end_ GPX file formats by expanding the range of byte offsets (PR #2512)
+- [x] (Added) _Back-end_ Cloud Import feature to import files from cloud providers (PR #2498)
+- [x] (Added) _Back-end_ Dropbox support for Cloud Import (PR #2498)
+- [x] (Added) _Back-end_ Scheduling (e.g. every hour / every 10 minutes) for Cloud Import (PR #2498)
+- [x] (Fixed) _Back-end_ Prioritize import rules that match both ImageFormat and Origin (PR #2567)
+- [x] (Added) _Back-end_ Hide in api/env for cloud-import keys (PR #2569)
+- [x] (Fixed) _Back-end_ Selecting structure patterns based on image format and origin (PR #2571)
+- [x] (Fixed) _Front-end Previous with Ctrl/Cmd + \[ and to the next with Ctrl/Cmd + ] (PR #2572)
+- [x] (Removed) _Back-end_ Legacy starsky-tools/dropbox-import (PR #2576)
+- [x] (Added) _Back-end_ Setup for Dropbox in starskyAdminCli (PR #2576)
+- [x] (Removed) _Back-end_ Removed Tools Dropbox Import Docker Buildx pipeline (PR #2576)
+
+## version 0.7.5 - 2025-11-17 {#v0.7.5}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.416 (Runtime: 8.0.22) (PR #2432)
-
+- [x] (Changed) _Front-end_ Updated ClientApp dependencies and build tooling (PRs: #2412, #2409,
+  #2421, #2426, #2437, #2434, #2435, #2438, #2442)
+- [x] (Changed) _Desktop_ Updated Electron / StarskyDesktop dependencies (PRs: #2406, #2410, #2418,
+  #2422, #2427, #2438, #2443, #2447)
+- [x] (Fixed) _Back-end_ Added improved exception handling for invalid ZIP files, fixed disposal
+  issues and resolved misleading comments and interface alignment (PRs #2419, #2424)
+- [x] (Fixed) _Back-end_ Temp files are now written inside the source folder instead of IDE-specific
+  temp folders (PR #2439)
+- [x] (Changed) _Back-end_ Updated IIS configuration and applied several fixes to improve hosting
+  stability (PR #2434)
+- [x] (Changed) _Documentation_ Updated various docs including V2 additions, SDK references and
+  formatting fixes   (PRs #2420, #2432, #2433, #2436)
+- [x] (Security) _DevOps_ Added CodeQL configuration, fixed workflow permission issues, added
+  action pinning and addressed multiple code scanning alerts (PRs #2453, #2450, #2491, and related
+  alerts 1100+)
 
 ## version 0.7.4 - 2025-10-24 {#v0.7.4}
 

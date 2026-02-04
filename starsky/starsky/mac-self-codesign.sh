@@ -8,6 +8,7 @@ xattr -d com.apple.quarantine libSystem.Native.dylib
 
 # Array of executable files
 executables=(
+  "starsky"
   "starskyadmincli"
   "starskygeocli"
   "starskyimportercli"
@@ -27,3 +28,5 @@ for exec in "${executables[@]}"
 do
   codesign --force --deep -s - "$exec"
 done
+
+echo "mac-self-codesign.sh completed."

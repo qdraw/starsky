@@ -103,13 +103,17 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			new AppSettings(), _scopeFactory);
 
 		// Act & Assert
-		await Assert.ThrowsExactlyAsync<ToManyUsageException>(async () =>
+		await Assert.ThrowsExactlyAsync<ToManyUsageException>(async () => await Test());
+
+		return;
+
+		async Task Test()
 		{
 			await backgroundQueue.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask,
 				string.Empty);
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(0, count);
-		});
+		}
 	}
 
 	/// <summary>

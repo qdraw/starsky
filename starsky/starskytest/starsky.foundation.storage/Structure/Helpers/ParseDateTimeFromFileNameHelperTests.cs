@@ -58,7 +58,8 @@ public class ParseDateTimeFromFileNameHelperTests
 		};
 
 		var model = new StructureInputModel(input.DateTime,
-			createAnImageNoExif.FileName, "jpg", ExtensionRolesHelper.ImageFormat.notfound,
+			createAnImageNoExif.FileName, "jpg", 
+			ExtensionRolesHelper.ImageFormat.notfound,
 			string.Empty);
 		var result =
 			new ParseDateTimeFromFileNameHelper(input.Structure).ParseDateTimeFromFileName(model);
@@ -73,8 +74,8 @@ public class ParseDateTimeFromFileNameHelperTests
 		// Check if those overwrite is accepted
 		Assert.AreEqual(answerDateTime, result);
 
-		new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(createAnImageNoExif
-			.FullFilePathWithDate);
+		var hostFileSystem = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		hostFileSystem.FileDelete(createAnImageNoExif.FullFilePathWithDate);
 	}
 
 	[TestMethod]

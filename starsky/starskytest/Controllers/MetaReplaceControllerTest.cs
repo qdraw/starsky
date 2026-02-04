@@ -107,7 +107,7 @@ public sealed class MetaReplaceControllerTest
 	{
 		var fileHashCode =
 			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(_createAnImage
-				.DbPath) ).Key;
+				.DbPath, ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 
 		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
 		{

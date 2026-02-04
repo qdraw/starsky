@@ -136,7 +136,8 @@ public class FfMpegDownloadTest
 		var resultMissingIndex = await ffmpegDownload.DownloadFfMpeg(
 			[.. arg.Split(",")]);
 
-		Assert.AreEqual(count, resultMissingIndex.Count);
+		Assert.HasCount(count, resultMissingIndex);
+
 		if ( resultMissingIndex.Count == 2 )
 		{
 			Assert.AreEqual(FfmpegDownloadStatus.DownloadIndexFailed, resultMissingIndex[0]);

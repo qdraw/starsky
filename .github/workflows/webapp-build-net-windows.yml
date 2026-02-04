@@ -1,5 +1,8 @@
 name: Windows .NET build
 
+permissions:
+  contents: read
+
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -30,12 +33,12 @@ jobs:
 
     steps:
     
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@131b410979e0b49e2162c0718030257b22d6dc2c
       with:
-        dotnet-version: 8.0.416
+        dotnet-version: 8.0.417
         
     - name: Build (Windows)
       shell: pwsh

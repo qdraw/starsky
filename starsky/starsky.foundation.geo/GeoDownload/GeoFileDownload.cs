@@ -15,6 +15,8 @@ public sealed class GeoFileDownload : IGeoFileDownload
 {
 	public const string CountryName = "cities1000";
 
+	public const string Admin1CodesAscii = "admin1CodesASCII";
+
 	internal const string BaseUrl =
 		"download.geonames.org/export/dump/";
 
@@ -40,7 +42,7 @@ public sealed class GeoFileDownload : IGeoFileDownload
 		RemoveFailedDownload();
 		CreateDependenciesFolder();
 		const string https = "https://";
-		const string admin1CodesasciiTxt = "admin1CodesASCII.txt";
+		const string admin1CodesasciiTxt = $"{Admin1CodesAscii}.txt";
 
 		if ( !_hostStorage.ExistFile(
 			    Path.Combine(_appSettings.DependenciesFolder, CountryName + ".txt")) )
@@ -100,15 +102,27 @@ public sealed class GeoFileDownload : IGeoFileDownload
 
 		// When trying to download a file
 		var zipFullPath = Path.Combine(_appSettings.DependenciesFolder, CountryName + ".zip");
-		using (var stream = _hostStorage.ReadStream(zipFullPath))
+		try
 		{
-			if (stream.Length > MinimumSizeInBytes)
+			using var stream = _hostStorage.ReadStream(zipFullPath);
+			if ( stream.Length > MinimumSizeInBytes )
 			{
 				return;
 			}
 		}
+		catch ( IOException e )
+		{
+			_logger.LogError(e, "Could not read downloaded geo file");
+		}
 
-		_hostStorage.FileDelete(Path.Combine(_appSettings.DependenciesFolder,
-			CountryName + ".zip"));
+		try
+		{
+			_hostStorage.FileDelete(Path.Combine(_appSettings.DependenciesFolder,
+				CountryName + ".zip"));
+		}
+		catch ( IOException e )
+		{
+			_logger.LogError(e, "Could not delete failed downloaded geo file");
+		}
 	}
 }

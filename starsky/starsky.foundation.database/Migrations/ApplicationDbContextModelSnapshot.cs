@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "8.0.17");
+                .HasAnnotation("ProductVersion", "8.0.23");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -264,6 +264,10 @@ namespace starsky.foundation.database.Migrations
                     b.Property<double>("Aperture")
                         .HasColumnType("REAL");
 
+                    b.Property<string>("Artist")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("ColorClass")
                         .HasColumnType("INTEGER");
 
@@ -369,9 +373,17 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DateTime");
+
+                    b.HasIndex("FileHash")
+                        .HasAnnotation("MySql:CharSet", "utf8mb4");
+
                     b.HasIndex("FilePath");
 
                     b.HasIndex("ImageFormat");
+
+                    b.HasIndex("ParentDirectory")
+                        .HasDatabaseName("IX_FileIndex_ParentDirectory");
 
                     b.HasIndex("Tags");
 
@@ -384,6 +396,114 @@ namespace starsky.foundation.database.Migrations
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
 
+            modelBuilder.Entity("starsky.foundation.database.Models.GeoNameCity", b =>
+                {
+                    b.Property<int>("GeonameId")
+                        .HasColumnType("INTEGER")
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", false)
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
+                        .HasAnnotation("Sqlite:Autoincrement", false);
+
+                    b.Property<string>("Admin1Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Admin2Code")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Admin3Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Admin4Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AlternateNames")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AsciiName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Cc2")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CountryCode")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CountryName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CountryThreeLetterCode")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Dem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("Elevation")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FeatureClass")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FeatureCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<DateOnly>("ModificationDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Population")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Province")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TimeZoneId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("GeonameId");
+
+                    b.ToTable("GeoNameCities", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
             modelBuilder.Entity("starsky.foundation.database.Models.ImportIndexItem", b =>
                 {
                     b.Property<int>("Id")
@@ -391,6 +511,10 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("AddToDatabase")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Artist")
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ColorClass")
@@ -504,6 +628,9 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("FileHash");
+
+                    b.HasIndex("ExtraLarge", "Large", "Small")
+                        .HasDatabaseName("IX_Thumbnails_Missing");
 
                     b.ToTable("Thumbnails", (string)null);
 

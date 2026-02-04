@@ -7,18 +7,21 @@ on:
       - release/*
     paths: 
       - '**.csproj'
+      - '.github/workflows/webapp-update-nuget-packages-list.yml'
   workflow_dispatch:
 
 jobs: 
   run:
     name: Update Nuget packages list
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps: 
     - name: Checkout repo
-      uses: actions/checkout@v5
+      uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
 
     - name: Set up Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
       with:
         node-version: 22.x
       
@@ -26,11 +29,38 @@ jobs:
       working-directory: ./starsky-tools/build-tools
       run: npm run nuget-package-list
 
-    - name: Commit changes
-      uses: EndBug/add-and-commit@v9
+    - shell: bash
+      working-directory: ./starsky
+      id: files_changed
+      run: |
+        git status
+        git status --porcelain
+      
+        if [[ `git status --porcelain` ]]; then
+          echo "There are files not committed yet"
+          echo "CHANGED=true" >> $GITHUB_OUTPUT
+        else 
+          echo "not changed"
+          echo "CHANGED=false" >> $GITHUB_OUTPUT
+        fi
+      
+    - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
+      id: cpr
+      if: steps.files_changed.outputs.CHANGED == 'true' && github.event_name != 'pull_request'
+      uses: peter-evans/create-pull-request@6699836a213cf8b28c4f0408a404a6ac79d4458a
       with:
-        author_name: DocsUpdateBot
-        author_email: qdraw@users.noreply.github.com
-        message: "[NugetPackagesListUpdate] Auto commited nugetPackages list"
-        add: "starsky/nuget-packages-list.json"
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.WORKFLOW_GITHUB }}
+        commit-message: '[NugetPackagesListUpdate] Auto commited nugetPackages list'
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        add-paths: |
+          *
+        branch: feature/nuget_packages_list
+        delete-branch: true
+        title: '[NugetPackagesListUpdate] Auto commited nugetPackages list'
+        body: |
+          ## [NugetPackagesListUpdate] Auto commited nugetPackages list
+        labels: |
+          documentation
+        draft: false

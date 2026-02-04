@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -11,13 +10,8 @@ using starsky.foundation.database.Models.Account;
 
 namespace starsky.foundation.database.Data;
 
-[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-	public ApplicationDbContext(DbContextOptions options) : base(options)
-	{
-	}
-
 	public virtual DbSet<FileIndexItem> FileIndex { get; set; }
 	public DbSet<ImportIndexItem> ImportIndex { get; set; }
 
@@ -42,6 +36,8 @@ public class ApplicationDbContext : DbContext
 	/// </summary>
 	public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
+	public DbSet<GeoNameCity> GeoNameCities { get; set; }
+
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		// Do nothing because of that in debug mode this only triggered
@@ -57,24 +53,40 @@ public class ApplicationDbContext : DbContext
 		const string utf8Mb4 = "utf8mb4";
 		const string mySqlCharSetAnnotation = "MySql:CharSet";
 		const string mySqlValueGeneratedOnAdd = "MySql:ValueGeneratedOnAdd";
+		const string sqliteAutoincrement = "Sqlite:Autoincrement";
+		const string mysqlValuegenerationstrategy = "MySql:ValueGenerationStrategy";
 
 		// does not have direct effect
 		modelBuilder.HasCharSet(utf8Mb4,
 			DelegationModes.ApplyToAll);
 
 		// Add Index to speed performance (on MySQL max key length is 3072 bytes)
-		// MySql:CharSet might be working a future release but now it does nothing
+		// MySql:CharSet might be working a future release, but now it does nothing
 		modelBuilder.Entity<FileIndexItem>(etb =>
 		{
 			etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
-			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
-			// This filters on ParentDirectory and sort on fileName
-			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 
+			// This filters on ParentDirectory and sort on fileName
+			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
+			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 			etb.HasIndex(x => new { x.FilePath });
+			// The Tags Index is truncated to fit within the index size limit
 			etb.HasIndex(x => new { x.Tags });
 			etb.HasIndex(x => new { x.ImageFormat });
 
+			// Search indexes - for WideSearch (SearchService.cs) performance
+			// Date range search indexes
+			etb.HasIndex(x => new { x.DateTime });
+
+			// ParentDirectory index only (Tags is varchar(1024) = 4096 bytes, exceeds 3072 limit)
+			etb.HasIndex(x => new { x.ParentDirectory })
+				.HasDatabaseName("IX_FileIndex_ParentDirectory");
+
+			// FileHash index improvement - ensure it supports null values
+			etb.HasIndex(x => new { x.FileHash })
+				.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+
+			// set type for file size in bites
 			etb.Property(p => p.Size).HasColumnType("bigint");
 		});
 
@@ -184,9 +196,9 @@ public class ApplicationDbContext : DbContext
 				etb.HasKey(e => e.Id);
 				etb.Property(e => e.Id)
 					.ValueGeneratedOnAdd()
-					.HasAnnotation("MySql:ValueGeneratedOnAdd", true)
-					.HasAnnotation("Sqlite:Autoincrement", true)
-					.HasAnnotation("MySql:ValueGenerationStrategy",
+					.HasAnnotation(mySqlValueGeneratedOnAdd, true)
+					.HasAnnotation(sqliteAutoincrement, true)
+					.HasAnnotation(mysqlValuegenerationstrategy,
 						MySqlValueGenerationStrategy.IdentityColumn);
 
 				etb.Property(p => p.Content)
@@ -230,7 +242,7 @@ public class ApplicationDbContext : DbContext
 				etb.HasKey(e => e.Id);
 				etb.Property(e => e.Id)
 					.ValueGeneratedOnAdd()
-					.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+					.HasAnnotation(mySqlValueGeneratedOnAdd, true);
 
 				etb.Property(e => e.Xml).HasMaxLength(1200);
 				etb.Property(e => e.FriendlyName).HasMaxLength(45);
@@ -243,7 +255,27 @@ public class ApplicationDbContext : DbContext
 				etb.HasKey(e => e.FileHash);
 
 				etb.ToTable("Thumbnails");
-				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+
+				// Add composite index for performance on GetMissingThumbnailsBatchInternalAsync
+				// FileHash is excluded as it's already the primary key
+				// This keeps the index size under MariaDB's 3072 byte limit
+				etb.HasIndex(e => new { e.ExtraLarge, e.Large, e.Small })
+					.HasDatabaseName("IX_Thumbnails_Missing");
+			}
+		);
+
+		modelBuilder.Entity<GeoNameCity>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.ToTable("GeoNameCities");
+
+				etb.Property(e => e.GeonameId)
+					.ValueGeneratedNever()
+					.HasAnnotation(mySqlValueGeneratedOnAdd, false)
+					.HasAnnotation(sqliteAutoincrement, false)
+					.HasAnnotation(mysqlValuegenerationstrategy,
+						MySqlValueGenerationStrategy.IdentityColumn);
 			}
 		);
 	}

@@ -138,21 +138,27 @@ public sealed class Zipper : IZipper
 
 	public static bool IsValidZipFile(string fullFilePath)
 	{
-		if ( !File.Exists(fullFilePath) )
-		{
-			return false;
-		}
+		return RetryHelper.Do(CheckIfIsValidZipFile,
+			TimeSpan.FromSeconds(1));
 
-		var buffer = new byte[4];
-		using ( var fs = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read) )
+		bool CheckIfIsValidZipFile()
 		{
-			if ( fs.Read(buffer, 0, 4) != 4 )
+			if ( !File.Exists(fullFilePath) )
 			{
 				return false;
 			}
-		}
 
-		return IsValidZipFile(buffer);
+			var buffer = new byte[4];
+			using ( var fs = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read) )
+			{
+				if ( fs.Read(buffer, 0, 4) != 4 )
+				{
+					return false;
+				}
+			}
+
+			return IsValidZipFile(buffer);
+		}
 	}
 
 	/// <summary>

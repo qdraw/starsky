@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <RuntimeFrameworkVersion>8.0.22</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.23</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <!-- SonarQube needs this -->
         <ProjectGuid>{b3342a3e-64e1-442f-b4f7-f7a718508aac}</ProjectGuid>
@@ -11,34 +11,33 @@
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
-
-        <EnableMSTestRunner>true</EnableMSTestRunner>
-        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
-
-        <!--
-          Displays error on console in addition to the log file. Note that this feature comes with a performance impact.
-          For more information, visit https://learn.microsoft.com/dotnet/core/testing/microsoft-testing-platform-integration-dotnet-test#show-failure-per-test
-          -->
-        <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
-
     </PropertyGroup>
 
     <PropertyGroup>
         <RootFolder>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</RootFolder>
-        <!--        <RunSettingsFilePath>$(RootFolder)\build.vstest.runsettings</RunSettingsFilePath>-->
+        <RunSettingsFilePath>$(RootFolder)\build.vstest.runsettings</RunSettingsFilePath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'"/>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'"/>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.22"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
-        <PackageReference Include="MSTest" Version="4.0.2"/>
-        <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.23" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.23" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="3.11.1"/>
+        <PackageReference Include="MSTest.TestFramework" Version="3.11.1"/>
+        <PackageReference Include="Verify.MSTest" Version="30.20.1"/>
+        <PackageReference Include="coverlet.collector" Version="6.0.4">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-        <!--        <PackageReference Include="Verify.MSTest" Version="30.19.1" />-->
+    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.3.9"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.9"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -47,7 +46,6 @@
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.desktop\starsky.feature.desktop.csproj"/>
         <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj"/>
-        <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj"/>
         <ProjectReference Include="..\starsky.feature.settings\starsky.feature.settings.csproj"/>
         <ProjectReference Include="..\starsky.feature.thumbnail\starsky.feature.thumbnail.csproj"/>
         <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj"/>
@@ -119,6 +117,57 @@
         </None>
         <None Update="starsky.foundation.thumbnailgeneration\GenerationFactory\Shared\SharedGenerateTest.GenerateThumbnail_Verify.received.txt">
             <DependentUpon>SharedGenerateTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.sync\SyncServices\SyncFolderTest_summary.md">
+            <DependentUpon>SyncFolderTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_HappyFlow.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a330.arw.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a6660.arw.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a6700.arw.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-test.mp4.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTestInMemoryDb.Importer_Gpx.verified.txt">
+            <DependentUpon>ImportTest_InMemoryDb.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCity_ReturnsOk_Verify.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-01-30T12-00-00.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-01-30T12-00-00_cityName=Amsterdam.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-01-30T12-00-00_cityName=Amsterdam.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-06-30T12-00-00_cityName=Amsterdam.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-06-30T12-00-00_cityName=Willemstad.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-06-30T12-00-00_cityName=Willemstad.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCity_ReturnsOk_Verify.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.geo\GeoNameCitySeed\GeoNameCitySeedServiceTest.Seed_InsertsUniqueCities_Verify.verified.txt">
+            <DependentUpon>GeoNameCitySeedServiceTest.cs</DependentUpon>
         </None>
     </ItemGroup>
     <ItemGroup>

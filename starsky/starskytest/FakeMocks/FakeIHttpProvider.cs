@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using starsky.foundation.http.Interfaces;
 
@@ -36,7 +37,8 @@ public class FakeIHttpProvider : IHttpProvider
 		return Task.FromResult(response);
 	}
 
-	public async Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content)
+	public async Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content,
+		AuthenticationHeaderValue? authenticationHeaderValue)
 	{
 		return await GetAsync(requestUri);
 	}

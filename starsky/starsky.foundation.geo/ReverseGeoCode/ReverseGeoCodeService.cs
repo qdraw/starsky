@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using NGeoNames;
@@ -6,6 +5,7 @@ using NGeoNames.Entities;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.GeoDownload;
 using starsky.foundation.geo.GeoDownload.Interfaces;
+using starsky.foundation.geo.GeoRegionInfo;
 using starsky.foundation.geo.ReverseGeoCode.Interface;
 using starsky.foundation.geo.ReverseGeoCode.Model;
 using starsky.foundation.injection;
@@ -103,7 +103,7 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 		}
 
 		status.LocationCity = nearestPlace.NameASCII;
-		WriteLocationCountryAndCode(nearestPlace, status);
+		SetLocationCountryAndCode(nearestPlace, status);
 		status.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
 
 		// also update: ShouldApplyReverseGeoCode
@@ -137,19 +137,12 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 		       !string.IsNullOrEmpty(fileIndexItem.LocationCountryCode);
 	}
 
-	private void WriteLocationCountryAndCode(ExtendedGeoName nearestPlace, GeoLocationModel status)
+	private void SetLocationCountryAndCode(ExtendedGeoName nearestPlace, GeoLocationModel status)
 	{
-		// Catch is used for example the region VA (Vatican City)
-		try
-		{
-			var region = new RegionInfo(nearestPlace.CountryCode);
-			status.LocationCountry = region.EnglishName;
-			status.LocationCountryCode = region.ThreeLetterISORegionName;
-		}
-		catch ( ArgumentException e )
-		{
-			_logger.LogInformation("[GeoReverseLookup] " + e.Message);
-		}
+		var (locationCountry, threeLetterLocationCountryCode) =
+			new RegionInfoHelper(_logger).GetLocationCountryAndCode(nearestPlace.CountryCode);
+		status.LocationCountry = locationCountry;
+		status.LocationCountryCode = threeLetterLocationCountryCode;
 	}
 
 	internal string? GetAdmin1Name(string countryCode, string[] adminCodes)

@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
@@ -25,6 +27,9 @@ public sealed class StorageThumbnailFilesystemTest
 		_fileName = createNewImage.FileName;
 	}
 
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public void Thumbnail_CombinePathShouldEndWithTestJpg()
 	{
@@ -37,21 +42,24 @@ public sealed class StorageThumbnailFilesystemTest
 	{
 		var createNewImage = new CreateAnImage();
 
+		const string startMoveFile = "start_move_file2";
+		const string movedFileName = "StorageThumbnailFilesystemTest_FileMove2.jpg";
+
 		// first copy for parallel test
 		RetryHelper.Do(CreateStartMoveFileAsync, TimeSpan.FromSeconds(1));
 
-		_thumbnailStorage.FileMove("start_move_file",
-			"StorageThumbnailFilesystemTest_FileMove.jpg");
+		_thumbnailStorage.FileMove(startMoveFile,
+			movedFileName);
 
-		var path = Path.Combine(createNewImage.BasePath, "start_move_file" + ".jpg");
+		var path = Path.Combine(createNewImage.BasePath, startMoveFile + ".jpg");
 		Assert.IsFalse(File.Exists(path));
 		var path2 = Path.Combine(createNewImage.BasePath,
-			"StorageThumbnailFilesystemTest_FileMove.jpg");
+			movedFileName);
 		Assert.IsTrue(File.Exists(path2));
 
-		File.Delete(Path.Combine(createNewImage.BasePath, "start_move_file.jpg"));
+		File.Delete(Path.Combine(createNewImage.BasePath, startMoveFile + ".jpg"));
 		File.Delete(Path.Combine(createNewImage.BasePath,
-			"StorageThumbnailFilesystemTest_FileMove.jpg"));
+			movedFileName));
 
 		var createAnImage = new CreateAnImage();
 		Assert.IsNotNull(createAnImage);
@@ -61,7 +69,7 @@ public sealed class StorageThumbnailFilesystemTest
 		{
 			// first copy for parallel test
 			createNewImage = new CreateAnImage();
-			_thumbnailStorage.FileCopy(_fileName, "start_move_file");
+			_thumbnailStorage.FileCopy(_fileName, startMoveFile);
 			return true;
 		}
 	}
@@ -197,8 +205,7 @@ public sealed class StorageThumbnailFilesystemTest
 	public async Task Thumbnail_IsFileReady_thumbnailStorage()
 	{
 		var createNewImage = new CreateAnImage();
-
-		const string thumbnailId = "IsFileReady_thumbnailStorage";
+		var thumbnailId = $"IsFileReady_thumbnailStorage_{Guid.NewGuid():N}";
 		// first copy for parallel test
 		_thumbnailStorage.FileCopy(_fileName, thumbnailId);
 
@@ -218,8 +225,7 @@ public sealed class StorageThumbnailFilesystemTest
 		var result2 = _thumbnailStorage.IsFileReady(thumbnailId);
 		Assert.IsTrue(result2);
 
-		File.Delete(Path.Combine(createNewImage.BasePath,
-			$"{thumbnailId}"));
+		File.Delete(Path.Combine(createNewImage.BasePath, thumbnailId));
 
 		Assert.IsFalse(_thumbnailStorage.ExistFile(thumbnailId));
 	}
@@ -293,5 +299,11 @@ public sealed class StorageThumbnailFilesystemTest
 		Assert.AreEqual(CreateAnImage.Size, _thumbnailStorage.Info(_fileName).Size);
 	}
 
-	public TestContext TestContext { get; set; }
+
+	[TestMethod]
+	public void Thumb_ReadLinesAsync()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.ReadLinesAsync("not-found", new CancellationToken(true)));
+	}
 }

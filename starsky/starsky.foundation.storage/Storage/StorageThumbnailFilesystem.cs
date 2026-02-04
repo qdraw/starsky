@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -29,6 +30,11 @@ public sealed class StorageThumbnailFilesystem : IStorage
 	public bool IsFileReady(string path)
 	{
 		return new StorageHostFullPathFilesystem(_logger).IsFileReady(CombinePath(path));
+	}
+
+	public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken)
+	{
+		throw new NotSupportedException();
 	}
 
 	/// <summary>

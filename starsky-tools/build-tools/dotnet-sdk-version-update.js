@@ -509,7 +509,7 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 			let fileContent = buffer.toString("utf8");
 
 			const actionsSetupDotNet = new RegExp(
-				"uses: actions\\/setup-dotnet@v[0-9.]+\n\\s+with:\n\\s+dotnet-version: [0-9.]+",
+				"uses: actions\/setup-dotnet@([v]?[0-9.]+|[a-f0-9]{40})\\n\\s+with:\\n\\s+dotnet-version: [0-9.]+",
 				"g"
 			);
 			const actionsSetupDotNetMatch =

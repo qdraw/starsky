@@ -1,8 +1,12 @@
 name: Desktop Release on tag (.NET & Electron)
+permissions:
+  contents: read
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
+    branches: [master]
+    paths:
+    - '.github/workflows/desktop-release-on-tag-net-electron.yml'
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   schedule:
@@ -17,12 +21,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+
+      - name: Remove Android
+        run: sudo rm -rf /usr/local/lib/android
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@131b410979e0b49e2162c0718030257b22d6dc2c
         with:
-          dotnet-version: 8.0.416
+          dotnet-version: 8.0.417
 
       - name: Build --no-unit-test linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
         shell: bash
@@ -30,43 +37,43 @@ jobs:
         run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test --ready-to-run
 
       - name: Upload linux-arm as build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: linux-arm
           path: ./starsky/starsky-linux-arm.zip
 
       - name: Upload linux-arm64 as build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: linux-arm64
           path: ./starsky/starsky-linux-arm64.zip
  
       - name: Upload win-x64 as build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: win-x64
           path: ./starsky/starsky-win-x64.zip
   
       - name: Upload linux-x64 as build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: linux-x64
           path: ./starsky/starsky-linux-x64.zip
 
       - name: Upload osx-x64 as build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: osx-x64
           path: ./starsky/starsky-osx-x64.zip
  
       - name: Upload osx-arm64 as build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: osx-arm64
           path: ./starsky/starsky-osx-arm64.zip
  
       - name: Upload slack-notification as build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: starsky-tools-slack-notification
           path: ./starsky-tools/slack-notification
@@ -74,13 +81,15 @@ jobs:
   build_mac_x64:
     name: Build Mac Desktop app (x64)
     runs-on: macos-latest
+    permissions:
+      contents: read
     needs: [build_net]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
 
       - name: Download osx-x64 as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: osx-x64
           path: ./starsky
@@ -119,7 +128,7 @@ jobs:
         run: npm run macx64
    
       - name: Upload starsky-mac-x64-desktop as build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: starsky-mac-x64-desktop
           path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg 
@@ -130,10 +139,10 @@ jobs:
     needs: [build_net]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
 
       - name: Download osx-arm64 as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: osx-arm64
           path: ./starsky
@@ -167,7 +176,7 @@ jobs:
         run: npm run macarm64
    
       - name: Upload starsky-mac-arm64-desktop as build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: starsky-mac-arm64-desktop
           path: ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg 
@@ -176,12 +185,14 @@ jobs:
     name: Build Windows Desktop app
     runs-on: windows-latest
     needs: [build_net]
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
 
       - name: Download starsky-win-x64 as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: win-x64
           path: ./starsky
@@ -202,7 +213,7 @@ jobs:
         run: npm run release-version-check
 
       - name: Use node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
         with:
           node-version: '22.x'
 
@@ -215,7 +226,7 @@ jobs:
         run: npm run windows
      
       - name: Upload starsky-win-x64-desktop as build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: starsky-win-x64-desktop
           path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
@@ -235,49 +246,49 @@ jobs:
         run: mkdir -p starsky && mkdir -p starskydesktop && mkdir -p starskydesktop/dist-prod
  
       - name: Download starsky-win-x64-desktop as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: starsky-win-x64-desktop
           path: ./starskydesktop/dist-prod
  
       - name: Download starsky-mac-x64-desktop as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: starsky-mac-x64-desktop
           path: ./starskydesktop/dist-prod
 
       - name: Download starsky-mac-arm64-desktop as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: starsky-mac-arm64-desktop
           path: ./starskydesktop/dist-prod
  
       - name: Download linux-arm as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: linux-arm
           path: ./starsky
 
       - name: Download linux-arm64 as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: linux-arm64
           path: ./starsky
 
       - name: Download osx-x64 as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: osx-x64
           path: ./starsky
 
       - name: Download osx-arm64 as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: osx-arm64
           path: ./starsky
 
       - name: Download win-x64 as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: win-x64
           path: ./starsky
@@ -297,7 +308,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@78237c54eb15310cb292a15480c4be010be47aeb
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -340,7 +351,7 @@ jobs:
       # - name: Upload Release Asset osx-x64 -- reference only
       #   id: upload-osx-x64
       #   if: startsWith(github.ref, 'refs/tags/v')
-      #   uses: actions/upload-release-asset@v1
+      #   uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #   with:
@@ -350,7 +361,7 @@ jobs:
       #     asset_content_type: application/zip
 
       - name: Download slack-notification as build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: starsky-tools-slack-notification
           path: ./starsky-tools-slack-notification

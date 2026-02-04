@@ -276,7 +276,7 @@ public sealed class QueryTest
 			.Where(p => p.FilePath?.Contains("/basic") == true)
 			.OrderBy(p => p.FileName).ToList();
 
-		Assert.AreEqual(getAllRecursive123.Count, getAllRecursiveExpectedResult123.Count);
+		Assert.HasCount(getAllRecursive123.Count, getAllRecursiveExpectedResult123);
 
 		CollectionAssert.AreEqual(getAllRecursive123.Select(p => p.FileHash).ToList(),
 			getAllRecursiveExpectedResult123.Select(p => p.FileHash).ToList());

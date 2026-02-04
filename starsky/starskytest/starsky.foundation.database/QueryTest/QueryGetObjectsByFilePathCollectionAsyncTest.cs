@@ -15,20 +15,15 @@ namespace starskytest.starsky.foundation.database.QueryTest;
 [TestClass]
 public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 {
-	private readonly Query _query;
-
-	public QueryGetObjectsByFilePathCollectionAsyncTest()
-	{
-		_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetRequiredService<ApplicationDbContext>(),
-			new AppSettings(), CreateNewScope(), new FakeIWebLogger(), new FakeMemoryCache());
-	}
+	private readonly Query _query = new(CreateNewScope().CreateScope().ServiceProvider
+			.GetRequiredService<ApplicationDbContext>(),
+		new AppSettings(), CreateNewScope(), new FakeIWebLogger(), new FakeMemoryCache());
 
 	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
 		services.AddDbContext<ApplicationDbContext>(options =>
-			options.UseInMemoryDatabase(nameof(QueryGetObjectsByFilePathAsyncTest)));
+			options.UseInMemoryDatabase(nameof(QueryGetObjectsByFilePathCollectionAsyncTest)));
 		var serviceProvider = services.BuildServiceProvider();
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}

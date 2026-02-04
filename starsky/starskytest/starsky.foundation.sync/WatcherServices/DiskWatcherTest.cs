@@ -240,13 +240,17 @@ public sealed class DiskWatcherTest
 		var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!);
 
 		// Act & Assert
-		Assert.ThrowsExactly<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(Test);
+		
+		return;
+
+		void Test()
 		{
 			watcher.OnChanged(null!, event1);
 
 			// Cleanup
 			watcher.Dispose();
-		});
+		}
 	}
 
 	[TestMethod]

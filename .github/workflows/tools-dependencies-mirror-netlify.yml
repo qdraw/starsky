@@ -19,6 +19,8 @@ on:
     
 name: Tools dependencies mirror netlify
 # for: starsky-dependencies
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -26,14 +28,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
           
       - name: download-mirror.sh
         working-directory: starsky-tools/build-tools
         run: bash download-mirror.sh
 
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
         with:
           name: build-tools-mirror
           path: ./starsky-tools/build-tools/mirror/

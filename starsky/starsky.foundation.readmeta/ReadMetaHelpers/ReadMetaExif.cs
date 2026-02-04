@@ -119,8 +119,18 @@ public sealed class ReadMetaExif
 		SetArrayBasedItemsMakeModel(allExifItems, item);
 		SetArrayBasedItemSerial(allExifItems, item);
 		SetArrayBasedItemsSoftwareStabilization(allExifItems, item);
+		SetArrayBasedItemsArtist(allExifItems, item);
 
 		return item;
+	}
+
+	private static void SetArrayBasedItemsArtist(List<Directory> allExifItems, FileIndexItem item)
+	{
+		var artist = GetArtist(allExifItems);
+		if ( !string.IsNullOrEmpty(artist) ) // null = is not the right tag or empty tag
+		{
+			item.Artist = artist;
+		}
 	}
 
 	/// <summary>
@@ -636,6 +646,28 @@ public sealed class ReadMetaExif
 		}
 
 		return keyWords;
+	}
+
+	private static string GetArtist(List<Directory> allExifItems)
+	{
+		// Exif IFD0
+		var iptcDirectory = allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault();
+		var artist = iptcDirectory?.GetDescription(ExifDirectoryBase.TagArtist);
+
+		if ( !string.IsNullOrEmpty(artist) )
+		{
+			return artist;
+		}
+
+		var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+		var dcCreator = GetXmpData(xmpDirectory, "dc:creator");
+		if ( !string.IsNullOrEmpty(dcCreator) )
+		{
+			return dcCreator;
+		}
+
+		var creator = GetXmpData(xmpDirectory, "Iptc4xmpCore:Creator");
+		return creator;
 	}
 
 	private static string GetColorClassString(List<Directory> allExifItems)

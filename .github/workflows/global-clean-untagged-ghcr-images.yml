@@ -1,5 +1,8 @@
 name: Clean untagged and nightly ghcr images
 
+permissions:
+  packages: write
+
 on:
   workflow_dispatch:
   schedule:
@@ -10,14 +13,14 @@ jobs:
   delete_versions:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/delete-package-versions@v5
+      - uses: actions/delete-package-versions@4dbb860504f6d0cde296a192842138c03915746a
         with: 
           package-name: 'starsky'
           token: ${{ secrets.WORKFLOW_GITHUB }}
           package-type: 'container'
           delete-only-untagged-versions: 'true'
 
-      - uses: actions/delete-package-versions@v5
+      - uses: actions/delete-package-versions@4dbb860504f6d0cde296a192842138c03915746a
         with: 
           package-name: 'starsky-unstable-nightly'
           token: ${{ secrets.WORKFLOW_GITHUB }}

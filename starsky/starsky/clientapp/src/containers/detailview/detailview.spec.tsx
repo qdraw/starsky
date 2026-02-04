@@ -286,7 +286,7 @@ describe("DetailView", () => {
       });
     });
 
-    it("Prev Keyboard", () => {
+    it("Prev Keyboard - Arrow key", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
 
@@ -337,7 +337,58 @@ describe("DetailView", () => {
       });
     });
 
-    it("Next Keyboard", () => {
+    it("Prev Keyboard - [ key", () => {
+      const navigateSpy = jest.fn().mockResolvedValueOnce("");
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+
+      const locationObject = {
+        location: {
+          ...Router.state.location,
+          href: "",
+          search: ""
+        },
+        navigate: navigateSpy
+      };
+      const locationSpy = jest
+        .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject);
+
+      jest.spyOn(UpdateRelativeObject.prototype, "Update").mockImplementationOnce(() => {
+        return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
+      });
+
+      const detailview = render(<TestComponent />);
+
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "[",
+        metaKey: true
+      });
+
+      act(() => {
+        globalThis.dispatchEvent(event);
+      });
+
+      expect(locationSpy).toHaveBeenCalled();
+
+      expect(navigateSpy).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith("/?f=prev", {
+        replace: true
+      });
+
+      act(() => {
+        detailview.unmount();
+      });
+    });
+
+    it("Next Keyboard - Arrow key", () => {
       jest.spyOn(MenuDetailView, "default").mockImplementationOnce(() => <></>);
       jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
 
@@ -380,6 +431,123 @@ describe("DetailView", () => {
       expect(navigateSpy).toHaveBeenCalledWith("/?f=next", {
         replace: true
       });
+      component.unmount();
+    });
+
+    it("Next Keyboard: ] key", () => {
+      jest.spyOn(MenuDetailView, "default").mockImplementationOnce(() => <></>);
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+
+      const navigateSpy = jest.fn().mockResolvedValueOnce("");
+      const locationObject = {
+        location: { ...globalThis.location, search: "" },
+        navigate: navigateSpy
+      };
+      const locationSpy = jest
+        .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject);
+
+      jest
+        .spyOn(UpdateRelativeObject.prototype, "Update")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
+        });
+
+      const component = render(<TestComponent />);
+
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "]",
+        metaKey: true
+      });
+
+      act(() => {
+        globalThis.dispatchEvent(event);
+      });
+
+      expect(locationSpy).toHaveBeenCalled();
+
+      expect(navigateSpy).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith("/?f=next", {
+        replace: true
+      });
+      component.unmount();
+    });
+
+    it.each([
+      { key: "]", description: "] key press" },
+      { key: "[", description: "[ key press" }
+    ])("Tags input: blur and focus on %s", ({ key }) => {
+      jest.spyOn(MenuDetailView, "default").mockImplementationOnce(() => <></>);
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+
+      const navigateSpy = jest.fn().mockResolvedValueOnce("");
+      const locationObject = {
+        location: {
+          ...globalThis.location,
+          search: "?f=/test.jpg&details=true"
+        },
+        navigate: navigateSpy
+      };
+
+      jest
+        .spyOn(UpdateRelativeObject.prototype, "Update")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
+        });
+
+      jest
+        .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject);
+
+      const component = render(<TestComponent />);
+
+      const tagsInput = component.container.querySelector('[data-name="tags"]') as HTMLInputElement;
+
+      expect(tagsInput).toBeTruthy();
+
+      act(() => {
+        tagsInput.focus();
+      });
+
+      let blur = false;
+      let focused = false;
+
+      tagsInput.addEventListener("blur", () => {
+        blur = true;
+      });
+
+      tagsInput.addEventListener("focus", () => {
+        focused = true;
+      });
+
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key,
+        metaKey: true
+      });
+
+      act(() => {
+        tagsInput.dispatchEvent(event);
+      });
+
+      expect(focused).toBe(true);
+      expect(blur).toBe(true);
+
       component.unmount();
     });
 

@@ -4,19 +4,26 @@ on:
   workflow_dispatch:
   schedule:
     - cron:  '30 4 15 * *'
+  push:
+    branches: [master]
+    paths:
+    - '.github/workflows/clientapp-update-dependencies-vite.yml'
     
 jobs:
   run:
+    permissions:
+      contents: write
+      pull-requests: write
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
       with:
         ref: master
         
     - name: Setup Node.js environment
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
       with:
         node-version: 18
         check-latest: true
@@ -43,7 +50,7 @@ jobs:
       
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
-      uses: peter-evans/create-pull-request@v7
+      uses: peter-evans/create-pull-request@6699836a213cf8b28c4f0408a404a6ac79d4458a
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: 'Update ClientApp'
@@ -63,7 +70,7 @@ jobs:
         draft: false
         
     - name: Merge current branch into -> auto_clientapp_vite_app_update
-      uses: everlytic/branch-merge@1.1.5
+      uses: everlytic/branch-merge@c4a244dc23143f824ae6c022a10732566cb8e973
       if: github.event_name == 'workflow_dispatch' && steps.files_changed.outputs.CHANGED == 'true'
       with:
         github_token: ${{ secrets.WORKFLOW_GITHUB }}

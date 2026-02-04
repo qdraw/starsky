@@ -1,10 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.feature.import.Interfaces;
-using starsky.feature.import.Services;
+using starsky.feature.cloudimport.Interfaces;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.geo.GeoDownload.Interfaces;
+using starsky.foundation.import.Interfaces;
+using starsky.foundation.import.Services;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Helpers;
@@ -44,16 +45,22 @@ public static class Program
 		var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
 		var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 		var geoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>();
+		var cloudImport = serviceProvider.GetRequiredService<ICloudImportService>();
+		var storageDetector = serviceProvider.GetRequiredService<ICameraStorageDetector>();
 
 		// Migrations before importing
 		await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
 			webLogger,
 			appSettings);
 
+		if ( !( await cloudImport.SyncAsync(args) ).SkippedNoInput )
+		{
+			return;
+		}
 
 		// Help and other Command Line Tools args are included in the ImporterCli 
 		var service = new ImportCli(import, appSettings, console, webLogger, exifToolDownload,
-			geoFileDownload);
+			geoFileDownload, storageDetector);
 		if ( !await service.Importer(args) )
 		{
 			throw new WebApplicationException("Import failed");

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Update;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Notifications;
 using starskytest.FakeMocks;
@@ -29,7 +31,7 @@ public sealed class NotificationQueryErrorTest
 	{
 		IsCalledDbUpdateConcurrency = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase("MovieListDatabase")
+			.UseInMemoryDatabase(nameof(AddNotification_ConcurrencyException))
 			.Options;
 
 		var fakeQuery = new NotificationQuery(
@@ -45,7 +47,7 @@ public sealed class NotificationQueryErrorTest
 	{
 		IsCalledDbUpdateConcurrency = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase("MovieListDatabase")
+			.UseInMemoryDatabase(nameof(AddNotification_DoubleConcurrencyException))
 			.Options;
 
 		var fakeQuery = new NotificationQuery(
@@ -61,7 +63,7 @@ public sealed class NotificationQueryErrorTest
 	{
 		IsCalledDbUpdateConcurrency = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase("MovieListDatabase")
+			.UseInMemoryDatabase(nameof(AddNotification_3ConcurrencyException))
 			.Options;
 
 		var fakeQuery = new NotificationQuery(
@@ -95,6 +97,52 @@ public sealed class NotificationQueryErrorTest
 		Assert.AreEqual(content, result.Content);
 	}
 
+	private static MySqlException CreateMySqlException(MySqlErrorCode code,
+		string message)
+	{
+		// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
+
+		var ctorLIst =
+			typeof(MySqlException).GetConstructors(
+				BindingFlags.Instance |
+				BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+		var ctor = ctorLIst.FirstOrDefault(p =>
+			p.ToString() ==
+			"Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)");
+
+		var instance =
+			( MySqlException? ) ctor?.Invoke(
+				[code, "test", message, new Exception()]);
+		return instance!;
+	}
+
+	[TestMethod]
+	public async Task AddNotification_ShouldHandle_MySqlErrorCode_DuplicateKeyEntry()
+	{
+		// Arrange
+		const string content = "Test notification";
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(AddNotification_ShouldHandleUniqueConstraintError))
+			.Options;
+		var context = new DbUpdateExceptionApplicationDbContext(options)
+		{
+			MinCount = 1,
+			InnerException =
+				CreateMySqlException(MySqlErrorCode.DuplicateKeyEntry,
+					"Duplicate entry '1' for key 'PRIMARY'")
+		};
+
+		// Act
+		var sut = new NotificationQuery(context, new FakeIWebLogger(), null!);
+		var result = await sut.AddNotification(content);
+
+		await context.DisposeAsync();
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(content, result.Content);
+	}
+
 	[TestMethod]
 	public async Task AddNotification_ShouldRetry_GeneralException()
 	{
@@ -116,7 +164,7 @@ public sealed class NotificationQueryErrorTest
 		Assert.IsNotNull(result);
 		Assert.AreEqual(content, result.Content);
 	}
-
+	
 	[TestMethod]
 	public async Task AddNotification_ShouldLogError_WhenInputExceedsMaxLength()
 	{

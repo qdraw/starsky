@@ -60,7 +60,51 @@ public sealed class StarskyImporterCliProgramTest
 		Assert.IsNotNull(args);
 	}
 
-	[ClassCleanup]
+	[TestMethod]
+	public async Task StarskyProvider()
+	{
+		var args = new List<string> { "--provider" }.ToArray();
+		await Program.Main(args);
+		Assert.IsNotNull(args);
+	}
+
+	[TestMethod]
+	public async Task StarskyProviderTest()
+	{
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__Id", "test");
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__Enabled", "false");
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__Provider", "Dropbox");
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__RemoteFolder",
+			"/Camera Uploads");
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__DeleteAfterImport",
+			"false");
+		Environment.SetEnvironmentVariable(
+			"app__CloudImport__Providers__0__Credentials__RefreshToken", "");
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__Credentials__AppKey",
+			"24353");
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__Credentials__AppSecret",
+			"243");
+
+		var args = new List<string> { "--provider", "test" }.ToArray();
+		await Program.Main(args);
+		Assert.IsNotNull(args);
+
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__Id", null);
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__Enabled", null);
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__Provider", null);
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__RemoteFolder",
+			null);
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__DeleteAfterImport",
+			null);
+		Environment.SetEnvironmentVariable(
+			"app__CloudImport__Providers__0__Credentials__RefreshToken", null);
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__Credentials__AppKey",
+			null);
+		Environment.SetEnvironmentVariable("app__CloudImport__Providers__0__Credentials__AppSecret",
+			null);
+	}
+
+	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
 	public static void CleanEnvsAfterwards()
 	{
 		Environment.SetEnvironmentVariable("PORT", _prePort);

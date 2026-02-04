@@ -376,8 +376,8 @@ public sealed class MetaUpdateServiceTest
 
 		await service.RotationThumbnailExecute(1, new FileIndexItem("/test.jpg"));
 
-		Assert.AreEqual(ThumbnailNameHelper.AllThumbnailSizes.Length,
-			thumbnailService.InputsRotate.Count);
+		Assert.HasCount(ThumbnailNameHelper.AllThumbnailSizes.Length,
+			thumbnailService.InputsRotate);
 
 		Assert.IsTrue(thumbnailService.InputsRotate.Exists(p => p.Item3 ==
 		                                                        ThumbnailNameHelper.GetSize(

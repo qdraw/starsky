@@ -122,10 +122,30 @@ public sealed class ExifToolCmdHelper
 
 		command = UpdateMakeModelCommand(command, comparedNames, updateModel);
 		command = UpdateImageStabilization(command, comparedNames, updateModel);
+		command = UpdateArtist(command, comparedNames, updateModel);
 
 		if ( command == initCommand )
 		{
 			return string.Empty;
+		}
+
+		return command;
+	}
+
+	private static string UpdateArtist(string command, List<string> comparedNames,
+		FileIndexItem updateModel)
+	{
+		if ( comparedNames.Contains(nameof(FileIndexItem.Artist)
+			     .ToLowerInvariant()) &&
+		     !string.IsNullOrEmpty(updateModel.Artist) )
+		{
+			// ExifTool supports composite tags.
+			// ExifTool will automatically write:
+			// XMP-dc:Creator
+			// EXIF:Artist
+			// IPTC:By-line
+			command +=
+				$" -Artist=\"{updateModel.Artist}\" -XMP-dc:Creator=\"{updateModel.Artist}\" ";
 		}
 
 		return command;
@@ -231,8 +251,8 @@ public sealed class ExifToolCmdHelper
 			return updateModel.FileHash!;
 		}
 
-		return ( await new FileHash(_iStorage, _webLogger).GetHashCodeAsync(path) )
-			.Key;
+		var fileHashService = new FileHash(_iStorage, _webLogger);
+		return ( await fileHashService.GetHashCodeAsync(path, updateModel.ImageFormat) ).Key;
 	}
 
 	/// <summary>
@@ -537,7 +557,7 @@ public sealed class ExifToolCmdHelper
 				"yyyy:MM:dd HH:mm:ss",
 				CultureInfo.InvariantCulture);
 			command +=
-				$" -AllDates=\"{exifToolDatetimeString}\" \"-xmp:datecreated={exifToolDatetimeString}\"";
+				$" -AllDates=\"{exifToolDatetimeString}\" \"-xmp:datecreated={exifToolDatetimeString}\" ";
 		}
 
 		return command;
@@ -638,7 +658,7 @@ public sealed class ExifToolCmdHelper
 		     updateModel.ImageStabilisation != ImageStabilisationType.Unknown )
 		{
 			// there is no XMP version of the name
-			command += " -ImageStabilization=\"" + updateModel.ImageStabilisation + "\"";
+			command += $" -ImageStabilization=\"{updateModel.ImageStabilisation}\" ";
 		}
 
 		return command;

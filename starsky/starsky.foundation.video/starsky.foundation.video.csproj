@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{c6f6b684-f8eb-4dfd-9143-33f0262153fe}</ProjectGuid>
-        <Version>0.7.4</Version>
+        <Version>0.7.10</Version>
         <RootNamespace>starsky.foundation.video</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>

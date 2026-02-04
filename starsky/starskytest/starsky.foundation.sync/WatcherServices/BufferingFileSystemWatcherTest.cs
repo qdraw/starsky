@@ -247,7 +247,7 @@ public sealed class BufferingFileSystemWatcherTest
 	{
 		var path = Path.Join(_tempExistingFilesFolder, "test.txt");
 		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(
-			new MemoryStream(Array.Empty<byte>()), path);
+			new MemoryStream([]), path);
 
 		var watcher = new FileSystemWatcher(_tempExistingFilesFolder);
 		var wrapper = new BufferingFileSystemWatcher(watcher);
@@ -292,7 +292,7 @@ public sealed class BufferingFileSystemWatcherTest
 	{
 		var path = Path.Join(_tempExistingFilesFolder, "test.txt");
 		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(
-			new MemoryStream(Array.Empty<byte>()), path);
+			new MemoryStream([]), path);
 
 		var watcher = new FileSystemWatcher(_tempExistingFilesFolder);
 		var wrapper = new BufferingFileSystemWatcher(watcher);
@@ -572,7 +572,14 @@ public sealed class BufferingFileSystemWatcherTest
 		FileSystemEventHandler welcome = (_, s) => { message = s.FullPath; };
 
 		// Act & Assert
-		Assert.ThrowsExactly<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(Test);
+
+		// Optionally, check that the message is not altered
+		Assert.IsNotNull(message);
+		
+		return;
+
+		void Test()
 		{
 			wrapper.InvokeHandler(welcome, null!);
 
@@ -580,10 +587,7 @@ public sealed class BufferingFileSystemWatcherTest
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
 			watcher.Dispose();
-		});
-
-		// Optionally, check that the message is not altered
-		Assert.IsNotNull(message);
+		}
 	}
 
 	[TestMethod]
@@ -612,18 +616,23 @@ public sealed class BufferingFileSystemWatcherTest
 		RenamedEventHandler welcome = (_, s) => { message = s.FullPath; };
 
 		// Act & Assert
-		Assert.ThrowsExactly<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(Test);
+
+		// Optionally, check that the message is not altered
+		Assert.IsNotNull(message);
+		
+				
+		return;
+
+		void Test()
 		{
 			wrapper.InvokeHandler(welcome, null);
 
 			// Cleanup
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
-			watcher.Dispose();
-		});
-
-		// Optionally, check that the message is not altered
-		Assert.IsNotNull(message);
+			watcher.Dispose();	
+		}
 	}
 
 
@@ -649,7 +658,14 @@ public sealed class BufferingFileSystemWatcherTest
 		ErrorEventHandler welcome = (_, s) => { message = s.ToString(); };
 
 		// Act & Assert
-		Assert.ThrowsExactly<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(Test);
+
+		// Optionally, check that the message was not altered
+		Assert.IsNotNull(message);
+		
+		return;
+
+		void Test()
 		{
 			wrapper.InvokeHandler(welcome, null!);
 
@@ -657,10 +673,7 @@ public sealed class BufferingFileSystemWatcherTest
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
 			watcher.Dispose();
-		});
-
-		// Optionally, check that the message was not altered
-		Assert.IsNotNull(message);
+		}
 	}
 
 	[TestMethod]

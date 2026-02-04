@@ -279,6 +279,9 @@ export class UrlQuery {
     filePath?: string,
     extraLarge = true
   ): string => {
+    if (!fileHash) {
+      return "";
+    }
     if (!extraLarge) {
       return (
         this.prefix +
@@ -447,8 +450,82 @@ export class UrlQuery {
     return url;
   }
 
+  /**
+   * Batch rename photos preview
+   */
+  public UrlBatchRenamePreview(): string {
+    return this.prefix + "/api/batch-rename/preview";
+  }
+
+  /**
+   * Batch rename photos execute
+   */
+  public UrlBatchRenameExecute(): string {
+    return this.prefix + "/api/batch-rename/execute";
+  }
+
   public DocsGettingStartedFirstSteps(): string {
     return "https://docs.qdraw.nl/docs/getting-started/first-steps";
+  }
+
+  /**
+   * Preview timezone shift
+   */
+  public UrlTimezonePreview(): string {
+    return this.prefix + "/api/meta-time-correct/timezone-preview";
+  }
+
+  /**
+   * Execute timezone shift
+   */
+  public UrlTimezoneExecute(): string {
+    return this.prefix + "/api/meta-time-correct/timezone-execute";
+  }
+
+  /**
+   * Preview offset shift
+   */
+  public UrlOffsetPreview(): string {
+    return this.prefix + "/api/meta-time-correct/offset-preview";
+  }
+
+  /**
+   * Execute offset shift
+   */
+  public UrlOffsetExecute(): string {
+    return this.prefix + "/api/meta-time-correct/offset-execute";
+  }
+
+  /**
+   * Preview batch rename for offset shift
+   */
+  public UrlBatchRenameOffsetPreview(): string {
+    return this.prefix + "/api/batch-rename-datetime/offset-preview";
+  }
+
+  /**
+   * Execute batch rename for offset shift
+   */
+  public UrlBatchRenameOffsetExecute(): string {
+    return this.prefix + "/api/batch-rename-datetime/offset-execute";
+  }
+
+  /**
+   * Preview batch rename for timezone shift
+   */
+  public UrlBatchRenameTimezonePreview(): string {
+    return this.prefix + "/api/batch-rename-datetime/timezone-preview";
+  }
+
+  /**
+   * Execute batch rename for timezone shift
+   */
+  public UrlBatchRenameTimezoneExecute(): string {
+    return this.prefix + "/api/batch-rename-datetime/timezone-execute";
+  }
+
+  public UrlGeoLocationNameCityTimezone(dateTime: string, city: string): string {
+    return `${this.prefix}/api/geo-location-name/city-timezone?dateTime=${encodeURIComponent(dateTime)}&city=${encodeURIComponent(city)}`;
   }
 
   private urlReplacePath(input: string): string {

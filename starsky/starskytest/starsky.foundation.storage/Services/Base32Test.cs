@@ -23,10 +23,20 @@ public sealed class Base32Test
 	}
 
 	[TestMethod]
+	public void Base32Encode_WithValidMd5Hash_Returns26CharString()
+	{
+		var mdatContent = "This is test video content that should be hashed"u8.ToArray();
+		var expectedHashBytes = System.Security.Cryptography.MD5.HashData(mdatContent);
+		var base32Hash = Base32.Encode(expectedHashBytes);
+		Assert.IsNotNull(base32Hash);
+		Assert.AreEqual(26, base32Hash.Length);
+	}
+
+	[TestMethod]
 	public void Base32DecodeNull()
 	{
 		var encodeBytes = Base32.Decode(string.Empty);
-		Assert.AreEqual(0, encodeBytes.Length);
+		Assert.IsEmpty(encodeBytes);
 	}
 
 	[TestMethod]

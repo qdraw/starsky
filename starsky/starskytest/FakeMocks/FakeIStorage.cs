@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -83,7 +84,13 @@ public class FakeIStorage : IStorage
 		return true;
 	}
 
-	public bool ExistFile(string path)
+	public virtual IAsyncEnumerable<string> ReadLinesAsync(string path,
+		CancellationToken cancellationToken)
+	{
+		throw new NotSupportedException();
+	}
+
+	public virtual bool ExistFile(string path)
 	{
 		return _outputSubPathFiles.Contains(path);
 	}
@@ -257,11 +264,8 @@ public class FakeIStorage : IStorage
 			path = PathHelper.RemoveLatestSlash(path);
 		}
 
-		if ( !ExistFolder(path) )
-		{
-			return new List<KeyValuePair<string, DateTime>>();
-		}
-
+		// Check if there are any subdirectories under this path
+		// even if the parent folder doesn't explicitly exist
 		var result = new List<KeyValuePair<string, DateTime>>();
 		foreach ( var item in _outputSubPathFolders.Where(p =>
 				         p?.StartsWith(path) == true && p != path)

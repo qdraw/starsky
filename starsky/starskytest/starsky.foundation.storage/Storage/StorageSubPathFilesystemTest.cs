@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -28,6 +31,8 @@ public sealed class StorageSubPathFilesystemTest
 		var appSettings = new AppSettings { StorageFolder = _newImage.BasePath };
 		_storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
 	}
+
+	public TestContext TestContext { get; set; }
 
 	[TestMethod]
 	public void StorageFilesystem_GetAllFilesDirectoryTest()
@@ -281,5 +286,40 @@ public sealed class StorageSubPathFilesystemTest
 	{
 		var result = _storage.IsFolderOrFile("not-found");
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, result);
+	}
+
+	[TestMethod]
+	public async Task ReadLinesAsync_ReadsAllLines()
+	{
+		// Arrange: create a temp file with sample lines
+		var tempFile = Path.GetTempFileName();
+		try
+		{
+			var lines = new[] { "line1", "line2", "line3" };
+			await File.WriteAllLinesAsync(tempFile, lines, TestContext.CancellationToken);
+			var storage = new StorageSubPathFilesystem(
+				new AppSettings { StorageFolder = Path.GetDirectoryName(tempFile) ?? string.Empty },
+				new FakeIWebLogger()
+			);
+
+			// Act
+			var result = new List<string>();
+			await foreach ( var line in storage.ReadLinesAsync(
+				               Path.GetFileName(tempFile), CancellationToken.None) )
+			{
+				result.Add(line);
+			}
+
+			// Assert
+			CollectionAssert.AreEqual(lines, result);
+		}
+		finally
+		{
+			// Cleanup
+			if ( File.Exists(tempFile) )
+			{
+				File.Delete(tempFile);
+			}
+		}
 	}
 }

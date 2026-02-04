@@ -247,6 +247,11 @@ describe("url-query", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("hash_test", "filePath", true);
       expect(test).toContain("hash_test");
     });
+
+    it("when filehash is empty return empty string", () => {
+      const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("", "filePath", true);
+      expect(test).toBe("");
+    });
   });
 
   it("DocsGettingStartedFirstSteps", () => {
@@ -289,6 +294,18 @@ describe("url-query", () => {
       const url = new UrlQuery().UrlRealtime();
       expect(url).toBe("ws://localhost:7382/starsky/realtime");
       expect(url).toContain("realtime");
+    });
+  });
+
+  describe("UrlBatchRenamePreview & Execute", () => {
+    it("should contain /api/batch-rename/preview", () => {
+      const test = urlQuery.UrlBatchRenamePreview();
+      expect(test).toContain("/api/batch-rename/preview");
+    });
+
+    it("should contain /api/batch-rename/execute", () => {
+      const test = urlQuery.UrlBatchRenameExecute();
+      expect(test).toContain("/api/batch-rename/execute");
     });
   });
 });

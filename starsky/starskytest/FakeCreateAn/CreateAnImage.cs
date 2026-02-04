@@ -2,7 +2,6 @@ using System;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Reflection;
 using starsky.foundation.platform.Helpers;
 
 namespace starskytest.FakeCreateAn;
@@ -10,6 +9,13 @@ namespace starskytest.FakeCreateAn;
 public class CreateAnImage
 {
 	private const string FileNamePrivate = "0000000000aaaaa__exifreadingtest00.jpg";
+
+	private const string TempUnitTestFolderName = "temp-unit-test";
+
+	/// <summary>
+	///     Size in bytes of the image
+	/// </summary>
+	public const int Size = 9998;
 
 	/// <summary>
 	///     Split line
@@ -233,9 +239,8 @@ public class CreateAnImage
 	/// <summary>
 	///     The FullFile Path of the Directory of the Assemblies
 	/// </summary>
-	public readonly string BasePath =
-		( Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) +
-		  Path.DirectorySeparatorChar ).Replace("./", string.Empty);
+	public readonly string
+		BasePath = Path.Combine(AppContext.BaseDirectory, TempUnitTestFolderName);
 
 	/// <summary>
 	///     Database Path/subpath of the iamge
@@ -246,13 +251,7 @@ public class CreateAnImage
 	///     Full path of the image
 	/// </summary>
 	public readonly string FullFilePath =
-		( Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) +
-		  Path.DirectorySeparatorChar ).Replace("./", string.Empty) + FileNamePrivate;
-
-	/// <summary>
-	/// Size in bytes of the image
-	/// </summary>
-	public const int Size = 9998;
+		Path.Combine(AppContext.BaseDirectory, TempUnitTestFolderName, FileNamePrivate);
 
 	/// <summary>
 	///     Use abstractions instead of a System.IO dependency
@@ -262,6 +261,11 @@ public class CreateAnImage
 		if ( File.Exists(FullFilePath) )
 		{
 			return;
+		}
+
+		if ( !Directory.Exists(BasePath) )
+		{
+			Directory.CreateDirectory(BasePath);
 		}
 
 		try

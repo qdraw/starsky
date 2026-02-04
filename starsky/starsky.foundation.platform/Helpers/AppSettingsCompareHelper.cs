@@ -10,6 +10,9 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.platform.Helpers;
 
+/// <summary>
+///     AppSettings Merge Helper
+/// </summary>
 public static class AppSettingsCompareHelper
 {
 	/// <summary>
@@ -103,6 +106,54 @@ public static class AppSettingsCompareHelper
 				oldObjectValue,
 				newObjectValue, differenceList);
 		}
+
+		if ( propertyInfoFromA.PropertyType ==
+		     typeof(CloudImportSettings) &&
+		     propertyB.PropertyType == typeof(CloudImportSettings) )
+		{
+			var oldCloudImportSettingsValue =
+				( CloudImportSettings? ) propertyInfoFromA.GetValue(
+					sourceIndexItem, null);
+			var newCloudImportSettingsValue =
+				( CloudImportSettings? ) propertyB.GetValue(updateObject,
+					null);
+			CompareAppSettingsCloudSettings(propertyB.Name, sourceIndexItem,
+				oldCloudImportSettingsValue,
+				newCloudImportSettingsValue, differenceList);
+		}
+	}
+
+	private static void CompareAppSettingsCloudSettings(string propertyBName,
+		AppSettings sourceIndexItem, CloudImportSettings? oldCloudImportSettingsValue,
+		CloudImportSettings? newCloudImportSettingsValue, List<string> differenceList)
+	{
+		// If both are null, nothing to compare
+		if ( oldCloudImportSettingsValue == null && newCloudImportSettingsValue == null )
+		{
+			return;
+		}
+
+		var newCloudImportSettingsJson = JsonSerializer.Serialize(newCloudImportSettingsValue);
+		var oldCloudImportSettingsJson = JsonSerializer.Serialize(oldCloudImportSettingsValue);
+
+		// If both are non-null and equal (deep compare via JSON), nothing to do
+		if ( oldCloudImportSettingsValue != null && newCloudImportSettingsValue != null &&
+		     oldCloudImportSettingsJson == newCloudImportSettingsJson )
+		{
+			return;
+		}
+
+		// If new is default (empty), do nothing
+		if ( newCloudImportSettingsValue != null &&
+		     newCloudImportSettingsJson == JsonSerializer.Serialize(new CloudImportSettings()) )
+		{
+			return;
+		}
+
+		// Otherwise, update and record the change
+		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
+			newCloudImportSettingsValue, null);
+		differenceList.Add(propertyBName.ToLowerInvariant());
 	}
 
 	[SuppressMessage("Performance",

@@ -655,7 +655,8 @@ public sealed class AppSettings
 	///     According to Phil Harvey (exiftool's creator),
 	///     Quicktime timestamps are supposed to be set to UTC time as per the standard.
 	///     But it seems a lot of cameras don't do this
-	///     We assume that the standard is followed, and for Camera brands that don't follow the specs use
+	///     We assume that the standard is followed,
+	///		and for Camera brands that don't follow the specs use
 	///     this setting.
 	/// </summary>
 	[PackageTelemetry]
@@ -799,6 +800,11 @@ public sealed class AppSettings
 	/// </summary>
 	[PackageTelemetry]
 	public string? FfmpegPath { get; set; }
+
+	/// <summary>
+	///     Cloud import settings for automatic import from cloud storage
+	/// </summary>
+	public CloudImportSettings? CloudImport { get; set; } = new();
 
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 
@@ -952,8 +958,20 @@ public sealed class AppSettings
 		}
 
 		ReplaceOpenTelemetryData(appSettings);
+		ReplaceCloudImportData(appSettings);
 
 		return appSettings;
+	}
+
+	private static void ReplaceCloudImportData(AppSettings appSettings)
+	{
+		foreach ( var provider in appSettings.CloudImport?.Providers ?? [] )
+		{
+			provider.Credentials = new CloudProviderCredentials
+			{
+				RefreshToken = CloneToDisplaySecurityWarning
+			};
+		}
 	}
 
 	private static void ReplaceOpenTelemetryData(AppSettings appSettings)

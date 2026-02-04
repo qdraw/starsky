@@ -136,7 +136,7 @@ public class Pbkdf2HasherTests
 		var salt = Pbkdf2Hasher.GenerateRandomSalt();
 
 		// Assert
-		Assert.AreEqual(16, salt.Length); // 128 / 8 = 16
+		Assert.HasCount(16, salt); // 128 / 8 = 16
 	}
 
 	[TestMethod]

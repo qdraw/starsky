@@ -8,13 +8,13 @@ using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
-using starsky.feature.import.Interfaces;
-using starsky.feature.import.Models;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
+using starsky.foundation.import.Interfaces;
+using starsky.foundation.import.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -29,7 +29,7 @@ namespace starsky.Controllers;
 
 [Authorize] // <- should be logged in!
 [SuppressMessage("Usage", "S5693:Make sure the content " +
-						  "length limit is safe here", Justification = "Is checked")]
+                          "length limit is safe here", Justification = "Is checked")]
 public sealed class UploadController : Controller
 {
 	private readonly AppSettings _appSettings;
@@ -89,10 +89,10 @@ public sealed class UploadController : Controller
 	public async Task<IActionResult> UploadToFolder()
 	{
 		var to = Request.Headers["to"].ToString();
-		
+
 		if ( string.IsNullOrWhiteSpace(to) )
 		{
-			_logger.LogInformation($"[UploadToFolder] Missing 'to' header in request");
+			_logger.LogInformation("[UploadToFolder] Missing 'to' header in request");
 			return BadRequest("missing 'to' header");
 		}
 
@@ -179,7 +179,7 @@ public sealed class UploadController : Controller
 		if ( fileIndexResultsList.TrueForAll(p => p.Status == ImportStatus.FileError) )
 		{
 			_logger.LogInformation($"Wrong input extension is not allowed" +
-								   $" {string.Join(",", fileIndexResultsList.Select(p => p.FilePath))}");
+			                       $" {string.Join(",", fileIndexResultsList.Select(p => p.FilePath))}");
 			Response.StatusCode = 415;
 		}
 
@@ -211,7 +211,7 @@ public sealed class UploadController : Controller
 	private void AddOrRemoveXmpSidecarFileToDatabase(FileIndexItem metaDataItem)
 	{
 		if ( _iStorage.ExistFile(ExtensionRolesHelper.ReplaceExtensionWithXmp(metaDataItem
-				.FilePath)) )
+			    .FilePath)) )
 		{
 			metaDataItem.AddSidecarExtension("xmp");
 			return;
@@ -333,7 +333,7 @@ public sealed class UploadController : Controller
 
 		// only used for direct import
 		if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) &&
-			 FilenamesHelper.IsValidFileName(FilenamesHelper.GetFileName(to)) )
+		     FilenamesHelper.IsValidFileName(FilenamesHelper.GetFileName(to)) )
 		{
 			Request.Headers["filename"] = FilenamesHelper.GetFileName(to);
 			return FilenamesHelper.GetParentPath(PathHelper.RemoveLatestSlash(to));

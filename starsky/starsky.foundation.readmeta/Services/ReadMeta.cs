@@ -66,7 +66,7 @@ public sealed class ReadMeta : IReadMeta
 			var subPath = subPathList[i];
 
 			var returnItem = await ReadExifAndXmpFromFileAsync(subPath);
-			var stream = _iStorage.ReadStream(subPath, 50);
+			var stream = _iStorage.ReadStream(subPath, 65);
 			var imageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 			await stream.DisposeAsync();
 
@@ -79,7 +79,7 @@ public sealed class ReadMeta : IReadMeta
 			if ( fileHashes == null || fileHashes.Count <= i )
 			{
 				returnItem.FileHash =
-					( await _fileHashHelper.GetHashCodeAsync(subPath) ).Key;
+					( await _fileHashHelper.GetHashCodeAsync(subPath, imageFormat) ).Key;
 			}
 			else
 			{

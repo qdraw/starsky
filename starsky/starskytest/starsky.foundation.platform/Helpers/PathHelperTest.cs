@@ -391,7 +391,7 @@ public class PathHelperTests
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.AreEqual(0, result.Length);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -405,7 +405,7 @@ public class PathHelperTests
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.AreEqual(0, result.Length);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -419,7 +419,7 @@ public class PathHelperTests
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.AreEqual(2, result.Length);
+		Assert.HasCount(2, result);
 		Assert.AreEqual("/path/to/file1", result[0]);
 		Assert.AreEqual("/path/to/file2", result[1]);
 	}

@@ -732,7 +732,7 @@ public sealed class AppSettingsCompareHelperTest
 
 		AppSettingsCompareHelper.Compare(source, to);
 
-		Assert.AreEqual(source.DefaultDesktopEditor.Count, to.DefaultDesktopEditor.Count);
+		Assert.HasCount(source.DefaultDesktopEditor.Count, to.DefaultDesktopEditor);
 		Assert.AreEqual(source.DefaultDesktopEditor[0].ApplicationPath,
 			to.DefaultDesktopEditor[0].ApplicationPath);
 		Assert.AreEqual(source.DefaultDesktopEditor[0].ImageFormats,
@@ -763,5 +763,75 @@ public sealed class AppSettingsCompareHelperTest
 		AppSettingsCompareHelper.Compare(source, to);
 
 		Assert.IsEmpty(to.DefaultDesktopEditor);
+	}
+
+	[TestMethod]
+	public void AppSettingsCloudImport()
+	{
+		var source = new AppSettings { CloudImport = new CloudImportSettings { Providers = [] } };
+
+		var to = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers =
+				[
+					new CloudImportProviderSettings
+					{
+						Id = "to/test",
+						Provider = "Dropbox",
+						RemoteFolder = "/to/test",
+						Enabled = true,
+						SyncFrequencyHours = 1,
+						DeleteAfterImport = false
+					}
+				]
+			}
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.HasCount(source.CloudImport.Providers.Count, to.CloudImport.Providers);
+		Assert.AreEqual(source.CloudImport.Providers[0].Id,
+			to.CloudImport.Providers[0].Id);
+		Assert.AreEqual(source.CloudImport.Providers[0].Provider,
+			to.CloudImport.Providers[0].Provider);
+		Assert.AreEqual(source.CloudImport.Providers[0].RemoteFolder,
+			to.CloudImport.Providers[0].RemoteFolder);
+		Assert.AreEqual(source.CloudImport.Providers[0].Enabled,
+			to.CloudImport.Providers[0].Enabled);
+		Assert.AreEqual(source.CloudImport.Providers[0].SyncFrequencyHours,
+			to.CloudImport.Providers[0].SyncFrequencyHours);
+		Assert.AreEqual(source.CloudImport.Providers[0].DeleteAfterImport,
+			to.CloudImport.Providers[0].DeleteAfterImport);
+	}
+
+	[TestMethod]
+	public void AppSettingsCloudImport_Ignore_DefaultOption()
+	{
+		var source = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers =
+				[
+					new CloudImportProviderSettings
+					{
+						Id = "to/test",
+						Provider = "Dropbox",
+						RemoteFolder = "/to/test",
+						Enabled = true,
+						SyncFrequencyHours = 1,
+						DeleteAfterImport = false
+					}
+				]
+			}
+		};
+
+		var to = new AppSettings { CloudImport = new CloudImportSettings { Providers = [] } };
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsEmpty(to.CloudImport.Providers);
 	}
 }

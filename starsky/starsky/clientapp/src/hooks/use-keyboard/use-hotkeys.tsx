@@ -9,6 +9,7 @@ export interface IHotkeysKeyboardEvent {
   metaKey?: boolean;
   shiftKey?: boolean;
   ctrlKeyOrMetaKey?: boolean;
+  skipIsInForm?: boolean;
 }
 /**
  * Use key with alt, ctrl, command or shift key
@@ -40,7 +41,11 @@ function useHotKeys(
 
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
-      if (new Keyboard().isInForm(event)) return;
+      if (
+        (hotkey.skipIsInForm || hotkey.skipIsInForm === undefined) &&
+        new Keyboard().isInForm(event)
+      )
+        return;
       if (!hotkey?.key) {
         return;
       }

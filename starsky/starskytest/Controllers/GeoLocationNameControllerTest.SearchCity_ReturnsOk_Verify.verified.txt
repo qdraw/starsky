@@ -1,0 +1,25 @@
+﻿[
+  {
+    GeonameId: 2759794,
+    Name: Amsterdam,
+    AsciiName: Amsterdam,
+    AlternateNames: AMS,Aemstelredamme,Aemsterdam,Amestelledamme,Amesterda,Amesterdam,Amesterdao,Amesterdã,Amesterdão,Amistardam,Amseutereudam,Amstadem,Amstardam,Amstardām,Amstedam,Amstehrdam,Amsteladamum,Amstelodamum,Amstelodhamon,Amstelodhámon,Amsterda,Amsterdam,Amsterdama,Amsterdamas,Amsterdame,Amsterdami,Amsterdamo,Amsterdams,Amsterdamu,Amsterdan,Amsterdã,Amsterntam,Amsterodam,Amstyerdam,Amstèdam,Amstèrdame,Amstérdam,Amstɛrɩdam,Amstʻertam,Amsut'erudam,Amszterdam,Amsŭt'erŭdam,Amusitedan,Amusuterudamu,Damsko,I-Amsterdami,Mokum,Mokum Aleph,a mu si te dan,aimstardaima,amasataradama,amastaradama,amastararyama,amseuteleudam,amstardama,amstartam,amstrdam,amusuterudamu,anstardyam,emstaradyama,xamstexrdam,yەmstەrdam,Àmsterdam,Ámsterdam,Ámsterdan,Âmesterdâm,Āmǔsītèdān,Άμστερνταμ,Амстердам,Амстэрдам,Ամսթերտամ,Ամստերդամ,אמסטערדאם,אמסטרדם,آمستردام,أمستردام,ئامستېردام,ئەمستەردام,امستردام,امسټرډام,ایمسٹرڈیم,ܐܡܣܛܪܕܐܡ,अ‍ॅम्स्टरडॅम,आम्स्टर्डम,एम्स्तरद्याम,ऐम्स्टर्डैम,আমস্টারডাম,ਅਮਸਤਰਦਮ,ଆମଷ୍ଟରଡ଼୍ୟାମ,ஆம்ஸ்டர்டம்,ಆಂಸ್ಟರ್ಡ್ಯಾಮ್,ആംസ്റ്റർഡാം,ඈම්ස්ටර්ඩෑම්,อัมสเตอร์ดัม,ཨེམ་སི་ཊར་ཌམ།,အမ်စတာဒမ်မြို့,ამსტერდამი,አምስተርዳም,アムステルダム,阿姆斯特丹,암스테르담,
+    Latitude: 52.37403,
+    Longitude: 4.88969,
+    FeatureClass: P,
+    FeatureCode: PPLC,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 07,
+    Admin2Code: 0363,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 741636,
+    Dem: 13,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_1,
+    Province: Noord-Holland,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  }
+]

@@ -21,6 +21,7 @@ public class ThumbnailGeneratorFactoryTests
 	}
 
 	[TestMethod]
+	[Timeout(5000, CooperativeCancellation = true)]
 	[DataRow("test.jpg", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.mp4", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.txt", typeof(NotSupportedFallbackThumbnailGenerator))]

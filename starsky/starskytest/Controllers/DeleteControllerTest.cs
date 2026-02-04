@@ -90,28 +90,30 @@ public sealed class DeleteControllerTest
 
 	private async Task<FileIndexItem?> InsertSearchData(bool delete = false)
 	{
-		var fileHashCode = new FileHash(_iStorage, new FakeIWebLogger())
-			.GetHashCode(_createAnImage.DbPath).Key;
+		var fileHashCode = ( await new FileHash(_iStorage, new FakeIWebLogger())
+			.GetHashCodeAsync(_createAnImage.DbPath, ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
+		if ( !string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
 		{
-			var isDelete = string.Empty;
-			if ( delete )
-			{
-				isDelete = TrashKeyword.TrashKeywordString;
-			}
-
-			await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = _createAnImage.FileName,
-				ParentDirectory = "/",
-				FileHash = fileHashCode,
-				ColorClass = ColorClassParser.Color.Winner, // 1
-				Tags = isDelete
-			});
+			return await _query.GetObjectByFilePathAsync(_createAnImage.DbPath);
 		}
 
-		return _query.GetObjectByFilePath(_createAnImage.DbPath);
+		var isDelete = string.Empty;
+		if ( delete )
+		{
+			isDelete = TrashKeyword.TrashKeywordString;
+		}
+
+		await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = _createAnImage.FileName,
+			ParentDirectory = "/",
+			FileHash = fileHashCode,
+			ColorClass = ColorClassParser.Color.Winner, // 1
+			Tags = isDelete
+		});
+
+		return await _query.GetObjectByFilePathAsync(_createAnImage.DbPath);
 	}
 
 
@@ -138,7 +140,7 @@ public sealed class DeleteControllerTest
 
 		var actionResult = await controller.Delete(createAnImage?.FilePath!) as JsonResult;
 		Assert.IsNotNull(actionResult);
-		var jsonCollection = actionResult?.Value as List<FileIndexItem>;
+		var jsonCollection = actionResult.Value as List<FileIndexItem>;
 		Assert.AreEqual(createAnImage?.FilePath, jsonCollection?.FirstOrDefault()?.FilePath);
 
 		var createAnImage2 = new CreateAnImage(); //restore afterwards

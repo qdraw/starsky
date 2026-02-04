@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "Starsky",
-    "version": "0.7.4.0",
+    "version": "0.7.10.0",
     "extensions": {}
   },
   "servers": [
@@ -2316,6 +2316,1596 @@
       "extensions": {},
       "unresolvedReference": false
     },
+    "/api/batch-rename/preview": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "BatchRename",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Preview batch rename mappings for a list of file paths and a rename pattern.",
+          "parameters": [],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "List of file paths to preview rename for, Rename pattern string\n(e.g. {yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}).",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "BatchRenameMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/BatchRenameMapping",
+                        "referenceV2": "#/definitions/BatchRenameMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "BatchRenameMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/BatchRenameMapping",
+                        "referenceV2": "#/definitions/BatchRenameMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "text/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "BatchRenameMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/BatchRenameMapping",
+                        "referenceV2": "#/definitions/BatchRenameMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/batch-rename/execute": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "BatchRename",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Execute batch rename for a list of mappings.",
+          "parameters": [],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Request containing mappings and collections flag.",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "text/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/batch-rename-datetime/offset-preview": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "BatchRenameDateTime",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Preview filename datetime repair for files with datetime patterns in their names.\nDetects patterns like YYYYMMDD_HHMMSS and shows how they would be corrected.",
+          "parameters": [],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Request containing file paths, collections flag, and timezone/offset correction details",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FilenameDatetimeRepairMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FilenameDatetimeRepairMapping",
+                        "referenceV2": "#/definitions/FilenameDatetimeRepairMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FilenameDatetimeRepairMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FilenameDatetimeRepairMapping",
+                        "referenceV2": "#/definitions/FilenameDatetimeRepairMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "text/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FilenameDatetimeRepairMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FilenameDatetimeRepairMapping",
+                        "referenceV2": "#/definitions/FilenameDatetimeRepairMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/batch-rename-datetime/offset-execute": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "BatchRenameDateTime",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Execute filename datetime repair to correct datetime patterns in filenames.\nRenames files to match corrected timestamps (e.g., fixing timezone offsets in filenames).",
+          "parameters": [],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Request containing file paths, collections flag, and timezone/offset correction details",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "text/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/batch-rename-datetime/timezone-preview": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "BatchRenameDateTime",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Preview filename datetime repair for files with datetime patterns in their names.\nDetects patterns like YYYYMMDD_HHMMSS and shows how they would be corrected.",
+          "parameters": [],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Request containing file paths, collections flag, and timezone/offset correction details",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FilenameDatetimeRepairMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FilenameDatetimeRepairMapping",
+                        "referenceV2": "#/definitions/FilenameDatetimeRepairMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FilenameDatetimeRepairMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FilenameDatetimeRepairMapping",
+                        "referenceV2": "#/definitions/FilenameDatetimeRepairMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "text/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FilenameDatetimeRepairMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FilenameDatetimeRepairMapping",
+                        "referenceV2": "#/definitions/FilenameDatetimeRepairMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/batch-rename-datetime/timezone-execute": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "BatchRenameDateTime",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Execute filename datetime repair to correct datetime patterns in filenames.\nRenames files to match corrected timestamps (e.g., fixing timezone offsets in filenames).",
+          "parameters": [],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Request containing file paths, collections flag, and timezone/offset correction details",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "text/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
     "/api/cache/list": {
       "operations": {
         "Get": {
@@ -2590,6 +4180,297 @@
             },
             "401": {
               "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/status": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/status/{providerId}": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "providerId",
+              "in": 2,
+              "required": true,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 3,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/sync": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/sync/{providerId}": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "providerId",
+              "in": 2,
+              "required": true,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 3,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/last-results": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/last-result/{providerId}": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "providerId",
+              "in": 2,
+              "required": true,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 3,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
               "headers": {},
               "content": {},
               "links": {},
@@ -4661,6 +6542,169 @@
             },
             "401": {
               "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/geo-location-name/city": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "GeoLocationName",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Search for a city by name",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "city",
+              "in": 0,
+              "description": "City name to search for",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Data with object",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/geo-location-name/city-timezone": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "GeoLocationName",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Search for a city's timezone for a given date/time",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "dateTime",
+              "in": 0,
+              "description": "Date/time string (ISO 8601 or similar)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "city",
+              "in": 0,
+              "description": "City name to search for",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Data with object",
               "headers": {},
               "content": {},
               "links": {},
@@ -7282,6 +9326,926 @@
       "extensions": {},
       "unresolvedReference": false
     },
+    "/api/meta-time-correct/timezone-preview": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "MetaTimeCorrect",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Preview timezone correction for batch of images (dry-run)\nUses timezone IDs to calculate offset differences (DST-aware)",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "subPath filepath to file, split by dot comma (;)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "collections",
+              "in": 0,
+              "description": "Include collections or not",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Timezone correction request with RecordedTimezone and CorrectTimezone",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "Preview results with corrections that would be applied",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "Invalid parameters or file paths",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/meta-time-correct/timezone-execute": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "MetaTimeCorrect",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Execute timezone correction for batch of images\nUses timezone IDs to calculate offset differences (DST-aware)",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "subPath filepath to file, split by dot comma (;)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "collections",
+              "in": 0,
+              "description": "Include collections or not",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Timezone correction request with RecordedTimezone and CorrectTimezone",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "Correction results with success/error status per file",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "Invalid parameters or file paths",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/meta-time-correct/offset-preview": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "MetaTimeCorrect",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Preview custom offset correction for batch of images (dry-run)\nUses custom time/date offsets (years, months, days, hours, minutes, seconds)",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "subPath filepath to file, split by dot comma (;)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "collections",
+              "in": 0,
+              "description": "Include collections or not",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Custom offset correction request with offset values",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "Preview results with corrections that would be applied",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "Invalid parameters or file paths",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/meta-time-correct/offset-execute": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "MetaTimeCorrect",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Execute custom offset correction for batch of images\nUses custom time/date offsets (years, months, days, hours, minutes, seconds)",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "subPath filepath to file, split by dot comma (;)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "collections",
+              "in": 0,
+              "description": "Include collections or not",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Custom offset correction request with offset values",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "Correction results with success/error status per file",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "Invalid parameters or file paths",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
     "/api/update": {
       "operations": {
         "Post": {
@@ -8655,6 +11619,37 @@
                   "extensions": {},
                   "unresolvedReference": false
                 },
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "Artist",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "maxLength": 200,
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
                 "properties": {},
                 "additionalPropertiesAllowed": true,
                 "enum": [],
@@ -13187,6 +16182,30 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "cloudImport": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "CloudImportSettings",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/CloudImportSettings",
+              "referenceV2": "#/definitions/CloudImportSettings"
+            }
+          },
           "openTelemetry": {
             "readOnly": false,
             "writeOnly": false,
@@ -13981,6 +17000,225 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "BatchRenameMapping": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "sourceFilePath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "targetFilePath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "relatedFilePaths": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false,
+              "reference": {
+                "isFragrament": false,
+                "type": 0,
+                "id": "StringStringValueTuple",
+                "isExternal": false,
+                "isLocal": true,
+                "referenceV3": "#/components/schemas/StringStringValueTuple",
+                "referenceV2": "#/definitions/StringStringValueTuple"
+              }
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "sequenceNumber": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "hasError": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "errorMessage": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "BatchRenameRequest": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "filePaths": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "type": "string",
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "pattern": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "collections": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "CameraMakeModel": {
         "type": "object",
         "readOnly": false,
@@ -14007,6 +17245,315 @@
             "unresolvedReference": false
           },
           "model": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "CloudImportProviderSettings": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "enabled": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "provider": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "remoteFolder": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "syncFrequencyMinutes": {
+            "type": "number",
+            "format": "double",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "syncFrequencyHours": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "deleteAfterImport": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "extensions": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "type": "string",
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "credentials": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "CloudProviderCredentials",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/CloudProviderCredentials",
+              "referenceV2": "#/definitions/CloudProviderCredentials"
+            }
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "CloudImportSettings": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "providers": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false,
+              "reference": {
+                "isFragrament": false,
+                "type": 0,
+                "id": "CloudImportProviderSettings",
+                "isExternal": false,
+                "isLocal": true,
+                "referenceV3": "#/components/schemas/CloudImportProviderSettings",
+                "referenceV2": "#/definitions/CloudImportProviderSettings"
+              }
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "CloudProviderCredentials": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "appKey": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "appSecret": {
             "type": "string",
             "readOnly": false,
             "writeOnly": false,
@@ -14131,6 +17678,233 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "ExifCustomOffsetCorrectionRequest": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "year": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "month": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "day": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "hour": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "minute": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "second": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "hasAnyOffset": {
+            "type": "boolean",
+            "readOnly": true,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [
+          "correctionRequest",
+          "filePaths"
+        ],
+        "properties": {
+          "filePaths": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "type": "string",
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "collections": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "correctionRequest": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "ExifCustomOffsetCorrectionRequest",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+              "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+            }
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "ExifStatus": {
         "type": "integer",
         "format": "int32",
@@ -14204,6 +17978,150 @@
             "value": 11
           }
         ],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "ExifTimezoneBasedCorrectionRequest": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [
+          "correctTimezoneId",
+          "recordedTimezoneId"
+        ],
+        "properties": {
+          "recordedTimezoneId": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "correctTimezoneId": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [
+          "correctionRequest",
+          "filePaths"
+        ],
+        "properties": {
+          "filePaths": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "type": "string",
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "collections": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "correctionRequest": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "ExifTimezoneBasedCorrectionRequest",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+              "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+            }
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
         "nullable": false,
         "deprecated": false,
         "extensions": {},
@@ -14969,6 +18887,251 @@
             "deprecated": false,
             "extensions": {},
             "unresolvedReference": false
+          },
+          "artist": {
+            "type": "string",
+            "maxLength": 200,
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "FilenameDatetimeRepairMapping": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "sourceFilePath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "detectedPatternDescription": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "originalDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "correctedDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "targetFilePath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "relatedFilePaths": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false,
+              "reference": {
+                "isFragrament": false,
+                "type": 0,
+                "id": "StringStringValueTuple",
+                "isExternal": false,
+                "isLocal": true,
+                "referenceV3": "#/components/schemas/StringStringValueTuple",
+                "referenceV2": "#/definitions/StringStringValueTuple"
+              }
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "offsetHours": {
+            "type": "number",
+            "format": "double",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "hasError": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "errorMessage": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "warning": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "fileIndexItem": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "FileIndexItem",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/FileIndexItem",
+              "referenceV2": "#/definitions/FileIndexItem"
+            }
           }
         },
         "additionalPropertiesAllowed": false,
@@ -15467,6 +19630,23 @@
           },
           "makeModel": {
             "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "artist": {
+            "type": "string",
+            "maxLength": 200,
             "readOnly": false,
             "writeOnly": false,
             "allOf": [],
@@ -16610,6 +20790,22 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "StringStringValueTuple": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {},
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "StructureRule": {
         "type": "object",
         "readOnly": false,
@@ -17232,5 +21428,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "4BC5A7DBB10D6F17E7B914EE16B3AA67030E872DE649CD51344E41C6B0253447C3D01A4B4932805618A71FA7940F3AEAA356C413D443B6D0F6FEC60773F5B346"
+  "hashCode": "99972521E4F178BF8A146E139B6D3BDE7E48C116BA9E96552FC14BE8F16539ABD2909A0DC41D9257967C3B8519EE11939777F97882095F3BB8071A60330D8B64"
 }

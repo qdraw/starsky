@@ -1,0 +1,51 @@
+﻿[
+  {
+    FileHash: AWUAZRGXRTZB54BIKQEKC6OIAE,
+    FilePath: /2024/11/2024_11_07/20241107_140535_a6660.arw,
+    DateTime: 2024-11-07 14:05:35,
+    Status: Ok,
+    FileIndexItem: {
+      Id: 1,
+      FilePath: /2024/11/2024_11_07/20241107_140535_a6660.arw,
+      FileName: 20241107_140535_a6660.arw,
+      FileHash: AWUAZRGXRTZB54BIKQEKC6OIAE,
+      FileCollectionName: 20241107_140535_a6660,
+      ParentDirectory: /2024/11/2024_11_07,
+      IsDirectory: false,
+      Tags: ,
+      Status: Ok,
+      Description: ,
+      Title: ,
+      DateTime: 2024-11-07 14:05:35,
+      LocationCity: ,
+      LocationState: ,
+      LocationCountry: ,
+      LocationCountryCode: ,
+      Orientation: Horizontal,
+      ImageWidth: 6000,
+      ImageHeight: 4000,
+      ImageFormat: tiff,
+      SidecarExtensions: ,
+      ShutterSpeed: ,
+      Software: ILCE-6600 v1.10,
+      MakeModel: Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE|,
+      Make: Sony,
+      Model: ILCE-6600,
+      LensModel: E 18-200mm F3.5-6.3 OSS LE,
+      MakeCameraSerial: ,
+      Size: 50000,
+      ImageStabilisation: On,
+      Artist: Dion van Velde
+    },
+    SourceFullFilePath: /a6660.arw,
+    Structure: {
+      DefaultPattern: /yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext
+    },
+    MakeModel: Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE|,
+    Artist: Dion van Velde,
+    DateTimeFromFileName: false,
+    ImageFormat: tiff,
+    Size: 50000,
+    Origin: 
+  }
+]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -33,6 +34,14 @@ public sealed class StorageSubPathFilesystem : IStorage
 	{
 		var fullPath = _appSettings.DatabasePathToFilePath(path);
 		return new StorageHostFullPathFilesystem(_logger).IsFileReady(fullPath);
+	}
+
+	public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken)
+	{
+		var fullPath = _appSettings.DatabasePathToFilePath(path);
+
+		return new StorageHostFullPathFilesystem(_logger).ReadLinesAsync(fullPath,
+			cancellationToken);
 	}
 
 	/// <summary>

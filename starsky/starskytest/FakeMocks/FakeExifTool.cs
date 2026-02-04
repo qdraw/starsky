@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -56,7 +57,8 @@ public sealed class FakeExifTool : IExifToolHostStorage
 		}
 
 		var newFileHash =
-			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(subPath) ).Key;
+			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(subPath,
+				ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 		return new ExifToolWriteTagsAndRenameThumbnailModel(true, newFileHash);
 	}
 

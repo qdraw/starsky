@@ -1,0 +1,169 @@
+.modal-timezone-shift .mode-selection .radio-option {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.modal-timezone-shift .mode-selection .radio-option:hover {
+  border-color: #0078d4;
+  background-color: #f5f5f5;
+}
+.modal-timezone-shift .mode-selection .radio-option input[type="radio"] {
+  margin-top: 4px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+.modal-timezone-shift .mode-selection .radio-option div {
+  flex: 1;
+}
+.modal-timezone-shift .mode-selection .radio-option div strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+.modal-timezone-shift .mode-selection .radio-option div p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* timezone shift */
+.modal-timezone-shift .timezone-inputs .form-row label input,
+.modal-timezone-shift .timezone-inputs .form-row label select {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  margin-top: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.modal-timezone-shift .timezone-inputs .form-row label input:focus,
+.modal-timezone-shift .timezone-inputs .form-row label select:focus {
+  outline: none;
+  border-color: #1565c0;
+}
+
+/* Offset Inputs */
+.modal-timezone-shift .offset-inputs .form-row {
+  display: inline-block;
+}
+
+.modal-timezone-shift .offset-inputs .form-row label input[type="number"] {
+  width: 100px;
+  margin-right: 10px;
+}
+.modal-timezone-shift .preview-section {
+  margin: 20px 0;
+}
+.modal-timezone-shift .preview-section .preview-result {
+  padding: 16px;
+  background-color: #cfd8dc;
+  border-radius: 4px;
+  margin-top: 12px;
+}
+.modal-timezone-shift .preview-section .preview-result p {
+  margin: 8px 0;
+}
+.modal-timezone-shift .preview-section .preview-result p strong {
+  display: inline-block;
+  min-width: 120px;
+}
+
+.modal-timezone-shift .warning,
+.modal-timezone-shift .error {
+  color: #b71c1c;
+  padding: 12px;
+  background-color: #ffcdd2;
+  border-radius: 4px;
+  margin: 12px 0;
+}
+
+.modal-timezone-shift .warning .filename,
+.modal-timezone-shift .error .filename {
+  line-break: anywhere;
+}
+
+/* https://m2.material.io/design/color/the-color-system.html#tools-for-picking-colors */
+.modal-timezone-shift .warning {
+  color: #263238;
+  background-color: #ffcc80;
+}
+
+/* filename replace */
+
+.modal-timezone-shift .custom-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1rem;
+  user-select: none;
+}
+
+.modal-timezone-shift .custom-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.modal-timezone-shift .custom-checkbox-box {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #90caf9;
+  border-radius: 50%;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.08);
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
+  font-size: 15px;
+  color: #1976d2;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.modal-timezone-shift .custom-checkbox input[type="checkbox"]:checked + .custom-checkbox-box {
+  background-color: #1976d2;
+  border-color: #1976d2;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(25, 118, 210, 0.15);
+}
+
+.modal-timezone-shift
+  .custom-checkbox
+  input[type="checkbox"]:checked
+  + .custom-checkbox-box::after {
+  content: "•";
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% + 1px));
+}
+
+.modal-timezone-shift
+  .custom-checkbox
+  input[type="checkbox"]:not(:checked)
+  + .custom-checkbox-box::after {
+  content: "";
+}
+
+.modal-timezone-shift .custom-checkbox input[type="checkbox"]:focus-visible + .custom-checkbox-box {
+  outline: 2px solid #90caf9;
+  outline-offset: 2px;
+}

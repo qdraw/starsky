@@ -10,8 +10,8 @@ and copy this file
 
 */
 
-const fs = require('fs');
-const swagger = require('../static/openapi/openapi.json');
+const fs = require("fs");
+const swagger = require("../static/openapi/openapi.json");
 
 function parseSwagger() {
 	let output = "";
@@ -21,78 +21,100 @@ function parseSwagger() {
 	const summaryLen = 80;
 	const wordBoundCorrection = 25;
 
-	output += `| Path${' '.repeat(pathLen - 4)}| Type  | Description ${' '.repeat(summaryLen - 12)}| \r\n`;
-	output += "|" + '-'.repeat(pathLen + 1) + "|" + '-'.repeat(operationLen + 1) + "|" + '-'.repeat(summaryLen + 1) + "|\r\n";
-
+	output += `| Path${" ".repeat(pathLen - 4)}| Type  | Description ${" ".repeat(summaryLen - 12)}| \r\n`;
+	output +=
+		"|" +
+		"-".repeat(pathLen + 1) +
+		"|" +
+		"-".repeat(operationLen + 1) +
+		"|" +
+		"-".repeat(summaryLen + 1) +
+		"|\r\n";
 
 	for (const path in swagger.paths) {
-
-		const pathObject = swagger.paths[path]
-
+		const pathObject = swagger.paths[path];
 
 		for (const operation in pathObject.operations) {
-
 			if (operation === "Head") {
 				continue;
 			}
 
-			let pathContent = `__${path}__`
-			// for mdx markdown 
-			pathContent = pathContent.replace(/{/ig, "\\{").replace(/}/ig, "\\}");
+			let pathContent = `__${path}__`;
+			// for mdx markdown
+			pathContent = pathContent
+				.replace(/\\/g, "\\\\") // Escape backslashes for MDX markdown
+				.replace(/{/gi, "\\{")
+				.replace(/}/gi, "\\}");
 
-			const rightPathSpace = ' '.repeat(pathLen - pathContent.length)
-			const rightOperationSpace = ' '.repeat(operationLen - operation.length)
+			let rightPathSpaceCount = pathLen - pathContent.length;
+			if (rightPathSpaceCount < 0) {
+				console.log(
+					`Warning: Path "${path}" exceeds the maximum length of ${pathLen} characters.`,
+				);
+				rightPathSpaceCount = 0;
+			}
+			const rightPathSpace = " ".repeat(rightPathSpaceCount);
+			const rightOperationSpace = " ".repeat(operationLen - operation.length);
 
-			let summary = "Missing summary"
+			let summary = "Missing summary";
 			if (pathObject.operations[operation].summary) {
-				summary = pathObject.operations[operation].summary.replace(/(\n|\r\n)/ig, "");
+				summary = pathObject.operations[operation].summary
+					.replace(/(\n|\r\n)/gi, "")
+					.trimStart();
 			}
 
 			const trimmedSummary = trimString(summary, summaryLen);
-			const rightSummarySpace = ' '.repeat(summaryLen - trimmedSummary.length);
+			const rightSummarySpace = " ".repeat(summaryLen - trimmedSummary.length);
 
-			output += `| ${pathContent}${rightPathSpace}| ${operation.toUpperCase()}${rightOperationSpace}` +
+			output +=
+				`| ${pathContent}${rightPathSpace}| ${operation.toUpperCase()}${rightOperationSpace}` +
 				`| ${trimmedSummary}${rightSummarySpace}|\r\n`;
 
-
-			let parametersDefaultValue = 'Parameters: '
+			let parametersDefaultValue = "Parameters: ";
 			let parametersContent = parametersDefaultValue;
 			for (const parameterIndex in pathObject.operations[operation].parameters) {
 				const parameter = pathObject.operations[operation].parameters[parameterIndex];
 
 				parametersContent += `${parameter.name}`;
 				if (parameter.description) {
-					parametersContent += ` (${parameter.description})`
+					parametersContent += ` (${parameter.description})`;
 				}
 				if (parameterIndex != pathObject.operations[operation].parameters.length - 1) {
-					parametersContent += ", "
+					parametersContent += ", ";
 				}
 			}
 
 			if (parametersContent && parametersContent !== parametersDefaultValue) {
-
-				const regex = new RegExp(`(?!\\s).{${pathLen + operationLen + summaryLen - wordBoundCorrection},}?(?=\\s|$)`, "g");
+				const regex = new RegExp(
+					`(?!\\s).{${pathLen + operationLen + summaryLen - wordBoundCorrection},}?(?=\\s|$)`,
+					"g",
+				);
 				const matches = parametersContent.match(regex);
 
 				if (matches) {
 					let parameterOutputDescription = "";
 					for (const splitedContent of matches) {
-						const value = (pathLen + operationLen + summaryLen) - splitedContent.length;
+						const value = pathLen + operationLen + summaryLen - splitedContent.length;
 
-						const rightParameterSpace = ' '.repeat(value);
+						const rightParameterSpace = " ".repeat(value);
 						parameterOutputDescription += `| _${splitedContent}${rightParameterSpace} _ |\r\n`;
 					}
 
 					if (matches.length >= 1) {
 						const lastContentInMatch = matches[matches.length - 1];
-						let index = parametersContent.indexOf(lastContentInMatch) + lastContentInMatch.length;
-						const splitedContent = parametersContent.substring(index, parametersContent.length);
+						let index =
+							parametersContent.indexOf(lastContentInMatch) +
+							lastContentInMatch.length;
+						const splitedContent = parametersContent.substring(
+							index,
+							parametersContent.length,
+						);
 						if (splitedContent.length >= 1) {
-							const value = (pathLen + operationLen + summaryLen) - splitedContent.length;
-							const rightParameterSpace = ' '.repeat(value);
+							const value =
+								pathLen + operationLen + summaryLen - splitedContent.length;
+							const rightParameterSpace = " ".repeat(value);
 							parameterOutputDescription += `| _${splitedContent}${rightParameterSpace} _ |\r\n`;
 						}
-
 					}
 
 					output += parameterOutputDescription;
@@ -107,7 +129,6 @@ function trimString(string, length) {
 	return string.length > length ? string.substring(0, length - 3) + "..." : string;
 }
 
-
 function parseAndWrite(showLog = false) {
 	const output = parseSwagger();
 
@@ -118,12 +139,11 @@ function parseAndWrite(showLog = false) {
 		console.log(apiOutputReadme);
 	}
 
-	fs.writeFileSync('docs/developer-guide/api/readme.md', apiOutputReadme, 'utf8');
+	fs.writeFileSync("docs/developer-guide/api/readme.md", apiOutputReadme, "utf8");
 }
 
 if (require.main === module) {
 	parseAndWrite(true);
 }
 
-module.exports = {parseAndWrite};
-
+module.exports = { parseAndWrite };

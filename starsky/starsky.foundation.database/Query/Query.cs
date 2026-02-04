@@ -721,34 +721,49 @@ public partial class Query : IQuery
 	/// <param name="updateStatusContent">the content to add</param>
 	internal void AddCacheItem(FileIndexItem updateStatusContent)
 	{
-		// If cache is turned of
-		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		try
 		{
-			return;
+			AddCacheItemInternal(_cache);
+		}
+		catch ( ObjectDisposedException exception )
+		{
+			// you can't recover a singleton cache when it is disposed,
+			// so we log this error and skip the cache update
+			_logger.LogError("[AddCacheItem] ObjectDisposedException cache is broken", exception);
 		}
 
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
-			updateStatusContent.ParentDirectory!);
+		return;
 
-		if ( !_cache.TryGetValue(queryCacheName, out var objectFileFolders) )
+		void AddCacheItemInternal(IMemoryCache? cache)
 		{
-			return;
+			// If cache is turned off
+			if ( cache == null || _appSettings.AddMemoryCache == false )
+			{
+				return;
+			}
+
+			var queryCacheName = CachingDbName(nameof(FileIndexItem),
+				updateStatusContent.ParentDirectory!);
+			if ( !cache.TryGetValue(queryCacheName, out var objectFileFolders) )
+			{
+				return;
+			}
+
+			objectFileFolders ??= new List<FileIndexItem>();
+			var displayFileFolders = ( List<FileIndexItem> ) objectFileFolders;
+
+			if ( updateStatusContent.FilePath == "/" )
+			{
+				return;
+			}
+
+			displayFileFolders.Add(updateStatusContent);
+			// Order by filename
+			displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
+
+			cache.Remove(queryCacheName);
+			cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1, 0, 0));
 		}
-
-		objectFileFolders ??= new List<FileIndexItem>();
-		var displayFileFolders = ( List<FileIndexItem> ) objectFileFolders;
-
-		if ( updateStatusContent.FilePath == "/" )
-		{
-			return;
-		}
-
-		displayFileFolders.Add(updateStatusContent);
-		// Order by filename
-		displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
-
-		_cache.Remove(queryCacheName);
-		_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1, 0, 0));
 	}
 
 	/// <summary>
