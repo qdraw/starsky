@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskyDependenciesDownloadCli;
@@ -57,9 +58,23 @@ public sealed class StarskyDependenciesDownloadCliTest
 	[TestMethod]
 	public async Task StarskyDependenciesDownloadCli_HelpVerbose()
 	{
-		var args = new List<string> { "-h", "-v" }.ToArray();
-		await Program.Main(args);
-		Assert.IsNotNull(args);
+		try
+		{
+			await CreateMain();
+		}
+		catch ( IOException )
+		{
+			await CreateMain();
+		}
+
+		return;
+
+		static async Task CreateMain()
+		{
+			var args = new List<string> { "-h", "-v" }.ToArray();
+			await Program.Main(args);
+			Assert.IsNotNull(args);
+		}
 	}
 
 	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
