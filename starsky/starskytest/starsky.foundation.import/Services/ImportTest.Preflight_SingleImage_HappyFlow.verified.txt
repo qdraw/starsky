@@ -39,13 +39,15 @@
       LensModel: 24-105mm F3.5-4.5,
       MakeCameraSerial: ,
       FocalLength: 100.0,
-      Size: 9998
+      Size: 9998,
+      Artist: 
     },
     SourceFullFilePath: /test.jpg,
     Structure: {
       DefaultPattern: /yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext
     },
     MakeModel: Sony|SLT-A58|24-105mm F3.5-4.5|,
+    Artist: ,
     DateTimeFromFileName: false,
     ImageFormat: jpg,
     Size: 9998,

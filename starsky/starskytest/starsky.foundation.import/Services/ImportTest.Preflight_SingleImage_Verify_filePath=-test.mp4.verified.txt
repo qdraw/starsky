@@ -33,13 +33,15 @@
       Model: MacBookPro15,1,
       LensModel: ,
       MakeCameraSerial: ,
-      Size: 1877
+      Size: 1877,
+      Artist: 
     },
     SourceFullFilePath: /test.mp4,
     Structure: {
       DefaultPattern: /yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext
     },
     MakeModel: Apple|MacBookPro15,1||,
+    Artist: ,
     DateTimeFromFileName: false,
     ImageFormat: mp4,
     Size: 1877,

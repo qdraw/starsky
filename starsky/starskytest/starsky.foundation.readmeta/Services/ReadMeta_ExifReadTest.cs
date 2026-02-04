@@ -289,7 +289,7 @@ public sealed class ExifReadTest
 		var provider = CultureInfo.InvariantCulture;
 
 		var result = ReadMetaExif.ParseSubIfdDateTime(container, provider);
-		Assert.AreEqual(new DateTime(), result);
+		Assert.AreEqual(DateTime.MinValue, result);
 	}
 
 	[TestMethod]
@@ -302,7 +302,7 @@ public sealed class ExifReadTest
 		var provider = CultureInfo.InvariantCulture;
 
 		var result = ReadMetaExif.ParseSubIfdDateTime(container, provider);
-		Assert.AreEqual(new DateTime(), result);
+		Assert.AreEqual(DateTime.MinValue, result);
 	}
 
 	[TestMethod]
@@ -391,8 +391,9 @@ public sealed class ExifReadTest
 		Assert.AreEqual("E 18-200mm F3.5-6.3 OSS LE", item.LensModel);
 		Assert.AreEqual(string.Empty, item.MakeCameraSerial);
 		Assert.AreEqual(ImageStabilisationType.On, item.ImageStabilisation);
+		Assert.Contains("Dion", item.Artist ?? string.Empty);
 	}
-	
+
 	[TestMethod]
 	public void ExifRead_CreateAnImageA6700_ReadExifFromFileTest()
 	{
@@ -427,6 +428,7 @@ public sealed class ExifReadTest
 		Assert.AreEqual("E 18-200mm F3.5-6.3 OSS LE", item.LensModel);
 		Assert.AreEqual("02059361", item.MakeCameraSerial);
 		Assert.AreEqual(ImageStabilisationType.On, item.ImageStabilisation);
+		Assert.Contains("marianne", item.Artist ?? string.Empty);
 	}
 
 	[TestMethod]
@@ -463,6 +465,7 @@ public sealed class ExifReadTest
 		Assert.AreEqual("DSLR-A330", item.Model);
 		Assert.AreEqual("Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II", item.LensModel);
 		Assert.AreEqual(ImageStabilisationType.On, item.ImageStabilisation);
+		Assert.Contains("", item.Artist ?? string.Empty);
 	}
 
 	[TestMethod]
@@ -506,6 +509,7 @@ public sealed class ExifReadTest
 		Assert.AreEqual("Qdraw 1.0", item.Software);
 		Assert.AreEqual("Geulpoort, Valkenburg, Geul, poort, kasteel, kerk", item.Tags);
 		Assert.AreEqual("Geulpoort", item.Title);
+		Assert.Contains("Dion", item.Artist ?? string.Empty);
 	}
 
 	[TestMethod]
