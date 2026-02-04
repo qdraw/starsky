@@ -100,8 +100,8 @@ This document is auto generated
 | _Title, DateTime, AddToDatabase, LastEdited, Latitude, Longitude, LocationAltitude, LocationCity, LocationState,                          _ |
 | _LocationCountry, LocationCountryCode, ColorClass, Orientation, ImageWidth, ImageHeight, ImageFormat, CollectionPaths,                    _ |
 | _SidecarExtensions, SidecarExtensionsList, Aperture, ShutterSpeed, IsoSpeed, Software, MakeModel, Make, Model, LensModel,                 _ |
-| _MakeCameraSerial, FocalLength, Size, ImageStabilisation, LastChanged, f (subPath filepath to file, split by dot                          _ |
-| _comma (;)), append (only for stings, add update to existing items), collections (StackCollections bool, default                          _ |
+| _MakeCameraSerial, FocalLength, Size, ImageStabilisation, LastChanged, Artist, f (subPath filepath to file, split                         _ |
+| _by dot comma (;)), append (only for stings, add update to existing items), collections (StackCollections bool, default                   _ |
 | _ true), rotateClock (relative orientation -1 or 1)                                                                                       _ |
 | __/api/notification/notification__                | GET   | Get recent notificationsUse dateTime 2022-04-16T17:33:10.323974Z to get the l...|
 | __/api/publish__                                  | GET   | Get all publish profilesTo see the entire config check appSettings              |

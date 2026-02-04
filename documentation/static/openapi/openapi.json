@@ -11633,6 +11633,37 @@
             },
             {
               "unresolvedReference": false,
+              "name": "Artist",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "maxLength": 200,
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
               "name": "f",
               "in": 0,
               "description": "subPath filepath to file, split by dot comma (;)",
@@ -18856,6 +18887,23 @@
             "deprecated": false,
             "extensions": {},
             "unresolvedReference": false
+          },
+          "artist": {
+            "type": "string",
+            "maxLength": 200,
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
           }
         },
         "additionalPropertiesAllowed": false,
@@ -19582,6 +19630,23 @@
           },
           "makeModel": {
             "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "artist": {
+            "type": "string",
+            "maxLength": 200,
             "readOnly": false,
             "writeOnly": false,
             "allOf": [],
@@ -21363,5 +21428,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "239E5B47BD28A335F1A56FE3E74CAB01622D786BE4F366241CFF2F28E45244B16395ACD5E1586D2446EF7218B98D1D5189EBF93ACB5351747DC079B80A77D0FE"
+  "hashCode": "99972521E4F178BF8A146E139B6D3BDE7E48C116BA9E96552FC14BE8F16539ABD2909A0DC41D9257967C3B8519EE11939777F97882095F3BB8071A60330D8B64"
 }
