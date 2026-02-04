@@ -182,6 +182,12 @@ public sealed class ReadMetaXmp
 
 			// ImageStabilisation is not found in XMP
 
+			var artist = GetNullNameSpace(property, "dc:creator[1]");
+			if ( artist != null )
+			{
+				item.Artist = artist;
+			}
+
 			// don't show in production 
 			// Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 		}

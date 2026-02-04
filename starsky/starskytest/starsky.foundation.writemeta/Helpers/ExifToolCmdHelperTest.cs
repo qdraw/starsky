@@ -253,7 +253,7 @@ public sealed class ExifToolCmdHelperTest
 		var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
 			comparedNames, true);
 
-		Assert.AreEqual("-json -overwrite_original -ImageStabilization=\"On\"", result);
+		Assert.AreEqual("-json -overwrite_original -ImageStabilization=\"On\" ", result);
 	}
 
 	[TestMethod]
@@ -333,6 +333,38 @@ public sealed class ExifToolCmdHelperTest
 			result);
 	}
 
+	[TestMethod]
+	public void ExifToolCommandLineArgs_Artist()
+	{
+		var updateModel = new FileIndexItem
+		{
+			Artist = "Dion" // < - - - - include here
+		};
+		var comparedNames = new List<string> { nameof(FileIndexItem.Artist).ToLowerInvariant() };
+
+		var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+			comparedNames, true);
+
+		Assert.AreEqual(
+			"-json -overwrite_original -Artist=\"Dion\" -XMP-dc:Creator=\"Dion\" ",
+			result);
+	}
+
+	[TestMethod]
+	public void ExifToolCommandLineArgs_Artist_NoDataSkip()
+	{
+		var updateModel = new FileIndexItem
+		{
+			Artist = "" // < - - - - not include here
+		};
+		var comparedNames = new List<string> { nameof(FileIndexItem.Artist).ToLowerInvariant() };
+
+		var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+			comparedNames, true);
+
+		Assert.AreEqual(string.Empty, result);
+	}
+
 	/// <summary>
 	///     Tests the BeforeFileHash method via UpdateAsync
 	///     When FilePath doesn't match the path parameter, it should call FileHash.GetHashCodeAsync
@@ -347,26 +379,25 @@ public sealed class ExifToolCmdHelperTest
 			FilePath = "/original.jpg",
 			FileHash = "ORIGINALHASH123",
 			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
-			Tags = "test"  // Add a field to compare so command is not empty
+			Tags = "test" // Add a field to compare so command is not empty
 		};
-		var comparedNames = new List<string>
-		{
-			nameof(FileIndexItem.Tags).ToLowerInvariant()
-		};
+		var comparedNames = new List<string> { nameof(FileIndexItem.Tags).ToLowerInvariant() };
 
 		// Create storage with a test file
 		var storage = new FakeIStorage(["/"],
-			[testPath], 
+			[testPath],
 			new List<byte[]> { new byte[] { 1, 2, 3, 4, 5 } });
-		
+
 		var fileHashService = new FileHash(storage, new FakeIWebLogger());
 		var inputSubPaths = new List<string> { testPath };
 		var thumbnailQuery = new FakeIThumbnailQuery([
-			new ThumbnailItem { 
-				FileHash = (await fileHashService.GetHashCodeAsync(testPath, 
-					ExtensionRolesHelper.ImageFormat.jpg)).Key,
-				ExtraLarge = false, 
-				Reasons = "test" }
+			new ThumbnailItem
+			{
+				FileHash = ( await fileHashService.GetHashCodeAsync(testPath,
+					ExtensionRolesHelper.ImageFormat.jpg) ).Key,
+				ExtraLarge = false,
+				Reasons = "test"
+			}
 		]);
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		var sut = new ExifToolCmdHelper(fakeExifTool, storage, storage,
@@ -374,18 +405,18 @@ public sealed class ExifToolCmdHelperTest
 
 		// Act - call UpdateAsync which internally calls BeforeFileHash
 		// Since FilePath ("/original.jpg") != path ("/different.jpg"), it should calculate the hash
-		var result = await sut.UpdateAsync(updateModel, inputSubPaths, comparedNames, 
-			includeSoftware: true, renameThumbnail: true, TestContext.CancellationToken);
+		var result = await sut.UpdateAsync(updateModel, inputSubPaths, comparedNames,
+			true, true, TestContext.CancellationToken);
 
 		// Assert - verify that the command was created successfully
 		// If FileHash.GetHashCodeAsync was not called, the test would have failed
 		Assert.IsNotNull(result);
 		Assert.IsNotNull(result.Command);
-		Assert.HasCount(1,result.Rename);
+		Assert.HasCount(1, result.Rename);
 		Assert.AreEqual(26, result.Rename[0].NewFileHash.Length);
-		
+
 		// check if it does rename it correctly in the thumbnail
-		var afterQueryResult = (await thumbnailQuery.Get(result.Rename[0].NewFileHash))[0];
+		var afterQueryResult = ( await thumbnailQuery.Get(result.Rename[0].NewFileHash) )[0];
 		Assert.IsNotNull(afterQueryResult);
 		Assert.AreEqual(result.Rename[0].NewFileHash, afterQueryResult.FileHash);
 		Assert.AreEqual("test", afterQueryResult.Reasons);
@@ -406,21 +437,17 @@ public sealed class ExifToolCmdHelperTest
 			FilePath = testPath,
 			FileHash = cachedHash,
 			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
-			Tags = "test"  // Add a field to compare so command is not empty
+			Tags = "test" // Add a field to compare so command is not empty
 		};
-		var comparedNames = new List<string>
-		{
-			nameof(FileIndexItem.Tags).ToLowerInvariant()
-		};
+		var comparedNames = new List<string> { nameof(FileIndexItem.Tags).ToLowerInvariant() };
 		var inputSubPaths = new List<string> { testPath };
 
 		var thumbnailQuery = new FakeIThumbnailQuery([
-			new ThumbnailItem { FileHash = cachedHash, ExtraLarge = false, 
-				Reasons = "test" }
+			new ThumbnailItem { FileHash = cachedHash, ExtraLarge = false, Reasons = "test" }
 		]);
 
 		var storage = new FakeIStorage(["/"],
-			[testPath], 
+			[testPath],
 			new List<byte[]> { new byte[] { 1, 2, 3, 4, 5 } });
 
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
@@ -430,17 +457,17 @@ public sealed class ExifToolCmdHelperTest
 		// Act - call UpdateAsync with matching FilePath and path
 		// Since they match, it should use the cached FileHash
 		var result = await sut.UpdateAsync(updateModel, inputSubPaths, comparedNames,
-			includeSoftware: true, renameThumbnail: true, TestContext.CancellationToken);
+			true, true, TestContext.CancellationToken);
 
 		// Assert - verify the command was created with the cached hash
 		Assert.IsNotNull(result);
 		Assert.IsNotNull(result.Command);
-		
-		Assert.HasCount(1,result.Rename);
+
+		Assert.HasCount(1, result.Rename);
 		Assert.AreEqual(26, result.Rename[0].NewFileHash.Length);
 
 		// check if it does rename it correctly in the thumbnail
-		var afterQueryResult = (await thumbnailQuery.Get(result.Rename[0].NewFileHash))[0];
+		var afterQueryResult = ( await thumbnailQuery.Get(result.Rename[0].NewFileHash) )[0];
 		Assert.IsNotNull(afterQueryResult);
 		Assert.AreEqual(result.Rename[0].NewFileHash, afterQueryResult.FileHash);
 		Assert.AreEqual("test", afterQueryResult.Reasons);

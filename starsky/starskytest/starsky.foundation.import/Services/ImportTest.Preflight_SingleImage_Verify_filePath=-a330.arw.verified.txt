@@ -34,13 +34,15 @@
       LensModel: Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II,
       MakeCameraSerial: ,
       Size: 50000,
-      ImageStabilisation: On
+      ImageStabilisation: On,
+      Artist: 
     },
     SourceFullFilePath: /a330.arw,
     Structure: {
       DefaultPattern: /yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext
     },
     MakeModel: Sony|DSLR-A330|Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II|,
+    Artist: ,
     DateTimeFromFileName: false,
     ImageFormat: tiff,
     Size: 50000,

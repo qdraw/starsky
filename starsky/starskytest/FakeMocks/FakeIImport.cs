@@ -45,7 +45,8 @@ public class FakeIImport : IImport
 				SourceFullFilePath = "~/temp/test",
 				FileHash = "FAKE",
 				MakeModel = "added if the item fails",
-				Status = ImportStatus.FileError
+				Status = ImportStatus.FileError,
+				Artist = "test artist"
 			};
 
 			// Check if extension is correct
