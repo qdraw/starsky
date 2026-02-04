@@ -2,3 +2,18 @@
 .preferences--password .warning-box {
   margin-top: 10px;
 }
+
+@media (prefers-color-scheme: dark) {
+  .preferences--app-settings h3,
+  .preferences--app-settings p {
+    color: white;
+  }
+}
+
+/*for password gui*/
+@media (prefers-color-scheme: dark) {
+  .preferences-role,
+  .preferences-username-text {
+    color: #fff;
+  }
+}

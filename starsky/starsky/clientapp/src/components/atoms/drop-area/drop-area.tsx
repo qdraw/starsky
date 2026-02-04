@@ -5,7 +5,7 @@ import Portal from "../portal/portal";
 import Preloader from "../preloader/preloader";
 import { UploadFiles } from "./upload-files";
 
-export interface IDropAreaProps {
+interface IDropAreaProps {
   endpoint: string;
   folderPath?: string;
   enableInputButton?: boolean;
@@ -19,7 +19,7 @@ export interface IDropAreaProps {
  * @param event DragEvent which should contain files
  */
 const containsFiles = (event: DragEvent) => {
-  if (event.dataTransfer && event.dataTransfer.types) {
+  if (event?.dataTransfer?.types) {
     for (const type of event.dataTransfer.types) {
       if (type === "Files") {
         return true;
@@ -34,10 +34,8 @@ const containsFiles = (event: DragEvent) => {
  * @param props Endpoints, settings to enable drag 'n drop, add extra classes
  */
 const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
-  const [dragActive, setDrag] = useState(false);
-  const [dragTarget, setDragTarget] = useState(
-    document.createElement("span") as Element
-  );
+  const [dragActive, setDragActive] = useState(false);
+  const [dragTarget, setDragTarget] = useState(document.createElement("span") as Element);
   const [isLoading, setIsLoading] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState("");
 
@@ -65,7 +63,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
    */
   const onDrop = (event: DragEvent) => {
     event.preventDefault();
-    setDrag(false);
+    setDragActive(false);
 
     if (!event.dataTransfer) return;
 
@@ -89,7 +87,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const onDragEnter = (event: DragEvent) => {
     event.preventDefault();
     if (!event.target || !containsFiles(event)) return;
-    setDrag(true);
+    setDragActive(true);
     setDragTarget(event.target as Element);
     setDropEffect(event);
   };
@@ -101,9 +99,8 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
    */
   const onDragLeave = (event: DragEvent) => {
     event.preventDefault();
-    if (!containsFiles(event) || (event.target as Element) !== dragTarget)
-      return;
-    setDrag(false);
+    if (!containsFiles(event) || (event.target as Element) !== dragTarget) return;
+    setDragActive(false);
   };
 
   /**
@@ -113,7 +110,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const onDragOver = (event: DragEvent) => {
     event.preventDefault();
     if (!containsFiles(event)) return;
-    setDrag(true);
+    setDragActive(true);
     setDropEffect(event);
   };
 
@@ -129,17 +126,17 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     if (!props.enableDragAndDrop) return;
 
     // Bind the event listener
-    window.addEventListener("dragenter", onDragEnter);
-    window.addEventListener("dragleave", onDragLeave);
-    window.addEventListener("dragover", onDragOver);
-    window.addEventListener("drop", onDrop);
+    globalThis.addEventListener("dragenter", onDragEnter);
+    globalThis.addEventListener("dragleave", onDragLeave);
+    globalThis.addEventListener("dragover", onDragOver);
+    globalThis.addEventListener("drop", onDrop);
 
     return () => {
       // Unbind the event listener on clean up
-      window.removeEventListener("dragenter", onDragEnter);
-      window.removeEventListener("dragleave", onDragLeave);
-      window.removeEventListener("dragover", onDragOver);
-      window.removeEventListener("drop", onDrop);
+      globalThis.removeEventListener("dragenter", onDragEnter);
+      globalThis.removeEventListener("dragleave", onDragLeave);
+      globalThis.removeEventListener("dragover", onDragOver);
+      globalThis.removeEventListener("drop", onDrop);
     };
   });
 
@@ -171,6 +168,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
             id={dropAreaId}
             className="droparea-file-input"
             type="file"
+            data-test="droparea-file-input"
             multiple={true}
             onChange={onChange}
           />

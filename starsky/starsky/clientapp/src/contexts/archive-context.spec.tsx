@@ -3,17 +3,49 @@ import { IArchive, newIArchive, SortType } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
-import {
-  ImageFormat,
-  newIFileIndexItemArray
-} from "../interfaces/IFileIndexItem";
+import { IFileIndexItem, ImageFormat, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
-import { ArchiveAction, archiveReducer } from "./archive-context";
+import { ArchiveAction, archiveReducer, filterSidecarItems } from "./archive-context";
 
 describe("ArchiveContext", () => {
+  it("filterSidecarItems removes sidecar files when collections are enabled", () => {
+    const actionAdd: IFileIndexItem[] = [
+      {
+        filePath: "/path/to/image.xmp",
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem,
+      {
+        filePath: "/path/to/image2.jpg",
+        imageFormat: ImageFormat.jpg
+      } as IFileIndexItem
+    ];
+    const fileIndexItems: IFileIndexItem[] = [
+      {
+        filePath: "/path/to/image.xmp",
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem,
+      {
+        filePath: "/path/to/image2.jpg",
+        imageFormat: ImageFormat.jpg
+      } as IFileIndexItem
+    ];
+    const state: IArchiveProps = {
+      collections: true
+    } as IArchiveProps;
+
+    const result = filterSidecarItems(actionAdd, fileIndexItems, state);
+
+    expect(result).toEqual([
+      {
+        filePath: "/path/to/image2.jpg",
+        imageFormat: ImageFormat.jpg
+      }
+    ]);
+  });
+
   it("remove-folder - folder should be gone", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           filePath: "/test.jpg"
@@ -24,15 +56,15 @@ describe("ArchiveContext", () => {
       ]
     } as IArchiveProps;
 
-    var action = { type: "remove-folder" } as ArchiveAction;
+    const action = { type: "remove-folder" } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(0);
   });
 
   it("rename-folder - path should be changed", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           filePath: "/test.jpg"
@@ -44,15 +76,15 @@ describe("ArchiveContext", () => {
       subPath: "/test"
     } as IArchiveProps;
 
-    var action = { type: "rename-folder", path: "/test2" } as ArchiveAction;
+    const action = { type: "rename-folder", path: "/test2" } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.subPath).toBe("/test2");
   });
 
   it("force-reset - it should not add duplicate content", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           filePath: "/test.jpg"
@@ -64,16 +96,16 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // fullPath input
-    var action = { type: "force-reset", payload: state } as ArchiveAction;
+    const action = { type: "force-reset", payload: state } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(1);
     expect(result.fileIndexItems[0].filePath).toBe("/test.jpg");
   });
 
   it("force-reset - should update cache", () => {
-    var state = {
+    const state = {
       pageType: PageType.Archive,
       subPath: "/",
       fileIndexItems: [
@@ -85,15 +117,15 @@ describe("ArchiveContext", () => {
 
     const cacheSetObjectSpy = jest
       .spyOn(FileListCache.prototype, "CacheSetObject")
-      .mockImplementationOnce(() => {});
+      .mockImplementationOnce(() => newIArchive());
 
     // fullPath input
-    var action = { type: "force-reset", payload: state } as ArchiveAction;
+    const action = { type: "force-reset", payload: state } as ArchiveAction;
 
     archiveReducer(state, action);
 
-    expect(cacheSetObjectSpy).toBeCalled();
-    expect(cacheSetObjectSpy).toBeCalledWith(
+    expect(cacheSetObjectSpy).toHaveBeenCalled();
+    expect(cacheSetObjectSpy).toHaveBeenCalledWith(
       {
         collections: undefined,
         colorClass: undefined,
@@ -109,7 +141,7 @@ describe("ArchiveContext", () => {
   });
 
   it("force-reset - should ignore cache due pageType", () => {
-    var state = {
+    const state = {
       pageType: PageType.Search,
       subPath: "/",
       fileIndexItems: [
@@ -121,26 +153,27 @@ describe("ArchiveContext", () => {
 
     const cacheSetObjectSpy = jest
       .spyOn(FileListCache.prototype, "CacheSetObject")
-      .mockImplementationOnce(() => {});
+      .mockReset()
+      .mockImplementationOnce(() => newIArchive());
 
     // fullPath input
-    var action = { type: "force-reset", payload: state } as ArchiveAction;
+    const action = { type: "force-reset", payload: state } as ArchiveAction;
 
     archiveReducer(state, action);
 
-    expect(cacheSetObjectSpy).toBeCalledTimes(0);
+    expect(cacheSetObjectSpy).toHaveBeenCalledTimes(0);
     cacheSetObjectSpy.mockReset();
   });
 
   it("set - it should ignore when fileIndexItem is undefined", () => {
-    var action = { type: "set", payload: {} } as ArchiveAction;
-    var result = archiveReducer({} as any, action);
+    const action = { type: "set", payload: {} } as ArchiveAction;
+    const result = archiveReducer({} as IArchiveProps, action);
 
     expect(result.fileIndexItems).toBeUndefined();
   });
 
   it("set - it should not add duplicate content", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           filePath: "/test.jpg"
@@ -152,16 +185,16 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // fullPath input
-    var action = { type: "set", payload: state } as ArchiveAction;
+    const action = { type: "set", payload: state } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(1);
     expect(result.fileIndexItems[0].filePath).toBe("/test.jpg");
   });
 
   it("set - should not default default sort when is PageType.Archive", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "a.jpg",
@@ -178,9 +211,9 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // fullPath input
-    var action = { type: "set", payload: state } as ArchiveAction;
+    const action = { type: "set", payload: state } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(2);
     expect(result.fileIndexItems[0].filePath).toBe("/a.jpg");
@@ -188,7 +221,7 @@ describe("ArchiveContext", () => {
   });
 
   it("set - should sort imageFormat when is PageType.Archive", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "a.jpg",
@@ -206,9 +239,9 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // fullPath input
-    var action = { type: "set", payload: state } as ArchiveAction;
+    const action = { type: "set", payload: state } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(2);
     expect(result.fileIndexItems[0].filePath).toBe("/a.jpg");
@@ -216,7 +249,7 @@ describe("ArchiveContext", () => {
   });
 
   it("set - should ignore when is PageType.Search", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "first.jpg",
@@ -233,9 +266,9 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // fullPath input
-    var action = { type: "set", payload: state } as ArchiveAction;
+    const action = { type: "set", payload: state } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(2);
     expect(result.fileIndexItems[0].filePath).toBe("/first.jpg");
@@ -243,7 +276,7 @@ describe("ArchiveContext", () => {
   });
 
   it("remove - check if item is removed", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           filePath: "/test.jpg"
@@ -255,16 +288,16 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // fullpath input
-    var action = { type: "remove", toRemoveFileList: ["/test.jpg"] } as any;
+    const action: ArchiveAction = { type: "remove", toRemoveFileList: ["/test.jpg"] };
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(1);
     expect(result.fileIndexItems[0].filePath).toBe("/test1.jpg");
   });
 
   it("remove - last colorClassUsage is removed", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           filePath: "/test.jpg"
@@ -274,27 +307,27 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // fullpath input
-    var action = { type: "remove", toRemoveFileList: ["/test.jpg"] } as any;
+    const action: ArchiveAction = { type: "remove", toRemoveFileList: ["/test.jpg"] };
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(0);
     expect(result.colorClassUsage).toStrictEqual([]);
   });
 
   it("add - undefined", () => {
-    var state = { fileIndexItems: newIFileIndexItemArray() } as IArchiveProps;
+    const state = { fileIndexItems: newIFileIndexItemArray() } as IArchiveProps;
 
     // fullpath input
-    var action = { type: "add", add: undefined } as any;
+    const action: ArchiveAction = { type: "add", add: undefined as unknown as IFileIndexItem[] };
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(0);
   });
 
   it("add - last colorClassUsage is removed", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           filePath: "/test.jpg"
@@ -308,19 +341,150 @@ describe("ArchiveContext", () => {
         filePath: "/test.jpg",
         status: IExifStatus.Deleted // <- say its deleted
       }
-    ];
+    ] as IFileIndexItem[];
 
     // fullpath input
-    var action = { type: "add", add } as any;
+    const action: ArchiveAction = { type: "add", add };
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(0);
     expect(result.colorClassUsage).toStrictEqual([]);
   });
 
+  it("add - overwrite tags", () => {
+    const state = {
+      fileIndexItems: [
+        {
+          filePath: "/test.jpg",
+          tags: "init"
+        }
+      ] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.jpg",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150
+      } as IFileIndexItem
+    ] as IFileIndexItem[];
+
+    // fullpath input
+    const action = { type: "add", add } as unknown as ArchiveAction;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems[0]).toBe(add[0]);
+  });
+
+  it("add - ignore xmp file when collections is true", () => {
+    const state = {
+      collections: true,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.xmp",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as unknown as ArchiveAction;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+  });
+
+  it("add - add xmp file when collections is false", () => {
+    const state = {
+      collections: false,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.xmp",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as unknown as ArchiveAction;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems[0]).toBe(add[0]);
+  });
+
+  it("add - ignore meta_json file when collections is undefined", () => {
+    const state = {
+      collections: undefined,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.meta.json",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.meta_json
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as unknown as ArchiveAction;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+  });
+
+  it("add - add meta_json file when collections is false", () => {
+    const state = {
+      collections: false,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.meta.json",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.meta_json
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as unknown as ArchiveAction;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems[0]).toBe(add[0]);
+  });
+
   it("update - check if item is update (append false)", () => {
-    var state = {
+    const state = {
       ...newIArchive(),
       fileIndexItems: [
         {
@@ -332,7 +496,7 @@ describe("ArchiveContext", () => {
       ],
       colorClassUsage: [] as number[]
     } as IArchive;
-    var action = {
+    const action = {
       type: "update",
       fileHash: "1",
       tags: "tags",
@@ -341,9 +505,9 @@ describe("ArchiveContext", () => {
       title: "title",
       append: false,
       select: ["test.jpg"]
-    } as any;
+    } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(2);
     expect(result.fileIndexItems[0].tags).toBe("tags");
@@ -354,7 +518,7 @@ describe("ArchiveContext", () => {
   });
 
   it("update - check if item is update when not found (append false)", () => {
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "test.jpg",
@@ -364,27 +528,25 @@ describe("ArchiveContext", () => {
         }
       ]
     } as IArchiveProps;
-    var action = {
+    const action = {
       type: "update",
       tags: "tags",
       description: "description",
       title: "title",
       append: true,
       select: ["test.jpg", "notfound.jpg"]
-    } as any;
+    } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(1);
     expect(result.fileIndexItems[0].tags).toBe("tags1, tags");
-    expect(result.fileIndexItems[0].description).toBe(
-      "description1description"
-    );
+    expect(result.fileIndexItems[0].description).toBe("description1description");
     expect(result.fileIndexItems[0].title).toBe("title1title");
   });
 
   it("update - colorclass check usage", () => {
-    var state = {
+    const state = {
       ...newIArchive(),
       fileIndexItems: [
         {
@@ -393,8 +555,9 @@ describe("ArchiveContext", () => {
           description: "description1",
           title: "title1",
           colorClass: 1
-        } as any
-      ],
+        }
+      ] as IFileIndexItem[],
+
       colorClassUsage: [1, 2],
       colorClassActiveList: [],
       breadcrumb: [],
@@ -404,9 +567,13 @@ describe("ArchiveContext", () => {
       isReadOnly: false
     } as IArchive;
 
-    var action = { type: "update", colorClass: 2, select: ["test.jpg"] } as any;
+    const action = {
+      type: "update",
+      colorClass: 2,
+      select: ["test.jpg"]
+    } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.colorClassUsage.length).toBe(2);
     expect(result.colorClassUsage[0]).toBe(1);
@@ -414,7 +581,7 @@ describe("ArchiveContext", () => {
   });
 
   it("update - colorclass 2", () => {
-    var state = {
+    const state = {
       ...newIArchive(),
       fileIndexItems: [
         {
@@ -423,8 +590,8 @@ describe("ArchiveContext", () => {
           description: "description1",
           title: "title1",
           colorClass: 1
-        } as any
-      ],
+        }
+      ] as IFileIndexItem[],
       colorClassUsage: [2],
       colorClassActiveList: [],
       breadcrumb: [],
@@ -434,9 +601,13 @@ describe("ArchiveContext", () => {
       isReadOnly: false
     } as IArchive;
 
-    var action = { type: "update", colorClass: 3, select: ["test.jpg"] } as any;
+    const action = {
+      type: "update",
+      colorClass: 3,
+      select: ["test.jpg"]
+    } as ArchiveAction;
 
-    var result = archiveReducer(state, action);
+    const result = archiveReducer(state, action);
 
     expect(result.colorClassUsage.length).toBe(1);
     expect(result.colorClassUsage[0]).toBe(2);
@@ -444,7 +615,7 @@ describe("ArchiveContext", () => {
 
   it("add -- check when added the ColorClassUsage field is updated", () => {
     // current state
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "test0.jpg",
@@ -461,7 +632,7 @@ describe("ArchiveContext", () => {
       ]
     } as IArchiveProps;
 
-    var add = [
+    const add = [
       {
         fileName: "test1.jpg",
         filePath: "/test1.jpg",
@@ -474,17 +645,17 @@ describe("ArchiveContext", () => {
         status: IExifStatus.Ok,
         colorClass: undefined // <--- should ignore this one
       }
-    ];
+    ] as IFileIndexItem[];
 
-    var action = { type: "add", add } as any;
-    var result = archiveReducer(state, action);
+    const action = { type: "add", add } as ArchiveAction;
+    const result = archiveReducer(state, action);
 
     expect(result.colorClassUsage).toStrictEqual([2, 0]);
   });
 
   it("add -- and check if is orderd", () => {
     // current state
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "test0.jpg",
@@ -500,7 +671,7 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // to add this
-    var add = [
+    const add = [
       {
         fileName: "test1.jpg",
         filePath: "/test1.jpg",
@@ -511,9 +682,9 @@ describe("ArchiveContext", () => {
         filePath: "/test3.jpg",
         status: IExifStatus.Ok
       }
-    ];
-    var action = { type: "add", add } as any;
-    var result = archiveReducer(state, action);
+    ] as IFileIndexItem[];
+    const action = { type: "add", add } as ArchiveAction;
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(4);
     expect(result.fileIndexItems).toStrictEqual([
@@ -542,7 +713,7 @@ describe("ArchiveContext", () => {
 
   it("add -- remove a collection item", () => {
     // current state
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "test0.jpg",
@@ -559,15 +730,15 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // to add/remove this
-    var add = [
+    const add = [
       {
         fileName: "test0.mp4",
         filePath: "/test0.mp4",
         status: IExifStatus.Deleted
       }
     ];
-    var action = { type: "add", add } as any;
-    var result = archiveReducer(state, action);
+    const action = { type: "add", add } as ArchiveAction;
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(1);
     expect(result.fileIndexItems).toStrictEqual([
@@ -584,7 +755,7 @@ describe("ArchiveContext", () => {
     console.log("-implicit delete");
 
     // current state
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "test0.jpg",
@@ -603,15 +774,15 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // to add/remove this
-    var add = [
+    const add = [
       {
         fileName: "test0.jpg",
         filePath: "/test0.jpg",
         status: IExifStatus.Deleted
       }
     ];
-    var action = { type: "add", add } as any;
-    var result = archiveReducer(state, action);
+    const action = { type: "add", add } as ArchiveAction;
+    const result = archiveReducer(state, action);
 
     console.log("<--");
 
@@ -630,13 +801,13 @@ describe("ArchiveContext", () => {
     console.log("-change order for raw files");
 
     // current state
-    var state = {
+    const state = {
       fileIndexItems: newIFileIndexItemArray(),
       collections: true
     } as IArchiveProps;
 
     // to add/remove this
-    var add = [
+    const add = [
       {
         fileName: "test0.arw",
         fileCollectionName: "test0",
@@ -653,8 +824,8 @@ describe("ArchiveContext", () => {
       }
     ];
 
-    var action = { type: "add", add } as any;
-    var result = archiveReducer(state, action);
+    const action = { type: "add", add } as ArchiveAction;
+    const result = archiveReducer(state, action);
 
     console.log("<--");
 
@@ -672,7 +843,7 @@ describe("ArchiveContext", () => {
 
   it("add -- and check if is ordered", () => {
     // current state
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "2018.01.01.17.00.01.jpg",
@@ -683,15 +854,15 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // to add this
-    var add = [
+    const add = [
       {
         fileName: "__20180101170001.jpg",
         filePath: "/__starsky/01-dif/__20180101170001.jpg",
         status: IExifStatus.Ok
       }
     ];
-    var action = { type: "add", add } as any;
-    var result = archiveReducer(state, action);
+    const action = { type: "add", add } as ArchiveAction;
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(2);
 
@@ -713,13 +884,13 @@ describe("ArchiveContext", () => {
 
   it("add -- try to add item outside filter", () => {
     // current state
-    var state = {
+    const state = {
       fileIndexItems: [],
       colorClassActiveList: [2, 4]
-    };
+    } as unknown as IArchiveProps;
 
     // to add this
-    var add = [
+    const add = [
       {
         fileName: "__20180101170001.jpg",
         filePath: "/__starsky/01-dif/__20180101170001.jpg",
@@ -727,15 +898,15 @@ describe("ArchiveContext", () => {
         colorClass: 1
       }
     ];
-    var action = { type: "add", add } as any;
-    var result = archiveReducer(state as any, action);
+    const action = { type: "add", add } as ArchiveAction;
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(0);
   });
 
   it("add -- duplicate", () => {
     // current state
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "2018.01.01.17.00.01.jpg",
@@ -746,7 +917,7 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // to add this
-    var add = [
+    const add = [
       {
         fileName: "2018.01.01.17.00.01.jpg",
         filePath: "/__starsky/01-dif/2018.01.01.17.00.01.jpg",
@@ -754,8 +925,8 @@ describe("ArchiveContext", () => {
         tags: "updated"
       }
     ];
-    var action = { type: "add", add } as any;
-    var result = archiveReducer(state, action);
+    const action = { type: "add", add } as ArchiveAction;
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(1);
 
@@ -773,25 +944,25 @@ describe("ArchiveContext", () => {
 
   it("add -- duplicate 2", () => {
     // current state
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "test0.jpg",
           filePath: "/test0.jpg",
           status: IExifStatus.Ok
         }
-      ]
+      ] as IFileIndexItem[]
     } as IArchiveProps;
 
-    var action = { type: "add", add: state.fileIndexItems[0] } as any;
-    var result = archiveReducer(state, action);
+    const action = { type: "add", add: state.fileIndexItems[0] as unknown } as ArchiveAction;
+    const result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(1);
   });
 
   it("add -- duplicate (in collections mode true)", () => {
     // current state
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "test0.jpg",
@@ -803,21 +974,21 @@ describe("ArchiveContext", () => {
       collections: true
     } as IArchiveProps;
 
-    var add = {
+    const add = {
       fileName: "test0.dng",
       filePath: "/test0.dng",
       fileCollectionName: "test0",
       status: IExifStatus.Ok
-    };
+    } as IFileIndexItem;
 
-    var uniqueResultsSpy = jest
+    const uniqueResultsSpy = jest
       .spyOn(ArrayHelper.prototype, "UniqueResults")
       .mockImplementationOnce(() => [add]);
 
-    var action = { type: "add", add } as any;
-    var result = archiveReducer(state, action);
+    const action = { type: "add", add } as unknown as ArchiveAction;
+    const result = archiveReducer(state, action);
 
-    expect(uniqueResultsSpy).toBeCalledWith(
+    expect(uniqueResultsSpy).toHaveBeenCalledWith(
       [
         {
           fileCollectionName: "test0",
@@ -835,7 +1006,7 @@ describe("ArchiveContext", () => {
 
   it("add -- duplicate (in collections mode false)", () => {
     // current state
-    var state = {
+    const state = {
       fileIndexItems: [
         {
           fileName: "test0.jpg",
@@ -847,7 +1018,7 @@ describe("ArchiveContext", () => {
       collections: false
     } as IArchiveProps;
 
-    var add = {
+    const add = {
       fileName: "test0.dng",
       filePath: "/test0.dng",
       fileCollectionName: "test0",
@@ -855,14 +1026,14 @@ describe("ArchiveContext", () => {
     };
 
     jest.spyOn(ArrayHelper.prototype, "UniqueResults").mockReset();
-    var uniqueResultsSpy = jest
+    const uniqueResultsSpy = jest
       .spyOn(ArrayHelper.prototype, "UniqueResults")
       .mockImplementationOnce(() => [add]);
 
-    var action = { type: "add", add } as any;
-    var result = archiveReducer(state, action);
+    const action = { type: "add", add } as unknown as ArchiveAction;
+    const result = archiveReducer(state, action);
 
-    expect(uniqueResultsSpy).toBeCalledWith(
+    expect(uniqueResultsSpy).toHaveBeenCalledWith(
       [
         {
           fileName: "test0.jpg",

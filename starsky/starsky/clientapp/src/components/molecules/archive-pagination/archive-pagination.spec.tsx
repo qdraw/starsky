@@ -1,29 +1,39 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
-import {
-  IRelativeObjects,
-  newIRelativeObjects
-} from "../../../interfaces/IDetailView";
+import { render } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { IRelativeObjects, newIRelativeObjects } from "../../../interfaces/IDetailView";
 import ArchivePagination from "./archive-pagination";
 
 describe("ArchivePagination", () => {
   it("renders new object", () => {
-    shallow(<ArchivePagination relativeObjects={newIRelativeObjects()} />);
+    render(
+      <MemoryRouter>
+        <ArchivePagination relativeObjects={newIRelativeObjects()} />
+      </MemoryRouter>
+    );
   });
 
-  var relativeObjects = {
+  const relativeObjects = {
     nextFilePath: "next",
     prevFilePath: "prev"
   } as IRelativeObjects;
-  var Component = mount(
-    <ArchivePagination relativeObjects={relativeObjects} />
-  );
 
   it("next page exist", () => {
-    expect(Component.find("a.next").props().href).toBe("/?f=next");
+    const Component = render(
+      <MemoryRouter>
+        <ArchivePagination relativeObjects={relativeObjects} />
+      </MemoryRouter>
+    );
+    const next = Component.queryByTestId("archive-pagination-next") as HTMLAnchorElement;
+    expect(next.href).toBe("http://localhost/?f=next");
   });
 
   it("prev page exist", () => {
-    expect(Component.find("a.prev").props().href).toBe("/?f=prev");
+    const Component = render(
+      <MemoryRouter>
+        <ArchivePagination relativeObjects={relativeObjects} />
+      </MemoryRouter>
+    );
+    const next = Component.queryByTestId("archive-pagination-prev") as HTMLAnchorElement;
+    expect(next.href).toBe("http://localhost/?f=prev");
   });
 });

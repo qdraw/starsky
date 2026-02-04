@@ -1,0 +1,51 @@
+name: Windows .NET build
+
+permissions:
+  contents: read
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky/**'
+    - '!starsky/starsky/clientapp/**'
+  workflow_dispatch:    
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky/**'
+    - '!starsky/starsky/clientapp/**'
+    - '.github/workflows/**'
+    - '!starsky/Dockerfile'
+    - '!starsky/docker_demo_setup.sh'
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    env:
+      WEBSITE_SITE_NAME: "ci"
+
+    steps:
+    
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@131b410979e0b49e2162c0718030257b22d6dc2c
+      with:
+        dotnet-version: 8.0.417
+        
+    - name: Build (Windows)
+      shell: pwsh
+      working-directory: ./starsky
+      run: pwsh build.ps1 --Target BuildNetCore --no-sonar --no-dependencies --no-publish --no-logo 
+      
+    - name: Test (Windows)
+      shell: pwsh
+      working-directory: ./starsky
+      run: pwsh build.ps1 --Target TestNetCore --no-sonar --no-dependencies --no-publish --no-logo

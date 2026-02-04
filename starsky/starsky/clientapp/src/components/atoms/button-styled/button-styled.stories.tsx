@@ -1,18 +1,17 @@
-import { globalHistory } from "@reach/router";
-import { storiesOf } from "@storybook/react";
-import React from "react";
+import { Router } from "../../../router-app/router-app";
 import ButtonStyled from "./button-styled";
 
-storiesOf("components/atoms/button-styled", module).add("default", () => {
-  globalHistory.navigate("/?select=test.jpg");
+export default {
+  title: "components/atoms/button-styled"
+};
+
+export const Default = () => {
+  Router.navigate("/?select=test.jpg");
   return (
-    <ButtonStyled
-      className="btn btn--default"
-      type="submit"
-      disabled={false}
-      onClick={(e) => {}}
-    >
+    <ButtonStyled className="btn btn--default" type="submit" disabled={false} onClick={() => {}}>
       Loading...
     </ButtonStyled>
   );
-});
+};
+
+Default.storyName = "default";

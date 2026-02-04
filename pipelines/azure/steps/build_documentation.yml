@@ -1,0 +1,53 @@
+parameters:
+  npmConfigCache: $(Pipeline.Workspace)/.npm
+  url: "/"
+  baseUrl: "/"
+  googleVerification: ""
+  gtag: ""
+
+steps:
+
+  - task: Cache@2
+    inputs:
+      key: 'npm | documentation | "$(Agent.OS)" | $(Build.SourcesDirectory)/documentation/package.json'
+      restoreKeys: |
+        npm | clientapp | "$(Agent.OS)"
+      path: ${{ parameters.npmConfigCache }}
+    displayName: "[doc..] Cache npm"
+
+  - task: PowerShell@2
+    displayName: "[doc..] check versions node npm"
+    inputs:
+      targetType: "inline"
+      workingDirectory: documentation
+      script: |
+        node -v 
+        npm -v
+
+  - task: PowerShell@2
+    displayName: "[doc..] npm install"
+    inputs:
+      targetType: "inline"
+      workingDirectory: documentation
+      script: |
+        npm install --no-audit --no-fund --prefer-offline --force
+
+  - task: PowerShell@2
+    displayName: "[doc..] npm run build"
+    inputs:
+      targetType: "inline"
+      workingDirectory: documentation
+      script: |
+        $env:DOCS_URL = "${{ parameters.url }}"
+        $env:DOCS_BASE_URL = "${{ parameters.baseUrl }}"
+        $env:GOOGLE_VERIFICATION = "${{ parameters.googleVerification }}"
+        $env:GTAG = "${{ parameters.gtag }}"
+
+        Write-Host "DOCS_URL $Env:DOCS_URL"
+        Write-Host "DOCS_BASE_URL $Env:DOCS_BASE_URL"
+        Write-Host "GOOGLE_VERIFICATION $Env:GOOGLE_VERIFICATION"
+
+        npm run build
+        
+
+

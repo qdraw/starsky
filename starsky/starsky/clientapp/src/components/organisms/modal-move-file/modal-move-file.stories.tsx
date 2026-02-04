@@ -1,8 +1,10 @@
-import { storiesOf } from "@storybook/react";
-import React from "react";
 import ModalMoveFile from "./modal-move-file";
 
-storiesOf("components/organisms/modal-move-file", module).add("default", () => {
+export default {
+  title: "components/organisms/modal-move-file"
+};
+
+export const Default = () => {
   return (
     <ModalMoveFile
       parentDirectory="/"
@@ -11,4 +13,6 @@ storiesOf("components/organisms/modal-move-file", module).add("default", () => {
       handleExit={() => {}}
     ></ModalMoveFile>
   );
-});
+};
+
+Default.storyName = "default";

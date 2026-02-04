@@ -1,20 +1,20 @@
-import { act } from "@testing-library/react";
-import { ReactWrapper } from "enzyme";
+import { RenderResult } from "@testing-library/react";
+import { act } from "react";
 import * as DifferenceInDate from "../../shared/date";
+import { mountReactHook, MountReactHookResult } from "../___tests___/test-hook";
 import * as useInterval from "../use-interval";
-import { mountReactHook } from "../___tests___/test-hook";
+import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
 import useSockets, { IUseSockets } from "./use-sockets";
 import WebSocketService from "./websocket-service";
 import * as WsCurrentStart from "./ws-current-start";
-import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
 
 describe("useSockets", () => {
-  let setupComponent: any;
+  let setupComponent: MountReactHookResult;
   let hook: IUseSockets;
-  let component: ReactWrapper;
+  let component: RenderResult;
 
   function mountComponent() {
-    setupComponent = mountReactHook(useSockets, []); // Mount a Component with our hook
+    setupComponent = mountReactHook(useSockets, []) as unknown as MountReactHookResult; // Mount a Component with our hook
     hook = setupComponent.componentHook as IUseSockets;
     component = setupComponent.componentMount;
   }
@@ -26,36 +26,38 @@ describe("useSockets", () => {
   });
 
   it("feature toggle disabled", () => {
-    var socketService = new WebSocketService("");
+    const socketService = new WebSocketService("");
     localStorage.setItem("use-sockets", "false");
 
-    var wsCurrent = jest
+    const wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
       .mockImplementationOnce(() => socketService);
 
     mountComponent();
     expect(hook.showSocketError).toBeFalsy();
 
-    expect(wsCurrent).toBeCalledTimes(0);
+    expect(wsCurrent).toHaveBeenCalledTimes(0);
 
     localStorage.setItem("use-sockets", "true");
     component.unmount();
   });
 
   it("ws current has been called", () => {
-    var socketService = new WebSocketService("");
-    var wsCurrent = jest
+    const socketService = new WebSocketService("");
+    const wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
       .mockImplementationOnce(() => socketService);
     mountComponent();
 
-    expect(wsCurrent).toBeCalled();
-    expect(wsCurrent).toBeCalledTimes(1);
-    expect(wsCurrent).toBeCalledWith(
+    expect(wsCurrent).toHaveBeenCalled();
+    expect(wsCurrent).toHaveBeenCalledTimes(1);
+    expect(wsCurrent).toHaveBeenCalledWith(
       false,
       expect.any(Function),
       { current: true },
       expect.any(Function),
+      expect.any(Function),
+      expect.any(String),
       expect.any(Function)
     );
 
@@ -64,17 +66,15 @@ describe("useSockets", () => {
   });
 
   it("test retry when no response", () => {
-    (window as any).appInsights = jest.fn();
-    (window as any).appInsights.trackTrace = jest.fn();
-
     jest.useFakeTimers();
-    var socketService = new FakeWebSocketService();
+    const socketService = new FakeWebSocketService();
 
     // set the difference in time longer than 0.5 minutes
-    jest
-      .spyOn(DifferenceInDate, "DifferenceInDate")
-      .mockImplementationOnce(() => 1);
-    var wsCurrent = jest
+    jest.spyOn(DifferenceInDate, "DifferenceInDate").mockImplementationOnce(() => 1);
+
+    jest.spyOn(WsCurrentStart, "default").mockClear();
+
+    const wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
       .mockImplementationOnce(() => socketService)
       .mockImplementationOnce(() => socketService);
@@ -82,16 +82,18 @@ describe("useSockets", () => {
     mountComponent();
 
     act(() => {
-      jest.advanceTimersByTime(60000);
+      jest.advanceTimersByTime(40000);
     });
 
-    expect(wsCurrent).toBeCalled();
-    expect(wsCurrent).toBeCalledTimes(2);
-    expect(wsCurrent).toBeCalledWith(
+    expect(wsCurrent).toHaveBeenCalled();
+    expect(wsCurrent).toHaveBeenCalledTimes(2);
+    expect(wsCurrent).toHaveBeenCalledWith(
       false,
       expect.any(Function),
       { current: true },
       expect.any(Function),
+      expect.any(Function),
+      expect.any(String),
       expect.any(Function)
     );
 
@@ -109,16 +111,13 @@ describe("useSockets", () => {
 
     jest
       .spyOn(useInterval, "default")
-      .mockImplementationOnce((props) => {
-        props();
-      })
-      .mockImplementationOnce((props) => {
-        props();
-      })
+      .mockImplementationOnce((props) => props())
+      .mockImplementationOnce((props) => props())
       .mockImplementationOnce(() => {});
 
     const wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
+      .mockReset()
       .mockImplementationOnce(() => socketService)
       .mockImplementationOnce(() => socketService);
 
@@ -128,8 +127,8 @@ describe("useSockets", () => {
       hook.setShowSocketError(null);
     });
 
-    expect(wsCurrent).toBeCalled();
-    expect(wsCurrent).toBeCalledTimes(2);
+    expect(wsCurrent).toHaveBeenCalled();
+    expect(wsCurrent).toHaveBeenCalledTimes(2);
 
     expect(hook.showSocketError).toBeNull();
 
@@ -139,16 +138,17 @@ describe("useSockets", () => {
   it("should ignore when Client is disabled", () => {
     jest.useFakeTimers();
 
-    var socketService = new FakeWebSocketService();
+    const socketService = new FakeWebSocketService();
 
     localStorage.setItem("use-sockets", "false");
     const wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
+      .mockReset()
       .mockImplementationOnce(() => socketService);
 
     mountComponent();
 
-    expect(wsCurrent).toBeCalledTimes(0);
+    expect(wsCurrent).toHaveBeenCalledTimes(0);
 
     localStorage.removeItem("use-sockets");
     jest.spyOn(WsCurrentStart, "default").mockReset();

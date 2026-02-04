@@ -1,15 +1,18 @@
 {
   "name": "mock",
-  "version": "0.4.9",
+  "version": "0.7.10",
   "description": "",
   "main": "mock.js",
   "scripts": {
     "start": "node mock",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update": "npx --yes npm-check-updates",
+    "update:install": "npx --yes npm-check-updates -u && npm install"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^5.2.1",
+    "ws": "^8.19.0"
   }
 }

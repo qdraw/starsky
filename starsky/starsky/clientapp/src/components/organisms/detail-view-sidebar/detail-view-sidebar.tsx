@@ -1,36 +1,33 @@
-import { Link } from "@reach/router";
 import React, { memo, useEffect, useRef } from "react";
 import { DetailViewAction } from "../../../contexts/detailview-context";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import { AsciiNull } from "../../../shared/ascii-null";
 import AspectRatio from "../../../shared/aspect-ratio";
 import BytesFormat from "../../../shared/bytes-format";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import { ClipboardHelper } from "../../../shared/clipboard-helper";
-import {
-  isValidDate,
-  parseDate,
-  parseRelativeDate,
-  parseTime
-} from "../../../shared/date";
+import { isValidDate, parseRelativeDate } from "../../../shared/date";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Keyboard } from "../../../shared/keyboard";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import DetailViewExifStatus from "../../atoms/detailview-exifstatus/detailview-exifstatus";
 import DetailViewInfoMakeModelAperture from "../../atoms/detailview-info-make-model-aperture/detailview-info-make-model-aperture";
 import FormControl from "../../atoms/form-control/form-control";
+import Link from "../../atoms/link/link";
 import Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "../../molecules/color-class-select/color-class-select";
-import ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
+import DetailViewInfoDateTime from "../detailview-info-datetime/detailview-info-datetime";
+import DetailViewInfoLocation from "../detailview-info-location/detailview-info-location";
 import { UpdateChange } from "./update-change";
 
 interface IDetailViewSidebarProps {
@@ -45,39 +42,17 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     // content
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageTitleName = language.text("Titel", "Title");
-    const MessageInfoName = "Info";
-    const MessageColorClassification = language.text(
-      "Kleur-Classificatie",
-      "Color Classification"
-    );
-    const MessageDateTimeAgoEdited = language.text(
-      "geleden bewerkt",
-      "ago edited"
-    );
-    const MessageDateLessThan1Minute = language.text(
-      "minder dan één minuut",
-      "less than one minute"
-    );
-    const MessageDateMinutes = language.text("minuten", "minutes");
-    const MessageDateHour = language.text("uur", "hour");
-    const MessageNounNameless = language.text("Naamloze", "Unnamed");
-    const MessageLocation = language.text("locatie", "location");
-    const MessageCreationDate = language.text("Aanmaakdatum", "Creation date");
-    const MessageCreationDateUnknownTime = language.text(
-      "is op een onbekend moment",
-      "is at an unknown time"
-    );
-    const MessageCopiedLabels = language.text(
-      "De labels zijn gekopieerd",
-      "The labels have been copied"
-    );
-    const MessagePasteLabels = language.text(
-      "De labels zijn overschreven",
-      "The labels have been overwritten"
-    );
+    const MessageTitleName = language.key(localization.MessageTitleName);
+    const MessageInfoName = language.key(localization.MessageInfoName);
+    const MessageColorClassification = language.key(localization.MessageColorClassification);
+    const MessageDateTimeAgoEdited = language.key(localization.MessageDateTimeAgoEdited);
+    const MessageDateLessThan1Minute = language.key(localization.MessageDateLessThan1Minute);
+    const MessageDateMinutes = language.key(localization.MessageDateMinutes);
+    const MessageDateHour = language.key(localization.MessageDateHour);
+    const MessageCopiedLabels = language.key(localization.MessageCopiedLabels);
+    const MessagePasteLabels = language.key(localization.MessagePasteLabels);
 
-    var history = useLocation();
+    const history = useLocation();
 
     const [fileIndexItem, setFileIndexItem] = React.useState(
       state
@@ -97,36 +72,33 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     const [collections, setCollections] = React.useState([] as string[]);
 
     // To Get information from Info Api
-    var location = new UrlQuery().UrlQueryInfoApi(props.filePath);
+    const location = new UrlQuery().UrlQueryInfoApi(props.filePath);
     const infoResponseObject = useFetch(location, "get");
 
     useEffect(() => {
       if (!infoResponseObject.data) return;
-      var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(
-        infoResponseObject.data
-      );
+      const infoFileIndexItem = new CastToInterface().InfoFileIndexArray(infoResponseObject.data);
       if (!infoFileIndexItem) return;
       updateCollections(infoFileIndexItem);
 
-      dispatch({ type: "update", ...infoFileIndexItem[0], lastEdited: "" });
+      dispatch({
+        type: "update",
+        ...infoFileIndexItem[0],
+        lastEdited: "",
+        filePath: infoFileIndexItem[0].filePath
+      });
     }, [dispatch, infoResponseObject]);
 
-    // use time from state and not the update api
-    useEffect(() => {
-      if (!fileIndexItem.lastEdited) return;
-      // there is a bug in the api
-      dispatch({ type: "update", lastEdited: fileIndexItem.lastEdited });
-    }, [dispatch, fileIndexItem.lastEdited]);
-
     function updateCollections(infoFileIndexItem: IFileIndexItem[]) {
-      var collectionsList: string[] = [];
-      infoFileIndexItem.forEach((element) => {
+      const collectionsList: string[] = [];
+      for (const element of infoFileIndexItem) {
         collectionsList.push(element.filePath);
-      });
+      }
       setCollections(collectionsList);
     }
+
     // For the display
-    const [isFormEnabled, setFormEnabled] = React.useState(true);
+    const [formEnabled, setFormEnabled] = React.useState(true);
     useEffect(() => {
       if (!fileIndexItem.status) return;
       switch (fileIndexItem.status) {
@@ -144,17 +116,17 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     function handleChange(event: React.ChangeEvent<HTMLDivElement>) {
       let value = event.currentTarget.textContent;
-      let name = event.currentTarget.dataset["name"];
+      const name = event.currentTarget.dataset["name"];
 
       if (!name) return;
-      if (!value) value = AsciiNull();
-      new UpdateChange(
-        fileIndexItem,
-        setFileIndexItem,
-        dispatch,
-        history,
-        state
-      ).Update([[name, value]]);
+
+      // only when the value is null; add a null character
+      // this is needed for the server to update the field
+      value ??= AsciiNull();
+
+      new UpdateChange(fileIndexItem, setFileIndexItem, dispatch, history, state).Update([
+        [name, value]
+      ]);
     }
 
     const descriptionReference = useRef<HTMLDivElement>(null);
@@ -162,24 +134,25 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     const [copyPasteAction, setCopyPasteAction] = React.useState("");
 
     // To fast go the tags field
+    // Press T or I to focus on the end of the field
     const tagsReference = useRef<HTMLDivElement>(null);
     useKeyboardEvent(
       /^([ti])$/,
       (event: KeyboardEvent) => {
         if (new Keyboard().isInForm(event)) return;
         event.preventDefault();
-        var current = tagsReference.current as HTMLDivElement;
+        const current = tagsReference.current as HTMLDivElement;
         new Keyboard().SetFocusOnEndField(current);
       },
       [props]
     );
 
     useKeyboardEvent(
-      /^([c])$/,
+      /^c$/,
       (event: KeyboardEvent) => {
         if (new Keyboard().isInForm(event)) return;
         event.preventDefault();
-        var copy = new ClipboardHelper().Copy(
+        const copy = new ClipboardHelper().Copy(
           tagsReference,
           descriptionReference,
           titleReference
@@ -196,7 +169,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     }, [fileIndexItem.filePath]);
 
     useKeyboardEvent(
-      /^([v])$/,
+      /^v$/,
       (event: KeyboardEvent) => {
         if (new Keyboard().isInForm(event)) return;
         event.preventDefault();
@@ -208,17 +181,14 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           history,
           state
         );
-        console.log(updateChange);
 
-        const paste = new ClipboardHelper().Paste(updateChange.Update);
-
-        if (!paste) return;
-        setCopyPasteAction(MessagePasteLabels);
+        new ClipboardHelper().PasteAsync(updateChange.Update).then((paste) => {
+          if (!paste) return;
+          setCopyPasteAction(MessagePasteLabels);
+        });
       },
       [props]
     );
-
-    const [isModalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
 
     if (!fileIndexItem) {
       return <>No status</>;
@@ -226,11 +196,9 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     // noinspection HtmlUnknownAttribute
     return (
-      <div className="detailview-sidebar">
+      <div className="detailview-sidebar" data-test="detailview-sidebar">
         {copyPasteAction ? (
-          <Notification callback={() => setCopyPasteAction("")}>
-            {copyPasteAction}
-          </Notification>
+          <Notification callback={() => setCopyPasteAction("")}>{copyPasteAction}</Notification>
         ) : null}
         <DetailViewExifStatus status={fileIndexItem.status} />
         <div className="content--header">Tags</div>
@@ -238,9 +206,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           <FormControl
             onBlur={handleChange}
             name="tags"
+            data-test="detailview-sidebar-tags"
             maxlength={1024}
             reference={tagsReference}
-            contentEditable={isFormEnabled}
+            contentEditable={formEnabled}
           >
             {fileIndexItem.tags}
           </FormControl>
@@ -253,10 +222,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           <h4>{MessageInfoName}</h4>
           <FormControl
             onBlur={handleChange}
-            maxlength={1024}
+            maxlength={5000}
             name="description"
             reference={descriptionReference}
-            contentEditable={isFormEnabled}
+            contentEditable={formEnabled}
           >
             {fileIndexItem.description}
           </FormControl>
@@ -266,7 +235,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             name="title"
             maxlength={1024}
             reference={titleReference}
-            contentEditable={isFormEnabled}
+            contentEditable={formEnabled}
           >
             {fileIndexItem.title}
           </FormControl>
@@ -274,10 +243,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         <div className="content--header">{MessageColorClassification}</div>
         <div className="content--text">
           <ColorClassSelect
-            collections={
-              new URLPath().StringToIUrl(history.location.search)
-                .collections !== false
-            }
+            collections={new URLPath().StringToIUrl(history.location.search).collections !== false}
             onToggle={(result) => {
               setFileIndexItem({
                 ...fileIndexItem,
@@ -286,6 +252,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
               });
               dispatch({
                 type: "update",
+                filePath: fileIndexItem.filePath,
                 lastEdited: new Date().toString(),
                 colorclass: result
               });
@@ -294,7 +261,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             }}
             filePath={fileIndexItem.filePath}
             currentColorClass={fileIndexItem.colorClass}
-            isEnabled={isFormEnabled}
+            isEnabled={formEnabled}
           />
         </div>
         {fileIndexItem.latitude ||
@@ -308,68 +275,22 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           <div className="content--header">Details</div>
         ) : null}
 
-        {/* dateTime when the image is created */}
-        {isModalDatetimeOpen ? (
-          <ModalDatetime
-            subPath={fileIndexItem.filePath}
-            dateTime={fileIndexItem.dateTime}
-            handleExit={(result) => {
-              setModalDatetimeOpen(false);
-              if (!result || !result[0]) return;
-              // only update the content that can be changed
-              setFileIndexItem({
-                ...fileIndexItem,
-                dateTime: result[0].dateTime
-              });
-              dispatch({
-                type: "update",
-                dateTime: result[0].dateTime,
-                lastEdited: ""
-              });
-            }}
-            isOpen={true}
-          />
-        ) : null}
         <div className="content--text">
-          <button
-            className="box"
-            disabled={!isFormEnabled}
-            data-test="dateTime"
-            onClick={() => setModalDatetimeOpen(true)}
-          >
-            {isFormEnabled ? (
-              <div className="icon icon--right icon--edit" />
-            ) : null}
-            <div className="icon icon--date" />
-            {isValidDate(fileIndexItem.dateTime) ? (
-              <>
-                <b>{parseDate(fileIndexItem.dateTime, settings.language)}</b>
-                <p>{parseTime(fileIndexItem.dateTime)}</p>
-              </>
-            ) : null}
-            {!isValidDate(fileIndexItem.dateTime) ? (
-              <>
-                <b>{MessageCreationDate}</b>
-                <p>{MessageCreationDateUnknownTime}</p>
-              </>
-            ) : null}
-          </button>
+          <DetailViewInfoDateTime
+            fileIndexItem={fileIndexItem}
+            isFormEnabled={formEnabled}
+            setFileIndexItem={setFileIndexItem}
+            dispatch={dispatch}
+          />
 
           {isValidDate(fileIndexItem.lastEdited) ? (
             <div className="box" data-test="lastEdited">
               <div className="icon icon--last-edited"></div>
               <b>
                 {language.token(
-                  parseRelativeDate(
-                    fileIndexItem.lastEdited,
-                    settings.language
-                  ),
+                  parseRelativeDate(fileIndexItem.lastEdited, settings.language),
                   ["{lessThan1Minute}", "{minutes}", "{hour}"],
-                  [
-                    MessageDateLessThan1Minute,
-                    MessageDateMinutes,
-                    MessageDateHour
-                  ]
+                  [MessageDateLessThan1Minute, MessageDateMinutes, MessageDateHour]
                 )}
               </b>
               <p>{MessageDateTimeAgoEdited}</p>
@@ -392,56 +313,32 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             </div>
           ) : null}
 
-          {fileIndexItem.latitude && fileIndexItem.longitude ? (
-            <a
-              className="box"
-              target="_blank"
-              rel="noopener noreferrer"
-              href={
-                "https://www.openstreetmap.org/?mlat=" +
-                fileIndexItem.latitude +
-                "&mlon=" +
-                fileIndexItem.longitude +
-                "#map=16/" +
-                fileIndexItem.latitude +
-                "/" +
-                fileIndexItem.longitude
-              }
-            >
-              <div className="icon icon--location" />
-              {fileIndexItem.locationCity && fileIndexItem.locationCountry ? (
-                <>
-                  <b>{fileIndexItem.locationCity}</b>
-                  <p>{fileIndexItem.locationCountry}</p>
-                </>
-              ) : (
-                <>
-                  <b>{MessageNounNameless}</b>
-                  <p>{MessageLocation}</p>
-                </>
-              )}
-            </a>
-          ) : (
-            ""
-          )}
+          <DetailViewInfoLocation
+            fileIndexItem={fileIndexItem}
+            isFormEnabled={formEnabled}
+            {...fileIndexItem}
+            dispatch={dispatch}
+            setFileIndexItem={setFileIndexItem}
+          />
 
           {collections.map((item, index) => (
-            // some senarios details is set off, this is linked from details
+            // some scenarios details is set off, this is linked from details
             <Link
               to={new UrlQuery().updateFilePathHash(
                 history.location.search + "&details=true",
                 item
               )}
-              key={index}
-              className={index !== 1 ? "box" : "box box--child"}
+              key={item}
+              className={index === 1 ? "box box--child" : "box"}
               data-test="collections"
             >
-              {index !== 1 ? <div className="icon icon--photo" /> : null}
+              {index === 1 ? null : <div className="icon icon--photo" />}
               <b>{new URLPath().getChild(item)}</b>
               <p>
-                {index === 1 ? <>In een collectie:</> : null} {index + 1} van{" "}
-                {collections.length}.
+                {index === 1 ? <>In een collectie:</> : null} {index + 1} van {collections.length}.
                 {item === fileIndexItem.filePath &&
+                fileIndexItem.imageWidth !== undefined &&
+                fileIndexItem.imageHeight !== undefined &&
                 fileIndexItem.imageWidth !== 0 &&
                 fileIndexItem.imageHeight !== 0 ? (
                   <span>

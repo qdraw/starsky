@@ -1,25 +1,25 @@
-import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
-import React from "react";
-import { act } from "react-dom/test-utils";
-import * as useLocation from "../../../hooks/use-location";
+import { createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act } from "react";
+import * as useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch-post";
-import { UrlQuery } from "../../../shared/url-query";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
+import { UrlQuery } from "../../../shared/url/url-query";
 import * as Modal from "../../atoms/modal/modal";
 import ModalArchiveRename from "./modal-archive-rename";
 
 describe("ModalArchiveRename", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
-    shallow(
-      <ModalArchiveRename isOpen={true} subPath="/" handleExit={() => {}}>
-        test
-      </ModalArchiveRename>
+    render(
+      <ModalArchiveRename isOpen={true} subPath="/" handleExit={() => {}}></ModalArchiveRename>
     );
   });
   describe("rename", () => {
     it("rename to non valid directory name", async () => {
-      var modal = mount(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -27,24 +27,27 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
+
+      const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
-      act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory.test";
-        modal.find('[data-name="foldername"]').simulate("input");
-      });
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // update component + now press a key
+      directoryName.textContent = "a";
+      const inputEvent = createEvent.input(directoryName, { key: "a" });
+      fireEvent(directoryName, inputEvent);
 
       // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      // See warning message
-      expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(screen.getByTestId("modal-archive-rename-warning-box")).toBeTruthy();
+
+      const submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeTruthy();
 
       // Cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -53,16 +56,15 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';;
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
-      var fetchPostSpy = jest
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const handleExitSpy = jest.fn();
-      const modal = mount(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -70,20 +72,31 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
-      act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory";
-        modal.find('[data-name="foldername"]').simulate("input");
-      });
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
 
-      // await is needed
+      const submitButtonBefore = button.disabled;
+      expect(submitButtonBefore).toBeTruthy();
+
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // update component + now press a key
+      directoryName.textContent = "directory";
+      const inputEvent = createEvent.input(directoryName, { key: "d" });
+      fireEvent(directoryName, inputEvent);
+
+      expect(screen.getByTestId("modal-archive-rename")).not.toBeNull();
+
+      const submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeFalsy();
+
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlSyncRename(),
+      await waitFor(() => expect(fetchPostSpy).toHaveBeenCalled());
+      expect(fetchPostSpy).toHaveBeenCalledWith(
+        new UrlQuery().UrlDiskRename(),
         "f=%2Ftest&to=%2Fdirectory"
       );
 
@@ -94,17 +107,14 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name and expect dispatch", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';;
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
       const dispatch = jest.fn();
       const handleExitSpy = jest.fn();
-      const modal = mount(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -113,19 +123,27 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
-      act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory";
-        modal.find('[data-name="foldername"]').simulate("input");
-      });
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
 
-      // await is needed
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // update component + now press a key
+      directoryName.textContent = "directory";
+      const inputEvent = createEvent.input(directoryName, { key: "d" });
+      fireEvent(directoryName, inputEvent);
+
+      expect(screen.getByTestId("modal-archive-rename")).not.toBeNull();
+
+      const submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeFalsy();
+
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      expect(dispatch).toBeCalled();
-      expect(dispatch).toBeCalledWith({
+      expect(dispatch).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledWith({
         path: "/directory",
         type: "rename-folder"
       });
@@ -137,16 +155,13 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name should give callback", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';;
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
       const locationObject = {
-        location: globalHistory.location,
+        location: globalThis.location,
         navigate: jest.fn()
       };
 
@@ -157,7 +172,7 @@ describe("ModalArchiveRename", () => {
         .mockImplementationOnce(() => locationObject);
 
       const handleExitSpy = jest.fn();
-      const modal = mount(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -165,18 +180,26 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
-      act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory";
-        modal.find('[data-name="foldername"]').simulate("input");
-      });
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
 
-      // await is needed
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // update component + now press a key
+      directoryName.textContent = "directory";
+      const inputEvent = createEvent.input(directoryName, { key: "d" });
+      fireEvent(directoryName, inputEvent);
+
+      expect(screen.getByTestId("modal-archive-rename")).not.toBeNull();
+
+      const submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeFalsy();
+
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      expect(handleExitSpy).toBeCalledWith("/directory");
+      expect(handleExitSpy).toHaveBeenCalledWith("/directory");
 
       // Cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -185,15 +208,15 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name and FAIL", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 500 } as IConnectionDefault
-      );
-      var fetchPostSpy = jest
+      // use this import => import * as FetchPost from '../../../shared/fetch/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 500
+      } as IConnectionDefault);
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var modal = mount(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -201,30 +224,33 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
-      act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory";
-        modal.find('[data-name="foldername"]').simulate("input");
-      });
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
 
-      // await is needed
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // update component + now press a key
+      directoryName.textContent = "directory";
+      const inputEvent = createEvent.input(directoryName, { key: "d" });
+      fireEvent(directoryName, inputEvent);
+
+      expect(screen.getByTestId("modal-archive-rename")).not.toBeNull();
+
+      const submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeFalsy();
+
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlSyncRename(),
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
+        new UrlQuery().UrlDiskRename(),
         "f=%2Ftest&to=%2Fdirectory"
       );
 
-      // await is needed (button is disabled)
-      await act(async () => {
-        await modal.find(".btn--default").simulate("click");
-      });
-
       // Where should be a warning
-      expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(screen.getByTestId("modal-archive-rename-warning-box")).toBeTruthy();
 
       // Cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -233,16 +259,14 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name and FAIL with UNDO dispatch", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 500 } as IConnectionDefault
-      );
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefault);
+      // use this import => import * as FetchPost from '../../../shared/fetch/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 500
+      } as IConnectionDefault);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
       const dispatch = jest.fn();
-      var modal = mount(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -251,18 +275,23 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
-      act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory";
-        modal.find('[data-name="foldername"]').simulate("input");
-      });
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
 
-      // await is needed
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // update component + now press a key
+      directoryName.textContent = "directory";
+      const inputEvent = createEvent.input(directoryName, { key: "d" });
+      fireEvent(directoryName, inputEvent);
+
+      expect(screen.getByTestId("modal-archive-rename")).not.toBeNull();
+
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      expect(dispatch).toBeCalled();
+      expect(dispatch).toHaveBeenCalled();
 
       expect(dispatch).toHaveBeenNthCalledWith(1, {
         path: "/directory",
@@ -286,17 +315,13 @@ describe("ModalArchiveRename", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = mount(
-        <ModalArchiveRename
-          subPath="/"
-          isOpen={true}
-          handleExit={handleExitSpy}
-        />
+      const component = render(
+        <ModalArchiveRename subPath="/" isOpen={true} handleExit={handleExitSpy} />
       );
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       // and clean afterwards
       component.unmount();

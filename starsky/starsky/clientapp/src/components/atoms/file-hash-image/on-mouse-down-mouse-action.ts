@@ -22,7 +22,7 @@ export class OnMouseDownMouseAction {
     this.down(clientX, clientY);
   };
 
-  public onMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  public onMouseDown = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     this.down(e.clientX, e.clientY);
   };

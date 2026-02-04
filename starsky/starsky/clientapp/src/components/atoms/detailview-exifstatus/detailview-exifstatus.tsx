@@ -1,6 +1,7 @@
 import { memo } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 
 interface IDetailViewExifStatusProps {
@@ -12,32 +13,23 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
 
-    const MessageReadOnlyFile = language.text(
-      "Alleen lezen bestand",
-      "Read only file"
-    );
-    const MessageNotFoundSourceMissing = language.text(
-      "Mist in de index",
-      "Misses in the index"
-    );
-    const MessageServerError = language.text(
-      "Er is iets mis met de input",
-      "Something is wrong with the input"
-    );
-    const MessageDeleted = language.text(
-      "Staat in de prullenmand",
-      "Is in the trash"
-    );
-    const MessageDeletedRestoreInstruction = language.text(
-      "'Zet terug uit prullenmand' om het item te bewerken",
-      "'Restore from Trash' to edit the item"
+    const MessageReadOnlyFile = language.key(localization.MessageReadOnlyFile);
+
+    const MessageNotFoundSourceMissing = language.key(localization.MessageNotFoundSourceMissing);
+    const MessageServerError = language.key(localization.MessageServerInputError);
+    const MessageIsInTheTrash = language.key(localization.MessageIsInTheTrash);
+
+    const MessageDeletedRestoreInstruction = language.key(
+      localization.MessageDeletedRestoreInstruction
     );
 
     const DeleteComponent = (
       <>
         {status === IExifStatus.Deleted ? (
           <>
-            <div className="warning-box">{MessageDeleted}</div>
+            <div data-test="detailview-exifstatus-status-deleted" className="warning-box">
+              {MessageIsInTheTrash}
+            </div>
             {MessageDeletedRestoreInstruction}
           </>
         ) : null}
@@ -47,7 +39,9 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.NotFoundSourceMissing ? (
           <>
-            <div className="warning-box">{MessageNotFoundSourceMissing}</div>{" "}
+            <div data-test="detailview-exifstatus-status-source-missing" className="warning-box">
+              {MessageNotFoundSourceMissing}
+            </div>{" "}
           </>
         ) : null}
       </>
@@ -56,7 +50,9 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.ReadOnly ? (
           <>
-            <div className="warning-box">{MessageReadOnlyFile}</div>{" "}
+            <div data-test="detailview-exifstatus-status-read-only" className="warning-box">
+              {MessageReadOnlyFile}
+            </div>{" "}
           </>
         ) : null}
       </>
@@ -66,7 +62,9 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.ServerError ? (
           <>
-            <div className="warning-box">{MessageServerError}</div>{" "}
+            <div data-test="detailview-exifstatus-status-server-error" className="warning-box">
+              {MessageServerError}
+            </div>{" "}
           </>
         ) : null}
       </>

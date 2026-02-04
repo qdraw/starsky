@@ -1,0 +1,30 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.webhtmlpublish.ViewModels;
+using starsky.foundation.platform.Models;
+
+namespace starskytest.starsky.feature.webhtmlpublish.ViewModels;
+
+[TestClass]
+public sealed class WebHtmlViewModelTest
+{
+	[TestMethod]
+	public void WebHtmlViewModel1()
+	{
+		var model = new WebHtmlViewModel
+		{
+			ItemName = "test",
+			AppSettings = new AppSettings(),
+			CurrentProfile = new AppSettingsPublishProfiles(),
+			Profiles = [],
+			Base64ImageArray = [],
+			FileIndexItems = []
+		};
+
+		Assert.AreEqual("test", model.ItemName);
+		Assert.AreEqual("Starsky", model.AppSettings.Name);
+		Assert.AreEqual(TemplateContentType.None, model.CurrentProfile.ContentType);
+		Assert.IsEmpty(model.Profiles);
+		Assert.IsEmpty(model.Base64ImageArray);
+		Assert.IsEmpty(model.FileIndexItems);
+	}
+}

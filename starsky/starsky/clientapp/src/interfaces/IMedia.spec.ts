@@ -2,7 +2,7 @@ import { IMedia, newIMedia } from "./IMedia";
 
 describe("IMedia", () => {
   it("newIMedia", () => {
-    var media = newIMedia();
+    const media = newIMedia();
     expect(media).toStrictEqual({} as IMedia);
   });
 });

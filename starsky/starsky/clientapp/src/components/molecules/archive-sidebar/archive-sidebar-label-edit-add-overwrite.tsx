@@ -1,81 +1,60 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
-import useLocation from "../../../hooks/use-location";
-import { PageType } from "../../../interfaces/IDetailView";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
+import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { Keyboard } from "../../../shared/keyboard";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { SidebarUpdate } from "../../../shared/sidebar-update";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
-import Notification, {
-  NotificationType
-} from "../../atoms/notification/notification";
+import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
+import Tooltip from "../../atoms/tooltip/tooltip";
 
 const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
-  const MessageAddName = new Language(settings.language).text(
-    "Toevoegen",
-    "Add to"
-  );
-  const MessageOverwriteName = new Language(settings.language).text(
-    "Overschrijven",
-    "Overwrite"
-  );
-  const MessageTitleName = new Language(settings.language).text(
-    "Titel",
-    "Title"
-  );
-  const MessageErrorReadOnly = new Language(settings.language).text(
-    "Eén of meerdere bestanden zijn alleen lezen. " +
-      "Alleen de bestanden met schrijfrechten zijn geupdate.",
-    "One or more files are read only. " +
-      "Only the files with write permissions have been updated."
-  );
-  const MessageErrorGenericFail = new Language(settings.language).text(
-    "Er is iets misgegaan met het updaten. Probeer het opnieuw",
-    "Something went wrong with the update. Please try again"
+  const language = new Language(settings.language);
+  const MessageTagsWithColon = language.key(localization.MessageTagsWithColon);
+  const MessageInfoWithColon = language.key(localization.MessageInfoWithColon);
+  const MessageTitleWithColon = language.key(localization.MessageTitleWithColon);
+  const MessageTagsDescription = language.key(localization.MessageTagsDescription);
+  const MessageAddName = language.key(localization.MessageAddName);
+  const MessageOverwriteName = language.key(localization.MessageOverwriteName);
+  const MessageWriteErrorReadOnly = language.key(localization.MessageWriteErrorReadOnly);
+  const MessageErrorGenericFail = language.key(localization.MessageErrorGenericFail);
+  const MessageErrorNotFoundSourceMissingRunSync = language.key(
+    localization.MessageErrorNotFoundSourceMissingRunSync
   );
 
-  const MessageErrorNotFoundSourceMissing = new Language(
-    settings.language
-  ).text(
-    "Eén of meerdere bestanden zijn al verdwenen. " +
-      "Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
-    "One or more files are already gone. " +
-      "Only the files that are present are updated. Run a manual sync"
-  );
-
-  var history = useLocation();
-  let { state, dispatch } = React.useContext(ArchiveContext);
+  const history = useLocation();
+  // eslint-disable-next-line prefer-const
+  let { state, dispatch } = useContext(ArchiveContext);
 
   // state without any context
   state = new CastToInterface().UndefinedIArchiveReadonly(state);
 
   // show select info
-  const [select, setSelect] = React.useState(
-    new URLPath().getSelect(history.location.search)
-  );
+  const [select, setSelect] = useState(new URLPath().getSelect(history.location.search));
   useEffect(() => {
     setSelect(new URLPath().getSelect(history.location.search));
   }, [history.location.search]);
 
   // The Updated that is send to the api
-  const [update, setUpdate] = React.useState({
+  const [update, setUpdate] = useState({
     append: true,
     collections: true
   } as ISidebarUpdate);
 
   // Add/Hide disabled state
-  const [isInputEnabled, setInputEnabled] = React.useState(false);
+  const [inputEnabled, setInputEnabled] = useState(false);
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
@@ -85,11 +64,9 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
 
   // Update the disabled state + Local variable with input data
   function handleUpdateChange(
-    event:
-      | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+    event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
   ) {
-    var sideBarUpdate = new SidebarUpdate().Change(event, update);
+    const sideBarUpdate = new SidebarUpdate().Change(event, update);
     if (!sideBarUpdate) return;
     setUpdate(sideBarUpdate);
     setInputEnabled(new SidebarUpdate().IsFormUsed(update));
@@ -105,47 +82,33 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     setInputEnabled(false);
 
     update.append = append;
-    update.collections =
-      state.pageType !== PageType.Search
-        ? new URLPath().StringToIUrl(history.location.search).collections !==
-          false
-        : false;
+    update.collections = new URLPath().IsCollections(state.pageType, history.location.search);
 
-    var bodyParams = new URLPath().ObjectToSearchParams(update);
+    const bodyParams = new URLPath().ObjectToSearchParams(update);
     if (bodyParams.toString().length === 0) return;
 
-    var subPaths = new URLPath().MergeSelectFileIndexItem(
-      select,
-      state.fileIndexItems
-    );
+    const subPaths = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!subPaths) return;
-    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
-      subPaths,
-      ""
-    );
+    const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(subPaths, "");
 
     if (selectParams.length === 0) return;
     bodyParams.append("f", selectParams);
 
     FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString())
       .then((anyData) => {
-        var result = new CastToInterface().InfoFileIndexArray(anyData.data);
-        result.forEach((element) => {
-          if (element.status === IExifStatus.ReadOnly)
-            setIsError(MessageErrorReadOnly);
+        const result = new CastToInterface().InfoFileIndexArray(anyData.data);
+        for (const element of result) {
+          if (element.status === IExifStatus.ReadOnly) setIsError(MessageWriteErrorReadOnly);
           if (element.status === IExifStatus.NotFoundSourceMissing)
-            setIsError(MessageErrorNotFoundSourceMissing);
-          if (
-            element.status === IExifStatus.Ok ||
-            element.status === IExifStatus.Deleted
-          ) {
+            setIsError(MessageErrorNotFoundSourceMissingRunSync);
+          if (element.status === IExifStatus.Ok || element.status === IExifStatus.Deleted) {
             dispatch({
               type: "update",
               ...element,
               select: [element.fileName]
             });
           }
-        });
+        }
 
         // loading + update button
         setIsLoading(false);
@@ -171,7 +134,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     (event: KeyboardEvent) => {
       if (new Keyboard().isInForm(event)) return;
       event.preventDefault();
-      var current = tagsReference.current as HTMLDivElement;
+      const current = tagsReference.current as HTMLDivElement;
       new Keyboard().SetFocusOnEndField(current);
     },
     []
@@ -180,18 +143,20 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   // noinspection HtmlUnknownAttribute
   return (
     <>
-      {isError !== "" ? (
-        <Notification
-          callback={() => setIsError("")}
-          type={NotificationType.danger}
-        >
+      {isError === "" ? null : (
+        <Notification callback={() => setIsError("")} type={NotificationType.danger}>
           {isError}
         </Notification>
-      ) : null}
+      )}
 
       {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
 
-      <h4>Tags:</h4>
+      <h4>
+        {MessageTagsWithColon}
+        <Tooltip left={true} text={MessageTagsDescription}>
+          <span className="info--small"></span>
+        </Tooltip>
+      </h4>
       <FormControl
         spellcheck={true}
         reference={tagsReference}
@@ -200,7 +165,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         contentEditable={!state.isReadOnly && select.length !== 0}
       ></FormControl>
 
-      <h4>Info:</h4>
+      <h4>{MessageInfoWithColon}</h4>
       <FormControl
         spellcheck={true}
         onInput={handleUpdateChange}
@@ -208,7 +173,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         contentEditable={!state.isReadOnly && select.length !== 0}
       ></FormControl>
 
-      <h4>{MessageTitleName}:</h4>
+      <h4>{MessageTitleWithColon}</h4>
       <FormControl
         spellcheck={true}
         onInput={handleUpdateChange}
@@ -216,25 +181,17 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         contentEditable={!state.isReadOnly && select.length !== 0}
       ></FormControl>
 
-      {isInputEnabled && select.length !== 0 ? (
-        <button
-          className="btn btn--info"
-          data-test="overwrite"
-          onClick={() => pushUpdate(false)}
-        >
-          Overschrijven
+      {inputEnabled && select.length !== 0 ? (
+        <button className="btn btn--info" data-test="overwrite" onClick={() => pushUpdate(false)}>
+          {MessageOverwriteName}
         </button>
       ) : (
         <button disabled className="btn btn--info disabled">
           {MessageOverwriteName}
         </button>
       )}
-      {isInputEnabled && select.length !== 0 ? (
-        <button
-          data-test="add"
-          className="btn btn--default"
-          onClick={() => pushUpdate(true)}
-        >
+      {inputEnabled && select.length !== 0 ? (
+        <button data-test="add" className="btn btn--default" onClick={() => pushUpdate(true)}>
           {MessageAddName}
         </button>
       ) : (

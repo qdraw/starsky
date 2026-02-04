@@ -1,55 +1,44 @@
 import React, { useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { SortType } from "../../../interfaces/IArchive";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import Modal from "../../atoms/modal/modal";
 import Select from "../../atoms/select/select";
 import SwitchButton from "../../atoms/switch-button/switch-button";
 
 interface IModalDisplayOptionsProps {
   isOpen: boolean;
-  handleExit: Function;
-  parentFolder?: string;
+  handleExit: () => void;
 }
 
-const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = (
-  props
-) => {
+const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageDisplayOptions = language.text(
-    "Weergave opties",
-    "Display options"
+  const MessageDisplayOptions = language.key(localization.MessageDisplayOptions);
+  const MessageDisplayOptionsSwitchButtonCollectionsOff = language.key(
+    localization.MessageDisplayOptionsSwitchButtonCollectionsOff
   );
-  const MessageSwitchButtonCollectionsOff = language.text(
-    "Toon raw bestanden",
-    "Show raw files"
+  const MessageDisplayOptionsSwitchButtonCollectionsOn = language.key(
+    localization.MessageDisplayOptionsSwitchButtonCollectionsOn
   );
-  const MessageSwitchButtonCollectionsOn = language.text(
-    "Verberg raw bestanden",
-    "Hide Raw files"
+  const MessageDisplayOptionsSwitchButtonIsSingleItemOff = language.key(
+    localization.MessageDisplayOptionsSwitchButtonIsSingleItemOff
   );
-  const MessageSwitchButtonIsSingleItemOn = language.text(
-    "Alles inladen",
-    "Load everything"
+  const MessageDisplayOptionsSwitchButtonIsSingleItemOn = language.key(
+    localization.MessageDisplayOptionsSwitchButtonIsSingleItemOn
   );
-  const MessageSwitchButtonIsSingleItemOff = language.text(
-    "Klein inladen",
-    "Small loading"
+  const MessageDisplayOptionsSwitchButtonIsSocketOn = language.key(
+    localization.MessageDisplayOptionsSwitchButtonIsSocketOn
   );
-  const MessageSwitchButtonIsSocketOn = language.text(
-    "Realtime updates",
-    "Realtime updates"
-  );
-  const MessageSwitchButtonIsSocketOff = language.text(
-    "Ververs zelf",
-    "Refresh yourself"
+  const MessageDisplayOptionsSwitchButtonIsSocketOff = language.key(
+    localization.MessageDisplayOptionsSwitchButtonIsSocketOff
   );
 
-  var history = useLocation();
+  const history = useLocation();
 
   // the default is true
   const [collections, setCollections] = React.useState(
@@ -58,34 +47,34 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
 
   /** update when changing values and search */
   useEffect(() => {
-    setCollections(
-      new URLPath().StringToIUrl(history.location.search).collections !== false
-    );
+    setCollections(new URLPath().StringToIUrl(history.location.search).collections !== false);
   }, [collections, history.location.search]);
 
   function toggleCollections() {
     const urlObject = new URLPath().StringToIUrl(history.location.search);
     // set the default option
-    if (urlObject.collections === undefined) urlObject.collections = true;
+    // if undefined, set to true
+    urlObject.collections ??= true;
     urlObject.collections = !urlObject.collections;
     setCollections(urlObject.collections);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  const [isSingleItem, setIsSingleItem] = React.useState(
-    localStorage.getItem("issingleitem") === "false"
+  const [isAlwaysLoadImage, setIsAlwaysLoadImage] = React.useState(
+    localStorage.getItem("alwaysLoadImage") === "true"
   );
 
   function toggleSlowFiles() {
-    setIsSingleItem(!isSingleItem);
-    localStorage.setItem("issingleitem", isSingleItem.toString());
+    localStorage.setItem("alwaysLoadImage", (!isAlwaysLoadImage).toString());
+    setIsAlwaysLoadImage(!isAlwaysLoadImage);
   }
 
-  const [isUseSockets, setUseSockets] = React.useState(
+  const [isUseSockets, setIsUseSockets] = React.useState(
     localStorage.getItem("use-sockets") === "false"
   );
+
   function toggleSockets() {
-    setUseSockets(!isUseSockets);
+    setIsUseSockets(!isUseSockets);
     if (isUseSockets) {
       localStorage.removeItem("use-sockets");
       return;
@@ -101,6 +90,8 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   function toggleSort(option: string) {
     const urlObject = new URLPath().StringToIUrl(history.location.search);
     urlObject.sort = SortType[option as keyof typeof SortType];
+    console.log(urlObject.sort);
+
     history.navigate(new URLPath().IUrlToString(urlObject), {
       replace: true
     });
@@ -114,44 +105,46 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
         props.handleExit();
       }}
     >
-      <div className="modal content--subheader">{MessageDisplayOptions}</div>
-      <div className="content--text">
-        <SwitchButton
-          isOn={!collections}
-          data-test="toggle-collections"
-          isEnabled={true}
-          leftLabel={MessageSwitchButtonCollectionsOn}
-          onToggle={() => toggleCollections()}
-          rightLabel={MessageSwitchButtonCollectionsOff}
-        />
-      </div>
-      <div className="modal content--subheader">
-        <SwitchButton
-          data-test="toggle-slow-files"
-          isOn={isSingleItem}
-          isEnabled={true}
-          leftLabel={MessageSwitchButtonIsSingleItemOn}
-          rightLabel={MessageSwitchButtonIsSingleItemOff}
-          onToggle={() => toggleSlowFiles()}
-        />
-      </div>
-      <div className="content--text">
-        <SwitchButton
-          isOn={isUseSockets}
-          data-test="toggle-sockets"
-          isEnabled={true}
-          leftLabel={MessageSwitchButtonIsSocketOn}
-          onToggle={() => toggleSockets()}
-          rightLabel={MessageSwitchButtonIsSocketOff}
-        />
-      </div>
-      <div className="modal content--text">
-        <Select
-          data-test="sort"
-          selectOptions={Object.values(SortType) as any}
-          callback={toggleSort}
-          selected={currentSort()}
-        />
+      <div data-test="modal-display-options">
+        <div className="modal content--subheader">{MessageDisplayOptions}</div>
+        <div className="content--text">
+          <SwitchButton
+            isOn={!collections}
+            data-test="toggle-collections"
+            isEnabled={true}
+            leftLabel={MessageDisplayOptionsSwitchButtonCollectionsOn}
+            onToggle={() => toggleCollections()}
+            rightLabel={MessageDisplayOptionsSwitchButtonCollectionsOff}
+          />
+        </div>
+        <div className="modal content--subheader">
+          <SwitchButton
+            data-test="toggle-slow-files"
+            isOn={isAlwaysLoadImage}
+            isEnabled={true}
+            leftLabel={MessageDisplayOptionsSwitchButtonIsSingleItemOn}
+            rightLabel={MessageDisplayOptionsSwitchButtonIsSingleItemOff}
+            onToggle={() => toggleSlowFiles()}
+          />
+        </div>
+        <div className="content--text">
+          <SwitchButton
+            isOn={isUseSockets}
+            data-test="toggle-sockets"
+            isEnabled={true}
+            leftLabel={MessageDisplayOptionsSwitchButtonIsSocketOn}
+            onToggle={() => toggleSockets()}
+            rightLabel={MessageDisplayOptionsSwitchButtonIsSocketOff}
+          />
+        </div>
+        <div className="modal content--text">
+          <Select
+            data-test="sort"
+            selectOptions={Object.values(SortType) as string[]}
+            callback={toggleSort}
+            selected={currentSort()}
+          />
+        </div>
       </div>
     </Modal>
   );

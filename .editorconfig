@@ -1,21 +1,24 @@
+# EditorConfig for Starsky
 # https://editorconfig.org
 
 root = true
 
 [*]
 # Most of the standard properties are supported
-indent_size=4
-max_line_length=80
+indent_size = 4
+max_line_length = 100
+end_of_line = lf
 
 # Most frequently used .NET-coding-convention properties are supported
-csharp_space_between_parentheses=expressions, type_casts, control_flow_statements
-csharp_style_var_for_built_in_types=true
+csharp_space_between_parentheses = expressions, type_casts, control_flow_statements
+csharp_style_var_for_built_in_types = true
 
-[*.{ts,tsx}]
+[*.{ts,tsx,json}]
 charset = utf-8
-indent_style = tab
-indent_size=2
+indent_style = space
+indent_size = 2
 insert_final_newline = true
+trim_trailing_whitespace = true
 
 [*.{js,cs,css,cshtml}]
 charset = utf-8
@@ -27,17 +30,83 @@ insert_final_newline = true
 [{*.yml,*.yaml,package.json}]
 indent_style = space
 indent_size = 2
+trim_trailing_whitespace = true
 
 # C# files
 [*.cs]
+tab_width = 4
 # New line preferences
 csharp_new_line_before_open_brace = all
+csharp_new_line_before_open_brace_for_methods = true
+csharp_new_line_before_open_brace_for_control_blocks = true
+csharp_preserve_single_line_statements = false
+csharp_style_allow_embedded_statements_on_same_line_experimental = false
 csharp_new_line_before_else = true
 csharp_new_line_before_catch = true
 csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
 csharp_new_line_within_query_expression_clauses = true
+csharp_wrap_before_eq = false
+place_attribute_on_same_line = "never"
+# csharp_style_namespace_declarations = file_scoped:warning
+
+# https://dotnettips.wordpress.com/2023/06/27/microsoft-net-code-analysis-always-add-braces-in-c/
+dotnet_diagnostic.IDE0011.severity = warning
+csharp_prefer_braces = true:error
+dotnet_diagnostic.SA1500.severity = warning
+dotnet_diagnostic.SA1503.severity = warning
+dotnet_diagnostic.SA1520.severity = warning
+
+# https://gist.github.com/RealDotNetDave/dbae4d97358ba4515dd52e5b8ca87671
+
+# MSTEST0017: Assertion arguments should be passed in the correct order. 
+# 'actual' and 'expected'/'notExpected' arguments have been
+dotnet_diagnostic.MSTEST0017.severity = warning
+
+# MSTEST0032: Review or remove the assertion as its condition is known to be always true
+dotnet_diagnostic.MSTEST0032.severity = warning
+
+# Use ClassCleanupBehavior.EndOfClass with the [ClassCleanup]
+# This analyzer is no longer relevant for MSTest 4 as ClassCleanupBehavior was removed.
+dotnet_diagnostic.MSTEST0034.severity = none
+
+# [DeploymentItem] can be specified only on test class or test method
+dotnet_diagnostic.MSTEST0035.severity = warning
+
+# Do not use shadowing inside test class
+dotnet_diagnostic.MSTEST0036.severity = warning
+
+# Use proper 'Assert' methods
+dotnet_diagnostic.MSTEST0037.severity = warning
+
+# Don't use 'Assert.AreSame' or 'Assert.AreNotSame' with value types
+dotnet_diagnostic.MSTEST0038.severity = warning
+
+# Use newer 'Assert.Throws' methods
+dotnet_diagnostic.MSTEST0039.severity = warning
+
+# Do not assert inside 'async void' contexts
+dotnet_diagnostic.MSTEST0040.severity = warning
+
+# Use 'ConditionBaseAttribute' on test classes
+dotnet_diagnostic.MSTEST0041.severity = warning
+
+# Use 'Assert.HasCount' instead of 'Assert.AreEqual'
+dotnet_diagnostic.MSTEST0037.severity = warning
+
+# Use 'CooperativeCancellation = true' with '[Timeout]' to enable cooperative cancellation behavior
+dotnet_diagnostic.MSTEST0045.severity = warning
+
+# Consider using the overload that accepts a CancellationToken and pass 'TestContext.CancellationTokenSource.Token'
+dotnet_diagnostic.MSTEST0049.severity = warning
+
+# Use 'TestContext.CancellationToken' instead of 'TestContext.CancellationTokenSource.Token'
+dotnet_diagnostic.MSTEST0054.severity = warning
+
+# Seal internal types
+dotnet_diagnostic.CA1852.severity = warning
 
 # Indentation preferences
 csharp_indent_block_contents = true
@@ -45,3 +114,31 @@ csharp_indent_braces = false
 csharp_indent_case_contents = true
 csharp_indent_switch_labels = true
 csharp_indent_labels = one_less_than_current
+csharp_indent_case_contents_when_block = false
+csharp_space_after_cast = true
+
+# Prefer "var" everywhere
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+
+# Unnecessary Code Rules
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/unnecessary-code-rules
+dotnet_code_quality_unused_parameters = all:warning
+dotnet_remove_unnecessary_suppression_exclusions = none:warning
+
+dotnet_style_namespace_match_folder = true:suggestion
+
+# unused usings (IDE0005)
+dotnet_diagnostic.IDE0005.severity = warning
+
+dotnet_diagnostic.IDE0028.severity = silent #  IDE0028 = Simplify collection initialization
+dotnet_diagnostic.IDE0051.severity = silent # Private member is unused
+
+# CS4014: Because this call is not awaited, execution of the current method continues before the call is completed.
+# Consider applying the 'await' operator to the result of the call.
+dotnet_diagnostic.CS4014.severity = error
+
+
+# IDE0077: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0077
+dotnet_diagnostic.IDE0077.severity = error

@@ -12,3 +12,7 @@ export interface ISidebarUpdate {
   replaceDescription?: string;
   replaceTitle?: string;
 }
+
+export interface ISidebarGenericUpdate {
+  [key: string]: string | undefined;
+}

@@ -1,16 +1,14 @@
-import { IUseLocation } from "../hooks/use-location";
+import { IUseLocation } from "../hooks/use-location/interfaces/IUseLocation";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
-import { URLPath } from "./url-path";
+import { URLPath } from "./url/url-path";
 
 export class Select {
-  private select: string[] | undefined = [];
-  private setSelect: React.Dispatch<
-    React.SetStateAction<string[] | undefined>
-  > = () => {
+  private readonly select: string[] | undefined = [];
+  private readonly setSelect: React.Dispatch<React.SetStateAction<string[] | undefined>> = () => {
     /* should do nothing */
   };
-  private history: IUseLocation = {} as IUseLocation;
-  private state: IArchiveProps;
+  private readonly history: IUseLocation = {} as IUseLocation;
+  private readonly state: IArchiveProps;
 
   constructor(
     select: string[] | undefined,
@@ -27,10 +25,7 @@ export class Select {
 
   public undoSelection() {
     if (!this.select) return;
-    var urlObject = new URLPath().updateSelection(
-      this.history.location.search,
-      []
-    );
+    const urlObject = new URLPath().updateSelection(this.history.location.search, []);
     this.setSelect(urlObject.select);
     this.history.navigate(new URLPath().IUrlToString(urlObject), {
       replace: true
@@ -42,15 +37,9 @@ export class Select {
    */
   public allSelection() {
     if (!this.select) return;
-    var updatedSelect = new URLPath().GetAllSelection(
-      this.select,
-      this.state.fileIndexItems
-    );
+    const updatedSelect = new URLPath().GetAllSelection(this.select, this.state.fileIndexItems);
 
-    var urlObject = new URLPath().updateSelection(
-      this.history.location.search,
-      updatedSelect
-    );
+    const urlObject = new URLPath().updateSelection(this.history.location.search, updatedSelect);
     this.setSelect(urlObject.select);
     this.history.navigate(new URLPath().IUrlToString(urlObject), {
       replace: true
@@ -58,10 +47,7 @@ export class Select {
   }
 
   public toggleSelection(fileName: string): void {
-    var urlObject = new URLPath().toggleSelection(
-      fileName,
-      this.history.location.search
-    );
+    const urlObject = new URLPath().toggleSelection(fileName, this.history.location.search);
     this.history.navigate(new URLPath().IUrlToString(urlObject), {
       replace: true
     });
@@ -73,13 +59,13 @@ export class Select {
    * In the menu Nothing selected and items selected
    */
   public removeSidebarSelection() {
-    var urlObject = new URLPath().StringToIUrl(this.history.location.search);
-    var selectVar: string[] = urlObject.select ? urlObject.select : [];
-    if (!urlObject.select) {
-      urlObject.select = [];
-    } else {
+    const urlObject = new URLPath().StringToIUrl(this.history.location.search);
+    const selectVar: string[] = urlObject.select ?? [];
+    if (urlObject.select) {
       delete urlObject.sidebar;
       delete urlObject.select;
+    } else {
+      urlObject.select = [];
     }
     if (selectVar) {
       this.setSelect(selectVar);

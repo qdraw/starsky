@@ -1,13 +1,19 @@
 {
   "name": "build-tools",
-  "version": "0.4.9",
+  "version": "0.7.10",
   "description": "",
   "main": "",
   "scripts": {
     "app-version-update": "node app-version-update.js",
+    "update": "echo 'keep this without any npm dependencies'",
+    "update:install": "echo 'keep this without any npm dependencies'",
+    "clientapp-vite-update": "node clientapp-vite-update",
+    "documentation-create-docusaurus-update": "node documentation-create-docusaurus-update",
+    "app-version-test": "node app-version-test.js",
     "project-guid": "node project-guid.js",
     "nuget-package-list": "node nuget-package-list.js",
-    "release-version-check": "node release-version-check.js"
+    "release-version-check": "node release-version-check.js",
+    "dotnet-sdk-version-update": "node dotnet-sdk-version-update.js"
   },
   "author": "",
   "license": "ISC"

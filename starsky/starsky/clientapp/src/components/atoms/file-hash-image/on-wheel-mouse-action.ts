@@ -1,17 +1,17 @@
 import { ImageObject, PositionObject } from "./pan-and-zoom-image";
 
 export class OnWheelMouseAction {
-  private image: ImageObject;
-  private setPosition: React.Dispatch<React.SetStateAction<PositionObject>>;
+  private readonly image: ImageObject;
+  private readonly setPosition: React.Dispatch<React.SetStateAction<PositionObject>>;
   public position: PositionObject;
-  private containerRef: React.RefObject<HTMLDivElement>;
-  private onWheelCallback: (z: number) => void;
+  private readonly containerRef: React.RefObject<HTMLButtonElement>;
+  private readonly onWheelCallback: (z: number) => void;
 
   constructor(
     image: ImageObject,
     setPosition: React.Dispatch<React.SetStateAction<PositionObject>>,
     position: PositionObject,
-    containerRef: React.RefObject<HTMLDivElement>,
+    containerRef: React.RefObject<HTMLButtonElement>,
     onWheelCallback: (z: number) => void
   ) {
     this.image = image;
@@ -24,7 +24,7 @@ export class OnWheelMouseAction {
     this.onWheel = this.onWheel.bind(this);
   }
 
-  public onWheel(e: React.WheelEvent<HTMLDivElement>) {
+  public onWheel(e: React.WheelEvent<HTMLButtonElement>) {
     if (!e.deltaY) return;
     this.zoom(e.deltaY, e.clientX);
   }
@@ -51,15 +51,10 @@ export class OnWheelMouseAction {
     const z = this.position.z * scale;
     this.setPosition({
       ...this.position,
-      x:
-        this.position.x * scale -
-        (rect.width / 2 - eventclientX + rect.x) * sign,
+      x: this.position.x * scale - (rect.width / 2 - eventclientX + rect.x) * sign,
       y:
         this.position.y * scale -
-        ((this.image.height * rect.width) / this.image.width / 2 -
-          eventclientX +
-          rect.y) *
-          sign,
+        ((this.image.height * rect.width) / this.image.width / 2 - eventclientX + rect.y) * sign,
       z
     });
 

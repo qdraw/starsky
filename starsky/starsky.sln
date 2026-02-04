@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starsky", "starsky\starsky.csproj", "{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskysynccli", "starskysynccli\starskysynccli.csproj", "{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskyimportercli", "starskyimportercli\starskyimportercli.csproj", "{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskytest", "starskytest\starskytest.csproj", "{1E2346C0-67B3-4538-8F76-B152AA65BB1B}"
@@ -15,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskywebhtmlcli", "starsk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskygeocli", "starskygeocli\starskygeocli.csproj", "{EF96F7C8-4832-4606-8F5C-B1423FEE83B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskycore", "starskycore\starskycore.csproj", "{A90751E7-2F4D-44AA-8507-DDE5F980DBBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.project.web", "starsky.project.web\starsky.project.web.csproj", "{A90751E7-2F4D-44AA-8507-DDE5F980DBBB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskywebftpcli", "starskywebftpcli\starskywebftpcli.csproj", "{F8CE092D-F296-4B04-B013-EE5FCD4A8B3B}"
 EndProject
@@ -49,22 +47,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.thumbnai
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.http", "starsky.foundation.http\starsky.foundation.http.csproj", "{A9F75593-3660-47AA-8EA7-D967AD447C0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.import", "starsky.feature.import\starsky.feature.import.csproj", "{81C4FBDB-B778-4A98-AEE4-FC7B6E341589}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.import", "starsky.foundation.import\starsky.foundation.import.csproj", "{81C4FBDB-B778-4A98-AEE4-FC7B6E341589}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readme", "Readme", "{C757587F-8490-4815-97CE-9BE39A6C82C6}"
 ProjectSection(SolutionItems) = preProject
 	..\history.md = ..\history.md
-	..\index.md = ..\index.md
 	..\readme.md = ..\readme.md
 	..\SECURITY.md = ..\SECURITY.md
+	..\HACKING.md = ..\HACKING.md
+	..\CONTRIBUTING.md = ..\CONTRIBUTING.md
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "starsky.sln", "starsky.sln", "{0F47FD1D-CE79-4069-AFD4-252ED9D9445E}"
 ProjectSection(SolutionItems) = preProject
 	readme.md = readme.md
-	readme-docker-instructions.md = readme-docker-instructions.md
 	readme-upgrade-net-core.md = readme-upgrade-net-core.md
-	docker_demo_setup.sh = docker_demo_setup.sh
+	Dockerfile = Dockerfile
+	build.sh = build.sh
+	build.ps1 = build.ps1
+	telemetry.md = telemetry.md
+	compose-build-up.sh = compose-build-up.sh
+	..\.gitignore = ..\.gitignore
+	..\documentation\docs\developer-guide\migrations\migrations.md = ..\documentation\docs\developer-guide\migrations\migrations.md
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.metaupdate", "starsky.feature.metaupdate\starsky.feature.metaupdate.csproj", "{FBB448C3-A995-469C-8004-11FA006F65C5}"
@@ -96,6 +100,86 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.webtelem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.worker", "starsky.foundation.worker\starsky.foundation.worker.csproj", "{EE4E6FCA-9E87-4E31-A137-8D1809FFED54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.thumbnailmeta", "starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj", "{1FD59380-AC19-4AF1-A5A5-F295A2844B11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskythumbnailmetacli", "starskythumbnailmetacli\starskythumbnailmetacli.csproj", "{E0559015-77F2-4135-9AF5-41EBEA6C2C9C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{1BFEB172-4387-420C-BB7D-9936CBCE76A9}"
+ProjectSection(SolutionItems) = preProject
+	..\.editorconfig = ..\.editorconfig
+EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "docker-compose", "docker-compose.dcproj", "{2F38C5AC-1FFA-4FC5-9BE3-B960124DCE5E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{A3C71266-A3AD-4611-8990-846EC0DDA16E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build-tools", "Build-tools", "{52237C88-FC6B-4DE3-BB27-8D2F9FF45F25}"
+	ProjectSection(SolutionItems) = preProject
+		..\starsky-tools\build-tools\app-version-update.js = ..\starsky-tools\build-tools\app-version-update.js
+		..\starsky-tools\build-tools\dotnet-sdk-version-update.js = ..\starsky-tools\build-tools\dotnet-sdk-version-update.js
+		..\starsky-tools\build-tools\documentation-create-docusaurus-update.js = ..\starsky-tools\build-tools\documentation-create-docusaurus-update.js
+		..\starsky-tools\build-tools\project-guid.js = ..\starsky-tools\build-tools\project-guid.js
+		..\starsky-tools\build-tools\release-version-check.js = ..\starsky-tools\build-tools\release-version-check.js
+		..\starsky-tools\build-tools\readme.md = ..\starsky-tools\build-tools\readme.md
+		..\starsky-tools\build-tools\nuget-package-list.js = ..\starsky-tools\build-tools\nuget-package-list.js
+		..\starsky-tools\build-tools\app-version-test.js = ..\starsky-tools\build-tools\app-version-test.js
+		..\starsky-tools\build-tools\clientapp-vite-update.js = ..\starsky-tools\build-tools\clientapp-vite-update.js
+		..\starsky-tools\build-tools\package.json = ..\starsky-tools\build-tools\package.json
+		..\starsky-tools\build-tools\download-mirror.sh = ..\starsky-tools\build-tools\download-mirror.sh
+		..\starsky-tools\build-tools\download-mirror-exiftool.sh = ..\starsky-tools\build-tools\download-mirror-exiftool.sh
+		..\starsky-tools\build-tools\download-mirror-ffmpeg.sh = ..\starsky-tools\build-tools\download-mirror-ffmpeg.sh
+		..\starsky-tools\build-tools\download-mirror-geonames.sh = ..\starsky-tools\build-tools\download-mirror-geonames.sh
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.packagetelemetry", "starsky.feature.packagetelemetry\starsky.feature.packagetelemetry.csproj", "{7AB42607-88DF-427C-823B-033A224A73A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.realtime", "starsky.feature.realtime\starsky.feature.realtime.csproj", "{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{2F68B3F8-5277-45CF-A820-50F93E7BF7D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_build", "build\_build.csproj", "{BC9677D6-CF4B-4446-8CD2-38A79B2C5346}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.syncbackground", "starsky.feature.syncbackground\starsky.feature.syncbackground.csproj", "{F760AAA0-5404-407C-81F9-E3CB438794B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.settings", "starsky.foundation.settings\starsky.foundation.settings.csproj", "{3002DDCE-7E22-4779-8FDC-24114C753067}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.search", "starsky.feature.search\starsky.feature.search.csproj", "{A6D96205-0B7F-4F09-8E46-91129D947D21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.demo", "starsky.feature.demo\starsky.feature.demo.csproj", "{63CF4BEC-DCC2-4688-8911-FB4B510032D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskydemoseedcli", "starskydemoseedcli\starskydemoseedcli.csproj", "{C4219438-A401-47D5-9CF3-A198BB6E3185}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "documentation", "..\documentation\documentation.csproj", "{B7CB2C57-117D-43B4-9884-59BEAC3B6DB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.thumbnail", "starsky.feature.thumbnail\starsky.feature.thumbnail.csproj", "{5B70A0EC-1E7A-496E-94C7-A7ED1628B7EF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{110B54C1-9044-4B00-B8E3-DC950D78367B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "compose", "compose", "{E638B7CE-3CAC-4772-8D3B-49A202D0975A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "generic", "generic", "{35222B74-4D4C-4848-A5E3-7C3E084FB2FD}"
+	ProjectSection(SolutionItems) = preProject
+		docker\compose\generic\docker-compose.yml = docker\compose\generic\docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.native", "starsky.foundation.native\starsky.foundation.native.csproj", "{0072F697-4E18-4B5F-80DF-530361D3E847}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.trash", "starsky.feature.trash\starsky.feature.trash.csproj", "{A62C129C-5D0C-4A0A-B5AA-261E041FF55D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.settings", "starsky.feature.settings\starsky.feature.settings.csproj", "{F2C4C9DE-22A1-4B34-AC1D-0F08353E0742}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.desktop", "starsky.feature.desktop\starsky.feature.desktop.csproj", "{B88C2815-D154-4C6D-AE37-2E150AEBF73D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.video", "starsky.foundation.video\starsky.foundation.video.csproj", "{C6F6B684-F8EB-4DFD-9143-33F0262153FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskydependenciesdownloadcli", "starskydependenciesdownloadcli\starskydependenciesdownloadcli.csproj", "{A5BE4F80-975C-4F15-AB99-D046E6F8726D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.geo", "starsky.foundation.geo\starsky.foundation.geo.csproj", "{D6D53732-2CEC-489D-BE54-E15AEE30B6D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.metaupdate", "starsky.foundation.metaupdate\starsky.foundation.metaupdate.csproj", "{9B6E6A97-9F50-47A2-995B-B54895880573}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.cloudimport", "starsky.feature.cloudimport\starsky.feature.cloudimport.csproj", "{7342F88C-25D5-4EC4-84C8-C458E24BEC2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,10 +190,6 @@ Global
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -142,10 +222,6 @@ Global
 		{F797EB32-21C9-4835-BB67-EFF8F197A219}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F797EB32-21C9-4835-BB67-EFF8F197A219}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F797EB32-21C9-4835-BB67-EFF8F197A219}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0ED1A8D6-BF81-4949-89D4-AFAB7424E6C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0ED1A8D6-BF81-4949-89D4-AFAB7424E6C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0ED1A8D6-BF81-4949-89D4-AFAB7424E6C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0ED1A8D6-BF81-4949-89D4-AFAB7424E6C3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F0C0B27-8F29-4CC5-BB91-910B9DE22FC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F0C0B27-8F29-4CC5-BB91-910B9DE22FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F0C0B27-8F29-4CC5-BB91-910B9DE22FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -234,6 +310,94 @@ Global
 		{EE4E6FCA-9E87-4E31-A137-8D1809FFED54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE4E6FCA-9E87-4E31-A137-8D1809FFED54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE4E6FCA-9E87-4E31-A137-8D1809FFED54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FD59380-AC19-4AF1-A5A5-F295A2844B11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FD59380-AC19-4AF1-A5A5-F295A2844B11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FD59380-AC19-4AF1-A5A5-F295A2844B11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FD59380-AC19-4AF1-A5A5-F295A2844B11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0559015-77F2-4135-9AF5-41EBEA6C2C9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0559015-77F2-4135-9AF5-41EBEA6C2C9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0559015-77F2-4135-9AF5-41EBEA6C2C9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0559015-77F2-4135-9AF5-41EBEA6C2C9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F38C5AC-1FFA-4FC5-9BE3-B960124DCE5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F38C5AC-1FFA-4FC5-9BE3-B960124DCE5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F38C5AC-1FFA-4FC5-9BE3-B960124DCE5E}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F38C5AC-1FFA-4FC5-9BE3-B960124DCE5E}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{7AB42607-88DF-427C-823B-033A224A73A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AB42607-88DF-427C-823B-033A224A73A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AB42607-88DF-427C-823B-033A224A73A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AB42607-88DF-427C-823B-033A224A73A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC9677D6-CF4B-4446-8CD2-38A79B2C5346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC9677D6-CF4B-4446-8CD2-38A79B2C5346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC9677D6-CF4B-4446-8CD2-38A79B2C5346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC9677D6-CF4B-4446-8CD2-38A79B2C5346}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F760AAA0-5404-407C-81F9-E3CB438794B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F760AAA0-5404-407C-81F9-E3CB438794B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F760AAA0-5404-407C-81F9-E3CB438794B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F760AAA0-5404-407C-81F9-E3CB438794B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3002DDCE-7E22-4779-8FDC-24114C753067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3002DDCE-7E22-4779-8FDC-24114C753067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3002DDCE-7E22-4779-8FDC-24114C753067}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3002DDCE-7E22-4779-8FDC-24114C753067}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6D96205-0B7F-4F09-8E46-91129D947D21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6D96205-0B7F-4F09-8E46-91129D947D21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6D96205-0B7F-4F09-8E46-91129D947D21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6D96205-0B7F-4F09-8E46-91129D947D21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63CF4BEC-DCC2-4688-8911-FB4B510032D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63CF4BEC-DCC2-4688-8911-FB4B510032D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63CF4BEC-DCC2-4688-8911-FB4B510032D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63CF4BEC-DCC2-4688-8911-FB4B510032D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4219438-A401-47D5-9CF3-A198BB6E3185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4219438-A401-47D5-9CF3-A198BB6E3185}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4219438-A401-47D5-9CF3-A198BB6E3185}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4219438-A401-47D5-9CF3-A198BB6E3185}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7CB2C57-117D-43B4-9884-59BEAC3B6DB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7CB2C57-117D-43B4-9884-59BEAC3B6DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7CB2C57-117D-43B4-9884-59BEAC3B6DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7CB2C57-117D-43B4-9884-59BEAC3B6DB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B70A0EC-1E7A-496E-94C7-A7ED1628B7EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B70A0EC-1E7A-496E-94C7-A7ED1628B7EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B70A0EC-1E7A-496E-94C7-A7ED1628B7EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B70A0EC-1E7A-496E-94C7-A7ED1628B7EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0072F697-4E18-4B5F-80DF-530361D3E847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0072F697-4E18-4B5F-80DF-530361D3E847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0072F697-4E18-4B5F-80DF-530361D3E847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0072F697-4E18-4B5F-80DF-530361D3E847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A62C129C-5D0C-4A0A-B5AA-261E041FF55D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A62C129C-5D0C-4A0A-B5AA-261E041FF55D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A62C129C-5D0C-4A0A-B5AA-261E041FF55D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A62C129C-5D0C-4A0A-B5AA-261E041FF55D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2C4C9DE-22A1-4B34-AC1D-0F08353E0742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2C4C9DE-22A1-4B34-AC1D-0F08353E0742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2C4C9DE-22A1-4B34-AC1D-0F08353E0742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2C4C9DE-22A1-4B34-AC1D-0F08353E0742}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B88C2815-D154-4C6D-AE37-2E150AEBF73D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B88C2815-D154-4C6D-AE37-2E150AEBF73D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B88C2815-D154-4C6D-AE37-2E150AEBF73D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B88C2815-D154-4C6D-AE37-2E150AEBF73D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F6B684-F8EB-4DFD-9143-33F0262153FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F6B684-F8EB-4DFD-9143-33F0262153FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F6B684-F8EB-4DFD-9143-33F0262153FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F6B684-F8EB-4DFD-9143-33F0262153FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5BE4F80-975C-4F15-AB99-D046E6F8726D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5BE4F80-975C-4F15-AB99-D046E6F8726D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5BE4F80-975C-4F15-AB99-D046E6F8726D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5BE4F80-975C-4F15-AB99-D046E6F8726D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6D53732-2CEC-489D-BE54-E15AEE30B6D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6D53732-2CEC-489D-BE54-E15AEE30B6D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6D53732-2CEC-489D-BE54-E15AEE30B6D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6D53732-2CEC-489D-BE54-E15AEE30B6D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B6E6A97-9F50-47A2-995B-B54895880573}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B6E6A97-9F50-47A2-995B-B54895880573}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B6E6A97-9F50-47A2-995B-B54895880573}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B6E6A97-9F50-47A2-995B-B54895880573}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7342F88C-25D5-4EC4-84C8-C458E24BEC2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7342F88C-25D5-4EC4-84C8-C458E24BEC2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7342F88C-25D5-4EC4-84C8-C458E24BEC2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7342F88C-25D5-4EC4-84C8-C458E24BEC2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -245,7 +409,6 @@ Global
 		{0F0C0B27-8F29-4CC5-BB91-910B9DE22FC1} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494} = {8379CCD4-26EE-4881-888E-B56B6EDC852C}
 		{F797EB32-21C9-4835-BB67-EFF8F197A219} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
-		{7878CE2F-0934-4050-8D92-7E4EE8C95CC0} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{EF96F7C8-4832-4606-8F5C-B1423FEE83B8} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{F8CE092D-F296-4B04-B013-EE5FCD4A8B3B} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
@@ -260,7 +423,6 @@ Global
 		{C2116756-80E9-49C2-B971-33DD053DE7A2} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{DE3680F5-9529-4974-990A-21A0A97202E3} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{A9F75593-3660-47AA-8EA7-D967AD447C0F} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
-		{81C4FBDB-B778-4A98-AEE4-FC7B6E341589} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{0F47FD1D-CE79-4069-AFD4-252ED9D9445E} = {C757587F-8490-4815-97CE-9BE39A6C82C6}
 		{FBB448C3-A995-469C-8004-11FA006F65C5} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{A0B7AE0F-14A7-4882-91BD-ADF2B9DCE5C6} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
@@ -275,5 +437,31 @@ Global
 		{26399A15-B762-4550-BC1E-5B4C1F71F7E3} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{19D361BA-BA3E-49F1-AC6C-BF815F106E42} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{EE4E6FCA-9E87-4E31-A137-8D1809FFED54} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{1FD59380-AC19-4AF1-A5A5-F295A2844B11} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{E0559015-77F2-4135-9AF5-41EBEA6C2C9C} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
+		{52237C88-FC6B-4DE3-BB27-8D2F9FF45F25} = {A3C71266-A3AD-4611-8990-846EC0DDA16E}
+		{7AB42607-88DF-427C-823B-033A224A73A6} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{BC9677D6-CF4B-4446-8CD2-38A79B2C5346} = {2F68B3F8-5277-45CF-A820-50F93E7BF7D9}
+		{F760AAA0-5404-407C-81F9-E3CB438794B1} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{3002DDCE-7E22-4779-8FDC-24114C753067} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{A6D96205-0B7F-4F09-8E46-91129D947D21} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{63CF4BEC-DCC2-4688-8911-FB4B510032D6} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{C4219438-A401-47D5-9CF3-A198BB6E3185} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
+		{B7CB2C57-117D-43B4-9884-59BEAC3B6DB2} = {2F68B3F8-5277-45CF-A820-50F93E7BF7D9}
+		{5B70A0EC-1E7A-496E-94C7-A7ED1628B7EF} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{110B54C1-9044-4B00-B8E3-DC950D78367B} = {A3C71266-A3AD-4611-8990-846EC0DDA16E}
+		{E638B7CE-3CAC-4772-8D3B-49A202D0975A} = {110B54C1-9044-4B00-B8E3-DC950D78367B}
+		{35222B74-4D4C-4848-A5E3-7C3E084FB2FD} = {E638B7CE-3CAC-4772-8D3B-49A202D0975A}
+		{0072F697-4E18-4B5F-80DF-530361D3E847} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{A62C129C-5D0C-4A0A-B5AA-261E041FF55D} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{F2C4C9DE-22A1-4B34-AC1D-0F08353E0742} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{B88C2815-D154-4C6D-AE37-2E150AEBF73D} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{C6F6B684-F8EB-4DFD-9143-33F0262153FE} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{A5BE4F80-975C-4F15-AB99-D046E6F8726D} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
+		{D6D53732-2CEC-489D-BE54-E15AEE30B6D5} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{9B6E6A97-9F50-47A2-995B-B54895880573} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{7342F88C-25D5-4EC4-84C8-C458E24BEC2B} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{81C4FBDB-B778-4A98-AEE4-FC7B6E341589} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 	EndGlobalSection
 EndGlobal

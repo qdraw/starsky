@@ -1,219 +1,130 @@
-﻿#if SYSTEM_TEXT_ENABLED
-using System.Text.Json.Serialization;
-#else
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-#endif
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.database.Models
+namespace starsky.foundation.database.Models;
+
+/// <summary>
+///     Used to display file status (eg. NotFoundNotInIndex, Ok)
+/// </summary>
+public enum ImportStatus
+{
+	Default,
+	Ok,
+	IgnoredAlreadyImported,
+	FileError,
+	NotFound,
+	Ignore,
+	ParentDirectoryNotFound,
+	ReadOnlyFileSystem
+}
+
+[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
+public sealed class ImportIndexItem
 {
 	/// <summary>
-	/// Used to display file status (eg. NotFoundNotInIndex, Ok)
+	///     In order to create an instance of 'ImportIndexItem'
+	///     EF requires that a parameter-less constructor be declared.
 	/// </summary>
-	public enum ImportStatus
+	public ImportIndexItem()
 	{
-		Default,
-		Ok,
-		IgnoredAlreadyImported,
-		AgeToOld,
-		FileError,
-		NotFound
 	}
-	
-    public class ImportIndexItem
-    {
-        private readonly AppSettings _appSettings;
 
-        /// <summary>
-        /// In order to create an instance of 'ImportIndexItem'
-        /// EF requires that a parameter-less constructor be declared.
-        /// </summary>
-        public ImportIndexItem()
-        {
-        }
-        
-        public ImportIndexItem(AppSettings appSettings)
-        {
-            _appSettings = appSettings;
-            Structure = _appSettings.Structure;
-        }
+	public ImportIndexItem(AppSettings appSettings)
+	{
+		Structure = appSettings.Structure;
+	}
 
-        /// <summary>
-        /// Database Number (isn't used anywhere)
-        /// </summary>
-        [JsonIgnore]
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        
-        /// <summary>
-        /// FileHash before importing
-        /// When using a -ColorClass=1 overwrite the fileHash changes during the import process
-        /// </summary>
-        public string FileHash { get; set; }
-        
-        /// <summary>
-        /// The location where the image should be stored.
-        /// When the user move an item this field is NOT updated
-        /// </summary>
-        public string FilePath { get; set; }
+	/// <summary>
+	///     Database Number (isn't used anywhere)
+	/// </summary>
+	[JsonIgnore]
+	[Key]
+	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+	public int Id { get; set; }
 
-        /// <summary>
-        /// UTC DateTime when the file is imported
-        /// </summary>
-        public DateTime AddToDatabase { get; set; }
+	/// <summary>
+	///     FileHash before importing
+	///     When using a -ColorClass=1 overwrite the fileHash changes during the import process
+	/// </summary>
+	public string? FileHash { get; set; } = string.Empty;
 
-        /// <summary>
-        /// DateTime of the photo/or when it is originally is made
-        /// </summary>
-        public DateTime DateTime{ get; set; }
-	    
-	    [NotMapped]
-#if SYSTEM_TEXT_ENABLED
-		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-	    [JsonConverter(typeof(StringEnumConverter))]
-#endif
-	    public ImportStatus Status { get; set; }
-	    
-	    [NotMapped]
-		public FileIndexItem FileIndexItem { get; set; }
-        
-        [NotMapped]
-        [JsonIgnore]
-        public string SourceFullFilePath { get; set; }
+	/// <summary>
+	///     The location where the image should be stored.
+	///     When the user move an item this field is NOT updated
+	/// </summary>
+	public string? FilePath { get; set; } = string.Empty;
 
-        // Defaults to _appSettings.Structure
-        // Feature to overwrite system structure by request
-        [NotMapped] 
-        [JsonIgnore]
-        public string Structure { get; set; }
+	/// <summary>
+	///     UTC DateTime when the file is imported
+	/// </summary>
+	public DateTime AddToDatabase { get; set; }
 
-        public DateTime ParseDateTimeFromFileName()
-        {
-            // Depends on 'AppSettingsProvider.Structure'
-            // depends on SourceFullFilePath
-            if(string.IsNullOrEmpty(SourceFullFilePath)) {return new DateTime();}
+	/// <summary>
+	///     DateTime of the photo/or when it is originally is made
+	/// </summary>
+	public DateTime DateTime { get; set; }
 
-            var fileName = Path.GetFileNameWithoutExtension(SourceFullFilePath);
-            
-            // Replace asterisk > escape all options
-            var structuredFileName = Structure.Split("/".ToCharArray()).LastOrDefault();
-            structuredFileName = structuredFileName.Replace("*", "");
-            structuredFileName = structuredFileName.Replace(".ext", string.Empty);
-            structuredFileName = structuredFileName.Replace("{filenamebase}", string.Empty);
-            
-            DateTime.TryParseExact(fileName, 
-                structuredFileName, 
-                CultureInfo.InvariantCulture, 
-                DateTimeStyles.None, 
-                out var dateTime);
+	[NotMapped]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public ImportStatus Status { get; set; }
 
-            if (dateTime.Year >= 2)
-            {
-                DateTime = dateTime;
-                return dateTime;
-            }
-                            
-            // Now retry it and replace special charaters from string
-            // For parsing files like: '2018-08-31 18.50.35' > '20180831185035'
-            Regex pattern = new Regex("-|_| |;|\\.|:");
-            fileName = pattern.Replace(fileName,string.Empty);
-            structuredFileName = pattern.Replace(structuredFileName,string.Empty);
-                
-            DateTime.TryParseExact(fileName, 
-                structuredFileName, 
-                CultureInfo.InvariantCulture, 
-                DateTimeStyles.None, 
-                out dateTime);
-            
-            if (dateTime.Year >= 2)
-            {
-                DateTime = dateTime;
-                return dateTime;
-            }
+	[NotMapped] public FileIndexItem? FileIndexItem { get; set; }
 
-            // when using /yyyymmhhss_{filenamebase}.jpg
-            // For the situation that the image has no exif date and there is an appendix used (in the config)
-            if(structuredFileName.Length >= fileName.Length)  {
-                
-                structuredFileName = structuredFileName.Substring(0, fileName.Length-1);
-                
-                DateTime.TryParseExact(fileName, 
-                    structuredFileName, 
-                    CultureInfo.InvariantCulture, 
-                    DateTimeStyles.None, 
-                    out dateTime);
-            }
-	        
-	        if (dateTime.Year >= 2)
-	        {
-		        DateTime = dateTime;
-		        return dateTime;
-	        }
+	[NotMapped] [JsonIgnore] public string SourceFullFilePath { get; set; } = string.Empty;
 
-	        // For the situation that the image has no exif date and there is an appendix
-	        // used in the source filename AND the config
-	        if ( fileName.Length >= structuredFileName.Length )
-	        {
-		        structuredFileName = RemoveEscapedCharacters(structuredFileName);
-		        
-		        // short the filename with structuredFileName
-		        fileName = fileName.Substring(0, structuredFileName.Length);
-		        
-		        DateTime.TryParseExact(fileName, 
-			        structuredFileName, 
-			        CultureInfo.InvariantCulture, 
-			        DateTimeStyles.None, 
-			        out dateTime);
-	        }
-        
-            // Return 0001-01-01 if everything fails
-            DateTime = dateTime;
-            return dateTime;
-        }
 
-	    /// <summary>
-	    /// Removes the escaped characters and the first character after the backslash
-	    /// </summary>
-	    /// <param name="inputString">to input</param>
-	    /// <returns>the input string without those characters</returns>
-	    public string RemoveEscapedCharacters(string inputString)
-	    {
-		    var newString = new StringBuilder();
-		    for ( int i = 0; i < inputString.ToCharArray().Length; i++ )
-		    {
-			    var structuredCharArray = inputString[i];
-			    var escapeChar = "\\"[0];
-			    if ( i != 0 && structuredCharArray != escapeChar && inputString[i - 1] != escapeChar )
-			    {
-				    newString.Append(structuredCharArray);
-			    }
+	/// <summary>
+	///     Defaults to _appSettings.Structure
+	///     Feature to overwrite system structure by request
+	/// </summary>
+	[NotMapped]
+	[JsonIgnore]
+	public AppSettingsStructureModel Structure { get; set; } = new();
 
-			    // add the first one
-			    if ( i == 0 && structuredCharArray != escapeChar) newString.Append(structuredCharArray);
-			    
-		    }
-		    return newString.ToString();
-	    }
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+	public string? MakeModel { get; set; } = string.Empty;
 
-        public List<string> SearchSubDirInDirectory(string parentItem, string parsedItem)
-        {
-            if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
-            var childDirectories = Directory.GetDirectories(
-                _appSettings.DatabasePathToFilePath(parentItem), parsedItem).ToList();
-            childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
-            return childDirectories;
-        }
-    }
+	[MaxLength(200)] public string? Artist { get; set; } = string.Empty;
+
+	/// <summary>
+	///     Is the Exif DateTime parsed from the fileName
+	/// </summary>
+	public bool DateTimeFromFileName { get; set; }
+
+	/// <summary>
+	///     ColorClass
+	/// </summary>
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+	public ColorClassParser.Color ColorClass { get; set; }
+
+	/// <summary>
+	///     Store imageFormat like jpeg, png, webp
+	/// </summary>
+	public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; }
+
+	/// <summary>
+	///     Size of the file in bytes
+	/// </summary>
+	public long Size { get; set; }
+
+	/// <summary>
+	///     Where the file is imported from
+	/// </summary>
+	[MaxLength(100)]
+	public string Origin { get; set; } = string.Empty;
+
+	public string GetFileHashWithUpdate()
+	{
+		if ( FileIndexItem == null && FileHash != null )
+		{
+			return FileHash;
+		}
+
+		return FileIndexItem?.FileHash ?? string.Empty;
+	}
 }

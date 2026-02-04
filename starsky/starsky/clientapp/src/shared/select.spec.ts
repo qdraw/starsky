@@ -1,39 +1,41 @@
-import { globalHistory } from "@reach/router";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
+import { Router } from "../router-app/router-app";
 import { Select } from "./select";
 
 describe("select", () => {
   describe("removeSidebarSelection", () => {
     it("single disable", () => {
-      globalHistory.navigate("/?select=");
-      var setSelectSpy = jest.fn();
-      var select = new Select(
-        [],
-        setSelectSpy,
-        {} as IArchiveProps,
-        globalHistory
-      );
+      Router.navigate("/?select=");
+      const setSelectSpy = jest.fn();
+      const select = new Select([], setSelectSpy, {} as IArchiveProps, {
+        location: {
+          href: "",
+          ...Router.state.location
+        },
+        navigate: Router.navigate
+      });
       select.removeSidebarSelection();
 
-      expect(globalHistory.location.search).toBe("");
-      expect(setSelectSpy).toBeCalled();
-      expect(setSelectSpy).toBeCalledWith([]);
+      expect(Router.state.location.search).toBe("");
+      expect(setSelectSpy).toHaveBeenCalled();
+      expect(setSelectSpy).toHaveBeenCalledWith([]);
     });
 
     it("multiple disable", () => {
-      globalHistory.navigate("/?select=1,2");
-      var setSelectSpy = jest.fn();
-      var select = new Select(
-        [],
-        setSelectSpy,
-        {} as IArchiveProps,
-        globalHistory
-      );
+      Router.navigate("/?select=1,2");
+      const setSelectSpy = jest.fn();
+      const select = new Select([], setSelectSpy, {} as IArchiveProps, {
+        location: {
+          href: "",
+          ...Router.state.location
+        },
+        navigate: Router.navigate
+      });
       select.removeSidebarSelection();
 
-      expect(globalHistory.location.search).toBe("");
-      expect(setSelectSpy).toBeCalled();
-      expect(setSelectSpy).toBeCalledWith(["1", "2"]);
+      expect(Router.state.location.search).toBe("");
+      expect(setSelectSpy).toHaveBeenCalled();
+      expect(setSelectSpy).toHaveBeenCalledWith(["1", "2"]);
     });
   });
 });

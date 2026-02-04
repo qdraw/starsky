@@ -1,0 +1,8 @@
+{
+    "strictVersion": true,
+    "sdk": {
+        "version": "8.0.417",
+        "rollForward": "disable",
+        "allowPrerelease": false
+    }
+}

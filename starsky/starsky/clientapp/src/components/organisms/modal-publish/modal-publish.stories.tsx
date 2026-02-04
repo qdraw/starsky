@@ -1,11 +1,11 @@
-import { storiesOf } from "@storybook/react";
-import React from "react";
 import ModalPublish from "./modal-publish";
 
-storiesOf("components/organisms/modal-publish", module).add("default", () => {
-  return (
-    <ModalPublish isOpen={true} select={["/"]} handleExit={() => {}}>
-      test
-    </ModalPublish>
-  );
-});
+export default {
+  title: "components/organisms/modal-publish"
+};
+
+export const Default = () => {
+  return <ModalPublish isOpen={true} select={["/"]} handleExit={() => {}}></ModalPublish>;
+};
+
+Default.storyName = "default";

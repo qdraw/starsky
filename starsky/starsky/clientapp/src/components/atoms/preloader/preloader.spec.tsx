@@ -1,19 +1,28 @@
-import { shallow } from "enzyme";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import Preloader from "./preloader";
 
 describe("Preloader", () => {
   it("renders", () => {
-    shallow(<Preloader isOverlay={false} />);
+    render(<Preloader isOverlay={false} />);
   });
 
   it("no overlay", () => {
-    var component = shallow(<Preloader isOverlay={false} />);
-    expect(component.exists(".preloader--overlay")).toBeFalsy();
+    const component = render(<Preloader isOverlay={false} />);
+
+    const className = screen.queryByTestId("preloader")?.className;
+
+    expect(className).not.toContain("preloader--overlay");
+
+    component.unmount();
   });
 
   it("with overlay", () => {
-    var component = shallow(<Preloader isOverlay={true} />);
-    expect(component.exists(".preloader--overlay")).toBeTruthy();
+    const component = render(<Preloader isOverlay={true} />);
+
+    const className = screen.queryByTestId("preloader")?.className;
+
+    expect(className).toContain("preloader--overlay");
+
+    component.unmount();
   });
 });

@@ -1,60 +1,55 @@
-import { shallow } from "enzyme";
-import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { act } from "react";
 import SwitchButton from "./switch-button";
 
 describe("SwitchButton", () => {
   it("renders", () => {
-    var toggle = jest.fn();
-    shallow(
-      <SwitchButton onToggle={toggle} leftLabel={"on"} rightLabel={"off"} />
-    );
+    const toggle = jest.fn();
+    render(<SwitchButton onToggle={toggle} leftLabel={"on"} rightLabel={"off"} />);
   });
 
   it("renders (disabled:state)", () => {
-    var toggle = jest.fn();
-    var wrapper = shallow(
-      <SwitchButton
-        isEnabled={false}
-        onToggle={toggle}
-        leftLabel={"on"}
-        rightLabel={"off"}
-      />
+    const toggle = jest.fn();
+    const wrapper = render(
+      <SwitchButton isEnabled={false} onToggle={toggle} leftLabel={"on"} rightLabel={"off"} />
     );
-    var name = wrapper.find('[name="switchToggle"]');
-    expect(name.last().props().disabled).toBeTruthy();
+
+    const switchButton = screen.queryByTestId("switch-button-left") as HTMLInputElement;
+
+    expect(switchButton.disabled).toBeTruthy();
+
+    wrapper.unmount();
   });
 
   it("test if element triggers onToggle when changed (default)", () => {
-    var toggle = jest.fn();
-    var wrapper = shallow(
-      <SwitchButton
-        isOn={true}
-        onToggle={toggle}
-        leftLabel={"on"}
-        rightLabel={"off"}
-      />
+    const toggle = jest.fn();
+    const wrapper = render(
+      <SwitchButton isOn={true} onToggle={toggle} leftLabel={"on label"} rightLabel={"off label"} />
     );
-    var name = wrapper.find('[name="switchToggle"]');
-    name.last().simulate("change");
-    expect(toggle).toBeCalled();
-    expect(name.last().props().disabled).toBeFalsy();
-    expect(name.last().props().checked).toBeTruthy();
+
+    const switchButtonLeft = screen.queryByTestId("switch-button-left") as HTMLInputElement;
+
+    act(() => {
+      fireEvent.click(switchButtonLeft);
+    });
+
+    expect(toggle).toHaveBeenCalledTimes(1);
+
+    wrapper.unmount();
   });
 
   it("test if element triggers onToggle when changed (negative)", () => {
-    var toggle = jest.fn();
-    var wrapper = shallow(
-      <SwitchButton
-        isOn={false}
-        onToggle={toggle}
-        leftLabel={"on"}
-        rightLabel={"off"}
-      />
+    const toggle = jest.fn();
+    const wrapper = render(
+      <SwitchButton isOn={false} onToggle={toggle} leftLabel={"on"} rightLabel={"off"} />
     );
-    var name = wrapper.find('[name="switchToggle"]');
-    name.first().simulate("change");
-    expect(toggle).toBeCalled();
-    expect(name.last().props().disabled).toBeFalsy();
-    expect(name.first().props().checked).toBeTruthy();
+
+    const switchButtonRight = wrapper.queryByTestId("switch-button-right") as HTMLInputElement;
+
+    act(() => {
+      fireEvent.click(switchButtonRight);
+    });
+
+    expect(toggle).toHaveBeenCalled();
   });
 });

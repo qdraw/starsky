@@ -13,14 +13,16 @@ namespace starsky.foundation.storage.Exceptions
 		public DecodingException(string message) : base(message)
 		{
 		}
-		
+
 		/// <summary>
 		/// Without this constructor, deserialization will fail
 		/// </summary>
 		/// <param name="info"></param>
 		/// <param name="context"></param>
-		protected DecodingException(SerializationInfo info, StreamingContext context) 
+		protected DecodingException(SerializationInfo info, StreamingContext context)
+#pragma warning disable SYSLIB0051
 			: base(info, context)
+#pragma warning restore SYSLIB0051
 		{
 		}
 	}

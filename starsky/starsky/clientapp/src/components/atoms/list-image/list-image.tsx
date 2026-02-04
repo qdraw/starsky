@@ -1,29 +1,33 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import useIntersection from "../../../hooks/use-intersection-observer";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
-import EmptyImage from "../../../style/images/empty-image.gif";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 
 interface IListImageProps {
+  children?: React.ReactNode;
   fileHash: string;
+  filePath: string;
   imageFormat?: ImageFormat;
   alt?: string;
 }
+
+/**
+ * Since vite does inline images for small images this is hard coded
+ */
+const emptyImageUrl = "empty-image.gif";
 
 /**
  * Used inside archive/search
  */
 const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   const target = useRef<HTMLDivElement>(null);
-  var alt = props.alt ? props.alt : "afbeelding";
+  const alt = props.alt ?? "afbeelding";
 
   const [src, setSrc] = useState(props.fileHash);
 
-  const [issingleitem] = useState(
-    localStorage.getItem("issingleitem") !== "false"
-  );
+  const alwaysLoadImage = localStorage.getItem("alwaysLoadImage") === "true";
 
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +39,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     setIsLoading(true);
   }, [props.fileHash]);
 
-  var intersected = useIntersection(target, {
+  const intersected = useIntersection(target, {
     rootMargin: "250px",
     once: true,
     threshold: 0.3
@@ -43,8 +47,9 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   // threshold = indicate at what percentage of the target's visibility the callback is executed. (default = 0)
 
   // to stop loading images after a url change
-  var history = useLocation();
-  const [historyLocation] = useState(history.location.search);
+  const history = useLocation();
+  const historyLocation = history.location.search;
+
   useEffect(() => {
     // use ?f only to support details
     // need to refresh
@@ -54,17 +59,11 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       isLoading
     ) {
       // data:images are blocked by a strict CSP
-      setSrc(EmptyImage); // 26 bytes
+      setSrc(emptyImageUrl); // 26 bytes
       return;
     }
-    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, issingleitem));
-  }, [
-    props.fileHash,
-    history.location.search,
-    historyLocation,
-    isLoading,
-    issingleitem
-  ]);
+    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, props.filePath, alwaysLoadImage));
+  }, [props.fileHash, history.location.search, historyLocation, isLoading, alwaysLoadImage]);
 
   if (
     props.fileHash === "null" ||
@@ -72,7 +71,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     !props.fileHash ||
     !props.imageFormat
   ) {
-    return <div ref={target} className="img-box--error" />;
+    return <div ref={target} data-test="list-image-img-error" className="img-box--error" />;
   }
 
   // for example show gpx, raw and mp4 as icon
@@ -80,28 +79,35 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     props.imageFormat !== ImageFormat.bmp &&
     props.imageFormat !== ImageFormat.gif &&
     props.imageFormat !== ImageFormat.jpg &&
-    props.imageFormat !== ImageFormat.png
+    props.imageFormat !== ImageFormat.webp &&
+    props.imageFormat !== ImageFormat.png &&
+    props.imageFormat !== ImageFormat.mp4 &&
+    props.imageFormat !== ImageFormat.mjpeg &&
+    props.imageFormat !== ImageFormat.mts
   ) {
     return (
       <div
         ref={target}
+        data-test="list-image-img-error"
         className={`img-box--error img-box--unsupported img-box--${props.imageFormat}`}
       />
     );
   }
 
-  const className = error
-    ? `img-box--error img-box--${props.imageFormat}`
-    : isLoading
-    ? "img-box img-box--loading"
-    : "img-box";
+  let className = "img-box";
+  if (error) {
+    className += ` img-box--error img-box--${props.imageFormat}`;
+  } else if (isLoading) {
+    className += " img-box--loading";
+  }
 
   return (
-    <div ref={target} className={className}>
+    <div ref={target} className={className} data-test="list-image-img-parent-div">
       {intersected ? (
-        <img
+        <img /* NOSONAR(S6847) */
           src={src}
           alt={alt}
+          data-test="list-image-img"
           onLoad={() => {
             setError(false);
             setIsLoading(false);

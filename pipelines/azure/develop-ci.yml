@@ -3,6 +3,10 @@ parameters:
   displayName: Run unit tests & sonar scan?
   type: boolean
   default: true
+- name: readyToRunEnabled
+  displayName: Enable ReadyToRun .NET feature
+  type: boolean
+  default: true
 
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -11,30 +15,30 @@ variables:
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
-
-pool:
-  vmImage: 'ubuntu-20.04'
-  demands:
-  - msbuild
-  - java
+  SONAR_TOKEN: $(STARSKY_SONAR_TOKEN)
+  RUNTIME_ARG: '--runtime "linux-x64"'
 
 trigger:
   branches:
     include:
     - master
     - release/*
+    - feature/auto_dotnet_sdk_version_upgrade*
     exclude:
-    - feature/*
+    - test/*
   paths:
       include:
       - starsky/*
       exclude:
-      - starskyapp/*
+      - starskydesktop/*
       - starsky-tools/*
       - starsky.netframework/*
       - starsky/readme.md
       - starsky/starsky/readme.md
       - starsky/starsky/clientapp/readme.md
+      - /*.md
+      - /*.json
+      - starsky/nuget-packages-list.json
 
 # specific path build
 pr:
@@ -45,52 +49,122 @@ pr:
     include:
     - starsky/*
     exclude:
-    - starskyapp/*
+    - starskydesktop/*
     - starsky-tools/*
     - starsky.netframework/*
 
-steps:
+stages:
+- stage: build
+  displayName: 'Develop CI'
+  jobs:
+  - job: buildnetcore
+    displayName: 'Build'
+    timeoutInMinutes: 35 # how long to run the job before automatically cancelling
+    cancelTimeoutInMinutes: 10 # how much time to give 'run always even if cancelled tasks' before stopping them
+    pool:
+      vmImage: 'ubuntu-24.04'
+      demands:
+      - msbuild
+      - java
 
-  - template: /pipelines/azure/steps/use_dotnet_version.yml
+    steps:
+    - checkout: self
+      # fetchDepth: 1 - disable for sonarqube
 
-  - template: /pipelines/azure/steps/build_clientapp.yml
-    parameters:
-      npmConfigCache: $(npm_config_cache)
-      jest: ${{ parameters.unitTestsEnabled }}
+    - template: /pipelines/azure/steps/use_jdk_powershell.yml
 
-  - template: /pipelines/azure/steps/build_server.yml
-    parameters:
-      vstest: ${{ parameters.unitTestsEnabled }}
-      nugetPackages: $(NUGET_PACKAGES)
+    - template: /pipelines/azure/steps/use_dotnet_version.yml
 
-  - template: /pipelines/azure/steps/coverage_report_merge.yml
-    parameters:
-      unitTest: ${{ parameters.unitTestsEnabled }} 
+    - template: /pipelines/azure/steps/build_clientapp.yml
+      parameters:
+        jest: ${{ parameters.unitTestsEnabled }}
+        runtimeArg: $(RUNTIME_ARG)
+        npmConfigCache: $(npm_config_cache)
 
-  - template: /pipelines/azure/steps/build_zip_bundle.yml
+    - template: /pipelines/azure/steps/build_server.yml
+      parameters:
+        vstest: ${{ parameters.unitTestsEnabled }}
+        readyToRunEnabled: ${{ parameters.readyToRunEnabled }}
+        nugetPackages: $(NUGET_PACKAGES)
+        runtimeArg: $(RUNTIME_ARG)
 
-  - task: PowerShell@2
-    condition: and(succeeded(), ne('${{ parameters.unitTestsEnabled }}', true) )
-    displayName: "[ne] Create zip with coverage with no content"
-    inputs:
-      targetType: 'inline'
-      script: |
-        New-Item -ItemType Directory -Path '$(Build.SourcesDirectory)/temp'
-        New-Item -ItemType file '$(Build.SourcesDirectory)/temp/index.html'
-        Compress-Archive -Path '$(Build.SourcesDirectory)/temp' -DestinationPath '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
-        Write-Host '$(Build.SourcesDirectory)/starsky/starskytest'
-        Get-ChildItem '$(Build.SourcesDirectory)/starsky/starskytest'
+    - template: /pipelines/azure/steps/coverage_report_merge.yml
+      parameters:
+        unitTest: ${{ parameters.unitTestsEnabled }}
+        runtimeArg: $(RUNTIME_ARG)
 
-  - template: /pipelines/azure/steps/publish_end2end_container.yml
+    - template: /pipelines/azure/steps/build_zip_bundle.yml
+      parameters:
+        runtimeArg: $(RUNTIME_ARG)
 
-  - template: /pipelines/azure/steps/publish_artifacts.yml
-    parameters:
-      publish: 
-        - key: linux-arm64
-          value: '/starsky/starsky-linux-arm64.zip' 
-        - key: linux-arm
-          value: '/starsky/starsky-linux-arm.zip' 
-        - key: generic-netcore
-          value: '/starsky/starsky-generic-netcore.zip'
-        - key: coverage-report
-          value: '/starsky/starskytest/coverage-report.zip'
+    - task: PowerShell@2
+      condition: and(succeeded(), ne('${{ parameters.unitTestsEnabled }}', true) )
+      displayName: "[ne] Create zip with coverage with no content"
+      inputs:
+        targetType: 'inline'
+        script: |
+          New-Item -ItemType Directory -Path '$(Build.SourcesDirectory)/temp'
+          New-Item -ItemType file '$(Build.SourcesDirectory)/temp/index.html'
+          Compress-Archive -Path '$(Build.SourcesDirectory)/temp' -DestinationPath '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
+          Write-Host '$(Build.SourcesDirectory)/starsky/starskytest'
+          Get-ChildItem '$(Build.SourcesDirectory)/starsky/starskytest'
+
+    - template: /pipelines/azure/steps/publish_end2end_container.yml
+
+    - template: /pipelines/azure/steps/publish_artifacts.yml
+      parameters:
+        publish:
+          - key: linux-x64
+            value: '/starsky/starsky-linux-x64.zip'
+          - key: generic-netcore
+            value: '/starsky/starsky-generic-netcore.zip'
+          - key: coverage-report
+            value: '/starsky/starskytest/coverage-report.zip'
+
+- stage: deploy
+  displayName: 'Deploy'
+  dependsOn: build
+  jobs:
+  - job: deploy
+    displayName: 'Deploy'
+    timeoutInMinutes: 30
+    cancelTimeoutInMinutes: 10
+    strategy:
+      matrix:
+        eikpunt:
+          agentDemand: eikpunt
+        twello:
+          agentDemand: twello
+      maxParallel: 1
+    pool: 
+      name: 'dev-build'
+      demands:
+      - "Agent.Name -equals $(agentDemand)"
+    continueOnError: true
+    steps:
+
+    - checkout: none
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download starsky-linux-x64.zip artifact'
+      inputs:
+        source: 'current'
+        artifactName: 'linux-x64'
+        path: '$(Pipeline.Workspace)'
+
+    - task: ExtractFiles@1
+      displayName: 'Unzip starsky-linux-x64.zip'
+      inputs:
+        archiveFilePatterns: '$(Pipeline.Workspace)/starsky-linux-x64.zip'
+        destinationFolder: '$(Pipeline.Workspace)/starsky'
+
+    - task: Bash@3
+      enabled: true
+      displayName: 'Run Deployment Script'
+      inputs:
+        workingDirectory: '$(Pipeline.Workspace)/starsky'
+        targetType: 'inline'
+        script: |
+          cp -f pm2-new-instance.sh /opt/starsky/pm2-new-instance.sh
+          cp -f $(Pipeline.Workspace)/starsky-linux-x64.zip /opt/starsky/starsky-linux-x64.zip
+          bash /opt/starsky/pm2-new-instance.sh --no-pm2

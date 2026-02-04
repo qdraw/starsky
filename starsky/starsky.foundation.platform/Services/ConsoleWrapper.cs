@@ -5,7 +5,7 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.foundation.platform.Services
 {
 	[Service(typeof(IConsole), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class ConsoleWrapper : IConsole
+	public sealed class ConsoleWrapper : IConsole
 	{
 		public void Write(string message)
 		{
@@ -17,7 +17,7 @@ namespace starsky.foundation.platform.Services
 			Console.WriteLine(message);
 		}
 
-		public string ReadLine()
+		public string? ReadLine()
 		{
 			return Console.ReadLine();
 		}

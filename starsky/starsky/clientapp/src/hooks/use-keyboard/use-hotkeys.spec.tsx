@@ -6,7 +6,7 @@ describe("useHotKeys", () => {
   describe("should ignore", () => {
     it("missing input as empty object", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [{}, callback]);
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [{}, callback]);
 
       const event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -14,15 +14,18 @@ describe("useHotKeys", () => {
         key: "q",
         altKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
     it("missing input as undefined", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [undefined, callback]);
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
+        undefined,
+        callback
+      ]);
 
       const event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -30,20 +33,18 @@ describe("useHotKeys", () => {
         key: "q",
         altKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
     it("should ignore when keyboard is in form", () => {
       const callback = jest.fn();
 
-      jest
-        .spyOn(Keyboard.prototype, "isInForm")
-        .mockImplementationOnce(() => true);
+      jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => true);
 
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           altKey: true
@@ -57,19 +58,19 @@ describe("useHotKeys", () => {
         key: "q",
         altKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
   });
 
   describe("pressing key with q", () => {
-    it("should return when pressing alt+q and expect alt+q", () => {
+    it("should return when pressing alt+j and expect alt+j", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
-          key: "q",
+          key: "j",
           altKey: true
         } as IHotkeysKeyboardEvent,
         callback
@@ -78,18 +79,18 @@ describe("useHotKeys", () => {
       const event = new KeyboardEvent("keydown", {
         bubbles: true,
         cancelable: true,
-        key: "q",
+        key: "j",
         altKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
     it("should return when pressing control q and expect key:q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKey: true
@@ -103,15 +104,15 @@ describe("useHotKeys", () => {
         key: "q",
         ctrlKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
     it("should return when pressing command/meta q and expect cmd/meta+q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           metaKey: true
@@ -125,15 +126,15 @@ describe("useHotKeys", () => {
         key: "q",
         metaKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
     it("should return when pressing shift+q and expect shift+q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           shiftKey: true
@@ -147,15 +148,15 @@ describe("useHotKeys", () => {
         key: "q",
         shiftKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
     it("should not return when pressing q and expect shift+q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           shiftKey: true
@@ -168,15 +169,15 @@ describe("useHotKeys", () => {
         cancelable: true,
         key: "q"
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
     it("should not return when pressing shift+q and expect q only", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           shiftKey: true
@@ -189,15 +190,15 @@ describe("useHotKeys", () => {
         cancelable: true,
         key: "q"
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
     it("ctrlKeyOrMetaKey - should return when pressing command/meta with combination option enabled q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true
@@ -211,15 +212,15 @@ describe("useHotKeys", () => {
         key: "q",
         metaKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
     it("ctrlKeyOrMetaKey - should return when pressing ctrlKey with combination option enabled q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true
@@ -233,15 +234,15 @@ describe("useHotKeys", () => {
         key: "q",
         ctrlKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
-    it("ctrlKeyOrMetaKey - should return when pessing cmdOrCtlr+shift+q", () => {
+    it("ctrlKeyOrMetaKey - should return when pressing cmdOrCtlr+shift+q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true,
@@ -257,15 +258,15 @@ describe("useHotKeys", () => {
         shiftKey: true,
         metaKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
     it("ctrlKeyOrMetaKey - should not return when pressing shiftKey with combination option enabled q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true
@@ -279,15 +280,15 @@ describe("useHotKeys", () => {
         key: "q",
         shiftKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
     it("ctrlKeyOrMetaKey - should not return when pressing q only with combination option enabled", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true
@@ -302,15 +303,15 @@ describe("useHotKeys", () => {
         metaKey: false,
         ctrlKey: false
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
     it("ctrlKeyOrMetaKey - should not return when pressing t only with combination option enabled", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true
@@ -325,9 +326,38 @@ describe("useHotKeys", () => {
         metaKey: false,
         ctrlKey: false
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
+      test.componentMount.unmount();
+    });
+  });
+
+  describe("skipIsInForm false flag", () => {
+    it("should not ignore when keyboard is in form with flag", () => {
+      const callback = jest.fn();
+
+      jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => true);
+
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
+        {
+          key: "w",
+          altKey: true,
+          skipIsInForm: false
+        } as IHotkeysKeyboardEvent,
+        callback
+      ]);
+
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "w",
+        altKey: true
+      });
+      globalThis.dispatchEvent(event);
+
+      expect(callback).toHaveBeenCalled();
+
       test.componentMount.unmount();
     });
   });

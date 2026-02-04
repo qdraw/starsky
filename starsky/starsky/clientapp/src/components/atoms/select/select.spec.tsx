@@ -1,40 +1,62 @@
-import { shallow } from "enzyme";
-import React from "react";
+import { createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Select from "./select";
 
 describe("SwitchButton", () => {
   it("renders", () => {
-    shallow(<Select selectOptions={[]} />);
+    render(<Select selectOptions={[]} />);
   });
 
-  it("trigger change", () => {
-    var outputSpy = jest.fn();
-    var component = shallow(
-      <Select selectOptions={["Test"]} callback={outputSpy} />
-    );
-    component.find("select").simulate("change", { target: { value: "test" } });
+  it("trigger change", async () => {
+    const outputSpy = jest.fn();
+    const component = render(<Select selectOptions={["Test"]} callback={outputSpy} />);
 
-    expect(outputSpy).toBeCalled();
-    expect(outputSpy).toBeCalledWith("test");
+    const selectElement = component.queryByTestId("select") as HTMLElement;
+
+    const changeEvent = createEvent.change(selectElement, {
+      value: "Test"
+    });
+
+    fireEvent(selectElement, changeEvent);
+
+    await waitFor(() => {
+      expect(outputSpy).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(outputSpy).toHaveBeenCalledWith("Test");
+    });
   });
 
   it("trigger change (no callback)", () => {
-    var outputSpy = jest.fn();
-    var component = shallow(<Select selectOptions={[]} />);
-    component.find("select").simulate("change", { target: { value: "test" } });
+    const outputSpy = jest.fn();
+    const component = render(<Select selectOptions={[]} />);
+    const selectElement = component.queryByTestId("select") as HTMLElement;
 
-    expect(outputSpy).toBeCalledTimes(0);
+    const changeEvent = createEvent.change(selectElement, {
+      value: "Test"
+    });
+
+    fireEvent(selectElement, changeEvent);
+
+    expect(outputSpy).toHaveBeenCalledTimes(0);
   });
 
   it("find option", () => {
-    var component = shallow(<Select selectOptions={["Test"]} />);
+    const component = render(<Select selectOptions={["Test"]} />);
 
-    expect(component.find("option").text()).toBe("Test");
+    const selectElement = screen.queryByTestId("select") as HTMLElement;
+
+    expect(selectElement.querySelector("option")?.innerHTML).toBe("Test");
+
+    component.unmount();
   });
 
   it("null option", () => {
-    var component = shallow(<Select selectOptions={[]} />);
+    const component = render(<Select selectOptions={[]} />);
 
-    expect(component.exists("select")).toBeTruthy();
+    const selectElement = screen.queryByTestId("select") as HTMLElement;
+
+    expect(selectElement).toBeTruthy();
+
+    component.unmount();
   });
 });

@@ -1,77 +1,122 @@
-import { globalHistory } from "@reach/router";
-import { mount } from "enzyme";
-import React from "react";
-import * as ContentPage from "../pages/content-page";
-import * as ImportPage from "../pages/import-page";
-import * as LoginPage from "../pages/login-page";
+import { render } from "@testing-library/react";
+import * as Import from "../containers/import/import";
+import * as Login from "../containers/login";
+import * as MediaContent from "../containers/media-content";
+import * as Preferences from "../containers/preferences/preferences";
+import * as useSearchList from "../hooks/use-searchlist";
+import { ISearchList } from "../hooks/use-searchlist";
 import * as NotFoundPage from "../pages/not-found-page";
 import * as SearchPage from "../pages/search-page";
 import * as TrashPage from "../pages/trash-page";
-import RouterApp from "./router-app";
+import RouterApp, { Router } from "./router-app";
+import { RoutesConfig } from "./routes-config";
 
 describe("Router", () => {
   it("default", () => {
-    var contentPageSpy = jest
-      .spyOn(ContentPage, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
-    mount(<RouterApp></RouterApp>);
-    expect(contentPageSpy).toBeCalled();
+    const searchPagePageSpy = jest
+      .spyOn(MediaContent, "default")
+      .mockImplementationOnce(() => <></>);
+
+    const component = render(<RouterApp />);
+
+    expect(RoutesConfig.find((x) => x.path === "/")?.element).not.toBeUndefined();
+
+    expect(searchPagePageSpy).toHaveBeenCalled();
+
+    component.unmount();
   });
 
   it("search", () => {
-    var searchPagePageSpy = jest
-      .spyOn(SearchPage, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
-    globalHistory.navigate("/search?q=t");
-    mount(<RouterApp></RouterApp>);
-    expect(searchPagePageSpy).toBeCalled();
+    jest.spyOn(SearchPage, "SearchPage").mockImplementationOnce(() => <></>);
+
+    const searchListMock = jest.spyOn(useSearchList, "default").mockImplementationOnce(() => {
+      return [{} as ISearchList, () => {}] as unknown as ISearchList;
+    });
+
+    Router.navigate("search?q=t");
+
+    const component = render(<RouterApp />);
+
+    expect(searchListMock).toHaveBeenCalled();
+    expect(searchListMock).toHaveBeenCalledWith(undefined, undefined, true);
+
+    component.unmount();
   });
 
   it("TrashPage", () => {
-    var trashPagePageSpy = jest
-      .spyOn(TrashPage, "default")
+    const searchListMock = jest
+      .spyOn(useSearchList, "default")
+      .mockReset()
       .mockImplementationOnce(() => {
-        return <></>;
+        return [{} as ISearchList, () => {}] as unknown as ISearchList;
       });
-    globalHistory.navigate("/trash?q=t");
-    mount(<RouterApp></RouterApp>);
-    expect(trashPagePageSpy).toBeCalled();
+
+    jest.spyOn(TrashPage, "TrashPage").mockImplementationOnce(() => {
+      return <></>;
+    });
+
+    Router.navigate("/trash?q=t");
+
+    const component = render(<RouterApp></RouterApp>);
+
+    expect(searchListMock).toHaveBeenCalled();
+    expect(searchListMock).toHaveBeenCalledWith("!delete!", undefined, true);
+
+    component.unmount();
   });
 
   it("ImportPage", () => {
-    var importPagePageSpy = jest
-      .spyOn(ImportPage, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
-    globalHistory.navigate("/import?q=t");
-    mount(<RouterApp></RouterApp>);
-    expect(importPagePageSpy).toBeCalled();
+    const importPagePageSpy = jest.spyOn(Import, "Import").mockImplementationOnce(() => {
+      return <></>;
+    });
+
+    Router.navigate("/import");
+
+    const component = render(<RouterApp></RouterApp>);
+
+    expect(importPagePageSpy).toHaveBeenCalled();
+
+    component.unmount();
   });
 
   it("LoginPage", () => {
-    var loginPagePageSpy = jest
-      .spyOn(LoginPage, "default")
+    const loginPagePageSpy = jest.spyOn(Login, "Login").mockImplementationOnce(() => <></>);
+
+    Router.navigate("/account/login");
+
+    const component = render(<RouterApp></RouterApp>);
+
+    console.log(component.container.innerHTML);
+
+    expect(loginPagePageSpy).toHaveBeenCalled();
+
+    component.unmount();
+  });
+
+  it("PreferencesPage", () => {
+    const preferencesPagePageSpy = jest
+      .spyOn(Preferences, "Preferences")
       .mockImplementationOnce(() => {
         return <></>;
       });
-    globalHistory.navigate("/account/login");
-    mount(<RouterApp></RouterApp>);
-    expect(loginPagePageSpy).toBeCalled();
+
+    Router.navigate("/preferences");
+
+    const component = render(<RouterApp></RouterApp>);
+
+    expect(preferencesPagePageSpy).toHaveBeenCalled();
+
+    component.unmount();
   });
 
   it("NotFoundPage", () => {
-    var notFoundPageSpy = jest
-      .spyOn(NotFoundPage, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
-    globalHistory.navigate("/not-found");
-    mount(<RouterApp></RouterApp>);
-    expect(notFoundPageSpy).toBeCalled();
+    jest.spyOn(NotFoundPage, "NotFoundPage").mockImplementationOnce(() => <></>);
+
+    Router.navigate("/not-found");
+    const component = render(<RouterApp></RouterApp>);
+
+    expect(component.queryByTestId("not-found-page")).not.toBeNull();
+
+    component.unmount();
   });
 });

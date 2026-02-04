@@ -1,10 +1,9 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch-post";
-import { UrlQuery } from "../../../shared/url-query";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
+import { UrlQuery } from "../../../shared/url/url-query";
 import * as Modal from "../../atoms/modal/modal";
 import ModalForceDelete from "./modal-force-delete";
 
@@ -14,7 +13,7 @@ describe("ModalForceDelete", () => {
   });
 
   it("renders", () => {
-    shallow(
+    render(
       <ModalForceDelete
         isOpen={true}
         handleExit={() => {}}
@@ -28,14 +27,12 @@ describe("ModalForceDelete", () => {
   });
 
   it("should fetchPost and dispatch", async () => {
-    const fetchSpy = jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(async () => {
-        return { statusCode: 200 } as IConnectionDefault;
-      });
+    const fetchSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(async () => {
+      return { statusCode: 200 } as IConnectionDefault;
+    });
 
     const dispatch = jest.fn();
-    const modal = mount(
+    const modal = render(
       <ModalForceDelete
         isOpen={true}
         handleExit={() => {}}
@@ -57,29 +54,28 @@ describe("ModalForceDelete", () => {
       ></ModalForceDelete>
     );
 
-    expect(modal.exists('[data-test="force-delete"]')).toBeTruthy();
-    expect(modal.exists("button.btn--default")).toBeTruthy();
+    const forceDelete = screen.queryByTestId("force-delete");
+    expect(forceDelete).toBeTruthy();
     // need to await here
-    await modal.find('[data-test="force-delete"]').simulate("click");
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith(
+    await forceDelete?.click();
+
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith(
       new UrlQuery().UrlDeleteApi(),
       "f=%2Ftest.jpg&collections=false",
       "delete"
     );
-    expect(dispatch).toBeCalled();
+    expect(dispatch).toHaveBeenCalled();
     modal.unmount();
   });
 
   it("should fetchPost and not dispatch due status error", async () => {
-    const fetchSpy = jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(async () => {
-        return { statusCode: 500 } as IConnectionDefault;
-      });
+    const fetchSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(async () => {
+      return { statusCode: 500 } as IConnectionDefault;
+    });
 
     const dispatch = jest.fn();
-    const modal = mount(
+    const modal = render(
       <ModalForceDelete
         isOpen={true}
         handleExit={() => {}}
@@ -101,17 +97,18 @@ describe("ModalForceDelete", () => {
       ></ModalForceDelete>
     );
 
-    expect(modal.exists('[data-test="force-delete"]')).toBeTruthy();
-    expect(modal.exists("button.btn--default")).toBeTruthy();
+    const forceDelete = screen.queryByTestId("force-delete");
+    expect(forceDelete).toBeTruthy();
     // need to await here
-    await modal.find('[data-test="force-delete"]').simulate("click");
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith(
+    await forceDelete?.click();
+
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith(
       new UrlQuery().UrlDeleteApi(),
       "f=%2Ftest.jpg&collections=false",
       "delete"
     );
-    expect(dispatch).toBeCalledTimes(0);
+    expect(dispatch).toHaveBeenCalledTimes(0);
     modal.unmount();
   });
 
@@ -123,9 +120,9 @@ describe("ModalForceDelete", () => {
       return <>{props.children}</>;
     });
 
-    var handleExitSpy = jest.fn();
+    const handleExitSpy = jest.fn();
 
-    var component = mount(
+    const component = render(
       <ModalForceDelete
         isOpen={true}
         dispatch={jest.fn()}
@@ -137,7 +134,7 @@ describe("ModalForceDelete", () => {
       />
     );
 
-    expect(handleExitSpy).toBeCalled();
+    expect(handleExitSpy).toHaveBeenCalled();
 
     component.unmount();
   });

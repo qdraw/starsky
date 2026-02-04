@@ -1,18 +1,20 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
-import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch-post";
-import { UrlQuery } from "../../../shared/url-query";
+import { createEvent, fireEvent, render, RenderResult, screen } from "@testing-library/react";
+import { act } from "react";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import { IExifStatus } from "../../../interfaces/IExifStatus";
+import localization from "../../../localization/localization.json";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
+import { UrlQuery } from "../../../shared/url/url-query";
 import * as Modal from "../../atoms/modal/modal";
-import ModalDatetime from "./modal-edit-datetime";
+import ModalDatetime, { GetDates, UpdateDateTime } from "./modal-edit-datetime";
 
 describe("ModalArchiveMkdir", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
-    shallow(
-      <ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}>
-        test
-      </ModalDatetime>
-    );
+    render(<ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}></ModalDatetime>);
   });
   describe("with Context", () => {
     beforeEach(() => {
@@ -20,21 +22,25 @@ describe("ModalArchiveMkdir", () => {
     });
 
     it("no date input", () => {
-      var modal = mount(
-        <ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />
-      );
+      const modal = render(<ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />);
 
-      expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(screen.getByTestId("modal-edit-datetime-non-valid")).toBeTruthy();
+      const errorText = screen.getByTestId("modal-edit-datetime-non-valid").textContent;
+      expect(errorText).toContain(localization.MessageErrorDatetime.en);
 
       // and button is disabled
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
-      expect(submitButtonBefore).toBeTruthy();
+      const submitButtonBefore = screen.queryByTestId(
+        "modal-edit-datetime-btn-default"
+      ) as HTMLButtonElement;
+      expect(submitButtonBefore).not.toBeNull();
+
+      expect(submitButtonBefore.disabled).toBeTruthy();
+
+      modal.unmount();
     });
 
     it("example date no error dialog", () => {
-      var modal = mount(
+      const modal = render(
         <ModalDatetime
           dateTime="2020-01-01T01:29:40"
           subPath={"/test"}
@@ -44,62 +50,111 @@ describe("ModalArchiveMkdir", () => {
       );
 
       // no warning
-      expect(modal.exists(".warning-box")).toBeFalsy();
+      expect(screen.queryByTestId("modal-edit-datetime-non-valid")).toBeFalsy();
 
-      // and button is enabled
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
-      expect(submitButtonBefore).toBeFalsy();
+      const submitButtonBefore = screen.queryByTestId(
+        "modal-edit-datetime-btn-default"
+      ) as HTMLButtonElement;
+      expect(submitButtonBefore).not.toBeNull();
+
+      // and button is NOT disabled
+      expect(submitButtonBefore.disabled).toBeFalsy();
+      modal.unmount();
     });
 
-    it("change all options", (done) => {
+    function fireEventOnFormControl(_modal: RenderResult, dataName: string, input: string) {
+      const formControls = screen.queryAllByTestId("form-control");
+
+      const year = formControls.find(
+        (p) => p.getAttribute("data-name") === dataName
+      ) as HTMLElement;
+      // use focusout instead of .blur
+      const blurEventYear = createEvent.focusOut(year, {
+        textContent: input
+      });
+
+      year.innerHTML = input;
+      fireEvent(year, blurEventYear);
+    }
+
+    it("change all options to valid options", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { data: null, statusCode: 200 }
-      );
-      var fetchPostSpy = jest
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        data: null,
+        statusCode: 200
+      });
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var modal = mount(
+      const modal = render(
         <ModalDatetime
           dateTime="2020-01-01T01:29:40"
           subPath={"/test"}
           isOpen={true}
           handleExit={() => {
-            done();
+            // done();
           }}
         />
       );
 
-      // update component + and blur
-      modal.find('[data-name="year"]').getDOMNode().textContent = "1998";
-      modal.find('[data-name="year"]').simulate("blur");
+      fireEventOnFormControl(modal, "year", "1998");
+      fireEventOnFormControl(modal, "month", "12");
+      fireEventOnFormControl(modal, "date", "1");
+      fireEventOnFormControl(modal, "hour", "13");
+      fireEventOnFormControl(modal, "minute", "5");
+      fireEventOnFormControl(modal, "sec", "5");
 
-      modal.find('[data-name="month"]').getDOMNode().textContent = "12";
-      modal.find('[data-name="month"]').simulate("blur");
+      await act(async () => {
+        await screen.queryByTestId("modal-edit-datetime-btn-default")?.click();
+      });
 
-      modal.find('[data-name="date"]').getDOMNode().textContent = "1";
-      modal.find('[data-name="date"]').simulate("blur");
-
-      modal.find('[data-name="hour"]').getDOMNode().textContent = "13";
-      modal.find('[data-name="hour"]').simulate("blur");
-
-      modal.find('[data-name="minute"]').getDOMNode().textContent = "5";
-      modal.find('[data-name="minute"]').simulate("blur");
-
-      modal.find('[data-name="sec"]').getDOMNode().textContent = "5";
-      modal.find('[data-name="sec"]').simulate("blur");
-
-      modal.find(".btn--default").simulate("click");
-
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().prefix + "/api/update",
         "f=%2Ftest&datetime=1998-12-01T13%3A05%3A05"
       );
+    });
+
+    it("change all options to invalid options", async () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        data: null,
+        statusCode: 200
+      });
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const modal = render(
+        <ModalDatetime
+          dateTime="2020-01-01T01:29:40"
+          subPath={"/test"}
+          isOpen={true}
+          handleExit={() => {
+            // done();
+          }}
+        />
+      );
+
+      fireEventOnFormControl(modal, "year", "");
+      fireEventOnFormControl(modal, "month", "");
+      fireEventOnFormControl(modal, "date", "");
+      fireEventOnFormControl(modal, "hour", "");
+      fireEventOnFormControl(modal, "minute", "");
+      fireEventOnFormControl(modal, "sec", "");
+
+      await act(async () => {
+        await screen.queryByTestId("modal-edit-datetime-btn-default")?.click();
+      });
+
+      expect(fetchPostSpy).toHaveBeenCalledTimes(0);
+      expect(screen.getByTestId("modal-edit-datetime-non-valid")).toBeTruthy();
+      const errorText = screen.getByTestId("modal-edit-datetime-non-valid").textContent;
+      expect(errorText).toContain(localization.MessageErrorDatetime.en);
     });
 
     it("test if handleExit is called", () => {
@@ -110,20 +165,128 @@ describe("ModalArchiveMkdir", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = mount(
-        <ModalDatetime
-          subPath="/test.jpg"
-          isOpen={true}
-          handleExit={handleExitSpy}
-        />
+      const component = render(
+        <ModalDatetime subPath="/test.jpg" isOpen={true} handleExit={handleExitSpy} />
       );
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       // and clean afterwards
       component.unmount();
+    });
+  });
+
+  describe("GetDates (theory)", () => {
+    // [month, date, fullYear, hour, minute, seconds, expected]
+    const cases: [
+      number | undefined,
+      number | undefined,
+      number | undefined,
+      number | undefined,
+      number | undefined,
+      number | undefined,
+      string
+    ][] = [
+      [10, 23, 2025, 14, 5, 9, "2025-10-23T14:05:09"],
+      [1, 1, 2020, 0, 0, 0, "2020-01-01T00:00:00"],
+      [12, 31, 1999, 23, 59, 59, "1999-12-31T23:59:59"],
+      [undefined, 23, 2025, 14, 5, 9, ""],
+      [10, undefined, 2025, 14, 5, 9, ""],
+      [10, 23, undefined, 14, 5, 9, ""],
+      [10, 23, 2025, undefined, 5, 9, ""],
+      [10, 23, 2025, 14, undefined, 9, ""],
+      [10, 23, 2025, 14, 5, undefined, ""],
+      [10, 23, 2025, 0, 0, 0, "2025-10-23T00:00:00"],
+      [0, 23, 2025, 14, 5, 9, ""],
+      [10, 0, 2025, 14, 5, 9, ""]
+    ];
+
+    it.each(cases)(
+      "GetDates(%p, %p, %p, %p, %p, %p) should return '%s'",
+      (
+        month: number | undefined,
+        date: number | undefined,
+        fullYear: number | undefined,
+        hour: number | undefined,
+        minute: number | undefined,
+        seconds: number | undefined,
+        expected: string
+      ) => {
+        expect(
+          GetDates(
+            month as number | undefined,
+            date as number | undefined,
+            fullYear as number | undefined,
+            hour as number | undefined,
+            minute as number | undefined,
+            seconds as number | undefined
+          )
+        ).toBe(expected);
+      }
+    );
+  });
+
+  describe("UpdateDateTime", () => {
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      ...newIConnectionDefault(),
+      data: [
+        {
+          status: IExifStatus.Ok,
+          fileName: "rootfilename.jpg",
+          dateTime: "2025-10-24T12:00:00"
+        }
+      ],
+      statusCode: 200
+    });
+
+    const mockIConnectionFailed: Promise<IConnectionDefault> = Promise.resolve({
+      ...newIConnectionDefault(),
+      statusCode: 400
+    });
+
+    it("should not call FetchPost if form is not enabled", () => {
+      const handleExit = jest.fn();
+      UpdateDateTime(false, "subpath", "2025-10-24T12:00:00", handleExit);
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+      expect(fetchPostSpy).not.toHaveBeenCalled();
+      expect(handleExit).not.toHaveBeenCalled();
+    });
+
+    it("should call FetchPost with correct params and call handleExit on success", async () => {
+      const handleExitSpy = jest.fn();
+
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const result = await UpdateDateTime(true, "subpath", "2025-10-24T12:00:00", handleExitSpy);
+
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+      const [url, body] = fetchPostSpy.mock.calls[0];
+      expect(url).toBe(new UrlQuery().UrlUpdateApi());
+      expect(body).toContain("f=subpath");
+      expect(body).toContain("datetime=2025-10-24T12%3A00%3A00");
+      expect(handleExitSpy).toHaveBeenCalledTimes(1);
+      console.log("result", result);
+
+      expect(result![0].dateTime).toEqual("2025-10-24T12:00:00");
+    });
+
+    it("should not call handleExit if statusCode is not 200", async () => {
+      const handleExit = jest.fn();
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionFailed);
+
+      fetchPostSpy.mockResolvedValueOnce({ statusCode: 400, data: [] });
+      await UpdateDateTime(true, "subpath", "2025-10-24T12:00:00", handleExit);
+      expect(handleExit).not.toHaveBeenCalled();
     });
   });
 });

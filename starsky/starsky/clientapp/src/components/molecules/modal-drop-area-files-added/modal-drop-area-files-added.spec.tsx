@@ -1,5 +1,4 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as Modal from "../../atoms/modal/modal";
 import * as ItemTextListView from "../../molecules/item-text-list-view/item-text-list-view";
@@ -7,12 +6,10 @@ import ModalDropAreaFilesAdded from "./modal-drop-area-files-added";
 
 describe("ModalDropAreaFilesAdded", () => {
   it("renders", () => {
-    var component = shallow(
-      <ModalDropAreaFilesAdded
-        isOpen={true}
-        uploadFilesList={[]}
-        handleExit={() => {}}
-      />
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+
+    const component = render(
+      <ModalDropAreaFilesAdded isOpen={true} uploadFilesList={[]} handleExit={() => {}} />
     );
     component.unmount();
   });
@@ -23,24 +20,24 @@ describe("ModalDropAreaFilesAdded", () => {
     });
 
     it("list is rendered", () => {
-      jest
-        .spyOn(ItemTextListView, "default")
-        .mockImplementationOnce((props) => {
-          return (
-            <span id="data-test-0">{props.fileIndexItems[0].fileName}</span>
-          );
-        });
+      jest.spyOn(ItemTextListView, "default").mockImplementationOnce((props) => {
+        return (
+          <span data-test="data-test-0" id="data-test-0">
+            {props.fileIndexItems[0].fileName}
+          </span>
+        );
+      });
 
-      var exampleList = [
+      const exampleList = [
         {
           fileName: "test.jpg",
           filePath: "/test.jpg"
         } as IFileIndexItem
       ];
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = mount(
+      const component = render(
         <ModalDropAreaFilesAdded
           isOpen={true}
           uploadFilesList={exampleList}
@@ -48,18 +45,16 @@ describe("ModalDropAreaFilesAdded", () => {
         />
       );
 
-      expect(component.exists("#data-test-0")).toBeTruthy();
-      expect(component.find("#data-test-0").text()).toBe("test.jpg");
+      expect(screen.getByTestId("data-test-0")).toBeTruthy();
+      expect(screen.getByTestId("data-test-0")?.textContent).toBe("test.jpg");
 
       component.unmount();
     });
 
     it("test if handleExit is called", () => {
-      jest
-        .spyOn(ItemTextListView, "default")
-        .mockImplementationOnce((props) => {
-          return <></>;
-        });
+      jest.spyOn(ItemTextListView, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       // simulate if a user press on close
       // use as ==> import * as Modal from './modal';
@@ -68,17 +63,13 @@ describe("ModalDropAreaFilesAdded", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = mount(
-        <ModalDropAreaFilesAdded
-          isOpen={true}
-          uploadFilesList={[]}
-          handleExit={handleExitSpy}
-        />
+      const component = render(
+        <ModalDropAreaFilesAdded isOpen={true} uploadFilesList={[]} handleExit={handleExitSpy} />
       );
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       component.unmount();
     });

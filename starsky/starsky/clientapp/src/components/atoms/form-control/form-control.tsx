@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
+import getTextLength from "./get-text-length";
 import { LimitLength } from "./limit-length";
 
-export interface IFormControlProps {
+interface IFormControlProps {
   contentEditable: boolean;
   onBlur?(event: React.ChangeEvent<HTMLDivElement>): void;
   onInput?(event: React.ChangeEvent<HTMLDivElement>): void;
@@ -14,26 +16,18 @@ export interface IFormControlProps {
   children?: React.ReactNode;
   warning?: boolean;
   spellcheck?: boolean;
+  "data-test"?: string;
 }
 
-const FormControl: React.FunctionComponent<IFormControlProps> = ({
-  onBlur,
-  ...props
-}) => {
-  const maxlength = props.maxlength ? props.maxlength : 255;
-
-  const [childLength, setChildLength] = useState(
-    props.children?.toString().length ? props.children?.toString().length : 0
-  );
+const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, ...props }) => {
+  const maxlength = props.maxlength ?? 255;
+  const [childLength, setChildLength] = useState(getTextLength(props.children));
 
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageFieldMaxLength = language.token(
-    language.text(
-      "Het onderstaande veld mag maximaal {maxlength} tekens hebben",
-      "The field below can have a maximum of {maxlength} characters"
-    ),
+  const MessageFieldMaxLength = language.key(
+    localization.MessageFieldMaxLength,
     ["{maxlength}"],
     [maxlength.toString()]
   );
@@ -42,16 +36,13 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({
    * Limit length on paste event
    * @param element ClipboardEvent
    */
-  const limitLengthPaste = function (
-    element: React.ClipboardEvent<HTMLDivElement>
-  ) {
-    if (childLength + element.clipboardData.getData("Text").length <= maxlength)
-      return;
+  const limitLengthPaste = function (element: React.ClipboardEvent<HTMLDivElement>) {
+    if (childLength + element.clipboardData.getData("Text").length <= maxlength) return;
     element.preventDefault();
     setChildLength(childLength + element.clipboardData.getData("Text").length);
   };
 
-  const propsClassName = props.className ? props.className : "";
+  const propsClassName = props.className ?? "";
 
   return (
     <>
@@ -59,14 +50,12 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({
         <div className="warning-box">{MessageFieldMaxLength}</div>
       ) : null}
 
+      {/* NOSONAR(S6847) */}
       <div
-        onBlur={
-          new LimitLength(setChildLength, onBlur, maxlength).LimitLengthBlur
-        }
+        data-test={props["data-test"] ?? "form-control"}
+        onBlur={new LimitLength(setChildLength, onBlur, maxlength).LimitLengthBlur}
         data-name={props.name}
-        onKeyDown={
-          new LimitLength(setChildLength, onBlur, maxlength).LimitLengthKey
-        }
+        onKeyDown={new LimitLength(setChildLength, onBlur, maxlength).LimitLengthKey}
         onInput={props.onInput}
         onPaste={limitLengthPaste}
         spellCheck={props.spellcheck}

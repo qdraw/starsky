@@ -1,47 +1,44 @@
-import { globalHistory } from "@reach/router";
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import React, { act } from "react";
 import * as AppContext from "../../../contexts/archive-context";
 import { IArchive } from "../../../interfaces/IArchive";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import * as FetchPost from "../../../shared/fetch-post";
+import { Router } from "../../../router-app/router-app";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { Keyboard } from "../../../shared/keyboard";
-import { UrlQuery } from "../../../shared/url-query";
-import FormControl from "../../atoms/form-control/form-control";
+import { UrlQuery } from "../../../shared/url/url-query";
 import * as Notification from "../../atoms/notification/notification";
 import ArchiveSidebarLabelEditAddOverwrite from "./archive-sidebar-label-edit-add-overwrite";
 
 describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("renders", () => {
-    shallow(<ArchiveSidebarLabelEditAddOverwrite />);
+    render(<ArchiveSidebarLabelEditAddOverwrite />);
   });
 
   it("isReadOnly: true", () => {
-    const mainElement = shallow(<ArchiveSidebarLabelEditAddOverwrite />);
+    const mainElement = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-    var formControl = mainElement.find(".form-control");
+    const formControl = screen.queryAllByTestId("form-control");
 
     // there are 3 classes [title,info,description]
-    formControl.forEach((element) => {
-      var disabled = element.hasClass("disabled");
-      expect(disabled).toBeTruthy();
-    });
+    for (const element of formControl) {
+      const disabled = element.classList;
+      expect(disabled).toContain("disabled");
+    }
+    mainElement.unmount();
   });
 
   describe("with context", () => {
-    var useContextSpy: jest.SpyInstance;
+    let useContextSpy: jest.SpyInstance;
 
-    var dispatchedValues: any[] = [];
+    let dispatchedValues: AppContext.ArchiveAction[] = [];
 
     beforeEach(() => {
       // is used in multiple ways
       // use this: ==> import * as AppContext from '../contexts/archive-context';
-      useContextSpy = jest
-        .spyOn(React, "useContext")
-        .mockImplementation(() => contextValues);
+      useContextSpy = jest.spyOn(React, "useContext").mockImplementation(() => contextValues);
 
       // clean array
       dispatchedValues = [];
@@ -60,19 +57,14 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
             }
           ]
         } as IArchive,
-        dispatch: (value: any) => {
+        dispatch: (value: AppContext.ArchiveAction) => {
           dispatchedValues.push(value);
         }
       } as AppContext.IArchiveContext;
 
-      jest.mock("@reach/router", () => ({
-        navigate: jest.fn(),
-        globalHistory: jest.fn()
-      }));
-
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test.jpg");
+        Router.navigate("/?select=test.jpg");
       });
     });
 
@@ -81,18 +73,19 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       useContextSpy.mockClear();
     });
 
-    it("isReadOnly: false", () => {
-      const component = shallow(<ArchiveSidebarLabelEditAddOverwrite />);
+    it("isReadOnly: false (so contentEditable is true)", () => {
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-      var formControl = component.find(FormControl);
-
-      // there are 3 classes [title,info,description]
-      formControl.forEach((element) => {
-        expect(element.props()["contentEditable"]).toBeTruthy();
-      });
+      const formControls = screen.queryAllByTestId("form-control");
 
       // if there is no contentEditable it should fail
-      expect(formControl.length).toBeGreaterThanOrEqual(3);
+      expect(formControls.length).toBeGreaterThanOrEqual(3);
+
+      // there are 3 classes [title,info,description]
+      for (const element of formControls) {
+        const contentEditable = element.getAttribute("contentEditable");
+        expect(contentEditable).toBeTruthy();
+      }
 
       act(() => {
         component.unmount();
@@ -107,24 +100,28 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .spyOn(Notification, "default")
         .mockImplementationOnce(() => <></>);
 
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefault);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
+
+      const formControls = screen
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
 
       // update component + now press a key
-      act(() => {
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
-      });
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
 
       // need to await here
+      const add = screen.queryByTestId("add") as HTMLElement;
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
-      expect(notificationSpy).toBeCalled();
+      expect(notificationSpy).toHaveBeenCalled();
 
       act(() => {
         component.unmount();
@@ -133,52 +130,54 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it("click overwrite > generic fail > remove message retry when success", async () => {
-      var connectionDefault: IConnectionDefault = {
+      const connectionDefault: IConnectionDefault = {
         statusCode: 200,
-        data: [] as any[]
+        data: [] as AppContext.ArchiveAction[]
       };
 
       const mockIConnectionDefaultReject: Promise<IConnectionDefault> = Promise.reject();
 
-      const mockIConnectionDefaultResolve: Promise<IConnectionDefault> = Promise.resolve(
-        connectionDefault
-      );
+      const mockIConnectionDefaultResolve: Promise<IConnectionDefault> =
+        Promise.resolve(connectionDefault);
 
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefaultReject);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefaultReject);
 
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
+
+      const formControls = screen
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
 
       // update component + now press a key
-      act(() => {
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
-      });
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
 
       // need to await here
+      const add = screen.queryByTestId("add") as HTMLElement;
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
       jest.spyOn(FetchPost, "default").mockRestore();
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefaultResolve);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefaultResolve);
 
       // force update to show message
-      component.update();
-      expect(component.exists(".notification")).toBeTruthy();
+      let notification = screen.queryByTestId("notification-content") as HTMLElement;
+
+      expect(notification).toBeTruthy();
 
       // second time; now it removes the error message from the component
       // need to await here
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
       // force update to show message
-      component.update();
-      expect(component.exists(".notification")).toBeFalsy();
+      notification = screen.queryByTestId("notification-content") as HTMLElement;
+      expect(notification).toBeFalsy();
 
       act(() => {
         component.unmount();
@@ -187,22 +186,22 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it("Should change value when onChange was called", () => {
-      const component = mount(
-        <ArchiveSidebarLabelEditAddOverwrite>
-          t
-        </ArchiveSidebarLabelEditAddOverwrite>
-      );
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-      act(() => {
-        // update component
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
+      const formControls = screen
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
 
-        // now press a key
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
-      });
+      // update component + now press a key
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
 
-      var className = component.find(".btn.btn--default").getDOMNode()
-        .className;
+      const add = screen.queryByTestId("add") as HTMLElement;
+
+      const className = add.className;
       expect(className).toBe("btn btn--default");
 
       act(() => {
@@ -211,7 +210,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it("click append", async () => {
-      var connectionDefault: IConnectionDefault = {
+      const connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [
           {
@@ -222,30 +221,36 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           }
         ] as IFileIndexItem[]
       };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        connectionDefault
-      );
-      var spy = jest
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve(connectionDefault);
+      const spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-      act(() => {
-        // update component + now press a key
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
-      });
+      const formControls = screen
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
 
-      expect(component.exists(".btn--default")).toBeTruthy();
+      // update component + now press a key
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
+
+      const add = screen.queryByTestId("add") as HTMLElement;
+
+      expect(add).toBeTruthy();
 
       // need to await to contain dispatchedValues
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().prefix + "/api/update",
         "append=true&collections=true&tags=a&f=%2Ftest.jpg"
       );
@@ -269,7 +274,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     it("click append | read only", async () => {
       jest.spyOn(FetchPost, "default").mockReset();
 
-      var connectionDefault: IConnectionDefault = {
+      const connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [
           {
@@ -280,30 +285,33 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           }
         ] as IFileIndexItem[]
       };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        connectionDefault
-      );
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve(connectionDefault);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-      act(() => {
-        // update component + now press a key
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
-      });
+      const formControls = screen
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
+      // update component + now press a key
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
+
+      const add = screen.queryByTestId("add") as HTMLElement;
+      expect(add).toBeTruthy();
 
       // need to await to contain dispatchedValues
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
-      // force update to get the right state
-      component.update();
-
-      expect(component.exists(Notification.default)).toBeTruthy();
+      const notification = screen.queryByTestId("notification-content") as HTMLElement;
+      expect(notification).toBeTruthy();
 
       act(() => {
         component.unmount();
@@ -313,12 +321,12 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     it("click append multiple", async () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test.jpg,test1.jpg,notfound.jpg");
+        Router.navigate("/?select=test.jpg,test1.jpg,notfound.jpg");
       });
 
       jest.spyOn(FetchPost, "default").mockReset();
 
-      var connectionDefault: IConnectionDefault = {
+      const connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [
           {
@@ -335,28 +343,35 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           }
         ] as IFileIndexItem[]
       };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        connectionDefault
-      );
-      var spy = jest
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve(connectionDefault);
+      const spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-      act(() => {
-        // update component + now press a key
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
-      });
+      const formControls = screen
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
+      // update component + now press a key
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
+
+      const add = screen.queryByTestId("add") as HTMLElement;
+      expect(add).toBeTruthy();
 
       // need to await to contain dispatchedValues
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().prefix + "/api/update",
         "append=true&collections=true&tags=a&f=%2Ftest.jpg%3B%2Ftest1.jpg"
       );
@@ -379,24 +394,26 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           status: IExifStatus.Ok
         }
       ]);
+
+      component.unmount();
     });
 
     it("keydown should be fired", () => {
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-      var keyboardSpy = jest
+      const keyboardSpy = jest
         .spyOn(Keyboard.prototype, "SetFocusOnEndField")
         .mockImplementationOnce(() => {});
 
-      var event = new KeyboardEvent("keydown", {
+      const event = new KeyboardEvent("keydown", {
         bubbles: true,
         cancelable: true,
         key: "t",
         shiftKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
-      expect(keyboardSpy).toBeCalled();
+      expect(keyboardSpy).toHaveBeenCalled();
 
       act(() => {
         component.unmount();

@@ -3,28 +3,26 @@ import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 export class SelectCheckIfActive {
   public IsActive(
     select: string[] | undefined,
-    colorclasses: number[],
+    colorClasses: number[],
     fileIndexItems: IFileIndexItem[]
   ) {
     if (!select) return [];
 
-    // it should contain on the colorclasses
-    const fileNameList = fileIndexItems
-      .filter(
-        (el) =>
-          el.colorClass !== undefined &&
-          colorclasses.indexOf(el.colorClass) !== -1
-      )
-      .map((ele) => ele.fileName);
+    // it should contain on the colorClasses
+    const fileNameList = new Set(
+      fileIndexItems
+        .filter((el) => el.colorClass !== undefined && colorClasses.includes(el.colorClass))
+        .map((ele) => ele.fileName)
+    );
 
-    // you can't select an item thats not shown
-    select.forEach((selectedPath) => {
-      if (fileNameList.indexOf(selectedPath) === -1) {
-        var selectIndex = select.indexOf(selectedPath);
-        delete select[selectIndex];
+    // you can't select an item that's not shown
+    for (let i = select.length - 1; i >= 0; i--) {
+      const selectedPath = select[i];
+      if (!fileNameList.has(selectedPath)) {
+        select.splice(i, 1);
       }
-    });
-    // remove emthy items from the list
-    return select.filter((res) => res);
+    }
+    // remove empty items from the list
+    return select.filter(Boolean);
   }
 }

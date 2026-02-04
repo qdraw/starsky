@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Net;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
@@ -19,8 +20,11 @@ namespace starskytest.FakeMocks
 		{
 			Uri = uri;
 		}
-		public string Method { get; set; }
-		public NetworkCredential Credentials { get; set; }
+
+		public string Method { get; set; } = string.Empty;
+
+		public NetworkCredential Credentials { get; set; } =
+			new NetworkCredential();
 		public bool UsePassive { get; set; }
 		public bool UseBinary { get; set; }
 		public bool KeepAlive { get; set; }
@@ -44,8 +48,15 @@ namespace starskytest.FakeMocks
 	{
 		public void Dispose()
 		{
-			// done
+			GC.SuppressFinalize(this);
+			Dispose(true);
 		}
+		
+		protected virtual void Dispose(bool disposing)
+		{
+			// do nothing
+		}
+		
 
 		public Stream GetResponseStream()
 		{

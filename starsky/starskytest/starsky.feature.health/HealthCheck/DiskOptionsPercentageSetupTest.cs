@@ -7,7 +7,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
-	public class DiskOptionsPercentageSetupTest
+	public sealed class DiskOptionsPercentageSetupTest
 	{
 		
 		[TestMethod]
@@ -15,7 +15,7 @@ namespace starskytest.starsky.feature.health.HealthCheck
 		{
 			var appSettings = new AppSettings();
 			var diskOptions = new DiskStorageOptions();
-			new DiskOptionsPercentageSetup().Setup(appSettings.TempFolder,diskOptions);
+			DiskOptionsPercentageSetup.Setup(appSettings.TempFolder,diskOptions);
 
 			var value = diskOptions.GetType().GetRuntimeFields().FirstOrDefault();
 			Assert.IsNotNull(value);

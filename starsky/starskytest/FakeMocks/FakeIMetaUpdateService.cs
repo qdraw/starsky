@@ -1,21 +1,26 @@
 using System.Collections.Generic;
-using starsky.feature.metaupdate.Interfaces;
+using System.Threading.Tasks;
 using starsky.foundation.database.Models;
+using starsky.foundation.metaupdate.Interfaces;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeIMetaUpdateService : IMetaUpdateService
 {
-	public class FakeIMetaUpdateService : IMetaUpdateService
-	{
-		public List<FileIndexItem> Update(Dictionary<string, List<string>> changedFileIndexItemName, List<FileIndexItem> fileIndexResultsList,
-			FileIndexItem inputModel, bool collections, bool append, int rotateClock)
-		{
-			// does not update yet
-			return fileIndexResultsList;
-		}
+	public List<Dictionary<string, List<string>>>
+		ChangedFileIndexItemNameContent { get; set; } =
+		new();
 
-		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> returnNewResultList)
-		{
-			throw new System.NotImplementedException();
-		}
+	public Task<List<FileIndexItem>> UpdateAsync(
+		Dictionary<string, List<string>> changedFileIndexItemName,
+		List<FileIndexItem> fileIndexResultsList, FileIndexItem? inputModel,
+		bool collections, bool append, int rotateClock)
+	{
+		ChangedFileIndexItemNameContent.Add(changedFileIndexItemName);
+		return Task.FromResult(fileIndexResultsList);
+	}
+
+	public void UpdateReadMetaCache(IEnumerable<FileIndexItem> returnNewResultList)
+	{
 	}
 }

@@ -1,54 +1,45 @@
 import React, { memo, useEffect } from "react";
-import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
-import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ListImageViewSelectContainer from "../list-image-view-select-container/list-image-view-select-container";
-import { ShiftSelectionHelper } from "./shift-selection-helper";
+import { ShiftSelectionHelper } from "./internal/shift-selection-helper";
+import { WarningBoxNoPhotosFilter } from "./internal/warning-box-no-photos-filter";
 
 interface ItemListProps {
   fileIndexItems: Array<IFileIndexItem>;
   colorClassUsage: Array<number>;
   pageType?: PageType;
   iconList?: boolean;
+  subPath?: string;
 }
+
 /**
  * A list with links to the items
  */
 const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   // feature that saves the scroll height
-  var history = useLocation();
+  const history = useLocation();
   const folderRef = React.useRef<HTMLDivElement>(null);
 
-  // Content
-  const settings = useGlobalSettings();
-  const language = new Language(settings.language);
-  const MessageNoPhotosInFolder = language.text(
-    "Er zijn geen foto's in deze map",
-    "There are no photos in this folder"
-  );
-  const MessageItemsOutsideFilter = language.text(
-    "Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'",
-    "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'"
-  );
-
   useEffect(() => {
-    var navigationState = history.location.state as INavigateState;
+    const navigationState = history.location.state as INavigateState;
 
-    if (!navigationState || !navigationState.filePath) return;
+    if (!navigationState?.filePath) return;
 
     // for the DOM delay
     setTimeout(() => {
-      var dataTagQuery = `[data-filepath="${navigationState.filePath}"]`;
-      var elementList = document.querySelectorAll(dataTagQuery);
+      console.log("scroll to", navigationState.filePath);
+
+      const dataTagQuery = `[data-filepath="${navigationState.filePath}"]`;
+      const elementList = document.querySelectorAll(dataTagQuery);
       if (elementList.length !== 1) return;
 
-      window.scrollTo({
+      globalThis.scrollTo({
         top: elementList[0] ? (elementList[0] as HTMLDivElement).offsetTop : 0
       });
 
@@ -66,22 +57,18 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
     );
   }
 
-  let items = props.fileIndexItems;
+  const items = props.fileIndexItems;
   if (!items) return <div className="folder">no content</div>;
 
   return (
     <div className={props.iconList ? "folder" : "folder-flat"} ref={folderRef}>
-      {props.pageType !== PageType.Loading ? (
-        items.length === 0 ? (
-          props.colorClassUsage.length >= 1 ? (
-            <div className="warning-box warning-box--left">
-              {MessageItemsOutsideFilter}
-            </div>
-          ) : (
-            <div className="warning-box">{MessageNoPhotosInFolder}</div>
-          )
-        ) : null
-      ) : null}
+      <WarningBoxNoPhotosFilter
+        pageType={props.pageType}
+        subPath={props.subPath}
+        items={items}
+        colorClassUsage={props.colorClassUsage}
+      />
+
       {items.map((item) => (
         <ListImageViewSelectContainer
           item={item}
@@ -89,11 +76,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
           key={item.fileName + item.lastEdited + item.colorClass}
           onSelectionCallback={onSelectionCallback}
         >
-          {props.iconList ? (
-            <ListImageChildItem {...item} />
-          ) : (
-            <FlatListItem item={item} />
-          )}
+          {props.iconList ? <ListImageChildItem {...item} /> : <FlatListItem item={item} />}
         </ListImageViewSelectContainer>
       ))}
     </div>

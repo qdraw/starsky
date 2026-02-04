@@ -1,13 +1,19 @@
-import { globalHistory } from "@reach/router";
-import { storiesOf } from "@storybook/react";
-import React from "react";
+import useLocation from "../../../hooks/use-location/use-location";
 import DetailViewGpx from "./detail-view-gpx";
 
-storiesOf("components/organisms/detail-view-gpx", module).add("default", () => {
-  globalHistory.navigate("/?f=/test.gpx");
+export default {
+  title: "components/organisms/detail-view-gpx"
+};
+
+export const Default = () => {
+  const location = useLocation();
+
+  location.navigate("/?f=/test.gpx");
   return (
     <div className="detailview">
       <DetailViewGpx></DetailViewGpx>
     </div>
   );
-});
+};
+
+Default.storyName = "default";

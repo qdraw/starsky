@@ -1,0 +1,22 @@
+
+// GA 4
+// needs: <script async src="https://www.googletagmanager.com/gtag/js?id=G-999X9XX9XX"></script>
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+
+gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'granted'
+});
+
+// Redact advertising data
+gtag('set', 'ads_data_redaction', true);
+
+// does some triggery with urls and advertising
+gtag('set', 'url_passthrough', false);
+
+gtag('js', new Date());
+gtag('config', 'G-999X9XX9XX');

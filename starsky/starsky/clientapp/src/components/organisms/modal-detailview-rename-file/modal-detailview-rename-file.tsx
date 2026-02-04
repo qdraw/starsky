@@ -1,20 +1,21 @@
 import React, { useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView, newDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import FetchPost from "../../../shared/fetch-post";
+import localization from "../../../localization/localization.json";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
 interface IModalRenameFileProps {
   isOpen: boolean;
-  handleExit: Function;
+  handleExit: () => void;
   state: IDetailView;
 }
 
@@ -25,23 +26,12 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageNonValidExtension: string = language.text(
-    "Dit bestand kan zo niet worden weggeschreven",
-    "This file cannot be saved"
+  const MessageNonValidExtension = language.key(localization.MessageNonValidExtension);
+  const MessageChangeToDifferentExtension = language.key(
+    localization.MessageChangeToDifferentExtension
   );
-  const MessageChangeToDifferentExtension = language.text(
-    "Let op! Je veranderd de extensie van het bestand, " +
-      "deze kan hierdoor onleesbaar worden",
-    "Pay attention! You change the file extension, which can make it unreadable"
-  );
-  const MessageGeneralError: string = language.text(
-    "Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
-    "Something went wrong with the request, please try again later"
-  );
-  const MessageRenameFileName = language.text(
-    "Bestandsnaam wijzigen",
-    "Rename file name"
-  );
+  const MessageRenameServerError = language.key(localization.MessageRenameServerError);
+  const MessageRenameFileName = language.key(localization.MessageRenameFileName);
 
   // Fallback for no context
   if (!state) {
@@ -52,10 +42,10 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
   }
 
   // to know where you are
-  var history = useLocation();
+  const history = useLocation();
 
   // For the display
-  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  const [isFormEnabled, setIsFormEnabled] = React.useState(true);
   useEffect(() => {
     if (!state.fileIndexItem.status) return;
     switch (state.fileIndexItem.status) {
@@ -63,10 +53,10 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
       case IExifStatus.ReadOnly:
       case IExifStatus.ServerError:
       case IExifStatus.NotFoundSourceMissing:
-        setFormEnabled(false);
+        setIsFormEnabled(false);
         break;
       default:
-        setFormEnabled(true);
+        setIsFormEnabled(true);
         break;
     }
   }, [state.fileIndexItem.status]);
@@ -78,7 +68,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
   const [error, setError] = React.useState(useErrorHandler(null));
 
   // when you are waiting on the API
-  const [loading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   // The Updated that is send to the api
   const [fileName, setFileName] = React.useState(state.fileIndexItem.fileName);
@@ -87,39 +77,37 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
   const [buttonState, setButtonState] = React.useState(false);
 
   function handleUpdateChange(
-    event:
-      | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+    event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
   ) {
     if (!isFormEnabled) return;
     if (!event.currentTarget.textContent) return null;
-    let fieldValue = event.currentTarget.textContent.trim();
+    const fieldValue = event.currentTarget.textContent.trim();
 
     setFileName(fieldValue);
     setButtonState(true);
 
-    var extensionsState = new FileExtensions().MatchExtension(
+    const extensionsState = new FileExtensions().MatchExtension(
       state.fileIndexItem.fileName,
       fieldValue
     );
-    var isValidFileName = new FileExtensions().IsValidFileName(fieldValue);
+    const isValidFileName = new FileExtensions().IsValidFileName(fieldValue);
 
     if (!isValidFileName) {
       setError(MessageNonValidExtension);
       setButtonState(false);
-    } else if (!extensionsState) {
-      setError(MessageChangeToDifferentExtension);
-    } else {
+    } else if (extensionsState) {
       setError(null);
+    } else {
+      setError(MessageChangeToDifferentExtension);
     }
   }
 
-  async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+  async function pushRenameChange() {
     // Show icon with load ++ disable forms
-    setFormEnabled(false);
+    setIsFormEnabled(false);
     setIsLoading(true);
 
-    const filePathAfterChange = state.fileIndexItem.filePath.replace(
+    const filePathAfterChange = state.fileIndexItem.filePath.replaceAll(
       state.fileIndexItem.fileName,
       fileName
     );
@@ -128,21 +116,15 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     const bodyParams = new URLSearchParams();
     bodyParams.append("f", state.fileIndexItem.filePath);
     bodyParams.append("to", filePathAfterChange);
-    bodyParams.append(
-      "collections",
-      state.collections !== undefined ? state.collections.toString() : "true"
-    );
+    bodyParams.append("collections", state.collections ? state.collections.toString() : "true");
 
-    const result = await FetchPost(
-      new UrlQuery().UrlSyncRename(),
-      bodyParams.toString()
-    );
+    const result = await FetchPost(new UrlQuery().UrlDiskRename(), bodyParams.toString());
 
     if (result.statusCode !== 200) {
-      setError(MessageGeneralError);
-      // and renable
+      setError(MessageRenameServerError);
+      // and renewable
       setIsLoading(false);
-      setFormEnabled(true);
+      setIsFormEnabled(true);
       return;
     }
 
@@ -152,7 +134,8 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
       history.location.search,
       filePathAfterChange
     );
-    await history.navigate(replacePath, { replace: true });
+
+    history.navigate(replacePath, { replace: true });
 
     // Close window
     props.handleExit();
@@ -169,29 +152,31 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
       <div className="content">
         <div className="modal content--subheader">{MessageRenameFileName}</div>
         <div className="modal content--text">
-          <FormControl
-            onInput={handleUpdateChange}
-            name="filename"
-            contentEditable={isFormEnabled}
-          >
+          <FormControl onInput={handleUpdateChange} name="filename" contentEditable={isFormEnabled}>
             {state.fileIndexItem.fileName}
           </FormControl>
 
           {error && (
-            <div className="warning-box--under-form warning-box">{error}</div>
+            <div
+              data-test="modal-detailview-rename-file-warning-box"
+              className="warning-box--under-form warning-box"
+            >
+              {error}
+            </div>
           )}
 
           <button
             disabled={
               state.fileIndexItem.fileName === fileName ||
               !isFormEnabled ||
-              loading ||
+              isLoading ||
               !buttonState
             }
+            data-test="modal-detailview-rename-file-btn-default"
             className="btn btn--default"
             onClick={pushRenameChange}
           >
-            {loading ? "Loading..." : MessageRenameFileName}
+            {isLoading ? "Loading..." : MessageRenameFileName}
           </button>
         </div>
       </div>

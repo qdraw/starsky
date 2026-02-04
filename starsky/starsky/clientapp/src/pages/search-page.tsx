@@ -1,18 +1,17 @@
-import { RouteComponentProps } from "@reach/router";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import Preloader from "../components/atoms/preloader/preloader";
 import ApplicationException from "../components/organisms/application-exception/application-exception";
 import ArchiveContextWrapper from "../contexts-wrappers/archive-wrapper";
-import useLocation from "../hooks/use-location";
+import useLocation from "../hooks/use-location/use-location";
 import useSearchList from "../hooks/use-searchlist";
 import { PageType } from "../interfaces/IDetailView";
-import { URLPath } from "../shared/url-path";
+import { URLPath } from "../shared/url/url-path";
 
-const SearchPage: FunctionComponent<RouteComponentProps<any>> = () => {
-  var history = useLocation();
+export const SearchPage: FunctionComponent = () => {
+  const history = useLocation();
 
-  var urlObject = new URLPath().StringToIUrl(history.location.search);
-  var searchList = useSearchList(urlObject.t, urlObject.p, true);
+  const urlObject = new URLPath().StringToIUrl(history.location.search);
+  const searchList = useSearchList(urlObject.t, urlObject.p, true);
 
   if (!searchList) return <>Something went wrong</>;
   if (searchList.pageType === PageType.ApplicationException) {
@@ -29,5 +28,3 @@ const SearchPage: FunctionComponent<RouteComponentProps<any>> = () => {
     </>
   );
 };
-
-export default SearchPage;

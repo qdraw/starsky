@@ -1,0 +1,56 @@
+{
+  "name": "starsky",
+  "version": "0.7.10",
+  "private": true,
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "prestart": "node scripts/prestart.js",
+    "start": "docusaurus start --port 3003",
+    "prebuild": "node scripts/prestart.js",
+    "build": "docusaurus build",
+    "postbuild": "node scripts/postbuild.js",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "preclear": "node scripts/clear.js",
+    "clear": "docusaurus clear",
+    "clean": "npm run clear",
+    "serve": "docusaurus serve",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids",
+    "typecheck": "tsc",
+    "update": "node ../starsky-tools/build-tools/documentation-create-docusaurus-update.js",
+    "update:install": "npm run update",
+    "update:yes": "npm run update"
+  },
+  "dependencies": {
+    "@cmfcmf/docusaurus-search-local": "^1.1.0",
+    "@docusaurus/core": "3.9.2",
+    "@docusaurus/preset-classic": "3.9.2",
+    "@mdx-js/react": "^3.0.0",
+    "clsx": "^2.0.0",
+    "prism-react-renderer": "^2.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.7.0",
+    "@docusaurus/tsconfig": "3.6.1",
+    "@docusaurus/types": "3.6.3",
+    "typescript": "~5.7.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 3 chrome version",
+      "last 3 firefox version",
+      "last 5 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0"
+  }
+}

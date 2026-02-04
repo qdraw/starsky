@@ -1,24 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{82ba730f-0aca-470d-ad0e-af046d422f8c}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.4.9</Version>
+        <Version>0.7.10</Version>
+        <Nullable>enable</Nullable>
+        <RootNamespace>starsky.foundation.readmeta</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.13" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.13" />
-        <PackageReference Include="XmpCore" Version="6.1.10" />
-        <PackageReference Include="MetadataExtractor" Version="2.4.3" />
+        <PackageReference Include="GeoTimeZone" Version="6.1.0"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+        <PackageReference Include="XmpCore" Version="6.1.10.1"/>
+        <PackageReference Include="MetadataExtractor" Version="2.9.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

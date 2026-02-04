@@ -1,21 +1,24 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { render, screen } from "@testing-library/react";
+import { act } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import * as Modal from "../../atoms/modal/modal";
 import ModalDownload from "./modal-download";
 
 describe("ModalDownload", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     // interface IModalExportProps {
     //   isOpen: boolean;
     //   select: Array<string> | undefined;
     //   handleExit: Function;
     // }
-    shallow(
+    render(
       <ModalDownload
         collections={false}
         select={["/"]}
@@ -33,11 +36,11 @@ describe("ModalDownload", () => {
       statusCode: 200,
       data: null
     } as IConnectionDefault;
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = mount(
+    const modal = render(
       <ModalDownload
         collections={false}
         select={["/"]}
@@ -46,9 +49,9 @@ describe("ModalDownload", () => {
       ></ModalDownload>
     );
 
-    expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="thumbnail"]')).toBeTruthy();
-    expect(modal.exists('[data-test="orginal"]')).toBeTruthy();
+    expect(useFetchSpy).toHaveBeenCalled();
+    expect(screen.getByTestId("thumbnail")).toBeTruthy();
+    expect(screen.getByTestId("original")).toBeTruthy();
 
     // and clean afterwards
     act(() => {
@@ -75,18 +78,16 @@ describe("ModalDownload", () => {
       .mockImplementationOnce(() => {});
 
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockFetchGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault
-    );
+    const mockFetchGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockFetchGetIConnectionDefault);
 
-    var modal = mount(
+    const modal = render(
       <ModalDownload
         collections={false}
         select={["/file0", "/file1.jpg"]}
@@ -95,13 +96,11 @@ describe("ModalDownload", () => {
       ></ModalDownload>
     );
 
-    var item = modal.find('[data-test="thumbnail"]');
+    const thumbnail = screen.queryByTestId("thumbnail");
+    expect(thumbnail).toBeTruthy();
+    thumbnail?.click();
 
-    act(() => {
-      item.simulate("click");
-    });
-
-    expect(fetchPostSpy).toBeCalled();
+    expect(fetchPostSpy).toHaveBeenCalled();
 
     // and clean afterwards
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -116,11 +115,11 @@ describe("ModalDownload", () => {
       statusCode: 415,
       data: null
     } as IConnectionDefault;
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = mount(
+    const modal = render(
       <ModalDownload
         collections={false}
         select={["/"]}
@@ -129,9 +128,13 @@ describe("ModalDownload", () => {
       ></ModalDownload>
     );
 
-    expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="btn-test"]')).toBeFalsy();
-    expect(modal.exists('[data-test="orginal"]')).toBeTruthy();
+    expect(useFetchSpy).toHaveBeenCalled();
+
+    const btnTest = screen.queryByTestId("btn-test");
+    const original = screen.queryByTestId("original");
+
+    expect(btnTest).toBeNull();
+    expect(original).not.toBeNull();
 
     // and clean afterwards
     act(() => {
@@ -155,22 +158,15 @@ describe("ModalDownload", () => {
       statusCode: 415,
       data: null
     } as IConnectionDefault;
-    jest
-      .spyOn(useFetch, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(useFetch, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var handleExitSpy = jest.fn();
+    const handleExitSpy = jest.fn();
 
-    var modal = mount(
-      <ModalDownload
-        collections={false}
-        select={["/"]}
-        isOpen={true}
-        handleExit={handleExitSpy}
-      />
+    const modal = render(
+      <ModalDownload collections={false} select={["/"]} isOpen={true} handleExit={handleExitSpy} />
     );
 
-    expect(handleExitSpy).toBeCalled();
+    expect(handleExitSpy).toHaveBeenCalled();
 
     // and clean afterwards
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});

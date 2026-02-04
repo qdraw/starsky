@@ -1,5 +1,4 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { render } from "@testing-library/react";
 import * as useFetch from "../hooks/use-fetch";
 import { newIArchive } from "../interfaces/IArchive";
 import { newIConnectionDefault } from "../interfaces/IConnectionDefault";
@@ -7,18 +6,18 @@ import Trash from "./trash";
 
 describe("Trash", () => {
   it("renders", () => {
-    shallow(<Trash {...newIArchive()} />);
+    render(<Trash {...newIArchive()} />);
   });
 
   it("check if warning exist with no items in the list", () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
-    var spyGet = jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
+    const spyGet = jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
       return newIConnectionDefault();
     });
 
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
-    const container = mount(
+    const container = render(
       <Trash
         {...newIArchive()}
         colorClassActiveList={[]}
@@ -26,8 +25,8 @@ describe("Trash", () => {
         fileIndexItems={[]}
       />
     );
-    expect(container.exists(".warning-box")).toBeTruthy();
+    expect(container.container.innerHTML).toContain("warning-box");
 
-    expect(spyGet).toBeCalled();
+    expect(spyGet).toHaveBeenCalled();
   });
 });

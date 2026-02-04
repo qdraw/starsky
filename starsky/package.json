@@ -1,0 +1,18 @@
+{
+  "name": "clientapp",
+  "scripts": {
+    "preinstall": "cd starsky && cd clientapp && npm ci",
+    "start": "cd starsky && cd clientapp && npm run start",
+    "build": "cd starsky && cd clientapp && npm run build",
+    "test": "cd starsky && cd clientapp && npm run test",
+    "test:ci": "cd starsky && cd clientapp && npm run test:ci",
+    "storybook": "cd starsky && cd clientapp && npm run storybook",
+    "lint:fix": "cd starsky && cd clientapp && npm run lint:fix",
+    "lint": "cd starsky && cd clientapp && npm run lint",
+    "update:install": "cd starsky && cd clientapp && npm run update:install",
+    "format": "cd starsky && cd clientapp && npm run format"
+  },
+  "devDependencies": {
+    "body-parser": "^2.0.0"
+  }
+}

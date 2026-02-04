@@ -1,58 +1,54 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
-import React from "react";
-import MoreMenu, { MoreMenuEventCloseConst } from "./more-menu";
+import { render, screen } from "@testing-library/react";
+import { useState } from "react";
+import MoreMenu from "./more-menu";
 
 describe("More Menu", () => {
   it("renders", () => {
-    shallow(<MoreMenu />);
+    render(<MoreMenuWrapper></MoreMenuWrapper>);
   });
 
-  it("get childeren", () => {
-    var element = shallow(<MoreMenu>test</MoreMenu>);
-    expect(element.find(".menu-options").text()).toBe("test");
+  function MoreMenuWrapper() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, setEnableMoreMenu] = useState(false);
+    return <MoreMenu setEnableMoreMenu={setEnableMoreMenu}>test</MoreMenu>;
+  }
+
+  it("menu-menu-button should open", () => {
+    render(<MoreMenuWrapper></MoreMenuWrapper>);
+
+    const moreMenuButton = screen.getByTestId("menu-menu-button");
+    moreMenuButton.click();
+
+    expect(moreMenuButton.className).toBe("item item--more");
   });
 
-  it("toggle", () => {
-    var element = shallow(<MoreMenu>test</MoreMenu>);
+  it("get children", () => {
+    const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
+    const menuOptions = screen.queryAllByTestId("menu-options")[0];
 
-    act(() => {
-      element.find(".menu-context").simulate("click");
-    });
+    expect(menuOptions.innerHTML).toBe("test");
 
-    expect(element.find(".menu-context").props().className).toBe(
-      "menu-context"
-    );
+    element.unmount();
   });
 
-  it("toggle no childeren", () => {
-    var element = shallow(<MoreMenu />);
+  it("toggle", async () => {
+    const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
 
-    act(() => {
-      element.find(".menu-context").simulate("click");
-    });
+    const menuContext = element.queryAllByTestId("menu-context")[0];
+    // need to await here
+    await menuContext.click();
 
-    expect(element.find(".menu-context").props().className).toBe(
-      "menu-context menu-context--hide"
-    );
+    expect(menuContext.className).toBe("menu-context menu-context--hide");
   });
 
-  it("turn off using event", (done) => {
-    var element = mount(<MoreMenu>test</MoreMenu>);
+  it("toggle no children", () => {
+    const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
 
-    act(() => {
-      element.find(".menu-context").simulate("click");
-    });
+    const menuContext = screen.queryAllByTestId("menu-context")[0];
+    menuContext.click();
 
-    window.addEventListener(MoreMenuEventCloseConst, () => {
-      expect(element.find(".menu-context").props().className).toBe(
-        "menu-context menu-context--hide"
-      );
-      done();
-    });
+    expect(menuContext.className).toBe("menu-context menu-context--hide");
 
-    act(() => {
-      window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst));
-    });
+    element.unmount();
   });
 });

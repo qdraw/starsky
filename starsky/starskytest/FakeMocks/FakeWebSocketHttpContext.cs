@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.realtime.Middleware
+namespace starskytest.FakeMocks
 {
+#pragma warning disable 8764
+	[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
 	public class FakeWebSocketHttpContext : HttpContext
 	{
 		public FakeWebSocketHttpContext(bool userLoggedIn = true)
@@ -24,15 +26,17 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			Response = new DefaultHttpContext().Response;
 		}
 		public override void Abort() { }
-		public override ConnectionInfo Connection { get; }
-		public override IFeatureCollection Features { get; }
-		public override IDictionary<object, object> Items { get; set; }
-		public override HttpRequest Request { get; }
+		public override ConnectionInfo? Connection { get; }
+		public override IFeatureCollection? Features { get; }
+
+		public override IDictionary<object, object?> Items { get; set; } =
+			new Dictionary<object, object?>();
+		public override HttpRequest? Request { get; }
 		public override CancellationToken RequestAborted { get; set; }
-		public override IServiceProvider RequestServices { get; set; }
-		public override HttpResponse Response { get; }
-		public override ISession Session { get; set; }
-		public override string TraceIdentifier { get; set; }
+		public override IServiceProvider? RequestServices { get; set; }
+		public override HttpResponse? Response { get; }
+		public override ISession? Session { get; set; }
+		public override string? TraceIdentifier { get; set; }
 		public sealed override ClaimsPrincipal User { get; set; }
 		public override WebSocketManager WebSockets { get; }
 	}
@@ -46,13 +50,17 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			
 #pragma warning disable 1998
 		// ReSharper disable once ArrangeModifiersOrder
-		public async override Task<WebSocket> AcceptWebSocketAsync(string subProtocol)
+		public async override Task<WebSocket> AcceptWebSocketAsync(string? subProtocol)
 #pragma warning restore 1998
 		{
 			return FakeWebSocket;
 		}
 
 		public override bool IsWebSocketRequest { get; }
-		public override IList<string> WebSocketRequestedProtocols { get; }
+
+		public override IList<string> WebSocketRequestedProtocols { get; } =
+			new List<string>();
 	}
+#pragma warning restore 8764
+	
 }

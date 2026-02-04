@@ -1,34 +1,35 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import React, { act } from "react";
 import { IArchive, newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
-import * as FetchGet from "../../../shared/fetch-get";
-import * as FetchPost from "../../../shared/fetch-post";
-import { UrlQuery } from "../../../shared/url-query";
+import * as FetchGet from "../../../shared/fetch/fetch-get";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
+import { UrlQuery } from "../../../shared/url/url-query";
 import * as Modal from "../../atoms/modal/modal";
 import ModalArchiveMkdir from "./modal-archive-mkdir";
 
 describe("ModalArchiveMkdir", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
-    shallow(
+    render(
       <ModalArchiveMkdir
         dispatch={jest.fn()}
-        state={{} as any}
+        state={{} as IArchiveProps}
         isOpen={true}
         handleExit={() => {}}
-      >
-        test
-      </ModalArchiveMkdir>
+      />
     );
   });
 
   describe("mkdir", () => {
     it("to non valid dirname", async () => {
-      var state = {} as IArchiveProps;
-      var contextValues = { state, dispatch: jest.fn() };
+      const state = {} as IArchiveProps;
+      const contextValues = { state, dispatch: jest.fn() };
 
       jest
         .spyOn(React, "useContext")
@@ -42,7 +43,7 @@ describe("ModalArchiveMkdir", () => {
           return contextValues;
         });
 
-      var modal = mount(
+      const modal = render(
         <ModalArchiveMkdir
           state={state}
           dispatch={jest.fn()}
@@ -51,27 +52,26 @@ describe("ModalArchiveMkdir", () => {
         ></ModalArchiveMkdir>
       );
 
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      const button = screen.queryByTestId("modal-archive-mkdir-btn-default") as HTMLButtonElement;
+
+      const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
-      act(() => {
-        modal.find('[data-name="directoryname"]').getDOMNode().textContent =
-          "f";
-        modal.find('[data-name="directoryname"]').simulate("input");
-      });
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // update component + now press a key
+      directoryName.textContent = "a";
+      const inputEvent = createEvent.input(directoryName, { key: "a" });
+      fireEvent(directoryName, inputEvent);
 
       // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(screen.getByTestId("modal-archive-mkdir-warning-box")).toBeTruthy();
 
-      var submitButtonAfter = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
 
       // cleanup
@@ -82,36 +82,34 @@ describe("ModalArchiveMkdir", () => {
     it("submit mkdir", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
 
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       // use ==> import * as FetchGet from '../shared/fetch-get';
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
-          statusCode: 202,
-          data: {
-            ...newIArchive(),
-            fileIndexItems: [],
-            pageType: PageType.Search
-          } as IArchiveProps
-        } as IConnectionDefault
-      );
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 202,
+        data: {
+          ...newIArchive(),
+          fileIndexItems: [],
+          pageType: PageType.Search
+        } as IArchiveProps
+      } as IConnectionDefault);
 
-      var fetchGetSpy = jest
+      const fetchGetSpy = jest
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      var state = {
+      const state = {
         subPath: "/test"
       } as IArchive;
-      var contextValues = { state, dispatch: jest.fn() };
+      const contextValues = { state, dispatch: jest.fn() };
 
-      var modal = mount(
+      const modal = render(
         <ModalArchiveMkdir
           state={state}
           dispatch={contextValues.dispatch}
@@ -120,33 +118,33 @@ describe("ModalArchiveMkdir", () => {
         ></ModalArchiveMkdir>
       );
 
-      act(() => {
-        modal.find('[data-name="directoryname"]').getDOMNode().textContent =
-          "new folder";
-        modal.find('[data-name="directoryname"]').simulate("input");
-      });
+      const button = screen.queryByTestId("modal-archive-mkdir-btn-default") as HTMLButtonElement;
+
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      directoryName.textContent = "new folder";
+      const inputEvent = createEvent.input(directoryName, { key: "a" });
+      fireEvent(directoryName, inputEvent);
 
       // await is needed
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
       // to create new directory
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlSyncMkdir(),
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
+        new UrlQuery().UrlDiskMkdir(),
         "f=%2Ftest%2Fnew+folder"
       );
 
       // to get the update
-      expect(fetchGetSpy).toBeCalled();
-      expect(fetchGetSpy).toBeCalledWith(
-        new UrlQuery().UrlIndexServerApi({ f: "/test" })
-      );
+      expect(fetchGetSpy).toHaveBeenCalled();
+      expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlIndexServerApi({ f: "/test" }));
 
       // to update context
-      expect(contextValues.dispatch).toBeCalled();
-      expect(contextValues.dispatch).toBeCalledWith({
+      expect(contextValues.dispatch).toHaveBeenCalled();
+      expect(contextValues.dispatch).toHaveBeenCalledWith({
         payload: { fileIndexItems: [], pageType: "Search" },
         type: "force-reset"
       });
@@ -164,18 +162,18 @@ describe("ModalArchiveMkdir", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = mount(
+      const component = render(
         <ModalArchiveMkdir
-          state={{} as any}
+          state={{} as IArchiveProps}
           isOpen={true}
           dispatch={jest.fn()}
           handleExit={handleExitSpy}
         />
       );
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       // and clean afterwards
       component.unmount();

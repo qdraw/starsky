@@ -1,34 +1,99 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
-import {
-  IDetailView,
-  newDetailView,
-  PageType
-} from "../interfaces/IDetailView";
+import { IDetailView, PageType, newDetailView } from "../interfaces/IDetailView";
 import { CastToInterface } from "../shared/cast-to-interface";
 import { FileListCache } from "../shared/filelist-cache";
-import { URLPath } from "../shared/url-path";
-import { UrlQuery } from "../shared/url-query";
+import { URLPath } from "../shared/url/url-path";
+import { UrlQuery } from "../shared/url/url-query";
 
 export interface IFileList {
   archive?: IArchive;
   detailView?: IDetailView;
   pageType: PageType;
   parent: string;
-  fetchContent: (
-    location: string,
-    abortController: AbortController
+  fetchUseFileListContentCache: (
+    locationLocal: string,
+    locationSearch: string,
+    abortController: AbortController,
+    setPageTypeHelper: (responseObject: IDetailView | IArchive) => boolean,
+    resetPageTypeBeforeLoading: boolean,
+    setPageType: (value: SetStateAction<PageType>) => void
   ) => Promise<void>;
-  fetchContentCache: (
-    location: string,
-    abortController: AbortController
-  ) => Promise<void>;
+  setPageTypeHelper: (responseObject: IDetailView | IArchive) => boolean;
 }
+
+export const fetchContentUseFileList = async (
+  locationLocal: string,
+  locationSearch: string,
+  abortController: AbortController,
+  setPageTypeHelper: (responseObject: IDetailView | IArchive) => void,
+  resetPageTypeBeforeLoading: boolean,
+  setPageType: (value: SetStateAction<PageType>) => void
+): Promise<void> => {
+  try {
+    // force start with a loading icon
+    if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
+
+    const res: Response = await fetch(locationLocal, {
+      signal: abortController.signal,
+      credentials: "include",
+      method: "get"
+    });
+
+    if (res.status === 404) {
+      setPageType(PageType.NotFound);
+      return;
+    } else if (res.status === 401) {
+      setPageType(PageType.Unauthorized);
+      return;
+    } else if (res.status >= 400 && res.status <= 550) {
+      setPageType(PageType.ApplicationException);
+      return;
+    }
+
+    const responseObject = await res.json();
+    setPageTypeHelper(responseObject);
+    new FileListCache().CacheSet(locationSearch, responseObject);
+  } catch (e: unknown) {
+    if ((e as { message: string })?.message?.indexOf("aborted") >= 0) {
+      return;
+    }
+    console.error(e);
+    setPageType(PageType.ApplicationException);
+  }
+};
+
+const fetchUseFileListContentCache = async (
+  locationLocal: string,
+  locationSearch: string,
+  abortController: AbortController,
+  setPageTypeHelper: (responseObject: IDetailView | IArchive) => boolean,
+  resetPageTypeBeforeLoading: boolean,
+  setPageType: (value: SetStateAction<PageType>) => void
+): Promise<void> => {
+  const content = new FileListCache().CacheGet(locationSearch);
+  if (content) {
+    console.log(
+      ` -- Cache Content ${new Date(content.dateCache).toLocaleTimeString()} ${locationSearch} -- `
+    );
+    setPageTypeHelper(content);
+  } else {
+    console.log(` -- Fetch Content ${locationSearch} -- `);
+    await fetchContentUseFileList(
+      locationLocal,
+      locationSearch,
+      abortController,
+      setPageTypeHelper,
+      resetPageTypeBeforeLoading,
+      setPageType
+    );
+  }
+};
 
 /**
  * Hook to get index API
  * @param locationSearch with query parameter "?f=/"
- * @param resetPageTypeBeforeLoading start direct with loading state = true is enable, use false to have smooth page transistions
+ * @param resetPageTypeBeforeLoading start direct with loading state = true is enable, use false to have smooth page transitions
  */
 const useFileList = (
   locationSearch: string,
@@ -40,102 +105,51 @@ const useFileList = (
   const [parent, setParent] = useState("/");
   const location = new UrlQuery().UrlQueryServerApi(locationSearch);
 
-  /**
-   * fetchContent inside useFileList
-   * @param locationLocal url
-   * @param abortController how to abort
-   * @returns promise with no content
-   */
-  const fetchContent = async (
-    locationLocal: string,
-    abortController: AbortController
-  ): Promise<void> => {
-    try {
-      // force start with a loading icon
-      if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
-
-      const res: Response = await fetch(locationLocal, {
-        signal: abortController.signal,
-        credentials: "include",
-        method: "get"
-      });
-
-      if (res.status === 404) {
-        setPageType(PageType.NotFound);
-        return;
-      } else if (res.status === 401) {
-        setPageType(PageType.Unauthorized);
-        return;
-      } else if (res.status >= 400 && res.status <= 550) {
-        setPageType(PageType.ApplicationException);
-        return;
-      }
-
-      const responseObject = await res.json();
-      setPageTypeHelper(responseObject);
-      new FileListCache().CacheSet(locationSearch, responseObject);
-    } catch (e) {
-      console.error(e);
-      setPageType(PageType.ApplicationException);
-    }
-  };
-
-  const setPageTypeHelper = (responseObject: any) => {
+  const setPageTypeHelper = (responseObject: IDetailView | IArchive): boolean => {
     setParent(new URLPath().getParent(locationSearch));
 
     if (
-      !responseObject ||
-      !responseObject.pageType ||
-      responseObject.pageType === PageType.NotFound ||
-      responseObject.pageType === PageType.ApplicationException
-    )
-      return;
+      !responseObject?.pageType ||
+      responseObject?.pageType === PageType.NotFound ||
+      responseObject?.pageType === PageType.ApplicationException
+    ) {
+      return false;
+    }
 
     responseObject.sort = new URLPath().StringToIUrl(locationSearch).sort;
     setPageType(responseObject.pageType);
     switch (responseObject.pageType) {
       case PageType.Archive:
-        const archiveMedia = new CastToInterface().MediaArchive(responseObject);
-        setArchive(archiveMedia.data);
-        break;
+        setArchive(new CastToInterface().MediaArchive(responseObject).data);
+        return true;
       case PageType.DetailView:
-        const detailViewMedia = new CastToInterface().MediaDetailView(
-          responseObject
-        );
-        setDetailView(detailViewMedia.data);
-        break;
+        setDetailView(new CastToInterface().MediaDetailView(responseObject).data);
+        return true;
       default:
         break;
     }
-  };
-
-  const fetchContentCache = async (
-    locationScoped: string,
-    abortController: AbortController
-  ): Promise<void> => {
-    var content = new FileListCache().CacheGet(locationSearch);
-    if (content) {
-      console.log(
-        "-- Gets Cache",
-        new Date(content.dateCache).toLocaleTimeString()
-      );
-      setPageTypeHelper(content);
-    } else {
-      console.log(" -- Fetch Content");
-      await fetchContent(locationScoped, abortController);
-    }
+    return false;
   };
 
   useEffect(() => {
     const abortController = new AbortController();
-    fetchContentCache(location, abortController);
+    fetchUseFileListContentCache(
+      location,
+      locationSearch,
+      abortController,
+      setPageTypeHelper,
+      resetPageTypeBeforeLoading,
+      setPageType
+    ).then(() => {
+      // do nothing
+    });
 
     return () => {
       abortController.abort();
     };
 
     // dependency: 'locationSearch'. is not added to avoid a lot of queries
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [location]);
 
   return {
@@ -143,8 +157,8 @@ const useFileList = (
     detailView,
     pageType,
     parent,
-    fetchContent,
-    fetchContentCache
+    fetchUseFileListContentCache,
+    setPageTypeHelper
   };
 };
 

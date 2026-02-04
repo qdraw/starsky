@@ -1,0 +1,39 @@
+name: Update Application version auto
+permissions:
+  contents: write
+on:
+  push:
+    branches:
+      - master
+      - release/*
+    paths: 
+      - 'starsky-tools/build-tools/app-version-update.js'
+      - '.github/workflows/global-update-application-version-auto.yml'      
+  workflow_dispatch:
+
+jobs: 
+  run:
+    name: Application Version Auto update (job)
+    runs-on: ubuntu-latest
+    steps: 
+    - name: Checkout repo
+      uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+
+    - name: Set up Node.js
+      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
+      with:
+        node-version: 22.x
+      
+    - name: Npm app-version-update
+      working-directory: ./starsky-tools/build-tools
+      run: npm run app-version-update
+
+    - name: Commit changes
+      uses: EndBug/add-and-commit@2df77c10fb02f084460f06c7d7a576a43bd00b86
+      with:
+        author_name: Application Version Update Bot
+        author_email: qdraw@users.noreply.github.com
+        message: "Auto commited Application Version update"
+        add: "."
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+

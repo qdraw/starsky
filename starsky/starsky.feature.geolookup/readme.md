@@ -1,5 +1,7 @@
 # Starsky Geo Core
 
+This feature assembly has the scope of providing geo lookup information to pictures
+
 ## Feature GeoLookup
 
 The goal of this feature is:

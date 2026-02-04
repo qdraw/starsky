@@ -1,32 +1,41 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>8.0</LangVersion>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>12.0</LangVersion>
         <!-- SonarQube needs this -->
         <ProjectGuid>{7f7fe502-31a8-409b-bd0b-92d7d1bfeb31}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.4.9</Version>
+        <Version>0.7.10</Version>
+        <Nullable>enable</Nullable>
+        <RootNamespace>starsky.feature.webhtmlpublish</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- For RazorLight -->
+        <!-- https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnet-core/6.0/preservecompilationcontext-not-set-by-default -->
+        <PreserveCompilationContext>true</PreserveCompilationContext>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="RazorLight" Version="2.0.0-rc.3" />
-      <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
-      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta12" />
+        <PackageReference Include="RazorLight" Version="2.3.1"/>
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-        <None Update="WebHtmlPublish\EmbeddedViews\**" CopyToOutputDirectory="PreserveNewest" />
-        <None Update="WebHtmlPublish\PublishedContent\**" CopyToOutputDirectory="PreserveNewest" />
-        <None Update="WebHtmlPublish\UserViews\**" CopyToOutputDirectory="PreserveNewest" />
+        <None Update="WebHtmlPublish\EmbeddedViews\**" CopyToOutputDirectory="PreserveNewest"/>
+        <None Update="WebHtmlPublish\PublishedContent\**" CopyToOutputDirectory="PreserveNewest"/>
+        <None Update="WebHtmlPublish\UserViews\**" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-      <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
-      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
-      <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
-      <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

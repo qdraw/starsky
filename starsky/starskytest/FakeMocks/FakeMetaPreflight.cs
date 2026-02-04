@@ -1,33 +1,60 @@
 using System.Collections.Generic;
-using starsky.feature.metaupdate.Interfaces;
+using System.Linq;
+using System.Threading.Tasks;
 using starsky.foundation.database.Models;
+using starsky.foundation.metaupdate.Interfaces;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeMetaPreflight : IMetaPreflight
 {
-	public class FakeMetaPreflight : IMetaPreflight
+	public Task<(List<FileIndexItem> fileIndexResultsList, Dictionary<string,
+		List<string>> changedFileIndexItemName)> PreflightAsync(FileIndexItem? inputModel,
+		List<string> inputFilePaths, bool append,
+		bool collections, int rotateClock)
 	{
-
-		public (List<FileIndexItem> fileIndexResultsList, Dictionary<string, List<string>>
-			changedFileIndexItemName)
-			Preflight(FileIndexItem inputModel,
-				string[] inputFilePaths, bool append, bool collections, int rotateClock)
+		if ( inputModel != null &&
+		     ( string.IsNullOrEmpty(inputModel.FilePath) || inputModel.FilePath == "/" ) &&
+		     inputFilePaths.Count != 0 )
 		{
-			var detailView = new DetailView {FileIndexItem = inputModel};
-			var changedFileIndexItemName = new Dictionary<string, List<string>>();
-			CompareAllLabelsAndRotation(changedFileIndexItemName,
-				detailView,
-				inputModel, append, rotateClock);
-			
-			return ( new List<FileIndexItem>{inputModel}, changedFileIndexItemName);
+			inputModel.FilePath = inputFilePaths.FirstOrDefault();
 		}
 
-		public void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName, DetailView detailView,
-			FileIndexItem inputModel, bool append, int rotateClock)
+		var detailView = new DetailView { FileIndexItem = inputModel };
+		var changedFileIndexItemName = new Dictionary<string, List<string>>();
+
+		if ( inputModel == null )
 		{
-			if ( !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) )
-			{
-				changedFileIndexItemName.Add(detailView.FileIndexItem.FilePath, new List<string>{"Tags"});
-			}
+			return Task.FromResult(( new List<FileIndexItem>(), changedFileIndexItemName ));
+		}
+
+		CompareAllLabelsAndRotation(changedFileIndexItemName,
+			detailView);
+
+		if ( inputModel.Status == FileIndexItem.ExifStatus.Default )
+		{
+			inputModel.Status = FileIndexItem.ExifStatus.Ok;
+		}
+
+
+		if ( inputModel.FilePath == "/_database_changed_afterwards.jpg" )
+		{
+			// include updated changedFileIndexItemName
+			return Task.FromResult(( new List<FileIndexItem> { new() }, changedFileIndexItemName ));
+		}
+
+		return Task.FromResult(( new List<FileIndexItem> { inputModel },
+			changedFileIndexItemName ));
+	}
+
+	private static void CompareAllLabelsAndRotation(
+		Dictionary<string, List<string>> changedFileIndexItemName, DetailView detailView)
+	{
+		if ( detailView.FileIndexItem?.FilePath != null &&
+		     !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) )
+		{
+			changedFileIndexItemName.Add(detailView.FileIndexItem!.FilePath,
+				new List<string> { "Tags" });
 		}
 	}
 }

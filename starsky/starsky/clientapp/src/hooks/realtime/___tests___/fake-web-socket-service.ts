@@ -1,18 +1,15 @@
 import WebSocketService from "../websocket-service";
 
 export class FakeWebSocketService implements WebSocketService {
-  private onOpenEvent: Event;
+  private readonly onOpenEvent: Event;
 
-  private onCloseEvent: CloseEvent;
+  private readonly onCloseEvent: CloseEvent;
 
   public OnOpenCalled: boolean = false;
   public OnCloseCalled: boolean = false;
   public OnErrorCalled: boolean = false;
 
-  constructor(
-    onOpenEvent: Event = new Event("t"),
-    onCloseEvent: CloseEvent = new CloseEvent("t")
-  ) {
+  constructor(onOpenEvent: Event = new Event("t"), onCloseEvent: CloseEvent = new CloseEvent("t")) {
     this.onOpenEvent = onOpenEvent;
     this.onCloseEvent = onCloseEvent;
   }
@@ -35,12 +32,14 @@ export class FakeWebSocketService implements WebSocketService {
   }
 
   public send(
-    data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView
   ): void {
     // it should do nothing
   }
 
-  public onMessage(callback: (event: MessageEvent) => void): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public onMessage(_callback: (event: MessageEvent) => void): void {
     // it should do nothing
   }
 }

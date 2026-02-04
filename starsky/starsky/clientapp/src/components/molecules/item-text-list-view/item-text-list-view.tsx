@@ -1,49 +1,44 @@
-import React from "react";
+import { FunctionComponent } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
+import { GetBoxClassName } from "./internal/get-box-class-name.ts";
 
 interface ItemListProps {
   fileIndexItems: IFileIndexItem[];
-  isLoading?: boolean;
   callback?(path: string): void;
 }
+
 /**
  * A list with links to the items
  */
-const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
+const ItemTextListView: FunctionComponent<ItemListProps> = (props) => {
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageNoPhotos = language.text(
-    "Er zijn geen foto's",
-    "There are no pictures"
-  );
+  const MessageNoPhotos = language.key(localization.MessageNoPhotos);
 
   if (!props.fileIndexItems)
-    return <div className="warning-box">{MessageNoPhotos}</div>;
+    return (
+      <div className="warning-box" data-test="list-text-view-no-photos-in-folder">
+        {MessageNoPhotos}
+      </div>
+    );
 
   return (
     <>
       {props.fileIndexItems.length === 0 ? (
-        <div className="warning-box">{MessageNoPhotos}</div>
+        <div className="warning-box" data-test="list-text-view-no-photos-in-folder">
+          {MessageNoPhotos}
+        </div>
       ) : (
         ""
       )}
       <ul>
-        {props.fileIndexItems.map((item, index) => (
-          <li
-            className={
-              item.isDirectory
-                ? "box isDirectory-true"
-                : item.status === IExifStatus.Ok ||
-                  item.status === IExifStatus.Default
-                ? "box isDirectory-false"
-                : "box isDirectory-false error"
-            }
-            key={item.filePath + item.lastEdited}
-          >
+        {props.fileIndexItems.map((item) => (
+          <li className={GetBoxClassName(item)} key={item.filePath + item.lastEdited}>
             {item.isDirectory ? (
               <button
                 data-test={"btn-" + item.fileName}
@@ -55,10 +50,14 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
                 {item.fileName}
               </button>
             ) : null}
-            {!item.isDirectory ? item.fileName : null}
+            {item.isDirectory ? null : item.fileName}
             {item.status !== IExifStatus.Ok &&
-            item.status !== IExifStatus.Default ? (
-              <em className="error-status">{item.status}</em>
+            item.status !== IExifStatus.Default &&
+            item.status !== IExifStatus.OkAndSame &&
+            item.status !== IExifStatus.ExifWriteNotSupported ? (
+              <em data-test={item.fileName + "-error-status"} className="error-status">
+                {item.status}
+              </em>
             ) : null}
           </li>
         ))}

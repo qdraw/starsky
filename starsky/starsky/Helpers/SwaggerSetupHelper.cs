@@ -7,7 +7,7 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.Helpers
 {
-	public class SwaggerSetupHelper
+	public sealed class SwaggerSetupHelper
 	{
 		private readonly AppSettings _appSettings;
 
@@ -15,11 +15,11 @@ namespace starsky.Helpers
 		{
 			_appSettings = appSettings;
 		}
-		
+
 		public void Add01SwaggerGenHelper(IServiceCollection services)
 		{
-			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			
+			var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+
 			services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc(_appSettings.Name, new OpenApiInfo { Title = _appSettings.Name, Version = version });
@@ -31,14 +31,14 @@ namespace starsky.Helpers
 						{
 							Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "basic" }
 						},
-						new string[] {}
+						System.Array.Empty<string>()
 					}
 				});
 				// DescribeAllEnumsAsStrings are not working
 				c.IncludeXmlComments(GetXmlCommentsPath());
 			});
 		}
-		
+
 		/// <summary>
 		/// Expose Swagger to the `/swagger/` endpoint
 		/// </summary>
@@ -47,7 +47,10 @@ namespace starsky.Helpers
 		{
 			// Use swagger only when enabled, default false
 			// recommend to disable in production
-			if ( _appSettings == null || !_appSettings.AddSwagger ) return;
+			if ( _appSettings == null || _appSettings.AddSwagger != true )
+			{
+				return;
+			}
 
 			app.UseSwagger(); // registers the two documents in separate routes
 			app.UseSwaggerUI(options =>
@@ -57,7 +60,7 @@ namespace starsky.Helpers
 				options.OAuthAppName(_appSettings.Name + " - Swagger");
 			}); // makes the ui visible    
 		}
-		
+
 		private string GetXmlCommentsPath()
 		{
 			return Path.Combine(_appSettings.BaseDirectoryProject, "starsky.xml");

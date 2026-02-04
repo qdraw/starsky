@@ -1,9 +1,10 @@
 import { OnMouseDownMouseAction } from "./on-mouse-down-mouse-action";
+import { PositionObject } from "./pan-and-zoom-image";
 
 describe("OnMoveMouseTouchAction", () => {
   it("should set values", () => {
     const setPosition = jest.fn();
-    new OnMouseDownMouseAction(jest.fn(), {} as any, setPosition).onTouchStart({
+    new OnMouseDownMouseAction(jest.fn(), {} as PositionObject, setPosition).onTouchStart({
       touches: [
         {
           clientX: 1,
@@ -11,8 +12,8 @@ describe("OnMoveMouseTouchAction", () => {
         }
       ],
       preventDefault: jest.fn()
-    } as any);
-    expect(setPosition).toBeCalledTimes(1);
-    expect(setPosition).toBeCalledWith({ oldX: 1, oldY: 1 });
+    } as unknown as TouchEvent);
+    expect(setPosition).toHaveBeenCalledTimes(1);
+    expect(setPosition).toHaveBeenCalledWith({ oldX: 1, oldY: 1 });
   });
 });

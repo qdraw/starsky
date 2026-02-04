@@ -1,0 +1,5 @@
+dist/
+build/
+runtime-starsky*
+coverage
+.sonar/

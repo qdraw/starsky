@@ -1,7 +1,19 @@
-import { storiesOf } from "@storybook/react";
-import React from "react";
 import MoreMenu from "./more-menu";
 
-storiesOf("components/atoms/more-menu", module).add("default", () => {
-  return <MoreMenu>test</MoreMenu>;
-});
+export default {
+  title: "components/atoms/more-menu"
+};
+
+export const Default = () => {
+  return (
+    <MoreMenu
+      setEnableMoreMenu={() => {
+        alert("test");
+      }}
+    >
+      test
+    </MoreMenu>
+  );
+};
+
+Default.storyName = "default";

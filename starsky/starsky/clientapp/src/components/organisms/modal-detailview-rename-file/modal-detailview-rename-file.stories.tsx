@@ -1,18 +1,18 @@
-import { storiesOf } from "@storybook/react";
-import React from "react";
+import { IDetailView } from "../../../interfaces/IDetailView";
 import ModalDetailviewRenameFile from "./modal-detailview-rename-file";
 
-storiesOf("components/organisms/modal-detailview-rename-file", module).add(
-  "default",
-  () => {
-    return (
-      <ModalDetailviewRenameFile
-        state={{} as any}
-        isOpen={true}
-        handleExit={() => {}}
-      >
-        test
-      </ModalDetailviewRenameFile>
-    );
-  }
-);
+export default {
+  title: "components/organisms/modal-detailview-rename-file"
+};
+
+export const Default = () => {
+  return (
+    <ModalDetailviewRenameFile
+      state={{} as IDetailView}
+      isOpen={true}
+      handleExit={() => {}}
+    ></ModalDetailviewRenameFile>
+  );
+};
+
+Default.storyName = "default";

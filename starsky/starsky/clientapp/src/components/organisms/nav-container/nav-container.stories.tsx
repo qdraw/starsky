@@ -1,10 +1,13 @@
-import { storiesOf } from "@storybook/react";
-import React from "react";
+import { useState } from "react";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
 import NavContainer from "./nav-container";
 
-storiesOf("components/organisms/nav-container", module).add("default", () => {
-  const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
+export default {
+  title: "components/organisms/nav-container"
+};
+
+export const Default = () => {
+  const [hamburgerMenu, setHamburgerMenu] = useState(false);
   return (
     <header className="header">
       <div style={{ backgroundColor: "red" }}>
@@ -20,4 +23,6 @@ storiesOf("components/organisms/nav-container", module).add("default", () => {
       </NavContainer>
     </header>
   );
-});
+};
+
+Default.storyName = "default";

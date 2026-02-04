@@ -8,8 +8,9 @@ namespace starsky.foundation.database.Interfaces
 	{
 		Task<bool> IsHashInImportDbAsync(string fileHashCode);
 		bool TestConnection();
-		Task<bool> AddAsync(ImportIndexItem updateStatusContent);
+		Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool writeConsole = true);
 		List<ImportIndexItem> History();
 		Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList);
+		Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem, int maxAttemptCount = 3);
 	}
 }

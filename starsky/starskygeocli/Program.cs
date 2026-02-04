@@ -1,50 +1,61 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Services;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.http.Interfaces;
+using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.webtelemetry.Extensions;
+using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 
-namespace starskyGeoCli
+namespace starskyGeoCli;
+
+public static class Program
 {
-	public static class Program
+	public static async Task Main(string[] args)
 	{
-		public static async Task Main(string[] args)
-		{
-			// Use args in application
-			new ArgsHelper().SetEnvironmentByArgs(args);
+		// Use args in application
+		new ArgsHelper().SetEnvironmentByArgs(args);
 
-			var services = new ServiceCollection();
+		var services = new ServiceCollection();
 
-			// Setup AppSettings
-			services = SetupAppSettings.FirstStepToAddSingleton(services);
+		// Setup AppSettings
+		services = await SetupAppSettings.FirstStepToAddSingleton(services);
 
-			// Inject services
-			new RegisterDependencies().Configure(services);
-			var serviceProvider = services.BuildServiceProvider();
-			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-            
-			new SetupDatabaseTypes(appSettings,services).BuilderDb();
-			serviceProvider = services.BuildServiceProvider();
+		// Inject services
+		RegisterDependencies.Configure(services);
+		var serviceProvider = services.BuildServiceProvider();
+		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
-			var geoReverseLookup = serviceProvider.GetService<IGeoReverseLookup>();
-			var geoLocationWrite = serviceProvider.GetRequiredService<IGeoLocationWrite>();
-			var geoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>();
+		services.AddOpenTelemetryMonitoring(appSettings);
+		services.AddTelemetryLogging(appSettings);
 
-			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
+		new SetupDatabaseTypes(appSettings, services).BuilderDb();
+		serviceProvider = services.BuildServiceProvider();
 
-			var console = serviceProvider.GetRequiredService<IConsole>();
-			var httpClientHelper = serviceProvider.GetRequiredService<IHttpClientHelper>();
+		var geoReverseLookup = serviceProvider.GetRequiredService<IGeoFolderReverseLookup>();
+		var geoLocationWrite = serviceProvider.GetRequiredService<IGeoLocationWrite>();
+		var geoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>();
 
-			// Help and other Command Line Tools args are included in the Geo tools 
-			await new GeoCli(geoReverseLookup, geoLocationWrite, selectorStorage,
-				appSettings, console, httpClientHelper, geoFileDownload).CommandLineAsync(args);
-		}
+		var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
+
+		var console = serviceProvider.GetRequiredService<IConsole>();
+		var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
+		var logger = serviceProvider.GetRequiredService<IWebLogger>();
+
+		// Migrations before geo-tools (not needed for this specific app, but helps the process)
+		await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
+			logger, appSettings);
+
+		// Help and other Command Line Tools args are included in the Geo tools 
+		await new GeoCli(geoReverseLookup, geoLocationWrite, selectorStorage,
+				appSettings, console, geoFileDownload, exifToolDownload, logger)
+			.CommandLineAsync(args);
 	}
 }

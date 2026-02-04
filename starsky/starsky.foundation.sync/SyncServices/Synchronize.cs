@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -17,59 +20,91 @@ using starsky.foundation.sync.SyncInterfaces;
 namespace starsky.foundation.sync.SyncServices
 {
 	[Service(typeof(ISynchronize), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class Synchronize : ISynchronize
+	public sealed class Synchronize : ISynchronize
 	{
+		private readonly ISyncAddThumbnailTable _syncAddThumbnail;
 		private readonly IStorage _subPathStorage;
 		private readonly SyncSingleFile _syncSingleFile;
 		private readonly SyncRemove _syncRemove;
-		private readonly IConsole _console;
+		private readonly ConsoleWrapper _console;
 		private readonly SyncFolder _syncFolder;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
+		private readonly SyncMultiFile _syncMultiFile;
 
-		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage)
+		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger,
+			ISyncAddThumbnailTable syncAddThumbnail, IServiceScopeFactory? serviceScopeFactory = null,
+			IMemoryCache? memoryCache = null)
 		{
+			_syncAddThumbnail = syncAddThumbnail;
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, _console);
-			_syncRemove = new SyncRemove(appSettings, query);
-			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console);
+			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, memoryCache, logger);
+			_syncRemove = new SyncRemove(appSettings, query, memoryCache, logger, serviceScopeFactory);
+			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console, logger, memoryCache, serviceScopeFactory);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
+			_syncMultiFile = new SyncMultiFile(appSettings, query, _subPathStorage, memoryCache, logger);
 		}
-		
-		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true)
+
+		public async Task<List<FileIndexItem>> Sync(string subPath,
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null,
+			DateTime? childDirectoriesAfter = null)
+		{
+			return await _syncAddThumbnail.SyncThumbnailTableAsync(
+				await SyncWithoutThumbnail(subPath, updateDelegate,
+					childDirectoriesAfter));
+		}
+
+		/// <summary>
+		/// Sync list by subPaths
+		/// </summary>
+		/// <param name="subPaths"></param>
+		/// <param name="updateDelegate"></param>
+		/// <returns></returns>
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths,
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
+		{
+			var results = await _syncMultiFile.MultiFile(subPaths, updateDelegate);
+			return await _syncAddThumbnail.SyncThumbnailTableAsync(results);
+		}
+
+		private async Task<List<FileIndexItem>> SyncWithoutThumbnail(string subPath,
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null,
+			DateTime? childDirectoriesAfter = null)
 		{
 			// Prefix / for database
 			subPath = PathHelper.PrefixDbSlash(subPath);
-			if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
-			
-			if ( FilterCommonTempFiles.Filter(subPath)  || _syncIgnoreCheck.Filter(subPath)  ) 
-				return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
+			if ( subPath != "/" )
+			{
+				subPath = PathHelper.RemoveLatestSlash(subPath);
+			}
 
-			_console.WriteLine($"Sync {subPath}");
-			
+			if ( FilterCommonTempFiles.Filter(subPath) || _syncIgnoreCheck.Filter(subPath) )
+			{
+				return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
+			}
+
+			_console.WriteLine($"[Synchronize] Sync {subPath} {DateTimeDebug()}");
+
 			// ReSharper disable once ConvertSwitchStatementToSwitchExpression
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-					return await _syncFolder.Folder(subPath);
+					var syncFolder = await _syncFolder.Folder(subPath,
+						updateDelegate, childDirectoriesAfter);
+					return syncFolder;
 				case FolderOrFileModel.FolderOrFileTypeList.File:
-					var item = await _syncSingleFile.SingleFile(subPath);
-					return new List<FileIndexItem>{item};
+					return await _syncSingleFile.SingleFile(subPath, updateDelegate);
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					return await _syncRemove.Remove(subPath);
+					return await _syncRemove.RemoveAsync(subPath, updateDelegate);
 				default:
 					throw new AggregateException("enum is not valid");
 			}
 		}
 
-		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, bool recursive = true)
+		internal static string DateTimeDebug()
 		{
-			var results = new List<FileIndexItem>();
-			foreach ( var subPath in subPaths )
-			{
-				results.AddRange(await Sync(subPath, recursive));
-			}
-			return results;
+			return ": " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss",
+				CultureInfo.InvariantCulture);
 		}
 	}
 }

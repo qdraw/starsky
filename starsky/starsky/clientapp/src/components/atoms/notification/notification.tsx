@@ -1,4 +1,3 @@
-import React from "react";
 import Portal, { PortalId } from "../portal/portal";
 
 type NotificationPropTypes = {
@@ -8,8 +7,8 @@ type NotificationPropTypes = {
 };
 
 export enum NotificationType {
-  default = "default" as any,
-  danger = "danger" as any
+  default = "default",
+  danger = "danger"
 }
 
 const Notification: React.FunctionComponent<NotificationPropTypes> = ({
@@ -32,8 +31,10 @@ const Notification: React.FunctionComponent<NotificationPropTypes> = ({
     <Portal>
       <div className={`notification notification--${type}`}>
         <div className="icon icon--error" />
-        <div className="content">{children}</div>
-        <button className="icon icon--close" onClick={close} />
+        <div data-test="notification-content" className="content">
+          {children}
+        </div>
+        <button data-test="notification-close" className="icon icon--close" onClick={close} />
       </div>
     </Portal>
   );

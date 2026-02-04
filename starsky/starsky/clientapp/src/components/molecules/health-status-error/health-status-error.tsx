@@ -1,20 +1,17 @@
-import React from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IHealthEntry } from "../../../interfaces/IHealthEntry";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url-query";
-import Notification, {
-  NotificationType
-} from "../../atoms/notification/notification";
+import { UrlQuery } from "../../../shared/url/url-query";
+import Notification, { NotificationType } from "../../atoms/notification/notification";
 
 const HealthStatusError: React.FunctionComponent = () => {
-  var healthCheck = useFetch(new UrlQuery().UrlHealthDetails(), "get");
+  const healthCheck = useFetch(new UrlQuery().UrlHealthDetails(), "get");
 
   const settings = useGlobalSettings();
-  const MessageCriticalErrors = new Language(settings.language).text(
-    "Er zijn kritieke fouten in de volgende onderdelen:",
-    "There are critical errors in the following components:"
+  const MessageHealthStatusCriticalErrors = new Language(settings.language).key(
+    localization.MessageHealthStatusCriticalErrorsWithTheFollowingComponents
   );
 
   if (
@@ -24,21 +21,21 @@ const HealthStatusError: React.FunctionComponent = () => {
   )
     return null;
 
-  var content: JSX.Element[] = [
-    <span key="warning">{MessageCriticalErrors}</span>
+  const content: React.JSX.Element[] = [
+    <span key="warning">{MessageHealthStatusCriticalErrors}</span>
   ];
 
-  if (!healthCheck.data || !healthCheck.data.entries) {
-    content.push(
-      <li key="backend-services">
-        BackendServices HTTP StatusCode: {healthCheck.statusCode}
-      </li>
-    );
-  } else {
-    healthCheck.data.entries.forEach((entry: IHealthEntry) => {
-      if (entry.isHealthy) return;
+  const healthCheckData = healthCheck.data as { entries: IHealthEntry[] };
+
+  if (healthCheckData?.entries) {
+    for (const entry of healthCheckData.entries) {
+      if (entry.isHealthy) continue;
       content.push(<li key={entry.name}> {entry.name}</li>);
-    });
+    }
+  } else {
+    content.push(
+      <li key="backend-services">BackendServices HTTP StatusCode: {healthCheck.statusCode}</li>
+    );
   }
 
   return <Notification type={NotificationType.danger}>{content}</Notification>;

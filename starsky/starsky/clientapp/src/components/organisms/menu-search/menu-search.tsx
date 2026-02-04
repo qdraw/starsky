@@ -1,33 +1,34 @@
 import React, { useEffect, useState } from "react";
-import {
-  ArchiveAction,
-  defaultStateFallback
-} from "../../../contexts/archive-context";
+import { ArchiveAction, defaultStateFallback } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
+import { GetArchiveSearchMenuHeaderClass } from "../../../shared/menu/get-archive-search-menu-header-class";
 import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
-import MenuOption from "../../atoms/menu-option/menu-option";
+import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
+import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
+import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
+import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
+import { MenuSelectFurther } from "../../molecules/menu-select-further/menu-select-further";
 import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
 
-export interface IMenuSearchProps {
+interface IMenuSearchProps {
   state: IArchiveProps;
   dispatch: React.Dispatch<ArchiveAction>;
 }
 
-export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
-  state,
-  dispatch
-}) => {
+const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch }) => {
   state = defaultStateFallback(state);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
@@ -36,21 +37,11 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   const language = new Language(settings.language);
 
   // Content
-  const MessageNoneSelected = language.text(
-    "Niets geselecteerd",
-    "Nothing selected"
-  );
-  const MessageSelectPresentPerfect = language.text("geselecteerd", "selected");
-  const MessageSelectAction = language.text("Selecteer", "Select");
-  const MessageSelectAll = language.text("Alles selecteren", "Select all");
-  const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
-  const MessageSelectFurther = language.text(
-    "Verder selecteren",
-    "Select further"
-  );
+  const MessageSelectAction = language.key(localization.MessageSelectAction);
+  const MessageLabels = language.key(localization.MessageLabels);
 
   // Selection
-  var history = useLocation();
+  const history = useLocation();
   const [select, setSelect] = React.useState(
     new URLPath().StringToIUrl(history.location.search).select
   );
@@ -58,40 +49,38 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
   }, [history.location.search]);
 
-  var allSelection = () =>
-    new Select(select, setSelect, state, history).allSelection();
-  var removeSidebarSelection = () =>
+  const allSelection = () => new Select(select, setSelect, state, history).allSelection();
+  const removeSidebarSelection = () =>
     new Select(select, setSelect, state, history).removeSidebarSelection();
-  var undoSelection = () =>
-    new Select(select, setSelect, state, history).undoSelection();
+  const undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
+
+  // Command + A for mac os || Ctrl + A for windows
+  useHotKeys({ key: "a", ctrlKeyOrMetaKey: true }, allSelection, []);
 
   // Sidebar
   const [sidebar, setSidebar] = React.useState(
     new URLPath().StringToIUrl(history.location.search).sidebar
   );
+  const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
+
   useEffect(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
-  var toggleLabels = () =>
-    new Sidebar(sidebar, setSidebar, history).toggleSidebar();
+  const toggleLabels = () => new Sidebar(setSidebar, history).toggleSidebar();
 
   // download modal
-  const [isModalExportOpen, setModalExportOpen] = useState(false);
-  const [isModalPublishOpen, setModalPublishOpen] = useState(false);
+  const [isModalExportOpen, setIsModalExportOpen] = useState(false);
+  // publish modal
+  const [isModalPublishOpen, setIsModalPublishOpen] = useState(false);
 
   return (
     <>
       {/* Modal download */}
       {isModalExportOpen ? (
         <ModalDownload
-          handleExit={() => setModalExportOpen(!isModalExportOpen)}
+          handleExit={() => setIsModalExportOpen(!isModalExportOpen)}
           select={
-            select
-              ? new URLPath().MergeSelectFileIndexItem(
-                  select,
-                  state.fileIndexItems
-                )
-              : []
+            select ? new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems) : []
           }
           collections={false}
           isOpen={isModalExportOpen}
@@ -102,18 +91,10 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
         select={select}
         stateFileIndexItems={state.fileIndexItems}
         isModalPublishOpen={isModalPublishOpen}
-        setModalPublishOpen={setModalPublishOpen}
+        setModalPublishOpen={setIsModalPublishOpen}
       />
 
-      <header
-        className={
-          sidebar
-            ? "header header--main header--select header--edit"
-            : select
-            ? "header header--main header--select"
-            : "header header--main "
-        }
-      >
+      <header className={GetArchiveSearchMenuHeaderClass(sidebar, select)}>
         <div className="wrapper">
           <HamburgerMenuToggle
             select={select}
@@ -121,32 +102,11 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          {select && select.length === 0 ? (
-            <button
-              data-test="selected-0"
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {MessageNoneSelected}
-            </button>
-          ) : null}
-          {select && select.length >= 1 ? (
-            <button
-              data-test={`selected-${select.length}`}
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {select.length} {MessageSelectPresentPerfect}
-            </button>
-          ) : null}
+          <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection} />
 
-          {/* te select button with checkbox*/}
-          {!select ? (
-            <div
+          {/* the select button with checkbox*/}
+          {select ? null : (
+            <button
               className={
                 state.fileIndexItems.length >= 1
                   ? "item item--select"
@@ -155,64 +115,67 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               onClick={() => {
                 removeSidebarSelection();
               }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  removeSidebarSelection();
+                }
+              }}
             >
               {MessageSelectAction}
-            </div>
-          ) : null}
+            </button>
+          )}
 
           {/* when selected */}
           {select ? (
-            <div className={"item item--labels"} onClick={() => toggleLabels()}>
-              Labels
-            </div>
+            <button
+              className={"item item--labels"}
+              onClick={() => toggleLabels()}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  toggleLabels();
+                }
+              }}
+            >
+              {MessageLabels}
+            </button>
           ) : null}
 
           {/* More menu - When in normal state */}
-          {!select ? <MoreMenu /> : null}
+          {select ? null : (
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu} />
+          )}
 
           {/* More menu - In the select context there are more options */}
-          {select && select.length === 0 ? (
-            <MoreMenu>
-              <li
-                tabIndex={0}
-                className="menu-option"
-                onClick={() => allSelection()}
-              >
-                {MessageSelectAll}
-              </li>
+          {select?.length === 0 ? (
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
             </MoreMenu>
           ) : null}
 
           {/* More menu - When more then 1 item is selected */}
           {select && select.length >= 1 ? (
-            <MoreMenu>
-              {select.length === state.fileIndexItems.length ? (
-                <li className="menu-option" onClick={() => undoSelection()}>
-                  {MessageUndoSelection}
-                </li>
-              ) : null}
-              {select.length !== state.fileIndexItems.length ? (
-                <li
-                  className="menu-option"
-                  data-test="select-all"
-                  onClick={() => allSelection()}
-                >
-                  {MessageSelectAll}
-                </li>
-              ) : null}
-              <MenuOption
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
+              <MenuOptionSelectionUndo
+                select={select}
+                state={state}
+                undoSelection={undoSelection}
+              />
+
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
+
+              <MenuOptionModal
+                isReadOnly={false}
                 testName="export"
                 isSet={isModalExportOpen}
-                set={setModalExportOpen}
-                nl="Download"
-                en="Download"
+                set={setIsModalExportOpen}
+                localization={localization.MessageDownload}
               />
-              <MenuOption
+              <MenuOptionModal
+                isReadOnly={false}
                 testName="publish"
                 isSet={isModalPublishOpen}
-                set={setModalPublishOpen}
-                nl="Publiceren"
-                en="Publish"
+                set={setIsModalPublishOpen}
+                localization={localization.MessagePublish}
               />
               <MenuOptionMoveToTrash
                 state={state}
@@ -230,20 +193,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
         </div>
       </header>
 
-      {select ? (
-        <div className="header header--sidebar header--border-left">
-          <div
-            className="item item--continue"
-            onClick={() => {
-              toggleLabels();
-            }}
-          >
-            {MessageSelectFurther}
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
+      <MenuSelectFurther select={select} toggleLabels={toggleLabels} />
     </>
   );
 };

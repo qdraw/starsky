@@ -1,0 +1,40 @@
+using System.Diagnostics.CodeAnalysis;
+using starsky.foundation.native.Trash.Helpers;
+
+namespace starsky.foundation.native.OpenApplicationNative.Helpers;
+
+using System;
+using System.Runtime.InteropServices;
+
+public class MacOsOpenDefaultApp
+{
+	public static void SetDefaultApplicationAtURL(
+		string applicationURL,
+		string fileURL)
+	{
+		var nsUrl = MacOsTrashBindingHelper.GetUrls([applicationURL]).FirstOrDefault();
+		var fileUrl = MacOsTrashBindingHelper.GetUrls([fileURL]).FirstOrDefault();
+		
+		objc_msgSend_retVoid_IntPtr_IntPtr_IntPtr(
+			MacOsOpenUrl.NsWorkspaceSharedWorksPace(),
+			MacOsTrashBindingHelper.GetSelector(
+				"setDefaultApplicationAtURL:toOpenFileAtURL:completionHandler:"),
+			nsUrl,
+			fileUrl,
+			IntPtr.Zero);
+	}
+	
+	private const string FoundationFramework =
+		"/System/Library/Frameworks/Foundation.framework/Foundation";
+
+	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
+	private static extern void objc_msgSend_retVoid_IntPtr_IntPtr_IntPtr(
+		IntPtr target,
+		IntPtr selector,
+		IntPtr param1,
+		IntPtr param2,
+		IntPtr param3);
+
+	
+
+}

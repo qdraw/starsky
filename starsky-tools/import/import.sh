@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Mac OS only:
+# launchctl load -w ~/Library/LaunchAgents/starsky.importer.plist
+# launchctl unload ~/Library/LaunchAgents/starsky.importer.plist
+# chmod +x /opt/starsky/import.sh
+# replace data_disk with your disk name
+
+BACKUP_DIR="/Volumes/data_disk/storage/fotobiebbak"
+
+
+LOCKFILE="/tmp/importd.lock"
+
+# lock file
+if [ -f $LOCKFILE ]; then
+	# Control will enter here if file exists.
+	if [ "$(( $(date +"%s") - $(stat -f "%m" "$LOCKFILE") ))" -gt "3600" ]; then
+		echo "$LOCKFILE is older then 1 hour"
+		rm $LOCKFILE
+	fi
+
+	if [ -f $LOCKFILE ]; then
+		if [ "$(( $(date +"%s") - $(stat -f "%m" "$LOCKFILE") ))" -lt "3600" ]; then
+			echo "$LOCKFILE is younger than 1 hour"
+			exit 1
+		fi
+	fi
+fi
+
+if [ ! -f $LOCKFILE ]; then
+	touch $LOCKFILE
+fi
+
+echo "script started"
+# end lock file
+
+# for /Volumes/sdcard/DCIM/101MSDCF
+find /Volumes -type d -maxdepth 2 -name "DCIM" -print0 |
+  while IFS= read -r -d '' line;
+  do
+        echo "$line"
+        if [ -d $BACKUP_DIR ]
+        then
+          # just copy
+          echo "start $BACKUP_DIR"
+          /opt/starsky/starsky/starskyimportercli --recursive true -v true -i false --path $line --structure "/yyyyMMdd_HHmmss_{filenamebase}.ext" --basepath $BACKUP_DIR -x false
+        else
+          echo "Skip: Directory $BACKUP_DIR does not exists."
+        fi
+
+        # import
+        /opt/starsky/starsky/starskyimportercli --recursive true --camera --move true -i true
+  done
+
+
+# lock file
+echo "script ended"
+
+if [ -f $LOCKFILE ]; then
+	echo "Lockfile removed"
+	rm $LOCKFILE
+fi
+# end lock file

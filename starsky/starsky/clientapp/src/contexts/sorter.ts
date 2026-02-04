@@ -14,12 +14,13 @@ export function sorter(
       );
     case SortType.imageFormat:
       return [...concatenatedFileIndexItems].sort((a, b) => {
-        if (!a.imageFormat) a.imageFormat = ImageFormat.unknown;
-        if (!b.imageFormat) b.imageFormat = ImageFormat.unknown;
+        a.imageFormat ??= ImageFormat.unknown;
+        b.imageFormat ??= ImageFormat.unknown;
 
         const enumOrder = Object.values(ImageFormat);
         return (
-          enumOrder.indexOf(a.imageFormat) - enumOrder.indexOf(b.imageFormat)
+          enumOrder.indexOf(a.imageFormat) - enumOrder.indexOf(b.imageFormat) ||
+          a.fileName.localeCompare(b.fileName, "en", { sensitivity: "base" })
         );
       });
     default:

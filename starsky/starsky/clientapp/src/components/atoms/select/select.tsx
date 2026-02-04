@@ -1,8 +1,6 @@
-import React from "react";
-
 type SelectPropTypes = {
   children?: React.ReactNode;
-  selectOptions: string[];
+  selectOptions: string[] | undefined;
   selected?: string;
   callback?(option: string): void;
 };
@@ -28,11 +26,12 @@ const Select: React.FunctionComponent<SelectPropTypes> = ({
     <select
       defaultValue={selected}
       className="select"
+      data-test="select"
       onChange={(e) => change(e.target.value)}
     >
-      {selectOptions.map((value, index) => {
+      {selectOptions.map((value) => {
         return (
-          <option key={index} value={value}>
+          <option key={value} value={value}>
             {value}
           </option>
         );

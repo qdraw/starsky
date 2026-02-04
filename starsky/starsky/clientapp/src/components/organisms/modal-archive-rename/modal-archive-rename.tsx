@@ -1,82 +1,68 @@
-import React from "react";
+import { useState } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
-import FetchPost from "../../../shared/fetch-post";
+import useLocation from "../../../hooks/use-location/use-location";
+import localization from "../../../localization/localization.json";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
-interface IModalRenameFolderProps {
+export interface IModalRenameFolderProps {
   isOpen: boolean;
   handleExit: (state?: string) => void;
   subPath: string;
   dispatch?: React.Dispatch<ArchiveAction>;
 }
 
-const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
-  props
-) => {
+const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageRenameFolder = language.text(
-    "Huidige mapnaam wijzigen",
-    "Rename current folder"
+  const MessageRenameFolder = language.key(localization.MessageRenameCurrentFolder);
+  const MessageNonValidDirectoryName: string = language.key(
+    localization.MessageNonValidDirectoryName
   );
-  const MessageNonValidDirectoryName: string = language.text(
-    "Deze mapnaam is niet valide",
-    "Directory name is not valid"
-  );
-  const MessageGeneralError: string = language.text(
-    "Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
-    "Something went wrong with the request, please try again later"
-  );
+  const MessageGeneralError: string = language.key(localization.MessageErrorGenericFail);
 
   // to show errors
   const useErrorHandler = (initialState: string | null) => {
     return initialState;
   };
-  const [error, setError] = React.useState(useErrorHandler(null));
+  const [error, setError] = useState(useErrorHandler(null));
 
   // when you are waiting on the API
-  const [loading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // The Updated that is send to the api
-  const [folderName, setFolderName] = React.useState(
-    new FileExtensions().GetFileName(props.subPath)
-  );
+  const [folderName, setFolderName] = useState(new FileExtensions().GetFileName(props.subPath));
 
-  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  const [isFormEnabled, setIsFormEnabled] = useState(true);
 
   // to know where you are
-  var history = useLocation();
+  const history = useLocation();
 
   /**
    * Update status and check if input is valid
    * @param event [Change Event]
    */
   function handleUpdateChange(
-    event:
-      | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+    event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
   ) {
     if (!isFormEnabled) return;
     if (!event.currentTarget.textContent) return null;
-    let fieldValue = event.currentTarget.textContent.trim();
+    const fieldValue = event.currentTarget.textContent.trim();
 
     setFolderName(fieldValue);
 
-    var isValidDirectoryName = new FileExtensions().IsValidDirectoryName(
-      fieldValue
-    );
-    if (!isValidDirectoryName) {
-      setError(MessageNonValidDirectoryName);
-    } else {
+    const isValidDirectoryName = new FileExtensions().IsValidDirectoryName(fieldValue);
+    if (isValidDirectoryName) {
       setError(null);
+    } else {
+      setError(MessageNonValidDirectoryName);
     }
   }
 
@@ -92,13 +78,13 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
    * Send Change request to back-end services
    * @param event : change vent
    */
-  async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+  async function pushRenameChange() {
     // Show icon with load ++ disable forms
-    setFormEnabled(false);
+    setIsFormEnabled(false);
     setIsLoading(true);
 
     // subPath style including parent folder
-    const filePathAfterChange = props.subPath.replace(
+    const filePathAfterChange = props.subPath.replaceAll(
       new FileExtensions().GetFileName(props.subPath),
       folderName
     );
@@ -112,19 +98,16 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     bodyParams.append("f", props.subPath);
     bodyParams.append("to", filePathAfterChange);
 
-    const result = await FetchPost(
-      new UrlQuery().UrlSyncRename(),
-      bodyParams.toString()
-    );
+    const result = await FetchPost(new UrlQuery().UrlDiskRename(), bodyParams.toString());
 
     if (result.statusCode !== 200) {
       // undo dispatch
       dispatchRename(props.subPath);
 
       setError(MessageGeneralError);
-      // and renable
+      // and renewable
       setIsLoading(false);
-      setFormEnabled(true);
+      setIsFormEnabled(true);
       return;
     }
 
@@ -137,7 +120,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
       filePathAfterChange
     );
 
-    await history.navigate(replacePath, { replace: true });
+    history.navigate(replacePath, { replace: true });
 
     // Close window
     props.handleExit(filePathAfterChange);
@@ -151,7 +134,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
         props.handleExit();
       }}
     >
-      <div className="content">
+      <div className="content" data-test="modal-archive-rename">
         <div className="modal content--subheader">{MessageRenameFolder}</div>
         <div className="modal content--text">
           <FormControl
@@ -163,19 +146,23 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
           </FormControl>
 
           {error && (
-            <div className="warning-box--under-form warning-box">{error}</div>
+            <div
+              data-test="modal-archive-rename-warning-box"
+              className="warning-box--under-form warning-box"
+            >
+              {error}
+            </div>
           )}
 
           <button
             disabled={
-              new FileExtensions().GetFileName(props.subPath) === folderName ||
-              !!error ||
-              loading
+              new FileExtensions().GetFileName(props.subPath) === folderName || !!error || isLoading
             }
+            data-test="modal-archive-rename-btn-default"
             className="btn btn--default"
             onClick={pushRenameChange}
           >
-            {loading ? "Loading..." : MessageRenameFolder}
+            {isLoading ? "Loading..." : MessageRenameFolder}
           </button>
         </div>
       </div>

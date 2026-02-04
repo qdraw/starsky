@@ -1,10 +1,10 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import Modal from "./modal";
 
 describe("Modal", () => {
   it("renders", () => {
-    shallow(
+    globalThis.scrollTo = jest.fn();
+    render(
       <Modal id="test2-modal" isOpen={true} handleExit={() => {}}>
         &nbsp;
       </Modal>
@@ -12,43 +12,88 @@ describe("Modal", () => {
   });
 
   describe("Close Modal", () => {
-    var handleExit = jest.fn();
-    var element = mount(
-      <Modal id="test-modal" isOpen={true} handleExit={handleExit}>
-        &nbsp;
-      </Modal>
-    );
+    function renderModal(): {
+      handleExit: jest.Mock;
+      element: RenderResult;
+    } {
+      globalThis.scrollTo = jest.fn();
+      const handleExit = jest.fn();
+      const element = render(
+        <Modal id="test-modal" isOpen={true} handleExit={handleExit}>
+          &nbsp;
+        </Modal>
+      );
+      return {
+        handleExit,
+        element
+      };
+    }
 
-    it("modal-exit-button", () => {
-      element.find(".modal-exit-button").simulate("click");
-      expect(handleExit).toBeCalled();
+    it("modal-exit-button click", () => {
+      const { handleExit, element } = renderModal();
+
+      screen.queryAllByTestId("modal-exit-button")[0].click();
+      expect(handleExit).toHaveBeenCalled();
+      element.unmount();
+    });
+
+    it("modal-exit-button keyDown tab ignores", () => {
+      const { handleExit, element } = renderModal();
+
+      const menuOption = screen.queryAllByTestId("modal-exit-button")[0];
+
+      fireEvent.keyDown(menuOption, { key: "Tab" });
+
+      expect(handleExit).toHaveBeenCalledTimes(0);
+      element.unmount();
+    });
+
+    it("modal-exit-button keyDown enter", () => {
+      const { handleExit, element } = renderModal();
+
+      const menuOption = screen.queryAllByTestId("modal-exit-button")[0];
+
+      fireEvent.keyDown(menuOption, { key: "Enter" });
+
+      expect(handleExit).toHaveBeenCalledTimes(1);
+      element.unmount();
     });
 
     it("modal-bg", () => {
-      element.find(".modal-bg").simulate("click");
-      expect(handleExit).toBeCalled();
+      const { handleExit, element } = renderModal();
+
+      screen.queryAllByTestId("modal-bg")[0].click();
+      expect(handleExit).toHaveBeenCalled();
+      element.unmount();
     });
   });
 
   describe("Open Modal", () => {
-    const spyScrollTo = jest.fn();
-    Object.defineProperty(window, "scrollTo", { value: spyScrollTo });
+    function renderModal2(): [jest.Mock, RenderResult] {
+      const spyScrollTo = jest.fn();
+      globalThis.scrollTo = spyScrollTo;
 
-    var handleExit = jest.fn();
-    mount(
-      <div>
-        <Modal id="test-modal" isOpen={false} handleExit={handleExit}>
-          &nbsp;
-        </Modal>
-        <div className="root" />
-      </div>
-    );
+      const handleExit = jest.fn();
+      const component = render(
+        <div>
+          <Modal id="test-modal" isOpen={true} handleExit={handleExit}>
+            &nbsp;
+          </Modal>
+          <div className="root" />
+        </div>
+      );
+      return [spyScrollTo, component as unknown as RenderResult];
+    }
 
-    it("sould open modal", () => {
-      var element = document.body.querySelector(".modal-bg--open");
+    it("should open modal", () => {
+      const [spyScrollTo, component] = renderModal2();
+
+      const element = document.body.querySelector(".modal-bg--open");
+
       expect(element).toBeTruthy();
 
-      // compontent.unmount();
+      component.unmount();
+
       spyScrollTo.mockClear();
     });
   });

@@ -1,0 +1,70 @@
+name: "CodeQL analysis"
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
+on:
+  push:
+    branches: [master]
+    # all files because parent git hashes are used to compare in PR's
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyse:
+    name: Analyse
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+      with:
+        # We must fetch at least the immediate parents so that if this is
+        # a pull request then we can checkout the head.
+        fetch-depth: 2
+
+    # If this run was triggered by a pull request event, then checkout
+    # the head of the pull request instead of the merge commit.
+    - run: git checkout HEAD^2
+      if: ${{ github.event_name == 'pull_request' }}
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@ab5b0e3aabf4de044f07a63754c2110d3ef2df38
+       #Override language selection by uncommenting this and choosing your languages
+      with:
+         languages: csharp, javascript, actions
+         config-file: .github/codeql/codeql-config.yml         
+
+    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+    # If this step fails, then you should remove it and run the build manually (see below)
+    #- name: Autobuild
+    #  uses: github/codeql-action/autobuild@8dca8a82e2fa1a2c8908956f711300f9c4a4f4f6
+
+    # ℹ️ Command-line programs to run using the OS shell.
+    # 📚 https://git.io/JvXDl
+
+    # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
+    #    and modify them (or add more) to build your code if your project
+    #    uses a compiled language
+
+    - name: Cache nuget packages (*nix)
+      uses: actions/cache@b7e8d49f17405cc70c1c120101943203c98d3a4b
+      with:
+        # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-build-netcore-${{ hashFiles('./starsky/starsky/nuget-packages-list.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-netcore-
+ 
+    - name: BuildNetCore
+      shell: bash
+      working-directory: ./starsky
+      run: bash build.sh --Target=BuildNetCore --no-sonar --no-dependencies --no-publish
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@ab5b0e3aabf4de044f07a63754c2110d3ef2df38

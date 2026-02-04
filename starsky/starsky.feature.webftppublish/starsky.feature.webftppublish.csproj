@@ -1,16 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{31df1419-6c81-4372-b7ae-a6ebb429e7e9}</ProjectGuid>
-        <Version>0.4.9</Version>
+        <Version>0.7.10</Version>
+        <Nullable>enable</Nullable>
+        <RootNamespace>starsky.feature.webftppublish</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

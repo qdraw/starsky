@@ -1,12 +1,14 @@
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using starskycore.Helpers;
+using starsky.foundation.platform.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
 	public static class CreateAnPng
 	{
-		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
-		private static readonly string Base64pngString = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFc" +
+		[SuppressMessage("ReSharper", "StringLiteralTypo")]
+		private static readonly string Base64pngString =
+			"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFc" +
 			"SJAAAG+mlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAA" +
 			"PD94cGFja2V0IGJlZ2luPSfvu78nIGlkPSdXNU0wTX" +
 			"BDZWhpSHpyZVN6TlRjemtjOWQnPz4KPHg6eG1wbWV0Y" +
@@ -88,7 +90,8 @@ namespace starskytest.FakeCreateAn
 			"FAAAAAQAAAboAAAAAAAAAIwAAAAEAAAACAAAAAQAAAF" +
 			"QAAAAFAAAAUQAAAAEAAAADAAAAAQAAACQAAAAFAAAAC" +
 			"gAAAAHgYX43AAAAAElFTkSuQmCC";
-			
-		public static readonly byte[] Bytes = Base64Helper.TryParse(Base64pngString);
+
+		public static readonly ImmutableArray<byte> Bytes =
+			Base64Helper.TryParse(Base64pngString).ToImmutableArray();
 	}
 }

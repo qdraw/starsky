@@ -2,14 +2,14 @@ import { newIArchive } from "../interfaces/IArchive";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import { PageType } from "../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
+import { mountReactHook } from "./___tests___/test-hook";
 import useFetch, { fetchContent } from "./use-fetch";
-import { shallowReactHook } from "./___tests___/test-hook";
 
 describe("UseFetch", () => {
   let setupComponent;
   let hook: IConnectionDefault;
 
-  let fetchSpy: jest.SpyInstance<any>;
+  let fetchSpy: jest.SpyInstance<Promise<Response>>;
 
   function setFetchSpy(statusCode: number) {
     const mockSuccessResponse = {
@@ -31,7 +31,10 @@ describe("UseFetch", () => {
   }
 
   beforeEach(() => {
-    setupComponent = shallowReactHook(useFetch, ["/default/", "get"]); // Mount a Component with our hook
+    setupComponent = mountReactHook(useFetch as (...args: unknown[]) => unknown, [
+      "/default/",
+      "get"
+    ]); // Mount a Component with our hook
     hook = setupComponent.componentHook as IConnectionDefault;
   });
 
@@ -41,23 +44,70 @@ describe("UseFetch", () => {
 
   it("with default archive feedback", async () => {
     setFetchSpy(200);
-    var controller = new AbortController();
-    var setDataSpy = jest.fn();
+    const controller = new AbortController();
+    const setDataSpy = jest.fn();
     await fetchContent("test", "get", true, controller, setDataSpy);
 
     // fetchSpy
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith("test", {
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith("test", {
       credentials: "include",
       method: "get",
       signal: controller.signal
     });
 
     // setData
-    expect(setDataSpy).toBeCalled();
-    expect(setDataSpy).toBeCalledWith({
+    expect(setDataSpy).toHaveBeenCalled();
+    expect(setDataSpy).toHaveBeenCalledWith({
       data: { fileIndexItems: [], pageType: "Archive" },
       statusCode: 200
+    });
+  });
+});
+
+describe("UseFetch error", () => {
+  it("aborted", async () => {
+    const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+      throw new Error("aborted");
+    });
+
+    const controller = new AbortController();
+    const setDataSpy = jest.fn();
+    await fetchContent("test", "get", true, controller, setDataSpy);
+
+    // fetchSpy
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith("test", {
+      credentials: "include",
+      method: "get",
+      signal: controller.signal
+    });
+
+    expect(setDataSpy).toHaveBeenCalledTimes(0);
+  });
+
+  it("non aborted", async () => {
+    const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+      throw new Error("default error");
+    });
+
+    const controller = new AbortController();
+    const setDataSpy = jest.fn();
+    await fetchContent("test", "get", true, controller, setDataSpy);
+
+    // fetchSpy
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith("test", {
+      credentials: "include",
+      method: "get",
+      signal: controller.signal
+    });
+
+    // setData
+    expect(setDataSpy).toHaveBeenCalled();
+    expect(setDataSpy).toHaveBeenCalledWith({
+      data: null,
+      statusCode: 999
     });
   });
 });

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
 using starsky.feature.webftppublish.Helpers;
 using starsky.foundation.injection;
@@ -6,31 +7,37 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.webtelemetry.Extensions;
+using starsky.foundation.webtelemetry.Helpers;
 
 namespace starskywebftpcli
 {
 	public static class Program
 	{
-		public static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
 			// Use args in application
 			new ArgsHelper().SetEnvironmentByArgs(args);
-			
+
 			// Setup AppSettings
-			var services = SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection());
+			var services = await SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection());
 
 			// Inject services
-			new RegisterDependencies().Configure(services);
+			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-            
+
+			services.AddOpenTelemetryMonitoring(appSettings);
+			services.AddTelemetryLogging(appSettings);
+
 			serviceProvider = services.BuildServiceProvider();
-			
-			var storageSelector = serviceProvider.GetService<ISelectorStorage>();
+
+			var storageSelector = serviceProvider.GetRequiredService<ISelectorStorage>();
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var webRequestFactory = serviceProvider.GetRequiredService<IFtpWebRequestFactory>();
-			
-			new WebFtpCli(appSettings, storageSelector, console, webRequestFactory).Run(args);
+
+			await new WebFtpCli(appSettings, storageSelector, console, webRequestFactory)
+				.RunAsync(args);
 		}
 	}
 }

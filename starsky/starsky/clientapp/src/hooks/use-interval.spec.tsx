@@ -1,10 +1,10 @@
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import React, { memo } from "react";
 import useInterval from "./use-interval";
 
 describe("useInterval", () => {
   interface UseIntervalComponentTestProps {
-    callback: Function;
+    callback: () => void;
     timer: number;
   }
 
@@ -19,25 +19,17 @@ describe("useInterval", () => {
     function callback() {
       done();
     }
-    mount(
-      <UseIntervalComponentTest timer={0} callback={callback}>
-        t
-      </UseIntervalComponentTest>
-    );
+    render(<UseIntervalComponentTest timer={0} callback={callback}></UseIntervalComponentTest>);
   });
 
   it("check if setInterval is called", () => {
-    var clearIntervalSpy = jest
-      .spyOn(window, "setInterval")
-      .mockImplementationOnce(() => {
-        return {} as any;
-      });
+    const clearIntervalSpy = jest.spyOn(window, "setInterval").mockImplementationOnce(() => {
+      return {} as NodeJS.Timeout;
+    });
 
-    var component = mount(
-      <UseIntervalComponentTest timer={10} callback={jest.fn()} />
-    );
+    const component = render(<UseIntervalComponentTest timer={10} callback={jest.fn()} />);
     component.unmount();
 
-    expect(clearIntervalSpy).toBeCalled();
+    expect(clearIntervalSpy).toHaveBeenCalled();
   });
 });

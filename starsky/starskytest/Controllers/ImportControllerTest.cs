@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -8,210 +9,243 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.feature.import.Interfaces;
+using starsky.foundation.import.Interfaces;
+using starsky.foundation.import.Models;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.geo.ReverseGeoCode.Interface;
 using starsky.foundation.http.Services;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
+using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Services;
+using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.Controllers
+namespace starskytest.Controllers;
+
+[TestClass]
+public sealed class ImportControllerTest
 {
-	[TestClass]
-	public class ImportControllerTest
+	private readonly AppSettings _appSettings;
+	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
+	private readonly IImport _import;
+	private readonly IServiceScopeFactory _scopeFactory;
+
+	public ImportControllerTest()
 	{
-		private readonly IImport _import;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly IServiceScopeFactory _scopeFactory;
-		private readonly AppSettings _appSettings;
+		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builder.UseInMemoryDatabase("test");
 
-		public ImportControllerTest()
+		var services = new ServiceCollection();
+
+		_appSettings = new AppSettings();
+
+		// Add Background services
+		services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+		services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
+		// metrics
+		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+
+		var serviceProvider = services.BuildServiceProvider();
+
+		// get the background helper
+		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+
+		_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		_import = new FakeIImport(new FakeSelectorStorage(new FakeIStorage()));
+	}
+
+	/// <summary>
+	///     Add the file in the underlying request object.
+	/// </summary>
+	/// <returns>Controller Context with file</returns>
+	private static ControllerContext RequestWithFile()
+	{
+		var httpContext = new DefaultHttpContext();
+		httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
+		httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes.ToArray());
+
+		var actionContext = new ActionContext(httpContext, new RouteData(),
+			new ControllerActionDescriptor());
+		return new ControllerContext(actionContext);
+	}
+
+	[TestMethod]
+	public async Task ImportController_WrongInputFlow()
+	{
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+
+		var importController = new ImportController(new FakeIImport(fakeStorageSelector),
+			_appSettings,
+			_bgTaskQueue, null!, fakeStorageSelector, _scopeFactory, new FakeIWebLogger())
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
+			ControllerContext = RequestWithFile()
+		};
 
-			var memoryCache = provider.GetService<IMemoryCache>();
+		var actionResult = await importController.IndexPost() as JsonResult;
+		var list = actionResult?.Value as List<ImportIndexItem>;
 
-			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase("test");
-			var options = builder.Options;
-			var context = new ApplicationDbContext(options);
+		Assert.AreEqual(ImportStatus.FileError, list?.FirstOrDefault()?.Status);
+	}
 
-			var services = new ServiceCollection();
+	[TestMethod]
+	public async Task ImportPostBackgroundTask_NotFound()
+	{
+		var services = new ServiceCollection();
+		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+		services.AddSingleton<IStorage, FakeIStorage>();
+		services.AddSingleton<AppSettings>();
+		services.AddSingleton<IImportQuery, FakeIImportQuery>();
+		services.AddSingleton<IExifTool, FakeExifTool>();
+		services.AddSingleton<IQuery, FakeIQuery>();
+		services.AddSingleton<IImport, FakeIImport>();
+		services.AddSingleton<IConsole, FakeConsoleWrapper>();
+		services.AddSingleton<IThumbnailQuery, FakeIThumbnailQuery>();
+		services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
+		services.AddSingleton<IReverseGeoCodeService, FakeIReverseGeoCodeService>();
 
-			_appSettings = new AppSettings();
+		// metrics
+		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+		services.AddMemoryCache();
 
-			// Add Background services
-			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-			var serviceProvider = services.BuildServiceProvider();
+		var importController = new ImportController(null!, new AppSettings(),
+			null!, null!, new FakeSelectorStorage(),
+			scopeFactory, new FakeIWebLogger());
 
-			// get the background helper
-			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
+		var result = await importController.ImportPostBackgroundTask(
+			new List<string> { "/test" }, new ImportSettingsModel());
 
-			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			_import = new FakeIImport(new FakeSelectorStorage(new FakeIStorage()));
-		}
+		Assert.HasCount(1, result);
+		Assert.AreEqual(ImportStatus.NotFound, result[0].Status);
+	}
 
-		/// <summary>
-		///  Add the file in the underlying request object.
-		/// </summary>
-		/// <returns>Controller Context with file</returns>
-		private ControllerContext RequestWithFile()
-		{
-			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
-			httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes);
+	[TestMethod]
+	public async Task ImportPostBackgroundTask_NotFound_Logger_Contain1()
+	{
+		var services = new ServiceCollection();
+		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+		services.AddSingleton<IStorage, FakeIStorage>();
+		services.AddSingleton<AppSettings>();
+		services.AddSingleton<IImportQuery, FakeIImportQuery>();
+		services.AddSingleton<IExifTool, FakeExifTool>();
+		services.AddSingleton<IQuery, FakeIQuery>();
+		services.AddSingleton<IImport, FakeIImport>();
+		services.AddSingleton<IConsole, FakeConsoleWrapper>();
+		services.AddSingleton<IThumbnailQuery, FakeIThumbnailQuery>();
+		services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
+		services.AddSingleton<IReverseGeoCodeService, FakeIReverseGeoCodeService>();
+		// metrics
+		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
 
-			var actionContext = new ActionContext(httpContext, new RouteData(),
-				new ControllerActionDescriptor());
-			return new ControllerContext(actionContext);
-		}
+		services.AddMemoryCache();
 
-		[TestMethod]
-		public async Task ImportController_WrongInputFlow()
-		{
-			var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-			var importController = new ImportController(new FakeIImport(fakeStorageSelector),
-				_appSettings,
-				_bgTaskQueue, null, fakeStorageSelector, _scopeFactory)
-			{
-				ControllerContext = RequestWithFile(),
-			};
+		var logger = new FakeIWebLogger();
+		var importController = new ImportController(null!, new AppSettings(),
+			null!, null!, new FakeSelectorStorage(),
+			scopeFactory, logger);
 
-			var actionResult = await importController.IndexPost() as JsonResult;
-			var list = actionResult.Value as List<ImportIndexItem>;
+		await importController.ImportPostBackgroundTask(
+			new List<string> { "/test" }, new ImportSettingsModel(), true);
 
-			Assert.AreEqual(ImportStatus.FileError, list.FirstOrDefault().Status);
-		}
+		Assert.HasCount(1, logger.TrackedInformation);
+	}
 
-		[TestMethod]
-		public async Task FromUrl_PathInjection()
-		{
-			var importController = new ImportController(_import, _appSettings,
-				_bgTaskQueue, null, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory)
-			{
-				ControllerContext = RequestWithFile(),
-			};
-			var actionResult =
-				await importController.FromUrl("", "../../path-injection.dll", null) as
-					BadRequestResult;
-			Assert.AreEqual(400, actionResult.StatusCode);
-		}
+	[TestMethod]
+	public async Task FromUrl_PathInjection()
+	{
+		var importController = new ImportController(_import, _appSettings,
+			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory,
+			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+		var actionResult =
+			await importController.FromUrl("", "../../path-injection.dll", null!) as
+				BadRequestResult;
+		Assert.AreEqual(400, actionResult?.StatusCode);
+	}
 
-		[TestMethod]
-		public async Task FromUrl_RequestFromWhiteListedDomain_NotFound()
-		{
-			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
-			var httpClient = new HttpClient(fakeHttpMessageHandler);
-			var httpProvider = new HttpProvider(httpClient);
+	[TestMethod]
+	public async Task FromUrl_BadRequest()
+	{
+		var importController = new ImportController(_import, _appSettings,
+			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory,
+			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+		importController.ModelState.AddModelError("Key", "ErrorMessage");
 
-			var services = new ServiceCollection();
-			services.AddSingleton<IStorage, FakeIStorage>();
-			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-			var serviceProvider = services.BuildServiceProvider();
+		var result =
+			await importController.FromUrl(null!, null!, null!);
 
-			var httpClientHelper = new HttpClientHelper(httpProvider,
-				serviceProvider.GetRequiredService<IServiceScopeFactory>());
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
 
-			var importController = new ImportController(_import, _appSettings,
-				_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()),
-				_scopeFactory) {ControllerContext = RequestWithFile(),};
-			// download.geoNames is in the FakeHttpMessageHandler always a 404
-			var actionResult =
-				await importController.FromUrl("https://download.geonames.org", "example.tiff",
-					null) as NotFoundObjectResult;
-			Assert.AreEqual(404, actionResult.StatusCode);
-		}
+	[TestMethod]
+	public async Task FromUrl_RequestFromWhiteListedDomain_NotFound()
+	{
+		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+		var httpClient = new HttpClient(fakeHttpMessageHandler);
+		var httpProvider = new HttpProvider(httpClient);
 
-		[TestMethod]
-		public async Task FromUrl_RequestFromWhiteListedDomain_Ok()
-		{
-			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
-			var httpClient = new HttpClient(fakeHttpMessageHandler);
-			var httpProvider = new HttpProvider(httpClient);
+		var services = new ServiceCollection();
+		services.AddSingleton<IStorage, FakeIStorage>();
+		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+		var serviceProvider = services.BuildServiceProvider();
 
-			var services = new ServiceCollection();
-			services.AddSingleton<IStorage, FakeIStorage>();
-			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-			var serviceProvider = services.BuildServiceProvider();
-			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
+		var httpClientHelper = new HttpClientHelper(httpProvider,
+			serviceProvider.GetRequiredService<IServiceScopeFactory>(), new FakeIWebLogger());
 
-			var httpClientHelper = new HttpClientHelper(httpProvider,
-				serviceProvider.GetRequiredService<IServiceScopeFactory>());
+		var importController = new ImportController(_import, _appSettings,
+			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()),
+			_scopeFactory, new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+		// download.geoNames is in the FakeHttpMessageHandler always a 404
+		var actionResult =
+			await importController.FromUrl("https://download.geonames.org", "example.tiff",
+				null!) as NotFoundObjectResult;
+		Assert.AreEqual(404, actionResult?.StatusCode);
+	}
 
-			var importController = new ImportController(
-				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-				_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider),
-				_scopeFactory) {ControllerContext = RequestWithFile(),};
+	[TestMethod]
+	public async Task FromUrl_RequestFromWhiteListedDomain_Ok()
+	{
+		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+		var httpClient = new HttpClient(fakeHttpMessageHandler);
+		var httpProvider = new HttpProvider(httpClient);
 
-			var actionResult =
-				await importController.FromUrl("https://qdraw.nl", "example_image.tiff", null) as
-					JsonResult;
-			var list = actionResult.Value as List<ImportIndexItem>;
+		var services = new ServiceCollection();
+		services.AddSingleton<IStorage, FakeIStorage>();
+		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+		var serviceProvider = services.BuildServiceProvider();
+		var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 
-			Assert.IsTrue(list.FirstOrDefault().FilePath.Contains("example_image.tiff"));
-		}
+		var httpClientHelper = new HttpClientHelper(httpProvider,
+			serviceProvider.GetRequiredService<IServiceScopeFactory>(), new FakeIWebLogger());
 
-		[TestMethod]
-		public async Task Import_Thumbnail_Ok()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IStorage, FakeIStorage>();
-			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-			var serviceProvider = services.BuildServiceProvider();
-			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
-			var importController = new ImportController(
-				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-				_bgTaskQueue, null, new FakeSelectorStorage(storageProvider), _scopeFactory)
-			{
-				ControllerContext = RequestWithFile(),
-			};
-			importController.Request.Headers["filename"] =
-				"01234567890123456789123456.jpg"; // len() 26
+		var importController = new ImportController(
+			new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
+			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider),
+			_scopeFactory, new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
 
-			var actionResult = await importController.Thumbnail() as JsonResult;
-			var list = actionResult.Value as List<string>;
-			var existFileInTempFolder =
-				storageProvider.ExistFile(
-					_appSettings.TempFolder + "01234567890123456789123456.jpg");
+		var actionResult =
+			await importController.FromUrl("https://qdraw.nl", "example_image.tiff", null!) as
+				JsonResult;
+		var list = actionResult?.Value as List<ImportIndexItem>;
 
-			Assert.AreEqual("01234567890123456789123456", list.FirstOrDefault());
-			Assert.IsFalse(existFileInTempFolder);
-		}
-
-		[TestMethod]
-		public async Task Import_Thumbnail_WrongInputName()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IStorage, FakeIStorage>();
-			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-			var serviceProvider = services.BuildServiceProvider();
-			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
-
-			var importController = new ImportController(
-				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-				_bgTaskQueue, null, new FakeSelectorStorage(storageProvider), _scopeFactory)
-			{
-				ControllerContext = RequestWithFile(),
-			};
-			importController.Request.Headers["filename"] = "123.jpg"; // len() 3
-
-			var actionResult = await importController.Thumbnail() as JsonResult;
-			var list = actionResult.Value as List<string>;
-
-			Assert.AreEqual(0, list.Count);
-		}
+		Assert.IsTrue(list?.FirstOrDefault()?.FilePath?.Contains("example_image.tiff"));
 	}
 }

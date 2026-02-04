@@ -1,0 +1,152 @@
+{
+    "$id": "https://docs.qdraw.nl/schema/meta-data-container.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+        "item": {
+            "type": "object",
+            "properties": {
+                "filePath": {
+                    "type": "string"
+                },
+                "fileName": {
+                    "type": "string"
+                },
+                "fileHash": {
+                    "type": "string"
+                },
+                "fileCollectionName": {
+                    "type": "string"
+                },
+                "parentDirectory": {
+                    "type": "string"
+                },
+                "isDirectory": {
+                    "type": "boolean"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "dateTime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "addToDatabase": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "lastEdited": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "locationAltitude": {
+                    "type": "number"
+                },
+                "locationCity": {
+                    "type": "string"
+                },
+                "locationState": {
+                    "type": "string"
+                },
+                "locationCountry": {
+                    "type": "string"
+                },
+                "locationCountryCode": {
+                    "type": ["string", "null"]
+                },
+                "colorClass": {
+                    "type": "integer"
+                },
+                "orientation": {
+                    "type": "string"
+                },
+                "imageWidth": {
+                    "type": "integer"
+                },
+                "imageHeight": {
+                    "type": "integer"
+                },
+                "imageFormat": {
+                    "type": "string"
+                },
+                "collectionPaths": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sidecarExtensionsList": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "aperture": {
+                    "type": "number"
+                },
+                "shutterSpeed": {
+                    "type": "string"
+                },
+                "isoSpeed": {
+                    "type": "integer"
+                },
+                "software": {
+                    "type": "string"
+                },
+                "makeModel": {
+                    "type": "string"
+                },
+                "make": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "lensModel": {
+                    "type": "string"
+                },
+                "focalLength": {
+                    "type": "number"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "imageStabilisation": {
+                    "type": "string"
+                },
+                "lastChanged": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "required": [
+                "filePath",
+                "fileName",
+                "isDirectory",
+                "status",
+                "dateTime",
+                "addToDatabase",
+                "lastEdited"
+            ]
+        }
+    },
+    "required": ["item"]
+}

@@ -1,0 +1,63 @@
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky/starsky/clientapp/.storybook/**'
+    - 'starsky/starsky/clientapp/package.json'
+    - 'starsky/starsky/clientapp/package-lock.json'    
+    - '.github/workflows/clientapp-storybook-netlify.yml'
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky/starsky/clientapp/**'
+    - '.github/workflows/clientapp-storybook-netlify.yml'
+  workflow_dispatch:
+    
+name: storybook clientapp netlify
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+
+      - name: Cache node modules clientapp
+        uses: actions/cache@b7e8d49f17405cc70c1c120101943203c98d3a4b
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-clientapp-${{ hashFiles('./starsky/starsky/clientapp/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-clientapp-
+          
+      - name: Install Dependencies
+        working-directory: ./starsky/starsky/clientapp
+        run: npm ci --no-progress --prefer-offline --legacy-peer-deps --no-fund
+
+      - name: build-storybook
+        working-directory: ./starsky/starsky/clientapp
+        run: npm run build-storybook
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: storybook-static
+          path: ./starsky/starsky/clientapp/storybook-static
+
+      - name: Install Netlify
+        if: github.event_name != 'pull_request'
+        run: npm install netlify-cli@17.37.2 -g
+        
+      - name: Deploy to Netlify
+        if: github.event_name != 'pull_request'
+        id: netlify_deploy
+        working-directory: ./starsky/starsky/clientapp
+        run: |
+          netlify deploy \
+            --dir storybook-static \
+            --site ${{ secrets.NETLIFY_STORYBOOK_SITE_ID }} \
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}

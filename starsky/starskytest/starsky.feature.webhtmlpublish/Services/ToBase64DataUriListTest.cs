@@ -1,23 +1,57 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Helpers;
-using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Services;
+using starsky.foundation.thumbnailgeneration.GenerationFactory;
 using starskytest.FakeCreateAn;
+using starskytest.FakeCreateAn.CreateAnImageCorrupt;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.webhtmlpublish.Services
+namespace starskytest.starsky.feature.webhtmlpublish.Services;
+
+[TestClass]
+public sealed class ToBase64DataUriListTest
 {
-	[TestClass]
-	public class ToBase64DataUriListTest
+	[TestMethod]
+	public async Task TestIfContainsDataImageBaseHash()
 	{
-		[TestMethod]
-		public void TestIfContainsDataImageBaseHash()
-		{
-			var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>{CreateAnImage.Bytes});
-			var result = new ToBase64DataUriList(fakeStorage, fakeStorage).Create(
-				new List<FileIndexItem> {new FileIndexItem("/test.jpg")});
-			Assert.IsTrue(result[0].Contains("data:image/png;base64,"));
-		}
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(fakeStorage),
+			new FakeIWebLogger(), new AppSettings(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(new FakeSelectorStorage(fakeStorage)),
+			new FileHashSubPathStorage(new FakeSelectorStorage(fakeStorage), new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
+
+		var result = await new ToBase64DataUriList(thumbnailService)
+			.Create(
+				new List<FileIndexItem> { new("/test.jpg") });
+		Assert.Contains("data:image/png;base64,", result[0]);
+	}
+
+	[TestMethod]
+	public async Task TestIfContainsDataImageBaseHash_CorruptOutput()
+	{
+		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+			["/test.jpg"],
+			new List<byte[]> { new CreateAnImageCorrupt().Bytes.ToArray() });
+		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(fakeStorage),
+			new FakeIWebLogger(), new AppSettings(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(new FakeSelectorStorage(fakeStorage)),
+			new FileHashSubPathStorage(new FakeSelectorStorage(fakeStorage), new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
+
+		var result = await new ToBase64DataUriList(thumbnailService)
+			.Create(
+				new List<FileIndexItem> { new("/test.jpg") });
+		// to fallback image (1px x 1px)
+		Assert.AreEqual("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA" +
+		                "C1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", result[0]);
 	}
 }

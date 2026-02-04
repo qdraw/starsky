@@ -6,25 +6,42 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.health.HealthCheck;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.starsky.feature.health.HealthCheck
+namespace starskytest.starsky.feature.health.HealthCheck;
+
+[TestClass]
+public sealed class DiskStorageHealthCheckExtensionsTest
 {
-	[TestClass]
-	public class DiskStorageHealthCheckExtensionsTest
+	[TestMethod]
+	public void CheckIfServiceExist_WithSetup()
 	{
-		[TestMethod]
-		public void CheckIfServiceExist()
+		var services = new ServiceCollection();
+		services
+			.AddHealthChecks()
+			.AddDiskStorageHealthCheck(
+				diskOptions =>
+				{
+					DiskOptionsPercentageSetup.Setup(new CreateAnImage().BasePath, diskOptions);
+				}, "ThumbnailTempFolder");
+
+		if ( services.All(x => x.ServiceType != typeof(HealthCheckService)) )
 		{
-			var services = new ServiceCollection();
-			services
-				.AddHealthChecks()
-				.AddDiskStorageHealthCheck(diskOptions => { new DiskOptionsPercentageSetup().Setup(new CreateAnImage().BasePath,diskOptions); },
-					name: "ThumbnailTempFolder");
-	
-			if ( services.All(x => x.ServiceType != typeof(HealthCheckService)) )
-			{
-				// Service doesn't exist, do something
-				throw new ArgumentException("missing service");
-			}
+			// Service doesn't exist, do something
+			throw new ArgumentException("missing service");
 		}
-	} 
+	}
+
+	[TestMethod]
+	public void CheckIfServiceExist_WithoutSetup()
+	{
+		var services = new ServiceCollection();
+		services
+			.AddHealthChecks()
+			.AddDiskStorageHealthCheck(null, "ThumbnailTempFolder");
+
+		if ( services.All(x => x.ServiceType != typeof(HealthCheckService)) )
+		{
+			// Service doesn't exist, do something
+			throw new ArgumentException("missing service");
+		}
+	}
 }

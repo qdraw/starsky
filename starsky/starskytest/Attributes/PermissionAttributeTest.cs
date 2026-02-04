@@ -8,12 +8,11 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.foundation.accountmanagement.Services;
-using starskycore.Services;
 
 namespace starskytest.Attributes
 {
 	[TestClass]
-	public class PermissionAttributeTest
+	public sealed class PermissionAttributeTest
 	{
 		[TestMethod]
 		public void NotLoggedIn()
@@ -28,7 +27,7 @@ namespace starskytest.Attributes
 			
 			permissionAttribute.OnAuthorization(authorizationFilterContext);
 			
-			Assert.AreEqual(authorizationFilterContext.Result.GetType(), new UnauthorizedResult().GetType());
+			Assert.AreEqual(authorizationFilterContext.Result?.GetType(), new UnauthorizedResult().GetType());
 		}
 		
 		[TestMethod]
@@ -41,7 +40,7 @@ namespace starskytest.Attributes
 			var httpContext = new DefaultHttpContext
 			{
 				User = new ClaimsPrincipal(new ClaimsIdentity(
-					new Claim[] {new Claim(ClaimTypes.Name, "username")}, "someAuthTypeName"))
+					new[] {new Claim(ClaimTypes.Name, "username")}, "someAuthTypeName"))
 			};
 			
 			var authorizationFilterContext = new AuthorizationFilterContext(
@@ -50,7 +49,7 @@ namespace starskytest.Attributes
 			
 			permissionAttribute.OnAuthorization(authorizationFilterContext);
 			
-			Assert.AreEqual(authorizationFilterContext.Result.GetType(), new UnauthorizedResult().GetType());
+			Assert.AreEqual(authorizationFilterContext.Result?.GetType(), new UnauthorizedResult().GetType());
 		}
 		
 		[TestMethod]

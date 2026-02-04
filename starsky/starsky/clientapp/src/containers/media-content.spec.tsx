@@ -1,5 +1,4 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { render } from "@testing-library/react";
 import * as Notification from "../components/atoms/notification/notification";
 import * as HealthStatusError from "../components/molecules/health-status-error/health-status-error";
 import * as useSockets from "../hooks/realtime/use-sockets";
@@ -10,7 +9,7 @@ import MediaContent from "./media-content";
 
 describe("MediaContent", () => {
   it("renders", () => {
-    shallow(<MediaContent />);
+    render(<MediaContent />);
   });
   it("application failed", () => {
     // use this import => import * as useFileList from '../hooks/use-filelist';
@@ -25,8 +24,8 @@ describe("MediaContent", () => {
     // use ==> import * as HealthStatusError from '../components/health-status-error';
     jest.spyOn(HealthStatusError, "default").mockImplementationOnce(() => null);
 
-    const component = mount(<MediaContent />);
-    expect(component.html()).toBe(
+    const component = render(<MediaContent />);
+    expect(component.container.innerHTML).toBe(
       "<br>The application has failed. Please reload it to try it again"
     );
     component.unmount();
@@ -37,7 +36,7 @@ describe("MediaContent", () => {
       return {
         archive: { ...newIArchive() },
         pageType: PageType.Loading
-      } as any;
+      } as useFileList.IFileList;
     });
 
     // import * as useSockets from "../hooks/realtime/use-sockets";
@@ -55,12 +54,12 @@ describe("MediaContent", () => {
       if (props.callback) {
         props.callback();
       }
-      return <div className="test">testung</div>;
+      return <div className="test">test</div>;
     });
 
-    const component = mount(<MediaContent />);
+    const component = render(<MediaContent />);
 
-    expect(setShowSocketErrorSpy).toBeCalled();
+    expect(setShowSocketErrorSpy).toHaveBeenCalled();
     component.unmount();
   });
 });

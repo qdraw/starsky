@@ -1,7 +1,7 @@
 import { IDetailView, IRelativeObjects } from "../interfaces/IDetailView";
-import FetchGet from "./fetch-get";
-import { URLPath } from "./url-path";
-import { UrlQuery } from "./url-query";
+import FetchGet from "./fetch/fetch-get";
+import { URLPath } from "./url/url-path";
+import { UrlQuery } from "./url/url-query";
 
 export class UpdateRelativeObject {
   /**
@@ -15,7 +15,7 @@ export class UpdateRelativeObject {
   ): Promise<IRelativeObjects> {
     return new Promise((resolve, rejects) => {
       if (state.subPath === "/" || !isSearchQuery) {
-        rejects();
+        rejects(new Error("no subpath or query"));
         return;
       }
 
@@ -28,15 +28,15 @@ export class UpdateRelativeObject {
       )
         .then((result) => {
           if (result.statusCode !== 200) {
-            rejects();
+            rejects(new Error("status code not 200"));
             return;
           }
-          setRelativeObjects(result.data);
-          resolve(result.data);
+          setRelativeObjects(result.data as React.SetStateAction<IRelativeObjects>);
+          resolve(result.data as IRelativeObjects);
         })
-        .catch((err) => {
-          console.log(err);
-          rejects();
+        .catch((err: Error) => {
+          console.error(err);
+          rejects(err);
         });
     });
   }

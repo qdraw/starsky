@@ -1,0 +1,41 @@
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    cooldown:
+      default-days: 3
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "[github-actions] "
+      
+  # Maintain dependencies for node package manager
+  - package-ecosystem: "npm"
+    directory: "/"
+    cooldown:
+      default-days: 3
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "[npm] "
+      
+  # Maintain dependencies for .NET nugets
+  - package-ecosystem: "nuget"
+    directory: "/"
+    cooldown:
+      default-days: 3
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "[nuget] "
+
+  # Maintain dependencies for Dockerfiles
+  - package-ecosystem: "docker"
+    directory: "/"
+    cooldown:
+      default-days: 3   
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "[docker] "

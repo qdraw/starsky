@@ -5,40 +5,43 @@ using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Exceptions;
 
-namespace starskytest.starsky.foundation.storage.Exceptions
-{
-	[TestClass]
-	public class DecodingExceptionTest
-	{
-		[TestMethod]
-		[ExpectedException(typeof(DecodingException))]
-		public void DecodingException()
-		{
-			var info = new SerializationInfo(typeof(Exception),
-				new FormatterConverter());
-			info.AddValue("Number", 1);
-			info.AddValue("SqlState", "SqlState");
-			info.AddValue("Message", "");
-			info.AddValue("InnerException", new Exception());
-			info.AddValue("HelpURL", "");
-			info.AddValue("StackTraceString", "");
-			info.AddValue("RemoteStackTraceString", "");
-			info.AddValue("RemoteStackIndex", 1);
-			info.AddValue("HResult", 1);
-			info.AddValue("Source", "");
-			info.AddValue("WatsonBuckets", new byte[0]);
-			
-			var ctor =
-				typeof(DecodingException).GetConstructors(BindingFlags.Instance |
-					BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
-			var instance =
-				( DecodingException ) ctor.Invoke(new object[]
-				{
-					info,
-					new StreamingContext(StreamingContextStates.All)
-				});
+namespace starskytest.starsky.foundation.storage.Exceptions;
 
-			throw instance;
+[TestClass]
+public sealed class DecodingExceptionTest
+{
+	[TestMethod]
+	public void DecodingException()
+	{
+		// Arrange
+#pragma warning disable SYSLIB0050
+		var info = new SerializationInfo(typeof(Exception), new FormatterConverter());
+		info.AddValue("Message", "");
+		info.AddValue("InnerException", new Exception());
+		info.AddValue("HelpURL", "");
+		info.AddValue("StackTraceString", "");
+		info.AddValue("RemoteStackTraceString", "");
+		info.AddValue("HResult", 1);
+		info.AddValue("Source", "");
+
+		var ctor = typeof(DecodingException).GetConstructors(BindingFlags.Instance |
+		                                                     BindingFlags.NonPublic)
+			.FirstOrDefault();
+
+		if ( ctor == null )
+		{
+			Assert.Fail("No suitable constructor found for DecodingException.");
 		}
+
+		// Act & Assert (single expression in lambda per MSTEST0051)
+		var ex = Assert.ThrowsExactly<DecodingException>(() =>
+			throw ( DecodingException ) ctor.Invoke(new object[]
+			{
+				info, new StreamingContext(StreamingContextStates.All)
+			}));
+#pragma warning restore SYSLIB0050
+
+		// Optionally verify the exception message or other properties
+		Assert.Contains("System.Exception", ex.ToString());
 	}
 }

@@ -1,16 +1,23 @@
 import { ICurrentTouches } from "./ICurrentTouches.types";
-import { IHandlers } from "./IHandlers.types";
+import { IHandlers, IHandlersMapper } from "./IHandlers.types";
 
 export const callHandler = (
   eventName: string,
   event: ICurrentTouches,
-  handlers: IHandlers
+  handlers: IHandlers | undefined | IHandlersMapper
 ) => {
+  if (!handlers) {
+    throw new Error(`handler ${eventName} is missing`);
+  }
+
   if (
     eventName &&
-    (handlers as any)[eventName] &&
-    typeof (handlers as any)[eventName] === "function"
+    handlers[eventName as keyof IHandlers] &&
+    typeof handlers[eventName as keyof IHandlers] === "function"
   ) {
-    (handlers as any)[eventName](event);
+    const handler = handlers[eventName as keyof IHandlers];
+    if (handler) {
+      (handler as (e: ICurrentTouches) => void)(event);
+    }
   }
 };

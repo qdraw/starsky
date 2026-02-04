@@ -13,9 +13,9 @@ steps:
 
   - ${{ each item in parameters.publish }}:
 
-    - task: PublishBuildArtifacts@1
+    - task: PublishPipelineArtifact@1
       displayName: 'Publish Artifact: ${{ item.key }} '
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)${{ item.value }}'
-        ArtifactName: ${{ item.key }}
+        path: '$(Build.SourcesDirectory)${{ item.value }}'
+        artifactName: ${{ item.key }}
 

@@ -1,3 +1,5 @@
+#!/usr/bin/node
+
 // Make sure the version in files are matching the release version in the branch or tag name.
 // When this is not the case auto fix it. 
 

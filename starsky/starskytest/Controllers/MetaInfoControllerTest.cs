@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,55 +15,71 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class MetaInfoControllerTest
+	public sealed class MetaInfoControllerTest
 	{
 		private readonly IMetaInfo _metaInfo;
-		private readonly FakeIStorage _iStorage;
 
 		public MetaInfoControllerTest()
 		{
-			_iStorage = new FakeIStorage();
 			_metaInfo = new MetaInfo(new FakeIQuery(
-					new List<FileIndexItem>{new FileIndexItem("/test.jpg"), new FileIndexItem("/readonly/image.jpg"),
-						new FileIndexItem("/source_missing.jpg")}), 
-				new AppSettings{ ReadOnlyFolders = new List<string>{"readonly"}}, 
-				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
-					new List<string>{"/test.jpg","/readonly/image.jpg"}, new List<byte[]>{ 
-						CreateAnImage.Bytes, 
-						CreateAnImage.Bytes})),null);
-			
-		}
-		
-		[TestMethod]
-		public void Info_AllDataIncluded_WithFakeExifTool()
-		{
-			var controller = new MetaInfoController(_metaInfo);
-			var jsonResult = controller.Info("/test.jpg", false) as JsonResult;
-			var listResult = jsonResult.Value as List<FileIndexItem>;
-			Assert.AreEqual("test, sion", listResult.FirstOrDefault().Tags);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, listResult.FirstOrDefault().Status);
+					new List<FileIndexItem>
+					{
+						new FileIndexItem("/test.jpg"),
+						new FileIndexItem("/readonly/image.jpg"),
+						new FileIndexItem("/source_missing.jpg")
+					}),
+				new AppSettings { ReadOnlyFolders = new List<string> { "readonly" } },
+				new FakeSelectorStorage(new FakeIStorage(new List<string>(),
+					new List<string> { "/test.jpg", "/readonly/image.jpg" },
+					new List<byte[]>
+					{
+						CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray()
+					})), null!, new FakeIWebLogger());
 		}
 
 		[TestMethod]
-		public void Info_SourceImageMissing_WithFakeExifTool()
+		public async Task Info_AllDataIncluded_WithFakeExifTool()
 		{
 			var controller = new MetaInfoController(_metaInfo);
-			var notFoundResult = controller.Info("/source_missing.jpg") as NotFoundObjectResult;
-			Assert.AreEqual(404, notFoundResult.StatusCode);
+			var jsonResult = await controller.InfoAsync("/test.jpg", false) as JsonResult;
+			var listResult = jsonResult?.Value as List<FileIndexItem>;
+			Assert.AreEqual("test, sion", listResult?.FirstOrDefault()?.Tags);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, listResult?.FirstOrDefault()?.Status);
+		}
+
+		[TestMethod]
+		public async Task Info_SourceImageMissing_WithFakeExifTool()
+		{
+			var controller = new MetaInfoController(_metaInfo);
+			var notFoundResult =
+				await controller.InfoAsync("/source_missing.jpg") as NotFoundObjectResult;
+			Assert.AreEqual(404, notFoundResult?.StatusCode);
 		}
 		
 		[TestMethod]
-		public void ReadOnly()
+		public async Task Index_BadRequest()
+		{
+			var controller = new MetaInfoController(_metaInfo);
+
+			controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+			var result = await controller.InfoAsync("/source_missing.jpg");		
+			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+		}
+
+		[TestMethod]
+		public async Task ReadOnly()
 		{
 			var controller = new MetaInfoController(_metaInfo)
 			{
-				ControllerContext = {HttpContext = new DefaultHttpContext()}
+				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
-			var jsonResult = controller.Info("/readonly/image.jpg", false) as JsonResult;
+			var jsonResult = await controller.InfoAsync("/readonly/image.jpg", false) as JsonResult;
 
-			var listResult = jsonResult.Value as List<FileIndexItem>;
-			Assert.AreEqual("test, sion", listResult.FirstOrDefault().Tags);
-			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, listResult.FirstOrDefault().Status);
+			var listResult = jsonResult?.Value as List<FileIndexItem>;
+			Assert.AreEqual("test, sion", listResult?.FirstOrDefault()?.Tags);
+			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly,
+				listResult?.FirstOrDefault()?.Status);
 		}
 	}
 }

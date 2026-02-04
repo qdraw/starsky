@@ -18,9 +18,7 @@ describe("shallowEqual", function () {
   });
 
   it("returns true if arguments are shallow equal", () => {
-    expect(shallowEqual({ a: 1, b: 2, c: 3 }, { a: 1, b: 2, c: 3 })).toEqual(
-      true
-    );
+    expect(shallowEqual({ a: 1, b: 2, c: 3 }, { a: 1, b: 2, c: 3 })).toEqual(true);
   });
 
   it("returns false if arguments are not objects and not equal", () => {
@@ -40,17 +38,13 @@ describe("shallowEqual", function () {
   });
 
   it("returns true if values are not primitives but are ===", () => {
-    let obj = {};
-    expect(
-      shallowEqual({ a: 1, b: 2, c: obj }, { a: 1, b: 2, c: obj })
-    ).toEqual(true);
+    const obj = {};
+    expect(shallowEqual({ a: 1, b: 2, c: obj }, { a: 1, b: 2, c: obj })).toEqual(true);
   });
 
   // subsequent test cases are copied from lodash tests
   it("returns false if arguments are not shallow equal", () => {
-    expect(shallowEqual({ a: 1, b: 2, c: {} }, { a: 1, b: 2, c: {} })).toEqual(
-      false
-    );
+    expect(shallowEqual({ a: 1, b: 2, c: {} }, { a: 1, b: 2, c: {} })).toEqual(false);
   });
 
   it("should handle comparisons if `customizer` returns `undefined`", () => {
@@ -62,7 +56,7 @@ describe("shallowEqual", function () {
   });
 
   it("should not handle comparisons if `customizer` returns `true`", () => {
-    const customizer = function (value: any) {
+    const customizer = function (value: unknown) {
       return typeof value === "string" || undefined;
     };
 
@@ -72,7 +66,7 @@ describe("shallowEqual", function () {
   });
 
   it("should not handle comparisons if `customizer` returns `false`", () => {
-    const customizer = function (value: any) {
+    const customizer = function (value: unknown) {
       return typeof value === "string" ? false : undefined;
     };
 

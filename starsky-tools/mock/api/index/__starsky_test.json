@@ -1,0 +1,70 @@
+{
+    "fileIndexItem":{
+       "filePath":"/__starsky/test.jpg",
+       "fileName":"20220819_153219_DSC00206_e.jpg",
+       "fileHash":"M52QR7MJEU6CHLMWVYJQ4M4AGE",
+       "fileCollectionName":"20220819_153219_DSC00206_e",
+       "parentDirectory":"/__starsky",
+       "isDirectory":false,
+       "tags":"Alesjaure, Aliseatnu, water, turquoise, bergen, wolken",
+       "status":"Default",
+       "description":"vanaf brug gemaakt",
+       "title":"Aliseatnu",
+       "dateTime":"2022-08-19T15:32:19",
+       "addToDatabase":"2022-09-27T13:11:34.680772",
+       "lastEdited":"2022-11-26T23:50:19.226269",
+       "latitude":68.1350833333,
+       "longitude":18.4157138888,
+       "locationAltitude":708,
+       "locationCity":"",
+       "locationState":"",
+       "locationCountry":"",
+       "locationCountryCode":null,
+       "colorClass":1,
+       "orientation":"Horizontal",
+       "imageWidth":6732,
+       "imageHeight":4488,
+       "imageFormat":"jpg",
+       "collectionPaths":[
+          "/__starsky/test.jpg"
+       ],
+       "sidecarExtensionsList":[
+          
+       ],
+       "aperture":9,
+       "shutterSpeed":"1/79",
+       "isoSpeed":400,
+       "software":"Adobe Photoshop 21.0 (Macintosh)",
+       "makeModel":"Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE",
+       "make":"Sony",
+       "model":"ILCE-6600",
+       "lensModel":"E 18-200mm F3.5-6.3 OSS LE",
+       "focalLength":18,
+       "size":9918221,
+       "imageStabilisation":"Unknown",
+       "lastChanged":[
+          
+       ]
+    },
+    "breadcrumb":[
+       "/",
+       "/__starsky"
+    ],
+    "colorClassActiveList":[
+       
+    ],
+    "pageType":"DetailView",
+    "isDirectory":false,
+    "subPath":"/__starsky/test.jpg",
+    "collections":true,
+    "relativeObjects":{
+       "nextFilePath":"/__starsky/test3.jpg",
+       "prevFilePath":"/2022/08/2022_08_19_zw\u00A0Garddenvaggi naar Bossosjohka/20220819_153136_DSC00205.jpg",
+       "nextHash":"YLYMX666TJ2XY43RCSKHFZUC6Q",
+       "prevHash":"WGX6X3MVMVWBRPSE6UKKDJE6KQ",
+       "args":{
+          
+       }
+    },
+    "isReadOnly":false
+ }

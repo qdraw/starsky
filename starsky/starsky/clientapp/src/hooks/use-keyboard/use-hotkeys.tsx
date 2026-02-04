@@ -9,6 +9,7 @@ export interface IHotkeysKeyboardEvent {
   metaKey?: boolean;
   shiftKey?: boolean;
   ctrlKeyOrMetaKey?: boolean;
+  skipIsInForm?: boolean;
 }
 /**
  * Use key with alt, ctrl, command or shift key
@@ -24,21 +25,28 @@ export interface IHotkeysKeyboardEvent {
       [deps]
     );
     ```
- * @param regex - the or statement
+ * @param predefined - the or statement
  * @param callback - function that is called
- * @param dependencies - deps array 
+ * @param _dependencies - deps array
  */
 function useHotKeys(
-  predefined: IHotkeysKeyboardEvent = { key: "" },
+  predefined?: IHotkeysKeyboardEvent,
   callback: (event: KeyboardEvent) => void = () => {
     /* should do nothing, you should overwrite this */
   },
-  dependencies: any = []
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _dependencies: React.DependencyList = []
 ) {
+  const hotkey = predefined ?? { key: "" };
+
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
-      if (new Keyboard().isInForm(event)) return;
-      if (!predefined || !predefined.key) {
+      if (
+        (hotkey.skipIsInForm || hotkey.skipIsInForm === undefined) &&
+        new Keyboard().isInForm(event)
+      )
+        return;
+      if (!hotkey?.key) {
         return;
       }
 
@@ -57,7 +65,7 @@ function useHotKeys(
         metaKey: preDefinedMetaKey = false,
         shiftKey: preDefinedShiftKey = false,
         ctrlKeyOrMetaKey: preDefinedCtrlKeyOrMetaKey = false
-      } = predefined;
+      } = hotkey;
 
       if (
         eventKey === preDefinedKey &&
@@ -85,11 +93,10 @@ function useHotKeys(
         callback(event);
       }
     };
-    window.addEventListener("keydown", handler);
+    globalThis.addEventListener("keydown", handler);
     return () => {
-      window.removeEventListener("keydown", handler);
+      globalThis.removeEventListener("keydown", handler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   });
 }
 

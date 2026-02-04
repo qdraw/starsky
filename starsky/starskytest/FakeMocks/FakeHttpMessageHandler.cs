@@ -1,26 +1,50 @@
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeHttpMessageHandler : HttpMessageHandler
 {
-	public class FakeHttpMessageHandler : HttpMessageHandler
+	private readonly Exception? _exception;
+
+	public FakeHttpMessageHandler(Exception? exception = null)
 	{
-		public virtual HttpResponseMessage Send(HttpRequestMessage request)
+		_exception = exception;
+	}
+
+	public List<HttpRequestMessage> LastRequestMessage { get; set; } = [];
+
+	public virtual HttpResponseMessage Send(HttpRequestMessage request)
+	{
+		if ( _exception != null )
 		{
-			if ( request.RequestUri.Host == "download.geonames.org" )
+			throw _exception;
+		}
+		
+		LastRequestMessage.Add(request);
+
+		if ( request.RequestUri?.Host == "download.geonames.org" )
+		{
+			return new HttpResponseMessage(HttpStatusCode.NotFound)
 			{
-				return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("404") };
-
-			}
-			return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("Your message here") };
-			// Configure this method however you wish for your testing needs.
+				Content = new StringContent("404")
+			};
 		}
 
-		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+		return new HttpResponseMessage(HttpStatusCode.OK)
 		{
-			return Task.FromResult(Send(request));
-		}
+			Content = new StringContent("Your message here")
+		};
+		// Configure this method however you wish for your testing needs.
+	}
+
+	protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+		CancellationToken cancellationToken)
+	{
+		return Task.FromResult(Send(request));
 	}
 }

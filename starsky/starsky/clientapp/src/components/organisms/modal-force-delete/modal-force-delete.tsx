@@ -1,22 +1,21 @@
-import React from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
-import FetchGet from "../../../shared/fetch-get";
-import FetchPost from "../../../shared/fetch-post";
+import localization from "../../../localization/localization.json";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { Select } from "../../../shared/select";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
 
 interface IModalForceDeleteProps {
   isOpen: boolean;
   select: Array<string> | undefined;
   setSelect: React.Dispatch<React.SetStateAction<string[] | undefined>>;
-  handleExit: Function;
+  handleExit: () => void;
   state: IArchiveProps;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   dispatch: React.Dispatch<ArchiveAction>;
@@ -34,56 +33,33 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageDeleteIntroText = language.text(
-    "Weet je zeker dat je dit bestand wilt verwijderen van alle devices?",
-    "Are you sure you want to delete this file from all devices?"
-  );
-  const MessageCancel = language.text("Annuleren", "Cancel");
-  const MessageDeleteImmediately = language.text(
-    "Verwijder onmiddellijk",
-    "Delete immediately"
-  );
-  var history = useLocation();
+  const MessageDeleteIntroText = language.key(localization.MessageDeleteIntroText);
+  const MessageCancel = language.key(localization.MessageCancel);
+  const MessageDeleteImmediately = language.key(localization.MessageDeleteImmediately);
 
-  const undoSelection = () =>
-    new Select(select, setSelect, state, history).undoSelection();
+  const history = useLocation();
+
+  const undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
 
   function forceDelete() {
     if (!select) return;
     setIsLoading(true);
 
-    const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
-      select,
-      state.fileIndexItems
-    );
+    const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
-    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
-      toUndoTrashList,
-      ""
-    );
+    const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(toUndoTrashList, "");
 
     if (selectParams.length === 0) return;
 
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.append("f", selectParams);
     bodyParams.append("collections", "false");
 
     undoSelection();
 
-    FetchPost(
-      new UrlQuery().UrlDeleteApi(),
-      bodyParams.toString(),
-      "delete"
-    ).then((result) => {
+    FetchPost(new UrlQuery().UrlDeleteApi(), bodyParams.toString(), "delete").then((result) => {
       if (result.statusCode === 200 || result.statusCode === 404) {
         dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
-
-        if (state.pageNumber === 1) {
-          const url = new UrlQuery().UrlSearchTrashApi(state.pageNumber);
-          FetchGet(url).then((result) => {
-            console.log(result);
-          });
-        }
       }
 
       ClearSearchCache(history.location.search);
@@ -100,17 +76,11 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
       }}
     >
       <>
-        <div className="modal content--subheader">
-          {MessageDeleteImmediately}
-        </div>
+        <div className="modal content--subheader">{MessageDeleteImmediately}</div>
         <div className="modal content--text">
           {MessageDeleteIntroText}
           <br />
-          <button
-            data-test="force-cancel"
-            onClick={() => handleExit()}
-            className="btn btn--info"
-          >
+          <button data-test="force-cancel" onClick={() => handleExit()} className="btn btn--info">
             {MessageCancel}
           </button>
           <button

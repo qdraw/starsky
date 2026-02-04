@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# For insiders only
+# For insiders only - requires token
 # Please use: 
 # ./pm2-install-latest-release.sh 
 # for public builds
@@ -8,6 +8,8 @@
 # Script goal:
 # Download binaries with zip folder from Azure Devops
 # Get pm2-new-instance.sh ready to run (but not run)
+
+# Filename: pm2-download-azure-devops.sh
 
 RUNTIME="linux-arm"
 case $(uname -m) in
@@ -19,37 +21,63 @@ case $(uname -m) in
     RUNTIME="linux-arm"
     ;;
 
-  "x86_64")
-    if [ $(uname) = "Darwin" ]; then
-        RUNTIME="osx.10.12-x64"
+  "arm64")
+  if [[ $(uname) = "Darwin" ]]; then
+        RUNTIME="osx-arm64"
     fi
     ;;
+
+  "x86_64")
+  if [[ $(uname) = "Darwin" ]]; then
+        RUNTIME="osx-x64"
+    fi
+  if [[ $(uname) = "Linux" ]]; then
+        RUNTIME="linux-x64"
+    fi
+    ;;
+  *)
+    echo "Fatal error: Unknown architecture $(uname -m);" >&2
+    exit 1
+    ;;    
 esac
 
 
 BRANCH="master"
+
 # azure devops
 ORGANIZATION="qdraw"
 DEVOPSPROJECT="starsky"
 DEVOPSDEFIDS=( 17 20 )
+BUILD_ID_DEF=""
 # STARSKY_DEVOPS_PAT <= use this one
 # export STARSKY_DEVOPS_PAT=""
+
+STARSKY_ZIP_PREFIX="starsky-"
+
+CURRENT_DIR=$(dirname "$0")
+OUTPUT_DIR=$CURRENT_DIR
 
 # get arguments
 ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
-  if [ $i -gt 1 ]; then
+  CURRENT=$(($i-1))
+  if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
+  then
+      echo "--branch master"
+      echo "--token anything"
+      echo "--runtime linux-arm"
+      echo "     (or:) --runtime linux-arm64"
+      echo "     (or:) --runtime osx-x64"
+      echo "     (or:) --runtime win-x64"
+      echo "     (or as fallback:) --runtime "$RUNTIME
+      echo "(optional) --id BUILD_ID"
+
+      exit 0
+  fi
+  
+  if [[ $i -gt 1 ]]; then
     PREV=$(($i-2))
-    CURRENT=$(($i-1))
-
-    if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
-    then
-        echo "--runtime linux-arm"
-        echo "--branch master"
-        echo "--token anything"
-
-    fi
 
     if [[ ${ARGUMENTS[PREV]} == "--branch" ]];
     then
@@ -65,8 +93,30 @@ for ((i = 1; i <= $#; i++ )); do
     then
         STARSKY_DEVOPS_PAT="${ARGUMENTS[CURRENT]}"
     fi
+    
+    if [[ ${ARGUMENTS[PREV]} == "--id" ]];
+    then
+        BUILD_ID_DEF="${ARGUMENTS[CURRENT]}"
+        DEVOPSDEFIDS=( -1 )
+    fi
+    
+    if [[ ${ARGUMENTS[PREV]} == "--output" ]];
+    then
+        OUTPUT_DIR="${ARGUMENTS[CURRENT]}"
+    fi
   fi
 done
+
+# add slash if not exists
+LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
+[[ $LAST_CHAR_OUTPUT_DIR != "/" ]] && OUTPUT_DIR="$OUTPUT_DIR/"; :
+
+if [[ -f $OUTPUT_DIR"Startup.cs" ]]; then # output dir should have slash at end
+    echo "FAIL: You should not run this folder from the source folder"
+    echo "copy this file to the location to run it from"
+    echo "end script due failure"
+    exit 1
+fi
 
 if [[ -z $STARSKY_DEVOPS_PAT ]]; then
   echo "enter your PAT: and press enter"
@@ -76,33 +126,43 @@ fi
 BRANCH="${BRANCH/refs\/heads\//}"
 echo $BRANCH
 
-cd "$(dirname "$0")"
-
-GET_DATA () {
+get_data () {
   LOCALDEVOPSDEFID=$1
-  echo "try: get artifact for Id: "$LOCALDEVOPSDEFID
+
+  if [[ "$LOCALDEVOPSDEFID" != -1 ]]; then
+    echo "try: get artifact for Id: "$LOCALDEVOPSDEFID
+  else  
+    echo "try: get artifact"
+  fi
+  
   URLBUILDS="https://dev.azure.com/"$ORGANIZATION"/"$DEVOPSPROJECT"/_apis/build/builds?api-version=5.1&\$top=1&statusFilter=completed&definitions="$LOCALDEVOPSDEFID"&branchName=refs%2Fheads%2F"$BRANCH
   RESULTBUILDS=$(curl -sS --user :$STARSKY_DEVOPS_PAT $URLBUILDS)
   
-  if [[ "$RESULTBUILDS" == *"Object moved to"* ]]; then
+  # NOSONAR(S1764) ignore Correct one of the identical expressions on both sides of operator '||'.
+  if [[ "$RESULTBUILDS" == *"Object moved to"* || "$RESULTBUILDS" == *"Access Denied"* ]]; then
     echo "FAIL: You don't have access!"
     exit 1
   fi
 
    # echo '-28T16:20:31.273Z"},"uri":"vstfs:///Build/Build/3216","sou' | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+'
 
-  VSTFSURL=$(echo $RESULTBUILDS | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+') 
-
-  BUILDNUMBER=$(echo $RESULTBUILDS | grep -Eo '(buildNumber.{3})([0-9]{8}.[0-9]{1,5})') 
-  if [[ ! -z $BUILDNUMBER ]]; then
-     echo $BUILDNUMBER
-  fi
+  if [[ -z $BUILD_ID_DEF ]]; then
+      VSTFSURL=$(echo $RESULTBUILDS | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+') 
     
-  BUILDID=$(grep -E -o '[0-9]+' <<< $VSTFSURL)
-  if [[ -z $BUILDID ]]; then
-    echo "Continue > No build id found for: "$LOCALDEVOPSDEFID
-    return 1
+      BUILDNUMBER=$(echo $RESULTBUILDS | grep -Eo '(buildNumber.{3})([0-9]{8}.[0-9]{1,5})') 
+      if [[ ! -z $BUILDNUMBER ]]; then
+         echo $BUILDNUMBER
+      fi
+        
+      BUILDID=$(grep -E -o '[0-9]+' <<< $VSTFSURL)
+      if [[ -z $BUILDID ]]; then
+        echo "Continue > No build id found for: "$LOCALDEVOPSDEFID
+        return 1
+      fi   
+  else 
+     BUILDID=$BUILD_ID_DEF
   fi
+  echo "build id: "$BUILDID
 
   URLGETARTIFACT="https://dev.azure.com/"$ORGANIZATION"/"$DEVOPSPROJECT"/_apis/build/builds/"$BUILDID"/artifacts?api-version=5.1&artifactName="$RUNTIME
   RESULTARTIFACT=$(curl -sS --user :$STARSKY_DEVOPS_PAT $URLGETARTIFACT)
@@ -114,7 +174,7 @@ GET_DATA () {
   DOWNLOADJSONURL="${DOWNLOADJSONURL%\"}"
 
   if [[ -z $DOWNLOADJSONURL ]]; then
-    echo "> for buildId: "$LOCALDEVOPSDEFID" there is no artifact"
+    echo "> for buildId: "$BUILDID" there is no artifact"
     return 1
   fi
 
@@ -126,30 +186,73 @@ GET_DATA () {
   unzip -q -o -j "temp_"$RUNTIME".zip"
   rm "temp_"$RUNTIME".zip"
 
-  if [ -f "starsky-"$RUNTIME".zip" ]; then
-    echo "starsky-"$RUNTIME".zip is downloaded"
+  if [[ -f "$STARSKY_ZIP_PREFIX$RUNTIME.zip" ]]; then
+    echo "$STARSKY_ZIP_PREFIX$RUNTIME.zip is downloaded"
     return 0
   fi
 
-  echo "FAIL output file: starsky-"$RUNTIME".zip not found"
+  echo "FAIL output file: $STARSKY_ZIP_PREFIX$RUNTIME.zip not found"
   exit 1
 }
 
-for i in "${DEVOPSDEFIDS[@]}"
-do
-    GET_DATA $i
-done
+unique_values() {
+  local value="$1"
+  typeset i
+  for i do
+    [[ "$value" = "$i" ]] || return 1
+  done
+  return 0
+}
 
-if [ -f "starsky-"$RUNTIME".zip" ]; then
-    echo "YEAH > download for "$RUNTIME" looks ok"
-    echo "get pm2-new-instance.sh installer file"
-    unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./pm2-new-instance.sh
+if [[ ! -d $OUTPUT_DIR ]]; then
+    echo "FAIL "$OUTPUT_DIR" does not exist "
+    exit 1
+fi
+if [[ -f $OUTPUT_DIR"/Startup.cs" ]]; then
+    echo "FAIL: You should not run this folder from the source folder"
+    echo "copy this file to the location to run it from"
+  echo "end script due failure"
+    exit 1
 fi
 
-if [ -f pm2-new-instance.sh ]; then
+cd $OUTPUT_DIR
+
+RESULTS_GET_DATA=()
+for i in "${DEVOPSDEFIDS[@]}"
+do
+  echo "_______________________ "
+  get_data $i
+  RESULTS_GET_DATA+=($?) 
+done
+
+if unique_values "${RESULTS_GET_DATA[@]}"; then
+    if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
+        # whatever you want to do when array doesn't contain value
+    echo "> Download FAILED, there is no artifact for any definitionId"
+        exit 1    
+    else 
+        echo "WARNING: there are duplicate runtime values over multiple pipelines"
+    fi
+fi
+
+if [[ -f "$STARSKY_ZIP_PREFIX$RUNTIME.zip" ]]; then
+  echo "YEAH > download for "$RUNTIME" looks ok"
+  echo "get pm2-new-instance.sh installer file"
+  unzip -p "$STARSKY_ZIP_PREFIX$RUNTIME.zip" "pm2-new-instance.sh" > ./__pm2-new-instance.sh
+    
+  if [[ -s ./__pm2-new-instance.sh ]]; then
+   mv __pm2-new-instance.sh pm2-new-instance.sh
+  else 
+    rm ./__pm2-new-instance.sh
+  fi
+    
+fi
+
+if [[ -f pm2-new-instance.sh ]]; then
     chmod +rwx ./pm2-new-instance.sh
     echo "run for the setup:"
-    echo "./pm2-new-instance.sh"
+    # output dir should have slash at end
+    echo $OUTPUT_DIR"pm2-new-instance.sh"
 else 
     echo " pm2-new-instance.sh is missing, please download it yourself and run it"
     exit 1

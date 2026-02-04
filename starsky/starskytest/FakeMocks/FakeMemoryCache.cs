@@ -1,11 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.foundation.database.Models;
-using starskycore.Models;
-using starskycore.ViewModels;
-using starskytest.FakeCreateAn;
 
 namespace starskytest.FakeMocks
 {
@@ -14,16 +11,18 @@ namespace starskytest.FakeMocks
 		private readonly ICacheEntry _fakeCacheEntry;
 		private readonly Dictionary<string, object> _items;
 
-		public FakeMemoryCache(Dictionary<string, object> items)
+		public FakeMemoryCache(Dictionary<string, object>? items = null)
 		{
 			var services = new ServiceCollection();
 			services.AddSingleton<ICacheEntry,FakeICacheEntry>();
 			var serviceProvider = services.BuildServiceProvider();
 			_fakeCacheEntry = serviceProvider.GetRequiredService<ICacheEntry>();
+			items ??= new Dictionary<string, object>();
 			_items = items;
 		}
 		public void Dispose()
 		{
+			GC.SuppressFinalize(this);
 		}
 
 		public bool TryGetValue(object key, out object value)

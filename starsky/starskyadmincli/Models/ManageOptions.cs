@@ -1,10 +1,10 @@
-namespace starskyAdminCli.Models
+namespace starskyAdminCli.Models;
+
+public enum ManageAdminOptions
 {
-	public enum ManageAdminOptions
-	{
-		Nothing = 0,
-		ChangeSecret = 1,
-		RemoveAccount = 2,
-		ToggleUserAdminRole = 3,
-	}
+	Nothing = 0,
+	ChangeSecret = 1,
+	RemoveAccount = 2,
+	ToggleUserAdminRole = 3,
+	SetupDropbox = 4
 }

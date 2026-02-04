@@ -1,30 +1,26 @@
-import { shallow } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import {
-  IFileIndexItem,
-  newIFileIndexItemArray
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import ItemTextListView from "./item-text-list-view";
 
 describe("ItemTextListView", () => {
   it("renders (without state component)", () => {
-    shallow(
-      <ItemTextListView
-        fileIndexItems={newIFileIndexItemArray()}
-        callback={() => {}}
-      />
-    );
+    render(<ItemTextListView fileIndexItems={newIFileIndexItemArray()} callback={() => {}} />);
   });
 
   it("renders undefined", () => {
-    var content = shallow(
-      <ItemTextListView fileIndexItems={undefined as any} callback={() => {}} />
+    render(
+      <ItemTextListView
+        fileIndexItems={undefined as unknown as IFileIndexItem[]}
+        callback={() => {}}
+      />
     );
-    expect(content.exists(".warning-box")).toBeTruthy();
+
+    expect(screen.getByTestId("list-text-view-no-photos-in-folder")).toBeTruthy();
   });
 
   it("list of 1 file item", () => {
-    var fileIndexItems = [
+    const fileIndexItems = [
       {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
@@ -32,15 +28,13 @@ describe("ItemTextListView", () => {
         isDirectory: false
       }
     ] as IFileIndexItem[];
-    var list = shallow(
-      <ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />
-    );
+    const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />);
 
-    expect(list.find("ul li").text()).toBe(fileIndexItems[0].fileName);
+    expect(list.container.querySelector("ul li")?.textContent).toBe(fileIndexItems[0].fileName);
   });
 
   it("list of 1 error item", () => {
-    var fileIndexItems = [
+    const fileIndexItems = [
       {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
@@ -48,16 +42,50 @@ describe("ItemTextListView", () => {
         isDirectory: false
       }
     ] as IFileIndexItem[];
-    var list = shallow(
-      <ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />
-    );
+    const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />);
 
-    expect(list.find("ul li em").text()).toBe("ServerError");
-    expect(list.find("ul li").text()).toContain(fileIndexItems[0].fileName);
+    expect(list.container.querySelector("ul li em")?.textContent).toBe("ServerError");
+    expect(list.container.querySelector("ul li")?.textContent).toContain(
+      fileIndexItems[0].fileName
+    );
   });
 
+  const statusCorrectlyTheoryData = [
+    { status: IExifStatus.OkAndSame, shouldShowError: false },
+    { status: IExifStatus.ServerError, shouldShowError: true },
+    { status: IExifStatus.NotFoundSourceMissing, shouldShowError: true },
+    { status: IExifStatus.Ok, shouldShowError: false },
+    { status: IExifStatus.ReadOnly, shouldShowError: true },
+    { status: IExifStatus.ExifWriteNotSupported, shouldShowError: false }
+  ];
+
+  test.each(statusCorrectlyTheoryData)(
+    "error-status should render %s",
+    ({ status, shouldShowError }) => {
+      const fileIndexItems = [
+        {
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg",
+          status: status,
+          isDirectory: false
+        }
+      ] as IFileIndexItem[];
+      const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />);
+
+      const item = screen.queryByTestId("image.jpg-error-status");
+
+      if (shouldShowError) {
+        expect(item).toBeTruthy();
+      } else {
+        expect(item).toBeFalsy();
+      }
+
+      list.unmount();
+    }
+  );
+
   it("list of 1 directory item", () => {
-    var fileIndexItems = [
+    const fileIndexItems = [
       {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
@@ -66,16 +94,16 @@ describe("ItemTextListView", () => {
       }
     ] as IFileIndexItem[];
 
-    var callback = jest.fn();
-    var list = shallow(
-      <ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />
-    );
+    const callback = jest.fn();
+    const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />);
 
-    expect(list.find("ul li button").text()).toBe(fileIndexItems[0].fileName);
+    expect(list.container.querySelector("ul li button")?.textContent).toBe(
+      fileIndexItems[0].fileName
+    );
   });
 
   it("list of 1 directory item callback", () => {
-    var fileIndexItems = [
+    const fileIndexItems = [
       {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
@@ -84,14 +112,16 @@ describe("ItemTextListView", () => {
       }
     ] as IFileIndexItem[];
 
-    var callback = jest.fn();
-    var list = shallow(
-      <ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />
-    );
+    const callback = jest.fn();
+    const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />);
 
-    list.find("ul li button").simulate("click");
+    const button = list.container.querySelector("ul li button") as HTMLButtonElement;
 
-    expect(callback).toBeCalled();
-    expect(callback).toBeCalledWith(fileIndexItems[0].filePath);
+    expect(button).not.toBeNull();
+
+    button.click();
+
+    expect(callback).toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith(fileIndexItems[0].filePath);
   });
 });

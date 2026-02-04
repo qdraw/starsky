@@ -1,16 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{bc265f9e-e0f1-46da-9c40-0babe44de9ee}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.4.9</Version>
+        <Version>0.7.10</Version>
+        <Nullable>enable</Nullable>
+        <RootNamespace>starsky.foundation.writemeta</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
     
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.13" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
       <PackageReference Include="MedallionShell" Version="1.6.2" />
     </ItemGroup>
 

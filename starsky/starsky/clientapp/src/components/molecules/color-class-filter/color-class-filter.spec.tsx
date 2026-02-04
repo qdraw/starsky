@@ -1,103 +1,134 @@
-import { globalHistory } from "@reach/router";
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
-import React from "react";
-import { URLPath } from "../../../shared/url-path";
+import { render, screen } from "@testing-library/react";
+import { act } from "react";
+import { MemoryRouter } from "react-router-dom";
+import { Router } from "../../../router-app/router-app";
+import { URLPath } from "../../../shared/url/url-path";
 import ColorClassFilter from "./color-class-filter";
 
 describe("ColorClassFilter", () => {
   it("renders", () => {
-    shallow(
-      <ColorClassFilter
-        itemsCount={1}
-        subPath={"/test"}
-        colorClassActiveList={[1, 2]}
-        colorClassUsage={[1, 2]}
-      ></ColorClassFilter>
+    render(
+      <MemoryRouter>
+        <ColorClassFilter
+          itemsCount={1}
+          subPath={"/test"}
+          colorClassActiveList={[1, 2]}
+          colorClassUsage={[1, 2]}
+        ></ColorClassFilter>
+      </MemoryRouter>
     );
   });
 
   it("onClick value", () => {
-    var component = shallow(
+    const component = render(
+      <MemoryRouter>
+        <ColorClassFilter
+          itemsCount={1}
+          subPath={"/test"}
+          colorClassActiveList={[1]}
+          colorClassUsage={[1, 2]}
+        />
+      </MemoryRouter>
+    );
+
+    const colorClass = screen.queryByTestId("color-class-filter-2") as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
+    colorClass.click();
+
+    component.unmount();
+  });
+
+  it("itemsCount = 0 should return nothing", () => {
+    const component = render(
       <ColorClassFilter
-        itemsCount={1}
+        itemsCount={0}
         subPath={"/test"}
         colorClassActiveList={[1]}
         colorClassUsage={[1, 2]}
-      >
-        t
-      </ColorClassFilter>
+      />
     );
-    expect(component.exists(".colorclass--2")).toBeTruthy();
-    component.find(".colorclass--2").last().simulate("click");
+
+    expect(component).toBeTruthy();
+    expect(component.container.innerHTML).toBeFalsy();
+
+    component.unmount();
   });
 
   it("outside current scope display reset", () => {
-    var component = shallow(
-      <ColorClassFilter
-        itemsCount={1}
-        subPath={"/test"}
-        colorClassActiveList={[1]}
-        colorClassUsage={[3]}
-      >
-        t
-      </ColorClassFilter>
+    const component = render(
+      <MemoryRouter>
+        <ColorClassFilter
+          itemsCount={1}
+          subPath={"/test"}
+          colorClassActiveList={[1]}
+          colorClassUsage={[3]}
+        />
+      </MemoryRouter>
     );
-    expect(component.exists(".colorclass--reset")).toBeTruthy();
+
+    expect(screen.getByTestId("color-class-filter-reset")).toBeTruthy();
+
+    component.unmount();
   });
 
   it("onClick value and preloader exist", () => {
-    var component = mount(
-      <ColorClassFilter
-        itemsCount={1}
-        subPath={"/test"}
-        colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]}
-      >
-        t
-      </ColorClassFilter>
+    const component = render(
+      <MemoryRouter>
+        <ColorClassFilter
+          itemsCount={1}
+          subPath={"/test"}
+          colorClassActiveList={[1]}
+          colorClassUsage={[1, 2]}
+        />
+      </MemoryRouter>
     );
 
-    expect(component.exists(".colorclass--2")).toBeTruthy();
+    const colorClass = screen.queryByTestId("color-class-filter-2") as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
 
-    component.find(".colorclass--2").last().simulate("click");
-    expect(component.exists(".preloader")).toBeTruthy();
+    act(() => {
+      colorClass.click();
+    });
+
+    const preloader = screen.queryByTestId("preloader") as HTMLElement;
+    expect(preloader).toBeTruthy();
 
     component.unmount();
   });
 
   it("undo selection when clicking on already selected colorclass", () => {
-    globalHistory.navigate("/?colorclass=1");
+    Router.navigate("/?colorclass=1");
 
-    var component = mount(
-      <ColorClassFilter
-        itemsCount={1}
-        subPath={"/test"}
-        colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]}
-      >
-        t
-      </ColorClassFilter>
+    const component = render(
+      <MemoryRouter>
+        <ColorClassFilter
+          itemsCount={1}
+          subPath={"/test"}
+          colorClassActiveList={[1]}
+          colorClassUsage={[1, 2]}
+        />
+      </MemoryRouter>
     );
 
-    expect(
-      component.find(".colorclass--1").last().hasClass("active")
-    ).toBeTruthy();
+    const colorClass = screen.queryByTestId("color-class-filter-1") as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
 
-    var urlToStringSpy = jest
+    expect(colorClass.classList).toContain("active");
+
+    const urlToStringSpy = jest
       .spyOn(URLPath.prototype, "IUrlToString")
       .mockImplementationOnce(() => {
         return "";
       });
 
     act(() => {
-      component.find(".colorclass--1").last().simulate("click");
+      colorClass.click();
     });
 
-    expect(urlToStringSpy).toBeCalled();
-    expect(urlToStringSpy).toBeCalledWith({ colorClass: [] });
+    expect(urlToStringSpy).toHaveBeenCalled();
+    expect(urlToStringSpy).toHaveBeenCalledWith({ colorClass: [] });
 
     component.unmount();
-    globalHistory.navigate("/");
+    Router.navigate("/");
   });
 });

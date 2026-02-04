@@ -1,11 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{12f5ae66-8d7f-4d81-86c5-e3e3864f44a1}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.4.9</Version>
+        <Version>0.7.10</Version>
+        <Nullable>enable</Nullable>
+        <RootNamespace>starsky.foundation.storage</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
     
     <ItemGroup>
@@ -14,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.Buffers" Version="4.5.1" />
+      <PackageReference Include="System.Buffers" Version="4.6.1" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

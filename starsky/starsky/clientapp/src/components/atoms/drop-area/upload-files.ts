@@ -1,8 +1,4 @@
-import {
-  IFileIndexItem,
-  newIFileIndexItemArray
-} from "../../../interfaces/IFileIndexItem";
-import { MoreMenuEventCloseConst } from "../more-menu/more-menu";
+import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import { PostSingleFormData } from "./post-single-form-data";
 
 export class UploadFiles {
@@ -34,12 +30,8 @@ export class UploadFiles {
      * Pushing content to the server
      * @param files FileList
      */
-    // only needed for the more menu
-    window.dispatchEvent(
-      new CustomEvent(MoreMenuEventCloseConst, { bubbles: false })
-    );
 
-    var filesList = Array.from(files);
+    const filesList = Array.from(files);
 
     const { length } = filesList;
     if (length === 0) {

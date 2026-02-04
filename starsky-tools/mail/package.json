@@ -1,16 +1,19 @@
 {
   "name": "mail",
-  "version": "0.4.9",
+  "version": "0.7.10",
   "description": "",
   "main": "mail.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node mail.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update": "npx --yes npm-check-updates",
+    "update:install": "npx --yes npm-check-updates -u && npm install"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^8.2.0",
-    "imap-simple": "^5.0.0",
+    "dotenv": "^17.2.3",
+    "imap-simple": "^5.1.0",
     "request": "^2.88.2"
   }
 }

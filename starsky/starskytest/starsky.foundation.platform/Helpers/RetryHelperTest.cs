@@ -1,115 +1,140 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 
-namespace starskytest.starsky.foundation.platform.Helpers
+namespace starskytest.starsky.foundation.platform.Helpers;
+
+[TestClass]
+public sealed class RetryHelperTest
 {
-	[TestClass]
-	public class RetryHelperTest
+	[TestMethod]
+	public void RetrySucceed()
 	{
-		[TestMethod]
-		public void RetrySucceed()
-		{
-			var count = 0;
-			bool Test()
-			{
-				count++;
-				if ( count == 2)
-				{
-					return true;
-				}
-				throw new ApplicationException();
-			}
-			
-			var result = RetryHelper.Do(Test, TimeSpan.Zero);
-			Assert.IsTrue(result);
-		}
-		
-		[TestMethod]
-		[ExpectedException(typeof(AggregateException))]
-		public void RetryFail_expect_AggregateException()
-		{
-			var count = 0;
-			bool Test()
-			{
-				if ( count == 2)
-				{
-					throw new FormatException(); // <= does combine it with AggregateException
-				}
-				count++;
-				throw new ApplicationException();
-			}
-			
-			var result = RetryHelper.Do(Test, TimeSpan.Zero);
-			Assert.IsTrue(result);
-		}
+		var count = 0;
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public void RetryFail_expect_ArgumentOutOfRangeException()
+		bool Test()
 		{
-			bool Test()
+			count++;
+			if ( count == 2 )
 			{
 				return true;
 			}
-			// should not be negative
-			RetryHelper.Do(Test, TimeSpan.Zero, 0);
+
+			throw new ApplicationException();
 		}
 
-		[TestMethod]
-		public async Task Async_RetrySucceed()
+		var result = RetryHelper.Do(Test, TimeSpan.Zero);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void RetryFail_expect_AggregateException()
+	{
+		var count = 0;
+
+		// Act & Assert
+		var ex = Assert.ThrowsExactly<AggregateException>(() =>
 		{
-			var count = 0;
-#pragma warning disable 1998
-			async Task<bool> Test()
-#pragma warning restore 1998
+			RetryHelper.Do(Test, TimeSpan.Zero);
+		});
+
+		// Verify that the AggregateException contains the expected inner exceptions
+		var innerExceptions = ex.InnerExceptions ;
+		Assert.IsTrue(innerExceptions.Any(e => e is FormatException));
+		Assert.IsTrue(innerExceptions.Any(e => e is ApplicationException));
+		return;
+
+		bool Test()
+		{
+			if (count == 2)
 			{
-				count++;
-				if ( count == 2)
-				{
-					return true;
-				}
-				throw new ApplicationException();
+				throw new FormatException(); // <= combines with AggregateException
 			}
-			
-			var result = await RetryHelper.DoAsync(Test, TimeSpan.Zero);
-			Assert.IsTrue(result);
+
+			count++;
+			throw new ApplicationException();
 		}
-		
-		[TestMethod]
-		[ExpectedException(typeof(AggregateException))]
-		public async Task Async_RetryFail_expect_AggregateException()
+	}
+
+	[TestMethod]
+	public void RetryFail_expect_ArgumentOutOfRangeException()
+	{
+		// Act & Assert
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => RetryHelper.Do(Test,
+			TimeSpan.Zero, 0));
+		return;
+
+		// Arrange
+		static bool Test()
 		{
-			var count = 0;
-#pragma warning disable 1998
-			async Task<bool> Test()
-#pragma warning restore 1998
-			{
-				if ( count == 2)
-				{
-					throw new FormatException(); // <= does combine it with AggregateException
-				}
-				count++;
-				throw new ApplicationException();
-			}
-			
-			var result = await RetryHelper.DoAsync(Test, TimeSpan.Zero);
-			Assert.IsTrue(result);
+			return true;
 		}
-		
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public async Task Async_RetryFail_expect_ArgumentOutOfRangeException()
-		{
+	}
+
+	[TestMethod]
+	public async Task Async_RetrySucceed()
+	{
+		var count = 0;
 #pragma warning disable 1998
-			async Task<bool> Test()
+		async Task<bool> Test()
 #pragma warning restore 1998
+		{
+			count++;
+			return count == 2 ? true : throw new ApplicationException();
+		}
+
+		var result = await RetryHelper.DoAsync(Test, TimeSpan.Zero);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task Async_RetryFail_expect_AggregateException()
+	{
+		var count = 0;
+
+		// Act & Assert
+		var ex = await Assert.ThrowsExactlyAsync<AggregateException>(async () => await AssertTest());
+
+		// Verify the AggregateException contains the expected inner exceptions
+		Assert.IsTrue(ex.InnerExceptions.Any(e => e is FormatException));
+		Assert.IsTrue(ex.InnerExceptions.Any(e => e is ApplicationException));
+		return;
+
+		async Task AssertTest()
+		{
+			var result = await RetryHelper.DoAsync(Test, TimeSpan.Zero);
+			Assert.IsTrue(result); // This will not be reached if exception is thrown
+		}
+
+		Task<bool> Test()
+		{
+			if (count == 2)
 			{
-				return true;
+				throw new FormatException(); // Combined with AggregateException
 			}
+
+			count++;
+			throw new ApplicationException();
+		}
+	}
+
+	[TestMethod]
+	public async Task Async_RetryFail_expect_ArgumentOutOfRangeException()
+	{
+		// Act & Assert
+		await Assert.ThrowsExactlyAsync<ArgumentOutOfRangeException>(async () =>
+		{
 			// should not be negative
 			await RetryHelper.DoAsync(Test, TimeSpan.Zero, 0);
+		});
+
+		// Arrange
+		static async Task<bool> Test()
+		{
+			// Just return true for the purpose of this test
+			return await Task.FromResult(true);
 		}
 	}
 }

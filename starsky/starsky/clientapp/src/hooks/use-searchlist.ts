@@ -2,14 +2,17 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
 import { PageType } from "../interfaces/IDetailView";
 import { CastToInterface } from "../shared/cast-to-interface";
-import { UrlQuery } from "../shared/url-query";
+import { UrlQuery } from "../shared/url/url-query";
 
 export interface ISearchList {
   archive?: IArchive;
   pageType: PageType;
-  fetchContent: (
-    location: string,
-    abortController: AbortController
+  fetchContentUseSearchList: (
+    locationScoped: string | undefined,
+    abortController: AbortController,
+    setArchive: Dispatch<SetStateAction<IArchive>>,
+    setPageType: Dispatch<SetStateAction<PageType>>,
+    resetPageTypeBeforeLoading: boolean
   ) => Promise<void>;
 }
 
@@ -44,100 +47,100 @@ const setErrorPageType = (
   return false;
 };
 
-/**
- * Search Query
- * @param query - where to search for
- * @param pageNumber - pagenumber starts with 1
- * @param resetPageTypeBeforeLoading - add loading icon on startup
- * @returns - promise with void
- */
+export const fetchContentUseSearchList = async (
+  locationScoped: string | undefined,
+  abortController: AbortController,
+  setArchive: Dispatch<SetStateAction<IArchive>>,
+  setPageType: Dispatch<SetStateAction<PageType>>,
+  resetPageTypeBeforeLoading: boolean
+): Promise<void> => {
+  try {
+    if (!locationScoped) {
+      setArchive({
+        ...newIArchive(),
+        pageType: PageType.Search,
+        fileIndexItems: [],
+        colorClassUsage: [],
+        searchQuery: ""
+      });
+      setPageType(PageType.Search);
+      return;
+    }
+
+    // force start with a loading icon
+    if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
+
+    const res: Response = await fetch(locationScoped, {
+      signal: abortController.signal,
+      credentials: "include",
+      method: "GET"
+    });
+
+    // 401, 404 and other errors
+    if (setErrorPageType(res, setPageType, setArchive)) {
+      return;
+    }
+
+    const responseObject = await res.json();
+
+    const archiveMedia = new CastToInterface().MediaArchive(responseObject);
+    setPageType(archiveMedia.data.pageType);
+
+    if (
+      archiveMedia.data.pageType !== PageType.Search &&
+      archiveMedia.data.pageType !== PageType.Trash
+    ) {
+      return;
+    }
+
+    // We don't know those values in the search context
+    archiveMedia.data.colorClassUsage = [];
+    archiveMedia.data.colorClassActiveList = [];
+    setArchive(archiveMedia.data);
+  } catch (e: unknown) {
+    if ((e as Error)?.message?.indexOf("aborted") >= 0) {
+      console.log("useSearchList aborted");
+      return;
+    }
+    console.log("useSearchList");
+    console.error(e);
+  }
+};
+
 const useSearchList = (
   query: string | undefined,
   pageNumber: number | undefined,
   resetPageTypeBeforeLoading: boolean
 ): ISearchList | null => {
-  if (!pageNumber) pageNumber = 0;
+  pageNumber ??= 0;
 
   const [archive, setArchive] = useState(newIArchive());
   const [pageType, setPageType] = useState(PageType.Loading);
 
-  var location = query
-    ? new UrlQuery().UrlQuerySearchApi(query, pageNumber)
-    : undefined;
-
-  /**
-   * From SearchList to fetch trash and search content
-   * @param locationScoped - url
-   * @param abortController - how to cancel
-   * @returns emthy promise
-   */
-  const fetchContent = async (
-    locationScoped: string | undefined,
-    abortController: AbortController
-  ): Promise<void> => {
-    try {
-      if (!locationScoped) {
-        setArchive({
-          ...newIArchive(),
-          pageType: PageType.Search,
-          fileIndexItems: [],
-          colorClassUsage: [],
-          searchQuery: ""
-        });
-        setPageType(PageType.Search);
-        return;
-      }
-
-      // force start with a loading icon
-      if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
-
-      const res: Response = await fetch(locationScoped, {
-        signal: abortController.signal,
-        credentials: "include",
-        method: "GET"
-      });
-
-      // 401, 404 and other errors
-      if (setErrorPageType(res, setPageType, setArchive)) {
-        return;
-      }
-
-      const responseObject = await res.json();
-
-      var archiveMedia = new CastToInterface().MediaArchive(responseObject);
-      setPageType(archiveMedia.data.pageType);
-
-      if (
-        archiveMedia.data.pageType !== PageType.Search &&
-        archiveMedia.data.pageType !== PageType.Trash
-      )
-        return;
-
-      // We don't know those values in the search context
-      archiveMedia.data.colorClassUsage = [];
-      archiveMedia.data.colorClassActiveList = [];
-      setArchive(archiveMedia.data);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  const location = query ? new UrlQuery().UrlQuerySearchApi(query, pageNumber) : undefined;
 
   useEffect(() => {
     const abortController = new AbortController();
-    fetchContent(location, abortController);
+    fetchContentUseSearchList(
+      location,
+      abortController,
+      setArchive,
+      setPageType,
+      resetPageTypeBeforeLoading
+    );
 
     return () => {
       abortController.abort();
     };
 
     // dependency: 'locationSearch'. is not added to avoid a lot of queries
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [location]);
 
   return {
     archive,
     pageType,
-    fetchContent
+    fetchContentUseSearchList
   };
 };
 

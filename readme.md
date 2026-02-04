@@ -1,6 +1,7 @@
-# Project Readme
+# [Starsky](https://docs.qdraw.nl/) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](../LICENSE.md) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) ![GitHub all releases](https://img.shields.io/github/downloads/qdraw/starsky/total?label=release%20downloads) ![Docker](https://img.shields.io/docker/pulls/qdraw/starsky.svg) ![GitHub Repo stars](https://img.shields.io/github/stars/qdraw/starsky?label=Give%20me%20a%20star%20please&style=social) ![GitHub issues](https://img.shields.io/github/issues-raw/qdraw/starsky) [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/qdraw/starsky?include_prereleases)](https://github.com/qdraw/starsky/releases/)
+
 ## List of __[Starsky](readme.md)__ Projects
- * [starsky (sln)](starsky/readme.md) _database photo index & import index project_
+ * [By App documentation](starsky/readme.md) _database photo index & import index project_
     * [starsky](starsky/starsky/readme.md) _web api application / interface_
       *  [clientapp](starsky/starsky/clientapp/readme.md) _react front-end application_
     * [starskyImporterCli](starsky/starskyimportercli/readme.md)  _import command line interface_
@@ -10,11 +11,11 @@
     * [starskyAdminCli](starsky/starskyadmincli/readme.md)  _manage user accounts_
     * [starskySynchronizeCli](starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
     * [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
-    * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
-    * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](starsky.netframework/readme.md) _Client for older machines (deprecated)_
+    * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (.NET)_
+    * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](starskyapp/readme.md) _Desktop Application_
+ * [Starsky Desktop](starskydesktop/readme.md) _Desktop Application_
+    * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
  * [Changelog](history.md) _Release notes and history_
 
 ## What is Starsky?
@@ -23,9 +24,9 @@
 ## Demo app
 Starsky has a demo application online.
 
-[See the online demo](https://demostarsky.herokuapp.com?classes=btn,btn-default)
+[See the online demo](https://demo.qdraw.nl)
 
-> Use the username: `demo@qdraw.nl` and Password: `demo@qdraw.nl` to access the demo
+> Is not needed to login, but you can create a new account
 
 ## Project Readme   
 
@@ -44,6 +45,27 @@ To publish files generate markup and images with a logo use the [Web Html CLI](s
 
 All these projects are separately compiled using the build script and using the same application settings (`appsettings`) configuration.
 
+## GitHub Issues
+
+### Pay attention
+
+Please do not open an issue on GitHub, unless you have spotted an actual bug in Starsky.
+
+Use [GitHub Discussions](https://github.com/qdraw/starsky/discussions) to ask questions, bring up ideas, or other general items. Issues are not the place for questions, and will either be converted to a discussion or closed.
+
+This policy is in place to avoid bugs being drowned out in a pile of sensible suggestions for future enhancements and calls for help from people who forget to check back if they get it and so on.
+
+If a feature request is actually going to be built, it will get its own issue with the tag: Feature Request
+
+## Latest stable release
+
+[![Release](https://img.shields.io/github/v/release/qdraw/starsky)](https://github.com/qdraw/starsky/releases/)
+
+## Latest prerelease
+
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/qdraw/starsky?include_prereleases)](https://github.com/qdraw/starsky/releases/)
+
+
 ## Build status
 
 ### Azure pipeline
@@ -55,22 +77,31 @@ _See `./pipelines/azure` for details_
 
 #### Windows
 
-![Starsky .NET Core (Windows)](https://github.com/qdraw/starsky/workflows/Starsky%20.NET%20Core%20(Windows)/badge.svg)
+[![Windows .NET build](https://github.com/qdraw/starsky/actions/workflows/webapp-build-net-windows.yml/badge.svg?branch=master)](https://github.com/qdraw/starsky/actions/workflows/webapp-build-net-windows.yml)
 
 #### Ubuntu
 
-![Starsky .NET Core (Ubuntu)](https://github.com/qdraw/starsky/workflows/Starsky%20.NET%20Core%20(Ubuntu)/badge.svg)
-![Starsky ClientApp (React)](https://github.com/qdraw/starsky/workflows/Starsky%20ClientApp%20(React)/badge.svg)
+[![Ubuntu .NET build](https://github.com/qdraw/starsky/actions/workflows/webapp-build-net-ubuntu.yml/badge.svg?branch=master)](https://github.com/qdraw/starsky/actions/workflows/webapp-build-net-ubuntu.yml)
+[![ClientApp React Linux CI](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml/badge.svg?branch=master)](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml)
+
+#### Docker
+[![webapp-unstable-docker-buildx](https://github.com/qdraw/starsky/actions/workflows/webapp-unstable-docker-buildx.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/webapp-unstable-docker-buildx.yml)
 
 #### App on Windows and Mac OS
 
-![StarskyApp Electron (Missing .NET dependency)](https://github.com/qdraw/starsky/workflows/StarskyApp%20Electron%20(Missing%20.NET%20dependency)/badge.svg)
+The pipeline below is to test the Desktop build process. The .NET part isn't build in this pipeline, but it's needed to run the Desktop app.
 
+[![starskyDesktop Electron PR (Missing .NET dependency)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml)
 
-_See `./.github/workflows` for details_
+A full build including the .NET dependency 
 
-### End2End tests on public heroku demo environment
-![end2end on heroku-demo](https://github.com/qdraw/starsky/workflows/end2end%20on%20heroku-demo/badge.svg?branch=master)
+[![Create Desktop Release on tag for .Net Core and Electron](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml)
+
+_See [the documentation](https://docs.qdraw.nl/docs/developer-guide/github-actions/) for details_
+
+### End2End tests on ubuntu github actions ci environment
+
+![end2end on ubuntu-ci](https://github.com/qdraw/starsky/actions/workflows/end2end-ubuntu-ci.yml/badge.svg)
 
 _See `./starsky-tools/end2end` for details_
 
@@ -78,9 +109,20 @@ _See `./starsky-tools/end2end` for details_
 
 There is a version log and backlog available on the [history and changelog page](history.md)
 
+### Codecov
+[![codecov](https://codecov.io/gh/qdraw/starsky/branch/master/graph/badge.svg?token=MUCQuYH99y)](https://codecov.io/gh/qdraw/starsky)
+
 ### Sonarqube
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=coverage)](https://sonarcloud.io/dashboard?id=starsky)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=coverage)](https://sonarcloud.io/summary/new_code?id=starsky)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=bugs)](https://sonarcloud.io/dashboard?id=starsky)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=code_smells)](https://sonarcloud.io/dashboard?id=starsky)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=starsky)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=starsky)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=starsky)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=starsky)
+
+### Licence
+![MIT License](https://img.shields.io/static/v1?label=Licence&message=MIT&color=green)
+
+## Authors
+- [@qdraw](https://www.github.com/qdraw)

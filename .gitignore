@@ -47,6 +47,7 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 **/Properties/launchSettings.json
+!**/Properties/default-init-launchSettings.json
 
 *_i.c
 *_p.c
@@ -287,10 +288,6 @@ paket-files/
 __pycache__/
 *.pyc
 
-# Cake - Uncomment if you are using it
-# tools/**
-# !tools/packages.config
-
 # Telerik's JustMock configuration file
 *.jmconfig
 
@@ -312,7 +309,7 @@ xcuserdata/
 *.xccheckout
 
 ## compatibility with Xcode 3 and earlier (ignoring not required starting Xcode 4)
-build/
+#build/
 DerivedData/
 *.moved-aside
 *.pbxuser
@@ -332,10 +329,19 @@ starsky/starsky/.sonarqube*
 **/appsettings.*
 !**/appsettings.cs
 !**/appsettings.json
+!**/appsettings.default.json
 starsky/starskytest/coverag*.xml
 starskyapp/ios/main.jsbundle
 **/.env
 **/.starskyenv
+starskyapp/dist-prod/*
+starskyapp/tmp/settings.json
+starskydesktop/dist-prod/*
+starskydesktop/tmp/settings.json
+
+starskydesktop/.scannerwork/**
+starskydesktop/src/.scannerwork/**
+
 
 starsky-tools/docs/*.yml
 starsky-tools/docs/*.sh
@@ -351,26 +357,38 @@ starsky-tools/docs/*/*.jpg
 starsky-tools/docs/*/*/*.jpg
 starsky-tools/docs/*/*/*/*.jpg
 
-**/osx.10.12-x64/*
+starsky-tools/build-tools/vite-tmp-folder/*
+
+**/osx-x64/*
+**/osx-arm64/*
 **/linux-arm/*
 **/linux-arm64/*
+**/linux-x64/*
 **/win7-x86/*
 **/win7-x64/*
+**/win-x86/*
 **/win-x64/*
+**/win-arm64/*
 **/generic-netcore/*
 **/generic-netcore-starskyonly/*
-**/netframework-msbuild/*
+starsky/output/*
+
 
 starsky-linux-arm.zip
 starsky-linux-arm64.zip
+
+starsky-osx-x64.zip
+starsky-osx-arm64.zip
 starsky-osx.10.12-x64.zip
 starsky-win7-x86.zip
 starsky-win7-x64.zip
 starsky-win-x64.zip
+starsky-win-arm64.zip
+starsky-linux-arm64.zip
+starsky-linux-x64.zip
 starsky-generic-netcore*.zip
 starsky-netframework-msbuild.zip
 
-**/Cake/*
 **/tools/nuget.exe
 **/tools/packages.config*
 **/tools/Addins/*/**
@@ -385,6 +403,13 @@ starsky-netframework-msbuild.zip
 **/jest-coverage.cobertura.xml
 **/coverage-merge-report/*
 
+!starsky/.env
+
 bundle.min.js
 bundle.min.js.map
 .eslintcache
+
+starsky/.nuke/temp
+
+starskydesktop4
+desktop

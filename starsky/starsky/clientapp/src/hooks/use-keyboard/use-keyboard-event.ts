@@ -18,20 +18,20 @@ import { useEffect } from "react";
  */
 function useKeyboardEvent(
   regex: RegExp,
-  callback: Function,
-  dependencies: any = []
+  callback: (arg0: KeyboardEvent) => void,
+  dependencies: React.DependencyList = []
 ) {
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
-      if (regex && event.key.match(regex)) {
+      if (regex?.exec(event.key)) {
         callback(event);
       }
     };
-    window.addEventListener("keydown", handler);
+    globalThis.addEventListener("keydown", handler);
     return () => {
-      window.removeEventListener("keydown", handler);
+      globalThis.removeEventListener("keydown", handler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [...dependencies, regex, callback]);
 }
 

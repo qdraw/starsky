@@ -1,60 +1,98 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
-import useIntersection from "../../../hooks/use-intersection-observer";
+import { createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import * as useIntersection from "../../../hooks/use-intersection-observer";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import ListImage from "./list-image";
 
 jest.mock("../../../hooks/use-intersection-observer");
 
 describe("ListImageTest", () => {
   it("renders", () => {
-    shallow(
-      <ListImage alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />
-    );
+    render(<ListImage filePath={""} alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />);
   });
 
   it("useIntersection = true", () => {
-    (useIntersection as jest.Mock<any>).mockImplementation(() => true);
-    var element = mount(
-      <ListImage fileHash={"test.jpg"} imageFormat={ImageFormat.jpg}>
+    (useIntersection.default as jest.Mock<boolean>).mockImplementation(() => true);
+    const element = render(
+      <ListImage filePath={""} fileHash={"test.jpg"} imageFormat={ImageFormat.jpg}>
         test
       </ListImage>
     );
-    element.find("img").simulate("load");
 
-    expect(element.find("img").length).toBe(1);
-    expect(
-      element.find("img").filterWhere((item) => {
-        return (
-          item.prop("src") ===
-          new UrlQuery().UrlThumbnailImage("test.jpg", true)
-        );
-      })
-    ).toHaveLength(1);
+    const img = screen.queryAllByTestId("list-image-img")[0] as HTMLImageElement;
+
+    const keyDownEvent = createEvent.load(img, {
+      key: "x",
+      code: "x"
+    });
+
+    fireEvent(img, keyDownEvent);
+
+    expect(img).not.toBeNull();
+    expect(img.src).toContain(new UrlQuery().UrlThumbnailImage("test.jpg", "", false));
+
+    element.unmount();
   });
 
   it("img-box--error null", () => {
-    var element = shallow(
-      <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
+    const element = render(
+      <ListImage filePath={""} imageFormat={ImageFormat.jpg} fileHash={"null"} />
     );
 
-    expect(
-      element.filterWhere((item) => {
-        return item.prop("className") === "img-box--error";
-      })
-    ).toHaveLength(1);
+    const img = screen.queryAllByTestId("list-image-img-error")[0] as HTMLImageElement;
+
+    expect(img).not.toBeNull();
+    expect(img.className).toContain("img-box--error");
+
+    element.unmount();
+  });
+
+  it("should have correct class name when error is true", async () => {
+    const props = {
+      fileHash: "abc123",
+      alt: "test image",
+      imageFormat: ImageFormat.jpg,
+      filePath: ""
+    };
+
+    jest.spyOn(useIntersection, "default").mockReturnValue(true);
+    const container = render(<ListImage {...props} />);
+
+    const imgBox = screen.getByTestId("list-image-img-parent-div");
+    const img = screen.getByTestId("list-image-img");
+
+    fireEvent.error(img);
+
+    await waitFor(() => expect(imgBox.className).toContain("img-box--error"));
+    container.unmount();
+  });
+
+  it("unknown type", async () => {
+    const props = {
+      fileHash: "abc123",
+      alt: "test image",
+      imageFormat: ImageFormat.unknown,
+      filePath: ""
+    };
+
+    jest.spyOn(useIntersection, "default").mockReturnValue(true);
+    const container = render(<ListImage {...props} />);
+
+    const imgBox = screen.getByTestId("list-image-img-error");
+    expect(imgBox.className).toContain("img-box--unsupported");
+    container.unmount();
   });
 
   it("img-box--error null 2", () => {
-    var element = shallow(
-      <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
+    const element = render(
+      <ListImage filePath={""} imageFormat={ImageFormat.jpg} fileHash={"null"} />
     );
 
-    expect(
-      element.filterWhere((item) => {
-        return item.prop("className") === "img-box--error";
-      })
-    ).toHaveLength(1);
+    const img = screen.queryAllByTestId("list-image-img-error")[0] as HTMLImageElement;
+
+    expect(img).not.toBeNull();
+    expect(img.className).toContain("img-box--error");
+
+    element.unmount();
   });
 });

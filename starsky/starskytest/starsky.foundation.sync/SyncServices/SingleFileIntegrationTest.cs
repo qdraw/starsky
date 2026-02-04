@@ -1,20 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.metaupdate.Services;
-using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
-using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.SyncServices;
@@ -24,13 +19,13 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
 	[TestClass]
-	public class SingleFileIntegrationTest
+	public sealed class SingleFileIntegrationTest
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 		private readonly CreateAnImage _createAnImage;
-		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly IMemoryCache _memoryCache;
 
 		public SingleFileIntegrationTest()
 		{
@@ -48,29 +43,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			new SetupDatabaseTypes(_appSettings, provider).BuilderDb();
 			provider.AddScoped<IQuery,Query>();
+			provider.AddScoped<IWebLogger, FakeIWebLogger>();
 			
 			var serviceProvider = provider.BuildServiceProvider();
 			
-			_iStorage = new StorageSubPathFilesystem(_appSettings);
-			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
+			serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+
 			_query = serviceProvider.GetRequiredService<IQuery>();
-		}
-		
-		[TestMethod]
-		public async Task NewItem()
-		{
-			var stopWatch = new Stopwatch();
-			stopWatch.Start();
-
-			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage));
-			var result = await sync.Sync(_createAnImage.DbPath);
-
-			stopWatch.Stop();
-			var ts = stopWatch.Elapsed;
-			// Format and display the TimeSpan value.
-			var elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-			Console.WriteLine("RunTime " + elapsedTime);
-			Assert.IsNotNull(result);
 		}
 		
 		[TestMethod]
@@ -86,7 +67,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var stopWatch = new Stopwatch();
 			stopWatch.Start();
 			
-			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage));
+			var sync = new Synchronize(_appSettings, _query, 
+				new FakeSelectorStorage(_iStorage), new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), 
+				null, _memoryCache);
 			var result = await sync.Sync("/");
 			
 			stopWatch.Stop();

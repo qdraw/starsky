@@ -7,7 +7,7 @@ using starsky.foundation.platform.Helpers;
 namespace starskytest.ViewModels
 {
 	[TestClass]
-	public class RelativeObjectsTest
+	public sealed class RelativeObjectsTest
 	{
 		[TestMethod]
 		public void relativeObjects_args_1()

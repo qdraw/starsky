@@ -59,6 +59,10 @@
   box-shadow: none;
 }
 
+.header .menu-inline-search button {
+  width: 100%;
+}
+
 .header .menu-item {
   list-style: none;
   font-size: 16px;
@@ -145,7 +149,6 @@
 .header .nav__container {
   position: absolute;
   margin-top: 50px;
-  /* padding: 80px 20px 30px; */
   top: 0;
   left: 0;
   width: 100%;
@@ -183,12 +186,8 @@
   mask-position: center;
   mask-size: 100%;
   margin-right: 5px;
-
-  padding-right: 4px;
-  padding-left: 20px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-
+  /*left = 20px*/
+  padding: 4px 4px 4px 20px;
   line-height: 50px;
 }
 
@@ -202,6 +201,7 @@
   background-color: #90a4ae;
 }
 
+.header > .wrapper > .item.item--force-sync,
 .header > .wrapper > .item.item--labels,
 .header > .wrapper > .item.item--more,
 .header > .wrapper > .item.item--select,
@@ -211,6 +211,10 @@
   color: #fff;
   text-decoration: none;
   cursor: pointer;
+}
+
+.header .item.item--continue:focus {
+  box-shadow: inset 0px 0px 0px 3px #283593;
 }
 
 .header > .wrapper > .item.disabled {
@@ -236,6 +240,10 @@
 
 .header > .wrapper > .item.item--select:before {
   mask-image: url("../images/baseline-check_circle_outline-24px.svg");
+}
+
+.header > .wrapper > .item.item--force-sync:before {
+  mask-image: url("../images/baseline-refresh-24px.svg");
 }
 
 .header > .wrapper > .item.item--labels:before {
@@ -287,6 +295,18 @@
   }
 }
 
+.header > .wrapper > .item.item--force-sync {
+  position: absolute;
+  right: 215px;
+  top: 0px; /* for old firefox */
+}
+
+@media screen and (max-width: 450px) {
+  .header > .wrapper > .item.item--force-sync {
+    display: none;
+  }
+}
+
 .header.header--sidebar {
   width: 320px;
   position: fixed;
@@ -311,6 +331,7 @@
 .header--sidebar .item.item--close {
   color: #000;
   margin-left: 5px;
+  padding-right: 5px;
 }
 
 .header--sidebar .item.item--close .autosave {

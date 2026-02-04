@@ -24,7 +24,7 @@ export class LimitLength {
    * Limit length before sending to onBlurEvent
    * @param element Focus event
    */
-  public LimitLengthBlur(element: React.FocusEvent<HTMLDivElement>) {
+  public LimitLengthBlur(element: React.FocusEvent<HTMLDivElement>): void {
     if (!element.currentTarget.textContent) {
       this.setChildLength(0);
       if (!this.onBlur) return;
@@ -45,10 +45,7 @@ export class LimitLength {
    * @param element KeydownEvent
    */
   public LimitLengthKey(element: React.KeyboardEvent<HTMLDivElement>) {
-    if (
-      (element.metaKey || element.ctrlKey) &&
-      (element.key === "a" || element.key === "e")
-    ) {
+    if ((element.metaKey || element.ctrlKey) && (element.key === "a" || element.key === "e")) {
       return;
     }
 
@@ -57,14 +54,16 @@ export class LimitLength {
       return;
     }
 
-    var elementLength = element.currentTarget.textContent.trim().length;
+    const elementLength = element.currentTarget.textContent.trim().length;
+
+    const anyKeyRegex = new RegExp(/^.?$/);
 
     if (
       elementLength < this.maxlength ||
-      window.getSelection()?.type === "Range" ||
+      globalThis.getSelection()?.type === "Range" ||
       (element.key === "x" && element.ctrlKey) ||
       (element.key === "x" && element.metaKey) ||
-      !element.key.match(/^.{0,1}$/)
+      !anyKeyRegex.exec(element.key)
     )
       return;
 

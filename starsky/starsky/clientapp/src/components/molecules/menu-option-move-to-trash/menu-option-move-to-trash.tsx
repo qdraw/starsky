@@ -1,16 +1,16 @@
 import React, { memo } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
-import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
-import FetchPost from "../../../shared/fetch-post";
+import localization from "../../../localization/localization.json";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
-import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { Select } from "../../../shared/select";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path.ts";
+import { UrlQuery } from "../../../shared/url/url-query.ts";
+import MenuOption from "../../atoms/menu-option/menu-option.tsx";
 
 interface IMenuOptionMoveToTrashProps {
   select: string[];
@@ -25,53 +25,37 @@ interface IMenuOptionMoveToTrashProps {
  */
 const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> = memo(
   ({ state, dispatch, select, setSelect, isReadOnly }) => {
-    const settings = useGlobalSettings();
-    const language = new Language(settings.language);
+    const undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
 
-    var undoSelection = () =>
-      new Select(select, setSelect, state, history).undoSelection();
-
-    const MessageMoveToTrash = language.text(
-      "Verplaats naar prullenmand",
-      "Move to Trash"
-    );
-
-    var history = useLocation();
+    const history = useLocation();
 
     async function moveToTrashSelection() {
       if (!select || isReadOnly) return;
 
-      var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
-        select,
-        state.fileIndexItems
-      );
+      const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
 
       if (!toUndoTrashList) return;
-      var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
-        toUndoTrashList,
-        ""
-      );
+      const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(toUndoTrashList, "");
       if (selectParams.length === 0) return;
 
-      var bodyParams = new URLSearchParams();
+      const bodyParams = new URLSearchParams();
+      // noinspection PointlessBooleanExpressionJS
+      const collections = new URLPath().StringToIUrl(history.location.search).collections !== false;
 
       bodyParams.append("f", selectParams);
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
       bodyParams.set("Colorclass", "8");
-      bodyParams.set(
-        "collections",
-        (
-          new URLPath().StringToIUrl(history.location.search).collections !==
-          false
-        ).toString()
-      );
+      bodyParams.set("collections", collections.toString());
 
-      var resultDo = await FetchPost(
-        new UrlQuery().UrlUpdateApi(),
-        bodyParams.toString()
-      );
-      if (resultDo.statusCode !== 404 && resultDo.statusCode !== 200) {
+      const resultDo = await FetchPost(new UrlQuery().UrlMoveToTrashApi(), bodyParams.toString());
+
+      if (
+        resultDo.statusCode === 404 ||
+        resultDo.statusCode === 400 ||
+        resultDo.statusCode === 500 ||
+        resultDo.statusCode === 502
+      ) {
         return;
       }
 
@@ -86,19 +70,20 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
      * When pressing delete its moved to the trash
      */
     useHotKeys({ key: "Delete" }, () => {
-      moveToTrashSelection();
+      moveToTrashSelection().then(() => {
+        // do nothing
+      });
     });
 
     return (
       <>
         {select.length >= 1 ? (
-          <li
-            data-test="trash"
-            className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-            onClick={() => moveToTrashSelection()}
-          >
-            {MessageMoveToTrash}
-          </li>
+          <MenuOption
+            isReadOnly={isReadOnly}
+            testName={"trash"}
+            onClickKeydown={moveToTrashSelection}
+            localization={localization.MessageMoveToTrash}
+          />
         ) : null}
       </>
     );

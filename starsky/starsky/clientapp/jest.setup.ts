@@ -1,0 +1,28 @@
+import "@testing-library/jest-dom";
+import { configure } from "@testing-library/react";
+import "isomorphic-fetch";
+import "jest-environment-jsdom";
+import "ts-node";
+
+// Mock IntersectionObserver
+class IntersectionObserver {
+  observe = jest.fn();
+  disconnect = jest.fn();
+  unobserve = jest.fn();
+}
+
+Object.defineProperty(window, "IntersectionObserver", {
+  writable: true,
+  configurable: true,
+  value: IntersectionObserver
+});
+
+Object.defineProperty(global, "IntersectionObserver", {
+  writable: true,
+  configurable: true,
+  value: IntersectionObserver
+});
+
+globalThis.scrollTo = jest.fn();
+
+configure({ testIdAttribute: "data-test" });

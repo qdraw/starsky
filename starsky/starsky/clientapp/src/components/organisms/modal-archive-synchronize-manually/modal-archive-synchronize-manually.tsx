@@ -2,22 +2,21 @@ import React, { useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
-import useLocation from "../../../hooks/use-location";
-import { IArchiveProps } from "../../../interfaces/IArchiveProps";
-import { CastToInterface } from "../../../shared/cast-to-interface";
-import FetchGet from "../../../shared/fetch-get";
-import FetchPost from "../../../shared/fetch-post";
-import { FileListCache } from "../../../shared/filelist-cache";
+import useLocation from "../../../hooks/use-location/use-location";
+import localization from "../../../localization/localization.json";
+import FetchGet from "../../../shared/fetch/fetch-get";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
 import Preloader from "../../atoms/preloader/preloader";
 import ForceSyncWaitButton from "../../molecules/force-sync-wait-button/force-sync-wait-button";
+import { RemoveCache } from "./internal/remove-cache.ts";
 
 interface IModalDisplayOptionsProps {
   isOpen: boolean;
-  handleExit: Function;
+  handleExit: () => void;
   parentFolder?: string;
 }
 
@@ -27,123 +26,75 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageSynchronizeManually = language.text(
-    "Handmatig synchroniseren",
-    "Synchronize manually"
-  );
-
-  const MessageRemoveCache = language.text(
-    "Verwijder cache van huidige map",
-    "Refresh cache of current directory"
-  );
-  const MessageGeoSync = language.text(
-    "Voeg geolocatie automatisch toe",
-    "Automatically add geolocation"
-  );
-  const MessageGeoSyncExplainer = language.text(
-    "De locatie wordt afgeleid van een gpx bestand die zich in de huidige map bevind " +
-      "en op basis van de locatie worden er plaatsnamen bij de afbeeldingen gevoegd",
-    "The location is derived from a gpx file located in " +
-      " the current folder and based on the location place names are appended to the images"
-  );
-  const MessageManualThumbnailSync = language.text(
-    "Thumbnail afbeeldingen generen",
-    "Generate thumbnail images"
-  );
-  const MessageManualThumbnailSyncExplainer = language.text(
-    "Deze actie genereert op de achtergrond veel miniatuurafbeeldingen, dit heeft invloed op de prestaties",
-    "This action generate on the background lots of thumbnail images, this does impact the performance"
+  const MessageSynchronizeManually = language.key(localization.MessageSynchronizeManually);
+  const MessageRemoveCache = language.key(localization.MessageRemoveCache);
+  const MessageGeoSync = language.key(localization.MessageGeoSync);
+  const MessageGeoSyncExplainer = language.key(localization.MessageGeoSyncExplainer);
+  const MessageManualThumbnailSync = language.key(localization.MessageManualThumbnailSync);
+  const MessageManualThumbnailSyncExplainer = language.key(
+    localization.MessageManualThumbnailSyncExplainer
   );
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
 
-  var history = useLocation();
-  let { dispatch } = React.useContext(ArchiveContext);
+  const history = useLocation();
+  const { dispatch } = React.useContext(ArchiveContext);
 
   // the default is true
   const [collections, setCollections] = React.useState(
-    new URLPath().StringToIUrl(history.location.search).collections !== false
+    new URLPath().StringToIUrl(history.location.search).collections
   );
 
   /** update when changing values and search */
   useEffect(() => {
-    setCollections(
-      new URLPath().StringToIUrl(history.location.search).collections !== false
-    );
+    setCollections(new URLPath().StringToIUrl(history.location.search).collections);
   }, [collections, history.location.search]);
-
-  /**
-   * Remove Folder cache
-   */
-  function removeCache() {
-    setIsLoading(true);
-    new FileListCache().CacheCleanEverything();
-    var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    FetchGet(
-      new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))
-    ).then((_) => {
-      setTimeout(() => {
-        var url = new UrlQuery().UrlIndexServerApi(
-          new URLPath().StringToIUrl(history.location.search)
-        );
-        FetchGet(url).then((connectionResult) => {
-          var removeCacheResult = new CastToInterface().MediaArchive(
-            connectionResult.data
-          );
-          var payload = removeCacheResult.data as IArchiveProps;
-          if (payload.fileIndexItems) {
-            dispatch({ type: "force-reset", payload });
-          }
-          props.handleExit();
-        });
-      }, 600);
-    });
-  }
 
   const [geoSyncPercentage, setGeoSyncPercentage] = useState(0);
 
   function geoSync() {
-    var parentFolder = props.parentFolder ? props.parentFolder : "/";
+    const parentFolder = props.parentFolder ?? "/";
 
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
-    FetchPost(
-      new UrlQuery().UrlGeoSync(),
-      bodyParams.toString()
-    ).then((_) => {});
+    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then(() => {
+      // do nothing with result
+    });
   }
 
   function fetchGeoSyncStatus() {
-    var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    FetchGet(
-      new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))
-    ).then((anyData) => {
-      if (anyData.statusCode !== 200 || !anyData.data) {
-        setGeoSyncPercentage(-1);
-        return;
-      }
+    const parentFolder = props.parentFolder ?? "/";
+    FetchGet(new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))).then(
+      (anyData: unknown) => {
+        const containerData = anyData as {
+          statusCode: number;
+          data: { current: number; total: number };
+        };
+        if (containerData.statusCode !== 200 || !containerData.data) {
+          setGeoSyncPercentage(-1);
+          return;
+        }
 
-      if (anyData.data.current === 0 && anyData.data.total === 0) {
-        setGeoSyncPercentage(0);
-        return;
+        if (containerData.data?.current === 0 && containerData.data.total === 0) {
+          setGeoSyncPercentage(0);
+          return;
+        }
+        setGeoSyncPercentage((containerData.data.current / containerData.data.total) * 100);
       }
-      setGeoSyncPercentage((anyData.data.current / anyData.data.total) * 100);
-    });
+    );
   }
 
   useInterval(() => fetchGeoSyncStatus(), 10000);
 
   function manualThumbnailSync() {
-    var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    var bodyParams = new URLSearchParams();
+    const parentFolder =
+      props.parentFolder && props.parentFolder.trim() !== "" ? props.parentFolder : "/";
+    const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
     setIsLoading(true);
 
-    FetchPost(
-      new UrlQuery().UrlThumbnailGeneration(),
-      bodyParams.toString()
-    ).then((anyData) => {
+    FetchPost(new UrlQuery().UrlThumbnailGeneration(), bodyParams.toString()).then(() => {
       setTimeout(() => {
         setIsLoading(false);
         props.handleExit();
@@ -159,41 +110,50 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
         props.handleExit();
       }}
     >
-      {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
+      <div className="modal content scroll">
+        {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
 
-      <div className="modal content--subheader">
-        {MessageSynchronizeManually}
-      </div>
-      <div className="modal content--text">
-        <ForceSyncWaitButton
-          propsParentFolder={props.parentFolder}
-          historyLocationSearch={history.location.search}
-          callback={() => props.handleExit()}
-          dispatch={dispatch}
-        ></ForceSyncWaitButton>
-        <button
-          className="btn btn--default"
-          data-test="remove-cache"
-          onClick={() => removeCache()}
-        >
-          {MessageRemoveCache}
-        </button>
-        <button
-          className="btn btn--info btn--percentage"
-          data-test="geo-sync"
-          onClick={() => geoSync()}
-        >
-          {MessageGeoSync} {geoSyncPercentage}%
-        </button>
-        <p>{MessageGeoSyncExplainer}</p>
-        <button
-          className="btn btn--info"
-          data-test="thumbnail-generation"
-          onClick={() => manualThumbnailSync()}
-        >
-          {MessageManualThumbnailSync}
-        </button>
-        <p>{MessageManualThumbnailSyncExplainer}</p>
+        <div className="modal content--subheader">{MessageSynchronizeManually}</div>
+        <div className="modal content--text">
+          <ForceSyncWaitButton
+            isShortLabel={false}
+            propsParentFolder={props.parentFolder}
+            historyLocationSearch={history.location.search}
+            callback={() => props.handleExit()}
+            dispatch={dispatch}
+          ></ForceSyncWaitButton>
+          <button
+            className="btn btn--default"
+            data-test="remove-cache"
+            onClick={() =>
+              RemoveCache(
+                setIsLoading,
+                props.parentFolder ?? "",
+                history.location.search,
+                dispatch,
+                props.handleExit
+              )
+            }
+          >
+            {MessageRemoveCache}
+          </button>
+          <button
+            className="btn btn--info btn--percentage"
+            data-test="geo-sync"
+            onClick={() => geoSync()}
+          >
+            {MessageGeoSync} {geoSyncPercentage}%
+          </button>
+          <p>{MessageGeoSyncExplainer}</p>
+          <button
+            className="btn btn--info"
+            data-test="thumbnail-generation"
+            onClick={() => manualThumbnailSync()}
+          >
+            {MessageManualThumbnailSync}
+          </button>
+          <p>{MessageManualThumbnailSyncExplainer}</p>
+        </div>
       </div>
     </Modal>
   );

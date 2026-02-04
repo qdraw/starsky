@@ -1,5 +1,5 @@
 ## Starsky.Foundation.Sync
 
-Work in progress, see starskycore.Sync
+Syncronize the disk with the database
 
 - Implements SyncIgnore

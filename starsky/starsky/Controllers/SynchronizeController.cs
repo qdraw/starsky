@@ -4,41 +4,36 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Models;
 using starsky.foundation.sync.SyncInterfaces;
 
-namespace starsky.Controllers
+namespace starsky.Controllers;
+
+[Authorize]
+public sealed class SynchronizeController(IManualBackgroundSyncService manualBackgroundSyncService)
+	: Controller
 {
-	[Authorize]
-	public class SynchronizeController : Controller
+	/// <summary>
+	///     Faster API to Check if directory is changed (not recursive)
+	/// </summary>
+	/// <param name="f">subPaths split by dot comma</param>
+	/// <returns>list of changed files</returns>
+	/// <response code="200">started sync as background job</response>
+	/// <response code="401">User unauthorized</response>
+	[HttpPost("/api/synchronize")]
+	[ProducesResponseType(typeof(string), 200)]
+	[ProducesResponseType(typeof(string), 401)]
+	[Produces("application/json")]
+	public async Task<IActionResult> Index(string f)
 	{
-		private readonly IManualBackgroundSyncService _manualBackgroundSyncService;
-
-		public SynchronizeController(IManualBackgroundSyncService manualBackgroundSyncService)
+		if ( !ModelState.IsValid )
 		{
-			_manualBackgroundSyncService = manualBackgroundSyncService;
+			return BadRequest("Model invalid");
 		}
 
-		/// <summary>
-		/// Faster API to Check if directory is changed (not recursive)
-		/// </summary>
-		/// <param name="f">subPaths split by dot comma</param>
-		/// <returns>list of changed files</returns>
-		/// <response code="200">started sync as background job</response>
-		/// <response code="401">User unauthorized</response>
-		[HttpPost("/api/synchronize")]
-		[HttpGet("/api/synchronize")] // < = = = = = = = = subject to change!
-		[ProducesResponseType(typeof(string),200)]
-		[ProducesResponseType(typeof(string),401)]
-		[Produces("application/json")]	   
-		public async Task<IActionResult> Index(string f)
+		var status = await manualBackgroundSyncService.ManualSync(f);
+		return status switch
 		{
-			var status = await _manualBackgroundSyncService.ManualSync(f);
-			switch ( status )
-			{
-				case FileIndexItem.ExifStatus.NotFoundNotInIndex:
-					return NotFound("Failed");
-				case FileIndexItem.ExifStatus.OperationNotSupported:
-					return BadRequest("Already started");
-			}
-			return Ok("Job created");
-		}
+			FileIndexItem.ExifStatus.NotFoundNotInIndex => NotFound("Failed"),
+			FileIndexItem.ExifStatus.OperationNotSupported => BadRequest("Already started"),
+			_ => Ok("Job created")
+		};
 	}
 }

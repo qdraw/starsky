@@ -1,7 +1,12 @@
-import { storiesOf } from "@storybook/react";
-import React from "react";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import MenuSearch from "./menu-search";
 
-storiesOf("components/organisms/menu-search", module).add("default", () => {
-  return <MenuSearch state={undefined as any} dispatch={() => {}} />;
-});
+export default {
+  title: "components/organisms/menu-search"
+};
+
+export const Default = () => {
+  return <MenuSearch state={undefined as unknown as IArchiveProps} dispatch={() => {}} />;
+};
+
+Default.storyName = "default";

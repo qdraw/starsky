@@ -1,24 +1,22 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starskycore.Models;
-using starskycore.ViewModels;
+using starsky.project.web.ViewModels;
 
 namespace starskytest.ViewModels
 {
 	[TestClass]
-	public class SyncViewModelTest
+	public sealed class SyncViewModelTest
 	{
 		[TestMethod]
 		public void SyncViewModelSyncViewModelTest()
 		{
 			var syncViewModel = new SyncViewModel
 			{
-				FilePath = "/test",
-				Status = FileIndexItem.ExifStatus.Ok
-			}; 
-            
-			Assert.AreEqual("/test",syncViewModel.FilePath);  
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,syncViewModel.Status);  
+				FilePath = "/test", Status = FileIndexItem.ExifStatus.Ok
+			};
+
+			Assert.AreEqual("/test", syncViewModel.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, syncViewModel.Status);
 		}
 	}
 }

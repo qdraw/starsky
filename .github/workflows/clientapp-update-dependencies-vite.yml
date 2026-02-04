@@ -1,0 +1,79 @@
+name: ClientApp upgrade dependencies create Vite 
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '30 4 15 * *'
+  push:
+    branches: [master]
+    paths:
+    - '.github/workflows/clientapp-update-dependencies-vite.yml'
+    
+jobs:
+  run:
+    permissions:
+      contents: write
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+      with:
+        ref: master
+        
+    - name: Setup Node.js environment
+      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
+      with:
+        node-version: 18
+        check-latest: true
+  
+    - name: 'Update clientapp'
+      id: clientapp_vite_app_update
+      working-directory: ./starsky-tools/build-tools
+      run: npm run clientapp-vite-update
+      
+    - shell: bash
+      working-directory: ./starsky
+      id: files_changed
+      run: |
+        git status
+        git status --porcelain
+      
+        if [[ `git status --porcelain` ]]; then
+          echo "There are files not committed yet"
+          echo "CHANGED=true" >> $GITHUB_OUTPUT
+        else 
+          echo "not changed"
+          echo "CHANGED=false" >> $GITHUB_OUTPUT
+        fi
+      
+    - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
+      id: cpr
+      uses: peter-evans/create-pull-request@6699836a213cf8b28c4f0408a404a6ac79d4458a
+      with:
+        token: ${{ secrets.WORKFLOW_GITHUB }}
+        commit-message: 'Update ClientApp'
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        add-paths: |
+          *
+        branch: feature/auto_clientapp_vite_app_update
+        delete-branch: true
+        title: 'Client App - Vite - Upgrade dependencies'
+        body: |
+          ## Upgrade Client App to the latest version
+          - todo: test!         
+        labels: |
+          dependencies
+        draft: false
+        
+    - name: Merge current branch into -> auto_clientapp_vite_app_update
+      uses: everlytic/branch-merge@c4a244dc23143f824ae6c022a10732566cb8e973
+      if: github.event_name == 'workflow_dispatch' && steps.files_changed.outputs.CHANGED == 'true'
+      with:
+        github_token: ${{ secrets.WORKFLOW_GITHUB }}
+        source_ref: 'master'
+        target_branch: feature/auto_clientapp_vite_app_update
+        commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'

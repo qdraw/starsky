@@ -1,18 +1,42 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { render, screen } from "@testing-library/react";
+import React, { act } from "react";
 import ArchiveSidebarLabelEdit from "./archive-sidebar-label-edit";
 
 describe("ArchiveSidebarLabelEdit", () => {
   it("renders", () => {
-    shallow(<ArchiveSidebarLabelEdit />);
+    render(<ArchiveSidebarLabelEdit />);
   });
 
   it("click on SwitchButton go to Replace", () => {
-    var component = mount(<ArchiveSidebarLabelEdit>t</ArchiveSidebarLabelEdit>);
+    const state = {
+      state: { isReadOnly: false }
+    };
+    jest
+      .spyOn(React, "useContext")
+      .mockImplementationOnce(() => state)
+      .mockImplementationOnce(() => state)
+      .mockImplementationOnce(() => state)
+      .mockImplementationOnce(() => state);
 
-    var item = component.find('input[type="radio"]').last();
-    item.simulate("change");
+    const component = render(<ArchiveSidebarLabelEdit />);
 
-    expect(component.exists('[data-name="replace-tags"]')).toBeTruthy();
+    const item = screen.queryByTestId("switch-button-right") as HTMLElement;
+
+    let formControls = screen.queryAllByRole("form-control");
+    for (const element of formControls) {
+      // Not Contain
+      expect(element).not.toContain("replace-");
+    }
+
+    act(() => {
+      item.click();
+    });
+
+    formControls = screen.queryAllByRole("form-control");
+    for (const element of formControls) {
+      expect(element).toContain("replace-");
+    }
+
+    component.unmount();
   });
 });

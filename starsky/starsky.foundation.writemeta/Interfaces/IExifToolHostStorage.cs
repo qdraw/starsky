@@ -1,6 +1,6 @@
-﻿namespace starsky.foundation.writemeta.Interfaces
+namespace starsky.foundation.writemeta.Interfaces
 {
-    public interface IExifToolHostStorage : IExifTool
-    {
-    }
+	public interface IExifToolHostStorage : IExifTool
+	{
+	}
 }

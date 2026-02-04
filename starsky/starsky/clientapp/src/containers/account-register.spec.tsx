@@ -1,307 +1,277 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { fireEvent, render, RenderResult, screen, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
-import * as FetchGet from "../shared/fetch-get";
-import * as FetchPost from "../shared/fetch-post";
-import { UrlQuery } from "../shared/url-query";
+import * as FetchGet from "../shared/fetch/fetch-get";
+import * as FetchPost from "../shared/fetch/fetch-post";
+import { UrlQuery } from "../shared/url/url-query";
 import AccountRegister from "./account-register";
 
 describe("AccountRegister", () => {
   it("renders", () => {
-    shallow(<AccountRegister />);
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(
+        () => Promise.resolve({ statusCode: 4638 }) as Promise<IConnectionDefault>
+      );
+    render(<AccountRegister />);
   });
 
   it("link to TOC exist", () => {
-    var compontent = shallow(<AccountRegister />);
-    expect(compontent.find('[data-test="toc"]')).toBeTruthy();
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(
+        () => Promise.resolve({ statusCode: 876 }) as Promise<IConnectionDefault>
+      );
+    const component = render(<AccountRegister />);
+    expect(screen.getByTestId("toc")).toBeTruthy();
+
+    component.unmount();
   });
 
   it("link to privacy exist", () => {
-    var compontent = shallow(<AccountRegister />);
-    expect(compontent.find('[data-test="privacy"]')).toBeTruthy();
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(
+        () => Promise.resolve({ statusCode: 123 }) as Promise<IConnectionDefault>
+      );
+    const component = render(<AccountRegister />);
+    expect(component.getByTestId("privacy")).toBeTruthy();
+
+    component.unmount();
   });
 
   it("not allowed get 403 from api", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 403,
-        data: null
-      } as IConnectionDefault
-    );
-    var fetchGetSpy = jest
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 403,
+      data: null
+    } as IConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockReset();
+    const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    let container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
-    expect(
-      (container.find('[name="email"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeTruthy();
-    expect(
-      (container.find('[name="password"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeTruthy();
-    expect(
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).disabled
-    ).toBeTruthy();
+    const email = screen.getByTestId("email") as HTMLInputElement;
+    expect(email.disabled).toBeTruthy();
 
-    expect(fetchGetSpy).toBeCalled();
+    const password = screen.getByTestId("password") as HTMLInputElement;
+    expect(password.disabled).toBeTruthy();
+
+    const confirmPassword = screen.getByTestId("confirm-password") as HTMLInputElement;
+    expect(confirmPassword.disabled).toBeTruthy();
+
+    expect(fetchGetSpy).toHaveBeenCalled();
 
     container.unmount();
   });
 
   it("allowed get 200 from api", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault
-    );
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
-    var fetchGetSpy = jest
+    const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    let container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
-    expect(
-      (container.find('[name="email"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeFalsy();
-    expect(
-      (container.find('[name="password"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeFalsy();
-    expect(
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).disabled
-    ).toBeFalsy();
+    const email = screen.getByTestId("email") as HTMLInputElement;
+    expect(email.disabled).toBeFalsy();
 
-    expect(fetchGetSpy).toBeCalled();
+    const password = screen.getByTestId("password") as HTMLInputElement;
+    expect(password.disabled).toBeFalsy();
+
+    const confirmPassword = screen.getByTestId("confirm-password") as HTMLInputElement;
+    expect(confirmPassword.disabled).toBeFalsy();
+
+    expect(fetchGetSpy).toHaveBeenCalled();
 
     container.unmount();
   });
 
   it("allowed get 202 from api, it should hide sign in instead button", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 202,
-        data: null
-      } as IConnectionDefault
-    );
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 202,
+      data: null
+    } as IConnectionDefault);
 
-    var fetchGetSpy = jest
+    const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    let container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
-    expect(
-      (container.find('[name="email"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeFalsy();
-    expect(
-      (container.find('[name="password"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeFalsy();
-    expect(
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).disabled
-    ).toBeFalsy();
+    const email = screen.getByTestId("email") as HTMLInputElement;
+    expect(email.disabled).toBeFalsy();
 
-    container.update();
+    const password = screen.getByTestId("password") as HTMLInputElement;
+    expect(password.disabled).toBeFalsy();
 
-    const signInInstead = container.find('[data-test="sign-in-instead"]');
+    const confirmPassword = screen.getByTestId("confirm-password") as HTMLInputElement;
+    expect(confirmPassword.disabled).toBeFalsy();
 
-    expect(signInInstead.html()).toBeTruthy();
+    const signInInstead = screen.getByTestId("sign-in-instead");
 
-    expect(signInInstead.hasClass("disabled")).toBeTruthy();
+    expect(signInInstead).toBeTruthy();
 
-    expect(fetchGetSpy).toBeCalled();
+    expect(signInInstead.classList).toContain("disabled");
+
+    expect(fetchGetSpy).toHaveBeenCalled();
 
     container.unmount();
   });
 
   it("submit no content", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault
-    );
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    let container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
-    container.find('[type="submit"]').last().simulate("submit");
+    const button = screen.queryByTestId("account-register-submit") as HTMLButtonElement;
 
-    expect(container.exists(".content--error-true")).toBeTruthy();
+    act(() => {
+      button.click();
+    });
+
+    const error = screen.queryByTestId("account-register-error") as HTMLElement;
+    expect(error).toBeTruthy();
+    container.unmount();
   });
+
+  function submitEmailPassword(
+    _container: RenderResult,
+    email: string,
+    password: string,
+    confirmPassword: string,
+    submit: boolean = true
+  ) {
+    // email
+    const emailElement = screen.queryByTestId("email") as HTMLInputElement;
+    fireEvent.change(emailElement, { target: { value: email } });
+
+    // password
+    const passwordElement = screen.queryByTestId("password") as HTMLInputElement;
+    fireEvent.change(passwordElement, { target: { value: password } });
+
+    // confirm-password
+    const confirmPasswordElement = screen.queryByTestId("confirm-password") as HTMLInputElement;
+    fireEvent.change(confirmPasswordElement, {
+      target: { value: confirmPassword }
+    });
+
+    if (!submit) {
+      return;
+    }
+
+    // submit
+    const loginContent = screen.queryByTestId("account-register-form") as HTMLFormElement;
+    act(() => {
+      loginContent.submit();
+    });
+  }
 
   it("submit short password", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault
-    );
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    let container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
-    await act(async () => {
-      (container
-        .find('[name="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      container.find('[name="email"]').simulate("change");
-      (container
-        .find('[name="password"]')
-        .getDOMNode() as HTMLInputElement).value = "123";
-      container.find('[name="password"]').simulate("change");
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).value = "123";
-      // await next one
-      await container.find('[name="confirm-password"]').simulate("change");
+    submitEmailPassword(container, "dont@mail.me", "123", "123");
 
-      // and submit
-      container.find('[type="submit"]').last().simulate("submit");
-    });
-
-    expect(container.exists(".content--error-true")).toBeTruthy();
+    const error = screen.queryByTestId("account-register-error") as HTMLElement;
+    expect(error).toBeTruthy();
   });
 
   it("submit password No Match", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault
-    );
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    let container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
-    await act(async () => {
-      (container
-        .find('[name="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      container.find('[name="email"]').simulate("change");
-      (container
-        .find('[name="password"]')
-        .getDOMNode() as HTMLInputElement).value = "123456789";
-      container.find('[name="password"]').simulate("change");
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).value = "123";
-      // await next one
-      await container.find('[name="confirm-password"]').simulate("change");
+    submitEmailPassword(container, "dont@mail.me", "123456789", "123");
 
-      // and submit
-      container.find('[type="submit"]').last().simulate("submit");
-    });
-
-    expect(container.exists(".content--error-true")).toBeTruthy();
+    const error = screen.queryByTestId("account-register-error") as HTMLElement;
+    expect(error).toBeTruthy();
   });
 
   it("submit password Happy flow", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault
-    );
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // use ==> import * as FetchPost from '../shared/fetch-post';
-    const mockPostIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: "Ok"
-      } as IConnectionDefault
-    );
+    const mockPostIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: "Ok"
+    } as IConnectionDefault);
 
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockPostIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    let container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
-    await act(async () => {
-      (container
-        .find('[name="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      container.find('[name="email"]').simulate("change");
-      (container
-        .find('[name="password"]')
-        .getDOMNode() as HTMLInputElement).value = "987654321";
-      container.find('[name="password"]').simulate("change");
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).value = "987654321";
-      // await next one
-      await container.find('[name="confirm-password"]').simulate("change");
+    submitEmailPassword(container, "dont@mail.me", "987654321", "987654321");
 
-      // and submit
-      container.find('[type="submit"]').last().simulate("submit");
-    });
+    expect(fetchPostSpy).toHaveBeenCalled();
 
-    expect(fetchPostSpy).toBeCalled();
-
-    expect(fetchPostSpy).toBeCalledWith(
+    expect(fetchPostSpy).toHaveBeenCalledWith(
       new UrlQuery().UrlAccountRegisterApi(),
       `Email=dont@mail.me&Password=987654321&ConfirmPassword=987654321`
     );
@@ -309,57 +279,94 @@ describe("AccountRegister", () => {
 
   it("submit password antiforgery token missing (return error 400 from api)", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault
-    );
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // use ==> import * as FetchPost from '../shared/fetch-post';
-    const mockPostIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 400,
-        data: null
-      } as IConnectionDefault
-    );
+    const mockPostIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 400,
+      data: null
+    } as IConnectionDefault);
 
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
+      .mockClear()
+      .mockImplementationOnce(() => mockPostIConnectionDefault)
       .mockImplementationOnce(() => mockPostIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    const container = render(<AccountRegister />);
+
+    submitEmailPassword(container, "dont@mail.me", "987654321", "987654321", false);
+
+    // submit & await
+    const loginContent = screen.queryByTestId("account-register-form") as HTMLFormElement;
+
+    // need to await
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      await loginContent.submit();
     });
 
-    await act(async () => {
-      (container
-        .find('[name="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      container.find('[name="email"]').simulate("change");
-      (container
-        .find('[name="password"]')
-        .getDOMNode() as HTMLInputElement).value = "987654321";
-      container.find('[name="password"]').simulate("change");
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).value = "987654321";
-      // await next one
-      await container.find('[name="confirm-password"]').simulate("change");
+    expect(fetchPostSpy).toHaveBeenCalled();
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
 
-      // and submit
-      container.find('[type="submit"]').last().simulate("submit");
+    const error = screen.queryByTestId("account-register-error") as HTMLElement;
+
+    console.log(container.container.innerHTML);
+
+    expect(error).toBeTruthy();
+  });
+
+  it("displays an error message when the response data is falsy", async () => {
+    // use ==> import * as FetchPost from '../shared/fetch-post';
+    const mockPostIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
+
+    const fetchPostSpy = jest
+      .spyOn(FetchPost, "default")
+      .mockClear()
+      .mockImplementationOnce(() => mockPostIConnectionDefault)
+      .mockImplementationOnce(() => mockPostIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockPostIConnectionDefault);
+
+    const component = render(<AccountRegister />);
+
+    const emailInput = screen.getByTestId("email");
+    const passwordInput = screen.getByTestId("password");
+    const confirmPasswordInput = screen.getByTestId("confirm-password");
+    const submitButton = screen.getByTestId("account-register-submit");
+
+    // Act
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password" } });
+    fireEvent.change(confirmPasswordInput, { target: { value: "password" } });
+    fireEvent.click(submitButton);
+
+    // Assert
+    await waitFor(() => {
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
     });
 
-    expect(fetchPostSpy).toBeCalled();
+    expect(fetchPostSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      "Email=test@example.com&Password=password&ConfirmPassword=password"
+    );
 
-    // search for .html()
-    expect(container.html().indexOf("content--error-true") >= 1).toBeTruthy();
+    await waitFor(() => {
+      const errorMessage = screen.getByTestId("account-register-error");
+      expect(errorMessage).toBeTruthy();
+    });
+    component.unmount();
   });
 });

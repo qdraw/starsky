@@ -1,0 +1,406 @@
+name: Desktop Release on tag (.NET & Electron)
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [master]
+    paths:
+    - '.github/workflows/desktop-release-on-tag-net-electron.yml'
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  schedule:
+    - cron: '25 0 * * *'
+  workflow_dispatch:
+
+jobs:
+
+  build_net:
+
+    name: Build .NET
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+
+      - name: Remove Android
+        run: sudo rm -rf /usr/local/lib/android
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@131b410979e0b49e2162c0718030257b22d6dc2c
+        with:
+          dotnet-version: 8.0.417
+
+      - name: Build --no-unit-test linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
+        shell: bash
+        working-directory: ./starsky
+        run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test --ready-to-run
+
+      - name: Upload linux-arm as build artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: linux-arm
+          path: ./starsky/starsky-linux-arm.zip
+
+      - name: Upload linux-arm64 as build artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: linux-arm64
+          path: ./starsky/starsky-linux-arm64.zip
+ 
+      - name: Upload win-x64 as build artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: win-x64
+          path: ./starsky/starsky-win-x64.zip
+  
+      - name: Upload linux-x64 as build artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: linux-x64
+          path: ./starsky/starsky-linux-x64.zip
+
+      - name: Upload osx-x64 as build artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: osx-x64
+          path: ./starsky/starsky-osx-x64.zip
+ 
+      - name: Upload osx-arm64 as build artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: osx-arm64
+          path: ./starsky/starsky-osx-arm64.zip
+ 
+      - name: Upload slack-notification as build artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: starsky-tools-slack-notification
+          path: ./starsky-tools/slack-notification
+
+  build_mac_x64:
+    name: Build Mac Desktop app (x64)
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    needs: [build_net]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+
+      - name: Download osx-x64 as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: osx-x64
+          path: ./starsky
+
+      - name: Unzip Mac OS bundle (osx-x64)
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx-x64.zip -d osx-x64
+
+      - name: Restore rights pm2-restore-x-rights.sh (osx-x64)
+        shell: bash
+        working-directory: ./starsky/osx-x64
+        run: chmod 777 pm2-restore-x-rights.sh 
+
+      - name: run pm2-restore-x-rights.sh (osx-x64)
+        shell: bash
+        working-directory: ./starsky/osx-x64
+        run: bash pm2-restore-x-rights.sh 
+
+      - name: List
+        shell: bash
+        working-directory: ./starsky
+        run: ls -lah 
+
+      - name: fix release version (release-version-check)
+        shell: bash
+        working-directory: ./starsky-tools/build-tools
+        run: npm run release-version-check
+
+      - name: NpmCi
+        working-directory: ./starskydesktop
+        run: npm ci
+
+      - name: NpmDist
+        working-directory: ./starskydesktop
+        run: npm run macx64
+   
+      - name: Upload starsky-mac-x64-desktop as build artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: starsky-mac-x64-desktop
+          path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg 
+
+  build_mac_arm64:
+    name: Build Mac Desktop app (arm64)
+    runs-on: macos-latest
+    needs: [build_net]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+
+      - name: Download osx-arm64 as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: osx-arm64
+          path: ./starsky
+
+      - name: Unzip Mac OS bundle (osx-arm64)
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx-arm64.zip -d osx-arm64
+
+      - name: Restore rights pm2-restore-x-rights.sh (osx-arm64)
+        shell: bash
+        working-directory: ./starsky/osx-arm64
+        run: chmod 777 pm2-restore-x-rights.sh 
+
+      - name: run pm2-restore-x-rights.sh (osx-arm64)
+        shell: bash
+        working-directory: ./starsky/osx-arm64
+        run: bash pm2-restore-x-rights.sh 
+
+      - name: fix release version (release-version-check)
+        shell: bash
+        working-directory: ./starsky-tools/build-tools
+        run: npm run release-version-check
+
+      - name: NpmCi
+        working-directory: ./starskydesktop
+        run: npm ci
+
+      - name: NpmDist
+        working-directory: ./starskydesktop
+        run: npm run macarm64
+   
+      - name: Upload starsky-mac-arm64-desktop as build artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: starsky-mac-arm64-desktop
+          path: ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg 
+ 
+  build_win:
+    name: Build Windows Desktop app
+    runs-on: windows-latest
+    needs: [build_net]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+
+      - name: Download starsky-win-x64 as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: win-x64
+          path: ./starsky
+
+      - name: Unzip Windows bundle
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-win-x64.zip -d win-x64
+
+      - name: List
+        shell: bash
+        working-directory: ./starsky
+        run: ls -lah
+
+      - name: fix release version (release-version-check)
+        shell: bash
+        working-directory: ./starsky-tools/build-tools
+        run: npm run release-version-check
+
+      - name: Use node version
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
+        with:
+          node-version: '22.x'
+
+      - name: NpmCi
+        working-directory: ./starskydesktop
+        run: npm ci
+
+      - name: NpmDist
+        working-directory: ./starskydesktop
+        run: npm run windows
+     
+      - name: Upload starsky-win-x64-desktop as build artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: starsky-win-x64-desktop
+          path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
+ 
+  create_release:
+    name: Create Release
+    needs: [build_net, build_mac_x64, build_mac_arm64, build_win]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      discussions: write
+    steps:
+       
+      - name: Create parent directories
+        shell: bash
+        working-directory: ./
+        run: mkdir -p starsky && mkdir -p starskydesktop && mkdir -p starskydesktop/dist-prod
+ 
+      - name: Download starsky-win-x64-desktop as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: starsky-win-x64-desktop
+          path: ./starskydesktop/dist-prod
+ 
+      - name: Download starsky-mac-x64-desktop as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: starsky-mac-x64-desktop
+          path: ./starskydesktop/dist-prod
+
+      - name: Download starsky-mac-arm64-desktop as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: starsky-mac-arm64-desktop
+          path: ./starskydesktop/dist-prod
+ 
+      - name: Download linux-arm as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: linux-arm
+          path: ./starsky
+
+      - name: Download linux-arm64 as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: linux-arm64
+          path: ./starsky
+
+      - name: Download osx-x64 as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: osx-x64
+          path: ./starsky
+
+      - name: Download osx-arm64 as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: osx-arm64
+          path: ./starsky
+
+      - name: Download win-x64 as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: win-x64
+          path: ./starsky
+
+      - name: show downloads starsky
+        working-directory: ./starsky
+        run: ls
+
+      - name: show downloads starskydesktop/dist-prod
+        working-directory: ./starskydesktop/dist-prod
+        run: ls
+
+      - name: Get tag name (needed for slack/create release)
+        id: get_tag_name
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@78237c54eb15310cb292a15480c4be010be47aeb
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          files: |
+            ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg
+            ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg
+            ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
+            ./starsky/starsky-linux-arm.zip
+            ./starsky/starsky-linux-arm64.zip
+            ./starsky/starsky-osx-x64.zip
+            ./starsky/starsky-osx-arm64.zip
+            ./starsky/starsky-win-x64.zip
+          name: Release ${{ steps.get_tag_name.outputs.VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_unmatched_files: true
+          body: |
+            ## Desktop app versions:
+            _When you are not sure pick the Desktop App_
+            - starsky-mac-x64-desktop.dmg - __Starsky Desktop App for Intel, Mac OS *12.0* or newer__
+            - starsky-mac-arm64-desktop.dmg - __Starsky Desktop App for Apple silicon, Mac OS *12.0* or newer__            
+            - starsky-win-x64-desktop.exe - __Starsky Desktop App for Windows 10 1607+ or Windows 11 22000+ (Intel 64 bits)__
+
+            ## Server versions:
+            - starsky-linux-arm.zip - Starsky as Web Application (start from command line) only for Raspberry Pi's
+            - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's 
+            - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *12.0* or newer
+            - starsky-osx-arm64.zip - Starsky as Web Application (start from command line) only for Apple Silicon (newer then end of 2020) Mac OS *12* or newer
+            - starsky-win-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1607+ or 11 22000+ (Intel 64 bits)
+
+            ## Getting started
+            [Read about the first steps](https://docs.qdraw.nl/docs/getting-started/first-steps)
+
+            ## Changelog
+            [There is an changelog to see the recent changes](https://docs.qdraw.nl/docs/advanced-options/history/#${{ steps.get_tag_name.outputs.VERSION }})
+          draft: true
+          prerelease: false
+           
+      # - name: Upload Release Asset osx-x64 -- reference only
+      #   id: upload-osx-x64
+      #   if: startsWith(github.ref, 'refs/tags/v')
+      #   uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./starsky/starsky-osx-x64.zip
+      #     asset_name: starsky-osx-x64.zip
+      #     asset_content_type: application/zip
+
+      - name: Download slack-notification as build artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: starsky-tools-slack-notification
+          path: ./starsky-tools-slack-notification
+
+      - name: Run Slack Notification
+        working-directory: ./starsky-tools-slack-notification
+        run: ls
+
+      - name: Replace outputs url for edit
+        id: create_release_outputs_url
+        if: startsWith(github.ref, 'refs/tags/v')
+        run:  |
+          EDIT_NAME="edit/"
+          URL=${{ steps.create_release.outputs.url }}
+          echo "EDIT_URL="${URL/tag\//"$EDIT_NAME"}"" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+
+      - name: Run Slack Notification
+        if: startsWith(github.ref, 'refs/tags/v')
+        working-directory: ./starsky-tools-slack-notification
+        run: node slack-notification
+        env:
+           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+           SLACK_TITLE: 'Release ${{ steps.get_tag_name.outputs.VERSION }} is ready'
+           SLACK_MESSAGE: 'The release is ready ${{ steps.create_release_outputs_url.outputs.EDIT_URL }}'
+
+  trigger_pipe:
+    runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+    needs: [build_net, build_mac_x64, build_win, build_mac_arm64] 
+    # build_mac_arm64 is not used for end2end tests, but it needs to be done
+    steps:
+      - name: trigger end2end-ubuntu-ci.yml
+        shell: bash
+        env:
+          NOTE_READ_THIS_NOW: "Need a github token that has more rights otherwise it will be ignored"
+        run: |
+          curl \
+          -H"authorization: Bearer ${{ secrets.WORKFLOW_GITHUB }}" \
+          -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/end2end-ubuntu-ci.yml/dispatches \
+          -d '{"ref":"master"}' -v

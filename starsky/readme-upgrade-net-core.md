@@ -2,7 +2,9 @@
 
 ## When upgrading SDK
 
-Build pipelines need to be updated
+There is an build-tools script that does this automatically 
+
+## Build pipelines need to be updated
 
  - [x] `.github/workflows/starsky-dotnetcore-ubuntu.yml`
  - [x] `.github/workflows/starsky-dotnetcore-windows.yml `
@@ -30,13 +32,6 @@ Check at least those files
  - [x] `starsky/starskywebftpcli/starskywebftpcli.csproj`
  - [x] `starsky/starskywebhtmlcli/starskywebhtmlcli.csproj`
 
-## Marked as deprecated
-- [x] `starsky/starskysynccli/starskysynccli.csproj`
-
-## Legacy project
- - [x] `starsky.netframework/starskyImporterNetFrameworkCli/starskyImporterNetFrameworkCli.csproj`
- - [x] `starsky.netframework/starskySyncNetFrameworkCli/starskySyncNetFrameworkCli.csproj`
-
 Might useful to force evaluate packages
 ```
 dotnet restore --force-evaluate
@@ -45,5 +40,5 @@ dotnet restore --force-evaluate
 
 ## Go to starsky root directory
 ```
-atom  starsky/starsky/starsky.csproj starsky/starskyadmincli/starskyadmincli.csproj starsky/starskygeocli/starskygeocli.csproj starsky/starskyimportercli/starskyimportercli.csproj starsky/starskysynccli/starskysynccli.csproj starsky/starskysynccli/starskysynccli.csproj starsky/starskytest/starskytest.csproj starsky/starskywebftpcli/starskywebftpcli.csproj starsky/starskywebhtmlcli/starskywebhtmlcli.csproj starsky.netframework/starskyImporterNetFrameworkCli/starskyImporterNetFrameworkCli.csproj starsky.netframework/starskySyncNetFrameworkCli/starskySyncNetFrameworkCli.csproj
+atom  starsky/starsky/starsky.csproj starsky/starskyadmincli/starskyadmincli.csproj starsky/starskygeocli/starskygeocli.csproj starsky/starskyimportercli/starskyimportercli.csproj starsky/starskytest/starskytest.csproj starsky/starskywebftpcli/starskywebftpcli.csproj starsky/starskywebhtmlcli/starskywebhtmlcli.csproj starsky.netframework/starskyImporterNetFrameworkCli/starskyImporterNetFrameworkCli.csproj starsky.netframework/starskySyncNetFrameworkCli/starskySyncNetFrameworkCli.csproj
 ```

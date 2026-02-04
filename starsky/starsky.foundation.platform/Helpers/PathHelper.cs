@@ -1,156 +1,226 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
-namespace starsky.foundation.platform.Helpers
+namespace starsky.foundation.platform.Helpers;
+
+public static class PathHelper
 {
-    public static class PathHelper
-    {
+	private const char PathSeparatorAlwaysUnixStyle = '/';
 
-	    /// <summary>
-	    /// Return value (works for POSIX/Windows paths)
-	    /// </summary>
-	    /// <param name="filePath"></param>
-	    /// <returns></returns>
-	    public static string GetFileName(string filePath)
-	    {
-			// unescaped:
-			// [^/]+(?=(?:\.[^.]+)?$)
-			return Regex.Match(filePath, "[^/]+(?=(?:\\.[^.]+)?$)").Value;
-	    }
-
-		/// <summary>
-		/// Removes the latest backslash. Path.DirectorySeparatorChar
-		/// </summary>
-		/// <param name="basePath">The base path.</param>
-		/// <returns></returns>
-		public static string RemoveLatestBackslash(string basePath = "/")
-        {
-            if (string.IsNullOrWhiteSpace(basePath)) return null;
-
-            // Depends on Platform
-            if (basePath == "/") return basePath;
-            
-            // remove latest backslash
-            if (basePath.Substring(basePath.Length - 1, 1) == Path.DirectorySeparatorChar.ToString())
-            {
-                basePath = basePath.Substring(0, basePath.Length - 1);
-            }
-            return basePath;
-        }
-
-		/// <summary>
-		/// Removes the latest slash. (/)
-		/// </summary>
-		/// <param name="basePath">The base path.</param>
-		/// <returns></returns>
-		public static string RemoveLatestSlash(string basePath)
+	/// <summary>
+	///     Return value (works for POSIX/Windows paths)
+	/// </summary>
+	/// <param name="filePath">path to parse</param>
+	/// <returns></returns>
+	public static string GetFileName(string? filePath)
+	{
+		if ( string.IsNullOrEmpty(filePath) )
 		{
-			// don't know why it returns / > string.empty
+			return string.Empty;
+		}
 
-			// on all platforms the same
-            if (string.IsNullOrWhiteSpace(basePath) || basePath == "/" ) return string.Empty;
+		if ( filePath.Length >= 4095 )
+		{
+			// why? https://serverfault.com/questions/9546/filename-length-limits-on-linux
+			throw new ArgumentException("[PathHelper] FilePath over Unix limits", nameof(filePath));
+		}
 
-            // remove latest slash
-            if (basePath.Substring(basePath.Length - 1, 1) == "/")
-            {
-                basePath = basePath.Substring(0, basePath.Length - 1);
-            }
-            return basePath;
-        }
-        
-	    /// <summary>
-	    /// Add backSlash to configuration // or \\
-	    /// Platform depended feature
-	    /// </summary>
-	    /// <param name="thumbnailTempFolder"></param>
-	    /// <returns></returns>
-        public static string AddBackslash(string thumbnailTempFolder) { 
-            // Add backSlash to configuration // or \\
-            // Platform depended feature
-            if (string.IsNullOrWhiteSpace(thumbnailTempFolder)) return thumbnailTempFolder;
-            
-            if (thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
-                1) != Path.DirectorySeparatorChar.ToString())
-            {
-                thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
-            }
-            return thumbnailTempFolder;
-        }
+		var fileName = GetFileNameUnix(filePath.AsSpan());
+		return fileName.ToString();
+	}
 
-		/// <summary>
-		/// Add / to end of file
-		/// </summary>
-		/// <param name="inputFolder">Input folder path</param>
-		/// <returns>value +/</returns>
-		public static string AddSlash(string inputFolder) { 
-            if (string.IsNullOrWhiteSpace(inputFolder) ) return inputFolder;
-            
-            if ( inputFolder.Substring(inputFolder.Length - 1, 1) != "/")
-            {
-				inputFolder += "/";
-            }
-            return inputFolder;
-        }
-        
+	[SuppressMessage("Style", "IDE0057:Use range operator")]
+	[SuppressMessage("ReSharper", "ReplaceSliceWithRangeIndexer")]
+	internal static ReadOnlySpan<char> GetFileNameUnix(ReadOnlySpan<char> path)
+	{
+		var length = GetPathRootUnix(path).Length;
+		var num = path.LastIndexOf(PathSeparatorAlwaysUnixStyle);
+		return path.Slice(num < length ? length : num + 1);
+	}
 
-	    /// <summary>
-	    /// Add / (always) before string
-	    /// </summary>
-	    /// <param name="subPath">the subpath</param>
-	    /// <returns>/subpath</returns>
-        public static string PrefixDbSlash(string subPath) { 
-            // Add normal linux slash to beginning of the configuration
-            if (string.IsNullOrWhiteSpace(subPath)) return "/";
-            
-            if (subPath.Substring(0,1) != "/")
-            {
-                subPath = "/" + subPath;
-            }
-            return subPath;
-        }
-        
-	    /// <summary>
-	    /// Remove / (always) before string
-	    /// </summary>
-	    /// <param name="subpath">subpath</param>
-	    /// <returns>(without slash) subpath</returns>
-        public static string RemovePrefixDbSlash(string subpath) { 
-            // Remove linux slash to beginning of the configuration
-            if (string.IsNullOrWhiteSpace(subpath)) return "/";
-            
-            if (subpath.Substring(0,1) == "/")
-            {
-                subpath = subpath.Remove(0, 1);
-            }
-            return subpath;
-        }
-        
-        /// <summary>
-        /// Split a list with devided by dot comma and blank values are removed
-        /// </summary>
-        /// <param name="f">input filepaths</param>
-        /// <returns>string array with sperated strings</returns>
-        public static string[] SplitInputFilePaths(string f)
-        {
-            if (string.IsNullOrEmpty(f)) return new List<string>().ToArray();
-            
-            // input devided by dot comma and blank values are removed
-            var inputFilePaths = f.Split(";".ToCharArray());
-            inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+	private static ReadOnlySpan<char> GetPathRootUnix(ReadOnlySpan<char> path)
+	{
+		return !IsPathRootedUnix(path) ? [] : $"{PathSeparatorAlwaysUnixStyle}".AsSpan();
+	}
 
-			// Remove duplicates from list
-			// have a single slash in front the path
-	        HashSet<string> inputHashSet = new HashSet<string>(); 
-	        foreach ( var path in inputFilePaths )
-	        {
-		        var subpath = RemovePrefixDbSlash(path);
-		        subpath = PrefixDbSlash(subpath);
+	private static bool IsPathRootedUnix(ReadOnlySpan<char> path)
+	{
+		return path.Length > 0 && path[0] == PathSeparatorAlwaysUnixStyle;
+	}
 
-		        inputHashSet.Add(subpath);
-	        }
-            return inputHashSet.ToArray();
-        }
-    }
+	/// <summary>
+	///     Removes the latest backslash. Path.DirectorySeparatorChar
+	/// </summary>
+	/// <param name="basePath">The base path.</param>
+	/// <returns></returns>
+	public static string? RemoveLatestBackslash(string basePath = "/")
+	{
+		if ( string.IsNullOrWhiteSpace(basePath) )
+		{
+			return null;
+		}
+
+		// Depends on Platform
+		if ( basePath == PathSeparatorAlwaysUnixStyle.ToString() )
+		{
+			return basePath;
+		}
+
+		// remove latest backslash
+		if ( basePath.Substring(basePath.Length - 1, 1) ==
+		     Path.DirectorySeparatorChar.ToString() )
+		{
+			basePath = basePath.Substring(0, basePath.Length - 1);
+		}
+
+		return basePath;
+	}
+
+	/// <summary>
+	///     Removes the latest slash. (/) always unix style
+	/// </summary>
+	/// <param name="basePath">The base path.</param>
+	/// <returns></returns>
+	public static string RemoveLatestSlash(string basePath)
+	{
+		// don't know why it returns / > string.empty
+
+		// on all platforms the same
+		if ( string.IsNullOrWhiteSpace(basePath) ||
+		     basePath == PathSeparatorAlwaysUnixStyle.ToString() )
+		{
+			return string.Empty;
+		}
+
+		// remove latest slash
+		if ( basePath.Substring(basePath.Length - 1, 1) == PathSeparatorAlwaysUnixStyle.ToString() )
+		{
+			basePath = basePath.Substring(0, basePath.Length - 1);
+		}
+
+		return basePath;
+	}
+
+	/// <summary>
+	///     Add backSlash to configuration // or \\
+	///     Platform specific feature
+	/// </summary>
+	/// <param name="thumbnailTempFolder"></param>
+	/// <returns></returns>
+	public static string AddBackslash(string thumbnailTempFolder)
+	{
+		// Add backSlash to configuration // or \\
+		// Platform specific feature
+		if ( string.IsNullOrWhiteSpace(thumbnailTempFolder) )
+		{
+			return thumbnailTempFolder;
+		}
+
+		if ( thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
+			    1) != Path.DirectorySeparatorChar.ToString() )
+		{
+			thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
+		}
+
+		return thumbnailTempFolder;
+	}
+
+	/// <summary>
+	///     Add / to end of file
+	/// </summary>
+	/// <param name="inputFolder">Input folder path</param>
+	/// <returns>value +/</returns>
+	public static string AddSlash(string inputFolder)
+	{
+		if ( string.IsNullOrWhiteSpace(inputFolder) )
+		{
+			return inputFolder;
+		}
+
+		var lastLetter = inputFolder.Substring(
+			inputFolder.Length - 1, 1);
+		if ( lastLetter !=
+		     PathSeparatorAlwaysUnixStyle.ToString() )
+		{
+			inputFolder += PathSeparatorAlwaysUnixStyle.ToString();
+		}
+
+		return inputFolder;
+	}
+
+	/// <summary>
+	///     Add / (always) before string
+	/// </summary>
+	/// <param name="subPath">the subPath</param>
+	/// <returns>/subpath</returns>
+	public static string PrefixDbSlash(string subPath)
+	{
+		// Add normal linux slash to beginning of the configuration
+		if ( string.IsNullOrWhiteSpace(subPath) )
+		{
+			return PathSeparatorAlwaysUnixStyle.ToString();
+		}
+
+		if ( subPath.Substring(0, 1) !=
+		     PathSeparatorAlwaysUnixStyle.ToString() )
+		{
+			subPath = PathSeparatorAlwaysUnixStyle + subPath;
+		}
+
+		return subPath;
+	}
+
+	/// <summary>
+	///     Remove / (always) before string
+	/// </summary>
+	/// <param name="subPath">subPath</param>
+	/// <returns>(without slash) subPath</returns>
+	public static string RemovePrefixDbSlash(string subPath)
+	{
+		// Remove linux slash to beginning of the configuration
+		if ( string.IsNullOrWhiteSpace(subPath) )
+		{
+			return PathSeparatorAlwaysUnixStyle.ToString();
+		}
+
+		if ( subPath.Substring(0, 1) ==
+		     PathSeparatorAlwaysUnixStyle.ToString() )
+		{
+			subPath = subPath.Remove(0, 1);
+		}
+
+		return subPath;
+	}
+
+	/// <summary>
+	///     Split a list with divided by dot comma and blank values are removed
+	/// </summary>
+	/// <param name="f">input filePaths</param>
+	/// <returns>string array with seperated strings</returns>
+	public static string[] SplitInputFilePaths(string f)
+	{
+		if ( string.IsNullOrEmpty(f) )
+		{
+			return [];
+		}
+
+		// input divided by dot comma and blank values are removed
+		var inputFilePaths = f.Split(";".ToCharArray());
+		inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+
+		// have a single slash in front the path
+		var inputHashSet = new List<string>();
+		foreach ( var path in inputFilePaths )
+		{
+			var subPath = RemovePrefixDbSlash(path);
+			subPath = PrefixDbSlash(subPath);
+
+			inputHashSet.Add(subPath);
+		}
+
+		return [.. inputHashSet];
+	}
 }

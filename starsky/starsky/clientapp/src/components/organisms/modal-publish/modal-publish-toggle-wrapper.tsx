@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import ModalPublish from "./modal-publish";
 
 interface IModalPublishWrapperProps {
@@ -14,12 +14,7 @@ interface IModalPublishWrapperProps {
  * Wrapper to hide modal in the menu
  */
 const ModalPublishToggleWrapper: React.FunctionComponent<IModalPublishWrapperProps> = memo(
-  ({
-    select,
-    stateFileIndexItems,
-    isModalPublishOpen,
-    setModalPublishOpen
-  }) => {
+  ({ select, stateFileIndexItems, isModalPublishOpen, setModalPublishOpen }) => {
     const selectFallback = select
       ? new URLPath().MergeSelectFileIndexItem(select, stateFileIndexItems)
       : [];

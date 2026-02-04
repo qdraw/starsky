@@ -1,0 +1,49 @@
+import { existsSync, promises as fsPromises } from "fs";
+import { join, sep } from "path";
+import { electronCacheLocation } from "../child-process/electron-cache-location";
+import logger from "../logger/logger";
+
+// // for local usage
+// const lastSubPath = fileIndexItem.collectionPaths[fileIndexItem.collectionPaths.length - 1];
+// const pathOnDisk = await ExistsOnLocalDisk(lastSubPath);
+// if (pathOnDisk != null) {
+//   logger.info(`pathOnDisk ${pathOnDisk}`);
+//   await openWindow(pathOnDisk);
+//   return;
+// }
+
+export default async function ReadAppSettings() : Promise<{ app: { "storageFolder" : string | null } }> {
+  const appSettingsPath = join(electronCacheLocation(), "appsettings.json");
+
+  if (!existsSync(appSettingsPath)) {
+    return null;
+  }
+  const jsonText = await fsPromises.readFile(appSettingsPath, { encoding: "utf-8" });
+  logger.info(jsonText);
+  const data = JSON.parse(jsonText) as { app: { "storageFolder" : string | null } };
+  logger.info(`data.app.storageFolder ${data.app.storageFolder}`);
+
+  if (!existsSync(data.app.storageFolder)) {
+    return {
+      app: {
+        storageFolder: null
+      }
+    };
+  }
+  return data;
+}
+
+export async function ExistsOnLocalDisk(subPath: string) : Promise<string | null> {
+  const { app: { storageFolder } } = await ReadAppSettings();
+  if (storageFolder === null) {
+    return null;
+  }
+  logger.info(`storageFolder ${storageFolder}`);
+
+  const subPathOsStyle = subPath.replace(/\//ig, sep);
+  const filePath = join(storageFolder, subPathOsStyle);
+  if (existsSync(filePath)) {
+    return filePath;
+  }
+  return null;
+}

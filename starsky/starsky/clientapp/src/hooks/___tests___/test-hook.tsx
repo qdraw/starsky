@@ -1,20 +1,26 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
-import { act } from "react-dom/test-utils";
+import { render, RenderResult } from "@testing-library/react";
+import { act } from "react";
+
+// this file is excluded from the build in vite.config.ts
 
 type ModalPropTypes = {
-  children: (hookValues: any) => any;
+  children: (hookValues: unknown) => React.ReactNode;
 };
 
-export const shallowReactHook = (hook: any, args: string[]) => {
+export type MountReactHookResult = {
+  componentMount: RenderResult;
+  componentHook: object;
+};
+
+export const mountReactHook = (hook: (...args: unknown[]) => unknown, args: unknown[]) => {
   const Component = ({ children }: ModalPropTypes) => {
     return children(hook(...args));
   };
   const componentHook = {};
-  let componentMount;
+  let componentMount = render(<></>);
 
   act(() => {
-    componentMount = shallow(
+    componentMount = render(
       <Component>
         {(hookValues) => {
           Object.assign(componentHook, hookValues);
@@ -23,25 +29,5 @@ export const shallowReactHook = (hook: any, args: string[]) => {
       </Component>
     );
   });
-  return { componentMount, componentHook };
-};
-
-export const mountReactHook = (hook: any, args: any[]) => {
-  const Component = ({ children }: ModalPropTypes) => {
-    return children(hook(...args));
-  };
-  const componentHook = {};
-  let componentMount = mount(<></>);
-
-  act(() => {
-    componentMount = mount(
-      <Component>
-        {(hookValues) => {
-          Object.assign(componentHook, hookValues);
-          return null;
-        }}
-      </Component>
-    );
-  });
-  return { componentMount, componentHook };
+  return { componentMount, componentHook } as MountReactHookResult;
 };

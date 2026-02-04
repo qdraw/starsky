@@ -4,7 +4,7 @@ using starsky.foundation.injection;
 namespace starskytest.starsky.foundation.injection
 {
 	[TestClass]
-	public class ServiceAttributeTest
+	public sealed class ServiceAttributeTest
 	{
 		[TestMethod]
 		public void ServiceAttribute_defaultOption()

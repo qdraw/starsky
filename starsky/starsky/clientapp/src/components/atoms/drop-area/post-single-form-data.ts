@@ -1,13 +1,15 @@
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import {
-  IFileIndexItem,
-  newIFileIndexItem
-} from "../../../interfaces/IFileIndexItem";
-import FetchPost from "../../../shared/fetch-post";
+import { IFileIndexItem, newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import FetchPost from "../../../shared/fetch/fetch-post";
 
-const CastFileIndexItem = (element: any): IFileIndexItem => {
-  var uploadFileObject = newIFileIndexItem();
+const CastFileIndexItem = (element: {
+  fileHash: string;
+  filePath: string;
+  fileName: string;
+  status: IExifStatus;
+}): IFileIndexItem => {
+  const uploadFileObject = newIFileIndexItem();
   uploadFileObject.fileHash = element.fileHash;
   uploadFileObject.filePath = element.filePath;
   uploadFileObject.isDirectory = false;
@@ -26,7 +28,7 @@ export function PostSingleFormData(
   callBackWhenReady: (result: IFileIndexItem[]) => void,
   setNotificationStatus: React.Dispatch<React.SetStateAction<string>>
 ) {
-  var formData = new FormData();
+  const formData = new FormData();
 
   if (inputFilesList.length === index) {
     setNotificationStatus("");
@@ -35,9 +37,7 @@ export function PostSingleFormData(
   }
 
   setNotificationStatus(
-    `Uploading ${index + 1}/${inputFilesList.length} ${
-      inputFilesList[index].name
-    }`
+    `Uploading ${index + 1}/${inputFilesList.length} ${inputFilesList[index].name}`
   );
 
   if (inputFilesList[index].size / 1024 / 1024 > 250) {
@@ -74,10 +74,12 @@ export function PostSingleFormData(
 }
 
 class ProcessResponse {
-  private endpoint: string;
+  private readonly endpoint: string;
+
   constructor(endpoint: string) {
     this.endpoint = endpoint;
   }
+
   public Run(
     response: IConnectionDefault,
     folderPath: string | undefined,
@@ -108,22 +110,22 @@ class ProcessResponse {
     }
 
     // Success
-    Array.from(response.data).forEach((dataItem: any) => {
+    const dataArr = response.data as {
+      fileIndexItem?: IFileIndexItem;
+      filePath?: string;
+      fileHash?: string;
+      status: IExifStatus;
+    }[];
+    for (const dataItem of dataArr) {
       if (!dataItem) {
         outputUploadFilesList.push({
           filePath: inputFilesList[index].name,
           fileName: inputFilesList[index].name,
           status: IExifStatus.ServerError
         } as IFileIndexItem);
-      } else if (
-        dataItem.fileIndexItem &&
-        (dataItem.status as IExifStatus) !== IExifStatus.Ok
-      ) {
+      } else if (dataItem.fileIndexItem && dataItem.status !== IExifStatus.Ok) {
         outputUploadFilesList.push(CastFileIndexItem(dataItem.fileIndexItem));
-      } else if (
-        !dataItem.fileIndexItem &&
-        (dataItem.status as IExifStatus) !== IExifStatus.Ok
-      ) {
+      } else if (!dataItem.fileIndexItem && dataItem.status !== IExifStatus.Ok) {
         // when `/import` already existing item
         outputUploadFilesList.push({
           filePath: dataItem.filePath,
@@ -132,11 +134,11 @@ class ProcessResponse {
           fileHash: dataItem.fileHash,
           status: dataItem.status
         } as IFileIndexItem);
-      } else {
+      } else if (dataItem.fileIndexItem) {
         dataItem.fileIndexItem.lastEdited = new Date().toISOString();
         outputUploadFilesList.push(dataItem.fileIndexItem);
       }
-    });
+    }
 
     next(
       this.endpoint,

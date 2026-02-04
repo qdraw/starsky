@@ -2,21 +2,15 @@ import { memo } from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 
 interface IDetailViewInfoMakeModelApertureProps {
-  fileIndexItem: IFileIndexItem;
+  fileIndexItem: Readonly<IFileIndexItem>;
 }
 
-const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMakeModelApertureProps> = memo(
-  ({ fileIndexItem }) => {
-    function ShowISOIfExistCompontent(fileIndexItemInside: IFileIndexItem) {
-      return (
-        <>
-          {fileIndexItemInside.isoSpeed !== 0 ? (
-            <>ISO {fileIndexItemInside.isoSpeed}</>
-          ) : null}
-        </>
-      );
-    }
+function ShowISOIfExistComponent(fileIndexItemInside: Readonly<IFileIndexItem>) {
+  return <>{fileIndexItemInside.isoSpeed === 0 ? null : <>ISO {fileIndexItemInside.isoSpeed}</>}</>;
+}
 
+const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMakeModelApertureProps> =
+  memo(({ fileIndexItem }) => {
     return (
       <>
         {fileIndexItem.make &&
@@ -33,17 +27,14 @@ const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMa
               f/<span data-test="aperture">{fileIndexItem.aperture}</span>
               &nbsp;&nbsp;&nbsp;
               {fileIndexItem.shutterSpeed} sec&nbsp;&nbsp;&nbsp;
-              <span data-test="focalLength">
-                {fileIndexItem.focalLength.toFixed(1)}
-              </span>{" "}
+              <span data-test="focalLength">{fileIndexItem.focalLength.toFixed(1)}</span>{" "}
               mm&nbsp;&nbsp;&nbsp;
-              <ShowISOIfExistCompontent {...fileIndexItem} />
+              <ShowISOIfExistComponent {...fileIndexItem} />
             </p>
           </div>
         ) : null}
       </>
     );
-  }
-);
+  });
 
 export default DetailViewInfoMakeModelAperture;

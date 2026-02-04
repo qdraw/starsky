@@ -8,24 +8,20 @@ export class ClipboardHelper {
   /**
    * Name of the sessionStorage
    */
-  private clipBoardName = "starskyClipboardData";
+  private readonly clipBoardName = "starskyClipboardData";
 
   public Copy(
     tagsReference: React.RefObject<HTMLDivElement>,
     descriptionReference: React.RefObject<HTMLDivElement>,
     titleReference: React.RefObject<HTMLDivElement>
   ): boolean {
-    if (
-      !tagsReference.current ||
-      !descriptionReference.current ||
-      !titleReference.current
-    ) {
+    if (!tagsReference.current || !descriptionReference.current || !titleReference.current) {
       return false;
     }
 
-    var tags = tagsReference.current.innerText;
-    var description = descriptionReference.current.innerText;
-    var title = titleReference.current.innerText;
+    const tags = tagsReference.current.innerText;
+    const description = descriptionReference.current.innerText;
+    const title = titleReference.current.innerText;
 
     sessionStorage.setItem(
       this.clipBoardName,
@@ -39,11 +35,11 @@ export class ClipboardHelper {
   }
 
   public Read(): IClipboardData | null {
-    var result = {};
+    let result = {};
     try {
-      var resultString = sessionStorage.getItem(this.clipBoardName);
-      result = JSON.parse(resultString ? resultString : "");
-    } catch (error) {
+      const resultString = sessionStorage.getItem(this.clipBoardName);
+      result = JSON.parse(resultString ?? "");
+    } catch {
       return null;
     }
     return result as IClipboardData;
@@ -57,13 +53,38 @@ export class ClipboardHelper {
     if (!updateChange) {
       return false;
     }
-    var readData = this.Read();
+    const readData = this.Read();
 
     if (!readData) {
       return false;
     }
 
     updateChange([
+      ["tags", readData.tags],
+      ["description", readData.description],
+      ["title", readData.title]
+    ]);
+
+    return true;
+  }
+
+  /**
+   * Paste values in callback
+   * @param updateChange callback function
+   */
+  public async PasteAsync(
+    updateChange: (items: [string, string][]) => Promise<string | boolean>
+  ): Promise<boolean> {
+    if (!updateChange) {
+      return false;
+    }
+    const readData = this.Read();
+
+    if (!readData) {
+      return false;
+    }
+
+    await updateChange([
       ["tags", readData.tags],
       ["description", readData.description],
       ["title", readData.title]

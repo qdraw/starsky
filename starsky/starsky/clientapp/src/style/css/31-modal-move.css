@@ -1,12 +1,13 @@
 .modal-move {
   min-height: 65px;
   /* extra space for iOS */
-  max-height: calc(100vh - 255px);
+  height: calc(100vh - 325px);
+  /* there is currently no solution to fix this without vh */
   overflow-y: scroll;
 }
 
 .modal-move.modal-move--error-space {
-  max-height: calc(100vh - 325px);
+  max-height: calc(100vh - 375px);
 }
 
 .modal-move .box {
@@ -21,6 +22,7 @@
   width: calc(100% - 34px);
   cursor: pointer;
   background-color: transparent;
+  color: rgba(0, 0, 0, 0.847);
 }
 
 @media (prefers-color-scheme: dark) {

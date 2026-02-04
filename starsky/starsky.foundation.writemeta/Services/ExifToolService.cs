@@ -1,33 +1,49 @@
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Models;
 
-namespace starsky.foundation.writemeta.Services
+namespace starsky.foundation.writemeta.Services;
+
+[Service(typeof(IExifTool), InjectionLifetime = InjectionLifetime.Scoped)]
+public sealed class ExifToolService : IExifTool
 {
-	[Service(typeof(IExifTool), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class ExifToolService : IExifTool
+	private readonly ExifTool _exifTool;
+
+	public ExifToolService(ISelectorStorage selectorStorage,
+		AppSettings appSettings, IWebLogger logger)
 	{
-		private readonly IExifTool _exifTool;
+		var iStorage =
+			selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		var thumbnailStorage =
+			selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+		_exifTool = new ExifTool(iStorage, thumbnailStorage, appSettings,
+			logger);
+	}
 
-		public ExifToolService(ISelectorStorage selectorStorage, AppSettings appSettings)
-		{
-			var iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			var thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_exifTool = new ExifTool(iStorage, thumbnailStorage, appSettings);
+	public async Task<bool> WriteTagsAsync(string subPath, string command)
+	{
+		return await _exifTool.WriteTagsAsync(subPath, command);
+	}
 
-		}
-		public async Task<bool> WriteTagsAsync(string subPath, string command)
-		{
-			return await _exifTool.WriteTagsAsync(subPath,command);
-		}
+	public async Task<ExifToolWriteTagsAndRenameThumbnailModel>
+		WriteTagsAndRenameThumbnailAsync(string subPath,
+			string? beforeFileHash, string command,
+			CancellationToken cancellationToken = default)
+	{
+		return await _exifTool.WriteTagsAndRenameThumbnailAsync(subPath,
+			beforeFileHash, command, cancellationToken);
+	}
 
-		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
-		{
-			return await _exifTool.WriteTagsThumbnailAsync(fileHash,command);
-		}
+	public async Task<bool> WriteTagsThumbnailAsync(string fileHash,
+		string command)
+	{
+		return await _exifTool.WriteTagsThumbnailAsync(fileHash, command);
 	}
 }

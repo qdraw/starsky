@@ -1,0 +1,8 @@
+{
+    "label": "Docker",
+    "position": 7,
+    "link": {
+        "type": "generated-index",
+        "description": "Learn how to configure Docker. The recommend way is to use Docker compose. See Setup using Docker Compose for more information.",
+    }
+}

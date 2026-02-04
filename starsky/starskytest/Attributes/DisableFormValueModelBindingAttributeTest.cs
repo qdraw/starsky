@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -13,13 +11,13 @@ using starsky.Attributes;
 namespace starskytest.Attributes
 {
 	[TestClass]
-	public class DisableFormValueModelBindingAttributeTest
+	public sealed class DisableFormValueModelBindingAttributeTest
 	{
 		[TestMethod]
 		public void DisableFormValueModelBindingAttribute_RemoveTest()
 		{
 			// source: https://stackoverflow.com/a/53141666/8613589
-			
+
 			var filter = new DisableFormValueModelBindingAttribute();
 			var actionContext = new ActionContext(
 				new DefaultHttpContext(),
@@ -33,16 +31,15 @@ namespace starskytest.Attributes
 
 			//Run
 			filter.OnResourceExecuting(context);
-			
+
 			// Run other class
 			filter.OnResourceExecuted(new ResourceExecutedContext(actionContext, filters));
 
 			// It is not removed in this case, because it didn't exist on forehand
-			
+
 			Assert.IsNotNull(filter);
 			Assert.IsNotNull(actionContext);
 			Assert.IsNotNull(filters);
 		}
-		
 	}
 }

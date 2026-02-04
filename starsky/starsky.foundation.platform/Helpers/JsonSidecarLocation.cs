@@ -8,7 +8,7 @@ namespace starsky.foundation.platform.Helpers
 			var parentDirectory = subPath.Replace(fileName, string.Empty);
 			return JsonLocation(parentDirectory, fileName);
 		}
-		
+
 		/// <summary>
 		/// Get the jsonSubPath `parentDir/.starsky.filename.ext.json`
 		/// </summary>
@@ -18,7 +18,7 @@ namespace starsky.foundation.platform.Helpers
 		public static string JsonLocation(string parentDirectory, string fileName)
 		{
 			return PathHelper.AddSlash(parentDirectory) + ".starsky." + fileName
-			       + ".json";
+				   + ".json";
 		}
 	}
 }

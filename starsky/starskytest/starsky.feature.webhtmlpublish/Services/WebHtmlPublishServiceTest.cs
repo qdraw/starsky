@@ -6,442 +6,658 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
+using starsky.foundation.platform.Thumbnails;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using starskytest.Models;
 
-namespace starskytest.starsky.feature.webhtmlpublish.Services
+namespace starskytest.starsky.feature.webhtmlpublish.Services;
+
+[TestClass]
+public sealed class WebHtmlPublishServiceTest
 {
-	[TestClass]
-	public class WebHtmlPublishServiceTest
+	private static ThumbnailService SetThumbnailService(IStorage storage)
 	{
-		[TestMethod]
-		public async Task RenderCopy_NoConfigItems()
-		{
-			var storage = new FakeIStorage();
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var appSettings = new AppSettings();
-			var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper());
-			var result = await service.RenderCopy(new List<FileIndexItem>(), 
-				"test", "test", "/");
+		return new ThumbnailService(new FakeSelectorStorage(storage),
+			new FakeIWebLogger(), new AppSettings(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(new FakeSelectorStorage(storage)),
+			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
+	}
 
-			Assert.IsNull(result);
-		}	
-		
-		[TestMethod]
-		public async Task RenderCopy_KeyNotFound()
+	[TestMethod]
+	public async Task RenderCopy_NoConfigItems()
+	{
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings();
+		var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage,
+			appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
+		var result = await service.RenderCopy(new List<FileIndexItem>(),
+			"test", "test", "/");
+
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public async Task RenderCopy_KeyNotFound()
+	{
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings
 		{
-			var storage = new FakeIStorage();
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var appSettings = new AppSettings
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					{"same", new List<AppSettingsPublishProfiles>
+					"same",
+					new List<AppSettingsPublishProfiles>
 					{
-						new AppSettingsPublishProfiles
+						new()
 						{
 							ContentType = TemplateContentType.Jpeg,
 							SourceMaxWidth = 300,
 							OverlayMaxWidth = 380,
-							Folder =  "1000",
+							Folder = "1000",
 							Append = "_kl1k"
 						}
-					}}
+					}
 				}
-			};
-			var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper());
-			var result = await service.RenderCopy(new List<FileIndexItem>(), 
-				"test", "test", "/");
+			}
+		};
+		var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage,
+			appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
+		var result = await service.RenderCopy(new List<FileIndexItem>(),
+			"test", "test", "/");
 
-			Assert.IsNull(result);
-		}
-		
-		[TestMethod]
-		public async Task RenderCopy_ShouldNotCrash()
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public async Task RenderCopy_ShouldNotCrash()
+	{
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings
 		{
-			var storage = new FakeIStorage();
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var appSettings = new AppSettings
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					{"test", new List<AppSettingsPublishProfiles>
+					"test",
+					new List<AppSettingsPublishProfiles>
 					{
-						new AppSettingsPublishProfiles
-						{
-							ContentType = TemplateContentType.Html,
-						},
-						new AppSettingsPublishProfiles
+						new() { ContentType = TemplateContentType.Html },
+						new()
 						{
 							ContentType = TemplateContentType.Jpeg,
 							SourceMaxWidth = 300,
 							OverlayMaxWidth = 380,
-							Folder =  "1000",
+							Folder = "1000",
 							Append = "_kl1k"
 						},
-						new AppSettingsPublishProfiles
+						new()
 						{
 							ContentType = TemplateContentType.OnlyFirstJpeg,
 							SourceMaxWidth = 300,
 							OverlayMaxWidth = 380,
-							Folder =  "1000",
+							Folder = "1000",
 							Append = "__fi_kl"
 						},
-						new AppSettingsPublishProfiles
-						{
-							ContentType = TemplateContentType.MoveSourceFiles,
-						},
-						new AppSettingsPublishProfiles
-						{
-							ContentType = TemplateContentType.PublishContent,
-						},
-						new AppSettingsPublishProfiles
-						{
-							ContentType = TemplateContentType.PublishManifest,
-						},
-					}}
+						new() { ContentType = TemplateContentType.MoveSourceFiles },
+						new() { ContentType = TemplateContentType.PublishContent },
+						new() { ContentType = TemplateContentType.PublishManifest }
+					}
 				}
-			};
-			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
-					new ConsoleWrapper()), selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper());
-			
-			var result = await service.RenderCopy(new List<FileIndexItem>(), 
-				"test", "test", "/");
+			}
+		};
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
 
-			Assert.IsNotNull(result);
-		}
+		var result = await service.RenderCopy(new List<FileIndexItem>(),
+			"test", "test", "/");
 
-		[TestMethod]
-		public async Task RenderCopy_OnlyFirstJpeg_ShouldNotCrash()
+		Assert.IsNotNull(result);
+	}
+
+	[TestMethod]
+	public async Task RenderCopy_OnlyFirstJpeg_ShouldNotCrash()
+	{
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings
 		{
-			var storage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{CreateAnImage.Bytes});
-			
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var appSettings = new AppSettings
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					{"test", new List<AppSettingsPublishProfiles>
+					"test",
+					new List<AppSettingsPublishProfiles>
 					{
-						new AppSettingsPublishProfiles
+						new()
 						{
 							ContentType = TemplateContentType.OnlyFirstJpeg,
 							SourceMaxWidth = 300,
 							OverlayMaxWidth = 380,
-							Folder =  "",
+							Folder = "",
 							Append = "__fi_kl"
 						}
-					}}
+					}
 				}
-			};
-			var overlayService = new FakeIOverlayImage(selectorStorage);
-			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
-					new ConsoleWrapper()), selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), overlayService,
-				new ConsoleWrapper());
-			
-			var result = await service.RenderCopy(new List<FileIndexItem>
-				{
-					new FileIndexItem("/test.jpg")
-				}, 
-				"test", "test", "/");
-			
-			Assert.IsNotNull(result);
-		}
+			}
+		};
+		var overlayService = new FakeIOverlayImage(selectorStorage);
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), overlayService,
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			SetThumbnailService(storage));
 
-		[TestMethod]
-		public void AddFileHashIfNotExist_Test()
-		{
-			var storage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
-			var selectorStorage = new FakeSelectorStorage(storage);
-			
-			var service = new WebHtmlPublishService(null,selectorStorage,null,
-				null,null,null);
-			var list = service.AddFileHashIfNotExist(new List<FileIndexItem> {new FileIndexItem("/test.jpg")});
-			Assert.IsTrue(list.FirstOrDefault().FileHash != string.Empty);
-		}
-		
-		[TestMethod]
-		public void PreGenerateThumbnail_Test()
-		{
-			var storage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
-			var selectorStorage = new FakeSelectorStorage(storage);
-			
-			var service = new WebHtmlPublishService(null,selectorStorage,null,
-				null,null,null);
-			var input = new List<FileIndexItem>
+		var result = await service.RenderCopy(
+			new List<FileIndexItem> { new("/test.jpg") },
+			"test", "test", "/");
+
+		Assert.IsNotNull(result);
+	}
+
+	[TestMethod]
+	public void AddFileHashIfNotExist_Test()
+	{
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var selectorStorage = new FakeSelectorStorage(storage);
+
+		var service = new WebHtmlPublishService(null!, selectorStorage, null!,
+			null!, null!, null!, new FakeIWebLogger(),
+			SetThumbnailService(storage));
+		var list =
+			service.AddFileHashIfNotExist(new List<FileIndexItem> { new("/test.jpg") });
+		Assert.AreNotEqual(string.Empty, list.FirstOrDefault()?.FileHash);
+	}
+
+	[TestMethod]
+	public async Task PreGenerateThumbnail_Test()
+	{
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
+		var selectorStorage = new FakeSelectorStorage(storage);
+
+		var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage,
+			null!,
+			null!, null!, null!, new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
+		var input = new List<FileIndexItem> { new("/test.jpg") { FileHash = "test_hash_01" } }
+			.AsEnumerable();
+
+		await service.PreGenerateThumbnail(input, "");
+
+		Assert.IsTrue(storage.ExistFile("test_hash_01"));
+	}
+
+	[TestMethod]
+	public void ShouldSkipExtraLarge_IncludeXtraLarge()
+	{
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { new byte[10] });
+		var selectorStorage = new FakeSelectorStorage(storage);
+
+		var service = new WebHtmlPublishService(
+			new FakeIPublishPreflight(new List<AppSettingsPublishProfiles>
 			{
-				new FileIndexItem("/test.jpg")
-				{
-					FileHash = "test"
-					
-				}
-			}.AsEnumerable();
-			Assert.IsNotNull(service);
-			service.PreGenerateThumbnail(input);
-			// should not crash
-		}
-		
-		[TestMethod]
-		public async Task GenerateWebHtml_RealFsTest()
-		{
-			var appSettings = new AppSettings
+				new() { SourceMaxWidth = 2000 }
+			}),
+			selectorStorage, null!,
+			null!, null!, null!, new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
+
+		var result = service.ShouldSkipExtraLarge("");
+		Assert.AreEqual(ThumbnailGenerationType.All, result);
+	}
+
+	[TestMethod]
+	public void ShouldSkipExtraLarge_SkipExtraLarge()
+	{
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { new byte[10] });
+		var selectorStorage = new FakeSelectorStorage(storage);
+
+		var service = new WebHtmlPublishService(
+			new FakeIPublishPreflight(new List<AppSettingsPublishProfiles>
 			{
-				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+				new() { SourceMaxWidth = 1000 }
+			}),
+			selectorStorage, null!,
+			null!, null!, null!, new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
+
+		var result = service.ShouldSkipExtraLarge("");
+		Assert.AreEqual(ThumbnailGenerationType.SkipExtraLarge, result);
+	}
+
+	[TestMethod]
+	public async Task GenerateWebHtml_RealFsTest()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
 				{
-					{"default", new List<AppSettingsPublishProfiles>
+					"default",
+					new List<AppSettingsPublishProfiles>
 					{
-						new AppSettingsPublishProfiles
+						new()
 						{
 							ContentType = TemplateContentType.Html,
 							Path = "index.html",
 							Template = "Index.cshtml"
 						}
-					}}
-				},
-				Verbose = true
-			};
+					}
+				}
+			},
+			Verbose = true
+		};
 
-			// REAL FS
-			var storage = new StorageHostFullPathFilesystem();
-			var selectorStorage = new FakeSelectorStorage(storage);
-			
-			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
-					new ConsoleWrapper()), selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper());
+		// REAL FS
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var selectorStorage = new FakeSelectorStorage(storage);
 
-			// Write to actual Disk
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService());
 
-			var profiles = new PublishPreflight(appSettings, 
-				new ConsoleWrapper()).GetPublishProfileName("default");
+		// Write to actual Disk
 
-			var output = await service.GenerateWebHtml(profiles, 
-				profiles.FirstOrDefault(), "testItem", new string[1],
-				new List<FileIndexItem>{new FileIndexItem("test")}, 
-				AppDomain.CurrentDomain.BaseDirectory
-			);
+		var profiles = new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
+			.GetPublishProfileName("default");
 
-			var outputFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "index.html");
-			
-			Assert.IsTrue( storage.ExistFile(outputFile));
-			Assert.IsTrue(output.ContainsKey("index.html"));
+		var output = await service.GenerateWebHtml(profiles,
+			profiles.FirstOrDefault()!, "testItem", new string[1],
+			new List<FileIndexItem> { new("test") },
+			AppDomain.CurrentDomain.BaseDirectory
+		);
 
-			// this realFS
-			storage.FileDelete(outputFile);
-		}
+		var outputFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "index.html");
 
-		[TestMethod]
-		public void GenerateJpeg_Thumbnail_Test()
+		Assert.IsTrue(storage.ExistFile(outputFile));
+		Assert.IsTrue(output.ContainsKey("index.html"));
+
+		// this realFS
+		storage.FileDelete(outputFile);
+	}
+
+	[TestMethod]
+	public async Task GenerateJpeg_Thumbnail_Test()
+	{
+		var appSettings = new AppSettings
 		{
-			var appSettings = new AppSettings
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
+					"default",
+					new List<AppSettingsPublishProfiles>
 					{
-						"default",
-						new List<AppSettingsPublishProfiles>
+						new()
 						{
-							new AppSettingsPublishProfiles
-							{
-								ContentType = TemplateContentType.Jpeg,
-								Path = "index.html",
-								MetaData = true,
-							}
+							ContentType = TemplateContentType.Jpeg,
+							Path = "index.html",
+							MetaData = true
 						}
 					}
-				},
-				Verbose = true
-			};
-			var storage = new FakeIStorage();
-			var selectorStorage = new FakeSelectorStorage(storage);
-			
-			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
-					new ConsoleWrapper()), selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper());
-			
-			var profiles = new PublishPreflight(appSettings, 
-				new ConsoleWrapper()).GetPublishProfileName("default");
+				}
+			},
+			Verbose = true
+		};
+		var storage = new FakeIStorage(["/"],
+			[
+				ThumbnailNameHelper.Combine("fileHash", ThumbnailSize.Large,
+					new AppSettings().ThumbnailImageFormat)
+			],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
-			var generateJpeg = service.GenerateJpeg(profiles.FirstOrDefault(), 
-				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
-				Path.DirectorySeparatorChar.ToString());
-			
-			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
-			Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
-		}
-		
-		[TestMethod]
-		public void GenerateJpeg_Large_Test()
+		var selectorStorage = new FakeSelectorStorage(storage);
+
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			SetThumbnailService(storage));
+
+		var profiles = new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
+			.GetPublishProfileName("default");
+
+		var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault()!,
+			new List<FileIndexItem> { new("/test.jpg") { FileHash = "fileHash" } },
+			Path.DirectorySeparatorChar.ToString(), 1);
+
+		Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
+		Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
+	}
+
+
+	[TestMethod]
+	public async Task GenerateJpeg_Thumbnail_CorruptOutput_Test()
+	{
+		var appSettings = new AppSettings
 		{
-			var appSettings = new AppSettings
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
+					"default",
+					new List<AppSettingsPublishProfiles>
 					{
-						"default",
-						new List<AppSettingsPublishProfiles>
+						new()
 						{
-							new AppSettingsPublishProfiles
-							{
-								ContentType = TemplateContentType.Jpeg,
-								Path = "index.html",
-								MetaData = false,
-								SourceMaxWidth = 1001
-							}
+							ContentType = TemplateContentType.Jpeg,
+							Path = "index.html",
+							MetaData = true
 						}
 					}
-				},
-				Verbose = true
-			};
-			var storage = new FakeIStorage();
-			var selectorStorage = new FakeSelectorStorage(storage);
-			
-			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
-					new ConsoleWrapper()), selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper());
-			
-			var profiles = new PublishPreflight(appSettings, 
-				new ConsoleWrapper()).GetPublishProfileName("default");
+				}
+			},
+			Verbose = true
+		};
+		var storage = new FakeIStorage(new List<string>(),
+			new List<string> { "corrupt" },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
-			var generateJpeg = service.GenerateJpeg(profiles.FirstOrDefault(), 
-				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
-				Path.DirectorySeparatorChar.ToString());
-			
-			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
-			Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
-		}
+		var selectorStorage = new FakeSelectorStorage(storage);
 
-		[TestMethod]
-		public async Task MoveSourceFiles_True()
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
+
+		var profiles = new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
+			.GetPublishProfileName("default");
+
+		var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault()!,
+			new List<FileIndexItem> { new("/test.jpg") { FileHash = "fileHash" } },
+			Path.DirectorySeparatorChar.ToString(), 1);
+
+		// should not output file due corrupt output of image generation
+		Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
+
+		// removed in script due corrupt output
+		Assert.IsFalse(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
+	}
+
+	[TestMethod]
+	public async Task GenerateJpeg_Large_NotFound_Test()
+	{
+		var appSettings = new AppSettings
 		{
-			var profile = new AppSettingsPublishProfiles
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				ContentType = TemplateContentType.MoveSourceFiles, Folder = "src",
-			};
-			
-			var storage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{"/test.jpg"});
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var appSettings = new AppSettings
-			{
-				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
+					"default",
+					new List<AppSettingsPublishProfiles>
 					{
-						"default",
-						new List<AppSettingsPublishProfiles>
+						new()
 						{
-							profile
+							ContentType = TemplateContentType.Jpeg,
+							Path = "index.html",
+							MetaData = false,
+							SourceMaxWidth = 1001
 						}
 					}
-				},
-				Verbose = true
-			};
-			
-			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
-					new ConsoleWrapper()), selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper());
+				}
+			},
+			Verbose = true
+		};
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
 
-			await service.GenerateMoveSourceFiles(profile,
-				new List<FileIndexItem> {new FileIndexItem("/test.jpg")}, "/", 
-				true);
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
 
-			// True param situation
-			Assert.IsTrue(storage.GetAllFilesInDirectoryRecursive("/").Where(p => p != null)
-				.FirstOrDefault(p => p.Contains("src/test.jpg")) != null);
+		var profiles = new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
+			.GetPublishProfileName("default");
 
-			// is False instead of True
-			Assert.IsFalse(storage.ExistFile("/test.jpg"));
-		}
-		
-		[TestMethod]
-		public async Task MoveSourceFiles_False()
+		var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault()!,
+			new List<FileIndexItem> { new("/test.jpg") },
+			Path.DirectorySeparatorChar.ToString(), 1);
+
+		Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
+		Assert.IsFalse(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
+	}
+
+	[TestMethod]
+	public async Task GenerateJpeg_Large_Test()
+	{
+		var appSettings = new AppSettings
 		{
-			var profile = new AppSettingsPublishProfiles
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				ContentType = TemplateContentType.MoveSourceFiles, Folder = "src",
-			};
-			
-			var storage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{"/test.jpg"});
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var appSettings = new AppSettings
-			{
-				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
+					"default",
+					new List<AppSettingsPublishProfiles>
 					{
-						"default",
-						new List<AppSettingsPublishProfiles>
+						new()
 						{
-							profile
+							ContentType = TemplateContentType.Jpeg,
+							Path = "index.html",
+							MetaData = false,
+							SourceMaxWidth = 1001
 						}
 					}
-				},
-				Verbose = true
-			};
-			
-			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, new ConsoleWrapper()), 
-				selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper());
+				}
+			},
+			Verbose = true
+		};
+		var storage = new FakeIStorage(new List<string>(),
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
-			await service.GenerateMoveSourceFiles(profile,
-				new List<FileIndexItem> {new FileIndexItem("/test.jpg")}, "/", 
-				false);
+		var selectorStorage = new FakeSelectorStorage(storage);
 
-			// False situation
-			Assert.IsTrue(storage.GetAllFilesInDirectoryRecursive("/")
-				.FirstOrDefault(p => p != null && p.Contains("src/test.jpg")) != null);
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
 
-			// is True instead of False
-			Assert.IsTrue(storage.ExistFile("/test.jpg"));
-		}
+		var profiles = new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
+			.GetPublishProfileName("default");
 
-		[TestMethod]
-		public void GenerateZip_RealFsTest()
+		var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault()!,
+			new List<FileIndexItem> { new("/test.jpg") },
+			Path.DirectorySeparatorChar.ToString(), 1);
+
+		Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
+		Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
+	}
+
+	[TestMethod]
+	public async Task MoveSourceFiles_True()
+	{
+		var profile = new AppSettingsPublishProfiles
 		{
-			var appSettings = new AppSettings();
-			
-			// RealFs
-			var storage = new StorageHostFullPathFilesystem();
-			var selectorStorage = new FakeSelectorStorage(storage);
-			
-			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, new ConsoleWrapper()), 
-				selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper());
+			ContentType = TemplateContentType.MoveSourceFiles, Folder = "src"
+		};
 
-			service.GenerateZip(new CreateAnImage().BasePath, "test", 
-				new Dictionary<string, bool>{
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" });
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings
+		{
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{ "default", new List<AppSettingsPublishProfiles> { profile } }
+			},
+			Verbose = true
+		};
+
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
+
+		await service.GenerateMoveSourceFiles(profile,
+			new List<FileIndexItem> { new("/test.jpg") }, "/",
+			true);
+
+		// True param situation
+		Assert.IsNotNull(storage.GetAllFilesInDirectoryRecursive("/")
+			.Cast<string?>().Where(p => p != null).Cast<string>()
+			.FirstOrDefault(p => p.Contains("src/test.jpg")));
+
+		// is False instead of True
+		Assert.IsFalse(storage.ExistFile("/test.jpg"));
+	}
+
+	[TestMethod]
+	public async Task MoveSourceFiles_False()
+	{
+		var profile = new AppSettingsPublishProfiles
+		{
+			ContentType = TemplateContentType.MoveSourceFiles, Folder = "src"
+		};
+
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" });
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings
+		{
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{ "default", new List<AppSettingsPublishProfiles> { profile } }
+			},
+			Verbose = true
+		};
+
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(),
+				new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
+
+		await service.GenerateMoveSourceFiles(profile,
+			new List<FileIndexItem> { new("/test.jpg") }, "/",
+			false);
+
+		// False situation
+		Assert.IsNotNull(storage.GetAllFilesInDirectoryRecursive("/").Cast<string?>()
+			.FirstOrDefault(p => p != null && p.Contains("src/test.jpg")));
+
+		// is True instead of False
+		Assert.IsTrue(storage.ExistFile("/test.jpg"));
+	}
+
+	private static async Task<(WebHtmlPublishService, string, Dictionary<string, bool>,
+		StorageHostFullPathFilesystem)> GenerateZipCreateSut()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
 				{
-					new CreateAnImage().FileName,true
-				}}, true).ConfigureAwait(false);
+					"default",
+					new List<AppSettingsPublishProfiles>
+					{
+						new()
+						{
+							ContentType = TemplateContentType.Html,
+							Path = "index.html",
+							Template = "Index.cshtml"
+						}
+					}
+				}
+			},
+			Verbose = true
+		};
 
-			var outputFile = Path.Combine(new CreateAnImage().BasePath, "test.zip");
-			
-			Assert.IsTrue(storage.ExistFile(outputFile));
-			
-			storage.FileDelete(outputFile);
-		}
+		// REAL FS
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var selectorStorage = new FakeSelectorStorage(storage);
+
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService());
+
+		// Write to actual Disk
+
+		var profiles = new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
+			.GetPublishProfileName("default");
+
+		var outputFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+			"output_test_1234");
+		storage.CreateDirectory(outputFolderPath);
+
+		var output = await service.GenerateWebHtml(profiles,
+			profiles.FirstOrDefault()!, "testItem", new string[1],
+			new List<FileIndexItem> { new("test") },
+			outputFolderPath
+		);
+
+		return ( service, outputFolderPath, output, storage );
+	}
+
+	/// <summary>
+	///     Test GenerateZip
+	/// </summary>
+	/// <returns></returns>
+	[TestMethod]
+	public async Task GenerateZip_GenerateWebHtml_RealFsTest()
+	{
+		var (service, outputFolderPath, output, storage) =
+			await GenerateZipCreateSut();
+
+		await service.GenerateZip(outputFolderPath, "output_test_1234",
+			output);
+
+		// delete the folder
+		Assert.IsFalse(storage.ExistFolder(Path.Combine(new AppSettings().TempFolder,
+			"output_test_1234")));
+
+		// This test creates a .done file in the temp folder
+		// git/starsky/starsky/starsky/bin/Debug/net8.0/temp/output_test_1234.done
+
+		Assert.IsTrue(storage.ExistFile(Path.Combine(outputFolderPath, "output_test_1234.zip")));
+
+		// this realFS
+		storage.FolderDelete(outputFolderPath);
 	}
 }

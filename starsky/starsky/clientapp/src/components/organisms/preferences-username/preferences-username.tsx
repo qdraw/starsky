@@ -1,36 +1,48 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 
-const PreferencesUsername: React.FunctionComponent<any> = (_) => {
+const PreferencesUsername: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageUnknownUsername = language.text(
-    "Onbekende gebruikersnaam",
-    "Unknown username"
-  );
-  const MessageUsername = language.text("Gebruikersnaam", "Username");
+  const MessageUsername = language.key(localization.MessageUsername);
+  const MessageRole = language.key(localization.MessageRole);
 
-  var accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
-  const [userName, setUserName] = React.useState(MessageUnknownUsername);
+  interface AccountStatusData {
+    credentialsIdentifiers?: string[];
+    roleCode: string;
+  }
 
-  useEffect(() => {
-    if (
-      accountStatus.statusCode !== 200 ||
-      !accountStatus.data ||
-      !accountStatus.data.credentialsIdentifiers ||
-      accountStatus.data.credentialsIdentifiers.length !== 1
-    )
-      return;
-    setUserName(accountStatus.data.credentialsIdentifiers[0]);
-  }, [accountStatus]);
+  const accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
+  const accountStatusData = accountStatus?.data as AccountStatusData;
+
+  let userName = language.key(localization.MessageUnknownUsername);
+
+  if (
+    accountStatus.statusCode === 200 &&
+    accountStatusData?.credentialsIdentifiers &&
+    accountStatusData?.credentialsIdentifiers.length >= 1
+  ) {
+    userName = accountStatusData?.credentialsIdentifiers[0];
+    if (userName === "mail@localhost") {
+      userName = language.key(localization.MessageDesktopMailLocalhostUsername);
+    }
+  }
 
   return (
     <>
       <div className="content--subheader">{MessageUsername}</div>
-      <div className="content--text">{userName}</div>
+      <div
+        data-test="preferences-username-text"
+        className="content--text preferences-username-text"
+      >
+        {userName}
+      </div>
+      <div className="content--subheader">{MessageRole}</div>
+      <div className="content--text preferences-role">{accountStatusData?.roleCode}</div>
     </>
   );
 };

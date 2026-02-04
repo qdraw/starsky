@@ -57,28 +57,6 @@
   }
 }
 
-/* .btn-danger {
-    color: #fff;
-    background-color: #BF360C;
-    border-color: #B71C1C;
-}
-.btn-warning {
-    color: #212529;
-    background-color: #ffc107;
-    border-color: #ffc107;
-}
-
-.btn-info {
-    color: #007bff;
-    background-color: #EBEBEB;
-}
-.btn-secondary {
-    text-decoration: none;
-    color: #fff;
-    background-color: #5a6268;
-    border-color: #545b62;
-} */
-
 .btn.disabled,
 .btn:disabled {
   cursor: not-allowed;

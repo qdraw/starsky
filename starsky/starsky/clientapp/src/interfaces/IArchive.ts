@@ -18,8 +18,8 @@ export interface IArchive {
 }
 
 export enum SortType {
-  fileName = "fileName" as any,
-  imageFormat = "imageFormat" as any
+  fileName = "fileName",
+  imageFormat = "imageFormat"
 }
 
 export function newIArchive(): IArchive {

@@ -1,52 +1,68 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
+using starsky.foundation.webtelemetry.Extensions;
+using starsky.foundation.webtelemetry.Helpers;
 using starskyAdminCli.Services;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starskyAdminCli
+
+namespace starskyAdminCli;
+
+internal static class Program
 {
-	internal static class Program
+	/// <summary>
+	///     Starsky Admin CLI to manage user admin tasks
+	/// </summary>
+	/// <param name="args">use -h to see all options</param>
+	internal static async Task Main(string[] args)
 	{
-		internal static void Main(string[] args)
+		// Use args in application
+		new ArgsHelper().SetEnvironmentByArgs(args);
+
+		var services = new ServiceCollection();
+
+		// Setup AppSettings
+		services = await SetupAppSettings.FirstStepToAddSingleton(services);
+
+		// Inject services
+		RegisterDependencies.Configure(services);
+		var serviceProvider = services.BuildServiceProvider();
+		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+		var httpClientHelper = serviceProvider.GetRequiredService<IHttpClientHelper>();
+
+		services.AddOpenTelemetryMonitoring(appSettings);
+		services.AddTelemetryLogging(appSettings);
+
+		var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
+
+		new SetupDatabaseTypes(appSettings, services).BuilderDb();
+		serviceProvider = services.BuildServiceProvider();
+
+		// Use args in application
+		appSettings.Verbose = ArgsHelper.NeedVerbose(args);
+
+		var userManager = serviceProvider.GetRequiredService<IUserManager>();
+		appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
+
+		if ( ArgsHelper.NeedHelp(args) )
 		{
-			// Use args in application
-			new ArgsHelper().SetEnvironmentByArgs(args);
-
-			var services = new ServiceCollection();
-
-			// Setup AppSettings
-			services = SetupAppSettings.FirstStepToAddSingleton(services);
-
-			// Inject services
-			new RegisterDependencies().Configure(services);
-			var serviceProvider = services.BuildServiceProvider();
-			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-            
-			new SetupDatabaseTypes(appSettings,services).BuilderDb();
-			serviceProvider = services.BuildServiceProvider();
-
-			// Use args in application
-			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
-			
-			var userManager = serviceProvider.GetService<IUserManager>();
-
-			if (new ArgsHelper().NeedHelp(args))
-			{
-				appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
-				new ArgsHelper(appSettings).NeedHelpShowDialog();
-				return;
-			}
-			
-			RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>()).ConfigureAwait(false);
-			new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(
-				new ArgsHelper().GetName(args), new ArgsHelper().GetUserInputPassword(args));
+			new ArgsHelper(appSettings).NeedHelpShowDialog();
+			return;
 		}
+
+		await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
+			webLogger, appSettings);
+		await new ConsoleAdmin(userManager, new ConsoleWrapper(), httpClientHelper).Tool(
+			ArgsHelper.GetName(args), ArgsHelper.GetUserInputPassword(args));
 	}
 }

@@ -3,28 +3,24 @@ import ItemListView from "../components/molecules/item-list-view/item-list-view"
 import SearchPagination from "../components/molecules/search-pagination/search-pagination";
 import ArchiveSidebar from "../components/organisms/archive-sidebar/archive-sidebar";
 import MenuTrash from "../components/organisms/menu-trash/menu-trash";
-import {
-  ArchiveContext,
-  defaultStateFallback
-} from "../contexts/archive-context";
+import { ArchiveContext, defaultStateFallback } from "../contexts/archive-context";
 import useGlobalSettings from "../hooks/use-global-settings";
-import useLocation from "../hooks/use-location";
+import useLocation from "../hooks/use-location/use-location";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
+import localization from "../localization/localization.json";
 import { Language } from "../shared/language";
-import { URLPath } from "../shared/url-path";
+import { URLPath } from "../shared/url/url-path";
 
-function Trash(archive: IArchiveProps) {
+function Trash(archive: Readonly<IArchiveProps>) {
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageEmptyTrash = language.text(
-    "Er staat niets in de prullenmand",
-    "There is nothing in the trash"
-  );
-  const MessageNumberOfResults = language.text("resultaten", "results");
-  const MessageNoResult = language.text("Geen resultaat", "No result");
 
-  var history = useLocation();
+  const MessageNumberOfResults = language.key(localization.MessageNumberOfResults);
+  const MessageNoResult = language.key(localization.MessageNoResult);
+  const MessageEmptyTrash = language.key(localization.MessageEmptyTrash);
+
+  const history = useLocation();
 
   // The sidebar
   const [sidebar, setSidebar] = React.useState(
@@ -36,12 +32,11 @@ function Trash(archive: IArchiveProps) {
   }, [history.location.search]);
 
   // to dynamic update the number of trashed items
+  // eslint-disable-next-line prefer-const
   let { state, dispatch } = React.useContext(ArchiveContext);
   state = defaultStateFallback(state);
 
-  const [collectionsCount, setCollectionsCount] = React.useState(
-    state.collectionsCount
-  );
+  const [collectionsCount, setCollectionsCount] = React.useState(state.collectionsCount);
   useEffect(() => {
     setCollectionsCount(state.collectionsCount);
   }, [state.collectionsCount]);
@@ -52,37 +47,29 @@ function Trash(archive: IArchiveProps) {
   return (
     <>
       <MenuTrash state={state} dispatch={dispatch} />
-      <div className={!sidebar ? "archive" : "archive collapsed"}>
+      <div className={sidebar ? "archive collapsed" : "archive"}>
         {sidebar ? <ArchiveSidebar {...archive} /> : ""}
 
         <div className="content">
           <div className="content--header">
-            {collectionsCount !== 0 ? (
+            {collectionsCount === 0 ? (
+              MessageNoResult
+            ) : (
               <>
                 {collectionsCount} {MessageNumberOfResults}
               </>
-            ) : (
-              MessageNoResult
             )}
           </div>
           <SearchPagination {...archive} />
           {collectionsCount >= 1 ? (
-            <ItemListView
-              iconList={true}
-              {...archive}
-              colorClassUsage={archive.colorClassUsage}
-            >
-              {" "}
-            </ItemListView>
+            <ItemListView iconList={true} {...archive} colorClassUsage={archive.colorClassUsage} />
           ) : null}
           {collectionsCount === 0 ? (
             <div className="folder">
               <div className="warning-box"> {MessageEmptyTrash}</div>
             </div>
           ) : null}
-          {archive.fileIndexItems.length >= 20 ? (
-            <SearchPagination {...archive} />
-          ) : null}
+          {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive} /> : null}
         </div>
       </div>
     </>

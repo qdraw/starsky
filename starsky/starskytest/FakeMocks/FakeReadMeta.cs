@@ -1,69 +1,42 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Interfaces;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.FakeMocks
 {
 	public class FakeReadMeta : IReadMeta
 	{
-		public FileIndexItem ReadExifAndXmpFromFile(string subPath, ExtensionRolesHelper.ImageFormat imageFormat)
+#pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
+		public Task<FileIndexItem> ReadExifAndXmpFromFileAsync(string subPath)
+#pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
 		{
-			return new FileIndexItem
-			{
-				Status = FileIndexItem.ExifStatus.Ok, 
-				Tags = "test", 
-				FileHash = "test", 
-				FileName = "t", 
-				ParentDirectory = "d"
-			};
-		}
-
-		public FileIndexItem ReadExifAndXmpFromFile(string path)
-		{
-			return new FileIndexItem
+			return Task.FromResult(new FileIndexItem
 			{
 				Status = FileIndexItem.ExifStatus.Ok,
 				Tags = "test, fake read meta"
-			};
+			});
 		}
 
-		public FileIndexItem ReadExifAndXmpFromFile(FileIndexItem fileIndexItemWithLocation)
-		{
-			return fileIndexItemWithLocation;
-		}
-
-		public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathArray, 
-			List<string> fileHashes = null)
+		public Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList,
+			List<string>? fileHashes = null)
 		{
 			var createAnImage = new CreateAnImage();
-			return new List<FileIndexItem>
+			return Task.FromResult(new List<FileIndexItem>
 			{
 				new FileIndexItem
 				{
 					Status = FileIndexItem.ExifStatus.Ok, 
 					FileName = createAnImage.FileName
 				}
-			};
+			});
 		}
 
-		public void RemoveReadMetaCache(List<string> fullFilePathArray)
+		public bool? RemoveReadMetaCache(string fullFilePath)
 		{
 			// dont do anything
-		}
-
-		public void RemoveReadMetaCache(string fullFilePath)
-		{
-			// dont do anything
-		}
-
-		public void UpdateReadMetaCache(string fullFilePath, FileIndexItem objectExifToolModel)
-		{
-			// dont do anything
+			return true;
 		}
 
 		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)

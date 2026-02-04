@@ -1,89 +1,116 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.database.Helpers
+namespace starskytest.starsky.foundation.database.Helpers;
+
+[TestClass]
+public sealed class RunMigrationsTest
 {
-	[TestClass]
-	public class RunMigrationsTest
+	[TestMethod]
+	public async Task Test()
 	{
-		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public async Task Test()
-		{
-			IServiceCollection services = new ServiceCollection();
-			var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
-			services
-				.AddDbContext<ApplicationDbContext>(b =>
-					b.UseInMemoryDatabase("test1234").UseInternalServiceProvider(efServiceProvider));
-			var serviceProvider = services.BuildServiceProvider();
-			var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		IServiceCollection services = new ServiceCollection();
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
-			Assert.IsNotNull(serviceScopeFactory);
-			await RunMigrations.Run(serviceScopeFactory.CreateScope());
-			// expect exception: Relational-specific methods can only be used when the context is using a relational database provider.
-		}
+		var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase()
+			.BuildServiceProvider();
+		services
+			.AddDbContext<ApplicationDbContext>(b =>
+				b.UseInMemoryDatabase("test1234").UseInternalServiceProvider(efServiceProvider));
+		services.AddSingleton<AppSettings>();
 
-		private class AppDbMySqlException : ApplicationDbContext
-		{
-			public AppDbMySqlException(DbContextOptions options) : base(options)
+		var serviceProvider = services.BuildServiceProvider();
+		var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+
+		appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
+
+		Assert.IsNotNull(serviceScopeFactory);
+		await RunMigrations.Run(serviceScopeFactory.CreateScope(), 1);
+		// expect exception: Relational-specific methods can only be used when the context is using a relational database provider.
+	}
+
+	[SuppressMessage("Usage", "S6602: First or Default")]
+	[SuppressMessage("Usage", "S3398: move function")]
+	private static MySqlException CreateMySqlException(string message)
+	{
+		// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
+
+		var ctorLIst =
+			typeof(MySqlException).GetConstructors(
+				BindingFlags.Instance |
+				BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+		var ctor = ctorLIst.FirstOrDefault(p =>
+			p.ToString() ==
+			"Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)");
+
+		var instance =
+			( MySqlException? ) ctor?.Invoke(new object[]
 			{
-			}
+				MySqlErrorCode.AccessDenied, "test", message, new Exception()
+			});
+		return instance!;
+	}
 
-			public override DatabaseFacade Database
-			{
-				get
-				{
-					var info = new SerializationInfo(typeof(Exception),
-						new FormatterConverter());
-					info.AddValue("Number", 1);
-					info.AddValue("SqlState", "SqlState");
-					info.AddValue("Message", "");
-					info.AddValue("InnerException", new Exception());
-					info.AddValue("HelpURL", "");
-					info.AddValue("StackTraceString", "");
-					info.AddValue("RemoteStackTraceString", "");
-					info.AddValue("RemoteStackIndex", 1);
-					info.AddValue("HResult", 1);
-					info.AddValue("Source", "");
-					info.AddValue("WatsonBuckets", new byte[0]);
-					
-					// private MySqlException(SerializationInfo info, StreamingContext context)
-					var ctor =
-						typeof(MySqlException).GetConstructors(BindingFlags.Instance |
-							BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
-					var instance =
-						( MySqlException ) ctor.Invoke(new object[]
-						{
-							info,
-							new StreamingContext(StreamingContextStates.All)
-						});
+	[TestMethod]
+	public async Task MySqlException()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
 
-					throw instance;
-				}
-			}
-		}
+		Assert.IsNotNull(options);
+		await RunMigrations.Run(
+			new AppDbMySqlException(options), new FakeIWebLogger(),
+			new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.Mysql }, 1);
 
-		[TestMethod]
-		public async Task MySqlException()
+		// should not crash
+	}
+
+	[TestMethod]
+	public async Task MysqlFixes_ShouldReturnTrue_AfterFixesAreApplied()
+	{
+		// Arrange
+		var appSettings = new AppSettings
 		{
-			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
-				.Options;
-			
-			Assert.IsNotNull(options);
-			await RunMigrations.Run(new AppDbMySqlException(options));
-			
-			// should not crash
+			DatabaseType = AppSettings.DatabaseTypeList.Mysql,
+			DatabaseConnection =
+				"server=localhost;database=mydatabase;user=root;password=mypassword"
+		};
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+		var dbContext = new ApplicationDbContext(options);
+		var connection = new MySqlConnection(appSettings.DatabaseConnection);
+
+		// Act
+		var result =
+			await RunMigrations.MysqlFixes(connection, appSettings, dbContext,
+				new FakeIWebLogger());
+
+		// Assert
+		Assert.IsTrue(result);
+	}
+
+	private sealed class AppDbMySqlException : ApplicationDbContext
+	{
+		public AppDbMySqlException(DbContextOptions options) : base(options)
+		{
 		}
+
+		public override DatabaseFacade Database => throw CreateMySqlException("");
 	}
 }

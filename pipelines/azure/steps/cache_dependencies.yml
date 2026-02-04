@@ -1,0 +1,11 @@
+parameters:
+  path: "$(Build.SourcesDirectory)/starsky/generic-netcore/dependencies"
+
+steps:
+  - task: Cache@2
+    inputs:
+      key: 'starsky-generic-netcore-dependencies'
+      restoreKeys: |
+       starsky-generic-netcore-dependencies"
+      path: ${{ parameters.path }}
+    displayName: Cache generic netcore dependencies

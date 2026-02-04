@@ -1,4 +1,22 @@
 export class Keyboard {
+  public unBlur(event?: KeyboardEvent): boolean | null {
+    if (!event || !this.isInForm(event)) return null;
+
+    const target = event.target as HTMLElement;
+    if (!target?.blur) return null;
+    target.blur();
+    return true;
+  }
+
+  public focus(event?: KeyboardEvent): boolean | null {
+    if (!event || !this.isInForm(event)) return null;
+
+    const target = event.target as HTMLElement;
+    if (!target?.focus) return null;
+    target.focus();
+    return true;
+  }
+
   /**
    * to prevent keystrokes in a form element
    * @param event Keyboard Event
@@ -7,13 +25,15 @@ export class Keyboard {
     if (!event) return null;
 
     const target = event.target as HTMLElement;
-    if (!target || !target.className) return null;
-    return (
-      target.className.indexOf("form-control") !== -1 ||
-      target.className.indexOf("modal") !== -1
-    );
+    if (!target?.className) return null;
+    return target.className.includes("form-control") || target.className.includes("modal");
   }
 
+  /**
+   * When press an key like I and it should focus on the end of the div contenteditable
+   * @param current html element
+   * @returns void
+   */
   public SetFocusOnEndField(current: HTMLDivElement): void {
     // no content in field
     if (current.childNodes.length === 0) {
@@ -22,12 +42,9 @@ export class Keyboard {
     }
     if (!current.childNodes[0].textContent) return;
     // Set selection to the end of the element
-    var range = document.createRange();
-    var sel = window.getSelection();
-    range.setStart(
-      current.childNodes[0],
-      current.childNodes[0].textContent.length
-    );
+    const range = document.createRange();
+    const sel = globalThis.getSelection();
+    range.setStart(current.childNodes[0], current.childNodes[0].textContent.length);
     range.collapse(true);
     if (!sel) return;
     sel.removeAllRanges();

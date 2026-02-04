@@ -35,8 +35,8 @@ export const getCurrentTouches = (
     preventDefault: originalEvent.preventDefault,
     stopPropagation: originalEvent.stopPropagation,
     ...pointer,
-    deltaX: prevTouch && prevTouch.x ? pointer.x - prevTouch.x : 0,
-    deltaY: prevTouch && prevTouch.y ? pointer.y - prevTouch.y : 0,
+    deltaX: prevTouch?.x ? pointer.x - prevTouch.x : 0,
+    deltaY: prevTouch?.y ? pointer.y - prevTouch.y : 0,
     delta: prevTouch ? getDistance(pointer, prevTouch) : 0,
     distance: firstTouch ? getDistance(pointer, firstTouch) : 0,
     angleDeg: prevTouch ? getAngleDeg(pointer, prevTouch) : 0

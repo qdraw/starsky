@@ -1,10 +1,10 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { FileListCache } from "../../../shared/filelist-cache";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import ColorClassSelect from "../color-class-select/color-class-select";
 
 interface IArchiveSidebarColorClassProps {
@@ -21,37 +21,24 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
     const history = useLocation();
 
     // show select info
-    const [select, setSelect] = React.useState(
-      new URLPath().getSelect(history.location.search)
-    );
+    const [select, setSelect] = useState(new URLPath().getSelect(history.location.search));
     useEffect(() => {
       setSelect(new URLPath().getSelect(history.location.search));
     }, [history.location.search]);
 
     // updated parameters based on select
-    const [selectParams, setSelectParams] = React.useState("");
+    const [selectParams, setSelectParams] = useState("");
     useEffect(() => {
-      var subPaths = new URLPath().MergeSelectFileIndexItem(
-        select,
-        props.fileIndexItems
-      );
-      var selectParamsLocal = new URLPath().ArrayToCommaSeperatedStringOneParent(
-        subPaths,
-        ""
-      );
+      const subPaths = new URLPath().MergeSelectFileIndexItem(select, props.fileIndexItems);
+      const selectParamsLocal = new URLPath().ArrayToCommaSeparatedStringOneParent(subPaths, "");
       setSelectParams(selectParamsLocal);
     }, [select, props.fileIndexItems]);
 
-    let { dispatch } = React.useContext(ArchiveContext);
+    const { dispatch } = React.useContext(ArchiveContext);
 
     return (
       <ColorClassSelect
-        collections={
-          props.pageType !== PageType.Search
-            ? new URLPath().StringToIUrl(history.location.search)
-                .collections !== false
-            : false
-        }
+        collections={new URLPath().IsCollections(props.pageType, history.location.search)}
         onToggle={(colorclass) => {
           dispatch({ type: "update", colorclass, select });
           // Entire cache because the relativeObjects in detailview can reference that order

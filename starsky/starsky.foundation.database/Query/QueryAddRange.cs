@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Query
 {
@@ -13,22 +15,79 @@ namespace starsky.foundation.database.Query
 		/// </summary>
 		/// <param name="fileIndexItemList"></param>
 		/// <returns>items with id</returns>
-		public virtual async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
+		public virtual async Task<List<FileIndexItem>> AddRangeAsync(
+			List<FileIndexItem> fileIndexItemList)
 		{
-			async Task LocalQuery(ApplicationDbContext context)
+			if ( fileIndexItemList.Count == 0 )
 			{
-				await context.FileIndex.AddRangeAsync(fileIndexItemList);
+				return new List<FileIndexItem>();
+			}
+
+			async Task LocalQuery(ApplicationDbContext context,
+				IReadOnlyCollection<FileIndexItem> items)
+			{
 				await context.SaveChangesAsync();
+				await context.FileIndex.AddRangeAsync(items);
+				await context.SaveChangesAsync();
+				foreach ( var item in items )
+				{
+					context.Attach(item).State = EntityState.Detached;
+				}
 			}
-			
+
+			async Task<bool> LocalRemoveDefaultQuery()
+			{
+				await LocalQuery(new InjectServiceScope(_scopeFactory).Context(),
+					fileIndexItemList);
+				return true;
+			}
+
 			try
 			{
-				await LocalQuery(_context);
+				await LocalQuery(_context, fileIndexItemList);
 			}
-			catch (ObjectDisposedException)
+			catch ( DbUpdateConcurrencyException concurrencyException )
 			{
-				await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+				SolveConcurrency.SolveConcurrencyExceptionLoop(
+					concurrencyException.Entries);
+				try
+				{
+					await _context.SaveChangesAsync();
+				}
+				catch ( DbUpdateConcurrencyException e )
+				{
+					if ( _appSettings.Verbose == true )
+					{
+						_context.ChangeTracker.DetectChanges();
+						// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+						_logger?.LogDebug(_context.ChangeTracker.DebugView
+							.LongView);
+					}
+
+					_logger?.LogError(e,
+						"[AddRangeAsync] save failed after DbUpdateConcurrencyException");
+				}
 			}
+			catch ( ObjectDisposedException )
+			{
+				await LocalQuery(
+					new InjectServiceScope(_scopeFactory).Context(),
+					fileIndexItemList);
+			}
+			catch ( Microsoft.Data.Sqlite.SqliteException )
+			{
+				// Files that are locked
+				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
+					TimeSpan.FromSeconds(2), 4);
+			}
+			catch ( DbUpdateException )
+			{
+				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
+					TimeSpan.FromSeconds(2), 4);
+			}
+
+			fileIndexItemList = FormatOk(fileIndexItemList,
+				FileIndexItem.ExifStatus.NotFoundNotInIndex);
 
 			foreach ( var fileIndexItem in fileIndexItemList )
 			{
@@ -37,33 +96,5 @@ namespace starsky.foundation.database.Query
 
 			return fileIndexItemList;
 		}
-		
-		/// <summary>
-		/// (Sync) Add a new item to the database
-		/// </summary>
-		/// <param name="fileIndexItemList"></param>
-		/// <returns>items with id</returns>
-		public List<FileIndexItem> AddRange(List<FileIndexItem> fileIndexItemList)
-		{
-			try
-			{
-				_context.FileIndex.AddRange(fileIndexItemList);
-				_context.SaveChanges();
-			}
-			catch (ObjectDisposedException)
-			{
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				context.FileIndex.AddRange(fileIndexItemList);
-				context.SaveChanges();
-			}
-
-			foreach ( var fileIndexItem in fileIndexItemList )
-			{
-				AddCacheItem(fileIndexItem);
-			}
-
-			return fileIndexItemList;
-		}
-
 	}
 }

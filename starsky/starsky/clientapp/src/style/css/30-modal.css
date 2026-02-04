@@ -24,16 +24,21 @@ div.modal-content {
   max-width: 400px;
   width: 100%;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(188, 193, 217, 0.5),
+  box-shadow:
+    0 1px 3px rgba(188, 193, 217, 0.5),
     0 4px 12px rgba(188, 193, 217, 0.5);
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, 0%);
   opacity: 0;
-  transition: transform 250ms ease-out, opacity 200ms ease-out;
+  transition:
+    transform 250ms ease-out,
+    opacity 200ms ease-out;
   cursor: default;
   max-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 div.modal-content h4 {
@@ -78,6 +83,7 @@ div.modal-content button.modal-exit-button {
   font-weight: inherit;
   line-height: inherit;
   padding: 17px;
+  color: #000;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -123,4 +129,18 @@ div.modal-content.modal-content--show .preloader.preloader--inside {
   width: 50px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.modal.content.scroll {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.scroll .content--text {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
 }

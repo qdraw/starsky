@@ -1,25 +1,21 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../../../interfaces/IConnectionDefault";
+import "@testing-library/jest-dom";
+import { render, screen, waitFor } from "@testing-library/react";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
-import * as FetchGet from "../../../shared/fetch-get";
-import * as FetchPost from "../../../shared/fetch-post";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
-import ForceSyncWaitButton, {
-  ForceSyncRequestNewContent
-} from "./force-sync-wait-button";
+import * as FetchGet from "../../../shared/fetch/fetch-get";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
+import ForceSyncWaitButton, { ForceSyncRequestNewContent } from "./force-sync-wait-button";
 
 describe("ForceSyncWaitButton", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ForceSyncWaitButton
         historyLocationSearch={""}
         dispatch={jest.fn()}
         callback={jest.fn()}
+        isShortLabel={false}
       ></ForceSyncWaitButton>
     );
   });
@@ -29,26 +25,30 @@ describe("ForceSyncWaitButton", () => {
     data: null
   });
 
-  it("onClick value", () => {
+  it("onClick value", async () => {
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    const component = mount(
+    const component = render(
       <ForceSyncWaitButton
+        isShortLabel={false}
         historyLocationSearch={""}
         dispatch={jest.fn()}
         callback={jest.fn()}
-      >
-        t
-      </ForceSyncWaitButton>
+      />
     );
 
-    component.find("button").simulate("click");
-    expect(fetchPostSpy).toBeCalled();
+    const forceSync = screen.queryByTestId("force-sync") as HTMLButtonElement;
+    expect(forceSync).toBeTruthy();
+    forceSync.click();
 
-    var urlSync = new UrlQuery().UrlSync("/");
-    expect(fetchPostSpy).toBeCalledWith(urlSync, "");
+    await waitFor(() => expect(fetchPostSpy).toHaveBeenCalled());
+
+    const urlSync = new UrlQuery().UrlSync("/");
+    expect(fetchPostSpy).toHaveBeenCalledWith(urlSync, "");
+
+    component.unmount();
   });
 
   const mockIConnectionData: Promise<IConnectionDefault> = Promise.resolve({
@@ -79,22 +79,19 @@ describe("ForceSyncWaitButton", () => {
     ForceSyncRequestNewContent({
       callback: jest.fn(),
       dispatch: jest.fn(),
-      historyLocationSearch: "?f=/"
+      historyLocationSearch: "?f=/",
+      setIsLoading: jest.fn()
     });
 
-    expect(fetchGetSpy).toBeCalled();
+    expect(fetchGetSpy).toHaveBeenCalled();
 
-    const url = new UrlQuery().UrlIndexServerApi(
-      new URLPath().StringToIUrl("?f=/")
-    );
+    const url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl("?f=/"));
 
-    expect(fetchGetSpy).toBeCalledWith(url);
+    expect(fetchGetSpy).toHaveBeenCalledWith(url);
   });
 
   it("ForceSyncRequestNewContent should callback & dispatch", async () => {
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockIConnectionData);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockIConnectionData);
 
     const callback = jest.fn();
     const dispatch = jest.fn();
@@ -102,9 +99,77 @@ describe("ForceSyncWaitButton", () => {
     await ForceSyncRequestNewContent({
       callback,
       dispatch,
-      historyLocationSearch: "?f=/"
+      historyLocationSearch: "?f=/",
+      setIsLoading: jest.fn()
     });
 
-    expect(dispatch).toBeCalled();
+    expect(dispatch).toHaveBeenCalled();
   });
+
+  it("ForceSyncRequestNewContent should when failed callback & dispatch", async () => {
+    const mockIConnectionDataFailed: Promise<IConnectionDefault> = Promise.resolve({
+      ...newIConnectionDefault(),
+      statusCode: 500 // < - - - - - -
+    });
+
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockIConnectionDataFailed);
+
+    const callback = jest.fn();
+    const dispatch = jest.fn();
+
+    await ForceSyncRequestNewContent({
+      callback,
+      dispatch,
+      historyLocationSearch: "?f=/",
+      setIsLoading: jest.fn()
+    });
+
+    expect(callback).toHaveBeenCalled();
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  const defaultProps = {
+    historyLocationSearch: "",
+    callback: jest.fn(),
+    dispatch: jest.fn(),
+    isShortLabel: false
+  };
+
+  const buttonLabelClassNameTestCases = [
+    {
+      description: "renders with short label, custom class and custom dataTest",
+      isShortLabel: true,
+      className: "btn btn--primary",
+      dataTest: "custom-sync",
+      expectedClass: "btn btn--primary",
+      expectedDataTest: "custom-sync"
+    },
+    {
+      description: "renders with long label, default class and default dataTest",
+      isShortLabel: false,
+      className: undefined,
+      dataTest: undefined,
+      expectedClass: "btn btn--default",
+      expectedDataTest: "force-sync"
+    }
+  ];
+
+  test.each(buttonLabelClassNameTestCases)(
+    "$description",
+    ({ isShortLabel, className, dataTest, expectedClass, expectedDataTest }) => {
+      render(
+        <ForceSyncWaitButton
+          {...defaultProps}
+          isShortLabel={isShortLabel}
+          className={className}
+          dataTest={dataTest}
+        />
+      );
+
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass(expectedClass);
+      expect(button).toHaveAttribute("data-test", expectedDataTest);
+      expect(button.textContent).toBeTruthy(); // label should render
+    }
+  );
 });

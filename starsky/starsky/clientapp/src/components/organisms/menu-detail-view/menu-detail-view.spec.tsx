@@ -1,14 +1,15 @@
-import { globalHistory, Link } from "@reach/router";
-import { mount, shallow } from "enzyme";
-import React from "react";
-import { act } from "react-dom/test-utils";
+import { fireEvent, render } from "@testing-library/react";
+import React, { act } from "react";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import * as FetchGet from "../../../shared/fetch-get";
-import * as FetchPost from "../../../shared/fetch-post";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { Router } from "../../../router-app/router-app";
+import * as FetchGet from "../../../shared/fetch/fetch-get";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
+import * as Link from "../../atoms/link/link";
 import * as ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-detailview-rename-file";
 import * as ModalExport from "../modal-download/modal-download";
 import * as ModalMoveFile from "../modal-move-file/modal-move-file";
@@ -28,7 +29,11 @@ describe("MenuDetailView", () => {
         parentDirectory: "/test"
       }
     } as IDetailView;
-    shallow(<MenuDetailView state={state} dispatch={jest.fn()} />);
+    render(
+      <MemoryRouter>
+        <MenuDetailView state={state} dispatch={jest.fn()} />
+      </MemoryRouter>
+    );
   });
 
   describe("readonly status context", () => {
@@ -46,50 +51,47 @@ describe("MenuDetailView", () => {
     } as IDetailView;
 
     it("readonly - move click", () => {
-      var moveModal = jest
-        .spyOn(ModalMoveFile, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
-
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
-      );
-
-      var item = component.find('[data-test="move"]');
-
-      act(() => {
-        item.simulate("click");
+      const moveModal = jest.spyOn(ModalMoveFile, "default").mockImplementationOnce(() => {
+        return <></>;
       });
 
-      expect(moveModal).toBeCalledTimes(0);
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const move = component.queryByTestId("move");
+      expect(move).toBeTruthy();
+      move?.click();
+
+      expect(moveModal).toHaveBeenCalledTimes(0);
 
       // reset afterwards
       act(() => {
-        globalHistory.navigate("/");
+        Router.navigate("/");
         component.unmount();
       });
     });
 
     it("readonly - rename click", () => {
-      var renameModal = jest
+      const renameModal = jest
         .spyOn(ModalDetailviewRenameFile, "default")
         .mockImplementationOnce(() => {
           return <></>;
         });
 
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
-      var item = component.find('[data-test="rename"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const rename = component.queryByTestId("rename");
+      expect(rename).toBeTruthy();
+      rename?.click();
 
-      expect(renameModal).toBeCalledTimes(0);
+      expect(renameModal).toHaveBeenCalledTimes(0);
 
       act(() => {
         component.unmount();
@@ -99,25 +101,24 @@ describe("MenuDetailView", () => {
     it("readonly - trash click to trash", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
-      var fetchPostSpy = jest
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
-      var item = component.find('[data-test="trash"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const trash = component.queryByTestId("trash");
+      expect(trash).toBeTruthy();
+      trash?.click();
 
-      expect(fetchPostSpy).toBeCalledTimes(0);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(0);
 
       act(() => {
         component.unmount();
@@ -138,16 +139,20 @@ describe("MenuDetailView", () => {
           parentDirectory: "/test"
         }
       } as IDetailView;
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
-      component.find(Link).simulate("click", {
+
+      const anchor = component.queryByTestId("menu-detail-view-close") as HTMLAnchorElement;
+
+      fireEvent.click(anchor, {
         metaKey: true
       });
 
-      expect(component.exists(".preloader--overlay")).toBeFalsy();
+      expect(component.queryByTestId("preloader")).toBeNull();
+
       component.unmount();
     });
 
@@ -163,20 +168,26 @@ describe("MenuDetailView", () => {
           parentDirectory: "/test"
         }
       } as IDetailView;
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
-      component.find(Link).simulate("click");
 
-      expect(component.exists(".preloader--overlay")).toBeTruthy();
+      const anchor = component.queryByTestId("menu-detail-view-close") as HTMLAnchorElement;
+
+      fireEvent.click(anchor, {
+        metaKey: false
+      });
+
+      expect(component.queryByTestId("preloader")).not.toBeNull();
+
       component.unmount();
     });
   });
 
   describe("with Context", () => {
-    var state = {
+    const state = {
       subPath: "/test/image.jpg",
       fileIndexItem: {
         status: IExifStatus.Ok,
@@ -185,34 +196,60 @@ describe("MenuDetailView", () => {
         fileName: "image.jpg",
         lastEdited: new Date(1970, 1, 1).toISOString(),
         parentDirectory: "/test"
-      }
+      },
+      isReadOnly: false
     } as IDetailView;
 
     it("as search Result button exist", () => {
       // add search query to url
-      globalHistory.navigate("/?t=test&p=0");
+      Router.navigate("/?t=test&p=0");
 
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
-      expect(component.exists(".item--search")).toBeTruthy();
+      const anchor = component.queryByTestId("menu-detail-view-close") as HTMLAnchorElement;
+
+      expect(anchor).toBeTruthy();
+      expect(anchor.className).toContain("search");
 
       act(() => {
         // reset afterwards
         component.unmount();
-        globalHistory.navigate("/");
+        Router.navigate("/");
+      });
+    });
+
+    it("as search Result button exist no ?t", () => {
+      // add search query to url
+      Router.navigate("/");
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const anchor = component.queryByTestId("menu-detail-view-close") as HTMLAnchorElement;
+
+      expect(anchor).toBeTruthy();
+      expect(anchor.className).toContain("item--close");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        Router.navigate("/");
       });
     });
 
     it("last Edited change [true]", () => {
-      globalHistory.navigate("/?details=true");
+      Router.navigate("/?details=true");
 
       //  With updated LastEdited
 
-      var updateState = {
+      const updateState = {
         ...state,
         fileIndexItem: {
           ...state.fileIndexItem,
@@ -220,57 +257,118 @@ describe("MenuDetailView", () => {
         }
       };
 
-      var component = mount(
-        <MenuDetailView state={updateState} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
-      expect(component.exists(".autosave")).toBeTruthy();
+      expect(component.queryByTestId("menu-detail-view-autosave")).toBeTruthy();
 
       act(() => {
         // reset afterwards
         component.unmount();
-        globalHistory.navigate("/");
+        Router.navigate("/");
       });
     });
 
     it("last Edited change [false]", () => {
       act(() => {
-        globalHistory.navigate("/?details=true");
+        Router.navigate("/?details=true");
       });
 
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
-      expect(component.exists(".autosave")).toBeFalsy();
+      expect(component.queryByTestId("menu-detail-view-autosave")).toBeFalsy();
 
       act(() => {
         // reset afterwards
         component.unmount();
-        globalHistory.navigate("/");
+        Router.navigate("/");
       });
     });
 
     it("export click [menu]", () => {
-      var exportModal = jest
+      const exportModal = jest.spyOn(ModalExport, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const exportButton = component.queryByTestId("download");
+      expect(exportButton).toBeTruthy();
+
+      act(() => {
+        exportButton?.click();
+      });
+
+      expect(exportModal).toHaveBeenCalled();
+
+      // to avoid polling afterwards
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("export keyDown [menu] Tab so ignore", () => {
+      const exportModal = jest
         .spyOn(ModalExport, "default")
+        .mockReset()
         .mockImplementationOnce(() => {
           return <></>;
         });
 
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
-      var item = component.find('[data-test="export"]');
+      const exportButton = component.queryByTestId("download") as HTMLElement;
+      expect(exportButton).toBeTruthy();
 
       act(() => {
-        item.simulate("click");
+        fireEvent.keyDown(exportButton, { key: "Tab" });
       });
 
-      expect(exportModal).toBeCalled();
+      expect(exportModal).toHaveBeenCalledTimes(0);
+
+      // to avoid polling afterwards
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("export keyDown [menu] Enter so continue", () => {
+      const exportModal = jest
+        .spyOn(ModalExport, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const exportButton = component.queryByTestId("download") as HTMLElement;
+      expect(exportButton).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(exportButton, { key: "Enter" });
+      });
+
+      expect(exportModal).toHaveBeenCalledTimes(1);
 
       // to avoid polling afterwards
       act(() => {
@@ -279,142 +377,440 @@ describe("MenuDetailView", () => {
     });
 
     it("labels click .item--labels [menu]", () => {
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
-      var find = component.find(".item.item--labels");
+      const labels = component.queryByTestId("menu-detail-view-labels");
 
       act(() => {
-        find.simulate("click");
+        labels?.click();
       });
 
-      var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
+      const urlObject = new URLPath().StringToIUrl(globalThis.location.search);
 
       expect(urlObject.details).toBeTruthy();
 
-      // dont keep any menus open
+      // don't keep any menus open
       act(() => {
         component.unmount();
         // reset afterwards
-        globalHistory.navigate("/");
+        Router.navigate("/");
+      });
+    });
+
+    it("labels keyDown .item--labels [menu] Tab so ignore", () => {
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const labels = component.queryByTestId("menu-detail-view-labels") as HTMLElement;
+      expect(labels).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(labels, { key: "Tab" });
+      });
+
+      const urlObject = new URLPath().StringToIUrl(globalThis.location.search);
+
+      expect(urlObject.details).toBeFalsy();
+
+      // don't keep any menus open
+      act(() => {
+        component.unmount();
+        // reset afterwards
+        Router.navigate("/");
+      });
+    });
+
+    it("labels keyDown .item--labels [menu] Enter", () => {
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const labels = component.queryByTestId("menu-detail-view-labels") as HTMLElement;
+      expect(labels).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(labels, { key: "Enter" });
+      });
+
+      const urlObject = new URLPath().StringToIUrl(globalThis.location.search);
+
+      expect(urlObject.details).toBeTruthy();
+
+      // don't keep any menus open
+      act(() => {
+        component.unmount();
+        // reset afterwards
+        Router.navigate("/");
       });
     });
 
     it("labels click (in MoreMenu)", () => {
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
-      var item = component.find('[data-test="labels"]');
+
+      const labels = component.queryByTestId("labels");
+      expect(labels).toBeTruthy();
 
       act(() => {
-        item.simulate("click");
+        labels?.click();
       });
 
-      var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
+      const urlObject = new URLPath().StringToIUrl(Router.state.location.search);
       expect(urlObject.details).toBeTruthy();
 
       // reset afterwards
       act(() => {
-        globalHistory.navigate("/");
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("labels keyDown enter (in MoreMenu)", () => {
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const labels = component.queryByTestId("labels") as HTMLElement;
+      expect(labels).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(labels, { key: "Enter" });
+      });
+
+      const urlObject = new URLPath().StringToIUrl(Router.state.location.search);
+      expect(urlObject.details).toBeTruthy();
+
+      // reset afterwards
+      act(() => {
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("labels keyDown tab so skip (in MoreMenu)", () => {
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const labels = component.queryByTestId("labels") as HTMLElement;
+      expect(labels).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(labels, { key: "Tab" });
+      });
+
+      const urlObject = new URLPath().StringToIUrl(Router.state.location.search);
+      expect(urlObject.details).toBeFalsy();
+
+      // reset afterwards
+      act(() => {
+        Router.navigate("/");
         component.unmount();
       });
     });
 
     it("navigate to parent folder click", () => {
-      globalHistory.navigate("/?t=test");
+      Router.navigate("/?t=test");
 
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
-      var item = component.find('[data-test="go-to-parent-folder"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const goToParentFolder = component.queryByTestId("go-to-parent-folder");
+      expect(goToParentFolder).toBeTruthy();
 
-      expect(globalHistory.location.search).toBe("?f=/test");
+      goToParentFolder?.click();
+
+      expect(Router.state.location.search).toBe("?f=/test");
 
       act(() => {
         component.unmount();
-        globalHistory.navigate("/");
+        Router.navigate("/");
       });
     });
 
-    it("move click", () => {
-      var moveModal = jest
+    it("[menu detail] move click", async () => {
+      const moveModal = jest.spyOn(ModalMoveFile, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const move = component.queryByTestId("move");
+      expect(move).toBeTruthy();
+
+      // need await
+      act(() => {
+        move?.click();
+      });
+
+      console.log(move?.innerHTML);
+
+      console.log(component.container.innerHTML);
+
+      expect(moveModal).toHaveBeenCalledTimes(1);
+
+      // reset afterwards
+      act(() => {
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("[menu detail] move keyDown tab so ignore", () => {
+      const moveModal = jest
         .spyOn(ModalMoveFile, "default")
+        .mockReset()
         .mockImplementationOnce(() => {
           return <></>;
         });
 
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
-      var item = component.find('[data-test="move"]');
+      const move = component.queryByTestId("move") as HTMLElement;
+      expect(move).toBeTruthy();
 
       act(() => {
-        item.simulate("click");
+        fireEvent.keyDown(move, { key: "Tab" });
       });
 
-      expect(moveModal).toBeCalled();
+      expect(moveModal).toHaveBeenCalledTimes(0);
 
       // reset afterwards
       act(() => {
-        globalHistory.navigate("/");
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("[menu detail] move keyDown enter", () => {
+      const moveModal = jest
+        .spyOn(ModalMoveFile, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      console.log("[menu detail] move keyDown enter");
+
+      const move = component.queryByTestId("move") as HTMLElement;
+      expect(move).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(move, { key: "Enter" });
+      });
+
+      expect(moveModal).toHaveBeenCalledTimes(1);
+
+      // reset afterwards
+      act(() => {
+        Router.navigate("/");
         component.unmount();
       });
     });
 
     it("rename click", () => {
-      var renameModal = jest
+      const renameModal = jest
         .spyOn(ModalDetailviewRenameFile, "default")
         .mockImplementationOnce(() => {
           return <></>;
         });
 
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
-      var item = component.find('[data-test="rename"]');
+
+      const rename = component.queryByTestId("rename");
+      expect(rename).toBeTruthy();
 
       act(() => {
-        item.simulate("click");
+        rename?.click();
       });
 
-      expect(renameModal).toBeCalled();
+      expect(renameModal).toHaveBeenCalled();
 
       act(() => {
         component.unmount();
       });
     });
 
-    it("trash click to trash", () => {
+    it("rename keyDown tab so ignore", () => {
+      const renameModal = jest
+        .spyOn(ModalDetailviewRenameFile, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const rename = component.queryByTestId("rename") as HTMLElement;
+      expect(rename).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(rename, { key: "Tab" });
+      });
+
+      expect(renameModal).toHaveBeenCalledTimes(0);
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("rename keyDown enter so continue", () => {
+      const renameModal = jest
+        .spyOn(ModalDetailviewRenameFile, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const rename = component.queryByTestId("rename") as HTMLElement;
+      expect(rename).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(rename, { key: "Enter" });
+      });
+
+      expect(renameModal).toHaveBeenCalled();
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("trash keyDown to trash so tab so skip", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
-      var spy = jest
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      const spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
-      var item = component.find('[data-test="trash"]');
+
+      const trash = component.queryByTestId("trash") as HTMLElement;
+      expect(trash).toBeTruthy();
 
       act(() => {
-        item.simulate("click");
+        fireEvent.keyDown(trash, { key: "Tab" });
       });
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith(
-        new UrlQuery().UrlUpdateApi(),
-        "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true"
+      expect(spy).toHaveBeenCalledTimes(0);
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("trash keyDown to trash enter continue", () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      const spy = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
+
+      const trash = component.queryByTestId("trash") as HTMLElement;
+      expect(trash).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(trash, { key: "Enter" });
+      });
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(new UrlQuery().UrlMoveToTrashApi(), "f=%2Ftest%2Fimage.jpg");
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("trash keyDown to trash", () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      const spy = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const trash = component.queryByTestId("trash");
+      expect(trash).toBeTruthy();
+      trash?.click();
+
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(new UrlQuery().UrlMoveToTrashApi(), "f=%2Ftest%2Fimage.jpg");
 
       act(() => {
         component.unmount();
@@ -422,97 +818,224 @@ describe("MenuDetailView", () => {
     });
 
     it("trash click to trash and collection is true", () => {
-      var component = mount(
-        <MenuDetailView
-          state={{
-            ...state,
-            fileIndexItem: {
-              ...state.fileIndexItem,
-              collectionPaths: [".jpg", "t.arw"]
-            },
-            collections: true
-          }}
-          dispatch={jest.fn()}
-        />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView
+            state={{
+              ...state,
+              fileIndexItem: {
+                ...state.fileIndexItem,
+                collectionPaths: [".jpg", "t.arw"]
+              },
+              collections: true
+            }}
+            dispatch={jest.fn()}
+          />
+        </MemoryRouter>
       );
-      expect(component.exists('[data-test="trash-including"]')).toBeTruthy();
 
-      var trashIncl = component.find('[data-test="trash-including"]').text();
+      const trashIncl = component.queryByTestId("trash-including");
 
-      expect(trashIncl).toBe("Including: jpg, arw");
+      expect(trashIncl).toBeTruthy();
+
+      expect(trashIncl?.textContent).toBe("Including: arw, jpg");
 
       act(() => {
         component.unmount();
       });
     });
 
-    it("rotate click", async () => {
+    it("rotate keyDown tab so skip", () => {
       jest.useFakeTimers();
-      var setTimeoutSpy = jest.spyOn(global, "setTimeout");
+      jest.spyOn(global, "setTimeout");
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
-      var spyPost = jest
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      const spyPost = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
-          statusCode: 200,
-          data: {
-            subPath: "/test/image.jpg",
-            pageType: PageType.DetailView,
-            fileIndexItem: {
-              fileHash: "needed",
-              status: IExifStatus.Ok,
-              filePath: "/test/image.jpg",
-              fileName: "image.jpg"
-            }
-          } as IDetailView
-        } as IConnectionDefault
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView
+            state={{
+              ...state,
+              fileIndexItem: {
+                ...state.fileIndexItem,
+                collectionPaths: [".jpg", "t.arw"]
+              },
+              collections: true
+            }}
+            dispatch={jest.fn()}
+          />
+        </MemoryRouter>
       );
-      var spyGet = jest
-        .spyOn(FetchGet, "default")
-        .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      var component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
-      );
-      var item = component.find('[data-test="rotate"]');
-
-      // need to await this click 2 times
-      await act(async () => {
-        await item.simulate("click");
-      });
-
-      expect(spyPost).toBeCalled();
-      expect(spyPost).toBeCalledWith(
-        new UrlQuery().UrlUpdateApi(),
-        "f=%2Ftest%2Fimage.jpg&rotateClock=1"
-      );
+      const rotate = component.queryByTestId("rotate") as HTMLElement;
 
       act(() => {
-        jest.advanceTimersByTime(3000);
+        fireEvent.keyDown(rotate, { key: "Tab" });
       });
 
-      expect(setTimeoutSpy).toBeCalled();
-      expect(spyGet).toBeCalled();
-      expect(spyGet).toBeCalledWith(
-        new UrlQuery().UrlIndexServerApi({ f: "/test/image.jpg" })
-      );
+      expect(rotate).toBeTruthy();
 
-      // cleanup afterwards
+      expect(spyPost).toHaveBeenCalledTimes(0);
+
       act(() => {
         component.unmount();
-        jest.useRealTimers();
+      });
+    });
+
+    it("rotate keyDown enter", () => {
+      jest.useFakeTimers();
+      jest.spyOn(global, "setTimeout");
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      const spyPost = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView
+            state={{
+              ...state,
+              fileIndexItem: {
+                ...state.fileIndexItem,
+                collectionPaths: [".jpg", "t.arw"]
+              },
+              collections: true
+            }}
+            dispatch={jest.fn()}
+          />
+        </MemoryRouter>
+      );
+
+      const rotate = component.queryByTestId("rotate") as HTMLElement;
+
+      act(() => {
+        fireEvent.keyDown(rotate, { key: "Enter" });
+      });
+
+      expect(rotate).toBeTruthy();
+
+      expect(spyPost).toHaveBeenCalledTimes(1);
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("press click menu-detail-view-close-details button", () => {
+      Router.navigate("/?details=true");
+
+      const updateState = {
+        ...state,
+        fileIndexItem: {
+          ...state.fileIndexItem
+        }
+      };
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      expect(Router.state.location.search).toBe("?details=true");
+
+      const closeButton = component.queryByTestId("menu-detail-view-close-details") as HTMLElement;
+      expect(closeButton).toBeTruthy();
+
+      closeButton?.click();
+
+      expect(Router.state.location.search).toBe("?details=false");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        Router.navigate("/");
+      });
+    });
+
+    it("press keyDown enter menu-detail-view-close-details button", () => {
+      Router.navigate("/?details=true");
+
+      const updateState = {
+        ...state,
+        fileIndexItem: {
+          ...state.fileIndexItem
+        }
+      };
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      expect(Router.state.location.search).toBe("?details=true");
+
+      const closeButton = component.queryByTestId("menu-detail-view-close-details") as HTMLElement;
+      expect(closeButton).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(closeButton, { key: "Enter" });
+      });
+
+      expect(Router.state.location.search).toBe("?details=false");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        Router.navigate("/");
+      });
+    });
+
+    it("press keyDown tab skip menu-detail-view-close-details button so skips", () => {
+      Router.navigate("/?details=true");
+
+      const updateState = {
+        ...state,
+        fileIndexItem: {
+          ...state.fileIndexItem
+        }
+      };
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      expect(Router.state.location.search).toBe("?details=true");
+
+      const closeButton = component.queryByTestId("menu-detail-view-close-details") as HTMLElement;
+      expect(closeButton).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(closeButton, { key: "Tab" });
+      });
+
+      // keep the same
+      expect(Router.state.location.search).toBe("?details=true");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        Router.navigate("/");
       });
     });
   });
 
   describe("file is marked as deleted", () => {
-    it("trash click to trash", () => {
-      var state = {
+    it("(deleted) trash click to trash", () => {
+      const state = {
         subPath: "/trashed/test1.jpg",
         fileIndexItem: {
           status: IExifStatus.Deleted,
@@ -520,33 +1043,33 @@ describe("MenuDetailView", () => {
           fileName: "test1.jpg"
         }
       } as IDetailView;
-      var contextValues = { state, dispatch: jest.fn() };
-
-      jest.spyOn(React, "useContext").mockImplementationOnce(() => {
-        return contextValues;
-      });
-
-      const component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
-      );
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
 
-      var spy = jest
+      const spy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var item = component.find('[data-test="trash"]');
+      jest.spyOn(React, "useContext").mockClear();
 
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const trash = component.queryByTestId("trash");
+      expect(trash).toBeTruthy();
       act(() => {
-        item.simulate("click");
+        trash?.click();
       });
 
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().UrlReplaceApi(),
         "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21"
       );
@@ -561,7 +1084,7 @@ describe("MenuDetailView", () => {
     it("press 'Delete' on keyboard to trash", () => {
       jest.spyOn(FetchPost, "default").mockReset();
 
-      var state = {
+      const state = {
         subPath: "/trashed/test1.jpg",
         fileIndexItem: {
           status: IExifStatus.Deleted,
@@ -574,20 +1097,22 @@ describe("MenuDetailView", () => {
         }
       } as IDetailView;
 
-      const component = mount(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
-      var spyFetchPost = jest
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      const spyFetchPost = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var event = new KeyboardEvent("keydown", {
+      const event = new KeyboardEvent("keydown", {
         bubbles: false,
         cancelable: true,
         key: "Delete",
@@ -596,12 +1121,12 @@ describe("MenuDetailView", () => {
       });
 
       act(() => {
-        window.dispatchEvent(event);
+        globalThis.dispatchEvent(event);
       });
 
-      expect(spyFetchPost).toBeCalled();
-      expect(spyFetchPost).toBeCalledTimes(1);
-      expect(spyFetchPost).toBeCalledWith(
+      expect(spyFetchPost).toHaveBeenCalled();
+      expect(spyFetchPost).toHaveBeenCalledTimes(1);
+      expect(spyFetchPost).toHaveBeenCalledWith(
         new UrlQuery().UrlReplaceApi(),
         "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21"
       );
@@ -612,7 +1137,7 @@ describe("MenuDetailView", () => {
     });
 
     it("navigate to next item and reset some states", () => {
-      let state1 = {
+      const state1 = {
         subPath: "/trashed/test1.jpg",
         fileIndexItem: {
           status: IExifStatus.Deleted,
@@ -622,24 +1147,25 @@ describe("MenuDetailView", () => {
         }
       } as IDetailView;
 
-      const component = mount(
-        <MenuDetailView state={state1} dispatch={jest.fn()} />
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state1} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
-      expect(component.find("header").getDOMNode().className).toBe(
-        "header header--main header--deleted"
-      );
+      let header = component.container.querySelector("header") as HTMLHeadingElement;
+      expect(header.className).toBe("header header--main header--deleted");
 
       act(() => {
         state1.fileIndexItem.status = IExifStatus.Ok;
       });
 
       act(() => {
-        globalHistory.navigate("/?f=/test2.jpg");
+        Router.navigate("/?f=/test2.jpg");
       });
 
-      expect(component.find("header").getDOMNode().className).toBe(
-        "header header--main"
-      );
+      header = component.container.querySelector("header") as HTMLHeadingElement;
+
+      expect(header.className).toBe("header header--main");
 
       act(() => {
         component.unmount();
@@ -650,6 +1176,11 @@ describe("MenuDetailView", () => {
       it("when source is missing file can't be downloaded", () => {
         jest.spyOn(React, "useContext").mockReset();
 
+        jest
+          .spyOn(Link, "default")
+          .mockImplementationOnce(() => <></>)
+          .mockImplementationOnce(() => <></>);
+
         const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {
@@ -659,18 +1190,25 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
-          <MenuDetailView state={state} dispatch={jest.fn()} />
+        const component = render(
+          <MemoryRouter>
+            <MenuDetailView state={state} dispatch={jest.fn()} />
+          </MemoryRouter>
         );
-        var item = component.find('[data-test="export"]');
 
-        expect(item.getDOMNode().className).toBe("menu-option disabled");
+        const item = component.queryByTestId("download") as HTMLDivElement;
+
+        expect(item.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be moved", () => {
         jest.spyOn(React, "useContext").mockReset();
+        jest
+          .spyOn(Link, "default")
+          .mockImplementationOnce(() => <></>)
+          .mockImplementationOnce(() => <></>);
 
-        var state = {
+        const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
@@ -679,18 +1217,24 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
-          <MenuDetailView state={state} dispatch={jest.fn()} />
+        const component = render(
+          <BrowserRouter>
+            <MenuDetailView state={state} dispatch={jest.fn()} />
+          </BrowserRouter>
         );
-        var item = component.find('[data-test="move"]');
 
-        expect(item.getDOMNode().className).toBe("menu-option disabled");
+        const item = component.queryByTestId("move") as HTMLDivElement;
+        expect(item.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be renamed", () => {
         jest.spyOn(React, "useContext").mockReset();
+        jest
+          .spyOn(Link, "default")
+          .mockImplementationOnce(() => <></>)
+          .mockImplementationOnce(() => <></>);
 
-        var state = {
+        const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
@@ -699,18 +1243,24 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
-          <MenuDetailView state={state} dispatch={jest.fn()} />
+        const component = render(
+          <MemoryRouter>
+            <MenuDetailView state={state} dispatch={jest.fn()} />
+          </MemoryRouter>
         );
-        var item = component.find('[data-test="rename"]');
 
-        expect(item.getDOMNode().className).toBe("menu-option disabled");
+        const item = component.queryByTestId("rename") as HTMLDivElement;
+        expect(item.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be moved to trash", () => {
         jest.spyOn(React, "useContext").mockReset();
+        jest
+          .spyOn(Link, "default")
+          .mockImplementationOnce(() => <></>)
+          .mockImplementationOnce(() => <></>);
 
-        var state = {
+        const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
@@ -719,16 +1269,23 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
-          <MenuDetailView state={state} dispatch={jest.fn()} />
+        const component = render(
+          <MemoryRouter>
+            <MenuDetailView state={state} dispatch={jest.fn()} />
+          </MemoryRouter>
         );
-        var item = component.find('[data-test="trash"]');
 
-        expect(item.getDOMNode().className).toBe("menu-option disabled");
+        const item = component.queryByTestId("trash") as HTMLDivElement;
+        expect(item?.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be rotated", () => {
-        var state = {
+        jest
+          .spyOn(Link, "default")
+          .mockImplementationOnce(() => <></>)
+          .mockImplementationOnce(() => <></>);
+
+        const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
@@ -737,12 +1294,97 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
-          <MenuDetailView state={state} dispatch={jest.fn()} />
+        const component = render(
+          <MemoryRouter>
+            <MenuDetailView state={state} dispatch={jest.fn()} />
+          </MemoryRouter>
         );
-        var item = component.find('[data-test="rotate"]');
 
-        expect(item.getDOMNode().className).toBe("menu-option disabled");
+        const item = component.queryByTestId("rotate") as HTMLDivElement;
+        expect(item.parentElement?.className).toBe("menu-option disabled");
+      });
+    });
+  });
+
+  describe("rotate", () => {
+    const state = {
+      subPath: "/test/image.jpg",
+      fileIndexItem: {
+        status: IExifStatus.Ok,
+        fileHash: "000",
+        filePath: "/test/image.jpg",
+        fileName: "image.jpg",
+        lastEdited: new Date(1970, 1, 1).toISOString(),
+        parentDirectory: "/test"
+      }
+    } as IDetailView;
+
+    it("[menu detail view] rotate click", async () => {
+      jest.useFakeTimers();
+      jest.spyOn(React, "useContext").mockReset();
+
+      const setTimeoutSpy = jest.spyOn(global, "setTimeout");
+      const contextValues = { state, dispatch: jest.fn() };
+
+      jest
+        .spyOn(Link, "default")
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>);
+
+      jest.spyOn(React, "useContext").mockImplementationOnce(() => contextValues);
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      const spyPost = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: {
+          subPath: "/test/image.jpg",
+          pageType: PageType.DetailView,
+          fileIndexItem: {
+            fileHash: "needed",
+            status: IExifStatus.Ok,
+            filePath: "/test/image.jpg",
+            fileName: "image.jpg"
+          }
+        } as IDetailView
+      } as IConnectionDefault);
+      const spyGet = jest
+        .spyOn(FetchGet, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+      const component = render(<MenuDetailView state={state} dispatch={jest.fn()} />);
+
+      const item = component.queryByTestId("rotate");
+
+      // need to await this click 2 times
+      await act(async () => {
+        await item?.click();
+      });
+
+      expect(spyPost).toHaveBeenCalled();
+      expect(spyPost).toHaveBeenCalledWith(
+        new UrlQuery().UrlUpdateApi(),
+        "f=%2Ftest%2Fimage.jpg&rotateClock=1"
+      );
+
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
+
+      expect(setTimeoutSpy).toHaveBeenCalled();
+      expect(spyGet).toHaveBeenCalled();
+      expect(spyGet).toHaveBeenCalledWith(
+        new UrlQuery().UrlIndexServerApi({ f: "/test/image.jpg" })
+      );
+
+      // cleanup afterwards
+      act(() => {
+        component.unmount();
       });
     });
   });

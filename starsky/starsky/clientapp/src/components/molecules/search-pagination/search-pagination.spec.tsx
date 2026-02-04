@@ -1,60 +1,86 @@
-import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
-import React from "react";
-import { act } from "react-dom/test-utils";
+import { render } from "@testing-library/react";
+import { act } from "react";
+import { MemoryRouter } from "react-router-dom";
+import { Router } from "../../../router-app/router-app";
 import SearchPagination from "./search-pagination";
-
 describe("SearchPagination", () => {
   it("renders", () => {
-    shallow(<SearchPagination />);
+    render(<SearchPagination />);
   });
 
   it("next page exist", () => {
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
-      globalHistory.navigate("/?p=0");
+      Router.navigate("/?p=0");
     });
 
-    var component = mount(
-      <SearchPagination lastPageNumber={2}>t</SearchPagination>
+    const component = render(
+      <MemoryRouter>
+        <SearchPagination lastPageNumber={2}></SearchPagination>
+      </MemoryRouter>
     );
-    expect(component.find("a.next").props().href).toBe("/?p=1");
+
+    const nextButton = component.queryByTestId("search-pagination-next") as HTMLAnchorElement;
+    expect(nextButton).toBeTruthy();
+    expect(nextButton.href).toBe("http://localhost/?p=1");
+
+    const prevButton = component.queryByTestId("search-pagination-prev") as HTMLAnchorElement;
+    expect(prevButton).toBeFalsy();
   });
 
   it("prev page exist", () => {
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
-      globalHistory.navigate("/?p=1");
+      Router.navigate("/?p=1");
     });
 
-    var component = mount(
-      <SearchPagination lastPageNumber={2}>t</SearchPagination>
+    const component = render(
+      <MemoryRouter>
+        <SearchPagination lastPageNumber={2}></SearchPagination>
+      </MemoryRouter>
     );
-    expect(component.find("a.prev").props().href).toBe("/?p=0");
+
+    const prevButton = component.queryByTestId("search-pagination-prev") as HTMLAnchorElement;
+    expect(prevButton).toBeTruthy();
+
+    expect(prevButton.href).toBe("http://localhost/?p=0");
   });
 
   it("prev page exist + remove select param", () => {
+    // due the fact that the selected item does not exist on that new page
+
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
-      globalHistory.navigate("/?p=1&select=test");
+      Router.navigate("/?p=1&select=test");
     });
 
-    var component = mount(
-      <SearchPagination lastPageNumber={2}>t</SearchPagination>
+    const component = render(
+      <MemoryRouter>
+        <SearchPagination lastPageNumber={2}></SearchPagination>
+      </MemoryRouter>
     );
 
-    expect(component.find("a.prev").props().href).toBe("/?p=0&select=");
+    const prevButton = component.queryByTestId("search-pagination-prev") as HTMLAnchorElement;
+    expect(prevButton).toBeTruthy();
+
+    expect(prevButton.href).toBe("http://localhost/?p=0&select=");
   });
 
   it("next page exist + remove select param", () => {
+    // due the fact that the selected item does not exist on that new page
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
-      globalHistory.navigate("/?p=0&select=test");
+      Router.navigate("/?p=0&select=test");
     });
 
-    var component = mount(
-      <SearchPagination lastPageNumber={2}>t</SearchPagination>
+    const component = render(
+      <MemoryRouter>
+        <SearchPagination lastPageNumber={2}></SearchPagination>
+      </MemoryRouter>
     );
-    expect(component.find("a.next").props().href).toBe("/?p=1&select=");
+
+    const nextButton = component.queryByTestId("search-pagination-next") as HTMLAnchorElement;
+    expect(nextButton).toBeTruthy();
+    expect(nextButton.href).toBe("http://localhost/?p=1&select=");
   });
 });

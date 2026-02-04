@@ -5,7 +5,7 @@ namespace starsky.feature.geolookup.Models
 		Total,
 		Current
 	}
-	
+
 	public class GeoCacheStatus
 	{
 		public int Total { get; set; }

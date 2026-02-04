@@ -1,16 +1,17 @@
-import { shallow } from "enzyme";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import ButtonStyled from "./button-styled";
 
 describe("CurrentLocationButton", () => {
   it("renders", () => {
-    shallow(<ButtonStyled />);
+    render(<ButtonStyled />);
   });
 
   describe("ButtonStyled", () => {
     it("set type", () => {
-      var component = shallow(<ButtonStyled type={"submit"} />);
-      expect(component.find("button").prop("type")).toEqual("submit");
+      const component = render(<ButtonStyled type={"submit"} />);
+      const button = screen.getByRole("button") as HTMLInputElement;
+      expect(button.type).toEqual("submit");
+      component.unmount();
     });
   });
 });

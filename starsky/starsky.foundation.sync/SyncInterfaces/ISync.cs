@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
@@ -9,7 +10,12 @@ namespace starsky.foundation.sync.SyncInterfaces
 	/// </summary>
 	public interface ISynchronize
 	{
-		Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true);
-		Task<List<FileIndexItem>> Sync(List<string> subPaths, bool recursive = true);
+		delegate Task SocketUpdateDelegate(List<FileIndexItem> changedFiles);
+
+		Task<List<FileIndexItem>> Sync(string subPath,
+			SocketUpdateDelegate? updateDelegate = null,
+			DateTime? childDirectoriesAfter = null);
+		Task<List<FileIndexItem>> Sync(List<string> subPaths,
+			SocketUpdateDelegate? updateDelegate = null);
 	}
 }

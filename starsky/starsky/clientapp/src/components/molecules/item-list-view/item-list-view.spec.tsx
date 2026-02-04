@@ -1,19 +1,18 @@
-import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
-import { act } from "react-dom/test-utils";
-import {
-  IFileIndexItem,
-  newIFileIndexItemArray
-} from "../../../interfaces/IFileIndexItem";
-import { INavigateState } from "../../../interfaces/INavigateState";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { act } from "react";
+import { MemoryRouter } from "react-router-dom";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
+import * as useLocation from "../../../hooks/use-location/use-location";
+import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import * as FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import * as ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
+import * as ShiftSelectionHelper from "./internal/shift-selection-helper";
 import ItemListView from "./item-list-view";
-import * as ShiftSelectionHelper from "./shift-selection-helper";
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
-    shallow(
+    render(
       <ItemListView
         iconList={true}
         fileIndexItems={newIFileIndexItemArray()}
@@ -23,21 +22,24 @@ describe("ItemListView", () => {
   });
 
   describe("with Context", () => {
-    var exampleData = [
+    const exampleData = [
       { fileName: "test.jpg", filePath: "/test.jpg", colorClass: 1 }
     ] as IFileIndexItem[];
 
     it("search with data-filepath in child element", () => {
-      var component = mount(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+      const component = render(
+        <MemoryRouter>
+          <ItemListView iconList={true} fileIndexItems={exampleData} colorClassUsage={[]} />
+        </MemoryRouter>
       );
-      var query = '[data-filepath="' + exampleData[0].filePath + '"]';
 
-      expect(component.exists(query)).toBeTruthy();
+      const element = screen.queryAllByTestId("list-image-view-select-container")[0];
+
+      expect(element).toBeTruthy();
+
+      expect(element.dataset["filepath"]).toBeTruthy();
+      expect(element.dataset["filepath"]).toBe(exampleData[0].filePath);
+
       component.unmount();
     });
 
@@ -45,73 +47,94 @@ describe("ItemListView", () => {
       const flatListItemSpy = jest
         .spyOn(FlatListItem, "default")
         .mockImplementationOnce(() => <></>);
-      var component = mount(
-        <ItemListView
-          iconList={false}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+      const component = render(
+        <MemoryRouter>
+          <ItemListView iconList={false} fileIndexItems={exampleData} colorClassUsage={[]} />
+        </MemoryRouter>
       );
-      expect(flatListItemSpy).toBeCalled();
+      expect(flatListItemSpy).toHaveBeenCalled();
       component.unmount();
     });
 
     it("no content", () => {
-      var component = shallow(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={undefined as any}
-          colorClassUsage={[]}
-        />
+      const component = render(
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={undefined as unknown as IFileIndexItem[]}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
-      expect(component.text()).toBe("no content");
+      expect(component.container.textContent).toBe("no content");
+    });
+
+    it("text should be: New? Set your drive location in the settings. There are no photos in this folder", () => {
+      const component = render(
+        <ItemListView iconList={true} fileIndexItems={[]} subPath="/" colorClassUsage={[]} />
+      );
+      expect(component.container.textContent).toContain(
+        "New? Set your drive location in the settings."
+      );
+      expect(component.container.textContent).toContain("There are no photos in this folder");
+    });
+
+    it("text should be: There are no photos in this folder", () => {
+      const component = render(
+        <ItemListView iconList={true} fileIndexItems={[]} subPath="/test" colorClassUsage={[]} />
+      );
+      expect(component.container.textContent).toBe("There are no photos in this folder");
     });
 
     it("you did select a different colorclass but there a no items with this colorclass", () => {
-      var component = shallow(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={[]}
-          colorClassUsage={[2]}
-        />
+      const component = render(
+        <ItemListView iconList={true} fileIndexItems={[]} colorClassUsage={[2]} />
       );
-      expect(component.text()).toBe(
+      expect(component.container.textContent).toBe(
         "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'"
       );
     });
 
     it("scroll to state with filePath [item exist]", () => {
-      var scrollTo = jest
+      const scrollTo = jest
         .spyOn(window, "scrollTo")
+        .mockReset()
         .mockImplementationOnce(() => {});
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
       const div = document.createElement("div");
-      (window as any).domNode = div;
+      (window as unknown as { domNode: HTMLElement }).domNode = div;
       document.body.appendChild(div);
 
-      globalHistory.location.state = {
-        filePath: exampleData[0].filePath
-      } as INavigateState;
+      const useLocationMock = {
+        location: {
+          state: {
+            filePath: exampleData[0].filePath
+          }
+        },
+        navigate: jest.fn()
+      } as unknown as IUseLocation;
+
+      jest.spyOn(useLocation, "default").mockImplementationOnce(() => useLocationMock);
+
       jest.useFakeTimers();
 
-      var component = mount(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        >
-          item
-        </ItemListView>,
-        { attachTo: (window as any).domNode }
+      const component = render(
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={exampleData}
+            colorClassUsage={[]}
+          ></ItemListView>
+        </MemoryRouter>
       );
 
       act(() => {
         jest.advanceTimersByTime(100);
       });
 
-      expect(scrollTo).toBeCalled();
-      expect(scrollTo).toBeCalledWith({ top: 0 });
+      expect(scrollTo).toHaveBeenCalled();
+      expect(scrollTo).toHaveBeenCalledWith({ top: 0 });
 
       jest.clearAllTimers();
       component.unmount();
@@ -119,35 +142,42 @@ describe("ItemListView", () => {
 
     it("when clicking shift in selection mode", () => {
       const listImageChildItemSpy = jest.spyOn(ListImageChildItem, "default");
-      globalHistory.navigate("/?select=");
-      var shiftSelectionHelperSpy = jest
+      Router.navigate("/?select=");
+      const shiftSelectionHelperSpy = jest
         .spyOn(ShiftSelectionHelper, "ShiftSelectionHelper")
-        .mockImplementationOnce(() => {
-          return true;
-        });
+        .mockImplementationOnce(() => true);
 
-      var component = mount(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+      const component = render(
+        <MemoryRouter>
+          <ItemListView iconList={true} fileIndexItems={exampleData} colorClassUsage={[]} />
+        </MemoryRouter>
       );
 
-      act(() => {
-        component
-          .find(".list-image-box button")
-          .simulate("click", { shiftKey: true });
-      });
+      const item = screen.queryByTestId("list-image-view-select-container") as HTMLButtonElement;
 
-      expect(shiftSelectionHelperSpy).toBeCalled();
-      expect(shiftSelectionHelperSpy).toBeCalledWith(
+      console.log(component.container.innerHTML);
+      expect(item).toBeTruthy();
+
+      const button = item.querySelector("button") as HTMLButtonElement;
+      expect(button).toBeTruthy();
+
+      fireEvent(
+        button,
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          shiftKey: true
+        })
+      );
+
+      expect(shiftSelectionHelperSpy).toHaveBeenCalled();
+      expect(shiftSelectionHelperSpy).toHaveBeenCalledWith(
         expect.any(Object),
         [],
         "/test.jpg",
         exampleData
       );
-      expect(listImageChildItemSpy).toBeCalled();
+      expect(listImageChildItemSpy).toHaveBeenCalled();
     });
 
     it("should return ListImageChildItem when iconList is true", () => {
@@ -155,14 +185,12 @@ describe("ItemListView", () => {
       const listImageChildItemSpy = jest
         .spyOn(ListImageChildItem, "default")
         .mockImplementationOnce(() => <>t</>);
-      var component = mount(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+      const component = render(
+        <MemoryRouter>
+          <ItemListView iconList={true} fileIndexItems={exampleData} colorClassUsage={[]} />
+        </MemoryRouter>
       );
-      expect(listImageChildItemSpy).toBeCalled();
+      expect(listImageChildItemSpy).toHaveBeenCalled();
       component.unmount();
       jest.spyOn(ListImageChildItem, "default").mockReset();
     });

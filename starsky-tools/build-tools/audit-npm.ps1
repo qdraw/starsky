@@ -88,6 +88,11 @@ $prohibitedLicenses = @(
 Push-Location
 Set-Location $targetFolder
 Rename-Item -Path package.json -NewName package.json.original
+
+if (Test-Path $targetFolder\package-lock.json) {
+  Copy-Item -Path package-lock.json -Destination package-lock.json.original
+}
+
 try {
     $content = (Get-Content -Raw -Path package.json.original | ConvertFrom-Json)
     if (-Not $includeDevDeps) {
@@ -217,6 +222,7 @@ try {
             Write-Host "##vso[task.logissue type=warning]There are packages that are outdated by one major version."
         }
     }
+
     if (($action -eq "generate-attributions") -Or ($action -eq "all")) {
         if (-Not $silent) { Write-Host "Generating license attributions file" }
         $licenseFiles = Get-ChildItem -Path .\node_modules\*\LICENSE
@@ -227,38 +233,38 @@ try {
             $attributionsList += $(Get-Content -Path $license -Encoding UTF8 -Raw)
             $attributionsList += "`r`n"
         }
-
         $attributionsList | Out-File -FilePath $attributionsOutputFile
-        if (-Not $silent) {
-            if (($action -eq "find-vulnerabilities") -Or ($action -eq "all")) {
-                Write-Host "--------------------"
-                Write-Host "Vulnerability check: $vulnCheckStatus"
-                Write-Host "--------------------"
-                Write-Host "Found: $($findingsVuln.Count) vulnerabilities. Low: $lowCount - Moderate: $moderateCount - High: $highCount"
-                if ($($findingsVuln.Count) -gt 0) {
-                    Write-Host $($findingsVuln | ConvertTo-Json)
-                }
-            }
-            if (($action -eq "outdated") -Or ($action -eq "all")) {
-                Write-Host "--------------------"
-                Write-Host "Outdated check: $outdatedCheckStatus"
-                Write-Host "--------------------"
-                Write-Host "Found: $($findingsOutdated.Count) outdated. Major: $majorCount - Minor: $minorCount - Patch: $patchCount"
-                if ($($findingsOutdated.Count) -gt 0) {
-                    Write-Host $($findingsOutdated | ConvertTo-Json)
-                }
-            }
-            if (($action -eq "check-licenses") -Or ($action -eq "all")) {
-                Write-Host "-------------------------"
-                Write-Host "License compliance check: $licenseCheckStatus"
-                Write-Host "-------------------------"
-                Write-Host "License breakdown:"
-                foreach ($line in $summary) {
-                    # otherwise, line breaks are gone :/
-                    Write-Host "$line"
-                }
-            }
-        }
+    }
+
+    if (-Not $silent) {
+      if (($action -eq "find-vulnerabilities") -Or ($action -eq "all")) {
+          Write-Host "--------------------"
+          Write-Host "Vulnerability check: $vulnCheckStatus"
+          Write-Host "--------------------"
+          Write-Host "Found: $($findingsVuln.Count) vulnerabilities. Low: $lowCount - Moderate: $moderateCount - High: $highCount"
+          if ($($findingsVuln.Count) -gt 0) {
+              Write-Host $($findingsVuln | ConvertTo-Json)
+          }
+      }
+      if (($action -eq "outdated") -Or ($action -eq "all")) {
+          Write-Host "--------------------"
+          Write-Host "Outdated check: $outdatedCheckStatus"
+          Write-Host "--------------------"
+          Write-Host "Found: $($findingsOutdated.Count) outdated. Major: $majorCount - Minor: $minorCount - Patch: $patchCount"
+          if ($($findingsOutdated.Count) -gt 0) {
+              Write-Host $($findingsOutdated | ConvertTo-Json)
+          }
+      }
+      if (($action -eq "check-licenses") -Or ($action -eq "all")) {
+          Write-Host "-------------------------"
+          Write-Host "License compliance check: $licenseCheckStatus"
+          Write-Host "-------------------------"
+          Write-Host "License breakdown:"
+          foreach ($line in $summary) {
+              # otherwise, line breaks are gone :/
+              Write-Host "$line"
+          }
+      }
     }
 
     if ($outputFileVuln) {
@@ -269,8 +275,18 @@ catch {
     if (-Not $silent) { Write-Host "Error occurred: $($_.Exception)" }
 }
 finally {
+    # undo changes
     Remove-Item -Path package.json
     Rename-Item -Path package.json.original -NewName package.json
+
+    # and now the node lock files 
+    if (Test-Path $targetFolder\package-lock.json) {
+      Remove-Item -Path package-lock.json
+    }
+    if (Test-Path $targetFolder\package-lock.json.original) {
+      Rename-Item -Path package-lock.json.original -NewName package-lock.json
+    }
+
     Pop-Location
     if ($vulnCheckStatus -ne "OK" -or $licenseCheckStatus -ne "OK" -or $outdatedCheckStatus -eq "FAILED") {
         Exit 1

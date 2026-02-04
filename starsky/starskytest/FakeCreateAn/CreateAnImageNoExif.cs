@@ -1,41 +1,44 @@
 using System;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Reflection;
-using starskycore.Helpers;
+using starsky.foundation.platform.Helpers;
 
-namespace starskytest.FakeCreateAn
+namespace starskytest.FakeCreateAn;
+
+public class CreateAnImageNoExif
 {
-	public class CreateAnImageNoExif
+	private const string TempUnitTestFolderName = "temp-unit-test";
+
+	/// <summary>
+	///     Full path of the image
+	/// </summary>
+	public readonly string FullFilePathWithDate =
+		Path.Combine(AppContext.BaseDirectory, TempUnitTestFolderName, FileNameWithDate);
+
+	private const string FileNameWithDate = "123300_20120101.jpg";
+	// HHmmss_yyyyMMdd > not very logical but used to test features
+
+	public readonly string FileName = FileNameWithDate;
+
+	public readonly string BasePath =  Path.Combine(AppContext.BaseDirectory, TempUnitTestFolderName);
+
+	[SuppressMessage("ReSharper", "StringLiteralTypo")]
+	private static readonly string Base64JpgString =
+		"/9j/4AAQSkZJRgABAQAAAQABAAD/2wDFAAEBAQEB" +
+		"AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAQEBAQEBA" +
+		"QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQABAQEBAQEBAQE" +
+		"BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB/8EAEQgAAgADAwARA" +
+		"AERAAIRAP/EACcAAQEAAAAAAAAAAAAAAAAAAAAKEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMAAAEAAgAAPwC/gH//2Q==";
+
+	public static readonly ImmutableArray<byte> Bytes =
+		[..Base64Helper.TryParse(Base64JpgString)];
+
+	public CreateAnImageNoExif()
 	{
-
-		public readonly string FullFilePathWithDate = 
-			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + FileNameWithDate;
-
-		private const string FileNameWithDate = "123300_20120101.jpg";
-		// HHmmss_yyyyMMdd > not very logical but used to test features
-
-		public readonly string FileName = FileNameWithDate;
-
-		public readonly string BasePath =
-			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
-
-		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
-		private static readonly string Base64JpgString =	"/9j/4AAQSkZJRgABAQAAAQABAAD/2wDFAAEBAQEB"+
-			"AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAQEBAQEBA" + 
-			"QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQABAQEBAQEBAQE" +
-			"BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB/8EAEQgAAgADAwARA"+
-			"AERAAIRAP/EACcAAQEAAAAAAAAAAAAAAAAAAAAKEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMAAAEAAgAAPwC/gH//2Q==";
-
-		public static readonly byte[] Bytes = Base64Helper.TryParse(Base64JpgString);
-		
-		public CreateAnImageNoExif()
+		if ( !File.Exists(FullFilePathWithDate) )
 		{
-
-			if (!File.Exists(FullFilePathWithDate))
-			{
-				File.WriteAllBytes(FullFilePathWithDate, Convert.FromBase64String(Base64JpgString));
-			}
+			File.WriteAllBytes(FullFilePathWithDate, Convert.FromBase64String(Base64JpgString));
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -6,162 +7,144 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starskycore.Helpers;
 
-namespace starsky.foundation.http.Streaming
+namespace starsky.foundation.http.Streaming;
+
+public static class FileStreamingHelper
 {
-    public static class FileStreamingHelper
-    {
-        private static readonly FormOptions DefaultFormOptions = new FormOptions();
-        
-        /// <summary>
-        /// Support for plain text input and base64 strings
-        /// Use for single files only
-        /// </summary>
-        /// <param name="request">HttpRequest </param>
-        /// <param name="appSettings">application settings</param>
-        /// <returns></returns>
-        public static string HeaderFileName(HttpRequest request, AppSettings appSettings)
-        {
-	        // > when you do nothing
-	        if (string.IsNullOrEmpty(request.Headers["filename"]))
-		        return Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
-            
-	        // file without base64 encoding; return slug based url
-	        if (Base64Helper.TryParse(request.Headers["filename"]).Length == 0)
-		        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]),
-			               true, false) + Path.GetExtension(request.Headers["filename"]);
-            
-	        var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
-	        var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
-	        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders),
-		               true, false) + Path.GetExtension(requestHeaders);
-        }
-        
-        public static async Task<List<string>> StreamFile(this HttpRequest request, 
-	        AppSettings appSettings, ISelectorStorage selectorStorage)
-        {
-            // The Header 'filename' is for uploading on file without a form.
-            return await StreamFile(request.ContentType, request.Body, appSettings, 
-	            selectorStorage, HeaderFileName(request,appSettings));            
-        }
+	private static readonly FormOptions DefaultFormOptions = new();
 
-        public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, 
-	        ISelectorStorage selectorStorage, string headerFileName = null)
-        {
-            // headerFileName is for uploading on a single file without a multi part form.
+	/// <summary>
+	///     Support for plain text input and base64 strings
+	///     Use for single files only
+	/// </summary>
+	/// <param name="request">HttpRequest </param>
+	/// <returns></returns>
+	public static string HeaderFileName(HttpRequest request)
+	{
+		// > when you do nothing
+		const string fileNameHeader = "filename";
+		if ( string.IsNullOrEmpty(request.Headers[fileNameHeader]) )
+		{
+			return Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
+		}
 
-            // fallback
-            if (headerFileName == null) headerFileName = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
-            
-            var tempPaths = new List<string>();
+		// file without base64 encoding; return slug based url
+		if ( Base64Helper.TryParse(request.Headers[fileNameHeader]).Length == 0 )
+		{
+			return GenerateSlugHelper.GenerateSlug(
+				Path.GetFileNameWithoutExtension(request.Headers[fileNameHeader]),
+				true, false, true) + Path.GetExtension(request.Headers[fileNameHeader]);
+		}
 
-            if (!MultipartRequestHelper.IsMultipartContentType(contentType))
-            {
-                if (contentType != "image/jpeg" && contentType != "application/octet-stream") 
-                    throw new FileLoadException($"Expected a multipart request, but got {contentType}; add the header 'content-type' ");
+		var requestHeadersBytes = Base64Helper.TryParse(request.Headers[fileNameHeader]);
+		var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
+		return GenerateSlugHelper.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders),
+			true, false, true) + Path.GetExtension(requestHeaders);
+	}
 
-                var fullFilePath = Path.Combine(appSettings.TempFolder, headerFileName);
-                // Write to disk
-                await selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem)
-	                .WriteStreamAsync(requestBody, fullFilePath);
+	public static async Task<List<string>> StreamFile(this HttpRequest request,
+		AppSettings appSettings, ISelectorStorage selectorStorage)
+	{
+		// The Header 'filename' is for uploading on file without a form.
+		return await StreamFile(request.ContentType, request.Body,
+			appSettings,
+			selectorStorage, HeaderFileName(request));
+	}
 
-                tempPaths.Add(fullFilePath);
+	[SuppressMessage("Usage", "S125:Remove this commented out code")]
+	[SuppressMessage("Usage", "S2589:contentDisposition null")]
+	public static async Task<List<string>> StreamFile(string? contentType, Stream requestBody,
+		AppSettings appSettings,
+		ISelectorStorage selectorStorage, string? headerFileName = null)
+	{
+		// headerFileName is for uploading on a single file without a multi part form.
 
-                return tempPaths;
-            }
-            
-            // From here on no unit tests anymore :(
-            
-            // Used to accumulate all the form url encoded key value pairs in the 
-            // request.
+		// fallback
+		headerFileName ??= Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
 
-            var boundary = MultipartRequestHelper.GetBoundary(MediaTypeHeaderValue.Parse(contentType),
-                DefaultFormOptions.MultipartBoundaryLengthLimit);
-            var reader = new MultipartReader(boundary, requestBody);
+		var tempPaths = new List<string>();
 
-            var section = await reader.ReadNextSectionAsync();
-            while (section != null)
-            {
-	            var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(
-		            section.ContentDisposition, out var contentDisposition);
+		if ( !MultipartRequestHelper.IsMultipartContentType(contentType) )
+		{
+			if ( contentType != "image/jpeg" && contentType != "application/octet-stream" )
+			{
+				throw new FileLoadException(
+					$"Expected a multipart request, but got {contentType}; add the header 'content-type' ");
+			}
 
-                if (hasContentDispositionHeader && MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
-                {
-                    var sourceFileName = contentDisposition.FileName.ToString().Replace("\"", string.Empty);
-                    var inputExtension = Path.GetExtension(sourceFileName);
+			var randomFolderName = "stream_" +
+			                       Base32.Encode(FileHash.GenerateRandomBytes(4));
+			var fullFilePath = Path.Combine(appSettings.TempFolder, randomFolderName,
+				headerFileName);
 
-                    var tempHash = appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(sourceFileName),
-	                    true, false); // underscore allowed
-                    var fullFilePath = Path.Combine(appSettings.TempFolder, tempHash + inputExtension);
-                    tempPaths.Add(fullFilePath);
+			// Write to disk
+			var hostFileSystemStorage =
+				selectorStorage.Get(SelectorStorage.StorageServices
+					.HostFilesystem);
+			hostFileSystemStorage.CreateDirectory(Path.Combine(appSettings.TempFolder,
+				randomFolderName));
+			await hostFileSystemStorage
+				.WriteStreamAsync(requestBody, fullFilePath);
 
-                    await selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem)
-	                    .WriteStreamAsync(section.Body, fullFilePath);
-                }
+			tempPaths.Add(fullFilePath);
 
-                // Drains any remaining section body that has not been consumed and
-                // reads the headers for the next section.
-                section = await reader.ReadNextSectionAsync();
-            }
+			return tempPaths;
+		}
 
-            return tempPaths;
-        }
+		// Used to accumulate all the form url encoded key value pairs in the 
+		// request.
 
-        
-//        // For reading plain text form fields
-//                    else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))
-//                    {
-//                        formAccumulator = await FormAccumulatorHelper(contentDisposition, section, formAccumulator);
-//                    }
-//        public static async Task<KeyValueAccumulator> FormAccumulatorHelper(ContentDispositionHeaderValue contentDisposition, 
-//            MultipartSection section, KeyValueAccumulator formAccumulator)
-//        {
-//            // Content-Disposition: form-data; name="key"
-//            // value
-//
-//            // Do not limit the key name length here because the 
-//            // multipart headers length limit is already in effect.
-//            var key = HeaderUtilities.RemoveQuotes(contentDisposition.Name);
-//            var encoding = GetEncoding(section);
-//            using (var streamReader = new StreamReader(
-//                section.Body,
-//                encoding,
-//                detectEncodingFromByteOrderMarks: true,
-//                bufferSize: 1024,
-//                leaveOpen: true))
-//            {
-//                // The value length limit is enforced by MultipartBodyLengthLimit
-//                var value = await streamReader.ReadToEndAsync();
-//                if (String.Equals(value, "undefined", StringComparison.OrdinalIgnoreCase))
-//                {
-//                    value = String.Empty;
-//                }
-//                formAccumulator.Append(key.Value, value); // For .NET Core <2.0 remove ".Value" from key
-//
-//                if (formAccumulator.ValueCount > _defaultFormOptions.ValueCountLimit)
-//                {
-//                    throw new InvalidDataException($"Form key count limit {_defaultFormOptions.ValueCountLimit} exceeded.");
-//                }
-//            }
-//            return formAccumulator;
-//        }
-//
-//        public static Encoding GetEncoding(MultipartSection section)
-//        {
-//            MediaTypeHeaderValue mediaType;
-//            var hasMediaTypeHeader = MediaTypeHeaderValue.TryParse(section.ContentType, out mediaType);
-//            // UTF-7 is insecure and should not be honored. UTF-8 will succeed in 
-//            // most cases.
-//            if (!hasMediaTypeHeader || Encoding.UTF7.Equals(mediaType.Encoding))
-//            {
-//                return Encoding.UTF8;
-//            }
-//            return mediaType.Encoding;
-//        }
-    }
+		var boundary = MultipartRequestHelper.GetBoundary(
+			MediaTypeHeaderValue.Parse(contentType),
+			DefaultFormOptions.MultipartBoundaryLengthLimit);
+		var reader = new MultipartReader(boundary, requestBody);
+
+		var section = await reader.ReadNextSectionAsync();
+
+		while ( section != null )
+		{
+			var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(
+				section.ContentDisposition, out var contentDisposition);
+
+			if ( hasContentDispositionHeader && contentDisposition != null &&
+			     MultipartRequestHelper.HasFileContentDisposition(contentDisposition) )
+			{
+				var sourceFileName = contentDisposition.FileName.ToString()
+					.Replace("\"", string.Empty);
+				var inputExtension =
+					Path.GetExtension(sourceFileName).Replace("\n", string.Empty);
+
+				var tempHash = GenerateSlugHelper.GenerateSlug(
+					Path.GetFileNameWithoutExtension(sourceFileName),
+					true, false, true); // underscore allowed
+				var randomFolderName = "stream_" +
+				                       Base32.Encode(FileHash.GenerateRandomBytes(4));
+				var fullFilePath = Path.Combine(appSettings.TempFolder, randomFolderName,
+					tempHash + inputExtension);
+				tempPaths.Add(fullFilePath);
+
+				var hostFileSystemStorage =
+					selectorStorage.Get(SelectorStorage.StorageServices
+						.HostFilesystem);
+				hostFileSystemStorage.CreateDirectory(Path.Combine(appSettings.TempFolder,
+					randomFolderName));
+
+				await hostFileSystemStorage
+					.WriteStreamAsync(section.Body, fullFilePath);
+			}
+
+			// Drains any remaining section body that has not been consumed and
+			// reads the headers for the next section.
+			section = await reader.ReadNextSectionAsync();
+		}
+
+		return tempPaths;
+	}
 }

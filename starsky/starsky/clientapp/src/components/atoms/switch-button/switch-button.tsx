@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface ISwitchButtonProps {
   onToggle(value: boolean, name?: string): void;
@@ -7,38 +7,41 @@ interface ISwitchButtonProps {
   isEnabled?: boolean;
   isOn?: boolean;
   name?: string;
+  "data-test"?: string;
 }
 
-function SwitchButton(props: ISwitchButtonProps) {
-  const [random, setRandom] = React.useState(0);
+function SwitchButton(props: Readonly<ISwitchButtonProps>) {
+  const [random, setRandom] = useState(0);
 
   useEffect(() => {
     setRandom(Math.ceil(Math.random() * 100));
   }, []);
 
-  const [checked, setChecked] = React.useState(props.isOn ? props.isOn : false);
+  const [checked, setChecked] = useState(props.isOn ?? false);
 
   useEffect(() => {
     if (props.isOn === undefined) return;
     setChecked(props.isOn);
   }, [props]);
 
+  function onChange() {
+    setChecked(!checked);
+    props.onToggle(!checked, props.name);
+  }
+
   return (
     <form
-      className={
-        props.isEnabled !== false ? "switch-field" : "switch-field disabled"
-      }
+      data-test={props["data-test"]}
+      className={props.isEnabled === false ? "switch-field disabled" : "switch-field"}
     >
       <input
         type="radio"
         disabled={props.isEnabled === false}
         id={"switch_left_" + random}
-        name={!props.name ? "switchToggle" : props.name}
+        name={props.name ?? "switchToggle"}
         value={props.leftLabel}
-        onChange={() => {
-          setChecked(!checked);
-          props.onToggle(!checked, props.name);
-        }}
+        data-test="switch-button-left"
+        onChange={onChange}
         checked={!checked}
       />
       <label htmlFor={"switch_left_" + random}>{props.leftLabel}</label>
@@ -47,12 +50,10 @@ function SwitchButton(props: ISwitchButtonProps) {
         type="radio"
         id={"switch_right_" + random}
         disabled={props.isEnabled === false}
-        name={!props.name ? "switchToggle" : props.name}
+        name={props.name ?? "switchToggle"}
         value={props.rightLabel}
-        onChange={() => {
-          setChecked(!checked);
-          props.onToggle(!checked, props.name);
-        }}
+        data-test="switch-button-right"
+        onChange={onChange}
         checked={checked}
       />
       <label htmlFor={"switch_right_" + random}>{props.rightLabel}</label>

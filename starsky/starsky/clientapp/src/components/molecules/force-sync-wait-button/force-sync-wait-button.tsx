@@ -3,13 +3,14 @@ import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
-import FetchGet from "../../../shared/fetch-get";
-import FetchPost from "../../../shared/fetch-post";
+import FetchGet from "../../../shared/fetch/fetch-get";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Preloader from "../../atoms/preloader/preloader";
 
 type ForceSyncWaitButtonPropTypes = {
@@ -17,9 +18,19 @@ type ForceSyncWaitButtonPropTypes = {
   historyLocationSearch: string;
   callback(): void;
   dispatch: React.Dispatch<ArchiveAction>;
+  isShortLabel: boolean;
+  className?: string;
+  dataTest?: string;
 };
 
-export const ForceSyncWaitTime = 10000;
+type ForceSyncRequestNewContentPropTypes = {
+  historyLocationSearch: string;
+  dispatch: React.Dispatch<ArchiveAction>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  callback(): void;
+};
+
+const ForceSyncWaitTime = 5000;
 
 /**
  * Helper to get new content in the current view
@@ -28,19 +39,23 @@ export const ForceSyncWaitTime = 10000;
 export async function ForceSyncRequestNewContent({
   historyLocationSearch,
   dispatch,
-  callback
-}: ForceSyncWaitButtonPropTypes): Promise<void> {
-  const url = new UrlQuery().UrlIndexServerApi(
-    new URLPath().StringToIUrl(historyLocationSearch)
-  );
+  callback,
+  setIsLoading
+}: ForceSyncRequestNewContentPropTypes): Promise<void> {
+  const url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl(historyLocationSearch));
   FetchGet(url).then((connectionResult) => {
-    const forceSyncResult = new CastToInterface().MediaArchive(
-      connectionResult.data
-    );
+    if (connectionResult.statusCode !== 200) {
+      console.log("request failed");
+      console.error(connectionResult);
+      callback();
+      return;
+    }
+    const forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
     const payload = forceSyncResult.data as IArchiveProps;
     if (payload.fileIndexItems) {
       dispatch({ type: "force-reset", payload });
     }
+    setIsLoading(false);
     callback();
   });
 }
@@ -49,23 +64,29 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
   propsParentFolder,
   historyLocationSearch,
   callback,
-  dispatch
+  dispatch,
+  isShortLabel = false,
+  className = "btn btn--default",
+  dataTest = "force-sync"
 }) => {
   function forceSync(): Promise<IConnectionDefault> {
-    const parentFolder = propsParentFolder ? propsParentFolder : "/";
+    const parentFolder = propsParentFolder ?? "/";
     setIsLoading(true);
     new FileListCache().CacheCleanEverything();
 
-    var urlSync = new UrlQuery().UrlSync(parentFolder);
+    const urlSync = new UrlQuery().UrlSync(parentFolder);
     return FetchPost(urlSync, "");
   }
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageForceSync = language.text(
-    "Handmatig synchroniseren van huidige map",
-    "Synchronize current directory manually"
-  );
+
+  let label;
+  if (isShortLabel) {
+    label = language.key(localization.MessageForceSync);
+  } else {
+    label = language.key(localization.MessageForceSyncCurrentFolder);
+  }
 
   const [startCounter, setStartCounter] = useState(0);
   // preloading icon
@@ -80,7 +101,8 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
         ForceSyncRequestNewContent({
           dispatch,
           historyLocationSearch,
-          callback
+          callback,
+          setIsLoading
         });
       }, ForceSyncWaitTime);
     });
@@ -88,7 +110,7 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
     return () => {
       clearTimeout(timeout);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [startCounter]);
 
   function startForceSync() {
@@ -98,12 +120,8 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
   return (
     <>
       {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
-      <button
-        className="btn btn--default"
-        data-test="force-sync"
-        onClick={() => startForceSync()}
-      >
-        {MessageForceSync}
+      <button className={className} data-test={dataTest} onClick={() => startForceSync()}>
+        {label}
       </button>
     </>
   );

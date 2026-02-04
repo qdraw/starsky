@@ -11,34 +11,37 @@ variables:
 trigger:
   branches:
     include:
-    - master
+    - feature/auto_dotnet_sdk_version_upgrade*
     exclude:
     - release/*
-    - feature/*
   paths:
     include:
     - starsky/*
     exclude:
-    - starskyapp/*
+    - starskydesktop/*
     - starsky-tools/*
     - starsky.netframework/*
     - starsky/readme.md
     - starsky/starsky/readme.md
     - starsky/starsky/clientapp/readme.md
     - /*.md
+    - /*.json
+    - starsky/nuget-packages-list.json
 
 pr:
   branches:
     exclude:
     - master
-    
+
 pool:
-  vmImage: 'ubuntu-20.04'
+  vmImage: 'ubuntu-24.04'
 
 steps:
 - checkout: self
   clean: true
   fetchDepth: 1
+
+- template: /pipelines/azure/steps/use_dotnet_version.yml
 
 - template: /pipelines/azure/steps/build_clientapp.yml
   parameters:
@@ -50,8 +53,7 @@ steps:
 
 - template: /pipelines/azure/steps/publish_end2end_container.yml
 
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)//starsky/starsky/generic-site' 
+    path: '$(Build.SourcesDirectory)//starsky/starsky/generic-site'
     ArtifactName: 'generic-site'
-    publishLocation: 'Container'

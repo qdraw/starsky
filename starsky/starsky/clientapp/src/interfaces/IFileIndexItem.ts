@@ -1,20 +1,8 @@
 import { IExifStatus } from "./IExifStatus";
 
-export enum Color {
-  Winner = 1, // Paars/Roze - purple
-  WinnerAlt = 2, // rood - Red -
-  Superior = 3, // Oranje - orange
-  SuperiorAlt = 4, // Geel - yellow
-  Typical = 5, // Groen - groen
-  TypicalAlt = 6, // Turquoise
-  Extras = 7, // Blauw - blue
-  Trash = 8, // grijs - Grey
-  None = 0, // donkergrijs Dark Grey
-  DoNotChange = -1
-}
-
 export interface IFileIndexItem {
   lastEdited?: string;
+  lastChanged?: string[];
   filePath: string;
   fileName: string;
   fileCollectionName: string;
@@ -39,32 +27,39 @@ export interface IFileIndexItem {
   shutterSpeed?: string;
   focalLength?: number;
   locationCountry?: string;
+  locationCountryCode?: string;
   locationCity?: string;
-  imageWidth: number;
-  imageHeight: number;
+  locationState?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   size?: number;
   sidecarExtensionsList?: string[];
   collectionPaths?: string[];
 }
 
 export enum ImageFormat {
-  notfound = "notfound" as any,
-  unknown = "unknown" as any,
-  jpg = "jpg" as any,
-  tiff = "tiff" as any,
-  bmp = "bmp" as any,
-  gif = "gif" as any,
-  png = "png" as any,
-  xmp = "xmp" as any,
-  gpx = "gpx" as any,
-  mp4 = "mp4" as any
+  notfound = "notfound",
+  unknown = "unknown",
+  jpg = "jpg",
+  tiff = "tiff",
+  bmp = "bmp",
+  gif = "gif",
+  png = "png",
+  webp = "webp",
+  psd = "psd",
+  xmp = "xmp",
+  meta_json = "meta_json",
+  gpx = "gpx",
+  mp4 = "mp4",
+  mjpeg = "mjpeg",
+  mts = "mts"
 }
 
 export enum Orientation {
-  Horizontal = "Horizontal" as any,
-  Rotate90Cw = "Rotate90Cw" as any,
-  Rotate180 = "Rotate180" as any,
-  Rotate270Cw = "Rotate270Cw" as any
+  Horizontal = "Horizontal",
+  Rotate90Cw = "Rotate90Cw",
+  Rotate180 = "Rotate180",
+  Rotate270Cw = "Rotate270Cw"
 }
 
 // Warning: Input elements should not switch from uncontrolled to controlled https://fb.me/react-controlled-components

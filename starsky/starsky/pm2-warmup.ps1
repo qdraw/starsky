@@ -1,7 +1,16 @@
-$TestUrl = "$(testUrl)"
+
+param(
+    [Parameter(Mandatory=$false)][switch]$help,
+    [Parameter(Mandatory=$false)][string]$port='4000'
+)
+# Port 4823 an example port number
+
+$TestUrl = "http://localhost:$port"
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Write-Output "Starting"
-$MaxAttempts = 5
+$MaxAttempts = 30
+
 If (![string]::IsNullOrWhiteSpace($TestUrl)) {
     Write-Output "Making request to $TestUrl"
     Try {

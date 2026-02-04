@@ -1,27 +1,34 @@
 {
   "name": "end2end",
-  "version": "0.4.9",
+  "version": "0.7.10",
+  "description": "End2End testing of the application",
   "scripts": {
-    "start": "cypress open --env configFolder=starsky,configEnv=local,CYPRESS_RETRIES=2",
-    "start:env": "cypress open",
-    "open:heroku-demo": "cypress open --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",
-    "e2e:heroku-demo": "cypress run --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",
+    "start": "cypress open --env configFolder=starsky,configEnv=local,CYPRESS_RETRIES=2 --e2e --browser=electron",
+    "env:local": "cypress run --env configFolder=starsky,configEnv=local,CYPRESS_RETRIES=2",
+    "start:env": "cypress open --e2e",
+    "open:env": "npm run start:env",
+    "open:docker": "cypress open --env configFolder=starsky,configEnv=docker,CYPRESS_RETRIES=2 --e2e",
+    "start:docker": "npm run open:docker",
+    "e2e:docker": "cypress run --env configFolder=starsky,configEnv=docker,CYPRESS_RETRIES=2",
     "e2e:env": "cypress run",
     "e2e:env:record": "cypress run --record",
-    "cache-path": "cypress cache path"
+    "cache-path": "cypress cache path",
+    "cache": "cypress cache path",
+    "e2e:azure": "export CYPRESS_BASE_URL=https://demostarsky.azurewebsites.net && export cypress_name=no-create-account && export cypress_AUTH_USER=demo@qdraw.nl && export cypress_AUTH_PASS=demo@qdraw.nl && npm run e2e:env",
+    "start:azure": "export CYPRESS_BASE_URL=https://demostarsky.azurewebsites.net && export cypress_name=no-create-account && export cypress_AUTH_USER=demo@qdraw.nl && export cypress_AUTH_PASS=demo@qdraw.nl && npm run open:env",
+    "open:azure": "npm run start:azure",
+    "lint": "node node_modules/eslint/bin/eslint.js \"**\" --max-warnings 0",
+    "update": "npx --yes npm-check-updates",
+    "update:install": "npx --yes npm-check-updates -u && npm install",
+    "update:yes": "npm run update:install"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^14.14.35",
-    "@typescript-eslint/eslint-plugin": "^4.18.0",
-    "@typescript-eslint/parser": "^4.18.0",
-    "cypress": "^6.9.1",
-    "eslint": "^7.22.0",
-    "eslint-config-standard": "^15.0.1",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.3.1",
-    "eslint-plugin-standard": "^4.1.0",
-    "typescript": "^4.2.3"
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^25.0.10",
+    "cypress": "^15.9.0",
+    "eslint": "^9.39.2",
+    "globals": "^17.1.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.1"
   }
 }

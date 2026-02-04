@@ -1,82 +1,81 @@
-import { mount, ReactWrapper, shallow } from "enzyme";
-import React from "react";
-import * as DetailView from "../containers/detailview";
+import { render, RenderResult } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import * as DetailView from "../containers/detailview/detailview";
 import * as useDetailViewContext from "../contexts/detailview-context";
-import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { mountReactHook } from "../hooks/___tests___/test-hook";
+import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { IDetailView, newDetailView } from "../interfaces/IDetailView";
 import { newIFileIndexItem } from "../interfaces/IFileIndexItem";
-import DetailViewWrapper, {
-  DetailViewEventListenerUseEffect
-} from "./detailview-wrapper";
+import DetailViewWrapper, { DetailViewEventListenerUseEffect } from "./detailview-wrapper";
 
 describe("DetailViewWrapper", () => {
   it("renders", () => {
-    shallow(<DetailViewWrapper {...newDetailView()} />);
+    render(
+      <MemoryRouter>
+        <DetailViewWrapper {...newDetailView()} />
+      </MemoryRouter>
+    );
   });
 
   describe("with mount", () => {
     it("check if DetailView is mounted", () => {
-      var args = { ...newDetailView() } as IDetailView;
-      var detailView = jest
-        .spyOn(DetailView, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const args = { ...newDetailView() } as IDetailView;
+      const detailView = jest.spyOn(DetailView, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
-      const compontent = mount(<DetailViewWrapper {...args} />);
-      expect(detailView).toBeCalled();
-      compontent.unmount();
+      const component = render(<DetailViewWrapper {...args} />);
+      expect(detailView).toHaveBeenCalled();
+      component.unmount();
     });
 
     it("check if dispatch is called", () => {
-      var contextValues = {
+      const contextValues = {
         state: { fileIndexItem: newIFileIndexItem() },
         dispatch: jest.fn()
-      } as any;
+      } as unknown as useDetailViewContext.IDetailViewContext;
 
       jest
         .spyOn(useDetailViewContext, "useDetailViewContext")
-        .mockImplementationOnce(() => contextValues as any)
-        .mockImplementationOnce(() => contextValues as any)
-        .mockImplementationOnce(() => contextValues as any);
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
-      var args = {
+      const args = {
         ...newDetailView(),
         fileIndexItem: newIFileIndexItem()
       } as IDetailView;
 
-      var detailView = jest
-        .spyOn(DetailView, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const detailView = jest.spyOn(DetailView, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
-      const compontent = mount(<DetailViewWrapper {...args} />);
+      const component = render(<DetailViewWrapper {...args} />);
 
-      expect(contextValues.dispatch).toBeCalled();
-      expect(detailView).toBeCalled();
+      expect(contextValues.dispatch).toHaveBeenCalled();
+      expect(detailView).toHaveBeenCalled();
 
-      compontent.unmount();
+      component.unmount();
     });
   });
 
   describe("no context", () => {
-    it("No context if used", () => {
-      var contextValues = {
+    it("[detail view] No context if used", () => {
+      const contextValues = {
         state: null,
         dispatch: jest.fn()
-      } as any;
+      } as unknown as useDetailViewContext.IDetailViewContext;
 
       jest
         .spyOn(useDetailViewContext, "useDetailViewContext")
-        .mockImplementationOnce(() => contextValues as any);
+        .mockReset()
+        .mockImplementationOnce(() => contextValues);
 
-      var args = { ...newDetailView() } as IDetailView;
-      var compontent = mount(<DetailViewWrapper {...args} />);
+      const args = { ...newDetailView() } as IDetailView;
+      const component = render(<DetailViewWrapper {...args} />);
 
-      expect(compontent.text()).toBe("");
-      compontent.unmount();
+      expect(component.container.innerHTML).toBe("");
+      component.unmount();
     });
   });
 
@@ -87,45 +86,52 @@ describe("DetailViewWrapper", () => {
      * @see: https://wildwolf.name/jest-how-to-mock-window-location-href/
      */
     beforeAll(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      delete window.location;
+      delete globalThis.location;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      window.location = {
+      globalThis.location = {
         search: "/?f=/test.jpg"
       };
     });
 
     afterAll((): void => {
-      window.location = location;
+      globalThis.location = location;
     });
 
     it("Check if event is received", () => {
-      var dispatch = jest.fn();
+      const dispatch = jest.fn();
       document.body.innerHTML = "";
-      var result = mountReactHook(DetailViewEventListenerUseEffect, [dispatch]);
+      const result = mountReactHook(
+        DetailViewEventListenerUseEffect as (...args: unknown[]) => unknown,
+        [dispatch]
+      );
 
-      var detail = [
-        {
-          ...newIFileIndexItem()
-          // should ignore this one
-        },
-        {
-          colorclass: undefined,
-          ...newIFileIndexItem(),
-          filePath: "/test.jpg",
-          type: "update"
-        }
-      ];
-      var event = new CustomEvent(useSocketsEventName, {
+      const detail = {
+        data: [
+          {
+            ...newIFileIndexItem()
+            // should ignore this one
+          },
+          {
+            colorclass: undefined,
+            ...newIFileIndexItem(),
+            filePath: "/test.jpg",
+            type: "update"
+          }
+        ]
+      };
+      const event = new CustomEvent(useSocketsEventName, {
         detail
       });
 
       document.body.dispatchEvent(event);
 
-      expect(dispatch).toBeCalled();
-      expect(dispatch).toBeCalledWith(detail[1]);
+      expect(dispatch).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledWith(detail.data[1]);
 
-      var element = (result.componentMount as any) as ReactWrapper;
+      const element = result.componentMount as unknown as RenderResult;
       element.unmount();
     });
   });

@@ -6,7 +6,7 @@ import { IDetailView } from "./IDetailView";
  * type met zowel een key als een "Value" (voor zover types values hebben)
  */
 // let op, hij maakt hier stiekem een interface van ipv type
-export interface IMediaTypes {
+interface IMediaTypes {
   DetailView: IDetailView;
   Archive: IArchive;
 }

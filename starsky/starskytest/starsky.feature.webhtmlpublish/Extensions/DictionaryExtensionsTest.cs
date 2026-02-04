@@ -5,7 +5,7 @@ using starsky.feature.webhtmlpublish.Extensions;
 namespace starskytest.starsky.feature.webhtmlpublish.Extensions
 {
 	[TestClass]
-	public class DictionaryExtensionsTest
+	public sealed class DictionaryExtensionsTest
 	{
 		[TestMethod]
 		public void AddRangeOverride()

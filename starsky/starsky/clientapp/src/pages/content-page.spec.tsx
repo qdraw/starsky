@@ -1,32 +1,21 @@
-import { globalHistory } from "@reach/router";
-import { mount } from "enzyme";
-import React from "react";
+import { render } from "@testing-library/react";
 import * as MediaContent from "../containers/media-content";
-import ContentPage from "./content-page";
+import { ContentPage } from "./content-page";
 
 describe("ContentPage", () => {
   it("default", () => {
-    var mediaContentSpy = jest
-      .spyOn(MediaContent, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
-    mount(<ContentPage></ContentPage>);
-    expect(mediaContentSpy).toBeCalledTimes(0);
+    const mediaContentSpy = jest.spyOn(MediaContent, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
+    render(<ContentPage />);
+    expect(mediaContentSpy).toHaveBeenCalledTimes(1);
   });
 
   it("with navigate and location", () => {
-    var mediaContentSpy = jest
-      .spyOn(MediaContent, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
-    mount(
-      <ContentPage
-        navigate={globalHistory.navigate}
-        location={globalHistory.location}
-      ></ContentPage>
-    );
-    expect(mediaContentSpy).toBeCalled();
+    const mediaContentSpy = jest.spyOn(MediaContent, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
+    render(<ContentPage />);
+    expect(mediaContentSpy).toHaveBeenCalled();
   });
 });

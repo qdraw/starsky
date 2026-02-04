@@ -1,147 +1,202 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
-namespace starsky.foundation.storage.Storage
+[assembly: InternalsVisibleTo("starskytest")]
+
+namespace starsky.foundation.storage.Storage;
+
+[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
+public sealed class StorageThumbnailFilesystem : IStorage
 {
-	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class StorageThumbnailFilesystem : IStorage
+	private readonly AppSettings _appSettings;
+	private readonly IWebLogger _logger;
+
+	public StorageThumbnailFilesystem(AppSettings appSettings, IWebLogger logger)
 	{
-		private readonly AppSettings _appSettings;
+		_appSettings = appSettings;
+		_logger = logger;
+	}
 
-		public StorageThumbnailFilesystem(AppSettings appSettings)
+	public bool IsFileReady(string path)
+	{
+		return new StorageHostFullPathFilesystem(_logger).IsFileReady(CombinePath(path));
+	}
+
+	public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken)
+	{
+		throw new NotSupportedException();
+	}
+
+	/// <summary>
+	/// </summary>
+	/// <param name="path">FileHash not path</param>
+	/// <returns></returns>
+	public bool ExistFile(string path)
+	{
+		return new StorageHostFullPathFilesystem(_logger).ExistFile(CombinePath(path));
+	}
+
+	public bool ExistFolder(string path)
+	{
+		// only for the root folder
+		return new StorageHostFullPathFilesystem(_logger).ExistFolder(_appSettings
+			.ThumbnailTempFolder);
+	}
+
+	public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
+	{
+		throw new NotSupportedException();
+	}
+
+	public void FolderMove(string fromPath, string toPath)
+	{
+		throw new NotSupportedException();
+	}
+
+	public bool FileMove(string fromPath, string toPath)
+	{
+		var oldThumbPath = CombinePath(fromPath);
+		var newThumbPath = CombinePath(toPath);
+
+		var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
+
+		var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
+		var existNewFile = hostFilesystem.ExistFile(newThumbPath);
+
+		if ( !existOldFile || existNewFile )
 		{
-			_appSettings = appSettings;
-		}
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="path">FileHash not path</param>
-		/// <returns></returns>
-		public bool ExistFile(string path)
-		{
-			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg");
-			return new StorageHostFullPathFilesystem().ExistFile(filePath);
-		}
-
-		public bool ExistFolder(string path)
-		{
-			// only for the root folder
-			return new StorageHostFullPathFilesystem().ExistFolder(_appSettings.ThumbnailTempFolder);
-		}
-
-		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public void FolderMove(string fromPath, string toPath)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public void FileMove(string fromPath, string toPath)
-		{
-			var oldThumbPath = _appSettings.ThumbnailTempFolder + fromPath + ".jpg";
-			var newThumbPath = _appSettings.ThumbnailTempFolder + toPath + ".jpg";
-
-			var hostFilesystem = new StorageHostFullPathFilesystem();
-
-			var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
-			var existNewFile = hostFilesystem.ExistFile(newThumbPath);
-
-			if (!existOldFile || existNewFile)
-			{
-				return;
-			}
-			hostFilesystem.FileMove(oldThumbPath,newThumbPath);
-		}
-
-		public void FileCopy(string fromPath, string toPath)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public bool FileDelete(string path)
-		{
-			if ( !ExistFile(path) ) return false;
-
-			var thumbPath = _appSettings.ThumbnailTempFolder + path + ".jpg";
-			var hostFilesystem = new StorageHostFullPathFilesystem();
-			return hostFilesystem.FileDelete(thumbPath);
+			return false;
 		}
 
-		public void CreateDirectory(string path)
+		hostFilesystem.FileMove(oldThumbPath, newThumbPath);
+		return true;
+	}
+
+	public void FileCopy(string fromPath, string toPath)
+	{
+		var oldThumbPath = CombinePath(fromPath);
+		var newThumbPath = CombinePath(toPath);
+
+		var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
+
+		var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
+		var existNewFile = hostFilesystem.ExistFile(newThumbPath);
+
+		if ( !existOldFile || existNewFile )
 		{
-			throw new System.NotImplementedException();
-		}
-		
-		public bool FolderDelete(string path)
-		{
-			throw new System.NotImplementedException();
+			return;
 		}
 
-		public IEnumerable<string> GetAllFilesInDirectory(string path)
+		hostFilesystem.FileCopy(oldThumbPath, newThumbPath);
+	}
+
+	/// <summary>
+	///     Delete single file
+	/// </summary>
+	/// <param name="path">fileHash</param>
+	/// <returns>true when success</returns>
+	public bool FileDelete(string path)
+	{
+		if ( string.IsNullOrEmpty(path) || !ExistFile(path) )
 		{
-			DirectoryInfo dirInfo = new DirectoryInfo(_appSettings.ThumbnailTempFolder);
-			return dirInfo.EnumerateFiles($"*.jpg", SearchOption.TopDirectoryOnly)
-				.Select(p => p.Name).ToList();
+			return false;
 		}
 
-		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
+		var thumbPath = CombinePath(path);
+		var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
+		return hostFilesystem.FileDelete(thumbPath);
+	}
+
+	public bool CreateDirectory(string path)
+	{
+		throw new NotSupportedException();
+	}
+
+	public bool FolderDelete(string path)
+	{
+		throw new NotSupportedException();
+	}
+
+	public IEnumerable<string> GetAllFilesInDirectory(string path)
+	{
+		var dirInfo = new DirectoryInfo(_appSettings.ThumbnailTempFolder);
+		return dirInfo.EnumerateFiles($"*.{_appSettings.ThumbnailImageFormat}",
+				SearchOption.TopDirectoryOnly)
+			.Select(p => p.Name).ToList();
+	}
+
+	public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
+	{
+		throw new NotSupportedException();
+	}
+
+	public IEnumerable<string> GetDirectories(string path)
+	{
+		throw new NotSupportedException();
+	}
+
+	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
+	{
+		throw new NotSupportedException();
+	}
+
+	/// <summary>
+	///     Read Stream (and keep open)
+	/// </summary>
+	/// <param name="path">location</param>
+	/// <param name="maxRead">how many bytes are read (default all or -1)</param>
+	/// <returns>Stream with data (non-disposed)</returns>
+	public Stream ReadStream(string path, int maxRead = -1)
+	{
+		if ( !ExistFile(path) )
 		{
-			throw new System.NotImplementedException();
+			throw new FileNotFoundException(path);
 		}
 
-		public IEnumerable<string> GetDirectories(string path)
-		{
-			throw new System.NotImplementedException();
-		}
+		return new StorageHostFullPathFilesystem(_logger).ReadStream(CombinePath(path),
+			maxRead);
+	}
 
-		public IEnumerable<string> GetDirectoryRecursive(string path)
-		{
-			throw new System.NotImplementedException();
-		}
+	/// <summary>
+	///     To Write the thumbnail stream
+	/// </summary>
+	/// <param name="stream"></param>
+	/// <param name="path"></param>
+	/// <returns></returns>
+	public bool WriteStream(Stream stream, string path)
+	{
+		return new StorageHostFullPathFilesystem(_logger)
+			.WriteStream(stream, CombinePath(path));
+	}
 
-		public Stream ReadStream(string path, int maxRead = -1)
-		{
-			if ( !ExistFile(path) ) throw new FileNotFoundException(path); 
-			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg");
-			return new StorageHostFullPathFilesystem().ReadStream(filePath, maxRead);
-		}
+	public bool WriteStreamOpenOrCreate(Stream stream, string path)
+	{
+		throw new NotSupportedException();
+	}
 
-		/// <summary>
-		/// To Write the thumbnail stream
-		/// </summary>
-		/// <param name="stream"></param>
-		/// <param name="path"></param>
-		/// <returns></returns>
-		public bool WriteStream(Stream stream, string path)
-		{
-			return new StorageHostFullPathFilesystem()
-				.WriteStream(stream, Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg"));
-		}
+	public Task<bool> WriteStreamAsync(Stream stream, string path)
+	{
+		return new StorageHostFullPathFilesystem(_logger).WriteStreamAsync(stream,
+			CombinePath(path));
+	}
 
-		public bool WriteStreamOpenOrCreate(Stream stream, string path)
-		{
-			throw new System.NotImplementedException();
-		}
+	public StorageInfo Info(string path)
+	{
+		return new StorageHostFullPathFilesystem(_logger).Info(CombinePath(path));
+	}
 
-		public Task<bool> WriteStreamAsync(Stream stream, string path)
-		{
-			var fullFilePath = Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg");
-			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, fullFilePath);
-		}
-
-		public StorageInfo Info(string path)
-		{
-			throw new System.NotImplementedException();
-		}
+	internal string CombinePath(string fileHash)
+	{
+		return Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
 	}
 }

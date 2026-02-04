@@ -1,22 +1,19 @@
-import { mount, shallow } from "enzyme";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import * as MenuDefault from "../menu-default/menu-default";
 import ApplicationException from "./application-exception";
 
 describe("ApplicationException", () => {
   it("renders", () => {
-    shallow(<ApplicationException>t</ApplicationException>);
+    render(<ApplicationException />);
   });
 
   it("should have menu", () => {
-    const menuDefaultSpy = jest
-      .spyOn(MenuDefault, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
-    const component = mount(<ApplicationException>t</ApplicationException>);
+    const menuDefaultSpy = jest.spyOn(MenuDefault, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
+    const component = render(<ApplicationException />);
 
-    expect(menuDefaultSpy).toBeCalled();
+    expect(menuDefaultSpy).toHaveBeenCalled();
 
     component.unmount();
   });
@@ -26,36 +23,40 @@ describe("ApplicationException", () => {
       return <></>;
     });
 
-    const component = mount(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException />);
 
-    expect(component.exists(".content--header")).toBeTruthy();
+    expect(screen.getByTestId("application-exception-header")).toBeTruthy();
 
     component.unmount();
   });
 
   it("click on reload", () => {
     const { location } = window;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    delete window.location;
+    delete globalThis.location;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    window.location = { reload: jest.fn() };
+    globalThis.location = { reload: jest.fn() };
 
-    const reloadSpy = jest.spyOn(window.location, "reload").mockReturnValue();
+    const reloadSpy = jest.spyOn(globalThis.location, "reload").mockReturnValue();
 
     jest.spyOn(MenuDefault, "default").mockImplementationOnce(() => {
       return <></>;
     });
 
-    const component = mount(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException />);
 
-    expect(window.location.reload).not.toHaveBeenCalled();
+    expect(globalThis.location.reload).not.toHaveBeenCalled();
 
-    component.find("[data-test='reload']").simulate("click");
+    const reload = screen.queryByTestId("reload") as HTMLButtonElement;
 
-    expect(reloadSpy).toBeCalledTimes(1);
+    reload.click();
+
+    expect(reloadSpy).toHaveBeenCalledTimes(1);
 
     // restore window object
-    window.location = location;
+    globalThis.location = location;
 
     component.unmount();
   });

@@ -1,68 +1,76 @@
 using System;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.realtime.Model;
 
 namespace starsky.foundation.realtime.Services
 {
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class HeartbeatService : IHostedService
+	public sealed class HeartbeatService : IHostedService
 	{
-		#region Fields
-
 		private const int SpeedInSeconds = 30;
-		private const string InsertDateToken = "INSERT_DATE_TOKEN";
-		private const string SpeedInSecondsToken = "SPEED_TOKEN";
-		private const string HeartbeatMessage = "{ \"speed\": " + SpeedInSecondsToken + ",  \"time\": \"" + InsertDateToken + "\"} ";
 
-		private readonly IWebSocketConnectionsService _webSocketConnectionsService;
+		private readonly IWebSocketConnectionsService _connectionsService;
 
-		private Task _heartbeatTask;
-		private CancellationTokenSource _cancellationTokenSource;
-		#endregion
+		private Task? _heartbeatTask;
+		private CancellationTokenSource? _cancellationTokenSource;
 
-		#region Constructor
-		public HeartbeatService(IWebSocketConnectionsService webSocketConnectionsService)
+		public HeartbeatService(IWebSocketConnectionsService connectionsService)
 		{
-			_webSocketConnectionsService = webSocketConnectionsService;
+			_connectionsService = connectionsService;
 		}
-		#endregion
 
-		#region Methods
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
 			_cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
 			_heartbeatTask = HeartbeatAsync(_cancellationTokenSource.Token);
 
+			if ( _heartbeatTask.IsCompleted )
+			{
+				_cancellationTokenSource.Dispose();
+			}
+
 			return _heartbeatTask.IsCompleted ? _heartbeatTask : Task.CompletedTask;
 		}
 
 		public async Task StopAsync(CancellationToken cancellationToken)
 		{
-			if (_heartbeatTask != null)
+			if ( _heartbeatTask != null )
 			{
-				_cancellationTokenSource.Cancel();
+				if ( _cancellationTokenSource != null )
+				{
+					await _cancellationTokenSource.CancelAsync();
+				}
 
 				await Task.WhenAny(_heartbeatTask, Task.Delay(-1, cancellationToken));
 
-				cancellationToken.ThrowIfCancellationRequested();
+				try
+				{
+					cancellationToken.ThrowIfCancellationRequested();
+				}
+				catch ( OperationCanceledException )
+				{
+					// do nothing
+				}
 			}
 		}
 
 		private async Task HeartbeatAsync(CancellationToken cancellationToken)
 		{
-			while (!cancellationToken.IsCancellationRequested)
+			while ( !cancellationToken.IsCancellationRequested )
 			{
-				var message = HeartbeatMessage.Replace(SpeedInSecondsToken, SpeedInSeconds.ToString()).Replace(
-					InsertDateToken, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
-				await _webSocketConnectionsService.SendToAllAsync(message, cancellationToken);
+				var webSocketResponse =
+					new ApiNotificationResponseModel<HeartbeatModel>(new HeartbeatModel(SpeedInSeconds),
+						ApiNotificationType.Heartbeat);
+				await _connectionsService.SendToAllAsync(webSocketResponse, cancellationToken);
 				await Task.Delay(TimeSpan.FromSeconds(SpeedInSeconds), cancellationToken);
 			}
 		}
-		#endregion
 	}
 }

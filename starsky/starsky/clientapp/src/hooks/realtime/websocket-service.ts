@@ -1,12 +1,15 @@
 export default class WebSocketService {
-  private websocket?: WebSocket;
+  private readonly websocket?: WebSocket;
+
   constructor(url: string, protocols?: string | string[]) {
     try {
       this.websocket = new WebSocket(url, protocols);
-    } catch (error) {}
+    } catch {
+      // do nothing here
+    }
   }
 
-  public onOpen(callback: (ev: Event) => void): void {
+  public onOpen(callback: (ev: Event) => Promise<void>): void {
     if (!this.websocket) return;
     this.websocket.onopen = callback;
   }
@@ -30,9 +33,7 @@ export default class WebSocketService {
     this.websocket.close();
   }
 
-  public send(
-    data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView
-  ): void {
+  public send(data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView): void {
     if (!this.websocket) {
       return;
     }

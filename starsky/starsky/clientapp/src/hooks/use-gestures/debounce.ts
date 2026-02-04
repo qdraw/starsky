@@ -1,9 +1,7 @@
-export const debounce = (func: any, wait: number) => {
-  let timeout: any;
-  return function (...args: any) {
-    // @ts-ignore
-    const context = this;
+export const debounce = (func: (...args: unknown[]) => void, wait: number) => {
+  let timeout: ReturnType<typeof setTimeout>;
+  return (...args: unknown[]) => {
     clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), wait);
+    timeout = setTimeout(() => func(...args), wait);
   };
 };

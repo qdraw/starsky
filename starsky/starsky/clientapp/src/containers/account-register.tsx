@@ -1,12 +1,13 @@
 import React, { FunctionComponent, useEffect } from "react";
 import ButtonStyled from "../components/atoms/button-styled/button-styled";
 import useGlobalSettings from "../hooks/use-global-settings";
-import useLocation from "../hooks/use-location";
-import DocumentTitle from "../shared/document-title";
-import FetchGet from "../shared/fetch-get";
-import FetchPost from "../shared/fetch-post";
+import useLocation from "../hooks/use-location/use-location";
+import localization from "../localization/localization.json";
+import { DocumentTitle } from "../shared/document-title";
+import FetchGet from "../shared/fetch/fetch-get";
+import FetchPost from "../shared/fetch/fetch-post";
 import { Language } from "../shared/language";
-import { UrlQuery } from "../shared/url-query";
+import { UrlQuery } from "../shared/url/url-query";
 import { validateLoginForm } from "../shared/validate-login-form";
 
 const AccountRegister: FunctionComponent = () => {
@@ -14,65 +15,23 @@ const AccountRegister: FunctionComponent = () => {
   const language = new Language(settings.language);
 
   const MessageApplicationName = "Starsky";
-  const MessageCreateNewAccount = language.text(
-    "Maak nieuw account",
-    "Create new account"
-  );
-  const MessageUsername = language.text("E-mailadres", "E-mail address");
-  const MessageExamplePassword = language.text("superveilig", "supersafe");
-  const MessageExampleUsername = "dont@mail.me";
-  const MessagePassword = language.text(
-    "Geef je wachtwoord op",
-    "Enter your password"
-  );
-  const MessageConfirmPassword = language.text(
-    "Vul je wachtwoord nog een keer in",
-    "Enter your password again"
-  );
-  const MessageNoUsernamePassword = language.text(
-    "Voer een emailadres en een wachtwoord in",
-    "Enter an email address and password"
-  );
-  const MessageWrongFormatEmailAddress = language.text(
-    "Controleer je email adres",
-    "Check your email address"
-  );
-  const MessagePasswordToShort = language.text(
-    "Gebruik minimaal 8 tekens voor je wachtwoord",
-    "Use at least 8 characters for your password"
-  );
-  const MessagePasswordNoMatch = language.text(
-    "Deze wachtwoorden komen niet overeen. Probeer het opnieuw",
-    "These passwords do not match. Please try again"
-  );
-  const MessageConnection = language.text(
-    "Er is geen verbinding mogelijk, probeer het later opnieuw",
-    "No connection is possible, please try again later"
-  );
-  const MessageRejectedBadRequest = language.text(
-    "Dit verzoek is afgewezen aangezien er niet voldaan is aan de beveiligingseisen (Error 400)",
-    "This request was rejected because the security requirements were not met  (Error 400)"
-  );
-  const MessageRegistrationTurnedOff = language.text(
-    "Registratie is uitgezet",
-    "Registration is turned off"
-  );
-  const MessageSignInInstead = language.text(
-    "In plaats daarvan inloggen",
-    "Sign in instead"
-  );
+  const MessageCreateNewAccount = language.key(localization.MessageCreateNewAccount);
+  const MessageUsername = language.key(localization.MessageUsername);
+  const MessageExamplePassword = language.key(localization.MessageExamplePassword);
+  const MessageExampleUsername = language.key(localization.MessageExampleUsername);
+  const MessagePassword = language.key(localization.MessagePassword);
+  const MessageConfirmPassword = language.key(localization.MessageConfirmPassword);
+  const MessageNoUsernamePassword = language.key(localization.MessageNoUsernamePassword);
+  const MessageWrongFormatEmailAddress = language.key(localization.MessageWrongFormatEmailAddress);
+  const MessagePasswordToShort = language.key(localization.MessagePasswordToShort);
+  const MessagePasswordNoMatch = language.key(localization.MessagePasswordNoMatch);
+  const MessageConnection = language.key(localization.MessageConnection);
+  const MessageRejectedBadRequest = language.key(localization.MessageRejectedBadRequest);
+  const MessageRegistrationTurnedOff = language.key(localization.MessageRegistrationTurnedOff);
+  const MessageSignInInstead = language.key(localization.MessageSignInInstead);
+  const MessageLegalCreateAccountHtml = language.key(localization.MessageLegalCreateAccountHtml);
 
-  const MessageLegalCreateAccountHtml = language.text(
-    `Door het creëren van een account gaat u akkoord met de
-   <a href="/legal/toc.nl.html" data-test="toc">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze 
-   <a href="/legal/privacy-policy.nl.html" data-test="privacy">Privacykennisgeving</a> en onze 
-   <a href="/legal/privacy-policy.nl.html#cookie">Cookieverklaring</a>.`,
-    `By creating an account you agree to <a href="/legal/toc.en.html" data-test="toc">Starsky's Conditions of Use</a>. 
-   Please see our  <a href="/legal/privacy-policy.en.html" data-test="privacy">Privacy</a> Notice and our 
-   <a href="/legal/privacy-policy.en.html#cookie">Cookies Notice </a>   `
-  );
-
-  var history = useLocation();
+  const history = useLocation();
 
   const [userEmail, setUserEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
@@ -87,13 +46,11 @@ const AccountRegister: FunctionComponent = () => {
   new DocumentTitle().SetDocumentTitlePrefix(MessageCreateNewAccount);
 
   const setUpAccountHandler = async () => {
-    var loginValidation = validateLoginForm(userEmail, userPassword);
+    const loginValidation = validateLoginForm(userEmail, userPassword);
 
     if (!loginValidation) {
       setError(
-        loginValidation === null
-          ? MessageWrongFormatEmailAddress
-          : MessageNoUsernamePassword
+        loginValidation === null ? MessageWrongFormatEmailAddress : MessageNoUsernamePassword
       );
       return;
     }
@@ -119,7 +76,7 @@ const AccountRegister: FunctionComponent = () => {
       return;
     }
 
-    if (!response || !response.data) {
+    if (!response?.data) {
       setError(MessageConnection);
       setLoading(false);
       return;
@@ -131,10 +88,10 @@ const AccountRegister: FunctionComponent = () => {
   const [displaySignInInstead, setDisplaySignInInstead] = React.useState(true);
 
   // readonly mode
-  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  const [isFormEnabled, setIsFormEnabled] = React.useState(true);
   useEffect(() => {
     FetchGet(new UrlQuery().UrlAccountRegisterStatus()).then((response) => {
-      setFormEnabled(response.statusCode !== 403);
+      setIsFormEnabled(response.statusCode !== 403);
       if (response.statusCode === 403) {
         setError(MessageRegistrationTurnedOff);
       }
@@ -148,9 +105,7 @@ const AccountRegister: FunctionComponent = () => {
     <>
       <header className="header header--main header--bluegray700">
         <div className="wrapper">
-          <div className="item item--first item--detective">
-            {MessageApplicationName}
-          </div>
+          <div className="item item--first item--detective">{MessageApplicationName}</div>
         </div>
       </header>
 
@@ -160,6 +115,7 @@ const AccountRegister: FunctionComponent = () => {
         <form
           method="post"
           className="content--login-form form-inline form-nav"
+          data-test="account-register-form"
           onSubmit={(e) => {
             e.preventDefault();
             setError(null);
@@ -174,10 +130,13 @@ const AccountRegister: FunctionComponent = () => {
             type="email"
             name="email"
             maxLength={80}
+            data-test="email"
+            spellCheck={false}
             value={userEmail}
             placeholder={MessageExampleUsername}
             onChange={(e) => setUserEmail(e.target.value)}
           />
+          {/*  why spellCheck false? https://www.bleepingcomputer.com/news/security/google-microsoft-can-get-your-passwords-via-web-browsers-spellcheck/ */}
 
           <label htmlFor="email">{MessagePassword}</label>
           <input
@@ -186,7 +145,9 @@ const AccountRegister: FunctionComponent = () => {
             autoComplete="off"
             type="password"
             name="password"
+            data-test="password"
             maxLength={80}
+            spellCheck={false}
             placeholder={MessageExamplePassword}
             value={userPassword}
             onChange={(e) => setUserPassword(e.target.value)}
@@ -199,7 +160,9 @@ const AccountRegister: FunctionComponent = () => {
             autoComplete="off"
             type="password"
             maxLength={100}
+            spellCheck={false}
             name="confirm-password"
+            data-test="confirm-password"
             value={userConfirmPassword}
             onChange={(e) => setUserConfirmPassword(e.target.value)}
           />
@@ -208,11 +171,16 @@ const AccountRegister: FunctionComponent = () => {
             dangerouslySetInnerHTML={{ __html: MessageLegalCreateAccountHtml }}
           ></div>
 
-          {error && <div className="content--error-true">{error}</div>}
+          {error && (
+            <div data-test="account-register-error" className="content--error-true">
+              {error}
+            </div>
+          )}
 
           <ButtonStyled
             className="btn btn--default"
             type="submit"
+            data-test="account-register-submit"
             disabled={loading || !isFormEnabled}
           >
             {loading ? "Loading..." : MessageCreateNewAccount}
@@ -226,10 +194,7 @@ const AccountRegister: FunctionComponent = () => {
               {MessageSignInInstead}
             </a>
           ) : (
-            <div
-              data-test="sign-in-instead"
-              className="alternative btn disabled"
-            >
+            <div data-test="sign-in-instead" className="alternative btn disabled">
               {MessageSignInInstead}
             </div>
           )}

@@ -1,82 +1,86 @@
+using System;
+using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
-using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.storage.Structure;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 
-namespace starsky.foundation.thumbnailgeneration.Helpers
+namespace starsky.foundation.thumbnailgeneration.Helpers;
+
+public sealed class ThumbnailCli
 {
-	public class ThumbnailCli
+	private readonly AppSettings _appSettings;
+	private readonly IConsole _console;
+	private readonly IWebLogger _logger;
+	private readonly ISelectorStorage _selectorStorage;
+	private readonly IThumbnailCleaner _thumbnailCleaner;
+	private readonly IThumbnailService _thumbnailService;
+
+	public ThumbnailCli(AppSettings appSettings,
+		IConsole console, IThumbnailService thumbnailService,
+		IThumbnailCleaner thumbnailCleaner,
+		ISelectorStorage selectorStorage, IWebLogger webLogger)
 	{
-		private readonly AppSettings _appSettings;
-		private readonly IConsole _console;
-		private readonly IThumbnailCleaner _thumbnailCleaner;
-		private readonly ISelectorStorage _selectorStorage;
-		private readonly IThumbnailService _thumbnailService;
+		_appSettings = appSettings;
+		_thumbnailService = thumbnailService;
+		_console = console;
+		_thumbnailCleaner = thumbnailCleaner;
+		_selectorStorage = selectorStorage;
+		_logger = webLogger;
+	}
 
-		public ThumbnailCli(AppSettings appSettings, 
-			IConsole console, IThumbnailService thumbnailService, IThumbnailCleaner thumbnailCleaner, 
-			ISelectorStorage selectorStorage)
+	public async Task Thumbnail(string[] args)
+	{
+		_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
+		_appSettings.ApplicationType = AppSettings.StarskyAppType.Thumbnail;
+
+		if ( ArgsHelper.NeedHelp(args) )
 		{
-			_appSettings = appSettings;
-			_thumbnailService = thumbnailService;
-			_console = console;
-			_thumbnailCleaner = thumbnailCleaner;
-			_selectorStorage = selectorStorage;
+			new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
+			return;
 		}
-		
-		public void Thumbnail(string[] args)
+
+		new ArgsHelper().SetEnvironmentByArgs(args);
+
+		var subPath = new ArgsHelper(_appSettings).SubPathOrPathValue(args);
+		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
+		if ( getSubPathRelative != null )
 		{
-			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+			subPath = new StructureService(_selectorStorage, _appSettings, _logger)
+				.ParseSubfolders(getSubPathRelative)!;
+		}
 
-			if (new ArgsHelper().NeedHelp(args))
+		if ( ArgsHelper.GetThumbnail(args) )
+		{
+			if ( _appSettings.IsVerbose() )
 			{
-				_appSettings.ApplicationType = AppSettings.StarskyAppType.Thumbnail;
-				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
-				return;
-			}
-			
-			new ArgsHelper().SetEnvironmentByArgs(args);
-
-			var subPath = new ArgsHelper(_appSettings).SubPathOrPathValue(args);
-			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
-			if (getSubPathRelative != null)
-			{
-				subPath = new StructureService(_selectorStorage.Get(SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
-					.ParseSubfolders(getSubPathRelative);
+				_console.WriteLine($">> GetThumbnail True ({DateTime.UtcNow:HH:mm:ss})");
 			}
 
-			if (new ArgsHelper(_appSettings).GetThumbnail(args))
-			{
-				var storage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			var storage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
-				var isFolderOrFile = storage.IsFolderOrFile(subPath);
+			var isFolderOrFile = storage.IsFolderOrFile(subPath);
 
-				if (_appSettings.Verbose) _console.WriteLine(isFolderOrFile.ToString());
-                
-				if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
-				{
-					// If single file => create thumbnail
-					var fileHash = new FileHash(storage).GetHashCode(subPath).Key;
-					_thumbnailService.CreateThumb(subPath, fileHash); // <= this uses subPath
-				}
-				else
-				{
-					_thumbnailService.CreateThumb(subPath);
-				}
-				_console.WriteLine("Thumbnail Done!");
-			}
-            
-			if ( new ArgsHelper(_appSettings).NeedCleanup(args) )
+			if ( _appSettings.IsVerbose() )
 			{
-				_console.WriteLine(">>>>> Heavy CPU Feature => NeedCacheCleanup <<<<< ");
-				_thumbnailCleaner.CleanAllUnusedFiles();
+				_console.WriteLine(isFolderOrFile.ToString());
 			}
 
-			_console.WriteLine("Done!");
+			await _thumbnailService.GenerateThumbnail(subPath);
+
+			_console.WriteLine($"Thumbnail Done! ({DateTime.UtcNow:HH:mm:ss})");
+		}
+
+		if ( ArgsHelper.NeedCleanup(args) )
+		{
+			_console.WriteLine(
+				$"Next: Start Thumbnail Cache cleanup (-x true) ({DateTime.UtcNow:HH:mm:ss})");
+			await _thumbnailCleaner.CleanAllUnusedFilesAsync();
+			_console.WriteLine($"Cleanup Done! ({DateTime.UtcNow:HH:mm:ss})");
 		}
 	}
 }

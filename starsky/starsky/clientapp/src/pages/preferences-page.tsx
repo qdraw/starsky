@@ -1,9 +1,6 @@
-import { RouteComponentProps } from "@reach/router";
-import React, { FunctionComponent } from "react";
-import Preferences from "../containers/preferences";
+import { FunctionComponent } from "react";
+import { Preferences } from "../containers/preferences/preferences";
 
-const PreferencesPage: FunctionComponent<RouteComponentProps> = (props) => {
+export const PreferencesPage: FunctionComponent = () => {
   return <Preferences />;
 };
-
-export default PreferencesPage;

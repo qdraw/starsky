@@ -1,15 +1,6 @@
-import React from "react";
-import {
-  IFileIndexItem,
-  ImageFormat
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, ImageFormat } from "../../../interfaces/IFileIndexItem";
 import BytesFormat from "../../../shared/bytes-format";
-import {
-  parseDateDate,
-  parseDateMonth,
-  parseDateYear,
-  parseTime
-} from "../../../shared/date";
+import { parseDateDate, parseDateMonth, parseDateYear, parseTime } from "../../../shared/date";
 
 interface IFlatListItem {
   item: IFileIndexItem;
@@ -26,20 +17,18 @@ const FlatListItem: React.FunctionComponent<IFlatListItem> = ({ item }) => {
       <div className={`icon imageformat-${item.imageFormat}`}></div>
       <div className="name">{item.fileName}</div>
       <div className="lastedited">
-        {parseDateYear(item.lastEdited) !== 1 ? (
+        {parseDateYear(item.lastEdited) === 1 ? (
+          "--"
+        ) : (
           <>
             {parseDateDate(item.lastEdited)}-{parseDateMonth(item.lastEdited)}-
             {parseDateYear(item.lastEdited)} {parseTime(item.lastEdited)}
           </>
-        ) : (
-          "--"
         )}
       </div>
-      <div className="size">
-        {!item.isDirectory && item.size ? BytesFormat(item.size) : "--"}
-      </div>
+      <div className="size">{!item.isDirectory && item.size ? BytesFormat(item.size) : "--"}</div>
       <div className="imageformat">
-        {item.imageFormat !== ImageFormat.unknown ? item.imageFormat : "--"}
+        {item.imageFormat === ImageFormat.unknown ? "--" : item.imageFormat}
       </div>
     </div>
   );

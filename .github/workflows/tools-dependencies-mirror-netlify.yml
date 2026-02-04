@@ -1,0 +1,61 @@
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky-tools/build-tools/download-mirror-exiftool.sh'
+    - 'starsky-tools/build-tools/download-mirror-ffmpeg.sh'
+    - 'starsky-tools/build-tools/download-mirror-geonames.sh'
+    - 'starsky-tools/build-tools/download-mirror.sh'
+    - '.github/workflows/tools-dependencies-mirror-netlify.yml'
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky-tools/build-tools/download-mirror-exiftool.sh'
+    - 'starsky-tools/build-tools/download-mirror-ffmpeg.sh'
+    - 'starsky-tools/build-tools/download-mirror-geonames.sh'
+    - 'starsky-tools/build-tools/download-mirror.sh'
+    - '.github/workflows/tools-dependencies-mirror-netlify.yml'    
+  workflow_dispatch:
+    
+name: Tools dependencies mirror netlify
+# for: starsky-dependencies
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Mirror
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+          
+      - name: download-mirror.sh
+        working-directory: starsky-tools/build-tools
+        run: bash download-mirror.sh
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        with:
+          name: build-tools-mirror
+          path: ./starsky-tools/build-tools/mirror/
+
+      - name: ls && pwd
+        shell: bash
+        working-directory: ./starsky-tools/build-tools/mirror/
+        run: touch index.html && ls -lah && pwd       
+
+      - name: Install Netlify
+        if: github.event_name != 'pull_request'
+        run: npm install netlify-cli@17.37.2 -g
+        
+      - name: Deploy to Netlify
+        if: github.event_name != 'pull_request'
+        id: netlify_deploy
+        working-directory: ./starsky-tools/build-tools/        
+        run: |
+          netlify deploy \
+            --prod \
+            --dir mirror \
+            --site ${{ secrets.NETLIFY_MIRROR_SITE_ID }} \
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}

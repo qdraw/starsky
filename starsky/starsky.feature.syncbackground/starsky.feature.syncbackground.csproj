@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>starsky.feature.syncbackground</RootNamespace>
+        <ProjectGuid>{15e1493e-6e79-4314-907f-b3ef18eb9046}</ProjectGuid>
+        <Version>0.7.10</Version>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.foundation.settings\starsky.foundation.settings.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj"/>
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+
+</Project>

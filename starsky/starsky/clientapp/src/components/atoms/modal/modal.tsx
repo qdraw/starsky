@@ -1,18 +1,44 @@
 import "core-js/features/dom-collections/for-each";
-import React from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import capturePosition from "../../../hooks/use-capture-position";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
+import modalFreezeHelper from "./modal-freeze-helper";
+import modalInsertPortalDiv from "./modal-insert-portal-div";
 
 type ModalPropTypes = {
-  children: React.ReactNode;
+  children: ReactNode;
   root?: string;
   id?: string;
   isOpen: boolean;
-  handleExit: () => any;
+  handleExit: () => void;
   focusAfterExit?: HTMLElement;
+  className?: string;
+  dataTest?: string;
 };
+
+export const ModalOpenClassName = "modal-bg--open";
+
+function ModalClassName(isOpen: boolean, className?: string) {
+  let baseClassName = "modal-bg";
+  if (isOpen) {
+    baseClassName += ` ${ModalOpenClassName}`;
+    if (className) {
+      baseClassName += ` ${className}`;
+    }
+  }
+  return baseClassName;
+}
+
+function ifModalOpenHandleExit(
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  handleExit: () => void
+) {
+  const target = event.target as HTMLElement;
+  if (!target.className.includes(ModalOpenClassName)) return;
+  handleExit();
+}
 
 export default function Modal({
   children,
@@ -20,112 +46,55 @@ export default function Modal({
   root = "root",
   isOpen,
   handleExit,
-  focusAfterExit
-}: ModalPropTypes): any {
+  focusAfterExit,
+  className = "",
+  dataTest = "modal-bg"
+}: ModalPropTypes): JSX.Element | null {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageCloseDialog = language.text("Sluiten", "Close");
+  const MessageCloseDialog = language.key(localization.MessageCloseDialog);
 
-  const [hasUpdated, forceUpdate] = React.useState(false);
+  const [forceUpdate, setForceUpdate] = useState(false);
 
-  const exitButton = React.useRef<HTMLButtonElement>(null);
-  const modal = React.useRef<HTMLDivElement | null>(null);
+  const exitButton = useRef<HTMLButtonElement>(null);
+  const modal = useRef<HTMLDivElement | null>(null);
 
-  React.useEffect(() => {
-    modal.current = document.createElement("div");
-    modal.current.id = id;
-
-    if (!document.body.querySelector(`#${id}`)) {
-      document.body.insertBefore(modal.current, document.body.firstChild);
-    }
-
-    if (!hasUpdated) forceUpdate(true);
-
-    return () => {
-      if (modal.current) {
-        document.body.removeChild(modal.current);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    return modalInsertPortalDiv(modal, forceUpdate, setForceUpdate, id);
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, []);
 
-  const initialRender = React.useRef(false);
-  React.useEffect(() => {
-    const rootContainer = document.querySelector(`#${root}`);
-    const modalContainer = document.querySelector(`#${id}`);
-
-    const toggleTabIndex = (type: "on" | "off", container: Element) => {
-      const focusableElements = container.querySelectorAll(
-        "button, a, input, textarea, select"
-      );
-      focusableElements.forEach((element: Element) => {
-        if (type === "on") {
-          element.removeAttribute("tabindex");
-        } else {
-          element.setAttribute("tabindex", "-1");
-        }
-      });
-    };
-
-    const { freeze, unfreeze } = capturePosition();
-
-    if (isOpen) {
-      if (exitButton.current) exitButton.current.focus();
-      if (modalContainer) toggleTabIndex("on", modalContainer);
-      if (rootContainer) toggleTabIndex("off", rootContainer);
-      freeze();
-    } else {
-      if (modalContainer) toggleTabIndex("off", modalContainer);
-      if (rootContainer) toggleTabIndex("on", rootContainer);
-      unfreeze();
-      if (focusAfterExit) focusAfterExit.focus();
-
-      if (!initialRender.current) {
-        initialRender.current = true;
-        setTimeout(() => {
-          if (modalContainer) toggleTabIndex("off", modalContainer);
-        }, 0);
-      }
-    }
-
-    return () => {
-      if (isOpen) {
-        unfreeze();
-      }
-    };
+  const initialRender = useRef(false);
+  useEffect(() => {
+    return modalFreezeHelper(initialRender, root, id, isOpen, exitButton, focusAfterExit);
   }, [isOpen, focusAfterExit, id, root]);
 
   if (modal.current) {
     return ReactDOM.createPortal(
-      <>
-        <div
-          onClick={(event) => {
-            const target = event.target as HTMLElement;
-            if (target.className.indexOf("modal-bg--open") === -1) return;
+      <div
+        onClick={(event) => ifModalOpenHandleExit(event, handleExit)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
             handleExit();
-          }}
-          className={`modal-bg ${isOpen ? " modal-bg--open" : ""}`}
-        >
-          <div
-            className={`modal-content ${isOpen ? " modal-content--show" : ""}`}
-          >
-            <div className="modal-close-bar">
-              <button
-                className={`modal-exit-button ${
-                  isOpen ? " modal-exit-button--showing" : ""
-                }`}
-                ref={exitButton}
-                onClick={() => {
-                  handleExit();
-                }}
-              >
-                {MessageCloseDialog}
-              </button>
-            </div>
-            {children}
+          }
+        }}
+        data-test={dataTest}
+        className={ModalClassName(isOpen, className)}
+      >
+        <div className={`modal-content ${isOpen ? " modal-content--show" : ""}`}>
+          <div className="modal-close-bar">
+            <button
+              className={`modal-exit-button ${isOpen ? " modal-exit-button--showing" : ""}`}
+              ref={exitButton}
+              data-test="modal-exit-button"
+              onClick={handleExit}
+            >
+              {MessageCloseDialog}
+            </button>
           </div>
+          {children}
         </div>
-      </>,
+      </div>,
       modal.current
     );
   }

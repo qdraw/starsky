@@ -1,31 +1,38 @@
 import React, { memo } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import { ILanguageLocalization } from "../../../interfaces/ILanguageLocalization";
 import { Language } from "../../../shared/language";
 
 interface IMenuOptionProps {
+  isReadOnly: boolean;
   testName: string;
-  isSet: boolean;
-  set: React.Dispatch<React.SetStateAction<boolean>>;
-  nl: string;
-  en: string;
+  onClickKeydown: () => void;
+  localization?: ILanguageLocalization;
+  children?: React.ReactNode;
 }
 
 const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
-  ({ nl, en, isSet, set, testName }) => {
+  ({ localization, onClickKeydown, testName, isReadOnly = true, children = undefined }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const Message = language.text(nl, en);
+    const message = localization ? language.key(localization) : "";
 
     return (
       <>
         {
-          <li
-            tabIndex={0}
-            data-test={testName}
-            className="menu-option"
-            onClick={() => set(!isSet)}
-          >
-            {Message}
+          <li className={isReadOnly ? "menu-option disabled" : "menu-option"}>
+            <button
+              data-test={testName}
+              onClick={onClickKeydown}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  onClickKeydown();
+                }
+              }}
+            >
+              {message}
+              {children}
+            </button>
           </li>
         }
       </>

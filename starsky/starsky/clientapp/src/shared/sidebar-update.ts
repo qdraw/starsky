@@ -14,11 +14,11 @@ export class SidebarUpdate {
   ): ISidebarUpdate => {
     if (!fieldName) return updateSidebar;
     if (!fieldValue) {
-      delete (updateSidebar as any)[fieldName];
+      delete (updateSidebar as Partial<ISidebarUpdate>)[fieldName as keyof ISidebarUpdate];
       return updateSidebar;
     }
 
-    fieldValue = fieldValue.replace(/\n/g, "");
+    fieldValue = fieldValue.replaceAll("\n", "");
     switch (fieldName.toLowerCase()) {
       case "tags":
         updateSidebar.tags = fieldValue;
@@ -44,27 +44,21 @@ export class SidebarUpdate {
   };
 
   public Change = (
-    event:
-      | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>,
+    event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>,
     update: ISidebarUpdate
   ): ISidebarUpdate | null => {
-    let fieldValue = event.currentTarget.textContent
+    const fieldValue = event.currentTarget.textContent
       ? event.currentTarget.textContent.trim()
       : "";
-    let fieldName = event.currentTarget.dataset["name"];
+    const fieldName = event.currentTarget.dataset["name"];
 
     if (!fieldName) return null;
 
-    return new SidebarUpdate().CastToISideBarUpdate(
-      fieldName,
-      fieldValue,
-      update
-    );
+    return new SidebarUpdate().CastToISideBarUpdate(fieldName, fieldValue, update);
   };
 
   public IsFormUsed = (updateSidebar: ISidebarUpdate): boolean => {
-    var totalChars = 0;
+    let totalChars = 0;
     if (updateSidebar.tags) {
       totalChars += updateSidebar.tags.length;
     }

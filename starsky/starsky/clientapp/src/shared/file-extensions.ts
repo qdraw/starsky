@@ -5,13 +5,14 @@ export class FileExtensions {
    * @param to changeto.jpg
    */
   public MatchExtension(from: string, to: string): boolean | null {
-    var extensionRegex = /\.[0-9a-z]+$/;
+    const extensionRegex = /\.[0-9a-z]+$/;
 
-    var fromExtMatchArray = from.match(extensionRegex);
+    const fromExtMatchArray = extensionRegex.exec(from);
     if (!fromExtMatchArray) return null;
 
-    var toExtMatchArray = to.match(extensionRegex);
+    const toExtMatchArray = extensionRegex.exec(to);
     if (!toExtMatchArray) return false;
+
     return toExtMatchArray[0] === fromExtMatchArray[0];
   }
 
@@ -20,8 +21,8 @@ export class FileExtensions {
    * @param filename
    */
   public IsValidFileName(filename: string): boolean {
-    var extensionRegex = /^[a-zA-Z0-9_](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/;
-    var fromExtMatchArray = filename.match(extensionRegex);
+    const extensionRegex = /^\w(?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/;
+    const fromExtMatchArray = extensionRegex.exec(filename);
     return !!fromExtMatchArray;
   }
 
@@ -30,8 +31,8 @@ export class FileExtensions {
    * @param directoryName only the name, not the full path
    */
   public IsValidDirectoryName(directoryName: string): boolean {
-    var extensionRegex = /^[$a-zA-Z0-9_\s-]{2,}$/;
-    var fromDirMatchArray = directoryName.match(extensionRegex);
+    const extensionRegex = /^[$a-zA-Z0-9_\s-]{2,}$/;
+    const fromDirMatchArray = extensionRegex.exec(directoryName);
     return !!fromDirMatchArray;
   }
 
@@ -42,15 +43,18 @@ export class FileExtensions {
    */
   public GetParentPath(filePath: string) {
     if (!filePath) return "/";
+
     const parentRegex = /.+(?=\/[^/]+$)/;
 
-    // remove slash from end
-    if (filePath.length >= 2 && filePath[filePath.length - 1] === "/") {
-      filePath = filePath.substr(0, filePath.length - 1);
+    // Remove slash from end
+    if (filePath.length >= 2 && filePath.endsWith("/")) {
+      filePath = filePath.slice(0, -1);
     }
 
-    const parentMatchArray = filePath.match(parentRegex);
+    const parentMatchArray = parentRegex.exec(filePath);
+
     if (!parentMatchArray) return "/";
+
     return parentMatchArray[0];
   }
 
@@ -58,12 +62,10 @@ export class FileExtensions {
    * extract fileName from string
    * @param filePath the filepath
    */
-  public GetFileName(filePath: string) {
-    // [^\/]+(?=\.[\w]+\.$)|[^\/]+$
-    var filenameRegex = /[^/]+(?=\.[\w]+\.$)|[^/]+$/;
-    var fileNameMatchArray = filePath.match(filenameRegex);
-    if (!fileNameMatchArray) return "/";
-    return fileNameMatchArray[0];
+  public GetFileName(filePath: string): string {
+    const result = filePath.split("/").pop();
+    if (!result) return filePath;
+    return result;
   }
 
   /**
@@ -71,19 +73,20 @@ export class FileExtensions {
    * @param filePath the filepath
    */
   public GetFileNameWithoutExtension(filePath: string) {
-    var fileName = this.GetFileName(filePath);
-    return fileName.replace(new RegExp("\\.[a-zA-Z0-9]{1,4}$"), "");
+    const fileName = this.GetFileName(filePath);
+    return fileName.replaceAll(/\.[a-z0-9]{1,4}$/gi, "");
   }
 
   /**
    * Get File Extension without dot
-   * @param filename the filepath
+   * @param fileNameWithDot the filepath
    */
   public GetFileExtensionWithoutDot(fileNameWithDot: string) {
-    if (fileNameWithDot.indexOf(".") === -1) return "";
-    var fileNameMatchArray = fileNameWithDot.match(
-      new RegExp("[^.][a-zA-Z0-9]{1,4}$")
-    );
+    if (!fileNameWithDot.includes(".")) return "";
+
+    const extensionRegex = /[^.][a-zA-Z0-9]{1,4}$/;
+    const fileNameMatchArray = extensionRegex.exec(fileNameWithDot);
+
     if (!fileNameMatchArray) return "";
     return fileNameMatchArray[0].toLowerCase();
   }

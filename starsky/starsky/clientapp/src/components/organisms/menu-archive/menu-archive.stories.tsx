@@ -1,14 +1,19 @@
-import { globalHistory } from "@reach/router";
-import { storiesOf } from "@storybook/react";
-import React from "react";
+import { Router } from "../../../router-app/router-app";
 import MenuArchive from "./menu-archive";
+export default {
+  title: "components/organisms/menu-archive"
+};
 
-storiesOf("components/organisms/menu-archive", module)
-  .add("default", () => {
-    globalHistory.navigate("/");
-    return <MenuArchive></MenuArchive>;
-  })
-  .add("select", () => {
-    globalHistory.navigate("/?select=true");
-    return <MenuArchive></MenuArchive>;
-  });
+export const Default = () => {
+  Router.navigate("/");
+  return <MenuArchive></MenuArchive>;
+};
+
+Default.storyName = "default";
+
+export const Select = () => {
+  Router.navigate("/?select=true");
+  return <MenuArchive></MenuArchive>;
+};
+
+Select.storyName = "select";

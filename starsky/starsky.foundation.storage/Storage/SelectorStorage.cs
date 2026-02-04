@@ -1,46 +1,60 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 using starsky.foundation.storage.Interfaces;
 
-namespace starsky.foundation.storage.Storage
+namespace starsky.foundation.storage.Storage;
+
+[Service(typeof(ISelectorStorage), InjectionLifetime = InjectionLifetime.Scoped)]
+public sealed class SelectorStorage : ISelectorStorage
 {
-	[Service(typeof(ISelectorStorage), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class SelectorStorage : ISelectorStorage
+	public enum StorageServices
 	{
-		private readonly IServiceProvider _serviceProvider;
+		/// <summary>
+		///     Storage location
+		/// </summary>
+		SubPath,
 
-		public SelectorStorage(IServiceProvider serviceProvider)
-		{
-			_serviceProvider = serviceProvider;
-		}
-		
-		public enum StorageServices
-		{
-			SubPath,
-			Thumbnail,
-			/// <summary>
-			/// Use only to import from
-			/// </summary>
-			HostFilesystem 
-		}
-		
-		public IStorage Get(StorageServices storageServices)
-		{
-			var services = _serviceProvider.GetServices<IStorage>();
-			switch ( storageServices )
-			{
-				case StorageServices.SubPath:
-					return services.First(o => o.GetType() == typeof(StorageSubPathFilesystem));
-				case StorageServices.Thumbnail:
-					return services.First(o => o.GetType() == typeof(StorageThumbnailFilesystem));
-				case StorageServices.HostFilesystem:
-					return services.First(o => o.GetType() == typeof(StorageHostFullPathFilesystem));
+		/// <summary>
+		///     Location for thumbnails
+		/// </summary>
+		Thumbnail,
 
-				default:
-					throw new ArgumentOutOfRangeException(nameof(storageServices), storageServices, null);
-			}
-		}
+		/// <summary>
+		///     Use only to import from
+		/// </summary>
+		HostFilesystem,
+		
+		/// <summary>
+		/// Temporary storage 
+		/// </summary>
+		Temporary
+	}
+
+	private readonly IEnumerable<IStorage> _services;
+
+	public SelectorStorage(IServiceScopeFactory scopeFactory)
+	{
+		var scope = scopeFactory.CreateScope();
+		_services = scope.ServiceProvider.GetServices<IStorage>();
+	}
+
+	public IStorage Get(StorageServices storageServices)
+	{
+		return storageServices switch
+		{
+			StorageServices.SubPath => _services.First(o =>
+				o is StorageSubPathFilesystem),
+			StorageServices.HostFilesystem => _services.First(o =>
+				o is StorageHostFullPathFilesystem),
+			StorageServices.Thumbnail => _services.First(o =>
+				o is StorageThumbnailFilesystem),
+			StorageServices.Temporary => _services.First(o =>
+				o is StorageTemporaryFilesystem),			
+			_ => throw new ArgumentOutOfRangeException(
+				nameof(storageServices), storageServices, null)
+		};
 	}
 }

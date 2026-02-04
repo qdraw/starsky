@@ -1,70 +1,52 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.feature.thumbnail.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Helpers;
-using starsky.foundation.webtelemetry.Interfaces;
-using starsky.foundation.worker.Services;
 
-namespace starsky.Controllers
+namespace starsky.Controllers;
+
+[Authorize]
+public sealed class ThumbnailGenerationController : Controller
 {
-	[Authorize]
-	public class ThumbnailGenerationController : Controller
+	private readonly ISelectorStorage _selectorStorage;
+	private readonly IManualThumbnailGenerationService _thumbnailGenerationService;
+
+	public ThumbnailGenerationController(ISelectorStorage selectorStorage,
+		IManualThumbnailGenerationService thumbnailGenerationService)
 	{
-		private readonly ISelectorStorage _selectorStorage;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly ITelemetryService _telemetryService;
+		_selectorStorage = selectorStorage;
+		_thumbnailGenerationService = thumbnailGenerationService;
+	}
 
-		public ThumbnailGenerationController(ISelectorStorage selectorStorage,
-			IBackgroundTaskQueue queue, ITelemetryService telemetryService = null)
+	/// <summary>
+	///     Create thumbnails for a folder in the background
+	/// </summary>
+	/// <response code="200">give start signal</response>
+	/// <response code="404">folder not found</response>
+	/// <returns>the ImportIndexItem of the imported files</returns>
+	[HttpPost("/api/thumbnail-generation")]
+	[Produces("application/json")]
+	public async Task<IActionResult> ThumbnailGeneration(string f)
+	{
+		if ( !ModelState.IsValid )
 		{
-			_selectorStorage = selectorStorage;
-			_bgTaskQueue = queue;
-			_telemetryService = telemetryService;
+			return BadRequest("Model invalid");
 		}
-		
-		/// <summary>
-		/// Create thumbnails for a folder in the background
-		/// </summary>
-		/// <response code="200">give start signal</response>
-		/// <response code="404">folder not found</response>
-		/// <returns>the ImportIndexItem of the imported files</returns>
-		[HttpPost("/api/thumbnail-generation")]
-		[Produces("application/json")]
-		public IActionResult ThumbnailGeneration(string f)
-		{
-			var subPath = f != "/" ? PathHelper.RemoveLatestSlash(f) : "/";
-			var subPathStorage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			var thumbnailStorage = _selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
-			if ( !subPathStorage.ExistFolder(subPath))
-			{
-				return NotFound("folder not found");
-			}
+		var subPath = f != "/" ? PathHelper.RemoveLatestSlash(f) : "/";
+		var subPathStorage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
-			{
-				await WorkItem(subPath, subPathStorage, thumbnailStorage);
-			});	
-			
-			return Json("started");
-		}
-				
-		internal async Task WorkItem(string subPath, IStorage subPathStorage, 
-			IStorage thumbnailStorage)
+		if ( !subPathStorage.ExistFolder(subPath) )
 		{
-			try
-			{
-				new Thumbnail(subPathStorage, thumbnailStorage).CreateThumb(subPath);
-			}
-			catch ( UnauthorizedAccessException e )
-			{
-				Console.WriteLine(e);
-				_telemetryService?.TrackException(e);
-			}
+			return NotFound("folder not found");
 		}
+
+		// When the CPU is too high its gives an Error 500
+		await _thumbnailGenerationService.ManualBackgroundQueue(subPath);
+
+		return Json("Job started");
 	}
 }

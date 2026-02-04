@@ -1,9 +1,14 @@
-import { storiesOf } from "@storybook/react";
-import React from "react";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import MenuTrash from "./menu-trash";
 
-storiesOf("components/organisms/menu-trash", module).add("default", () => {
+export default {
+  title: "components/organisms/menu-trash"
+};
+
+export const Default = () => {
   return (
-    <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={() => {}} />
+    <MenuTrash state={{ fileIndexItems: [] } as unknown as IArchiveProps} dispatch={() => {}} />
   );
-});
+};
+
+Default.storyName = "default";

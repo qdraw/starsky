@@ -1,0 +1,86 @@
+workflows:
+  desktop-app-mac-m1:
+    instance_type: mac_mini_m1
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master_disabled
+      cancel_previous_builds: true
+    environment:
+      groups:
+        - starsky
+      node: 18.12.1
+      npm: 8.19.2
+      xcode: latest
+    cache:
+      cache_paths:
+        - ~/Library/Caches/electron
+        - ~/.npm
+    scripts:
+      - name: download binaries osx-x64 from github actions
+        working_directory: starsky/starsky
+        script: bash  github-artifacts-download.sh --token $WORKFLOW_GITHUB --output /Users/builder/clone/starsky --runtime osx-x64
+      - name: unzip osx-x64
+        working_directory: starsky
+        script: unzip starsky-osx-x64.zip -d osx-x64
+      - name: reset rights osx-x64
+        working_directory: starsky/osx-x64
+        script: bash pm2-restore-x-rights.sh
+      - name: download binaries osx-arm64 from github actions
+        working_directory: starsky/starsky
+        script: bash  github-artifacts-download.sh --token $WORKFLOW_GITHUB --output /Users/builder/clone/starsky --runtime osx-arm64
+      - name: unzip osx-arm64
+        working_directory: starsky
+        script: unzip starsky-osx-arm64.zip -d osx-arm64
+      - name: reset rights osx-arm64
+        working_directory: starsky/osx-arm64
+        script: bash pm2-restore-x-rights.sh
+      - name: npm install
+        working_directory: starskydesktop
+        script: npm install --no-fund --no-audit
+      - name: npm install winston (only needed for codemagic)
+        working_directory: starskydesktop
+        script: npm install winston --no-fund --no-audit
+      - name: npm install minimist (only needed for codemagic)
+        working_directory: starskydesktop
+        script: npm install minimist --no-fund --no-audit
+      - name: npm install rxjs (only needed for codemagic)
+        working_directory: starskydesktop
+        script: npm install rxjs --no-fund --no-audit
+      - name: npm run macarm64
+        working_directory: starskydesktop
+        script: npm run macarm64
+      - name: rm starsky-mac-x64-desktop.zip || true
+        working_directory: starskydesktop/dist-prod
+        script: rm starsky-mac-x64-desktop.zip || true
+      - name: rm starsky-mac-arm64-desktop.zip || true
+        working_directory: starskydesktop/dist-prod
+        script: rm starsky-mac-arm64-desktop.zip || true
+      - name: zip starsky-mac-x64-desktop.zip starsky-mac-x64-desktop.dmg
+        working_directory: starskydesktop/dist-prod
+        script: zip starsky-mac-x64-desktop.zip starsky-mac-x64-desktop.dmg
+      - name: zip starsky-mac-arm64-desktop.zip starsky-mac-arm64-desktop.dmg
+        working_directory: starskydesktop/dist-prod
+        script: zip starsky-mac-arm64-desktop.zip starsky-mac-arm64-desktop.dmg
+    artifacts:
+      - starskydesktop/dist-prod/starsky-mac-x64-desktop.zip
+      - starskydesktop/dist-prod/starsky-mac-arm64-desktop.zip
+      - starsky/starsky-osx-x64.zip
+      - starsky/starsky-osx-arm64.zip
+
+  build:
+    instance_type: mac_mini_m1
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master_disabled
+      cancel_previous_builds: true
+    environment:
+      node: 18.12.1
+      npm: 8.19.2
+    scripts:
+      - name: build.sh
+        working_directory: starsky
+        script: export FORCE_INSTALL_CHECK=true && ./build.sh --no-publish --no-dependencies --no-tests

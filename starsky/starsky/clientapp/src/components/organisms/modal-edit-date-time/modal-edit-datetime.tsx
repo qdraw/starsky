@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import {
   isValidDate,
   leftPad,
@@ -9,11 +10,13 @@ import {
   parseDateMonth,
   parseDateYear,
   parseTime,
-  parseTimeHour
+  parseTimeHour,
+  parseTimeMinute,
+  parseTimeSeconds
 } from "../../../shared/date";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
@@ -24,58 +27,77 @@ interface IModalDatetimeProps {
   dateTime?: string;
 }
 
-const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
-  props
-) => {
+export async function UpdateDateTime(
+  isFormEnabled: boolean,
+  propsSubPath: string,
+  datetime: string,
+  propsHandleExit: (result: IFileIndexItem[] | null) => void
+): Promise<IFileIndexItem[] | null> {
+  if (!isFormEnabled) return null;
+
+  const updateApiUrl = new UrlQuery().UrlUpdateApi();
+
+  const bodyParams = new URLSearchParams();
+  bodyParams.append("f", propsSubPath);
+  bodyParams.append("datetime", datetime);
+
+  const result = await FetchPost(updateApiUrl, bodyParams.toString());
+  if (result.statusCode !== 200) return null;
+  propsHandleExit(result.data as IFileIndexItem[]);
+  return result.data as IFileIndexItem[];
+}
+
+export function GetDates(
+  month: number | undefined,
+  date: number | undefined,
+  fullYear: number | undefined,
+  hour: number | undefined,
+  minute: number | undefined,
+  seconds: number | undefined
+): string {
+  if (
+    !fullYear ||
+    !month ||
+    !date ||
+    hour === undefined ||
+    minute === undefined ||
+    seconds === undefined
+  ) {
+    return "";
+  }
+  return (
+    `${fullYear}-${leftPad(month)}-${leftPad(date)}` +
+    `T${leftPad(hour)}:${leftPad(minute)}:${leftPad(seconds)}`
+  );
+}
+
+const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageModalDatetime = language.text(
-    "Datum en tijd bewerken",
-    "Edit date and time"
-  );
-  const MessageYear = language.text("Jaar", "Year");
-  const MessageMonth = language.text("Maand", "Month");
-  const MessageDate = language.text("Dag", "Day");
-  const MessageTime = language.text("Tijd", "Time");
-  const MessageErrorDatetime = language.text(
-    "De datum en tijd zijn incorrect ingegeven",
-    "The date and time were entered incorrectly"
-  );
+  const MessageModalDatetime = language.key(localization.MessageModalDatetime);
+  const MessageYear = language.key(localization.MessageYear);
+  const MessageMonth = language.key(localization.MessageMonth);
+  const MessageDate = language.key(localization.MessageDate);
+  const MessageTime = language.key(localization.MessageTime);
+  const MessageErrorDatetime = language.key(localization.MessageErrorDatetime);
 
-  const [isFormEnabled] = React.useState(true);
+  const isFormEnabled = true;
 
-  const [fullYear, setFullYear] = React.useState(parseDateYear(props.dateTime));
-  const [month, setMonth] = React.useState(parseDateMonth(props.dateTime));
-  const [date, setDate] = React.useState(parseDateDate(props.dateTime));
-  const [hour, setHour] = React.useState(parseTimeHour(props.dateTime));
-  const [minute, setMinute] = React.useState(
-    props.dateTime ? new Date(props.dateTime).getMinutes() : 1
-  );
-  const [seconds, setSeconds] = React.useState(
-    props.dateTime ? new Date(props.dateTime).getSeconds() : 1
-  );
+  const [fullYear, setFullYear] = useState(parseDateYear(props.dateTime));
+  const [month, setMonth] = useState(parseDateMonth(props.dateTime));
+  const [date, setDate] = useState(parseDateDate(props.dateTime));
+  const [hour, setHour] = useState(parseTimeHour(props.dateTime));
+  const [minute, setMinute] = useState(parseTimeMinute(props.dateTime));
+  const [seconds, setSeconds] = useState(parseTimeSeconds(props.dateTime));
 
   function getDates() {
-    return (
-      `${fullYear}-${leftPad(month)}-${leftPad(date)}` +
-      `T${leftPad(hour)}:${leftPad(minute)}:${leftPad(seconds)}`
-    );
+    return GetDates(month, date, fullYear, hour, minute, seconds);
   }
 
   function updateDateTime() {
-    if (!isFormEnabled) return;
-
-    var updateApiUrl = new UrlQuery().UrlUpdateApi();
-
-    var bodyParams = new URLSearchParams();
-    bodyParams.append("f", props.subPath);
-    bodyParams.append("datetime", getDates());
-
-    FetchPost(updateApiUrl, bodyParams.toString()).then((result) => {
-      if (result.statusCode !== 200) return;
-      props.handleExit(result.data);
-    });
+    const datetime = getDates();
+    UpdateDateTime(isFormEnabled, props.subPath, datetime, props.handleExit);
   }
 
   return (
@@ -86,7 +108,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
         props.handleExit(null);
       }}
     >
-      <div className="content">
+      <div data-test="modal-edit-datetime" className="content">
         <div className="modal content--subheader">
           <b>{MessageModalDatetime}</b>
           {isValidDate(getDates()) ? (
@@ -103,7 +125,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
               name="year"
               maxlength={4}
               onBlur={(e) => {
-                setFullYear(Number(e.target.textContent));
+                setFullYear(e.target.textContent ? Number(e.target.textContent) : undefined);
               }}
               className="inline-block"
               warning={false}
@@ -119,7 +141,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
               name="month"
               maxlength={2}
               onBlur={(e) => {
-                setMonth(Number(e.target.textContent));
+                setMonth(e.target.textContent ? Number(e.target.textContent) : undefined);
               }}
               className="inline-block"
               contentEditable={isFormEnabled}
@@ -135,7 +157,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
               name="date"
               maxlength={2}
               onBlur={(e) => {
-                setDate(Number(e.target.textContent));
+                setDate(e.target.textContent ? Number(e.target.textContent) : undefined);
               }}
               className="inline-block"
               contentEditable={isFormEnabled}
@@ -153,7 +175,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
               name="hour"
               maxlength={2}
               onBlur={(e) => {
-                setHour(Number(e.target.textContent));
+                setHour(e.target.textContent ? Number(e.target.textContent) : undefined);
               }}
               className="inline-block"
               contentEditable={isFormEnabled}
@@ -166,7 +188,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
               name="minute"
               maxlength={2}
               onBlur={(e) => {
-                setMinute(Number(e.target.textContent));
+                setMinute(e.target.textContent ? Number(e.target.textContent) : undefined);
               }}
               className="inline-block"
               contentEditable={isFormEnabled}
@@ -179,7 +201,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
               name="sec"
               maxlength={2}
               onBlur={(e) => {
-                setSeconds(Number(e.target.textContent));
+                setSeconds(e.target.textContent ? Number(e.target.textContent) : undefined);
               }}
               className="inline-block"
               contentEditable={isFormEnabled}
@@ -189,14 +211,18 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
             </FormControl>
           </div>
 
-          {!isValidDate(getDates()) ? (
-            <div className="warning-box">{MessageErrorDatetime}</div>
-          ) : null}
+          {/* invalid date */}
+          {isValidDate(getDates()) ? null : (
+            <div data-test="modal-edit-datetime-non-valid" className="warning-box">
+              {MessageErrorDatetime}
+            </div>
+          )}
 
           <button
             disabled={!isValidDate(getDates())}
             className="btn btn--default"
             onClick={updateDateTime}
+            data-test="modal-edit-datetime-btn-default"
           >
             {MessageModalDatetime}
           </button>

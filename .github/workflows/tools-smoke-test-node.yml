@@ -1,0 +1,61 @@
+name: Tools smoke test node
+permissions:
+  contents: read
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky-tools/localtunnel/**'
+    - 'starsky-tools/mail/**'
+    - 'starsky-tools/mock/**'
+    - 'starsky-tools/thumbnail/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky-tools/localtunnel/**'
+    - 'starsky-tools/mail/**'
+    - 'starsky-tools/mock/**'
+    - 'starsky-tools/thumbnail/**'
+    - '.github/workflows/**'
+  workflow_dispatch: 
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+
+    steps:
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+    - name: Build ${{ matrix.node-version }}
+      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: NpmCi Mock
+      working-directory: ./starsky-tools/mock
+      run: npm ci
+
+    - name: Node Run Mock SetRouter
+      working-directory: ./starsky-tools/mock
+      run: node set-router.js
+      
+    - name: NpmCi localtunnel
+      working-directory: ./starsky-tools/localtunnel
+      run: npm ci      
+        
+    - name: NpmCi mail
+      working-directory: ./starsky-tools/mail
+      run: npm ci      
+         
+    - name: NpmCi thumbnail
+      working-directory: ./starsky-tools/thumbnail
+      run: npm ci  

@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { DifferenceInDate } from "../../shared/date";
 import useInterval from "../use-interval";
+import { IsClientSideFeatureDisabled } from "./internal/is-client-side-feature-disabled.ts";
 import WebSocketService from "./websocket-service";
 import WsCurrentStart, { NewWebSocketService } from "./ws-current-start";
 
@@ -10,26 +11,21 @@ export interface IUseSockets {
 }
 
 /**
- * Set an localStorage cookie when no websocket client is used
- */
-function IsClientSideFeatureDisabled(): boolean {
-  return localStorage.getItem("use-sockets") === "false";
-}
-
-/**
  * Use Socket as react hook
  */
 const useSockets = (): IUseSockets => {
-  let ws = useRef({} as WebSocketService);
+  const ws = useRef({} as WebSocketService);
   // When the connection is lost
   const [socketConnected, setSocketConnected] = useState(false);
   // show a error message
-  // (dont update this field every render to avoid endless re-rendering)
+  // (don't update this field every render to avoid endless re-rendering)
   const [showSocketError, setShowSocketError] = useState<boolean | null>(false);
   // server side feature toggle to disable/enable client
   const isEnabled = useRef(true);
   // time the server has pinged me back (it should every 20 seconds)
   const [keepAliveTime, setKeepAliveTime] = useState(new Date());
+
+  const [keepAliveServerTime, setKeepAliveServerTime] = useState("");
 
   // number of failures
   const [countRetry, setCountRetry] = useState(0);
@@ -40,7 +36,7 @@ const useSockets = (): IUseSockets => {
   useInterval(doIntervalCheck, startDiffTime);
 
   function doIntervalCheck() {
-    if (!isEnabled.current || !ws.current || !ws.current.close) {
+    if (!isEnabled.current || !ws.current?.close) {
       return;
     }
 
@@ -65,7 +61,9 @@ const useSockets = (): IUseSockets => {
         setSocketConnected,
         isEnabled,
         setKeepAliveTime,
-        NewWebSocketService
+        NewWebSocketService,
+        keepAliveServerTime,
+        setKeepAliveServerTime
       );
     } else {
       setCountRetry(0);
@@ -81,9 +79,7 @@ const useSockets = (): IUseSockets => {
   }
 
   useEffect(() => {
-    console.log(
-      `[use-sockets] is disabled => ${IsClientSideFeatureDisabled()}`
-    );
+    console.log(`[use-sockets] is disabled => ${IsClientSideFeatureDisabled()}`);
     // option to disable in client side
     if (IsClientSideFeatureDisabled()) return;
 
@@ -92,7 +88,9 @@ const useSockets = (): IUseSockets => {
       setSocketConnected,
       isEnabled,
       setKeepAliveTime,
-      NewWebSocketService
+      NewWebSocketService,
+      keepAliveServerTime,
+      setKeepAliveServerTime
     );
 
     // when effect ends ->
@@ -102,7 +100,7 @@ const useSockets = (): IUseSockets => {
     };
 
     // When switching the feature toggle
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [localStorage.getItem("use-sockets")]);
 
   return {

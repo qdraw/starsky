@@ -1,21 +1,22 @@
 import L from "leaflet";
 import React, { useEffect, useRef, useState } from "react";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { Coordinates } from "../../../shared/coordinates-position.types";
-import FetchXml from "../../../shared/fetch-xml";
+import FetchXml from "../../../shared/fetch/fetch-xml";
 import { Geo } from "../../../shared/geo";
-import { LeafletEmptyImageUrlGridLayer } from "../../../shared/leaflet-modify-empty-image-url-gridlayer";
-import { LeafletEmptyImageUrlTileLayer } from "../../../shared/leaflet-modify-empty-image-url-tilelayer";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { LeafletEmptyImageUrlGridLayer } from "../../../shared/leaflet/leaflet-modify-empty-image-url-gridlayer";
+import { LeafletEmptyImageUrlTileLayer } from "../../../shared/leaflet/leaflet-modify-empty-image-url-tilelayer";
+import { TileLayerAttribution, TileLayerLocation } from "../../../shared/tile-layer-location.const";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import MarkerBlueSvg from "../../../style/images/fa-map-marker-blue.svg";
 import MarkerShadowPng from "../../../style/images/marker-shadow.png";
 import CurrentLocationButton from "../../atoms/current-location-button/current-location-button";
 import Preloader from "../../atoms/preloader/preloader";
 
 const DetailViewGpx: React.FC = () => {
-  var history = useLocation();
+  const history = useLocation();
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
@@ -29,19 +30,22 @@ const DetailViewGpx: React.FC = () => {
 
     // reset leaflet first
     mapReference.current.innerHTML = "";
-    var container = L.DomUtil.get(mapReference.current);
+    const container = L.DomUtil.get(mapReference.current);
     if (container != null) {
-      (container as any)._leaflet_id = null;
+      (container as unknown as { _leaflet_id: null })._leaflet_id = null;
     }
 
-    var tracks: any[] = [];
-    var tracksNodeList: NodeListOf<Element> = (response.data as XMLDocument).querySelectorAll(
+    const tracks: [number, number][] = [];
+    const tracksNodeList: NodeListOf<Element> = (response.data as XMLDocument).querySelectorAll(
       "trkpt"
     );
 
-    Array.from(tracksNodeList).forEach((element) => {
-      tracks.push([element.getAttribute("lat"), element.getAttribute("lon")]);
-    });
+    for (const element of Array.from(tracksNodeList)) {
+      tracks.push([
+        Number.parseFloat(element.getAttribute("lat") as string),
+        Number.parseFloat(element.getAttribute("lon") as string)
+      ]);
+    }
 
     // to avoid short inputs
     if (!tracks || tracks.length <= 2) return;
@@ -49,9 +53,8 @@ const DetailViewGpx: React.FC = () => {
     // create map
     const map = L.map(mapReference.current, {
       layers: [
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution:
-            '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        L.tileLayer(TileLayerLocation, {
+          attribution: TileLayerAttribution
         })
       ]
     });
@@ -62,11 +65,11 @@ const DetailViewGpx: React.FC = () => {
     map.scrollWheelZoom.disable();
     map.boxZoom.disable();
     map.keyboard.disable();
-    if (map.tap) map.tap.disable();
+    if (map.tapHold) map.tapHold.disable();
 
     map.fitBounds(tracks);
 
-    var blueIcon = L.icon({
+    const blueIcon = L.icon({
       iconUrl: MarkerBlueSvg,
       shadowUrl: MarkerShadowPng,
       iconSize: [50, 50], // size of the icon
@@ -76,12 +79,12 @@ const DetailViewGpx: React.FC = () => {
       popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
     });
 
-    var firstTrack = tracks[0];
-    var lastTrack = tracks[tracks.length - 1];
+    const firstTrack = tracks[0];
+    const lastTrack = tracks.at(-1);
 
     L.marker(tracks[0], { title: "gpx", icon: blueIcon }).addTo(map);
 
-    if (new Geo().Distance(firstTrack, lastTrack) >= 500) {
+    if (lastTrack && new Geo().Distance(firstTrack, lastTrack) >= 500) {
       L.marker(lastTrack, { icon: blueIcon }).addTo(map);
     }
 
@@ -102,19 +105,13 @@ const DetailViewGpx: React.FC = () => {
     new URLPath().encodeURI(new URLPath().getFilePath(history.location.search))
   );
   useEffect(() => {
-    setFilePathEncoded(
-      new URLPath().encodeURI(
-        new URLPath().getFilePath(history.location.search)
-      )
-    );
+    setFilePathEncoded(new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)));
   }, [history.location.search]);
 
-  /** update only on intial load */
+  /** update only on initial load */
   useEffect(() => {
     setIsLoading(true);
-    FetchXml(
-      new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false, true)
-    ).then((response) => {
+    FetchXml(new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false, true)).then((response) => {
       updateMap(response);
       setIsLoading(false);
     });
@@ -122,7 +119,11 @@ const DetailViewGpx: React.FC = () => {
 
   function unLockLockToggle() {
     if (!mapState) return;
-    isMapLocked ? mapState.dragging.enable() : mapState.dragging.disable();
+    if (isMapLocked) {
+      mapState.dragging.enable();
+    } else {
+      mapState.dragging.disable();
+    }
     setIsMapLocked(!isMapLocked);
   }
 
@@ -169,27 +170,17 @@ const DetailViewGpx: React.FC = () => {
           </button>
         </div>
         <div className="gpx-controls--button">
-          <button
-            data-test="zoom_in"
-            className="icon icon--zoom_in"
-            onClick={zoomIn}
-          >
+          <button data-test="zoom_in" className="icon icon--zoom_in" onClick={zoomIn}>
             Zoom in
           </button>
         </div>
         <div className="gpx-controls--button">
-          <button
-            data-test="zoom_out"
-            className="icon icon--zoom_out"
-            onClick={zoomOut}
-          >
+          <button data-test="zoom_out" className="icon icon--zoom_out" onClick={zoomOut}>
             Zoom out
           </button>
         </div>
         <div className="gpx-controls--button">
-          <CurrentLocationButton
-            callback={changeLocation}
-          ></CurrentLocationButton>
+          <CurrentLocationButton callback={changeLocation}></CurrentLocationButton>
         </div>
       </div>
     </>

@@ -1,30 +1,23 @@
-import { globalHistory } from "@reach/router";
-import { mount, ReactWrapper, shallow } from "enzyme";
-import React from "react";
-import { act } from "react-dom/test-utils";
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import { act } from "react";
+import { Router } from "../../../router-app/router-app";
 import * as Modal from "../../atoms/modal/modal";
 import ModalDisplayOptions from "./modal-display-options";
 
 describe("ModalDisplayOptions", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
-    shallow(
-      <ModalDisplayOptions isOpen={true} parentFolder="/" handleExit={() => {}}>
-        test
-      </ModalDisplayOptions>
-    );
+    render(<ModalDisplayOptions isOpen={true} handleExit={() => {}}></ModalDisplayOptions>);
   });
 
   describe("with Context", () => {
     describe("buttons exist", () => {
-      var modal: ReactWrapper;
-      beforeAll(() => {
-        modal = mount(
-          <ModalDisplayOptions
-            parentFolder={"/"}
-            isOpen={true}
-            handleExit={() => {}}
-          />
-        );
+      let modal: RenderResult;
+      beforeEach(() => {
+        modal = render(<ModalDisplayOptions isOpen={true} handleExit={() => {}} />);
       });
 
       afterAll(() => {
@@ -36,24 +29,22 @@ describe("ModalDisplayOptions", () => {
       });
 
       it("toggle-collections", () => {
-        expect(modal.exists('[data-test="toggle-collections"]')).toBeTruthy();
+        const toggleCollections = modal.queryByTestId("toggle-collections");
+        const modalDisplayOptions = modal.queryByTestId("modal-display-options");
+
+        expect(modalDisplayOptions).toBeTruthy();
+        expect(toggleCollections).toBeTruthy();
       });
       it("toggle-slow-files", () => {
-        expect(modal.exists('[data-test="toggle-slow-files"]')).toBeTruthy();
+        expect(modal.queryByTestId("toggle-slow-files")).toBeTruthy();
       });
     });
 
     describe("click button", () => {
-      var modal: ReactWrapper;
+      let modal: RenderResult;
       beforeEach(() => {
         jest.useFakeTimers();
-        modal = mount(
-          <ModalDisplayOptions
-            parentFolder={"/"}
-            isOpen={true}
-            handleExit={() => {}}
-          />
-        );
+        modal = render(<ModalDisplayOptions isOpen={true} handleExit={() => {}} />);
       });
 
       afterEach(() => {
@@ -65,74 +56,84 @@ describe("ModalDisplayOptions", () => {
         jest.useRealTimers();
       });
 
-      it("toggle-collections", () => {
-        modal
-          .find('[data-test="toggle-collections"] input')
-          .first()
-          .simulate("change");
+      it("toggle-collections", async () => {
+        const toggleCollections = modal.queryByTestId("toggle-collections");
 
-        expect(globalHistory.location.search).toBe("?collections=false");
+        const toFalseButton = toggleCollections?.querySelectorAll("input")[1];
 
-        modal
-          .find('[data-test="toggle-collections"] input')
-          .last()
-          .simulate("change");
+        await act(async () => {
+          await toFalseButton?.click();
+        });
 
-        expect(globalHistory.location.search).toBe("?collections=true");
+        expect(globalThis.location.search).toBe("?collections=false");
+
+        const toTrueButton = toggleCollections?.querySelectorAll("input")[0];
+
+        await act(async () => {
+          await toTrueButton?.click();
+        });
+
+        expect(globalThis.location.search).toBe("?collections=true");
       });
 
-      it("toggle-slow-files", () => {
-        modal
-          .find('[data-test="toggle-slow-files"] input')
-          .first()
-          .simulate("change");
+      it("toggle-slow-files should set localStorage", async () => {
+        const toggleSlowFiles = modal.queryByTestId("toggle-slow-files");
+        const toFalseButton = toggleSlowFiles?.querySelectorAll("input")[1];
 
-        expect(localStorage.getItem("issingleitem")).toBe("false");
+        await act(async () => {
+          await toFalseButton?.click();
+        });
 
-        modal
-          .find('[data-test="toggle-slow-files"] input')
-          .last()
-          .simulate("change");
+        expect(localStorage.getItem("alwaysLoadImage")).toBe("true");
 
-        expect(localStorage.getItem("issingleitem")).toBe("true");
+        const toTrueButton = toggleSlowFiles?.querySelectorAll("input")[0];
+
+        await act(async () => {
+          await toTrueButton?.click();
+        });
+
+        expect(localStorage.getItem("alwaysLoadImage")).toBe("false");
       });
 
-      it("toggle-sockets", () => {
-        modal
-          .find('[data-test="toggle-sockets"] input')
-          .first()
-          .simulate("change");
+      it("toggle-sockets", async () => {
+        const toggleSockets = modal.queryByTestId("toggle-sockets");
+        const toFalseButton = toggleSockets?.querySelectorAll("input")[1];
+
+        await act(async () => {
+          await toFalseButton?.click();
+        });
 
         expect(localStorage.getItem("use-sockets")).toBe("false");
 
-        modal
-          .find('[data-test="toggle-sockets"] input')
-          .last()
-          .simulate("change");
+        const toTrueButton = toggleSockets?.querySelectorAll("input")[0];
+
+        await act(async () => {
+          await toTrueButton?.click();
+        });
 
         expect(localStorage.getItem("use-sockets")).toBe(null);
       });
 
-      it("sort - change to imageFormat", () => {
-        globalHistory.location.search = "";
+      it("sort - change to imageFormat", async () => {
+        console.log("sort - change to imageFormat");
+        Router.navigate("/?sort=test");
 
-        modal
-          .find('[data-test="sort"] select')
-          .first()
-          .simulate("change", { target: { value: "imageFormat" } });
+        const select = modal.queryByTestId("select") as HTMLSelectElement;
+        expect(select).not.toBeNull();
 
-        expect(globalHistory.location.search).toBe("?sort=imageFormat");
+        fireEvent.change(select, { target: { value: "imageFormat" } });
+
+        expect(globalThis.location.search).toBe("?sort=imageFormat");
       });
 
       it("sort - change to fileName", () => {
-        globalHistory.location.search = "";
+        Router.navigate("/?sort=test");
 
-        modal
-          .find('[data-test="sort"] select')
-          .first()
-          .simulate("change", { target: { value: "fileName" } });
+        const select = modal.queryByTestId("select") as HTMLSelectElement;
+        expect(select).not.toBeNull();
+        fireEvent.change(select, { target: { value: "fileName" } });
 
-        expect(globalHistory.location.search).toBe("?sort=fileName");
+        expect(globalThis.location.search).toBe("?sort=fileName");
       });
     });
 
@@ -146,15 +147,9 @@ describe("ModalDisplayOptions", () => {
 
       const handleExitSpy = jest.fn();
 
-      const component = mount(
-        <ModalDisplayOptions
-          parentFolder="/"
-          isOpen={true}
-          handleExit={handleExitSpy}
-        />
-      );
+      const component = render(<ModalDisplayOptions isOpen={true} handleExit={handleExitSpy} />);
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       // and clean afterwards
       component.unmount();

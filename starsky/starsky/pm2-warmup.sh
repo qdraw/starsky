@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
 
-
-## WARMUP WITHOUT LOGIN
+## WARMUP WITHOUT LOGIN /api/account/status
 
 ARGUMENTS=("$@")
 
 PORT=5000
+# Port 4823 an example port number
 
 for ((i = 1; i <= $#; i++ )); do
-  if [ $i -gt 1 ]; then
+  if [[ $i -gt 1 ]]; then
     PREV=$(($i-2))
     CURRENT=$(($i-1))
 
     if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
     then
         echo "--port 4823"
+        exit 0
     fi
 
     if [[ ${ARGUMENTS[PREV]} == "--port" ]];
@@ -29,31 +30,30 @@ URL="http://localhost:$PORT"
 # no slash
 URL=${URL%/}
 
-echo "bash pm2-warmup.sh --port 4823"
-echo "Running on:"
-echo $URL
+echo "EXAMPLE: bash pm2-warmup.sh --port $PORT"
+echo "Running on: "$URL
 
 COUNTER=0
-MAXCOUNTER=30
-while [ $COUNTER -lt $MAXCOUNTER ]; do
-	CURLOUTPUT=`curl -X GET -IL "$URL"/api/account/status -o /dev/null -w '%{http_code}\n' -s`
-	if [ $CURLOUTPUT != "401" ]; then
+MAX_COUNTER=40
+while [[ $COUNTER -lt $MAX_COUNTER ]]; do
+	CURL_OUTPUT=$(curl -X GET -IL "$URL"/api/account/status -o /dev/null -w '%{http_code}\n' -s)
+  if [[ $CURL_OUTPUT != "401" && $CURL_OUTPUT != "406" ]]; then
 		if ! (($COUNTER % 2)); then
-			echo "$COUNTER - $CURLOUTPUT - retry"
+			echo "$COUNTER - $CURL_OUTPUT - retry"
 		fi
-		sleep 3s
+		sleep 3
 		let COUNTER=COUNTER+1
 	else
-		echo "$COUNTER - $CURLOUTPUT - done"
-    let COUNTER=MAXCOUNTER+1 # to exit the while loop
+		echo "$COUNTER - $CURL_OUTPUT - done"
+    let COUNTER=MAX_COUNTER+1 # to exit the while loop
 	fi
 done
 
-if [[ $COUNTER == $MAXCOUNTER  ]]; then
- echo "!> FAIL Tried more than "$MAXCOUNTER" Times"
+if [[ $COUNTER == $MAX_COUNTER  ]]; then
+ echo "!> FAIL Tried more than "$MAX_COUNTER" Times"
  exit 1
 fi
 
-# To make Search Suggestions at start faster
-CURLSUGGESTOUTPUT=`curl -X GET -LI "$URL"/api/suggest/inflate -o /dev/null -w '%{http_code}\n' -s`
-echo "!> done ~ -sug:$CURLSUGGESTOUTPUT"
+ # To make Search Suggestions at start faster
+CURL_SUGGEST_OUTPUT=$(curl -X GET -LI "$URL"/api/suggest/inflate -o /dev/null -w '%{http_code}\n' -s)
+echo "!> done ~ -sug:$CURL_SUGGEST_OUTPUT"

@@ -1,85 +1,112 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
+
 #pragma warning disable 1998
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeIImportQuery : IImportQuery
 {
-	public class FakeIImportQuery : IImportQuery
+	private readonly List<string> _exist;
+	private readonly bool _isConnection;
+
+	public FakeIImportQuery(List<string> exist, bool isConnection = true)
 	{
-		private readonly List<string> _exist;
-		private readonly bool _isConnection;
-
-		public FakeIImportQuery(List<string> exist, bool isConnection = true)
+		_exist = exist;
+		_isConnection = isConnection;
+		if ( exist == null! )
 		{
-			_exist = exist;
-			_isConnection = isConnection;
-			if ( exist == null ) _exist = new List<string>();
+			_exist = [];
 		}
+	}
 
-		public FakeIImportQuery()
-		{
-			_exist = new List<string>();
-			_isConnection = true;
-		}
+	public FakeIImportQuery()
+	{
+		_exist = new List<string>();
+		_isConnection = true;
+	}
 
-		/// <summary>
-		/// To fake auto inject content
-		/// </summary>
-		/// <param name="scopeFactory"></param>
-		/// <param name="dbContext"></param>
-		public FakeIImportQuery(IServiceScopeFactory scopeFactory, ApplicationDbContext dbContext = null)
-		{
-			_exist = new List<string>();
-			_isConnection = true;
-		}
-		
-		public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
-		{
-			return _exist.Contains(fileHashCode);
-		}
+	/// <summary>
+	///     To fake auto inject content
+	/// </summary>
+	/// <param name="scopeFactory"></param>
+	/// <param name="console"></param>
+	/// <param name="logger"></param>
+	/// <param name="dbContext"></param>
+	[SuppressMessage("ReSharper", "UnusedParameter.Local")]
+	[SuppressMessage("Usage", "IDE0060:Remove unused parameter")]
+	public FakeIImportQuery(IServiceScopeFactory scopeFactory, IConsole console,
+		IWebLogger logger, ApplicationDbContext? dbContext = null)
+	{
+		_exist = new List<string>();
+		_isConnection = true;
+	}
 
-		public bool TestConnection()
-		{
-			return _isConnection;
-		}
+	public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
+	{
+		return _exist.Contains(fileHashCode);
+	}
 
-		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
-		{
-			_exist.Add(updateStatusContent.FileHash);
-			return true;
-		}
+	public bool TestConnection()
+	{
+		return _isConnection;
+	}
 
-		public List<ImportIndexItem> History()
+	public async Task<bool> AddAsync(ImportIndexItem updateStatusContent,
+		bool writeConsole = true)
+	{
+		_exist.Add(updateStatusContent.FileHash!);
+		return true;
+	}
+
+	public List<ImportIndexItem> History()
+	{
+		var newFakeList = new List<ImportIndexItem>();
+		foreach ( var exist in _exist )
 		{
-			var newFakeList = new List<ImportIndexItem>();
-			foreach ( var exist in _exist )
-			{
-				newFakeList.Add(new ImportIndexItem
-				{
-					Status = ImportStatus.Ok,
-					FilePath = exist
-				});
-			}
-			return newFakeList;
+			newFakeList.Add(new ImportIndexItem { Status = ImportStatus.Ok, FilePath = exist });
 		}
 
-		public async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
+		return newFakeList;
+	}
+
+	public async Task<List<ImportIndexItem>> AddRangeAsync(
+		List<ImportIndexItem> importIndexItemList)
+	{
+		foreach ( var importIndexItem in importIndexItemList )
 		{
-			foreach ( var importIndexItem in importIndexItemList )
-			{
-				await AddAsync(importIndexItem);
-			}
-			return importIndexItemList;
+			await AddAsync(importIndexItem);
 		}
 
-		public async Task<bool> RemoveAsync(string fileHash)
+		return importIndexItemList;
+	}
+
+	public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem,
+		int maxAttemptCount = 3)
+	{
+		try
 		{
-			_exist.Remove(fileHash);
-			return true;
+			_exist.Remove(importIndexItem.FilePath!);
 		}
+		catch ( ArgumentOutOfRangeException )
+		{
+			await Task.Delay(new Random().Next(1, 5));
+			_exist.Remove(importIndexItem.FilePath!);
+		}
+
+		return importIndexItem;
+	}
+
+	public async Task<bool> RemoveAsync(string fileHash)
+	{
+		_exist.Remove(fileHash);
+		return true;
 	}
 }

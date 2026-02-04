@@ -1,100 +1,309 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.storage.Storage
+namespace starskytest.starsky.foundation.storage.Storage;
+
+[TestClass]
+public sealed class StorageThumbnailFilesystemTest
 {
-	[TestClass]
-	public class StorageThumbnailFilesystemTest
+	private readonly string _fileName;
+	private readonly StorageThumbnailFilesystem _thumbnailStorage;
+
+	public StorageThumbnailFilesystemTest()
 	{
-		private readonly StorageThumbnailFilesystem _thumbnailStorage;
-		private readonly string _fileNameWithoutExtension;
+		var createNewImage = new CreateAnImage();
+		var appSettings = new AppSettings { ThumbnailTempFolder = createNewImage.BasePath };
+		_thumbnailStorage = new StorageThumbnailFilesystem(appSettings, new FakeIWebLogger());
+		_fileName = createNewImage.FileName;
+	}
 
-		public StorageThumbnailFilesystemTest()
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+	public TestContext TestContext { get; set; }
+
+	[TestMethod]
+	public void Thumbnail_CombinePathShouldEndWithTestJpg()
+	{
+		var result = _thumbnailStorage.CombinePath("test.jpg");
+		Assert.EndsWith("test.jpg", result);
+	}
+
+	[TestMethod]
+	public void Thumbnail_FileMove_Test()
+	{
+		var createNewImage = new CreateAnImage();
+
+		const string startMoveFile = "start_move_file2";
+		const string movedFileName = "StorageThumbnailFilesystemTest_FileMove2.jpg";
+
+		// first copy for parallel test
+		RetryHelper.Do(CreateStartMoveFileAsync, TimeSpan.FromSeconds(1));
+
+		_thumbnailStorage.FileMove(startMoveFile,
+			movedFileName);
+
+		var path = Path.Combine(createNewImage.BasePath, startMoveFile + ".jpg");
+		Assert.IsFalse(File.Exists(path));
+		var path2 = Path.Combine(createNewImage.BasePath,
+			movedFileName);
+		Assert.IsTrue(File.Exists(path2));
+
+		File.Delete(Path.Combine(createNewImage.BasePath, startMoveFile + ".jpg"));
+		File.Delete(Path.Combine(createNewImage.BasePath,
+			movedFileName));
+
+		var createAnImage = new CreateAnImage();
+		Assert.IsNotNull(createAnImage);
+		return;
+
+		bool CreateStartMoveFileAsync()
 		{
-			var createNewImage = new CreateAnImage();
-			var appSettings = new AppSettings {ThumbnailTempFolder = createNewImage.BasePath};
-			_thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
-			_fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(createNewImage.FileName);
-
+			// first copy for parallel test
+			createNewImage = new CreateAnImage();
+			_thumbnailStorage.FileCopy(_fileName, startMoveFile);
+			return true;
 		}
-		
-		[TestMethod]
-		public void FileMove()
+	}
+
+	[TestMethod]
+	public void Thumbnail_FileMove_NotFound()
+	{
+		Assert.IsFalse(_thumbnailStorage.FileMove("not-found",
+			"StorageThumbnailFilesystemTest_FileMove.jpg"));
+	}
+
+	[TestMethod]
+	public async Task Thumbnail_FileMove_SkipIfAlreadyExists()
+	{
+		var createAnImage = new CreateAnImage();
+
+		// first copy for parallel test
+		const string alreadyExistsFileName = "already_exists_file_thumbnail.jpg";
+		const string beforeTestFileName = "before_test_thumbnail.jpg";
+
+		_thumbnailStorage.FileCopy(_fileName, alreadyExistsFileName);
+		await _thumbnailStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"),
+			beforeTestFileName);
+
+		_thumbnailStorage.FileMove(beforeTestFileName, alreadyExistsFileName);
+
+		Assert.AreEqual(CreateAnImage.Size, _thumbnailStorage.Info(alreadyExistsFileName).Size);
+
+		File.Delete(Path.Combine(createAnImage.BasePath,
+			alreadyExistsFileName));
+		_thumbnailStorage.FileDelete(beforeTestFileName);
+	}
+
+	[TestMethod]
+	public void Thumbnail_FileCopy_success()
+	{
+		var createNewImage = new CreateAnImage();
+
+		_thumbnailStorage.FileCopy(_fileName,
+			"StorageThumbnailFilesystemTest_FileCopy.jpg");
+
+		var path = Path.Combine(createNewImage.BasePath, _fileName);
+		Assert.IsTrue(File.Exists(path));
+		var path2 = Path.Combine(createNewImage.BasePath,
+			"StorageThumbnailFilesystemTest_FileCopy.jpg");
+		Assert.IsTrue(File.Exists(path2));
+
+		File.Delete(_fileName);
+		File.Delete(Path.Combine(createNewImage.BasePath,
+			"StorageThumbnailFilesystemTest_FileCopy.jpg"));
+
+		var createAnImage = new CreateAnImage();
+		Assert.IsNotNull(createAnImage);
+	}
+
+	[TestMethod]
+	public void Thumbnail_FileCopy_source_notFound()
+	{
+		var createNewImage = new CreateAnImage();
+
+		_thumbnailStorage.FileCopy("not_found", "StorageThumbnailFilesystemTest_FileCopy2.jpg");
+
+		var path2 = Path.Combine(createNewImage.BasePath,
+			"StorageThumbnailFilesystemTest_FileCopy2.jpg");
+		Assert.IsFalse(File.Exists(path2));
+	}
+
+	[TestMethod]
+	public void Thumbnail_FileDelete_NotExist()
+	{
+		Assert.IsFalse(_thumbnailStorage.FileDelete("NotFound"));
+	}
+
+	[TestMethod]
+	public void Thumbnail_ReadStream()
+	{
+		var createAnImage = new CreateAnImage();
+		Assert.IsNotNull(createAnImage);
+
+		var stream = _thumbnailStorage.ReadStream(_fileName);
+		Assert.AreEqual(CreateAnImage.Bytes.Length, stream.Length);
+
+		stream.Dispose();
+	}
+
+	[TestMethod]
+	public void Thumbnail_ReadStream_MaxLength()
+	{
+		var createAnImage = new CreateAnImage();
+		Assert.IsNotNull(createAnImage);
+
+		var stream = _thumbnailStorage.ReadStream(_fileName, 100);
+		Assert.AreEqual(100, stream.Length);
+
+		stream.Dispose();
+	}
+
+	[TestMethod]
+	public void Thumbnail_WriteStream()
+	{
+		const string filename = "StorageThumbnailFilesystemTest_WriteStream.jpg";
+		var createNewImage = new CreateAnImage();
+
+		_thumbnailStorage.WriteStream(new MemoryStream([.. CreateAnImage.Bytes]),
+			filename);
+
+		var readStream =
+			_thumbnailStorage.ReadStream(filename);
+		Assert.AreEqual(CreateAnImage.Bytes.Length, readStream.Length);
+		readStream.Dispose();
+
+		File.Delete(Path.Combine(createNewImage.BasePath, filename));
+	}
+
+	[TestMethod]
+	public async Task Thumbnail_WriteStreamAsync()
+	{
+		var createNewImage = new CreateAnImage();
+		const string filename = "StorageThumbnailFilesystemTest_WriteStreamAsync.jpg";
+
+		await _thumbnailStorage.WriteStreamAsync(
+			new MemoryStream([.. CreateAnImage.Bytes]),
+			filename);
+
+		var readStream = _thumbnailStorage.ReadStream(filename);
+		Assert.AreEqual(CreateAnImage.Bytes.Length, readStream.Length);
+		await readStream.DisposeAsync();
+
+		File.Delete(Path.Combine(createNewImage.BasePath, filename));
+	}
+
+	[TestMethod]
+	public async Task Thumbnail_IsFileReady_thumbnailStorage()
+	{
+		var createNewImage = new CreateAnImage();
+		var thumbnailId = $"IsFileReady_thumbnailStorage_{Guid.NewGuid():N}";
+		// first copy for parallel test
+		_thumbnailStorage.FileCopy(_fileName, thumbnailId);
+
+		var stream = _thumbnailStorage.ReadStream(thumbnailId);
+
+		var result = _thumbnailStorage.IsFileReady(thumbnailId);
+		Assert.IsFalse(result);
+
+		// is disposed too late (as designed)
+		await stream.DisposeAsync();
+
+		if ( new AppSettings().IsWindows )
 		{
-			var createNewImage = new CreateAnImage();
-			
-			_thumbnailStorage.FileMove(_fileNameWithoutExtension, "StorageThumbnailFilesystemTest_FileMove");
-
-			var path = Path.Combine(createNewImage.BasePath, _fileNameWithoutExtension + ".jpg");
-			Assert.IsFalse(File.Exists(path));
-			var path2 = Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg");
-			Assert.IsTrue(File.Exists(path2));
-			
-			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg"));
-			new CreateAnImage();
+			await Task.Delay(500, TestContext.CancellationToken);
 		}
 
-		[TestMethod]
-		public void FileDelete_NotExist()
-		{
-			Assert.IsFalse(_thumbnailStorage.FileDelete("NotFound"));
-		}
-		
-		[TestMethod]
-		public void ReadStream()
-		{
-			new CreateAnImage();
+		var result2 = _thumbnailStorage.IsFileReady(thumbnailId);
+		Assert.IsTrue(result2);
 
-			var stream =_thumbnailStorage.ReadStream(_fileNameWithoutExtension);
-			Assert.AreEqual(CreateAnImage.Bytes.Length,stream.Length);
-			
-			stream.Dispose();
-		}
-		
-		[TestMethod]
-		public void ReadStream_MaxLength()
-		{
-			new CreateAnImage();
+		File.Delete(Path.Combine(createNewImage.BasePath, thumbnailId));
 
-			var stream =_thumbnailStorage.ReadStream(_fileNameWithoutExtension, 100);
-			Assert.AreEqual(100,stream.Length);
-			
-			stream.Dispose();
-		}
-		
-		[TestMethod]
-		public void WriteStream()
-		{
-			var createNewImage = new CreateAnImage();
+		Assert.IsFalse(_thumbnailStorage.ExistFile(thumbnailId));
+	}
 
-			_thumbnailStorage.WriteStream(new MemoryStream(CreateAnImage.Bytes),
-				"StorageThumbnailFilesystemTest_WriteStream");
+	[TestMethod]
+	public void Thumbnail_IsFolderOrFile()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.IsFolderOrFile("not-found"));
+	}
 
-			var readStream =_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStream");
-			Assert.AreEqual(CreateAnImage.Bytes.Length,readStream.Length);
-			readStream.Dispose();
+	[TestMethod]
+	public void Thumbnail_FolderMove()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.FolderMove("not-found", "2"));
+	}
 
-			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg"));
-		}
-		
-		[TestMethod]
-		public async Task WriteStreamAsync()
-		{
-			var createNewImage = new CreateAnImage();
+	[TestMethod]
+	public void Thumbnail_CreateDirectory()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.CreateDirectory("not-found"));
+	}
 
-			await _thumbnailStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes),
-				"StorageThumbnailFilesystemTest_WriteStreamAsync");
+	[TestMethod]
+	public void Thumbnail_FolderDelete()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.FolderDelete("not-found"));
+	}
 
-			var readStream =_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStreamAsync");
-			Assert.AreEqual(CreateAnImage.Bytes.Length,readStream.Length);
-			await readStream.DisposeAsync();
+	[TestMethod]
+	public void Thumbnail_GetAllFilesInDirectoryRecursive()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.GetAllFilesInDirectoryRecursive("not-found"));
+	}
 
-			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_WriteStreamAsync.jpg"));
-		}
+	[TestMethod]
+	public void Thumbnail_GetDirectories()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.GetDirectories("not-found"));
+	}
+
+	[TestMethod]
+	public void Thumbnail_GetDirectoryRecursive()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.GetDirectoryRecursive("not-found"));
+	}
+
+	[TestMethod]
+	public void Thumbnail_ReadStream_NotFound()
+	{
+		Assert.ThrowsExactly<FileNotFoundException>(() =>
+			_thumbnailStorage.ReadStream("not-found"));
+	}
+
+	[TestMethod]
+	public void Thumbnail_WriteStreamOpenOrCreate()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.WriteStreamOpenOrCreate(Stream.Null, "not-found"));
+	}
+
+	[TestMethod]
+	public void Thumbnail_Info()
+	{
+		Assert.AreEqual(CreateAnImage.Size, _thumbnailStorage.Info(_fileName).Size);
+	}
+
+
+	[TestMethod]
+	public void Thumb_ReadLinesAsync()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.ReadLinesAsync("not-found", new CancellationToken(true)));
 	}
 }

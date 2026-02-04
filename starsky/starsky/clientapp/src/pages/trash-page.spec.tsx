@@ -1,5 +1,4 @@
-import { mount } from "enzyme";
-import React from "react";
+import { render } from "@testing-library/react";
 import * as Preloader from "../components/atoms/preloader/preloader";
 import * as ApplicationException from "../components/organisms/application-exception/application-exception";
 import * as ArchiveContextWrapper from "../contexts-wrappers/archive-wrapper";
@@ -7,7 +6,7 @@ import * as useSearchList from "../hooks/use-searchlist";
 import { ISearchList } from "../hooks/use-searchlist";
 import { newIArchive } from "../interfaces/IArchive";
 import { PageType } from "../interfaces/IDetailView";
-import TrashPage from "./trash-page";
+import { TrashPage } from "./trash-page";
 
 describe("TrashPage", () => {
   it("default error case", () => {
@@ -15,16 +14,15 @@ describe("TrashPage", () => {
       return {} as ISearchList;
     });
 
-    var error = mount(<TrashPage>t</TrashPage>);
-    expect(error.text()).toBe("Something went wrong");
+    const error = render(<TrashPage />);
+
+    expect(error.container.innerHTML).toBe("Something went wrong");
   });
 
   it("check if context is called", () => {
-    var contextSpy = jest
-      .spyOn(ArchiveContextWrapper, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const contextSpy = jest.spyOn(ArchiveContextWrapper, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
 
     jest.spyOn(useSearchList, "default").mockImplementationOnce(() => {
       return {
@@ -33,9 +31,9 @@ describe("TrashPage", () => {
       } as ISearchList;
     });
 
-    var trashPage = mount(<TrashPage>t</TrashPage>);
+    const trashPage = render(<TrashPage />);
 
-    expect(contextSpy).toBeCalled();
+    expect(contextSpy).toHaveBeenCalled();
 
     trashPage.unmount();
   });
@@ -43,10 +41,10 @@ describe("TrashPage", () => {
   it("Internal Error null", () => {
     jest
       .spyOn(useSearchList, "default")
-      .mockImplementationOnce(() => null as any);
+      .mockImplementationOnce(() => null as unknown as ISearchList);
 
-    const component = mount(<TrashPage>t</TrashPage>);
-    expect(component.html()).toBe("Something went wrong");
+    const component = render(<TrashPage />);
+    expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
   });
@@ -54,10 +52,10 @@ describe("TrashPage", () => {
   it("Internal Error plain object", () => {
     jest
       .spyOn(useSearchList, "default")
-      .mockImplementationOnce(() => ({} as any));
+      .mockImplementationOnce(() => ({}) as unknown as ISearchList);
 
-    const component = mount(<TrashPage>t</TrashPage>);
-    expect(component.html()).toBe("Something went wrong");
+    const component = render(<TrashPage />);
+    expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
   });
@@ -70,12 +68,12 @@ describe("TrashPage", () => {
     jest.spyOn(useSearchList, "default").mockImplementationOnce(() => {
       return {
         pageType: PageType.ApplicationException
-      } as any;
+      } as ISearchList;
     });
 
-    const component = mount(<TrashPage>t</TrashPage>);
+    const component = render(<TrashPage />);
 
-    expect(applicationExceptionSpy).toBeCalled();
+    expect(applicationExceptionSpy).toHaveBeenCalled();
 
     component.unmount();
   });
@@ -87,16 +85,16 @@ describe("TrashPage", () => {
       return {
         archive: {},
         pageType: PageType.Loading
-      } as any;
+      } as ISearchList;
     });
 
     jest.spyOn(ArchiveContextWrapper, "default").mockImplementationOnce(() => {
       return <></>;
     });
 
-    const component = mount(<TrashPage>t</TrashPage>);
+    const component = render(<TrashPage />);
 
-    expect(preloaderSpy).toBeCalled();
+    expect(preloaderSpy).toHaveBeenCalled();
 
     component.unmount();
   });

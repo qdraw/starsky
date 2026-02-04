@@ -1,32 +1,29 @@
-import { Link } from "@reach/router";
 import React, { memo, useEffect } from "react";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
+import Link from "../../atoms/link/link";
 import Preloader from "../../atoms/preloader/preloader";
 
 interface IListImageBox {
   item: IFileIndexItem;
+  className?: string;
+  children?: React.ReactNode;
+
   /**
    * When selecting and pressing shift
    * @param filePath the entire path (subPath style)
    */
   onSelectionCallback?(filePath: string): void;
-  className?: string;
-  children?: React.ReactNode;
 }
 
 const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = memo(
-  (props) => {
-    const item = props.item;
-    if (item.isDirectory === undefined) item.isDirectory = false;
+  ({ item, className: propsClassName, onSelectionCallback, children }) => {
+    item.isDirectory ??= false;
 
-    const [className] = React.useState(
-      !props.className ? "list-image-box" : props.className
-    );
-
-    var history = useLocation();
+    const className = propsClassName ?? "list-image-box";
+    const history = useLocation();
 
     // Check if select exist or Length 0 or more
     const [select, setSelect] = React.useState(
@@ -36,19 +33,21 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
       setSelect(new URLPath().StringToIUrl(history.location.search).select);
     }, [history.location.search]);
 
+    // reset preloader state when a new filePath is loaded
+    useEffect(() => {
+      setPreloaderState(false);
+    }, [item.filePath]);
+
     function toggleSelection(fileName: string): void {
-      var urlObject = new URLPath().toggleSelection(
-        fileName,
-        history.location.search
-      );
+      const urlObject = new URLPath().toggleSelection(fileName, history.location.search);
       history.navigate(new URLPath().IUrlToString(urlObject), {
         replace: true
       });
       setSelect(urlObject.select);
     }
 
-    var preloader = <Preloader isOverlay={true} isWhite={false} />;
-    const [isPreloaderState, setPreloaderState] = React.useState(false);
+    const preloader = <Preloader isOverlay={true} isWhite={false} />;
+    const [preloaderState, setPreloaderState] = React.useState(false);
 
     function preloaderStateOnClick(event: React.MouseEvent) {
       // Command (mac) or ctrl click means open new window
@@ -63,29 +62,27 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
         <div
           className={`${className} ${className}--select`}
           data-filepath={item.filePath}
+          data-test="list-image-view-select-container"
         >
           <button
             onClick={(event) => {
               // multiple select using the shift key
               if (!event.shiftKey) {
                 toggleSelection(item.fileName);
-              } else if (event.shiftKey && props.onSelectionCallback) {
-                props.onSelectionCallback(item.filePath);
+              } else if (event.shiftKey && onSelectionCallback) {
+                onSelectionCallback(item.filePath);
               }
             }}
             className={
-              select.indexOf(item.fileName) === -1
-                ? "box-content colorclass--" +
+              select.includes(item.fileName)
+                ? "box-content box-content--selected colorclass--" +
                   item.colorClass +
                   " isDirectory-" +
                   item.isDirectory
-                : "box-content box-content--selected colorclass--" +
-                  item.colorClass +
-                  " isDirectory-" +
-                  item.isDirectory
+                : "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory
             }
           >
-            {props.children}
+            {children}
           </button>
         </div>
       );
@@ -94,25 +91,23 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
     // default state
     // data-filepath is needed to scroll to
     return (
-      <div className={`${className} box--view`} data-filepath={item.filePath}>
+      <div
+        data-test="list-image-view-select-container"
+        className={`${className} box--view`}
+        data-filepath={item.filePath}
+      >
         {/* for slow connections show preloader icon */}
-        {isPreloaderState ? preloader : null}
-        {/* the a href to the child page */}
+        {preloaderState ? preloader : null}
+        {/* the <a href to the child page */}
         <Link
           onClick={preloaderStateOnClick}
           title={item.fileName}
-          to={new UrlQuery().updateFilePathHash(
-            history.location.search,
-            item.filePath
-          )}
+          to={new UrlQuery().updateFilePathHash(history.location.search, item.filePath)}
           className={
-            "box-content colorclass--" +
-            item.colorClass +
-            " isDirectory-" +
-            item.isDirectory
+            "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory
           }
         >
-          {props.children}
+          {children}
         </Link>
       </div>
     );

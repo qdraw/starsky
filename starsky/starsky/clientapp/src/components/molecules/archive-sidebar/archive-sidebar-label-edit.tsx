@@ -1,6 +1,7 @@
-import React from "react";
+import { useContext, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import { Language } from "../../../shared/language";
 import SwitchButton from "../../atoms/switch-button/switch-button";
@@ -10,19 +11,15 @@ import ArchiveSidebarLabelEditSearchReplace from "./archive-sidebar-label-edit-s
 const ArchiveSidebarLabelEdit: React.FunctionComponent = () => {
   // Content
   const settings = useGlobalSettings();
-  const MessageModifyName = new Language(settings.language).text(
-    "Wijzigen",
-    "Modify"
-  );
-  const MessageSearchAndReplaceName = new Language(settings.language).text(
-    "Vervangen",
-    "Replace"
+  const MessageModifyName = new Language(settings.language).key(localization.MessageModifyName);
+  const MessageSearchAndReplaceName = new Language(settings.language).key(
+    localization.MessageSearchAndReplaceNameShort
   );
 
   // Toggle
-  const [isReplaceMode, setReplaceMode] = React.useState(false);
+  const [replaceMode, setReplaceMode] = useState(false);
 
-  let { state } = React.useContext(ArchiveContext);
+  let { state } = useContext(ArchiveContext);
 
   // state without any context
   state = new CastToInterface().UndefinedIArchiveReadonly(state);
@@ -35,8 +32,11 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent = () => {
         rightLabel={MessageSearchAndReplaceName}
         onToggle={(value) => setReplaceMode(value)}
       />
-      {!isReplaceMode ? <ArchiveSidebarLabelEditAddOverwrite /> : null}
-      {isReplaceMode ? <ArchiveSidebarLabelEditSearchReplace /> : null}
+      {replaceMode ? (
+        <ArchiveSidebarLabelEditSearchReplace />
+      ) : (
+        <ArchiveSidebarLabelEditAddOverwrite />
+      )}
     </div>
   );
 };

@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../interfaces/IConnectionDefault";
 
 /**
  * With abort signal
@@ -52,12 +49,18 @@ export const fetchContent = async (
     });
     data = await res.json();
     statusCode = res.status;
-  } catch (event) {
+  } catch (error_: unknown) {
+    if (
+      (error_ as Error)?.message?.indexOf("aborted") >= 0 ||
+      (error_ as Error)?.message?.indexOf("Only absolute URLs are supported") >= 0
+    ) {
+      return;
+    }
     // DOMException: "The operation was aborted"
-    console.error("use-fetch", url, event);
+    console.error("use-fetch", url, error_);
   }
 
-  var response = {
+  const response = {
     statusCode,
     data
   } as IConnectionDefault;

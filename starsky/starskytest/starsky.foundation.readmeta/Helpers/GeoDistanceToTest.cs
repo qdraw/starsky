@@ -4,7 +4,7 @@ using starsky.foundation.readmeta.Helpers;
 namespace starskytest.starsky.foundation.readmeta.Helpers
 {
 	[TestClass]
-	public class GeoDistanceToTest
+	public sealed class GeoDistanceToTest
 	{
 		[TestMethod]
 		public void GetDistanceTest()
