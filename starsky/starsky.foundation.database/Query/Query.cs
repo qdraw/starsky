@@ -725,9 +725,11 @@ public partial class Query : IQuery
 		{
 			AddCacheItemInternal(_cache);
 		}
-		catch ( ObjectDisposedException )
+		catch ( ObjectDisposedException exception )
 		{
-			AddCacheItemInternal(new InjectCacheServiceScope(_scopeFactory).Cache());
+			// you can't recover a singleton cache when it is disposed,
+			// so we log this error and skip the cache update
+			_logger.LogError("[AddCacheItem] ObjectDisposedException cache is broken", exception);
 		}
 
 		return;
