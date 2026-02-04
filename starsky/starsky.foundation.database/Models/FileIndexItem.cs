@@ -757,6 +757,12 @@ public sealed class FileIndexItem
 	public List<string> LastChanged { get; set; } = new();
 
 	/// <summary>
+	/// IPTC field for artist/creator
+	/// </summary>
+	[MaxLength(200)]
+	public string? Artist { get; set; } = string.Empty;
+
+	/// <summary>
 	///     Sets the file path as Filename and ParentDirectory
 	/// </summary>
 	/// <param name="value">The value.</param>
@@ -828,7 +834,7 @@ public sealed class FileIndexItem
 
 
 	/// <summary>
-	///     Create an List of all String, bool, Datetime, ImageFormat based database fields
+	///     Create a List of all String, bool, Datetime, ImageFormat based database fields
 	/// </summary>
 	/// <returns> Files the index property list.</returns>
 	public static List<string> FileIndexPropList()

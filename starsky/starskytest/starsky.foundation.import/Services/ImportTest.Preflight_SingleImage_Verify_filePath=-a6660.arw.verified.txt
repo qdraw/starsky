@@ -34,13 +34,15 @@
       LensModel: E 18-200mm F3.5-6.3 OSS LE,
       MakeCameraSerial: ,
       Size: 50000,
-      ImageStabilisation: On
+      ImageStabilisation: On,
+      Artist: Dion van Velde
     },
     SourceFullFilePath: /a6660.arw,
     Structure: {
       DefaultPattern: /yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext
     },
     MakeModel: Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE|,
+    Artist: Dion van Velde,
     DateTimeFromFileName: false,
     ImageFormat: tiff,
     Size: 50000,
