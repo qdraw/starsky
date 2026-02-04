@@ -104,7 +104,7 @@ public sealed class NotificationQuery : INotificationQuery
 		}
 	}
 
-	private static NotificationItem NewNotificationItem(string content)
+	internal static NotificationItem NewNotificationItem(string content)
 	{
 		return new NotificationItem
 		{
@@ -114,15 +114,12 @@ public sealed class NotificationQuery : INotificationQuery
 		};
 	}
 
-	private async Task<NotificationItem> AddNotification(ApplicationDbContext context,
+	internal async Task<NotificationItem> AddNotification(ApplicationDbContext context,
 		NotificationItem item, string content)
 	{
 		try
 		{
-			context.Entry(item).State = EntityState.Added;
-			await context.Notifications.AddAsync(item);
-			await context.SaveChangesAsync();
-			return item;
+
 		}
 		catch ( DbUpdateException updateException )
 		{
@@ -177,13 +174,19 @@ public sealed class NotificationQuery : INotificationQuery
 		{
 			try
 			{
-				return await AddNotification(_context, item, content);
+				context.Entry(item).State = EntityState.Added;
+				await context.Notifications.AddAsync(item);
+				await context.SaveChangesAsync();
+				return item;
 			}
 			catch ( ObjectDisposedException )
 			{
 				// Include create new scope factory
 				var dbContext = new InjectServiceScope(_scopeFactory).Context();
-				return await AddNotification(dbContext, item, content);
+				dbContext.Entry(item).State = EntityState.Added;
+				await dbContext.Notifications.AddAsync(item);
+				await dbContext.SaveChangesAsync();
+				return item;
 			}
 		}
 	}

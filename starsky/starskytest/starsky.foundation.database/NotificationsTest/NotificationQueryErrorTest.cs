@@ -162,7 +162,7 @@ public sealed class NotificationQueryErrorTest
 		Assert.IsNotNull(result);
 		Assert.AreEqual(content, result.Content);
 	}
-
+	
 	[TestMethod]
 	public async Task AddNotification_ShouldLogError_WhenInputExceedsMaxLength()
 	{

@@ -96,6 +96,28 @@ public sealed class NotificationQueryTest
 		Assert.IsNotNull(testNotification?.Content);
 		Assert.IsGreaterThanOrEqualTo(1746613149, testNotification.DateTimeEpoch);
 	}
+	
+	[TestMethod]
+	public async Task AddNotification_DisposedTest()
+	{
+		// Arrange
+		var serviceScopeFactory = CreateNewScope();
+		var scope = serviceScopeFactory.CreateScope();
+		var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		const string content = "Test notification disposed";
+		
+		// Dispose here
+		await dbContextDisposed.DisposeAsync();
+		
+		// Act
+		var sut = new NotificationQuery(dbContextDisposed, new FakeIWebLogger(), null!);
+		var result = await sut.AddNotification(dbContextDisposed,
+			NotificationQuery.NewNotificationItem(content), content);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(content, result.Content);
+	}
 
 	[TestMethod]
 	public async Task Get_RecentItems_Ok()
