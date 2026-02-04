@@ -725,8 +725,7 @@ public partial class Query : IQuery
 		{
 			AddCacheItemInternal(_cache);
 		}
-		// ObjectDisposedException can also be disposed (InvalidOperationException)
-		catch ( InvalidOperationException )
+		catch ( ObjectDisposedException )
 		{
 			AddCacheItemInternal(new InjectCacheServiceScope(_scopeFactory).Cache());
 		}
