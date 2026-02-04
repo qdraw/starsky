@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.11 - _(Unreleased)_ - 2026-02-03 {#v0.7.11}
 
+- [x] (Fixed) _Back-end_ IsValidZipFile handles IO Exceptions (PR #2705)
 - [x] (Fixed) _Back-end_ Add notification handeling for duplicate keys (PR #2704)
 - [x] (Fixed) _Back-end_ Issue where cache is disposed (PR #2703)
 - [x] (Added) _Back-end_ Add IPTC Artist field for Import and FileIndex (PR #2698)
