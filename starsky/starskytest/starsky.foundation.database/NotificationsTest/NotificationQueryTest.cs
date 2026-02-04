@@ -100,7 +100,7 @@ public sealed class NotificationQueryTest
 	}
 
 	[TestMethod]
-	public async Task AddNotification_DisposedTest()
+	public async Task AddNotification_Internal_DisposedTest()
 	{
 		// Arrange
 		var serviceScopeFactory = CreateNewScope();
@@ -113,13 +113,49 @@ public sealed class NotificationQueryTest
 
 		// Act
 		var result = new NotificationItem();
-		
+
 		try
 		{
 			var sut = new NotificationQuery(dbContextDisposed, new FakeIWebLogger(),
 				serviceScopeFactory);
 			result = await sut.AddNotification(dbContextDisposed,
 				NotificationQuery.NewNotificationItem(content), content);
+
+			// Assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(content, result.Content);
+		}
+		finally
+		{
+			var dbContext = new InjectServiceScope(serviceScopeFactory).Context();
+
+			dbContext.Notifications.Remove(result);
+			await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+			scope.Dispose();
+		}
+	}
+
+	[TestMethod]
+	public async Task AddNotification_Public_DisposedTest2()
+	{
+		// Arrange
+		var serviceScopeFactory = CreateNewScope();
+		var scope = serviceScopeFactory.CreateScope();
+		var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		const string content = "Test notification disposed";
+
+		// Dispose here
+		await dbContextDisposed.DisposeAsync();
+
+		// Act
+		var result = new NotificationItem();
+
+		try
+		{
+			var sut = new NotificationQuery(dbContextDisposed, new FakeIWebLogger(),
+				serviceScopeFactory);
+			result = await sut.AddNotification(content);
 
 			// Assert
 			Assert.IsNotNull(result);

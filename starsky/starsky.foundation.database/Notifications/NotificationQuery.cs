@@ -86,21 +86,13 @@ public sealed class NotificationQuery : INotificationQuery
 		}
 
 		_logger.LogError($"[NotificationQuery]: {ErrorMessageContentToLong} " +
-		                 $"{content.Length} - First 3000 chars: {content[..3000]}");
+		                 $"{content.Length} - First 3000 chars: {content[..3000]}" +
+		                 $" so skipping add notification");
 		return item;
 
 		async Task<NotificationItem> LocalAddQuery()
 		{
-			try
-			{
-				return await AddNotification(_context, item, content);
-			}
-			catch ( ObjectDisposedException )
-			{
-				// Include create new scope factory
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				return await AddNotification(context, item, content);
-			}
+			return await AddNotification(_context, item, content);
 		}
 	}
 
@@ -162,7 +154,8 @@ public sealed class NotificationQuery : INotificationQuery
 			else
 			{
 				_logger.LogError(updateException,
-					$"[AddNotification] no solution maybe retry? M: {updateException.Message}");
+					$"[AddNotification] no solution maybe retry? " +
+					$"M: {updateException.Message}");
 				throw;
 			}
 		}
