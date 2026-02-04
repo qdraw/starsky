@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -25,6 +26,11 @@ public sealed class NotificationQuery : INotificationQuery
 	private readonly ApplicationDbContext _context;
 	private readonly IWebLogger _logger;
 	private readonly IServiceScopeFactory _scopeFactory;
+
+	/// <summary>
+	/// should be lower than MEDIUMTEXT: 5_000_000 is 5MB
+	/// </summary>
+	private const int MaxContentLength = 5_000_000;
 
 	public NotificationQuery(ApplicationDbContext context, IWebLogger logger,
 		IServiceScopeFactory scopeFactory)
@@ -72,17 +78,9 @@ public sealed class NotificationQuery : INotificationQuery
 	/// <returns>item with id</returns>
 	public async Task<NotificationItem> AddNotification(string content)
 	{
-		// should be lower than MEDIUMTEXT: 5_000_000 is 5MB
-		const int maxContentLength = 5_000_000;
+		var item = NewNotificationItem(content);
 
-		var item = new NotificationItem
-		{
-			DateTime = DateTime.UtcNow,
-			DateTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds(),
-			Content = content.Length < maxContentLength ? content : ""
-		};
-
-		if ( content.Length <= maxContentLength )
+		if ( content.Length <= MaxContentLength )
 		{
 			return await RetryHelper.DoAsync(LocalAddQuery, TimeSpan.FromSeconds(1));
 		}
@@ -91,66 +89,101 @@ public sealed class NotificationQuery : INotificationQuery
 		                 $"{content.Length} - First 3000 chars: {content[..3000]}");
 		return item;
 
-		async Task<NotificationItem> LocalAdd(ApplicationDbContext context)
-		{
-			try
-			{
-				context.Entry(item).State = EntityState.Added;
-				await context.Notifications.AddAsync(item);
-				await context.SaveChangesAsync();
-				return item;
-			}
-			catch ( DbUpdateException updateException )
-			{
-				if ( updateException is DbUpdateConcurrencyException )
-				{
-					_logger.LogInformation(
-						"[AddNotification] try to fix DbUpdateConcurrencyException",
-						updateException);
-					SolveConcurrency.SolveConcurrencyExceptionLoop(updateException.Entries);
-					try
-					{
-						await _context.SaveChangesAsync();
-					}
-					catch ( DbUpdateConcurrencyException e )
-					{
-						_logger.LogInformation(e,
-							"[AddNotification] save failed after DbUpdateConcurrencyException");
-					}
-				}
-				else if ( updateException.InnerException is SqliteException
-				         {
-					         SqliteErrorCode: 19
-				         } )
-				{
-					_logger.LogInformation($"[AddNotification] SqliteException retry next: " +
-					                       $"{updateException.InnerException.Message}");
-
-					item.Id = 0;
-					await LocalAddQuery();
-				}
-				else
-				{
-					_logger.LogError(updateException,
-						$"[AddNotification] no solution maybe retry? M: {updateException.Message}");
-					throw;
-				}
-			}
-
-			return item;
-		}
-
 		async Task<NotificationItem> LocalAddQuery()
 		{
 			try
 			{
-				return await LocalAdd(_context);
+				return await AddNotification(_context, item, content);
 			}
 			catch ( ObjectDisposedException )
 			{
 				// Include create new scope factory
 				var context = new InjectServiceScope(_scopeFactory).Context();
-				return await LocalAdd(context);
+				return await AddNotification(context, item, content);
+			}
+		}
+	}
+
+	private static NotificationItem NewNotificationItem(string content)
+	{
+		return new NotificationItem
+		{
+			DateTime = DateTime.UtcNow,
+			DateTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds(),
+			Content = content.Length < MaxContentLength ? content : ""
+		};
+	}
+
+	private async Task<NotificationItem> AddNotification(ApplicationDbContext context,
+		NotificationItem item, string content)
+	{
+		try
+		{
+			context.Entry(item).State = EntityState.Added;
+			await context.Notifications.AddAsync(item);
+			await context.SaveChangesAsync();
+			return item;
+		}
+		catch ( DbUpdateException updateException )
+		{
+			if ( updateException is DbUpdateConcurrencyException )
+			{
+				_logger.LogInformation(
+					"[AddNotification] try to fix DbUpdateConcurrencyException",
+					updateException);
+				SolveConcurrency.SolveConcurrencyExceptionLoop(updateException.Entries);
+				try
+				{
+					await _context.SaveChangesAsync();
+				}
+				catch ( DbUpdateConcurrencyException e )
+				{
+					_logger.LogInformation(e,
+						"[AddNotification] save failed after DbUpdateConcurrencyException");
+				}
+			}
+			else if ( updateException.InnerException is MySqlException
+			         {
+				         ErrorCode: MySqlErrorCode.DuplicateKeyEntry
+			         } )
+			{
+				_logger.LogInformation($"[AddNotification] MySqlException retry next: " +
+				                       $"{updateException.InnerException.Message}");
+				item = NewNotificationItem(content);
+				return await LocalAddQuery();
+			}
+			else if ( updateException.InnerException is SqliteException
+			         {
+				         SqliteErrorCode: 19
+			         } )
+			{
+				_logger.LogInformation($"[AddNotification] SqliteException retry next: " +
+				                       $"{updateException.InnerException.Message}");
+
+				item.Id = 0;
+				return await LocalAddQuery();
+			}
+			else
+			{
+				_logger.LogError(updateException,
+					$"[AddNotification] no solution maybe retry? M: {updateException.Message}");
+				throw;
+			}
+		}
+
+		return item;
+
+		async Task<NotificationItem> LocalAddQuery()
+		{
+			try
+			{
+				return await AddNotification(_context, item, content);
+			}
+			catch ( ObjectDisposedException )
+			{
+				// Include create new scope factory
+				var dbContext = new InjectServiceScope(_scopeFactory).Context();
+				return await AddNotification(dbContext, item, content);
 			}
 		}
 	}
