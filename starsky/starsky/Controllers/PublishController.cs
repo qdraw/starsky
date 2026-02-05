@@ -98,14 +98,7 @@ public sealed class PublishController : Controller
 		{
 			return BadRequest(preflightErrors);
 		}
-
-		// Ensure the profile is publishable
-		if ( !_publishPreflight.IsProfilePublishable(publishProfileName) )
-		{
-			return BadRequest($"Profile '{publishProfileName}' is not allowed to publish. " +
-			                  $"Please enable WebPublish in the profile settings.");
-		}
-
+		
 		var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 		var info = await _metaInfo.GetInfoAsync(inputFilePaths, false);
 		if ( info.TrueForAll(p =>
