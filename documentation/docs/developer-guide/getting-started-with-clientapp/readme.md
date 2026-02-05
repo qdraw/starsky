@@ -73,6 +73,15 @@ Now listening on: http://localhost:4000
 
 ## VS Code setup
 
+## Auto formatting needs te be enabled:
+
+This project uses prettier rules to check if the formating is done correctly, check this with (relative to the repository root):
+
+```
+cd starsky/starsky/clientapp
+npm run format
+```
+
 ### Recommended extensions
 
 This project includes a list of recommended VS Code extensions. You can find them here:
@@ -104,7 +113,7 @@ starsky/starsky/clientapp/clientapp.code-workspace
 2. Open the **Run and Debug** panel in VS Code (play icon on the left).
 
 
-    ![Meta data usage](../../assets/developer-guide-getting-started-with-clientapp-vscode-debug.jpg)
+    ![Debugger window](../../assets/developer-guide-getting-started-with-clientapp-vscode-debug.jpg)
 
 
 3. Start the debug configuration for the client app.
