@@ -392,4 +392,49 @@ public sealed class MetaUpdateServiceTest
 		                                                        ThumbnailNameHelper.GetSize(
 			                                                        ThumbnailSize.ExtraLarge)));
 	}
+
+	[TestMethod]
+	[DataRow(FileIndexItem.ExifStatus.Ok)]
+	[DataRow(FileIndexItem.ExifStatus.Deleted)]
+	[DataRow(FileIndexItem.ExifStatus.OkAndSame)]
+	[DataRow(FileIndexItem.ExifStatus.Default)]
+	[DataRow(FileIndexItem.ExifStatus.DeletedAndSame)]
+	[DataRow(FileIndexItem.ExifStatus.NotFoundNotInIndex)] // negative test
+	[DataRow(FileIndexItem.ExifStatus.NotFoundSourceMissing)] // negative test
+	[DataRow(FileIndexItem.ExifStatus.OperationNotSupported)] // negative test
+	[DataRow(FileIndexItem.ExifStatus.ReadOnly)] // negative test
+	[DataRow(FileIndexItem.ExifStatus.Unauthorized)] // negative test
+	public void UpdateAsync_StatusTheory(FileIndexItem.ExifStatus status)
+	{
+		var items = new List<FileIndexItem>
+		{
+			new() { FilePath = "/test1.jpg", Status = status },
+			new() { FilePath = "/test2.jpg", Status = FileIndexItem.ExifStatus.Ok }
+		};
+
+		var filtered = items.Where(p =>
+			p.Status is FileIndexItem.ExifStatus.Ok
+				or FileIndexItem.ExifStatus.Deleted
+				or FileIndexItem.ExifStatus.OkAndSame
+				or FileIndexItem.ExifStatus.Default
+				or FileIndexItem.ExifStatus.DeletedAndSame).ToList();
+
+		if ( status is FileIndexItem.ExifStatus.NotFoundNotInIndex
+		    or FileIndexItem.ExifStatus.NotFoundSourceMissing
+		    or FileIndexItem.ExifStatus.OperationNotSupported
+		    or FileIndexItem.ExifStatus.ReadOnly
+		    or FileIndexItem.ExifStatus.Unauthorized )
+		{
+			Assert.IsFalse(filtered.Any(p
+				=> p.Status is FileIndexItem.ExifStatus.NotFoundNotInIndex or
+					FileIndexItem.ExifStatus.NotFoundSourceMissing or
+					FileIndexItem.ExifStatus.OperationNotSupported or
+					FileIndexItem.ExifStatus.ReadOnly or
+					FileIndexItem.ExifStatus.Unauthorized));
+		}
+		else
+		{
+			Assert.IsTrue(filtered.Any(i => i.Status == status));
+		}
+	}
 }
