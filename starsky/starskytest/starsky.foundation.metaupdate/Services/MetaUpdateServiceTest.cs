@@ -404,20 +404,55 @@ public sealed class MetaUpdateServiceTest
 	[DataRow(FileIndexItem.ExifStatus.OperationNotSupported)] // negative test
 	[DataRow(FileIndexItem.ExifStatus.ReadOnly)] // negative test
 	[DataRow(FileIndexItem.ExifStatus.Unauthorized)] // negative test
-	public void UpdateAsync_StatusTheory(FileIndexItem.ExifStatus status)
+	public async Task UpdateAsync_StatusTheory(FileIndexItem.ExifStatus status)
 	{
-		var items = new List<FileIndexItem>
+		var item0 = await _query.AddItemAsync(new FileIndexItem
 		{
-			new() { FilePath = "/test1.jpg", Status = status },
-			new() { FilePath = "/test2.jpg", Status = FileIndexItem.ExifStatus.Ok }
+			Status = status,
+			Tags = "thisKeywordHasChanged",
+			FileName = "test_default.jpg",
+			Description = "noChanges",
+			ParentDirectory = "/"
+		});
+
+		var changedFileIndexItemName = new Dictionary<string, List<string>>
+		{
+			{ "/test_default.jpg", new List<string> { nameof(FileIndexItem.Tags) } }
 		};
 
-		var filtered = items.Where(p =>
-			p.Status is FileIndexItem.ExifStatus.Ok
-				or FileIndexItem.ExifStatus.Deleted
-				or FileIndexItem.ExifStatus.OkAndSame
-				or FileIndexItem.ExifStatus.Default
-				or FileIndexItem.ExifStatus.DeletedAndSame).ToList();
+		var fileIndexResultsList = new List<FileIndexItem>
+		{
+			new()
+			{
+				Status = status,
+				Tags = "initial tags (from database)",
+				FileName = "test_default.jpg",
+				ParentDirectory = "/",
+				Description = "keep"
+			}
+		};
+
+		var updateItem = new FileIndexItem
+		{
+			Status = status,
+			Tags = "only used when Caching is disabled",
+			FileName = "test_default.jpg",
+			Description = "noChanges",
+			ParentDirectory = "/"
+		};
+
+		var readMeta = new ReadMetaSubPathStorage(
+			new FakeSelectorStorage(_iStorageFake), _appSettings, new FakeIWebLogger(),
+			_memoryCache);
+		var service = new MetaUpdateService(_query, _exifTool,
+			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+			new FakeIWebLogger(), readMeta,
+			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
+			new FakeIThumbnailQuery(), new AppSettings());
+
+		var result = await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList,
+			updateItem,
+			false, false, 0);
 
 		if ( status is FileIndexItem.ExifStatus.NotFoundNotInIndex
 		    or FileIndexItem.ExifStatus.NotFoundSourceMissing
@@ -425,7 +460,7 @@ public sealed class MetaUpdateServiceTest
 		    or FileIndexItem.ExifStatus.ReadOnly
 		    or FileIndexItem.ExifStatus.Unauthorized )
 		{
-			Assert.IsFalse(filtered.Any(p
+			Assert.IsFalse(result.Any(p
 				=> p.Status is FileIndexItem.ExifStatus.NotFoundNotInIndex or
 					FileIndexItem.ExifStatus.NotFoundSourceMissing or
 					FileIndexItem.ExifStatus.OperationNotSupported or
@@ -434,7 +469,17 @@ public sealed class MetaUpdateServiceTest
 		}
 		else
 		{
-			Assert.IsTrue(filtered.Any(i => i.Status == status));
+			// check for item (Referenced)
+			Assert.AreEqual("thisKeywordHasChanged", item0.Tags);
+			// db
+			Assert.AreEqual("thisKeywordHasChanged",
+				_query.SingleItem("/test_default.jpg")!.FileIndexItem!.Tags);
+
+			Assert.AreEqual("noChanges",
+				_query.SingleItem("/test_default.jpg")!.FileIndexItem!.Description);
+			Assert.IsTrue(result.Any(i => i.Status == status));
 		}
+
+		await _query.RemoveItemAsync(item0);
 	}
 }
