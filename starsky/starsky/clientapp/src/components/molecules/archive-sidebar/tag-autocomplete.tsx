@@ -11,31 +11,31 @@ interface ITagAutocompleteProps {
   onInput: (event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
+function normalizeTagText(value: string): string {
+  return value.replaceAll(/\u00a0/g, " ");
+}
+
+function setCaretToEnd(element: HTMLDivElement) {
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  range.collapse(false);
+  const selection = globalThis.getSelection();
+  if (selection) {
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+}
+
 const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) => {
   const [tagSuggest, setTagSuggest] = useState<string[]>([]);
   const [tagQuery, setTagQuery] = useState("");
   const [tagSuggestOpen, setTagSuggestOpen] = useState(false);
   const [tagKeyDownIndex, setTagKeyDownIndex] = useState(-1);
 
-  function normalizeTagText(value: string): string {
-    return value.replace(/\u00a0/g, " ");
-  }
-
   function getTagQuery(value: string): string {
     const cleanValue = normalizeTagText(value);
     const parts = cleanValue.split(",");
-    return parts[parts.length - 1]?.trim() ?? "";
-  }
-
-  function setCaretToEnd(element: HTMLDivElement) {
-    const range = document.createRange();
-    range.selectNodeContents(element);
-    range.collapse(false);
-    const selection = window.getSelection();
-    if (selection) {
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
+    return parts.at(-1)?.trim() ?? "";
   }
 
   function applyTagSuggestion(value: string) {
@@ -156,9 +156,9 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
       </FormControl>
 
       {tagSuggestOpen && tagSuggest.length > 0 ? (
-        <ul className="tag-suggest-list" data-test="tag-suggest-list">
+        <div className="tag-suggest-list" data-test="tag-suggest-list">
           {tagSuggest.map((suggestion, index) => (
-            <li
+            <button
               key={suggestion}
               className={
                 index === tagKeyDownIndex
@@ -171,9 +171,9 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
               }}
             >
               {suggestion}
-            </li>
+            </button>
           ))}
-        </ul>
+        </div>
       ) : null}
     </div>
   );

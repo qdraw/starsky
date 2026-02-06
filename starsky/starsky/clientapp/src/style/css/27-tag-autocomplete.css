@@ -31,6 +31,8 @@
   cursor: pointer;
   font-size: 14px;
   color: #000;
+  width: 100%;
+  background-color: white;
 }
 
 @media (prefers-color-scheme: dark) {
