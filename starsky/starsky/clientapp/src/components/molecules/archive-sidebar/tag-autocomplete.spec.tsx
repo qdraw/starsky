@@ -157,3 +157,87 @@ describe("TagAutocomplete", () => {
     });
   });
 });
+
+describe("TagAutocomplete integration", () => {
+  let fetchSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    fetchSpy = jest.spyOn(global, "fetch").mockImplementation((url) => {
+      if (typeof url === "string" && url.includes("/api/suggest")) {
+        return Promise.resolve({
+          json: () => Promise.resolve(["tag1", "tag2", "tag3", "tag4"])
+        }) as Promise<Response>;
+      }
+      return Promise.resolve({ json: () => Promise.resolve([]) }) as Promise<Response>;
+    });
+  });
+
+  afterEach(() => {
+    fetchSpy.mockRestore();
+  });
+
+  it("allows user to type, see suggestions, select with mouse and keyboard, and updates content", async () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onInput = jest.fn();
+    render(
+      <TagAutocomplete
+        name="tags"
+        className="test-class"
+        contentEditable={true}
+        spellcheck={true}
+        reference={ref}
+        onInput={onInput}
+      />
+    );
+    const input = screen.getByTestId("form-control");
+    fireEvent.focus(input);
+    fireEvent.input(input, { target: { textContent: "tag" } });
+    await waitFor(() => {
+      expect(screen.getByText("tag1")).toBeInTheDocument();
+    });
+
+    // Select suggestion with mouse
+    fireEvent.mouseDown(screen.getByText("tag2"));
+    expect(onInput).toHaveBeenCalled();
+    expect(ref.current?.textContent).toContain("tag2");
+
+    // Type again for new suggestions
+    fireEvent.input(input, { target: { textContent: "tag3" } });
+    await waitFor(() => {
+      expect(screen.getByText("tag3")).toBeInTheDocument();
+    });
+
+    // Select suggestion with keyboard
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(onInput).toHaveBeenCalled();
+    expect(ref.current?.textContent).toContain("tag3");
+  });
+
+  it("updates content with comma-separated tags when selecting suggestion", async () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onInput = jest.fn();
+    render(
+      <TagAutocomplete
+        name="tags"
+        className="test-class"
+        contentEditable={true}
+        spellcheck={true}
+        reference={ref}
+        onInput={onInput}
+      />
+    );
+    const input = screen.getByTestId("form-control");
+    fireEvent.focus(input);
+    // Simulate existing tags
+    ref.current!.textContent = "tagA, tagB";
+    fireEvent.input(input, { target: { textContent: "tagA, tagB, tag" } });
+    await waitFor(() => {
+      expect(screen.getByText("tag1")).toBeInTheDocument();
+    });
+    fireEvent.mouseDown(screen.getByText("tag1"));
+    // Should append tag1 after tagA, tagB, with comma and space
+    expect(ref.current?.textContent).toContain("tagA, tagB, tag1, ");
+    expect(onInput).toHaveBeenCalled();
+  });
+});
