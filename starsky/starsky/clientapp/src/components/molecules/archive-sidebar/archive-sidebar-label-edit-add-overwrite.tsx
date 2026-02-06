@@ -18,7 +18,7 @@ import FormControl from "../../atoms/form-control/form-control";
 import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
 import Tooltip from "../../atoms/tooltip/tooltip";
-import TagAutocomplete from "./tag-autocomplete";
+import TagAutocomplete from "../tag-autocomplete/tag-autocomplete";
 
 const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
