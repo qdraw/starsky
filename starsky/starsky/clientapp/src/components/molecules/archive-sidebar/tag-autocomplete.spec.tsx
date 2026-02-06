@@ -373,15 +373,86 @@ describe("TagAutocomplete integration", () => {
       fireEvent.keyDown(input, { key: "ArrowDown", preventDefault });
     }
     // The selected suggestion should be the last one
-    // Check visually by looking for aria-selected or similar
+    // Check visually by looking for data-selected or similar
     const suggestList = screen.getByTestId("tag-suggest-list");
     const buttons = suggestList.querySelectorAll("button");
     let selectedCount = 0;
     buttons.forEach((btn) => {
-      if (btn.getAttribute("aria-selected") === "true") selectedCount++;
+      if (btn.getAttribute("data-selected") === "true") selectedCount++;
     });
     expect(selectedCount).toBe(1);
     // The last button should be selected
-    expect(buttons[buttons.length - 1].getAttribute("aria-selected")).toBe("true");
+    expect(buttons[buttons.length - 1].getAttribute("data-selected")).toBe("true");
+  });
+
+  it("ArrowDown increments and ArrowUp decrements tagKeyDownIndex", async () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onInput = jest.fn();
+    render(
+      <TagAutocomplete
+        name="tags"
+        className="test-class"
+        contentEditable={true}
+        spellcheck={true}
+        reference={ref}
+        onInput={onInput}
+      />
+    );
+    const input = screen.getByTestId("form-control");
+    fireEvent.focus(input);
+    fireEvent.input(input, { target: { textContent: "tag" } });
+    await waitFor(() => {
+      expect(screen.getByText("tag1")).toBeInTheDocument();
+    });
+    // Initial state: no suggestion selected
+    await waitFor(() => {
+      const suggestList = screen.getByTestId("tag-suggest-list");
+      const buttons = suggestList.querySelectorAll("button");
+      buttons.forEach((btn) => {
+        expect(btn.getAttribute("data-selected")).toBe("false");
+      });
+    });
+    // ArrowDown once: first suggestion selected
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    await waitFor(() => {
+      const suggestList = screen.getByTestId("tag-suggest-list");
+      const buttons = suggestList.querySelectorAll("button");
+      expect(buttons[0].getAttribute("data-selected")).toBe("true");
+    });
+    // ArrowDown again: second suggestion selected
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    await waitFor(() => {
+      const suggestList = screen.getByTestId("tag-suggest-list");
+      const buttons = suggestList.querySelectorAll("button");
+      expect(buttons[1].getAttribute("data-selected")).toBe("true");
+    });
+    // ArrowDown again: third suggestion selected
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    await waitFor(() => {
+      const suggestList = screen.getByTestId("tag-suggest-list");
+      const buttons = suggestList.querySelectorAll("button");
+      expect(buttons[2].getAttribute("data-selected")).toBe("true");
+    });
+    // ArrowUp once: second suggestion selected
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    await waitFor(() => {
+      const suggestList = screen.getByTestId("tag-suggest-list");
+      const buttons = suggestList.querySelectorAll("button");
+      expect(buttons[1].getAttribute("data-selected")).toBe("true");
+    });
+    // ArrowUp again: first suggestion selected
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    await waitFor(() => {
+      const suggestList = screen.getByTestId("tag-suggest-list");
+      const buttons = suggestList.querySelectorAll("button");
+      expect(buttons[0].getAttribute("data-selected")).toBe("true");
+    });
+    // ArrowUp again: should stay at first suggestion
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    await waitFor(() => {
+      const suggestList = screen.getByTestId("tag-suggest-list");
+      const buttons = suggestList.querySelectorAll("button");
+      expect(buttons[0].getAttribute("data-selected")).toBe("true");
+    });
   });
 });

@@ -12,7 +12,7 @@ interface ITagAutocompleteProps {
 }
 
 function normalizeTagText(value: string): string {
-  return value.replaceAll(/\u00a0/g, " ");
+  return value.replaceAll(/u00a0/g, " ");
 }
 
 export function setCaretToEnd(element: HTMLDivElement) {
@@ -26,17 +26,17 @@ export function setCaretToEnd(element: HTMLDivElement) {
   }
 }
 
+function getTagQuery(value: string): string {
+  const cleanValue = normalizeTagText(value);
+  const parts = cleanValue.split(",");
+  return parts.at(-1)?.trim() ?? "";
+}
+
 const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) => {
   const [tagSuggest, setTagSuggest] = useState<string[]>([]);
   const [tagQuery, setTagQuery] = useState("");
   const [tagSuggestOpen, setTagSuggestOpen] = useState(false);
   const [tagKeyDownIndex, setTagKeyDownIndex] = useState(-1);
-
-  function getTagQuery(value: string): string {
-    const cleanValue = normalizeTagText(value);
-    const parts = cleanValue.split(",");
-    return parts.at(-1)?.trim() ?? "";
-  }
 
   function applyTagSuggestion(value: string) {
     const element = props.reference?.current;
@@ -157,7 +157,7 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
           {tagSuggest.map((suggestion, index) => (
             <button
               key={suggestion}
-              aria-selected={index === tagKeyDownIndex}
+              data-selected={index === tagKeyDownIndex}
               className={
                 index === tagKeyDownIndex
                   ? "tag-suggest-item tag-suggest-item--active"
