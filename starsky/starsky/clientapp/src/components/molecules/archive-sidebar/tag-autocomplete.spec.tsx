@@ -240,4 +240,30 @@ describe("TagAutocomplete integration", () => {
     expect(ref.current?.textContent).toContain("tagA, tagB, tag1, ");
     expect(onInput).toHaveBeenCalled();
   });
+
+  it("clears suggestions and closes list when input is empty", async () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onInput = jest.fn();
+    render(
+      <TagAutocomplete
+        name="tags"
+        className="test-class"
+        contentEditable={true}
+        spellcheck={true}
+        reference={ref}
+        onInput={onInput}
+      />
+    );
+    const input = screen.getByTestId("form-control");
+    fireEvent.focus(input);
+    fireEvent.input(input, { target: { textContent: "tag" } });
+    await waitFor(() => {
+      expect(screen.queryByTestId("tag-suggest-list")).toBeTruthy();
+    });
+    // Now clear input
+    fireEvent.input(input, { target: { textContent: "" } });
+    await waitFor(() => {
+      expect(screen.queryByTestId("tag-suggest-list")).toBeNull();
+    });
+  });
 });

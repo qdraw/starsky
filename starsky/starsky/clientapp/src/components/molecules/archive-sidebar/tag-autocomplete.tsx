@@ -115,15 +115,12 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
     const controller = new AbortController();
     const timeout = setTimeout(() => {
       const url = `${new UrlQuery().UrlSearchSuggestApi(encodeURIComponent(query), false)}`;
+
       fetch(url, { signal: controller.signal })
         .then((response) => response.json())
         .then((data) => {
           if (Array.isArray(data)) {
             setTagSuggest(data);
-            return;
-          }
-          if (Array.isArray(data?.data)) {
-            setTagSuggest(data.data);
             return;
           }
           setTagSuggest([]);
