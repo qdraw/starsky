@@ -455,4 +455,42 @@ describe("TagAutocomplete integration", () => {
       expect(buttons[0].getAttribute("data-selected")).toBe("true");
     });
   });
+
+  it("Enter applies suggestion only if tagKeyDownIndex >= 0", async () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onInput = jest.fn();
+    render(
+      <TagAutocomplete
+        name="tags"
+        className="test-class"
+        contentEditable={true}
+        spellcheck={true}
+        reference={ref}
+        onInput={onInput}
+      />
+    );
+    const input = screen.getByTestId("form-control");
+    fireEvent.focus(input);
+    fireEvent.input(input, { target: { textContent: "tag" } });
+    await waitFor(() => {
+      expect(screen.getByText("tag1")).toBeInTheDocument();
+    });
+    // Enter with no selection (tagKeyDownIndex = -1)
+    fireEvent.keyDown(input, { key: "Enter" });
+    // Should not apply any suggestion
+    expect(ref.current?.textContent).toBe("tag");
+    // ArrowDown to select first suggestion (tagKeyDownIndex = 0)
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    await waitFor(() => {
+      const suggestList = screen.getByTestId("tag-suggest-list");
+      const buttons = suggestList.querySelectorAll("button");
+      expect(buttons[0].getAttribute("data-selected")).toBe("true");
+    });
+    // Enter should apply suggestion
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() => {
+      expect(ref.current?.textContent).toContain("tag1");
+    });
+    expect(onInput).toHaveBeenCalled();
+  });
 });
