@@ -15,7 +15,7 @@ function normalizeTagText(value: string): string {
   return value.replaceAll(/\u00a0/g, " ");
 }
 
-function setCaretToEnd(element: HTMLDivElement) {
+export function setCaretToEnd(element: HTMLDivElement) {
   const range = document.createRange();
   range.selectNodeContents(element);
   range.collapse(false);

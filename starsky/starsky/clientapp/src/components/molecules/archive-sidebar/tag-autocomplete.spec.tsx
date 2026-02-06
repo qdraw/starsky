@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
-import TagAutocomplete from "./tag-autocomplete";
+import TagAutocomplete, { setCaretToEnd } from "./tag-autocomplete";
 
 describe("TagAutocomplete", () => {
   let fetchSpy: jest.SpyInstance;
@@ -129,5 +129,31 @@ describe("TagAutocomplete", () => {
   it("does not show suggestions if input is empty", () => {
     setup();
     expect(screen.queryByTestId("tag-suggest-list")).toBeNull();
+  });
+
+  describe("setCaretToEnd", () => {
+    it("sets caret to end of contentEditable div", () => {
+      // Create a contentEditable div
+      const div = document.createElement("div");
+      div.contentEditable = "true";
+      div.textContent = "test content";
+      document.body.appendChild(div);
+
+      // Mock global selection
+      const removeAllRanges = jest.fn();
+      const addRange = jest.fn();
+      const mockSelection = {
+        removeAllRanges,
+        addRange
+      };
+      global.getSelection = () => mockSelection as unknown as Selection;
+
+      setCaretToEnd(div);
+
+      expect(removeAllRanges).toHaveBeenCalled();
+      expect(addRange).toHaveBeenCalled();
+
+      document.body.removeChild(div);
+    });
   });
 });
