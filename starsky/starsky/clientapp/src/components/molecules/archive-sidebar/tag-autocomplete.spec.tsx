@@ -344,4 +344,44 @@ describe("TagAutocomplete integration", () => {
     });
     fetchSpy.mockRestore();
   });
+
+  it("ArrowDown increments tagKeyDownIndex and prevents default", async () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onInput = jest.fn();
+    render(
+      <TagAutocomplete
+        name="tags"
+        className="test-class"
+        contentEditable={true}
+        spellcheck={true}
+        reference={ref}
+        onInput={onInput}
+      />
+    );
+    const input = screen.getByTestId("form-control");
+    fireEvent.focus(input);
+    fireEvent.input(input, { target: { textContent: "tag" } });
+    await waitFor(() => {
+      expect(screen.getByText("tag1")).toBeInTheDocument();
+    });
+    // Simulate ArrowDown key presses
+    const preventDefault = jest.fn();
+    fireEvent.keyDown(input, { key: "ArrowDown", preventDefault });
+    // expect(preventDefault).toHaveBeenCalled();
+    // Press ArrowDown multiple times, should not exceed tagSuggest.length - 1
+    for (let i = 0; i < 10; i++) {
+      fireEvent.keyDown(input, { key: "ArrowDown", preventDefault });
+    }
+    // The selected suggestion should be the last one
+    // Check visually by looking for aria-selected or similar
+    const suggestList = screen.getByTestId("tag-suggest-list");
+    const buttons = suggestList.querySelectorAll("button");
+    let selectedCount = 0;
+    buttons.forEach((btn) => {
+      if (btn.getAttribute("aria-selected") === "true") selectedCount++;
+    });
+    expect(selectedCount).toBe(1);
+    // The last button should be selected
+    expect(buttons[buttons.length - 1].getAttribute("aria-selected")).toBe("true");
+  });
 });

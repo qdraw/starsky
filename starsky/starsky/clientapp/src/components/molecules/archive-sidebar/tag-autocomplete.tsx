@@ -157,6 +157,7 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
           {tagSuggest.map((suggestion, index) => (
             <button
               key={suggestion}
+              aria-selected={index === tagKeyDownIndex}
               className={
                 index === tagKeyDownIndex
                   ? "tag-suggest-item tag-suggest-item--active"
