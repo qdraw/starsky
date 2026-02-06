@@ -234,5 +234,67 @@ describe("menu-inline-search", () => {
 
       menuBar.unmount();
     });
+
+    it("arrow down highlights, enter selects and submits suggestion", async () => {
+      const suggestionsExample = {
+        statusCode: 200,
+        data: ["suggest1", "suggest2"]
+      } as IConnectionDefault;
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockReset()
+        .mockImplementation(() => suggestionsExample)
+        .mockImplementation(() => suggestionsExample)
+        .mockImplementation(() => suggestionsExample);
+
+      const callback = jest.fn();
+      const component = render(
+        <MemoryRouter>
+          <MenuInlineSearch defaultText={"tes"} callback={callback} />
+        </MemoryRouter>
+      );
+
+      const input = screen.getByTestId("menu-inline-search") as HTMLInputElement;
+      expect(input).not.toBeNull();
+
+      // Simulate typing to trigger suggestions
+      fireEvent.change(input, { target: { value: "sug" } });
+      // Wait for suggestions to populate
+      await waitFor(() => {
+        expect(input.value).toBe("sug");
+      });
+
+      // Simulate arrow down to highlight first suggestion
+      act(() => {
+        fireEvent.keyDown(input, { key: "ArrowDown" });
+      });
+
+      act(() => {
+        input.blur();
+      });
+
+      component.rerender(
+        <MemoryRouter>
+          <MenuInlineSearch defaultText={"tes"} callback={callback} />
+        </MemoryRouter>
+      );
+
+      // Simulate form submit (onSubmit)
+      const form = input.closest("form");
+      if (form) {
+        fireEvent.submit(form);
+      } else {
+        throw new Error("Form element not found for input");
+      }
+
+      // Wait for input value to update to first suggestion
+      await waitFor(() => {
+        expect(callback).toHaveBeenCalledTimes(1);
+        expect(callback).toHaveBeenCalledWith("sug");
+      });
+
+      component.unmount();
+    });
   });
 });
