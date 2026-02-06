@@ -12,7 +12,8 @@ interface ITagAutocompleteProps {
 }
 
 function normalizeTagText(value: string): string {
-  return value.replaceAll(/u00a0/g, " ");
+  // Replace Unicode non-breaking space (U+00A0) with normal space
+  return value.replaceAll(/\u00a0/g, " ");
 }
 
 export function setCaretToEnd(element: HTMLDivElement) {
