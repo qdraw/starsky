@@ -28,7 +28,7 @@ public sealed class SearchSuggestController : Controller
 	[Produces("application/json")]
 	[Authorize]
 	// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
-	public async Task<IActionResult> Suggest(string t)
+	public async Task<IActionResult> Suggest(string t, bool system = true)
 	{
 		if ( string.IsNullOrWhiteSpace(t) )
 		{
@@ -41,7 +41,7 @@ public sealed class SearchSuggestController : Controller
 			return BadRequest("Model invalid");
 		}
 
-		var model = await _suggest.SearchSuggest(t);
+		var model = await _suggest.SearchSuggest(t, system);
 		return Json(model);
 	}
 
