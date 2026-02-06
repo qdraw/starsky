@@ -139,4 +139,20 @@ public sealed class SearchSuggestionsServiceTest
 		Assert.IsTrue(fakeLogger.TrackedExceptions.LastOrDefault().Item2
 			?.Contains("[SearchSuggestionsService] exception catch-ed"));
 	}
+
+	[TestMethod]
+	public async Task SearchSuggestionsService_SystemSuggestions_Enabled()
+	{
+		var result = await _suggest.SearchSuggest("-ImageFormat", true);
+		// Should contain at least one system suggestion
+		Assert.IsTrue(result.Any(r => r.StartsWith("-ImageFormat")));
+	}
+
+	[TestMethod]
+	public async Task SearchSuggestionsService_SystemSuggestions_Disabled()
+	{
+		var result = await _suggest.SearchSuggest("-ImageFormat", false);
+		// Should not contain system suggestions
+		Assert.IsFalse(result.Any(r => r.StartsWith("-ImageFormat")));
+	}
 }
