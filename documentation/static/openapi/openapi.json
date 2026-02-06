@@ -13129,6 +13129,41 @@
               "examples": {},
               "content": {},
               "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "system",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "default": {
+                  "primitiveType": 7,
+                  "anyType": 0,
+                  "value": true
+                },
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
             }
           ],
           "responses": {
@@ -13138,28 +13173,36 @@
               "content": {
                 "application/json": {
                   "schema": {
+                    "type": "array",
                     "readOnly": false,
                     "writeOnly": false,
                     "allOf": [],
                     "oneOf": [],
                     "anyOf": [],
                     "required": [],
+                    "items": {
+                      "type": "string",
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false
+                    },
                     "properties": {},
                     "additionalPropertiesAllowed": true,
                     "enum": [],
                     "nullable": false,
                     "deprecated": false,
                     "extensions": {},
-                    "unresolvedReference": false,
-                    "reference": {
-                      "isFragrament": false,
-                      "type": 0,
-                      "id": "SearchViewModel",
-                      "isExternal": false,
-                      "isLocal": true,
-                      "referenceV3": "#/components/schemas/SearchViewModel",
-                      "referenceV2": "#/definitions/SearchViewModel"
-                    }
+                    "unresolvedReference": false
                   },
                   "examples": {},
                   "encoding": {},
@@ -13218,11 +13261,11 @@
                     "reference": {
                       "isFragrament": false,
                       "type": 0,
-                      "id": "SearchViewModel",
+                      "id": "StringInt32KeyValuePair",
                       "isExternal": false,
                       "isLocal": true,
-                      "referenceV3": "#/components/schemas/SearchViewModel",
-                      "referenceV2": "#/definitions/SearchViewModel"
+                      "referenceV3": "#/components/schemas/StringInt32KeyValuePair",
+                      "referenceV2": "#/definitions/StringInt32KeyValuePair"
                     }
                   },
                   "examples": {},
@@ -20790,6 +20833,56 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "StringInt32KeyValuePair": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "key": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "value": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "StringStringValueTuple": {
         "type": "object",
         "readOnly": false,
@@ -21428,5 +21521,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "99972521E4F178BF8A146E139B6D3BDE7E48C116BA9E96552FC14BE8F16539ABD2909A0DC41D9257967C3B8519EE11939777F97882095F3BB8071A60330D8B64"
+  "hashCode": "275DF9FE0F1EA3489F3ED12E876787A7266C5985444B73004338F152BC88DB7B654668500FD5A2B671C4480490C3F2572300561CA8679FBC7A1C7110343F9646"
 }
