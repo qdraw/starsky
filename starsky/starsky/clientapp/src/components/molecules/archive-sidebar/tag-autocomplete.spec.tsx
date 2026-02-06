@@ -493,4 +493,45 @@ describe("TagAutocomplete integration", () => {
     });
     expect(onInput).toHaveBeenCalled();
   });
+
+  it("Escape closes suggestions and resets tagKeyDownIndex", async () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onInput = jest.fn();
+    render(
+      <TagAutocomplete
+        name="tags"
+        className="test-class"
+        contentEditable={true}
+        spellcheck={true}
+        reference={ref}
+        onInput={onInput}
+      />
+    );
+    const input = screen.getByTestId("form-control");
+    fireEvent.focus(input);
+    fireEvent.input(input, { target: { textContent: "tag" } });
+    await waitFor(() => {
+      expect(screen.queryByTestId("tag-suggest-list")).toBeTruthy();
+    });
+    // ArrowDown to select a suggestion
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    await waitFor(() => {
+      const suggestList = screen.getByTestId("tag-suggest-list");
+      const buttons = suggestList.querySelectorAll("button");
+      expect(buttons[0].getAttribute("data-selected")).toBe("true");
+    });
+    // Press Escape
+    fireEvent.keyDown(input, { key: "Escape" });
+    await waitFor(() => {
+      expect(screen.queryByTestId("tag-suggest-list")).toBeNull();
+    });
+    // Optionally, check tagKeyDownIndex is reset by simulating ArrowDown again
+    fireEvent.input(input, { target: { textContent: "tag" } });
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    await waitFor(() => {
+      const suggestList = screen.getByTestId("tag-suggest-list");
+      const buttons = suggestList.querySelectorAll("button");
+      expect(buttons[0].getAttribute("data-selected")).toBe("true");
+    });
+  });
 });
