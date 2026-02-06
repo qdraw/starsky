@@ -266,4 +266,40 @@ describe("TagAutocomplete integration", () => {
       expect(screen.queryByTestId("tag-suggest-list")).toBeNull();
     });
   });
+
+  it("clears suggestions when fetch throws in .then", async () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onInput = jest.fn();
+    // Mock fetch to resolve, but .then throws
+    const fetchSpy = jest
+      .spyOn(global, "fetch")
+      .mockReset()
+      .mockImplementationOnce(
+        () =>
+          Promise.resolve({
+            json: () => {
+              throw new Error("fail");
+            }
+          }) as unknown as Promise<Response>
+      );
+    render(
+      <TagAutocomplete
+        name="tags"
+        className="test-class"
+        contentEditable={true}
+        spellcheck={true}
+        reference={ref}
+        onInput={onInput}
+      />
+    );
+
+    const input = screen.getByTestId("form-control");
+    fireEvent.focus(input);
+    fireEvent.input(input, { target: { textContent: "tag" } });
+    await waitFor(() => {
+      expect(screen.queryByTestId("tag-suggest-list")).toBeNull();
+    });
+    expect(fetchSpy).toHaveBeenCalled();
+    fetchSpy.mockRestore();
+  });
 });
