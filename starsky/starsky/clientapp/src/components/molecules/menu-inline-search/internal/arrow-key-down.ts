@@ -4,7 +4,7 @@ export default function ArrowKeyDown(
   setKeyDownIndex: React.Dispatch<React.SetStateAction<number>>,
   inputFormControlReferenceCurrent: HTMLInputElement | null,
   suggest: string[],
-  setQuery?: React.Dispatch<React.SetStateAction<string>>
+  setQuery: React.Dispatch<React.SetStateAction<string>>
 ): void {
   if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
     setKeyDownIndex(-1);
@@ -18,9 +18,7 @@ export default function ArrowKeyDown(
 
   if (value < suggest.length) {
     inputFormControlReferenceCurrent.value = suggest[value];
-    if (setQuery) {
-      setQuery(suggest[value]);
-    }
+    setQuery(suggest[value]);
     setKeyDownIndex(value);
   }
 }

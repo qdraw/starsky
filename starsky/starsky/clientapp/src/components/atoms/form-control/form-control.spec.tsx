@@ -300,4 +300,33 @@ describe("FormControl", () => {
       component.unmount();
     });
   });
+
+  it("calls onKeyDown prop when key is pressed", () => {
+    const onKeyDown = jest.fn();
+    const { getByTestId } = render(
+      <FormControl
+        contentEditable={true}
+        name="test"
+        onKeyDown={onKeyDown}
+        data-test="form-control-test"
+      >
+        Test content
+      </FormControl>
+    );
+    const div = getByTestId("form-control-test");
+    fireEvent.keyDown(div, { key: "A", code: "KeyA" });
+    expect(onKeyDown).toHaveBeenCalled();
+  });
+
+  it("does not throw if onKeyDown is not provided", () => {
+    const { getByTestId } = render(
+      <FormControl contentEditable={true} name="test" data-test="form-control-test">
+        Test content
+      </FormControl>
+    );
+    const div = getByTestId("form-control-test");
+    expect(() => {
+      fireEvent.keyDown(div, { key: "A", code: "KeyA" });
+    }).not.toThrow();
+  });
 });
