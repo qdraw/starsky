@@ -18,6 +18,7 @@ import FormControl from "../../atoms/form-control/form-control";
 import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
 import Tooltip from "../../atoms/tooltip/tooltip";
+import TagAutocomplete from "./tag-autocomplete";
 
 const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
@@ -157,13 +158,13 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
           <span className="info--small"></span>
         </Tooltip>
       </h4>
-      <FormControl
+      <TagAutocomplete
         spellcheck={true}
         reference={tagsReference}
         onInput={handleUpdateChange}
         name="tags"
         contentEditable={!state.isReadOnly && select.length !== 0}
-      ></FormControl>
+      ></TagAutocomplete>
 
       <h4>{MessageInfoWithColon}</h4>
       <FormControl
