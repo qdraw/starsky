@@ -154,20 +154,21 @@ public class SearchSuggestionsService : ISearchSuggest
 			return new List<string>();
 		}
 
+		// do not modify allSuggestions, because it is stored in cache
 		var allSuggestions = await GetAllSuggestions();
-		if ( system )
-		{
-			// so add search queries as suggestions
-			var systemSuggestions =
-				SystemResults().Select(item => new KeyValuePair<string, int>(item, 10));
-			allSuggestions.AddRange(systemSuggestions);
-		}
 
 		var results = allSuggestions.Where(p =>
 				p.Key.StartsWith(query, StringComparison.InvariantCultureIgnoreCase))
 			.Take(MaxResult)
 			.OrderByDescending(p => p.Value).Select(p => p.Key)
 			.ToList();
+
+		if ( system )
+		{
+			results.AddRange(SystemResults().Where(p =>
+					p.StartsWith(query, StringComparison.InvariantCultureIgnoreCase))
+				.Take(MaxResult));
+		}
 
 		return results;
 	}
