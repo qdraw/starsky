@@ -118,8 +118,8 @@ export class UrlQuery {
     return `${this.prefix}/api/search?json=true&t=${query}&p=${pageNumber}`;
   };
 
-  public UrlSearchSuggestApi(query: string): string {
-    return `${this.prefix}/api/suggest/?t=${query}`;
+  public UrlSearchSuggestApi(query: string, system = true): string {
+    return `${this.prefix}/api/suggest/?t=${query}&system=${system}`;
   }
 
   public UrlSearchRemoveCacheApi(): string {

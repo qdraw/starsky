@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.search.Interfaces;
-using starsky.feature.search.ViewModels;
 using starsky.Helpers;
 
 namespace starsky.Controllers;
@@ -24,11 +23,11 @@ public sealed class SearchSuggestController : Controller
 	/// <returns>the search results</returns>
 	/// <response code="200">the search results</response>
 	[HttpGet("/api/suggest")]
-	[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
+	[ProducesResponseType(typeof(List<string>), 200)] // ok
 	[Produces("application/json")]
 	[Authorize]
 	// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
-	public async Task<IActionResult> Suggest(string t)
+	public async Task<IActionResult> Suggest(string t, bool system = true)
 	{
 		if ( string.IsNullOrWhiteSpace(t) )
 		{
@@ -41,7 +40,7 @@ public sealed class SearchSuggestController : Controller
 			return BadRequest("Model invalid");
 		}
 
-		var model = await _suggest.SearchSuggest(t);
+		var model = await _suggest.SearchSuggest(t, system);
 		return Json(model);
 	}
 
@@ -51,7 +50,7 @@ public sealed class SearchSuggestController : Controller
 	/// <returns>a keyList with search suggestions</returns>
 	/// <response code="200">the search results</response>
 	[HttpGet("/api/suggest/all")]
-	[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
+	[ProducesResponseType(typeof(KeyValuePair<string, int>), 200)] // ok
 	[Produces("application/json")]
 	[Authorize]
 	// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =

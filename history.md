@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.11 - _(Unreleased)_ - 2026-02-03 {#v0.7.11}
 
+- [x] (Added) _Front-end_ Tag complete in Archive sidebar (PR #2711)
 - [x] (Fixed) _Front-end_ When updating video files in archive mode those are not hidden (PR #2709)
 - [x] (Fixed) _Back-end_ Replace works now with Default status (PR #2706)
 - [x] (Fixed) _Back-end_ IsValidZipFile handles IO Exceptions (PR #2705)
