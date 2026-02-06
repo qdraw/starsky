@@ -296,10 +296,52 @@ describe("TagAutocomplete integration", () => {
     const input = screen.getByTestId("form-control");
     fireEvent.focus(input);
     fireEvent.input(input, { target: { textContent: "tag" } });
+    // Wait for fetch to be called
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalled();
+    });
+    // Wait for suggestions to be cleared
     await waitFor(() => {
       expect(screen.queryByTestId("tag-suggest-list")).toBeNull();
     });
-    expect(fetchSpy).toHaveBeenCalled();
+    fetchSpy.mockRestore();
+  });
+
+  it("clears suggestions when fetch gives invalid data", async () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onInput = jest.fn();
+    // Mock fetch to resolve, but .then throws
+    const fetchSpy = jest
+      .spyOn(global, "fetch")
+      .mockReset()
+      .mockImplementationOnce(
+        () =>
+          Promise.resolve({
+            json: () => "invalid data" // should be an array, but is a string
+          }) as unknown as Promise<Response>
+      );
+    render(
+      <TagAutocomplete
+        name="tags"
+        className="test-class"
+        contentEditable={true}
+        spellcheck={true}
+        reference={ref}
+        onInput={onInput}
+      />
+    );
+
+    const input = screen.getByTestId("form-control");
+    fireEvent.focus(input);
+    fireEvent.input(input, { target: { textContent: "tag" } });
+    // Wait for fetch to be called
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalled();
+    });
+    // Wait for suggestions to be cleared
+    await waitFor(() => {
+      expect(screen.queryByTestId("tag-suggest-list")).toBeNull();
+    });
     fetchSpy.mockRestore();
   });
 });
