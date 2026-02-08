@@ -8,7 +8,12 @@ interface ITagAutocompleteProps {
   contentEditable: boolean;
   spellcheck?: boolean;
   reference?: React.RefObject<HTMLDivElement>;
-  onInput: (event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => void;
+  onInput?: (
+    event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
+  ) => void;
+  children?: React.ReactNode;
+  onBlur?(event: React.ChangeEvent<HTMLDivElement>): void;
+  maxlength?: number;
 }
 
 function normalizeTagText(value: string): string {
@@ -59,13 +64,13 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
     setTagSuggestOpen(false);
     setTagKeyDownIndex(-1);
 
-    props.onInput({
+    props.onInput?.({
       currentTarget: element
     } as React.ChangeEvent<HTMLDivElement>);
   }
 
   function handleTagInput(event: React.ChangeEvent<HTMLDivElement>) {
-    props.onInput(event);
+    props.onInput?.(event);
     const query = getTagQuery(event.currentTarget.textContent ?? "");
     setTagQuery(query);
     if (query.length === 0) {
@@ -144,13 +149,17 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
         onInput={handleTagInput}
         onKeyDown={handleTagKeyDown}
         onFocus={() => setTagSuggestOpen(true)}
-        onBlur={() => setTimeout(() => setTagSuggestOpen(false), 150)}
+        onBlur={(event) => {
+          setTimeout(() => setTagSuggestOpen(false), 150);
+          props.onBlur?.(event);
+        }}
         reference={props.reference}
+        maxlength={props.maxlength}
         name={props.name}
         className={props.className}
         contentEditable={props.contentEditable}
       >
-        &nbsp;
+        {props.children}
       </FormControl>
 
       {tagSuggestOpen && tagSuggest.length > 0 ? (

@@ -26,6 +26,7 @@ import FormControl from "../../atoms/form-control/form-control";
 import Link from "../../atoms/link/link";
 import Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "../../molecules/color-class-select/color-class-select";
+import TagAutocomplete from "../../molecules/tag-autocomplete/tag-autocomplete";
 import DetailViewInfoDateTime from "../detailview-info-datetime/detailview-info-datetime";
 import DetailViewInfoLocation from "../detailview-info-location/detailview-info-location";
 import { UpdateChange } from "./update-change";
@@ -203,7 +204,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         <DetailViewExifStatus status={fileIndexItem.status} />
         <div className="content--header">Tags</div>
         <div className="content--text">
-          <FormControl
+          <TagAutocomplete
             onBlur={handleChange}
             name="tags"
             data-test="detailview-sidebar-tags"
@@ -212,7 +213,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             contentEditable={formEnabled}
           >
             {fileIndexItem.tags}
-          </FormControl>
+          </TagAutocomplete>
         </div>
         <div className="content--header">
           {/* Info & Title */}
