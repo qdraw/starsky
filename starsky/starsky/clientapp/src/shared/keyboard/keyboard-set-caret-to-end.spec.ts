@@ -31,6 +31,14 @@ describe("Keyboard.setCaretToEnd", () => {
       // ... add any other methods you need
     };
     (document as unknown as { createRange: () => void }).createRange = () => mockRange;
+    // Mock window.getSelection to accept our mock range
+    const mockSelection = {
+      removeAllRanges: jest.fn(),
+      addRange: jest.fn(),
+      anchorNode: null,
+      anchorOffset: 0
+    } as unknown as Selection;
+    (window as unknown as { getSelection: () => Selection }).getSelection = () => mockSelection;
 
     // Create a contenteditable div and add to DOM
     const mockDiv = document.createElement("div");
@@ -48,7 +56,7 @@ describe("Keyboard.setCaretToEnd", () => {
 
     mockDiv.addEventListener("keydown", (event) => {
       expect(keyboard.setCaretToEnd(event)).toBe(true);
-      (document as any).createRange = originalCreateRange;
+      (document as unknown as { createRange: () => void }).createRange = originalCreateRange;
       exit();
     });
 
