@@ -23,6 +23,7 @@
   .tag-autocomplete .tag-suggest-list {
     background: #263238;
     border-color: #455a64;
+    color: #fff;
   }
 }
 
@@ -38,6 +39,7 @@
 @media (prefers-color-scheme: dark) {
   .tag-autocomplete .tag-suggest-item {
     color: #fff;
+    background-color: #263238;
   }
 }
 
