@@ -14,6 +14,7 @@ interface ITagAutocompleteProps {
   children?: React.ReactNode;
   onBlur?(event: React.ChangeEvent<HTMLDivElement>): void;
   maxlength?: number;
+  "data-test"?: string;
 }
 
 function normalizeTagText(value: string): string {
@@ -158,6 +159,7 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
         name={props.name}
         className={props.className}
         contentEditable={props.contentEditable}
+        data-test={props["data-test"]}
       >
         {props.children}
       </FormControl>
