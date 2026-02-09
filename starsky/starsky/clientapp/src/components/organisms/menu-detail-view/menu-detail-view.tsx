@@ -12,7 +12,7 @@ import { CommaSeperatedFileList } from "../../../shared/comma-seperated-filelist
 import { IsEditedNow } from "../../../shared/date";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
-import { Keyboard } from "../../../shared/keyboard";
+import { Keyboard } from "../../../shared/keyboard/keyboard.ts";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { URLPath } from "../../../shared/url/url-path.ts";

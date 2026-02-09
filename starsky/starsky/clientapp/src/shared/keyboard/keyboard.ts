@@ -17,6 +17,25 @@ export class Keyboard {
     return true;
   }
 
+  public setCaretToEnd(event?: KeyboardEvent): boolean | null {
+    if (!event || !this.isInForm(event)) return null;
+
+    // Set caret to end after focusing
+    const target = event.target as HTMLElement;
+    if (target.isContentEditable) {
+      const range = document.createRange();
+      range.selectNodeContents(target);
+      range.collapse(false); // Move caret to end
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(range);
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * to prevent keystrokes in a form element
    * @param event Keyboard Event

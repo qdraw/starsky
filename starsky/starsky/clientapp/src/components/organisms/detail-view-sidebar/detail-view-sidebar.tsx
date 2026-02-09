@@ -15,7 +15,7 @@ import { CastToInterface } from "../../../shared/cast-to-interface";
 import { ClipboardHelper } from "../../../shared/clipboard-helper";
 import { isValidDate, parseRelativeDate } from "../../../shared/date";
 import { FileListCache } from "../../../shared/filelist-cache";
-import { Keyboard } from "../../../shared/keyboard";
+import { Keyboard } from "../../../shared/keyboard/keyboard";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { URLPath } from "../../../shared/url/url-path";

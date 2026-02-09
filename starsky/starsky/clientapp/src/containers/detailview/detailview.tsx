@@ -13,7 +13,7 @@ import useLocation from "../../hooks/use-location/use-location";
 import { IDetailView, newDetailView } from "../../interfaces/IDetailView";
 import { ImageFormat } from "../../interfaces/IFileIndexItem";
 import { DocumentTitle } from "../../shared/document-title";
-import { Keyboard } from "../../shared/keyboard";
+import { Keyboard } from "../../shared/keyboard/keyboard";
 import { UpdateRelativeObject } from "../../shared/update-relative-object";
 import { URLPath } from "../../shared/url/url-path";
 import MenuDetailViewContainer from "../menu-detailview-container/menu-detailview-container";
@@ -131,6 +131,7 @@ const DetailView: FC<IDetailView> = () => {
         setIsLoading
       ).prev();
       new Keyboard().focus(event);
+      new Keyboard().setCaretToEnd(event);
     },
     [relativeObjects]
   );
@@ -165,6 +166,7 @@ const DetailView: FC<IDetailView> = () => {
         setIsLoading
       ).next();
       new Keyboard().focus(event);
+      new Keyboard().setCaretToEnd(event);
     },
     [relativeObjects]
   );
