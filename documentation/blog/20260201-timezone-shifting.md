@@ -11,6 +11,8 @@ image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-m
 
 Have you ever returned from a trip, only to find your camera’s clock was set to the wrong timezone? Or maybe you moved to a new country and your photo timestamps no longer match your memories? With Starsky’s new **Timezone Shift** feature, fixing these issues is now quick, accurate, and painless. This feature is avaiable in v0.7.10 or later
 
+<!-- truncate -->
+
 ## Why Timezone Shift Matters
 
 Photo timestamps are more than just numbers—they help you organize, search, and relive your memories. But when your camera’s timezone is off, your photo library can become a confusing mess. The Timezone Shift tool is designed to solve this problem for everyone, from casual travelers to professional photographers.

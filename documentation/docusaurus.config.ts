@@ -104,6 +104,10 @@ const config: Config = {
           label: "Getting started",
         },
         {
+          label: "Download",
+          href: "/download",
+        },
+        {
           type: "doc",
           docId: "features/readme",
           position: "left",
@@ -122,8 +126,13 @@ const config: Config = {
           label: "Developer Guide",
         },
         {
-          label: "Download",
+          label: "Blog",
+          href: "/blog",
+        },
+        {
+          label: "Download ⬇️",
           href: "/download",
+          position: "right",
         },
         {
           href: "https://github.com/qdraw/starsky",
