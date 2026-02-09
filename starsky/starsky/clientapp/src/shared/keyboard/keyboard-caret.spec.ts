@@ -21,10 +21,21 @@ describe("Keyboard.setCaretToEnd", () => {
   });
 
   it("returns true and sets caret for contenteditable", (exit) => {
-    // Mock event with contenteditable target
+    // Mock Range API for jsdom
+    const originalCreateRange = document.createRange;
+    const mockRange = {
+      selectNodeContents: jest.fn(),
+      collapse: jest.fn(),
+      setStart: jest.fn(),
+      setEnd: jest.fn()
+      // ... add any other methods you need
+    };
+    (document as unknown as { createRange: () => void }).createRange = () => mockRange;
+
+    // Create a contenteditable div and add to DOM
     const mockDiv = document.createElement("div");
     mockDiv.contentEditable = "true";
-    mockDiv.className = "form-control"; // isInForm should return true
+    mockDiv.className = "form-control";
     mockDiv.innerText = "test";
     Object.defineProperty(mockDiv, "isContentEditable", {
       value: true,
@@ -37,6 +48,7 @@ describe("Keyboard.setCaretToEnd", () => {
 
     mockDiv.addEventListener("keydown", (event) => {
       expect(keyboard.setCaretToEnd(event)).toBe(true);
+      (document as any).createRange = originalCreateRange;
       exit();
     });
 
