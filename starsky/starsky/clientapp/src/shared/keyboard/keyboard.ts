@@ -26,7 +26,7 @@ export class Keyboard {
       const range = document.createRange();
       range.selectNodeContents(target);
       range.collapse(false); // Move caret to end
-      const sel = window.getSelection();
+      const sel = globalThis.getSelection();
       if (sel) {
         sel.removeAllRanges();
         sel.addRange(range);
