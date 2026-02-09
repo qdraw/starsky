@@ -1,6 +1,6 @@
 import "core-js/features/string/match"; // event.key.match
 import { useEffect } from "react";
-import { Keyboard } from "../../shared/keyboard";
+import { Keyboard } from "../../shared/keyboard/keyboard";
 
 export interface IHotkeysKeyboardEvent {
   key: string;

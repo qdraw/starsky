@@ -8,7 +8,7 @@ import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
 import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import { Keyboard } from "../../../shared/keyboard";
+import { Keyboard } from "../../../shared/keyboard/keyboard";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { SidebarUpdate } from "../../../shared/sidebar-update";
