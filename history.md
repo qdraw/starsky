@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.11 - _(Unreleased)_ - 2026-02-03 {#v0.7.11}
 
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.418 (Runtime: 8.0.24) (PR #2724)
 - [x] (Fixed) _Front-end_ Set caret to end when navigate via Command/Ctrl `[` or `]` (PR #2721)
 - [x] (Added) _Front-end_ Add tag auto complete to detail view (PR #2714)
 - [x] (Fixed) _Front-end_ Dark-mode fixes for dropdowns, autocomplete suggestions modal (PR #2719)
