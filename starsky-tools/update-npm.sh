@@ -1,35 +1,15 @@
 #!/bin/bash
+# Recursively run `npm run update:install` in all child folders containing package.json with the script
+# Change MAX_DEPTH to control how many levels deep to search
+MAX_DEPTH=2
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-cd $SCRIPT_DIR
+cd "$SCRIPT_DIR"
 
-pushd build-tools
-    npm run update:install
-popd
-pushd end2end
-    npm run update:install
-popd
-# pushd import
-#     npm run update
-# popd
-pushd localtunnel
-    npm run update:install
-popd
-pushd mail
-    npm run update:install
-popd
-pushd mock
-    npm run update:install
-popd
-# pushd release-tools
-#     npm run update:install
-# popd
-pushd slack-notification
-    npm run update:install
-popd
-# pushd socket
-#     npm run update:install
-# popd
-pushd thumbnail
-    npm run update:install
-popd
+find . -maxdepth $MAX_DEPTH -name package.json | while read -r pkg; do
+  dir=$(dirname "$pkg")
+  if grep -q '"update:install"' "$pkg"; then
+    echo "Running update:install in $dir"
+    (cd "$dir" && npm run update:install)
+  fi
+done
