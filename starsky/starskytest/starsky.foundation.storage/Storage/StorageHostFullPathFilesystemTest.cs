@@ -28,7 +28,7 @@ public sealed class StorageHostFullPathFilesystemTest
 		var createAnImage = new CreateAnImage();
 		var testDir = Path.Combine(createAnImage.BasePath, "Files_GetFilesRecursiveTest_Dir");
 		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-		
+
 		// Create a test directory structure
 		storage.CreateDirectory(testDir);
 		var subDir = Path.Combine(testDir, "subdir");
@@ -43,7 +43,7 @@ public sealed class StorageHostFullPathFilesystemTest
 
 		// Assert - Should find both files recursively
 		Assert.HasCount(3, content);
-		
+
 		// Cleanup
 		storage.FolderDelete(testDir);
 	}
@@ -333,6 +333,36 @@ public sealed class StorageHostFullPathFilesystemTest
 
 		await stream.DisposeAsync();
 		File.Delete(expectedPath);
+		Assert.IsFalse(hostStorage.ExistFile(expectedPath));
+	}
+
+	[TestMethod]
+	public async Task WriteStreamAsync_Host_TestOutput_DirectoryNotFoundException()
+	{
+		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var stream = new MemoryStream(new byte[1]);
+		var expectedDirectory = Path.Combine(Path.GetTempPath(),
+			"WriteStreamAsync_Host_TestOutput_" +
+			"DirectoryNotFoundException");
+		var expectedPath = Path.Combine(expectedDirectory, "image.jpg");
+		try
+		{
+			Directory.Delete(expectedDirectory);
+		}
+		catch ( DirectoryNotFoundException )
+		{
+			// ignore   System.IO.DirectoryNotFoundException: Could not find a part of the path
+			// '/tmp/WriteStreamAsync_Host_TestOutput_DirectoryNotFoundException'.
+		}
+
+		var result = await hostStorage.WriteStreamAsync(stream, expectedPath);
+
+		Assert.IsTrue(result);
+		Assert.AreEqual(1, hostStorage.Info(expectedPath).Size);
+
+		await stream.DisposeAsync();
+		File.Delete(expectedPath);
+		Directory.Delete(expectedDirectory);
 		Assert.IsFalse(hostStorage.ExistFile(expectedPath));
 	}
 

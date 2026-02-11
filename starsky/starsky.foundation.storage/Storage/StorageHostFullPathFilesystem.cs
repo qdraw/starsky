@@ -424,7 +424,6 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		return true;
 	}
 
-
 	/// <summary>
 	///     Write async and disposed after
 	/// </summary>
@@ -438,6 +437,18 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			return false;
 		}
 
+		return await RetryHelper.DoAsync(LocalRun,
+			TimeSpan.FromSeconds(1), 6);
+
+		async Task LocalCopy()
+		{
+			await using var fileStream = new FileStream(path, FileMode.Create,
+				FileAccess.Write, FileShare.Read, 4096,
+				FileOptions.Asynchronous | FileOptions.SequentialScan);
+			await stream.CopyToAsync(fileStream);
+			await fileStream.FlushAsync();
+		}
+
 		async Task<bool> LocalRun()
 		{
 			try
@@ -449,31 +460,37 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 				// HttpConnection.ContentLengthReadStream does not support this
 			}
 
-			using ( var fileStream = new FileStream(path, FileMode.Create,
-				       FileAccess.Write, FileShare.Read, 4096,
-				       FileOptions.Asynchronous | FileOptions.SequentialScan) )
-			{
-				await stream.CopyToAsync(fileStream);
-				await fileStream.FlushAsync();
-			}
-
 			try
 			{
-				await stream.FlushAsync();
+				await LocalCopy();
 			}
-			catch ( NotSupportedException )
+			catch ( DirectoryNotFoundException exception )
 			{
-				// HttpConnection does not support this - Specified method is not supported.
+				var dir = Path.GetDirectoryName(path)!;
+				CreateDirectory(dir);
+				_logger.LogInformation("[WriteStreamAsync] " +
+				                       "DirectoryNotFoundException " +
+				                       "Auto-created directory: " + dir, exception);
+				await LocalCopy();
 			}
+			finally
+			{
+				try
+				{
+					await stream.FlushAsync();
+				}
+				catch ( NotSupportedException )
+				{
+					// HttpConnection does not support this - Specified method is not supported.
+				}
 
-			await stream.DisposeAsync(); // also flush
+				await stream.DisposeAsync(); // also flush
 
-			_logger.LogDebug($"[WriteStreamAsync] Done writing file: {path}");
+				_logger.LogDebug($"[WriteStreamAsync] Done writing file: {path}");
+			}
 
 			return true;
 		}
-
-		return await RetryHelper.DoAsync(LocalRun, TimeSpan.FromSeconds(1), 6);
 	}
 
 	/// <summary>
