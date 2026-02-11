@@ -38,7 +38,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@131b410979e0b49e2162c0718030257b22d6dc2c
       with:
-        dotnet-version: 8.0.417
+        dotnet-version: 8.0.418
         
     - name: "BuildNetCore (MacOS)"
       shell: bash

@@ -31,7 +31,7 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@131b410979e0b49e2162c0718030257b22d6dc2c
       with:
-        dotnet-version: 8.0.417
+        dotnet-version: 8.0.418
 
     - name: Cache nuget packages (*nix)
       uses: actions/cache@b7e8d49f17405cc70c1c120101943203c98d3a4b
