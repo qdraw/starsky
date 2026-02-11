@@ -167,9 +167,8 @@ public class SearchService : ISearch
 		// Create an view model
 		var model = new SearchViewModel
 		{
-			SearchQuery = query ?? string.Empty,
-			Breadcrumb = new List<string> { "/", query ?? string.Empty }
-			// Null check will safe you from error 500 with Empty request
+			SearchQuery = query ?? string.Empty, Breadcrumb = ["/", query ?? string.Empty]
+			// Null check will save you from error 500 with Empty request
 		};
 
 		if ( query == null || model.FileIndexItems == null )
@@ -286,12 +285,12 @@ public class SearchService : ISearch
 					// is in the database one field => will be filtered in narrowSearch
 					var makeCameraSerial = model.SearchFor[i];
 					predicates.Add(x => x.MakeModel!.ToLower().Contains(makeCameraSerial));
-					break;		
+					break;
 				case SearchViewModel.SearchInTypes.lensmodel:
 					// is in the database one field => will be filtered in narrowSearch
 					var lensmodel = model.SearchFor[i];
 					predicates.Add(x => x.MakeModel!.ToLower().Contains(lensmodel));
-					break;		
+					break;
 				case SearchViewModel.SearchInTypes.filehash:
 					var fileHash = model.SearchFor[i];
 					predicates.Add(x =>
@@ -329,6 +328,10 @@ public class SearchService : ISearch
 						predicates.Add(x => x.ColorClass == castColorClass);
 					}
 
+					break;
+				case SearchViewModel.SearchInTypes.artist:
+					var artist = model.SearchFor[i];
+					predicates.Add(x => x.Artist!.ToLower().Contains(artist));
 					break;
 				default:
 					var tags = model.SearchFor[i];

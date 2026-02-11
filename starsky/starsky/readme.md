@@ -244,6 +244,8 @@ __All text (not number or date) driven search queries use a contain search__
 | -colorclass           | -colorclass=7                        | Blue / Extras                 |
 | -colorclass           | -colorclass=8                        | Grey / No name                |
 | __software__          | -software:"photoshop"                | Last edited this app          |
+| __artist__            | -artist:"your-name"                  | Some cameras store an artist  |
+
 
 ### Rest API documentation
 
