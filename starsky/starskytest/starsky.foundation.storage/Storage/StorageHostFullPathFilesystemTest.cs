@@ -341,17 +341,20 @@ public sealed class StorageHostFullPathFilesystemTest
 	{
 		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 		var stream = new MemoryStream(new byte[1]);
-		var expectedPath =
-			Path.Combine(Path.GetTempPath(),
-				"WriteStreamAsync_Host_TestOutput_" +
-				"DirectoryNotFoundException", "image.jpg");
+		var expectedDirectory = Path.Combine(Path.GetTempPath(),
+			"WriteStreamAsync_Host_TestOutput_" +
+			"DirectoryNotFoundException");
+		var expectedPath = Path.Combine(expectedDirectory, "image.jpg");
+		Directory.Delete(expectedDirectory);
 
 		var result = await hostStorage.WriteStreamAsync(stream, expectedPath);
 
-		Assert.IsFalse(result);
-		Assert.AreEqual(-1, hostStorage.Info(expectedPath).Size);
+		Assert.IsTrue(result);
+		Assert.AreEqual(1, hostStorage.Info(expectedPath).Size);
 
 		await stream.DisposeAsync();
+		File.Delete(expectedPath);
+		Directory.Delete(expectedDirectory);
 		Assert.IsFalse(hostStorage.ExistFile(expectedPath));
 	}
 

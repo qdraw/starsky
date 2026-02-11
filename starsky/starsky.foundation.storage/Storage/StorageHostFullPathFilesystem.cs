@@ -440,9 +440,17 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		return await RetryHelper.DoAsync(LocalRun,
 			TimeSpan.FromSeconds(1), 6);
 
+		async Task LocalCopy()
+		{
+			await using var fileStream = new FileStream(path, FileMode.Create,
+				FileAccess.Write, FileShare.Read, 4096,
+				FileOptions.Asynchronous | FileOptions.SequentialScan);
+			await stream.CopyToAsync(fileStream);
+			await fileStream.FlushAsync();
+		}
+
 		async Task<bool> LocalRun()
 		{
-			var isSuccess = true;
 			try
 			{
 				stream.Seek(0, SeekOrigin.Begin);
@@ -454,18 +462,16 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 
 			try
 			{
-				await using var fileStream = new FileStream(path, FileMode.Create,
-					FileAccess.Write, FileShare.Read, 4096,
-					FileOptions.Asynchronous | FileOptions.SequentialScan);
-				await stream.CopyToAsync(fileStream);
-				await fileStream.FlushAsync();
+				await LocalCopy();
 			}
 			catch ( DirectoryNotFoundException exception )
 			{
-				_logger.LogError("[WriteStreamAsync] " +
-				                 "catch-ed DirectoryNotFoundException",
-					exception);
-				isSuccess = false;
+				var dir = Path.GetDirectoryName(path)!;
+				CreateDirectory(dir);
+				_logger.LogInformation("[WriteStreamAsync] " +
+				                       "DirectoryNotFoundException " +
+				                       "Auto-created directory: " + dir, exception);
+				await LocalCopy();
 			}
 			finally
 			{
@@ -483,7 +489,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 				_logger.LogDebug($"[WriteStreamAsync] Done writing file: {path}");
 			}
 
-			return isSuccess;
+			return true;
 		}
 	}
 
