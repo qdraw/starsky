@@ -345,7 +345,15 @@ public sealed class StorageHostFullPathFilesystemTest
 			"WriteStreamAsync_Host_TestOutput_" +
 			"DirectoryNotFoundException");
 		var expectedPath = Path.Combine(expectedDirectory, "image.jpg");
-		Directory.Delete(expectedDirectory);
+		try
+		{
+			Directory.Delete(expectedDirectory);
+		}
+		catch ( DirectoryNotFoundException )
+		{
+			// ignore   System.IO.DirectoryNotFoundException: Could not find a part of the path
+			// '/tmp/WriteStreamAsync_Host_TestOutput_DirectoryNotFoundException'.
+		}
 
 		var result = await hostStorage.WriteStreamAsync(stream, expectedPath);
 
