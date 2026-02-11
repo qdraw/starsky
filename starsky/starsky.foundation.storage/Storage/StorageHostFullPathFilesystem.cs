@@ -424,7 +424,6 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		return true;
 	}
 
-
 	/// <summary>
 	///     Write async and disposed after
 	/// </summary>
@@ -438,8 +437,12 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			return false;
 		}
 
+		return await RetryHelper.DoAsync(LocalRun,
+			TimeSpan.FromSeconds(1), 6);
+
 		async Task<bool> LocalRun()
 		{
+			var isSuccess = true;
 			try
 			{
 				stream.Seek(0, SeekOrigin.Begin);
@@ -449,31 +452,39 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 				// HttpConnection.ContentLengthReadStream does not support this
 			}
 
-			using ( var fileStream = new FileStream(path, FileMode.Create,
-				       FileAccess.Write, FileShare.Read, 4096,
-				       FileOptions.Asynchronous | FileOptions.SequentialScan) )
+			try
 			{
+				await using var fileStream = new FileStream(path, FileMode.Create,
+					FileAccess.Write, FileShare.Read, 4096,
+					FileOptions.Asynchronous | FileOptions.SequentialScan);
 				await stream.CopyToAsync(fileStream);
 				await fileStream.FlushAsync();
 			}
-
-			try
+			catch ( DirectoryNotFoundException exception )
 			{
-				await stream.FlushAsync();
+				_logger.LogError("[WriteStreamAsync] " +
+				                 "catch-ed DirectoryNotFoundException",
+					exception);
+				isSuccess = false;
 			}
-			catch ( NotSupportedException )
+			finally
 			{
-				// HttpConnection does not support this - Specified method is not supported.
+				try
+				{
+					await stream.FlushAsync();
+				}
+				catch ( NotSupportedException )
+				{
+					// HttpConnection does not support this - Specified method is not supported.
+				}
+
+				await stream.DisposeAsync(); // also flush
+
+				_logger.LogDebug($"[WriteStreamAsync] Done writing file: {path}");
 			}
 
-			await stream.DisposeAsync(); // also flush
-
-			_logger.LogDebug($"[WriteStreamAsync] Done writing file: {path}");
-
-			return true;
+			return isSuccess;
 		}
-
-		return await RetryHelper.DoAsync(LocalRun, TimeSpan.FromSeconds(1), 6);
 	}
 
 	/// <summary>
