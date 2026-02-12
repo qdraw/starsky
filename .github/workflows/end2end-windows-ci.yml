@@ -68,7 +68,7 @@ jobs:
         run: .\pm2-warmup.ps1 -port 4000
 
       - name: Run Cypress in Electron 
-        uses: cypress-io/github-action@59d6ceb7164557b2e23ea8865db5e4df9d3c6c88
+        uses: cypress-io/github-action@be9c221b90b2fb97daedfa8699d1f08b662efc70
         env:
           CYPRESS_BASE_URL: http://localhost:4000
           cypress_name: local
