@@ -80,7 +80,16 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
   const mapReference = useCallback((node: HTMLDivElement | null) => {
     const leafletNode = node as LeafletDiv;
     if (node !== null && mapState === null && leafletNode._leaflet_id == null) {
-      UpdateMap(node, location, isFormEnabled, setLocation, setIsLocationUpdated, setMapState);
+      UpdateMap(
+        node,
+        location,
+        isFormEnabled,
+        setLocation,
+        setIsLocationUpdated,
+        setMapState,
+        language,
+        localization
+      );
     }
     // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, []);

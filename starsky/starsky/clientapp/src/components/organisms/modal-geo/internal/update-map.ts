@@ -1,4 +1,6 @@
+import { Language } from "../../../../shared/language";
 import { ILatLong } from "../modal-geo";
+import { AddContextMenu, ILocalization } from "./add-context-menu";
 import { AddDefaultClickSetMarker } from "./add-default-click-set-marker";
 import { AddDefaultMarker } from "./add-default-marker";
 import { AddMap } from "./add-map";
@@ -11,7 +13,9 @@ export function UpdateMap(
   isFormEnabled: boolean,
   setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
   setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>,
-  setMapState: React.Dispatch<React.SetStateAction<L.Map | null>>
+  setMapState: React.Dispatch<React.SetStateAction<L.Map | null>>,
+  language?: Language,
+  localization?: ILocalization
 ) {
   const zoom = GetZoom(location);
 
@@ -22,6 +26,11 @@ export function UpdateMap(
   isFormEnabled = AddDefaultMarker(location, map, isFormEnabled, setLocation, setIsLocationUpdated);
 
   AddDefaultClickSetMarker(map, isFormEnabled, setLocation, setIsLocationUpdated);
+
+  // Add context menu if language and localization are provided
+  if (language && localization) {
+    AddContextMenu({ map, language, localization });
+  }
 
   setMapState(map);
 }
