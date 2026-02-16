@@ -26,6 +26,10 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
+        <PackageReference Include="MSTest.Analyzers" Version="4.1.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="MSTest.TestAdapter" Version="4.1.0"/>
         <PackageReference Include="MSTest.TestFramework" Version="4.1.0"/>
         <PackageReference Include="Verify.MSTest" Version="31.13.0" />

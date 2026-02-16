@@ -1364,8 +1364,8 @@ public sealed class ImportTest : VerifyBase
 		await importService.AddToQueryAndImportDatabaseAsync(
 			new ImportIndexItem(), new ImportSettingsModel { IndexMode = false });
 
-		Assert.AreEqual(1, logger.TrackedInformation.Count(p =>
-			p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true));
+		Assert.ContainsSingle(p =>
+			p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true, logger.TrackedInformation);
 	}
 
 	private static string DefaultPath()
