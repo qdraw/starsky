@@ -20,7 +20,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices;
 [TestClass]
 public sealed class ManualBackgroundSyncServiceTest
 {
-
 	[TestMethod]
 	public async Task NotFound()
 	{
@@ -177,6 +176,7 @@ public sealed class ManualBackgroundSyncServiceTest
 		Assert.IsNotNull(hasCache1);
 
 		var isException = false;
+		object? hasCache = 1;
 		try
 		{
 			// Should crash on null reference exception on query
@@ -186,12 +186,11 @@ public sealed class ManualBackgroundSyncServiceTest
 		{
 			isException = true;
 
-			var hasCache = memoryCache.Get(
+			hasCache = memoryCache.Get(
 				ManualBackgroundSyncService.ManualSyncCacheName + "test");
-
-			Assert.IsNull(hasCache);
 		}
 
+		Assert.IsNull(hasCache);
 		Assert.IsTrue(isException);
 	}
 }
