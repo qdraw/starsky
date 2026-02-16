@@ -4209,6 +4209,7 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Get current Cloud Import status for all providers",
           "parameters": [],
           "responses": {
             "200": {
@@ -4242,11 +4243,13 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Get status for a specific provider",
           "parameters": [
             {
               "unresolvedReference": false,
               "name": "providerId",
               "in": 2,
+              "description": "id of provider",
               "required": true,
               "deprecated": false,
               "allowEmptyValue": false,
@@ -4306,6 +4309,7 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Trigger a manual sync for all enabled providers",
           "parameters": [],
           "responses": {
             "200": {
@@ -4339,11 +4343,13 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Trigger a manual sync for a specific provider",
           "parameters": [
             {
               "unresolvedReference": false,
               "name": "providerId",
               "in": 2,
+              "description": "which provider",
               "required": true,
               "deprecated": false,
               "allowEmptyValue": false,
@@ -4403,6 +4409,7 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Get the last sync results for all providers",
           "parameters": [],
           "responses": {
             "200": {
@@ -4436,11 +4443,13 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Get the last sync result for a specific provider",
           "parameters": [
             {
               "unresolvedReference": false,
               "name": "providerId",
               "in": 2,
+              "description": "which provider",
               "required": true,
               "deprecated": false,
               "allowEmptyValue": false,
@@ -21521,5 +21530,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "EB9A055F5F2ADF8952BDCE819056E8D88E4D731F7B3CFB9372B4E29EB8BEF4ED013B94394872A3EDA077DD903313CF23B84E46DC8B4C741A8FC19D8BD96BF55C"
+  "hashCode": "19F5B230E0798B83CB32C7F7C8C64457D360F6B23CA3B6BB7E66D1FAE41FC69A0C7FA53714CE5EA43AB898A4809BEC3B71001FBE8DF7957D9607F61BB0BCBD12"
 }
