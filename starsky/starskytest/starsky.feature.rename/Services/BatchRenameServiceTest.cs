@@ -196,7 +196,7 @@ public class BatchRenameServiceTest
 		const string tokenPattern = "{invalidtoken}";
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
 		CollectionAssert.AllItemsAreNotNull(result);
-		Assert.IsTrue(result.Any(x => x.HasError));
+		Assert.Contains(x => x.HasError, result);
 		Assert.Contains("Invalid pattern", result[0].ErrorMessage!);
 		await RemoveFoldersAndFilesInDatabase();
 	}
@@ -212,7 +212,7 @@ public class BatchRenameServiceTest
 		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
 		CollectionAssert.AllItemsAreNotNull(result);
-		Assert.IsTrue(result.Any(x => x.HasError));
+		Assert.Contains(x => x.HasError, result);
 		Assert.AreEqual("File not found in database", result[0].ErrorMessage);
 	}
 
@@ -261,16 +261,16 @@ public class BatchRenameServiceTest
 		Assert.HasCount(1, result);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
 	}
-	
+
 	[TestMethod]
 	public void PreviewBatchRename_ReadOnly()
 	{
-		var iStorage = new FakeIStorage([], 
+		var iStorage = new FakeIStorage([],
 			["/test.jpg"]);
 		var service =
 			new BatchRenameService(new FakeIQuery([new FileIndexItem("/test.jpg")]),
-				iStorage, new FakeIWebLogger(), new AppSettings{ReadOnlyFolders = ["/"]});
-		var result =  service.PreviewBatchRename(["/test.jpg"],
+				iStorage, new FakeIWebLogger(), new AppSettings { ReadOnlyFolders = ["/"] });
+		var result = service.PreviewBatchRename(["/test.jpg"],
 			"{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}");
 
 		Assert.HasCount(1, result);
@@ -965,8 +965,8 @@ public class BatchRenameServiceTest
 
 		// Assert
 		Assert.HasCount(2, result);
-		Assert.IsTrue(result.Any(x => x.SourceFilePath == sourceFilePath));
-		Assert.IsTrue(result.Any(x => x.SourceFilePath == sidecarFilePath));
+		Assert.Contains(x => x.SourceFilePath == sourceFilePath, result);
+		Assert.Contains(x => x.SourceFilePath == sidecarFilePath, result);
 		var mainFile = result.First(x => x.SourceFilePath == sourceFilePath);
 		var sidecar = result.First(x => x.SourceFilePath == sidecarFilePath);
 		Assert.IsFalse(mainFile.HasError);

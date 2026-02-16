@@ -229,14 +229,14 @@ public sealed class SyncFolderTest
 			"/same_test") ).Where(p => p.FilePath != "/").ToList();
 
 		Assert.HasCount(2, result); // folder and item in folder
-		Assert.AreEqual(1, result.Count(p => p.FileName == "test.jpg"));
-		Assert.AreEqual(1, result.Count(p => p.FileName == "same_test"));
+		Assert.ContainsSingle(p => p.FileName == "test.jpg", result);
+		Assert.ContainsSingle(p => p.FileName == "same_test", result);
 		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result[0].Status);
 
 
 		var queryResult = await _query.GetAllFilesAsync("/same_test");
 		Assert.HasCount(1, queryResult);
-		Assert.AreEqual(1, queryResult.Count(p => p.FileName == "test.jpg"));
+		Assert.ContainsSingle(p => p.FileName == "test.jpg", queryResult);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame,
 			queryResult.Find(p => p.FileName == "test.jpg")?.Status);
@@ -273,14 +273,14 @@ public sealed class SyncFolderTest
 			"/same_test") ).Where(p => p.FilePath != "/").ToList();
 
 		Assert.HasCount(2, result); // folder and item in folder
-		Assert.AreEqual(1, result.Count(p => p.FileName == "test.jpg"));
-		Assert.AreEqual(1, result.Count(p => p.FileName == "same_test"));
+		Assert.ContainsSingle(p => p.FileName == "test.jpg", result);
+		Assert.ContainsSingle(p => p.FileName == "same_test", result);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 
 
 		var queryResult = await _query.GetAllFilesAsync("/same_test");
 		Assert.HasCount(1, queryResult);
-		Assert.AreEqual(1, queryResult.Count(p => p.FileName == "test.jpg"));
+		Assert.ContainsSingle(p => p.FileName == "test.jpg", queryResult);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
 			queryResult.Find(p => p.FileName == "test.jpg")?.Status);
@@ -458,7 +458,7 @@ public sealed class SyncFolderTest
 		}
 
 		Assert.AreEqual("/", allFolders.Find(p => p.FilePath == "/")?.FilePath);
-		Assert.AreEqual(1, allFolders.Count(p => p.FilePath == "/DuplicateFolder"));
+		Assert.ContainsSingle(p => p.FilePath == "/DuplicateFolder", allFolders);
 	}
 
 	[TestMethod]
@@ -481,7 +481,7 @@ public sealed class SyncFolderTest
 
 		Assert.AreEqual("/DuplicateFolder",
 			allFolders.Find(p => p.FilePath == "/DuplicateFolder")?.FilePath);
-		Assert.AreEqual(1, allFolders.Count(p => p.FilePath == "/DuplicateFolder"));
+		Assert.ContainsSingle(p => p.FilePath == "/DuplicateFolder", allFolders);
 	}
 
 	[TestMethod]
@@ -781,8 +781,8 @@ public sealed class SyncFolderTest
 		await syncFolder.RemoveChildItems(_query, rootItem);
 
 		// Assert: Should log the count of items being removed
-		Assert.IsTrue(logger.TrackedInformation.Any(log =>
-			log.Item2!.Contains("[SyncFolder] Removing 10 child items")));
+		Assert.Contains(log =>
+			log.Item2!.Contains("[SyncFolder] Removing 10 child items"), logger.TrackedInformation);
 	}
 
 	[TestMethod]
@@ -861,9 +861,9 @@ public sealed class SyncFolderTest
 		await syncFolder.Folder("/");
 
 		// Assert: Should log the skip message
-		Assert.IsTrue(logger.TrackedInformation.Any(log =>
+		Assert.Contains(log =>
 				log.Item2!.Contains(
-					"[SyncFolder] Skipping deletion of /folder_with_subdirs - subdirectories exist on disk")),
+					"[SyncFolder] Skipping deletion of /folder_with_subdirs - subdirectories exist on disk"), logger.TrackedInformation,
 			"Expected log message about skipping deletion due to subdirectories");
 
 		// Assert: Folder should still exist in database (not deleted)
@@ -904,8 +904,8 @@ public sealed class SyncFolderTest
 		// Assert: Folder should NOT be deleted
 		var folder = await _query.GetObjectByFilePathAsync("/deep_nested_folder");
 		Assert.IsNotNull(folder, "Deeply nested folder should not be deleted");
-		Assert.IsTrue(logger.TrackedInformation.Any(log =>
-				log.Item2!.Contains("Skipping deletion of /deep_nested_folder")),
+		Assert.Contains(log =>
+				log.Item2!.Contains("Skipping deletion of /deep_nested_folder"), logger.TrackedInformation,
 			"Should log skip message for deeply nested folder");
 	}
 
@@ -1034,8 +1034,8 @@ public sealed class SyncFolderTest
 		Assert.IsEmpty(remainingChildren);
 
 		// Verify logging includes count
-		Assert.IsTrue(logger.TrackedInformation.Any(log =>
-			log.Item2!.Contains($"Removing {childCount} child items")));
+		Assert.Contains(log =>
+			log.Item2!.Contains($"Removing {childCount} child items"), logger.TrackedInformation);
 	}
 
 	/// <summary>
@@ -1245,8 +1245,8 @@ public sealed class SyncFolderTest
 		Assert.IsNotNull(normalFolder, "Normal folder should exist");
 
 		// The skip deletion log should work for normal folders
-		Assert.IsTrue(logger.TrackedInformation.Any(log =>
-			log.Item2!.Contains("Skipping deletion of /normal_folder")));
+		Assert.Contains(log =>
+			log.Item2!.Contains("Skipping deletion of /normal_folder"), logger.TrackedInformation);
 	}
 
 	/// <summary>
@@ -1302,8 +1302,8 @@ public sealed class SyncFolderTest
 		await syncFolder.Folder("/");
 
 		// Assert: Should skip deletion because subdirectories exist
-		Assert.IsTrue(logger.TrackedInformation.Any(log =>
-			log.Item2!.Contains("Skipping deletion")));
+		Assert.Contains(log =>
+			log.Item2!.Contains("Skipping deletion"), logger.TrackedInformation);
 	}
 
 	/// <summary>

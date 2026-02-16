@@ -164,7 +164,7 @@ public sealed class NotificationQueryErrorTest
 		Assert.IsNotNull(result);
 		Assert.AreEqual(content, result.Content);
 	}
-	
+
 	[TestMethod]
 	public async Task AddNotification_ShouldLogError_WhenInputExceedsMaxLength()
 	{
@@ -182,8 +182,9 @@ public sealed class NotificationQueryErrorTest
 		var result = await sut.AddNotification(longContent);
 
 		// Assert
-		Assert.IsTrue(fakeLogger.TrackedExceptions.Any(log =>
-			log.Item2?.Contains(NotificationQuery.ErrorMessageContentToLong) == true));
+		Assert.Contains(log =>
+				log.Item2?.Contains(NotificationQuery.ErrorMessageContentToLong) == true,
+			fakeLogger.TrackedExceptions);
 		Assert.AreEqual(string.Empty, result.Content);
 	}
 

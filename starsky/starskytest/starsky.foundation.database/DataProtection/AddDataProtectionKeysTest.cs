@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.Repositories;
@@ -19,7 +18,7 @@ public class AddDataProtectionKeysTest
 
 		service.SetupDataProtection();
 
-		Assert.IsTrue(service.Any(p => p.ToString().Contains("DataProtection")));
+		Assert.Contains(p => p.ToString().Contains("DataProtection"), service);
 	}
 
 	[TestMethod]
