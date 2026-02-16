@@ -53,11 +53,11 @@
   "System.Text.Json 9.0.9",
   "Microsoft.AspNetCore.Identity.EntityFrameworkCore 8.0.24",
   "Microsoft.Extensions.Hosting 8.0.1",
-  "Microsoft.NET.Test.Sdk 17.14.1",
-  "MSTest.TestAdapter 3.11.1",
-  "MSTest.TestFramework 3.11.1",
-  "Verify.MSTest 30.20.1",
-  "coverlet.collector 6.0.4",
+  "Microsoft.NET.Test.Sdk 18.0.1",
+  "MSTest.TestAdapter 4.1.0",
+  "MSTest.TestFramework 4.1.0",
+  "Verify.MSTest 31.13.0",
+  "coverlet.collector 8.0.0",
   "Microsoft.AspNetCore.Mvc.Formatters.Json 2.3.9",
   "Microsoft.AspNetCore.Identity 2.3.9"
 ]
