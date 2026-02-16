@@ -244,7 +244,7 @@ public sealed class DiskControllerTest
 
 		await controller.Rename(_createAnImage.DbPath, "/test.jpg");
 
-		Assert.AreEqual(1, socket.FakeSendToAllAsync.Count(p => !p.Contains("[system]")));
+		Assert.ContainsSingle(p => !p.Contains("[system]"), socket.FakeSendToAllAsync);
 		Assert.Contains("/test.jpg", socket.FakeSendToAllAsync[0]);
 
 		await _query.RemoveItemAsync(( await _query.GetObjectByFilePathAsync("/test.jpg") )!);

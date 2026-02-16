@@ -49,8 +49,8 @@ public class ExportServiceTest
 			await exportService.PreflightAsync(new List<string> { "/test/test.jpg" }.ToArray());
 
 		Assert.HasCount(3, fileIndexResultsList);
-		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.FilePath == "/test/test.jpg"));
-		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.FilePath == "/test/test.dng"));
+		Assert.ContainsSingle(p => p.FilePath == "/test/test.jpg", fileIndexResultsList);
+		Assert.ContainsSingle(p => p.FilePath == "/test/test.dng", fileIndexResultsList);
 	}
 
 
@@ -73,7 +73,7 @@ public class ExportServiceTest
 				false);
 
 		Assert.HasCount(1, fileIndexResultsList);
-		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.FilePath == "/test/test.jpg"));
+		Assert.ContainsSingle(p => p.FilePath == "/test/test.jpg", fileIndexResultsList);
 		Assert.AreEqual(0, fileIndexResultsList.Count(p => p.FilePath == "/test/test.dng"));
 	}
 
@@ -116,9 +116,8 @@ public class ExportServiceTest
 
 		Assert.AreEqual(0,
 			fileIndexResultsList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok));
-		Assert.AreEqual(1,
-			fileIndexResultsList.Count(p =>
-				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing));
+		Assert.ContainsSingle(p =>
+			p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing, fileIndexResultsList);
 	}
 
 	[TestMethod]

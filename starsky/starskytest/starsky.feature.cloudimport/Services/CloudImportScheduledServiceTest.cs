@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,9 +37,10 @@ public class CloudImportScheduledServiceTest
 
 		// Assert
 		Assert.IsEmpty(cloudImportService.SyncCalls);
-		Assert.IsTrue(
-			logger.TrackedInformation.Any(m =>
-				m.Item2!.Contains("disabled") || m.Item2!.Contains("not run")));
+		Assert.Contains(
+			m =>
+				m.Item2!.Contains("disabled") || m.Item2!.Contains("not run"),
+			logger.TrackedInformation);
 	}
 
 	[TestMethod]
@@ -75,7 +75,8 @@ public class CloudImportScheduledServiceTest
 		await service.StopAsync(cts.Token);
 
 		// Assert - Service should log that it's starting
-		Assert.IsTrue(logger.TrackedInformation.Any(m => m.Item2!.Contains("Starting scheduled sync")));
+		Assert.Contains(m => m.Item2!.Contains("Starting scheduled sync"),
+			logger.TrackedInformation);
 	}
 
 	[TestMethod]
@@ -107,7 +108,7 @@ public class CloudImportScheduledServiceTest
 		await service.StopAsync(cts.Token);
 
 		// Assert
-		Assert.IsTrue(logger.TrackedInformation.Any(m => m.Item2!.Contains("stopping")));
+		Assert.Contains(m => m.Item2!.Contains("stopping"), logger.TrackedInformation);
 	}
 
 	[TestMethod]

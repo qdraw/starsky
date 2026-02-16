@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +14,8 @@ namespace starskytest.starsky.foundation.database.GeoNamesCities;
 [TestClass]
 public class GeoNamesCitiesQueryTest
 {
-	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")] public TestContext TestContext { get; set; }
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+	public TestContext TestContext { get; set; }
 
 	private static (ApplicationDbContext, IServiceScopeFactory) CreateDbContextAndScopeFactory(
 		string dbName)
@@ -72,9 +72,9 @@ public class GeoNamesCitiesQueryTest
 		var db2 = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 		var all = await db2.GeoNameCities.ToListAsync(TestContext.CancellationToken);
 		Assert.HasCount(3, all);
-		Assert.IsTrue(all.Any(x => x.GeonameId == 1 && x.Name == "A"));
-		Assert.IsTrue(all.Any(x => x.GeonameId == 2 && x.Name == "B"));
-		Assert.IsTrue(all.Any(x => x.GeonameId == 3 && x.Name == "C"));
+		Assert.Contains(x => x.GeonameId == 1 && x.Name == "A", all);
+		Assert.Contains(x => x.GeonameId == 2 && x.Name == "B", all);
+		Assert.Contains(x => x.GeonameId == 3 && x.Name == "C", all);
 	}
 
 	[TestMethod]
@@ -123,7 +123,7 @@ public class GeoNamesCitiesQueryTest
 		var results = await query.Search("test", 10);
 		Assert.HasCount(0, results);
 	}
-	
+
 	[TestMethod]
 	public async Task Search_InValidField_NoResults()
 	{

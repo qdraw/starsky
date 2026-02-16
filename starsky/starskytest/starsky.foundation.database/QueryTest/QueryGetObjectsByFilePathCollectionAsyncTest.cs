@@ -19,6 +19,8 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 			.GetRequiredService<ApplicationDbContext>(),
 		new AppSettings(), CreateNewScope(), new FakeIWebLogger(), new FakeMemoryCache());
 
+	public TestContext TestContext { get; set; }
+
 	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
@@ -89,7 +91,7 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 		var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
 			new List<string> { "/3.jpg" });
 
-		Assert.AreEqual(1, result.Count(p => p.FileName?.StartsWith('3') == true));
+		Assert.ContainsSingle(p => p.FileName?.StartsWith('3') == true, result);
 		var threeJpg =
 			result.Where(p => p.FileName?.StartsWith('3') == true)
 				.ToList()[0];
@@ -258,6 +260,4 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 		Assert.HasCount(1, result);
 		Assert.AreEqual("/disposed2/single_item_disposed_1.jpg", result[0].FilePath);
 	}
-
-	public TestContext TestContext { get; set; }
 }

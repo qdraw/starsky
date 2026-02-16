@@ -637,9 +637,8 @@ public sealed class ExifToolDownloadTest
 				.StartDownloadForUnix();
 
 		Assert.IsFalse(result);
-		Assert.AreEqual(1,
-			logger.TrackedExceptions.Count(p =>
-				p.Item2?.Contains("[DownloadForUnix] matchExifToolForUnixName is empty") == true));
+		Assert.ContainsSingle(p =>
+				p.Item2?.Contains("[DownloadForUnix] matchExifToolForUnixName is empty") == true, logger.TrackedExceptions);
 	}
 
 	[TestMethod]
@@ -719,8 +718,7 @@ public sealed class ExifToolDownloadTest
 			.DownloadForWindows("exiftool-11.99_64.zip", []);
 
 		Assert.IsFalse(result);
-		Assert.AreEqual(1,
-			logger.TrackedExceptions.Count(p => p.Item2?.Contains("Checksum for") == true));
+		Assert.ContainsSingle(p => p.Item2?.Contains("Checksum for") == true, logger.TrackedExceptions);
 	}
 
 	[TestMethod]
@@ -764,10 +762,9 @@ public sealed class ExifToolDownloadTest
 				.StartDownloadForWindows();
 
 		Assert.IsFalse(result);
-		Assert.AreEqual(1,
-			logger.TrackedExceptions.Count(p =>
+		Assert.ContainsSingle(p =>
 				p.Item2?.Contains("[DownloadForWindows] matchExifToolForWindowsName is empty") ==
-				true));
+				true, logger.TrackedExceptions);
 	}
 
 	[TestMethod]

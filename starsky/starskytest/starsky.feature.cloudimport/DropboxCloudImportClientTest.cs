@@ -212,8 +212,8 @@ public class DropboxCloudImportClientTest
 		var files = await client.ListFilesAsync("/test");
 
 		Assert.HasCount(2, files);
-		Assert.IsTrue(files.Any(f => f.Id == "1" && f.Name == "file1.txt"));
-		Assert.IsTrue(files.Any(f => f.Id == "2" && f.Name == "file2.txt"));
+		Assert.Contains(f => f.Id == "1" && f.Name == "file1.txt", files);
+		Assert.Contains(f => f.Id == "2" && f.Name == "file2.txt", files);
 		Assert.AreEqual(1, callCount); // ListFolderContinueAsync should be called once
 	}
 
