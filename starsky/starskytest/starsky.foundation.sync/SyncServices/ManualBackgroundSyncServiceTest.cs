@@ -20,7 +20,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices;
 [TestClass]
 public sealed class ManualBackgroundSyncServiceTest
 {
-
 	[TestMethod]
 	public async Task NotFound()
 	{
@@ -109,10 +108,8 @@ public sealed class ManualBackgroundSyncServiceTest
 			Console.WriteLine("Manual sync " + itemContent.FilePath);
 		}
 
-		Assert.AreEqual(1,
-			content.Count(p => p.FilePath == "/test2__1234.jpg"));
-		Assert.AreEqual(1,
-			content.Count(p => p.FilePath == "/test3__1234.jpg"));
+		Assert.ContainsSingle(p => p.FilePath == "/test2__1234.jpg", content);
+		Assert.ContainsSingle(p => p.FilePath == "/test3__1234.jpg", content);
 		Assert.AreEqual(2,
 			content.Count(p => p.FilePath is "/test2__1234.jpg" or "/test3__1234.jpg"));
 		// should not contain the cached item
@@ -179,6 +176,7 @@ public sealed class ManualBackgroundSyncServiceTest
 		Assert.IsNotNull(hasCache1);
 
 		var isException = false;
+		object? hasCache = 1;
 		try
 		{
 			// Should crash on null reference exception on query
@@ -188,12 +186,11 @@ public sealed class ManualBackgroundSyncServiceTest
 		{
 			isException = true;
 
-			var hasCache = memoryCache.Get(
+			hasCache = memoryCache.Get(
 				ManualBackgroundSyncService.ManualSyncCacheName + "test");
-
-			Assert.IsNull(hasCache);
 		}
 
+		Assert.IsNull(hasCache);
 		Assert.IsTrue(isException);
 	}
 }

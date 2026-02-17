@@ -460,12 +460,12 @@ public sealed class MetaUpdateServiceTest
 		    or FileIndexItem.ExifStatus.ReadOnly
 		    or FileIndexItem.ExifStatus.Unauthorized )
 		{
-			Assert.IsFalse(result.Any(p
+			Assert.DoesNotContain(p
 				=> p.Status is FileIndexItem.ExifStatus.NotFoundNotInIndex or
 					FileIndexItem.ExifStatus.NotFoundSourceMissing or
 					FileIndexItem.ExifStatus.OperationNotSupported or
 					FileIndexItem.ExifStatus.ReadOnly or
-					FileIndexItem.ExifStatus.Unauthorized));
+					FileIndexItem.ExifStatus.Unauthorized, result);
 		}
 		else
 		{
@@ -477,7 +477,7 @@ public sealed class MetaUpdateServiceTest
 
 			Assert.AreEqual("noChanges",
 				_query.SingleItem("/test_default.jpg")!.FileIndexItem!.Description);
-			Assert.IsTrue(result.Any(i => i.Status == status));
+			Assert.Contains(i => i.Status == status, result);
 		}
 
 		await _query.RemoveItemAsync(item0);

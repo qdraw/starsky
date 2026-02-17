@@ -115,7 +115,7 @@ public class ProgramTest
 				TestContext.CancellationTokenSource.Token));
 	}
 
-	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	[ClassCleanup]
 	public static void CleanEnvsAfterwards()
 	{
 		// see also:

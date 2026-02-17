@@ -59,7 +59,7 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("disabled")));
+		Assert.Contains(e => e.Contains("disabled"), result.Errors);
 	}
 
 	[TestMethod]
@@ -97,7 +97,7 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("Failed to connect")));
+		Assert.Contains(e => e.Contains("Failed to connect"), result.Errors);
 	}
 
 	[TestMethod]
@@ -338,8 +338,8 @@ public class CloudImportServiceTest
 
 
 		// Assert
-		Assert.IsTrue(logger.TrackedExceptions.Any(e =>
-			e.Item2!.Contains("already in progress")));
+		Assert.Contains(e =>
+			e.Item2!.Contains("already in progress"), logger.TrackedExceptions);
 	}
 
 	[TestMethod]
@@ -409,8 +409,8 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.HasCount(2, results);
-		Assert.IsTrue(results.Any(r => r.ProviderId == "provider1"));
-		Assert.IsTrue(results.Any(r => r.ProviderId == "provider2"));
+		Assert.Contains(r => r.ProviderId == "provider1", results);
+		Assert.Contains(r => r.ProviderId == "provider2", results);
 		Assert.IsTrue(results.All(r => r.Success));
 	}
 
@@ -495,9 +495,9 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.HasCount(2, results);
-		Assert.IsTrue(results.Any(r =>
-			r.ProviderId == "provider1" && r.Errors.Any(e => e.Contains("Sync failed"))));
-		Assert.IsTrue(results.Any(r => r.ProviderId == "provider2"));
+		Assert.Contains(r =>
+			r.ProviderId == "provider1" && r.Errors.Any(e => e.Contains("Sync failed")), results);
+		Assert.Contains(r => r.ProviderId == "provider2", results);
 	}
 
 	[TestMethod]
@@ -529,8 +529,8 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Errors.Any(e =>
-			e.Contains("not available") || e.Contains("not enabled")));
+		Assert.Contains(e =>
+			e.Contains("not available") || e.Contains("not enabled"), result.Errors);
 	}
 
 	[TestMethod]
@@ -574,8 +574,8 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Errors.Any(e =>
-			e.Contains("not available") || e.Contains("not enabled")));
+		Assert.Contains(e =>
+			e.Contains("not available") || e.Contains("not enabled"), result.Errors);
 	}
 
 	[TestMethod]
@@ -610,8 +610,8 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsNotNull(errorResult);
-		Assert.IsTrue(errorResult.Errors.Any(e =>
-			e.Contains("Failed to list files from cloud storage")));
+		Assert.Contains(e =>
+			e.Contains("Failed to list files from cloud storage"), errorResult.Errors);
 	}
 
 	[TestMethod]
@@ -641,7 +641,7 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.AreEqual(1, result.FilesFailed);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("Download failed")));
+		Assert.Contains(e => e.Contains("Download failed"), result.Errors);
 	}
 
 	[TestMethod]
@@ -706,7 +706,7 @@ public class CloudImportServiceTest
 		Assert.IsFalse(success);
 		Assert.AreEqual(1, result.FilesFailed);
 		Assert.Contains(file.Name, result.FailedFiles);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("Import failed")));
+		Assert.Contains(e => e.Contains("Import failed"), result.Errors);
 	}
 
 	[TestMethod]
@@ -735,7 +735,7 @@ public class CloudImportServiceTest
 		Assert.IsFalse(success);
 		Assert.AreEqual(1, result.FilesFailed);
 		Assert.Contains(file.Name, result.FailedFiles);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("Import failed")));
+		Assert.Contains(e => e.Contains("Import failed"), result.Errors);
 	}
 
 	[TestMethod]

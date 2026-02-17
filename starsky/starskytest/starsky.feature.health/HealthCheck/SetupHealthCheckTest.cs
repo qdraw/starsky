@@ -17,6 +17,8 @@ namespace starskytest.starsky.feature.health.HealthCheck;
 [TestClass]
 public sealed class SetupHealthCheckTest
 {
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public void HealthCheckService_LoggerMissing_InvalidOperationException()
 	{
@@ -61,7 +63,7 @@ public sealed class SetupHealthCheckTest
 
 		var result = await service.CheckHealthAsync(TestContext.CancellationTokenSource.Token);
 
-		Assert.AreEqual(1, result.Entries.Count(p => p.Key == "mysql"));
+		Assert.ContainsSingle(p => p.Key == "mysql", result.Entries);
 		Assert.AreEqual(HealthStatus.Unhealthy,
 			result.Entries.FirstOrDefault(p => p.Key == "mysql").Value.Status);
 		Assert.AreEqual(0, result.Entries.Count(p => p.Key == "sqlite"));
@@ -123,7 +125,7 @@ public sealed class SetupHealthCheckTest
 
 		var result = await service.CheckHealthAsync(TestContext.CancellationTokenSource.Token);
 
-		Assert.AreEqual(1, result.Entries.Count(p => p.Key == "sqlite"));
+		Assert.ContainsSingle(p => p.Key == "sqlite", result.Entries);
 		Assert.AreEqual(HealthStatus.Unhealthy,
 			result.Entries.FirstOrDefault(p => p.Key == "sqlite").Value.Status);
 		Assert.AreEqual(0, result.Entries.Count(p => p.Key == "mysql"));
@@ -141,6 +143,4 @@ public sealed class SetupHealthCheckTest
 		Assert.ThrowsExactly<AggregateException>(() =>
 			new SetupHealthCheck(appSettings, services).BuilderHealth());
 	}
-
-	public TestContext TestContext { get; set; }
 }

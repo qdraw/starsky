@@ -104,7 +104,7 @@ public sealed class StarskyImporterCliProgramTest
 			null);
 	}
 
-	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	[ClassCleanup]
 	public static void CleanEnvsAfterwards()
 	{
 		Environment.SetEnvironmentVariable("PORT", _prePort);

@@ -48,6 +48,8 @@ public sealed class QueryTest
 			new AppSettings { Verbose = false }, serviceScope, _logger, _memoryCache);
 	}
 
+	public TestContext TestContext { get; set; }
+
 	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
@@ -189,8 +191,10 @@ public sealed class QueryTest
 			new AppSettings { Verbose = true }, serviceScope,
 			new FakeIWebLogger(), _memoryCache);
 
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/") { IsDirectory = true }, TestContext.CancellationTokenSource.Token);
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test.jpg"), TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// And dispose
@@ -213,12 +217,16 @@ public sealed class QueryTest
 		var query = new Query(dbContext, null!, null!, new FakeIWebLogger());
 
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetAllRecursiveAsync") { IsDirectory = true }, TestContext.CancellationTokenSource.Token);
+			new FileIndexItem("/GetAllRecursiveAsync") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetAllRecursiveAsync/test") { IsDirectory = true }, TestContext.CancellationTokenSource.Token);
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync/test.jpg"), TestContext.CancellationTokenSource.Token);
+			new FileIndexItem("/GetAllRecursiveAsync/test") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetAllRecursiveAsync/test/test.jpg"), TestContext.CancellationTokenSource.Token);
+			new FileIndexItem("/GetAllRecursiveAsync/test/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var items = await query.GetAllRecursiveAsync("/GetAllRecursiveAsync");
@@ -243,8 +251,10 @@ public sealed class QueryTest
 			new AppSettings { Verbose = true }, serviceScope,
 			new FakeIWebLogger(), _memoryCache);
 
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar") { IsDirectory = true }, TestContext.CancellationTokenSource.Token);
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar/test.jpg"), TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// And dispose
@@ -1132,7 +1142,7 @@ public sealed class QueryTest
 
 		Assert.AreEqual("hi", displayFileFolders.Find(p => p.FileName == "cache")?.Tags);
 
-		Assert.AreEqual(1, displayFileFolders.Count(p => p.FileName == "cache"));
+		Assert.ContainsSingle(p => p.FileName == "cache", displayFileFolders);
 	}
 
 	[TestMethod]
@@ -1373,7 +1383,8 @@ public sealed class QueryTest
 
 		var dbContext2 = new InjectServiceScope(serviceScope).Context();
 		var itemItShouldContain =
-			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test982.jpg", TestContext.CancellationTokenSource.Token);
+			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test982.jpg",
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNotNull(itemItShouldContain);
 		Assert.AreEqual("test", itemItShouldContain.Tags);
 	}
@@ -1387,16 +1398,19 @@ public sealed class QueryTest
 		var query = new Query(dbContext, new AppSettings(), serviceScope, new FakeIWebLogger(),
 			_memoryCache);
 
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"), TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var item =
-			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg", TestContext.CancellationTokenSource.Token);
+			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNotNull(item);
 		await query.RemoveItemAsync(item);
 
 		var itemItShouldBeNull =
-			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg", TestContext.CancellationTokenSource.Token);
+			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(itemItShouldBeNull);
 	}
 
@@ -1409,11 +1423,13 @@ public sealed class QueryTest
 		var query = new Query(dbContext, new AppSettings(), serviceScope, new FakeIWebLogger(),
 			_memoryCache);
 
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"), TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var item =
-			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg", TestContext.CancellationTokenSource.Token);
+			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
+				TestContext.CancellationTokenSource.Token);
 
 		await dbContext.DisposeAsync();
 
@@ -1422,7 +1438,8 @@ public sealed class QueryTest
 
 		var dbContext2 = new InjectServiceScope(serviceScope).Context();
 		var itemItShouldBeNull =
-			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg", TestContext.CancellationTokenSource.Token);
+			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(itemItShouldBeNull);
 	}
 
@@ -1473,6 +1490,4 @@ public sealed class QueryTest
 
 		Assert.IsNull(result);
 	}
-
-	public TestContext TestContext { get; set; }
 }

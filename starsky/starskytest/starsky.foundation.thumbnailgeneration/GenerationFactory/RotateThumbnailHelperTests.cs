@@ -60,8 +60,8 @@ public class RotateThumbnailHelperTests
 		var result = await _sut.RotateThumbnail("corrupt", 1);
 
 		Assert.IsFalse(result);
-		Assert.IsTrue(
-			_logger.TrackedExceptions.Any(log =>
-				log.Item2?.Contains("[RotateThumbnailHelper]") == true));
+		Assert.Contains(
+			log =>
+				log.Item2?.Contains("[RotateThumbnailHelper]") == true, _logger.TrackedExceptions);
 	}
 }

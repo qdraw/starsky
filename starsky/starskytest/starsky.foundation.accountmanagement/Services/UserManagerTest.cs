@@ -38,6 +38,8 @@ public sealed class UserManagerTest
 		_dbContext = new ApplicationDbContext(options);
 	}
 
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task ValidateAsync_CredentialType_NotFound()
 	{
@@ -120,9 +122,9 @@ public sealed class UserManagerTest
 		var claims = userManager
 			.GetUserClaims(new User { Name = "test", Id = 1 }).ToList();
 
-		Assert.AreEqual(1, claims.Count(p => p.Type == ClaimTypes.Name));
-		Assert.AreEqual(1, claims.Count(p => p.Type == ClaimTypes.NameIdentifier));
-		Assert.AreEqual(1, claims.Count(p => p.Type == ClaimTypes.Email));
+		Assert.ContainsSingle(p => p.Type == ClaimTypes.Name, claims);
+		Assert.ContainsSingle(p => p.Type == ClaimTypes.NameIdentifier, claims);
+		Assert.ContainsSingle(p => p.Type == ClaimTypes.Email, claims);
 	}
 
 	[TestMethod]
@@ -165,7 +167,8 @@ public sealed class UserManagerTest
 		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
 			_memoryCache);
 
-		var test = await _dbContext.CredentialTypes.AnyAsync(p => p.Code == "email", TestContext.CancellationTokenSource.Token);
+		var test = await _dbContext.CredentialTypes.AnyAsync(p => p.Code == "email",
+			TestContext.CancellationTokenSource.Token);
 		if ( !test )
 		{
 			_dbContext.CredentialTypes.Add(
@@ -185,7 +188,8 @@ public sealed class UserManagerTest
 		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
 			_memoryCache);
 
-		var test = await _dbContext.CredentialTypes.AnyAsync(p => p.Code == "email", TestContext.CancellationTokenSource.Token);
+		var test = await _dbContext.CredentialTypes.AnyAsync(p => p.Code == "email",
+			TestContext.CancellationTokenSource.Token);
 		if ( !test )
 		{
 			_dbContext.CredentialTypes.Add(
@@ -193,7 +197,9 @@ public sealed class UserManagerTest
 			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		}
 
-		var credentialTypesCode = await _dbContext.CredentialTypes.FirstOrDefaultAsync(TestContext.CancellationTokenSource.Token);
+		var credentialTypesCode =
+			await _dbContext.CredentialTypes.FirstOrDefaultAsync(TestContext.CancellationTokenSource
+				.Token);
 
 		_dbContext.Credentials.Add(new Credential
 		{
@@ -217,7 +223,8 @@ public sealed class UserManagerTest
 	[DataRow(false)]
 	public async Task ValidateAsync_Transform_To_Iterate100K(bool cacheEnabled)
 	{
-		var test = await _dbContext.CredentialTypes.AnyAsync(p => p.Code == "email", TestContext.CancellationTokenSource.Token);
+		var test = await _dbContext.CredentialTypes.AnyAsync(p => p.Code == "email",
+			TestContext.CancellationTokenSource.Token);
 		if ( !test )
 		{
 			_dbContext.CredentialTypes.Add(
@@ -225,9 +232,12 @@ public sealed class UserManagerTest
 			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		}
 
-		var credentialTypesCode = await _dbContext.CredentialTypes.FirstOrDefaultAsync(TestContext.CancellationTokenSource.Token);
+		var credentialTypesCode =
+			await _dbContext.CredentialTypes.FirstOrDefaultAsync(TestContext.CancellationTokenSource
+				.Token);
 
-		await _dbContext.Users.AddAsync(new User { Name = "test_0008" }, TestContext.CancellationTokenSource.Token);
+		await _dbContext.Users.AddAsync(new User { Name = "test_0008" },
+			TestContext.CancellationTokenSource.Token);
 		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var cred = new Credential
@@ -239,11 +249,14 @@ public sealed class UserManagerTest
 				"t5cJrj735BKTx6bNw2snWzkKb5lsXDSreT9Fpz5YLJw=", // "pass123456789" (IterateLegacy)
 			Extra = "0kp9rQX22yeGPl3FSyZFlg==",
 			IterationCount = IterationCountType.IterateLegacySha1,
-			User = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == "test_0008", TestContext.CancellationTokenSource.Token),
-			UserId = ( await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == "test_0008", TestContext.CancellationTokenSource.Token) )!.Id,
+			User = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == "test_0008",
+				TestContext.CancellationTokenSource.Token),
+			UserId = ( await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == "test_0008",
+				TestContext.CancellationTokenSource.Token) )!.Id,
 			Id = 43579345
 		};
-		var credExists = await _dbContext.Credentials.AnyAsync(p => p.Identifier == "test_0008", TestContext.CancellationTokenSource.Token);
+		var credExists = await _dbContext.Credentials.AnyAsync(p => p.Identifier == "test_0008",
+			TestContext.CancellationTokenSource.Token);
 		if ( !credExists )
 		{
 			_dbContext.Credentials.Add(cred);
@@ -258,7 +271,8 @@ public sealed class UserManagerTest
 			"pass123456789");
 
 		var credAfterTransform = await _dbContext.Credentials
-			.FirstOrDefaultAsync(p => p.Identifier == "test_0008", TestContext.CancellationTokenSource.Token);
+			.FirstOrDefaultAsync(p => p.Identifier == "test_0008",
+				TestContext.CancellationTokenSource.Token);
 
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual("jCCNdJCtH6h1UBhEHkHawc+zt9PqQaEEubc8yc5CGTw=", credAfterTransform?.Secret);
@@ -542,7 +556,8 @@ public sealed class UserManagerTest
 
 
 		var emailType =
-			await _dbContext.CredentialTypes.FirstOrDefaultAsync(p => p.Code == "email", TestContext.CancellationTokenSource.Token);
+			await _dbContext.CredentialTypes.FirstOrDefaultAsync(p => p.Code == "email",
+				TestContext.CancellationTokenSource.Token);
 		_dbContext.Remove(emailType!);
 
 		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
@@ -691,11 +706,14 @@ public sealed class UserManagerTest
 
 		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		var role =
-			await _dbContext.Roles.FirstOrDefaultAsync(p => p.Code == "test_role_892453", TestContext.CancellationTokenSource.Token);
+			await _dbContext.Roles.FirstOrDefaultAsync(p => p.Code == "test_role_892453",
+				TestContext.CancellationTokenSource.Token);
 		var userRole =
-			await _dbContext.UserRoles.FirstOrDefaultAsync(p => p.UserId == 45475, TestContext.CancellationTokenSource.Token);
+			await _dbContext.UserRoles.FirstOrDefaultAsync(p => p.UserId == 45475,
+				TestContext.CancellationTokenSource.Token);
 		var user =
-			await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == 45475, TestContext.CancellationTokenSource.Token);
+			await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == 45475,
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNotNull(role);
 		Assert.IsNotNull(userRole);
 		Assert.IsNotNull(user);
@@ -854,7 +872,8 @@ public sealed class UserManagerTest
 
 		_memoryCache.Remove(UserManager.CredentialCacheKey(credType, "test_cache_add"));
 
-		await _dbContext.CredentialTypes.AddAsync(credType, TestContext.CancellationTokenSource.Token);
+		await _dbContext.CredentialTypes.AddAsync(credType,
+			TestContext.CancellationTokenSource.Token);
 		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 
@@ -1054,21 +1073,25 @@ public sealed class UserManagerTest
 		const string testEmail = "dont3@mail.me";
 		const string id = "4859353904354";
 
-		foreach ( var user in await _dbContext.Users.ToListAsync(TestContext.CancellationTokenSource.Token) )
+		foreach ( var user in await _dbContext.Users.ToListAsync(TestContext.CancellationTokenSource
+			         .Token) )
 		{
 			_dbContext.Users.Remove(user);
 		}
 
 		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
-		await _dbContext.Users.AddAsync(new User { Name = id }, TestContext.CancellationTokenSource.Token);
+		await _dbContext.Users.AddAsync(new User { Name = id },
+			TestContext.CancellationTokenSource.Token);
 		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		var beforeItem =
-			await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == id, TestContext.CancellationTokenSource.Token);
+			await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == id,
+				TestContext.CancellationTokenSource.Token);
 
 		Assert.IsNotNull(beforeItem);
 		Assert.AreEqual(id,
-			( await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == id, TestContext.CancellationTokenSource.Token) )?.Name);
+			( await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == id,
+				TestContext.CancellationTokenSource.Token) )?.Name);
 
 		var userManager = new UserManager(_dbContext,
 			new AppSettings
@@ -1081,7 +1104,8 @@ public sealed class UserManagerTest
 		var roleAddToUser = userManager.GetRoleAddToUser(testEmail, beforeItem);
 
 		// clean user
-		var item = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == id, TestContext.CancellationTokenSource.Token);
+		var item = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == id,
+			TestContext.CancellationTokenSource.Token);
 		_dbContext.Users.Remove(item!);
 		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
@@ -1094,6 +1118,4 @@ public sealed class UserManagerTest
 	{
 		public override DbSet<User> Users => throw new RetryLimitExceededException("general");
 	}
-
-	public TestContext TestContext { get; set; }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -63,10 +62,10 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 
 		await Verify(all);
 
-		Assert.IsTrue(all.Any(x => x.GeonameId == 38832 && x.Name == "Vila"));
-		Assert.IsTrue(all.Any(x => x.GeonameId == 3039154 && x.Name == "El Tarter"));
-		Assert.IsTrue(all.Any(x => x.GeonameId == 3039163 && x.Name.StartsWith("Sant Juli")));
-		Assert.IsTrue(all.Any(x => x.GeonameId == 6691091 && x.Name.StartsWith("Al Karama")));
+		Assert.Contains(x => x.GeonameId == 38832 && x.Name == "Vila", all);
+		Assert.Contains(x => x.GeonameId == 3039154 && x.Name == "El Tarter", all);
+		Assert.Contains(x => x.GeonameId == 3039163 && x.Name.StartsWith("Sant Juli"), all);
+		Assert.Contains(x => x.GeonameId == 6691091 && x.Name.StartsWith("Al Karama"), all);
 	}
 
 	[TestMethod]
@@ -86,10 +85,10 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 
 		await Verify(all);
 
-		Assert.IsTrue(all.Any(x => x.GeonameId == 38832 && x.Name == "Vila"));
-		Assert.IsTrue(all.Any(x => x.GeonameId == 3039154 && x.Name == "El Tarter"));
-		Assert.IsTrue(all.Any(x => x.GeonameId == 3039163 && x.Name.StartsWith("Sant Juli")));
-		Assert.IsTrue(all.Any(x => x.GeonameId == 6691091 && x.Name.StartsWith("Al Karama")));
+		Assert.Contains(x => x.GeonameId == 38832 && x.Name == "Vila", all);
+		Assert.Contains(x => x.GeonameId == 3039154 && x.Name == "El Tarter", all);
+		Assert.Contains(x => x.GeonameId == 3039163 && x.Name.StartsWith("Sant Juli"), all);
+		Assert.Contains(x => x.GeonameId == 6691091 && x.Name.StartsWith("Al Karama"), all);
 	}
 
 	[TestMethod]
@@ -146,7 +145,7 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 		Assert.IsFalse(awaitedResult,
 			"Setup should return false when cache is not set and file exists");
 	}
-	
+
 	[TestMethod]
 	public async Task Setup_ReturnsFalse_NoMemoryCacheNull()
 	{

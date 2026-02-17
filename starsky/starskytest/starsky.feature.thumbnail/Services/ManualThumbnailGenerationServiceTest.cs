@@ -34,7 +34,7 @@ public class ManualThumbnailGenerationServiceTest
 			"/").ToList();
 
 		var name = Base32.Encode(Encoding.UTF8.GetBytes("/"));
-		Assert.AreEqual(1, folder.Count(p => p == "/" + name + "@2000.jpg"));
+		Assert.ContainsSingle(p => p == "/" + name + "@2000.jpg", folder);
 	}
 
 	[TestMethod]
