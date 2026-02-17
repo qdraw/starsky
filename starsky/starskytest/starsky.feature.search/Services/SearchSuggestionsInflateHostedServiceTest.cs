@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,7 +11,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.search.Services;
+namespace starskytest.starsky.feature.search.Services;
 
 [TestClass]
 public sealed class SearchSuggestionsInflateHostedServiceTest
@@ -68,7 +67,7 @@ public sealed class SearchSuggestionsInflateHostedServiceTest
 
 		await new SearchSuggestionsInflateHostedService(_scopeFactory, _memoryCache,
 			new FakeIWebLogger(),
-			new AppSettings()).StartAsync(new CancellationToken());
+			new AppSettings()).StartAsync(TestContext.CancellationTokenSource.Token);
 
 		var allSuggestions = await new SearchSuggestionsService(_dbContext,
 				_memoryCache, new FakeIWebLogger(), new AppSettings())
@@ -82,4 +81,22 @@ public sealed class SearchSuggestionsInflateHostedServiceTest
 	}
 
 	public TestContext TestContext { get; set; }
+
+
+	[TestMethod]
+	public async Task Inflate_Error_Test()
+	{
+		var logger = new FakeIWebLogger();
+		await new SearchSuggestionsInflateHostedService(null!, _memoryCache,
+			logger,
+			new AppSettings()).StartAsync(TestContext.CancellationTokenSource.Token);
+
+		var allSuggestions = await new SearchSuggestionsService(_dbContext,
+				_memoryCache, logger, new AppSettings())
+			.GetAllSuggestions();
+		Assert.HasCount(0, allSuggestions);
+		Assert.HasCount(0, logger.TrackedDebug.Where(p =>
+			p.Item2?.Contains("Cache inflated successfully") == true));
+		Assert.HasCount(1, logger.TrackedExceptions);
+	}
 }

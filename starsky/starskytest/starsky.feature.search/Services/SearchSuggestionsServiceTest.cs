@@ -12,7 +12,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.search.Services;
+namespace starskytest.starsky.feature.search.Services;
 
 [TestClass]
 public sealed class SearchSuggestionsServiceTest
