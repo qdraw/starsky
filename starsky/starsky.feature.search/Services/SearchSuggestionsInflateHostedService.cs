@@ -45,41 +45,30 @@ public class SearchSuggestionsInflateHostedService(
 	{
 		try
 		{
-			await InflateOnceAsync(cancellationToken).ConfigureAwait(false);
+			await InflateOnceAsync().ConfigureAwait(false);
 
 			using var timer = new PeriodicTimer(Interval);
 			while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
 			{
-				await InflateOnceAsync(cancellationToken).ConfigureAwait(false);
+				await InflateOnceAsync().ConfigureAwait(false);
 			}
 		}
 		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
 		{
 			// Graceful shutdown
 		}
-		catch ( Exception ex )
+		catch ( Exception exception )
 		{
-			logger.LogInformation("SearchSuggestionsInflateHostedService failed: " + ex.Message);
+			logger.LogError("SearchSuggestionsInflateHostedService failed: " + exception.Message, exception);
 		}
 	}
 
-	private async Task InflateOnceAsync(CancellationToken cancellationToken)
+	private async Task InflateOnceAsync()
 	{
-		try
-		{
-			using var scope = scopeFactory.CreateScope();
-			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			await new SearchSuggestionsService(dbContext, memoryCache, logger, appSettings)
-				.Inflate().ConfigureAwait(false);
-			logger.LogDebug("SearchSuggestionsInflateHostedService: Cache inflated successfully.");
-		}
-		catch ( OperationCanceledException ) when ( cancellationToken.IsCancellationRequested )
-		{
-			// Expected on shutdown.
-		}
-		catch ( Exception ex )
-		{
-			logger.LogInformation("SearchSuggestionsInflateHostedService failed: " + ex.Message);
-		}
+		using var scope = scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		await new SearchSuggestionsService(dbContext, memoryCache, logger, appSettings)
+			.Inflate().ConfigureAwait(false);
+		logger.LogDebug("SearchSuggestionsInflateHostedService: Cache inflated successfully.");
 	}
 }
