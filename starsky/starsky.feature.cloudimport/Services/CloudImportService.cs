@@ -48,12 +48,12 @@ public class CloudImportService(
 
 		if ( enabledProviders.Count == 0 )
 		{
-			logger.LogInformation("No enabled Cloud Import providers found");
+			logger.LogInformation("[CloudImportService] No enabled Cloud Import providers found");
 			return results;
 		}
 
 		logger.LogInformation(
-			$"Starting sync for {enabledProviders.Count} enabled provider(s)");
+			$"[CloudImportService] Starting sync for {enabledProviders.Count} enabled provider(s)");
 
 		foreach ( var providerSettings in enabledProviders )
 		{
@@ -65,7 +65,7 @@ public class CloudImportService(
 			catch ( Exception ex )
 			{
 				logger.LogError(ex,
-					$"Error syncing provider {providerSettings.Id}: {ex.Message}");
+					$"[CloudImportService] Error syncing provider {providerSettings.Id}: {ex.Message}");
 				results.Add(new CloudImportResult
 				{
 					ProviderId = providerSettings.Id,
@@ -104,7 +104,8 @@ public class CloudImportService(
 			appSettings.CloudImport?.Providers.FirstOrDefault(p => p.Id == providerId);
 		if ( providerSettings == null )
 		{
-			logger.LogError($"Provider with ID '{providerId}' not found in configuration");
+			logger.LogError(
+				$"[CloudImportService] Provider with ID '{providerId}' not found in configuration");
 			return new CloudImportResult
 			{
 				ProviderId = providerId,
@@ -118,7 +119,8 @@ public class CloudImportService(
 
 		if ( !providerSettings.Enabled )
 		{
-			logger.LogInformation($"Cloud Import provider '{providerId}' is disabled");
+			logger.LogInformation(
+				$"[CloudImportService] Cloud Import provider '{providerId}' is disabled");
 			return new CloudImportResult
 			{
 				ProviderId = providerId,
@@ -138,7 +140,7 @@ public class CloudImportService(
 		if ( !await providerLock.WaitAsync(0) )
 		{
 			logger.LogError(
-				$"Cloud Import already in progress for provider '{providerId}', skipping this execution");
+				$"[CloudImportService] Cloud Import already in progress for provider '{providerId}', skipping this execution");
 			return new CloudImportResult
 			{
 				ProviderId = providerId,
@@ -162,7 +164,7 @@ public class CloudImportService(
 			};
 
 			logger.LogInformation(
-				$"Starting Cloud Import (Provider ID: {providerId}, Trigger: {triggerType}, Provider: {providerSettings.Provider}, Folder: {providerSettings.RemoteFolder})");
+				$"[CloudImportService] Starting Cloud Import (Provider ID: {providerId}, Trigger: {triggerType}, Provider: {providerSettings.Provider}, Folder: {providerSettings.RemoteFolder})");
 
 			// Get the Cloud Import client
 			using var scope = serviceScopeFactory.CreateScope();
@@ -171,7 +173,7 @@ public class CloudImportService(
 			if ( cloudClient is not { Enabled: true } )
 			{
 				var error =
-					$"Cloud provider '{providerSettings.Provider}' is not available or not enabled";
+					$"[CloudImportService] Cloud provider '{providerSettings.Provider}' is not available or not enabled";
 				logger.LogError(error);
 				result.Errors.Add(error);
 				result.EndTime = DateTime.UtcNow;
@@ -190,7 +192,7 @@ public class CloudImportService(
 			if ( !await cloudClient.TestConnectionAsync() )
 			{
 				const string error = "Failed to connect to cloud storage provider";
-				logger.LogError(error);
+				logger.LogError($"[CloudImportService] {error}");
 				result.Errors.Add(error);
 				result.EndTime = DateTime.UtcNow;
 				UpdateLastSyncResult(providerId, result);
@@ -226,7 +228,8 @@ public class CloudImportService(
 				}
 				catch ( Exception ex )
 				{
-					logger.LogError(ex, $"Failed to cleanup temp folder: {ex.Message}");
+					logger.LogError(ex,
+						$"[CloudImportService] Failed to cleanup temp folder: {ex.Message}");
 				}
 			}
 
@@ -234,7 +237,8 @@ public class CloudImportService(
 			UpdateLastSyncResult(providerId, result);
 
 			logger.LogInformation(
-				$"Cloud Import completed for provider '{providerId}': {result.FilesImportedSuccessfully} imported, {result.FilesSkipped} skipped, {result.FilesFailed} failed");
+				$"[CloudImportService] Cloud Import completed for provider '{providerId}': " +
+				$"{result.FilesImportedSuccessfully} imported, {result.FilesSkipped} skipped, {result.FilesFailed} failed");
 
 			return result;
 		}
@@ -274,10 +278,10 @@ public class CloudImportService(
 		return ( cloudFiles, null );
 	}
 
-	internal static List<CloudFile> FilterExtensions(List<CloudFile> cloudFiles, 
+	internal static List<CloudFile> FilterExtensions(List<CloudFile> cloudFiles,
 		CloudImportProviderSettings providerSettings)
 	{
-		if (providerSettings.Extensions.Count > 0 )
+		if ( providerSettings.Extensions.Count > 0 )
 		{
 			cloudFiles = cloudFiles.Where(f =>
 				providerSettings.Extensions.Contains(
