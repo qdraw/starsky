@@ -22,7 +22,7 @@ public class SearchSuggestionsInflateHostedService(
 	private readonly CancellationTokenSource _stopCts = new();
 	private Task? _runTask;
 
-	internal TimeSpan Interval { get; init; } = new(0, 120, 0); 
+	internal TimeSpan Interval { get; init; } = new(0, 120, 10);
 
 	public Task StartAsync(CancellationToken cancellationToken)
 	{
@@ -48,18 +48,19 @@ public class SearchSuggestionsInflateHostedService(
 			await InflateOnceAsync().ConfigureAwait(false);
 
 			using var timer = new PeriodicTimer(Interval);
-			while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
+			while ( await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false) )
 			{
 				await InflateOnceAsync().ConfigureAwait(false);
 			}
 		}
-		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+		catch ( OperationCanceledException ) when ( cancellationToken.IsCancellationRequested )
 		{
 			// Graceful shutdown
 		}
 		catch ( Exception exception )
 		{
-			logger.LogError("SearchSuggestionsInflateHostedService failed: " + exception.Message, exception);
+			logger.LogError("SearchSuggestionsInflateHostedService failed: " + exception.Message,
+				exception);
 		}
 	}
 
