@@ -38,10 +38,8 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new() { Id = "test", Enabled = false }
-				}
+				Providers =
+					[new CloudImportProviderSettings { Id = "test", Enabled = false }]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -70,16 +68,16 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "test",
 						Enabled = true,
 						Provider = "FakeProvider",
 						RemoteFolder = "/test"
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -108,9 +106,9 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "test",
 						Enabled = true,
@@ -118,16 +116,16 @@ public class CloudImportServiceTest
 						RemoteFolder = "/photos",
 						DeleteAfterImport = false
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudImportClient
 		{
-			FilesToReturn = new List<CloudFile>
-			{
-				new()
+			FilesToReturn =
+			[
+				new CloudFile
 				{
 					Id = "1",
 					Name = "photo1.jpg",
@@ -135,7 +133,8 @@ public class CloudImportServiceTest
 					Size = 1024,
 					Hash = "abc123"
 				},
-				new()
+
+				new CloudFile
 				{
 					Id = "2",
 					Name = "photo2.jpg",
@@ -143,7 +142,7 @@ public class CloudImportServiceTest
 					Size = 2048,
 					Hash = "def456"
 				}
-			}
+			]
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
 		serviceCollection.AddScoped<IImport>(_ =>
@@ -173,9 +172,9 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "test",
 						Enabled = true,
@@ -183,16 +182,16 @@ public class CloudImportServiceTest
 						RemoteFolder = "/photos",
 						DeleteAfterImport = true
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudImportClient
 		{
-			FilesToReturn = new List<CloudFile>
-			{
-				new()
+			FilesToReturn =
+			[
+				new CloudFile
 				{
 					Id = "1",
 					Name = "photo1.jpg",
@@ -200,7 +199,7 @@ public class CloudImportServiceTest
 					Size = 1024,
 					Hash = "abc123"
 				}
-			}
+			]
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
 		serviceCollection.AddScoped<IImport>(_ =>
@@ -230,9 +229,9 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "test",
 						Enabled = true,
@@ -240,16 +239,16 @@ public class CloudImportServiceTest
 						RemoteFolder = "/photos",
 						DeleteAfterImport = true
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudImportClient
 		{
-			FilesToReturn = new List<CloudFile>
-			{
-				new()
+			FilesToReturn =
+			[
+				new CloudFile
 				{
 					Id = "1",
 					Name = "corrupted.jpg",
@@ -257,7 +256,7 @@ public class CloudImportServiceTest
 					Size = 1024,
 					Hash = "abc123"
 				}
-			}
+			]
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
 		serviceCollection.AddScoped<IImport>(_ =>
@@ -350,10 +349,8 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new() { Id = "test", Enabled = true }
-				}
+				Providers =
+					[new CloudImportProviderSettings { Id = "test", Enabled = true }]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -377,23 +374,24 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "provider1",
 						Enabled = true,
 						Provider = "FakeProvider",
 						RemoteFolder = "/folder1"
 					},
-					new()
+
+					new CloudImportProviderSettings
 					{
 						Id = "provider2",
 						Enabled = true,
 						Provider = "FakeProvider",
 						RemoteFolder = "/folder2"
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -422,16 +420,16 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "provider1",
 						Enabled = false,
 						Provider = "FakeProvider",
 						RemoteFolder = "/folder1"
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -508,10 +506,13 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new() { Id = "test", Enabled = true, Provider = "FakeProvider" }
-				}
+				Providers =
+				[
+					new CloudImportProviderSettings
+					{
+						Id = "test", Enabled = true, Provider = "FakeProvider"
+					}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -531,6 +532,28 @@ public class CloudImportServiceTest
 		Assert.IsFalse(result.Success);
 		Assert.Contains(e =>
 			e.Contains("not available") || e.Contains("not enabled"), result.Errors);
+	}
+	
+	[TestMethod]
+	public async Task SyncAsync_WhenCloudClientNotFound_ShouldReturnErrorResult()
+	{
+		// Arrange
+		var appSettings = new AppSettings();
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new ServiceCollection();
+		var fakeClient = new FakeCloudImportClient { Enabled = false };
+		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Act
+		var result = await service.SyncAsync("not-found", CloudImportTriggerType.Manual);
+
+		// Assert
+		Assert.IsFalse(result.Success);
+		Assert.Contains(e => e.Contains("not found"), result.Errors);
 	}
 
 	[TestMethod]
@@ -656,7 +679,7 @@ public class CloudImportServiceTest
 		var importIndexItem = new ImportIndexItem { Status = ImportStatus.Ok };
 		var fakeImport = new FakeIImportForImportTest
 		{
-			ImporterFunc = (_, _) => new List<ImportIndexItem> { importIndexItem }
+			ImporterFunc = (_, _) => [importIndexItem]
 		};
 		var appSettings = new AppSettings();
 		var logger = new FakeIWebLogger();
