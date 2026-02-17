@@ -42,7 +42,7 @@ public class SearchSuggestionsInflateHostedServiceTimerTest : DatabaseTest
 		using var cts = new CancellationTokenSource();
 		cts.CancelAfter(new TimeSpan(0,0,2));
 		await hostedService.StartAsync(cts.Token);
-		await Task.Delay(1500, cts.Token);
+		await Task.Delay(1500, CancellationToken.None);
 		await hostedService.StopAsync(cts.Token);
 
 		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService),
