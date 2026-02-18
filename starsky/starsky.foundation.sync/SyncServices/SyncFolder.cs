@@ -370,14 +370,21 @@ public sealed class SyncFolder
 				var query = queryFactory.Query()!;
 
 				var subDirectories =
-					_subPathStorage.GetDirectoryRecursive(item.FilePath!);
-				if ( !subDirectories.Any() )
+					_subPathStorage.GetDirectoryRecursive(item.FilePath!).ToList();
+				
+				// BUG FIX: Check for both subdirectories AND files
+				// Previously only checked subdirectories, which caused folders with only files
+				// to appear empty during parallel sync operations
+				var filesInFolder = _subPathStorage.GetAllFilesInDirectory(item.FilePath!).ToList();
+				
+				if ( !subDirectories.Any() && !filesInFolder.Any() )
 				{
 					return await RemoveChildItems(query, item);
 				}
 
+				var reason = subDirectories.Any() ? "subdirectories" : "files";
 				_logger.LogInformation(
-					$"[SyncFolder] Skipping deletion of {item.FilePath} - subdirectories exist on disk");
+					$"[SyncFolder] Skipping deletion of {item.FilePath} - {reason} exist on disk");
 				await query.DisposeAsync();
 				return null;
 			}, _appSettings.MaxDegreesOfParallelism) )!.ToList();

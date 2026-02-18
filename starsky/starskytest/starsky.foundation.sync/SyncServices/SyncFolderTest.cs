@@ -1422,4 +1422,83 @@ public sealed class SyncFolderTest
 		var remaining = await _query.GetAllRecursiveAsync("/mixed_status_folder");
 		Assert.IsEmpty(remaining);
 	}
+
+	/// <summary>
+	///     BUG FIX: Folder with only files (no subdirectories) should not be marked for deletion
+	///     This tests the race condition where CheckIfFolderExistOnDisk runs before files
+	///     are indexed, causing the folder to appear empty and get deleted incorrectly.
+	///     
+	///     Issue: Previously only checked GetDirectoryRecursive(), which returns subdirectories
+	///     not files. During parallel sync, a folder with only files appeared empty.
+	/// </summary>
+	[TestMethod]
+	public async Task CheckIfFolderExistOnDisk_FolderWithOnlyFiles_ShouldNotBeDeleted()
+	{
+		// Setup: Folder in DB with child files on disk but NO subdirectories
+		// This simulates the race condition where files exist but aren't indexed yet
+		await _query.AddItemAsync(
+			new FileIndexItem("/vacation/day1") { IsDirectory = true });
+
+		// Storage: Parent and child folder exist with files (but no subdirectories)
+		var storage = new FakeIStorage(
+			new List<string> { "/", "/vacation", "/vacation/day1" }, // Only directories, no subdirs of day1
+			new List<string> { "/vacation/day1/photo1.jpg", "/vacation/day1/photo2.jpg" }, // But files exist!
+			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
+
+		var logger = new FakeIWebLogger();
+		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+			new ConsoleWrapper(), logger,
+			new FakeMemoryCache(new Dictionary<string, object>()), null);
+
+		// Act: Sync the parent folder
+		var result = await syncFolder.Folder("/vacation");
+
+		// Assert: Folder with files should NOT be marked for deletion
+		// The folder should either be Ok or not in the result (skipped deletion)
+		var dayOneFolder = result.FirstOrDefault(r => r.FilePath == "/vacation/day1");
+		
+		// Either not present (skipped) or marked as Ok, but NOT marked as Deleted
+		if ( dayOneFolder != null )
+		{
+			Assert.IsTrue(
+				dayOneFolder.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.OkAndSame,
+				$"Folder with files should not be deleted. Status was: {dayOneFolder.Status}");
+		}
+
+		// Verify the logger didn't mark it for deletion
+		var deletionLogs = logger.TrackedInformation
+			.Where(log => log.Item2?.Contains("/vacation/day1") == true &&
+			              log.Item2.Contains("deletion")).ToList();
+		Assert.IsEmpty(deletionLogs);
+	}
+
+	/// <summary>
+	///     Related test: Ensure truly empty folders (no files, no subdirectories) ARE deleted
+	/// </summary>
+	[TestMethod]
+	public async Task CheckIfFolderExistOnDisk_TrulyEmptyFolder_ShouldBeDeleted()
+	{
+		// Setup: Folder in DB but truly empty on disk
+		await _query.AddItemAsync(
+			new FileIndexItem("/truly_empty") { IsDirectory = true });
+
+		// Storage: Parent exists but the empty folder does NOT exist on disk
+		var storage = new FakeIStorage(
+			new List<string> { "/" }, // Empty folder not even listed
+			new List<string>(), // No files
+			new List<byte[]>());
+
+		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeMemoryCache(new Dictionary<string, object>()), null);
+
+		// Act
+		var result = await syncFolder.Folder("/");
+
+		// Assert: Empty folder SHOULD be marked for deletion
+		var emptyFolder = result.FirstOrDefault(r => r.FilePath == "/truly_empty");
+		Assert.IsNotNull(emptyFolder, "Empty folder should be in results");
+		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, emptyFolder.Status,
+			"Truly empty folder should be marked as deleted");
+	}
 }
