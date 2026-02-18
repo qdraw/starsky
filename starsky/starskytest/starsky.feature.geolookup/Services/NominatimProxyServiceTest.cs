@@ -122,4 +122,25 @@ public class NominatimProxyServiceTest : VerifyBase
 
 		await Verify(result);
 	}
+	
+	[TestMethod]
+	public async Task ReverseAsync_ReturnsNullJson_Verify()
+	{
+		const string expectedJson = null!;
+		var fakeHttp = new FakeIHttpClientHelper(null!,
+			new Dictionary<string, KeyValuePair<bool, string>>
+			{
+				{
+					"https://nominatim.openstreetmap.org/reverse?format=json&" +
+					"lat=52.38230014307398&lon=4.941273642639544&addressdetails=1",
+					new KeyValuePair<bool, string>(true, expectedJson!)
+				}
+			});
+		var service = new NominatimProxyService(fakeHttp);
+		var result = await service.ReverseAsync(52.38230014307398, 4.941273642639544);
+		Assert.Contains("lat=52.38230014307398", fakeHttp.UrlsCalled[0]);
+		Assert.Contains("lon=4.941273642639544", fakeHttp.UrlsCalled[0]);
+
+		await Verify(result);
+	}
 }

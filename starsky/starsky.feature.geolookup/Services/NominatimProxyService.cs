@@ -11,7 +11,8 @@ namespace starsky.feature.geolookup.Services;
 [Service(typeof(INominatimProxyService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class NominatimProxyService(IHttpClientHelper httpClientHelper) : INominatimProxyService
 {
-	private const string NominatimBaseUrl = "https://nominatim.openstreetmap.org/reverse";
+	private const string HttpsPrefix = "https://";
+	private const string NominatimBaseUrl = "nominatim.openstreetmap.org/reverse";
 
 	/// <summary>
 	/// This API does not allow BATCH requests, so only one request at a time.
@@ -29,7 +30,8 @@ public class NominatimProxyService(IHttpClientHelper httpClientHelper) : INomina
 		}
 
 		const string errorMessage = "Failed to parse Nominatim response";
-		var url = $"{NominatimBaseUrl}?format=json&lat={latitude}&lon={longitude}&addressdetails=1";
+		var url = $"{HttpsPrefix}{NominatimBaseUrl}?format=json&lat={latitude}" +
+		          $"&lon={longitude}&addressdetails=1";
 		var response = await httpClientHelper.ReadString(url);
 		if ( !response.Key || string.IsNullOrWhiteSpace(response.Value) )
 		{
