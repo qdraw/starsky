@@ -169,6 +169,27 @@
         <None Update="starsky.foundation.geo\GeoNameCitySeed\GeoNameCitySeedServiceTest.Seed_InsertsUniqueCities_Verify.verified.txt">
             <DependentUpon>GeoNameCitySeedServiceTest.cs</DependentUpon>
         </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_InvalidLocation_Verify.received.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_InvalidLocation_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_InvalidRequest_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsExpectedJson_Amsterdam_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsExpectedJson_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsExpectedJson_Amsterdam_Verify.received.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsInvalidJson_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip"/>

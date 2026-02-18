@@ -1,0 +1,33 @@
+﻿{
+  PlaceId: 143283526,
+  Licence: Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright,
+  OsmType: way,
+  OsmId: 1262616283,
+  Lat: 52.3857326,
+  Lon: 4.9368839,
+  Class: man_made,
+  Type: works,
+  PlaceRank: 30,
+  Importance: 8.268177309829888E-05,
+  AddressType: man_made,
+  Name: Ketjen,
+  DisplayName: Ketjen, Nieuwendammerkade, Noord, Amsterdam, Noord-Holland, Nederland, 1022 AB, Nederland,
+  Address: {
+    ManMade: Ketjen,
+    Road: Nieuwendammerkade,
+    Suburb: Noord,
+    City: Amsterdam,
+    Municipality: Amsterdam,
+    State: Noord-Holland,
+    Iso3166Lvl4: NL-NH,
+    Country: Nederland,
+    Postcode: 1022 AB,
+    CountryCode: nl
+  },
+  BoundingBox: [
+    52.3839244,
+    52.3872288,
+    4.9313591,
+    4.9433754
+  ]
+}

@@ -35,7 +35,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		"exiftool.org",
 		"api.github.com",
 		"starsky-dependencies.netlify.app",
-		"api.dropbox.com"
+		"api.dropbox.com",
+		"nominatim.openstreetmap.org"
 	];
 
 	/// <summary>

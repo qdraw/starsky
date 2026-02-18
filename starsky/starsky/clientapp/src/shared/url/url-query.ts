@@ -532,4 +532,8 @@ export class UrlQuery {
     const output = input.replaceAll("#", "");
     return output.replaceAll("+", "%2B");
   }
+
+  public UrlGeoReverseNominatim(latitude: number, longitude: number): string {
+    return `${this.prefix}/api/geo-reverse-nominatim?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`;
+  }
 }
