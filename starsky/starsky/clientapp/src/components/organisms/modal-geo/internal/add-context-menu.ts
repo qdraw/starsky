@@ -28,7 +28,8 @@ interface IContextMenuOptions {
  */
 export function AddContextMenu({ map, language, localization }: IContextMenuOptions) {
   // Remove any existing context menu
-  const existingMenu = document.querySelector(".leaflet-context-menu");
+  const mapContainer = map.getContainer();
+  const existingMenu = mapContainer.querySelector(".leaflet-context-menu");
   if (existingMenu) {
     existingMenu.remove();
   }
@@ -54,7 +55,7 @@ export function AddContextMenu({ map, language, localization }: IContextMenuOpti
     contextMenu.style.position = "absolute";
     contextMenu.style.zIndex = "1000";
 
-    // Position menu at click location
+    // Position menu at click location (relative to map container)
     const containerPoint = map.latLngToContainerPoint(event.latlng);
     contextMenu.style.left = `${containerPoint.x}px`;
     contextMenu.style.top = `${containerPoint.y}px`;
@@ -66,7 +67,7 @@ export function AddContextMenu({ map, language, localization }: IContextMenuOpti
       </div>
     `;
 
-    document.body.appendChild(contextMenu);
+    mapContainer.appendChild(contextMenu);
 
     // Fetch address from Nominatim
     const addressData = await FetchAddressFromNominatim(currentLat, currentLng);
