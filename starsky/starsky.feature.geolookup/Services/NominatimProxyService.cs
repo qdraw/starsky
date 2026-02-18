@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
@@ -15,9 +16,9 @@ public class NominatimProxyService(IHttpClientHelper httpClientHelper) : INomina
 	private const string NominatimBaseUrl = "nominatim.openstreetmap.org/reverse";
 
 	/// <summary>
-	/// This API does not allow BATCH requests, so only one request at a time.
-	/// If you want to do multiple requests, please wait at least 1 second between requests.
-	/// See https://nominatim.org/release-docs/develop/api/Reverse/ for more details.
+	///     This API does not allow BATCH requests, so only one request at a time.
+	///     If you want to do multiple requests, please wait at least 1 second between requests.
+	///     See https://nominatim.org/release-docs/develop/api/Reverse/ for more details.
 	/// </summary>
 	/// <param name="latitude">Decimal Degree latitude</param>
 	/// <param name="longitude">Decimal Degree longitude</param>
@@ -30,8 +31,10 @@ public class NominatimProxyService(IHttpClientHelper httpClientHelper) : INomina
 		}
 
 		const string errorMessage = "Failed to parse Nominatim response";
-		var url = $"{HttpsPrefix}{NominatimBaseUrl}?format=json&lat={latitude}" +
-		          $"&lon={longitude}&addressdetails=1";
+		var url = $"{HttpsPrefix}{NominatimBaseUrl}?format=json&lat=" +
+		          $"{latitude.ToString(CultureInfo.InvariantCulture)}" +
+		          $"&lon={longitude.ToString(CultureInfo.InvariantCulture)}&addressdetails=1";
+
 		var response = await httpClientHelper.ReadString(url);
 		if ( !response.Key || string.IsNullOrWhiteSpace(response.Value) )
 		{
