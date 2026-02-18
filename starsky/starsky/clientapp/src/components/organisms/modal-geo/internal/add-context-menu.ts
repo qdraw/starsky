@@ -1,4 +1,5 @@
 import L from "leaflet";
+import React from "react";
 import { ILanguageLocalization } from "../../../../interfaces/ILanguageLocalization";
 import { Language } from "../../../../shared/language";
 import { FetchAddressFromNominatim, GetStreetName } from "./fetch-address-from-nominatim";
@@ -19,6 +20,7 @@ export interface ILocalization {
 interface IContextMenuOptions {
   map: L.Map;
   language: Language;
+  setNotificationStatus: React.Dispatch<React.SetStateAction<string | null>>;
   localization: ILocalization;
 }
 
@@ -26,7 +28,12 @@ interface IContextMenuOptions {
  * Adds a right-click context menu to the map
  * Shows coordinates and street name with copy functionality
  */
-export function AddContextMenu({ map, language, localization }: IContextMenuOptions) {
+export function AddContextMenu({
+  map,
+  language,
+  localization,
+  setNotificationStatus
+}: IContextMenuOptions) {
   // Remove any existing context menu
   const mapContainer = map.getContainer();
   const existingMenu = mapContainer.querySelector(".leaflet-context-menu");
@@ -105,18 +112,23 @@ export function AddContextMenu({ map, language, localization }: IContextMenuOpti
 
     // Add click handlers
     contextMenu.querySelectorAll('[data-action="copy-coordinates"]').forEach((el) => {
-      el.addEventListener("click", async () => {
+      el.addEventListener("click", async (event) => {
+        event.preventDefault();
         const coordinates = `${currentLat.toFixed(6)}, ${currentLng.toFixed(6)}`;
+        console.log("Coordinates copied:", coordinates);
+
         await copyToClipboard(coordinates);
-        showCopyNotification(language.key(localization.MessageCoordinatesCopied));
+        setNotificationStatus(language.key(localization.MessageCoordinatesCopied));
         closeContextMenu();
       });
     });
 
     contextMenu.querySelectorAll('[data-action="copy-street"]').forEach((el) => {
-      el.addEventListener("click", async () => {
+      el.addEventListener("click", async (event) => {
+        event.preventDefault();
+        console.log("Street name copied:", streetName);
         await copyToClipboard(streetName);
-        showCopyNotification(language.key(localization.MessageStreetNameCopied));
+        setNotificationStatus(language.key(localization.MessageStreetNameCopied));
         closeContextMenu();
       });
     });
@@ -135,35 +147,6 @@ export function AddContextMenu({ map, language, localization }: IContextMenuOpti
 
   // Copy to clipboard helper
   async function copyToClipboard(text: string) {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (err) {
-      console.error("Failed to copy to clipboard:", err);
-      // Fallback for older browsers
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      textArea.className = "clipboard-fallback-textarea";
-      document.body.appendChild(textArea);
-      textArea.select();
-      try {
-        document.execCommand("copy");
-      } catch (copyErr) {
-        console.error("Fallback copy failed:", copyErr);
-      }
-      document.body.removeChild(textArea);
-    }
-  }
-
-  // Show copy notification
-  function showCopyNotification(message: string) {
-    const notification = document.createElement("div");
-    notification.className = "leaflet-context-menu__toast";
-    notification.textContent = message;
-
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-      notification.remove();
-    }, 2000);
+    await navigator.clipboard.writeText(text);
   }
 }

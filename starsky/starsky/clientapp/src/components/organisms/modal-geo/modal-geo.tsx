@@ -6,6 +6,8 @@ import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
+import Notification from "../../atoms/notification/notification";
+import Portal from "../../atoms/portal/portal";
 import Preloader from "../../atoms/preloader/preloader";
 import { LatLongRound } from "./internal/lat-long-round";
 import { RealtimeMapUpdate } from "./internal/realtime-map-update";
@@ -45,6 +47,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
 
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [notificationStatus, setNotificationStatus] = useState<string | null>(null);
 
   const [mapState, setMapState] = useState<L.Map | null>(null);
 
@@ -80,7 +83,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
   const mapReference = useCallback((node: HTMLDivElement | null) => {
     const leafletNode = node as LeafletDiv;
     if (node !== null && mapState === null && leafletNode._leaflet_id == null) {
-      UpdateMap(
+      UpdateMap({
         node,
         location,
         isFormEnabled,
@@ -88,8 +91,9 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
         setIsLocationUpdated,
         setMapState,
         language,
-        localization
-      );
+        localization,
+        setNotificationStatus
+      });
     }
     // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, []);
@@ -169,6 +173,11 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
           </div>
         </div>
       </div>
+      {notificationStatus ? (
+        <Portal>
+          <Notification>{notificationStatus}</Notification>
+        </Portal>
+      ) : null}
     </Modal>
   );
 };

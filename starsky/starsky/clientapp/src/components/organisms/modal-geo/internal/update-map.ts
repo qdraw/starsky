@@ -7,16 +7,29 @@ import { AddMap } from "./add-map";
 import { AddMapLocationCenter } from "./add-map-location-center";
 import { GetZoom } from "./get-zoom";
 
-export function UpdateMap(
-  node: HTMLDivElement,
-  location: ILatLong,
-  isFormEnabled: boolean,
-  setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
-  setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>,
-  setMapState: React.Dispatch<React.SetStateAction<L.Map | null>>,
-  language?: Language,
-  localization?: ILocalization
-) {
+interface IUpdateMapOptions {
+  node: HTMLDivElement;
+  location: ILatLong;
+  isFormEnabled: boolean;
+  setLocation: React.Dispatch<React.SetStateAction<ILatLong>>;
+  setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>;
+  setMapState: React.Dispatch<React.SetStateAction<L.Map | null>>;
+  language: Language;
+  localization: ILocalization;
+  setNotificationStatus: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+export function UpdateMap({
+  node,
+  location,
+  isFormEnabled,
+  setLocation,
+  setIsLocationUpdated,
+  setMapState,
+  language,
+  localization,
+  setNotificationStatus
+}: IUpdateMapOptions) {
   const zoom = GetZoom(location);
 
   const mapLocationCenter = AddMapLocationCenter(location);
@@ -27,10 +40,7 @@ export function UpdateMap(
 
   AddDefaultClickSetMarker(map, isFormEnabled, setLocation, setIsLocationUpdated);
 
-  // Add context menu if language and localization are provided
-  if (language && localization) {
-    AddContextMenu({ map, language, localization });
-  }
+  AddContextMenu({ map, setNotificationStatus, language, localization });
 
   setMapState(map);
 }

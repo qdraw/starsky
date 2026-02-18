@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import Portal, { PortalId } from "../portal/portal";
 
 type NotificationPropTypes = {
   children?: React.ReactNode;
   type?: NotificationType;
   callback?(): void;
+  autoRemoveTimeout?: number;
 };
 
 export enum NotificationType {
@@ -14,8 +16,19 @@ export enum NotificationType {
 const Notification: React.FunctionComponent<NotificationPropTypes> = ({
   children,
   type,
-  callback
+  callback,
+  autoRemoveTimeout = -1
 }) => {
+  useEffect(() => {
+    if (autoRemoveTimeout <= 0) {
+      return;
+    }
+    const timer = setTimeout(() => {
+      close();
+    }, autoRemoveTimeout);
+    return () => clearTimeout(timer);
+  }, [autoRemoveTimeout]);
+
   const close = () => {
     // remove the entire portal
     const portal = document.getElementById(PortalId);
