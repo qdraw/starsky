@@ -145,7 +145,6 @@ dotnet_diagnostic.CS4014.severity = error
 # IDE0077: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0077
 dotnet_diagnostic.IDE0077.severity = error
 
-
 # Use '[OSCondition]' attribute instead of 'RuntimeInformation.IsOSPlatform' calls with early return or 'Assert.Inconclusive'
 dotnet_diagnostic.MSTEST0061.severity = warning
 
