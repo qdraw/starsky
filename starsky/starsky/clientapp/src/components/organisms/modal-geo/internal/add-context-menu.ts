@@ -83,7 +83,7 @@ export function AddContextMenu({
       <div class="leaflet-context-menu__section-title leaflet-context-menu__section-title--bottom">
         ${language.key(localization.MessageCoordinates)}
       </div>
-      <div class="leaflet-context-menu__coords">
+      <div class="leaflet-context-menu__coords" data-action="copy-coordinates">
         ${currentLat.toFixed(6)}, ${currentLng.toFixed(6)}
       </div>
       <div class="context-menu-item" data-action="copy-coordinates" title="${language.key(localization.MessageClickToCopy)}">
@@ -95,7 +95,7 @@ export function AddContextMenu({
         <div class="leaflet-context-menu__section-title leaflet-context-menu__section-title--top">
           ${language.key(localization.MessageStreetName)}
         </div>
-        <div class="leaflet-context-menu__street">
+        <div class="leaflet-context-menu__street" data-action="copy-street">
           ${streetName}
         </div>
         <div class="context-menu-item" data-action="copy-street" title="${language.key(localization.MessageClickToCopy)}">
@@ -114,9 +114,8 @@ export function AddContextMenu({
     contextMenu.querySelectorAll('[data-action="copy-coordinates"]').forEach((el) => {
       el.addEventListener("click", async (event) => {
         event.preventDefault();
+        event.stopPropagation();
         const coordinates = `${currentLat.toFixed(6)}, ${currentLng.toFixed(6)}`;
-        console.log("Coordinates copied:", coordinates);
-
         await copyToClipboard(coordinates);
         setNotificationStatus(language.key(localization.MessageCoordinatesCopied));
         closeContextMenu();
@@ -126,7 +125,7 @@ export function AddContextMenu({
     contextMenu.querySelectorAll('[data-action="copy-street"]').forEach((el) => {
       el.addEventListener("click", async (event) => {
         event.preventDefault();
-        console.log("Street name copied:", streetName);
+        event.stopPropagation();
         await copyToClipboard(streetName);
         setNotificationStatus(language.key(localization.MessageStreetNameCopied));
         closeContextMenu();
