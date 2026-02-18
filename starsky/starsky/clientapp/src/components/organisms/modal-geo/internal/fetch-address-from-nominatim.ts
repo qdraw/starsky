@@ -1,3 +1,5 @@
+import FetchGet from "../../../../shared/fetch/fetch-get";
+
 export interface INominatimAddress {
   road?: string;
   house_number?: string;
@@ -27,20 +29,12 @@ export async function FetchAddressFromNominatim(
 ): Promise<INominatimResponse | null> {
   try {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`;
-
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": "Starsky-App"
-      }
-    });
-
-    if (!response.ok) {
-      console.error("Nominatim API request failed:", response.statusText);
+    const result = await FetchGet(url, { "User-Agent": "Starsky-App" });
+    if (result.statusCode !== 200 || !result.data) {
+      console.error("Nominatim API request failed:", result.statusCode);
       return null;
     }
-
-    const data = await response.json();
-    return data as INominatimResponse;
+    return result.data as INominatimResponse;
   } catch (error) {
     console.error("Error fetching address from Nominatim:", error);
     return null;

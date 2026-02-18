@@ -1,4 +1,8 @@
-import { FetchAddressFromNominatim, GetStreetName, INominatimAddress } from "./fetch-address-from-nominatim";
+import {
+  FetchAddressFromNominatim,
+  GetStreetName,
+  INominatimAddress
+} from "./fetch-address-from-nominatim";
 
 describe("FetchAddressFromNominatim", () => {
   beforeEach(() => {
@@ -22,10 +26,12 @@ describe("FetchAddressFromNominatim", () => {
 
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => mockResponse
+      json: async () => mockResponse,
+      statusCode: 200,
+      data: mockResponse
     });
 
-    const result = await FetchAddressFromNominatim(52.5200, 13.4050);
+    const result = await FetchAddressFromNominatim(52.52, 13.405);
 
     expect(result).toEqual(mockResponse);
     expect(global.fetch).toHaveBeenCalledWith(
@@ -52,7 +58,7 @@ describe("FetchAddressFromNominatim", () => {
   it("should return null when fetch throws error", async () => {
     (global.fetch as jest.Mock).mockRejectedValueOnce(new Error("Network error"));
 
-    const result = await FetchAddressFromNominatim(52.5200, 13.4050);
+    const result = await FetchAddressFromNominatim(52.52, 13.405);
 
     expect(result).toBeNull();
   });
@@ -63,7 +69,7 @@ describe("FetchAddressFromNominatim", () => {
       json: async () => ({ display_name: "", address: {} })
     });
 
-    await FetchAddressFromNominatim(52.5200, 13.4050);
+    await FetchAddressFromNominatim(52.52, 13.405);
 
     expect(global.fetch).toHaveBeenCalledWith(
       "https://nominatim.openstreetmap.org/reverse?format=json&lat=52.52&lon=13.405&addressdetails=1",
