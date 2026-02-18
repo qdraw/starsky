@@ -118,6 +118,7 @@ public sealed class DiskStorageHealthCheckTest
 			new DiskStorageHealthCheck(new DiskStorageOptions(), new FakeIWebLogger());
 		// Use root drive for test (should exist on all systems)
 		var drive = Path.GetPathRoot(Environment.SystemDirectory);
+		Console.WriteLine("Testing drive: " + drive);
 		var (exists, actualFreeMegabytes) = healthCheck.GetWindowsDriveInfo(drive!);
 		Assert.IsTrue(exists);
 		Assert.IsGreaterThan(0, actualFreeMegabytes);
