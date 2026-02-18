@@ -1,4 +1,5 @@
 import FetchGet from "../../../../shared/fetch/fetch-get";
+import { UrlQuery } from "../../../../shared/url/url-query";
 
 export interface INominatimAddress {
   road?: string;
@@ -28,7 +29,7 @@ export async function FetchAddressFromNominatim(
   longitude: number
 ): Promise<INominatimResponse | null> {
   try {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`;
+    const url = new UrlQuery().UrlGeoReverseNominatim(latitude, longitude);
     const result = await FetchGet(url, { "User-Agent": "Starsky-App" });
     if (result.statusCode !== 200 || !result.data) {
       console.error("Nominatim API request failed:", result.statusCode);

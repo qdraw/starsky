@@ -1,0 +1,3 @@
+﻿{
+  Error: Failed to parse Nominatim response
+}

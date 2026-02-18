@@ -1,3 +1,4 @@
+import { UrlQuery } from "../../../../shared/url/url-query";
 import {
   FetchAddressFromNominatim,
   GetStreetName,
@@ -35,7 +36,7 @@ describe("FetchAddressFromNominatim", () => {
 
     expect(result).toEqual(mockResponse);
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("https://nominatim.openstreetmap.org/reverse"),
+      expect.stringContaining(new UrlQuery().UrlGeoReverseNominatim(52.52, 13.405)),
       expect.objectContaining({
         credentials: "include",
         headers: {
@@ -78,7 +79,7 @@ describe("FetchAddressFromNominatim", () => {
     await FetchAddressFromNominatim(52.52, 13.405);
 
     expect(global.fetch).toHaveBeenCalledWith(
-      "https://nominatim.openstreetmap.org/reverse?format=json&lat=52.52&lon=13.405&addressdetails=1",
+      new UrlQuery().UrlGeoReverseNominatim(52.52, 13.405),
       expect.any(Object)
     );
   });
