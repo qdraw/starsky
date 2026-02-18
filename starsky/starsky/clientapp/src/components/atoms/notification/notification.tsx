@@ -5,6 +5,11 @@ type NotificationPropTypes = {
   children?: React.ReactNode;
   type?: NotificationType;
   callback?(): void;
+
+  /**
+   * Schedules execution of a one-time callback after delay milliseconds.
+   * If delay is not specified the modal keeps there
+   */
   autoRemoveTimeout?: number;
 };
 

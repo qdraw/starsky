@@ -175,7 +175,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
       </div>
       {notificationStatus ? (
         <Portal>
-          <Notification>{notificationStatus}</Notification>
+          <Notification autoRemoveTimeout={5000}>{notificationStatus}</Notification>
         </Portal>
       ) : null}
     </Modal>
