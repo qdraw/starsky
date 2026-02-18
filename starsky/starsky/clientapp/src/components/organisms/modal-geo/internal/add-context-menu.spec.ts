@@ -119,7 +119,12 @@ describe("AddContextMenu", () => {
     (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(mockAddressData);
     (nominatimModule.GetStreetName as jest.Mock).mockReturnValue("Test Street 123");
 
-    AddContextMenu({ map, language: language as unknown as Language, localization });
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus: jest.fn()
+    });
 
     // Simulate right-click event
     const event = {
@@ -147,7 +152,12 @@ describe("AddContextMenu", () => {
     (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(mockAddressData);
     (nominatimModule.GetStreetName as jest.Mock).mockReturnValue("Test Street 123");
 
-    AddContextMenu({ map, language: language as unknown as Language, localization });
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus: jest.fn()
+    });
 
     map.fire("contextmenu", {
       latlng: L.latLng(52.52, 13.405),
@@ -173,7 +183,12 @@ describe("AddContextMenu", () => {
     (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(mockAddressData);
     (nominatimModule.GetStreetName as jest.Mock).mockReturnValue("Test Street 123");
 
-    AddContextMenu({ map, language: language as unknown as Language, localization });
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus: jest.fn()
+    });
 
     const event = {
       latlng: L.latLng(52.52, 13.405),
@@ -191,7 +206,12 @@ describe("AddContextMenu", () => {
     (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(null);
     (nominatimModule.GetStreetName as jest.Mock).mockReturnValue("");
 
-    AddContextMenu({ map, language: language as unknown as Language, localization });
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus: jest.fn()
+    });
 
     const event = {
       latlng: L.latLng(52.52, 13.405),
@@ -208,7 +228,12 @@ describe("AddContextMenu", () => {
   it("should close context menu on map click", async () => {
     (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(null);
 
-    AddContextMenu({ map, language: language as unknown as Language, localization });
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus: jest.fn()
+    });
 
     const event = {
       latlng: L.latLng(52.52, 13.405),
@@ -229,7 +254,12 @@ describe("AddContextMenu", () => {
   it("should close context menu on map move", async () => {
     (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(null);
 
-    AddContextMenu({ map, language: language as unknown as Language, localization });
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus: jest.fn()
+    });
 
     const event = {
       latlng: L.latLng(52.52, 13.405),
@@ -250,7 +280,12 @@ describe("AddContextMenu", () => {
   it("should remove existing context menu before creating new one", async () => {
     (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(null);
 
-    AddContextMenu({ map, language: language as unknown as Language, localization });
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus: jest.fn()
+    });
 
     // First context menu
     const event1 = {

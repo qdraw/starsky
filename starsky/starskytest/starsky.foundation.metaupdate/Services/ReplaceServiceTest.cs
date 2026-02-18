@@ -197,7 +197,7 @@ public sealed class ReplaceServiceTest
 		Assert.AreEqual(string.Empty, result[0].Tags);
 	}
 
-	[TestMethod(DisplayName = "Location City is null")]
+	[TestMethod("Location City is null")]
 	public void SearchAndReplace_LocationCityNull()
 	{
 		var result = MetaReplaceService.SearchAndReplace(
