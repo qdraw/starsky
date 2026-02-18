@@ -1,3 +1,4 @@
+import { waitFor } from "@testing-library/react";
 import L from "leaflet";
 import { ILanguageLocalization } from "../../../../interfaces/ILanguageLocalization";
 import { Language } from "../../../../shared/language";
@@ -310,5 +311,83 @@ describe("AddContextMenu", () => {
 
     const menus = document.querySelectorAll(".leaflet-context-menu");
     expect(menus.length).toBe(1);
+  });
+
+  it("should copy coordinates and call setNotificationStatus when copy-coordinates is clicked", async () => {
+    const mockAddressData = {
+      display_name: "Test Street 123, Test City",
+      address: {
+        road: "Test Street",
+        house_number: "123"
+      }
+    };
+    (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(mockAddressData);
+    (nominatimModule.GetStreetName as jest.Mock).mockReturnValue("Test Street 123");
+
+    const setNotificationStatus = jest.fn();
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus
+    });
+
+    // Simulate right-click event
+    const event = {
+      latlng: L.latLng(52.52, 13.405),
+      containerPoint: L.point(100, 100)
+    } as L.LeafletMouseEvent;
+    map.fire("contextmenu", event);
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const copyBtn = document.querySelector('[data-action="copy-coordinates"]') as HTMLElement;
+    expect(copyBtn).toBeTruthy();
+    copyBtn.click();
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("52.520000, 13.405000");
+
+    waitFor(() => {
+      expect(setNotificationStatus).toHaveBeenCalledWith("Coordinates copied!");
+    });
+  });
+
+  it("should copy street and call setNotificationStatus when copy-street is clicked", async () => {
+    const mockAddressData = {
+      display_name: "Test Street 123, Test City",
+      address: {
+        road: "Test Street",
+        house_number: "123"
+      }
+    };
+    (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(mockAddressData);
+    (nominatimModule.GetStreetName as jest.Mock).mockReturnValue("Test Street 123");
+
+    const setNotificationStatus = jest.fn();
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus
+    });
+
+    // Simulate right-click event
+    const event = {
+      latlng: L.latLng(52.52, 13.405),
+      containerPoint: L.point(100, 100)
+    } as L.LeafletMouseEvent;
+    map.fire("contextmenu", event);
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const copyBtn = document.querySelector('[data-action="copy-street"]') as HTMLElement;
+    expect(copyBtn).toBeTruthy();
+    copyBtn.click();
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("Test Street 123");
+
+    waitFor(() => {
+      expect(setNotificationStatus).toHaveBeenCalledWith("Street copied!");
+    });
   });
 });
