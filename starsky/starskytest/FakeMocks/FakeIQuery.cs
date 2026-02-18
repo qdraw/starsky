@@ -443,7 +443,14 @@ public class FakeIQuery : IQuery
 		var result = new List<FileIndexItem>();
 		foreach ( var filePath in filePathList )
 		{
-			result.AddRange(_content.Where(p => p.FilePath == filePath));
+			try
+			{
+				result.AddRange(_content.Where(p => p.FilePath == filePath));
+			}
+			catch ( NullReferenceException e )
+			{
+				Console.WriteLine($"Error in GetObjectsByFilePathAsync: {e.Message}");
+			}
 		}
 
 		return Task.FromResult(result);
