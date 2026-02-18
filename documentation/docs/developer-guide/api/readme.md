@@ -34,12 +34,12 @@ This document is auto generated
 | __/api/cache/list__                               | GET   | Get Database Cache (only the cache)                                             |
 | __/api/remove-cache__                             | GET   | Delete Database Cache (only the cache)                                          |
 | __/api/remove-cache__                             | POST  | Delete Database Cache (only the cache)                                          |
-| __/api/cloud-import/status__                      | GET   | Missing summary                                                                 |
-| __/api/cloud-import/status/\{providerId\}__       | GET   | Missing summary                                                                 |
-| __/api/cloud-import/sync__                        | POST  | Missing summary                                                                 |
-| __/api/cloud-import/sync/\{providerId\}__         | POST  | Missing summary                                                                 |
-| __/api/cloud-import/last-results__                | GET   | Missing summary                                                                 |
-| __/api/cloud-import/last-result/\{providerId\}__  | GET   | Missing summary                                                                 |
+| __/api/cloud-import/status__                      | GET   | Get current Cloud Import status for all providers                               |
+| __/api/cloud-import/status/\{providerId\}__       | GET   | Get status for a specific provider                                              |
+| __/api/cloud-import/sync__                        | POST  | Trigger a manual sync for all enabled providers                                 |
+| __/api/cloud-import/sync/\{providerId\}__         | POST  | Trigger a manual sync for a specific provider                                   |
+| __/api/cloud-import/last-results__                | GET   | Get the last sync results for all providers                                     |
+| __/api/cloud-import/last-result/\{providerId\}__  | GET   | Get the last sync result for a specific provider                                |
 | __/api/delete__                                   | DELETE| Remove files from the disk, but the file must contain the !delete!(TrashKeywo...|
 | _Parameters: f (subPaths, separated by dot comma), collections (true is to update files with the same name before                         _ |
 | _ the extenstion)                                                                                                                         _ |

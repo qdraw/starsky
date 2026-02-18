@@ -38,10 +38,8 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new() { Id = "test", Enabled = false }
-				}
+				Providers =
+					[new CloudImportProviderSettings { Id = "test", Enabled = false }]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -59,7 +57,7 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("disabled")));
+		Assert.Contains(e => e.Contains("disabled"), result.Errors);
 	}
 
 	[TestMethod]
@@ -70,16 +68,16 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "test",
 						Enabled = true,
 						Provider = "FakeProvider",
 						RemoteFolder = "/test"
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -97,7 +95,7 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("Failed to connect")));
+		Assert.Contains(e => e.Contains("Failed to connect"), result.Errors);
 	}
 
 	[TestMethod]
@@ -108,9 +106,9 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "test",
 						Enabled = true,
@@ -118,16 +116,16 @@ public class CloudImportServiceTest
 						RemoteFolder = "/photos",
 						DeleteAfterImport = false
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudImportClient
 		{
-			FilesToReturn = new List<CloudFile>
-			{
-				new()
+			FilesToReturn =
+			[
+				new CloudFile
 				{
 					Id = "1",
 					Name = "photo1.jpg",
@@ -135,7 +133,8 @@ public class CloudImportServiceTest
 					Size = 1024,
 					Hash = "abc123"
 				},
-				new()
+
+				new CloudFile
 				{
 					Id = "2",
 					Name = "photo2.jpg",
@@ -143,7 +142,7 @@ public class CloudImportServiceTest
 					Size = 2048,
 					Hash = "def456"
 				}
-			}
+			]
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
 		serviceCollection.AddScoped<IImport>(_ =>
@@ -173,9 +172,9 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "test",
 						Enabled = true,
@@ -183,16 +182,16 @@ public class CloudImportServiceTest
 						RemoteFolder = "/photos",
 						DeleteAfterImport = true
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudImportClient
 		{
-			FilesToReturn = new List<CloudFile>
-			{
-				new()
+			FilesToReturn =
+			[
+				new CloudFile
 				{
 					Id = "1",
 					Name = "photo1.jpg",
@@ -200,7 +199,7 @@ public class CloudImportServiceTest
 					Size = 1024,
 					Hash = "abc123"
 				}
-			}
+			]
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
 		serviceCollection.AddScoped<IImport>(_ =>
@@ -230,9 +229,9 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "test",
 						Enabled = true,
@@ -240,16 +239,16 @@ public class CloudImportServiceTest
 						RemoteFolder = "/photos",
 						DeleteAfterImport = true
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudImportClient
 		{
-			FilesToReturn = new List<CloudFile>
-			{
-				new()
+			FilesToReturn =
+			[
+				new CloudFile
 				{
 					Id = "1",
 					Name = "corrupted.jpg",
@@ -257,7 +256,7 @@ public class CloudImportServiceTest
 					Size = 1024,
 					Hash = "abc123"
 				}
-			}
+			]
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
 		serviceCollection.AddScoped<IImport>(_ =>
@@ -338,8 +337,8 @@ public class CloudImportServiceTest
 
 
 		// Assert
-		Assert.IsTrue(logger.TrackedExceptions.Any(e =>
-			e.Item2!.Contains("already in progress")));
+		Assert.Contains(e =>
+			e.Item2!.Contains("already in progress"), logger.TrackedExceptions);
 	}
 
 	[TestMethod]
@@ -350,10 +349,8 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new() { Id = "test", Enabled = true }
-				}
+				Providers =
+					[new CloudImportProviderSettings { Id = "test", Enabled = true }]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -377,23 +374,24 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "provider1",
 						Enabled = true,
 						Provider = "FakeProvider",
 						RemoteFolder = "/folder1"
 					},
-					new()
+
+					new CloudImportProviderSettings
 					{
 						Id = "provider2",
 						Enabled = true,
 						Provider = "FakeProvider",
 						RemoteFolder = "/folder2"
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -409,8 +407,8 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.HasCount(2, results);
-		Assert.IsTrue(results.Any(r => r.ProviderId == "provider1"));
-		Assert.IsTrue(results.Any(r => r.ProviderId == "provider2"));
+		Assert.Contains(r => r.ProviderId == "provider1", results);
+		Assert.Contains(r => r.ProviderId == "provider2", results);
 		Assert.IsTrue(results.All(r => r.Success));
 	}
 
@@ -422,16 +420,16 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "provider1",
 						Enabled = false,
 						Provider = "FakeProvider",
 						RemoteFolder = "/folder1"
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -495,9 +493,9 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.HasCount(2, results);
-		Assert.IsTrue(results.Any(r =>
-			r.ProviderId == "provider1" && r.Errors.Any(e => e.Contains("Sync failed"))));
-		Assert.IsTrue(results.Any(r => r.ProviderId == "provider2"));
+		Assert.Contains(r =>
+			r.ProviderId == "provider1" && r.Errors.Any(e => e.Contains("Sync failed")), results);
+		Assert.Contains(r => r.ProviderId == "provider2", results);
 	}
 
 	[TestMethod]
@@ -508,10 +506,13 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new() { Id = "test", Enabled = true, Provider = "FakeProvider" }
-				}
+				Providers =
+				[
+					new CloudImportProviderSettings
+					{
+						Id = "test", Enabled = true, Provider = "FakeProvider"
+					}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -529,8 +530,30 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Errors.Any(e =>
-			e.Contains("not available") || e.Contains("not enabled")));
+		Assert.Contains(e =>
+			e.Contains("not available") || e.Contains("not enabled"), result.Errors);
+	}
+	
+	[TestMethod]
+	public async Task SyncAsync_WhenCloudClientNotFound_ShouldReturnErrorResult()
+	{
+		// Arrange
+		var appSettings = new AppSettings();
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new ServiceCollection();
+		var fakeClient = new FakeCloudImportClient { Enabled = false };
+		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Act
+		var result = await service.SyncAsync("not-found", CloudImportTriggerType.Manual);
+
+		// Assert
+		Assert.IsFalse(result.Success);
+		Assert.Contains(e => e.Contains("not found"), result.Errors);
 	}
 
 	[TestMethod]
@@ -574,8 +597,8 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Errors.Any(e =>
-			e.Contains("not available") || e.Contains("not enabled")));
+		Assert.Contains(e =>
+			e.Contains("not available") || e.Contains("not enabled"), result.Errors);
 	}
 
 	[TestMethod]
@@ -610,8 +633,8 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsNotNull(errorResult);
-		Assert.IsTrue(errorResult.Errors.Any(e =>
-			e.Contains("Failed to list files from cloud storage")));
+		Assert.Contains(e =>
+			e.Contains("Failed to list files from cloud storage"), errorResult.Errors);
 	}
 
 	[TestMethod]
@@ -641,7 +664,7 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.AreEqual(1, result.FilesFailed);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("Download failed")));
+		Assert.Contains(e => e.Contains("Download failed"), result.Errors);
 	}
 
 	[TestMethod]
@@ -656,7 +679,7 @@ public class CloudImportServiceTest
 		var importIndexItem = new ImportIndexItem { Status = ImportStatus.Ok };
 		var fakeImport = new FakeIImportForImportTest
 		{
-			ImporterFunc = (_, _) => new List<ImportIndexItem> { importIndexItem }
+			ImporterFunc = (_, _) => [importIndexItem]
 		};
 		var appSettings = new AppSettings();
 		var logger = new FakeIWebLogger();
@@ -706,7 +729,7 @@ public class CloudImportServiceTest
 		Assert.IsFalse(success);
 		Assert.AreEqual(1, result.FilesFailed);
 		Assert.Contains(file.Name, result.FailedFiles);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("Import failed")));
+		Assert.Contains(e => e.Contains("Import failed"), result.Errors);
 	}
 
 	[TestMethod]
@@ -735,7 +758,7 @@ public class CloudImportServiceTest
 		Assert.IsFalse(success);
 		Assert.AreEqual(1, result.FilesFailed);
 		Assert.Contains(file.Name, result.FailedFiles);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("Import failed")));
+		Assert.Contains(e => e.Contains("Import failed"), result.Errors);
 	}
 
 	[TestMethod]

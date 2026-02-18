@@ -43,6 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.12 - _(Unreleased)_ - 2026-?-? {#v0.7.11}
 
+- [x] (Added) _Back-end_ Make sure the inflate search cache keeps cache (PR #2754)
+- [x] (Changed) _Back-end_ Unit testing update to MSTest v4 (PR #2750)
 - [x] (Added) _Back-end_ Search for Artist `-artist` (PR #2731)
 
 ## version 0.7.11 - 2026-02-11 {#v0.7.11}

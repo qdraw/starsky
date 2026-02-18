@@ -145,8 +145,8 @@ public class CompositeThumbnailGeneratorTests
 				thumbnailSizes);
 
 		// Assert
-		Assert.IsTrue(
-			_logger.TrackedExceptions.Any(log => log.Item2?.Contains("Test exception") == true));
+		Assert.Contains(
+			log => log.Item2?.Contains("Test exception") == true, _logger.TrackedExceptions);
 		Assert.AreEqual(secondSuccess, results.All(r => r.Success));
 	}
 }

@@ -12,7 +12,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.search.Services;
+namespace starskytest.starsky.feature.search.Services;
 
 [TestClass]
 public sealed class SearchSuggestionsServiceTest
@@ -145,7 +145,7 @@ public sealed class SearchSuggestionsServiceTest
 	{
 		var result = await _suggest.SearchSuggest("-ImageFormat", true);
 		// Should contain at least one system suggestion
-		Assert.IsTrue(result.Any(r => r.StartsWith("-ImageFormat")));
+		Assert.Contains(r => r.StartsWith("-ImageFormat"), result);
 	}
 
 	[TestMethod]
@@ -153,6 +153,6 @@ public sealed class SearchSuggestionsServiceTest
 	{
 		var result = await _suggest.SearchSuggest("-ImageFormat", false);
 		// Should not contain system suggestions
-		Assert.IsFalse(result.Any(r => r.StartsWith("-ImageFormat")));
+		Assert.DoesNotContain(r => r.StartsWith("-ImageFormat"), result);
 	}
 }

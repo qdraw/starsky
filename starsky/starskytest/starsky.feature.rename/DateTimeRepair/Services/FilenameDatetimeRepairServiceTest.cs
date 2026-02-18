@@ -523,7 +523,7 @@ public class FilenameDatetimeRepairServiceTest
 
 		// Assert
 		Assert.HasCount(1, result);
-		Assert.IsTrue(logger.TrackedInformation.Any(x => x.Item2?.Contains("same") == true));
+		Assert.Contains(x => x.Item2?.Contains("same") == true, logger.TrackedInformation);
 	}
 
 	[TestMethod]

@@ -49,7 +49,7 @@ public class SearchSuggestionsService : ISearchSuggest
 	{
 		if ( _cache == null )
 		{
-			return new List<KeyValuePair<string, int>>();
+			return [];
 		}
 
 		if ( _cache.TryGetValue(nameof(SearchSuggestionsService), out _) )
@@ -110,6 +110,7 @@ public class SearchSuggestionsService : ISearchSuggest
 			.OrderByDescending(p => p.Value)
 			.ToList();
 
+		// When changing here also change the cache expire time in SearchSuggestionsInflateHostedService
 		var cacheExpire = suggestionsFiltered.Count != 0
 			? new TimeSpan(120, 0, 0)
 			: new TimeSpan(0, 1, 0);
