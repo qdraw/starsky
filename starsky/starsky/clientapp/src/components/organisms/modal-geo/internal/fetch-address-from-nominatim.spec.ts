@@ -27,7 +27,7 @@ describe("FetchAddressFromNominatim", () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse,
-      statusCode: 200,
+      status: 200,
       data: mockResponse
     });
 
@@ -37,9 +37,13 @@ describe("FetchAddressFromNominatim", () => {
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining("https://nominatim.openstreetmap.org/reverse"),
       expect.objectContaining({
+        credentials: "include",
         headers: {
-          "User-Agent": "Starsky-App"
-        }
+          Accept: "application/json",
+          "User-Agent": "Starsky-App",
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        method: "GET"
       })
     );
   });
@@ -47,6 +51,7 @@ describe("FetchAddressFromNominatim", () => {
   it("should return null when API request fails", async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
+      status: 404,
       statusText: "Not Found"
     });
 
@@ -66,6 +71,7 @@ describe("FetchAddressFromNominatim", () => {
   it("should include correct coordinates in URL", async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
+      status: 200,
       json: async () => ({ display_name: "", address: {} })
     });
 
