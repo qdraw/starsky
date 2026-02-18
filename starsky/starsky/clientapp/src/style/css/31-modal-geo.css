@@ -79,8 +79,7 @@
   z-index: 1000;
   min-width: 200px;
   font-size: 13px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Gloriola Std", sans-serif;
 }
 
 .leaflet-context-menu .context-menu-item {
@@ -133,25 +132,6 @@
   padding: 4px 8px;
   color: #999;
   font-style: italic;
-}
-
-.leaflet-context-menu__toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #4caf50;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10000;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.clipboard-fallback-textarea {
-  position: fixed;
-  left: -999999px;
 }
 
 @media (prefers-color-scheme: dark) {

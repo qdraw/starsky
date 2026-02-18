@@ -143,9 +143,9 @@ export function AddContextMenu({
 
   map.on("click", closeContextMenu);
   map.on("movestart", closeContextMenu);
+}
 
-  // Copy to clipboard helper
-  async function copyToClipboard(text: string) {
-    await navigator.clipboard.writeText(text);
-  }
+// Copy to clipboard helper
+async function copyToClipboard(text: string) {
+  await navigator.clipboard.writeText(text);
 }
