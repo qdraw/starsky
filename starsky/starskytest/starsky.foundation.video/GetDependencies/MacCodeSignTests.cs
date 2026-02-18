@@ -209,14 +209,9 @@ public class MacCodeSignTests
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
 	public async Task MacCodeSignAndXattrExecutable_QuarantineEventsV2_ShouldReturnTrue__MacOnly()
 	{
-		if ( !OperatingSystem.IsMacOS() )
-		{
-			Assert.Inconclusive("This test is only applicable on macOS.");
-			return;
-		}
-
 		// Arrange
 		var exeFile = await CreateStubExeFile();
 
@@ -261,17 +256,11 @@ public class MacCodeSignTests
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
 	public async Task MacCodeSignAndXattrExecutable_CodeSign__MacOnly()
 	{
-		if ( !OperatingSystem.IsMacOS() )
-		{
-			Assert.Inconclusive("This test is only applicable on macOS.");
-			return;
-		}
-
 		// Arrange
 		var exeFile = await CreateStubExeFile();
-
 		var codeSignBefore = await Command.Run("codesign", "-dvv", exeFile).Task;
 
 		// Act
