@@ -6832,6 +6832,105 @@
       "extensions": {},
       "unresolvedReference": false
     },
+    "/api/geo-reverse-nominatim": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "GeoReverseNominatim",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Reverse geo lookup with OpenStreetMap Nominatim\nThis API does not allow BATCH requests, so only one request at a time.\nIf you want to do multiple requests, please wait at least 1 second between requests.\nSee https://nominatim.org/release-docs/develop/api/Reverse/ for more details.",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "lat",
+              "in": 0,
+              "description": "Latitude coordinate in Decimal Degree (DD)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "number",
+                "format": "double",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "lon",
+              "in": 0,
+              "description": "Longitude coordinate in DD",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "number",
+                "format": "double",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Data with object",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
     "/api/health": {
       "operations": {
         "Get": {
@@ -21530,5 +21629,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "19F5B230E0798B83CB32C7F7C8C64457D360F6B23CA3B6BB7E66D1FAE41FC69A0C7FA53714CE5EA43AB898A4809BEC3B71001FBE8DF7957D9607F61BB0BCBD12"
+  "hashCode": "82B6DD3F2CB7118A24DDAB84D7E5D5D1B006653484FC0B834B1120AC53EDE9E276AA6B2DAE5980118CBAB6914707391346A2B5B6B5AD9CFD83CC775FA853FCC2"
 }
