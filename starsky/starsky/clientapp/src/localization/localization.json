@@ -1224,6 +1224,51 @@
     "nl": "Locatie wijzigen",
     "de": "Standort ändern"
   },
+  "MessageCoordinates": {
+    "en": "Coordinates",
+    "nl": "Coördinaten",
+    "de": "Koordinaten"
+  },
+  "MessageCopyCoordinates": {
+    "en": "Copy coordinates",
+    "nl": "Coördinaten kopiëren",
+    "de": "Koordinaten kopieren"
+  },
+  "MessageStreetName": {
+    "en": "Street",
+    "nl": "Straat",
+    "de": "Straße"
+  },
+  "MessageCopyStreetName": {
+    "en": "Copy street name",
+    "nl": "Straatnaam kopiëren",
+    "de": "Straßenname kopieren"
+  },
+  "MessageClickToCopy": {
+    "en": "Click to copy",
+    "nl": "Klik om te kopiëren",
+    "de": "Klicken zum Kopieren"
+  },
+  "MessageCoordinatesCopied": {
+    "en": "Coordinates copied!",
+    "nl": "Coördinaten gekopieerd!",
+    "de": "Koordinaten kopiert!"
+  },
+  "MessageStreetNameCopied": {
+    "en": "Street name copied!",
+    "nl": "Straatnaam gekopieerd!",
+    "de": "Straßenname kopiert!"
+  },
+  "MessageNoStreetFound": {
+    "en": "No street name found",
+    "nl": "Geen straatnaam gevonden",
+    "de": "Kein Straßenname gefunden"
+  },
+  "MessageLoadingAddress": {
+    "en": "Loading address...",
+    "nl": "Adres laden...",
+    "de": "Adresse wird geladen..."
+  },
   "MessageSearchOrSelect": {
     "en": "Search or select...",
     "nl": "Zoek of selecteer...",
