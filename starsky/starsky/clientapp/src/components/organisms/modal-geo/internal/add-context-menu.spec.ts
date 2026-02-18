@@ -390,4 +390,46 @@ describe("AddContextMenu", () => {
       expect(setNotificationStatus).toHaveBeenCalledWith("Street copied!");
     });
   });
+
+  it("should remove previous contextMenu instance before creating a new one", async () => {
+    const mockAddressData = {
+      display_name: "Test Street 123, Test City",
+      address: {
+        road: "Test Street",
+        house_number: "123"
+      }
+    };
+    (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(mockAddressData);
+    (nominatimModule.GetStreetName as jest.Mock).mockReturnValue("Test Street 123");
+
+    const setNotificationStatus = jest.fn();
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus
+    });
+
+    // Simulate first right-click event
+    const event1 = {
+      latlng: L.latLng(52.52, 13.405),
+      containerPoint: L.point(100, 100)
+    } as L.LeafletMouseEvent;
+    map.fire("contextmenu", event1);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // There should be one menu
+    expect(document.querySelectorAll(".leaflet-context-menu").length).toBe(1);
+
+    // Simulate second right-click event
+    const event2 = {
+      latlng: L.latLng(52.53, 13.415),
+      containerPoint: L.point(150, 150)
+    } as L.LeafletMouseEvent;
+    map.fire("contextmenu", event2);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // There should still be only one menu
+    expect(document.querySelectorAll(".leaflet-context-menu").length).toBe(1);
+  });
 });
