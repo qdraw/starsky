@@ -142,6 +142,14 @@ export class UrlQuery {
     return `${this.prefix}/api/account/change-secret`;
   };
 
+  public UrlCloudImportStatus = (): string => {
+    return `${this.prefix}/api/cloud-import/status`;
+  };
+
+  public UrlCloudImportSync = (providerId: string): string => {
+    return `${this.prefix}/api/cloud-import/sync/${encodeURIComponent(providerId)}`;
+  };
+
   public UrlAccountPermissions = (): string => {
     return `${this.prefix}/api/account/permissions`;
   };

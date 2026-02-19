@@ -136,6 +136,16 @@ describe("url-query", () => {
     expect(result).toContain("logout");
   });
 
+  it("UrlCloudImportStatus", () => {
+    const result = urlQuery.UrlCloudImportStatus();
+    expect(result).toContain("/api/cloud-import/status");
+  });
+
+  it("UrlCloudImportSync", () => {
+    const result = urlQuery.UrlCloudImportSync("dropbox-camera-uploads");
+    expect(result).toContain("/api/cloud-import/sync/dropbox-camera-uploads");
+  });
+
   it("UrlLogoutPage ", () => {
     const result = urlQuery.UrlLogoutPage("test");
     expect(result).toContain("/account/logout?ReturnUrl=test");

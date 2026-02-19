@@ -3,6 +3,31 @@
   margin-top: 10px;
 }
 
+.preferences-cloud-import-status {
+  margin-bottom: 10px;
+}
+
+.preferences-cloud-import-provider {
+  border: 1px solid #cfd8dc;
+  border-radius: 3px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.preferences-cloud-import-provider h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.preferences-cloud-import-provider p {
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.preferences-cloud-import-last-sync {
+  margin-bottom: 10px;
+}
+
 .preferences-tabs {
   display: flex;
   gap: 10px;
@@ -39,6 +64,16 @@
 }
 
 @media (prefers-color-scheme: dark) {
+  .preferences-cloud-import-provider {
+    border-color: #78909c;
+  }
+
+  .preferences-cloud-import-provider h4,
+  .preferences-cloud-import-provider p,
+  .preferences-cloud-import-status {
+    color: #fff;
+  }
+
   .preferences-tabs {
     background-color: #546e7a;
   }

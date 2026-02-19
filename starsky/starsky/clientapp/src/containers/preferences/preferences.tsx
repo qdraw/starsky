@@ -2,15 +2,16 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import MenuDefault from "../../components/organisms/menu-default/menu-default";
 import PreferencesAppSettings from "../../components/organisms/preferences-app-settings/preferences-app-settings";
+import PreferencesCloudImport from "../../components/organisms/preferences-cloud-import/preferences-cloud-import";
 import PreferencesPassword from "../../components/organisms/preferences-password/preferences-password";
 import PreferencesUsername from "../../components/organisms/preferences-username/preferences-username";
 import useGlobalSettings from "../../hooks/use-global-settings";
 import localization from "../../localization/localization.json";
 import { Language } from "../../shared/language";
 
-type PreferencesTab = "username" | "password" | "app";
+type PreferencesTab = "username" | "password" | "app" | "cloud";
 
-const tabValues: PreferencesTab[] = ["username", "password", "app"];
+const tabValues: PreferencesTab[] = ["username", "password", "app", "cloud"];
 
 const isPreferencesTab = (value: string | null): value is PreferencesTab => {
   if (!value) {
@@ -26,6 +27,7 @@ export const Preferences: React.FunctionComponent = () => {
   const messageUsername = language.key(localization.MessageUsername);
   const messagePassword = language.key(localization.MessagePassword);
   const messageAppSettings = language.key(localization.MessageAppSettings);
+  const messageCloudImports = language.key(localization.MessageCloudImports);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -44,7 +46,8 @@ export const Preferences: React.FunctionComponent = () => {
   const tabs: { id: PreferencesTab; label: string }[] = [
     { id: "username", label: messageUsername },
     { id: "password", label: messagePassword },
-    { id: "app", label: messageAppSettings }
+    { id: "app", label: messageAppSettings },
+    { id: "cloud", label: messageCloudImports }
   ];
 
   const onChangeTab = (tab: PreferencesTab) => {
@@ -84,6 +87,7 @@ export const Preferences: React.FunctionComponent = () => {
       {activeTab === "username" && <PreferencesUsername />}
       {activeTab === "password" && <PreferencesPassword />}
       {activeTab === "app" && <PreferencesAppSettings />}
+      {activeTab === "cloud" && <PreferencesCloudImport />}
     </>
   );
 };

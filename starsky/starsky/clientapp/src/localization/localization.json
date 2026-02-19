@@ -104,6 +104,11 @@
     "nl": "App-instellingen",
     "de": "App-Einstellungen"
   },
+  "MessageCloudImports": {
+    "en": "Cloud Imports",
+    "nl": "Cloud-import",
+    "de": "Cloud-Importe"
+  },
   "MessageLogout": {
     "en": "Logout",
     "nl": "Uitloggen",
