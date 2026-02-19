@@ -11,13 +11,13 @@ import { Language } from "../../shared/language";
 
 type PreferencesTab = "username" | "password" | "app" | "cloud";
 
-const tabValues: PreferencesTab[] = ["username", "password", "app", "cloud"];
+const tabValues: Set<PreferencesTab> = new Set(["username", "password", "app", "cloud"]);
 
 const isPreferencesTab = (value: string | null): value is PreferencesTab => {
   if (!value) {
     return false;
   }
-  return tabValues.includes(value as PreferencesTab);
+  return tabValues.has(value as PreferencesTab);
 };
 
 export const Preferences: React.FunctionComponent = () => {

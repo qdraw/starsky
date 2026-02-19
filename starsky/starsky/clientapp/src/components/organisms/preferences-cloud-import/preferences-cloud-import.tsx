@@ -95,11 +95,11 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
     };
 
     fetchStatus();
-    const interval = window.setInterval(fetchStatus, 10000);
+    const interval = globalThis.setInterval(fetchStatus, 10000);
 
     return () => {
       mounted = false;
-      window.clearInterval(interval);
+      globalThis.clearInterval(interval);
     };
   }, [loadStatus]);
 
