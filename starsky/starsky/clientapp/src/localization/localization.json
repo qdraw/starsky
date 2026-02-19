@@ -99,6 +99,11 @@
     "nl": "Voorkeuren",
     "de": "Einstellungen"
   },
+  "MessageAppSettings": {
+    "en": "App Settings",
+    "nl": "App-instellingen",
+    "de": "App-Einstellungen"
+  },
   "MessageLogout": {
     "en": "Logout",
     "nl": "Uitloggen",

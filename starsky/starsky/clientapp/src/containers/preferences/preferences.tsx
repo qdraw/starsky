@@ -22,7 +22,11 @@ const isPreferencesTab = (value: string | null): value is PreferencesTab => {
 export const Preferences: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessagePreferences = language.key(localization.MessagePreferences);
+  const messagePreferences = language.key(localization.MessagePreferences);
+  const messageUsername = language.key(localization.MessageUsername);
+  const messagePassword = language.key(localization.MessagePassword);
+  const messageAppSettings = language.key(localization.MessageAppSettings);
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentTab = searchParams.get("tab");
@@ -38,9 +42,9 @@ export const Preferences: React.FunctionComponent = () => {
   }, [activeTab, currentTab, searchParams, setSearchParams]);
 
   const tabs: { id: PreferencesTab; label: string }[] = [
-    { id: "username", label: "Username" },
-    { id: "password", label: "Password" },
-    { id: "app", label: "AppSettings" }
+    { id: "username", label: messageUsername },
+    { id: "password", label: messagePassword },
+    { id: "app", label: messageAppSettings }
   ];
 
   const onChangeTab = (tab: PreferencesTab) => {
@@ -55,7 +59,7 @@ export const Preferences: React.FunctionComponent = () => {
   return (
     <>
       <MenuDefault isEnabled={true} />
-      <div className="content--header">{MessagePreferences}</div>
+      <div className="content--header">{messagePreferences}</div>
 
       <div className="preferences-tabs" role="tablist" aria-label="Preferences sections">
         {tabs.map((tab) => (
