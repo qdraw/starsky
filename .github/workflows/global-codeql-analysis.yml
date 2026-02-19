@@ -34,7 +34,7 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@015d8c7cbcbb8e7252a7dccfe81a90aa176260b2
+      uses: github/codeql-action/init@5e7a52feb2a3dfb87f88be2af33b9e2275f48de6
        #Override language selection by uncommenting this and choosing your languages
       with:
          languages: csharp, javascript, actions
@@ -67,4 +67,4 @@ jobs:
       run: bash build.sh --Target=BuildNetCore --no-sonar --no-dependencies --no-publish
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@015d8c7cbcbb8e7252a7dccfe81a90aa176260b2
+      uses: github/codeql-action/analyze@5e7a52feb2a3dfb87f88be2af33b9e2275f48de6
