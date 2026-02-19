@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import localization from "../../../localization/localization.json";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
+import { Language, SupportedLanguages } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url/url-query";
 import PreferencesCloudImport from "./preferences-cloud-import";
 
@@ -174,6 +175,24 @@ describe("PreferencesCloudImport", () => {
 
     const warning = screen.getByText(localization.MessageCloudImportSyncStartFail.en);
     expect(warning).toBeTruthy();
+
+    component.unmount();
+  });
+
+  it("should disable sync when a sync is in progress", async () => {
+    jest.spyOn(FetchGet, "default").mockImplementation(() =>
+      Promise.resolve({
+        statusCode: 500,
+        data: null
+      })
+    );
+    const language = new Language(SupportedLanguages.en);
+    const messageStatusUnavailable = language.key(localization.MessageCloudImportStatusUnavailable);
+
+    const component = render(<PreferencesCloudImport />);
+
+    const errorMessage = await screen.findByTestId("cloud-import-status-error");
+    expect(errorMessage).toHaveTextContent(messageStatusUnavailable);
 
     component.unmount();
   });

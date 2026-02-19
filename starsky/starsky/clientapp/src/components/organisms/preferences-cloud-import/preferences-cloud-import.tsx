@@ -125,8 +125,16 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
           {messageStatusLabel}: {statusText}
         </div>
 
-        {statusError ? <div className="warning-box">{statusError}</div> : null}
-        {syncError ? <div className="warning-box">{syncError}</div> : null}
+        {statusError ? (
+          <div data-test="cloud-import-status-error" className="warning-box">
+            {statusError}
+          </div>
+        ) : null}
+        {syncError ? (
+          <div data-test="cloud-import-sync-error" className="warning-box">
+            {syncError}
+          </div>
+        ) : null}
 
         {isLoading ? <p>{messageLoadingStatus}</p> : null}
 
