@@ -171,6 +171,20 @@ public sealed class FtpServiceTest
 	}
 
 	[TestMethod]
+	public void Run_FileInvalidZip_ReturnsFalse()
+	{
+		var factory = new FakeIFtpWebRequestFactory();
+		var fakeStorage =
+			new FakeIStorage(["/"],
+				["/file.zip"], [[0x00, 0x01, 0x02, 0x03]]);
+		var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(),
+			factory, new FakeIWebLogger());
+		var makeUpload = ftpService.Run("/file.zip", "test",
+			new Dictionary<string, bool> { { "non-existing-file.jpg", true } });
+		Assert.IsFalse(makeUpload);
+	}
+
+	[TestMethod]
 	public async Task IsValidZipOrFolder_NullOrEmpty_ReturnsNull()
 	{
 		var factory = new FakeIFtpWebRequestFactory();
