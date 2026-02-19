@@ -159,6 +159,18 @@ public sealed class FtpServiceTest
 	}
 
 	[TestMethod]
+	public void Run_NotFound()
+	{
+		var factory = new FakeIFtpWebRequestFactory();
+		var ftpService =
+			new FtpService(_appSettings, new FakeIStorage(), new FakeConsoleWrapper(), factory,
+				new FakeIWebLogger());
+		var makeUpload = ftpService.Run("/not-found", "test",
+			new Dictionary<string, bool> { { "non-existing-file.jpg", true } });
+		Assert.IsFalse(makeUpload);
+	}
+
+	[TestMethod]
 	public async Task IsValidZipOrFolder_NullOrEmpty_ReturnsNull()
 	{
 		var factory = new FakeIFtpWebRequestFactory();
