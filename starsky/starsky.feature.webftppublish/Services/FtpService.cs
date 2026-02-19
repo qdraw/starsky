@@ -5,16 +5,23 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Threading.Tasks;
 using System.Web;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
 using starsky.feature.webftppublish.Interfaces;
+using starsky.feature.webftppublish.Models;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
+using starsky.foundation.storage.ArchiveFormats;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -37,6 +44,7 @@ public class FtpService : IFtpService
 	private readonly string _webFtpNoLogin;
 
 	private readonly IFtpWebRequestFactory _webRequest;
+	private readonly IWebLogger _logger;
 
 
 	/// <summary>
@@ -48,11 +56,12 @@ public class FtpService : IFtpService
 	/// <param name="console"></param>
 	/// <param name="webRequest"></param>
 	public FtpService(AppSettings appSettings, IStorage storage, IConsole console,
-		IFtpWebRequestFactory webRequest)
+		IFtpWebRequestFactory webRequest, IWebLogger logger)
 	{
 		_storage = storage;
 		_console = console;
 		_webRequest = webRequest;
+		_logger = logger;
 
 		var uri = new Uri(appSettings.WebFtp);
 		_appSettingsCredentials = uri.UserInfo.Split(":".ToCharArray());
@@ -64,17 +73,130 @@ public class FtpService : IFtpService
 		_appSettingsCredentials[1] = HttpUtility.UrlDecode(_appSettingsCredentials[1]);
 	}
 
+	public async Task<FtpPublishManifestModel?> IsValidZipOrFolder(
+		string inputFullFileDirectoryOrZip)
+	{
+		if ( string.IsNullOrWhiteSpace(inputFullFileDirectoryOrZip) )
+		{
+			_logger.LogError("Please use the -p to add a path first");
+			return null;
+		}
+
+		var inputPathType = _storage.IsFolderOrFile(inputFullFileDirectoryOrZip);
+
+		switch ( inputPathType )
+		{
+			case FolderOrFileModel.FolderOrFileTypeList.Deleted:
+				_logger.LogError($"Folder location {inputFullFileDirectoryOrZip} " +
+				                 $"is not found \nPlease try the `-h` command to get help ");
+				return null;
+			case FolderOrFileModel.FolderOrFileTypeList.Folder:
+			{
+				var settingsFullFilePath =
+					Path.Combine(inputFullFileDirectoryOrZip, "_settings.json");
+				if ( _storage.ExistFile(settingsFullFilePath) )
+				{
+					return await
+						new DeserializeJson(_storage).ReadAsync<FtpPublishManifestModel>(
+							settingsFullFilePath);
+				}
+
+				_logger.LogError($"Please run 'starskywebhtmlcli' " +
+				                 $"first to generate a settings file");
+				return null;
+			}
+			case FolderOrFileModel.FolderOrFileTypeList.File:
+				if ( !string.Equals(Path.GetExtension(inputFullFileDirectoryOrZip), ".zip",
+					    StringComparison.OrdinalIgnoreCase) )
+				{
+					return null;
+				}
+
+				if ( !Zipper.IsValidZipFile(inputFullFileDirectoryOrZip) )
+				{
+					_logger.LogError(
+						$"Zip file is invalid or unreadable {inputFullFileDirectoryOrZip}");
+					return null;
+				}
+
+				var manifest =
+					new Zipper(_logger).ExtractZipEntry(inputFullFileDirectoryOrZip,
+						"_settings.json");
+				if ( manifest == null )
+				{
+					return null;
+				}
+
+				var result = JsonSerializer.Deserialize<FtpPublishManifestModel>(manifest);
+				return result;
+			default:
+				return null;
+		}
+	}
+
+	private ExtractZipResultModel ExtractZip(string parentDirectoryOrZipFile)
+	{
+		var existFolder = _storage.ExistFolder(parentDirectoryOrZipFile);
+		if ( existFolder )
+		{
+			return new ExtractZipResultModel
+			{
+				FullFileFolderPath = parentDirectoryOrZipFile,
+				RemoveFolderAfterwards = false,
+				IsError = false
+			};
+		}
+
+		var existFile = _storage.ExistFile(parentDirectoryOrZipFile);
+		if ( !existFile )
+		{
+			return new ExtractZipResultModel
+			{
+				FullFileFolderPath = parentDirectoryOrZipFile, IsError = true
+			};
+		}
+
+		var parentFolderTempPath = Path.Combine(Path.GetTempPath(), "starsky-webftp",
+			Path.GetFileNameWithoutExtension(parentDirectoryOrZipFile) + "_" +
+			Guid.NewGuid().ToString("N"));
+		_storage.CreateDirectory(parentFolderTempPath);
+
+		var zipper = new Zipper(new WebLogger());
+		if ( zipper.ExtractZip(parentDirectoryOrZipFile, parentFolderTempPath) )
+		{
+			return new ExtractZipResultModel
+			{
+				FullFileFolderPath = parentFolderTempPath,
+				RemoveFolderAfterwards = true,
+				IsError = false
+			};
+		}
+
+		_logger.LogError($"Zip extract failed {parentDirectoryOrZipFile}");
+		return new ExtractZipResultModel
+		{
+			FullFileFolderPath = parentDirectoryOrZipFile, IsError = true
+		};
+	}
+
 	/// <summary>
 	///     Copy all content to the ftp disk
 	/// </summary>
-	/// <param name="parentDirectory"></param>
+	/// <param name="parentDirectoryOrZipFile"></param>
 	/// <param name="slug"></param>
 	/// <param name="copyContent"></param>
 	/// <returns>true == success</returns>
-	public bool Run(string parentDirectory, string slug, Dictionary<string, bool> copyContent)
+	public bool Run(string parentDirectoryOrZipFile, string slug,
+		Dictionary<string, bool> copyContent)
 	{
+		var resultModel = ExtractZip(parentDirectoryOrZipFile);
+		if ( resultModel.IsError )
+		{
+			return false;
+		}
+
 		foreach ( var thisDirectory in
-		         CreateListOfRemoteDirectories(parentDirectory, slug, copyContent) )
+		         CreateListOfRemoteDirectories(resultModel.FullFileFolderPath, slug, copyContent) )
 		{
 			_console.Write(",");
 			if ( DoesFtpDirectoryExist(thisDirectory) )
@@ -92,9 +214,14 @@ public class FtpService : IFtpService
 
 		// content of the publication folder
 		var copyThisFilesSubPaths = CreateListOfRemoteFiles(copyContent);
-		if ( !MakeUpload(parentDirectory, slug, copyThisFilesSubPaths) )
+		if ( !MakeUpload(resultModel.FullFileFolderPath, slug, copyThisFilesSubPaths) )
 		{
 			return false;
+		}
+
+		if ( resultModel.RemoveFolderAfterwards )
+		{
+			_storage.FolderDelete(resultModel.FullFileFolderPath);
 		}
 
 		_console.Write("\n");

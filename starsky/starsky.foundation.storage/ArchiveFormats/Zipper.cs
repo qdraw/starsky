@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -215,5 +216,47 @@ public sealed class Zipper : IZipper
 
 		zip.Dispose(); // no flush
 		return tempFileFullPath;
+	}
+
+	public byte[]? ExtractZipEntry(string zipInputFullPath, string entryFullName)
+	{
+		if ( string.IsNullOrWhiteSpace(entryFullName) )
+		{
+			return null;
+		}
+
+		if ( !File.Exists(zipInputFullPath) )
+		{
+			_logger.LogError("[Zipper] Zip file not found: " + zipInputFullPath);
+			return null;
+		}
+
+		if ( !IsValidZipFile(zipInputFullPath) )
+		{
+			_logger.LogError("[Zipper] Invalid zip: " + zipInputFullPath);
+			return null;
+		}
+
+		try
+		{
+			using var archive = ZipFile.OpenRead(zipInputFullPath);
+			var entry = archive.Entries.FirstOrDefault(e =>
+				string.Equals(e.FullName, entryFullName, StringComparison.OrdinalIgnoreCase));
+			if ( entry == null )
+			{
+				return null;
+			}
+
+			using var entryStream = entry.Open();
+			using var memoryStream = new MemoryStream();
+			entryStream.CopyTo(memoryStream);
+			return memoryStream.ToArray();
+		}
+		catch ( InvalidDataException exception )
+		{
+			_logger.LogError($"[Zipper] Failed to extract {exception} - {zipInputFullPath}",
+				exception);
+			return null;
+		}
 	}
 }

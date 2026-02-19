@@ -6,4 +6,5 @@ public interface IZipper
 {
 	Dictionary<string, byte[]> ExtractZip(byte[] zipped);
 	bool ExtractZip(string zipInputFullPath, string storeZipFolderFullPath);
+	byte[]? ExtractZipEntry(string zipInputFullPath, string entryFullName);
 }

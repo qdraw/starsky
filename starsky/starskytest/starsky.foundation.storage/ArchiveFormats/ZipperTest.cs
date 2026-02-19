@@ -308,4 +308,68 @@ public sealed class ZipperTest
 
 		Assert.AreEqual(expected, result);
 	}
+
+	[TestMethod]
+	public void ExtractZipEntry_Found_ReturnsBytes()
+	{
+		var logger = new FakeIWebLogger();
+		var zipper = new Zipper(logger);
+		var tempZip = Path.Combine(Path.GetTempPath(), "zip-entry-test.zip");
+
+		if ( File.Exists(tempZip) )
+		{
+			File.Delete(tempZip);
+		}
+
+		using ( var zip = ZipFile.Open(tempZip, ZipArchiveMode.Create) )
+		{
+			var entry = zip.CreateEntry("folder/test.txt");
+			using var writer = new StreamWriter(entry.Open());
+			writer.Write("hello");
+		}
+
+		var result = zipper.ExtractZipEntry(tempZip, "folder/test.txt");
+
+		File.Delete(tempZip);
+		Assert.IsNotNull(result);
+		Assert.AreEqual("hello", Encoding.UTF8.GetString(result));
+	}
+
+	[TestMethod]
+	public void ExtractZipEntry_NotFound_ReturnsNull()
+	{
+		var logger = new FakeIWebLogger();
+		var zipper = new Zipper(logger);
+		var tempZip = Path.Combine(Path.GetTempPath(), "zip-entry-missing.zip");
+
+		if ( File.Exists(tempZip) )
+		{
+			File.Delete(tempZip);
+		}
+
+		using ( var zip = ZipFile.Open(tempZip, ZipArchiveMode.Create) )
+		{
+			zip.CreateEntry("exists.txt");
+		}
+
+		var result = zipper.ExtractZipEntry(tempZip, "missing.txt");
+
+		File.Delete(tempZip);
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public void ExtractZipEntry_InvalidZip_ReturnsNull()
+	{
+		var logger = new FakeIWebLogger();
+		var zipper = new Zipper(logger);
+		var tempZip = Path.GetTempFileName();
+
+		File.WriteAllBytes(tempZip, InvalidZip);
+
+		var result = zipper.ExtractZipEntry(tempZip, "test.txt");
+
+		File.Delete(tempZip);
+		Assert.IsNull(result);
+	}
 }
