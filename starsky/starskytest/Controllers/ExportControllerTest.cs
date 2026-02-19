@@ -175,25 +175,27 @@ public sealed class ExportControllerTest
 		// the test
 		_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { _createAnImage.DbPath },
+		var fakeStorage = new FakeIStorage(["/"],
+			[_createAnImage.DbPath],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
-			new()
+		var fakeQuery = new FakeIQuery([
+			new FileIndexItem
 			{
 				FileName = _createAnImage.DbPath,
 				ParentDirectory = "/",
 				FileHash = "file-hash",
 				ColorClass = ColorClassParser.Color.Winner // 1
 			}
-		});
+		]);
+
+		var tmpFolder = Path.Combine(_createAnImage.BasePath, "test-zip");
+		Directory.CreateDirectory(tmpFolder);
 
 		var appSettings =
-			new AppSettings { TempFolder = _createAnImage.BasePath, Verbose = true };
+			new AppSettings { TempFolder = tmpFolder, Verbose = true };
 
 		var export = new ExportService(fakeQuery, appSettings, storageSelector,
 			new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
@@ -234,6 +236,7 @@ public sealed class ExportControllerTest
 		await service.StopAsync(CancellationToken.None);
 
 		File.Delete(sourceFullPath);
+		Directory.Delete(appSettings.TempFolder);
 	}
 
 	[TestMethod]
