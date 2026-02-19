@@ -46,15 +46,15 @@ public class FtpService : IFtpService
 	private readonly IFtpWebRequestFactory _webRequest;
 	private readonly IWebLogger _logger;
 
-
 	/// <summary>
 	///     Use ftp://username:password@ftp.service.tld/pushfolder to extract credentials
-	///     Encode content using html for @ use %40 for example
+	///     Encode content using HTML for @ use %40 for example
 	/// </summary>
 	/// <param name="appSettings">the location of the settings</param>
 	/// <param name="storage">storage provider for source files</param>
 	/// <param name="console"></param>
 	/// <param name="webRequest"></param>
+	///	<param name="logger"></param>
 	public FtpService(AppSettings appSettings, IStorage storage, IConsole console,
 		IFtpWebRequestFactory webRequest, IWebLogger logger)
 	{
@@ -391,7 +391,7 @@ public class FtpService : IFtpService
 			var ftpWebResponse = requestDir.GetResponse();
 			var ftpStream = ftpWebResponse.GetResponseStream();
 
-			ftpStream?.Close();
+			ftpStream.Close();
 			ftpWebResponse.Dispose();
 
 			return true;
