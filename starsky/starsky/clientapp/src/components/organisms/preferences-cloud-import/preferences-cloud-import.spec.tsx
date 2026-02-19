@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import localization from "../../../localization/localization.json";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url/url-query";
@@ -120,6 +121,59 @@ describe("PreferencesCloudImport", () => {
         ""
       );
     });
+
+    component.unmount();
+  });
+
+  it("shows error and re-enables button when starting sync fails", async () => {
+    jest.spyOn(FetchGet, "default").mockImplementation(() =>
+      Promise.resolve({
+        statusCode: 200,
+        data: {
+          providers: [
+            {
+              id: "dropbox-camera-uploads",
+              enabled: true,
+              provider: "Dropbox",
+              remoteFolder: "/Camera Uploads",
+              syncFrequencyMinutes: 0,
+              syncFrequencyHours: 0,
+              deleteAfterImport: false
+            }
+          ],
+          isSyncInProgress: false,
+          lastSyncResults: {}
+        }
+      })
+    );
+
+    const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementation(() =>
+      Promise.resolve({
+        statusCode: 500,
+        data: null
+      })
+    );
+
+    const component = render(<PreferencesCloudImport />);
+
+    const syncButton = (await screen.findByTestId(
+      "cloud-import-sync-dropbox-camera-uploads"
+    )) as HTMLButtonElement;
+    fireEvent.click(syncButton);
+
+    await waitFor(() => {
+      expect(fetchPostSpy).toHaveBeenCalledWith(
+        new UrlQuery().UrlCloudImportSync("dropbox-camera-uploads"),
+        ""
+      );
+    });
+
+    await waitFor(() => {
+      expect(syncButton.disabled).toBe(false);
+    });
+
+    const warning = screen.getByText(localization.MessageCloudImportSyncStartFail.en);
+    expect(warning).toBeTruthy();
 
     component.unmount();
   });
