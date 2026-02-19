@@ -20,7 +20,9 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats;
 public sealed class ZipperTest
 {
 	private static readonly byte[] ValidZipSignatureButInvalidFile = [0x50, 0x4B, 0x03, 0x04, 0x00];
-	private static readonly byte[] InvalidZip = [0x00, 0x01, 0x02, 0x03];
+
+	private static readonly byte[] InvalidZip = [0x50, 0x4B, 0x03, 0x04];
+
 	private static readonly byte[] TooShortZip = "PK"u8.ToArray();
 	private static readonly byte[] EmptyZip = [];
 
@@ -359,6 +361,26 @@ public sealed class ZipperTest
 	}
 
 	[TestMethod]
+	public void ExtractZipEntry_ZipNotFound_ReturnsNull()
+	{
+		var logger = new FakeIWebLogger();
+		var zipper = new Zipper(logger);
+
+		var result = zipper.ExtractZipEntry("/not-found.zip", "missing.txt");
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public void ExtractZipEntry_ZipNotFoundAndEntryNoContent_ReturnsNull()
+	{
+		var logger = new FakeIWebLogger();
+		var zipper = new Zipper(logger);
+
+		var result = zipper.ExtractZipEntry("/not-found.zip", string.Empty);
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
 	public void ExtractZipEntry_InvalidZip_ReturnsNull()
 	{
 		var logger = new FakeIWebLogger();
@@ -366,6 +388,21 @@ public sealed class ZipperTest
 		var tempZip = Path.GetTempFileName();
 
 		File.WriteAllBytes(tempZip, InvalidZip);
+
+		var result = zipper.ExtractZipEntry(tempZip, "test.txt");
+
+		File.Delete(tempZip);
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public void ExtractZipEntry_InvalidZip2_ReturnsNull()
+	{
+		var logger = new FakeIWebLogger();
+		var zipper = new Zipper(logger);
+		var tempZip = Path.GetTempFileName();
+
+		File.WriteAllBytes(tempZip, ValidZipSignatureButInvalidFile);
 
 		var result = zipper.ExtractZipEntry(tempZip, "test.txt");
 

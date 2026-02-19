@@ -112,7 +112,8 @@ public class FtpService : IFtpService
 					return null;
 				}
 
-				if ( !Zipper.IsValidZipFile(inputFullFileDirectoryOrZip) )
+				var zipFirstByteStream = _storage.ReadStream(inputFullFileDirectoryOrZip, 10);
+				if ( !Zipper.IsValidZipFile(zipFirstByteStream) )
 				{
 					_logger.LogError(
 						$"Zip file is invalid or unreadable {inputFullFileDirectoryOrZip}");

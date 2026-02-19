@@ -137,6 +137,15 @@ public sealed class Zipper : IZipper
 		}
 	}
 
+	public static bool IsValidZipFile(Stream zipFirstByteStream)
+	{
+		using var ms = new MemoryStream();
+		zipFirstByteStream.CopyTo(ms);
+		var bytes = ms.ToArray();
+		zipFirstByteStream.Dispose();
+		return IsValidZipFile(bytes);
+	}
+
 	public static bool IsValidZipFile(string fullFilePath)
 	{
 		return RetryHelper.Do(CheckIfIsValidZipFile,
