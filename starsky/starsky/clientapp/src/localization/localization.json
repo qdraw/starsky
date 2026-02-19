@@ -109,6 +109,116 @@
     "nl": "Cloud-import",
     "de": "Cloud-Importe"
   },
+  "MessageCloudImportStatusLabel": {
+    "en": "Status",
+    "nl": "Status",
+    "de": "Status"
+  },
+  "MessageCloudImportStatusInProgress": {
+    "en": "In progress",
+    "nl": "Bezig",
+    "de": "In Bearbeitung"
+  },
+  "MessageCloudImportStatusIdle": {
+    "en": "Idle",
+    "nl": "Inactief",
+    "de": "Inaktiv"
+  },
+  "MessageCloudImportStatusUnavailable": {
+    "en": "Cloud import status unavailable",
+    "nl": "Cloud-importstatus niet beschikbaar",
+    "de": "Cloud-Import-Status nicht verfügbar"
+  },
+  "MessageCloudImportSyncStartFail": {
+    "en": "Unable to start cloud import sync",
+    "nl": "Cloud-import synchronisatie starten is niet gelukt",
+    "de": "Cloud-Import-Synchronisierung konnte nicht gestartet werden"
+  },
+  "MessageCloudImportLoadingStatus": {
+    "en": "Loading cloud import status...",
+    "nl": "Cloud-importstatus laden...",
+    "de": "Cloud-Import-Status wird geladen..."
+  },
+  "MessageCloudImportNoProvidersConfigured": {
+    "en": "No providers configured.",
+    "nl": "Geen providers geconfigureerd.",
+    "de": "Keine Anbieter konfiguriert."
+  },
+  "MessageCloudImportProviderId": {
+    "en": "ID",
+    "nl": "ID",
+    "de": "ID"
+  },
+  "MessageCloudImportEnabled": {
+    "en": "Enabled",
+    "nl": "Ingeschakeld",
+    "de": "Aktiviert"
+  },
+  "MessageCloudImportDeleteAfterImport": {
+    "en": "Delete after import",
+    "nl": "Verwijderen na import",
+    "de": "Nach Import löschen"
+  },
+  "MessageCloudImportYes": {
+    "en": "Yes",
+    "nl": "Ja",
+    "de": "Ja"
+  },
+  "MessageCloudImportNo": {
+    "en": "No",
+    "nl": "Nee",
+    "de": "Nein"
+  },
+  "MessageCloudImportLastSync": {
+    "en": "Last sync",
+    "nl": "Laatste synchronisatie",
+    "de": "Letzte Synchronisierung"
+  },
+  "MessageCloudImportLastSyncSuccess": {
+    "en": "Success",
+    "nl": "Gelukt",
+    "de": "Erfolgreich"
+  },
+  "MessageCloudImportLastSyncFailed": {
+    "en": "Failed",
+    "nl": "Mislukt",
+    "de": "Fehlgeschlagen"
+  },
+  "MessageCloudImportFilesFound": {
+    "en": "Files found",
+    "nl": "Bestanden gevonden",
+    "de": "Gefundene Dateien"
+  },
+  "MessageCloudImportFilesImported": {
+    "en": "Imported",
+    "nl": "Geïmporteerd",
+    "de": "Importiert"
+  },
+  "MessageCloudImportFilesSkipped": {
+    "en": "Skipped",
+    "nl": "Overgeslagen",
+    "de": "Übersprungen"
+  },
+  "MessageCloudImportFilesFailed": {
+    "en": "Failed",
+    "nl": "Mislukt",
+    "de": "Fehlgeschlagen"
+  },
+  "MessageCloudImportNoSyncResult": {
+    "en": "No sync result yet.",
+    "nl": "Nog geen synchronisatieresultaat.",
+    "de": "Noch kein Synchronisierungsergebnis."
+  },
+  "MessageCloudImportStartSync": {
+    "en": "Start sync",
+    "nl": "Synchronisatie starten",
+    "de": "Synchronisierung starten"
+  },
+  "MessageCloudImportStarting": {
+    "en": "Starting...",
+    "nl": "Starten...",
+    "de": "Startet..."
+  },
   "MessageLogout": {
     "en": "Logout",
     "nl": "Uitloggen",

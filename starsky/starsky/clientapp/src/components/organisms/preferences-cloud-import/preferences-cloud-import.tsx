@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
+import { parseRelativeDate } from "../../../shared/date";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
@@ -35,6 +36,33 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const messageCloudImports = language.key(localization.MessageCloudImports);
+  const messageStatusLabel = language.key(localization.MessageCloudImportStatusLabel);
+  const messageStatusInProgress = language.key(localization.MessageCloudImportStatusInProgress);
+  const messageStatusIdle = language.key(localization.MessageCloudImportStatusIdle);
+  const messageStatusUnavailable = language.key(localization.MessageCloudImportStatusUnavailable);
+  const messageSyncStartFail = language.key(localization.MessageCloudImportSyncStartFail);
+  const messageLoadingStatus = language.key(localization.MessageCloudImportLoadingStatus);
+  const messageNoProvidersConfigured = language.key(
+    localization.MessageCloudImportNoProvidersConfigured
+  );
+  const messageProviderId = language.key(localization.MessageCloudImportProviderId);
+  const messageEnabled = language.key(localization.MessageCloudImportEnabled);
+  const messageDeleteAfterImport = language.key(localization.MessageCloudImportDeleteAfterImport);
+  const messageYes = language.key(localization.MessageCloudImportYes);
+  const messageNo = language.key(localization.MessageCloudImportNo);
+  const messageLastSync = language.key(localization.MessageCloudImportLastSync);
+  const messageLastSyncSuccess = language.key(localization.MessageCloudImportLastSyncSuccess);
+  const messageLastSyncFailed = language.key(localization.MessageCloudImportLastSyncFailed);
+  const messageFilesFound = language.key(localization.MessageCloudImportFilesFound);
+  const messageFilesImported = language.key(localization.MessageCloudImportFilesImported);
+  const messageFilesSkipped = language.key(localization.MessageCloudImportFilesSkipped);
+  const messageFilesFailed = language.key(localization.MessageCloudImportFilesFailed);
+  const messageNoSyncResult = language.key(localization.MessageCloudImportNoSyncResult);
+  const messageStartSync = language.key(localization.MessageCloudImportStartSync);
+  const messageStarting = language.key(localization.MessageCloudImportStarting);
+  const MessageDateLessThan1Minute = language.key(localization.MessageDateLessThan1Minute);
+  const MessageDateMinutes = language.key(localization.MessageDateMinutes);
+  const MessageDateHour = language.key(localization.MessageDateHour);
 
   const [statusData, setStatusData] = useState<CloudImportStatusResponse | null>(null);
   const [statusError, setStatusError] = useState<string | null>(null);
@@ -46,7 +74,7 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
     const statusResponse = await FetchGet(new UrlQuery().UrlCloudImportStatus());
 
     if (statusResponse.statusCode !== 200 || !statusResponse.data) {
-      setStatusError("Cloud import status unavailable");
+      setStatusError(messageStatusUnavailable);
       setIsLoading(false);
       return;
     }
@@ -54,7 +82,7 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
     setStatusData(statusResponse.data as CloudImportStatusResponse);
     setStatusError(null);
     setIsLoading(false);
-  }, []);
+  }, [messageStatusUnavailable]);
 
   useEffect(() => {
     let mounted = true;
@@ -89,7 +117,7 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
     const response = await FetchPost(new UrlQuery().UrlCloudImportSync(providerId), "");
 
     if (response.statusCode < 200 || response.statusCode > 299) {
-      setSyncError("Unable to start cloud import sync");
+      setSyncError(messageSyncStartFail);
       setIsStartingSync(false);
       return;
     }
@@ -98,22 +126,22 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
     setIsStartingSync(false);
   };
 
-  const statusText = isSyncInProgress ? "In progress" : "Idle";
+  const statusText = isSyncInProgress ? messageStatusInProgress : messageStatusIdle;
 
   return (
     <div className="preferences--cloud-import">
       <div className="content--subheader">{messageCloudImports}</div>
       <div className="content--text">
         <div data-test="cloud-import-status" className="preferences-cloud-import-status">
-          Status: {statusText}
+          {messageStatusLabel}: {statusText}
         </div>
 
         {statusError ? <div className="warning-box">{statusError}</div> : null}
         {syncError ? <div className="warning-box">{syncError}</div> : null}
 
-        {isLoading ? <p>Loading cloud import status...</p> : null}
+        {isLoading ? <p>{messageLoadingStatus}</p> : null}
 
-        {!isLoading && providers.length === 0 ? <p>No providers configured.</p> : null}
+        {!isLoading && providers.length === 0 ? <p>{messageNoProvidersConfigured}</p> : null}
 
         {providers.map((provider) => {
           const lastSyncResult = statusData?.lastSyncResults?.[provider.id];
@@ -129,24 +157,38 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
               <h4>
                 {provider.provider} - {provider.remoteFolder}
               </h4>
-              <p>ID: {provider.id}</p>
-              <p>Enabled: {provider.enabled ? "Yes" : "No"}</p>
-              <p>Delete after import: {provider.deleteAfterImport ? "Yes" : "No"}</p>
+              <p>
+                {messageProviderId}: {provider.id}
+              </p>
+              <p>
+                {messageEnabled}: {provider.enabled ? messageYes : messageNo}
+              </p>
+              <p>
+                {messageDeleteAfterImport}: {provider.deleteAfterImport ? messageYes : messageNo}
+              </p>
 
               {lastSyncResult ? (
                 <div className="preferences-cloud-import-last-sync">
                   <p>
-                    Last sync: {lastSyncResult.success ? "Success" : "Failed"}
-                    {lastSyncResult.endTime ? ` (${lastSyncResult.endTime})` : ""}
+                    {messageLastSync}:{" "}
+                    {lastSyncResult.success ? messageLastSyncSuccess : messageLastSyncFailed}
+                    {lastSyncResult.endTime
+                      ? ` (${language.token(
+                          parseRelativeDate(lastSyncResult.endTime, settings.language),
+                          ["{lessThan1Minute}", "{minutes}", "{hour}"],
+                          [MessageDateLessThan1Minute, MessageDateMinutes, MessageDateHour]
+                        )} ${language.key(localization.MessageDateTimeAgoEdited)})`
+                      : ""}
                   </p>
                   <p>
-                    Files found: {lastSyncResult.filesFound ?? 0}, imported: {" "}
-                    {lastSyncResult.filesImportedSuccessfully ?? 0}, skipped: {" "}
-                    {lastSyncResult.filesSkipped ?? 0}, failed: {lastSyncResult.filesFailed ?? 0}
+                    {messageFilesFound}: {lastSyncResult.filesFound ?? 0}, {messageFilesImported}:{" "}
+                    {lastSyncResult.filesImportedSuccessfully ?? 0}, {messageFilesSkipped}:{" "}
+                    {lastSyncResult.filesSkipped ?? 0}, {messageFilesFailed}:{" "}
+                    {lastSyncResult.filesFailed ?? 0}
                   </p>
                 </div>
               ) : (
-                <p>No sync result yet.</p>
+                <p>{messageNoSyncResult}</p>
               )}
 
               <button
@@ -156,7 +198,7 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
                 disabled={syncButtonDisabled}
                 onClick={() => startSync(provider.id)}
               >
-                {isStartingSync ? "Starting..." : "Start sync"}
+                {isStartingSync ? messageStarting : messageStartSync}
               </button>
             </div>
           );
