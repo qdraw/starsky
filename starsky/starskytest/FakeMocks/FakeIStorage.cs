@@ -67,7 +67,10 @@ public class FakeIStorage : IStorage
 		{
 			for ( var i = 0; i < _outputSubPathFiles.Count; i++ )
 			{
-				_lastEditDict.Add(_outputSubPathFiles[i]!, lastEdited[i]);
+				if ( _outputSubPathFiles[i] != null )
+				{
+					_lastEditDict?.Add(_outputSubPathFiles[i]!, lastEdited[i]);
+				}
 			}
 		}
 	}
@@ -207,12 +210,21 @@ public class FakeIStorage : IStorage
 		{
 			// for thumbnails
 			return _outputSubPathFiles
-				.Where(p => p?.StartsWith('/') == false).Cast<string>();
+				.Where(p => p?.StartsWith('/') == false && p != null)
+				.Cast<string>();
 		}
 
 		var pathNoEndSlash = PathHelper.RemoveLatestSlash(path);
 
 		// non recursive
+		// PATCH: Allow returning files even if folder does not exist, as long as files exist in that folder
+		var filesInFolder = _outputSubPathFiles.Where(p =>
+			p != null && CheckAndFixParentFiles(pathNoEndSlash, p)).Cast<string>().ToList();
+		if ( filesInFolder.Count > 0 )
+		{
+			return filesInFolder;
+		}
+
 		if ( pathNoEndSlash != string.Empty &&
 		     !ExistFolder(pathNoEndSlash) )
 		{
@@ -220,9 +232,7 @@ public class FakeIStorage : IStorage
 		}
 
 
-		return _outputSubPathFiles.Where(p =>
-				CheckAndFixParentFiles(pathNoEndSlash, p!))
-			.AsEnumerable().Cast<string>();
+		return filesInFolder;
 	}
 
 	public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)

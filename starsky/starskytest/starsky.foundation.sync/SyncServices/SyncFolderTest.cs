@@ -1473,12 +1473,15 @@ public sealed class SyncFolderTest
 	/// Test: Folder missing on disk, but has subdirectories => should skip deletion and log reason
 	/// </summary>
 	[TestMethod]
-	public async Task CheckIfFolderExistOnDisk_MissingFolderWithSubdirectories_ShouldSkipDeletionAndLog()
+	public async Task
+		CheckIfFolderExistOnDisk_MissingFolderWithSubdirectories_ShouldSkipDeletionAndLog()
 	{
-		await _query.AddItemAsync(new FileIndexItem("/missing_with_subdirs") { IsDirectory = true });
+		await _query.AddItemAsync(
+			new FileIndexItem("/missing_with_subdirs") { IsDirectory = true });
 
 		// Storage: Only root and subdirectory exist, not the folder itself
-		var storage = new FakeIStorage(["/", "/missing_with_subdirs/subdir"], [], new List<byte[]>());
+		var storage =
+			new FakeIStorage(["/", "/missing_with_subdirs/subdir"], [], new List<byte[]>());
 		var logger = new FakeIWebLogger();
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), logger,
@@ -1491,7 +1494,8 @@ public sealed class SyncFolderTest
 		Assert.IsNotNull(folder, "Folder with subdirectories should not be deleted");
 		// Assert: Log contains correct reason
 		Assert.Contains(log =>
-			log.Item2!.Contains("[SyncFolder] Skipping deletion of /missing_with_subdirs - subdirectories exist on disk"),
+				log.Item2!.Contains(
+					"[SyncFolder] Skipping deletion of /missing_with_subdirs - subdirectories exist on disk"),
 			logger.TrackedInformation,
 			"Expected log message about skipping deletion due to subdirectories");
 	}
@@ -1502,24 +1506,31 @@ public sealed class SyncFolderTest
 	[TestMethod]
 	public async Task CheckIfFolderExistOnDisk_MissingFolderWithFiles_ShouldSkipDeletionAndLog()
 	{
+		// Add folder to DB, but do NOT add it to storage folders
 		await _query.AddItemAsync(new FileIndexItem("/missing_with_files") { IsDirectory = true });
 
-		// Storage: Only root exists, but file is present in the folder
-		var storage = new FakeIStorage(["/"], ["/missing_with_files/file.jpg"], new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		// Storage: Only root exists, but file is present in the folder (folder itself is missing)
+		var storage = new FakeIStorage(
+			["/"], // Only root exists
+			["/missing_with_files/file.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var logger = new FakeIWebLogger();
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), logger,
 			new FakeMemoryCache(new Dictionary<string, object>()), null);
 
+		// Act: Run folder sync
 		await syncFolder.Folder("/");
 
-		// Assert: Folder should NOT be deleted
-		var folder = await _query.GetObjectByFilePathAsync("/missing_with_files");
-		Assert.IsNotNull(folder, "Folder with files should not be deleted");
-		// Assert: Log contains correct reason
+		// Assert: Should log the skip message for files
 		Assert.Contains(log =>
-			log.Item2!.Contains("[SyncFolder] Skipping deletion of /missing_with_files - files exist on disk"),
+				log.Item2 != null && log.Item2.Contains(
+					"[SyncFolder] Skipping deletion of /missing_with_files - files exist on disk"),
 			logger.TrackedInformation,
 			"Expected log message about skipping deletion due to files");
+
+		// Assert: Folder should still exist in database (not deleted)
+		var folder = await _query.GetObjectByFilePathAsync("/missing_with_files");
+		Assert.IsNotNull(folder, "Folder should not be deleted when files exist on disk");
 	}
 }
