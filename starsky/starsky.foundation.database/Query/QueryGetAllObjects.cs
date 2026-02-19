@@ -18,17 +18,17 @@ namespace starsky.foundation.database.Query;
 public partial class Query
 {
 	/// <summary>
-	///     Get all objects inside a folder
+	///     Get all objects inside a folder (non-recursive), but this uses a database as source
 	/// </summary>
-	/// <param name="subPath"></param>
-	/// <returns></returns>
+	/// <param name="subPath">sub path style folder</param>
+	/// <returns>items</returns>
 	public async Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath)
 	{
-		return await GetAllObjectsAsync(new List<string> { subPath });
+		return await GetAllObjectsAsync([subPath]);
 	}
 
 	/// <summary>
-	///     Get all objects inside a folder
+	///     Get all objects inside a folder (non-recursive), but this uses a database as source
 	/// </summary>
 	/// <param name="filePaths">parent paths</param>
 	/// <param name="fallbackDelay">delay when fallback</param>

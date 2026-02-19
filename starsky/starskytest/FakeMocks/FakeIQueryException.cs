@@ -131,6 +131,11 @@ public class FakeIQueryException : IQuery
 		throw _exception;
 	}
 
+	public Task<List<FileIndexItem>> GetFoldersAsync(List<string> filePaths)
+	{
+		throw new NotImplementedException();
+	}
+
 	public Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath)
 	{
 		throw _exception;

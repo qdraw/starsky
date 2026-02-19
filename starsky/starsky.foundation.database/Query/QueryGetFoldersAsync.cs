@@ -17,11 +17,21 @@ namespace starsky.foundation.database.Query;
 /// </summary>
 public partial class Query : IQuery
 {
+	/// <summary>
+	/// Get folders non-recursive, but this uses a database as source
+	/// </summary>
+	/// <param name="subPath">which path (subpath style)</param>
+	/// <returns>items</returns>
 	public async Task<List<FileIndexItem>> GetFoldersAsync(string subPath)
 	{
 		return await GetFoldersAsync(new List<string> { subPath });
 	}
 
+	/// <summary>
+	/// Get folders non-recursive, but this uses a database as source
+	/// </summary>
+	/// <param name="filePaths">which paths (subpath style)</param>
+	/// <returns>items</returns>
 	public async Task<List<FileIndexItem>> GetFoldersAsync(List<string> filePaths)
 	{
 		try

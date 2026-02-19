@@ -342,7 +342,7 @@ public sealed class SyncFolder
 		return resultDatabaseItems.DistinctBy(p => p.FilePath).ToList();
 	}
 
-	private async Task<List<FileIndexItem?>> CheckIfFolderExistOnDisk(
+	internal async Task<List<FileIndexItem?>> CheckIfFolderExistOnDisk(
 		List<FileIndexItem> fileIndexItems)
 	{
 		var fileIndexItemsOnlyFolders = fileIndexItems
@@ -369,19 +369,19 @@ public sealed class SyncFolder
 					_serviceScopeFactory, _logger);
 				var query = queryFactory.Query()!;
 
-			var subDirectories =
-				_subPathStorage.GetDirectoryRecursive(item.FilePath!).ToList();
-			
-			var filesInFolder = _subPathStorage.GetAllFilesInDirectory(item.FilePath!).ToList();
-			
-			if ( subDirectories.Count == 0 && filesInFolder.Count == 0 )
-			{
-				return await RemoveChildItems(query, item);
-			}
+				var subDirectories =
+					_subPathStorage.GetDirectoryRecursive(item.FilePath!).ToList();
 
-			var reason = subDirectories.Count != 0 ? "subdirectories" : "files";
-			_logger.LogInformation(
-				$"[SyncFolder] Skipping deletion of {item.FilePath} - {reason} exist on disk");
+				var filesInFolder = _subPathStorage.GetAllFilesInDirectory(item.FilePath!).ToList();
+
+				if ( subDirectories.Count == 0 && filesInFolder.Count == 0 )
+				{
+					return await RemoveChildItems(query, item);
+				}
+
+				var reason = subDirectories.Count != 0 ? "subdirectories" : "files";
+				_logger.LogInformation(
+					$"[SyncFolder] Skipping deletion of {item.FilePath} - {reason} exist on disk");
 				await query.DisposeAsync();
 				return null;
 			}, _appSettings.MaxDegreesOfParallelism) )!.ToList();
