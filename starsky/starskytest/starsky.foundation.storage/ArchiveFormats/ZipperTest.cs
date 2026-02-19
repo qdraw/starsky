@@ -21,7 +21,6 @@ public sealed class ZipperTest
 {
 	private static readonly byte[] ValidZipSignatureButInvalidFile = [0x50, 0x4B, 0x03, 0x04, 0x00];
 	private static readonly byte[] InvalidZip = [0x00, 0x01, 0x02, 0x03];
-
 	private static readonly byte[] TooShortZip = "PK"u8.ToArray();
 	private static readonly byte[] EmptyZip = [];
 
