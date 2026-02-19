@@ -3,7 +3,54 @@
   margin-top: 10px;
 }
 
+.preferences-tabs {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background-color: #f5f8fa;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.preferences-tabs__item {
+  background-color: #eceff1;
+  color: #000;
+  border-radius: 3px;
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.preferences-tabs__item--active {
+  background-color: #263238;
+  color: #fff;
+}
+
+@media screen and (max-width: 600px) {
+  .preferences-tabs {
+    gap: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .preferences-tabs__item {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
+  .preferences-tabs {
+    background-color: #546e7a;
+  }
+  .preferences-tabs__item {
+    background-color: #455a64;
+    color: #fff;
+  }
+  .preferences-tabs__item--active {
+    background-color: #eceff1;
+    color: #263238;
+  }
+
   .preferences--app-settings h3,
   .preferences--app-settings p {
     color: white;
