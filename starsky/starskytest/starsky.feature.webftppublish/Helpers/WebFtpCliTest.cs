@@ -16,22 +16,16 @@ namespace starskytest.starsky.feature.webftppublish.Helpers;
 [TestClass]
 public sealed class WebFtpCliTest
 {
-	private readonly AppSettings _appSettings;
-	private readonly FakeIFtpWebRequestFactory _webRequestFactory;
-
-	public WebFtpCliTest()
-	{
-		_appSettings = new AppSettings { WebFtp = "ftp://test:test@testmedia.be" };
-		_webRequestFactory = new FakeIFtpWebRequestFactory();
-	}
+	private readonly AppSettings _appSettings = new() { WebFtp = "ftp://test:test@testmedia.be" };
+	private readonly FakeIFtpWebRequestFactory _webRequestFactory = new();
 
 	private static byte[]? ExampleManifest()
 	{
-		var input = "{\n  \"Name\": \"Test\",\n  " +
-		            "\"Copy\": {\n    \"1000/0_kl1k.jpg\": " +
-		            "true,\n    \"_settings.json\": false\n  },\n" +
-		            "  \"Slug\": \"test\",\n  \"Export\": \"20200808121411\",\n" +
-		            "  \"Version\": \"0.3.0.0\"\n}";
+		const string input = "{\n  \"Name\": \"Test\",\n  " +
+		                     "\"Copy\": {\n    \"1000/0_kl1k.jpg\": " +
+		                     "true,\n    \"_settings.json\": false\n  },\n" +
+		                     "  \"Slug\": \"test\",\n  \"Export\": \"20200808121411\",\n" +
+		                     "  \"Version\": \"0.3.0.0\"\n}";
 		var stream = StringToStreamHelper.StringToStream(input) as MemoryStream;
 		return stream?.ToArray();
 	}
@@ -126,7 +120,7 @@ public sealed class WebFtpCliTest
 		await new WebFtpCli(_appSettings, fakeSelectorStorage, console, _webRequestFactory,
 				logger)
 			.RunAsync(["-p", "/test"]);
-		
+
 		Assert.IsTrue(logger.TrackedExceptions.FirstOrDefault()
 			.Item2?.Contains("generate a settings file"));
 	}
@@ -138,7 +132,8 @@ public sealed class WebFtpCliTest
 
 		var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(
 			["/test"],
-			[$"/test{Path.DirectorySeparatorChar}_settings.json", "/test/1000/0_kl1k.jpg"], new List<byte[]?> { ExampleManifest(), Array.Empty<byte>() }));
+			[$"/test{Path.DirectorySeparatorChar}_settings.json", "/test/1000/0_kl1k.jpg"],
+			new List<byte[]?> { ExampleManifest(), Array.Empty<byte>() }));
 		// instead of new byte[0]
 
 		await new WebFtpCli(_appSettings, fakeSelectorStorage, console, _webRequestFactory,
@@ -153,7 +148,7 @@ public sealed class WebFtpCliTest
 			// To Debug why the test has failed
 			case false:
 			{
-				foreach ( var line in console.WrittenLines! )
+				foreach ( var line in console.WrittenLines )
 				{
 					Console.WriteLine(line);
 				}
@@ -166,6 +161,26 @@ public sealed class WebFtpCliTest
 		}
 
 		Assert.IsTrue(isSuccess);
+	}
+
+	[TestMethod]
+	public async Task Run_SettingsFile_FileMissing()
+	{
+		var console = new FakeConsoleWrapper();
+
+		var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(
+			["/test"],
+			[$"/test{Path.DirectorySeparatorChar}_settings.json"],
+			// 1000/0_kl1k.jpg is missing
+			new List<byte[]?> { ExampleManifest() }));
+
+		await new WebFtpCli(_appSettings, fakeSelectorStorage, console, _webRequestFactory,
+				new FakeIWebLogger())
+			.RunAsync(["-p", "/test"]);
+
+		var isFailed = console.WrittenLines.LastOrDefault()?
+			.Contains("Ftp copy failed");
+		Assert.IsTrue(isFailed);
 	}
 
 	[TestMethod]
