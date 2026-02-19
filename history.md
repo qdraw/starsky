@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.12 - _(Unreleased)_ - 2026-?-? {#v0.7.11}
 
+- [x] (Fixed) _Back-end_ Add extra check for deleting folders to avoid race conditions (PR #2769)
 - [x] (Fixed) _Back-end_ On non-Windows platforms, DriveInfo.GetDrives() may give issues (PR #2764)
 - [x] (Added) _Back-end_ Expose NominatimProxyService (PR #2761)
 - [x] (Added) _Front-end_ Add right click menu in detail view map to copy street names (PR #2735)
