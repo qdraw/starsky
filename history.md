@@ -43,6 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.12 - _(Unreleased)_ - 2026-?-? {#v0.7.11}
 
+- [x] (Added) _Front-end_ Add section for cloud sync in preferences (PR #2772)
+- [x] (Added) _Front-end_ Add tabs in preferences for different sections (PR #2772)
 - [x] (Added) _Back-end_ Allow zip with settings manifest as input for web-ftp-cli (PR #2770)
 - [x] (Fixed) _Back-end_ Add extra check for deleting folders to avoid race conditions (PR #2769)
 - [x] (Fixed) _Back-end_ On non-Windows platforms, DriveInfo.GetDrives() may give issues (PR #2764)
