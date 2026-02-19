@@ -29,7 +29,7 @@ public sealed class SyncFolderTest
 		_appSettings = new AppSettings
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
-			SyncIgnore = new List<string> { "/.git" }
+			SyncIgnore = ["/.git"]
 		};
 
 		( _query, _ ) = CreateNewExampleData();
@@ -44,13 +44,12 @@ public sealed class SyncFolderTest
 		var serviceProvider = services.BuildServiceProvider();
 
 		services.AddScoped(_ => _appSettings);
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
+		var query = new FakeIQuery([
 			new FileIndexItem("/folder_no_content/") { IsDirectory = true },
 			new FileIndexItem("/folder_content") { IsDirectory = true },
 			new FileIndexItem("/folder_content/test.jpg"),
 			new FileIndexItem("/folder_content/test2.jpg")
-		});
+		]);
 		services.AddScoped<IQuery, FakeIQuery>(_ => query);
 		var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		return new Tuple<IQuery, IServiceScopeFactory>(query, serviceScopeFactory);
@@ -59,8 +58,8 @@ public sealed class SyncFolderTest
 	private static FakeIStorage GetStorage()
 	{
 		return new FakeIStorage(
-			new List<string> { "/", "/folder_01", "/folder_no_content" },
-			new List<string> { "/test1.jpg", "/test2.jpg", "/test3.jpg", "/folder_01/test4.jpg" },
+			["/", "/folder_01", "/folder_no_content"],
+			["/test1.jpg", "/test2.jpg", "/test3.jpg", "/folder_01/test4.jpg"],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(),
@@ -98,8 +97,8 @@ public sealed class SyncFolderTest
 	public async Task Folder_Ignored_Due_Filter()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/test_01", "/test_01/test_02" },
-			new List<string> { "/test_01/test_02/test.jpg" },
+			["/", "/test_01", "/test_01/test_02"],
+			["/test_01/test_02/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
@@ -179,8 +178,8 @@ public sealed class SyncFolderTest
 	public async Task Folder_DuplicateChildItems()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/Folder_Duplicate" },
-			new List<string> { "/Folder_Duplicate/test.jpg" },
+			["/", "/Folder_Duplicate"],
+			["/Folder_Duplicate/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		// yes this is duplicate!
@@ -208,8 +207,8 @@ public sealed class SyncFolderTest
 	public async Task Folder_ChildItemDateTimeLastEditNotChanged()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/same_test" },
-			new List<string> { "/same_test/test.jpg" },
+			["/", "/same_test"],
+			["/same_test/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() },
 			new List<DateTime> { new(2000, 01, 01, 01, 01, 01, DateTimeKind.Local) });
 
@@ -249,8 +248,8 @@ public sealed class SyncFolderTest
 	public async Task Folder_ChildItemDateTimeLastEditChanged()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/same_test" },
-			new List<string> { "/same_test/test.jpg" },
+			["/", "/same_test"],
+			["/same_test/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }, new List<DateTime>
 			{
 				new(3000, 01,
@@ -366,7 +365,7 @@ public sealed class SyncFolderTest
 		var storage = GetStorage();
 		var folderPath = "/not-found";
 
-		var query = new FakeIQuery(new List<FileIndexItem> { new("/") });
+		var query = new FakeIQuery([new("/")]);
 
 		var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
@@ -387,11 +386,11 @@ public sealed class SyncFolderTest
 	[TestMethod]
 	public async Task AddParentFolder_InListSoSkip()
 	{
-		var query = new FakeIQuery(new List<FileIndexItem> { new("/") });
+		var query = new FakeIQuery([new("/")]);
 		var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(GetStorage()),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 		var result = await syncFolder.AddParentFolder("/test",
-			new List<FileIndexItem> { new("/test") });
+			[new("/test")]);
 		Assert.AreEqual(0,
 			result.Count(p => p.Status != FileIndexItem.ExifStatus.OkAndSame));
 	}
@@ -400,7 +399,7 @@ public sealed class SyncFolderTest
 	public void PathsToUpdateInDatabase_FilesOnDiskButNotInTheDb()
 	{
 		var results = SyncFolder.PathsToUpdateInDatabase(
-			new List<FileIndexItem>(), new List<string> { "/test.jpg" });
+			[], new List<string> { "/test.jpg" });
 
 		Assert.HasCount(1, results);
 		Assert.AreEqual("/test.jpg", results[0].FilePath);
@@ -410,7 +409,7 @@ public sealed class SyncFolderTest
 	public void PathsToUpdateInDatabase_InDbButNotOnDisk()
 	{
 		var results = SyncFolder.PathsToUpdateInDatabase(
-			new List<FileIndexItem> { new("/test.jpg") }, Array.Empty<string>());
+			[new("/test.jpg")], []);
 
 		Assert.HasCount(1, results);
 		Assert.AreEqual("/test.jpg", results[0].FilePath);
@@ -420,7 +419,7 @@ public sealed class SyncFolderTest
 	public void PathsToUpdateInDatabase_ExistBoth()
 	{
 		var results = SyncFolder.PathsToUpdateInDatabase(
-			new List<FileIndexItem> { new("/test.jpg") }, new List<string> { "/test.jpg" });
+			[new("/test.jpg")], new List<string> { "/test.jpg" });
 
 		Assert.HasCount(1, results);
 		Assert.AreEqual("/test.jpg", results[0].FilePath);
@@ -430,7 +429,7 @@ public sealed class SyncFolderTest
 	public void PathsToUpdateInDatabase_Duplicates()
 	{
 		var results = SyncFolder.PathsToUpdateInDatabase(
-			new List<FileIndexItem>(), new List<string> { "/test.jpg", "/test.jpg" });
+			[], new List<string> { "/test.jpg", "/test.jpg" });
 
 		Assert.HasCount(1, results);
 		Assert.AreEqual("/test.jpg", results[0].FilePath);
@@ -444,7 +443,7 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(new FileIndexItem("/DuplicateFolder") { IsDirectory = true });
 
 		var storage =
-			new FakeIStorage(new List<string> { "/", "/DuplicateFolder" });
+			new FakeIStorage(["/", "/DuplicateFolder"]);
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 
@@ -469,7 +468,7 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(new FileIndexItem("/DuplicateFolder") { IsDirectory = true });
 
 		var storage =
-			new FakeIStorage(new List<string> { "/", "/DuplicateFolder" });
+			new FakeIStorage(["/", "/DuplicateFolder"]);
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 
@@ -488,8 +487,8 @@ public sealed class SyncFolderTest
 	public async Task Folder_ShouldIgnore()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/test_ignore", "/test_ignore/ignore" },
-			new List<string> { "/test_ignore/ignore/test1.jpg" },
+			["/", "/test_ignore", "/test_ignore/ignore"],
+			["/test_ignore/ignore/test1.jpg"],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(),
@@ -501,7 +500,7 @@ public sealed class SyncFolderTest
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
 			Verbose = true,
-			SyncIgnore = new List<string> { "/test_ignore/ignore" }
+			SyncIgnore = ["/test_ignore/ignore"]
 		};
 
 		var syncFolder = new SyncFolder(appSettings, _query, new FakeSelectorStorage(storage),
@@ -546,14 +545,14 @@ public sealed class SyncFolderTest
 	public async Task CompareFolderListAndFixMissingFoldersTest_Ok()
 	{
 		var storage =
-			new FakeIStorage(new List<string> { "/", "/2018", "/2018/02", "/2018/02/2018_02_01" });
+			new FakeIStorage(["/", "/2018", "/2018/02", "/2018/02/2018_02_01"]);
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
 			new FakeMemoryCache(new Dictionary<string, object>()), null);
 
 		await syncFolder.CompareFolderListAndFixMissingFolders(
-			new List<string> { "/", "/2018", "/2018/02", "/2018/02/2018_02_01" },
-			new List<FileIndexItem> { new("/2018") });
+			["/", "/2018", "/2018/02", "/2018/02/2018_02_01"],
+			[new("/2018")]);
 
 		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018"));
 		Assert.AreEqual("/2018/02",
@@ -565,14 +564,14 @@ public sealed class SyncFolderTest
 	[TestMethod]
 	public async Task CompareFolderListAndFixMissingFoldersTest_Ignored()
 	{
-		var storage = new FakeIStorage(new List<string> { "/", "/.git", "/test" });
+		var storage = new FakeIStorage(["/", "/.git", "/test"]);
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
 			new FakeMemoryCache(new Dictionary<string, object>()), null);
 
 		await syncFolder.CompareFolderListAndFixMissingFolders(
-			new List<string> { "/", "/.git" },
-			new List<FileIndexItem> { new("/") });
+			["/", "/.git"],
+			[new("/")]);
 
 		Assert.IsNull(await _query.GetObjectByFilePathAsync("/.git"));
 	}
@@ -581,17 +580,14 @@ public sealed class SyncFolderTest
 	public async Task CompareFolderListAndFixMissingFoldersTest_Ok_SameCount()
 	{
 		var storage =
-			new FakeIStorage(new List<string> { "/", "/2018", "/2018/02", "/2018/02/2018_02_01" });
+			new FakeIStorage(["/", "/2018", "/2018/02", "/2018/02/2018_02_01"]);
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
 			new FakeMemoryCache(new Dictionary<string, object>()), null);
 
 		await syncFolder.CompareFolderListAndFixMissingFolders(
-			new List<string> { "/", "/2018", "/2018/02", "/2018/02/2018_02_01" },
-			new List<FileIndexItem>
-			{
-				new("/"), new("/2018"), new("/2018/02"), new("/2018/02/2018_02_01")
-			}
+			["/", "/2018", "/2018/02", "/2018/02/2018_02_01"],
+			[new("/"), new("/2018"), new("/2018/02"), new("/2018/02/2018_02_01")]
 		);
 
 		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018"));
@@ -602,14 +598,14 @@ public sealed class SyncFolderTest
 	[TestMethod]
 	public async Task CompareFolderListAndFixMissingFoldersTest_NotFound()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
 			new FakeMemoryCache(new Dictionary<string, object>()), null);
 
 		await syncFolder.CompareFolderListAndFixMissingFolders(
-			new List<string> { "/", "/2018", "/2018/02", "/2018/02/2018_02_01" },
-			new List<FileIndexItem> { new("/2018") });
+			["/", "/2018", "/2018/02", "/2018/02/2018_02_01"],
+			[new("/2018")]);
 
 		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018"));
 		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018/02"));
@@ -621,7 +617,7 @@ public sealed class SyncFolderTest
 	{
 		var consoleWrapper = new FakeConsoleWrapper();
 		SyncFolder.DisplayInlineConsole(consoleWrapper,
-			new List<FileIndexItem> { new("/test.jpg") });
+			[new("/test.jpg")]);
 		Assert.AreEqual("⁑", consoleWrapper.WrittenLines.LastOrDefault());
 	}
 
@@ -630,10 +626,7 @@ public sealed class SyncFolderTest
 	{
 		var consoleWrapper = new FakeConsoleWrapper();
 		SyncFolder.DisplayInlineConsole(consoleWrapper,
-			new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.DeletedAndSame }
-			});
+			[new("/test.jpg") { Status = FileIndexItem.ExifStatus.DeletedAndSame }]);
 		Assert.AreEqual("✘", consoleWrapper.WrittenLines.LastOrDefault());
 	}
 
@@ -642,10 +635,7 @@ public sealed class SyncFolderTest
 	{
 		var consoleWrapper = new FakeConsoleWrapper();
 		SyncFolder.DisplayInlineConsole(consoleWrapper,
-			new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Deleted }
-			});
+			[new("/test.jpg") { Status = FileIndexItem.ExifStatus.Deleted }]);
 		Assert.AreEqual("֍", consoleWrapper.WrittenLines.LastOrDefault());
 	}
 
@@ -659,8 +649,8 @@ public sealed class SyncFolderTest
 
 		// Storage has the folder (simulating folder created between checks)
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/race_condition_folder" },
-			new List<string> { "/race_condition_folder/test.jpg" },
+			["/", "/race_condition_folder"],
+			["/race_condition_folder/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -692,7 +682,7 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(new FileIndexItem("/truly_missing_folder/test.jpg"));
 
 		// Storage does NOT have the folder
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string>(),
+		var storage = new FakeIStorage(["/"], [],
 			new List<byte[]>());
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -726,8 +716,8 @@ public sealed class SyncFolderTest
 
 		// Storage has the full structure
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/photos", "/photos/2024", "/photos/2024/01" },
-			new List<string> { "/photos/2024/01/photo1.jpg", "/photos/2024/01/photo2.jpg" },
+			["/", "/photos", "/photos/2024", "/photos/2024/01"],
+			["/photos/2024/01/photo1.jpg", "/photos/2024/01/photo2.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
 
 		var appSettings = new AppSettings
@@ -766,7 +756,7 @@ public sealed class SyncFolderTest
 				new FileIndexItem($"/folder_many_items/photo{i}.jpg"));
 		}
 
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string>(),
+		var storage = new FakeIStorage(["/"], [],
 			new List<byte[]>());
 
 		var logger = new FakeIWebLogger();
@@ -792,7 +782,7 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(
 			new FileIndexItem("/truly_empty_folder") { IsDirectory = true });
 
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string>(),
+		var storage = new FakeIStorage(["/"], [],
 			new List<byte[]>());
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -816,8 +806,8 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(new FileIndexItem("/active_sync_folder") { IsDirectory = true });
 
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/active_sync_folder" },
-			new List<string> { "/active_sync_folder/new_photo.jpg" },
+			["/", "/active_sync_folder"],
+			["/active_sync_folder/new_photo.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -848,8 +838,8 @@ public sealed class SyncFolderTest
 
 		// Storage: Parent folder exists with subdirectories (simulating active folder creation)
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/folder_with_subdirs/subfolder" },
-			new List<string> { "/folder_with_subdirs/subfolder/file.jpg" },
+			["/", "/folder_with_subdirs/subfolder"],
+			["/folder_with_subdirs/subfolder/file.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var logger = new FakeIWebLogger();
@@ -883,14 +873,13 @@ public sealed class SyncFolderTest
 
 		// Storage: Has deeply nested structure
 		var storage = new FakeIStorage(
-			new List<string>
-			{
+			[
 				"/",
 				"/deep_nested_folder/level1",
 				"/deep_nested_folder/level1/level2",
 				"/deep_nested_folder/level1/level2/level3"
-			},
-			new List<string> { "/deep_nested_folder/level1/level2/level3/file.jpg" },
+			],
+			["/deep_nested_folder/level1/level2/level3/file.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var logger = new FakeIWebLogger();
@@ -921,21 +910,19 @@ public sealed class SyncFolderTest
 			new FileIndexItem("/multi_sibling_folder") { IsDirectory = true });
 
 		var storage = new FakeIStorage(
-			new List<string>
-			{
+			[
 				"/",
 				"/multi_sibling_folder/sub1",
 				"/multi_sibling_folder/sub2",
 				"/multi_sibling_folder/sub3",
 				"/multi_sibling_folder/sub4"
-			},
-			new List<string>
-			{
+			],
+			[
 				"/multi_sibling_folder/sub1/file1.jpg",
 				"/multi_sibling_folder/sub2/file2.jpg",
 				"/multi_sibling_folder/sub3/file3.jpg",
 				"/multi_sibling_folder/sub4/file4.jpg"
-			},
+			],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(),
@@ -967,7 +954,7 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(
 			new FileIndexItem("/truly_empty_orphan_folder") { IsDirectory = true });
 
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string>(),
+		var storage = new FakeIStorage(["/"], [],
 			new List<byte[]>());
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -1007,7 +994,7 @@ public sealed class SyncFolderTest
 				new FileIndexItem($"/folder_with_many_children/file{i:D3}.jpg"));
 		}
 
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string>(),
+		var storage = new FakeIStorage(["/"], [],
 			new List<byte[]>());
 
 		var logger = new FakeIWebLogger();
@@ -1055,7 +1042,7 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(new FileIndexItem("/parent_with_subdirs/child_dir2/file2.jpg"));
 		await _query.AddItemAsync(new FileIndexItem("/parent_with_subdirs/rootfile.jpg"));
 
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string>(),
+		var storage = new FakeIStorage(["/"], [],
 			new List<byte[]>());
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -1092,7 +1079,7 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(new FileIndexItem("/race_appears_later/orphan.jpg"));
 
 		// Storage initially empty
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string>(),
+		var storage = new FakeIStorage(["/"], [],
 			new List<byte[]>());
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -1129,19 +1116,17 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(new FileIndexItem("/parallel_folder3") { IsDirectory = true });
 
 		var storage = new FakeIStorage(
-			new List<string>
-			{
+			[
 				"/",
 				"/parallel_folder1/sub1",
 				"/parallel_folder2/sub2",
 				"/parallel_folder3/sub3"
-			},
-			new List<string>
-			{
+			],
+			[
 				"/parallel_folder1/sub1/file.jpg",
 				"/parallel_folder2/sub2/file.jpg",
 				"/parallel_folder3/sub3/file.jpg"
-			},
+			],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(),
@@ -1189,8 +1174,8 @@ public sealed class SyncFolderTest
 
 		// Storage has only some files
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/mixed_folder" },
-			new List<string> { "/mixed_folder/file_on_disk.jpg" },
+			["/", "/mixed_folder"],
+			["/mixed_folder/file_on_disk.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -1228,8 +1213,8 @@ public sealed class SyncFolderTest
 
 		// Storage has subdirectories in both ignored and normal folders
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/ignored_folder/sub", "/normal_folder/sub" },
-			new List<string> { "/ignored_folder/sub/file1.jpg", "/normal_folder/sub/file.jpg" },
+			["/", "/ignored_folder/sub", "/normal_folder/sub"],
+			["/ignored_folder/sub/file1.jpg", "/normal_folder/sub/file.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
 
 		var logger = new FakeIWebLogger();
@@ -1262,8 +1247,8 @@ public sealed class SyncFolderTest
 
 		// Storage has empty subdirectory
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/parent_with_empty_sub", "/parent_with_empty_sub/empty_sub" },
-			new List<string>(),
+			["/", "/parent_with_empty_sub", "/parent_with_empty_sub/empty_sub"],
+			[],
 			new List<byte[]>());
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -1289,8 +1274,8 @@ public sealed class SyncFolderTest
 
 		// Special case: subdirectories exist but parent folder path doesn't exist as folder
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/folder_missing_but_subs_exist/sub1/sub2" },
-			new List<string> { "/folder_missing_but_subs_exist/sub1/sub2/file.jpg" },
+			["/", "/folder_missing_but_subs_exist/sub1/sub2"],
+			["/folder_missing_but_subs_exist/sub1/sub2/file.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var logger = new FakeIWebLogger();
@@ -1316,8 +1301,8 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(new FileIndexItem(longFolderName) { IsDirectory = true });
 
 		var storage = new FakeIStorage(
-			new List<string> { "/", $"{longFolderName}/sub" },
-			new List<string> { $"{longFolderName}/sub/file.jpg" },
+			["/", $"{longFolderName}/sub"],
+			[$"{longFolderName}/sub/file.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -1345,8 +1330,8 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(new FileIndexItem("/concurrent_folder2/file2.jpg"));
 
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/concurrent_folder1", "/concurrent_folder2" },
-			new List<string> { "/concurrent_folder1/file1.jpg", "/concurrent_folder2/file2.jpg" },
+			["/", "/concurrent_folder1", "/concurrent_folder2"],
+			["/concurrent_folder1/file1.jpg", "/concurrent_folder2/file2.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
 
 		var appSettings = new AppSettings
@@ -1400,7 +1385,7 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(child2);
 		await _query.AddItemAsync(child3);
 
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string>(),
+		var storage = new FakeIStorage(["/"], [],
 			new List<byte[]>());
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -1437,6 +1422,8 @@ public sealed class SyncFolderTest
 		// Setup: Folder in DB with child files on disk but NO subdirectories
 		// This simulates the race condition where files exist but aren't indexed yet
 		await _query.AddItemAsync(
+			new FileIndexItem("/vacation") { IsDirectory = true });
+		await _query.AddItemAsync(
 			new FileIndexItem("/vacation/day1") { IsDirectory = true });
 
 		// Storage: Parent and child folder exist with files (but no subdirectories)
@@ -1450,14 +1437,12 @@ public sealed class SyncFolderTest
 			new ConsoleWrapper(), logger,
 			new FakeMemoryCache(new Dictionary<string, object>()), null);
 
-		// Act: Sync the parent folder
+		// Act: Actually call the Folder() method to trigger CheckIfFolderExistOnDisk
 		var result = await syncFolder.Folder("/vacation");
 
 		// Assert: Folder with files should NOT be marked for deletion
-		// The folder should either be Ok or not in the result (skipped deletion)
 		var dayOneFolder = result.FirstOrDefault(r => r.FilePath == "/vacation/day1");
 		
-		// Either not present (skipped) or marked as Ok, but NOT marked as Deleted
 		if ( dayOneFolder != null )
 		{
 			Assert.IsTrue(
@@ -1470,6 +1455,15 @@ public sealed class SyncFolderTest
 			.Where(log => log.Item2?.Contains("/vacation/day1") == true &&
 			              log.Item2.Contains("deletion")).ToList();
 		Assert.IsEmpty(deletionLogs);
+
+		// CRITICAL: Verify the log message shows FILES were found (not subdirectories)
+		// This proves GetAllFilesInDirectory() was called and used
+		var filesLog = logger.TrackedInformation
+			.FirstOrDefault(log => log.Item2?.Contains("/vacation/day1") == true &&
+			                        log.Item2.Contains("files exist on disk"));
+		
+		Assert.IsTrue(!string.IsNullOrEmpty(filesLog.Item2), 
+			"CRITICAL: Log should indicate 'files exist on disk' proving GetAllFilesInDirectory() was checked");
 	}
 
 	/// <summary>
@@ -1484,8 +1478,8 @@ public sealed class SyncFolderTest
 
 		// Storage: Parent exists but the empty folder does NOT exist on disk
 		var storage = new FakeIStorage(
-			new List<string> { "/" }, // Empty folder not even listed
-			new List<string>(), // No files
+			["/"], // Empty folder not even listed
+			[], // No files
 			new List<byte[]>());
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
