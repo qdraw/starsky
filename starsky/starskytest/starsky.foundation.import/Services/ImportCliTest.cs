@@ -200,9 +200,10 @@ public sealed class ImportCliTest
 		await sut.Importer(["--camera"]);
 
 		// Assert
-		Assert.IsTrue(webLogger.TrackedInformation.Any(p =>
-			p.Item2 != null &&
-			p.Item2.Contains(
-				"Camera storage detection recommends -r or --recursive to be enabled. If not you only importing from the root of the camera storage.")));
+		Assert.Contains(p =>
+				p.Item2 != null &&
+				p.Item2.Contains(
+					"Camera storage detection recommends -r or --recursive to be enabled. If not you only importing from the root of the camera storage."),
+			webLogger.TrackedInformation);
 	}
 }

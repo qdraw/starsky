@@ -45,14 +45,9 @@ public class PreviewImageNativeServiceTests
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
 	public void GeneratePreviewImage_ShouldReturnFalse_WhenThumbnailGenerationFails__MacOnly()
 	{
-		// Arrange
-		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on macOS platforms.");
-		}
-
 		var (service, logger) = CreateSut();
 
 		// Act
@@ -67,14 +62,9 @@ public class PreviewImageNativeServiceTests
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.Windows)]
 	public void GeneratePreviewImage_ShouldReturnFalse_WhenThumbnailGenerationFails__WindowsOnly()
 	{
-		// Arrange
-		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
-		{
-			Assert.Inconclusive("This test is only valid on Windows platforms.");
-		}
-
 		var (service, logger) = CreateSut();
 
 		// Act
@@ -89,14 +79,9 @@ public class PreviewImageNativeServiceTests
 	}
 
 	[TestMethod]
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.OSX)]
 	public void GeneratePreviewImage_False__WindowsLinuxOnly()
 	{
-		// Arrange
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
-		}
-
 		var (service, _) = CreateSut();
 
 		// Act
@@ -109,14 +94,9 @@ public class PreviewImageNativeServiceTests
 	}
 
 	[TestMethod]
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
 	public void GeneratePreviewImage_False__MacLinuxOnly()
 	{
-		// Arrange
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
-		{
-			Assert.Inconclusive("This test is only valid on non-windows platforms.");
-		}
-
 		var (service, _) = CreateSut();
 
 		// Act
@@ -129,26 +109,18 @@ public class PreviewImageNativeServiceTests
 	}
 
 	[TestMethod]
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.Linux)]
 	public void IsSupported__MacAndWindowsOnly()
 	{
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Linux) )
-		{
-			Assert.Inconclusive("This test is only valid on windows / mac os platforms.");
-		}
-
 		var (service, _) = CreateSut();
 		var big = service.IsSupported(1024);
 		Assert.AreEqual(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows), big);
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.Linux)]
 	public void IsSupported__LinuxOnly()
 	{
-		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Linux) )
-		{
-			Assert.Inconclusive("This test is only valid on LInux platforms.");
-		}
-
 		var (service, _) = CreateSut();
 		var result = service.IsSupported();
 		Assert.IsFalse(result);

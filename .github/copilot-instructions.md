@@ -7,6 +7,8 @@ In starskydesktop we use Electron.
 
 For unit testing we use mstest and custom Fake Builders. So for myObject, there is highly likely to exist a FakeMyObject or FakeIMyObject. NEVER suggest Mock.
 
+When using ApplicationDbContext use DatabaseTest as a base class for testing. This will ensure that the database is properly set up and torn down for each test.
+
 Be concise.
 
 If I say "review": Review the code. When reviewing, start with a list of what needs to improve, then separately compliment on the good stuff. We don't use try catch, errors are caught on a higher level.

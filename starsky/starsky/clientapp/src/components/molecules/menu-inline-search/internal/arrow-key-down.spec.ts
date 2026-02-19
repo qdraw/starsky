@@ -10,7 +10,8 @@ describe("ArrowKeyDown", () => {
       0,
       callback,
       document.createElement("input"),
-      []
+      [],
+      jest.fn()
     );
 
     expect(callback).toHaveBeenCalled();
@@ -26,7 +27,8 @@ describe("ArrowKeyDown", () => {
       0,
       callback,
       null,
-      []
+      [],
+      jest.fn()
     );
 
     expect(callback).toHaveBeenCalledTimes(0);
@@ -41,7 +43,8 @@ describe("ArrowKeyDown", () => {
       0,
       callback,
       document.createElement("input"),
-      []
+      [],
+      jest.fn()
     );
 
     expect(callback).toHaveBeenCalledTimes(0);
@@ -57,7 +60,8 @@ describe("ArrowKeyDown", () => {
       -1,
       callback,
       inputElement,
-      ["test", "test1"]
+      ["test", "test1"],
+      jest.fn()
     );
 
     expect(callback).toHaveBeenCalled();
@@ -75,7 +79,8 @@ describe("ArrowKeyDown", () => {
       1,
       callback,
       inputElement,
-      ["test", "test1"]
+      ["test", "test1"],
+      jest.fn()
     );
 
     expect(callback).toHaveBeenCalled();
@@ -93,7 +98,8 @@ describe("ArrowKeyDown", () => {
       1,
       callback,
       inputElement,
-      ["test", "test1"]
+      ["test", "test1"],
+      jest.fn()
     );
 
     expect(callback).toHaveBeenCalledTimes(0);
@@ -109,7 +115,8 @@ describe("ArrowKeyDown", () => {
       0,
       callback,
       inputElement,
-      ["test", "test1"]
+      ["test", "test1"],
+      jest.fn()
     );
 
     expect(callback).toHaveBeenCalledTimes(0);

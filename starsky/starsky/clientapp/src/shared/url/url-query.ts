@@ -118,8 +118,8 @@ export class UrlQuery {
     return `${this.prefix}/api/search?json=true&t=${query}&p=${pageNumber}`;
   };
 
-  public UrlSearchSuggestApi(query: string): string {
-    return `${this.prefix}/api/suggest/?t=${query}`;
+  public UrlSearchSuggestApi(query: string, system = true): string {
+    return `${this.prefix}/api/suggest/?t=${query}&system=${system}`;
   }
 
   public UrlSearchRemoveCacheApi(): string {
@@ -531,5 +531,9 @@ export class UrlQuery {
   private urlReplacePath(input: string): string {
     const output = input.replaceAll("#", "");
     return output.replaceAll("+", "%2B");
+  }
+
+  public UrlGeoReverseNominatim(latitude: number, longitude: number): string {
+    return `${this.prefix}/api/geo-reverse-nominatim?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`;
   }
 }

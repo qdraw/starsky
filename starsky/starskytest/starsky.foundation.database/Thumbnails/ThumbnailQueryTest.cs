@@ -30,6 +30,8 @@ public class ThumbnailQueryTest
 			new FakeMemoryCache());
 	}
 
+	public TestContext TestContext { get; set; }
+
 	private static IServiceScopeFactory CreateNewScope(string? name = null)
 	{
 		name ??= nameof(ThumbnailQueryTest);
@@ -62,7 +64,8 @@ public class ThumbnailQueryTest
 		Assert.IsTrue(result.Where(p => p.FileHash is "00123" or "00456")
 			.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
 
-		var thumbnails = await _context.Thumbnails.ToListAsync(TestContext.CancellationTokenSource.Token);
+		var thumbnails =
+			await _context.Thumbnails.ToListAsync(TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(2,
 			thumbnails.Count(p => p.FileHash is "00123" or "00456"));
 		Assert.IsTrue(thumbnails.TrueForAll(x => x.Small == true));
@@ -167,8 +170,9 @@ public class ThumbnailQueryTest
 		Assert.IsNotNull(result);
 		Assert.HasCount(2, result);
 		Assert.AreEqual(2, await _context.Thumbnails.CountAsync(p =>
-			p.FileHash == "file" + ThumbnailSize.Small
-			|| p.FileHash == "file" + ThumbnailSize.Large, TestContext.CancellationTokenSource.Token));
+				p.FileHash == "file" + ThumbnailSize.Small
+				|| p.FileHash == "file" + ThumbnailSize.Large,
+			TestContext.CancellationTokenSource.Token));
 
 		var dbResult = _context.Thumbnails.Where(p =>
 			p.FileHash == "file" + ThumbnailSize.Small
@@ -213,7 +217,8 @@ public class ThumbnailQueryTest
 		Assert.IsTrue(result.Select(x => x.FileHash)
 			.All(x => fileHashes.Contains(x)));
 
-		var thumbnails = await _context.Thumbnails.ToListAsync(TestContext.CancellationTokenSource.Token);
+		var thumbnails =
+			await _context.Thumbnails.ToListAsync(TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(2,
 			thumbnails.Count(p => p.FileHash is "9123" or "9456"));
 		Assert.IsTrue(thumbnails.Where(p => p.FileHash is "9123" or "9456")
@@ -513,7 +518,7 @@ public class ThumbnailQueryTest
 		// Assert
 		var thumbnails = await _thumbnailQuery.Get();
 		Assert.IsGreaterThanOrEqualTo(1, thumbnails.Count);
-		Assert.AreEqual(1, thumbnails.Count(p => p.FileHash == "3456789"));
+		Assert.ContainsSingle(p => p.FileHash == "3456789", thumbnails);
 
 		Assert.IsTrue(thumbnails.Where(p => p.FileHash == "3456789")
 			.All(x => x.Small == true));
@@ -769,7 +774,8 @@ public class ThumbnailQueryTest
 		dbContext.Thumbnails.Add(new ThumbnailItem { FileHash = "123wruiweriu" });
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		var item =
-			await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "123wruiweriu", TestContext.CancellationTokenSource.Token);
+			await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "123wruiweriu",
+				TestContext.CancellationTokenSource.Token);
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -820,7 +826,8 @@ public class ThumbnailQueryTest
 
 		dbContext.Thumbnails.Add(new ThumbnailItem { FileHash = "test123", Large = true });
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
-		var item = await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "test123", TestContext.CancellationTokenSource.Token);
+		var item = await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "test123",
+			TestContext.CancellationTokenSource.Token);
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -873,7 +880,8 @@ public class ThumbnailQueryTest
 		dbContext.Thumbnails.Add(new ThumbnailItem { FileHash = "8439573458435", Large = true });
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		var item =
-			await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "8439573458435", TestContext.CancellationTokenSource.Token);
+			await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "8439573458435",
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNotNull(item);
 
 		// And dispose
@@ -925,7 +933,8 @@ public class ThumbnailQueryTest
 		dbContext.Thumbnails.Add(new ThumbnailItem { FileHash = "5478349895834", Large = true });
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		var item =
-			await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "5478349895834", TestContext.CancellationTokenSource.Token);
+			await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "5478349895834",
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNotNull(item);
 
 		// And dispose
@@ -1026,6 +1035,4 @@ public class ThumbnailQueryTest
 			throw new DbUpdateConcurrencyException();
 		}
 	}
-
-	public TestContext TestContext { get; set; }
 }

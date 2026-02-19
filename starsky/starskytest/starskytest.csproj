@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <RuntimeFrameworkVersion>8.0.23</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.24</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <!-- SonarQube needs this -->
         <ProjectGuid>{b3342a3e-64e1-442f-b4f7-f7a718508aac}</ProjectGuid>
@@ -21,15 +21,15 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'"/>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'"/>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.23" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.23" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.24" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
-        <PackageReference Include="MSTest.TestAdapter" Version="3.11.1"/>
-        <PackageReference Include="MSTest.TestFramework" Version="3.11.1"/>
-        <PackageReference Include="Verify.MSTest" Version="30.20.1"/>
-        <PackageReference Include="coverlet.collector" Version="6.0.4">
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+        <PackageReference Include="MSTest.TestAdapter" Version="4.1.0"/>
+        <PackageReference Include="MSTest.TestFramework" Version="4.1.0"/>
+        <PackageReference Include="Verify.MSTest" Version="31.13.0" />
+        <PackageReference Include="coverlet.collector" Version="8.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -168,6 +168,27 @@
         </None>
         <None Update="starsky.foundation.geo\GeoNameCitySeed\GeoNameCitySeedServiceTest.Seed_InsertsUniqueCities_Verify.verified.txt">
             <DependentUpon>GeoNameCitySeedServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_InvalidLocation_Verify.received.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_InvalidLocation_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_InvalidRequest_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsExpectedJson_Amsterdam_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsExpectedJson_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsExpectedJson_Amsterdam_Verify.received.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsInvalidJson_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
         </None>
     </ItemGroup>
     <ItemGroup>

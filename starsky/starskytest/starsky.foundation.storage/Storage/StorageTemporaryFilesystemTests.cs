@@ -231,17 +231,19 @@ public sealed class StorageTemporaryFilesystemTests
 		// is disposed too late (as designed)
 		await stream.DisposeAsync();
 
+		bool result2;
 		try
 		{
-			var result2 = _tempStorage.IsFileReady(thumbnailId);
+			result2 = _tempStorage.IsFileReady(thumbnailId);
 			Assert.IsTrue(result2);
 		}
 		catch ( Exception )
 		{
 			await Task.Delay(100, TestContext.CancellationToken);
-			var result2 = _tempStorage.IsFileReady(thumbnailId);
-			Assert.IsTrue(result2);
+			result2 = _tempStorage.IsFileReady(thumbnailId);
 		}
+		
+		Assert.IsTrue(result2);
 
 		File.Delete(Path.Combine(createNewImage.BasePath,
 			$"{thumbnailId}"));

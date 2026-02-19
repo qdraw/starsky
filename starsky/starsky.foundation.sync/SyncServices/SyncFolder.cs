@@ -67,7 +67,7 @@ public sealed class SyncFolder
 			})
 			.Select(p => p.Key));
 
-		// Loop trough all folders recursive
+		// Loop through all folders recursive
 		var resultChunkList = await subPaths.ForEachAsync(
 			async subPath =>
 			{
@@ -166,7 +166,7 @@ public sealed class SyncFolder
 	internal async Task<List<FileIndexItem>> AddParentFolder(string subPath,
 		List<FileIndexItem>? allResults)
 	{
-		allResults ??= new List<FileIndexItem>();
+		allResults ??= [];
 		// used to check later if the item already exists, to avoid duplicates
 		var filePathsAllResults = allResults.Select(p => p.FilePath).ToList();
 
@@ -186,17 +186,6 @@ public sealed class SyncFolder
 			{
 				IsDirectory = isDirectory, Status = exifStatus
 			});
-		}
-
-		List<string> Merge(IReadOnlyCollection<FileIndexItem> allResults1)
-		{
-			var parentDirectoriesStart = allResults1
-				.Where(p => p.FilePath != null)
-				.Select(p => p.ParentDirectory).ToList();
-			parentDirectoriesStart.AddRange(allResults1
-				.Where(p => p.IsDirectory == true)
-				.Select(p => p.FilePath));
-			return parentDirectoriesStart.Where(p => !string.IsNullOrEmpty(p)).Distinct().ToList()!;
 		}
 
 		var parentDirectories = Merge(allResults);
@@ -235,6 +224,17 @@ public sealed class SyncFolder
 			.ToList());
 
 		return newItems;
+
+		static List<string> Merge(IReadOnlyCollection<FileIndexItem> allResults1)
+		{
+			var parentDirectoriesStart = allResults1
+				.Where(p => p.FilePath != null)
+				.Select(p => p.ParentDirectory).ToList();
+			parentDirectoriesStart.AddRange(allResults1
+				.Where(p => p.IsDirectory == true)
+				.Select(p => p.FilePath));
+			return parentDirectoriesStart.Where(p => !string.IsNullOrEmpty(p)).Distinct().ToList()!;
+		}
 	}
 
 	private async Task<List<FileIndexItem>> LoopOverFolder(
@@ -248,7 +248,7 @@ public sealed class SyncFolder
 		var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItemsOnlyFiles, pathsOnDisk);
 		if ( pathsToUpdateInDatabase.Count == 0 )
 		{
-			return new List<FileIndexItem>();
+			return [];
 		}
 
 		var resultChunkList = await pathsToUpdateInDatabase.Chunk(50).ForEachAsync(
@@ -342,7 +342,7 @@ public sealed class SyncFolder
 		return resultDatabaseItems.DistinctBy(p => p.FilePath).ToList();
 	}
 
-	private async Task<List<FileIndexItem?>> CheckIfFolderExistOnDisk(
+	internal async Task<List<FileIndexItem?>> CheckIfFolderExistOnDisk(
 		List<FileIndexItem> fileIndexItems)
 	{
 		var fileIndexItemsOnlyFolders = fileIndexItems
@@ -370,14 +370,18 @@ public sealed class SyncFolder
 				var query = queryFactory.Query()!;
 
 				var subDirectories =
-					_subPathStorage.GetDirectoryRecursive(item.FilePath!);
-				if ( !subDirectories.Any() )
+					_subPathStorage.GetDirectoryRecursive(item.FilePath!).ToList();
+
+				var filesInFolder = _subPathStorage.GetAllFilesInDirectory(item.FilePath!).ToList();
+
+				if ( subDirectories.Count == 0 && filesInFolder.Count == 0 )
 				{
 					return await RemoveChildItems(query, item);
 				}
 
+				var reason = subDirectories.Count != 0 ? "subdirectories" : "files";
 				_logger.LogInformation(
-					$"[SyncFolder] Skipping deletion of {item.FilePath} - subdirectories exist on disk");
+					$"[SyncFolder] Skipping deletion of {item.FilePath} - {reason} exist on disk");
 				await query.DisposeAsync();
 				return null;
 			}, _appSettings.MaxDegreesOfParallelism) )!.ToList();
@@ -387,8 +391,8 @@ public sealed class SyncFolder
 	///     Remove all items that are included
 	/// </summary>
 	/// <param name="query">To run async a query object</param>
-	/// <param name="item">root item</param>
-	/// <returns>root item</returns>
+	/// <param name="item">Root item</param>
+	/// <returns>Root item</returns>
 	internal async Task<FileIndexItem> RemoveChildItems(IQuery query, FileIndexItem item)
 	{
 		// Final safety check before deletion - verify folder truly doesn't exist

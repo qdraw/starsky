@@ -17,7 +17,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.search.Services;
+namespace starskytest.starsky.feature.search.Services;
 
 [TestClass]
 public sealed class SearchServiceTest
@@ -110,7 +110,8 @@ public sealed class SearchServiceTest
 					DateTimeKind.Local),
 				AddToDatabase = new DateTime(2016, 1, 1, 1, 1, 1,
 					DateTimeKind.Local),
-				IsDirectory = false
+				IsDirectory = false,
+				Artist = "test-artist"
 			});
 		}
 
@@ -292,6 +293,17 @@ public sealed class SearchServiceTest
 		await InsertSearchData();
 
 		Assert.AreEqual(1, ( await _search.Search("-software:photo") ).SearchCount);
+	}
+
+	[TestMethod]
+	public async Task SearchService_ArtistSearch()
+	{
+		await InsertSearchData();
+
+		var result = await _search.Search("-artist:test-artist");
+		Assert.AreEqual(1, result.SearchCount);
+		Assert.AreEqual("test-artist", result.FileIndexItems![0].Artist);
+		Assert.AreEqual("lelystadcentrum2.jpg", result.FileIndexItems[0].FileName);
 	}
 
 	[TestMethod]

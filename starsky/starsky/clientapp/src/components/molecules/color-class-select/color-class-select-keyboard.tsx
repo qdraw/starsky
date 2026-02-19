@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import localization from "../../../localization/localization.json";
-import { Keyboard } from "../../../shared/keyboard";
+import { Keyboard } from "../../../shared/keyboard/keyboard";
 import { Language } from "../../../shared/language";
 import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Portal from "../../atoms/portal/portal";

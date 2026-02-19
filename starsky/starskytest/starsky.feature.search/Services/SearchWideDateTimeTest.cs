@@ -6,7 +6,7 @@ using starsky.feature.search.Services;
 using starsky.feature.search.ViewModels;
 using starsky.foundation.database.Models;
 
-namespace starskytest.starsky.foundation.search.Services;
+namespace starskytest.starsky.feature.search.Services;
 
 [TestClass]
 public sealed class SearchWideDateTimeTest

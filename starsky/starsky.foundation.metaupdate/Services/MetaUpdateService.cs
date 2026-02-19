@@ -87,8 +87,12 @@ public class MetaUpdateService : IMetaUpdateService
 
 		var updatedItems = new List<FileIndexItem>();
 		var fileIndexItemList = fileIndexResultsList
-			.Where(p => p.Status is FileIndexItem.ExifStatus.Ok
-				or FileIndexItem.ExifStatus.Deleted).ToList();
+			.Where(p => 
+				p.Status is FileIndexItem.ExifStatus.Ok
+				or FileIndexItem.ExifStatus.Deleted or
+				FileIndexItem.ExifStatus.OkAndSame or
+				FileIndexItem.ExifStatus.Default or
+				FileIndexItem.ExifStatus.DeletedAndSame).ToList();
 
 		foreach ( var fileIndexItem in fileIndexItemList )
 		{

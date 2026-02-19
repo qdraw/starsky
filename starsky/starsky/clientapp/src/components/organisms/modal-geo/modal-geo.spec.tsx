@@ -18,7 +18,8 @@ describe("ModalGeo", () => {
     jest.spyOn(L, "map").mockImplementationOnce(() => {
       return {
         addLayer: jest.fn(),
-        on: jest.fn()
+        on: jest.fn(),
+        getContainer: jest.fn().mockReturnValue(document.createElement("div"))
       } as unknown as L.Map;
     });
   });

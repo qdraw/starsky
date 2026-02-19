@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
@@ -41,14 +40,14 @@ public sealed class RetryHelperTest
 		});
 
 		// Verify that the AggregateException contains the expected inner exceptions
-		var innerExceptions = ex.InnerExceptions ;
-		Assert.IsTrue(innerExceptions.Any(e => e is FormatException));
-		Assert.IsTrue(innerExceptions.Any(e => e is ApplicationException));
+		var innerExceptions = ex.InnerExceptions;
+		Assert.Contains(e => e is FormatException, innerExceptions);
+		Assert.Contains(e => e is ApplicationException, innerExceptions);
 		return;
 
 		bool Test()
 		{
-			if (count == 2)
+			if ( count == 2 )
 			{
 				throw new FormatException(); // <= combines with AggregateException
 			}
@@ -95,11 +94,12 @@ public sealed class RetryHelperTest
 		var count = 0;
 
 		// Act & Assert
-		var ex = await Assert.ThrowsExactlyAsync<AggregateException>(async () => await AssertTest());
+		var ex = await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
+			await AssertTest());
 
 		// Verify the AggregateException contains the expected inner exceptions
-		Assert.IsTrue(ex.InnerExceptions.Any(e => e is FormatException));
-		Assert.IsTrue(ex.InnerExceptions.Any(e => e is ApplicationException));
+		Assert.Contains(e => e is FormatException, ex.InnerExceptions);
+		Assert.Contains(e => e is ApplicationException, ex.InnerExceptions);
 		return;
 
 		async Task AssertTest()
@@ -110,7 +110,7 @@ public sealed class RetryHelperTest
 
 		Task<bool> Test()
 		{
-			if (count == 2)
+			if ( count == 2 )
 			{
 				throw new FormatException(); // Combined with AggregateException
 			}

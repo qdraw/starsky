@@ -34,12 +34,12 @@ This document is auto generated
 | __/api/cache/list__                               | GET   | Get Database Cache (only the cache)                                             |
 | __/api/remove-cache__                             | GET   | Delete Database Cache (only the cache)                                          |
 | __/api/remove-cache__                             | POST  | Delete Database Cache (only the cache)                                          |
-| __/api/cloud-import/status__                      | GET   | Missing summary                                                                 |
-| __/api/cloud-import/status/\{providerId\}__       | GET   | Missing summary                                                                 |
-| __/api/cloud-import/sync__                        | POST  | Missing summary                                                                 |
-| __/api/cloud-import/sync/\{providerId\}__         | POST  | Missing summary                                                                 |
-| __/api/cloud-import/last-results__                | GET   | Missing summary                                                                 |
-| __/api/cloud-import/last-result/\{providerId\}__  | GET   | Missing summary                                                                 |
+| __/api/cloud-import/status__                      | GET   | Get current Cloud Import status for all providers                               |
+| __/api/cloud-import/status/\{providerId\}__       | GET   | Get status for a specific provider                                              |
+| __/api/cloud-import/sync__                        | POST  | Trigger a manual sync for all enabled providers                                 |
+| __/api/cloud-import/sync/\{providerId\}__         | POST  | Trigger a manual sync for a specific provider                                   |
+| __/api/cloud-import/last-results__                | GET   | Get the last sync results for all providers                                     |
+| __/api/cloud-import/last-result/\{providerId\}__  | GET   | Get the last sync result for a specific provider                                |
 | __/api/delete__                                   | DELETE| Remove files from the disk, but the file must contain the !delete!(TrashKeywo...|
 | _Parameters: f (subPaths, separated by dot comma), collections (true is to update files with the same name before                         _ |
 | _ the extenstion)                                                                                                                         _ |
@@ -64,6 +64,7 @@ This document is auto generated
 | __/api/geo-location-name/city__                   | GET   | Search for a city by name                                                       |
 | __/api/geo-location-name/city-timezone__          | GET   | Search for a city's timezone for a given date/time                              |
 | __/api/geo-reverse-lookup__                       | GET   | Reverse geo lookup                                                              |
+| __/api/geo-reverse-nominatim__                    | GET   | Reverse geo lookup with OpenStreetMap NominatimThis API does not allow BATCH ...|
 | __/api/health__                                   | GET   | Check if the service has any known errors and return only a stringPublic API    |
 | __/api/health/details__                           | GET   | Check if the service has any known errorsFor Authorized Users only              |
 | __/api/health/version__                           | POST  | Check if Client/App version has a match with the API-versionthe parameter 've...|

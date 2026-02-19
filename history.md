@@ -21,7 +21,7 @@
     - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
 - [Starsky Desktop](starskydesktop/readme.md) _Desktop Application_
-    - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
+    - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 - **[Changelog](history.md) Release notes and history**
 
 ## Release notes of Starsky
@@ -41,10 +41,28 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.11 - _(Unreleased)_ - 2026-02-03 {#v0.7.11}
+## version 0.7.12 - _(Unreleased)_ - 2026-?-? {#v0.7.11}
 
+- [x] (Fixed) _Back-end_ Add extra check for deleting folders to avoid race conditions (PR #2769)
+- [x] (Fixed) _Back-end_ On non-Windows platforms, DriveInfo.GetDrives() may give issues (PR #2764)
+- [x] (Added) _Back-end_ Expose NominatimProxyService (PR #2761)
+- [x] (Added) _Front-end_ Add right click menu in detail view map to copy street names (PR #2735)
+- [x] (Added) _Back-end_ Make sure the inflate search cache keeps cache (PR #2754)
+- [x] (Changed) _Back-end_ Unit testing update to MSTest v4 (PR #2750)
+- [x] (Added) _Back-end_ Search for Artist `-artist` (PR #2731)
+
+## version 0.7.11 - 2026-02-11 {#v0.7.11}
+
+- [x] (Fixed) _Back-end_ Create Directory when WriteStreamAsync fails to avoid issues (PR #2729)
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.418 (Runtime: 8.0.24) (PR #2724)
+- [x] (Fixed) _Front-end_ Set caret to end when navigate via Command/Ctrl `[` or `]` (PR #2721)
+- [x] (Added) _Front-end_ Add tag auto complete to detail view (PR #2714)
+- [x] (Fixed) _Front-end_ Dark-mode fixes for dropdowns, autocomplete suggestions modal (PR #2719)
+- [x] (Added) _Front-end_ Tag complete in Archive sidebar (PR #2711)
+- [x] (Fixed) _Front-end_ When updating video files in archive mode those are not hidden (PR #2709)
+- [x] (Fixed) _Back-end_ Replace works now with Default status (PR #2706)
 - [x] (Fixed) _Back-end_ IsValidZipFile handles IO Exceptions (PR #2705)
-- [x] (Fixed) _Back-end_ Add notification handeling for duplicate keys (PR #2704)
+- [x] (Fixed) _Back-end_ Add notification handling for duplicate keys (PR #2704)
 - [x] (Fixed) _Back-end_ Issue where cache is disposed (PR #2703)
 - [x] (Added) _Back-end_ Add IPTC Artist field for Import and FileIndex (PR #2698)
 
@@ -344,7 +362,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Update ImageSharp (PR #1434, #1435, #1436)
 - [x] (Changed) _Back-end_ Change unit tests retry OpenDefault windows (PR #1433)
 - [x] (Changed) _Back-end_ Update Pomelo.EntityFrameworkCore.MySql, ImageSharp.Drawing,
-  ReportGenerator, OpenTelemetry.*.AspNetCore, System.Text.Json, MSTest and Coverlet (PR #1438)
+  ReportGenerator, OpenTelemetry, System.Text.Json, MSTest and Coverlet (PR #1438)
 - [x] (Changed) _Back-end_ Fix for Code Smells and Sonarcloud bugs (PR #1440)
 - [x] (Fixed) _Back-end_ Longer regex timeout for GetFileName (PR #1444)
 - [x] (Fixed) _Back-end_ Warnings for Sonarcloud (PR #1445)
@@ -357,8 +375,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.6.0-beta.2 - 2024-03-05 {#v0.6.0-beta.2}
 
 - [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.201 (Runtime: 8.0.2) (PR #1402)
-- [x] (Added) _Back-end_ Native Open File on Windows & Mac OS (PR #1381)
-- [x] (Added) _Back-end_ Native Open File with specific editor on Windows & Mac OS (PR #1381)
+- [x] (Added) _Back-end_ Native Open File on Windows & macOS (PR #1381)
+- [x] (Added) _Back-end_ Native Open File with specific editor on Windows & macOS (PR #1381)
 - [x] (Added) _Back-end_ AppSettings for Collections / Stacks and Open File (PR #1381)
 - [x] (Breaking Change) _Back-end_ Rename UseLocalDesktopUi to UseLocalDesktop (PR #1381)
 - [x] (Added) _Back-end_ ImageFormat = ExtensionRolesHelper.ImageFormat.directory (PR #1381)
@@ -373,10 +391,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Removed) _App_ Removed overwrite of open app in desktop (replaced with native open file)
   (PR #1381)
 - [x] (Added) _App_ Add 'App Settings' to the menu (PR #1381)
-- [x] (Added) _Front-end_ Add warning when opening a lot pictures at one: "Do you really want to
-  edit all of the selected photos?" (PR #1381)
+- [x] (Added) _Front-end_ Add warning when opening a great quantity at one: "Do you really want to
+  edit all the selected photos?" (PR #1381)
 - [x] (Changed) _Front-end_ isRelativeUrl check for redirect (PR #1419)
-- [x] (Breaking changes) _App_ System requirements for Windows and Mac OS are changed see release
+- [x] (Breaking changes) _App_ System requirements for Windows and macOS are changed see release
   notes (PR #1422)
 - [x] (Fixed) _Front-end_ Add Tooltip to explain that tags are comma separated (PR #1422) (Issue
   #1405)
@@ -384,7 +402,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Front-end_ Add link to docs page for storage folder (PR #1422) (Issue #1404)
 - [x] (Security) _Front-end_ spellcheck false on email and password fields (PR #1430)
 - [x] (Fixed) _Front-end_ Tooltip is partly not shown (PR #1430)
-- [x] (Changed) _Front-end_ View user friendly name for Default Desktop user (PR #1430)
+- [x] (Changed) _Front-end_ View user-friendly name for Default Desktop user (PR #1430)
 - [x] (Changed) _Docs_ Use Google Consent Mode, only for docs, other apps have no Google (PR #1424)
 
 ## version 0.6.0-beta.1 - 2024-02-18 {#v0.6.0-beta.1}
@@ -430,9 +448,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Changed) _Front-end_ Accessibility focus for prev next in detailView (PR #1291)
 - [x] (Changed) _Front-end_ Move from div to button Accessibility (PR #1294)
-- [x] (Changed) _Front-end_ Front-end version updates (PR #1295, #1296, #1297, #1298, #1299, #1300,
+- [x] (Changed) _Front-end_ Version updates (PR #1295, #1296, #1297, #1298, #1299, #1300,
   #1301, #1303)
-- [x] (Changed) _Front-end_ Code style style issues (PR #1304, #1307)
+- [x] (Changed) _Front-end_ Code style issues (PR #1304, #1307)
 - [x] (Fixed) _Front-end_ long file names in multi select (Issue #1305 PR #1307)
 - [x] (Fixed) _Back-end_ Replace tags / info etc. with OkAndSame status (Issue #1175 PR #1308)
 - [x] (Changed) _Front-end_ Menu option change to button (PR #1310)
@@ -461,7 +479,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR #1219, 1220, 1228, 1230, 1237, 1240)
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR 1241, 1239, 1252, 1244, 1246, 1247, 1250, 1251)
 - [x] (Changed) _Back-end_ Upgrade github yaml's (PR 1232, 1233, 1234, 1235)
-- [x] (Changed) _Desktop_ Upgrade Electron to 26.x (27.0 has removed support for Mac OS 10.13 and
+- [x] (Changed) _Desktop_ Upgrade Electron to 26.x (27.0 has removed support for macOS 10.13 and
   10.14) (PR #1255)
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.415 (Runtime: 6.0.23) (PR #1256)
 
@@ -470,7 +488,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.410 (Runtime: 6.0.16 (PR #1178)
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.412 (Runtime: 6.0.20) (PR #1193)
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR #1198)
-- [x] (Changed) _Back-end_ Sonarqube settings from sonar.login to sonar.token (PR #1198)
+- [x] (Changed) _Back-end_ Sonarqube settings from sonar login to sonar token (PR #1198)
 - [x] (Fixed) _Back-end_ Various code smells (PR #1199)
 
 ## version 0.5.9 - 2023-05-18 {#v0.5.9}
@@ -497,7 +515,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Fixed) _Back-end_ Add fallback for detailView image Issue #1106 (PR #1113)
 - [x] (Fixed) _Back-end_ Don't write meta.json files for xmp files Issue #1108 (PR #1115)
-- [x] (Fixed) _Back-end_ Change spec of meta.json files and make json schema (PR #1115)
+- [x] (Fixed) _Back-end_ Change spec of meta.json files and make JSON schema (PR #1115)
 - [x] (Fixed) _Back-end_ Code smells, improving readability (PR #1115, #1116, #1121)
 - [x] (Changed) _Back-end_ Add help info screen and test for demo CLI (PR #1117)
 - [x] (Changed) _Desktop_ Upgrade Electron packages (PR #1118, #1119)
@@ -511,7 +529,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Front-end_ Remove skip next item (Issue #1105) (PR #1135)
 - [x] (Removed) _Back-end_ Remove deprecated internal query api GetAllRecursive (PR #1135)
 - [x] (Fixed) _Back-end_ GetFileName longer timeout for slow devices  (PR #1135)
-- [x] (Fixed) _Front-end_ Add preloader state for update geo location (PR #1135)
+- [x] (Fixed) _Front-end_ Add preloader state for update geolocation (PR #1135)
 - [x] (Fixed) _Back-end_ Change tests for MySqlDatabaseFixes (PR #1135)
 - [x] (Fixed) _Back-end_ `api/info` gives xmp (Issue #1127) (PR #1136)
 - [x] (Changed)
@@ -520,15 +538,15 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.5.7-beta.0 - 2023-03-20 {#v0.5.7-beta.0}
 
-- [x] (Added)  _Devops_ Add stable release to github container registry
+- [x] (Added)  _Devops_ Add stable release to GitHub container registry
 
 ## version 0.5.6 - 2023-03-19 {#v0.5.6}
 
 _Known issues #1106, #1107 and #1108_
 
-- [x] (Added)  _Back-end_ Internal service for system trash (windows and mac os) (PR #1071)
-- [x] (Changed) _Back-end_ Unit test to multi threaded (PR #1071)
-- [x] (Added) _Back-end_ Add API for System Trash or Meta data trash (PR #1078)
+- [x] (Added)  _Back-end_ Internal service for system trash (windows and macOS) (PR #1071)
+- [x] (Changed) _Back-end_ Unit test to multithreaded (PR #1071)
+- [x] (Added) _Back-end_ Add API for System Trash or Metadata trash (PR #1078)
 - [x] (Added) _Back-end_ Add feature toggle `useSystemTrash` (PR #1078)
 - [x] (Removed) _Back-end_ Remove `RemoveItem` sync query (use async instead) (PR #1078)
 - [x] (Changed) _Front-end_ Removal of Directories (PR #1085)
@@ -571,7 +589,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed)  _Back-end_ Add auto install `./build.ps1` for Windows package manager (winGet) for
   .NET and node (PR #1047)
 - [x] (Fixed)  _Desktop_ Upgrade Electron to 22.1.0 and fix tests (PR #1047)
-- [x] (Updated)  _CI_ Update Github Actions (20230206, PR #1063, #1062, #1061, #1060, #1059)
+- [x] (Updated)  _CI_ Update GitHub Actions (20230206, PR #1063, #1062, #1061, #1060, #1059)
 - [x] (Updated)  _Docs_ Update Docusaurus (PR #1055, #1049)
 - [x] (Added)  _Back-end_ Add option for cmd line args for web app (PR #1054)
 - [x] (Added)  _Back-end_ Service deploy script for Windows (PR #1053)
@@ -583,8 +601,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/disk/rename` (PR
   #1030)
 - [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/update` (PR #1030)
-- [x] (Changed)  _Tests_ Update create directory end2end tests (PR #1030)
-- [x] (Changed)  _Tests_ retry end2end test: Create Rename Dir > delete it afterwards (PR #1032)
+- [x] (Changed)  _Tests_ Update create directory `end2end` tests (PR #1030)
+- [x] (Changed)  _Tests_ retry `end2end` test: Create Rename Dir > delete it afterward (PR #1032)
 - [x] (Changed)  _Back-end_ Add thumbnail query delete for not found items (PR #1032)
 - [x] (Fixed)  _Back-end_ starskyWebHtmlCli missing db context and crashed (PR #1032)
 - [x] (Fixed)  _Back-end_ fixing import disposed exception (issue #1033 / PR #1034)
@@ -627,7 +645,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Changed)
   _Back-end_ [Upgrade to .NET 6 - SDK 6.0.404 (Runtime: 6.0.12)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.12/6.0.12.md) (
   PR #997)
-- [x] (Changed) _Front-end_ Upgrade Create React App / Typescript / storybook  (PR #998)
+- [x] (Changed) _Front-end_ Upgrade Create React App / TypeScript / storybook  (PR #998)
 - [x] (Changed) _Front-end_ Geo location edit in detail view (PR #996)
 - [x] (Changed) _Front-end_ Dark-mode UI tweaks (PR #999)
 - [x] (Fixed) _Back-end_ Avoid duplicate input when replace (Issue #995 / PR #1000)
@@ -1677,7 +1695,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (feature) _Front-end_ Upload to directory (+ backend)
 - [x] (bugfix) add filter for backslashes in structure: `\\\\d`
 - [x] (breaking change) removal of GetColor in razor views
-- [x] (breaking change) rename of field colorClassFilterList={[]} ==> colorClassActiveList={[]}
+- [x] (breaking change) rename of field colorClassFilterList={[]} to colorClassActiveList={[]}
 - [x] (bugfix) colorClass filter are selecting
 - [x] (bugfix) export poll after 206 'not ready'
 - [x] (feature) _Front-end_ make folder layout smooth responsive
@@ -1731,7 +1749,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 
 ## version 0.1.10 - 2019-12-15
 
-- [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
+- [x] (bugfix) Archive to After pressing 'Apply' the updates are not shown
 - [x] (version) _Front-end_ Upgrade ClientApp from React 16.9.0 to 16.9.15 _(Create React App 3.3.0,
   5 Dec 2019)_
 - [x] (bugfix) _Front-end_ Front-end for Rename files (in detailview)
@@ -1877,7 +1895,7 @@ _Version number does not match SemVer_
 - change '/api/info' to support readonly meta display
 - add /suggest/all to show all suggestions
 - upgrade dependencies to support Debian 10 (to fix: No usable version of the libssl was found)
-- fix localisation issue with starskyWebHtmlCli
+- fix localization issue with starskyWebHtmlCli
 - add copy of content folder in bin with starskyWebHtmlCli
 
 ## version 0.1.5.5 - 2019-05-17

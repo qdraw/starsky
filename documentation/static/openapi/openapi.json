@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "Starsky",
-    "version": "0.7.10.0",
+    "version": "0.7.11.0",
     "extensions": {}
   },
   "servers": [
@@ -4209,6 +4209,7 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Get current Cloud Import status for all providers",
           "parameters": [],
           "responses": {
             "200": {
@@ -4242,11 +4243,13 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Get status for a specific provider",
           "parameters": [
             {
               "unresolvedReference": false,
               "name": "providerId",
               "in": 2,
+              "description": "id of provider",
               "required": true,
               "deprecated": false,
               "allowEmptyValue": false,
@@ -4306,6 +4309,7 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Trigger a manual sync for all enabled providers",
           "parameters": [],
           "responses": {
             "200": {
@@ -4339,11 +4343,13 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Trigger a manual sync for a specific provider",
           "parameters": [
             {
               "unresolvedReference": false,
               "name": "providerId",
               "in": 2,
+              "description": "which provider",
               "required": true,
               "deprecated": false,
               "allowEmptyValue": false,
@@ -4403,6 +4409,7 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Get the last sync results for all providers",
           "parameters": [],
           "responses": {
             "200": {
@@ -4436,11 +4443,13 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Get the last sync result for a specific provider",
           "parameters": [
             {
               "unresolvedReference": false,
               "name": "providerId",
               "in": 2,
+              "description": "which provider",
               "required": true,
               "deprecated": false,
               "allowEmptyValue": false,
@@ -6771,6 +6780,105 @@
             {
               "unresolvedReference": false,
               "name": "longitude",
+              "in": 0,
+              "description": "Longitude coordinate in DD",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "number",
+                "format": "double",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Data with object",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/geo-reverse-nominatim": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "GeoReverseNominatim",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Reverse geo lookup with OpenStreetMap Nominatim\nThis API does not allow BATCH requests, so only one request at a time.\nIf you want to do multiple requests, please wait at least 1 second between requests.\nSee https://nominatim.org/release-docs/develop/api/Reverse/ for more details.",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "lat",
+              "in": 0,
+              "description": "Latitude coordinate in Decimal Degree (DD)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "number",
+                "format": "double",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "lon",
               "in": 0,
               "description": "Longitude coordinate in DD",
               "required": false,
@@ -13129,6 +13237,41 @@
               "examples": {},
               "content": {},
               "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "system",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "default": {
+                  "primitiveType": 7,
+                  "anyType": 0,
+                  "value": true
+                },
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
             }
           ],
           "responses": {
@@ -13138,28 +13281,36 @@
               "content": {
                 "application/json": {
                   "schema": {
+                    "type": "array",
                     "readOnly": false,
                     "writeOnly": false,
                     "allOf": [],
                     "oneOf": [],
                     "anyOf": [],
                     "required": [],
+                    "items": {
+                      "type": "string",
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false
+                    },
                     "properties": {},
                     "additionalPropertiesAllowed": true,
                     "enum": [],
                     "nullable": false,
                     "deprecated": false,
                     "extensions": {},
-                    "unresolvedReference": false,
-                    "reference": {
-                      "isFragrament": false,
-                      "type": 0,
-                      "id": "SearchViewModel",
-                      "isExternal": false,
-                      "isLocal": true,
-                      "referenceV3": "#/components/schemas/SearchViewModel",
-                      "referenceV2": "#/definitions/SearchViewModel"
-                    }
+                    "unresolvedReference": false
                   },
                   "examples": {},
                   "encoding": {},
@@ -13218,11 +13369,11 @@
                     "reference": {
                       "isFragrament": false,
                       "type": 0,
-                      "id": "SearchViewModel",
+                      "id": "StringInt32KeyValuePair",
                       "isExternal": false,
                       "isLocal": true,
-                      "referenceV3": "#/components/schemas/SearchViewModel",
-                      "referenceV2": "#/definitions/SearchViewModel"
+                      "referenceV3": "#/components/schemas/StringInt32KeyValuePair",
+                      "referenceV2": "#/definitions/StringInt32KeyValuePair"
                     }
                   },
                   "examples": {},
@@ -20790,6 +20941,56 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "StringInt32KeyValuePair": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "key": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "value": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "StringStringValueTuple": {
         "type": "object",
         "readOnly": false,
@@ -21428,5 +21629,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "99972521E4F178BF8A146E139B6D3BDE7E48C116BA9E96552FC14BE8F16539ABD2909A0DC41D9257967C3B8519EE11939777F97882095F3BB8071A60330D8B64"
+  "hashCode": "82B6DD3F2CB7118A24DDAB84D7E5D5D1B006653484FC0B834B1120AC53EDE9E276AA6B2DAE5980118CBAB6914707391346A2B5B6B5AD9CFD83CC775FA853FCC2"
 }

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.import.Models;
-using starsky.foundation.import.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode;
+using starsky.foundation.import.Models;
+using starsky.foundation.import.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -796,6 +797,7 @@ public sealed class ImportTest : VerifyBase
 	}
 
 	[TestMethod]
+	[SuppressMessage("Usage", "MSTEST0037:Use proper \'Assert\' methods")]
 	public async Task Importer_CheckIfAddToDatabaseTime()
 	{
 		var appSettings = new AppSettings();
@@ -1362,8 +1364,9 @@ public sealed class ImportTest : VerifyBase
 		await importService.AddToQueryAndImportDatabaseAsync(
 			new ImportIndexItem(), new ImportSettingsModel { IndexMode = false });
 
-		Assert.AreEqual(1, logger.TrackedInformation.Count(p =>
-			p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true));
+		Assert.ContainsSingle(p =>
+			p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true, 
+			logger.TrackedInformation);
 	}
 
 	private static string DefaultPath()

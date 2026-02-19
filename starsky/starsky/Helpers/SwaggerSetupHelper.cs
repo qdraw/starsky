@@ -36,6 +36,7 @@ namespace starsky.Helpers
 				});
 				// DescribeAllEnumsAsStrings are not working
 				c.IncludeXmlComments(GetXmlCommentsPath());
+				c.IncludeXmlComments(GetXmlCloudImportCommentsPath());
 			});
 		}
 
@@ -64,6 +65,10 @@ namespace starsky.Helpers
 		private string GetXmlCommentsPath()
 		{
 			return Path.Combine(_appSettings.BaseDirectoryProject, "starsky.xml");
+		}
+		private string GetXmlCloudImportCommentsPath()
+		{
+			return Path.Combine(_appSettings.BaseDirectoryProject, "starsky.feature.cloudimport.xml");
 		}
 	}
 }
