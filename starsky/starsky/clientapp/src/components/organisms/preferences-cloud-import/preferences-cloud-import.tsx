@@ -85,20 +85,9 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
   }, [messageStatusUnavailable]);
 
   useEffect(() => {
-    let mounted = true;
-
-    const fetchStatus = async () => {
-      if (!mounted) {
-        return;
-      }
-      await loadStatus();
-    };
-
-    fetchStatus();
-    const interval = globalThis.setInterval(fetchStatus, 10000);
-
+    const interval = globalThis.setInterval(loadStatus, 10000);
+    loadStatus();
     return () => {
-      mounted = false;
       globalThis.clearInterval(interval);
     };
   }, [loadStatus]);
