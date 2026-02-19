@@ -8,7 +8,7 @@ import PreferencesCloudImport from "./preferences-cloud-import";
 
 describe("PreferencesCloudImport", () => {
   it("renders providers and status", async () => {
-    jest.spyOn(FetchGet, "default").mockImplementation(() =>
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() =>
       Promise.resolve({
         statusCode: 200,
         data: {
@@ -39,7 +39,7 @@ describe("PreferencesCloudImport", () => {
   });
 
   it("should disable sync when a sync is in progress", async () => {
-    jest.spyOn(FetchGet, "default").mockImplementation(() =>
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() =>
       Promise.resolve({
         statusCode: 200,
         data: {
@@ -69,26 +69,28 @@ describe("PreferencesCloudImport", () => {
   });
 
   it("waits for start-sync request before allowing another start", async () => {
-    jest.spyOn(FetchGet, "default").mockImplementation(() =>
-      Promise.resolve({
-        statusCode: 200,
-        data: {
-          providers: [
-            {
-              id: "dropbox-camera-uploads",
-              enabled: true,
-              provider: "Dropbox",
-              remoteFolder: "/Camera Uploads",
-              syncFrequencyMinutes: 0,
-              syncFrequencyHours: 0,
-              deleteAfterImport: false
-            }
-          ],
-          isSyncInProgress: false,
-          lastSyncResults: {}
-        }
-      })
-    );
+    const fetchGetPromise = Promise.resolve({
+      statusCode: 200,
+      data: {
+        providers: [
+          {
+            id: "dropbox-camera-uploads",
+            enabled: true,
+            provider: "Dropbox",
+            remoteFolder: "/Camera Uploads",
+            syncFrequencyMinutes: 0,
+            syncFrequencyHours: 0,
+            deleteAfterImport: false
+          }
+        ],
+        isSyncInProgress: false,
+        lastSyncResults: {}
+      }
+    });
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => fetchGetPromise)
+      .mockImplementationOnce(() => fetchGetPromise);
 
     let resolvePost: ((value: unknown) => void) | undefined;
     const postPromise = new Promise((resolve) => {
@@ -127,7 +129,7 @@ describe("PreferencesCloudImport", () => {
   });
 
   it("shows error and re-enables button when starting sync fails", async () => {
-    jest.spyOn(FetchGet, "default").mockImplementation(() =>
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() =>
       Promise.resolve({
         statusCode: 200,
         data: {
