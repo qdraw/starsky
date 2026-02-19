@@ -391,8 +391,8 @@ public sealed class SyncFolder
 	///     Remove all items that are included
 	/// </summary>
 	/// <param name="query">To run async a query object</param>
-	/// <param name="item">root item</param>
-	/// <returns>root item</returns>
+	/// <param name="item">Root item</param>
+	/// <returns>Root item</returns>
 	internal async Task<FileIndexItem> RemoveChildItems(IQuery query, FileIndexItem item)
 	{
 		// Final safety check before deletion - verify folder truly doesn't exist

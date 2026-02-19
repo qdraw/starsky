@@ -1445,84 +1445,81 @@ public sealed class SyncFolderTest
 		await syncFolder.CheckIfFolderExistOnDisk(items);
 	}
 
-	// [TestMethod]
-	// public async Task CheckIfFolderExistOnDisk_FolderWithOnlyFiles_ShouldNotBeDeleted()
-	// {
-	// 	// Setup: Folder in DB with child files on disk but NO subdirectories
-	// 	// This simulates the race condition where files exist but aren't indexed yet
-	// 	await _query.AddItemAsync(
-	// 		new FileIndexItem("/vacation") { IsDirectory = true });
-	// 	await _query.AddItemAsync(
-	// 		new FileIndexItem("/vacation/day1") { IsDirectory = true });
-	//
-	// 	// Storage: Parent and child folder exist with files (but no subdirectories)
-	// 	var storage = new FakeIStorage(
-	// 		["/", "/vacation", "/vacation/day1"], // Only directories, no subdirs of day1
-	// 		["/vacation/day1/photo1.jpg", "/vacation/day1/photo2.jpg"], // But files exist!
-	// 		new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
-	//
-	// 	var logger = new FakeIWebLogger();
-	// 	var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-	// 		new ConsoleWrapper(), logger,
-	// 		new FakeMemoryCache(new Dictionary<string, object>()), null);
-	//
-	// 	// Act: Actually call the Folder() method to trigger CheckIfFolderExistOnDisk
-	// 	var result = await syncFolder.Folder("/vacation");
-	//
-	// 	// Assert: Folder with files should NOT be marked for deletion
-	// 	var dayOneFolder = result.FirstOrDefault(r => r.FilePath == "/vacation/day1");
-	//
-	// 	if ( dayOneFolder != null )
-	// 	{
-	// 		Assert.IsTrue(
-	// 			dayOneFolder.Status is FileIndexItem.ExifStatus.Ok
-	// 				or FileIndexItem.ExifStatus.OkAndSame,
-	// 			$"Folder with files should not be deleted. Status was: {dayOneFolder.Status}");
-	// 	}
-	//
-	// 	// Verify the logger didn't mark it for deletion
-	// 	var deletionLogs = logger.TrackedInformation
-	// 		.Where(log => log.Item2?.Contains("/vacation/day1") == true &&
-	// 		              log.Item2.Contains("deletion")).ToList();
-	// 	Assert.IsEmpty(deletionLogs);
-	//
-	// 	// CRITICAL: Verify the log message shows FILES were found (not subdirectories)
-	// 	// This proves GetAllFilesInDirectory() was called and used
-	// 	var filesLog = logger.TrackedInformation
-	// 		.FirstOrDefault(log => log.Item2?.Contains("/vacation/day1") == true &&
-	// 		                       log.Item2.Contains("files exist on disk"));
-	//
-	// 	Assert.IsTrue(!string.IsNullOrEmpty(filesLog.Item2),
-	// 		"CRITICAL: Log should indicate 'files exist on disk' proving GetAllFilesInDirectory() was checked");
-	// }
-
 	/// <summary>
-	///     Related test: Ensure truly empty folders (no files, no subdirectories) ARE deleted
+	/// Test: Folder missing on disk, no subdirectories, no files => should be deleted
 	/// </summary>
 	[TestMethod]
-	public async Task CheckIfFolderExistOnDisk_TrulyEmptyFolder_ShouldBeDeleted()
+	public async Task CheckIfFolderExistOnDisk_EmptyMissingFolder_ShouldBeDeleted()
 	{
-		// Setup: Folder in DB but truly empty on disk
+		// Arrange: Add folder to DB, but not on disk
 		await _query.AddItemAsync(
-			new FileIndexItem("/truly_empty") { IsDirectory = true });
+			new FileIndexItem("/empty_missing_folder") { IsDirectory = true });
 
-		// Storage: Parent exists but the empty folder does NOT exist on disk
-		var storage = new FakeIStorage(
-			["/"], // Empty folder not even listed
-			[], // No files
-			new List<byte[]>());
-
+		// Storage: Only root exists, no subdirs or files in /empty_missing_folder
+		var storage = new FakeIStorage(["/"], [], new List<byte[]>());
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
 			new FakeMemoryCache(new Dictionary<string, object>()), null);
 
-		// Act
-		var result = await syncFolder.Folder("/");
+		// Act: Run folder sync
+		await syncFolder.Folder("/");
 
-		// Assert: Empty folder SHOULD be marked for deletion
-		var emptyFolder = result.FirstOrDefault(r => r.FilePath == "/truly_empty");
-		Assert.IsNotNull(emptyFolder, "Empty folder should be in results");
-		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, emptyFolder.Status,
-			"Truly empty folder should be marked as deleted");
+		// Assert: Folder should be deleted from DB
+		var folder = await _query.GetObjectByFilePathAsync("/empty_missing_folder");
+		Assert.IsNull(folder, "Empty missing folder should be deleted");
+	}
+
+	/// <summary>
+	/// Test: Folder missing on disk, but has subdirectories => should skip deletion and log reason
+	/// </summary>
+	[TestMethod]
+	public async Task CheckIfFolderExistOnDisk_MissingFolderWithSubdirectories_ShouldSkipDeletionAndLog()
+	{
+		await _query.AddItemAsync(new FileIndexItem("/missing_with_subdirs") { IsDirectory = true });
+
+		// Storage: Only root and subdirectory exist, not the folder itself
+		var storage = new FakeIStorage(["/", "/missing_with_subdirs/subdir"], [], new List<byte[]>());
+		var logger = new FakeIWebLogger();
+		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+			new ConsoleWrapper(), logger,
+			new FakeMemoryCache(new Dictionary<string, object>()), null);
+
+		await syncFolder.Folder("/");
+
+		// Assert: Folder should NOT be deleted
+		var folder = await _query.GetObjectByFilePathAsync("/missing_with_subdirs");
+		Assert.IsNotNull(folder, "Folder with subdirectories should not be deleted");
+		// Assert: Log contains correct reason
+		Assert.Contains(log =>
+			log.Item2!.Contains("[SyncFolder] Skipping deletion of /missing_with_subdirs - subdirectories exist on disk"),
+			logger.TrackedInformation,
+			"Expected log message about skipping deletion due to subdirectories");
+	}
+
+	/// <summary>
+	/// Test: Folder missing on disk, but has files => should skip deletion and log reason
+	/// </summary>
+	[TestMethod]
+	public async Task CheckIfFolderExistOnDisk_MissingFolderWithFiles_ShouldSkipDeletionAndLog()
+	{
+		await _query.AddItemAsync(new FileIndexItem("/missing_with_files") { IsDirectory = true });
+
+		// Storage: Only root exists, but file is present in the folder
+		var storage = new FakeIStorage(["/"], ["/missing_with_files/file.jpg"], new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var logger = new FakeIWebLogger();
+		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+			new ConsoleWrapper(), logger,
+			new FakeMemoryCache(new Dictionary<string, object>()), null);
+
+		await syncFolder.Folder("/");
+
+		// Assert: Folder should NOT be deleted
+		var folder = await _query.GetObjectByFilePathAsync("/missing_with_files");
+		Assert.IsNotNull(folder, "Folder with files should not be deleted");
+		// Assert: Log contains correct reason
+		Assert.Contains(log =>
+			log.Item2!.Contains("[SyncFolder] Skipping deletion of /missing_with_files - files exist on disk"),
+			logger.TrackedInformation,
+			"Expected log message about skipping deletion due to files");
 	}
 }
