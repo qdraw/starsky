@@ -257,6 +257,11 @@ public class FakeIQuery : IQuery
 			.Where(p => p.ParentDirectory == subPath && p.IsDirectory == true).ToList());
 	}
 
+	public Task<List<FileIndexItem>> GetFoldersAsync(List<string> filePaths)
+	{
+		throw new NotImplementedException();
+	}
+
 	public Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath)
 	{
 		return Task.FromResult(_content.Where(p => p.ParentDirectory == subPath).ToList());
