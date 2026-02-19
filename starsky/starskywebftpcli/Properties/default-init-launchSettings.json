@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "starskywebftpcli": {
+      "commandName": "Project",
+      "commandLineArgs": "-p",
+      "environmentVariables": {
+        "app__webFtp": "ftp://"
+      }
+    }
+  }
+}
