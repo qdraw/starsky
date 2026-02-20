@@ -53,7 +53,7 @@ jobs:
           architecture: x64 # (x64 or x86) - defaults to x64
 
       - name: Set node version
-        uses: actions/setup-node@d02c89dce7e1ba9ef629ce0680989b3a1cc72edb
+        uses: actions/setup-node@efcb663fc60e97218a2b2d6d827f7830f164739e
         with:
           node-version: '22.x'
 
