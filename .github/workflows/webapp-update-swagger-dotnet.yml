@@ -29,7 +29,7 @@ jobs:
     steps:
     - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@131b410979e0b49e2162c0718030257b22d6dc2c
+      uses: actions/setup-dotnet@16c7b3c2fa55a0e394467d22512b84fda46adf63
       with:
         dotnet-version: 8.0.418
 
