@@ -119,7 +119,7 @@ $ActionsWorkflowUrlInProgress = Get-Workflow-Url -WorkflowId $WorkflowId -Status
 
 # Define the API status code variable
 try {
-    $apiResponse = Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token, "User-Agent": "starsky-ci"} -UseBasicParsing -ErrorAction Stop
+    $apiResponse = Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token} -UseBasicParsing -ErrorAction Stop
 }
 catch {
     Write-Output "GitHub API request failed: $($_.Exception.Message)"
