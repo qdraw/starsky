@@ -1,18 +1,19 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn.CreateFakeStarskyExe;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 
 /// <summary>
-/// Only for Windows - test the WindowsSetFileAssociationsWindows
+///     Only for Windows - test the WindowsSetFileAssociationsWindows
 /// </summary>
 [TestClass]
 public partial class WindowsSetFileAssociationsTests
@@ -20,6 +21,9 @@ public partial class WindowsSetFileAssociationsTests
 	private const string Extension = ".starsky";
 	private const string ProgId = "starskytest";
 	private const string FileTypeDescription = "Starsky Test File";
+
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+	public TestContext TestContext { get; set; }
 
 	[TestInitialize]
 	public void TestInitialize()
@@ -42,15 +46,24 @@ public partial class WindowsSetFileAssociationsTests
 			return;
 		}
 
-		// Ensure no keys exist before the test starts
-		try
+		RetryHelper.Do(DeleteKeys, TimeSpan.FromSeconds(1));
+		return;
+
+		// 	Ensure no keys exist before the test starts
+		static bool DeleteKeys()
 		{
-			Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{Extension}", false);
-			Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{ProgId}", false);
-		}
-		catch ( IOException )
-		{
-			// Ignore if the key does not exist
+			try
+			{
+				Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{Extension}", false);
+				Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{ProgId}", false);
+				return true;
+			}
+			catch ( IOException )
+			{
+				// Ignore if the key does not exist
+			}
+
+			return false;
 		}
 	}
 
@@ -75,13 +88,13 @@ public partial class WindowsSetFileAssociationsTests
 			{
 				Set();
 			}
-			
+
 			Console.WriteLine($"Registry key not found " +
 			                  $"(attempt {attempt + 1})," +
 			                  $" waiting for registry to update");
-			
+
 			await Task.Delay(250, TestContext.CancellationTokenSource.Token);
-			
+
 			valueKey = GetRegistryValue();
 			if ( valueKey != null )
 			{
@@ -123,7 +136,4 @@ public partial class WindowsSetFileAssociationsTests
 
 	[GeneratedRegex("\"([^\"]*)\"")]
 	private static partial Regex GetFilePathFromRegistryRegex();
-
-	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-	public TestContext TestContext { get; set; }
 }
