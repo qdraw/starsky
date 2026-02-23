@@ -77,7 +77,11 @@ describe("useOffsetState", () => {
 
       act(() => {
         for (const { setter, value } of setup) {
-          (result.current[setter as keyof typeof result.current] as any)(value);
+          (
+            result.current[setter as keyof typeof result.current] as unknown as (
+              value: number
+            ) => void
+          )(value);
         }
       });
 
@@ -127,7 +131,11 @@ describe("useOffsetState", () => {
       const { result } = renderHook(() => useOffsetState());
 
       act(() => {
-        (result.current[setter as keyof typeof result.current] as any)(value);
+        (
+          result.current[setter as keyof typeof result.current] as unknown as (
+            value: number
+          ) => void
+        )(value);
       });
 
       const offset = result.current.getOffset();

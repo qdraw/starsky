@@ -78,7 +78,6 @@ export function ArchiveEventListenerUseEffect(dispatch: React.Dispatch<ArchiveAc
       document.body.removeEventListener(useSocketsEventName, update);
     };
     // only when start of view
-    // eslint-disable-next-line
   }, []);
 }
 

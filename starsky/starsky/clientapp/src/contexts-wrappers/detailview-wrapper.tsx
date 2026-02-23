@@ -61,7 +61,6 @@ export function DetailViewEventListenerUseEffect(dispatch: React.Dispatch<Detail
       document.body.removeEventListener(useSocketsEventName, update);
     };
     // only when start of view
-    // eslint-disable-next-line
   }, []);
 }
 

@@ -60,7 +60,7 @@ describe("fetchCityTimezones", () => {
       () =>
         ({
           UrlGeoLocationNameCityTimezone: mockUrlSpy
-        }) as any
+        }) as unknown as UrlQuery.UrlQuery
     );
 
     jest.spyOn(FetchGet, "default").mockResolvedValue({
