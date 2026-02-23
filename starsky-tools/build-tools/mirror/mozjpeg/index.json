@@ -1,0 +1,29 @@
+{
+    "binaries": [
+        {
+            "architecture": "linux-x64",
+            "fileName": "mozjpeg-linux-x64.zip",
+            "sha256": "ab3a2655cdff367c84723b6eeb438797afaa84fb36ac790f63bcf6dfacc1d95f"
+        },
+        {
+            "architecture": "linux-arm64",
+            "fileName": "mozjpeg-linux-arm64.zip",
+            "sha256": "ec1167d6e5d3e2933683edd271b8d39d5aef87b38b01be5e33f2786217154d8b"
+        },
+        {
+            "architecture": "osx-x64",
+            "fileName": "mozjpeg-osx-x64.zip",
+            "sha256": "97a59354556357467b8c02fc11433af097985e3aacb429df2ed60d5068c221db"
+        },
+        {
+            "architecture": "osx-arm64",
+            "fileName": "mozjpeg-osx-arm64.zip",
+            "sha256": "97a59354556357467b8c02fc11433af097985e3aacb429df2ed60d5068c221db"
+        },
+        {
+            "architecture": "win-x64",
+            "fileName": "mozjpeg-win-x64.zip",
+            "sha256": "3b23b1b41e6bfe9c2d1e6cfcc1fbbb2cf16fafe3b100871ae85574048037b466"
+        }
+    ]
+}
