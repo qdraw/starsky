@@ -92,7 +92,11 @@ if ((Test-Path -Path $startupCsPath) -eq $true) {
 if ([string]::IsNullOrWhitespace($token)){
     write-host "enter pat as --token and rerun"
     exit 1
-} 
+}
+
+# GitHub API calls in Windows PowerShell need TLS 1.2 and a User-Agent
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$ghHeaders = @{ Authorization = "Token " + $token; "User-Agent" = "starsky-ci" }
 
 # Define the API URL
 function Get-Workflow-Url {
@@ -115,7 +119,15 @@ $ActionsWorkflowUrlCompleted = Get-Workflow-Url -WorkflowId $WorkflowId -Status 
 $ActionsWorkflowUrlInProgress = Get-Workflow-Url -WorkflowId $WorkflowId -Status "in_progress" -Branch ""
 
 # Define the API status code variable
-$ApiGatewayStatusCode = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token}).StatusCode
+try {
+    $apiResponse = Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers $ghHeaders -UseBasicParsing -ErrorAction Stop
+}
+catch {
+    Write-Output "GitHub API request failed: $($_.Exception.Message)"
+    exit 1
+}
+$ApiGatewayStatusCode = $apiResponse.StatusCode
+
 
 # Check if the API status code is 401 or 404
 if ($ApiGatewayStatusCode -eq 401 -or $ApiGatewayStatusCode -eq 404) {
@@ -134,9 +146,7 @@ function Wait-For-WorkflowCompletion {
     $RetryCount = 0
 
     while ($true) {
-        $ResultActionsInProgressWorkflow = Invoke-RestMethod -Uri $ActionsWorkflowUrlInProgress -Headers @{
-            Authorization = "Token " + $StarskyGitHubPAT
-        }
+        $ResultActionsInProgressWorkflow = Invoke-RestMethod -Uri $ActionsWorkflowUrlInProgress -Headers $ghHeaders -ErrorAction Stop
 
         $totalCount = $ResultActionsInProgressWorkflow.total_count
 
@@ -161,7 +171,7 @@ Wait-For-WorkflowCompletion -StarskyGitHubPAT $token -ActionsWorkflowURLInProgre
 
 
 # Get the latest workflow run information
-$LatestRun = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token} | ConvertFrom-Json).workflow_runs[0]
+$LatestRun = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers $ghHeaders -UseBasicParsing -ErrorAction Stop | ConvertFrom-Json).workflow_runs[0]
 
 
 # Get the latest workflow run ID
@@ -171,7 +181,7 @@ $LatestRunId = $LatestRun.id
 # Get the artifacts URL
 $ArtifactsUrl = $LatestRun.artifacts_url
 
-$artifactsUrlResult = (Invoke-WebRequest -Method GET -Uri $LatestRun.artifacts_url -Headers @{Authorization = "Token " + $token} | ConvertFrom-Json)
+$artifactsUrlResult = (Invoke-WebRequest -Method GET -Uri $LatestRun.artifacts_url -Headers $ghHeaders -UseBasicParsing -ErrorAction Stop | ConvertFrom-Json)
 
 $artifactsDownloadUrl = ""
 ForEach ($artifact in $artifactsUrlResult.artifacts) {
@@ -191,7 +201,7 @@ if ([string]::IsNullOrWhitespace($artifactsDownloadUrl)){
 $outPutZipTempPath= Join-Path -Path $outPut -ChildPath "${versionName}_tmp.zip"
 
 write-host "Next: download output file:" $outPutZipTempPath
-Invoke-WebRequest  -Method GET -Uri $artifactsDownloadUrl -Headers @{Authorization = "Token " + $token} -OutFile $outPutZipTempPath
+Invoke-WebRequest -Method GET -Uri $artifactsDownloadUrl -Headers $ghHeaders -OutFile $outPutZipTempPath -UseBasicParsing -ErrorAction Stop
 
 # remove already downloaded outputs
 ForEach ($singleVersionZip in $versionZipArray) {
