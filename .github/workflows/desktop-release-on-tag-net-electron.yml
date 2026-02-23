@@ -27,7 +27,7 @@ jobs:
         run: sudo rm -rf /usr/local/lib/android
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@131b410979e0b49e2162c0718030257b22d6dc2c
+        uses: actions/setup-dotnet@16c7b3c2fa55a0e394467d22512b84fda46adf63
         with:
           dotnet-version: 8.0.418
 
@@ -213,7 +213,7 @@ jobs:
         run: npm run release-version-check
 
       - name: Use node version
-        uses: actions/setup-node@d02c89dce7e1ba9ef629ce0680989b3a1cc72edb
+        uses: actions/setup-node@efcb663fc60e97218a2b2d6d827f7830f164739e
         with:
           node-version: '22.x'
 
