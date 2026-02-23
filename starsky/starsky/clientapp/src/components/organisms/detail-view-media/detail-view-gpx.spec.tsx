@@ -33,7 +33,7 @@ describe("DetailViewGpx", () => {
       const polylineSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
           addTo: jest.fn()
-        } as any;
+        } as unknown as L.Polyline;
       });
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
@@ -76,12 +76,12 @@ describe("DetailViewGpx", () => {
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
       const div = document.createElement("div");
-      (window as any).domNode = div;
+      (window as unknown as { domNode: HTMLDivElement }).domNode = div;
       document.body.appendChild(div);
 
       const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
-          ...(new MapMock("", {}) as any),
+          ...(new MapMock("", {}) as unknown as L.Map),
           dragging: { disable: jest.fn() },
           touchZoom: { disable: jest.fn() },
           doubleClickZoom: { disable: jest.fn() },
@@ -89,13 +89,13 @@ describe("DetailViewGpx", () => {
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
           tapHold: { disable: jest.fn() }
-        };
+        } as unknown as L.Map;
       });
 
       const polylineSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
           addTo: jest.fn()
-        } as any;
+        } as unknown as L.Polyline;
       });
 
       // attachTo: (window as any).domNode
@@ -129,7 +129,7 @@ describe("DetailViewGpx", () => {
 
       const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
-          ...(new MapMock("", {}) as any),
+          ...(new MapMock("", {}) as unknown as L.Map),
           dragging: { disable: jest.fn(), enable },
           touchZoom: { disable: jest.fn(), enable: jest.fn() },
           doubleClickZoom: { disable: jest.fn(), enable: jest.fn() },
@@ -138,13 +138,13 @@ describe("DetailViewGpx", () => {
           keyboard: { disable: jest.fn() },
           tapHold: { disable: jest.fn() },
           zoomIn
-        };
+        } as unknown as L.Map;
       });
 
       const polylineSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
           addTo: jest.fn()
-        } as any;
+        } as unknown as L.Polyline;
       });
 
       const gpx = render(<DetailViewGpx></DetailViewGpx>);
@@ -188,7 +188,7 @@ describe("DetailViewGpx", () => {
 
       const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
-          ...(new MapMock("", {}) as any),
+          ...(new MapMock("", {}) as unknown as L.Map),
           dragging: { disable: jest.fn(), enable },
           touchZoom: { disable: jest.fn(), enable: jest.fn() },
           doubleClickZoom: { disable: jest.fn(), enable: jest.fn() },
@@ -197,13 +197,13 @@ describe("DetailViewGpx", () => {
           keyboard: { disable: jest.fn() },
           tapHold: { disable: jest.fn() },
           zoomOut
-        };
+        } as unknown as L.Map;
       });
 
       const polylineSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
           addTo: jest.fn()
-        } as any;
+        } as unknown as L.Polyline;
       });
 
       const gpx = render(<DetailViewGpx></DetailViewGpx>);
@@ -255,7 +255,7 @@ describe("DetailViewGpx", () => {
 
       const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
-          ...(new MapMock("", {}) as any),
+          ...(new MapMock("", {}) as unknown as L.Map),
           dragging: { disable, enable },
           touchZoom: { disable: jest.fn() },
           doubleClickZoom: { disable: jest.fn() },
@@ -264,13 +264,13 @@ describe("DetailViewGpx", () => {
           keyboard: { disable: jest.fn() },
           tapHold: { disable: jest.fn() },
           zoomOut
-        };
+        } as unknown as L.Map;
       });
 
       jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
           addTo: jest.fn()
-        } as any;
+        } as unknown as L.Polyline;
       });
 
       //attachTo: (window as any).domNode
@@ -309,13 +309,13 @@ describe("DetailViewGpx", () => {
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
       const div = document.createElement("div");
-      (window as any).domNode = div;
+      (window as unknown as { domNode: HTMLDivElement }).domNode = div;
       document.body.appendChild(div);
 
       const setViewSpy = jest.fn();
       const lMapMock = () => {
         return {
-          ...(new MapMock("", {}) as any),
+          ...(new MapMock("", {}) as unknown as L.Map),
           dragging: { disable: jest.fn(), enable: jest.fn() },
           touchZoom: { disable: jest.fn(), enable: jest.fn() },
           doubleClickZoom: { disable: jest.fn(), enable: jest.fn() },
@@ -324,14 +324,14 @@ describe("DetailViewGpx", () => {
           keyboard: { disable: jest.fn() },
           tapHold: { disable: jest.fn() },
           setView: setViewSpy
-        };
+        } as unknown as L.Map;
       };
       const spyMap = jest.spyOn(L, "map").mockImplementationOnce(lMapMock);
 
       jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
           addTo: jest.fn()
-        } as any;
+        } as unknown as L.Polyline;
       });
 
       const locationButton = (input: CurrentLocationButtonPropTypes) => {
@@ -374,7 +374,7 @@ describe("DetailViewGpx", () => {
     });
   });
 
-  const LeafletMock: any = jest.genMockFromModule("leaflet");
+  const LeafletMock: any = jest.genMockFromModule("leaflet") as unknown as typeof L;
 
   class MapMock extends LeafletMock.Map {
     constructor(_id: any, options: any = {}) {
