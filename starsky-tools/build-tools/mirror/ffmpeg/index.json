@@ -27,8 +27,8 @@
         },
         {
             "architecture": "osx-arm64",
-            "fileName": "ffmpeg711arm.zip",
-            "sha256": "59e39a5cec2e5d2307ed079c53227a9181e64b87454ed4de998349e044bfdc70"
+            "fileName": "ffmpeg80arm.zip",
+            "sha256": "0d4efcaf6a098430a708e0af694a84792938921fa126162787ae98c6151d7a95"
         }
     ]
 }

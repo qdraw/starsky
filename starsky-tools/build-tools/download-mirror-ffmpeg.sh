@@ -3,7 +3,7 @@
 # for: starsky-dependencies
 
 FFBINARIES_API="https://ffbinaries.com/api/v1/version/6.1"
-OSX_ARM64_FILENAME="ffmpeg711arm.zip"
+OSX_ARM64_FILENAME="ffmpeg80arm.zip"
 OSX_ARM64_URL="https://www.osxexperts.net/"$OSX_ARM64_FILENAME
 OSX_ARM64_NAME="osx-arm64"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
