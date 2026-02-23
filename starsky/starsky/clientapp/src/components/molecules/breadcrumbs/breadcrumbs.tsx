@@ -48,7 +48,9 @@ const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
           </span>
         );
       })}
-      {new URLPath().FileNameBreadcrumb(props.subPath)}
+      <span className="current" data-test={"breadcrumb-span-current"}>
+        {new URLPath().FileNameBreadcrumb(props.subPath)}
+      </span>
     </div>
   );
 });
