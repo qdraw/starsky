@@ -568,12 +568,12 @@ public sealed class AppSettingsCompareHelperTest
 	{
 		var source = new AppSettings
 		{
-			publishProfilesDefaults = new AppSettingsPublishProfilesDefaults()
+			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults()
 		};
 
 		var to = new AppSettings
 		{
-			publishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
 			{
 				ProfileFeatures = new ProfileFeatures
 				{
@@ -599,8 +599,8 @@ public sealed class AppSettingsCompareHelperTest
 		};
 
 		AppSettingsCompareHelper.Compare(source, to);
-		Assert.AreEqual(source.publishProfilesDefaults,
-			to.publishProfilesDefaults);
+		Assert.AreEqual(source.PublishProfilesDefaults,
+			to.PublishProfilesDefaults);
 	}
 
 	[TestMethod]
@@ -608,7 +608,7 @@ public sealed class AppSettingsCompareHelperTest
 	{
 		var source = new AppSettings
 		{
-			publishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
 			{
 				ProfileFeatures = new ProfileFeatures
 				{
@@ -620,7 +620,7 @@ public sealed class AppSettingsCompareHelperTest
 
 		var to = new AppSettings
 		{
-			publishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
 			{
 				ProfileFeatures = new ProfileFeatures
 				{
@@ -631,10 +631,10 @@ public sealed class AppSettingsCompareHelperTest
 		};
 
 		AppSettingsCompareHelper.Compare(source, to);
-		Assert.AreEqual(source.publishProfilesDefaults.ProfileFeatures.Optimization.Enabled,
-			to.publishProfilesDefaults.ProfileFeatures.Optimization.Enabled);
-		Assert.AreEqual(source.publishProfilesDefaults.ProfileFeatures.Publishing.Enabled,
-			to.publishProfilesDefaults.ProfileFeatures.Publishing.Enabled);
+		Assert.AreEqual(source.PublishProfilesDefaults.ProfileFeatures.Optimization.Enabled,
+			to.PublishProfilesDefaults.ProfileFeatures.Optimization.Enabled);
+		Assert.AreEqual(source.PublishProfilesDefaults.ProfileFeatures.Publishing.Enabled,
+			to.PublishProfilesDefaults.ProfileFeatures.Publishing.Enabled);
 	}
 
 	[TestMethod]

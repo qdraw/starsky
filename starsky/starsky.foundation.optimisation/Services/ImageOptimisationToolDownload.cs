@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Medallion.Shell;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.optimisation.Interfaces;
@@ -121,30 +121,14 @@ public class ImageOptimisationToolDownload(
 			return false;
 		}
 
-		var processStartInfo = new ProcessStartInfo(cmdPath)
-		{
-			RedirectStandardError = true
-		};
-		processStartInfo.ArgumentList.Add("-R");
-		processStartInfo.ArgumentList.Add("0755");
-		processStartInfo.ArgumentList.Add(path);
-
-		var process = Process.Start(processStartInfo);
-		if ( process == null )
-		{
-			logger.LogError("[ImageOptimisationToolDownload] Could not start chmod process");
-			return false;
-		}
-
-		await process.WaitForExitAsync();
-		if ( process.ExitCode == 0 )
+		var result = await Command.Run(cmdPath, "-R", "0755", path).Task;
+		if ( result.Success )
 		{
 			return true;
 		}
 
-		var standardError = await process.StandardError.ReadToEndAsync();
 		logger.LogError(
-			$"[ImageOptimisationToolDownload] chmod failed with {process.ExitCode}: {standardError}");
+			$"[ImageOptimisationToolDownload] chmod failed with {result.ExitCode}: {result.StandardError}");
 		return false;
 	}
 }

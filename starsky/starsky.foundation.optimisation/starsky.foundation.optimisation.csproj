@@ -13,4 +13,8 @@
         <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="MedallionShell" Version="1.6.2"/>
+    </ItemGroup>
+
 </Project>

@@ -12,6 +12,8 @@ using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.optimisation.Interfaces;
+using starsky.foundation.optimisation.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Interfaces;
@@ -41,6 +43,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IWebLogger _logger;
 	private readonly IOverlayImage _overlayImage;
+	private readonly IImageOptimisationService _imageOptimisationService;
 	private readonly PublishManifest _publishManifest;
 	private readonly IPublishPreflight _publishPreflight;
 	private readonly IStorage _subPathStorage;
@@ -54,6 +57,18 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool,
 		IOverlayImage overlayImage, IConsole console, IWebLogger logger,
 		IThumbnailService thumbnailService)
+		: this(publishPreflight, selectorStorage, appSettings, exifTool, overlayImage,
+			console, logger, thumbnailService, new NoOperationImageOptimisationService())
+	{
+	}
+
+	[SuppressMessage("Usage",
+		"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
+	public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage
+			selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool,
+		IOverlayImage overlayImage, IConsole console, IWebLogger logger,
+		IThumbnailService thumbnailService,
+		IImageOptimisationService imageOptimisationService)
 	{
 		_publishPreflight = publishPreflight;
 		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -70,6 +85,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			selectorStorage);
 		_logger = logger;
 		_thumbnailService = thumbnailService;
+		_imageOptimisationService = imageOptimisationService;
 	}
 
 	public async Task<Dictionary<string, bool>?> RenderCopy(
@@ -343,9 +359,29 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			}
 		}
 
+		await _imageOptimisationService.Optimize(
+			fileIndexItemsList.Select(item => new ImageOptimisationItem
+			{
+				InputPath = item.FilePath!,
+				OutputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder,
+					item.FilePath!, profile),
+				ImageFormat = item.ImageFormat
+			}).ToList(),
+			ResolveOptimizers(profile));
+
 		return fileIndexItemsList.ToDictionary(item =>
 				_overlayImage.FilePathOverlayImage(item.FilePath!, profile),
 			_ => profile.Copy);
+	}
+
+	private List<Optimizer> ResolveOptimizers(AppSettingsPublishProfiles profile)
+	{
+		if ( profile.Optimizers.Count > 0 )
+		{
+			return profile.Optimizers;
+		}
+
+		return _appSettings.PublishProfilesDefaults?.Optimizers ?? [];
 	}
 
 	/// <summary>
@@ -457,5 +493,14 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		return fileIndexItemsList.ToDictionary(item =>
 				_overlayImage.FilePathOverlayImage(item.FilePath!, profile),
 			_ => profile.Copy);
+	}
+
+	private sealed class NoOperationImageOptimisationService : IImageOptimisationService
+	{
+		public Task Optimize(IReadOnlyCollection<ImageOptimisationItem> images,
+			List<Optimizer>? optimizers = null)
+		{
+			return Task.CompletedTask;
+		}
 	}
 }
