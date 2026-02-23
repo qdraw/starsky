@@ -525,10 +525,14 @@ public sealed class AppSettings
 		}
 	}
 
+	[PackageTelemetry]
+	public AppSettingsPublishProfilesDefaults PublishProfilesDefaults { get; set; } =
+		new();
+
 	/// <summary>
 	///     Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)
-	///     This setting is by default false. The only 2 build-in exceptions are when there are no accounts
-	///     or you already logged in
+	///     This setting is by default false. The only 2 build-in exceptions are when there are no
+	///     accounts, or you already logged in
 	/// </summary>
 	[PackageTelemetry]
 	public bool? IsAccountRegisterOpen { get; set; }
@@ -656,7 +660,7 @@ public sealed class AppSettings
 	///     Quicktime timestamps are supposed to be set to UTC time as per the standard.
 	///     But it seems a lot of cameras don't do this
 	///     We assume that the standard is followed,
-	///		and for Camera brands that don't follow the specs use
+	///     and for Camera brands that don't follow the specs use
 	///     this setting.
 	/// </summary>
 	[PackageTelemetry]

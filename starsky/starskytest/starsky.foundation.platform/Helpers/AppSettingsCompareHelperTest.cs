@@ -493,8 +493,8 @@ public sealed class AppSettingsCompareHelperTest
 
 		AppSettingsCompareHelper.Compare(source, to);
 
-		Assert.AreEqual(source.PublishProfiles?.Keys.FirstOrDefault(),
-			to.PublishProfiles?.Keys.FirstOrDefault());
+		Assert.AreEqual(source.DemoData.FirstOrDefault(),
+			to.DemoData?.FirstOrDefault());
 	}
 
 	[TestMethod]
@@ -509,8 +509,8 @@ public sealed class AppSettingsCompareHelperTest
 
 		AppSettingsCompareHelper.Compare(source, to);
 
-		Assert.AreEqual(source.PublishProfiles?.Keys.FirstOrDefault(),
-			to.PublishProfiles?.Keys.FirstOrDefault());
+		Assert.AreEqual(source.DemoData.FirstOrDefault(),
+			to.DemoData.FirstOrDefault());
 	}
 
 	[TestMethod]
@@ -561,6 +561,80 @@ public sealed class AppSettingsCompareHelperTest
 		AppSettingsCompareHelper.Compare(source, to);
 		Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(),
 			to.PublishProfiles.Keys.FirstOrDefault());
+	}
+
+	[TestMethod]
+	public void AppSettingsPublishProfilesDefaults_Difference()
+	{
+		var source = new AppSettings
+		{
+			publishProfilesDefaults = new AppSettingsPublishProfilesDefaults()
+		};
+
+		var to = new AppSettings
+		{
+			publishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			{
+				ProfileFeatures = new ProfileFeatures
+				{
+					Optimization = new Optimization { Enabled = true },
+					Publishing = new Publishing { Enabled = true }
+				},
+				Optimizers =
+				[
+					new Optimizer
+					{
+						Id = "Optimizer1",
+						Enabled = true,
+						ImageFormats =
+						[
+							ExtensionRolesHelper.ImageFormat.jpg,
+							ExtensionRolesHelper.ImageFormat.png
+						],
+						Options = new OptimizerOptions { Quality = 80 }
+					}
+				],
+				PublishTargets = new PublishTargets { Ftp = new FtpTarget { Enabled = true } }
+			}
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+		Assert.AreEqual(source.publishProfilesDefaults,
+			to.publishProfilesDefaults);
+	}
+
+	[TestMethod]
+	public void AppSettingsPublishProfilesDefaults_Same()
+	{
+		var source = new AppSettings
+		{
+			publishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			{
+				ProfileFeatures = new ProfileFeatures
+				{
+					Optimization = new Optimization { Enabled = true },
+					Publishing = new Publishing { Enabled = true }
+				}
+			}
+		};
+
+		var to = new AppSettings
+		{
+			publishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			{
+				ProfileFeatures = new ProfileFeatures
+				{
+					Optimization = new Optimization { Enabled = true },
+					Publishing = new Publishing { Enabled = true }
+				}
+			}
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+		Assert.AreEqual(source.publishProfilesDefaults.ProfileFeatures.Optimization.Enabled,
+			to.publishProfilesDefaults.ProfileFeatures.Optimization.Enabled);
+		Assert.AreEqual(source.publishProfilesDefaults.ProfileFeatures.Publishing.Enabled,
+			to.publishProfilesDefaults.ProfileFeatures.Publishing.Enabled);
 	}
 
 	[TestMethod]
