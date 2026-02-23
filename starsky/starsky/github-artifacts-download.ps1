@@ -120,8 +120,7 @@ $ActionsWorkflowUrlInProgress = Get-Workflow-Url -WorkflowId $WorkflowId -Status
 
 # Define the API status code variable
 try {
-    $apiResponse = Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted \
-        -Headers $ghHeaders -UseBasicParsing -ErrorAction Stop
+    $apiResponse = Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers $ghHeaders -UseBasicParsing -ErrorAction Stop
 }
 catch {
     Write-Output "GitHub API request failed: $($_.Exception.Message)"
@@ -146,8 +145,9 @@ function Wait-For-WorkflowCompletion {
     $RetryCount = 0
 
     while ($true) {
-        $ResultActionsInProgressWorkflow = Invoke-RestMethod -Uri $ActionsWorkflowUrlInProgress \
-            -Headers $ghHeaders -ErrorAction Stop
+        $ResultActionsInProgressWorkflow = Invoke-RestMethod -Uri $ActionsWorkflowUrlInProgress -Headers @{
+            Authorization = "Token " + $StarskyGitHubPAT
+        }
 
         $totalCount = $ResultActionsInProgressWorkflow.total_count
 
@@ -172,9 +172,7 @@ Wait-For-WorkflowCompletion -StarskyGitHubPAT $token -ActionsWorkflowURLInProgre
 
 
 # Get the latest workflow run information
-$LatestRun = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted \
-    -Headers $ghHeaders -UseBasicParsing -ErrorAction Stop | ConvertFrom-Json).workflow_runs[0]
-
+$LatestRun = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token} | ConvertFrom-Json).workflow_runs[0]
 
 # Get the latest workflow run ID
 $LatestRunId = $LatestRun.id
