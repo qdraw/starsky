@@ -92,7 +92,7 @@ if ((Test-Path -Path $startupCsPath) -eq $true) {
 if ([string]::IsNullOrWhitespace($token)){
     write-host "enter pat as --token and rerun"
     exit 1
-} 
+}
 
 # GitHub API calls in Windows PowerShell need TLS 1.2 and a User-Agent
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -118,7 +118,15 @@ $ActionsWorkflowUrlCompleted = Get-Workflow-Url -WorkflowId $WorkflowId -Status 
 $ActionsWorkflowUrlInProgress = Get-Workflow-Url -WorkflowId $WorkflowId -Status "in_progress" -Branch ""
 
 # Define the API status code variable
-$ApiGatewayStatusCode = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token}).StatusCode
+try {
+    $apiResponse = Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token, "User-Agent": "starsky-ci"} -UseBasicParsing -ErrorAction Stop
+}
+catch {
+    Write-Output "GitHub API request failed: $($_.Exception.Message)"
+    exit 1
+}
+$ApiGatewayStatusCode = $apiResponse.StatusCode
+
 
 # Check if the API status code is 401 or 404
 if ($ApiGatewayStatusCode -eq 401 -or $ApiGatewayStatusCode -eq 404) {
