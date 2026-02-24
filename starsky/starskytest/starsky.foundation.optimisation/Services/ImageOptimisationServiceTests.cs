@@ -76,6 +76,40 @@ public class ImageOptimisationServiceTests
 				p.Item2!.Contains("[ImageOptimisationService] Unknown optimizer id"),
 			logger.TrackedInformation);
 	}
+	
+	[TestMethod]
+	public async Task Optimize_NotFoundId_DoesNotDownload2()
+	{
+		var appSettings = new AppSettings
+		{
+			 PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			{
+				Optimizers =
+				[
+				]
+			}
+		};
+		var fakeDownloaders = new FakeMozJpegDownload();
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage([], ["/out.jpg"]);
+		var fakeMozJpeg = new MozJpegService(appSettings,
+			new FakeSelectorStorage(storage), logger, fakeDownloaders);
+
+		var sut = new ImageOptimisationService(appSettings,
+			new FakeSelectorStorage(storage), logger, fakeMozJpeg);
+
+		await sut.Optimize(
+			[
+				new ImageOptimisationItem
+				{
+					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
+					InputPath = "/in.jpg",
+					OutputPath = "/out.jpg"
+				}
+			]);
+
+		Assert.AreEqual(0, fakeDownloaders.DownloadCount);
+	}
 
 	[TestMethod]
 	public async Task Optimize_UsesDefaults_WhenOptimizersNull_AndMatchesImageFormat()
