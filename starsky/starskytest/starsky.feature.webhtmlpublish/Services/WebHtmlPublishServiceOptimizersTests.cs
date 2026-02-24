@@ -119,17 +119,5 @@ public class WebHtmlPublishServiceOptimizersTests
 		Assert.AreEqual("mozjpeg", fakeOptimisationService.ReceivedOptimizers[0].Id);
 	}
 
-	private sealed class FakeImageOptimisationService : IImageOptimisationService
-	{
-		public bool Called { get; private set; }
-		public List<Optimizer>? ReceivedOptimizers { get; private set; }
 
-		public Task Optimize(IReadOnlyCollection<ImageOptimisationItem> images,
-			List<Optimizer>? optimizers = null)
-		{
-			Called = true;
-			ReceivedOptimizers = optimizers;
-			return Task.CompletedTask;
-		}
-	}
 }

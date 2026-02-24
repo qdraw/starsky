@@ -56,17 +56,6 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage
 			selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool,
 		IOverlayImage overlayImage, IConsole console, IWebLogger logger,
-		IThumbnailService thumbnailService)
-		: this(publishPreflight, selectorStorage, appSettings, exifTool, overlayImage,
-			console, logger, thumbnailService, new NoOperationImageOptimisationService())
-	{
-	}
-
-	[SuppressMessage("Usage",
-		"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
-	public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage
-			selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool,
-		IOverlayImage overlayImage, IConsole console, IWebLogger logger,
 		IThumbnailService thumbnailService,
 		IImageOptimisationService imageOptimisationService)
 	{
@@ -376,12 +365,9 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 
 	private List<Optimizer> ResolveOptimizers(AppSettingsPublishProfiles profile)
 	{
-		if ( profile.Optimizers.Count > 0 )
-		{
-			return profile.Optimizers;
-		}
-
-		return _appSettings.PublishProfilesDefaults?.Optimizers ?? [];
+		return profile.Optimizers.Count > 0
+			? profile.Optimizers
+			: _appSettings.PublishProfilesDefaults.Optimizers;
 	}
 
 	/// <summary>
@@ -493,14 +479,5 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		return fileIndexItemsList.ToDictionary(item =>
 				_overlayImage.FilePathOverlayImage(item.FilePath!, profile),
 			_ => profile.Copy);
-	}
-
-	private sealed class NoOperationImageOptimisationService : IImageOptimisationService
-	{
-		public Task Optimize(IReadOnlyCollection<ImageOptimisationItem> images,
-			List<Optimizer>? optimizers = null)
-		{
-			return Task.CompletedTask;
-		}
 	}
 }

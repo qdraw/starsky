@@ -39,7 +39,8 @@ public class ImageOptimisationToolDownloadTests
 	{
 		var storage = new FakeIStorage();
 		var sut = CreateSut(storage,
-			new FakeIHttpClientHelper(storage, new Dictionary<string, KeyValuePair<bool, string>>()),
+			new FakeIHttpClientHelper(storage,
+				new Dictionary<string, KeyValuePair<bool, string>>()),
 			new FakeImageOptimisationToolDownloadIndex
 			{
 				Result = new ImageOptimisationBinariesContainer(string.Empty, null, [], false)
@@ -56,7 +57,8 @@ public class ImageOptimisationToolDownloadTests
 	{
 		var storage = new FakeIStorage();
 		var sut = CreateSut(storage,
-			new FakeIHttpClientHelper(storage, new Dictionary<string, KeyValuePair<bool, string>>()),
+			new FakeIHttpClientHelper(storage,
+				new Dictionary<string, KeyValuePair<bool, string>>()),
 			new FakeImageOptimisationToolDownloadIndex
 			{
 				Result = new ImageOptimisationBinariesContainer
@@ -90,8 +92,9 @@ public class ImageOptimisationToolDownloadTests
 	{
 		var storage = new FakeIStorage();
 		var sut = CreateSut(storage,
-			new FakeIHttpClientHelper(storage, new Dictionary<string, KeyValuePair<bool, string>>()),
-			CreateIndex(binarySha: "abc"),
+			new FakeIHttpClientHelper(storage,
+				new Dictionary<string, KeyValuePair<bool, string>>()),
+			CreateIndex("abc"),
 			new Zipper(new FakeIWebLogger()));
 
 		var result = await sut.Download(OptionsNoChmod, "linux-x64");
@@ -111,7 +114,7 @@ public class ImageOptimisationToolDownloadTests
 					new KeyValuePair<bool, string>(true, "VGVzdENvbnRlbnQ=")
 				}
 			});
-		var sut = CreateSut(storage, http, CreateIndex(binarySha: "wrong-sha"),
+		var sut = CreateSut(storage, http, CreateIndex("wrong-sha"),
 			new Zipper(new FakeIWebLogger()));
 
 		var result = await sut.Download(OptionsNoChmod, "linux-x64");
@@ -132,7 +135,7 @@ public class ImageOptimisationToolDownloadTests
 				}
 			});
 		var validSha = "b98fc09ac0df3bbc1ee5e79316604f7462fffdf095c1c676e3c2517773645fe9";
-		var sut = CreateSut(storage, http, CreateIndex(binarySha: validSha),
+		var sut = CreateSut(storage, http, CreateIndex(validSha),
 			new FakeIZipper([], storage));
 
 		var result = await sut.Download(OptionsNoChmod, "linux-x64");
@@ -142,7 +145,8 @@ public class ImageOptimisationToolDownloadTests
 	}
 
 	[TestMethod]
-	public async Task Download_ReturnsRunChmodFailed_WhenUnixAndChmodMissing()
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
+	public async Task Download_ReturnsRunChmodFailed_WhenUnixAndChmodMissing__MacLinuxOnly()
 	{
 		var storage = new FakeIStorage();
 		var http = new FakeIHttpClientHelper(storage,
@@ -153,11 +157,11 @@ public class ImageOptimisationToolDownloadTests
 					new KeyValuePair<bool, string>(true, "VGVzdENvbnRlbnQ=")
 				}
 			});
-		var validSha = "b98fc09ac0df3bbc1ee5e79316604f7462fffdf095c1c676e3c2517773645fe9";
+		const string validSha = "b98fc09ac0df3bbc1ee5e79316604f7462fffdf095c1c676e3c2517773645fe9";
 		var toolFolder = Path.Combine("/dependencies", "mozjpeg");
 		var zipPath = Path.Combine(toolFolder, "mozjpeg-linux-x64.zip");
 
-		var sut = CreateSut(storage, http, CreateIndex(binarySha: validSha),
+		var sut = CreateSut(storage, http, CreateIndex(validSha),
 			new FakeIZipper(
 			[
 				new Tuple<string, byte[]>(zipPath,
@@ -193,7 +197,7 @@ public class ImageOptimisationToolDownloadTests
 		var toolFolder = Path.Combine("/dependencies", "mozjpeg");
 		var zipPath = Path.Combine(toolFolder, "mozjpeg-linux-x64.zip");
 
-		var sut = CreateSut(storage, http, CreateIndex(binarySha: validSha),
+		var sut = CreateSut(storage, http, CreateIndex(validSha),
 			new FakeIZipper(
 			[
 				new Tuple<string, byte[]>(zipPath,
@@ -243,7 +247,8 @@ public class ImageOptimisationToolDownloadTests
 		};
 	}
 
-	private sealed class FakeImageOptimisationToolDownloadIndex : IImageOptimisationToolDownloadIndex
+	private sealed class
+		FakeImageOptimisationToolDownloadIndex : IImageOptimisationToolDownloadIndex
 	{
 		public required ImageOptimisationBinariesContainer Result { get; init; }
 

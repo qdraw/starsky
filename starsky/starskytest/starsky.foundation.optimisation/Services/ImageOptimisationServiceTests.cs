@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.optimisation.Interfaces;
 using starsky.foundation.optimisation.Models;
@@ -18,29 +17,31 @@ public class ImageOptimisationServiceTests
 	[TestMethod]
 	public async Task Optimize_WithNoImages_DoesNotDownload()
 	{
-		var fakeMozJpeg = new FakeMozJpegDownload();
 		var appSettings = new AppSettings();
+		var fakeDownloaders = new FakeMozJpegDownload();
+		var fakeMozJpeg = new MozJpegService(appSettings,
+			new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger(), fakeDownloaders);
+
 		var sut = new ImageOptimisationService(appSettings,
 			new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger(), fakeMozJpeg);
 
 		await sut.Optimize([],
-			[
-				new Optimizer
-				{
-					Enabled = true,
-					Id = "mozjpeg",
-					ImageFormats = [ExtensionRolesHelper.ImageFormat.jpg],
-					Options = new OptimizerOptions { Quality = 80 }
-				}
-			]);
+		[
+			new Optimizer
+			{
+				Enabled = true,
+				Id = "mozjpeg",
+				ImageFormats = [ExtensionRolesHelper.ImageFormat.jpg],
+				Options = new OptimizerOptions { Quality = 80 }
+			}
+		]);
 
-		Assert.AreEqual(0, fakeMozJpeg.DownloadCount);
+		Assert.AreEqual(0, fakeDownloaders.DownloadCount);
 	}
 
 	[TestMethod]
 	public async Task Optimize_UsesDefaults_WhenOptimizersNull_AndMatchesImageFormat()
 	{
-		var fakeMozJpeg = new FakeMozJpegDownload();
 		var appSettings = new AppSettings
 		{
 			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
@@ -57,29 +58,36 @@ public class ImageOptimisationServiceTests
 				]
 			}
 		};
+		var fakeDownloaders = new FakeMozJpegDownload();
+		var fakeMozJpeg = new MozJpegService(appSettings,
+			new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger(), fakeDownloaders);
 
 		var storage = new FakeIStorage([], ["/out.jpg"]);
 		var sut = new ImageOptimisationService(appSettings,
 			new FakeSelectorStorage(storage), new FakeIWebLogger(), fakeMozJpeg);
 
 		await sut.Optimize(
-			[
-				new ImageOptimisationItem
-				{
-					InputPath = "/in.jpg",
-					OutputPath = "/out.jpg",
-					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
-				}
-			], null);
+		[
+			new ImageOptimisationItem
+			{
+				InputPath = "/in.jpg",
+				OutputPath = "/out.jpg",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			}
+		]);
 
-		Assert.AreEqual(1, fakeMozJpeg.DownloadCount);
+		Assert.AreEqual(1, fakeDownloaders.DownloadCount);
 	}
 
 	[TestMethod]
 	public async Task Optimize_SkipsWhenFormatDoesNotMatch()
 	{
-		var fakeMozJpeg = new FakeMozJpegDownload();
+		var fakeDownloaders = new FakeMozJpegDownload();
+		var fakeMozJpeg = new MozJpegService(new AppSettings(),
+			new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger(), fakeDownloaders);
+
 		var storage = new FakeIStorage([], ["/out.jpg"]);
+
 		var sut = new ImageOptimisationService(new AppSettings(),
 			new FakeSelectorStorage(storage), new FakeIWebLogger(), fakeMozJpeg);
 
@@ -102,13 +110,16 @@ public class ImageOptimisationServiceTests
 				}
 			]);
 
-		Assert.AreEqual(0, fakeMozJpeg.DownloadCount);
+		Assert.AreEqual(0, fakeDownloaders.DownloadCount);
 	}
 
 	[TestMethod]
 	public async Task Optimize_SkipsWhenOptimizerDisabled()
 	{
-		var fakeMozJpeg = new FakeMozJpegDownload();
+		var fakeDownloaders = new FakeMozJpegDownload();
+		var fakeMozJpeg = new MozJpegService(new AppSettings(),
+			new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger(), fakeDownloaders);
+
 		var storage = new FakeIStorage([], ["/out.jpg"]);
 		var sut = new ImageOptimisationService(new AppSettings(),
 			new FakeSelectorStorage(storage), new FakeIWebLogger(), fakeMozJpeg);
@@ -132,23 +143,23 @@ public class ImageOptimisationServiceTests
 				}
 			]);
 
-		Assert.AreEqual(0, fakeMozJpeg.DownloadCount);
+		Assert.AreEqual(0, fakeDownloaders.DownloadCount);
 	}
 
 	[TestMethod]
 	public async Task Optimize_NonJpegOutput_SkipsOptimizerCommand()
 	{
-		var appSettings = new AppSettings
-		{
-			DependenciesFolder = "/dependencies"
-		};
+		var fakeDownloaders = new FakeMozJpegDownload(ImageOptimisationDownloadStatus.Ok);
+		var appSettings = new AppSettings { DependenciesFolder = "/dependencies" };
 		var architecture = CurrentArchitecture.GetCurrentRuntimeIdentifier();
 		var exeName = appSettings.IsWindows ? "cjpeg.exe" : "cjpeg";
 		var cjpegPath = $"/dependencies/mozjpeg/{architecture}/{exeName}";
 
+		var fakeMozJpeg = new MozJpegService(new AppSettings(),
+			new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger(), fakeDownloaders);
+
 		var storage = new FakeIStorage([], ["/out.jpg", cjpegPath],
-			[CreateAnPng.Bytes.ToArray(), [1]]);
-		var fakeMozJpeg = new FakeMozJpegDownload(ImageOptimisationDownloadStatus.Ok);
+			[[.. CreateAnPng.Bytes], [1]]);
 		var sut = new ImageOptimisationService(appSettings,
 			new FakeSelectorStorage(storage), new FakeIWebLogger(), fakeMozJpeg);
 
@@ -171,7 +182,7 @@ public class ImageOptimisationServiceTests
 				}
 			]);
 
-		Assert.AreEqual(1, fakeMozJpeg.DownloadCount);
+		Assert.AreEqual(1, fakeDownloaders.DownloadCount);
 		Assert.IsTrue(storage.ExistFile("/out.jpg"));
 		Assert.IsFalse(storage.ExistFile("/out.jpg.optimizing"));
 	}
