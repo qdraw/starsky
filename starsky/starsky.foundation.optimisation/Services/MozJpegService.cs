@@ -8,6 +8,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using static Medallion.Shell.Shell;
 
 namespace starsky.foundation.optimisation.Services;
 
@@ -47,24 +48,35 @@ public class MozJpegService : IMozJpegService
 			return;
 		}
 
-		foreach ( var outputPath in targets.Select(item => item.OutputPath) )
+		foreach ( var outputInputPath in targets.Select(item => item.OutputPath) )
 		{
-			if ( !IsJpegOutput(outputPath) )
+			if ( !IsJpegOutput(outputInputPath) )
 			{
 				continue;
 			}
 
-			var tempFilePath = outputPath + ".optimizing";
-			var result = await Command.Run(cjpegPath,
-				"-quality", optimizer.Options.Quality.ToString(),
-				"-optimize",
-				"-outfile", tempFilePath,
-				outputPath).Task;
+			var tempFilePath = outputInputPath + ".optimizing";
+			await using var outputStream = File.OpenWrite(tempFilePath);
 
-			if ( !result.Success || !_hostFileSystemStorage.ExistFile(tempFilePath) )
+			var parent = Directory.GetParent(cjpegPath);
+			List<string> arguments =
+				["-quality", optimizer.Options.Quality.ToString(), "-optimize", outputInputPath];
+
+			var command = Default.Run(
+				cjpegPath,
+				options: opts =>
+				{
+					opts.StartInfo(i => i.Arguments = string.Join(" ", arguments));
+					opts.WorkingDirectory(parent!.FullName);
+				}
+			) > outputStream;
+			await command.Task;
+
+			if ( !command.Result.Success )
 			{
 				_logger.LogError(
-					$"[ImageOptimisationService] cjpeg failed for {outputPath}: {result.StandardError}");
+					$"[ImageOptimisationService] cjpeg failed for {outputInputPath}: " +
+					$"{command.Result.StandardError}");
 				if ( _hostFileSystemStorage.ExistFile(tempFilePath) )
 				{
 					_hostFileSystemStorage.FileDelete(tempFilePath);
@@ -73,8 +85,8 @@ public class MozJpegService : IMozJpegService
 				continue;
 			}
 
-			_hostFileSystemStorage.FileDelete(outputPath);
-			_hostFileSystemStorage.FileMove(tempFilePath, outputPath);
+			_hostFileSystemStorage.FileDelete(outputInputPath);
+			_hostFileSystemStorage.FileMove(tempFilePath, outputInputPath);
 		}
 	}
 

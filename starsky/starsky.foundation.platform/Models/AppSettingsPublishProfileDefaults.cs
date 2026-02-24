@@ -9,7 +9,7 @@ public class AppSettingsPublishProfilesDefaults
 {
 	/// <summary>
 	///     Enable optimization and publishing features by default for new publish profiles.
-	///     This setting can be overridden in individual publish profiles.
+	///     This setting can be overridden in individual Publish profiles.
 	/// </summary>
 	public ProfileFeatures ProfileFeatures { get; set; } = new();
 
