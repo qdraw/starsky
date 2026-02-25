@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{17e97351-0cd7-4477-a90f-eab96003c03f}</ProjectGuid>
-        <Version>0.7.11</Version>
+        <Version>0.7.12</Version>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>

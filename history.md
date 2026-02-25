@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.12 - _(Unreleased)_ - 2026-?-? {#v0.7.11}
+## version 0.7.13 - _(Unreleased)_ - 2026-?-? {#v0.7.13}
+
+- nothing yet
+
+## version 0.7.12 - 2026-02-25 {#v0.7.12}
 
 - [x] (Fixed) _Front-end_ code style improvements (PR #2785)
 - [x] (Fixed) _Back-end_ PowerShell github-artifacts-download TLS 1.2 (PR #2784)
