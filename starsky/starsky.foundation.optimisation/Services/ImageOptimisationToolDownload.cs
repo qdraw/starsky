@@ -25,15 +25,35 @@ public class ImageOptimisationToolDownload(
 	IImageOptimisationChmod chmod)
 	: IImageOptimisationToolDownload
 {
+	private readonly ImageOptimisationExePath _exePathHelper = new(appSettings);
+
 	private readonly IStorage _hostFileSystemStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
-	private readonly ImageOptimisationExePath _exePathHelper = new(appSettings);
-
+	/// <summary>
+	///     Downloads the image optimisation tool for a specific architecture. It checks if the tool is
+	///     already downloaded and if not, it downloads the zip file, checks the sha256 hash, extracts the
+	///     zip
+	/// </summary>
+	/// <param name="options">which tool to download</param>
+	/// <param name="architecture">use .net names for architecture</param>
+	/// <param name="retryInSeconds">to retry</param>
+	/// <returns>status of download</returns>
 	public async Task<ImageOptimisationDownloadStatus> Download(
 		ImageOptimisationToolDownloadOptions options, string? architecture = null,
 		int retryInSeconds = 15)
 	{
+		if ( appSettings.ImageOptimisationDownloadOnStartup == true
+		     || appSettings is { AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
+		{
+			var name = appSettings.ImageOptimisationDownloadOnStartup == true
+				? "ImageOptimisationDownloadOnStartup"
+				: "AddSwaggerExport and AddSwaggerExportExitAfter";
+			logger.LogInformation(
+				$"[ImageOptimisationToolDownload] Skipped due true of {name} setting");
+			return ImageOptimisationDownloadStatus.SettingsDisabled;
+		}
+
 		architecture ??= CurrentArchitecture.GetCurrentRuntimeIdentifier();
 		var toolFolder = Path.Combine(appSettings.DependenciesFolder, options.ToolName);
 		var architectureFolder = _exePathHelper.GetExeParentFolder(options.ToolName, architecture);
@@ -108,6 +128,28 @@ public class ImageOptimisationToolDownload(
 		return !chmodResult
 			? ImageOptimisationDownloadStatus.RunChmodFailed
 			: ImageOptimisationDownloadStatus.Ok;
+	}
+
+	/// <summary>
+	///     Downloads the image optimisation tool for multiple architectures. It iterates through the
+	///     provided architectures and calls the Download method for each architecture. The results are
+	///     collected in a list of ImageOptimisationDownloadStatus and returned at the end.
+	/// </summary>
+	/// <param name="options">which tool to download</param>
+	/// <param name="architectures">use the .net names for architectures</param>
+	/// <returns>status of download</returns>
+	public async Task<List<ImageOptimisationDownloadStatus>> Download(
+		ImageOptimisationToolDownloadOptions options,
+		List<string> architectures)
+	{
+		var result = new List<ImageOptimisationDownloadStatus>();
+		foreach ( var architecture in
+		         DotnetRuntimeNames.GetArchitecturesNoGenericAndFallback(architectures) )
+		{
+			result.Add(await Download(options, architecture));
+		}
+
+		return result;
 	}
 
 	private void CreateDirectories(List<string> paths)

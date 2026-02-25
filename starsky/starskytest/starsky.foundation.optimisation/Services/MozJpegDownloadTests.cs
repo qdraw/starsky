@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.optimisation.Interfaces;
@@ -34,6 +36,12 @@ public class MozJpegDownloadTests
 		public ImageOptimisationToolDownloadOptions? ReceivedOptions { get; private set; }
 		public string? ReceivedArchitecture { get; private set; }
 		public int ReceivedRetrySeconds { get; private set; }
+
+		public Task<List<ImageOptimisationDownloadStatus>> Download(
+			ImageOptimisationToolDownloadOptions options, List<string> architectures)
+		{
+			throw new NotImplementedException();
+		}
 
 		public Task<ImageOptimisationDownloadStatus> Download(
 			ImageOptimisationToolDownloadOptions options, string? architecture = null,

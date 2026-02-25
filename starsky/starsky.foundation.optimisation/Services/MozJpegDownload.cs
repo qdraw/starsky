@@ -8,10 +8,13 @@ namespace starsky.foundation.optimisation.Services;
 public class MozJpegDownload(IImageOptimisationToolDownload imageOptimisationToolDownload)
 	: IMozJpegDownload
 {
-	private static readonly Uri NetlifyBaseUri = new("https://starsky-dependencies.netlify.app/mozjpeg/");
-	private static readonly Uri QdrawMirrorBaseUri = new("https://qdraw.nl/special/mirror/mozjpeg/");
+	private static readonly Uri NetlifyBaseUri =
+		new("https://starsky-dependencies.netlify.app/mozjpeg/");
 
-	private static readonly ImageOptimisationToolDownloadOptions Options = new()
+	private static readonly Uri
+		QdrawMirrorBaseUri = new("https://qdraw.nl/special/mirror/mozjpeg/");
+
+	public static readonly ImageOptimisationToolDownloadOptions Options = new()
 	{
 		ToolName = "mozjpeg",
 		IndexUrls =

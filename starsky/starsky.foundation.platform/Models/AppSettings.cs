@@ -800,6 +800,13 @@ public sealed class AppSettings
 	public bool FfmpegSkipPreflightCheck { get; set; }
 
 	/// <summary>
+	///     Skip download ImageOptimisation on startup
+	///     Recommended to keep false
+	/// </summary>
+	[PackageTelemetry]
+	public bool? ImageOptimisationDownloadOnStartup { get; set; } = false;
+
+	/// <summary>
 	///     Exe path to Ffmpeg
 	/// </summary>
 	[PackageTelemetry]

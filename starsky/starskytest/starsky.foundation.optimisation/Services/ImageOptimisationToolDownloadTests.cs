@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.optimisation.Interfaces;
@@ -313,6 +314,62 @@ public class ImageOptimisationToolDownloadTests
 				]
 			}
 		};
+	}
+
+
+	[TestMethod]
+	public async Task Download_MultipleArchitectures_ReturnsStatuses()
+	{
+		// Arrange
+		var storage = new FakeIStorage();
+		var sut = CreateSut(storage,
+			new FakeIHttpClientHelper(storage,
+				new Dictionary<string, KeyValuePair<bool, string>>()),
+			new FakeImageOptimisationToolDownloadIndex
+			{
+				Result = new ImageOptimisationBinariesContainer
+				{
+					Success = true,
+					Data = new ImageOptimisationBinariesIndex
+					{
+						Binaries =
+						[
+							new ImageOptimisationBinaryIndex
+							{
+								Architecture = "win-x64",
+								FileName = "mozjpeg-win-x64.zip",
+								Sha256 = "abc"
+							},
+							new ImageOptimisationBinaryIndex
+							{
+								Architecture = "osx-x64",
+								FileName = "mozjpeg-osx-x64.zip",
+								Sha256 = "abc"
+							}
+						]
+					},
+					BaseUrls = [new Uri("https://starsky-dependencies.netlify.app/mozjpeg/")]
+				}
+			},
+			new Zipper(new FakeIWebLogger()));
+
+
+		var options = new ImageOptimisationToolDownloadOptions
+		{
+			ToolName = "mozjpeg",
+			RunChmodOnUnix = false,
+			IndexUrls = new List<Uri> { new("https://example.com/") },
+			BaseUrls = new List<Uri> { new("https://example.com/") }
+		};
+		var architectures = new List<string> { "osx-x64", "win-x64" };
+
+		// Act
+		var result = await sut.Download(options, architectures);
+
+		// Assert
+		Assert.HasCount(2, result);
+		Assert.IsTrue(result.All(x =>
+			x is ImageOptimisationDownloadStatus.DownloadBinariesFailed));
 	}
 
 	private sealed class

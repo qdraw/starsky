@@ -17,6 +17,7 @@
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj"/>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.optimisation\starsky.foundation.optimisation.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
         <ProjectReference Include="..\starsky.foundation.video\starsky.foundation.video.csproj"/>
         <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj"/>
