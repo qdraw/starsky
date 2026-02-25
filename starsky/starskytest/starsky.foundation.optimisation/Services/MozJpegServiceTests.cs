@@ -88,7 +88,7 @@ public sealed class MozJpegServiceTests
 	public async Task RunMozJpeg_NonJpegOutput_SkipsProcessing()
 	{
 		var appSettings = CreateAppSettings();
-		var cJpegPath = await CreateCjpegFile(appSettings, "");
+		var cJpegPath = await CreateMozJpegFile(appSettings, "");
 		WriteBytes(Path.Combine(_basePath, "image.png"), CreateAnPng.Bytes.ToArray());
 
 		var fakeLogger = new FakeIWebLogger();
@@ -119,7 +119,7 @@ public sealed class MozJpegServiceTests
 		}
 
 		var appSettings = CreateAppSettings();
-		await CreateCjpegFile(appSettings, "#!/bin/bash\ncat \"$4\"");
+		await CreateMozJpegFile(appSettings, "#!/bin/bash\ncat \"$4\"");
 
 		var outputPath = Path.Combine(_basePath, "photo.jpg");
 		WriteBytes(outputPath, CreateAnImage.Bytes.ToArray());
@@ -148,7 +148,7 @@ public sealed class MozJpegServiceTests
 		}
 
 		var appSettings = CreateAppSettings();
-		await CreateCjpegFile(appSettings, "#!/bin/bash\nexit 1");
+		await CreateMozJpegFile(appSettings, "#!/bin/bash\nexit 1");
 
 		var outputPath = Path.Combine(_basePath, "photo-fail.jpg");
 		var originalBytes = CreateAnImage.Bytes.ToArray();
@@ -193,7 +193,7 @@ public sealed class MozJpegServiceTests
 			new FakeSelectorStorage(_hostFileSystem), logger, download);
 	}
 
-	private async Task<string> CreateCjpegFile(AppSettings appSettings, string content)
+	private async Task<string> CreateMozJpegFile(AppSettings appSettings, string content)
 	{
 		var exePath = new ImageOptimisationExePath(appSettings).GetExePath("mozjpeg",
 			CurrentArchitecture.GetCurrentRuntimeIdentifier());
