@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.optimisation.Helpers;
 using starsky.foundation.optimisation.Interfaces;
 using starsky.foundation.optimisation.Models;
 using starsky.foundation.optimisation.Services;
@@ -109,7 +110,7 @@ public sealed class MozJpegServiceTests
 	}
 
 	[TestMethod]
-	public async Task RunMozJpeg_JpegOutput_Success_ReplacesFile()
+	public async Task RunMozJpeg_JpegOutput_Success_ReplacesFile__UnixOnly()
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -138,7 +139,7 @@ public sealed class MozJpegServiceTests
 	}
 
 	[TestMethod]
-	public async Task RunMozJpeg_JpegOutput_CommandFails_LogsErrorAndKeepsOriginal()
+	public async Task RunMozJpeg_JpegOutput_CommandFails_LogsErrorAndKeepsOriginal__UnixOnly()
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -166,12 +167,12 @@ public sealed class MozJpegServiceTests
 		Assert.IsFalse(_hostFileSystem.ExistFile(tempFilePath));
 		Assert.IsTrue(_hostFileSystem.ExistFile(outputPath));
 		Assert.Contains(entry =>
-			entry.Item2?.Contains("cjpeg failed") == true, fakeLogger.TrackedExceptions);
+			entry.Item2?.Contains("MozJPEG failed") == true, fakeLogger.TrackedExceptions);
 	}
 
 	private AppSettings CreateAppSettings()
 	{
-		return new AppSettings { DependenciesFolder = Path.Combine(_basePath, "deps") };
+		return new AppSettings { DependenciesFolder = Path.Combine(_basePath, "deps-test-mozjpeg") };
 	}
 
 	private static Optimizer CreateOptimizer()
@@ -194,30 +195,31 @@ public sealed class MozJpegServiceTests
 
 	private async Task<string> CreateCjpegFile(AppSettings appSettings, string content)
 	{
-		var architecture = CurrentArchitecture.GetCurrentRuntimeIdentifier();
-		var fileName = appSettings.IsWindows ? "cjpeg.exe" : "cjpeg";
-		var dir = Path.Combine(appSettings.DependenciesFolder, "mozjpeg", architecture);
-		_hostFileSystem.CreateDirectory(dir);
-		var fullPath = Path.Combine(dir, fileName);
+		var exePath = new ImageOptimisationExePath(appSettings).GetExePath("mozjpeg",
+			CurrentArchitecture.GetCurrentRuntimeIdentifier());
+		
+		var parentFolder = new ImageOptimisationExePath(appSettings).GetExeParentFolder("mozjpeg",
+			CurrentArchitecture.GetCurrentRuntimeIdentifier());
+		_hostFileSystem.CreateDirectory(parentFolder);
 
 		if ( !string.IsNullOrEmpty(content) )
 		{
 			var stream = StringToStreamHelper.StringToStream(content);
-			await _hostFileSystem.WriteStreamAsync(stream, fullPath);
+			await _hostFileSystem.WriteStreamAsync(stream, exePath);
 		}
 		else
 		{
-			WriteBytes(fullPath, [0x00]);
+			WriteBytes(exePath, [0x00]);
 		}
 
 		if ( !appSettings.IsWindows )
 		{
 			await new FfMpegChmod(new FakeSelectorStorage(_hostFileSystem),
 					new FakeIWebLogger())
-				.Chmod(fullPath);
+				.Chmod(exePath);
 		}
 
-		return fullPath;
+		return exePath;
 	}
 
 	private void WriteBytes(string path, byte[] bytes)

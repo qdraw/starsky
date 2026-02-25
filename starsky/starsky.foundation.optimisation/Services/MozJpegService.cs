@@ -79,7 +79,7 @@ public class MozJpegService : IMozJpegService
 			if ( !command.Result.Success )
 			{
 				_logger.LogError(
-					$"[ImageOptimisationService] cjpeg failed for {outputInputPath}: " +
+					$"[ImageOptimisationService] MozJPEG failed for {outputInputPath}: " +
 					$"{command.Result.StandardError}");
 				if ( _hostFileSystemStorage.ExistFile(tempFilePath) )
 				{

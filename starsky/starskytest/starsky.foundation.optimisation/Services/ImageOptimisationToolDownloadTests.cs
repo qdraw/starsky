@@ -33,6 +33,22 @@ public class ImageOptimisationToolDownloadTests
 			new Uri("https://qdraw.nl/special/mirror/mozjpeg/")
 		]
 	};
+	
+	private static readonly ImageOptimisationToolDownloadOptions OptionsWithChmod = new()
+	{
+		ToolName = "mozjpeg",
+		RunChmodOnUnix = true,
+		IndexUrls =
+		[
+			new Uri("https://starsky-dependencies.netlify.app/mozjpeg/index.json"),
+			new Uri("https://qdraw.nl/special/mirror/mozjpeg/index.json")
+		],
+		BaseUrls =
+		[
+			new Uri("https://starsky-dependencies.netlify.app/mozjpeg/"),
+			new Uri("https://qdraw.nl/special/mirror/mozjpeg/")
+		]
+	};
 
 	private readonly AppSettings _appSettings = new();
 	private readonly FakeIWebLogger _logger = new();
@@ -151,35 +167,25 @@ public class ImageOptimisationToolDownloadTests
 	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
 	public async Task Download_ReturnsRunChmodFailed_WhenUnixAndChmodMissing__MacLinuxOnly()
 	{
+		const string architecture = "linux-x64";
+		var zipBytes = CreateZipBytes("mozjpeg", "tool-binary");
+		var zipSha = ComputeSha256Hex(zipBytes);
 		var storage = new FakeIStorage();
+		var zipFullFilePath = Path.Combine("/dependencies", "mozjpeg", "mozjpeg-linux-x64.zip");
+
 		var http = new FakeIHttpClientHelper(storage,
 			new Dictionary<string, KeyValuePair<bool, string>>
 			{
 				{
 					"https://starsky-dependencies.netlify.app/mozjpeg/mozjpeg-linux-x64.zip",
-					new KeyValuePair<bool, string>(true, "VGVzdENvbnRlbnQ=")
+					new KeyValuePair<bool, string>(true, Convert.ToBase64String(zipBytes))
 				}
 			});
-		const string validSha = "b98fc09ac0df3bbc1ee5e79316604f7462fffdf095c1c676e3c2517773645fe9";
-		var toolFolder = Path.Combine("/dependencies", "mozjpeg");
-		var zipPath = Path.Combine(toolFolder, "mozjpeg-linux-x64.zip");
 
-		var sut = CreateSut(storage, http, CreateIndex(validSha),
-			new FakeIZipper(
-			[
-				new Tuple<string, byte[]>(zipPath,
-					[80, 75, 5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-			], storage));
+		var sut = CreateSut(storage, http, CreateIndex(zipSha),
+			new FakeIZipper([new Tuple<string, byte[]>(zipFullFilePath, zipBytes)], storage));
 
-		var options = new ImageOptimisationToolDownloadOptions
-		{
-			ToolName = "mozjpeg",
-			RunChmodOnUnix = true,
-			IndexUrls = OptionsNoChmod.IndexUrls,
-			BaseUrls = OptionsNoChmod.BaseUrls
-		};
-
-		var result = await sut.Download(options, "linux-x64");
+		var result = await sut.Download(OptionsWithChmod, architecture);
 
 		Assert.AreEqual(ImageOptimisationDownloadStatus.RunChmodFailed, result);
 	}
