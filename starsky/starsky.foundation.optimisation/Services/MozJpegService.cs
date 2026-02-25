@@ -1,4 +1,5 @@
 ﻿using starsky.foundation.injection;
+using starsky.foundation.optimisation.Helpers;
 using starsky.foundation.optimisation.Interfaces;
 using starsky.foundation.optimisation.Models;
 using starsky.foundation.platform.Architecture;
@@ -14,19 +15,19 @@ namespace starsky.foundation.optimisation.Services;
 [Service(typeof(IMozJpegService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MozJpegService : IMozJpegService
 {
-	private readonly AppSettings _appSettings;
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IWebLogger _logger;
 	private readonly IMozJpegDownload _mozJpegDownload;
+	private readonly ImageOptimisationExePath _exePathHelper;
 
 	public MozJpegService(AppSettings appSettings,
 		ISelectorStorage selectorStorage, IWebLogger logger, IMozJpegDownload mozJpegDownload)
 	{
-		_appSettings = appSettings;
 		_hostFileSystemStorage =
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_logger = logger;
 		_mozJpegDownload = mozJpegDownload;
+		_exePathHelper = new ImageOptimisationExePath(appSettings);
 	}
 
 	public async Task RunMozJpeg(Optimizer optimizer,
@@ -41,10 +42,11 @@ public class MozJpegService : IMozJpegService
 			return;
 		}
 
-		var cJpegPath = GetMozJpegPath();
-		if ( !_hostFileSystemStorage.ExistFile(cJpegPath) )
+		var exePath = _exePathHelper.GetExePath(optimizer.Id,
+			CurrentArchitecture.GetCurrentRuntimeIdentifier());
+		if ( !_hostFileSystemStorage.ExistFile(exePath) )
 		{
-			_logger.LogError($"[ImageOptimisationService] cjpeg not found at {cJpegPath}");
+			_logger.LogError($"[ImageOptimisationService] MozJPEG not found at {exePath}");
 			return;
 		}
 
@@ -56,14 +58,14 @@ public class MozJpegService : IMozJpegService
 			}
 
 			var tempFilePath = outputInputPath + ".optimizing";
-			await using var outputStream = File.OpenWrite(tempFilePath);
+			using var outputStream = new MemoryStream();
 
-			var parent = Directory.GetParent(cJpegPath);
+			var parent = Directory.GetParent(exePath);
 			List<string> arguments =
 				["-quality", optimizer.Options.Quality.ToString(), "-optimize", outputInputPath];
 
 			var command = Default.Run(
-				cJpegPath,
+				exePath,
 				options: opts =>
 				{
 					opts.StartInfo(i => i.Arguments = string.Join(" ", arguments));
@@ -71,6 +73,8 @@ public class MozJpegService : IMozJpegService
 				}
 			) > outputStream;
 			await command.Task;
+
+			await _hostFileSystemStorage.WriteStreamAsync(outputStream, tempFilePath);
 
 			if ( !command.Result.Success )
 			{
@@ -90,16 +94,10 @@ public class MozJpegService : IMozJpegService
 		}
 	}
 
-	private string GetMozJpegPath()
-	{
-		var architecture = CurrentArchitecture.GetCurrentRuntimeIdentifier();
-		var exeName = _appSettings.IsWindows ? "cjpeg.exe" : "cjpeg";
-		return Path.Combine(_appSettings.DependenciesFolder, "mozjpeg", architecture, exeName);
-	}
 
 	private bool IsJpegOutput(string outputPath)
 	{
-		using var stream =  _hostFileSystemStorage.ReadStream(outputPath, 68);
+		using var stream = _hostFileSystemStorage.ReadStream(outputPath, 68);
 		var format = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 		return format == ExtensionRolesHelper.ImageFormat.jpg;
 	}

@@ -28,26 +28,29 @@ public class ImageOptimisationToolDownload(
 	private readonly IStorage _hostFileSystemStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
+	private readonly ImageOptimisationExePath _exePathHelper = new(appSettings);
+
 	public async Task<ImageOptimisationDownloadStatus> Download(
 		ImageOptimisationToolDownloadOptions options, string? architecture = null,
 		int retryInSeconds = 15)
 	{
 		architecture ??= CurrentArchitecture.GetCurrentRuntimeIdentifier();
 		var toolFolder = Path.Combine(appSettings.DependenciesFolder, options.ToolName);
-		var architectureFolder = Path.Combine(toolFolder, architecture);
+		var architectureFolder = _exePathHelper.GetExeParentFolder(options.ToolName, architecture);
 
-		CreateDirectories([appSettings.DependenciesFolder, toolFolder, architectureFolder]);
+		CreateDirectories([appSettings.DependenciesFolder, architectureFolder]);
 
 		// Check if the binary already exists in the architecture folder
-		var expectedBinaryPath = new ImageOptimisationExePath(appSettings).GetExePath(options.ToolName, architecture);
-		
-		if ( _hostFileSystemStorage.ExistFile(expectedBinaryPath) )
+		var exePath = _exePathHelper.GetExePath(options.ToolName, architecture);
+
+		if ( _hostFileSystemStorage.ExistFile(exePath) )
 		{
-			logger.LogInformation($"[ImageOptimisationToolDownload] Tool already exists: {expectedBinaryPath}");
+			logger.LogInformation(
+				$"[ImageOptimisationToolDownload] Tool already exists: {exePath}");
 			return ImageOptimisationDownloadStatus.OkAlreadyDownloaded;
 		}
 
-		
+
 		var container = await toolDownloadIndex.DownloadIndex(options);
 		if ( !container.Success )
 		{
@@ -63,7 +66,7 @@ public class ImageOptimisationToolDownload(
 				$"[ImageOptimisationToolDownload] No binary for {options.ToolName} on {architecture}");
 			return ImageOptimisationDownloadStatus.DownloadBinariesFailedMissingFileName;
 		}
-		
+
 		var zipFullFilePath = Path.Combine(toolFolder, binaryIndex.FileName);
 		if ( !await DownloadMirror(container.BaseUrls, zipFullFilePath, binaryIndex,
 			    retryInSeconds) )
@@ -90,12 +93,18 @@ public class ImageOptimisationToolDownload(
 
 		_hostFileSystemStorage.FileDelete(zipFullFilePath);
 
+		if ( !_hostFileSystemStorage.ExistFile(exePath) )
+		{
+			logger.LogError($"Zipper failed {exePath}");
+			return ImageOptimisationDownloadStatus.DownloadBinariesFailedZipperNotExtracted;
+		}
+
 		if ( !options.RunChmodOnUnix || RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
 			return ImageOptimisationDownloadStatus.Ok;
 		}
 
-		var chmodResult = await chmod.Chmod(architectureFolder);
+		var chmodResult = await chmod.Chmod(exePath);
 		return !chmodResult
 			? ImageOptimisationDownloadStatus.RunChmodFailed
 			: ImageOptimisationDownloadStatus.Ok;
