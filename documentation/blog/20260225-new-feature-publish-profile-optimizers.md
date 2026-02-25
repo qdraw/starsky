@@ -79,25 +79,23 @@ Need different behavior for a specific output variant? Add `optimizers` directly
 
 ```json
 {
-  "ContentType": "jpeg",
-  "SourceMaxWidth": 1000,
-  "OverlayMaxWidth": 380,
-  "Path": "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/qdrawlarge.png",
-  "Folder": "1000",
-  "Append": "_kl1k",
-  "Copy": "true",
-  "optimizers": [
-    {
-      "imageFormats": [
-        "jpg"
-      ],
-      "id": "mozjpeg",
-      "enabled": true,
-      "options": {
-        "quality": 80
-      }
-    }
-  ]
+    "ContentType": "jpeg",
+    "SourceMaxWidth": 1000,
+    "OverlayMaxWidth": 380,
+    "Path": "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/qdrawlarge.png",
+    "Folder": "1000",
+    "Append": "_kl1k",
+    "Copy": "true",
+    "optimizers": [
+        {
+            "imageFormats": ["jpg"],
+            "id": "mozjpeg",
+            "enabled": true,
+            "options": {
+                "quality": 80
+            }
+        }
+    ]
 }
 ```
 
@@ -116,10 +114,5 @@ This keeps your configuration clean, reusable, and easy to maintain.
 ## Backward compatibility
 
 Existing publish profiles keep working as before. The optimizer feature is additive and can be introduced gradually in your current setup.
-
-## Learn more
-
-- Feature docs: [Publish media with watermarks and optimizers](../docs/features/webhtmlpublish.md)
-- CLI config docs: [starskyWebHtmlCli](../docs/advanced-options/starsky/starskywebhtmlcli/readme.md)
 
 If you are already using publish profiles, this is an easy upgrade that can reduce output size while preserving quality.
