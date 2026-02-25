@@ -81,7 +81,7 @@ Use the `publishProfiles` by the `starskyWebHtmlCli` and add the `WebFtp` field.
                 },
                 {
                     "ContentType":  "moveSourceFiles",
-                    "Folder": "orgineel",
+                    "Folder": "origineel",
                     "Copy": "false"
                 },
                 {
