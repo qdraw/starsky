@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.optimisation.Interfaces;
@@ -208,6 +210,70 @@ public class ImageOptimisationToolDownloadTests
 		var result = await sut.Download(OptionsNoChmod, "linux-x64");
 
 		Assert.AreEqual(ImageOptimisationDownloadStatus.DownloadBinariesFailedZipperNotExtracted, result);
+	}
+
+	[TestMethod]
+	public async Task Download_ReturnsOk_WhenToolAlreadyExists()
+	{
+		const string architecture = "linux-x64";
+		var expectedBinaryPath = Path.Combine("/dependencies", "mozjpeg-linux-x64", "mozjpeg");
+		var storage = new FakeIStorage(null, [expectedBinaryPath]);
+		var sut = CreateSut(storage,
+			new FakeIHttpClientHelper(storage,
+				new Dictionary<string, KeyValuePair<bool, string>>()),
+			CreateIndex("abc"),
+			new Zipper(new FakeIWebLogger()));
+
+		var result = await sut.Download(OptionsNoChmod, architecture);
+
+		Assert.AreEqual(ImageOptimisationDownloadStatus.OkAlreadyDownloaded, result);
+	}
+
+	[TestMethod]
+	public async Task Download_ReturnsOk_WhenDownloadShaAndExtract_Succeeds()
+	{
+		const string architecture = "linux-x64";
+		var zipBytes = CreateZipBytes("mozjpeg", "tool-binary");
+		var zipSha = ComputeSha256Hex(zipBytes);
+		var storage = new FakeIStorage();
+		var zipFullFilePath = Path.Combine("/dependencies", "mozjpeg", "mozjpeg-linux-x64.zip");
+
+		var http = new FakeIHttpClientHelper(storage,
+			new Dictionary<string, KeyValuePair<bool, string>>
+			{
+				{
+					"https://starsky-dependencies.netlify.app/mozjpeg/mozjpeg-linux-x64.zip",
+					new KeyValuePair<bool, string>(true, Convert.ToBase64String(zipBytes))
+				}
+			});
+
+		var sut = CreateSut(storage, http, CreateIndex(zipSha),
+			new FakeIZipper([new Tuple<string, byte[]>(zipFullFilePath, zipBytes)], storage));
+
+		var result = await sut.Download(OptionsNoChmod, architecture);
+
+		Assert.AreEqual(ImageOptimisationDownloadStatus.Ok, result);
+	}
+
+	private static byte[] CreateZipBytes(string entryName, string content)
+	{
+		using var memory = new MemoryStream();
+		using ( var archive = new ZipArchive(memory, ZipArchiveMode.Create, true) )
+		{
+			var entry = archive.CreateEntry(entryName);
+			using var entryStream = entry.Open();
+			using var writer = new StreamWriter(entryStream);
+			writer.Write(content);
+		}
+
+		return memory.ToArray();
+	}
+
+	private static string ComputeSha256Hex(byte[] bytes)
+	{
+		using var sha256 = SHA256.Create();
+		var hash = sha256.ComputeHash(bytes);
+		return Convert.ToHexString(hash).ToLowerInvariant();
 	}
 
 	private ImageOptimisationToolDownload CreateSut(FakeIStorage storage,
