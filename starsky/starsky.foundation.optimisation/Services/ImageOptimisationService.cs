@@ -27,6 +27,12 @@ public class ImageOptimisationService : IImageOptimisationService
 		_mozJpegService = mozJpegService;
 	}
 
+	public async Task Optimize(ImageOptimisationItem image,
+		List<Optimizer>? optimizers = null)
+	{
+		 await Optimize([image], optimizers);
+	}
+
 	public async Task Optimize(IReadOnlyCollection<ImageOptimisationItem> images,
 		List<Optimizer>? optimizers = null)
 	{

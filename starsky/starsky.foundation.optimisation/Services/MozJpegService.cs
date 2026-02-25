@@ -91,6 +91,8 @@ public class MozJpegService : IMozJpegService
 
 			_hostFileSystemStorage.FileDelete(outputInputPath);
 			_hostFileSystemStorage.FileMove(tempFilePath, outputInputPath);
+			
+			_logger.LogInformation("[ImageOptimisationService] MozJPEG optimized: " + outputInputPath);
 		}
 	}
 

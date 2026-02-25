@@ -41,9 +41,9 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	private readonly CopyPublishedContent _copyPublishedContent;
 	private readonly IExifTool _exifTool;
 	private readonly IStorage _hostFileSystemStorage;
+	private readonly IImageOptimisationService _imageOptimisationService;
 	private readonly IWebLogger _logger;
 	private readonly IOverlayImage _overlayImage;
-	private readonly IImageOptimisationService _imageOptimisationService;
 	private readonly PublishManifest _publishManifest;
 	private readonly IPublishPreflight _publishPreflight;
 	private readonly IStorage _subPathStorage;
@@ -348,16 +348,6 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			}
 		}
 
-		await _imageOptimisationService.Optimize(
-			fileIndexItemsList.Select(item => new ImageOptimisationItem
-			{
-				InputPath = item.FilePath!,
-				OutputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder,
-					item.FilePath!, profile),
-				ImageFormat = item.ImageFormat
-			}).ToList(),
-			ResolveOptimizers(profile));
-
 		return fileIndexItemsList.ToDictionary(item =>
 				_overlayImage.FilePathOverlayImage(item.FilePath!, profile),
 			_ => profile.Copy);
@@ -406,6 +396,13 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			await _overlayImage.ResizeOverlayImageLarge(item.FilePath!, outputPath, profile);
 		}
 
+		await _imageOptimisationService.Optimize(
+			new ImageOptimisationItem
+			{
+				InputPath = outputPath, OutputPath = outputPath, ImageFormat = item.ImageFormat
+			},
+			ResolveOptimizers(profile));
+
 		if ( profile.MetaData )
 		{
 			await MetaData(item, outputPath);
@@ -449,7 +446,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		// Write it back
 		await new ExifToolCmdHelper(_exifTool, _hostFileSystemStorage,
 			_thumbnailStorage, null!, null!, _logger).UpdateAsync(item,
-			new List<string> { outputPath }, comparedNames,
+			[outputPath], comparedNames,
 			false, false);
 	}
 
