@@ -11,6 +11,13 @@ public sealed class FakeImageOptimisationService : IImageOptimisationService
 	public bool Called { get; private set; }
 	public List<Optimizer>? ReceivedOptimizers { get; private set; }
 
+	public Task Optimize(ImageOptimisationItem image, List<Optimizer>? optimizers = null)
+	{
+		Called = true;
+		ReceivedOptimizers = optimizers;
+		return Task.CompletedTask;
+	}
+
 	public Task Optimize(IReadOnlyCollection<ImageOptimisationItem> images,
 		List<Optimizer>? optimizers = null)
 	{
