@@ -39,11 +39,9 @@ public class SearchSuggestionsInflateHostedServiceTimerTest : DatabaseTest
 			Interval = new TimeSpan(0,0,1) 
 		};
 
-		using var cts = new CancellationTokenSource();
-		cts.CancelAfter(new TimeSpan(0,0,2));
-		await hostedService.StartAsync(cts.Token);
-		await Task.Delay(1500, CancellationToken.None);
-		await hostedService.StopAsync(cts.Token);
+		await hostedService.StartAsync(CancellationToken.None);
+		await WaitForLogCountAsync(logger, expectedCount: 2, timeout: TimeSpan.FromSeconds(4));
+		await hostedService.StopAsync(CancellationToken.None);
 
 		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService),
 			    out var objectFileFolders) )
@@ -59,5 +57,20 @@ public class SearchSuggestionsInflateHostedServiceTimerTest : DatabaseTest
 		
 		Assert.HasCount(2, logger.TrackedDebug.Where(p => 
 			p.Item2?.Contains("Cache inflated successfully") == true));
+	}
+
+	private static async Task WaitForLogCountAsync(FakeIWebLogger logger, int expectedCount, TimeSpan timeout)
+	{
+		var stopAt = DateTime.UtcNow + timeout;
+		while ( DateTime.UtcNow < stopAt )
+		{
+			var count = logger.TrackedDebug.Count(p =>
+				p.Item2?.Contains("Cache inflated successfully") == true);
+			if ( count >= expectedCount )
+			{
+				return;
+			}
+			await Task.Delay(100, CancellationToken.None);
+		}
 	}
 }
