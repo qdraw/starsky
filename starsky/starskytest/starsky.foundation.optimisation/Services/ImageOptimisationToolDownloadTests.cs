@@ -73,6 +73,37 @@ public class ImageOptimisationToolDownloadTests
 	}
 
 	[TestMethod]
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task Download_SettingsDisabled(bool imageOptimisationDownloadOnStartup)
+	{
+		var appSettings = new AppSettings
+		{
+			ImageOptimisationDownloadOnStartup = imageOptimisationDownloadOnStartup
+		};
+		if ( !imageOptimisationDownloadOnStartup )
+		{
+			appSettings.AddSwaggerExport = true;
+			appSettings.AddSwaggerExportExitAfter = true;
+		}
+		
+		var storage = new FakeIStorage();
+		var sut = new ImageOptimisationToolDownload(new FakeSelectorStorage(storage),
+			new FakeIHttpClientHelper(storage,
+				new Dictionary<string, KeyValuePair<bool, string>>()),
+			appSettings, _logger,
+			new FakeImageOptimisationToolDownloadIndex
+			{
+				Result = new ImageOptimisationBinariesContainer(string.Empty, null, [], false)
+			}, new Zipper(new FakeIWebLogger()),
+			new ImageOptimisationChmod(new FakeSelectorStorage(storage), _logger));
+
+		var result = await sut.Download(OptionsNoChmod, "linux-x64");
+		
+		Assert.AreEqual(ImageOptimisationDownloadStatus.SettingsDisabled, result);
+	}
+
+	[TestMethod]
 	public async Task Download_ReturnsMissingFileName_WhenArchitectureNotInIndex()
 	{
 		var storage = new FakeIStorage();

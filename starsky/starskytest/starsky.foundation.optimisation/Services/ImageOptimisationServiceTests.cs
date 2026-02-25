@@ -76,13 +76,13 @@ public class ImageOptimisationServiceTests
 				p.Item2!.Contains("[ImageOptimisationService] Unknown optimizer id"),
 			logger.TrackedInformation);
 	}
-	
+
 	[TestMethod]
 	public async Task Optimize_NotFoundId_DoesNotDownload2()
 	{
 		var appSettings = new AppSettings
 		{
-			 PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
 			{
 				Optimizers =
 				[
@@ -99,16 +99,56 @@ public class ImageOptimisationServiceTests
 			new FakeSelectorStorage(storage), logger, fakeMozJpeg);
 
 		await sut.Optimize(
-			[
-				new ImageOptimisationItem
-				{
-					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
-					InputPath = "/in.jpg",
-					OutputPath = "/out.jpg"
-				}
-			]);
+		[
+			new ImageOptimisationItem
+			{
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
+				InputPath = "/in.jpg",
+				OutputPath = "/out.jpg"
+			}
+		]);
 
 		Assert.AreEqual(0, fakeDownloaders.DownloadCount);
+	}
+
+	[TestMethod]
+	public async Task Optimize_Single_UsesDefaults_WhenOptimizersNull_AndMatchesImageFormat()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			{
+				Optimizers =
+				[
+					new Optimizer
+					{
+						Enabled = true,
+						Id = "mozjpeg",
+						ImageFormats = [ExtensionRolesHelper.ImageFormat.jpg],
+						Options = new OptimizerOptions { Quality = 80 }
+					}
+				]
+			}
+		};
+		var fakeDownloaders = new FakeMozJpegDownload();
+		var fakeMozJpeg = new MozJpegService(appSettings,
+			new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger(), fakeDownloaders);
+
+		var storage = new FakeIStorage([], ["/out.jpg"]);
+		var sut = new ImageOptimisationService(appSettings,
+			new FakeSelectorStorage(storage), new FakeIWebLogger(), fakeMozJpeg);
+
+		await sut.Optimize(
+			// single item should also work when optimizers are in defaults
+			new ImageOptimisationItem
+			{
+				InputPath = "/in.jpg",
+				OutputPath = "/out.jpg",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			}
+		);
+
+		Assert.AreEqual(1, fakeDownloaders.DownloadCount);
 	}
 
 	[TestMethod]
