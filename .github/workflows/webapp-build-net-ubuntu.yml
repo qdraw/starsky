@@ -43,7 +43,7 @@ jobs:
         dotnet-version: 8.0.418
 
     - name: Cache nuget packages (*nix)
-      uses: actions/cache@b7e8d49f17405cc70c1c120101943203c98d3a4b
+      uses: actions/cache@565629816435f6c0b50676926c9b05c254113c0c
       with:
         # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
         path: ~/.nuget/packages
