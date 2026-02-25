@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{72f7442d-3083-4843-9dd1-2cab5c713152}</ProjectGuid>
+        <Version>0.7.11</Version>
+        <RootNamespace>starsky.foundation.optimisation</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MedallionShell" Version="1.6.2"/>
+    </ItemGroup>
+
+</Project>

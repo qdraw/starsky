@@ -43,7 +43,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.13 - _(Unreleased)_ - 2026-?-? {#v0.7.13}
 
-- nothing yet
+- [x] (Added) _Back-end_ Image optimization setting in publish profiles (PR #2788)
+- [x] (Added) _Back-end_ Add `MozJPEG` as Image optimization (PR #2788)
+- [x] (Added) _Back-end_ Add Image optimization to publish pipeline (PR #2788)
 
 ## version 0.7.12 - 2026-02-25 {#v0.7.12}
 

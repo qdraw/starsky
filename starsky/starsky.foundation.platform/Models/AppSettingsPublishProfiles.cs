@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Helpers;
 using System.Text.Json.Serialization;
@@ -195,6 +196,12 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public bool Copy { get; set; } = true;
 
+		/// <summary>
+		/// Optional profile-level optimizer settings.
+		/// If empty, PublishProfilesDefaults.Optimizers are used.
+		/// </summary>
+		public List<Optimizer> Optimizers { get; set; } = [];
+
 		public override string ToString()
 		{
 			return $"ContentType:{ContentType}," +
@@ -206,7 +213,8 @@ namespace starsky.foundation.platform.Models
 				   $"Template:{Template}," +
 				   $"Prepend:{Prepend}," +
 				   $"MetaData:{MetaData}," +
-				   $"Copy:{Copy}";
+				   $"Copy:{Copy}," +
+				   $"OptimizersCount:{Optimizers.Count}";
 		}
 	}
 

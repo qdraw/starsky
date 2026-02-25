@@ -31,5 +31,5 @@ Here below there is a list of key features:
 - [Synchronization - File system monitoring and automatic sync](synchronization.md)
 - [Trash - Delete and restore photos](trash.md)
 - [Video Support - Play videos and generate thumbnails](video.md)
-- [Publish media with watermarks](webhtmlpublish.md)
+- [Publish media with watermarks and optimizers](webhtmlpublish.md)
 - [Timezone Shift: Adjust Photo Timestamps Easily](timezone-shifting.md)

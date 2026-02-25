@@ -12,6 +12,8 @@ using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.optimisation.Interfaces;
+using starsky.foundation.optimisation.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Interfaces;
@@ -39,6 +41,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	private readonly CopyPublishedContent _copyPublishedContent;
 	private readonly IExifTool _exifTool;
 	private readonly IStorage _hostFileSystemStorage;
+	private readonly IImageOptimisationService _imageOptimisationService;
 	private readonly IWebLogger _logger;
 	private readonly IOverlayImage _overlayImage;
 	private readonly PublishManifest _publishManifest;
@@ -53,7 +56,8 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage
 			selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool,
 		IOverlayImage overlayImage, IConsole console, IWebLogger logger,
-		IThumbnailService thumbnailService)
+		IThumbnailService thumbnailService,
+		IImageOptimisationService imageOptimisationService)
 	{
 		_publishPreflight = publishPreflight;
 		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -70,6 +74,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			selectorStorage);
 		_logger = logger;
 		_thumbnailService = thumbnailService;
+		_imageOptimisationService = imageOptimisationService;
 	}
 
 	public async Task<Dictionary<string, bool>?> RenderCopy(
@@ -348,6 +353,13 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			_ => profile.Copy);
 	}
 
+	private List<Optimizer> ResolveOptimizers(AppSettingsPublishProfiles profile)
+	{
+		return profile.Optimizers.Count > 0
+			? profile.Optimizers
+			: _appSettings.PublishProfilesDefaults.Optimizers;
+	}
+
 	/// <summary>
 	///     Resize image with overlay
 	/// </summary>
@@ -383,6 +395,13 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			// Thumbs are 2000 px (and larger)
 			await _overlayImage.ResizeOverlayImageLarge(item.FilePath!, outputPath, profile);
 		}
+
+		await _imageOptimisationService.Optimize(
+			new ImageOptimisationItem
+			{
+				InputPath = outputPath, OutputPath = outputPath, ImageFormat = item.ImageFormat
+			},
+			ResolveOptimizers(profile));
 
 		if ( profile.MetaData )
 		{
@@ -427,7 +446,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		// Write it back
 		await new ExifToolCmdHelper(_exifTool, _hostFileSystemStorage,
 			_thumbnailStorage, null!, null!, _logger).UpdateAsync(item,
-			new List<string> { outputPath }, comparedNames,
+			[outputPath], comparedNames,
 			false, false);
 	}
 

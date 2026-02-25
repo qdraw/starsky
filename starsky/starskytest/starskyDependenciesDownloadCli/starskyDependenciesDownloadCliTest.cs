@@ -9,6 +9,7 @@ namespace starskytest.starskyDependenciesDownloadCli;
 [TestClass]
 public sealed class StarskyDependenciesDownloadCliTest
 {
+	private static string? _imageOptimisationDownloadOnStartup;
 	private static string? _ffmpegSkipDownloadOnStartup;
 	private static string? _prePort;
 	private static string? _preAspNetUrls;
@@ -38,6 +39,8 @@ public sealed class StarskyDependenciesDownloadCliTest
 			Environment.GetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup");
 		_ffmpegSkipDownloadOnStartup =
 			Environment.GetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup");
+		_imageOptimisationDownloadOnStartup =
+			Environment.GetEnvironmentVariable("app__ImageOptimisationDownloadOnStartup");
 
 		// also see:
 		// starsky/starskytest/root/ProgramTest.cs
@@ -52,6 +55,7 @@ public sealed class StarskyDependenciesDownloadCliTest
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", "false");
 		Environment.SetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup", "true");
+		Environment.SetEnvironmentVariable("app__ImageOptimisationDownloadOnStartup", "true");
 	}
 
 	[TestMethod]
@@ -77,5 +81,7 @@ public sealed class StarskyDependenciesDownloadCliTest
 			_exiftoolSkipDownloadOnStartup);
 		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup",
 			_ffmpegSkipDownloadOnStartup);
+		Environment.SetEnvironmentVariable("app__ImageOptimisationDownloadOnStartup",
+			_imageOptimisationDownloadOnStartup);
 	}
 }

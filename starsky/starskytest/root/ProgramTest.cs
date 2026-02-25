@@ -12,6 +12,7 @@ namespace starskytest.root;
 [TestClass]
 public class ProgramTest
 {
+	private static string? _imageOptimisationDownloadOnStartup;
 	private static string? _ffmpegSkipDownloadOnStartup;
 	private static string? _prePort;
 	private static string? _preAspNetUrls;
@@ -39,9 +40,13 @@ public class ProgramTest
 			Environment.GetEnvironmentVariable("app__EnablePackageTelemetry");
 		_ffmpegSkipDownloadOnStartup =
 			Environment.GetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup");
-
-		// see also:
-		// starsky/starskytest/starskyGeoCli/starskyGeoCliTest.cs
+		_imageOptimisationDownloadOnStartup =
+			Environment.GetEnvironmentVariable("app__ImageOptimisationDownloadOnStartup");
+		
+		// also see:
+		// starsky/starskytest/root/ProgramTest.cs
+		// starskytest/starskythumbnailcli/ProgramTest.cs
+		// starsky/starskytest/starskySynchronizeCli/ProgramTest.cs
 	}
 
 	public TestContext TestContext { get; set; }
@@ -65,6 +70,7 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", "false");
 		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "true");
+		Environment.SetEnvironmentVariable("app__ImageOptimisationDownloadOnStartup", "true");
 
 		await Program.Main(["--do-not-start"]);
 
@@ -134,5 +140,7 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", _enablePackageTelemetry);
 		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup",
 			_ffmpegSkipDownloadOnStartup);
+		Environment.SetEnvironmentVariable("app__ImageOptimisationDownloadOnStartup",
+			_imageOptimisationDownloadOnStartup);
 	}
 }

@@ -41,7 +41,7 @@ public sealed class WebHtmlPublishServiceTest
 			appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 		var result = await service.RenderCopy(new List<FileIndexItem>(),
 			"test", "test", "/");
 
@@ -77,7 +77,7 @@ public sealed class WebHtmlPublishServiceTest
 			appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 		var result = await service.RenderCopy(new List<FileIndexItem>(),
 			"test", "test", "/");
 
@@ -126,7 +126,7 @@ public sealed class WebHtmlPublishServiceTest
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 
 		var result = await service.RenderCopy(new List<FileIndexItem>(),
 			"test", "test", "/");
@@ -168,7 +168,7 @@ public sealed class WebHtmlPublishServiceTest
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), overlayService,
 			new ConsoleWrapper(), new FakeIWebLogger(),
-			SetThumbnailService(storage));
+			SetThumbnailService(storage), new FakeImageOptimisationService());
 
 		var result = await service.RenderCopy(
 			new List<FileIndexItem> { new("/test.jpg") },
@@ -187,7 +187,7 @@ public sealed class WebHtmlPublishServiceTest
 
 		var service = new WebHtmlPublishService(null!, selectorStorage, null!,
 			null!, null!, null!, new FakeIWebLogger(),
-			SetThumbnailService(storage));
+			SetThumbnailService(storage), new FakeImageOptimisationService());
 		var list =
 			service.AddFileHashIfNotExist(new List<FileIndexItem> { new("/test.jpg") });
 		Assert.AreNotEqual(string.Empty, list.FirstOrDefault()?.FileHash);
@@ -204,7 +204,7 @@ public sealed class WebHtmlPublishServiceTest
 		var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage,
 			null!,
 			null!, null!, null!, new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 		var input = new List<FileIndexItem> { new("/test.jpg") { FileHash = "test_hash_01" } }
 			.AsEnumerable();
 
@@ -228,7 +228,7 @@ public sealed class WebHtmlPublishServiceTest
 			}),
 			selectorStorage, null!,
 			null!, null!, null!, new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 
 		var result = service.ShouldSkipExtraLarge("");
 		Assert.AreEqual(ThumbnailGenerationType.All, result);
@@ -249,7 +249,7 @@ public sealed class WebHtmlPublishServiceTest
 			}),
 			selectorStorage, null!,
 			null!, null!, null!, new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 
 		var result = service.ShouldSkipExtraLarge("");
 		Assert.AreEqual(ThumbnailGenerationType.SkipExtraLarge, result);
@@ -286,7 +286,7 @@ public sealed class WebHtmlPublishServiceTest
 				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(), new FakeImageOptimisationService());
 
 		// Write to actual Disk
 
@@ -345,7 +345,7 @@ public sealed class WebHtmlPublishServiceTest
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
-			SetThumbnailService(storage));
+			SetThumbnailService(storage), new FakeImageOptimisationService());
 
 		var profiles = new PublishPreflight(appSettings,
 				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
@@ -393,7 +393,7 @@ public sealed class WebHtmlPublishServiceTest
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 
 		var profiles = new PublishPreflight(appSettings,
 				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
@@ -441,7 +441,7 @@ public sealed class WebHtmlPublishServiceTest
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 
 		var profiles = new PublishPreflight(appSettings,
 				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
@@ -489,7 +489,7 @@ public sealed class WebHtmlPublishServiceTest
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 
 		var profiles = new PublishPreflight(appSettings,
 				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
@@ -528,7 +528,7 @@ public sealed class WebHtmlPublishServiceTest
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 
 		await service.GenerateMoveSourceFiles(profile,
 			new List<FileIndexItem> { new("/test.jpg") }, "/",
@@ -569,7 +569,7 @@ public sealed class WebHtmlPublishServiceTest
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 
 		await service.GenerateMoveSourceFiles(profile,
 			new List<FileIndexItem> { new("/test.jpg") }, "/",
@@ -614,7 +614,7 @@ public sealed class WebHtmlPublishServiceTest
 				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(), new FakeImageOptimisationService());
 
 		// Write to actual Disk
 

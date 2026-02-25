@@ -104,6 +104,25 @@ The only exception is when using it from the WebUI, then move means copy
 ```json
 {
     "app" :{
+        "publishProfilesDefaults": {
+            "profileFeatures": {
+                "optimization": {
+                    "enabled": true
+                }
+            },
+            "optimizers": [
+                {
+                    "imageFormats": [
+                        "jpg"
+                    ],
+                    "id": "mozjpeg",
+                    "enabled": false,
+                    "options": {
+                        "quality": 80
+                    }
+                }
+            ]
+        },
         "publishProfiles": {
             "_default": [
                 {
@@ -143,7 +162,19 @@ The only exception is when using it from the WebUI, then move means copy
                     "Path": "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/qdrawlarge.png",
                     "Folder": "1000",
                     "Append": "_kl1k",
-                    "Copy": "true"
+                    "Copy": "true",
+                    "optimizers": [
+                        {
+                            "imageFormats": [
+                                "jpg"
+                            ],
+                            "id": "mozjpeg",
+                            "enabled": true,
+                            "options": {
+                                "quality": 80
+                            }
+                        }
+                    ]
                 },
                 {
                     "ContentType":  "jpeg",
@@ -153,7 +184,19 @@ The only exception is when using it from the WebUI, then move means copy
                     "Folder": "500",
                     "Append": "_kl",
                     "Copy": "true",
-                    "MetaData": "false"
+                    "MetaData": "false",
+                    "optimizers": [
+                        {
+                            "imageFormats": [
+                                "jpg"
+                            ],
+                            "id": "mozjpeg",
+                            "enabled": true,
+                            "options": {
+                                "quality": 80
+                            }
+                        }
+                    ]
                 },
                 {
                     "ContentType":  "moveSourceFiles",
@@ -193,3 +236,35 @@ The only exception is when using it from the WebUI, then move means copy
     }
 }
 ```
+
+
+#### publishProfilesDefaults
+
+Use `publishProfilesDefaults` to define reusable defaults for all publish profiles.
+
+- `profileFeatures.optimization.enabled` enables optimizer support for publish profiles.
+- `optimizers` defines default optimizer entries (for example `mozjpeg` with `quality`).
+
+```json
+"publishProfilesDefaults": {
+    "profileFeatures": {
+        "optimization": {
+            "enabled": true
+        }
+    },
+    "optimizers": [
+        {
+            "imageFormats": [
+                "jpg"
+            ],
+            "id": "mozjpeg",
+            "enabled": false,
+            "options": {
+                "quality": 80
+            }
+        }
+    ]
+}
+```
+
+You can still add an `optimizers` block per publish step inside `publishProfiles` to explicitly enable or tune optimizer behavior for that output.
