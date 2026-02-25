@@ -241,4 +241,121 @@ public sealed class PublishPreflightTest
 		Assert.HasCount(1, result.Item2);
 		Assert.AreEqual($"Image Path {publishProfile.Path} should exists", result.Item2[0]);
 	}
+
+	[TestMethod]
+	public void IsFtpPublishEnabled_UsesDefaults_WhenNoProfileOverride()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			{
+				ProfileFeatures = new ProfileFeatures
+				{
+					Publishing = new Publishing { Enabled = true }
+				},
+				PublishTargets = new PublishTargets
+				{
+					Ftp = new FtpTarget { Enabled = false }
+				}
+			},
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{ "test", [new AppSettingsPublishProfiles()] }
+			}
+		};
+
+		var result = new PublishPreflight(appSettings,
+			new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+			.IsFtpPublishEnabled("test");
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void IsFtpPublishEnabled_ProfileOverrideEnabled_ReturnsTrue()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			{
+				ProfileFeatures = new ProfileFeatures
+				{
+					Publishing = new Publishing { Enabled = true }
+				},
+				PublishTargets = new PublishTargets
+				{
+					Ftp = new FtpTarget { Enabled = false }
+				}
+			},
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{
+					"test",
+					[
+						new AppSettingsPublishProfiles
+						{
+							ProfileFeatures = new ProfileFeatures
+							{
+								Publishing = new Publishing { Enabled = true }
+							},
+							PublishTargets = new PublishTargets
+							{
+								Ftp = new FtpTarget { Enabled = true }
+							}
+						}
+					]
+				}
+			}
+		};
+
+		var result = new PublishPreflight(appSettings,
+			new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+			.IsFtpPublishEnabled("test");
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void IsFtpPublishEnabled_PublishingFeatureDisabled_ReturnsFalse()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			{
+				ProfileFeatures = new ProfileFeatures
+				{
+					Publishing = new Publishing { Enabled = true }
+				},
+				PublishTargets = new PublishTargets
+				{
+					Ftp = new FtpTarget { Enabled = true }
+				}
+			},
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{
+					"test",
+					[
+						new AppSettingsPublishProfiles
+						{
+							ProfileFeatures = new ProfileFeatures
+							{
+								Publishing = new Publishing { Enabled = false }
+							},
+							PublishTargets = new PublishTargets
+							{
+								Ftp = new FtpTarget { Enabled = true }
+							}
+						}
+					]
+				}
+			}
+		};
+
+		var result = new PublishPreflight(appSettings,
+			new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+			.IsFtpPublishEnabled("test");
+
+		Assert.IsFalse(result);
+	}
 }

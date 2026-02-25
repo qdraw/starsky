@@ -47,6 +47,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   const [itemName, setItemName] = React.useState("");
   const [existItemName, setExistItemName] = React.useState(false);
   const [publishProfileName, setPublishProfileName] = React.useState("");
+  const [hasTriggeredFtpPublish, setHasTriggeredFtpPublish] = React.useState(false);
 
   async function postZip() {
     setExistItemName(false);
@@ -71,6 +72,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       setIsProcessing(ProcessingState.fail);
       return;
     }
+    setHasTriggeredFtpPublish(false);
     setCreateZipKey(zipKeyResultData);
     await ExportIntervalUpdate(zipKeyResultData, setIsProcessing);
   }
@@ -89,6 +91,26 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     if (isProcessing !== ProcessingState.server) return;
     await ExportIntervalUpdate(createZipKey, setIsProcessing);
   }, 9000);
+
+  useEffect(() => {
+    async function publishToFtp() {
+      const bodyParams = new URLSearchParams();
+      bodyParams.set("itemName", itemName);
+      bodyParams.set("publishProfileName", publishProfileName);
+
+      const ftpResult = await FetchPost(new UrlQuery().UrlPublishFtp(), bodyParams.toString());
+      if (ftpResult.statusCode !== 200) {
+        setIsProcessing(ProcessingState.fail);
+      }
+    }
+
+    if (isProcessing !== ProcessingState.ready || !createZipKey || hasTriggeredFtpPublish) {
+      return;
+    }
+
+    setHasTriggeredFtpPublish(true);
+    publishToFtp();
+  }, [isProcessing, createZipKey, itemName, publishProfileName, hasTriggeredFtpPublish]);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
     const toUpdateItemName = event.target.textContent ? event.target.textContent.trim() : "";

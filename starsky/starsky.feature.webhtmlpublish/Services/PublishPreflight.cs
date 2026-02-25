@@ -60,6 +60,34 @@ public class PublishPreflight : IPublishPreflight
 			.FirstOrDefault(p => p.Key == publishProfileName).Value;
 	}
 
+	public bool IsFtpPublishEnabled(string publishProfileName)
+	{
+		var profile = _appSettings.PublishProfiles!
+			.FirstOrDefault(p => p.Key == publishProfileName);
+
+		if ( profile.Key == null || profile.Value == null || profile.Value.Count == 0 )
+		{
+			return false;
+		}
+
+		var defaultsPublishingEnabled = _appSettings.PublishProfilesDefaults
+			.ProfileFeatures.Publishing.Enabled;
+		var defaultsFtpEnabled = _appSettings.PublishProfilesDefaults
+			.PublishTargets.Ftp.Enabled;
+
+		var publishFeatureEnabled = profile.Value
+			.Select(p => p.ProfileFeatures)
+			.FirstOrDefault(p => p != null)
+			?.Publishing.Enabled ?? defaultsPublishingEnabled;
+
+		var ftpEnabled = profile.Value
+			.Select(p => p.PublishTargets)
+			.FirstOrDefault(p => p != null)
+			?.Ftp.Enabled ?? defaultsFtpEnabled;
+
+		return publishFeatureEnabled && ftpEnabled;
+	}
+
 	/// <summary>
 	///     Get the name by 1. -n or --name argument
 	///     Or 2. By user input

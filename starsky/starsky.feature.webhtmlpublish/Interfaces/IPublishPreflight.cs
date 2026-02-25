@@ -18,6 +18,7 @@ namespace starsky.feature.webhtmlpublish.Interfaces
 		/// <param name="publishProfileName">profile key</param>
 		/// <returns>(bool and list of errors)</returns>
 		Tuple<bool, List<string>> IsProfileValid(string publishProfileName);
+		bool IsFtpPublishEnabled(string publishProfileName);
 
 		string GetNameConsole(string inputPath, IReadOnlyList<string> args);
 		List<AppSettingsPublishProfiles> GetPublishProfileName(string publishProfileName);

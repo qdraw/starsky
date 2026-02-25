@@ -202,6 +202,18 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public List<Optimizer> Optimizers { get; set; } = [];
 
+		/// <summary>
+		/// Optional profile-level feature flags.
+		/// If null, PublishProfilesDefaults.ProfileFeatures is used.
+		/// </summary>
+		public ProfileFeatures? ProfileFeatures { get; set; }
+
+		/// <summary>
+		/// Optional profile-level publish targets.
+		/// If null, PublishProfilesDefaults.PublishTargets is used.
+		/// </summary>
+		public PublishTargets? PublishTargets { get; set; }
+
 		public override string ToString()
 		{
 			return $"ContentType:{ContentType}," +
@@ -213,8 +225,10 @@ namespace starsky.foundation.platform.Models
 				   $"Template:{Template}," +
 				   $"Prepend:{Prepend}," +
 				   $"MetaData:{MetaData}," +
-				   $"Copy:{Copy}," +
-				   $"OptimizersCount:{Optimizers.Count}";
+			       $"Copy:{Copy}," +
+			       $"OptimizersCount:{Optimizers.Count}," +
+			       $"HasProfileFeatures:{ProfileFeatures != null}," +
+			       $"HasPublishTargets:{PublishTargets != null}";
 		}
 	}
 

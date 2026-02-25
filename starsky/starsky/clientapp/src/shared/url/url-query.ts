@@ -452,6 +452,10 @@ export class UrlQuery {
     return this.prefix + `/api/publish/exist?itemName=${itemName}`;
   }
 
+  public UrlPublishFtp(): string {
+    return this.prefix + "/api/publish/ftp";
+  }
+
   public UrlRealtime(): string {
     let url = globalThis.location.protocol === "https:" ? "wss:" : "ws:";
     url += "//" + globalThis.location.host + this.prefix + "/realtime";

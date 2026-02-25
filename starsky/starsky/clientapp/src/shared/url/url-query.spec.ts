@@ -102,6 +102,11 @@ describe("url-query", () => {
     expect(result).toContain("itemName=name");
   });
 
+  it("UrlPublishFtp", () => {
+    const result = urlQuery.UrlPublishFtp();
+    expect(result).toContain("publish/ftp");
+  });
+
   it("UrlHomePage", () => {
     const result = new UrlQuery().UrlHomePage();
     expect(result).toBe("/");

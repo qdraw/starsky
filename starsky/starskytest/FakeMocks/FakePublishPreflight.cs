@@ -9,8 +9,10 @@ namespace starskytest.FakeMocks
 	{
 		private readonly List<AppSettingsPublishProfiles> _input = new List<AppSettingsPublishProfiles>();
 		private readonly bool _isOk;
+		private readonly bool _isFtpPublishEnabled;
 
-		public FakeIPublishPreflight(List<AppSettingsPublishProfiles>? input = null, bool isOk = true)
+		public FakeIPublishPreflight(List<AppSettingsPublishProfiles>? input = null,
+			bool isOk = true, bool isFtpPublishEnabled = true)
 		{
 			if ( input != null )
 			{
@@ -18,6 +20,7 @@ namespace starskytest.FakeMocks
 			}
 
 			_isOk = isOk;
+			_isFtpPublishEnabled = isFtpPublishEnabled;
 		}
 		
 		public IEnumerable<KeyValuePair<string,bool>> GetAllPublishProfileNames()
@@ -29,6 +32,11 @@ namespace starskytest.FakeMocks
 		public Tuple<bool, List<string>> IsProfileValid(string publishProfileName)
 		{
 			return new Tuple<bool, List<string>>(_isOk, new List<string>());
+		}
+
+		public bool IsFtpPublishEnabled(string publishProfileName)
+		{
+			return _isFtpPublishEnabled;
 		}
 
 		public string GetNameConsole(string inputPath, IReadOnlyList<string> args)
