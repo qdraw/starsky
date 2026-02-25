@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using Medallion.Shell;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.optimisation.Helpers;
 using starsky.foundation.optimisation.Interfaces;
 using starsky.foundation.optimisation.Models;
 using starsky.foundation.platform.Architecture;
@@ -36,6 +37,16 @@ public class ImageOptimisationToolDownload(
 
 		CreateDirectories([appSettings.DependenciesFolder, toolFolder, architectureFolder]);
 
+		// Check if the binary already exists in the architecture folder
+		var expectedBinaryPath = new ImageOptimisationExePath(appSettings).GetExePath(options.ToolName, architecture);
+		
+		if ( _hostFileSystemStorage.ExistFile(expectedBinaryPath) )
+		{
+			logger.LogInformation($"[ImageOptimisationToolDownload] Tool already exists: {expectedBinaryPath}");
+			return ImageOptimisationDownloadStatus.OkAlreadyDownloaded;
+		}
+
+		
 		var container = await toolDownloadIndex.DownloadIndex(options);
 		if ( !container.Success )
 		{
@@ -50,7 +61,7 @@ public class ImageOptimisationToolDownload(
 				$"[ImageOptimisationToolDownload] No binary for {options.ToolName} on {architecture}");
 			return ImageOptimisationDownloadStatus.DownloadBinariesFailedMissingFileName;
 		}
-
+		
 		var zipFullFilePath = Path.Combine(toolFolder, binaryIndex.FileName);
 		if ( !await DownloadMirror(container.BaseUrls, zipFullFilePath, binaryIndex,
 			    retryInSeconds) )

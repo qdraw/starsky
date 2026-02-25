@@ -34,7 +34,8 @@ public class MozJpegService : IMozJpegService
 		IEnumerable<ImageOptimisationItem> targets)
 	{
 		var downloadStatus = await _mozJpegDownload.Download();
-		if ( downloadStatus != ImageOptimisationDownloadStatus.Ok )
+		if ( downloadStatus != ImageOptimisationDownloadStatus.Ok &&
+		     downloadStatus != ImageOptimisationDownloadStatus.OkAlreadyDownloaded )
 		{
 			_logger.LogError(
 				$"[ImageOptimisationService] MozJPEG download failed: {downloadStatus}");
