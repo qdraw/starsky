@@ -8,7 +8,7 @@
         <ProjectGuid>{c5f59cd2-13dc-45e5-9cd0-a756feaffd86}</ProjectGuid>
         <RuntimeFrameworkVersion>8.0.24</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
-        <Version>0.7.11</Version>
+        <Version>0.7.12</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
