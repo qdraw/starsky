@@ -8,6 +8,7 @@ using starsky.foundation.optimisation.Models;
 using starsky.foundation.optimisation.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
+using starsky.foundation.storage.ArchiveFormats.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.optimisation.Services;
@@ -212,11 +213,12 @@ public class ImageOptimisationToolDownloadTests
 	private ImageOptimisationToolDownload CreateSut(FakeIStorage storage,
 		FakeIHttpClientHelper http,
 		IImageOptimisationToolDownloadIndex index,
-		global::starsky.foundation.storage.ArchiveFormats.Interfaces.IZipper zipper)
+		IZipper zipper)
 	{
 		_appSettings.DependenciesFolder = "/dependencies";
 		return new ImageOptimisationToolDownload(new FakeSelectorStorage(storage), http,
-			_appSettings, _logger, index, zipper);
+			_appSettings, _logger, index, zipper,
+			new ImageOptimisationChmod(new FakeSelectorStorage(storage), _logger));
 	}
 
 	private static FakeImageOptimisationToolDownloadIndex CreateIndex(string binarySha)

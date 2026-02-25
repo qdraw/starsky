@@ -1,12 +1,9 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.database.Models;
-using starsky.foundation.optimisation.Interfaces;
-using starsky.foundation.optimisation.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
@@ -94,9 +91,7 @@ public class WebHtmlPublishServiceOptimizersTests
 		};
 		var profile = new AppSettingsPublishProfiles
 		{
-			ContentType = TemplateContentType.Jpeg,
-			MetaData = false,
-			SourceMaxWidth = 1001
+			ContentType = TemplateContentType.Jpeg, MetaData = false, SourceMaxWidth = 1001
 		};
 
 		var storage = new FakeIStorage([], ["/test.jpg"], [CreateAnImage.Bytes.ToArray()]);
@@ -118,6 +113,4 @@ public class WebHtmlPublishServiceOptimizersTests
 		Assert.HasCount(1, fakeOptimisationService.ReceivedOptimizers);
 		Assert.AreEqual("mozjpeg", fakeOptimisationService.ReceivedOptimizers[0].Id);
 	}
-
-
 }

@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using Medallion.Shell;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.optimisation.Helpers;
@@ -22,10 +21,12 @@ public class ImageOptimisationToolDownload(
 	AppSettings appSettings,
 	IWebLogger logger,
 	IImageOptimisationToolDownloadIndex toolDownloadIndex,
-	IZipper zipper)
+	IZipper zipper,
+	IImageOptimisationChmod chmod)
 	: IImageOptimisationToolDownload
 {
-	private readonly IStorage _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+	private readonly IStorage _hostFileSystemStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
 	public async Task<ImageOptimisationDownloadStatus> Download(
 		ImageOptimisationToolDownloadOptions options, string? architecture = null,
@@ -50,7 +51,8 @@ public class ImageOptimisationToolDownload(
 		var container = await toolDownloadIndex.DownloadIndex(options);
 		if ( !container.Success )
 		{
-			logger.LogError($"[ImageOptimisationToolDownload] Index not found for {options.ToolName}");
+			logger.LogError(
+				$"[ImageOptimisationToolDownload] Index not found for {options.ToolName}");
 			return ImageOptimisationDownloadStatus.DownloadIndexFailed;
 		}
 
@@ -66,7 +68,8 @@ public class ImageOptimisationToolDownload(
 		if ( !await DownloadMirror(container.BaseUrls, zipFullFilePath, binaryIndex,
 			    retryInSeconds) )
 		{
-			logger.LogError($"[ImageOptimisationToolDownload] Download failed for {options.ToolName}");
+			logger.LogError(
+				$"[ImageOptimisationToolDownload] Download failed for {options.ToolName}");
 			return ImageOptimisationDownloadStatus.DownloadBinariesFailed;
 		}
 
@@ -92,18 +95,15 @@ public class ImageOptimisationToolDownload(
 			return ImageOptimisationDownloadStatus.Ok;
 		}
 
-		var chmodResult = await RunChmod(architectureFolder);
-		if ( !chmodResult )
-		{
-			return ImageOptimisationDownloadStatus.RunChmodFailed;
-		}
-
-		return ImageOptimisationDownloadStatus.Ok;
+		var chmodResult = await chmod.Chmod(architectureFolder);
+		return !chmodResult
+			? ImageOptimisationDownloadStatus.RunChmodFailed
+			: ImageOptimisationDownloadStatus.Ok;
 	}
 
 	private void CreateDirectories(List<string> paths)
 	{
-		foreach (var path in paths.Where(path => !_hostFileSystemStorage.ExistFolder(path)))
+		foreach ( var path in paths.Where(path => !_hostFileSystemStorage.ExistFolder(path)) )
 		{
 			_hostFileSystemStorage.CreateDirectory(path);
 		}
@@ -120,26 +120,6 @@ public class ImageOptimisationToolDownload(
 			}
 		}
 
-		return false;
-	}
-
-	private async Task<bool> RunChmod(string path)
-	{
-		const string cmdPath = "/bin/chmod";
-		if ( !_hostFileSystemStorage.ExistFile(cmdPath) )
-		{
-			logger.LogError("[ImageOptimisationToolDownload] /bin/chmod does not exist");
-			return false;
-		}
-
-		var result = await Command.Run(cmdPath, "-R", "0755", path).Task;
-		if ( result.Success )
-		{
-			return true;
-		}
-
-		logger.LogError(
-			$"[ImageOptimisationToolDownload] chmod failed with {result.ExitCode}: {result.StandardError}");
 		return false;
 	}
 }

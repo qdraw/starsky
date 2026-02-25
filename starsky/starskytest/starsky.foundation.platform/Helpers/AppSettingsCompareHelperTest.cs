@@ -638,6 +638,18 @@ public sealed class AppSettingsCompareHelperTest
 	}
 
 	[TestMethod]
+	public void AppSettingsPublishProfilesDefaults_Null()
+	{
+		var source = new AppSettings { PublishProfilesDefaults = null! };
+
+		var to = new AppSettings { PublishProfilesDefaults = null! };
+
+		AppSettingsCompareHelper.Compare(source, to);
+		Assert.AreEqual(source.PublishProfilesDefaults,
+			to.PublishProfilesDefaults);
+	}
+
+	[TestMethod]
 	public void CompareDatabaseTypeList_NotFound()
 	{
 		var list = new List<string>();
@@ -878,6 +890,18 @@ public sealed class AppSettingsCompareHelperTest
 			to.CloudImport.Providers[0].SyncFrequencyHours);
 		Assert.AreEqual(source.CloudImport.Providers[0].DeleteAfterImport,
 			to.CloudImport.Providers[0].DeleteAfterImport);
+	}
+
+	[TestMethod]
+	public void CloudImport_Null()
+	{
+		var source = new AppSettings { CloudImport = null! };
+
+		var to = new AppSettings { CloudImport = null! };
+
+		AppSettingsCompareHelper.Compare(source, to);
+		Assert.AreEqual(source.CloudImport,
+			to.CloudImport);
 	}
 
 	[TestMethod]

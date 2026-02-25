@@ -1,5 +1,4 @@
-﻿using Medallion.Shell;
-using starsky.foundation.injection;
+﻿using starsky.foundation.injection;
 using starsky.foundation.optimisation.Interfaces;
 using starsky.foundation.optimisation.Models;
 using starsky.foundation.platform.Architecture;
@@ -15,10 +14,10 @@ namespace starsky.foundation.optimisation.Services;
 [Service(typeof(IMozJpegService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MozJpegService : IMozJpegService
 {
-	private readonly IMozJpegDownload _mozJpegDownload;
 	private readonly AppSettings _appSettings;
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IWebLogger _logger;
+	private readonly IMozJpegDownload _mozJpegDownload;
 
 	public MozJpegService(AppSettings appSettings,
 		ISelectorStorage selectorStorage, IWebLogger logger, IMozJpegDownload mozJpegDownload)
@@ -42,10 +41,10 @@ public class MozJpegService : IMozJpegService
 			return;
 		}
 
-		var cjpegPath = GetMozJpegPath();
-		if ( !_hostFileSystemStorage.ExistFile(cjpegPath) )
+		var cJpegPath = GetMozJpegPath();
+		if ( !_hostFileSystemStorage.ExistFile(cJpegPath) )
 		{
-			_logger.LogError($"[ImageOptimisationService] cjpeg not found at {cjpegPath}");
+			_logger.LogError($"[ImageOptimisationService] cjpeg not found at {cJpegPath}");
 			return;
 		}
 
@@ -59,12 +58,12 @@ public class MozJpegService : IMozJpegService
 			var tempFilePath = outputInputPath + ".optimizing";
 			await using var outputStream = File.OpenWrite(tempFilePath);
 
-			var parent = Directory.GetParent(cjpegPath);
+			var parent = Directory.GetParent(cJpegPath);
 			List<string> arguments =
 				["-quality", optimizer.Options.Quality.ToString(), "-optimize", outputInputPath];
 
 			var command = Default.Run(
-				cjpegPath,
+				cJpegPath,
 				options: opts =>
 				{
 					opts.StartInfo(i => i.Arguments = string.Join(" ", arguments));
@@ -100,7 +99,7 @@ public class MozJpegService : IMozJpegService
 
 	private bool IsJpegOutput(string outputPath)
 	{
-		var stream = _hostFileSystemStorage.ReadStream(outputPath, 68);
+		using var stream =  _hostFileSystemStorage.ReadStream(outputPath, 68);
 		var format = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 		return format == ExtensionRolesHelper.ImageFormat.jpg;
 	}
