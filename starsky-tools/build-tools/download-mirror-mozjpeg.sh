@@ -6,11 +6,11 @@ set -euo pipefail
 
 # List of binaries to download, zip, and hash
 BINARIES=(
-  "linux-x64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/linux/amd64/cjpeg|mozjpeg-linux-x64.zip"
-  "linux-arm64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/linux/arm64/cjpeg|mozjpeg-linux-arm64.zip"
-  "osx-x64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/macos/amd64/cjpeg|mozjpeg-osx-x64.zip"
-  "osx-arm64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/macos/arm64/cjpeg|mozjpeg-osx-arm64.zip"
-  "win-x64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/win/x64/cjpeg.exe|mozjpeg-win-x64.zip"
+  "linux-x64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/linux/amd64/cjpeg|mozjpeg|mozjpeg-linux-x64.zip"
+  "linux-arm64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/linux/arm64/cjpeg|mozjpeg|mozjpeg-linux-arm64.zip"
+  "osx-x64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/macos/amd64/cjpeg|mozjpeg|mozjpeg-osx-x64.zip"
+  "osx-arm64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/macos/arm64/cjpeg|mozjpeg|mozjpeg-osx-arm64.zip"
+  "win-x64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/win/x64/cjpeg.exe|mozjpeg.exe|mozjpeg-win-x64.zip"
 )
 
 # Output folder setup
@@ -38,19 +38,26 @@ for ENTRY in "${BINARIES[@]}"; do
   ARCH="${ENTRY%%|*}"
   REMAINDER="${ENTRY#*|}"
   URL="${REMAINDER%%|*}"
-  ZIPNAME="${REMAINDER#*|}"
+  REMAINDER2="${REMAINDER#*|}"
+  ZIPNAME="${REMAINDER2##*|}"
+  FILENAME_INSIDE_ZIP="${REMAINDER2%%|*}"
   BASENAME=$(basename "$URL")
 
   echo "Downloading $URL ..."
   curl -L -o "$BASENAME" "$URL"
 
-  echo "Zipping $BASENAME to $ZIPNAME ..."
-  zip -q "$ZIPNAME" "$BASENAME"
+  # Rename to the desired filename inside the zip if needed
+  if [ "$BASENAME" != "$FILENAME_INSIDE_ZIP" ]; then
+    mv "$BASENAME" "$FILENAME_INSIDE_ZIP"
+  fi
+
+  echo "Zipping $FILENAME_INSIDE_ZIP to $ZIPNAME ..."
+  zip -q "$ZIPNAME" "$FILENAME_INSIDE_ZIP"
 
   echo "Calculating SHA256 for $ZIPNAME ..."
   SHA256=$(openssl dgst -sha256 "$ZIPNAME" | awk '{print $2}')
 
-  rm -f "$BASENAME"
+  rm -f "$FILENAME_INSIDE_ZIP"
 
   # Add to JSON
   if [ $FIRST -eq 0 ]; then OUTPUT_JSON+=","; fi
