@@ -6,11 +6,11 @@ set -euo pipefail
 
 # List of binaries to download, zip, and hash
 BINARIES=(
-  "linux-x64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/linux/amd64/cjpeg|mozjpeg|mozjpeg-linux-x64.zip"
-  "linux-arm64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/linux/arm64/cjpeg|mozjpeg|mozjpeg-linux-arm64.zip"
-  "osx-x64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/macos/amd64/cjpeg|mozjpeg|mozjpeg-osx-x64.zip"
-  "osx-arm64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/macos/arm64/cjpeg|mozjpeg|mozjpeg-osx-arm64.zip"
-  "win-x64|https://github.com/imagemin/mozjpeg-bin/raw/refs/heads/main/vendor/win/x64/cjpeg.exe|mozjpeg.exe|mozjpeg-win-x64.zip"
+  "linux-arm64|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.1/linux-arm64|mozjpeg|mozjpeg-linux-arm64.zip"
+  "linux-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.1/linux-x64|mozjpeg|mozjpeg-linux-x64.zip"
+  "osx-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.1/macos-x64|mozjpeg|mozjpeg-osx-x64.zip"
+  "osx-arm64|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.1/macos-arm64|mozjpeg|mozjpeg-osx-arm64.zip"
+  "win-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.1/windows-x64.exe|mozjpeg.exe|mozjpeg-win-x64.zip"
 )
 
 # Output folder setup
@@ -85,20 +85,11 @@ for CHECK_FILE in "${CHECK_FILES[@]}"; do
 
   FILE_SIZE="$(stat -c%s "$FILE_PATH" 2>/dev/null || stat -f%z "$FILE_PATH")"
 
-  if [[ "$CHECK_FILE" == *"linux-x64"* ]]; then
-    if [ "$FILE_SIZE" -gt 30000 ]; then
-      echo "✅ $CHECK_FILE exists and is larger than 30 KB."
-    else
-      echo "⛌ FAIL -> $CHECK_FILE exists but is 30 KB or smaller."
-      exit 1
-    fi
+  if [ "$FILE_SIZE" -gt 260000 ]; then
+    echo "✅ $CHECK_FILE exists and is larger than 260 KB. actual: $FILE_SIZE"
   else
-    if [ "$FILE_SIZE" -gt 200000 ]; then
-      echo "✅ $CHECK_FILE exists and is larger than 200 KB."
-    else
-      echo "⛌ FAIL -> $CHECK_FILE exists but is 200 KB or smaller."
-      exit 1
-    fi
+    echo "⛌ FAIL -> $CHECK_FILE exists but is 260 KB or smaller."
+    exit 1
   fi
 done
 
