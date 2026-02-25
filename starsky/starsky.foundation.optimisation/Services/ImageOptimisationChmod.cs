@@ -1,9 +1,12 @@
+using System.Runtime.CompilerServices;
 using Medallion.Shell;
 using starsky.foundation.injection;
 using starsky.foundation.optimisation.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+
+[assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.foundation.optimisation.Services;
 
