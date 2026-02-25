@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.optimisation.Interfaces;
 using starsky.foundation.optimisation.Models;
 using starsky.foundation.optimisation.Services;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.ArchiveFormats.Interfaces;
@@ -33,7 +33,7 @@ public class ImageOptimisationToolDownloadTests
 			new Uri("https://qdraw.nl/special/mirror/mozjpeg/")
 		]
 	};
-	
+
 	private static readonly ImageOptimisationToolDownloadOptions OptionsWithChmod = new()
 	{
 		ToolName = "mozjpeg",
@@ -169,7 +169,7 @@ public class ImageOptimisationToolDownloadTests
 	{
 		const string architecture = "linux-x64";
 		var zipBytes = CreateZipBytes("mozjpeg", "tool-binary");
-		var zipSha = ComputeSha256Hex(zipBytes);
+		var zipSha = Sha256.ComputeSha256(zipBytes);
 		var storage = new FakeIStorage();
 		var zipFullFilePath = Path.Combine("/dependencies", "mozjpeg", "mozjpeg-linux-x64.zip");
 
@@ -215,7 +215,8 @@ public class ImageOptimisationToolDownloadTests
 
 		var result = await sut.Download(OptionsNoChmod, "linux-x64");
 
-		Assert.AreEqual(ImageOptimisationDownloadStatus.DownloadBinariesFailedZipperNotExtracted, result);
+		Assert.AreEqual(ImageOptimisationDownloadStatus.DownloadBinariesFailedZipperNotExtracted,
+			result);
 	}
 
 	[TestMethod]
@@ -240,7 +241,7 @@ public class ImageOptimisationToolDownloadTests
 	{
 		const string architecture = "linux-x64";
 		var zipBytes = CreateZipBytes("mozjpeg", "tool-binary");
-		var zipSha = ComputeSha256Hex(zipBytes);
+		var zipSha = Sha256.ComputeSha256(zipBytes);
 		var storage = new FakeIStorage();
 		var zipFullFilePath = Path.Combine("/dependencies", "mozjpeg", "mozjpeg-linux-x64.zip");
 
@@ -273,13 +274,6 @@ public class ImageOptimisationToolDownloadTests
 		}
 
 		return memory.ToArray();
-	}
-
-	private static string ComputeSha256Hex(byte[] bytes)
-	{
-		using var sha256 = SHA256.Create();
-		var hash = sha256.ComputeHash(bytes);
-		return Convert.ToHexString(hash).ToLowerInvariant();
 	}
 
 	private ImageOptimisationToolDownload CreateSut(FakeIStorage storage,
