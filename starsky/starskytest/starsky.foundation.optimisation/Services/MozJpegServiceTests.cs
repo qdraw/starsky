@@ -80,7 +80,7 @@ public sealed class MozJpegServiceTests
 		]);
 
 		Assert.Contains(entry =>
-			entry.Item2?.Contains("cjpeg not found") == true, fakeLogger.TrackedExceptions);
+			entry.Item2?.Contains("[ImageOptimisationService] MozJPEG not found at") == true, fakeLogger.TrackedExceptions);
 	}
 
 	[TestMethod]

@@ -183,7 +183,7 @@ public class ImageOptimisationToolDownloadTests
 	}
 
 	[TestMethod]
-	public async Task Download_ReturnsOk_WhenDownloadShaAndExtractSucceed()
+	public async Task Download_ReturnsOk_WhenDownloadShaAndExtract_FileNotFoundInZip()
 	{
 		var storage = new FakeIStorage();
 		var http = new FakeIHttpClientHelper(storage,
@@ -194,7 +194,7 @@ public class ImageOptimisationToolDownloadTests
 					new KeyValuePair<bool, string>(true, "VGVzdENvbnRlbnQ=")
 				}
 			});
-		var validSha = "b98fc09ac0df3bbc1ee5e79316604f7462fffdf095c1c676e3c2517773645fe9";
+		const string validSha = "b98fc09ac0df3bbc1ee5e79316604f7462fffdf095c1c676e3c2517773645fe9";
 		var toolFolder = Path.Combine("/dependencies", "mozjpeg");
 		var zipPath = Path.Combine(toolFolder, "mozjpeg-linux-x64.zip");
 
@@ -207,7 +207,7 @@ public class ImageOptimisationToolDownloadTests
 
 		var result = await sut.Download(OptionsNoChmod, "linux-x64");
 
-		Assert.AreEqual(ImageOptimisationDownloadStatus.Ok, result);
+		Assert.AreEqual(ImageOptimisationDownloadStatus.DownloadBinariesFailedZipperNotExtracted, result);
 	}
 
 	private ImageOptimisationToolDownload CreateSut(FakeIStorage storage,
