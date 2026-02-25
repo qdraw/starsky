@@ -1,9 +1,10 @@
 .breadcrumb {
-  height: 50px;
+  min-height: 55px;
   background-color: #eceff1;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 2.3;
   padding-top: 12px;
+  padding-bottom: 12px;
   font-weight: 300;
 }
 

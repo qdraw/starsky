@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.13 - _(Unreleased)_ - 2026-?-? {#v0.7.13}
 
+- [x] (Fixed) _Front-end_ minimum height for breadcrumb (PR #2803)
 - [x] (Added) _Back-end_ Image optimization setting in publish profiles (PR #2788)
 - [x] (Added) _Back-end_ Add `MozJPEG` as Image optimization (PR #2788)
 - [x] (Added) _Back-end_ Add Image optimization to publish pipeline (PR #2788)
