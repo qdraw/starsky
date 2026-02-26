@@ -578,7 +578,7 @@ public sealed class AppSettingsCompareHelperTest
 				ProfileFeatures = new ProfileFeatures
 				{
 					Optimization = new Optimization { Enabled = true },
-					Publishing = new Publishing { Enabled = true }
+					Publishing = new Publishing { Ftp = new FtpTarget { Enabled = true } }
 				},
 				Optimizers =
 				[
@@ -593,8 +593,7 @@ public sealed class AppSettingsCompareHelperTest
 						],
 						Options = new OptimizerOptions { Quality = 80 }
 					}
-				],
-				PublishTargets = new PublishTargets { Ftp = new FtpTarget { Enabled = true } }
+				]
 			}
 		};
 
@@ -613,7 +612,7 @@ public sealed class AppSettingsCompareHelperTest
 				ProfileFeatures = new ProfileFeatures
 				{
 					Optimization = new Optimization { Enabled = true },
-					Publishing = new Publishing { Enabled = true }
+					Publishing = new Publishing { Ftp = new FtpTarget { Enabled = true } }
 				}
 			}
 		};
@@ -625,7 +624,7 @@ public sealed class AppSettingsCompareHelperTest
 				ProfileFeatures = new ProfileFeatures
 				{
 					Optimization = new Optimization { Enabled = true },
-					Publishing = new Publishing { Enabled = true }
+					Publishing = new Publishing { Ftp = new FtpTarget { Enabled = true } }
 				}
 			}
 		};
@@ -633,8 +632,8 @@ public sealed class AppSettingsCompareHelperTest
 		AppSettingsCompareHelper.Compare(source, to);
 		Assert.AreEqual(source.PublishProfilesDefaults.ProfileFeatures.Optimization.Enabled,
 			to.PublishProfilesDefaults.ProfileFeatures.Optimization.Enabled);
-		Assert.AreEqual(source.PublishProfilesDefaults.ProfileFeatures.Publishing.Enabled,
-			to.PublishProfilesDefaults.ProfileFeatures.Publishing.Enabled);
+		Assert.AreEqual(source.PublishProfilesDefaults.ProfileFeatures.Publishing.Ftp.Enabled,
+			to.PublishProfilesDefaults.ProfileFeatures.Publishing.Ftp.Enabled);
 	}
 
 	[TestMethod]

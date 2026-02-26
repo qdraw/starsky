@@ -251,11 +251,10 @@ public sealed class PublishPreflightTest
 			{
 				ProfileFeatures = new ProfileFeatures
 				{
-					Publishing = new Publishing { Enabled = true }
-				},
-				PublishTargets = new PublishTargets
-				{
-					Ftp = new FtpTarget { Enabled = false }
+					Publishing = new Publishing
+					{
+						Ftp = new FtpTarget { Enabled = false }
+					}
 				}
 			},
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
@@ -265,7 +264,7 @@ public sealed class PublishPreflightTest
 		};
 
 		var result = new PublishPreflight(appSettings,
-			new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
 			.IsFtpPublishEnabled("test");
 
 		Assert.IsFalse(result);
@@ -280,36 +279,24 @@ public sealed class PublishPreflightTest
 			{
 				ProfileFeatures = new ProfileFeatures
 				{
-					Publishing = new Publishing { Enabled = true }
-				},
-				PublishTargets = new PublishTargets
-				{
-					Ftp = new FtpTarget { Enabled = false }
+					Publishing = new Publishing { Ftp = new FtpTarget { Enabled = false } }
 				}
 			},
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"test",
-					[
+					"test", [
 						new AppSettingsPublishProfiles
-						{
-							ProfileFeatures = new ProfileFeatures
 							{
-								Publishing = new Publishing { Enabled = true }
-							},
-							PublishTargets = new PublishTargets
-							{
-								Ftp = new FtpTarget { Enabled = true }
+								ContentType = TemplateContentType.PublishFtp
 							}
-						}
 					]
 				}
 			}
 		};
 
 		var result = new PublishPreflight(appSettings,
-			new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
 			.IsFtpPublishEnabled("test");
 
 		Assert.IsTrue(result);
@@ -324,36 +311,21 @@ public sealed class PublishPreflightTest
 			{
 				ProfileFeatures = new ProfileFeatures
 				{
-					Publishing = new Publishing { Enabled = true }
-				},
-				PublishTargets = new PublishTargets
-				{
-					Ftp = new FtpTarget { Enabled = true }
+					Publishing = new Publishing { Ftp = new FtpTarget { Enabled = false } }
 				}
 			},
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"test",
-					[
-						new AppSettingsPublishProfiles
-						{
-							ProfileFeatures = new ProfileFeatures
-							{
-								Publishing = new Publishing { Enabled = false }
-							},
-							PublishTargets = new PublishTargets
-							{
-								Ftp = new FtpTarget { Enabled = true }
-							}
-						}
+					"test", [
+						new AppSettingsPublishProfiles { }
 					]
 				}
 			}
 		};
 
 		var result = new PublishPreflight(appSettings,
-			new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
 			.IsFtpPublishEnabled("test");
 
 		Assert.IsFalse(result);

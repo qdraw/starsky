@@ -17,8 +17,6 @@ public class AppSettingsPublishProfilesDefaults
 	///     List of optimizers to apply by default for new publish profiles.
 	/// </summary>
 	public List<Optimizer> Optimizers { get; set; } = [];
-
-	public PublishTargets PublishTargets { get; set; } = new();
 }
 
 public class ProfileFeatures
@@ -34,7 +32,7 @@ public class Optimization
 
 public class Publishing
 {
-	public bool Enabled { get; set; }
+	public FtpTarget Ftp { get; set; } = new();
 }
 
 public class Optimizer
@@ -50,11 +48,6 @@ public class Optimizer
 public class OptimizerOptions
 {
 	public int Quality { get; set; } = 80;
-}
-
-public class PublishTargets
-{
-	public FtpTarget Ftp { get; set; } = new();
 }
 
 public class FtpTarget
