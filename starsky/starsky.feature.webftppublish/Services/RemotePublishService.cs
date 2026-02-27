@@ -30,7 +30,7 @@ public class RemotePublishService(
 	public bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
 		Dictionary<string, bool> copyContent)
 	{
-		var publishItems = 
+		var publishItems =
 			appSettings.PublishProfilesRemote.GetById(profileId);
 		if ( publishItems.Count == 0 )
 		{
@@ -69,7 +69,8 @@ public class RemotePublishService(
 
 	public bool IsPublishEnabled(string publishProfileName)
 	{
-		if ( appSettings.PublishProfilesRemote.GetById(publishProfileName).Count == 0 )
+		var profiles = appSettings.PublishProfilesRemote.GetById(publishProfileName);
+		if ( profiles.Count == 0 )
 		{
 			return false;
 		}
@@ -77,13 +78,9 @@ public class RemotePublishService(
 		var profile = appSettings.PublishProfiles!
 			.FirstOrDefault(p => p.Key == publishProfileName);
 
-		if ( profile.Key == null || profile.Value == null || profile.Value.Count == 0 )
-		{
-			logger.LogInformation("Profile is missing or empty, skipping publish profile check");
-			return false;
-		}
-
-		var isPublish = profile.Value.Any(p => p.ContentType == TemplateContentType.PublishRemote);
+		var isPublish = profile.Value
+			.Any(p => p.ContentType ==
+			          TemplateContentType.PublishRemote);
 
 		return isPublish;
 	}
