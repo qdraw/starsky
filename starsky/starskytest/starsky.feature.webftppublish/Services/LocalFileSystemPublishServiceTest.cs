@@ -133,4 +133,46 @@ public class LocalFileSystemPublishServiceTest
 			}
 		}
 	}
+
+
+	[TestMethod]
+	public void Run_CorruptZipInput_ReturnsFalse()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
+				{
+					{
+						"test-profile",
+						[
+							new RemoteCredentialWrapper
+							{
+								Type = RemoteCredentialType.LocalFileSystem,
+								LocalFileSystem = new LocalFileSystemCredential { Path = "/dest" }
+							}
+						]
+					}
+				}
+			}
+		};
+
+		var storage = new FakeIStorage(["/test"], ["/test/corrupt.zip"]);
+		var logger = new FakeIWebLogger();
+
+
+		var service = new LocalFileSystemPublishService(
+			appSettings,
+			storage,
+			new FakeSelectorStorage(storage),
+			new FakeConsoleWrapper(),
+			logger);
+
+		var copyContent = new Dictionary<string, bool> { { "corrupt.zip", true } };
+		var result = service.Run("/test/corrupt.zip", "test-profile", "slug", copyContent);
+
+		Assert.IsFalse(result);
+	}
+
 }
