@@ -44,10 +44,8 @@ public class RemotePublishServiceTest
 				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
 				{
 					{
-						"test-profile",
-						new List<RemoteCredentialWrapper>
-						{
-							new()
+						"test-profile", [
+							new RemoteCredentialWrapper
 							{
 								Type = RemoteCredentialType.Ftp,
 								Ftp = new FtpCredential
@@ -55,7 +53,7 @@ public class RemotePublishServiceTest
 									WebFtp = "ftp://user:pass@example.com/path"
 								}
 							}
-						}
+						]
 					}
 				}
 			}
@@ -165,16 +163,14 @@ public class RemotePublishServiceTest
 				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
 				{
 					{
-						"profile",
-						new List<RemoteCredentialWrapper>
-						{
-							new()
+						"profile", [
+							new RemoteCredentialWrapper
 							{
 								Type = RemoteCredentialType.Unknown,
 								Ftp = null,
 								LocalFileSystem = null
 							}
-						}
+						]
 					}
 				}
 			}
@@ -205,6 +201,27 @@ public class RemotePublishServiceTest
 			},
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>()
 		};
+
+		var logger = new FakeIWebLogger();
+		var service = new RemotePublishService(
+			new FakeIFtpService(),
+			new LocalFileSystemPublishService(
+				appSettings,
+				new FakeIStorage(),
+				new FakeSelectorStorage(),
+				new FakeConsoleWrapper(),
+				logger),
+			appSettings,
+			logger);
+
+		var result = service.IsPublishEnabled("missing-profile");
+		Assert.IsFalse(result);
+	}
+	
+	[TestMethod]
+	public void IsPublishEnabled_ProfileNotFound2_ReturnsFalse()
+	{
+		var appSettings = new AppSettings();
 
 		var logger = new FakeIWebLogger();
 		var service = new RemotePublishService(
