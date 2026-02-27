@@ -60,29 +60,6 @@ public class PublishPreflight : IPublishPreflight
 			.FirstOrDefault(p => p.Key == publishProfileName).Value;
 	}
 
-	public bool IsFtpPublishEnabled(string publishProfileName)
-	{
-		if ( _appSettings.PublishProfilesRemote.GetFtpById(publishProfileName).Count == 0 )
-		{
-			_logger.LogInformation(
-				"WebFtp username/password is not configured, skipping publish profile check");
-			return false;
-		}
-
-		var profile = _appSettings.PublishProfiles!
-			.FirstOrDefault(p => p.Key == publishProfileName);
-
-		if ( profile.Key == null || profile.Value == null || profile.Value.Count == 0 )
-		{
-			_logger.LogInformation("Profile is missing or empty, skipping publish profile check");
-			return false;
-		}
-
-		var isPublish = profile.Value.Any(p => p.ContentType == TemplateContentType.PublishRemote);
-
-		return isPublish;
-	}
-
 	/// <summary>
 	///     Get the name by 1. -n or --name argument
 	///     Or 2. By user input
@@ -136,7 +113,7 @@ public class PublishPreflight : IPublishPreflight
 	/// </summary>
 	/// <param name="profiles">profile object</param>
 	/// <returns>(bool and list of errors)</returns>
-	internal Tuple<bool, List<string>> IsProfileValid(
+	private Tuple<bool, List<string>> IsProfileValid(
 		KeyValuePair<string, List<AppSettingsPublishProfiles>> profiles)
 	{
 		if ( profiles.Key == null! || profiles.Value == null! )

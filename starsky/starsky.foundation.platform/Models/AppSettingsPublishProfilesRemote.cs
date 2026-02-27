@@ -6,24 +6,30 @@ using System.Text.Json.Serialization;
 namespace starsky.foundation.platform.Models;
 
 /// <summary>
-/// Represents the remote Publish profiles configuration, allowing multiple remote targets per profile ID.
+///     Represents the remote Publish profiles configuration, allowing multiple remote targets per
+///     profile ID.
 /// </summary>
 public class AppSettingsPublishProfilesRemote
 {
 	/// <summary>
-	/// Key: publish profile id, Value: list of remote credential wrappers (targets)
+	///     Key: publish profile id, Value: list of remote credential wrappers (targets)
 	/// </summary>
 	public Dictionary<string, List<RemoteCredentialWrapper>> Profiles { get; set; } = new();
 
 	/// <summary>
-	/// Default/fallback remote credentials if a profile id is not found.
+	///     Default/fallback remote credentials if a profile id is not found.
 	/// </summary>
 	public List<RemoteCredentialWrapper> Default { get; set; } = [];
 
 	public List<RemoteCredentialWrapper> GetById(string id,
-		RemoteCredentialType type)
+		RemoteCredentialType? type = null)
 	{
 		Profiles.TryGetValue(id, out var result);
+		if ( type == null )
+		{
+			return result ?? Default;
+		}
+
 		if ( result != null && result.Any(p => p.Type == type) )
 		{
 			return result.Where(p => p.Type == type).ToList();
@@ -38,16 +44,27 @@ public class AppSettingsPublishProfilesRemote
 			.Cast<FtpCredential>().ToList();
 	}
 
+	public List<LocalFileSystemCredential> GetLocalFileSystemById(string id)
+	{
+		return GetById(id, RemoteCredentialType.LocalFileSystem)
+			.Where(p => p.LocalFileSystem != null)
+			.Select(p => p.LocalFileSystem)
+			.Cast<LocalFileSystemCredential>()
+			.ToList();
+	}
+
 	public AppSettingsPublishProfilesRemote DisplaySecurity(string securityWarning)
 	{
 		foreach ( var wrapper in Profiles.SelectMany(remoteProfile => remoteProfile.Value) )
 		{
 			wrapper.Ftp?.SetWarning(securityWarning);
+			wrapper.LocalFileSystem?.SetWarning(securityWarning);
 		}
 
-		foreach ( var wrapper in Default.Where(p => p.Ftp != null) )
+		foreach ( var wrapper in Default )
 		{
 			wrapper.Ftp?.SetWarning(securityWarning);
+			wrapper.LocalFileSystem?.SetWarning(securityWarning);
 		}
 
 		return this;
@@ -55,42 +72,36 @@ public class AppSettingsPublishProfilesRemote
 }
 
 /// <summary>
-/// Wrapper for a remote credential target (e.g., FTP, S3, etc.).
+///     Wrapper for a remote credential target (e.g., FTP, S3, etc.).
 /// </summary>
 public class RemoteCredentialWrapper
 {
 	/// <summary>
-	/// The type of remote target (e.g., "ftp").
+	///     The type of remote target (e.g., "ftp").
 	/// </summary>
 	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public RemoteCredentialType Type { get; set; } = RemoteCredentialType.Ftp;
 
 	/// <summary>
-	/// FTP credential details (if applicable).
+	///     FTP credential details (if applicable).
 	/// </summary>
 	public FtpCredential? Ftp { get; set; }
-}
 
-public enum RemoteCredentialType
-{
-	Unknown,
-	Ftp
+	/// <summary>
+	///     Local file system credential details (if applicable).
+	/// </summary>
+	public LocalFileSystemCredential? LocalFileSystem { get; set; }
 }
 
 /// <summary>
-/// FTP credential details for a remote Publish target.
+///     FTP credential details for a remote Publish target.
 /// </summary>
 public class FtpCredential
 {
 	private string? _webFtp;
 
-	public void SetWarning(string securityWarning)
-	{
-		_webFtp = securityWarning;
-	}
-
 	/// <summary>
-	/// Gets or sets the FTP URL (with credentials). '@' in username should be '%40'.
+	///     Gets or sets the FTP URL (with credentials). '@' in username should be '%40'.
 	/// </summary>
 	public string WebFtp
 	{
@@ -128,5 +139,40 @@ public class FtpCredential
 			var uri = new Uri(WebFtp);
 			return $"{uri.Scheme}://{uri.Host}{uri.LocalPath}";
 		}
+	}
+
+	public void SetWarning(string securityWarning)
+	{
+		_webFtp = securityWarning;
+	}
+}
+
+/// <summary>
+///     Local file system credential details for a publish target.
+/// </summary>
+public class LocalFileSystemCredential
+{
+	private string? _path;
+
+	/// <summary>
+	///     Gets or sets the destination path on the local file system.
+	/// </summary>
+	public string Path
+	{
+		get => string.IsNullOrEmpty(_path) ? string.Empty : _path;
+		set
+		{
+			if ( string.IsNullOrEmpty(value) )
+			{
+				return;
+			}
+
+			_path = value;
+		}
+	}
+
+	public void SetWarning(string securityWarning)
+	{
+		_path = securityWarning;
 	}
 }

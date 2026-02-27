@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
+using starsky.feature.webftppublish.Helpers;
 using starsky.feature.webftppublish.Interfaces;
 using starsky.feature.webftppublish.Models;
 using starsky.foundation.database.Helpers;
@@ -16,11 +16,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
-using starsky.foundation.storage.ArchiveFormats;
-using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -29,12 +25,12 @@ namespace starsky.feature.webftppublish.Services;
 [Service(typeof(IFtpService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class FtpService : IFtpService
 {
+	private readonly AppSettings _appSettings;
 	private readonly IConsole _console;
+	private readonly IWebLogger _logger;
 	private readonly IStorage _storage;
 
 	private readonly IFtpWebRequestFactory _webRequest;
-	private readonly IWebLogger _logger;
-	private readonly AppSettings _appSettings;
 
 	/// <summary>
 	///     Use ftp://username:password@ftp.service.tld/pushfolder to extract credentials
@@ -44,7 +40,7 @@ public class FtpService : IFtpService
 	/// <param name="storage">storage provider for source files</param>
 	/// <param name="console"></param>
 	/// <param name="webRequest"></param>
-	///	<param name="logger"></param>
+	/// <param name="logger"></param>
 	public FtpService(AppSettings appSettings, IStorage storage, IConsole console,
 		IFtpWebRequestFactory webRequest, IWebLogger logger)
 	{
@@ -58,121 +54,23 @@ public class FtpService : IFtpService
 	public async Task<FtpPublishManifestModel?> IsValidZipOrFolder(
 		string inputFullFileDirectoryOrZip)
 	{
-		if ( string.IsNullOrWhiteSpace(inputFullFileDirectoryOrZip) )
-		{
-			_logger.LogError("Please use the -p to add a path first");
-			return null;
-		}
-
-		var inputPathType = _storage.IsFolderOrFile(inputFullFileDirectoryOrZip);
-
-		switch ( inputPathType )
-		{
-			case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-				_logger.LogError($"Folder location {inputFullFileDirectoryOrZip} " +
-				                 $"is not found \nPlease try the `-h` command to get help ");
-				return null;
-			case FolderOrFileModel.FolderOrFileTypeList.Folder:
-			{
-				var settingsFullFilePath =
-					Path.Combine(inputFullFileDirectoryOrZip, "_settings.json");
-				if ( _storage.ExistFile(settingsFullFilePath) )
-				{
-					return await
-						new DeserializeJson(_storage).ReadAsync<FtpPublishManifestModel>(
-							settingsFullFilePath);
-				}
-
-				_logger.LogError($"Please run 'starskywebhtmlcli' " +
-				                 $"first to generate a settings file");
-				return null;
-			}
-			case FolderOrFileModel.FolderOrFileTypeList.File:
-				if ( !string.Equals(Path.GetExtension(inputFullFileDirectoryOrZip), ".zip",
-					    StringComparison.OrdinalIgnoreCase) )
-				{
-					return null;
-				}
-
-				var zipFirstByteStream = _storage.ReadStream(inputFullFileDirectoryOrZip, 10);
-				if ( !Zipper.IsValidZipFile(zipFirstByteStream) )
-				{
-					_logger.LogError(
-						$"Zip file is invalid or unreadable {inputFullFileDirectoryOrZip}");
-					return null;
-				}
-
-				var manifest =
-					new Zipper(_logger).ExtractZipEntry(inputFullFileDirectoryOrZip,
-						"_settings.json");
-				if ( manifest == null )
-				{
-					return null;
-				}
-
-				var result = JsonSerializer.Deserialize<FtpPublishManifestModel>(manifest);
-				return result;
-			default:
-				return null;
-		}
-	}
-
-	private ExtractZipResultModel ExtractZip(string parentDirectoryOrZipFile)
-	{
-		var existFolder = _storage.ExistFolder(parentDirectoryOrZipFile);
-		if ( existFolder )
-		{
-			return new ExtractZipResultModel
-			{
-				FullFileFolderPath = parentDirectoryOrZipFile,
-				RemoveFolderAfterwards = false,
-				IsError = false
-			};
-		}
-
-		var existFile = _storage.ExistFile(parentDirectoryOrZipFile);
-		if ( !existFile )
-		{
-			return new ExtractZipResultModel
-			{
-				FullFileFolderPath = parentDirectoryOrZipFile, IsError = true
-			};
-		}
-
-		var parentFolderTempPath = Path.Combine(Path.GetTempPath(), "starsky-webftp",
-			Path.GetFileNameWithoutExtension(parentDirectoryOrZipFile) + "_" +
-			Guid.NewGuid().ToString("N"));
-		_storage.CreateDirectory(parentFolderTempPath);
-
-		var zipper = new Zipper(new WebLogger());
-		if ( zipper.ExtractZip(parentDirectoryOrZipFile, parentFolderTempPath) )
-		{
-			return new ExtractZipResultModel
-			{
-				FullFileFolderPath = parentFolderTempPath,
-				RemoveFolderAfterwards = true,
-				IsError = false
-			};
-		}
-
-		_logger.LogError($"Zip extract failed {parentDirectoryOrZipFile}");
-		return new ExtractZipResultModel
-		{
-			FullFileFolderPath = parentDirectoryOrZipFile, IsError = true
-		};
+		return await new IsValidZipOrFolderHelper(_storage, _logger)
+			.IsValidZipOrFolder(inputFullFileDirectoryOrZip);
 	}
 
 	/// <summary>
 	///     Copy all content to the ftp disk
 	/// </summary>
 	/// <param name="parentDirectoryOrZipFile"></param>
+	/// <param name="profileId"></param>
 	/// <param name="slug"></param>
 	/// <param name="copyContent"></param>
 	/// <returns>true == success</returns>
 	public bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
 		Dictionary<string, bool> copyContent)
 	{
-		var resultModel = ExtractZip(parentDirectoryOrZipFile);
+		var resultModel =
+			new ExtractZipHelper(_storage, _logger).ExtractZip(parentDirectoryOrZipFile);
 		if ( resultModel.IsError )
 		{
 			return false;
@@ -229,6 +127,7 @@ public class FtpService : IFtpService
 	/// <param name="copyContent"></param>
 	/// <returns></returns>
 	[SuppressMessage("Usage", "S3267:Loops should be simplified with LINQ expressions ")]
+	[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
 	internal IEnumerable<string> CreateListOfRemoteDirectories(FtpCredential setting,
 		string parentDirectory,
 		string slug, Dictionary<string, bool> copyContent)

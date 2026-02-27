@@ -17,19 +17,20 @@ public class PublishRemoteController(
 	ISelectorStorage selectorStorage,
 	IPublishPreflight publishPreflight,
 	AppSettings appSettings,
-	IFtpService ftpService) : Controller
+	IRemotePublishService remotePublishService) : Controller
 {
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
 	/// <summary>
-	///     Publish generated zip to FTP for one publish profile
+	///     Publish generated zip to remote destination (FTP or LocalFileSystem)
 	/// </summary>
 	/// <param name="itemName">itemName used in /api/publish/create</param>
 	/// <param name="publishProfileName">publishProfileName used in /api/publish/create</param>
+	/// <param name="remoteType">Type of remote: "ftp" or "localfilesystem"</param>
 	/// <returns>true on success</returns>
-	/// <response code="200">ftp upload succeeded</response>
-	/// <response code="400">profiles are invalid</response>
+	/// <response code="200">upload succeeded</response>
+	/// <response code="400">profiles are invalid or remote type not supported</response>
 	/// <response code="404">zip not found</response>
 	/// <response code="401">User unauthorized</response>
 	[HttpPost("/api/publish-remote/remote")]
@@ -39,13 +40,8 @@ public class PublishRemoteController(
 	[ProducesResponseType(typeof(string), 404)]
 	[ProducesResponseType(typeof(void), 401)]
 	public async Task<IActionResult> PublishFtpAsync(string itemName,
-		string publishProfileName, string remoteType)
+		string publishProfileName)
 	{
-		if ( remoteType != "ftp" )
-		{
-			return BadRequest("only ftp is supported");
-		}
-
 		if ( !ModelState.IsValid )
 		{
 			return BadRequest("Model invalid");
@@ -58,7 +54,7 @@ public class PublishRemoteController(
 			return BadRequest(preflightErrors);
 		}
 
-		if ( !publishPreflight.IsFtpPublishEnabled(publishProfileName) )
+		if ( !remotePublishService.IsPublishEnabled(publishProfileName) )
 		{
 			return BadRequest("FTP publishing disabled for publish profile");
 		}
@@ -71,17 +67,17 @@ public class PublishRemoteController(
 			return NotFound("Publish zip not found");
 		}
 
-		var manifest = await ftpService.IsValidZipOrFolder(zipFullPath);
+		var manifest = await remotePublishService.IsValidZipOrFolder(zipFullPath);
 		if ( manifest == null )
 		{
 			return BadRequest("Publish zip is invalid");
 		}
 
-		var ftpResult =
-			ftpService.Run(zipFullPath, publishProfileName, manifest.Slug, manifest.Copy);
-		if ( !ftpResult )
+		var publishResult = remotePublishService.Run(zipFullPath, publishProfileName,
+			manifest.Slug, manifest.Copy);
+		if ( !publishResult )
 		{
-			return BadRequest("FTP upload failed");
+			return BadRequest("Publishing failed");
 		}
 
 		return Json(true);

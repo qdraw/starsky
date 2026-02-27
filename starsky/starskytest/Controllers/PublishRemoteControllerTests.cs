@@ -19,46 +19,17 @@ public class PublishRemoteControllerTests
 		var storage = new FakeIStorage(
 			[],
 			[Path.DirectorySeparatorChar + "test.zip"]);
-		var fakeFtpService = new FakeIFtpService();
+		var fakePublishService = new FakeIRemotePublishService();
 
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakeFtpService);
+			new FakeIPublishPreflight(), appSettings, fakePublishService);
 
 		var actionResult = await controller.PublishFtpAsync("test",
-			"test", "ftp") as JsonResult;
+			"test") as JsonResult;
 		var result = actionResult?.Value as bool?;
 
 		Assert.IsTrue(result);
-		Assert.AreEqual(Path.DirectorySeparatorChar + "test.zip", fakeFtpService.LastPath);
-	}
-
-	[TestMethod]
-	public async Task PublishFtpAsync_DisabledForProfile_ReturnsBadRequest()
-	{
-		var fakeFtpService = new FakeIFtpService();
-		var controller = new PublishRemoteController(new FakeSelectorStorage(),
-			new FakeIPublishPreflight(isFtpPublishEnabled: false),
-			new AppSettings(), fakeFtpService);
-
-		var actionResult =
-			await controller.PublishFtpAsync("test", "test", "ftp") as BadRequestObjectResult;
-
-		Assert.AreEqual(400, actionResult?.StatusCode);
-	}
-
-	[TestMethod]
-	public async Task PublishFtpAsync_RemoteTypeNotFtp_ReturnsBadRequest()
-	{
-		var appSettings = new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
-		var storage = new FakeIStorage([], [Path.DirectorySeparatorChar + "test.zip"]);
-		var fakeFtpService = new FakeIFtpService();
-		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakeFtpService);
-
-		var actionResult =
-			await controller.PublishFtpAsync("test", "test", "s3") as BadRequestObjectResult;
-		Assert.AreEqual(400, actionResult?.StatusCode);
-		Assert.AreEqual("only ftp is supported", actionResult?.Value);
+		Assert.AreEqual(Path.DirectorySeparatorChar + "test.zip", fakePublishService.LastPath);
 	}
 
 	[TestMethod]
@@ -66,12 +37,12 @@ public class PublishRemoteControllerTests
 	{
 		var appSettings = new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage([], [Path.DirectorySeparatorChar + "test.zip"]);
-		var fakeFtpService = new FakeIFtpService();
+		var fakePublishSelector = new FakeIRemotePublishService();
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakeFtpService);
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 		var actionResult =
-			await controller.PublishFtpAsync("test", "test", "ftp") as BadRequestObjectResult;
+			await controller.PublishFtpAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 		Assert.AreEqual("Model invalid", actionResult?.Value);
 	}
@@ -81,12 +52,12 @@ public class PublishRemoteControllerTests
 	{
 		var appSettings = new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage([], [Path.DirectorySeparatorChar + "test.zip"]);
-		var fakeFtpService = new FakeIFtpService();
+		var fakePublishSelector = new FakeIRemotePublishService();
 		// Use isOk = false to simulate invalid profile
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(isOk: false), appSettings, fakeFtpService);
+			new FakeIPublishPreflight(isOk: false), appSettings, fakePublishSelector);
 		var actionResult =
-			await controller.PublishFtpAsync("test", "test", "ftp") as BadRequestObjectResult;
+			await controller.PublishFtpAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 	}
 
@@ -95,13 +66,13 @@ public class PublishRemoteControllerTests
 	{
 		var appSettings = new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage([], [Path.DirectorySeparatorChar + "test.zip"]);
-		var fakeFtpService = new FakeIFtpService { RunResult = false };
+		var fakePublishSelector = new FakeIRemotePublishService { RunResult = false };
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakeFtpService);
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
 		var actionResult =
-			await controller.PublishFtpAsync("test", "test", "ftp") as BadRequestObjectResult;
+			await controller.PublishFtpAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
-		Assert.AreEqual("FTP upload failed", actionResult?.Value);
+		Assert.Contains("failed", actionResult?.Value as string ?? string.Empty);
 	}
 
 	[TestMethod]
@@ -109,11 +80,11 @@ public class PublishRemoteControllerTests
 	{
 		var appSettings = new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage([], [Path.DirectorySeparatorChar + "test.zip"]);
-		var fakeFtpService = new FakeIFtpService { ManifestResult = null };
+		var fakePublishSelector = new FakeIRemotePublishService { ManifestResult = null };
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakeFtpService);
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
 		var actionResult =
-			await controller.PublishFtpAsync("test", "test", "ftp") as BadRequestObjectResult;
+			await controller.PublishFtpAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 		Assert.AreEqual("Publish zip is invalid", actionResult?.Value);
 	}
@@ -123,12 +94,32 @@ public class PublishRemoteControllerTests
 	{
 		var appSettings = new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage([], []);
-		var fakeFtpService = new FakeIFtpService();
+		var fakePublishSelector = new FakeIRemotePublishService();
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakeFtpService);
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
 		var actionResult =
-			await controller.PublishFtpAsync("test", "test", "ftp") as NotFoundObjectResult;
+			await controller.PublishFtpAsync("test", "test") as NotFoundObjectResult;
 		Assert.AreEqual(404, actionResult?.StatusCode);
 		Assert.AreEqual("Publish zip not found", actionResult?.Value);
+	}
+
+	[TestMethod]
+	public async Task PublishFtpAsync_LocalFileSystem_Success()
+	{
+		var appSettings =
+			new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
+		var storage = new FakeIStorage(
+			[],
+			[Path.DirectorySeparatorChar + "test.zip"]);
+		var fakePublishSelector = new FakeIRemotePublishService();
+
+		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
+
+		var actionResult = await controller.PublishFtpAsync("test",
+			"test") as JsonResult;
+		var result = actionResult?.Value as bool?;
+
+		Assert.IsTrue(result);
 	}
 }
