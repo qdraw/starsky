@@ -27,7 +27,6 @@ public class PublishRemoteController(
 	/// </summary>
 	/// <param name="itemName">itemName used in /api/publish/create</param>
 	/// <param name="publishProfileName">publishProfileName used in /api/publish/create</param>
-	/// <param name="remoteType">Type of remote: "ftp" or "localfilesystem"</param>
 	/// <returns>true on success</returns>
 	/// <response code="200">upload succeeded</response>
 	/// <response code="400">profiles are invalid or remote type not supported</response>

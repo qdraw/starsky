@@ -99,10 +99,8 @@ public class RemotePublishServiceTest
 					Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
 					{
 						{
-							"test-profile",
-							new List<RemoteCredentialWrapper>
-							{
-								new()
+							"test-profile", [
+								new RemoteCredentialWrapper
 								{
 									Type = RemoteCredentialType.LocalFileSystem,
 									LocalFileSystem = new LocalFileSystemCredential
@@ -110,7 +108,7 @@ public class RemotePublishServiceTest
 										Path = tempDir
 									}
 								}
-							}
+							]
 						}
 					}
 				}
@@ -131,13 +129,13 @@ public class RemotePublishServiceTest
 				appSettings,
 				new FakeIWebLogger());
 
-		var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
-		var result = selector.Run("/test", "test-profile", "slug", copyContent);
+			var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
+			var result = selector.Run("/test", "test-profile", "slug", copyContent);
 
-		Assert.IsTrue(result);
-		// FtpService should not be called
-		Assert.AreEqual(string.Empty, ftpService.LastPath);
-		Assert.AreEqual(string.Empty, ftpService.LastSlug);
+			Assert.IsTrue(result);
+			// FtpService should not be called
+			Assert.AreEqual(string.Empty, ftpService.LastPath);
+			Assert.AreEqual(string.Empty, ftpService.LastSlug);
 		}
 		finally
 		{
