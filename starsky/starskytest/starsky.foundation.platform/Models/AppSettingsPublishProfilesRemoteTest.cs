@@ -331,6 +331,7 @@ public class AppSettingsPublishProfilesRemoteTest
 		Assert.AreEqual(string.Empty, ftp.WebFtp);
 		Assert.AreEqual(string.Empty, ftp.Username);
 		Assert.AreEqual(string.Empty, ftp.Password);
+		Assert.AreEqual(string.Empty, ftp.WebFtpNoLogin);
 	}
 
 	[TestMethod]
@@ -340,6 +341,7 @@ public class AppSettingsPublishProfilesRemoteTest
 		Assert.AreEqual(string.Empty, ftp.WebFtp);
 		Assert.AreEqual(string.Empty, ftp.Username);
 		Assert.AreEqual(string.Empty, ftp.Password);
+		Assert.AreEqual(string.Empty, ftp.WebFtpNoLogin);
 	}
 
 	[TestMethod]
@@ -348,6 +350,7 @@ public class AppSettingsPublishProfilesRemoteTest
 		var ftp = new FtpCredential { WebFtp = "ftp://user:pass@ftp.example.com/path" };
 		ftp.SetWarning("***HIDDEN***");
 		Assert.AreEqual("***HIDDEN***", ftp.WebFtp);
+		Assert.AreEqual(string.Empty, ftp.WebFtpNoLogin);
 	}
 
 	[TestMethod]
@@ -355,6 +358,7 @@ public class AppSettingsPublishProfilesRemoteTest
 	{
 		var ftp = new FtpCredential { WebFtp = "not-a-url" };
 		Assert.AreEqual(string.Empty, ftp.WebFtp);
+		Assert.AreEqual(string.Empty, ftp.WebFtpNoLogin);
 	}
 
 	[TestMethod]

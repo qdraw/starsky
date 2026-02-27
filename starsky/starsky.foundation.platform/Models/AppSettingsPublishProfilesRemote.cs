@@ -201,8 +201,15 @@ public class FtpCredential
 	{
 		get
 		{
-			var uri = new Uri(WebFtp);
-			return $"{uri.Scheme}://{uri.Host}{uri.LocalPath}";
+			try
+			{
+				var uri = new Uri(WebFtp);
+				return $"{uri.Scheme}://{uri.Host}{uri.LocalPath}";
+			}
+			catch ( UriFormatException )
+			{
+				return string.Empty;
+			}
 		}
 	}
 
