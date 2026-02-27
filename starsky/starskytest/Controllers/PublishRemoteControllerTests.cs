@@ -136,4 +136,46 @@ public class PublishRemoteControllerTests
 		Assert.AreEqual(400, actionResult?.StatusCode);
 		Assert.AreEqual("FTP publishing disabled for publish profile", actionResult?.Value);
 	}
+
+	[TestMethod]
+	public void Status_ValidProfile_PublishEnabled_ReturnsJsonFalse()
+	{
+		var appSettings = new AppSettings();
+		var storage = new FakeIStorage([], []);
+		var fakePublishPreflight = new FakeIPublishPreflight(isOk: true);
+		var fakePublishService = new FakeIRemotePublishService(true);
+		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
+			fakePublishPreflight, appSettings, fakePublishService);
+		var actionResult = controller.Status("test") as JsonResult;
+		Assert.IsNotNull(actionResult);
+		Assert.IsFalse(( bool? )  actionResult.Value );
+	}
+
+	[TestMethod]
+	public void Status_ValidProfile_PublishDisabled_ReturnsJsonTrue()
+	{
+		var appSettings = new AppSettings();
+		var storage = new FakeIStorage([], []);
+		var fakePublishPreflight = new FakeIPublishPreflight(isOk: true);
+		var fakePublishService = new FakeIRemotePublishService(false);
+		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
+			fakePublishPreflight, appSettings, fakePublishService);
+		var actionResult = controller.Status("test") as JsonResult;
+		Assert.IsNotNull(actionResult);
+		Assert.IsTrue(( bool? )  actionResult.Value );
+	}
+
+	[TestMethod]
+	public void Status_InvalidProfile_ReturnsJsonTrue()
+	{
+		var appSettings = new AppSettings();
+		var storage = new FakeIStorage([], []);
+		var fakePublishPreflight = new FakeIPublishPreflight(isOk: false);
+		var fakePublishService = new FakeIRemotePublishService(true);
+		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
+			fakePublishPreflight, appSettings, fakePublishService);
+		var actionResult = controller.Status("test") as JsonResult;
+		Assert.IsNotNull(actionResult);
+		Assert.IsTrue(( bool? )  actionResult.Value );
+	}
 }
