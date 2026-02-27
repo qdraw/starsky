@@ -88,16 +88,17 @@ public class PublishRemoteController(
 	[ProducesResponseType(typeof(string), 400)]
 	[ProducesResponseType(typeof(string), 404)]
 	[ProducesResponseType(typeof(void), 401)]
-	public async Task<IActionResult> PublishRemoteAsync(
+	public IActionResult Status(
 		string publishProfileName)
 	{
 		var (isValidProfile, _) =
 			publishPreflight.IsProfileValid(publishProfileName);
-		if (isValidProfile &&
-		    remotePublishService.IsPublishEnabled(publishProfileName))
+		if ( isValidProfile &&
+		     remotePublishService.IsPublishEnabled(publishProfileName) )
 		{
 			return Json(false);
 		}
+
 		return Json(true);
 	}
 }
