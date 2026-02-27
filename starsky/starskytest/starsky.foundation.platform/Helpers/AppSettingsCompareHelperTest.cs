@@ -712,6 +712,30 @@ public sealed class AppSettingsCompareHelperTest
 	}
 
 	[TestMethod]
+	public void AppSettingsPublishProfilesRemote_Null2()
+	{
+		var source = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Default =
+				[
+					new RemoteCredentialWrapper
+					{
+						LocalFileSystem = new LocalFileSystemCredential { Path = "test" }
+					}
+				]
+			}
+		};
+
+		var to = new AppSettings { PublishProfilesRemote = new AppSettingsPublishProfilesRemote() };
+
+		AppSettingsCompareHelper.Compare(source, to);
+		Assert.AreNotEqual(source.PublishProfilesRemote,
+			to.PublishProfilesRemote);
+	}
+
+	[TestMethod]
 	public void CompareDatabaseTypeList_NotFound()
 	{
 		var list = new List<string>();
