@@ -135,7 +135,8 @@ public class RemotePublishServiceTest
 			var result = selector.Run("/test", "test-profile", "slug", copyContent);
 
 			// FtpService should not be called
-			Assert.IsNull(ftpService.LastPath);
+			Assert.AreEqual(string.Empty, ftpService.LastPath);
+			Assert.AreEqual(string.Empty, ftpService.LastSlug);
 		}
 		finally
 		{
@@ -186,7 +187,8 @@ public class RemotePublishServiceTest
 
 		var copyContent = new Dictionary<string, bool> { { "test.jpg", true } };
 		// Override with Ftp even though profile is LocalFileSystem
-		var result = selector.Run("/test", "test-profile", "slug", copyContent);
+		var result = selector.Run("/test", 
+			"test-profile", "slug", copyContent);
 
 		Assert.AreEqual("/test", ftpService.LastPath);
 	}

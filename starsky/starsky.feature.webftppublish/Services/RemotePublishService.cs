@@ -30,9 +30,15 @@ public class RemotePublishService(
 	public bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
 		Dictionary<string, bool> copyContent)
 	{
+		var publishItems = 
+			appSettings.PublishProfilesRemote.GetById(profileId);
+		if ( publishItems.Count == 0 )
+		{
+			return false;
+		}
+
 		var success = false;
-		foreach ( var publishItemType in appSettings.PublishProfilesRemote.GetById(profileId)
-			         .Select(p => p.Type) )
+		foreach ( var publishItemType in publishItems.Select(p => p.Type) )
 		{
 			switch ( publishItemType )
 			{
