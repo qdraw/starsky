@@ -22,17 +22,11 @@ public class AppSettingsPublishProfilesDefaults
 public class ProfileFeatures
 {
 	public Optimization Optimization { get; set; } = new();
-	public Publishing Publishing { get; set; } = new();
 }
 
 public class Optimization
 {
 	public bool Enabled { get; set; }
-}
-
-public class Publishing
-{
-	public FtpTarget Ftp { get; set; } = new();
 }
 
 public class Optimizer

@@ -18,7 +18,7 @@ public class FakeIFtpService : IFtpService
 		return Task.FromResult(ManifestResult);
 	}
 
-	public bool Run(string parentDirectoryOrZipFile, string slug,
+	public bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
 		Dictionary<string, bool> copyContent)
 	{
 		LastPath = parentDirectoryOrZipFile;

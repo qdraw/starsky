@@ -1,0 +1,132 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
+
+namespace starsky.foundation.platform.Models;
+
+/// <summary>
+/// Represents the remote Publish profiles configuration, allowing multiple remote targets per profile ID.
+/// </summary>
+public class AppSettingsPublishProfilesRemote
+{
+	/// <summary>
+	/// Key: publish profile id, Value: list of remote credential wrappers (targets)
+	/// </summary>
+	public Dictionary<string, List<RemoteCredentialWrapper>> Profiles { get; set; } = new();
+
+	/// <summary>
+	/// Default/fallback remote credentials if a profile id is not found.
+	/// </summary>
+	public List<RemoteCredentialWrapper> Default { get; set; } = [];
+
+	public List<RemoteCredentialWrapper> GetById(string id,
+		RemoteCredentialType type)
+	{
+		Profiles.TryGetValue(id, out var result);
+		if ( result != null && result.Any(p => p.Type == type) )
+		{
+			return result.Where(p => p.Type == type).ToList();
+		}
+
+		return result ?? Default.Where(p => p.Type == type).ToList();
+	}
+
+	public List<FtpCredential> GetFtpById(string id)
+	{
+		return GetById(id, RemoteCredentialType.Ftp).Where(p => p.Ftp != null).Select(p => p.Ftp)
+			.Cast<FtpCredential>().ToList();
+	}
+
+	public AppSettingsPublishProfilesRemote DisplaySecurity(string securityWarning)
+	{
+		foreach ( var wrapper in Profiles.SelectMany(remoteProfile => remoteProfile.Value) )
+		{
+			wrapper.Ftp?.SetWarning(securityWarning);
+		}
+
+		foreach ( var wrapper in Default.Where(p => p.Ftp != null) )
+		{
+			wrapper.Ftp?.SetWarning(securityWarning);
+		}
+
+		return this;
+	}
+}
+
+/// <summary>
+/// Wrapper for a remote credential target (e.g., FTP, S3, etc.).
+/// </summary>
+public class RemoteCredentialWrapper
+{
+	/// <summary>
+	/// The type of remote target (e.g., "ftp").
+	/// </summary>
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public RemoteCredentialType Type { get; set; } = RemoteCredentialType.Ftp;
+
+	/// <summary>
+	/// FTP credential details (if applicable).
+	/// </summary>
+	public FtpCredential? Ftp { get; set; }
+}
+
+public enum RemoteCredentialType
+{
+	Unknown,
+	Ftp
+}
+
+/// <summary>
+/// FTP credential details for a remote Publish target.
+/// </summary>
+public class FtpCredential
+{
+	private string? _webFtp;
+
+	public void SetWarning(string securityWarning)
+	{
+		_webFtp = securityWarning;
+	}
+
+	/// <summary>
+	/// Gets or sets the FTP URL (with credentials). '@' in username should be '%40'.
+	/// </summary>
+	public string WebFtp
+	{
+		get => string.IsNullOrEmpty(_webFtp) ? string.Empty : _webFtp;
+		set
+		{
+			// Anonymous FTP is not supported
+			// Make sure that '@' in username is '%40'
+			if ( string.IsNullOrEmpty(value) )
+			{
+				return;
+			}
+
+			var uriAddress = new Uri(value);
+			if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2
+			     && uriAddress is { Scheme: "ftp", LocalPath.Length: >= 1 } )
+			{
+				_webFtp = value;
+			}
+		}
+	}
+
+	private string[] Credentials => new Uri(WebFtp).UserInfo.Split(":".ToCharArray());
+
+	public string Username => Credentials is not { Length: 2 } ? string.Empty : Credentials[0];
+	public string Password => Credentials is not { Length: 2 } ? string.Empty : Credentials[1];
+
+	/// <summary>
+	///     eg ftp://service.nl/drop/
+	/// </summary>
+	public string WebFtpNoLogin
+	{
+		get
+		{
+			var uri = new Uri(WebFtp);
+			return $"{uri.Scheme}://{uri.Host}{uri.LocalPath}";
+		}
+	}
+}

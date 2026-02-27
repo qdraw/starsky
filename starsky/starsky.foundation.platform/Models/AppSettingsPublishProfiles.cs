@@ -258,7 +258,7 @@ public enum TemplateContentType
 	OnlyFirstJpeg = 7,
 
 	/// <summary>
-	/// Publish to Ftp enabled
+	/// Publish to Ftp or other remote targets enabled
 	/// </summary>
-	PublishFtp = 8
+	PublishRemote = 8
 }

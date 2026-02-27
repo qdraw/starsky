@@ -7,7 +7,6 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Web;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
 using starsky.feature.webftppublish.Interfaces;
 using starsky.feature.webftppublish.Models;
@@ -30,21 +29,12 @@ namespace starsky.feature.webftppublish.Services;
 [Service(typeof(IFtpService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class FtpService : IFtpService
 {
-	/// <summary>
-	///     [0] is username, [1] password
-	/// </summary>
-	private readonly string[] _appSettingsCredentials;
-
 	private readonly IConsole _console;
 	private readonly IStorage _storage;
 
-	/// <summary>
-	///     eg ftp://service.nl/drop/
-	/// </summary>
-	private readonly string _webFtpNoLogin;
-
 	private readonly IFtpWebRequestFactory _webRequest;
 	private readonly IWebLogger _logger;
+	private readonly AppSettings _appSettings;
 
 	/// <summary>
 	///     Use ftp://username:password@ftp.service.tld/pushfolder to extract credentials
@@ -62,15 +52,7 @@ public class FtpService : IFtpService
 		_console = console;
 		_webRequest = webRequest;
 		_logger = logger;
-
-		var uri = new Uri(appSettings.WebFtp);
-		_appSettingsCredentials = uri.UserInfo.Split(":".ToCharArray());
-
-		// Replace WebFtpNoLogin
-		_webFtpNoLogin = $"{uri.Scheme}://{uri.Host}{uri.LocalPath}";
-
-		_appSettingsCredentials[0] = HttpUtility.UrlDecode(_appSettingsCredentials[0]);
-		_appSettingsCredentials[1] = HttpUtility.UrlDecode(_appSettingsCredentials[1]);
+		_appSettings = appSettings;
 	}
 
 	public async Task<FtpPublishManifestModel?> IsValidZipOrFolder(
@@ -187,7 +169,7 @@ public class FtpService : IFtpService
 	/// <param name="slug"></param>
 	/// <param name="copyContent"></param>
 	/// <returns>true == success</returns>
-	public bool Run(string parentDirectoryOrZipFile, string slug,
+	public bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
 		Dictionary<string, bool> copyContent)
 	{
 		var resultModel = ExtractZip(parentDirectoryOrZipFile);
@@ -196,36 +178,44 @@ public class FtpService : IFtpService
 			return false;
 		}
 
-		foreach ( var thisDirectory in
-		         CreateListOfRemoteDirectories(resultModel.FullFileFolderPath, slug, copyContent) )
+		var settings =
+			_appSettings.PublishProfilesRemote.GetFtpById(profileId);
+
+		foreach ( var setting in settings )
 		{
-			_console.Write(",");
-			if ( DoesFtpDirectoryExist(thisDirectory) )
+			foreach ( var thisDirectory in
+			         CreateListOfRemoteDirectories(setting, resultModel.FullFileFolderPath, slug,
+				         copyContent) )
 			{
-				continue;
+				_console.Write(",");
+				if ( DoesFtpDirectoryExist(setting, thisDirectory) )
+				{
+					continue;
+				}
+
+				if ( CreateFtpDirectory(setting, thisDirectory) )
+				{
+					continue;
+				}
+
+				_console.WriteLine($"Fail > create directory => {setting.WebFtpNoLogin}");
 			}
 
-			if ( CreateFtpDirectory(thisDirectory) )
+			// content of the publication folder
+			var copyThisFilesSubPaths = CreateListOfRemoteFiles(copyContent);
+			if ( !MakeUpload(setting, resultModel.FullFileFolderPath, slug, copyThisFilesSubPaths) )
 			{
-				continue;
+				return false;
 			}
 
-			_console.WriteLine($"Fail > create directory => {_webFtpNoLogin}");
+			if ( resultModel.RemoveFolderAfterwards )
+			{
+				_storage.FolderDelete(resultModel.FullFileFolderPath);
+			}
+
+			_console.Write("\n");
 		}
 
-		// content of the publication folder
-		var copyThisFilesSubPaths = CreateListOfRemoteFiles(copyContent);
-		if ( !MakeUpload(resultModel.FullFileFolderPath, slug, copyThisFilesSubPaths) )
-		{
-			return false;
-		}
-
-		if ( resultModel.RemoveFolderAfterwards )
-		{
-			_storage.FolderDelete(resultModel.FullFileFolderPath);
-		}
-
-		_console.Write("\n");
 
 		return true;
 	}
@@ -239,14 +229,15 @@ public class FtpService : IFtpService
 	/// <param name="copyContent"></param>
 	/// <returns></returns>
 	[SuppressMessage("Usage", "S3267:Loops should be simplified with LINQ expressions ")]
-	internal IEnumerable<string> CreateListOfRemoteDirectories(string parentDirectory,
+	internal IEnumerable<string> CreateListOfRemoteDirectories(FtpCredential setting,
+		string parentDirectory,
 		string slug, Dictionary<string, bool> copyContent)
 	{
-		var pushDirectory = _webFtpNoLogin + "/" + slug;
+		var pushDirectory = setting.WebFtpNoLogin + "/" + slug;
 
 		var createThisDirectories = new List<string>
 		{
-			_webFtpNoLogin, // <= the base dir
+			setting.WebFtpNoLogin, // <= the base dir
 			pushDirectory // <= current log item
 		};
 
@@ -277,33 +268,29 @@ public class FtpService : IFtpService
 		var copyThisFiles = copyContent
 			.Where(p => p.Value)
 			.Select(copyItem => "/" + copyItem.Key).ToList();
-		return new HashSet<string>(copyThisFiles);
+		return [..copyThisFiles];
 	}
 
 
 	/// <summary>
 	///     Preflight + the upload to the service
 	/// </summary>
+	/// <param name="setting"></param>
 	/// <param name="parentDirectory"></param>
 	/// <param name="slug">name</param>
 	/// <param name="copyThisFilesSubPaths">list of files (subPath style)</param>
 	/// <returns>false = fail</returns>
-	internal bool MakeUpload(string parentDirectory, string slug,
+	internal bool MakeUpload(FtpCredential setting, string parentDirectory, string slug,
 		IEnumerable<string> copyThisFilesSubPaths)
 	{
 		foreach ( var item in copyThisFilesSubPaths )
 		{
 			const string pathDelimiter = "/";
-			var toFtpPath = PathHelper.RemoveLatestSlash(_webFtpNoLogin) + pathDelimiter +
+			var toFtpPath = PathHelper.RemoveLatestSlash(setting.WebFtpNoLogin) + pathDelimiter +
 			                GenerateSlugHelper.GenerateSlug(slug, true) + pathDelimiter +
 			                item;
 
 			_console.Write(".");
-
-			bool LocalUpload()
-			{
-				return Upload(parentDirectory, item, toFtpPath);
-			}
 
 			RetryHelper.Do(LocalUpload, TimeSpan.FromSeconds(10));
 
@@ -314,6 +301,11 @@ public class FtpService : IFtpService
 
 			_console.WriteLine($"Fail > upload file => {item} {toFtpPath}");
 			return false;
+
+			bool LocalUpload()
+			{
+				return Upload(setting, parentDirectory, item, toFtpPath);
+			}
 		}
 
 		return true;
@@ -323,11 +315,13 @@ public class FtpService : IFtpService
 	/// <summary>
 	///     Upload a single file to the ftp service
 	/// </summary>
+	/// <param name="setting"></param>
 	/// <param name="parentDirectory"></param>
 	/// <param name="subPath">on disk</param>
 	/// <param name="toFtpPath">ftp path eg ftp://service.nl/drop/test//index.html</param>
 	/// <returns></returns>
-	private bool Upload(string parentDirectory, string subPath, string toFtpPath)
+	private bool Upload(FtpCredential setting, string parentDirectory, string subPath,
+		string toFtpPath)
 	{
 		if ( !_storage.ExistFile(parentDirectory + subPath) )
 		{
@@ -336,31 +330,28 @@ public class FtpService : IFtpService
 
 		var request = _webRequest.Create(toFtpPath);
 		request.Credentials =
-			new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
+			new NetworkCredential(setting.Username, setting.Password);
 		request.Method = WebRequestMethods.Ftp.UploadFile;
 
-		using ( var fileStream = _storage.ReadStream(parentDirectory + subPath) )
-		using ( var ftpStream = request.GetRequestStream() )
-		{
-			fileStream.CopyTo(ftpStream);
-		}
+		using var fileStream = _storage.ReadStream(parentDirectory + subPath);
+		using var ftpStream = request.GetRequestStream();
+		fileStream.CopyTo(ftpStream);
 
 		return true;
 	}
 
 	/// <summary>
-	///     Check if folder exist on ftp drive
+	///     Check if folder exists on ftp drive
 	///     @see: https://stackoverflow.com/a/24047971
 	/// </summary>
 	/// <param name="dirPath">directory may contain slash</param>
 	/// <returns>exist or not</returns>
-	internal bool DoesFtpDirectoryExist(string dirPath)
+	internal bool DoesFtpDirectoryExist(FtpCredential setting, string dirPath)
 	{
 		try
 		{
 			var request = _webRequest.Create(dirPath);
-			request.Credentials = new NetworkCredential(_appSettingsCredentials[0],
-				_appSettingsCredentials[1]);
+			request.Credentials = new NetworkCredential(setting.Username, setting.Password);
 			request.Method = WebRequestMethods.Ftp.ListDirectory;
 			request.GetResponse();
 			return true;
@@ -376,15 +367,14 @@ public class FtpService : IFtpService
 	/// </summary>
 	/// <param name="directory">ftp path with directory name eg ftp://service.nl/drop</param>
 	/// <returns></returns>
-	internal bool CreateFtpDirectory(string directory)
+	internal bool CreateFtpDirectory(FtpCredential setting, string directory)
 	{
 		try
 		{
 			// create the directory
 			var requestDir = _webRequest.Create(directory);
 			requestDir.Method = WebRequestMethods.Ftp.MakeDirectory;
-			requestDir.Credentials = new NetworkCredential(_appSettingsCredentials[0],
-				_appSettingsCredentials[1]);
+			requestDir.Credentials = new NetworkCredential(setting.Username, setting.Password);
 			requestDir.UsePassive = true;
 			requestDir.UseBinary = true;
 			requestDir.KeepAlive = false;

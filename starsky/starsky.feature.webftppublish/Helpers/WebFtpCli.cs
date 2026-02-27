@@ -45,10 +45,11 @@ public class WebFtpCli
 		var inputFullFileDirectoryOrZip = new ArgsHelper(_appSettings)
 			.GetPathFormArgs(args, false);
 
-		// check if settings is valid
-		if ( string.IsNullOrEmpty(_appSettings.WebFtp) )
+		// check if settings are valid
+		if ( _appSettings.PublishProfilesRemote.GetFtpById(ArgsHelper.GetProfile(args)).Count == 0 )
 		{
-			_logger.LogError("Please update the WebFtp settings in appsettings.json");
+			_logger.LogError(
+				"Please update the PublishProfilesRemote settings in appsettings.json");
 			return;
 		}
 
@@ -62,7 +63,7 @@ public class WebFtpCli
 			return;
 		}
 
-		var ftpResult = ftpService.Run(inputFullFileDirectoryOrZip,
+		var ftpResult = ftpService.Run(inputFullFileDirectoryOrZip, ArgsHelper.GetProfile(args),
 			manifest.Slug, manifest.Copy);
 
 		if ( !ftpResult )

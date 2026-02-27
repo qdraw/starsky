@@ -7,6 +7,7 @@ namespace starsky.feature.webftppublish.Interfaces;
 public interface IFtpService
 {
 	Task<FtpPublishManifestModel?> IsValidZipOrFolder(string inputFullFileDirectoryOrZip);
-	bool Run(string parentDirectoryOrZipFile, string slug,
+
+	bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
 		Dictionary<string, bool> copyContent);
 }

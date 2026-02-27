@@ -62,20 +62,25 @@ public class PublishPreflight : IPublishPreflight
 
 	public bool IsFtpPublishEnabled(string publishProfileName)
 	{
+		if ( _appSettings.PublishProfilesRemote.GetFtpById(publishProfileName).Count == 0 )
+		{
+			_logger.LogInformation(
+				"WebFtp username/password is not configured, skipping publish profile check");
+			return false;
+		}
+
 		var profile = _appSettings.PublishProfiles!
 			.FirstOrDefault(p => p.Key == publishProfileName);
 
 		if ( profile.Key == null || profile.Value == null || profile.Value.Count == 0 )
 		{
+			_logger.LogInformation("Profile is missing or empty, skipping publish profile check");
 			return false;
 		}
 
-		var isPublish = profile.Value.Any(p => p.ContentType == TemplateContentType.PublishFtp);
+		var isPublish = profile.Value.Any(p => p.ContentType == TemplateContentType.PublishRemote);
 
-		var defaultsPublishingEnabled = _appSettings.PublishProfilesDefaults
-			.ProfileFeatures.Publishing.Ftp.Enabled;
-
-		return isPublish || defaultsPublishingEnabled;
+		return isPublish;
 	}
 
 	/// <summary>

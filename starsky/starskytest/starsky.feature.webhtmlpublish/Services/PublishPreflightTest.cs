@@ -247,16 +247,6 @@ public sealed class PublishPreflightTest
 	{
 		var appSettings = new AppSettings
 		{
-			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
-			{
-				ProfileFeatures = new ProfileFeatures
-				{
-					Publishing = new Publishing
-					{
-						Ftp = new FtpTarget { Enabled = false }
-					}
-				}
-			},
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{ "test", [new AppSettingsPublishProfiles()] }
@@ -275,21 +265,25 @@ public sealed class PublishPreflightTest
 	{
 		var appSettings = new AppSettings
 		{
-			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
 			{
-				ProfileFeatures = new ProfileFeatures
-				{
-					Publishing = new Publishing { Ftp = new FtpTarget { Enabled = false } }
-				}
+				Default =
+				[
+					new RemoteCredentialWrapper
+					{
+						Type = RemoteCredentialType.Ftp,
+						Ftp = new FtpCredential { WebFtp = "ftp://test:test@testmedia.be" }
+					}
+				]
 			},
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
 					"test", [
 						new AppSettingsPublishProfiles
-							{
-								ContentType = TemplateContentType.PublishFtp
-							}
+						{
+							ContentType = TemplateContentType.PublishRemote
+						}
 					]
 				}
 			}
@@ -307,13 +301,6 @@ public sealed class PublishPreflightTest
 	{
 		var appSettings = new AppSettings
 		{
-			PublishProfilesDefaults = new AppSettingsPublishProfilesDefaults
-			{
-				ProfileFeatures = new ProfileFeatures
-				{
-					Publishing = new Publishing { Ftp = new FtpTarget { Enabled = false } }
-				}
-			},
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{

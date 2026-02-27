@@ -16,7 +16,21 @@ namespace starskytest.starsky.feature.webftppublish.Helpers;
 [TestClass]
 public sealed class WebFtpCliTest
 {
-	private readonly AppSettings _appSettings = new() { WebFtp = "ftp://test:test@testmedia.be" };
+	private readonly AppSettings _appSettings = new()
+	{
+		PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+		{
+			Default =
+			[
+				new RemoteCredentialWrapper
+				{
+					Type = RemoteCredentialType.Ftp,
+					Ftp = new FtpCredential { WebFtp = "ftp://test:test@testmedia.be" }
+				}
+			]
+		}
+	};
+
 	private readonly FakeIFtpWebRequestFactory _webRequestFactory = new();
 
 	private static byte[]? ExampleManifest()
@@ -92,20 +106,33 @@ public sealed class WebFtpCliTest
 	}
 
 	[TestMethod]
-	public async Task Run_NoFtpSettings()
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task Run_NoFtpSettings(bool isOtherSettings)
 	{
 		var console = new FakeConsoleWrapper();
 		var logger = new FakeIWebLogger();
 		var fakeSelectorStorage =
 			new FakeSelectorStorage(new FakeIStorage(["/test"]));
+		var appSettings = new AppSettings();
+		if ( isOtherSettings )
+		{
+			appSettings.PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Default =
+				[
+					new RemoteCredentialWrapper { Type = RemoteCredentialType.Unknown }
+				]
+			};
+		}
 
 		// no ftp settings
-		await new WebFtpCli(new AppSettings(), fakeSelectorStorage, console, _webRequestFactory,
+		await new WebFtpCli(appSettings, fakeSelectorStorage, console, _webRequestFactory,
 				logger)
 			.RunAsync(["-p", "/test"]);
 
 		Assert.IsTrue(logger.TrackedExceptions.FirstOrDefault()
-			.Item2?.Contains("WebFtp settings"));
+			.Item2?.Contains("PublishProfilesRemote settings"));
 	}
 
 	[TestMethod]

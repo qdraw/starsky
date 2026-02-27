@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
-using starsky.feature.webftppublish.Interfaces;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -28,19 +27,17 @@ public sealed class PublishController : Controller
 	private readonly IMetaInfo _metaInfo;
 	private readonly IPublishPreflight _publishPreflight;
 	private readonly IWebHtmlPublishService _publishService;
-	private readonly IFtpService _ftpService;
 	private readonly IWebLogger _webLogger;
 
 	public PublishController(AppSettings appSettings, IPublishPreflight publishPreflight,
 		IWebHtmlPublishService publishService, IMetaInfo metaInfo,
 		ISelectorStorage selectorStorage,
-		IUpdateBackgroundTaskQueue queue, IWebLogger webLogger, IFtpService ftpService)
+		IUpdateBackgroundTaskQueue queue, IWebLogger webLogger)
 	{
 		_appSettings = appSettings;
 		_publishPreflight = publishPreflight;
 		_publishService = publishService;
 		_metaInfo = metaInfo;
-		_ftpService = ftpService;
 		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_bgTaskQueue = queue;
 		_webLogger = webLogger;
@@ -147,63 +144,6 @@ public sealed class PublishController : Controller
 		return Json(CheckIfNameExist(GenerateSlugHelper.GenerateSlug(itemName)));
 	}
 
-	/// <summary>
-	///     Publish generated zip to FTP for one publish profile
-	/// </summary>
-	/// <param name="itemName">itemName used in /api/publish/create</param>
-	/// <param name="publishProfileName">publishProfileName used in /api/publish/create</param>
-	/// <returns>true on success</returns>
-	/// <response code="200">ftp upload succeeded</response>
-	/// <response code="400">profile invalid or ftp target not enabled</response>
-	/// <response code="404">zip not found</response>
-	/// <response code="401">User unauthorized</response>
-	[HttpPost("/api/publish/ftp")]
-	[Produces("application/json")]
-	[ProducesResponseType(typeof(bool), 200)]
-	[ProducesResponseType(typeof(string), 400)]
-	[ProducesResponseType(typeof(string), 404)]
-	[ProducesResponseType(typeof(void), 401)]
-	public async Task<IActionResult> PublishFtpAsync(string itemName,
-		string publishProfileName)
-	{
-		if ( !ModelState.IsValid )
-		{
-			return BadRequest("Model invalid");
-		}
-
-		var (isValidProfile, preflightErrors) = _publishPreflight.IsProfileValid(publishProfileName);
-		if ( !isValidProfile )
-		{
-			return BadRequest(preflightErrors);
-		}
-
-		if ( !_publishPreflight.IsFtpPublishEnabled(publishProfileName) )
-		{
-			return BadRequest("FTP publishing disabled for publish profile");
-		}
-
-		var slugItemName = GenerateSlugHelper.GenerateSlug(itemName, true);
-		var zipFullPath = Path.Combine(_appSettings.TempFolder, slugItemName + ".zip");
-
-		if ( !_hostStorage.ExistFile(zipFullPath) )
-		{
-			return NotFound("Publish zip not found");
-		}
-
-		var manifest = await _ftpService.IsValidZipOrFolder(zipFullPath);
-		if ( manifest == null )
-		{
-			return BadRequest("Publish zip is invalid");
-		}
-
-		var ftpResult = _ftpService.Run(zipFullPath, manifest.Slug, manifest.Copy);
-		if ( !ftpResult )
-		{
-			return BadRequest("FTP upload failed");
-		}
-
-		return Json(true);
-	}
 
 	private bool CheckIfNameExist(string slugItemName)
 	{

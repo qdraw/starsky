@@ -286,6 +286,10 @@ public sealed class ArgsHelper
 				_console.WriteLine(
 					"--profile: (string) ; name of profile to select (default to first)");
 				break;
+			case AppSettings.StarskyAppType.WebFtp:
+				_console.WriteLine(
+					"--profile: (string) ; name of profile to select (default to first)");
+				break;
 			case AppSettings.StarskyAppType.Importer:
 				// When this change please update ./readme.md
 				_console.WriteLine("--path or -p == parameter: (string) ; full path");
@@ -427,7 +431,17 @@ public sealed class ArgsHelper
 
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebFtp )
 		{
-			_console.WriteLine("WebFtp " + _appSettings.WebFtp);
+			foreach ( var item in _appSettings.PublishProfilesRemote.Default )
+			{
+				_console.WriteLine("WebFtp " + item.Ftp?.WebFtp);
+			}
+
+			foreach ( var item in
+			         _appSettings.PublishProfilesRemote.Profiles.SelectMany(item =>
+				         item.Value) )
+			{
+				_console.WriteLine("WebFtp " + item.Ftp?.WebFtp);
+			}
 		}
 
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Admin )

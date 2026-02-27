@@ -78,7 +78,7 @@ public sealed class PublishControllerTest
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 			new FakeIWebHtmlPublishService(), new FakeIMetaInfo(null!),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
+			_bgTaskQueue, new FakeIWebLogger());
 
 		var actionResult = controller.PublishGet() as JsonResult;
 		var result = actionResult?.Value as IEnumerable<KeyValuePair<string, bool>>;
@@ -96,7 +96,7 @@ public sealed class PublishControllerTest
 				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
 			}),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
+			_bgTaskQueue, new FakeIWebLogger());
 
 		var actionResult = await controller.PublishCreateAsync("/test.jpg",
 			"test", "test", true) as JsonResult;
@@ -115,7 +115,7 @@ public sealed class PublishControllerTest
 				new("/test.jpg") { Status = FileIndexItem.ExifStatus.ReadOnly }
 			}),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
+			_bgTaskQueue, new FakeIWebLogger());
 
 		var actionResult = await controller.PublishCreateAsync("/test.jpg",
 			"test", "test", true) as JsonResult;
@@ -136,7 +136,7 @@ public sealed class PublishControllerTest
 				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
 			}),
 			new FakeSelectorStorage(),
-			fakeBg, new FakeIWebLogger(), new FakeIFtpService());
+			fakeBg, new FakeIWebLogger());
 
 		await controller.PublishCreateAsync("/test.jpg",
 			"test", "test", true);
@@ -158,7 +158,7 @@ public sealed class PublishControllerTest
 				}
 			),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
+			_bgTaskQueue, new FakeIWebLogger());
 
 		var actionResult = await controller.PublishCreateAsync("/not-found.jpg",
 			"test", "test", true) as NotFoundObjectResult;
@@ -176,7 +176,7 @@ public sealed class PublishControllerTest
 			new FakeIWebHtmlPublishService(),
 			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
+			_bgTaskQueue, new FakeIWebLogger());
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act
@@ -201,7 +201,7 @@ public sealed class PublishControllerTest
 				}
 			),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
+			_bgTaskQueue, new FakeIWebLogger());
 
 		var actionResult = await controller.PublishCreateAsync("/not-found.jpg",
 			"test", "test", true) as BadRequestObjectResult;
@@ -225,7 +225,7 @@ public sealed class PublishControllerTest
 				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
 			}),
 			new FakeSelectorStorage(storage),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
+			_bgTaskQueue, new FakeIWebLogger());
 
 		var actionResult = await controller.PublishCreateAsync("/test.jpg",
 			"test", "test") as ConflictObjectResult;
@@ -250,7 +250,7 @@ public sealed class PublishControllerTest
 				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
 			}),
 			new FakeSelectorStorage(storage),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
+			_bgTaskQueue, new FakeIWebLogger());
 
 		var actionResult = await controller.PublishCreateAsync("/test.jpg",
 			"test", "test", true) as JsonResult;
@@ -268,7 +268,7 @@ public sealed class PublishControllerTest
 			new FakeIWebHtmlPublishService(),
 			new FakeIMetaInfo(new List<FileIndexItem>()),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
+			_bgTaskQueue, new FakeIWebLogger());
 		var actionResult = controller.Exist(string.Empty) as JsonResult;
 		var result = actionResult?.Value is bool;
 		Assert.IsTrue(result);
@@ -281,7 +281,7 @@ public sealed class PublishControllerTest
 			new FakeIWebHtmlPublishService(),
 			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
+			_bgTaskQueue, new FakeIWebLogger());
 
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
@@ -289,79 +289,6 @@ public sealed class PublishControllerTest
 		var result = controller.Exist(string.Empty);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-	}
-
-	[TestMethod]
-	public async Task PublishFtpAsync_Success()
-	{
-		var appSettings =
-			new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
-		var storage = new FakeIStorage(
-			new List<string>(),
-			new List<string> { Path.DirectorySeparatorChar + "test.zip" });
-		var fakeFtpService = new FakeIFtpService();
-
-		var controller = new PublishController(appSettings,
-			new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo([]),
-			new FakeSelectorStorage(storage),
-			_bgTaskQueue, new FakeIWebLogger(), fakeFtpService);
-
-		var actionResult = await controller.PublishFtpAsync("test", "test") as JsonResult;
-		var result = actionResult?.Value as bool?;
-
-		Assert.IsTrue(result);
-		Assert.AreEqual(Path.DirectorySeparatorChar + "test.zip", fakeFtpService.LastPath);
-	}
-
-	[TestMethod]
-	public async Task PublishFtpAsync_DisabledForProfile_ReturnsBadRequest()
-	{
-		var controller = new PublishController(new AppSettings(),
-			new FakeIPublishPreflight(isFtpPublishEnabled: false),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo([]),
-			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
-
-		var actionResult = await controller.PublishFtpAsync("test", "test") as BadRequestObjectResult;
-
-		Assert.AreEqual(400, actionResult?.StatusCode);
-	}
-
-	[TestMethod]
-	public async Task PublishFtpAsync_ZipNotFound_ReturnsNotFound()
-	{
-		var appSettings =
-			new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
-		var controller = new PublishController(appSettings,
-			new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo([]),
-			new FakeSelectorStorage(new FakeIStorage()),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
-
-		var actionResult = await controller.PublishFtpAsync("test", "test") as NotFoundObjectResult;
-
-		Assert.AreEqual(404, actionResult?.StatusCode);
-	}
-
-	[TestMethod]
-	public async Task PublishFtpAsync_ModelState_ReturnsBadRequest()
-	{
-		var controller = new PublishController(new AppSettings(),
-			new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo([]),
-			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger(), new FakeIFtpService());
-
-		controller.ModelState.AddModelError("Key", "ErrorMessage");
-
-		var result = await controller.PublishFtpAsync("test", "test");
-
 		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
 	}
 }
