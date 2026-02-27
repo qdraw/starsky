@@ -202,9 +202,9 @@ public class RemotePublishServiceTest
 			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
 			{
 				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>()
-			}
+			},
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>()
 		};
-		appSettings.PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>();
 
 		var logger = new FakeIWebLogger();
 		var service = new RemotePublishService(
@@ -292,15 +292,15 @@ public class RemotePublishServiceTest
 			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
 			{
 				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>()
-			}
-		};
-		appSettings.PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
-		{
+			},
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				"profile", [
-					new AppSettingsPublishProfiles { ContentType = TemplateContentType.Html },
-					new AppSettingsPublishProfiles { ContentType = TemplateContentType.Jpeg }
-				]
+				{
+					"profile", [
+						new AppSettingsPublishProfiles { ContentType = TemplateContentType.Html },
+						new AppSettingsPublishProfiles { ContentType = TemplateContentType.Jpeg }
+					]
+				}
 			}
 		};
 
