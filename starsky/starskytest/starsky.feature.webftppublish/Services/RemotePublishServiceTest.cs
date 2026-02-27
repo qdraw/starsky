@@ -193,4 +193,180 @@ public class RemotePublishServiceTest
 		Assert.IsTrue(logger.TrackedExceptions.Exists(p =>
 			p.Item2?.Contains("Unsupported remote credential type") == true));
 	}
+
+	[TestMethod]
+	public void IsPublishEnabled_ProfileNotFound_ReturnsFalse()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>()
+			}
+		};
+		appSettings.PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>();
+
+		var logger = new FakeIWebLogger();
+		var service = new RemotePublishService(
+			new FakeIFtpService(),
+			new LocalFileSystemPublishService(
+				appSettings,
+				new FakeIStorage(),
+				new FakeSelectorStorage(),
+				new FakeConsoleWrapper(),
+				logger),
+			appSettings,
+			logger);
+
+		var result = service.IsPublishEnabled("missing-profile");
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void IsPublishEnabled_ProfileEmptyValue_ReturnsFalse()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>()
+			},
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{ "empty-profile", [] }
+			}
+		};
+
+		var logger = new FakeIWebLogger();
+		var service = new RemotePublishService(
+			new FakeIFtpService(),
+			new LocalFileSystemPublishService(
+				appSettings,
+				new FakeIStorage(),
+				new FakeSelectorStorage(),
+				new FakeConsoleWrapper(),
+				logger),
+			appSettings,
+			logger);
+
+		var result = service.IsPublishEnabled("empty-profile");
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void IsPublishEnabled_ProfileValueNull_ReturnsFalseAndLogs()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>()
+			},
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{ "null-profile", null! }
+			}
+		};
+
+		var logger = new FakeIWebLogger();
+		var service = new RemotePublishService(
+			new FakeIFtpService(),
+			new LocalFileSystemPublishService(
+				appSettings,
+				new FakeIStorage(),
+				new FakeSelectorStorage(),
+				new FakeConsoleWrapper(),
+				logger),
+			appSettings,
+			logger);
+
+		var result = service.IsPublishEnabled("null-profile");
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void IsPublishEnabled_ProfileNoPublishRemote_ReturnsFalse()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>()
+			}
+		};
+		appSettings.PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+		{
+			{
+				"profile", [
+					new AppSettingsPublishProfiles { ContentType = TemplateContentType.Html },
+					new AppSettingsPublishProfiles { ContentType = TemplateContentType.Jpeg }
+				]
+			}
+		};
+
+		var logger = new FakeIWebLogger();
+		var service = new RemotePublishService(
+			new FakeIFtpService(),
+			new LocalFileSystemPublishService(
+				appSettings,
+				new FakeIStorage(),
+				new FakeSelectorStorage(),
+				new FakeConsoleWrapper(),
+				logger),
+			appSettings,
+			logger);
+
+		var result = service.IsPublishEnabled("profile");
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void IsPublishEnabled_ProfileHasPublishRemote_ReturnsTrue()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
+				{
+					{
+						"profile", [
+							new RemoteCredentialWrapper
+							{
+								Type = RemoteCredentialType.Ftp,
+								Ftp = new FtpCredential { WebFtp = "ftp://user:test@example.com" }
+							}
+						]
+					}
+				}
+			},
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{
+					"profile", [
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.PublishRemote
+						},
+						new AppSettingsPublishProfiles { ContentType = TemplateContentType.Html }
+					]
+				}
+			}
+		};
+
+		var logger = new FakeIWebLogger();
+		var service = new RemotePublishService(
+			new FakeIFtpService(),
+			new LocalFileSystemPublishService(
+				appSettings,
+				new FakeIStorage(),
+				new FakeSelectorStorage(),
+				new FakeConsoleWrapper(),
+				logger),
+			appSettings,
+			logger);
+
+		var result = service.IsPublishEnabled("profile");
+		Assert.IsTrue(result);
+	}
 }
