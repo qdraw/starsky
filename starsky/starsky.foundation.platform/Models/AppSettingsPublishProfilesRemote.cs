@@ -69,6 +69,46 @@ public class AppSettingsPublishProfilesRemote
 
 		return this;
 	}
+
+	public List<(RemoteCredentialType, string)> ListAll()
+	{
+		var lists = new List<(RemoteCredentialType, string)>();
+		
+		foreach ( var webFtp in Default
+			         .Where(p => p.Ftp?.WebFtp != null)
+			         .Select(p => p.Ftp?.WebFtp) )
+		{
+			lists.Add((RemoteCredentialType.Ftp, webFtp!));
+		}
+
+		foreach ( var webFtp in
+		         Profiles
+			         .SelectMany(item =>
+				         item.Value)
+			         .Where(p => p.Ftp?.WebFtp != null).Select(p => p.Ftp?.WebFtp) )
+		{
+			lists.Add((RemoteCredentialType.Ftp, webFtp!));
+		}
+
+		foreach ( var localFs in Default
+			         .Where(p => p.LocalFileSystem?.Path != null)
+			         .Select(p => p.LocalFileSystem?.Path) )
+		{
+			lists.Add((RemoteCredentialType.LocalFileSystem, localFs!));
+		}
+
+		foreach ( var localFs in
+		         Profiles
+			         .SelectMany(item =>
+				         item.Value)
+			         .Where(p => p.LocalFileSystem?.Path != null)
+			         .Select(p => p.LocalFileSystem?.Path) )
+		{
+			lists.Add((RemoteCredentialType.LocalFileSystem, localFs!));
+		}
+
+		return lists;
+	}
 }
 
 /// <summary>

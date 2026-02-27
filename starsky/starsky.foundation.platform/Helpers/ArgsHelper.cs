@@ -431,16 +431,9 @@ public sealed class ArgsHelper
 
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebFtp )
 		{
-			foreach ( var item in _appSettings.PublishProfilesRemote.Default )
+			foreach ( var (type, path) in _appSettings.PublishProfilesRemote.ListAll() )
 			{
-				_console.WriteLine("WebFtp " + item.Ftp?.WebFtp);
-			}
-
-			foreach ( var item in
-			         _appSettings.PublishProfilesRemote.Profiles.SelectMany(item =>
-				         item.Value) )
-			{
-				_console.WriteLine("WebFtp " + item.Ftp?.WebFtp);
+				_console.WriteLine($"{type}: {path}");
 			}
 		}
 
