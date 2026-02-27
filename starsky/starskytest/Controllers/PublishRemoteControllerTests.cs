@@ -24,7 +24,7 @@ public class PublishRemoteControllerTests
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
 			new FakeIPublishPreflight(), appSettings, fakePublishService);
 
-		var actionResult = await controller.PublishFtpAsync("test",
+		var actionResult = await controller.PublishRemoteAsync("test",
 			"test") as JsonResult;
 		var result = actionResult?.Value as bool?;
 
@@ -42,7 +42,7 @@ public class PublishRemoteControllerTests
 			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 		var actionResult =
-			await controller.PublishFtpAsync("test", "test") as BadRequestObjectResult;
+			await controller.PublishRemoteAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 		Assert.AreEqual("Model invalid", actionResult?.Value);
 	}
@@ -57,7 +57,7 @@ public class PublishRemoteControllerTests
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
 			new FakeIPublishPreflight(isOk: false), appSettings, fakePublishSelector);
 		var actionResult =
-			await controller.PublishFtpAsync("test", "test") as BadRequestObjectResult;
+			await controller.PublishRemoteAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 	}
 
@@ -70,7 +70,7 @@ public class PublishRemoteControllerTests
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
 			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
 		var actionResult =
-			await controller.PublishFtpAsync("test", "test") as BadRequestObjectResult;
+			await controller.PublishRemoteAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 		Assert.Contains("failed", actionResult?.Value as string ?? string.Empty);
 	}
@@ -84,7 +84,7 @@ public class PublishRemoteControllerTests
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
 			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
 		var actionResult =
-			await controller.PublishFtpAsync("test", "test") as BadRequestObjectResult;
+			await controller.PublishRemoteAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 		Assert.AreEqual("Publish zip is invalid", actionResult?.Value);
 	}
@@ -98,7 +98,7 @@ public class PublishRemoteControllerTests
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
 			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
 		var actionResult =
-			await controller.PublishFtpAsync("test", "test") as NotFoundObjectResult;
+			await controller.PublishRemoteAsync("test", "test") as NotFoundObjectResult;
 		Assert.AreEqual(404, actionResult?.StatusCode);
 		Assert.AreEqual("Publish zip not found", actionResult?.Value);
 	}
@@ -116,7 +116,7 @@ public class PublishRemoteControllerTests
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
 			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
 
-		var actionResult = await controller.PublishFtpAsync("test",
+		var actionResult = await controller.PublishRemoteAsync("test",
 			"test") as JsonResult;
 		var result = actionResult?.Value as bool?;
 

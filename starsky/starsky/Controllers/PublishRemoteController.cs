@@ -32,13 +32,13 @@ public class PublishRemoteController(
 	/// <response code="400">profiles are invalid or remote type not supported</response>
 	/// <response code="404">zip not found</response>
 	/// <response code="401">User unauthorized</response>
-	[HttpPost("/api/publish-remote/remote")]
+	[HttpPost("/api/publish-remote/create")]
 	[Produces("application/json")]
 	[ProducesResponseType(typeof(bool), 200)]
 	[ProducesResponseType(typeof(string), 400)]
 	[ProducesResponseType(typeof(string), 404)]
 	[ProducesResponseType(typeof(void), 401)]
-	public async Task<IActionResult> PublishFtpAsync(string itemName,
+	public async Task<IActionResult> PublishRemoteAsync(string itemName,
 		string publishProfileName)
 	{
 		if ( !ModelState.IsValid )
@@ -79,6 +79,25 @@ public class PublishRemoteController(
 			return BadRequest("Publishing failed");
 		}
 
+		return Json(true);
+	}
+
+	[HttpGet("/api/publish-remote/status")]
+	[Produces("application/json")]
+	[ProducesResponseType(typeof(bool), 200)]
+	[ProducesResponseType(typeof(string), 400)]
+	[ProducesResponseType(typeof(string), 404)]
+	[ProducesResponseType(typeof(void), 401)]
+	public async Task<IActionResult> PublishRemoteAsync(
+		string publishProfileName)
+	{
+		var (isValidProfile, _) =
+			publishPreflight.IsProfileValid(publishProfileName);
+		if (isValidProfile &&
+		    remotePublishService.IsPublishEnabled(publishProfileName))
+		{
+			return Json(false);
+		}
 		return Json(true);
 	}
 }
