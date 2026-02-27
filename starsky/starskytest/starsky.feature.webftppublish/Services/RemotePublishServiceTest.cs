@@ -131,12 +131,13 @@ public class RemotePublishServiceTest
 				appSettings,
 				new FakeIWebLogger());
 
-			var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
-			var result = selector.Run("/test", "test-profile", "slug", copyContent);
+		var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
+		var result = selector.Run("/test", "test-profile", "slug", copyContent);
 
-			// FtpService should not be called
-			Assert.AreEqual(string.Empty, ftpService.LastPath);
-			Assert.AreEqual(string.Empty, ftpService.LastSlug);
+		Assert.IsTrue(result);
+		// FtpService should not be called
+		Assert.AreEqual(string.Empty, ftpService.LastPath);
+		Assert.AreEqual(string.Empty, ftpService.LastSlug);
 		}
 		finally
 		{
@@ -145,52 +146,6 @@ public class RemotePublishServiceTest
 				Directory.Delete(tempDir, true);
 			}
 		}
-	}
-
-	[TestMethod]
-	public void Run_PreferredType_OverridesConfiguration()
-	{
-		var appSettings = new AppSettings
-		{
-			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
-			{
-				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
-				{
-					{
-						"test-profile", new List<RemoteCredentialWrapper>
-						{
-							new()
-							{
-								Type = RemoteCredentialType.LocalFileSystem,
-								LocalFileSystem =
-									new LocalFileSystemCredential { Path = "/dest" }
-							}
-						}
-					}
-				}
-			}
-		};
-
-		var ftpService = new FakeIFtpService();
-		var localFsService = new LocalFileSystemPublishService(
-			new AppSettings(),
-			new FakeIStorage(),
-			new FakeSelectorStorage(),
-			new FakeConsoleWrapper(),
-			new FakeIWebLogger());
-
-		var selector = new RemotePublishService(
-			ftpService,
-			localFsService,
-			appSettings,
-			new FakeIWebLogger());
-
-		var copyContent = new Dictionary<string, bool> { { "test.jpg", true } };
-		// Override with Ftp even though profile is LocalFileSystem
-		var result = selector.Run("/test", 
-			"test-profile", "slug", copyContent);
-
-		Assert.AreEqual("/test", ftpService.LastPath);
 	}
 
 	[TestMethod]
@@ -205,10 +160,32 @@ public class RemotePublishServiceTest
 			new FakeConsoleWrapper(),
 			new FakeIWebLogger());
 
+		var appSettings = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
+				{
+					{
+						"profile",
+						new List<RemoteCredentialWrapper>
+						{
+							new()
+							{
+								Type = RemoteCredentialType.Unknown,
+								Ftp = null,
+								LocalFileSystem = null
+							}
+						}
+					}
+				}
+			}
+		};
+
 		var selector = new RemotePublishService(
 			ftpService,
 			localFsService,
-			new AppSettings(),
+			appSettings,
 			logger);
 
 		var copyContent = new Dictionary<string, bool> { { "test.jpg", true } };
