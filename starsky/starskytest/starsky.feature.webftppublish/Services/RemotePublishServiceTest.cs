@@ -217,9 +217,9 @@ public class RemotePublishServiceTest
 		var result = service.IsPublishEnabled("missing-profile");
 		Assert.IsFalse(result);
 	}
-	
+
 	[TestMethod]
-	public void IsPublishEnabled_ProfileNotFound2_ReturnsFalse()
+	public void Run_ProfileNotFound_ReturnsFalse()
 	{
 		var appSettings = new AppSettings();
 
@@ -235,7 +235,7 @@ public class RemotePublishServiceTest
 			appSettings,
 			logger);
 
-		var result = service.IsPublishEnabled("missing-profile");
+		var result = service.Run("", "", "", new Dictionary<string, bool>());
 		Assert.IsFalse(result);
 	}
 
