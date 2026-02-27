@@ -122,4 +122,18 @@ public class PublishRemoteControllerTests
 
 		Assert.IsTrue(result);
 	}
+
+	[TestMethod]
+	public async Task PublishFtpAsync_PublishDisabled_ReturnsBadRequest()
+	{
+		var appSettings = new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
+		var storage = new FakeIStorage([], [Path.DirectorySeparatorChar + "test.zip"]);
+		var fakePublishSelector = new FakeIRemotePublishService(false);
+		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
+		var actionResult =
+			await controller.PublishRemoteAsync("test", "test") as BadRequestObjectResult;
+		Assert.AreEqual(400, actionResult?.StatusCode);
+		Assert.AreEqual("FTP publishing disabled for publish profile", actionResult?.Value);
+	}
 }

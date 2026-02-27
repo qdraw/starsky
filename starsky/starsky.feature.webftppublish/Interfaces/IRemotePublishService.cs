@@ -27,5 +27,11 @@ public interface IRemotePublishService
 	bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
 		Dictionary<string, bool> copyContent);
 
+	/// <summary>
+	///     Is the Publish profile enabled for use,
+	///     this is used to hide publish options in the UI if not enabled
+	/// </summary>
+	/// <param name="publishProfileName">which profile</param>
+	/// <returns></returns>
 	bool IsPublishEnabled(string publishProfileName);
 }
