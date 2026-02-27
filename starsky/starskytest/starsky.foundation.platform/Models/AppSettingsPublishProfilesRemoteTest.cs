@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 
@@ -152,7 +153,7 @@ public class AppSettingsPublishProfilesRemoteTest
 			}
 		};
 
-		var result = remote.GetById("profile1", type: null);
+		var result = remote.GetById("profile1", null);
 
 		Assert.HasCount(1, result);
 		Assert.AreEqual(RemoteCredentialType.Ftp, result[0].Type);
@@ -175,10 +176,7 @@ public class AppSettingsPublishProfilesRemoteTest
 						new RemoteCredentialWrapper
 						{
 							Type = RemoteCredentialType.Ftp,
-							Ftp = new FtpCredential
-							{
-								WebFtp = "ftp://user:pass@example.com/path"
-							}
+							Ftp = new FtpCredential { WebFtp = "ftp://user:pass@example.com/path" }
 						}
 					]
 				}
@@ -186,7 +184,7 @@ public class AppSettingsPublishProfilesRemoteTest
 			Default = [defaultWrapper]
 		};
 
-		var result = remote.GetById("nonexistent", type: null);
+		var result = remote.GetById("nonexistent", null);
 
 		Assert.HasCount(1, result);
 		Assert.AreEqual(RemoteCredentialType.LocalFileSystem, result[0].Type);
@@ -198,7 +196,7 @@ public class AppSettingsPublishProfilesRemoteTest
 	{
 		var remote = new AppSettingsPublishProfilesRemote();
 
-		var result = remote.GetById("nonexistent", type: null);
+		var result = remote.GetById("nonexistent", null);
 
 		Assert.IsEmpty(result);
 	}
@@ -227,7 +225,7 @@ public class AppSettingsPublishProfilesRemoteTest
 			}
 		};
 
-		var result = remote.GetById("profile1", type: null);
+		var result = remote.GetById("profile1", null);
 
 		Assert.HasCount(2, result);
 		Assert.AreEqual(RemoteCredentialType.Ftp, result[0].Type);
@@ -244,17 +242,75 @@ public class AppSettingsPublishProfilesRemoteTest
 		};
 		var remote = new AppSettingsPublishProfilesRemote
 		{
-			Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
-			{
-				{ "profile1", [] }
-			},
+			Profiles =
+				new Dictionary<string, List<RemoteCredentialWrapper>> { { "profile1", [] } },
 			Default = [defaultWrapper]
 		};
 
-		var result = remote.GetById("profile1", type: null);
+		var result = remote.GetById("profile1", null);
 
 		// Empty list is falsy, so result ?? Default returns Default
 		Assert.HasCount(1, result);
 		Assert.AreEqual(RemoteCredentialType.Ftp, result[0].Type);
+	}
+
+	[TestMethod]
+	public void ListAll_ReturnsAllCredentialsAndFormatsConsoleOutput()
+	{
+		var remote = new AppSettingsPublishProfilesRemote
+		{
+			Default =
+			[
+				new RemoteCredentialWrapper
+				{
+					Type = RemoteCredentialType.Ftp,
+					Ftp = new FtpCredential { WebFtp = "ftp://dion:dion@default.example.com" }
+				},
+
+				new RemoteCredentialWrapper
+				{
+					Type = RemoteCredentialType.LocalFileSystem,
+					LocalFileSystem = new LocalFileSystemCredential { Path = "/default/path" }
+				}
+			],
+			Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
+			{
+				{
+					"profile1", [
+						new RemoteCredentialWrapper
+						{
+							Type = RemoteCredentialType.Ftp,
+							Ftp = new FtpCredential
+							{
+								WebFtp = "ftp://dion:dion@profile1.example.com"
+							}
+						},
+
+						new RemoteCredentialWrapper
+						{
+							Type = RemoteCredentialType.LocalFileSystem,
+							LocalFileSystem =
+								new LocalFileSystemCredential { Path = "/profile1/path" }
+						}
+					]
+				}
+			}
+		};
+
+		var all = remote.ListAll();
+		Assert.HasCount(4, all);
+		Assert.AreEqual(( RemoteCredentialType.Ftp, "ftp://dion:dion@default.example.com" ),
+			all[0]);
+		Assert.AreEqual(( RemoteCredentialType.Ftp, "ftp://dion:dion@profile1.example.com" ),
+			all[1]);
+		Assert.AreEqual(( RemoteCredentialType.LocalFileSystem, "/default/path" ), all[2]);
+		Assert.AreEqual(( RemoteCredentialType.LocalFileSystem, "/profile1/path" ), all[3]);
+
+		// Simulate console output
+		var outputLines = all.Select(x => $"{x.Item1}: {x.Item2}").ToList();
+		Assert.AreEqual("Ftp: ftp://dion:dion@default.example.com", outputLines[0]);
+		Assert.AreEqual("Ftp: ftp://dion:dion@profile1.example.com", outputLines[1]);
+		Assert.AreEqual("LocalFileSystem: /default/path", outputLines[2]);
+		Assert.AreEqual("LocalFileSystem: /profile1/path", outputLines[3]);
 	}
 }

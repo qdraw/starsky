@@ -27,7 +27,12 @@ public class AppSettingsPublishProfilesRemote
 		Profiles.TryGetValue(id, out var result);
 		if ( type == null )
 		{
-			return result ?? Default;
+			if ( result == null || result.Count == 0 )
+			{
+				return Default;
+			}
+
+			return result;
 		}
 
 		if ( result != null && result.Any(p => p.Type == type) )
@@ -73,12 +78,12 @@ public class AppSettingsPublishProfilesRemote
 	public List<(RemoteCredentialType, string)> ListAll()
 	{
 		var lists = new List<(RemoteCredentialType, string)>();
-		
+
 		foreach ( var webFtp in Default
 			         .Where(p => p.Ftp?.WebFtp != null)
 			         .Select(p => p.Ftp?.WebFtp) )
 		{
-			lists.Add((RemoteCredentialType.Ftp, webFtp!));
+			lists.Add(( RemoteCredentialType.Ftp, webFtp! ));
 		}
 
 		foreach ( var webFtp in
@@ -87,14 +92,14 @@ public class AppSettingsPublishProfilesRemote
 				         item.Value)
 			         .Where(p => p.Ftp?.WebFtp != null).Select(p => p.Ftp?.WebFtp) )
 		{
-			lists.Add((RemoteCredentialType.Ftp, webFtp!));
+			lists.Add(( RemoteCredentialType.Ftp, webFtp! ));
 		}
 
 		foreach ( var localFs in Default
 			         .Where(p => p.LocalFileSystem?.Path != null)
 			         .Select(p => p.LocalFileSystem?.Path) )
 		{
-			lists.Add((RemoteCredentialType.LocalFileSystem, localFs!));
+			lists.Add(( RemoteCredentialType.LocalFileSystem, localFs! ));
 		}
 
 		foreach ( var localFs in
@@ -104,7 +109,7 @@ public class AppSettingsPublishProfilesRemote
 			         .Where(p => p.LocalFileSystem?.Path != null)
 			         .Select(p => p.LocalFileSystem?.Path) )
 		{
-			lists.Add((RemoteCredentialType.LocalFileSystem, localFs!));
+			lists.Add(( RemoteCredentialType.LocalFileSystem, localFs! ));
 		}
 
 		return lists;
