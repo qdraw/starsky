@@ -160,16 +160,36 @@ public class FtpCredential
 				return;
 			}
 
-			var uriAddress = new Uri(value);
-			if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2
-			     && uriAddress is { Scheme: "ftp", LocalPath.Length: >= 1 } )
+			try
 			{
-				_webFtp = value;
+				var uriAddress = new Uri(value);
+				if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2
+				     && uriAddress is { Scheme: "ftp", LocalPath.Length: >= 1 } )
+				{
+					_webFtp = value;
+				}
+			}
+			catch ( UriFormatException )
+			{
+				// Invalid URI format, do not set the value
 			}
 		}
 	}
 
-	private string[] Credentials => new Uri(WebFtp).UserInfo.Split(":".ToCharArray());
+	private string[] Credentials
+	{
+		get
+		{
+			try
+			{
+				return new Uri(WebFtp).UserInfo.Split(":".ToCharArray());
+			}
+			catch ( UriFormatException )
+			{
+				return [];
+			}
+		}
+	}
 
 	public string Username => Credentials is not { Length: 2 } ? string.Empty : Credentials[0];
 	public string Password => Credentials is not { Length: 2 } ? string.Empty : Credentials[1];

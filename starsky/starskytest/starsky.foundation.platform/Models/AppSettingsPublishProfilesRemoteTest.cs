@@ -153,7 +153,7 @@ public class AppSettingsPublishProfilesRemoteTest
 			}
 		};
 
-		var result = remote.GetById("profile1", null);
+		var result = remote.GetById("profile1");
 
 		Assert.HasCount(1, result);
 		Assert.AreEqual(RemoteCredentialType.Ftp, result[0].Type);
@@ -184,7 +184,7 @@ public class AppSettingsPublishProfilesRemoteTest
 			Default = [defaultWrapper]
 		};
 
-		var result = remote.GetById("nonexistent", null);
+		var result = remote.GetById("nonexistent");
 
 		Assert.HasCount(1, result);
 		Assert.AreEqual(RemoteCredentialType.LocalFileSystem, result[0].Type);
@@ -196,7 +196,7 @@ public class AppSettingsPublishProfilesRemoteTest
 	{
 		var remote = new AppSettingsPublishProfilesRemote();
 
-		var result = remote.GetById("nonexistent", null);
+		var result = remote.GetById("nonexistent");
 
 		Assert.IsEmpty(result);
 	}
@@ -225,7 +225,7 @@ public class AppSettingsPublishProfilesRemoteTest
 			}
 		};
 
-		var result = remote.GetById("profile1", null);
+		var result = remote.GetById("profile1");
 
 		Assert.HasCount(2, result);
 		Assert.AreEqual(RemoteCredentialType.Ftp, result[0].Type);
@@ -247,7 +247,7 @@ public class AppSettingsPublishProfilesRemoteTest
 			Default = [defaultWrapper]
 		};
 
-		var result = remote.GetById("profile1", null);
+		var result = remote.GetById("profile1");
 
 		// Empty list is falsy, so result ?? Default returns Default
 		Assert.HasCount(1, result);
@@ -312,5 +312,55 @@ public class AppSettingsPublishProfilesRemoteTest
 		Assert.AreEqual("Ftp: ftp://dion:dion@profile1.example.com", outputLines[1]);
 		Assert.AreEqual("LocalFileSystem: /default/path", outputLines[2]);
 		Assert.AreEqual("LocalFileSystem: /profile1/path", outputLines[3]);
+	}
+
+	[TestMethod]
+	public void FtpCredential_WebFtp_ValidUrl_ParsesCorrectly()
+	{
+		var ftp = new FtpCredential { WebFtp = "ftp://user:pass@ftp.example.com/path" };
+		Assert.AreEqual("ftp://user:pass@ftp.example.com/path", ftp.WebFtp);
+		Assert.AreEqual("user", ftp.Username);
+		Assert.AreEqual("pass", ftp.Password);
+		Assert.AreEqual("ftp://ftp.example.com/path", ftp.WebFtpNoLogin);
+	}
+
+	[TestMethod]
+	public void FtpCredential_WebFtp_Empty_ReturnsEmpty()
+	{
+		var ftp = new FtpCredential { WebFtp = "" };
+		Assert.AreEqual(string.Empty, ftp.WebFtp);
+		Assert.AreEqual(string.Empty, ftp.Username);
+		Assert.AreEqual(string.Empty, ftp.Password);
+	}
+
+	[TestMethod]
+	public void FtpCredential_WebFtp_Null_ReturnsEmpty()
+	{
+		var ftp = new FtpCredential { WebFtp = null! };
+		Assert.AreEqual(string.Empty, ftp.WebFtp);
+		Assert.AreEqual(string.Empty, ftp.Username);
+		Assert.AreEqual(string.Empty, ftp.Password);
+	}
+
+	[TestMethod]
+	public void FtpCredential_SetWarning_OverridesWebFtp()
+	{
+		var ftp = new FtpCredential { WebFtp = "ftp://user:pass@ftp.example.com/path" };
+		ftp.SetWarning("***HIDDEN***");
+		Assert.AreEqual("***HIDDEN***", ftp.WebFtp);
+	}
+
+	[TestMethod]
+	public void FtpCredential_WebFtp_InvalidUrl_DoesNotSet()
+	{
+		var ftp = new FtpCredential { WebFtp = "not-a-url" };
+		Assert.AreEqual(string.Empty, ftp.WebFtp);
+	}
+
+	[TestMethod]
+	public void FtpCredential_WebFtp_Anonymous_NotSupported()
+	{
+		var ftp = new FtpCredential { WebFtp = "ftp://anonymous@ftp.example.com/path" };
+		Assert.AreEqual(string.Empty, ftp.WebFtp);
 	}
 }
