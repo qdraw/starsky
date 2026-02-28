@@ -102,9 +102,14 @@ describe("url-query", () => {
     expect(result).toContain("itemName=name");
   });
 
-  it("UrlPublishFtp", () => {
-    const result = urlQuery.UrlPublishFtp();
-    expect(result).toContain("publish/ftp");
+  it("UrlPublishRemoteCreate", () => {
+    const result = urlQuery.UrlPublishRemoteCreate();
+    expect(result).toContain("publish-remote/create");
+  });
+
+  it("UrlPublishRemoteStatus", () => {
+    const result = urlQuery.UrlPublishRemoteStatus("_default");
+    expect(result).toContain("publish-remote/status?publishProfileName=_default");
   });
 
   it("UrlHomePage", () => {

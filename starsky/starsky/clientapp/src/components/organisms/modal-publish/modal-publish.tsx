@@ -14,6 +14,7 @@ import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 import Select from "../../atoms/select/select";
+import { publishToRemote } from "./internal/publish-to-remote.ts";
 
 interface IModalPublishProps {
   isOpen: boolean;
@@ -93,23 +94,12 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   }, 9000);
 
   useEffect(() => {
-    async function publishToFtp() {
-      const bodyParams = new URLSearchParams();
-      bodyParams.set("itemName", itemName);
-      bodyParams.set("publishProfileName", publishProfileName);
-
-      const ftpResult = await FetchPost(new UrlQuery().UrlPublishFtp(), bodyParams.toString());
-      if (ftpResult.statusCode !== 200) {
-        setIsProcessing(ProcessingState.fail);
-      }
-    }
-
     if (isProcessing !== ProcessingState.ready || !createZipKey || hasTriggeredFtpPublish) {
       return;
     }
 
     setHasTriggeredFtpPublish(true);
-    publishToFtp();
+    publishToRemote(publishProfileName, itemName, setIsProcessing);
   }, [isProcessing, createZipKey, itemName, publishProfileName, hasTriggeredFtpPublish]);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
