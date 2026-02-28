@@ -21,12 +21,15 @@ namespace starsky.feature.webftppublish.Services;
 	InjectionLifetime = InjectionLifetime.Scoped)]
 public class LocalFileSystemPublishService(
 	AppSettings appSettings,
-	IStorage sourceStorage,
 	ISelectorStorage selectorStorage,
 	IConsole console,
 	IWebLogger logger)
 	: ILocalFileSystemPublishService
 {
+	private readonly IStorage _hostStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+
+
 	/// <summary>
 	///     Copy all content to the local file system destination
 	/// </summary>
@@ -39,7 +42,7 @@ public class LocalFileSystemPublishService(
 		Dictionary<string, bool> copyContent)
 	{
 		var resultModel =
-			new ExtractZipHelper(sourceStorage, logger).ExtractZip(parentDirectoryOrZipFile);
+			new ExtractZipHelper(_hostStorage, logger).ExtractZip(parentDirectoryOrZipFile);
 		if ( resultModel.IsError )
 		{
 			return false;
@@ -64,7 +67,7 @@ public class LocalFileSystemPublishService(
 
 			if ( resultModel.RemoveFolderAfterwards )
 			{
-				sourceStorage.FolderDelete(resultModel.FullFileFolderPath);
+				_hostStorage.FolderDelete(resultModel.FullFileFolderPath);
 			}
 
 			console.Write("\n");
@@ -103,7 +106,7 @@ public class LocalFileSystemPublishService(
 			var parentItems = Breadcrumbs.BreadcrumbHelper(copyItem.Key);
 			var validItems = parentItems
 				.Where(p => p != Path.DirectorySeparatorChar.ToString())
-				.Where(item => sourceStorage.ExistFolder(sourceDirectory + item));
+				.Where(item => _hostStorage.ExistFolder(sourceDirectory + item));
 
 			foreach ( var item in validItems )
 			{
@@ -125,7 +128,7 @@ public class LocalFileSystemPublishService(
 			var sourcePath = Path.Combine(sourceDirectory, fileSubPath.TrimStart('/'));
 			var destPath = Path.Combine(destinationBasePath, fileSubPath.TrimStart('/'));
 
-			if ( !sourceStorage.ExistFile(sourcePath) )
+			if ( !_hostStorage.ExistFile(sourcePath) )
 			{
 				console.WriteLine($"Fail > source file not found => {sourcePath}");
 				return false;
@@ -135,7 +138,7 @@ public class LocalFileSystemPublishService(
 
 			try
 			{
-				using var sourceStream = sourceStorage.ReadStream(sourcePath);
+				using var sourceStream = _hostStorage.ReadStream(sourcePath);
 				destinationStorage.WriteStream(sourceStream, destPath);
 			}
 			catch ( Exception ex )

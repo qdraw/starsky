@@ -5,6 +5,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Services;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 
 namespace starsky.feature.webftppublish.Helpers;
 
@@ -22,24 +23,24 @@ public class ExtractZipHelper(IStorage storage, IWebLogger logger)
 	public ExtractZipResultModel ExtractZip(string parentDirectoryOrZipFile,
 		string tempFolderPrefix = "starsky-webftp")
 	{
-		var existFolder = storage.ExistFolder(parentDirectoryOrZipFile);
-		if ( existFolder )
+		var fileOrFolder = storage.IsFolderOrFile(parentDirectoryOrZipFile);
+		switch ( fileOrFolder )
 		{
-			return new ExtractZipResultModel
-			{
-				FullFileFolderPath = parentDirectoryOrZipFile,
-				RemoveFolderAfterwards = false,
-				IsError = false
-			};
-		}
-
-		var existFile = storage.ExistFile(parentDirectoryOrZipFile);
-		if ( !existFile )
-		{
-			return new ExtractZipResultModel
-			{
-				FullFileFolderPath = parentDirectoryOrZipFile, IsError = true
-			};
+			case FolderOrFileModel.FolderOrFileTypeList.Folder:
+				return new ExtractZipResultModel
+				{
+					FullFileFolderPath = parentDirectoryOrZipFile,
+					RemoveFolderAfterwards = false,
+					IsError = false,
+					IsFromZipFile = false
+				};
+			case FolderOrFileModel.FolderOrFileTypeList.Deleted:
+				return new ExtractZipResultModel
+				{
+					FullFileFolderPath = parentDirectoryOrZipFile,
+					IsError = true,
+					IsFromZipFile = false
+				};
 		}
 
 		var parentFolderTempPath = Path.Combine(Path.GetTempPath(), tempFolderPrefix,
@@ -54,14 +55,15 @@ public class ExtractZipHelper(IStorage storage, IWebLogger logger)
 			{
 				FullFileFolderPath = parentFolderTempPath,
 				RemoveFolderAfterwards = true,
-				IsError = false
+				IsError = false,
+				IsFromZipFile = true
 			};
 		}
 
 		logger.LogError($"Zip extract failed {parentDirectoryOrZipFile}");
 		return new ExtractZipResultModel
 		{
-			FullFileFolderPath = parentDirectoryOrZipFile, IsError = true
+			FullFileFolderPath = parentDirectoryOrZipFile, IsError = true, IsFromZipFile = true
 		};
 	}
 }
