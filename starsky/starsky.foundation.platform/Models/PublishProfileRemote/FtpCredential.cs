@@ -74,7 +74,11 @@ public sealed class FtpCredential
 				return;
 			}
 
-			if ( !string.Equals(uri.Scheme, Uri.UriSchemeFtp, StringComparison.OrdinalIgnoreCase) )
+			var isFtpScheme = string.Equals(uri.Scheme, Uri.UriSchemeFtp,
+				StringComparison.OrdinalIgnoreCase);
+			var isFtpsScheme = string.Equals(uri.Scheme, "ftps",
+				StringComparison.OrdinalIgnoreCase);
+			if ( !isFtpScheme && !isFtpsScheme )
 			{
 				return;
 			}
