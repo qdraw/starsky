@@ -9,6 +9,8 @@ For unit testing we use mstest and custom Fake Builders. So for myObject, there 
 
 When using ApplicationDbContext use DatabaseTest as a base class for testing. This will ensure that the database is properly set up and torn down for each test.
 
+When writing tests use `[TestMethod]` and `[DataRow]` to cover multiple scenarios in a single test method. `[DataTestMethod]` is deprecated use `[TestMethod]` with `[DataRow]` instead.
+
 Be concise.
 
 If I say "review": Review the code. When reviewing, start with a list of what needs to improve, then separately compliment on the good stuff. We don't use try catch, errors are caught on a higher level.
