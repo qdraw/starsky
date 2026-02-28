@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.Models;
 using starsky.feature.webftppublish.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
@@ -19,31 +20,25 @@ namespace starskytest.starsky.feature.webftppublish.Services;
 [TestClass]
 public sealed class FtpServiceTest
 {
-	private readonly AppSettings _appSettings;
-	private readonly FtpCredential _setting;
-	private readonly IStorage _storage;
-
-	public FtpServiceTest()
+	private readonly AppSettings _appSettings = new()
 	{
-		_appSettings = new AppSettings
+		PublishProfilesRemote = new AppSettingsPublishProfilesRemote
 		{
-			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			Default = new List<RemoteCredentialWrapper>
 			{
-				Default = new List<RemoteCredentialWrapper>
+				new()
 				{
-					new()
+					Ftp = new FtpCredential
 					{
-						Ftp = new FtpCredential
-						{
-							WebFtp = "ftp://test:test@testmedia.be"
-						}
+						WebFtp = "ftp://test:test@testmedia.be"
 					}
 				}
 			}
-		};
-		_setting = new FtpCredential { WebFtp = "ftp://test:test@testmedia.be" };
-		_storage = new FakeIStorage(["/", "//large", "/large"]);
-	}
+		}
+	};
+
+	private readonly FtpCredential _setting = new() { WebFtp = "ftp://test:test@testmedia.be" };
+	private readonly IStorage _storage = new FakeIStorage(["/", "//large", "/large"]);
 
 	[TestMethod]
 	public void CreateListOfRemoteDirectories_default()

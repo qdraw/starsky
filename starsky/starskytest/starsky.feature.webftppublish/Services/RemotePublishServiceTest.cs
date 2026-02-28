@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.webftppublish.Services;
@@ -115,11 +116,11 @@ public class RemotePublishServiceTest
 			var ftpService = new FakeIFtpService();
 			// Provide byte data for the file
 			var sourceStorage = new FakeIStorage(
-				["/test"], 
+				["/test"],
 				["/test/file.jpg"],
 				["test file content"u8.ToArray()]);
 			var destinationStorage = new FakeIStorage();
-			
+
 			var localFsService = new LocalFileSystemPublishService(
 				appSettings,
 				sourceStorage,

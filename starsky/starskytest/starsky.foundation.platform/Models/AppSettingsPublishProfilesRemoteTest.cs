@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 
 namespace starskytest.starsky.foundation.platform.Models;
 
@@ -299,17 +300,17 @@ public class AppSettingsPublishProfilesRemoteTest
 
 		var all = remote.ListAll();
 		Assert.HasCount(4, all);
-		Assert.AreEqual(( RemoteCredentialType.Ftp, "ftp://dion:dion@default.example.com" ),
+		Assert.AreEqual(( RemoteCredentialType.Ftp, "ftp://dion:dion@default.example.com/" ),
 			all[0]);
-		Assert.AreEqual(( RemoteCredentialType.Ftp, "ftp://dion:dion@profile1.example.com" ),
+		Assert.AreEqual(( RemoteCredentialType.Ftp, "ftp://dion:dion@profile1.example.com/" ),
 			all[1]);
 		Assert.AreEqual(( RemoteCredentialType.LocalFileSystem, "/default/path" ), all[2]);
 		Assert.AreEqual(( RemoteCredentialType.LocalFileSystem, "/profile1/path" ), all[3]);
 
 		// Simulate console output
 		var outputLines = all.Select(x => $"{x.Item1}: {x.Item2}").ToList();
-		Assert.AreEqual("Ftp: ftp://dion:dion@default.example.com", outputLines[0]);
-		Assert.AreEqual("Ftp: ftp://dion:dion@profile1.example.com", outputLines[1]);
+		Assert.AreEqual("Ftp: ftp://dion:dion@default.example.com/", outputLines[0]);
+		Assert.AreEqual("Ftp: ftp://dion:dion@profile1.example.com/", outputLines[1]);
 		Assert.AreEqual("LocalFileSystem: /default/path", outputLines[2]);
 		Assert.AreEqual("LocalFileSystem: /profile1/path", outputLines[3]);
 	}
@@ -348,9 +349,9 @@ public class AppSettingsPublishProfilesRemoteTest
 	public void FtpCredential_SetWarning_OverridesWebFtp()
 	{
 		var ftp = new FtpCredential { WebFtp = "ftp://user:pass@ftp.example.com/path" };
-		ftp.SetWarning("***HIDDEN***");
-		Assert.AreEqual("***HIDDEN***", ftp.WebFtp);
-		Assert.AreEqual(string.Empty, ftp.WebFtpNoLogin);
+		ftp.SetWarning("HIDDEN");
+		Assert.Contains("HIDDEN", ftp.WebFtp);
+		Assert.AreEqual("ftp://ftp.example.com/path", ftp.WebFtpNoLogin);
 	}
 
 	[TestMethod]

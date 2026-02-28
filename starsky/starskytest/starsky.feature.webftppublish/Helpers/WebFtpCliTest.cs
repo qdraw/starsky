@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
@@ -52,7 +54,7 @@ public sealed class WebFtpCliTest
 		using ( var settingsStream = settingsEntry.Open() )
 		using ( var writer = new StreamWriter(settingsStream) )
 		{
-			writer.Write(System.Text.Encoding.UTF8.GetString(ExampleManifest()!));
+			writer.Write(Encoding.UTF8.GetString(ExampleManifest()!));
 		}
 
 		var imageEntry = zip.CreateEntry("1000/0_kl1k.jpg");

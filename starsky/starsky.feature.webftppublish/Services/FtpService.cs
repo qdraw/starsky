@@ -16,6 +16,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
@@ -82,9 +83,10 @@ public class FtpService : IFtpService
 
 		foreach ( var setting in settings )
 		{
-			foreach ( var thisDirectory in
-			         CreateListOfRemoteDirectories(setting, resultModel.FullFileFolderPath, slug,
-				         copyContent) )
+			var thisDirectories = CreateListOfRemoteDirectories(setting,
+				resultModel.FullFileFolderPath, slug,
+				copyContent);
+			foreach ( var thisDirectory in thisDirectories )
 			{
 				_console.Write(",");
 				if ( DoesFtpDirectoryExist(setting, thisDirectory) )
@@ -133,7 +135,7 @@ public class FtpService : IFtpService
 		string parentDirectory,
 		string slug, Dictionary<string, bool> copyContent)
 	{
-		var pushDirectory = setting.WebFtpNoLogin + "/" + slug;
+		var pushDirectory = setting.WebFtpNoLogin.TrimEnd('/') + "/" + slug;
 
 		var createThisDirectories = new List<string>
 		{
@@ -150,7 +152,8 @@ public class FtpService : IFtpService
 			{
 				if ( _hostStorage.ExistFolder(parentDirectory + item) )
 				{
-					createThisDirectories.Add(pushDirectory + "/" + item);
+					createThisDirectories.Add(
+						pushDirectory.TrimEnd('/') + "/" + item.TrimStart('/'));
 				}
 			}
 		}
@@ -256,8 +259,15 @@ public class FtpService : IFtpService
 			request.GetResponse();
 			return true;
 		}
-		catch ( WebException )
+		catch ( WebException exception )
 		{
+			if ( exception.Message.Contains("(550)") &&
+			     exception.Message.Contains("File unavailable") )
+			{
+				return false;
+			}
+
+			_logger.LogError(exception, $"[FtpService] DoesFtpDirectoryExist {exception.Message}");
 			return false;
 		}
 	}

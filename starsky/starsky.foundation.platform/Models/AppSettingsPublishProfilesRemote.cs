@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 
 namespace starsky.foundation.platform.Models;
 
@@ -136,87 +136,6 @@ public class RemoteCredentialWrapper
 	///     Local file system credential details (if applicable).
 	/// </summary>
 	public LocalFileSystemCredential? LocalFileSystem { get; set; }
-}
-
-/// <summary>
-///     FTP credential details for a remote Publish target.
-/// </summary>
-public class FtpCredential
-{
-	private string? _webFtp;
-
-	/// <summary>
-	///     Gets or sets the FTP URL (with credentials). '@' in username should be '%40'.
-	/// </summary>
-	public string WebFtp
-	{
-		get => string.IsNullOrEmpty(_webFtp) ? string.Empty : _webFtp;
-		set
-		{
-			// Anonymous FTP is not supported
-			// Make sure that '@' in username is '%40'
-			if ( string.IsNullOrEmpty(value) )
-			{
-				return;
-			}
-
-			try
-			{
-				var uriAddress = new Uri(value);
-				if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2
-				     && uriAddress is { Scheme: "ftp", LocalPath.Length: >= 1 } )
-				{
-					_webFtp = value;
-				}
-			}
-			catch ( UriFormatException )
-			{
-				// Invalid URI format, do not set the value
-			}
-		}
-	}
-
-	private string[] Credentials
-	{
-		get
-		{
-			try
-			{
-				return new Uri(WebFtp).UserInfo.Split(":".ToCharArray());
-			}
-			catch ( UriFormatException )
-			{
-				return [];
-			}
-		}
-	}
-
-	public string Username => Credentials is not { Length: 2 } ? string.Empty : Credentials[0];
-	public string Password => Credentials is not { Length: 2 } ? string.Empty : Credentials[1];
-
-	/// <summary>
-	///     eg ftp://service.nl/drop/
-	/// </summary>
-	public string WebFtpNoLogin
-	{
-		get
-		{
-			try
-			{
-				var uri = new Uri(WebFtp);
-				return $"{uri.Scheme}://{uri.Host}{uri.LocalPath}";
-			}
-			catch ( UriFormatException )
-			{
-				return string.Empty;
-			}
-		}
-	}
-
-	public void SetWarning(string securityWarning)
-	{
-		_webFtp = securityWarning;
-	}
 }
 
 /// <summary>

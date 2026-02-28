@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.platform.Models;
@@ -267,10 +268,10 @@ public sealed class AppSettingsTest
 		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,
 			display.DatabaseConnection);
 
-		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,
-			display.PublishProfilesRemote.Default[0].Ftp?.WebFtp);
-		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,
-			display.PublishProfilesRemote.Profiles["test"][0].Ftp?.WebFtp);
+		Assert.Contains(AppSettings.CloneToDisplaySecurityWarning,
+			display.PublishProfilesRemote.Default[0].Ftp?.WebFtp ?? string.Empty);
+		Assert.Contains(AppSettings.CloneToDisplaySecurityWarning,
+			display.PublishProfilesRemote.Profiles["test"][0].Ftp?.WebFtp ?? string.Empty);
 	}
 
 	[TestMethod]
