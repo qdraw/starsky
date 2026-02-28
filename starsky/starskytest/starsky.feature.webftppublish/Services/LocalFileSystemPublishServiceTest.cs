@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Storage;
+using starskytest.FakeCreateAn.CreateAnZipFile12;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.webftppublish.Services;
@@ -475,42 +478,150 @@ public class LocalFileSystemPublishServiceTest
 	}
 
 	[TestMethod]
-	public void Run_RemoveFolderAfterwards_Success()
+	public void Run_RemoveFolderAfterwards_DeletesTemporaryFolder()
 	{
-		var appSettings = new AppSettings
+		var tempDir = Path.Combine(Path.GetTempPath(), "localfs-test-" + Path.GetRandomFileName());
+		var destDir = Path.Combine(tempDir, "dest");
+		var zipFile = Path.Combine(tempDir, "test.zip");
+
+		try
 		{
-			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			Directory.CreateDirectory(tempDir);
+			Directory.CreateDirectory(destDir);
+
+			// Create a real zip file for extraction
+			var zipContent = CreateAnZipFile12.Bytes.ToArray();
+			File.WriteAllBytes(zipFile, zipContent);
+
+			var appSettings = new AppSettings
 			{
-				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
+				PublishProfilesRemote = new AppSettingsPublishProfilesRemote
 				{
+					Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
 					{
-						"test-profile", [
-							new RemoteCredentialWrapper
-							{
-								Type = RemoteCredentialType.LocalFileSystem,
-								LocalFileSystem = new LocalFileSystemCredential { Path = "/dest" }
-							}
-						]
+						{
+							"test-profile", [
+								new RemoteCredentialWrapper
+								{
+									Type = RemoteCredentialType.LocalFileSystem,
+									LocalFileSystem = new LocalFileSystemCredential { Path = destDir }
+								}
+							]
+						}
 					}
 				}
+			};
+
+			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var destinationStorage = new FakeIStorage();
+			var selectorStorage = new FakeSelectorStorage(destinationStorage);
+
+			var service = new LocalFileSystemPublishService(
+				appSettings,
+				selectorStorage,
+				new FakeConsoleWrapper(),
+				new FakeIWebLogger());
+
+			var copyContent = new Dictionary<string, bool> { { "file1.txt", true } };
+			var result = service.Run(zipFile, "test-profile", "slug", copyContent);
+
+			Assert.IsTrue(result);
+
+			// Verify the temporary extraction folder was deleted
+			// The folder name should contain "starsky-webftp" and "test"
+			var tempFolders = Directory.GetDirectories(Path.GetTempPath(), "starsky-webftp*");
+			var testTempFolder = tempFolders.FirstOrDefault(f => f.Contains("test"));
+
+			// The folder should have been deleted
+			if ( testTempFolder != null )
+			{
+				Assert.IsFalse(Directory.Exists(testTempFolder),
+					"Temporary folder should have been deleted");
 			}
-		};
+		}
+		finally
+		{
+			if ( File.Exists(zipFile) )
+			{
+				File.Delete(zipFile);
+			}
 
-		var sourceStorage = new FakeIStorage(
-			["/source"],
-			["/source/file.jpg"],
-			["test content"u8.ToArray()]);
+			if ( Directory.Exists(tempDir) )
+			{
+				Directory.Delete(tempDir, true);
+			}
 
-		var service = new LocalFileSystemPublishService(
-			appSettings,
-			new FakeSelectorStorage(sourceStorage),
-			new FakeConsoleWrapper(),
-			new FakeIWebLogger());
+			// Cleanup any leftover temp folders
+			var tempFolders = Directory.GetDirectories(Path.GetTempPath(), "starsky-webftp*");
+			foreach ( var folder in tempFolders )
+			{
+				try
+				{
+					Directory.Delete(folder, true);
+				}
+				catch
+				{
+					// Ignore cleanup errors
+				}
+			}
+		}
+	}
 
-		var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
-		var result = service.Run("/source", "test-profile", "slug", copyContent);
+	[TestMethod]
+	public void Run_Folder_DoesNotDeleteSourceFolder()
+	{
+		var tempDir = Path.Combine(Path.GetTempPath(), "localfs-test-" + Path.GetRandomFileName());
+		var sourceDir = Path.Combine(tempDir, "source");
+		var destDir = Path.Combine(tempDir, "dest");
 
-		Assert.IsTrue(result);
+		try
+		{
+			Directory.CreateDirectory(sourceDir);
+			Directory.CreateDirectory(destDir);
+			File.WriteAllText(Path.Combine(sourceDir, "test.jpg"), "test content");
+
+			var appSettings = new AppSettings
+			{
+				PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+				{
+					Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
+					{
+						{
+							"test-profile", [
+								new RemoteCredentialWrapper
+								{
+									Type = RemoteCredentialType.LocalFileSystem,
+									LocalFileSystem = new LocalFileSystemCredential { Path = destDir }
+								}
+							]
+						}
+					}
+				}
+			};
+
+			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var destinationStorage = new FakeIStorage();
+
+			var service = new LocalFileSystemPublishService(
+				appSettings,
+				new FakeSelectorStorage(destinationStorage),
+				new FakeConsoleWrapper(),
+				new FakeIWebLogger());
+
+			var copyContent = new Dictionary<string, bool> { { "test.jpg", true } };
+			var result = service.Run(sourceDir, "test-profile", "slug", copyContent);
+
+			Assert.IsTrue(result);
+			// Source folder should still exist (RemoveFolderAfterwards = false for folders)
+			Assert.IsTrue(Directory.Exists(sourceDir));
+		}
+		finally
+		{
+			if ( Directory.Exists(tempDir) )
+			{
+				Directory.Delete(tempDir, true);
+			}
+		}
 	}
 
 	[TestMethod]
