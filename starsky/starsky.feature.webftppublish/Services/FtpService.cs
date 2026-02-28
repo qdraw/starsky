@@ -17,6 +17,7 @@ using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -27,8 +28,8 @@ public class FtpService : IFtpService
 {
 	private readonly AppSettings _appSettings;
 	private readonly IConsole _console;
+	private readonly IStorage _hostStorage;
 	private readonly IWebLogger _logger;
-	private readonly IStorage _storage;
 
 	private readonly IFtpWebRequestFactory _webRequest;
 
@@ -37,14 +38,14 @@ public class FtpService : IFtpService
 	///     Encode content using HTML for @ use %40 for example
 	/// </summary>
 	/// <param name="appSettings">the location of the settings</param>
-	/// <param name="storage">storage provider for source files</param>
+	/// <param name="selectorStorage">storage provider for source files</param>
 	/// <param name="console"></param>
 	/// <param name="webRequest"></param>
 	/// <param name="logger"></param>
-	public FtpService(AppSettings appSettings, IStorage storage, IConsole console,
+	public FtpService(AppSettings appSettings, ISelectorStorage selectorStorage, IConsole console,
 		IFtpWebRequestFactory webRequest, IWebLogger logger)
 	{
-		_storage = storage;
+		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_console = console;
 		_webRequest = webRequest;
 		_logger = logger;
@@ -54,7 +55,7 @@ public class FtpService : IFtpService
 	public async Task<FtpPublishManifestModel?> IsValidZipOrFolder(
 		string inputFullFileDirectoryOrZip)
 	{
-		return await new IsValidZipOrFolderHelper(_storage, _logger)
+		return await new IsValidZipOrFolderHelper(_hostStorage, _logger)
 			.IsValidZipOrFolder(inputFullFileDirectoryOrZip);
 	}
 
@@ -70,7 +71,7 @@ public class FtpService : IFtpService
 		Dictionary<string, bool> copyContent)
 	{
 		var resultModel =
-			new ExtractZipHelper(_storage, _logger).ExtractZip(parentDirectoryOrZipFile);
+			new ExtractZipHelper(_hostStorage, _logger).ExtractZip(parentDirectoryOrZipFile);
 		if ( resultModel.IsError )
 		{
 			return false;
@@ -108,7 +109,7 @@ public class FtpService : IFtpService
 
 			if ( resultModel.RemoveFolderAfterwards )
 			{
-				_storage.FolderDelete(resultModel.FullFileFolderPath);
+				_hostStorage.FolderDelete(resultModel.FullFileFolderPath);
 			}
 
 			_console.Write("\n");
@@ -147,7 +148,7 @@ public class FtpService : IFtpService
 			foreach ( var item in parentItems.Where(p =>
 				         p != Path.DirectorySeparatorChar.ToString()) )
 			{
-				if ( _storage.ExistFolder(parentDirectory + item) )
+				if ( _hostStorage.ExistFolder(parentDirectory + item) )
 				{
 					createThisDirectories.Add(pushDirectory + "/" + item);
 				}
@@ -193,7 +194,7 @@ public class FtpService : IFtpService
 
 			RetryHelper.Do(LocalUpload, TimeSpan.FromSeconds(10));
 
-			if ( _storage.ExistFile(parentDirectory + item) )
+			if ( _hostStorage.ExistFile(parentDirectory + item) )
 			{
 				continue;
 			}
@@ -222,7 +223,7 @@ public class FtpService : IFtpService
 	private bool Upload(FtpCredential setting, string parentDirectory, string subPath,
 		string toFtpPath)
 	{
-		if ( !_storage.ExistFile(parentDirectory + subPath) )
+		if ( !_hostStorage.ExistFile(parentDirectory + subPath) )
 		{
 			return false;
 		}
@@ -232,7 +233,7 @@ public class FtpService : IFtpService
 			new NetworkCredential(setting.Username, setting.Password);
 		request.Method = WebRequestMethods.Ftp.UploadFile;
 
-		using var fileStream = _storage.ReadStream(parentDirectory + subPath);
+		using var fileStream = _hostStorage.ReadStream(parentDirectory + subPath);
 		using var ftpStream = request.GetRequestStream();
 		fileStream.CopyTo(ftpStream);
 

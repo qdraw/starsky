@@ -96,9 +96,9 @@ public class PublishRemoteController(
 		if ( isValidProfile &&
 		     remotePublishService.IsPublishEnabled(publishProfileName) )
 		{
-			return Json(false);
+			return Json(true);
 		}
 
-		return Json(true);
+		return Json(false);
 	}
 }

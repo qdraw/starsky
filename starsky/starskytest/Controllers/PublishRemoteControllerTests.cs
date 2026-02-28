@@ -138,21 +138,21 @@ public class PublishRemoteControllerTests
 	}
 
 	[TestMethod]
-	public void Status_ValidProfile_PublishEnabled_ReturnsJsonFalse()
+	public void Status_ValidProfile_PublishEnabled_ReturnsJsonTrue()
 	{
 		var appSettings = new AppSettings();
 		var storage = new FakeIStorage([], []);
 		var fakePublishPreflight = new FakeIPublishPreflight(isOk: true);
-		var fakePublishService = new FakeIRemotePublishService(true);
+		var fakePublishService = new FakeIRemotePublishService();
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
 			fakePublishPreflight, appSettings, fakePublishService);
 		var actionResult = controller.Status("test") as JsonResult;
 		Assert.IsNotNull(actionResult);
-		Assert.IsFalse(( bool? )  actionResult.Value );
+		Assert.IsTrue(( bool? )  actionResult.Value );
 	}
 
 	[TestMethod]
-	public void Status_ValidProfile_PublishDisabled_ReturnsJsonTrue()
+	public void Status_ValidProfile_PublishDisabled_ReturnsJsonFalse()
 	{
 		var appSettings = new AppSettings();
 		var storage = new FakeIStorage([], []);
@@ -162,20 +162,20 @@ public class PublishRemoteControllerTests
 			fakePublishPreflight, appSettings, fakePublishService);
 		var actionResult = controller.Status("test") as JsonResult;
 		Assert.IsNotNull(actionResult);
-		Assert.IsTrue(( bool? )  actionResult.Value );
+		Assert.IsFalse(( bool? )  actionResult.Value );
 	}
 
 	[TestMethod]
-	public void Status_InvalidProfile_ReturnsJsonTrue()
+	public void Status_InvalidProfile_ReturnsJsonFalse()
 	{
 		var appSettings = new AppSettings();
 		var storage = new FakeIStorage([], []);
 		var fakePublishPreflight = new FakeIPublishPreflight(isOk: false);
-		var fakePublishService = new FakeIRemotePublishService(true);
+		var fakePublishService = new FakeIRemotePublishService();
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
 			fakePublishPreflight, appSettings, fakePublishService);
 		var actionResult = controller.Status("test") as JsonResult;
 		Assert.IsNotNull(actionResult);
-		Assert.IsTrue(( bool? )  actionResult.Value );
+		Assert.IsFalse(( bool? )  actionResult.Value );
 	}
 }
