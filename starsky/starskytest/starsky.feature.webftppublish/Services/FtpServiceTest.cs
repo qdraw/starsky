@@ -50,7 +50,7 @@ public sealed class FtpServiceTest
 				new Dictionary<string, bool>()).ToList();
 
 		Assert.AreEqual("ftp://testmedia.be/", item[0]);
-		Assert.AreEqual("ftp://testmedia.be//item-name", item[1]);
+		Assert.AreEqual("ftp://testmedia.be/item-name", item[1]);
 	}
 
 	[TestMethod]
@@ -63,7 +63,7 @@ public sealed class FtpServiceTest
 				new Dictionary<string, bool> { { "large/test.jpg", true } }).ToList();
 
 		// start with index 2
-		Assert.AreEqual("ftp://testmedia.be//item-name//large", item[2]);
+		Assert.AreEqual("ftp://testmedia.be/item-name/large", item[2]);
 	}
 
 	[TestMethod]

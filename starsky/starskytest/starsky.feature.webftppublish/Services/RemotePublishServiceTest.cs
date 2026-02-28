@@ -18,7 +18,6 @@ public class RemotePublishServiceTest
 		var ftpService = new FakeIFtpService();
 		var localFsService = new LocalFileSystemPublishService(
 			new AppSettings(),
-			new FakeIStorage(),
 			new FakeSelectorStorage(),
 			new FakeConsoleWrapper(),
 			new FakeIWebLogger());
@@ -63,7 +62,6 @@ public class RemotePublishServiceTest
 		var ftpService = new FakeIFtpService();
 		var localFsService = new LocalFileSystemPublishService(
 			new AppSettings(),
-			new FakeIStorage(),
 			new FakeSelectorStorage(),
 			new FakeConsoleWrapper(),
 			new FakeIWebLogger());
@@ -119,12 +117,10 @@ public class RemotePublishServiceTest
 				["/test"],
 				["/test/file.jpg"],
 				["test file content"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage();
 
 			var localFsService = new LocalFileSystemPublishService(
 				appSettings,
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -158,7 +154,6 @@ public class RemotePublishServiceTest
 		var ftpService = new FakeIFtpService();
 		var localFsService = new LocalFileSystemPublishService(
 			new AppSettings(),
-			new FakeIStorage(),
 			new FakeSelectorStorage(),
 			new FakeConsoleWrapper(),
 			new FakeIWebLogger());
@@ -214,7 +209,6 @@ public class RemotePublishServiceTest
 			new FakeIFtpService(),
 			new LocalFileSystemPublishService(
 				appSettings,
-				new FakeIStorage(),
 				new FakeSelectorStorage(),
 				new FakeConsoleWrapper(),
 				logger),
@@ -235,7 +229,6 @@ public class RemotePublishServiceTest
 			new FakeIFtpService(),
 			new LocalFileSystemPublishService(
 				appSettings,
-				new FakeIStorage(),
 				new FakeSelectorStorage(),
 				new FakeConsoleWrapper(),
 				logger),
@@ -266,7 +259,6 @@ public class RemotePublishServiceTest
 			new FakeIFtpService(),
 			new LocalFileSystemPublishService(
 				appSettings,
-				new FakeIStorage(),
 				new FakeSelectorStorage(),
 				new FakeConsoleWrapper(),
 				logger),
@@ -297,7 +289,6 @@ public class RemotePublishServiceTest
 			new FakeIFtpService(),
 			new LocalFileSystemPublishService(
 				appSettings,
-				new FakeIStorage(),
 				new FakeSelectorStorage(),
 				new FakeConsoleWrapper(),
 				logger),
@@ -333,7 +324,6 @@ public class RemotePublishServiceTest
 			new FakeIFtpService(),
 			new LocalFileSystemPublishService(
 				appSettings,
-				new FakeIStorage(),
 				new FakeSelectorStorage(),
 				new FakeConsoleWrapper(),
 				logger),
@@ -383,7 +373,6 @@ public class RemotePublishServiceTest
 			new FakeIFtpService(),
 			new LocalFileSystemPublishService(
 				appSettings,
-				new FakeIStorage(),
 				new FakeSelectorStorage(),
 				new FakeConsoleWrapper(),
 				logger),

@@ -49,12 +49,10 @@ public class LocalFileSystemPublishServiceTest
 				[sourceDir],
 				[Path.Combine(sourceDir, "test.jpg")],
 				["test content"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage();
 
 			var service = new LocalFileSystemPublishService(
 				appSettings,
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -63,7 +61,7 @@ public class LocalFileSystemPublishServiceTest
 
 			Assert.IsTrue(result);
 			var expectedDestFolder = Path.Combine(destDir, "my-slug");
-			Assert.IsTrue(destinationStorage.ExistFolder(expectedDestFolder));
+			Assert.IsTrue(sourceStorage.ExistFolder(expectedDestFolder));
 		}
 		finally
 		{
@@ -87,7 +85,6 @@ public class LocalFileSystemPublishServiceTest
 
 		var service = new LocalFileSystemPublishService(
 			appSettings,
-			storage,
 			new FakeSelectorStorage(storage),
 			new FakeConsoleWrapper(),
 			logger);
@@ -114,8 +111,7 @@ public class LocalFileSystemPublishServiceTest
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				storage,
-				new FakeSelectorStorage(),
+				new FakeSelectorStorage(storage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -160,7 +156,6 @@ public class LocalFileSystemPublishServiceTest
 
 		var service = new LocalFileSystemPublishService(
 			appSettings,
-			storage,
 			new FakeSelectorStorage(storage),
 			new FakeConsoleWrapper(),
 			logger);
@@ -185,12 +180,10 @@ public class LocalFileSystemPublishServiceTest
 				["/source"],
 				["/source/file.jpg"],
 				["test content"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage();
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -200,7 +193,7 @@ public class LocalFileSystemPublishServiceTest
 
 			Assert.IsTrue(result);
 			var expectedDestFolder = Path.Combine(tempDir, "my-slug");
-			Assert.IsTrue(destinationStorage.ExistFolder(expectedDestFolder));
+			Assert.IsTrue(sourceStorage.ExistFolder(expectedDestFolder));
 		}
 		finally
 		{
@@ -225,12 +218,10 @@ public class LocalFileSystemPublishServiceTest
 				["/source", "/source/subfolder"],
 				["/source/subfolder/file.jpg"],
 				["test content"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage();
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -240,7 +231,7 @@ public class LocalFileSystemPublishServiceTest
 
 			Assert.IsTrue(result);
 			var expectedSubfolder = Path.Combine(tempDir, "my-slug", "subfolder");
-			Assert.IsTrue(destinationStorage.ExistFolder(expectedSubfolder));
+			Assert.IsTrue(sourceStorage.ExistFolder(expectedSubfolder));
 		}
 		finally
 		{
@@ -265,14 +256,10 @@ public class LocalFileSystemPublishServiceTest
 				["/source", "/source/subfolder"],
 				["/source/subfolder/file.jpg"],
 				["test content"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage(
-				[Path.Combine(tempDir, "my-slug", "subfolder")],
-				[]);
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -305,12 +292,10 @@ public class LocalFileSystemPublishServiceTest
 				["/source"],
 				["/source/file1.jpg", "/source/file2.jpg", "/source/file3.jpg"],
 				["content1"u8.ToArray(), "content2"u8.ToArray(), "content3"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage();
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -323,11 +308,11 @@ public class LocalFileSystemPublishServiceTest
 
 			Assert.IsTrue(result);
 			Assert.IsTrue(
-				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file1.jpg")));
+				sourceStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file1.jpg")));
 			Assert.IsTrue(
-				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file2.jpg")));
+				sourceStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file2.jpg")));
 			Assert.IsTrue(
-				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file3.jpg")));
+				sourceStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file3.jpg")));
 		}
 		finally
 		{
@@ -352,12 +337,10 @@ public class LocalFileSystemPublishServiceTest
 				["/source"],
 				["/source/file1.jpg", "/source/file2.jpg"],
 				["content1"u8.ToArray(), "content2"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage();
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -370,9 +353,9 @@ public class LocalFileSystemPublishServiceTest
 
 			Assert.IsTrue(result);
 			Assert.IsTrue(
-				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file1.jpg")));
+				sourceStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file1.jpg")));
 			Assert.IsFalse(
-				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file2.jpg")));
+				sourceStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file2.jpg")));
 		}
 		finally
 		{
@@ -393,15 +376,10 @@ public class LocalFileSystemPublishServiceTest
 			Directory.CreateDirectory(tempDir);
 
 			var credential = new LocalFileSystemCredential { Path = tempDir };
-			var sourceStorage = new FakeIStorage(
-				["/source"],
-				["/source/file.jpg"],
-				["test content"u8.ToArray()]);
 			var destinationStorage = new FakeIStorage(new FileNotFoundException("Test exception"));
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				sourceStorage,
 				new FakeSelectorStorage(destinationStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
@@ -435,12 +413,10 @@ public class LocalFileSystemPublishServiceTest
 				["/source"],
 				["/source/file.jpg"],
 				["test content"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage();
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -451,7 +427,7 @@ public class LocalFileSystemPublishServiceTest
 
 			Assert.IsTrue(result);
 			Assert.IsTrue(
-				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file.jpg")));
+				sourceStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file.jpg")));
 		}
 		finally
 		{
@@ -488,7 +464,6 @@ public class LocalFileSystemPublishServiceTest
 
 		var service = new LocalFileSystemPublishService(
 			appSettings,
-			storage,
 			new FakeSelectorStorage(storage),
 			new FakeConsoleWrapper(),
 			new FakeIWebLogger());
@@ -525,12 +500,10 @@ public class LocalFileSystemPublishServiceTest
 			["/source"],
 			["/source/file.jpg"],
 			["test content"u8.ToArray()]);
-		var destinationStorage = new FakeIStorage();
 
 		var service = new LocalFileSystemPublishService(
 			appSettings,
-			sourceStorage,
-			new FakeSelectorStorage(destinationStorage),
+			new FakeSelectorStorage(sourceStorage),
 			new FakeConsoleWrapper(),
 			new FakeIWebLogger());
 
@@ -555,16 +528,9 @@ public class LocalFileSystemPublishServiceTest
 				["/source/file.jpg"],
 				["test content"u8.ToArray()]);
 
-			// Pre-create the destination folder
-			var destFolderPath = Path.Combine(tempDir, "my-slug");
-			var destinationStorage = new FakeIStorage(
-				[destFolderPath],
-				[]);
-
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -597,12 +563,10 @@ public class LocalFileSystemPublishServiceTest
 				["/source", "/source/level1", "/source/level1/level2"],
 				["/source/level1/level2/file.jpg"],
 				["test content"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage();
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
@@ -612,7 +576,7 @@ public class LocalFileSystemPublishServiceTest
 
 			Assert.IsTrue(result);
 			var expectedPath = Path.Combine(tempDir, "my-slug", "level1", "level2", "file.jpg");
-			Assert.IsTrue(destinationStorage.ExistFile(expectedPath));
+			Assert.IsTrue(sourceStorage.ExistFile(expectedPath));
 		}
 		finally
 		{
@@ -638,12 +602,10 @@ public class LocalFileSystemPublishServiceTest
 				["/source"],
 				["/source/file.jpg"],
 				["test content"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage();
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
-				sourceStorage,
-				new FakeSelectorStorage(destinationStorage),
+				new FakeSelectorStorage(sourceStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
