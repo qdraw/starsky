@@ -195,7 +195,8 @@ public class LocalFileSystemPublishServiceTest
 				new FakeIWebLogger());
 
 			var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
-			var result = service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+			var result =
+				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
 
 			Assert.IsTrue(result);
 			var expectedDestFolder = Path.Combine(tempDir, "my-slug");
@@ -234,7 +235,8 @@ public class LocalFileSystemPublishServiceTest
 				new FakeIWebLogger());
 
 			var copyContent = new Dictionary<string, bool> { { "subfolder/file.jpg", true } };
-			var result = service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+			var result =
+				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
 
 			Assert.IsTrue(result);
 			var expectedSubfolder = Path.Combine(tempDir, "my-slug", "subfolder");
@@ -275,7 +277,8 @@ public class LocalFileSystemPublishServiceTest
 				new FakeIWebLogger());
 
 			var copyContent = new Dictionary<string, bool> { { "subfolder/file.jpg", true } };
-			var result = service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+			var result =
+				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
 
 			Assert.IsTrue(result);
 		}
@@ -313,16 +316,18 @@ public class LocalFileSystemPublishServiceTest
 
 			var copyContent = new Dictionary<string, bool>
 			{
-				{ "file1.jpg", true },
-				{ "file2.jpg", true },
-				{ "file3.jpg", true }
+				{ "file1.jpg", true }, { "file2.jpg", true }, { "file3.jpg", true }
 			};
-			var result = service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+			var result =
+				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
 
 			Assert.IsTrue(result);
-			Assert.IsTrue(destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file1.jpg")));
-			Assert.IsTrue(destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file2.jpg")));
-			Assert.IsTrue(destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file3.jpg")));
+			Assert.IsTrue(
+				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file1.jpg")));
+			Assert.IsTrue(
+				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file2.jpg")));
+			Assert.IsTrue(
+				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file3.jpg")));
 		}
 		finally
 		{
@@ -358,14 +363,16 @@ public class LocalFileSystemPublishServiceTest
 
 			var copyContent = new Dictionary<string, bool>
 			{
-				{ "file1.jpg", true },
-				{ "file2.jpg", false }  // This one should be skipped
+				{ "file1.jpg", true }, { "file2.jpg", false } // This one should be skipped
 			};
-			var result = service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+			var result =
+				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
 
 			Assert.IsTrue(result);
-			Assert.IsTrue(destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file1.jpg")));
-			Assert.IsFalse(destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file2.jpg")));
+			Assert.IsTrue(
+				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file1.jpg")));
+			Assert.IsFalse(
+				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file2.jpg")));
 		}
 		finally
 		{
@@ -390,7 +397,7 @@ public class LocalFileSystemPublishServiceTest
 				["/source"],
 				["/source/file.jpg"],
 				["test content"u8.ToArray()]);
-			var destinationStorage = new FakeIStorage(new System.IO.FileNotFoundException("Test exception"));
+			var destinationStorage = new FakeIStorage(new FileNotFoundException("Test exception"));
 
 			var service = new LocalFileSystemPublishService(
 				new AppSettings(),
@@ -400,7 +407,8 @@ public class LocalFileSystemPublishServiceTest
 				new FakeIWebLogger());
 
 			var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
-			var result = service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+			var result =
+				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
 
 			Assert.IsFalse(result);
 		}
@@ -438,10 +446,12 @@ public class LocalFileSystemPublishServiceTest
 
 			// File path with leading slash should be trimmed
 			var copyContent = new Dictionary<string, bool> { { "/file.jpg", true } };
-			var result = service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+			var result =
+				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
 
 			Assert.IsTrue(result);
-			Assert.IsTrue(destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file.jpg")));
+			Assert.IsTrue(
+				destinationStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file.jpg")));
 		}
 		finally
 		{
@@ -544,7 +554,7 @@ public class LocalFileSystemPublishServiceTest
 				["/source"],
 				["/source/file.jpg"],
 				["test content"u8.ToArray()]);
-			
+
 			// Pre-create the destination folder
 			var destFolderPath = Path.Combine(tempDir, "my-slug");
 			var destinationStorage = new FakeIStorage(
@@ -559,7 +569,8 @@ public class LocalFileSystemPublishServiceTest
 				new FakeIWebLogger());
 
 			var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
-			var result = service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+			var result =
+				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
 
 			Assert.IsTrue(result);
 		}
@@ -596,7 +607,8 @@ public class LocalFileSystemPublishServiceTest
 				new FakeIWebLogger());
 
 			var copyContent = new Dictionary<string, bool> { { "level1/level2/file.jpg", true } };
-			var result = service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+			var result =
+				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
 
 			Assert.IsTrue(result);
 			var expectedPath = Path.Combine(tempDir, "my-slug", "level1", "level2", "file.jpg");
@@ -636,7 +648,8 @@ public class LocalFileSystemPublishServiceTest
 				new FakeIWebLogger());
 
 			var copyContent = new Dictionary<string, bool> { { "subfolder/file.jpg", true } };
-			var result = service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+			var result =
+				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
 
 			Assert.IsFalse(result);
 		}
@@ -649,4 +662,3 @@ public class LocalFileSystemPublishServiceTest
 		}
 	}
 }
-
