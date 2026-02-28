@@ -16,6 +16,7 @@ and putting them on albums by date, location, or even face--all within seconds.
 Here below there is a list of key features:
 
 - [Account Management, only useful for server version](accountmanagement.md)
+- [Auto publish to FTP and local targets](publish-remote.md)
 - [Bulk editing](bulk-editing.md)
 - [Cloud Import](cloudimport.md)
 - [Export and Download - Create zip archives and download photos](export.md)
