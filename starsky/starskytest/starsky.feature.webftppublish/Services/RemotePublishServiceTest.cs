@@ -113,11 +113,17 @@ public class RemotePublishServiceTest
 			};
 
 			var ftpService = new FakeIFtpService();
-			var sourceStorage = new FakeIStorage(["/test"], ["/test/file.jpg"]);
+			// Provide byte data for the file
+			var sourceStorage = new FakeIStorage(
+				["/test"], 
+				["/test/file.jpg"],
+				["test file content"u8.ToArray()]);
+			var destinationStorage = new FakeIStorage();
+			
 			var localFsService = new LocalFileSystemPublishService(
 				appSettings,
 				sourceStorage,
-				new FakeSelectorStorage(),
+				new FakeSelectorStorage(destinationStorage),
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
