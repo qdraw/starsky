@@ -60,7 +60,7 @@ public sealed class FtpCredential
 				password = Password;
 			}
 
-			return $"ftp://{user}:{password}@{Host}{_path}";
+			return $"{Scheme}://{user}:{password}@{Host}{_path}";
 		}
 		set
 		{
@@ -93,9 +93,12 @@ public sealed class FtpCredential
 			Username = Uri.UnescapeDataString(parts[0]);
 			Password = Uri.UnescapeDataString(parts[1]);
 			Host = uri.Host;
+			Scheme = uri.Scheme;
 			_path = string.IsNullOrEmpty(uri.AbsolutePath) ? "/" : uri.AbsolutePath;
 		}
 	}
+
+	public string Scheme { get; set; } = "ftp";
 
 
 	/// <summary>
