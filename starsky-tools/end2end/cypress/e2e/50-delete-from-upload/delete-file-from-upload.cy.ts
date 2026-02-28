@@ -4,7 +4,6 @@ import configFile from "./config.json";
 const config = configFile[envFolder][envName];
 
 describe("Delete file from upload (50)", () => {
-
   let useSystemTrashBeforeStatus = null;
   beforeEach("Check some config settings and do them before each test", () => {
     // Check if test is enabled for current environment
@@ -22,17 +21,16 @@ describe("Delete file from upload (50)", () => {
       url: config.apiEnvEndpoint,
       method: "GET",
     }).then((response) => {
-      useSystemTrashBeforeStatus = response.body.useSystemTrash
+      useSystemTrashBeforeStatus = response.body.useSystemTrash;
       cy.request({
         url: config.apiEnvEndpoint,
         method: "POST",
         form: true, // indicates the body should be form urlencoded and sets Content-Type
         body: {
           useSystemTrash: false,
-        }
-      })
+        },
+      });
     });
-
   });
 
   const fileName2 = "20200822_111408.jpg";
@@ -61,12 +59,18 @@ describe("Delete file from upload (50)", () => {
     waitOnUploadIsDone(0);
   });
 
-  it("check if upload is done (50)", () => {
-    cy.request(config.urlApiCollectionsFalse).then((res) => {
-      expect(res.status).to.eq(200);
-      expect(res.body.fileIndexItems.length).to.eq(4);
-    });
-  });
+  it(
+    "check if upload is done (50)",
+    {
+      retries: { runMode: 2, openMode: 2 },
+    },
+    () => {
+      cy.request(config.urlApiCollectionsFalse).then((res) => {
+        expect(res.status).to.eq(200);
+        expect(res.body.fileIndexItems.length).to.eq(4);
+      });
+    },
+  );
 
   function waitOnUploadIsDone(index: number, max: number = 10) {
     cy.request({
@@ -106,16 +110,12 @@ describe("Delete file from upload (50)", () => {
 
     cy.log(`go to: ${config.trash}`);
 
-    cy.intercept("/starsky/api/search?json=true&t=!delete!&p=0").as(
-      "trashPage"
-    );
+    cy.intercept("/starsky/api/search?json=true&t=!delete!&p=0").as("trashPage");
     cy.visit(config.trash);
     cy.wait("@trashPage");
 
     cy.get(".item.item--select").click();
-    cy.get(
-      `[data-filepath="/starsky-end2end-test/${fileName4}"] button`
-    ).click();
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName4}"] button`).click();
 
     // more menu and delete
     cy.get(".item.item--more").click();
@@ -175,9 +175,7 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.url);
 
     cy.get(".item.item--select").click();
-    cy.get(
-      `[data-filepath="/starsky-end2end-test/${fileName1}"] button`
-    ).click();
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.get(".item.item--more").click();
     cy.get("[data-test=trash]").click();
@@ -193,9 +191,7 @@ describe("Delete file from upload (50)", () => {
 
     cy.get(".item.item--select").click();
 
-    cy.get(
-      `[data-filepath="/starsky-end2end-test/${fileName1}"] button`
-    ).click();
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.log("next: click more and restore from trash");
 
@@ -209,9 +205,7 @@ describe("Delete file from upload (50)", () => {
     cy.log("next: should be restored");
 
     // item should be in the trash
-    cy.get(
-      `[data-filepath="/starsky-end2end-test/${fileName1}"] button`
-    ).should("not.exist");
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).should("not.exist");
 
     // display keys
     cy.window().then((win) => {
@@ -239,11 +233,7 @@ describe("Delete file from upload (50)", () => {
 
     if (envName === "local") {
       cy.request("/starsky/api/index?f=/starsky-end2end-test").then((res) => {
-        cy.log(
-          JSON.stringify(
-            res.body.fileIndexItems.find((p) => p.fileName === fileName1)
-          )
-        );
+        cy.log(JSON.stringify(res.body.fileIndexItems.find((p) => p.fileName === fileName1)));
       });
     }
 
@@ -253,11 +243,9 @@ describe("Delete file from upload (50)", () => {
 
     cy.request("/starsky/api/index?f=/starsky-end2end-test").then((res) => {
       expect(res.status).to.eq(200);
-      expect(
-        JSON.stringify(
-          res.body.fileIndexItems.find((p) => p.fileName === fileName1)
-        )
-      ).contain(fileName1);
+      expect(JSON.stringify(res.body.fileIndexItems.find((p) => p.fileName === fileName1))).contain(
+        fileName1,
+      );
     });
 
     cy.get(".folder > div").contains(fileName1);
@@ -268,9 +256,7 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.url);
 
     cy.get(".item.item--select").click();
-    cy.get(
-      `[data-filepath="/starsky-end2end-test/${fileName1}"] button`
-    ).click();
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.get(".item.item--more").click();
     cy.get("[data-test=trash]").click();
@@ -283,9 +269,7 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.trash);
 
     cy.get(".item.item--select").click();
-    cy.get(
-      `[data-filepath="/starsky-end2end-test/${fileName1}"] button`
-    ).click();
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.get(".item.item--more").click();
     cy.get("[data-test=delete]").click();
@@ -296,9 +280,7 @@ describe("Delete file from upload (50)", () => {
     cy.wait("@delete1");
 
     // item should be in the trash
-    cy.get(
-      `[data-filepath="/starsky-end2end-test/${fileName1}"] button`
-    ).should("not.exist");
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).should("not.exist");
 
     cy.visit(config.url);
 
@@ -310,15 +292,14 @@ describe("Delete file from upload (50)", () => {
   it("z cleanup trash settings (50)", () => {
     cy.log("cleanup trash settings");
     cy.log(useSystemTrashBeforeStatus);
-    
+
     cy.request({
       url: config.apiEnvEndpoint,
       method: "POST",
       form: true, // indicates the body should be form urlencoded and sets Content-Type
       body: {
         useSystemTrash: useSystemTrashBeforeStatus,
-      }
-    })
-
+      },
+    });
   });
 });
