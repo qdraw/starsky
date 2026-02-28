@@ -559,9 +559,15 @@ public class LocalFileSystemPublishServiceTest
 			Directory.CreateDirectory(tempDir);
 
 			var credential = new LocalFileSystemCredential { Path = tempDir };
+			var sourceDir = Path.DirectorySeparatorChar + "source";
+			var level1Dir = Path.Combine(sourceDir, "level1");
+			var level2Dir = Path.Combine(level1Dir, "level2");
+			var sourceFilePath = Path.Combine(level2Dir, "file.jpg");
+			var fileSubPath = Path.Combine("level1", "level2", "file.jpg");
+
 			var sourceStorage = new FakeIStorage(
-				["/source", "/source/level1", "/source/level1/level2"],
-				["/source/level1/level2/file.jpg"],
+				[sourceDir, level1Dir, level2Dir],
+				[sourceFilePath],
 				["test content"u8.ToArray()]);
 
 			var service = new LocalFileSystemPublishService(
@@ -570,9 +576,9 @@ public class LocalFileSystemPublishServiceTest
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
-			var copyContent = new Dictionary<string, bool> { { "level1/level2/file.jpg", true } };
+			var copyContent = new Dictionary<string, bool> { { fileSubPath, true } };
 			var result =
-				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+				service.CopyToLocalFileSystem(credential, sourceDir, "my-slug", copyContent);
 
 			Assert.IsTrue(result);
 			var expectedPath = Path.Combine(tempDir, "my-slug", "level1", "level2", "file.jpg");
