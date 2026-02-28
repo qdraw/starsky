@@ -30,8 +30,7 @@ public class LocalFileSystemPublishServiceTest
 					Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
 					{
 						{
-							"test-profile",
-							[
+							"test-profile", [
 								new RemoteCredentialWrapper
 								{
 									Type = RemoteCredentialType.LocalFileSystem,
@@ -134,7 +133,6 @@ public class LocalFileSystemPublishServiceTest
 		}
 	}
 
-
 	[TestMethod]
 	public void Run_CorruptZipInput_ReturnsFalse()
 	{
@@ -145,8 +143,7 @@ public class LocalFileSystemPublishServiceTest
 				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
 				{
 					{
-						"test-profile",
-						[
+						"test-profile", [
 							new RemoteCredentialWrapper
 							{
 								Type = RemoteCredentialType.LocalFileSystem,
@@ -161,7 +158,6 @@ public class LocalFileSystemPublishServiceTest
 		var storage = new FakeIStorage(["/test"], ["/test/corrupt.zip"]);
 		var logger = new FakeIWebLogger();
 
-
 		var service = new LocalFileSystemPublishService(
 			appSettings,
 			storage,
@@ -174,5 +170,4 @@ public class LocalFileSystemPublishServiceTest
 
 		Assert.IsFalse(result);
 	}
-
 }
