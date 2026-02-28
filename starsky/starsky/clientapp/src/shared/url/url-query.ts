@@ -456,6 +456,10 @@ export class UrlQuery {
     return this.prefix + "/api/publish-remote/create";
   }
 
+  public UrlPublishRemoteStatus(publishProfileName: string): string {
+    return this.prefix + `/api/publish-remote/status?publishProfileName=${publishProfileName}`;
+  }
+
   public UrlRealtime(): string {
     let url = globalThis.location.protocol === "https:" ? "wss:" : "ws:";
     url += "//" + globalThis.location.host + this.prefix + "/realtime";
