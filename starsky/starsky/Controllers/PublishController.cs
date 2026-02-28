@@ -144,7 +144,6 @@ public sealed class PublishController : Controller
 		return Json(CheckIfNameExist(GenerateSlugHelper.GenerateSlug(itemName)));
 	}
 
-
 	private bool CheckIfNameExist(string slugItemName)
 	{
 		if ( string.IsNullOrEmpty(slugItemName) )
