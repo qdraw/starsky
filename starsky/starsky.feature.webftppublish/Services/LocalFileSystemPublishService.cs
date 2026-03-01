@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using starsky.feature.webftppublish.Helpers;
 using starsky.feature.webftppublish.Interfaces;
+using starsky.feature.webftppublish.Models;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers.Slug;
@@ -43,6 +44,7 @@ public class LocalFileSystemPublishService(
 	{
 		var resultModel =
 			new ExtractZipHelper(_hostStorage, logger).ExtractZip(parentDirectoryOrZipFile);
+		LastExtractZipResult = resultModel;
 		if ( resultModel.IsError )
 		{
 			return false;
@@ -151,4 +153,7 @@ public class LocalFileSystemPublishService(
 
 		return true;
 	}
+
+	// Expose for testing
+	internal ExtractZipResultModel? LastExtractZipResult { get; private set; }
 }

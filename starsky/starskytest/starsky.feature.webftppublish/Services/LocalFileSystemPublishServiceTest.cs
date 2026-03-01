@@ -618,6 +618,9 @@ public class LocalFileSystemPublishServiceTest
 
 			// Diagnostic output after
 			Debug.WriteLine($"After Run: SourceDir exists: {Directory.Exists(sourceDir)}");
+			Debug.WriteLine($"RemoveFolderAfterwards: {service.LastExtractZipResult?.RemoveFolderAfterwards}");
+			Assert.IsNotNull(service.LastExtractZipResult, "LastExtractZipResult should not be null");
+			Assert.IsFalse(service.LastExtractZipResult.RemoveFolderAfterwards, "RemoveFolderAfterwards should be false for a directory input");
 
 			Assert.IsTrue(result);
 			// Source folder should still exist (RemoveFolderAfterwards = false for folders)
