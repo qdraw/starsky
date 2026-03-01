@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 
 namespace starskytest.starsky.foundation.platform.Helpers;
 
@@ -227,9 +228,9 @@ public sealed class AppSettingsCompareHelperTest
 	[TestMethod]
 	public void ListStringCompare()
 	{
-		var source = new AppSettings { ReadOnlyFolders = new List<string> { "/test" } };
+		var source = new AppSettings { ReadOnlyFolders = ["/test"] };
 
-		var to = new AppSettings { ReadOnlyFolders = new List<string> { "/test2" } };
+		var to = new AppSettings { ReadOnlyFolders = ["/test2"] };
 
 		AppSettingsCompareHelper.Compare(source, to);
 		Assert.AreEqual(source.ReadOnlyFolders.FirstOrDefault(),
@@ -239,9 +240,9 @@ public sealed class AppSettingsCompareHelperTest
 	[TestMethod]
 	public void ListStringCompare_Same()
 	{
-		var source = new AppSettings { ReadOnlyFolders = new List<string> { "/same" } };
+		var source = new AppSettings { ReadOnlyFolders = ["/same"] };
 
-		var to = new AppSettings { ReadOnlyFolders = new List<string> { "/same" } };
+		var to = new AppSettings { ReadOnlyFolders = ["/same"] };
 
 		var compare = AppSettingsCompareHelper.Compare(source, source);
 
@@ -301,9 +302,8 @@ public sealed class AppSettingsCompareHelperTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"zz__example", new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"zz__example", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Jpeg,
 							SourceMaxWidth = 1000,
@@ -313,7 +313,7 @@ public sealed class AppSettingsCompareHelperTest
 							Folder = "1000",
 							Append = "_kl1k"
 						}
-					}
+					]
 				}
 			}
 		};
@@ -323,10 +323,8 @@ public sealed class AppSettingsCompareHelperTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"zz__example2",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"zz__example2", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Jpeg,
 							SourceMaxWidth = 300,
@@ -334,7 +332,7 @@ public sealed class AppSettingsCompareHelperTest
 							Folder = "1000",
 							Append = "_kl1k"
 						}
-					}
+					]
 				}
 			}
 		};
@@ -421,12 +419,12 @@ public sealed class AppSettingsCompareHelperTest
 	{
 		var source = new AppSettings
 		{
-			DemoData = new List<AppSettingsKeyValue> { new() { Key = "1", Value = "2" } }
+			DemoData = [new AppSettingsKeyValue { Key = "1", Value = "2" }]
 		};
 
 		var to = new AppSettings
 		{
-			DemoData = new List<AppSettingsKeyValue> { new() { Key = "3", Value = "4" } }
+			DemoData = [new AppSettingsKeyValue { Key = "3", Value = "4" }]
 		};
 
 		var compare = AppSettingsCompareHelper.Compare(source, to);
@@ -444,7 +442,7 @@ public sealed class AppSettingsCompareHelperTest
 	{
 		var source = new AppSettings
 		{
-			DemoData = new List<AppSettingsKeyValue> { new() { Key = "1", Value = "2" } }
+			DemoData = [new AppSettingsKeyValue { Key = "1", Value = "2" }]
 		};
 
 		var to = new AppSettings { DemoData = source.DemoData };
@@ -463,7 +461,7 @@ public sealed class AppSettingsCompareHelperTest
 	{
 		var source = new AppSettings
 		{
-			DemoData = new List<AppSettingsKeyValue> { new() { Key = "1", Value = "2" } }
+			DemoData = [new AppSettingsKeyValue { Key = "1", Value = "2" }]
 		};
 
 		var to = new AppSettings { DemoData = null! };
@@ -483,18 +481,18 @@ public sealed class AppSettingsCompareHelperTest
 	{
 		var source = new AppSettings
 		{
-			DemoData = new List<AppSettingsKeyValue> { new() { Key = "2", Value = "1" } }
+			DemoData = [new AppSettingsKeyValue { Key = "2", Value = "1" }]
 		};
 
 		var to = new AppSettings
 		{
-			DemoData = new List<AppSettingsKeyValue> { new() { Key = "1", Value = "1" } }
+			DemoData = [new AppSettingsKeyValue { Key = "1", Value = "1" }]
 		};
 
 		AppSettingsCompareHelper.Compare(source, to);
 
 		Assert.AreEqual(source.DemoData.FirstOrDefault(),
-			to.DemoData?.FirstOrDefault());
+			to.DemoData.FirstOrDefault());
 	}
 
 	[TestMethod]
@@ -502,7 +500,7 @@ public sealed class AppSettingsCompareHelperTest
 	{
 		var source = new AppSettings
 		{
-			DemoData = new List<AppSettingsKeyValue> { new() { Key = "same", Value = "1" } }
+			DemoData = [new AppSettingsKeyValue { Key = "same", Value = "1" }]
 		};
 
 		var to = new AppSettings { DemoData = source.DemoData };
@@ -521,10 +519,8 @@ public sealed class AppSettingsCompareHelperTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"same",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"same", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Jpeg,
 							SourceMaxWidth = 300,
@@ -532,7 +528,7 @@ public sealed class AppSettingsCompareHelperTest
 							Folder = "1000",
 							Append = "_kl1k"
 						}
-					}
+					]
 				}
 			}
 		};
@@ -542,10 +538,8 @@ public sealed class AppSettingsCompareHelperTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"same",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"same", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Jpeg,
 							SourceMaxWidth = 300,
@@ -553,7 +547,7 @@ public sealed class AppSettingsCompareHelperTest
 							Folder = "1000",
 							Append = "_kl1k"
 						}
-					}
+					]
 				}
 			}
 		};
@@ -577,8 +571,7 @@ public sealed class AppSettingsCompareHelperTest
 			{
 				ProfileFeatures = new ProfileFeatures
 				{
-					Optimization = new Optimization { Enabled = true },
-					Publishing = new Publishing { Enabled = true }
+					Optimization = new Optimization { Enabled = true }
 				},
 				Optimizers =
 				[
@@ -593,8 +586,7 @@ public sealed class AppSettingsCompareHelperTest
 						],
 						Options = new OptimizerOptions { Quality = 80 }
 					}
-				],
-				PublishTargets = new PublishTargets { Ftp = new FtpTarget { Enabled = true } }
+				]
 			}
 		};
 
@@ -612,8 +604,7 @@ public sealed class AppSettingsCompareHelperTest
 			{
 				ProfileFeatures = new ProfileFeatures
 				{
-					Optimization = new Optimization { Enabled = true },
-					Publishing = new Publishing { Enabled = true }
+					Optimization = new Optimization { Enabled = true }
 				}
 			}
 		};
@@ -624,8 +615,7 @@ public sealed class AppSettingsCompareHelperTest
 			{
 				ProfileFeatures = new ProfileFeatures
 				{
-					Optimization = new Optimization { Enabled = true },
-					Publishing = new Publishing { Enabled = true }
+					Optimization = new Optimization { Enabled = true }
 				}
 			}
 		};
@@ -633,8 +623,6 @@ public sealed class AppSettingsCompareHelperTest
 		AppSettingsCompareHelper.Compare(source, to);
 		Assert.AreEqual(source.PublishProfilesDefaults.ProfileFeatures.Optimization.Enabled,
 			to.PublishProfilesDefaults.ProfileFeatures.Optimization.Enabled);
-		Assert.AreEqual(source.PublishProfilesDefaults.ProfileFeatures.Publishing.Enabled,
-			to.PublishProfilesDefaults.ProfileFeatures.Publishing.Enabled);
 	}
 
 	[TestMethod]
@@ -647,6 +635,105 @@ public sealed class AppSettingsCompareHelperTest
 		AppSettingsCompareHelper.Compare(source, to);
 		Assert.AreEqual(source.PublishProfilesDefaults,
 			to.PublishProfilesDefaults);
+	}
+
+	[TestMethod]
+	public void AppSettingsPublishProfilesRemote_Difference()
+	{
+		var source = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote()
+		};
+
+		var to = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Default =
+				[
+					new RemoteCredentialWrapper
+					{
+						Ftp = new FtpCredential { WebFtp = "ftp://dion:dion@example.com" }
+					}
+				]
+			}
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+		Assert.AreEqual(source.PublishProfilesRemote,
+			to.PublishProfilesRemote);
+	}
+
+	[TestMethod]
+	public void AppSettingsPublishProfilesRemote_Same()
+	{
+		var source = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Default =
+				[
+					new RemoteCredentialWrapper
+					{
+						Ftp = new FtpCredential { WebFtp = "ftp://dion:dion@example.com" }
+					}
+				]
+			}
+		};
+
+		var to = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Default =
+				[
+					new RemoteCredentialWrapper
+					{
+						Ftp = new FtpCredential { WebFtp = "ftp://dion:dion@example.com" }
+					}
+				]
+			}
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+		Assert.AreEqual(source.PublishProfilesRemote.Default.FirstOrDefault()?.Ftp?.WebFtp,
+			to.PublishProfilesRemote.Default.FirstOrDefault()?.Ftp?.WebFtp);
+	}
+
+	[TestMethod]
+	public void AppSettingsPublishProfilesRemote_Null()
+	{
+		var source = new AppSettings { PublishProfilesRemote = null! };
+
+		var to = new AppSettings { PublishProfilesRemote = null! };
+
+		AppSettingsCompareHelper.Compare(source, to);
+		Assert.AreEqual(source.PublishProfilesRemote,
+			to.PublishProfilesRemote);
+	}
+
+	[TestMethod]
+	public void AppSettingsPublishProfilesRemote_Null2()
+	{
+		var source = new AppSettings
+		{
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Default =
+				[
+					new RemoteCredentialWrapper
+					{
+						LocalFileSystem = new LocalFileSystemCredential { Path = "test" }
+					}
+				]
+			}
+		};
+
+		var to = new AppSettings { PublishProfilesRemote = new AppSettingsPublishProfilesRemote() };
+
+		AppSettingsCompareHelper.Compare(source, to);
+		Assert.AreNotEqual(source.PublishProfilesRemote,
+			to.PublishProfilesRemote);
 	}
 
 	[TestMethod]
@@ -666,8 +753,8 @@ public sealed class AppSettingsCompareHelperTest
 		var list = new List<string>();
 		AppSettingsCompareHelper.CompareListString("t",
 			new AppSettings(),
-			new List<string> { "1" },
-			new List<string> { "1" }, list);
+			["1"],
+			["1"], list);
 		Assert.IsNotNull(list);
 	}
 

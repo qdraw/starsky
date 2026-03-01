@@ -48,7 +48,11 @@
         "app__CloudImport__Providers__0__DeleteAfterImport": "false",
         "app__CloudImport__Providers__0__Credentials__RefreshToken": "",
         "app__CloudImport__Providers__0__Credentials__AppKey": "",
-        "app__CloudImport__Providers__0__Credentials__AppSecret": ""
+        "app__CloudImport__Providers__0__Credentials__AppSecret": "",
+        "___app__PublishProfilesRemote__default__0__type": "ftp",
+        "___app__PublishProfilesRemote__default__0__webFtp": "ftp://ftp.example.com/test",
+        "___app__PublishProfilesRemote__Profiles___default__0__type": "ftp",
+        "___app__PublishProfilesRemote__Profiles___default__0__webFtp": "ftp://user:pass@ftp.example.com/path"
       }
     },
     "IIS": {

@@ -113,13 +113,13 @@ public class PublishPreflight : IPublishPreflight
 	/// </summary>
 	/// <param name="profiles">profile object</param>
 	/// <returns>(bool and list of errors)</returns>
-	internal Tuple<bool, List<string>> IsProfileValid(
+	private Tuple<bool, List<string>> IsProfileValid(
 		KeyValuePair<string, List<AppSettingsPublishProfiles>> profiles)
 	{
-		if ( profiles.Key == null || profiles.Value == null )
+		if ( profiles.Key == null! || profiles.Value == null! )
 		{
 			return new Tuple<bool, List<string>>(false,
-				new List<string> { "Profile not found" });
+				["Profile not found"]);
 		}
 
 		var errors = new List<string>();

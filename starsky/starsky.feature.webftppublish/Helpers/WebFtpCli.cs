@@ -5,18 +5,17 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.webftppublish.Helpers;
 
 public class WebFtpCli
 {
-	private readonly ArgsHelper _argsHelper;
 	private readonly AppSettings _appSettings;
+	private readonly ArgsHelper _argsHelper;
 	private readonly IConsole _console;
-	private readonly IStorage _hostStorageProvider;
-	private readonly IFtpWebRequestFactory _webRequestFactory;
 	private readonly IWebLogger _logger;
+	private readonly ISelectorStorage _selectorStorage;
+	private readonly IFtpWebRequestFactory _webRequestFactory;
 
 	public WebFtpCli(AppSettings appSettings, ISelectorStorage selectorStorage,
 		IConsole console,
@@ -25,8 +24,7 @@ public class WebFtpCli
 		_appSettings = appSettings;
 		_console = console;
 		_argsHelper = new ArgsHelper(_appSettings, console);
-		_hostStorageProvider =
-			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+		_selectorStorage = selectorStorage;
 		_webRequestFactory = webRequestFactory;
 		_logger = logger;
 	}
@@ -45,14 +43,15 @@ public class WebFtpCli
 		var inputFullFileDirectoryOrZip = new ArgsHelper(_appSettings)
 			.GetPathFormArgs(args, false);
 
-		// check if settings is valid
-		if ( string.IsNullOrEmpty(_appSettings.WebFtp) )
+		// check if settings are valid
+		if ( _appSettings.PublishProfilesRemote.GetFtpById(ArgsHelper.GetProfile(args)).Count == 0 )
 		{
-			_logger.LogError("Please update the WebFtp settings in appsettings.json");
+			_logger.LogError(
+				"Please update the PublishProfilesRemote settings in appsettings.json");
 			return;
 		}
 
-		var ftpService = new FtpService(_appSettings, _hostStorageProvider,
+		var ftpService = new FtpService(_appSettings, _selectorStorage,
 			_console, _webRequestFactory, _logger);
 
 		var manifest = await ftpService.IsValidZipOrFolder(inputFullFileDirectoryOrZip);
@@ -62,7 +61,7 @@ public class WebFtpCli
 			return;
 		}
 
-		var ftpResult = ftpService.Run(inputFullFileDirectoryOrZip,
+		var ftpResult = ftpService.Run(inputFullFileDirectoryOrZip, ArgsHelper.GetProfile(args),
 			manifest.Slug, manifest.Copy);
 
 		if ( !ftpResult )

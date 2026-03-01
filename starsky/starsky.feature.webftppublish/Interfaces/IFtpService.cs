@@ -1,9 +1,13 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using starsky.feature.webftppublish.Models;
 
 namespace starsky.feature.webftppublish.Interfaces;
 
 public interface IFtpService
 {
-	bool Run(string parentDirectoryOrZipFile, string slug,
+	Task<FtpPublishManifestModel?> IsValidZipOrFolder(string inputFullFileDirectoryOrZip);
+
+	bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
 		Dictionary<string, bool> copyContent);
 }

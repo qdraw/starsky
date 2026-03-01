@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.platform.Models;
@@ -34,7 +35,7 @@ public sealed class AppSettingsTest
 		builder.AddInMemoryCollection(dict);
 		// build config
 		var configuration = builder.Build();
-		// inject config as object to a service
+		// inject config as item to a service
 		services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 		// build the service
 		var serviceProvider = services.BuildServiceProvider();
@@ -220,27 +221,6 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	public void AppSettingsWebFtp_http()
-	{
-		var appSettings = new AppSettings { WebFtp = "https://google.com" };
-		Assert.AreEqual(string.Empty, appSettings.WebFtp);
-	}
-
-	[TestMethod]
-	public void AppSettingsWebFtp_FtpWithoutPassword()
-	{
-		var appSettings = new AppSettings { WebFtp = "ftp://google.com" };
-		Assert.AreEqual(string.Empty, appSettings.WebFtp);
-	}
-
-	[TestMethod]
-	public void AppSettingsWebFtp_FtpWithPassword()
-	{
-		var appSettings = new AppSettings { WebFtp = "ftp://test:test@google.com" };
-		Assert.AreEqual("ftp://test:test@google.com", appSettings.WebFtp);
-	}
-
-	[TestMethod]
 	public void SyncServiceRenameListItemsToDbStyleTest()
 	{
 		var appSettings = new AppSettings();
@@ -250,7 +230,7 @@ public sealed class AppSettingsTest
 		var inputList = new List<string> { Path.DirectorySeparatorChar.ToString() };
 		var expectedOutputList = new List<string> { "/" };
 		var output = appSettings.RenameListItemsToDbStyle(inputList);
-		// list of files names that are starting with a filename (and not an / or \ )
+		// list of files names that are starting with a filename (and not an / or \)
 
 		CollectionAssert.AreEqual(expectedOutputList, output);
 	}
@@ -260,12 +240,38 @@ public sealed class AppSettingsTest
 	{
 		var appSettings = new AppSettings
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql, WebFtp = "ftp://t:t@m.com"
+			DatabaseType = AppSettings.DatabaseTypeList.Mysql,
+			PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+			{
+				Default =
+				[
+					new RemoteCredentialWrapper
+					{
+						Ftp = new FtpCredential { WebFtp = "ftp://t:t@m.com" }
+					}
+				],
+				Profiles = new Dictionary<string, List<RemoteCredentialWrapper>>
+				{
+					{
+						"test", [
+							new RemoteCredentialWrapper
+							{
+								Ftp = new FtpCredential { WebFtp = "ftp://t:t@m.com" }
+							}
+						]
+					}
+				}
+			}
 		};
-		var display = appSettings.CloneToDisplay();
 
-		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.DatabaseConnection);
-		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.WebFtp);
+		var display = appSettings.CloneToDisplay();
+		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,
+			display.DatabaseConnection);
+
+		Assert.Contains(AppSettings.CloneToDisplaySecurityWarning,
+			display.PublishProfilesRemote.Default[0].Ftp?.WebFtp ?? string.Empty);
+		Assert.Contains(AppSettings.CloneToDisplaySecurityWarning,
+			display.PublishProfilesRemote.Profiles["test"][0].Ftp?.WebFtp ?? string.Empty);
 	}
 
 	[TestMethod]
@@ -281,6 +287,7 @@ public sealed class AppSettingsTest
 				TracesHeader = "test"
 			}
 		};
+
 		var display = appSettings.CloneToDisplay();
 
 		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,
@@ -292,6 +299,7 @@ public sealed class AppSettingsTest
 		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,
 			display.OpenTelemetry?.TracesHeader);
 	}
+
 
 	[TestMethod]
 	public void AppSettings_CloneToDisplay_skip_Null_SecurityItems2_OpenTelemetrySettings()
@@ -368,7 +376,7 @@ public sealed class AppSettingsTest
 					{
 						Credentials = new CloudProviderCredentials { RefreshToken = "test1" }
 					}
-				],
+				]
 			}
 		};
 

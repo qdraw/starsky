@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.Models;
 using starsky.feature.webftppublish.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
@@ -18,37 +20,50 @@ namespace starskytest.starsky.feature.webftppublish.Services;
 [TestClass]
 public sealed class FtpServiceTest
 {
-	private readonly AppSettings _appSettings;
-	private readonly IStorage _storage;
-
-	public FtpServiceTest()
+	private readonly AppSettings _appSettings = new()
 	{
-		_appSettings = new AppSettings { WebFtp = "ftp://test:test@testmedia.be" };
-		_storage = new FakeIStorage(["/", "//large", "/large"]);
-	}
+		PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+		{
+			Default = new List<RemoteCredentialWrapper>
+			{
+				new()
+				{
+					Ftp = new FtpCredential
+					{
+						WebFtp = "ftp://test:test@testmedia.be"
+					}
+				}
+			}
+		}
+	};
+
+	private readonly FtpCredential _setting = new() { WebFtp = "ftp://test:test@testmedia.be" };
+	private readonly IStorage _storage = new FakeIStorage(["/", "//large", "/large"]);
 
 	[TestMethod]
 	public void CreateListOfRemoteDirectories_default()
 	{
-		var item = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(),
+		var item = new FtpService(_appSettings, new FakeSelectorStorage(_storage),
+				new FakeConsoleWrapper(),
 				new FakeIFtpWebRequestFactory(), new FakeIWebLogger())
-			.CreateListOfRemoteDirectories("/", "item-name",
+			.CreateListOfRemoteDirectories(_setting, "/", "item-name",
 				new Dictionary<string, bool>()).ToList();
 
 		Assert.AreEqual("ftp://testmedia.be/", item[0]);
-		Assert.AreEqual("ftp://testmedia.be//item-name", item[1]);
+		Assert.AreEqual("ftp://testmedia.be/item-name", item[1]);
 	}
 
 	[TestMethod]
 	public void CreateListOfRemoteDirectories_default_useCopyContent()
 	{
-		var item = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(),
+		var item = new FtpService(_appSettings, new FakeSelectorStorage(_storage),
+				new FakeConsoleWrapper(),
 				new FakeIFtpWebRequestFactory(), new FakeIWebLogger())
-			.CreateListOfRemoteDirectories("/", "item-name",
+			.CreateListOfRemoteDirectories(_setting, "/", "item-name",
 				new Dictionary<string, bool> { { "large/test.jpg", true } }).ToList();
 
 		// start with index 2
-		Assert.AreEqual("ftp://testmedia.be//item-name//large", item[2]);
+		Assert.AreEqual("ftp://testmedia.be/item-name/large", item[2]);
 	}
 
 	[TestMethod]
@@ -64,10 +79,11 @@ public sealed class FtpServiceTest
 	public void DoesFtpDirectoryExist()
 	{
 		var factory = new FakeIFtpWebRequestFactory();
-		var item = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory,
+		var item = new FtpService(_appSettings, new FakeSelectorStorage(_storage),
+			new FakeConsoleWrapper(), factory,
 			new FakeIWebLogger());
 
-		var result = item.DoesFtpDirectoryExist("/");
+		var result = item.DoesFtpDirectoryExist(_setting, "/");
 
 		Assert.IsTrue(result);
 	}
@@ -76,10 +92,11 @@ public sealed class FtpServiceTest
 	public void DoesFtpDirectoryExist_NonExist()
 	{
 		var factory = new FakeIFtpWebRequestFactory();
-		var item = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory,
+		var item = new FtpService(_appSettings, new FakeSelectorStorage(_storage),
+			new FakeConsoleWrapper(), factory,
 			new FakeIWebLogger());
 
-		var result = item.DoesFtpDirectoryExist("/web-exception");
+		var result = item.DoesFtpDirectoryExist(_setting, "/web-exception");
 
 		Assert.IsFalse(result);
 	}
@@ -88,10 +105,11 @@ public sealed class FtpServiceTest
 	public void CreateFtpDirectory()
 	{
 		var factory = new FakeIFtpWebRequestFactory();
-		var item = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory,
+		var item = new FtpService(_appSettings, new FakeSelectorStorage(_storage),
+			new FakeConsoleWrapper(), factory,
 			new FakeIWebLogger());
 
-		var result = item.CreateFtpDirectory("/new-folder");
+		var result = item.CreateFtpDirectory(_setting, "/new-folder");
 
 		Assert.IsTrue(result);
 	}
@@ -101,10 +119,11 @@ public sealed class FtpServiceTest
 	{
 		var factory = new FakeIFtpWebRequestFactory();
 		var ftpService =
-			new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory,
+			new FtpService(_appSettings, new FakeSelectorStorage(_storage),
+				new FakeConsoleWrapper(), factory,
 				new FakeIWebLogger());
 
-		var result = ftpService.CreateFtpDirectory("/web-exception");
+		var result = ftpService.CreateFtpDirectory(_setting, "/web-exception");
 
 		Assert.IsFalse(result);
 	}
@@ -114,10 +133,11 @@ public sealed class FtpServiceTest
 	{
 		var factory = new FakeIFtpWebRequestFactory();
 		var ftpService =
-			new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory,
+			new FtpService(_appSettings, new FakeSelectorStorage(_storage),
+				new FakeConsoleWrapper(), factory,
 				new FakeIWebLogger());
 		// And Fail
-		var makeUpload = ftpService.MakeUpload("/", "test", new List<string> { "/test" });
+		var makeUpload = ftpService.MakeUpload(_setting, "/", "test", new List<string> { "/test" });
 		Assert.IsFalse(makeUpload);
 	}
 
@@ -127,9 +147,11 @@ public sealed class FtpServiceTest
 		var factory = new FakeIFtpWebRequestFactory();
 		var fakeStorage = new FakeIStorage(["/"],
 			["//test.jpg"], new List<byte[]> { Array.Empty<byte>() });
-		var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(),
+		var ftpService = new FtpService(_appSettings, new FakeSelectorStorage(fakeStorage),
+			new FakeConsoleWrapper(),
 			factory, new FakeIWebLogger());
-		var makeUpload = ftpService.MakeUpload("/", "test", new List<string> { "/test.jpg" });
+		var makeUpload =
+			ftpService.MakeUpload(_setting, "/", "test", new List<string> { "/test.jpg" });
 		Assert.IsTrue(makeUpload);
 	}
 
@@ -139,9 +161,10 @@ public sealed class FtpServiceTest
 		var factory = new FakeIFtpWebRequestFactory();
 		var fakeStorage = new FakeIStorage(["/"],
 			["//test.jpg"], new List<byte[]> { Array.Empty<byte>() });
-		var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(),
+		var ftpService = new FtpService(_appSettings, new FakeSelectorStorage(fakeStorage),
+			new FakeConsoleWrapper(),
 			factory, new FakeIWebLogger());
-		var makeUpload = ftpService.Run("/", "test",
+		var makeUpload = ftpService.Run("/", "profileId", "test",
 			new Dictionary<string, bool> { { "test.jpg", true } });
 		Assert.IsTrue(makeUpload);
 	}
@@ -151,9 +174,10 @@ public sealed class FtpServiceTest
 	{
 		var factory = new FakeIFtpWebRequestFactory();
 		var ftpService =
-			new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory,
+			new FtpService(_appSettings, new FakeSelectorStorage(_storage),
+				new FakeConsoleWrapper(), factory,
 				new FakeIWebLogger());
-		var makeUpload = ftpService.Run("/", "test",
+		var makeUpload = ftpService.Run("/", "profileId", "test",
 			new Dictionary<string, bool> { { "non-existing-file.jpg", true } });
 		Assert.IsFalse(makeUpload);
 	}
@@ -163,9 +187,10 @@ public sealed class FtpServiceTest
 	{
 		var factory = new FakeIFtpWebRequestFactory();
 		var ftpService =
-			new FtpService(_appSettings, new FakeIStorage(), new FakeConsoleWrapper(), factory,
+			new FtpService(_appSettings, new FakeSelectorStorage(), new FakeConsoleWrapper(),
+				factory,
 				new FakeIWebLogger());
-		var makeUpload = ftpService.Run("/not-found", "test",
+		var makeUpload = ftpService.Run("/not-found", "profileId", "test",
 			new Dictionary<string, bool> { { "non-existing-file.jpg", true } });
 		Assert.IsFalse(makeUpload);
 	}
@@ -177,9 +202,10 @@ public sealed class FtpServiceTest
 		var fakeStorage =
 			new FakeIStorage(["/"],
 				["/file.zip"], [[0x00, 0x01, 0x02, 0x03]]);
-		var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(),
+		var ftpService = new FtpService(_appSettings, new FakeSelectorStorage(fakeStorage),
+			new FakeConsoleWrapper(),
 			factory, new FakeIWebLogger());
-		var makeUpload = ftpService.Run("/file.zip", "test",
+		var makeUpload = ftpService.Run("/file.zip", "profileId", "test",
 			new Dictionary<string, bool> { { "non-existing-file.jpg", true } });
 		Assert.IsFalse(makeUpload);
 	}
@@ -188,7 +214,8 @@ public sealed class FtpServiceTest
 	public async Task IsValidZipOrFolder_NullOrEmpty_ReturnsNull()
 	{
 		var factory = new FakeIFtpWebRequestFactory();
-		var ftpService = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory,
+		var ftpService = new FtpService(_appSettings, new FakeSelectorStorage(_storage),
+			new FakeConsoleWrapper(), factory,
 			new FakeIWebLogger());
 		Assert.IsNull(await ftpService.IsValidZipOrFolder(null!));
 		Assert.IsNull(await ftpService.IsValidZipOrFolder(""));
@@ -199,7 +226,8 @@ public sealed class FtpServiceTest
 	{
 		var factory = new FakeIFtpWebRequestFactory();
 		var fakeStorage = new FakeIStorage([], [], []);
-		var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(),
+		var ftpService = new FtpService(_appSettings, new FakeSelectorStorage(fakeStorage),
+			new FakeConsoleWrapper(),
 			factory, new FakeIWebLogger());
 		Assert.IsNull(await ftpService.IsValidZipOrFolder("/deleted"));
 	}
@@ -214,8 +242,9 @@ public sealed class FtpServiceTest
 				$"{Path.DirectorySeparatorChar}folder"
 			],
 			[$"{Path.DirectorySeparatorChar}folder{Path.DirectorySeparatorChar}_settings.json"],
-			[System.Text.Encoding.UTF8.GetBytes(manifestJson)]);
-		var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(),
+			[Encoding.UTF8.GetBytes(manifestJson)]);
+		var ftpService = new FtpService(_appSettings, new FakeSelectorStorage(fakeStorage),
+			new FakeConsoleWrapper(),
 			factory, new FakeIWebLogger());
 		var result = await ftpService.IsValidZipOrFolder($"{Path.DirectorySeparatorChar}folder");
 		Assert.IsNotNull(result);
@@ -227,7 +256,8 @@ public sealed class FtpServiceTest
 	{
 		var factory = new FakeIFtpWebRequestFactory();
 		var fakeStorage = new FakeIStorage(["/folder"], [], []);
-		var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(),
+		var ftpService = new FtpService(_appSettings, new FakeSelectorStorage(fakeStorage),
+			new FakeConsoleWrapper(),
 			factory, new FakeIWebLogger());
 		Assert.IsNull(await ftpService.IsValidZipOrFolder("/folder"));
 	}
@@ -238,7 +268,8 @@ public sealed class FtpServiceTest
 		var factory = new FakeIFtpWebRequestFactory();
 		var fakeStorage = new FakeIStorage(["/"], ["/file.txt"],
 			["not a zip"u8.ToArray()]);
-		var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(),
+		var ftpService = new FtpService(_appSettings, new FakeSelectorStorage(fakeStorage),
+			new FakeConsoleWrapper(),
 			factory, new FakeIWebLogger());
 		Assert.IsNull(await ftpService.IsValidZipOrFolder("/file.txt"));
 	}
@@ -250,7 +281,8 @@ public sealed class FtpServiceTest
 		var fakeStorage =
 			new FakeIStorage(["/"],
 				["/file.zip"], [[0x00, 0x01, 0x02, 0x03]]);
-		var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(),
+		var ftpService = new FtpService(_appSettings, new FakeSelectorStorage(fakeStorage),
+			new FakeConsoleWrapper(),
 			factory, new FakeIWebLogger());
 		Assert.IsNull(await ftpService.IsValidZipOrFolder("/file.zip"));
 	}
@@ -280,7 +312,8 @@ public sealed class FtpServiceTest
 			var hostFullPathFilesystem = new StorageHostFullPathFilesystem(logger);
 			await hostFullPathFilesystem.WriteStreamAsync(memoryStreamZip, tempFilePath);
 
-			var ftpService = new FtpService(_appSettings, hostFullPathFilesystem,
+			var ftpService = new FtpService(_appSettings,
+				new FakeSelectorStorage(hostFullPathFilesystem),
 				new FakeConsoleWrapper(),
 				factory, new FakeIWebLogger());
 			var result = await ftpService.IsValidZipOrFolder(tempFilePath);
@@ -314,7 +347,8 @@ public sealed class FtpServiceTest
 			var hostFullPathFilesystem = new StorageHostFullPathFilesystem(logger);
 			await hostFullPathFilesystem.WriteStreamAsync(memoryStreamZip, tempFilePath);
 
-			var ftpService = new FtpService(_appSettings, hostFullPathFilesystem,
+			var ftpService = new FtpService(_appSettings,
+				new FakeSelectorStorage(hostFullPathFilesystem),
 				new FakeConsoleWrapper(),
 				factory, new FakeIWebLogger());
 			var result = await ftpService.IsValidZipOrFolder(tempFilePath);
