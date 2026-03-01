@@ -9,6 +9,8 @@ import Modal from "../../atoms/modal/modal";
 import Notification from "../../atoms/notification/notification";
 import Portal from "../../atoms/portal/portal";
 import Preloader from "../../atoms/preloader/preloader";
+import SearchableDropdown from "../../atoms/searchable-dropdown";
+import { fetchCity } from "./internal/fetch-city";
 import { LatLongRound } from "./internal/lat-long-round";
 import { RealtimeMapUpdate } from "./internal/realtime-map-update";
 import { UpdateButtonWrapper } from "./internal/update-button-wrapper";
@@ -55,6 +57,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
     latitude: LatLongRound(latitude),
     longitude: LatLongRound(longitude)
   });
+  const [searchCity, setSearchCity] = useState("");
 
   useEffect(() => {
     if (mapState === null || !latitude || !longitude) {
@@ -122,7 +125,21 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
       <div className="content" data-test="modal-geo">
         {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : null}
 
-        <div className="modal content--subheader">{subHeader()}</div>
+        <div className="modal content--subheader">
+          {subHeader()} {searchCity}
+        </div>
+        <div className="modal content--header">
+          <SearchableDropdown
+            fetchResults={(city) => fetchCity(city)}
+            placeholder={language.key(localization.MessageSearchOrSelect)}
+            noResultsText={language.key(localization.MessageNoResultsFound)}
+            defaultValue={searchCity}
+            onSelect={(id, displayName) => {
+              setSearchCity(displayName);
+              console.log(id, displayName);
+            }}
+          />
+        </div>
         {error ? (
           <div className="modal modal-button-bar-error">
             <div data-test="login-error" className="content--error-true">
