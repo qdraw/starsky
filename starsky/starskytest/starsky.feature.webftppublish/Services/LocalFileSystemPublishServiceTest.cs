@@ -481,7 +481,7 @@ public class LocalFileSystemPublishServiceTest
 	[TestMethod]
 	public void Run_RemoveFolderAfterwards_DeletesTemporaryFolder()
 	{
-		var tempDir = Path.Combine(Path.GetTempPath(), "localfs-test-" + Path.GetRandomFileName());
+		var tempDir = Path.Combine(Path.GetTempPath(), "localfs-test-1-" + Path.GetRandomFileName());
 		var destDir = Path.Combine(tempDir, "dest");
 		var zipFile = Path.Combine(tempDir, "test.zip");
 
@@ -526,18 +526,23 @@ public class LocalFileSystemPublishServiceTest
 			var copyContent = new Dictionary<string, bool> { { "file1.txt", true } };
 			var result = service.Run(zipFile, "test-profile", "slug", copyContent);
 
+			// Diagnostics
+			var tempFolderPath = service.LastExtractZipResult?.FullFileFolderPath;
+			Debug.WriteLine($"Temp folder path: {tempFolderPath}");
+			Debug.WriteLine($"RemoveFolderAfterwards: {service.LastExtractZipResult?.RemoveFolderAfterwards}");
+			if ( tempFolderPath != null )
+			{
+				Debug.WriteLine($"Temp folder exists after Run: {Directory.Exists(tempFolderPath)}");
+			}
+			Assert.IsNotNull(service.LastExtractZipResult, "LastExtractZipResult should not be null");
+			Assert.IsTrue(service.LastExtractZipResult.RemoveFolderAfterwards, "RemoveFolderAfterwards should be true for a zip input");
+
 			Assert.IsTrue(result);
 
 			// Verify the temporary extraction folder was deleted
-			// The folder name should contain "starsky-webftp" and "test"
-			var tempFolders = Directory.GetDirectories(Path.GetTempPath(), "starsky-webftp*");
-			var testTempFolder = tempFolders.FirstOrDefault(f => f.Contains("test"));
-
-			// The folder should have been deleted
-			if ( testTempFolder != null )
+			if ( tempFolderPath != null )
 			{
-				Assert.IsFalse(Directory.Exists(testTempFolder),
-					"Temporary folder should have been deleted");
+				Assert.IsFalse(Directory.Exists(tempFolderPath), $"Temporary folder should have been deleted: {tempFolderPath}");
 			}
 		}
 		finally

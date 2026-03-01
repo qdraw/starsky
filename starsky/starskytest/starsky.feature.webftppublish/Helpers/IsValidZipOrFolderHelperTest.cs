@@ -26,7 +26,7 @@ public class IsValidZipOrFolderHelperTest
 	[TestMethod]
 	public async Task IsValidZipOrFolder_FolderWithManifest_ReturnsManifest()
 	{
-		var manifestJson = "{\"slug\":\"test-slug\",\"copy\":{\"file.jpg\":true}}";
+		const string manifestJson = "{\"slug\":\"test-slug\",\"copy\":{\"file.jpg\":true}}";
 		var storage = new FakeIStorage(
 			["/folder", "/folder/_settings.json"],
 			["/folder/_settings.json"],
