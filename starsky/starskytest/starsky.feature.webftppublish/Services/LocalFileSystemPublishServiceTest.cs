@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -504,7 +505,8 @@ public class LocalFileSystemPublishServiceTest
 								new RemoteCredentialWrapper
 								{
 									Type = RemoteCredentialType.LocalFileSystem,
-									LocalFileSystem = new LocalFileSystemCredential { Path = destDir }
+									LocalFileSystem =
+										new LocalFileSystemCredential { Path = destDir }
 								}
 							]
 						}
@@ -512,8 +514,7 @@ public class LocalFileSystemPublishServiceTest
 				}
 			};
 
-			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-			var destinationStorage = new FakeIStorage();
+			var destinationStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(destinationStorage);
 
 			var service = new LocalFileSystemPublishService(
@@ -591,7 +592,8 @@ public class LocalFileSystemPublishServiceTest
 								new RemoteCredentialWrapper
 								{
 									Type = RemoteCredentialType.LocalFileSystem,
-									LocalFileSystem = new LocalFileSystemCredential { Path = destDir }
+									LocalFileSystem =
+										new LocalFileSystemCredential { Path = destDir }
 								}
 							]
 						}
@@ -599,8 +601,7 @@ public class LocalFileSystemPublishServiceTest
 				}
 			};
 
-			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-			var destinationStorage = new FakeIStorage();
+			var destinationStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 
 			var service = new LocalFileSystemPublishService(
 				appSettings,
@@ -609,11 +610,19 @@ public class LocalFileSystemPublishServiceTest
 				new FakeIWebLogger());
 
 			var copyContent = new Dictionary<string, bool> { { "test.jpg", true } };
+
+			// Diagnostic output before
+			Debug.WriteLine($"Before Run: SourceDir exists: {Directory.Exists(sourceDir)}");
+
 			var result = service.Run(sourceDir, "test-profile", "slug", copyContent);
+
+			// Diagnostic output after
+			Debug.WriteLine($"After Run: SourceDir exists: {Directory.Exists(sourceDir)}");
 
 			Assert.IsTrue(result);
 			// Source folder should still exist (RemoveFolderAfterwards = false for folders)
-			Assert.IsTrue(Directory.Exists(sourceDir));
+			Assert.IsTrue(Directory.Exists(sourceDir),
+				$"SourceDir should exist after Run, but Directory.Exists returned false. TempDir: {tempDir}");
 		}
 		finally
 		{
