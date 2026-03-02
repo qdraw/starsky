@@ -19,7 +19,7 @@ jobs:
         ref: master
 
     - name: Setup Node.js environment
-      uses: actions/setup-node@774c1d62961e73038a114d59c8847023c003194d
+      uses: actions/setup-node@54045abd5dcd3b0fee9ca02fa24c57545834c9cc
       with:
         node-version: 24
         check-latest: true
