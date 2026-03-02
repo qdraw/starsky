@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
 
       - name: Set node version
-        uses: actions/setup-node@774c1d62961e73038a114d59c8847023c003194d
+        uses: actions/setup-node@54045abd5dcd3b0fee9ca02fa24c57545834c9cc
         with:
           node-version: '22.x'
       
