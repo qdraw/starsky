@@ -136,14 +136,16 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
               const selectedLatitude = Number(selectedLatitudeRaw);
               const selectedLongitude = Number(selectedLongitudeRaw);
 
-              if (Number.isNaN(selectedLatitude) || Number.isNaN(selectedLongitude)) {
+              if (
+                Number.isNaN(selectedLatitude) ||
+                Number.isNaN(selectedLongitude) ||
+                mapState === null
+              ) {
                 return;
               }
 
-              if (mapState !== null) {
-                mapState.panTo({ lat: selectedLatitude, lng: selectedLongitude });
-                mapState.setZoom(14);
-              }
+              mapState.panTo({ lat: selectedLatitude, lng: selectedLongitude });
+              mapState.setZoom(14);
             }}
           />
         </div>
