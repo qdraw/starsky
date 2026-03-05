@@ -1,6 +1,7 @@
 # Auto publish to FTP and local targets
 
-With this feature, Starsky can publish your files automatically to remote destinations right after you use **More → Publish**.
+With this feature, the app can publish your files automatically to remote destinations right after
+you use **More → Publish**.
 
 You can publish to:
 
@@ -9,9 +10,10 @@ You can publish to:
 
 ## What this means for you
 
-After you publish in the modal, Starsky can immediately continue with remote publishing in the background.
+After you publish in the modal, the app can immediately continue with remote publishing in the
+background.
 
-So instead of downloading and uploading yourself, Starsky can do that next step for you.
+So instead of downloading and uploading yourself, the app can do that next step for you.
 
 ## Before you start
 
@@ -100,18 +102,18 @@ Use this as a template:
 ## How it works (simple)
 
 1. You click **Publish** in the modal.
-2. Starsky prepares the publish output.
-3. Starsky checks if remote publishing is enabled for the selected profile.
-4. If enabled, Starsky starts publishing to your configured FTP/local targets.
+2. The app prepares the Publish output.
+3. The app checks if remote publishing is enabled for the selected profile.
+4. If enabled, the app starts publishing to your configured FTP/local targets.
 
 ## Troubleshooting
 
 - **No remote publish started**
-  - Check if your selected publish profile contains `PublishRemote`.
-  - Check if your profile exists in `AppSettingsPublishProfilesRemote`.
+    - Check if your selected publish profile contains `PublishRemote`.
+    - Check if your profile exists in `AppSettingsPublishProfilesRemote`.
 - **Publish fails**
-  - Verify FTP URL, username, password, and path.
-  - For local publishing, verify the destination path exists and has write permissions.
+    - Verify FTP URL, username, password, and path.
+    - For local publishing, verify the destination path exists and has write permissions.
 
 ## Advanced (API behavior)
 

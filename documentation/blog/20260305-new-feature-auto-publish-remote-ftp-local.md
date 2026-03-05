@@ -3,7 +3,7 @@ slug: new-feature-auto-publish-remote-ftp-local
 title: "New feature: Auto publish to FTP and local targets"
 authors: dion
 tags: [photo mangement, software update]
-date: 2026-02-28
+date: 2026-03-05
 image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/1000/02_starsky_v052_kl1k.jpg
 ---
 
