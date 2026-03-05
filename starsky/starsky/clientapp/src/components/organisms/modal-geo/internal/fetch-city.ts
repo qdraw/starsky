@@ -3,23 +3,25 @@ import { UrlQuery } from "../../../../shared/url/url-query";
 import { DropdownResult } from "../../../atoms/searchable-dropdown/ISearableDropdownProps";
 
 export const fetchCity = async (city: string): Promise<DropdownResult[]> => {
-  const url = new UrlQuery().UrlGeoLocationNameCity(city);
-
-  const response = await FetchGet(url);
-  if (response.statusCode !== 200) {
+  try {
+    const url = new UrlQuery().UrlGeoLocationNameCity(city);
+    const response = await FetchGet(url);
+    if (response.statusCode !== 200) {
+      return [];
+    }
+    const cityDataResult = response.data as IGeoLocationNameCity[];
+    const result: DropdownResult[] = [];
+    for (const cityData of cityDataResult) {
+      result.push({
+        id: `${cityData.latitude},${cityData.longitude}`,
+        displayName: cityData.name,
+        altText: `${cityData.province ? `${cityData.province}` : ""}${cityData.countryName ? `, ${cityData.countryName}` : ""}`
+      });
+    }
+    return result;
+  } catch {
     return [];
   }
-  const cityDataResult = response.data as IGeoLocationNameCity[];
-
-  const result: DropdownResult[] = [];
-  for (const cityData of cityDataResult) {
-    result.push({
-      id: `${cityData.latitude},${cityData.longitude}`,
-      displayName: cityData.name,
-      altText: `${cityData.province ? `${cityData.province}` : ""}${cityData.countryName ? `, ${cityData.countryName}` : ""}`
-    });
-  }
-  return result;
 };
 
 interface IGeoLocationNameCity {
