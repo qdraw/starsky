@@ -249,7 +249,7 @@ if [[ -f "$STARSKY_ZIP_PREFIX$RUNTIME.zip" ]]; then
 fi
 
 if [[ -f pm2-new-instance.sh ]]; then
-    chmod +rwx ./pm2-new-instance.sh
+    chmod +x ./pm2-new-instance.sh
     echo "run for the setup:"
     # output dir should have slash at end
     echo $OUTPUT_DIR"pm2-new-instance.sh"

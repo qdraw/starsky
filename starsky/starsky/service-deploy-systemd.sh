@@ -76,7 +76,7 @@ fi
 cd $OUTPUT_DIR
 
 if [[ -f $EXE_NAME ]]; then
-    chmod +rwx $EXE_NAME
+    chmod +x $EXE_NAME
 else 
     echo "FAIL: " $EXE_NAME" is missing"
     echo "do nothing"

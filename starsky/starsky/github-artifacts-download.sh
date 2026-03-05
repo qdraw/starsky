@@ -342,7 +342,7 @@ then
         fi
         
         if [[ -s $NEW_INSTANCE_OUTPUT_FILE ]]; then
-            chmod +rwx $NEW_INSTANCE_OUTPUT_FILE
+            chmod +x $NEW_INSTANCE_OUTPUT_FILE
             echo "run for the setup:"
             # output dir should have slash at end
             echo $OUTPUT_DIR"pm2-new-instance.sh"

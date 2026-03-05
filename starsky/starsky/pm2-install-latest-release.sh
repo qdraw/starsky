@@ -115,7 +115,7 @@ if [[ ! -f pm2-new-instance.sh ]]; then
 fi
 
 if [[ -f pm2-new-instance.sh ]]; then
-    chmod +rwx ./pm2-new-instance.sh
+    chmod +x ./pm2-new-instance.sh
     echo "NEXT run ./pm2-new-instance.sh ""${ARGUMENTS[*]}"
     bash pm2-new-instance.sh $ARGUMENTS
 else 

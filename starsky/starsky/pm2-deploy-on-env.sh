@@ -104,59 +104,59 @@ fi
 
 # excute right for specific files
 if [[ -f starsky ]]; then
-    chmod +rwx ./starsky
+    chmod +x ./starsky
 fi
 
 if [[ -f starskygeocli ]]; then
-    chmod +rwx ./starskygeocli
+    chmod +x ./starskygeocli
 fi
 
 if [[ -f starskyimportercli ]]; then
-    chmod +rwx ./starskyimportercli
+    chmod +x ./starskyimportercli
 fi
 
 if [[ -f starskysynchronizecli ]]; then
-    chmod +rwx ./starskysynchronizecli
+    chmod +x ./starskysynchronizecli
 fi
 
 if [[ -f starskythumbnailcli ]]; then
-    chmod +rwx ./starskythumbnailcli
+    chmod +x ./starskythumbnailcli
 fi
 
 if [[ -f starskythumbnailmetacli ]]; then
-    chmod +rwx ./starskythumbnailmetacli
+    chmod +x ./starskythumbnailmetacli
 fi
 
 if [[ -f starskywebftpcli ]]; then
-    chmod +rwx ./starskywebftpcli
+    chmod +x ./starskywebftpcli
 fi
 
 if [[ -f starskywebhtmlcli ]]; then
-    chmod +rwx ./starskywebhtmlcli
+    chmod +x ./starskywebhtmlcli
 fi
 
 if [[ -f starskyadmincli ]]; then
-    chmod +rwx ./starskyadmincli
+    chmod +x ./starskyadmincli
 fi
 
 if [[ -f pm2-deploy-on-env.sh ]]; then
-    chmod +rwx ./pm2-deploy-on-env.sh
+    chmod +x ./pm2-deploy-on-env.sh
 fi
 
 if [[ -f pm2-new-instance.sh ]]; then
-    chmod +rwx ./pm2-new-instance.sh
+    chmod +x ./pm2-new-instance.sh
 fi
 
 if [[ -f pm2-download-azure-devops.sh ]]; then
-    chmod +rwx ./pm2-download-azure-devops.sh
+    chmod +x ./pm2-download-azure-devops.sh
 fi
 
 if [[ -f pm2-warmup.sh ]]; then
-    chmod +rwx ./pm2-warmup.sh
+    chmod +x ./pm2-warmup.sh
 fi
 
 if [[ -f dependencies/exiftool-unix/exiftool ]]; then
-    chmod +rwx dependencies/exiftool-unix/exiftool
+    chmod +x dependencies/exiftool-unix/exiftool
 fi
 
 pm2 start $PM2NAME
