@@ -374,6 +374,7 @@ describe("ModalGeo", () => {
       expect(props.handleExit).toHaveBeenCalledWith(null);
       component.unmount();
     });
+
     it("calls mapState.panTo and setZoom when a city is selected in the dropdown", async () => {
       // Arrange: create spies for mapState methods
       const panToSpy = jest.fn();
@@ -420,6 +421,56 @@ describe("ModalGeo", () => {
       // Assert mapState methods were called
       expect(panToSpy).toHaveBeenCalledWith({ lat: 40.123, lng: -74.987 });
       expect(setZoomSpy).toHaveBeenCalledWith(14);
+
+      fetchCitySpy.mockRestore();
+    });
+
+    it("calls error when a city is selected in the dropdown (invalid)", async () => {
+      // Arrange: create spies for mapState methods
+      const panToSpy = jest.fn();
+      const setZoomSpy = jest.fn();
+
+      // Patch L.Map prototype so any instance uses our spies
+      jest.spyOn(L, "map").mockImplementation(() => {
+        return {
+          panTo: panToSpy,
+          setZoom: setZoomSpy,
+          on: jest.fn(),
+          addLayer: jest.fn(),
+          removeLayer: jest.fn(),
+          getContainer: jest.fn().mockReturnValue(document.createElement("div")),
+          eachLayer: jest.fn()
+        } as unknown as L.Map;
+      });
+
+      // Spy on fetchCity to return a city result
+      const fetchCitySpy = jest.spyOn(fetchCity, "fetchCity").mockResolvedValueOnce([
+        {
+          id: "invalid",
+          displayName: "Test City",
+          altText: "Test Country"
+        }
+      ]);
+
+      // Render ModalGeo
+      render(<ModalGeo {...props} />);
+
+      // Find the SearchableDropdown input
+      const input = await screen.findByTestId("searchable-dropdown-input");
+      expect(input).toBeTruthy();
+
+      // Simulate typing to trigger dropdown
+      fireEvent.change(input, { target: { value: "Test City" } });
+
+      // Wait for the dropdown item to appear and click it
+      const item = await screen.findByTestId("searchable-dropdown-item-invalid");
+      const button = item.querySelector("button");
+      expect(button).toBeTruthy();
+      if (button) fireEvent.click(button);
+
+      // Assert mapState methods were called
+      expect(panToSpy).not.toHaveBeenCalled();
+      expect(setZoomSpy).not.toHaveBeenCalled();
 
       fetchCitySpy.mockRestore();
     });
