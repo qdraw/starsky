@@ -24,7 +24,7 @@ export const fetchCity = async (city: string): Promise<DropdownResult[]> => {
   }
 };
 
-function getAltText(cityData: IGeoLocationNameCity): string {
+export function getAltText(cityData: IGeoLocationNameCity): string {
   let altText = "";
   if (cityData.province) {
     altText += cityData.province;

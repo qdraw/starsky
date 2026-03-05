@@ -1,5 +1,31 @@
 import * as FetchGet from "../../../../shared/fetch/fetch-get";
-import { fetchCity } from "./fetch-city";
+import { fetchCity, getAltText } from "./fetch-city";
+describe("getAltText", () => {
+  it("returns empty string if neither province nor countryName", () => {
+    expect(getAltText({ name: "A", latitude: 1, longitude: 2 })).toBe("");
+  });
+  it("returns province if only province is present", () => {
+    expect(getAltText({ name: "A", latitude: 1, longitude: 2, province: "Noord-Holland" })).toBe(
+      "Noord-Holland"
+    );
+  });
+  it("returns countryName if only countryName is present", () => {
+    expect(getAltText({ name: "A", latitude: 1, longitude: 2, countryName: "Netherlands" })).toBe(
+      "Netherlands"
+    );
+  });
+  it("returns 'province, countryName' if both are present", () => {
+    expect(
+      getAltText({
+        name: "A",
+        latitude: 1,
+        longitude: 2,
+        province: "Noord-Holland",
+        countryName: "Netherlands"
+      })
+    ).toBe("Noord-Holland, Netherlands");
+  });
+});
 
 describe("fetchCity", () => {
   afterEach(() => {
