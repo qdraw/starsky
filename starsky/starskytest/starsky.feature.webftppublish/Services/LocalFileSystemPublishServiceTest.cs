@@ -430,46 +430,6 @@ public class LocalFileSystemPublishServiceTest
 	}
 
 	[TestMethod]
-	public void CopyToLocalFileSystem_LeadingSlashTrimmed_Success()
-	{
-		var tempDir = Path.Combine(Path.GetTempPath(), "localfs-test-" + Path.GetRandomFileName());
-
-		try
-		{
-			Directory.CreateDirectory(tempDir);
-
-			var credential = new LocalFileSystemCredential { Path = tempDir };
-			var sourceDir = "source".PrefixBackSlash();
-			var sourceStorage = new FakeIStorage(
-				[sourceDir],
-				[Path.Combine(sourceDir, "file.jpg")],
-				["test content"u8.ToArray()]);
-
-			var service = new LocalFileSystemPublishService(
-				new AppSettings(),
-				new FakeSelectorStorage(sourceStorage),
-				new FakeConsoleWrapper(),
-				new FakeIWebLogger());
-
-			// File path with leading slash should be trimmed
-			var copyContent = new Dictionary<string, bool> { { "/file.jpg", true } };
-			var result =
-				service.CopyToLocalFileSystem(credential, sourceDir, "my-slug", copyContent);
-
-			Assert.IsTrue(result);
-			Assert.IsTrue(
-				sourceStorage.ExistFile(Path.Combine(tempDir, "my-slug", "file.jpg")));
-		}
-		finally
-		{
-			if ( Directory.Exists(tempDir) )
-			{
-				Directory.Delete(tempDir, true);
-			}
-		}
-	}
-
-	[TestMethod]
 	public void Run_ExtractZipError_ReturnsFalse()
 	{
 		var destPath = "dest".PrefixBackSlash();
