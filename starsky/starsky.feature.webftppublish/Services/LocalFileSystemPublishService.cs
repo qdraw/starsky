@@ -8,7 +8,6 @@ using starsky.feature.webftppublish.Interfaces;
 using starsky.feature.webftppublish.Models;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -31,7 +30,6 @@ public class LocalFileSystemPublishService(
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
-
 	/// <summary>
 	///     Copy all content to the local file system destination
 	/// </summary>
@@ -40,15 +38,15 @@ public class LocalFileSystemPublishService(
 	/// <param name="slug">Slug/name</param>
 	/// <param name="copyContent">Files to copy</param>
 	/// <returns>True on success</returns>
-	public bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
+	public PublishServiceResultModel Run(string parentDirectoryOrZipFile, string profileId,
+		string slug,
 		Dictionary<string, bool> copyContent)
 	{
 		var resultModel =
 			new ExtractZipHelper(_hostStorage, logger).ExtractZip(parentDirectoryOrZipFile);
-		LastExtractZipResult = resultModel;
 		if ( resultModel.IsError )
 		{
-			return false;
+			return new PublishServiceResultModel(false);
 		}
 
 		var settings =
@@ -56,8 +54,9 @@ public class LocalFileSystemPublishService(
 
 		if ( settings.Count == 0 )
 		{
-			logger.LogError($"No local file system settings found for profile: {profileId}");
-			return false;
+			var errorMessage = $"No local file system settings found for profile: {profileId}";
+			logger.LogError(errorMessage);
+			return new PublishServiceResultModel(false, errorMessage);
 		}
 
 		foreach ( var setting in settings )
@@ -65,7 +64,7 @@ public class LocalFileSystemPublishService(
 			if ( !CopyToLocalFileSystem(setting, resultModel.FullFileFolderPath, slug,
 				    copyContent) )
 			{
-				return false;
+				return new PublishServiceResultModel(false);
 			}
 
 			if ( resultModel.RemoveFolderAfterwards )
@@ -76,7 +75,8 @@ public class LocalFileSystemPublishService(
 			console.Write("\n");
 		}
 
-		return true;
+		return new PublishServiceResultModel(true,
+			string.Empty, parentDirectoryOrZipFile);
 	}
 
 	/// <summary>
@@ -154,7 +154,4 @@ public class LocalFileSystemPublishService(
 
 		return true;
 	}
-
-	// Expose for testing
-	internal ExtractZipResultModel? LastExtractZipResult { get; private set; }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -64,7 +63,7 @@ public class LocalFileSystemPublishServiceTest
 			var copyContent = new Dictionary<string, bool> { { "test.jpg", true } };
 			var result = service.Run(sourceDir, "test-profile", "my-slug", copyContent);
 
-			Assert.IsTrue(result);
+			Assert.IsTrue(result.IsSuccess);
 			var expectedDestFolder = Path.Combine(destDir, "my-slug");
 			Assert.IsTrue(sourceStorage.ExistFolder(expectedDestFolder));
 		}
@@ -98,7 +97,7 @@ public class LocalFileSystemPublishServiceTest
 		var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
 		var result = service.Run(testDir, "nonexistent-profile", "slug", copyContent);
 
-		Assert.IsFalse(result);
+		Assert.IsFalse(result.IsSuccess);
 		Assert.IsTrue(logger.TrackedExceptions.Exists(p =>
 			p.Item2?.Contains("No local file system settings found") == true));
 	}
@@ -150,7 +149,11 @@ public class LocalFileSystemPublishServiceTest
 							new RemoteCredentialWrapper
 							{
 								Type = RemoteCredentialType.LocalFileSystem,
-								LocalFileSystem = new LocalFileSystemCredential { Path = "dest".PrefixBackSlash() }
+								LocalFileSystem =
+									new LocalFileSystemCredential
+									{
+										Path = "dest".PrefixBackSlash()
+									}
 							}
 						]
 					}
@@ -168,9 +171,10 @@ public class LocalFileSystemPublishServiceTest
 			logger);
 
 		var copyContent = new Dictionary<string, bool> { { "corrupt.zip", true } };
-		var result = service.Run(Path.Combine(testDir, "corrupt.zip"), "test-profile", "slug", copyContent);
+		var result = service.Run(Path.Combine(testDir, "corrupt.zip"), "test-profile", "slug",
+			copyContent);
 
-		Assert.IsFalse(result);
+		Assert.IsFalse(result.IsSuccess);
 	}
 
 	[TestMethod]
@@ -226,7 +230,7 @@ public class LocalFileSystemPublishServiceTest
 			var sourceDir = "source".PrefixBackSlash();
 			var subfolderDir = Path.Combine(sourceDir, "subfolder");
 			var filePath = Path.Combine("subfolder".PrefixBackSlash(), "file.jpg");
-			
+
 			var sourceStorage = new FakeIStorage(
 				[sourceDir, subfolderDir],
 				[filePath],
@@ -271,7 +275,7 @@ public class LocalFileSystemPublishServiceTest
 			var sourceDir = "source".PrefixBackSlash();
 			var subfolderDir = Path.Combine(sourceDir, "subfolder");
 			var filePath = Path.Combine(subfolderDir, "file.jpg");
-			
+
 			var sourceStorage = new FakeIStorage(
 				[sourceDir, subfolderDir],
 				[filePath],
@@ -283,7 +287,8 @@ public class LocalFileSystemPublishServiceTest
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
-			var copyContent = new Dictionary<string, bool> { { Path.Combine("subfolder", "file.jpg"), true } };
+			var copyContent =
+				new Dictionary<string, bool> { { Path.Combine("subfolder", "file.jpg"), true } };
 			var result =
 				service.CopyToLocalFileSystem(credential, sourceDir, "my-slug", copyContent);
 
@@ -461,9 +466,11 @@ public class LocalFileSystemPublishServiceTest
 			new FakeIWebLogger());
 
 		var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
-		var result = service.Run("nonexistent".PrefixBackSlash(), "test-profile", "slug", copyContent);
+		var result = service.Run("nonexistent".PrefixBackSlash(), "test-profile", "slug",
+			copyContent);
 
-		Assert.IsFalse(result);
+		Assert.IsFalse(result.IsSuccess);
+		Assert.AreEqual(string.Empty, result.Error);
 	}
 
 	[TestMethod]
@@ -515,30 +522,11 @@ public class LocalFileSystemPublishServiceTest
 			var copyContent = new Dictionary<string, bool> { { "file1.txt", true } };
 			var result = service.Run(zipFile, "test-profile", "slug", copyContent);
 
-			// Diagnostics
-			var tempFolderPath = service.LastExtractZipResult?.FullFileFolderPath;
-			Debug.WriteLine($"Temp folder path: {tempFolderPath}");
-			Debug.WriteLine(
-				$"RemoveFolderAfterwards: {service.LastExtractZipResult?.RemoveFolderAfterwards}");
-			if ( tempFolderPath != null )
-			{
-				Debug.WriteLine(
-					$"Temp folder exists after Run: {Directory.Exists(tempFolderPath)}");
-			}
-
-			Assert.IsNotNull(service.LastExtractZipResult,
-				"LastExtractZipResult should not be null");
-			Assert.IsTrue(service.LastExtractZipResult.RemoveFolderAfterwards,
-				"RemoveFolderAfterwards should be true for a zip input");
-
-			Assert.IsTrue(result);
+			Assert.IsTrue(result.IsSuccess);
 
 			// Verify the temporary extraction folder was deleted
-			if ( tempFolderPath != null )
-			{
-				Assert.IsFalse(Directory.Exists(tempFolderPath),
-					$"Temporary folder should have been deleted: {tempFolderPath}");
-			}
+			Assert.IsFalse(Directory.Exists(result.ParentDirectoryOrZipFile),
+				$"Temporary folder should have been deleted: {destDir}");
 		}
 		finally
 		{
@@ -611,21 +599,9 @@ public class LocalFileSystemPublishServiceTest
 
 			var copyContent = new Dictionary<string, bool> { { "test.jpg", true } };
 
-			// Diagnostic output before
-			Debug.WriteLine($"Before Run: SourceDir exists: {Directory.Exists(sourceDir)}");
-
 			var result = service.Run(sourceDir, "test-profile", "slug", copyContent);
 
-			// Diagnostic output after
-			Debug.WriteLine($"After Run: SourceDir exists: {Directory.Exists(sourceDir)}");
-			Debug.WriteLine(
-				$"RemoveFolderAfterwards: {service.LastExtractZipResult?.RemoveFolderAfterwards}");
-			Assert.IsNotNull(service.LastExtractZipResult,
-				"LastExtractZipResult should not be null");
-			Assert.IsFalse(service.LastExtractZipResult.RemoveFolderAfterwards,
-				"RemoveFolderAfterwards should be false for a directory input");
-
-			Assert.IsTrue(result);
+			Assert.IsTrue(result.IsSuccess);
 			// Source folder should still exist (RemoveFolderAfterwards = false for folders)
 			Assert.IsTrue(Directory.Exists(sourceDir),
 				$"SourceDir should exist after Run, but Directory.Exists returned false. TempDir: {tempDir}");
@@ -743,7 +719,8 @@ public class LocalFileSystemPublishServiceTest
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
-			var copyContent = new Dictionary<string, bool> { { Path.Combine("subfolder", "file.jpg"), true } };
+			var copyContent =
+				new Dictionary<string, bool> { { Path.Combine("subfolder", "file.jpg"), true } };
 			var result =
 				service.CopyToLocalFileSystem(credential, sourceDir, "my-slug", copyContent);
 

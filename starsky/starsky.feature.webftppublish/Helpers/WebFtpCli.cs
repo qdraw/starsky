@@ -64,7 +64,7 @@ public class WebFtpCli
 		var ftpResult = ftpService.Run(inputFullFileDirectoryOrZip, ArgsHelper.GetProfile(args),
 			manifest.Slug, manifest.Copy);
 
-		if ( !ftpResult )
+		if ( !ftpResult.IsSuccess )
 		{
 			_console.WriteLine("Ftp copy failed");
 			return;

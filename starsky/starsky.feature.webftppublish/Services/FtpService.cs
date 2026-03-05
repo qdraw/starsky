@@ -68,14 +68,15 @@ public class FtpService : IFtpService
 	/// <param name="slug"></param>
 	/// <param name="copyContent"></param>
 	/// <returns>true == success</returns>
-	public bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
+	public PublishServiceResultModel Run(string parentDirectoryOrZipFile, string profileId,
+		string slug,
 		Dictionary<string, bool> copyContent)
 	{
 		var resultModel =
 			new ExtractZipHelper(_hostStorage, _logger).ExtractZip(parentDirectoryOrZipFile);
 		if ( resultModel.IsError )
 		{
-			return false;
+			return new PublishServiceResultModel(false, resultModel.IsError.ToString());
 		}
 
 		var settings =
@@ -106,7 +107,7 @@ public class FtpService : IFtpService
 			var copyThisFilesSubPaths = CreateListOfRemoteFiles(copyContent);
 			if ( !MakeUpload(setting, resultModel.FullFileFolderPath, slug, copyThisFilesSubPaths) )
 			{
-				return false;
+				return new PublishServiceResultModel(false, "make upload failed");
 			}
 
 			if ( resultModel.RemoveFolderAfterwards )
@@ -117,8 +118,8 @@ public class FtpService : IFtpService
 			_console.Write("\n");
 		}
 
-
-		return true;
+		return new PublishServiceResultModel(true,
+			string.Empty, parentDirectoryOrZipFile);
 	}
 
 	/// <summary>

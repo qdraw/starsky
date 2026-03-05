@@ -166,7 +166,7 @@ public sealed class FtpServiceTest
 			factory, new FakeIWebLogger());
 		var makeUpload = ftpService.Run("/", "profileId", "test",
 			new Dictionary<string, bool> { { "test.jpg", true } });
-		Assert.IsTrue(makeUpload);
+		Assert.IsTrue(makeUpload.IsSuccess);
 	}
 
 	[TestMethod]
@@ -179,7 +179,7 @@ public sealed class FtpServiceTest
 				new FakeIWebLogger());
 		var makeUpload = ftpService.Run("/", "profileId", "test",
 			new Dictionary<string, bool> { { "non-existing-file.jpg", true } });
-		Assert.IsFalse(makeUpload);
+		Assert.IsFalse(makeUpload.IsSuccess);
 	}
 
 	[TestMethod]
@@ -192,7 +192,7 @@ public sealed class FtpServiceTest
 				new FakeIWebLogger());
 		var makeUpload = ftpService.Run("/not-found", "profileId", "test",
 			new Dictionary<string, bool> { { "non-existing-file.jpg", true } });
-		Assert.IsFalse(makeUpload);
+		Assert.IsFalse(makeUpload.IsSuccess);
 	}
 
 	[TestMethod]
@@ -207,7 +207,7 @@ public sealed class FtpServiceTest
 			factory, new FakeIWebLogger());
 		var makeUpload = ftpService.Run("/file.zip", "profileId", "test",
 			new Dictionary<string, bool> { { "non-existing-file.jpg", true } });
-		Assert.IsFalse(makeUpload);
+		Assert.IsFalse(makeUpload.IsSuccess);
 	}
 
 	[TestMethod]

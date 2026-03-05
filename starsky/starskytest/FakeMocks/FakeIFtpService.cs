@@ -18,11 +18,11 @@ public class FakeIFtpService : IFtpService
 		return Task.FromResult(ManifestResult);
 	}
 
-	public bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
+	public PublishServiceResultModel Run(string parentDirectoryOrZipFile, string profileId, string slug,
 		Dictionary<string, bool> copyContent)
 	{
 		LastPath = parentDirectoryOrZipFile;
 		LastSlug = slug;
-		return RunResult;
+		return new PublishServiceResultModel(RunResult, "mocked result");
 	}
 }

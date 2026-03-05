@@ -8,6 +8,6 @@ public interface IFtpService
 {
 	Task<FtpPublishManifestModel?> IsValidZipOrFolder(string inputFullFileDirectoryOrZip);
 
-	bool Run(string parentDirectoryOrZipFile, string profileId, string slug,
+	PublishServiceResultModel Run(string parentDirectoryOrZipFile, string profileId, string slug,
 		Dictionary<string, bool> copyContent);
 }

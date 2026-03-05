@@ -44,7 +44,7 @@ public class RemotePublishService(
 			{
 				case RemoteCredentialType.Ftp:
 					if ( ftpService.Run(parentDirectoryOrZipFile, profileId, slug,
-						    copyContent) )
+						    copyContent).IsSuccess )
 					{
 						success = true;
 					}
@@ -52,7 +52,7 @@ public class RemotePublishService(
 					break;
 				case RemoteCredentialType.LocalFileSystem:
 					if ( localFileSystemService.Run(parentDirectoryOrZipFile, profileId, slug,
-						    copyContent) )
+						    copyContent).IsSuccess )
 					{
 						success = true;
 					}
