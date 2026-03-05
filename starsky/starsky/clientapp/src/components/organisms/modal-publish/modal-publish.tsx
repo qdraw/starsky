@@ -14,6 +14,7 @@ import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 import Select from "../../atoms/select/select";
+import { publishToRemote } from "./internal/publish-to-remote.ts";
 
 interface IModalPublishProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   const [itemName, setItemName] = React.useState("");
   const [existItemName, setExistItemName] = React.useState(false);
   const [publishProfileName, setPublishProfileName] = React.useState("");
+  const [hasTriggeredFtpPublish, setHasTriggeredFtpPublish] = React.useState(false);
 
   async function postZip() {
     setExistItemName(false);
@@ -71,6 +73,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       setIsProcessing(ProcessingState.fail);
       return;
     }
+    setHasTriggeredFtpPublish(false);
     setCreateZipKey(zipKeyResultData);
     await ExportIntervalUpdate(zipKeyResultData, setIsProcessing);
   }
@@ -89,6 +92,15 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     if (isProcessing !== ProcessingState.server) return;
     await ExportIntervalUpdate(createZipKey, setIsProcessing);
   }, 9000);
+
+  useEffect(() => {
+    if (isProcessing !== ProcessingState.ready || !createZipKey || hasTriggeredFtpPublish) {
+      return;
+    }
+
+    setHasTriggeredFtpPublish(true);
+    publishToRemote(publishProfileName, itemName, setIsProcessing);
+  }, [isProcessing, createZipKey, itemName, publishProfileName, hasTriggeredFtpPublish]);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
     const toUpdateItemName = event.target.textContent ? event.target.textContent.trim() : "";

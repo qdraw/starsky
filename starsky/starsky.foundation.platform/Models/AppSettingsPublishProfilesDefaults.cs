@@ -17,14 +17,11 @@ public class AppSettingsPublishProfilesDefaults
 	///     List of optimizers to apply by default for new publish profiles.
 	/// </summary>
 	public List<Optimizer> Optimizers { get; set; } = [];
-
-	public PublishTargets PublishTargets { get; set; } = new();
 }
 
 public class ProfileFeatures
 {
 	public Optimization Optimization { get; set; } = new();
-	public Publishing Publishing { get; set; } = new();
 }
 
 public class Optimization
@@ -32,32 +29,35 @@ public class Optimization
 	public bool Enabled { get; set; }
 }
 
-public class Publishing
-{
-	public bool Enabled { get; set; }
-}
-
 public class Optimizer
 {
+	/// <summary>
+	///     Image formats that this optimizer should be applied to by default for new publish profiles.
+	/// </summary>
 	[JsonConverter(typeof(EnumListConverter<ExtensionRolesHelper.ImageFormat>))]
 	public List<ExtensionRolesHelper.ImageFormat> ImageFormats { get; set; } = [];
 
+	/// <summary>
+	///     Unique identifier for the optimizer, used to reference it in publish profiles.
+	/// </summary>
 	public string Id { get; set; } = string.Empty;
+
+	/// <summary>
+	///     Enable or disable this optimizer by default for new publish profiles.
+	/// </summary>
 	public bool Enabled { get; set; }
+
+	/// <summary>
+	///     Options for the optimizer, such as quality settings for image optimization.
+	/// </summary>
 	public OptimizerOptions Options { get; set; } = new();
 }
 
 public class OptimizerOptions
 {
+	/// <summary>
+	///     Quality level for image optimization (0-100).
+	///     Higher values result in better quality but larger file sizes.
+	/// </summary>
 	public int Quality { get; set; } = 80;
-}
-
-public class PublishTargets
-{
-	public FtpTarget Ftp { get; set; } = new();
-}
-
-public class FtpTarget
-{
-	public bool Enabled { get; set; }
 }

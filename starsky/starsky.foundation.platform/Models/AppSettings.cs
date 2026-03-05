@@ -139,11 +139,6 @@ public sealed class AppSettings
 	/// </summary>
 	private string? _thumbnailTempFolder;
 
-	/// <summary>
-	///     Internal location for webFtp credentials
-	/// </summary>
-	private string? _webFtp;
-
 	public AppSettings()
 	{
 		ReadOnlyFolders = new List<string>();
@@ -462,38 +457,6 @@ public sealed class AppSettings
 	/// </summary>
 	public List<AppSettingsKeyValue> DemoData { get; set; } = new();
 
-	/// <summary>
-	///     Connection string for FTP
-	/// </summary>
-	public string WebFtp
-	{
-		get
-		{
-			if ( string.IsNullOrEmpty(_webFtp) )
-			{
-				return string.Empty;
-			}
-
-			return _webFtp;
-		}
-		set
-		{
-			// Anonymous FTP is not supported
-			// Make sure that '@' in username is '%40'
-			if ( string.IsNullOrEmpty(value) )
-			{
-				return;
-			}
-
-			var uriAddress = new Uri(value);
-			if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2
-			     && uriAddress.Scheme == "ftp"
-			     && uriAddress.LocalPath.Length >= 1 )
-			{
-				_webFtp = value;
-			}
-		}
-	}
 
 	/// <summary>
 	///     Private field: Publishing profiles
@@ -525,13 +488,23 @@ public sealed class AppSettings
 		}
 	}
 
+	/// <summary>
+	/// Represents the default settings for publish profiles,
+	/// including configuration and feature specifications
+	/// used when no specific profile overrides are provided.
+	/// </summary>
 	[PackageTelemetry]
 	public AppSettingsPublishProfilesDefaults PublishProfilesDefaults { get; set; } =
 		new();
 
 	/// <summary>
+	/// Represents the remote publishing profiles configuration for the application.
+	/// </summary>
+	public AppSettingsPublishProfilesRemote PublishProfilesRemote { get; set; } = new();
+
+	/// <summary>
 	///     Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)
-	///     This setting is by default false. The only 2 build-in exceptions are when there are no
+	///     This setting is by default false. The only 2 build in exceptions are when there are no
 	///     accounts, or you already logged in
 	/// </summary>
 	[PackageTelemetry]
@@ -940,10 +913,8 @@ public sealed class AppSettings
 				appSettings.DatabaseConnection.Replace(userProfileFolder, "~");
 		}
 
-		if ( !string.IsNullOrEmpty(appSettings.WebFtp) )
-		{
-			appSettings._webFtp = CloneToDisplaySecurityWarning;
-		}
+		appSettings.PublishProfilesRemote =
+			appSettings.PublishProfilesRemote.DisplaySecurity(CloneToDisplaySecurityWarning);
 
 		if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) &&
 		     !string.IsNullOrEmpty(userProfileFolder) )

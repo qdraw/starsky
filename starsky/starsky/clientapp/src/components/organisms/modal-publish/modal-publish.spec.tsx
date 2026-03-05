@@ -1,11 +1,13 @@
 import { createEvent, fireEvent, render, screen } from "@testing-library/react";
-import { act } from "react";
+import React, { act } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import { ProcessingState } from "../../../shared/export/processing-state";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import * as Modal from "../../atoms/modal/modal";
+import * as PublishToRemoteModule from "./internal/publish-to-remote";
 import ModalPublish from "./modal-publish";
 
 describe("ModalPublish", () => {
@@ -411,6 +413,93 @@ describe("ModalPublish", () => {
     expect(fetchGetSpy).toHaveBeenCalled();
     expect(fetchGetSpy).toHaveBeenCalledTimes(1);
 
+    modal.unmount();
+  });
+
+  it("calls publishToRemote when ready and not triggered", () => {
+    jest.restoreAllMocks();
+
+    const realUseState = React.useState;
+    const setIsProcessing = jest.fn();
+    const setCreateZipKey = jest.fn();
+    const setItemName = jest.fn();
+    const setExistItemName = jest.fn();
+    const setPublishProfileName = jest.fn();
+    const setHasTriggeredFtpPublish = jest.fn();
+
+    const useStateSpy = jest
+      .spyOn(React, "useState")
+      .mockImplementationOnce(() => [ProcessingState.ready, setIsProcessing])
+      .mockImplementationOnce(() => ["zip-123", setCreateZipKey])
+      .mockImplementationOnce(() => ["album-a", setItemName])
+      .mockImplementationOnce(() => [false, setExistItemName])
+      .mockImplementationOnce(() => ["_default", setPublishProfileName])
+      .mockImplementationOnce(() => [false, setHasTriggeredFtpPublish])
+      .mockImplementation(realUseState as typeof React.useState);
+
+    jest.spyOn(useInterval, "default").mockImplementation(() => {});
+    jest.spyOn(useFetch, "default").mockImplementation(() => ({
+      statusCode: 200,
+      data: [{ key: "_default", value: true }]
+    }));
+
+    const publishToRemoteSpy = jest
+      .spyOn(PublishToRemoteModule, "publishToRemote")
+      .mockResolvedValue();
+
+    const modal = render(
+      <ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>
+    );
+
+    expect(setHasTriggeredFtpPublish).toHaveBeenCalledWith(true);
+    expect(publishToRemoteSpy).toHaveBeenCalledWith("_default", "album-a", setIsProcessing);
+    expect(publishToRemoteSpy).toHaveBeenCalledTimes(1);
+
+    publishToRemoteSpy.mockRestore();
+    useStateSpy.mockRestore();
+    modal.unmount();
+  });
+
+  it("does not call publishToRemote when already triggered", () => {
+    jest.restoreAllMocks();
+
+    const realUseState = React.useState;
+    const setIsProcessing = jest.fn();
+    const setCreateZipKey = jest.fn();
+    const setItemName = jest.fn();
+    const setExistItemName = jest.fn();
+    const setPublishProfileName = jest.fn();
+    const setHasTriggeredFtpPublish = jest.fn();
+
+    const useStateSpy = jest
+      .spyOn(React, "useState")
+      .mockImplementationOnce(() => [ProcessingState.ready, setIsProcessing])
+      .mockImplementationOnce(() => ["zip-123", setCreateZipKey])
+      .mockImplementationOnce(() => ["album-a", setItemName])
+      .mockImplementationOnce(() => [false, setExistItemName])
+      .mockImplementationOnce(() => ["_default", setPublishProfileName])
+      .mockImplementationOnce(() => [true, setHasTriggeredFtpPublish])
+      .mockImplementation(realUseState as typeof React.useState);
+
+    jest.spyOn(useInterval, "default").mockImplementation(() => {});
+    jest.spyOn(useFetch, "default").mockImplementation(() => ({
+      statusCode: 200,
+      data: [{ key: "_default", value: true }]
+    }));
+
+    const publishToRemoteSpy = jest
+      .spyOn(PublishToRemoteModule, "publishToRemote")
+      .mockResolvedValue();
+
+    const modal = render(
+      <ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>
+    );
+
+    expect(setHasTriggeredFtpPublish).not.toHaveBeenCalledWith(true);
+    expect(publishToRemoteSpy).toHaveBeenCalledTimes(0);
+
+    publishToRemoteSpy.mockRestore();
+    useStateSpy.mockRestore();
     modal.unmount();
   });
 });

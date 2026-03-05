@@ -20,7 +20,7 @@ public class FakeIVideoProcess(ISelectorStorage selectorStorage) : IVideoProcess
 		selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
 	private VideoResult _result = new(true, string.Empty,
-		SelectorStorage.StorageServices.Temporary, "Mocked");
+		SelectorStorage.StorageServices.Thumbnail, "Mocked");
 
 	public async Task<VideoResult> RunVideo(string subPath, string? beforeFileHash,
 		VideoProcessTypes type)
@@ -35,6 +35,7 @@ public class FakeIVideoProcess(ISelectorStorage selectorStorage) : IVideoProcess
 		);
 
 		_result.ResultPath = thumbnailName;
+		_result.ResultPathType = SelectorStorage.StorageServices.Thumbnail;
 		return _result;
 	}
 
@@ -48,7 +49,7 @@ public class FakeIVideoProcess(ISelectorStorage selectorStorage) : IVideoProcess
 	public void SetSuccessResult()
 	{
 		_result = new VideoResult(true, string.Empty,
-			SelectorStorage.StorageServices.Temporary,
+			SelectorStorage.StorageServices.Thumbnail,
 			"Mocked");
 	}
 

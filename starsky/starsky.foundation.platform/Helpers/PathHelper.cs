@@ -223,4 +223,30 @@ public static class PathHelper
 
 		return [.. inputHashSet];
 	}
+
+	/// <summary>
+	///     Add platform-specific DirectorySeparatorChar (\\ or /) before string, ensuring only one at the start
+	/// </summary>
+	/// <param name="subPath">the subPath</param>
+	/// <returns>subPath with a single DirectorySeparatorChar at the start</returns>
+	public static string PrefixBackSlash(this string subPath)
+	{
+		return subPath.PrefixBackSlash(Path.DirectorySeparatorChar);
+	}
+
+	internal static string PrefixBackSlash(this string subPath, char directorySeparatorChar)
+	{
+		if ( string.IsNullOrWhiteSpace(subPath) )
+		{
+			return directorySeparatorChar.ToString();
+		}
+
+		// Remove all leading DirectorySeparatorChar
+		while ( subPath.Length > 0 && subPath[0] == directorySeparatorChar )
+		{
+			subPath = subPath[1..];
+		}
+
+		return directorySeparatorChar + subPath;
+	}
 }

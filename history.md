@@ -43,6 +43,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.13 - _(Unreleased)_ - 2026-?-? {#v0.7.13}
 
+- [x] (Added) _Back-end_ New publish step to upload the generated ZIP to an FTP server (PR #2804)
+- [x] (Added) _Front-end_ Create ZIP Publish succeeds, trigger FTP upload (needs enabled) (PR #2804)
+- [x] (Added) _Back-end_ Per-publish-profile config to enable FTP publishing (PR #2804)
 - [x] (Added) _Front-end_ Add search for city in modal geo pan and zooms the map location (PR #2817)
 - [x] (Fixed) _Front-end_ minimum height for breadcrumb (PR #2803)
 - [x] (Added) _Back-end_ Image optimization setting in publish profiles (PR #2788)
