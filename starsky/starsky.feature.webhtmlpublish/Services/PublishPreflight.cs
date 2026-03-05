@@ -137,9 +137,9 @@ public class PublishPreflight : IPublishPreflight
 				continue;
 			}
 
-			if ( !_hostStorage.ExistFile(profile.Path) && (
-				    profile.ContentType == TemplateContentType.Jpeg
-				    || profile.ContentType == TemplateContentType.OnlyFirstJpeg ) )
+			if ( !_hostStorage.ExistFile(profile.Path) &&
+			     profile.ContentType is TemplateContentType.Jpeg
+				     or TemplateContentType.OnlyFirstJpeg )
 			{
 				errors.Add($"Image Path {profile.Path} should exists");
 			}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -38,6 +39,8 @@ public class PublishRemoteController(
 	[ProducesResponseType(typeof(string), 400)]
 	[ProducesResponseType(typeof(string), 404)]
 	[ProducesResponseType(typeof(void), 401)]
+	[SuppressMessage("Usage",
+		"S5145: Change this code to not log user-controlled data")]
 	public async Task<IActionResult> PublishRemoteAsync(string itemName,
 		string publishProfileName)
 	{
@@ -50,7 +53,7 @@ public class PublishRemoteController(
 			publishPreflight.IsProfileValid(publishProfileName);
 		if ( !isValidProfile )
 		{
-			return BadRequest("Invalid publish profile"); 
+			return BadRequest("Invalid publish profile");
 		}
 
 		if ( !remotePublishService.IsPublishEnabled(publishProfileName) )
