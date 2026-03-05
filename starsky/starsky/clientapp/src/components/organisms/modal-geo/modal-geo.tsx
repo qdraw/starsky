@@ -57,7 +57,6 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
     latitude: LatLongRound(latitude),
     longitude: LatLongRound(longitude)
   });
-  const [searchCity, setSearchCity] = useState("");
 
   useEffect(() => {
     if (mapState === null || !latitude || !longitude) {
@@ -125,17 +124,14 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
       <div className="content" data-test="modal-geo">
         {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : null}
 
-        <div className="modal content--subheader">
-          {subHeader()} {searchCity}
-        </div>
+        <div className="modal content--subheader">{subHeader()}</div>
         <div className="modal content--header">
           <SearchableDropdown
             fetchResults={(city) => fetchCity(city)}
             placeholder={language.key(localization.MessageSearchOrSelect)}
             noResultsText={language.key(localization.MessageNoResultsFound)}
-            defaultValue={searchCity}
-            onSelect={(id, displayName) => {
-              setSearchCity(displayName);
+            defaultValue={""}
+            onSelect={(id) => {
               const [selectedLatitudeRaw, selectedLongitudeRaw] = id.split(",");
               const selectedLatitude = Number(selectedLatitudeRaw);
               const selectedLongitude = Number(selectedLongitudeRaw);
