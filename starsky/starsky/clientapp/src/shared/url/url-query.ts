@@ -536,6 +536,10 @@ export class UrlQuery {
     return `${this.prefix}/api/geo-location-name/city-timezone?dateTime=${encodeURIComponent(dateTime)}&city=${encodeURIComponent(city)}`;
   }
 
+  public UrlGeoLocationNameCity(city: string): string {
+    return `${this.prefix}/api/geo-location-name/city?city=${encodeURIComponent(city)}`;
+  }
+
   private urlReplacePath(input: string): string {
     const output = input.replaceAll("#", "");
     return output.replaceAll("+", "%2B");
