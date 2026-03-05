@@ -19,14 +19,14 @@ So instead of downloading and uploading yourself, the app can do that next step 
 
 To enable auto publish, you need both:
 
-1. A publish profile that includes `ContentType: PublishRemote`
-2. A remote profile in `AppSettingsPublishProfilesRemote` with your destination(s)
+1. A Publish profile that includes `ContentType: PublishRemote`
+2. A remote profile in `PublishProfilesRemote` with your destination(s)
 
 If one of these is missing, the normal publish still works, but remote auto publish will not start.
 
 ## How `AppSettingsPublishProfilesRemote` works
 
-`AppSettingsPublishProfilesRemote` has two levels:
+`PublishProfilesRemote` has two levels:
 
 - `Profiles`: remote targets for a specific profile id
 - `Default`: shared remote targets used as fallback for all profiles
@@ -35,8 +35,8 @@ The profile id comes from `publishProfiles` (for example `_default`, `profile1`,
 
 Resolution logic:
 
-1. Starsky first checks `AppSettingsPublishProfilesRemote.Profiles[profileId]`.
-2. If no profile-specific entry exists, Starsky uses `AppSettingsPublishProfilesRemote.Default`.
+1. Starsky first checks `PublishProfilesRemote.Profiles[profileId]`.
+2. If no profile-specific entry exists, Starsky uses `PublishProfilesRemote.Default`.
 
 This means:
 
@@ -56,7 +56,7 @@ Use this as a template:
       }
     ]
   },
-  "AppSettingsPublishProfilesRemote": {
+  "PublishProfilesRemote": {
     "Profiles": {
       "profile1": [
         {
@@ -109,8 +109,8 @@ Use this as a template:
 ## Troubleshooting
 
 - **No remote publish started**
-    - Check if your selected publish profile contains `PublishRemote`.
-    - Check if your profile exists in `AppSettingsPublishProfilesRemote`.
+    - Check if your selected Publish profile contains `PublishRemote`.
+    - Check if your profile exists in `PublishProfilesRemote`.
 - **Publish fails**
     - Verify FTP URL, username, password, and path.
     - For local publishing, verify the destination path exists and has write permissions.

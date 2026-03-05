@@ -9,7 +9,8 @@ image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-m
 
 # New feature: Auto publish to FTP and local targets
 
-Publishing in Starsky is now easier. After using **More → Publish**, Starsky can automatically continue with remote publishing to your configured targets.
+Publishing in the app is now easier. After using **More → Publish**, Starsky can automatically
+continue with remote publishing to your configured targets.
 
 That means less manual work: no extra download/upload step if your remote settings are configured.
 
@@ -56,8 +57,8 @@ The selected profile id comes from `publishProfiles`.
 
 Resolution order:
 
-1. Starsky checks `Profiles[profileId]` first.
-2. If that does not exist, Starsky uses `Default`.
+1. The app checks `Profiles[profileId]` first.
+2. If that does not exist, the app uses `Default`.
 
 This gives you a clean setup:
 
@@ -68,14 +69,14 @@ This gives you a clean setup:
 
 ```json
 {
-  "publishProfiles": {
+  "PublishProfiles": {
     "_default": [
       {
         "ContentType": "PublishRemote"
       }
     ]
   },
-  "AppSettingsPublishProfilesRemote": {
+  "PublishProfilesRemote": {
     "Profiles": {
       "profile1": [
         {
@@ -113,4 +114,5 @@ This gives you a clean setup:
 
 ## Security reminder
 
-Never commit real FTP credentials to source control. Use secure configuration management for production secrets.
+Never commit real FTP credentials to source control. Use secure configuration management for
+production secrets.
