@@ -8,6 +8,7 @@ using starsky.feature.webftppublish.Interfaces;
 using starsky.feature.webftppublish.Models;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -95,7 +96,7 @@ public class LocalFileSystemPublishService(
 		var destinationStorage =
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
-		// Create base destination directory
+		// Create a base destination directory
 		if ( !destinationStorage.ExistFolder(destinationBasePath) )
 		{
 			console.Write(",");
@@ -127,8 +128,8 @@ public class LocalFileSystemPublishService(
 		var filesToCopy = copyContent.Where(p => p.Value).Select(p => p.Key).ToList();
 		foreach ( var fileSubPath in filesToCopy )
 		{
-			var sourcePath = Path.Combine(sourceDirectory, fileSubPath.TrimStart('/'));
-			var destPath = Path.Combine(destinationBasePath, fileSubPath.TrimStart('/'));
+			var sourcePath = Path.Combine(sourceDirectory, fileSubPath);
+			var destPath = Path.Combine(destinationBasePath, fileSubPath);
 
 			if ( !_hostStorage.ExistFile(sourcePath) )
 			{

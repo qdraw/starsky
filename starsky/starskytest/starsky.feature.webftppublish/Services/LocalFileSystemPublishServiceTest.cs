@@ -225,7 +225,7 @@ public class LocalFileSystemPublishServiceTest
 			var credential = new LocalFileSystemCredential { Path = tempDir };
 			var sourceDir = "source".PrefixBackSlash();
 			var subfolderDir = Path.Combine(sourceDir, "subfolder");
-			var filePath = Path.Combine(subfolderDir, "file.jpg");
+			var filePath = Path.Combine("subfolder".PrefixBackSlash(), "file.jpg");
 			
 			var sourceStorage = new FakeIStorage(
 				[sourceDir, subfolderDir],
@@ -240,13 +240,13 @@ public class LocalFileSystemPublishServiceTest
 
 			var copyContent = new Dictionary<string, bool>
 			{
-				{ Path.Combine("subfolder", "file.jpg"), true }
+				{ Path.Combine("subfolder", "file.jpg").PrefixBackSlash(), true }
 			};
 			var result =
 				service.CopyToLocalFileSystem(credential, sourceDir, "my-slug", copyContent);
 
 			Assert.IsTrue(result);
-			var expectedSubfolder = Path.Combine(tempDir, "my-slug", "subfolder");
+			var expectedSubfolder = Path.Combine(sourceDir, "subfolder");
 			Assert.IsTrue(sourceStorage.ExistFolder(expectedSubfolder));
 		}
 		finally
