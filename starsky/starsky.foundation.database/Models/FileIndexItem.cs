@@ -559,9 +559,10 @@ public sealed class FileIndexItem
 			}
 
 			return
-				new HashSet<string>(
-					SidecarExtensions.Split('|')
-						.Where(p => !string.IsNullOrWhiteSpace(p)));
+			[
+				..SidecarExtensions.Split('|')
+					.Where(p => !string.IsNullOrWhiteSpace(p))
+			];
 		}
 	}
 
@@ -757,7 +758,7 @@ public sealed class FileIndexItem
 	public List<string> LastChanged { get; set; } = new();
 
 	/// <summary>
-	/// IPTC field for artist/creator
+	///     IPTC field for artist/creator
 	/// </summary>
 	[MaxLength(200)]
 	public string? Artist { get; set; } = string.Empty;

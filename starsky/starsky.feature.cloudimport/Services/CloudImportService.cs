@@ -35,7 +35,7 @@ public class CloudImportService(
 		{
 			lock ( _resultsLock )
 			{
-				return new Dictionary<string, CloudImportResult>(_lastSyncResults);
+				return _lastSyncResults;
 			}
 		}
 	}

@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.13 - _(Unreleased)_ - 2026-?-? {#v0.7.13}
 
+- [x] (Breaking change) _Back-end_ Change WebFtp field to PublishProfilesRemote (PR #2804)
 - [x] (Added) _Back-end_ New publish step to upload the generated ZIP to an FTP server (PR #2804)
 - [x] (Added) _Front-end_ Create ZIP Publish succeeds, trigger FTP upload (needs enabled) (PR #2804)
 - [x] (Added) _Back-end_ Per-publish-profile config to enable FTP publishing (PR #2804)

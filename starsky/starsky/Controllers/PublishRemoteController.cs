@@ -46,11 +46,11 @@ public class PublishRemoteController(
 			return BadRequest("Model invalid");
 		}
 
-		var (isValidProfile, preflightErrors) =
+		var (isValidProfile, _) =
 			publishPreflight.IsProfileValid(publishProfileName);
 		if ( !isValidProfile )
 		{
-			return BadRequest(preflightErrors);
+			return BadRequest("Invalid publish profile"); 
 		}
 
 		if ( !remotePublishService.IsPublishEnabled(publishProfileName) )
