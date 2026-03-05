@@ -19,8 +19,6 @@ export const fetchCity = async (city: string): Promise<DropdownResult[]> => {
       altText: `${cityData.province ? `${cityData.province}` : ""}${cityData.countryName ? `, ${cityData.countryName}` : ""}`
     });
   }
-
-  console.log(result);
   return result;
 };
 
