@@ -35,7 +35,7 @@ jobs:
         run: bash download-mirror.sh
 
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@47309c993abb98030a35d55ef7ff34b7fa1074b5
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: build-tools-mirror
           path: ./starsky-tools/build-tools/mirror/
