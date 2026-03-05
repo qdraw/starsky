@@ -7,7 +7,7 @@
   height: 100%;
 }
 .modal-bg .content-geo {
-  height: calc(100% - 150px);
+  height: calc(100% - 170px);
 }
 
 .modal-bg .modal-button-bar .lat-long {

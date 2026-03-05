@@ -16,7 +16,7 @@ export const fetchCity = async (city: string): Promise<DropdownResult[]> => {
     result.push({
       id: `${cityData.latitude},${cityData.longitude}`,
       displayName: cityData.name,
-      altText: cityData.name
+      altText: `${cityData.province ? `${cityData.province}` : ""}${cityData.countryName ? `, ${cityData.countryName}` : ""}`
     });
   }
 
@@ -28,4 +28,6 @@ interface IGeoLocationNameCity {
   name: string;
   latitude: number;
   longitude: number;
+  province?: string;
+  countryName?: string;
 }

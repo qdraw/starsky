@@ -60,6 +60,8 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+
     const items = results.length > 0 ? results : defaultItems;
 
     switch (e.key) {

@@ -24,6 +24,7 @@ images/
 }
 .leaflet-container {
   overflow: hidden;
+  position: relative;
 }
 .leaflet-tile,
 .leaflet-marker-icon,

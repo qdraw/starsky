@@ -136,7 +136,18 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
             defaultValue={searchCity}
             onSelect={(id, displayName) => {
               setSearchCity(displayName);
-              console.log(id, displayName);
+              const [selectedLatitudeRaw, selectedLongitudeRaw] = id.split(",");
+              const selectedLatitude = Number(selectedLatitudeRaw);
+              const selectedLongitude = Number(selectedLongitudeRaw);
+
+              if (Number.isNaN(selectedLatitude) || Number.isNaN(selectedLongitude)) {
+                return;
+              }
+
+              if (mapState !== null) {
+                mapState.panTo({ lat: selectedLatitude, lng: selectedLongitude });
+                mapState.setZoom(14);
+              }
             }}
           />
         </div>
@@ -148,7 +159,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
           </div>
         ) : null}
         <div className="content-geo" data-test="content-geo" ref={mapReference}></div>
-        <div className="modal modal-button-bar">
+        <div className="modal modal-button-bar content-geo-button-bar">
           <button
             data-test="force-cancel"
             onClick={() => props.handleExit(null)}
