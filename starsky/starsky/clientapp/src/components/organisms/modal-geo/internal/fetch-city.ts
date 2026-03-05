@@ -15,7 +15,7 @@ export const fetchCity = async (city: string): Promise<DropdownResult[]> => {
       result.push({
         id: `${cityData.latitude},${cityData.longitude}`,
         displayName: cityData.name,
-        altText: `${cityData.province ? `${cityData.province}` : ""}${cityData.countryName ? `, ${cityData.countryName}` : ""}`
+        altText: getAltText(cityData)
       });
     }
     return result;
@@ -23,6 +23,17 @@ export const fetchCity = async (city: string): Promise<DropdownResult[]> => {
     return [];
   }
 };
+
+function getAltText(cityData: IGeoLocationNameCity): string {
+  let altText = "";
+  if (cityData.province) {
+    altText += cityData.province;
+  }
+  if (cityData.countryName) {
+    altText += (altText ? ", " : "") + cityData.countryName;
+  }
+  return altText;
+}
 
 interface IGeoLocationNameCity {
   name: string;
