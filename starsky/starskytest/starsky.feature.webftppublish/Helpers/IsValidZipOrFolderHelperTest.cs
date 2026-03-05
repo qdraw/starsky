@@ -1,7 +1,9 @@
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.Helpers;
+using starsky.foundation.platform.Helpers;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.webftppublish.Helpers;
@@ -28,13 +30,13 @@ public class IsValidZipOrFolderHelperTest
 	{
 		const string manifestJson = "{\"slug\":\"test-slug\",\"copy\":{\"file.jpg\":true}}";
 		var storage = new FakeIStorage(
-			["/folder", "/folder/_settings.json"],
-			["/folder/_settings.json"],
+			["folder".PrefixBackSlash()],
+			[Path.Combine("folder", "_settings.json").PrefixBackSlash()],
 			[Encoding.UTF8.GetBytes(manifestJson)]);
 
 		var helper = new IsValidZipOrFolderHelper(storage, new FakeIWebLogger());
 
-		var result = await helper.IsValidZipOrFolder("/folder");
+		var result = await helper.IsValidZipOrFolder("folder".PrefixBackSlash());
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual("test-slug", result.Slug);

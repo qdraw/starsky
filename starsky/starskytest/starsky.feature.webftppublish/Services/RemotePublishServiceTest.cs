@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.Services;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Models.PublishProfileRemote;
 using starskytest.FakeMocks;
@@ -114,8 +115,8 @@ public class RemotePublishServiceTest
 			var ftpService = new FakeIFtpService();
 			// Provide byte data for the file
 			var sourceStorage = new FakeIStorage(
-				["/test"],
-				["/test/file.jpg"],
+				["test".PrefixBackSlash()],
+				[Path.Combine("test", "file.jpg".PrefixBackSlash())],
 				["test file content"u8.ToArray()]);
 
 			var localFsService = new LocalFileSystemPublishService(
@@ -130,8 +131,9 @@ public class RemotePublishServiceTest
 				appSettings,
 				new FakeIWebLogger());
 
-			var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
-			var result = selector.Run("/test", "test-profile", "slug", copyContent);
+			var copyContent = new Dictionary<string, bool> { { "file.jpg".PrefixBackSlash(), true } };
+			var result = selector.Run("test".PrefixBackSlash(),
+				"test-profile", "slug", copyContent);
 
 			Assert.IsTrue(result);
 			// FtpService should not be called

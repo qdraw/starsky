@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.Services;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn.CreateAnZipFile12;
@@ -181,8 +182,8 @@ public class LocalFileSystemPublishServiceTest
 
 			var credential = new LocalFileSystemCredential { Path = tempDir };
 			var sourceStorage = new FakeIStorage(
-				["/source"],
-				["/source/file.jpg"],
+				["source".PrefixBackSlash()],
+				[Path.Combine("source", "file.jpg").PrefixBackSlash()],
 				["test content"u8.ToArray()]);
 
 			var service = new LocalFileSystemPublishService(
@@ -193,7 +194,8 @@ public class LocalFileSystemPublishServiceTest
 
 			var copyContent = new Dictionary<string, bool> { { "file.jpg", true } };
 			var result =
-				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+				service.CopyToLocalFileSystem(credential,
+					"source".PrefixBackSlash(), "my-slug", copyContent);
 
 			Assert.IsTrue(result);
 			var expectedDestFolder = Path.Combine(tempDir, "my-slug");
@@ -211,7 +213,8 @@ public class LocalFileSystemPublishServiceTest
 	[TestMethod]
 	public void CopyToLocalFileSystem_CreateSubdirectories_Success()
 	{
-		var tempDir = Path.Combine(Path.GetTempPath(), "localfs-test-" + Path.GetRandomFileName());
+		var tempDir = Path.Combine(Path.GetTempPath(),
+			"localfs-test-" + Path.GetRandomFileName());
 
 		try
 		{
@@ -219,8 +222,11 @@ public class LocalFileSystemPublishServiceTest
 
 			var credential = new LocalFileSystemCredential { Path = tempDir };
 			var sourceStorage = new FakeIStorage(
-				["/source", "/source/subfolder"],
-				["/source/subfolder/file.jpg"],
+				[
+					"/source".PrefixBackSlash(),
+					Path.Combine("source", "subfolder").PrefixBackSlash()
+				],
+				[Path.Combine("source", "subfolder", "file.jpg").PrefixBackSlash()],
 				["test content"u8.ToArray()]);
 
 			var service = new LocalFileSystemPublishService(
@@ -229,9 +235,13 @@ public class LocalFileSystemPublishServiceTest
 				new FakeConsoleWrapper(),
 				new FakeIWebLogger());
 
-			var copyContent = new Dictionary<string, bool> { { "subfolder/file.jpg", true } };
+			var copyContent = new Dictionary<string, bool>
+			{
+				{ Path.Combine("source", "subfolder").PrefixBackSlash(), true }
+			};
 			var result =
-				service.CopyToLocalFileSystem(credential, "/source", "my-slug", copyContent);
+				service.CopyToLocalFileSystem(credential,
+					"source".PrefixBackSlash(), "my-slug", copyContent);
 
 			Assert.IsTrue(result);
 			var expectedSubfolder = Path.Combine(tempDir, "my-slug", "subfolder");
@@ -481,7 +491,8 @@ public class LocalFileSystemPublishServiceTest
 	[TestMethod]
 	public void Run_RemoveFolderAfterwards_DeletesTemporaryFolder()
 	{
-		var tempDir = Path.Combine(Path.GetTempPath(), "localfs-test-1-" + Path.GetRandomFileName());
+		var tempDir =
+			Path.Combine(Path.GetTempPath(), "localfs-test-1-" + Path.GetRandomFileName());
 		var destDir = Path.Combine(tempDir, "dest");
 		var zipFile = Path.Combine(tempDir, "test.zip");
 
@@ -529,20 +540,26 @@ public class LocalFileSystemPublishServiceTest
 			// Diagnostics
 			var tempFolderPath = service.LastExtractZipResult?.FullFileFolderPath;
 			Debug.WriteLine($"Temp folder path: {tempFolderPath}");
-			Debug.WriteLine($"RemoveFolderAfterwards: {service.LastExtractZipResult?.RemoveFolderAfterwards}");
+			Debug.WriteLine(
+				$"RemoveFolderAfterwards: {service.LastExtractZipResult?.RemoveFolderAfterwards}");
 			if ( tempFolderPath != null )
 			{
-				Debug.WriteLine($"Temp folder exists after Run: {Directory.Exists(tempFolderPath)}");
+				Debug.WriteLine(
+					$"Temp folder exists after Run: {Directory.Exists(tempFolderPath)}");
 			}
-			Assert.IsNotNull(service.LastExtractZipResult, "LastExtractZipResult should not be null");
-			Assert.IsTrue(service.LastExtractZipResult.RemoveFolderAfterwards, "RemoveFolderAfterwards should be true for a zip input");
+
+			Assert.IsNotNull(service.LastExtractZipResult,
+				"LastExtractZipResult should not be null");
+			Assert.IsTrue(service.LastExtractZipResult.RemoveFolderAfterwards,
+				"RemoveFolderAfterwards should be true for a zip input");
 
 			Assert.IsTrue(result);
 
 			// Verify the temporary extraction folder was deleted
 			if ( tempFolderPath != null )
 			{
-				Assert.IsFalse(Directory.Exists(tempFolderPath), $"Temporary folder should have been deleted: {tempFolderPath}");
+				Assert.IsFalse(Directory.Exists(tempFolderPath),
+					$"Temporary folder should have been deleted: {tempFolderPath}");
 			}
 		}
 		finally
@@ -623,9 +640,12 @@ public class LocalFileSystemPublishServiceTest
 
 			// Diagnostic output after
 			Debug.WriteLine($"After Run: SourceDir exists: {Directory.Exists(sourceDir)}");
-			Debug.WriteLine($"RemoveFolderAfterwards: {service.LastExtractZipResult?.RemoveFolderAfterwards}");
-			Assert.IsNotNull(service.LastExtractZipResult, "LastExtractZipResult should not be null");
-			Assert.IsFalse(service.LastExtractZipResult.RemoveFolderAfterwards, "RemoveFolderAfterwards should be false for a directory input");
+			Debug.WriteLine(
+				$"RemoveFolderAfterwards: {service.LastExtractZipResult?.RemoveFolderAfterwards}");
+			Assert.IsNotNull(service.LastExtractZipResult,
+				"LastExtractZipResult should not be null");
+			Assert.IsFalse(service.LastExtractZipResult.RemoveFolderAfterwards,
+				"RemoveFolderAfterwards should be false for a directory input");
 
 			Assert.IsTrue(result);
 			// Source folder should still exist (RemoveFolderAfterwards = false for folders)
