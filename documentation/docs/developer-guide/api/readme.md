@@ -110,6 +110,9 @@ This document is auto generated
 | _Parameters: f (subPath filepath to file, split by dot comma (;)), itemName (itemName), publishProfileName (publishProfileName),          _ |
 | _ force                                                                                                                                   _ |
 | __/api/publish/exist__                            | GET   | To give the user UI feedback when submitting the itemNameTrue is not to conti...|
+| __/api/publish-remote/create__                    | POST  | Publish generated zip to remote destination (FTP or LocalFileSystem)            |
+| _Parameters: itemName (itemName used in /api/publish/create), publishProfileName (publishProfileName used in /api/publish/create)         _ |
+| __/api/publish-remote/status__                    | GET   | Missing summary                                                                 |
 | __/redirect/sub-path-relative__                   | GET   | Redirect or view path to relative paths using the structure-config (see /api/...|
 | __/api/search__                                   | GET   | Gets the list of search results (cached)                                        |
 | __/api/search/relative-objects__                  | GET   | Get relative paths in a search queryDoes not cover multiple pages (so it ends...|
