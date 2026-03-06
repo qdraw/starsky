@@ -246,6 +246,7 @@ public class ExportService : IExport
 
 	/// <summary>
 	///     Get the filename (in case of thumbnail the source image name)
+	///     Preserves folder structure when there are subfolders, puts all files in a single folder otherwise
 	/// </summary>
 	/// <param name="filePaths">the full file paths </param>
 	/// <param name="thumbnail">copy the thumbnail (true) or the source image (false)</param>
@@ -254,21 +255,46 @@ public class ExportService : IExport
 		bool thumbnail)
 	{
 		var fileNames = new List<string>();
-		foreach ( var filePath in filePaths )
+		var filePathsList = filePaths.ToList();
+		
+		if ( thumbnail )
 		{
-			if ( thumbnail )
+			// For thumbnails, preserve folder structure
+			foreach ( var filePath in filePathsList )
 			{
-				// We use base32 fileHashes but export 
-				// the file with the original name
-
 				var thumbFilename = Path.GetFileNameWithoutExtension(filePath);
 				var subPath = await _query.GetSubPathByHashAsync(thumbFilename);
-				var filename = subPath?.Split('/').LastOrDefault()!; // first a string
-				fileNames.Add(filename);
-				continue;
+				fileNames.Add(subPath ?? Path.GetFileName(filePath));
 			}
 
-			fileNames.Add(Path.GetFileName(filePath));
+			return fileNames;
+		}
+
+		// For non-thumbnails, check if there are subfolders
+		var subPaths = new List<string>();
+		foreach ( var filePath in filePathsList )
+		{
+			// Convert full path to database subPath
+			var subPath = _appSettings.FullPathStorageFolderToDatabaseStyle(filePath);
+			subPaths.Add(subPath);
+		}
+
+		// Check if there are subfolders (paths with at least one separator)
+		var hasSubFolders = subPaths.Any(sp => sp.Contains("/") && sp.Count(c => c == '/') > 1);
+
+		foreach ( var filePath in filePathsList )
+		{
+			if ( hasSubFolders )
+			{
+				// Preserve folder structure
+				var subPath = _appSettings.FullPathStorageFolderToDatabaseStyle(filePath);
+				fileNames.Add(subPath);
+			}
+			else
+			{
+				// No subfolders, put all files in root folder of zip
+				fileNames.Add(Path.GetFileName(filePath));
+			}
 		}
 
 		return fileNames;
