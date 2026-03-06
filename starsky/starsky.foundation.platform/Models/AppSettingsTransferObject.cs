@@ -17,6 +17,12 @@ namespace starsky.foundation.platform.Models
 
 		public List<AppSettingsDefaultEditorApplication> DefaultDesktopEditor { get; set; } = [];
 
+		public Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfiles
+		{
+			get;
+			set;
+		} = new();
+
 		public CollectionsOpenType.RawJpegMode DesktopCollectionsOpen { get; set; } =
 			CollectionsOpenType.RawJpegMode.Default;
 
