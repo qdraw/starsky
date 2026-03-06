@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -76,5 +77,20 @@ public sealed class AppSettingsController : Controller
 
 		Response.StatusCode = result.StatusCode;
 		return Content(result.Message);
+	}
+
+	/// <summary>
+	///     Show the template content types for publish profiles
+	/// </summary>
+	/// <returns></returns>
+	[HttpGet("/api/env/template-content-types")]
+	[ProducesResponseType(typeof(AppSettings), 200)]
+	[ProducesResponseType(typeof(AppSettings), 401)]
+	[Produces("application/json")]
+	public ActionResult<IEnumerable<TemplateContentTypeDisplay>> TemplateContentTypes()
+	{
+		var values =
+			AppSettingsPublishProfilesTemplateContentType.GetAll();
+		return Ok(values);
 	}
 }
