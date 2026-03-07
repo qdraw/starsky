@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -75,6 +74,7 @@ public class TemplateContentTypeDisplay
 	public TemplateContentType Type { get; set; }
 
 	public TemplateContentTypeAllowedProperties Properties { get; set; } = new();
+	public TemplateContentTypeAllowedProperties Required { get; set; } = new();
 }
 
 public static class AppSettingsPublishProfilesTemplateContentType
@@ -102,6 +102,9 @@ public static class AppSettingsPublishProfilesTemplateContentType
 				display.Properties.Template = true;
 				display.Properties.Copy = true;
 				display.Properties.Optimizers = false;
+				// Required
+				display.Required.Template = true;
+				display.Required.Path = true;
 				break;
 			case TemplateContentType.Jpeg:
 				display.Properties.SourceMaxWidth = true;
@@ -115,6 +118,8 @@ public static class AppSettingsPublishProfilesTemplateContentType
 				display.Properties.Optimizers = true;
 				display.Properties.Append = false;
 				display.Properties.MetaData = true;
+				// Required
+				display.Required.SourceMaxWidth = true;
 				break;
 			case TemplateContentType.MoveSourceFiles:
 			case TemplateContentType.PublishContent:
@@ -128,6 +133,8 @@ public static class AppSettingsPublishProfilesTemplateContentType
 				display.Properties.Append = true;
 				display.Properties.Copy = true;
 				display.Properties.MetaData = false;
+				// Required
+				display.Required.SourceMaxWidth = true;
 				break;
 			case TemplateContentType.PublishRemote:
 				break;
@@ -135,6 +142,7 @@ public static class AppSettingsPublishProfilesTemplateContentType
 			default:
 				throw new ArgumentOutOfRangeException(nameof(p), p, null);
 		}
+
 		return display;
 	}
 }

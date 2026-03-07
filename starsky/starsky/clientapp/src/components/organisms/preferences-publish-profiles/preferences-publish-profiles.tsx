@@ -199,10 +199,6 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
   };
 
   const removeProfile = () => {
-    if (profiles.length <= 1) {
-      return;
-    }
-
     setProfiles((current) => current.filter((_, index) => index !== activeProfileIndex));
     setActiveProfileIndex((current) => Math.max(0, current - 1));
   };
@@ -353,7 +349,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
             type="button"
             className="btn btn--default"
             onClick={removeProfile}
-            disabled={!isAppSettingsWrite || profiles.length <= 1}
+            disabled={!isAppSettingsWrite}
             data-test="publish-profiles-remove-profile"
           >
             {messageRemoveProfile}
