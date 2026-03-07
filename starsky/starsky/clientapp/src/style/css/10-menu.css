@@ -383,3 +383,34 @@
     display: none;
   }
 }
+
+.menu-desktop-inline-search {
+  position: fixed;
+  left: 130px;
+  top: 7px;
+}
+
+.menu-desktop-inline-search input {
+  padding-left: 35px;
+}
+
+.menu-desktop-inline-search .icon-addon--search-focus,
+.menu-desktop-inline-search .icon-addon--search {
+  position: fixed;
+  left: 137px;
+  top: 12px;
+  z-index: 501;
+  width: 24px;
+  height: 24px;
+
+  background-color: #000;
+  mask-image: url("../images/baseline-search-24px.svg");
+  mask-position: 0px 50%;
+
+  display: inline-block;
+  text-indent: -9999px;
+}
+
+.menu-desktop-inline-search label.icon-addon--search-focus {
+  background-color: #283593;
+}
