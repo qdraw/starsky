@@ -109,6 +109,141 @@
     "nl": "Cloud-import",
     "de": "Cloud-Importe"
   },
+  "MessagePublishProfiles": {
+    "en": "Publish Profiles",
+    "nl": "Publiceerprofielen",
+    "de": "Veroeffentlichungsprofile"
+  },
+  "MessagePublishProfilesDescription": {
+    "en": "Manage publish profiles and the content types they contain.",
+    "nl": "Beheer publiceerprofielen en de contenttypen die ze bevatten.",
+    "de": "Verwalten Sie Veroeffentlichungsprofile und die enthaltenen Inhaltstypen."
+  },
+  "MessagePublishProfile": {
+    "en": "Profile",
+    "nl": "Profiel",
+    "de": "Profil"
+  },
+  "MessagePublishProfilesProfileName": {
+    "en": "Profile name",
+    "nl": "Profielnaam",
+    "de": "Profilname"
+  },
+  "MessagePublishProfileItems": {
+    "en": "Content types in this profile",
+    "nl": "Contenttypen in dit profiel",
+    "de": "Inhaltstypen in diesem Profil"
+  },
+  "MessagePublishContentType": {
+    "en": "Content type",
+    "nl": "Contenttype",
+    "de": "Inhaltstyp"
+  },
+  "MessagePublishSourceMaxWidth": {
+    "en": "Source max width",
+    "nl": "Bron maximale breedte",
+    "de": "Maximale Quellbreite"
+  },
+  "MessagePublishOverlayMaxWidth": {
+    "en": "Overlay max width",
+    "nl": "Overlay maximale breedte",
+    "de": "Maximale Overlay-Breite"
+  },
+  "MessagePublishOverlayFullPath": {
+    "en": "Overlay full path",
+    "nl": "Volledig overlaypad",
+    "de": "Vollstaendiger Overlay-Pfad"
+  },
+  "MessagePublishPrepend": {
+    "en": "Prepend",
+    "nl": "Voorvoegsel",
+    "de": "Voranstellen"
+  },
+  "MessagePublishTemplate": {
+    "en": "Template",
+    "nl": "Sjabloon",
+    "de": "Vorlage"
+  },
+  "MessagePublishCopy": {
+    "en": "Copy",
+    "nl": "Kopie",
+    "de": "Kopieren"
+  },
+  "MessagePublishOptimizers": {
+    "en": "Optimizers (JSON array)",
+    "nl": "Optimalisaties (JSON-array)",
+    "de": "Optimierer (JSON-Array)"
+  },
+  "MessagePublishAppend": {
+    "en": "Append",
+    "nl": "Achtervoegsel",
+    "de": "Anhaengen"
+  },
+  "MessagePublishMetaData": {
+    "en": "Metadata",
+    "nl": "Metadata",
+    "de": "Metadaten"
+  },
+  "MessagePublishAddProfile": {
+    "en": "Add profile",
+    "nl": "Profiel toevoegen",
+    "de": "Profil hinzufuegen"
+  },
+  "MessagePublishAddContentType": {
+    "en": "Add content type",
+    "nl": "Contenttype toevoegen",
+    "de": "Inhaltstyp hinzufuegen"
+  },
+  "MessagePublishRemoveProfile": {
+    "en": "Remove profile",
+    "nl": "Profiel verwijderen",
+    "de": "Profil entfernen"
+  },
+  "MessagePublishRemoveContentType": {
+    "en": "Remove content type",
+    "nl": "Contenttype verwijderen",
+    "de": "Inhaltstyp entfernen"
+  },
+  "MessagePublishProfilesSaveSuccess": {
+    "en": "Publish profiles are updated",
+    "nl": "Publiceerprofielen zijn bijgewerkt",
+    "de": "Veroeffentlichungsprofile wurden aktualisiert"
+  },
+  "MessagePublishProfilesSaveError": {
+    "en": "Something went wrong while saving publish profiles",
+    "nl": "Er ging iets mis bij het opslaan van publiceerprofielen",
+    "de": "Beim Speichern der Veroeffentlichungsprofile ist ein Fehler aufgetreten"
+  },
+  "MessagePublishInvalidOptimizers": {
+    "en": "Optimizers must be valid JSON and an array",
+    "nl": "Optimalisaties moeten geldige JSON zijn en een array",
+    "de": "Optimierer muessen gueltiges JSON und ein Array sein"
+  },
+  "MessagePublishProfilesLoading": {
+    "en": "Loading publish profile settings...",
+    "nl": "Publiceerprofielinstellingen laden...",
+    "de": "Einstellungen fuer Veroeffentlichungsprofile werden geladen..."
+  },
+  "MessagePublishProfilesNoContentTypes": {
+    "en": "No publish content types available",
+    "nl": "Geen publiceer-contenttypen beschikbaar",
+    "de": "Keine Veroeffentlichungs-Inhaltstypen verfuegbar"
+  },
+  "MessagePath": {
+    "en": "Path",
+    "nl": "Pad",
+    "de": "Pfad"
+  },
+  "MessageFolder": {
+    "en": "Folder",
+    "nl": "Map",
+    "de": "Ordner"
+  },
+  "MessageSave": {
+    "en": "Save",
+    "nl": "Opslaan",
+    "de": "Speichern"
+  },
   "MessageCloudImportStatusLabel": {
     "en": "Status",
     "nl": "Status",

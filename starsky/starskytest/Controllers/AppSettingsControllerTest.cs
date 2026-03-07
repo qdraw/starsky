@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -203,5 +204,24 @@ public sealed class AppSettingsControllerTest
 
 		// Assert
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
+	public void TemplateContentTypes_ExcludesNone_ReturnsAllOtherTypes()
+	{
+		// Arrange
+		var controller = new AppSettingsController(new AppSettings(),
+			null!);
+
+		// Act
+		var actionResult = controller.TemplateContentTypes();
+		var okResult = actionResult.Result as OkObjectResult;
+		Assert.IsNotNull(okResult);
+		var values = okResult.Value as IEnumerable<TemplateContentTypeDisplay>;
+		Assert.IsNotNull(values);
+		var list = values.Select(p => p.Type).ToList();
+		Assert.DoesNotContain(TemplateContentType.None, list,
+			"Should not contain None");
+		Assert.IsNotEmpty(list);
 	}
 }
