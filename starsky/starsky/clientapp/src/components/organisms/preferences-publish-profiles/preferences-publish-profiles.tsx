@@ -11,49 +11,11 @@ import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url/url-query";
+import { createProfileItem } from "./internal/create-profile-item";
+import { EditableProfile } from "./internal/editable-profile";
+import { updateItemField } from "./internal/update-item-field";
+import { removeContentType } from "./internal/remove-content-type";
 
-interface EditableProfileItem extends IAppSettingsPublishProfileItem {
-  _id: string;
-  optimizersText: string;
-}
-
-interface EditableProfile {
-  name: string;
-  items: EditableProfileItem[];
-}
-
-const createProfileItem = (
-  templateContentTypes: ITemplateContentType[],
-  item?: IAppSettingsPublishProfileItem
-): EditableProfileItem => {
-  const defaultContentType = templateContentTypes[0]?.type ?? "Html";
-  const toBoolean = (value: unknown, fallback: boolean): boolean => {
-    if (typeof value === "boolean") {
-      return value;
-    }
-    if (typeof value === "string") {
-      return value.toLowerCase() === "true";
-    }
-    return fallback;
-  };
-
-  return {
-    _id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-    contentType: item?.contentType ?? defaultContentType,
-    sourceMaxWidth: item?.sourceMaxWidth ?? 0,
-    overlayMaxWidth: item?.overlayMaxWidth ?? 0,
-    overlayFullPath: item?.overlayFullPath ?? item?.path ?? "",
-    path: item?.path ?? "",
-    prepend: item?.prepend ?? "",
-    template: item?.template ?? "",
-    copy: toBoolean(item?.copy, true),
-    optimizers: item?.optimizers ?? [],
-    optimizersText: JSON.stringify(item?.optimizers ?? [], null, 2),
-    folder: item?.folder ?? "",
-    append: item?.append ?? "",
-    metaData: toBoolean(item?.metaData, true)
-  };
-};
 
 const createProfiles = (
   publishProfiles: IAppSettingsPublishProfiles | undefined,
@@ -152,34 +114,6 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
     );
   };
 
-  const updateItemField = <K extends keyof EditableProfileItem>(
-    itemId: string,
-    field: K,
-    value: EditableProfileItem[K]
-  ) => {
-    setProfiles((current) =>
-      current.map((profile, profileIndex) => {
-        if (profileIndex !== activeProfileIndex) {
-          return profile;
-        }
-
-        return {
-          ...profile,
-          items: profile.items.map((item) => {
-            if (item._id !== itemId) {
-              return item;
-            }
-
-            return {
-              ...item,
-              [field]: value
-            };
-          })
-        };
-      })
-    );
-  };
-
   const addProfile = () => {
     if (templateContentTypes.length === 0) {
       return;
@@ -218,20 +152,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
     );
   };
 
-  const removeContentType = (itemId: string) => {
-    setProfiles((current) =>
-      current.map((profile, index) => {
-        if (index !== activeProfileIndex || profile.items.length <= 1) {
-          return profile;
-        }
 
-        return {
-          ...profile,
-          items: profile.items.filter((item) => item._id !== itemId)
-        };
-      })
-    );
-  };
 
   const toRequestPayload = (): { publishProfiles: IAppSettingsPublishProfiles } | null => {
     const publishProfiles: IAppSettingsPublishProfiles = {};
@@ -411,7 +332,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                     <select
                       className="select"
                       value={item.contentType}
-                      onChange={(event) => updateItemField(item._id, "contentType", event.target.value)}
+                      onChange={(event) => updateItemField(setProfiles, activeProfileIndex, item._id, "contentType", event.target.value)}
                       disabled={!isAppSettingsWrite}
                     >
                       {templateContentTypes.map((contentType) => (
@@ -429,7 +350,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                           type="number"
                           value={item.sourceMaxWidth ?? 0}
                           onChange={(event) =>
-                            updateItemField(item._id, "sourceMaxWidth", Number(event.target.value))
+                            updateItemField(setProfiles, activeProfileIndex,  item._id, "sourceMaxWidth", Number(event.target.value))
                           }
                           disabled={!isAppSettingsWrite}
                         />
@@ -444,7 +365,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                           type="number"
                           value={item.overlayMaxWidth ?? 0}
                           onChange={(event) =>
-                            updateItemField(item._id, "overlayMaxWidth", Number(event.target.value))
+                            updateItemField(setProfiles, activeProfileIndex,  item._id, "overlayMaxWidth", Number(event.target.value))
                           }
                           disabled={!isAppSettingsWrite}
                         />
@@ -458,7 +379,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                           className="form-control"
                           type="text"
                           value={item.path ?? ""}
-                          onChange={(event) => updateItemField(item._id, "path", event.target.value)}
+                          onChange={(event) => updateItemField(setProfiles, activeProfileIndex, item._id, "path", event.target.value)}
                           disabled={!isAppSettingsWrite}
                         />
                       </>
@@ -472,7 +393,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                           type="text"
                           value={item.overlayFullPath ?? ""}
                           onChange={(event) =>
-                            updateItemField(item._id, "overlayFullPath", event.target.value)
+                            updateItemField(setProfiles, activeProfileIndex, item._id, "overlayFullPath", event.target.value)
                           }
                           disabled={!isAppSettingsWrite}
                         />
@@ -486,7 +407,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                           className="form-control"
                           type="text"
                           value={item.prepend ?? ""}
-                          onChange={(event) => updateItemField(item._id, "prepend", event.target.value)}
+                          onChange={(event) => updateItemField(setProfiles, activeProfileIndex, item._id, "prepend", event.target.value)}
                           disabled={!isAppSettingsWrite}
                         />
                       </>
@@ -499,7 +420,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                           className="form-control"
                           type="text"
                           value={item.template ?? ""}
-                          onChange={(event) => updateItemField(item._id, "template", event.target.value)}
+                          onChange={(event) => updateItemField(setProfiles, activeProfileIndex, item._id, "template", event.target.value)}
                           disabled={!isAppSettingsWrite}
                         />
                       </>
@@ -512,7 +433,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                           className="form-control"
                           type="text"
                           value={item.folder ?? ""}
-                          onChange={(event) => updateItemField(item._id, "folder", event.target.value)}
+                          onChange={(event) => updateItemField(setProfiles, activeProfileIndex, item._id, "folder", event.target.value)}
                           disabled={!isAppSettingsWrite}
                         />
                       </>
@@ -525,7 +446,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                           className="form-control"
                           type="text"
                           value={item.append ?? ""}
-                          onChange={(event) => updateItemField(item._id, "append", event.target.value)}
+                          onChange={(event) => updateItemField(setProfiles, activeProfileIndex, item._id, "append", event.target.value)}
                           disabled={!isAppSettingsWrite}
                         />
                       </>
@@ -537,7 +458,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                         <input
                           type="checkbox"
                           checked={item.copy === true}
-                          onChange={(event) => updateItemField(item._id, "copy", event.target.checked)}
+                          onChange={(event) => updateItemField(setProfiles, activeProfileIndex, item._id, "copy", event.target.checked)}
                           disabled={!isAppSettingsWrite}
                         />
                       </>
@@ -550,7 +471,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                           type="checkbox"
                           checked={item.metaData === true}
                           onChange={(event) =>
-                            updateItemField(item._id, "metaData", event.target.checked)
+                            updateItemField(setProfiles, activeProfileIndex, item._id, "metaData", event.target.checked)
                           }
                           disabled={!isAppSettingsWrite}
                         />
@@ -564,7 +485,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                           className="form-control"
                           value={item.optimizersText}
                           onChange={(event) =>
-                            updateItemField(item._id, "optimizersText", event.target.value)
+                            updateItemField(setProfiles, activeProfileIndex, item._id, "optimizersText", event.target.value)
                           }
                           disabled={!isAppSettingsWrite}
                           rows={6}
@@ -576,7 +497,7 @@ const PreferencesPublishProfiles: React.FunctionComponent = () => {
                   <button
                     type="button"
                     className="btn btn--default"
-                    onClick={() => removeContentType(item._id)}
+                    onClick={() => removeContentType(setProfiles, activeProfileIndex, item._id)}
                     disabled={!isAppSettingsWrite || activeProfile.items.length <= 1}
                     data-test="publish-profiles-remove-content-type"
                   >
