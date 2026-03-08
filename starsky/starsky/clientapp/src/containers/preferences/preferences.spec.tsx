@@ -3,6 +3,7 @@ import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import * as PreferencesAppSettings from "../../components/organisms/preferences-app-settings/preferences-app-settings";
 import * as PreferencesCloudImport from "../../components/organisms/preferences-cloud-import/preferences-cloud-import";
 import * as PreferencesPassword from "../../components/organisms/preferences-password/preferences-password";
+import * as PreferencesPublishProfiles from "../../components/organisms/preferences-publish-profiles/preferences-publish-profiles";
 import * as PreferencesUsername from "../../components/organisms/preferences-username/preferences-username";
 import { Preferences } from "./preferences";
 
@@ -34,6 +35,9 @@ describe("Preferences", () => {
       const preferencesCloudImportSpy = jest
         .spyOn(PreferencesCloudImport, "default")
         .mockImplementation(() => <></>);
+      const preferencesPublishProfilesSpy = jest
+        .spyOn(PreferencesPublishProfiles, "default")
+        .mockImplementation(() => <></>);
 
       const { component, router } = renderWithRouter();
 
@@ -45,6 +49,7 @@ describe("Preferences", () => {
       expect(preferencesPasswordSpy).not.toHaveBeenCalled();
       expect(preferencesAppSettingsSpy).not.toHaveBeenCalled();
       expect(preferencesCloudImportSpy).not.toHaveBeenCalled();
+      expect(preferencesPublishProfilesSpy).not.toHaveBeenCalled();
 
       component.unmount();
     });
@@ -66,6 +71,10 @@ describe("Preferences", () => {
         .spyOn(PreferencesCloudImport, "default")
         .mockReset()
         .mockImplementation(() => <></>);
+      const preferencesPublishProfilesSpy = jest
+        .spyOn(PreferencesPublishProfiles, "default")
+        .mockReset()
+        .mockImplementation(() => <></>);
 
       const { component } = renderWithRouter("/preferences?tab=password");
 
@@ -73,6 +82,7 @@ describe("Preferences", () => {
       expect(preferencesPasswordSpy).toHaveBeenCalled();
       expect(preferencesAppSettingsSpy).not.toHaveBeenCalled();
       expect(preferencesCloudImportSpy).not.toHaveBeenCalled();
+      expect(preferencesPublishProfilesSpy).not.toHaveBeenCalled();
 
       component.unmount();
     });
@@ -94,6 +104,10 @@ describe("Preferences", () => {
         .spyOn(PreferencesCloudImport, "default")
         .mockReset()
         .mockImplementation(() => <></>);
+      const preferencesPublishProfilesSpy = jest
+        .spyOn(PreferencesPublishProfiles, "default")
+        .mockReset()
+        .mockImplementation(() => <></>);
 
       const { component } = renderWithRouter("/preferences?tab=cloud");
 
@@ -101,6 +115,40 @@ describe("Preferences", () => {
       expect(preferencesPasswordSpy).not.toHaveBeenCalled();
       expect(preferencesAppSettingsSpy).not.toHaveBeenCalled();
       expect(preferencesCloudImportSpy).toHaveBeenCalled();
+      expect(preferencesPublishProfilesSpy).not.toHaveBeenCalled();
+
+      component.unmount();
+    });
+
+    it("should render publish profiles tab from url", () => {
+      const preferencesUsernameSpy = jest
+        .spyOn(PreferencesUsername, "default")
+        .mockReset()
+        .mockImplementation(() => <></>);
+      const preferencesPasswordSpy = jest
+        .spyOn(PreferencesPassword, "default")
+        .mockReset()
+        .mockImplementation(() => <></>);
+      const preferencesAppSettingsSpy = jest
+        .spyOn(PreferencesAppSettings, "default")
+        .mockReset()
+        .mockImplementation(() => <></>);
+      const preferencesCloudImportSpy = jest
+        .spyOn(PreferencesCloudImport, "default")
+        .mockReset()
+        .mockImplementation(() => <></>);
+      const preferencesPublishProfilesSpy = jest
+        .spyOn(PreferencesPublishProfiles, "default")
+        .mockReset()
+        .mockImplementation(() => <></>);
+
+      const { component } = renderWithRouter("/preferences?tab=publishprofiles");
+
+      expect(preferencesUsernameSpy).not.toHaveBeenCalled();
+      expect(preferencesPasswordSpy).not.toHaveBeenCalled();
+      expect(preferencesAppSettingsSpy).not.toHaveBeenCalled();
+      expect(preferencesCloudImportSpy).not.toHaveBeenCalled();
+      expect(preferencesPublishProfilesSpy).toHaveBeenCalled();
 
       component.unmount();
     });
@@ -127,6 +175,13 @@ describe("Preferences", () => {
 
       await waitFor(() => {
         expect(router.state.location.search).toContain("tab=cloud");
+      });
+
+      const publishProfilesTabButton = screen.getByTestId("preferences-tab-publishprofiles");
+      fireEvent.click(publishProfilesTabButton);
+
+      await waitFor(() => {
+        expect(router.state.location.search).toContain("tab=publishprofiles");
       });
 
       component.unmount();

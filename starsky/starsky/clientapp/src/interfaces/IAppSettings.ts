@@ -1,4 +1,5 @@
 import { IAppSettingsDefaultEditorApplication } from "./IAppSettingsDefaultEditorApplication";
+import { IAppSettingsPublishProfiles } from "./IAppSettingsPublishProfiles";
 import { RawJpegMode } from "./ICollectionsOpenType";
 
 export interface IAppSettings {
@@ -8,4 +9,5 @@ export interface IAppSettings {
   useLocalDesktop: boolean;
   defaultDesktopEditor: IAppSettingsDefaultEditorApplication[];
   desktopCollectionsOpen: RawJpegMode;
+  publishProfiles?: IAppSettingsPublishProfiles;
 }
