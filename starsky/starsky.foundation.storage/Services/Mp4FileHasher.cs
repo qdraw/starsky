@@ -22,39 +22,33 @@ namespace starsky.foundation.storage.Services;
 public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 {
 	/// <summary>
-	///     Represents an MP4 atom header
-	/// </summary>
-	private struct Mp4Atom
-	{
-		public long Size;
-		public string Type;
-		public long DataOffset;
-	}
-
-	/// <summary>
-	///     Maximum bytes of video content to hash (256 KB)
+	///     Maximum bytes of video content to hash (1024 KB)
 	///     Balances between collision resistance and performance
 	/// </summary>
-	private const int MaxBytesToHash = 256 * 1024;
+	private const int MaxBytesToHash = 1024 * 1024;
+
+	private const int MaxReadVideoSize = 1024 * 1024; // 1024 KB
 
 	/// <summary>
 	///     Buffer size for reading atom data
 	/// </summary>
 	private const int BufferSize = 8192;
-	
-	private const int MaxReadVideoSize = 229376;
 
 	/// <summary>
 	///     Hash MP4 video content by reading only the mdat atom
-	///     This is significantly faster than hashing the entire file for large video files
+	///     This is significantly faster than hashing the entire file for
+	///     large video files
 	/// </summary>
 	/// <param name="fullFilePath">Path to the MP4 file</param>
-	/// <returns>Base32 encoded MD5 hash of video content, or empty string if no mdat atom found</returns>
+	/// <returns>
+	///     Base32 encoded MD5 hash of video content,
+	///     or empty string if no mdat atom found
+	/// </returns>
 	public async Task<string> HashMp4VideoContentAsync(string fullFilePath)
 	{
 		using var md5 = MD5.Create();
 		var buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
-		
+
 		try
 		{
 			await using var stream = iStorage.ReadStream(fullFilePath, MaxReadVideoSize);
@@ -81,7 +75,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		{
 			return string.Empty;
 		}
-		
+
 		while ( true )
 		{
 			var atom = await ReadAtomAsync(stream, cancellationToken);
@@ -106,7 +100,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 				continue;
 			}
 
-			logger.LogInformation("Mp4FileHasher.ProcessMp4AtomsAsync "+
+			logger.LogInformation("Mp4FileHasher.ProcessMp4AtomsAsync " +
 			                      "Failed to skip non-mdat atom");
 			return string.Empty;
 		}
@@ -119,7 +113,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	///     Hashes the mdat atom content
 	/// </summary>
 	private static async Task<string> HashMdatAtomAsync(Stream stream,
-		System.Security.Cryptography.MD5 md5, byte[] buffer, long payloadSize)
+		MD5 md5, byte[] buffer, long payloadSize)
 	{
 		var remaining = Math.Min(payloadSize, MaxBytesToHash);
 		while ( remaining > 0 )
@@ -227,5 +221,15 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		atomSize = ( long ) BinaryPrimitives.ReadUInt64BigEndian(largeSize);
 
 		return new Mp4Atom { Size = atomSize, Type = type, DataOffset = stream.Position };
+	}
+
+	/// <summary>
+	///     Represents an MP4 atom header
+	/// </summary>
+	private struct Mp4Atom
+	{
+		public long Size;
+		public string Type;
+		public long DataOffset;
 	}
 }

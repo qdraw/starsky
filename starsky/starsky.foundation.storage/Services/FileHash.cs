@@ -190,11 +190,17 @@ public sealed class FileHash
 		// Check if this is an MP4 file
 		if ( imageFormat == ExtensionRolesHelper.ImageFormat.mp4 )
 		{
+			_logger.LogDebug($"[FileHash] Using MP4 hasher for: {fullFilePath}");
 			var mp4Hash = await _mp4Hasher.HashMp4VideoContentAsync(fullFilePath);
 			if ( !string.IsNullOrEmpty(mp4Hash) )
 			{
+				_logger.LogDebug($"[FileHash] MP4 hash result: {mp4Hash}");
 				return mp4Hash;
 			}
+
+			_logger.LogError(
+				$"[FileHash] MP4 hasher returned empty for: {fullFilePath}, " +
+				$"falling back to standard hash.");
 		}
 
 		// Standard file hashing for non-MP4 files or if MP4 hashing fails
