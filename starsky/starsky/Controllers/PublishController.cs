@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.webhtmlpublish.Interfaces;
+using starsky.feature.webhtmlpublish.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
@@ -16,6 +17,9 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using System.Text.Json;
+using starsky.foundation.worker.Models;
+using starsky.Helpers;
 
 namespace starsky.Controllers;
 
@@ -110,20 +114,23 @@ public sealed class PublishController : Controller
 		}
 
 		// Creating Publish is a background task
-		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-			async _ =>
-			{
-				var renderCopyResult = await _publishService.RenderCopy(info,
-					publishProfileName, itemName, location);
-				await _publishService.GenerateZip(_appSettings.TempFolder, itemName,
-					renderCopyResult);
-				_webLogger.LogInformation($"[/api/publish/create] done: " +
-				                          $"{itemName} {DateTime.UtcNow}");
-			},
-			publishProfileName + "_" + itemName,
-			null,
-			ProcessTaskQueue.PriorityLaneUpdate,
-			nameof(IUpdateBackgroundTaskQueue)));
+		var payload = new PublishCreateBackgroundJobPayload
+		{
+			Info = info,
+			PublishProfileName = publishProfileName,
+			ItemName = itemName,
+			Location = location
+		};
+		
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = publishProfileName + "_" + itemName,
+			TraceParentId = null,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			QueueName = nameof(IUpdateBackgroundTaskQueue),
+			JobType = PublishCreateBackgroundJobHandler.JobTypeValue,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
 
 		// Get the zip 	by	[HttpGet("/export/zip/{f}.zip")]
 		return Json(slugItemName);

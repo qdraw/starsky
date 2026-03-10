@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -15,11 +16,13 @@ using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.Models;
 
 namespace starsky.feature.syncbackground.Helpers;
 
 public class OnStartupSync
 {
+	public const string JobType = "Sync.OnStartup.v1";
 	private readonly AppSettings _appSettings;
 	private readonly IDiskWatcherBackgroundTaskQueue _backgroundTaskQueue;
 	private readonly IWebLogger _logger;
@@ -49,12 +52,15 @@ public class OnStartupSync
 
 	public async Task StartUpSync()
 	{
-		await _backgroundTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-			async _ => { await StartUpSyncTask(); },
-			nameof(StartUpSync),
-			null,
-			ProcessTaskQueue.PriorityLaneDiskWatcher,
-			nameof(IDiskWatcherBackgroundTaskQueue)));
+		await _backgroundTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = nameof(StartUpSync),
+			TraceParentId = null,
+			PriorityLane = ProcessTaskQueue.PriorityLaneDiskWatcher,
+			QueueName = nameof(IDiskWatcherBackgroundTaskQueue),
+			JobType = JobType,
+			PayloadJson = JsonSerializer.Serialize(new OnStartupSyncPayload())
+		});
 	}
 
 	public async Task StartUpSyncTask()
@@ -89,4 +95,8 @@ public class OnStartupSync
 		await webSocketConnectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 		await notificationQuery.AddNotification(webSocketResponse);
 	}
+}
+
+public sealed class OnStartupSyncPayload
+{
 }
