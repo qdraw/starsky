@@ -334,7 +334,7 @@ public sealed class StorageSubPathFilesystemTest
 			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
 
 			// create a folder via storage (database style path)
-			var dbPath = "/emptyfolder";
+			const string dbPath = "/emptyfolder";
 			storage.CreateDirectory(dbPath);
 
 			var result = storage.IsFolderEmpty(dbPath);

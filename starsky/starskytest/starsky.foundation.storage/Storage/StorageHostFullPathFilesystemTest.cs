@@ -536,9 +536,9 @@ public sealed class StorageHostFullPathFilesystemTest
 			Task.Run(async () =>
 			{
 				// create the file after 5ms so it appears between the two checks (Sleep 10ms)
-				await Task.Delay(5).ConfigureAwait(false);
-				File.WriteAllText(filePath, "x");
-			});
+				await Task.Delay(5, TestContext.CancellationToken).ConfigureAwait(false);
+				await File.WriteAllTextAsync(filePath, "x", TestContext.CancellationToken);
+			}, TestContext.CancellationToken);
 
 			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			var result = storage.IsFolderEmpty(dir);
