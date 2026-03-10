@@ -298,6 +298,23 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 	}
 
 	/// <summary>
+	///     Checks if a folder is empty
+	/// </summary>
+	/// <param name="path">path</param>
+	/// <returns>true if empty</returns>
+	public bool IsFolderEmpty(string path)
+	{
+		if ( Directory.EnumerateFileSystemEntries(path).Any() )
+		{
+			return false;
+		}
+
+		Thread.Sleep(10);
+
+		return !Directory.EnumerateFileSystemEntries(path).Any();
+	}
+
+	/// <summary>
 	///     is the subPath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
 	/// </summary>
 	/// <param name="path">fullFilePath</param>

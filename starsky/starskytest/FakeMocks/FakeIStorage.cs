@@ -103,6 +103,11 @@ public class FakeIStorage : IStorage
 		return _outputSubPathFolders.Contains(path);
 	}
 
+	public bool IsFolderEmpty(string path)
+	{
+		throw new NotImplementedException();
+	}
+
 	public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(
 		string path)
 	{

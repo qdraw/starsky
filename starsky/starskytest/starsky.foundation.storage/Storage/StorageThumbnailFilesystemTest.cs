@@ -229,6 +229,13 @@ public sealed class StorageThumbnailFilesystemTest
 
 		Assert.IsFalse(_thumbnailStorage.ExistFile(thumbnailId));
 	}
+	
+	[TestMethod]
+	public void Thumbnail_IsFolderEmpty()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.IsFolderEmpty("not-found"));
+	}
 
 	[TestMethod]
 	public void Thumbnail_IsFolderOrFile()

@@ -470,6 +470,59 @@ public sealed class StorageHostFullPathFilesystemTest
 			}
 		});
 	}
+
+	[TestMethod]
+	public void IsFolderEmpty_EmptyFolder_ReturnsTrue()
+	{
+		var dir = Path.Combine(Path.GetTempPath(), "IsFolderEmpty_EmptyFolder_" + Guid.NewGuid());
+		Directory.CreateDirectory(dir);
+		try
+		{
+			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var result = storage.IsFolderEmpty(dir);
+			Assert.IsTrue(result, "Expected empty folder to be reported as empty");
+		}
+		finally
+		{
+			Directory.Delete(dir, true);
+		}
+	}
+
+	[TestMethod]
+	public void IsFolderEmpty_FolderWithFile_ReturnsFalse()
+	{
+		var dir = Path.Combine(Path.GetTempPath(),
+			"IsFolderEmpty_FolderWithFile_" + Guid.NewGuid());
+		Directory.CreateDirectory(dir);
+		var file = Path.Combine(dir, "test.txt");
+		File.WriteAllText(file, "test");
+		try
+		{
+			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var result = storage.IsFolderEmpty(dir);
+			Assert.IsFalse(result, "Expected folder with a file to be reported as not empty");
+		}
+		finally
+		{
+			Directory.Delete(dir, true);
+		}
+	}
+
+	[TestMethod]
+	public void IsFolderEmpty_NonExistent_ThrowsDirectoryNotFoundException()
+	{
+		var dir = Path.Combine(Path.GetTempPath(), "IsFolderEmpty_NonExistent_" + Guid.NewGuid());
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		try
+		{
+			storage.IsFolderEmpty(dir);
+			Assert.Fail("Expected DirectoryNotFoundException");
+		}
+		catch ( DirectoryNotFoundException )
+		{
+			// expected
+		}
+	}
 }
 
 internal sealed class NotSupportedExceptionStream : Stream

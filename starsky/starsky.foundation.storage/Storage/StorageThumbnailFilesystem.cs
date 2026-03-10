@@ -53,6 +53,11 @@ public sealed class StorageThumbnailFilesystem : IStorage
 			.ThumbnailTempFolder);
 	}
 
+	public bool IsFolderEmpty(string path)
+	{
+		throw new NotSupportedException();
+	}
+
 	public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
 	{
 		throw new NotSupportedException();

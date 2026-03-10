@@ -358,9 +358,13 @@ public sealed class SyncFolder
 			.ForEachAsync(async item =>
 			{
 				// assume only the input of directories
-				// Double-check: verify folder doesn't exist AND has no recent children
-				if ( _subPathStorage.ExistFolder(item.FilePath!) )
+				var helper = new HasDiskContentOrExistsHelper(_subPathStorage);
+				var (hasDiskContentOrExists, reason) =
+					await helper.HasDiskContentOrExistsAsync(item.FilePath!);
+				if ( hasDiskContentOrExists )
 				{
+					_logger.LogInformation(
+						$"[SyncFolder] Skipping deletion of {item.FilePath} - {reason}");
 					return null;
 				}
 
@@ -369,23 +373,10 @@ public sealed class SyncFolder
 					_serviceScopeFactory, _logger);
 				var query = queryFactory.Query()!;
 
-				var subDirectories =
-					_subPathStorage.GetDirectoryRecursive(item.FilePath!).ToList();
-
-				var filesInFolder = _subPathStorage.GetAllFilesInDirectory(item.FilePath!).ToList();
-
-				if ( subDirectories.Count == 0 && filesInFolder.Count == 0 )
-				{
-					return await RemoveChildItems(query, item);
-				}
-
-				var reason = subDirectories.Count != 0 ? "subdirectories" : "files";
-				_logger.LogInformation(
-					$"[SyncFolder] Skipping deletion of {item.FilePath} - {reason} exist on disk");
-				await query.DisposeAsync();
-				return null;
+				return await RemoveChildItems(query, item);
 			}, _appSettings.MaxDegreesOfParallelism) )!.ToList();
 	}
+
 
 	/// <summary>
 	///     Remove all items that are included
@@ -406,7 +397,7 @@ public sealed class SyncFolder
 		}
 
 		// Child items within
-		var removeItems = await _query.GetAllRecursiveAsync(item.FilePath!);
+		var removeItems = await query.GetAllRecursiveAsync(item.FilePath!);
 
 		_logger.LogInformation(
 			$"[SyncFolder] Removing {removeItems.Count} child items from {item.FilePath}");
