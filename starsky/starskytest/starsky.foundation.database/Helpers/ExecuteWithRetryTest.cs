@@ -98,11 +98,33 @@ public class ExecuteWithRetryTest
 		var logger = new FakeIWebLogger();
 		var sut = new ExecuteWithRetry(db, null, logger);
 
-		await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
+		var ex = await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
 		{
 			await sut.ExecuteWithRetryAsync<int>(_ =>
 				throw new InvalidOperationException("always"));
 		});
+
+		Assert.AreEqual("ExecuteWithRetryAsync exhausted retries", ex.Message);
+	}
+
+	[TestMethod]
+	public async Task ExecuteWithRetry_AlwaysTransient_Propagates_WithScopeFactory()
+	{
+		var scopeFactory =
+			CreateNewScope("ExecuteWithRetry_AlwaysTransient_Propagates_WithScopeFactory");
+		using var serviceScope = scopeFactory.CreateScope();
+		var db = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		var logger = new FakeIWebLogger();
+		var sut = new ExecuteWithRetry(db, scopeFactory, logger);
+
+		var ex = await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
+		{
+			await sut.ExecuteWithRetryAsync<int>(_ =>
+				throw new InvalidOperationException("always"));
+		});
+
+		Assert.AreEqual("ExecuteWithRetryAsync exhausted retries", ex.Message);
 	}
 
 	[TestMethod]
@@ -160,7 +182,7 @@ public class ExecuteWithRetryTest
 		Assert.IsGreaterThanOrEqualTo(2, call);
 		Assert.IsNotEmpty(logger.TrackedWarnings);
 	}
-	
+
 	[TestMethod]
 	public void IsTransientDbException_Null_ReturnsFalse()
 	{
@@ -184,7 +206,7 @@ public class ExecuteWithRetryTest
 	{
 		// Create an instance of MySqlException without invoking constructor
 		var mysqlType = typeof(MySqlException);
-		var mysqlEx = (Exception)RuntimeHelpers.GetUninitializedObject(mysqlType);
+		var mysqlEx = ( Exception ) RuntimeHelpers.GetUninitializedObject(mysqlType);
 		Assert.IsTrue(ExecuteWithRetry.IsTransientDbException(mysqlEx));
 	}
 
@@ -192,7 +214,7 @@ public class ExecuteWithRetryTest
 	public void IsTransientDbException_InnerExceptionChainContainingMySql_ReturnsTrue()
 	{
 		var mysqlType = typeof(MySqlException);
-		var mysqlEx = (Exception)RuntimeHelpers.GetUninitializedObject(mysqlType);
+		var mysqlEx = ( Exception ) RuntimeHelpers.GetUninitializedObject(mysqlType);
 
 		var inner = new Exception("inner", mysqlEx);
 		var outer = new Exception("outer", inner);

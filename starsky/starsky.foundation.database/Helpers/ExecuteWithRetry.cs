@@ -44,8 +44,6 @@ public class ExecuteWithRetry(
 			{
 				return scResult;
 			}
-
-			// else transient and retry
 		}
 
 		throw new InvalidOperationException("ExecuteWithRetryAsync exhausted retries");
@@ -65,13 +63,21 @@ public class ExecuteWithRetry(
 		{
 			throw;
 		}
-		catch ( Exception ex ) when ( IsTransientDbException(ex) && attempt < maxAttempts )
+		catch ( Exception ex ) when ( IsTransientDbException(ex) )
 		{
+			// Treat transient errors as retryable. If not the last attempt, delay and retry.
 			logger.LogWarning(ex,
-				"[ThumbnailQuery] transient DB error on attempt {Attempt}/{MaxAttempts}: {Message}",
+				"[ExecuteWithRetry] transient DB error on attempt {Attempt}/{MaxAttempts}: {Message}",
 				attempt, maxAttempts, ex.Message);
+			if ( attempt >= maxAttempts )
+			{
+				return ( false, default!, delayMs );
+			}
+
 			await Task.Delay(delayMs);
 			delayMs *= 2;
+			// Return false to indicate the operation did not succeed. On the final attempt this
+			// allows the outer loop to finish and throw the final exhausted exception.
 			return ( false, default!, delayMs );
 		}
 	}
