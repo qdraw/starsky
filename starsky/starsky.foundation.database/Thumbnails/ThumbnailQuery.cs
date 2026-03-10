@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
@@ -48,21 +49,10 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public async Task<List<ThumbnailItem>> Get(string? fileHash = null)
 	{
-		try
-		{
-			return await GetInternalAsync(_context, fileHash);
-		}
-		// InvalidOperationException can also be disposed
-		catch ( InvalidOperationException )
-		{
-			if ( _scopeFactory == null )
-			{
-				throw;
-			}
-
-			return await GetInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
-				fileHash);
-		}
+		var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
+		return await retry.ExecuteWithRetryAsync(ctx =>
+			GetInternalAsync(ctx, fileHash)
+		);
 	}
 
 	public async Task RemoveThumbnailsAsync(List<string> deletedFileHashes)
@@ -72,46 +62,21 @@ public class ThumbnailQuery : IThumbnailQuery
 			return;
 		}
 
-		try
+		var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
+		await retry.ExecuteWithRetryAsync(async ctx =>
 		{
-			await RemoveThumbnailsInternalAsync(_context, deletedFileHashes);
-		}
-		// InvalidOperationException can also be disposed
-		catch ( InvalidOperationException )
-		{
-			if ( _scopeFactory == null )
-			{
-				throw;
-			}
-
-			await RemoveThumbnailsInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
-				deletedFileHashes);
-		}
+			await RemoveThumbnailsInternalAsync(ctx, deletedFileHashes);
+			return true;
+		});
 	}
 
 	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
 	{
 		try
 		{
-			return await RenameInternalAsync(_context, beforeFileHash, newFileHash);
-		}
-		// InvalidOperationException can also be disposed
-		catch ( InvalidOperationException )
-		{
-			if ( _scopeFactory == null )
-			{
-				throw;
-			}
-
-			try
-			{
-				return await RenameInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
-					beforeFileHash, newFileHash);
-			}
-			catch ( DbUpdateConcurrencyException concurrencyException )
-			{
-				return await SolveDbUpdateConcurrencyException(concurrencyException);
-			}
+			var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
+			return await retry.ExecuteWithRetryAsync(ctx =>
+				RenameInternalAsync(ctx, beforeFileHash, newFileHash));
 		}
 		catch ( DbUpdateConcurrencyException concurrencyException )
 		{
@@ -121,20 +86,16 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public async Task<bool> UpdateAsync(ThumbnailItem item)
 	{
-		try
-		{
-			return await UpdateInternalAsync(_context, item);
-		}
-		// InvalidOperationException can also be disposed
-		catch ( InvalidOperationException )
-		{
-			if ( _scopeFactory == null )
-			{
-				throw;
-			}
+		var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
+		return await retry.ExecuteWithRetryAsync(ctx => UpdateInternalAsync(ctx, item));
+	}
 
-			return await UpdateInternalAsync(new InjectServiceScope(_scopeFactory).Context(), item);
-		}
+	public async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber,
+		int pageSize)
+	{
+		var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
+		return await retry.ExecuteWithRetryAsync(ctx =>
+			GetMissingThumbnailsBatchInternalAsync(ctx, pageNumber, pageSize));
 	}
 
 	public bool IsRunningJob()
@@ -161,27 +122,6 @@ public class ThumbnailQuery : IThumbnailQuery
 		_memoryCache.Set($"{nameof(ThumbnailQuery)}_IsRunningJob",
 			value, TimeSpan.FromDays(2));
 		return true;
-	}
-
-	public async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber,
-		int pageSize)
-	{
-		try
-		{
-			return await GetMissingThumbnailsBatchInternalAsync(_context, pageNumber, pageSize);
-		}
-		// InvalidOperationException can also be disposed
-		catch ( InvalidOperationException )
-		{
-			if ( _scopeFactory == null )
-			{
-				throw;
-			}
-
-			return await GetMissingThumbnailsBatchInternalAsync(
-				new InjectServiceScope(_scopeFactory).Context(),
-				pageNumber, pageSize);
-		}
 	}
 
 	private async Task<bool> SolveDbUpdateConcurrencyException(
