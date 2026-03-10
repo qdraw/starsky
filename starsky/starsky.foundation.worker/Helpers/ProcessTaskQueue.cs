@@ -5,174 +5,184 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
-namespace starsky.foundation.worker.Helpers
+namespace starsky.foundation.worker.Helpers;
+
+public static class ProcessTaskQueue
 {
-	public static class ProcessTaskQueue
+	public const int PriorityLaneUpdate = 1;
+	public const int PriorityLaneDiskWatcher = 2;
+	public const int PriorityLaneThumbnail = 3;
+
+	public static readonly BoundedChannelOptions DefaultBoundedChannelOptions =
+		new(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait };
+
+	public static Tuple<TimeSpan, double> RoundUp(AppSettings appSettings)
 	{
-		public static Tuple<TimeSpan, double> RoundUp(AppSettings appSettings)
+		if ( appSettings.UseDiskWatcherIntervalInMilliseconds <= 0 )
 		{
-			if ( appSettings.UseDiskWatcherIntervalInMilliseconds <= 0 )
-			{
-				return new Tuple<TimeSpan, double>(TimeSpan.Zero, 0);
-			}
-
-			var current = DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
-			var atMinuteInBlock = current % appSettings.UseDiskWatcherIntervalInMilliseconds;
-			var msToAdd = appSettings.UseDiskWatcherIntervalInMilliseconds - atMinuteInBlock;
-			return new Tuple<TimeSpan, double>(TimeSpan.FromMilliseconds(msToAdd), current);
+			return new Tuple<TimeSpan, double>(TimeSpan.Zero, 0);
 		}
 
-		public static async Task ProcessBatchedLoopAsync(
-			IBaseBackgroundTaskQueue taskQueue, IWebLogger logger, AppSettings appSettings,
-			CancellationToken cancellationToken)
+		var current = DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
+		var atMinuteInBlock = current % appSettings.UseDiskWatcherIntervalInMilliseconds;
+		var msToAdd = appSettings.UseDiskWatcherIntervalInMilliseconds - atMinuteInBlock;
+		return new Tuple<TimeSpan, double>(TimeSpan.FromMilliseconds(msToAdd), current);
+	}
+
+	public static async Task ProcessBatchedLoopAsync(
+		IBaseBackgroundTaskQueue taskQueue, IWebLogger logger, AppSettings appSettings,
+		CancellationToken cancellationToken, IServiceScopeFactory? scopeFactory = null)
+	{
+		await Task.Yield();
+
+		while ( !cancellationToken.IsCancellationRequested )
 		{
-			await Task.Yield();
-
-			while ( !cancellationToken.IsCancellationRequested )
-			{
-				try
-				{
-					var (secondsToWait, _) = RoundUp(appSettings);
-					if ( secondsToWait.TotalMilliseconds > 10 )
-					{
-						await Task.Delay(secondsToWait, cancellationToken);
-					}
-
-					var taskQueueCount = taskQueue.Count();
-					if ( taskQueueCount <= 0 )
-					{
-						continue;
-					}
-
-					var toDoItems = new List<Tuple<Func<CancellationToken, ValueTask>,
-						string?, string?>>();
-
-					for ( var i = 0; i < taskQueueCount; i++ )
-					{
-						var (workItem, metaData, parentTraceId) =
-							await taskQueue.DequeueAsync(cancellationToken);
-						toDoItems.Add(
-							new Tuple<Func<CancellationToken, ValueTask>, string?, string?>(
-								workItem,
-								metaData, parentTraceId));
-					}
-
-					var afterDistinct = toDoItems.DistinctBy(p => p.Item2).ToList();
-
-					foreach ( var (task, meta, _) in afterDistinct )
-					{
-						var name = taskQueue.GetType().ToString().Split(".").LastOrDefault();
-						logger.LogInformation($"[{name}] next task: {meta}");
-
-						await ExecuteTask(task, logger, null, cancellationToken);
-					}
-
-					logger.LogInformation(
-						$"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next done & wait ");
-				}
-				catch ( TaskCanceledException )
-				{
-					// do nothing
-				}
-			}
-		}
-
-		private static async Task ExecuteTask(
-			Func<CancellationToken, ValueTask> workItem,
-			IWebLogger logger,
-			IBaseBackgroundTaskQueue? taskQueue, CancellationToken cancellationToken)
-		{
-			string? metaData = null;
-			var activity = CreateActivity(null, metaData);
-
 			try
 			{
-				if ( taskQueue != null )
+				var (secondsToWait, _) = RoundUp(appSettings);
+				if ( secondsToWait.TotalMilliseconds > 10 )
 				{
-					string? parentTraceId;
-					// Dequeue here
-					(workItem, metaData, parentTraceId) =
-						await taskQueue.DequeueAsync(cancellationToken);
-
-					// set as parent for activity
-					activity = CreateActivity(parentTraceId, metaData);
+					await Task.Delay(secondsToWait, cancellationToken);
 				}
 
-				activity.Start();
+				var taskQueueCount = taskQueue.Count();
+				if ( taskQueueCount <= 0 )
+				{
+					continue;
+				}
 
-				await workItem(cancellationToken);
+				var toDoItems = new List<BackgroundTaskQueueJob>();
 
-				StopActivity(activity);
+				for ( var i = 0; i < taskQueueCount; i++ )
+				{
+					var queueJob = await taskQueue.DequeueJobAsync(cancellationToken);
+					toDoItems.Add(queueJob);
+				}
+
+				var afterDistinct = toDoItems.DistinctBy(p => p.MetaData).ToList();
+
+				foreach ( var queueJob in afterDistinct )
+				{
+					var name = taskQueue.GetType().ToString().Split(".").LastOrDefault();
+					logger.LogInformation($"[{name}] next task: {queueJob.MetaData}");
+
+					await ExecuteTask(queueJob, logger, null, cancellationToken, scopeFactory);
+				}
+
+				logger.LogInformation(
+					$"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next done & wait ");
 			}
-			catch ( OperationCanceledException )
+			catch ( TaskCanceledException )
 			{
-				// do nothing! Prevent throwing if stoppingToken was signaled
-			}
-			catch ( Exception ex )
-			{
-				logger.LogError(ex, $"Error occurred executing task work item. {ex.Message}");
+				// do nothing
 			}
 		}
+	}
 
-		private static Activity CreateActivity(string? parentTraceId, string? metaData)
+	private static async Task ExecuteTask(
+		BackgroundTaskQueueJob? queueJob,
+		IWebLogger logger,
+		IBaseBackgroundTaskQueue? taskQueue, CancellationToken cancellationToken,
+		IServiceScopeFactory? scopeFactory = null)
+	{
+		var activity = CreateActivity(queueJob?.TraceParentId, queueJob?.MetaData);
+
+		try
 		{
-			metaData ??= nameof(ProcessTaskQueue);
-			var activity = new Activity(metaData);
-			if ( parentTraceId == null )
+			if ( taskQueue != null )
 			{
-				return activity;
+				queueJob = await taskQueue.DequeueJobAsync(cancellationToken);
+				activity = CreateActivity(queueJob.TraceParentId, queueJob.MetaData);
 			}
 
-			activity.SetParentId(parentTraceId);
+			if ( queueJob == null )
+			{
+				throw new InvalidOperationException("Queued job is null");
+			}
+
+			activity.Start();
+			var executed = await TryExecuteViaRegisteredHandlersAsync(scopeFactory, queueJob,
+				cancellationToken);
+
+			if ( !executed )
+			{
+				throw new InvalidOperationException(
+					$"No handler mapping for job type: {queueJob.JobType}");
+			}
+
+			StopActivity(activity);
+		}
+		catch ( OperationCanceledException )
+		{
+			// do nothing! Prevent throwing if stoppingToken was signaled
+		}
+		catch ( Exception ex )
+		{
+			logger.LogError(ex, $"Error occurred executing task work item. {ex.Message}");
+		}
+	}
+
+	private static Activity CreateActivity(string? parentTraceId, string? metaData)
+	{
+		metaData ??= nameof(ProcessTaskQueue);
+		var activity = new Activity(metaData);
+		if ( parentTraceId == null )
+		{
 			return activity;
 		}
 
-		private static void StopActivity(Activity activity)
-		{
-			if ( activity.Duration == TimeSpan.Zero )
-			{
-				activity.SetEndTime(DateTime.UtcNow);
-			}
+		activity.SetParentId(parentTraceId);
+		return activity;
+	}
 
-			activity.Stop();
+	private static void StopActivity(Activity activity)
+	{
+		if ( activity.Duration == TimeSpan.Zero )
+		{
+			activity.SetEndTime(DateTime.UtcNow);
 		}
 
-		public static async Task ProcessTaskQueueAsync(IBaseBackgroundTaskQueue taskQueue,
-			IWebLogger logger, CancellationToken cancellationToken)
-		{
-			logger.LogInformation($"Queued Hosted Service {taskQueue.GetType().Name} is " +
-								  $"starting on {Environment.MachineName}");
+		activity.Stop();
+	}
 
-			while ( !cancellationToken.IsCancellationRequested )
-			{
-				await ExecuteTask(null!, logger, taskQueue, cancellationToken);
-			}
+	public static async Task ProcessTaskQueueAsync(IBaseBackgroundTaskQueue taskQueue,
+		IWebLogger logger, CancellationToken cancellationToken,
+		IServiceScopeFactory? scopeFactory = null)
+	{
+		logger.LogInformation($"Queued Hosted Service {taskQueue.GetType().Name} is " +
+		                      $"starting on {Environment.MachineName}");
+
+		while ( !cancellationToken.IsCancellationRequested )
+		{
+			await ExecuteTask(null!, logger, taskQueue, cancellationToken, scopeFactory);
+		}
+	}
+
+	private static async Task<bool> TryExecuteViaRegisteredHandlersAsync(
+		IServiceScopeFactory? scopeFactory,
+		BackgroundTaskQueueJob queueJob,
+		CancellationToken cancellationToken)
+	{
+		if ( scopeFactory == null || string.IsNullOrWhiteSpace(queueJob.JobType) )
+		{
+			return false;
 		}
 
-		public static readonly BoundedChannelOptions DefaultBoundedChannelOptions =
-			new(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait };
-
-		public static ValueTask QueueBackgroundWorkItemAsync(
-			Channel<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> channel,
-			Func<CancellationToken, ValueTask> workItem,
-			string? metaData = null, string? traceParentId = null)
+		using var scope = scopeFactory.CreateScope();
+		var handlers = scope.ServiceProvider.GetServices<IBackgroundJobHandler>();
+		var handler = handlers.FirstOrDefault(h => h.JobType == queueJob.JobType);
+		if ( handler == null )
 		{
-			ArgumentNullException.ThrowIfNull(workItem);
-			return QueueBackgroundWorkItemInternalAsync(channel, workItem, metaData, traceParentId);
+			return false;
 		}
 
-		private static async ValueTask QueueBackgroundWorkItemInternalAsync(
-			Channel<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> channel,
-			Func<CancellationToken, ValueTask> workItem,
-			string? metaData = null, string? traceParentId = null)
-		{
-			await channel.Writer.WriteAsync(
-				new Tuple<Func<CancellationToken, ValueTask>, string?, string?>(workItem, metaData,
-					traceParentId));
-		}
+		await handler.ExecuteAsync(queueJob.PayloadJson, cancellationToken);
+		return true;
 	}
 }

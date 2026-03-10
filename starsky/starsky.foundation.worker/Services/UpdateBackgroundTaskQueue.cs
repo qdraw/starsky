@@ -7,22 +7,23 @@ using starsky.foundation.injection;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Metrics;
+using starsky.foundation.worker.Models;
 
 namespace starsky.foundation.worker.Services;
 
 /// <summary>
-/// @see: https://learn.microsoft.com/en-us/dotnet/core/extensions/queue-service
+///     @see: https://learn.microsoft.com/en-us/dotnet/core/extensions/queue-service
 /// </summary>
 [Service(typeof(IUpdateBackgroundTaskQueue), InjectionLifetime = InjectionLifetime.Singleton)]
 public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 {
-	private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> _queue;
 	private readonly UpdateBackgroundQueuedMetrics _metrics;
+	private readonly Channel<BackgroundTaskQueueJob> _queue;
 
 	public UpdateBackgroundTaskQueue(IServiceScopeFactory scopeFactory)
 	{
-		_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>,
-			string?, string?>>(ProcessTaskQueue.DefaultBoundedChannelOptions);
+		_queue = Channel.CreateBounded<BackgroundTaskQueueJob>(
+			ProcessTaskQueue.DefaultBoundedChannelOptions);
 
 		_metrics = scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<UpdateBackgroundQueuedMetrics>();
@@ -33,15 +34,17 @@ public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 		return _queue.Reader.Count;
 	}
 
-	public ValueTask QueueBackgroundWorkItemAsync(
-		Func<CancellationToken, ValueTask> workItem,
-		string? metaData = null, string? traceParentId = null)
+	public ValueTask QueueJobAsync(BackgroundTaskQueueJob job)
 	{
-		return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue, workItem, metaData,
-			traceParentId);
+		ArgumentNullException.ThrowIfNull(job);
+		if ( string.IsNullOrWhiteSpace(job.JobType) )
+		{
+			throw new ArgumentException("JobType is required", nameof(job));
+		}
+		return _queue.Writer.WriteAsync(job);
 	}
 
-	public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> DequeueAsync(
+	public async ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(
 		CancellationToken cancellationToken)
 	{
 		var queueItem = await _queue.Reader.ReadAsync(cancellationToken);

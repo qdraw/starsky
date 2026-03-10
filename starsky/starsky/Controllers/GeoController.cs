@@ -12,6 +12,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 namespace starsky.Controllers;
@@ -96,18 +97,23 @@ public sealed class GeoController : Controller
 		}
 
 
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			_logger.LogInformation(
-				$"{nameof(GeoSyncFolder)} started {f} {DateTime.UtcNow.ToShortTimeString()}");
+		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
+			async _ =>
+			{
+				_logger.LogInformation(
+					$"{nameof(GeoSyncFolder)} started {f} {DateTime.UtcNow.ToShortTimeString()}");
 
-			var geoBackgroundTask = _serviceScopeFactory.CreateScope().ServiceProvider
-				.GetRequiredService<IGeoBackgroundTask>();
-			var result = await geoBackgroundTask.GeoBackgroundTaskAsync(f, index,
-				overwriteLocationNames);
+				var geoBackgroundTask = _serviceScopeFactory.CreateScope().ServiceProvider
+					.GetRequiredService<IGeoBackgroundTask>();
+				var result = await geoBackgroundTask.GeoBackgroundTaskAsync(f, index,
+					overwriteLocationNames);
 
-			_logger.LogInformation($"{nameof(GeoSyncFolder)} end {f} {result.Count}");
-		}, f, Activity.Current?.Id);
+				_logger.LogInformation($"{nameof(GeoSyncFolder)} end {f} {result.Count}");
+			},
+			f,
+			Activity.Current?.Id,
+			ProcessTaskQueue.PriorityLaneUpdate,
+			nameof(IUpdateBackgroundTaskQueue)));
 
 		return Json("job started");
 	}

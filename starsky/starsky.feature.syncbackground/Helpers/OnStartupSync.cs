@@ -14,6 +14,7 @@ using starsky.foundation.settings.Formats;
 using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.sync.WatcherBackgroundService;
+using starsky.foundation.worker.Helpers;
 
 namespace starsky.feature.syncbackground.Helpers;
 
@@ -48,8 +49,12 @@ public class OnStartupSync
 
 	public async Task StartUpSync()
 	{
-		await _backgroundTaskQueue.QueueBackgroundWorkItemAsync(
-			async _ => { await StartUpSyncTask(); }, nameof(StartUpSync));
+		await _backgroundTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
+			async _ => { await StartUpSyncTask(); },
+			nameof(StartUpSync),
+			null,
+			ProcessTaskQueue.PriorityLaneDiskWatcher,
+			nameof(IDiskWatcherBackgroundTaskQueue)));
 	}
 
 	public async Task StartUpSyncTask()

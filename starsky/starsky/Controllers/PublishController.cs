@@ -14,6 +14,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 namespace starsky.Controllers;
@@ -109,15 +110,20 @@ public sealed class PublishController : Controller
 		}
 
 		// Creating Publish is a background task
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			var renderCopyResult = await _publishService.RenderCopy(info,
-				publishProfileName, itemName, location);
-			await _publishService.GenerateZip(_appSettings.TempFolder, itemName,
-				renderCopyResult);
-			_webLogger.LogInformation($"[/api/publish/create] done: " +
-			                          $"{itemName} {DateTime.UtcNow}");
-		}, publishProfileName + "_" + itemName);
+		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
+			async _ =>
+			{
+				var renderCopyResult = await _publishService.RenderCopy(info,
+					publishProfileName, itemName, location);
+				await _publishService.GenerateZip(_appSettings.TempFolder, itemName,
+					renderCopyResult);
+				_webLogger.LogInformation($"[/api/publish/create] done: " +
+				                          $"{itemName} {DateTime.UtcNow}");
+			},
+			publishProfileName + "_" + itemName,
+			null,
+			ProcessTaskQueue.PriorityLaneUpdate,
+			nameof(IUpdateBackgroundTaskQueue)));
 
 		// Get the zip 	by	[HttpGet("/export/zip/{f}.zip")]
 		return Json(slugItemName);

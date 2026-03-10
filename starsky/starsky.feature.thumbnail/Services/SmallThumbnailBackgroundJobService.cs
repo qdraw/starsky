@@ -6,6 +6,7 @@ using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 namespace starsky.feature.thumbnail.Services;
@@ -37,9 +38,12 @@ public class SmallThumbnailBackgroundJobService(
 			return false;
 		}
 
-		await bgTaskQueue.QueueBackgroundWorkItemAsync(
+		await bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
 			async _ => { await WorkThumbnailGenerationLoop(path); },
-			"SmallThumbnailBackgroundJobService");
+			"SmallThumbnailBackgroundJobService",
+			null,
+			ProcessTaskQueue.PriorityLaneThumbnail,
+			nameof(IThumbnailQueuedHostedService)));
 		return true;
 	}
 

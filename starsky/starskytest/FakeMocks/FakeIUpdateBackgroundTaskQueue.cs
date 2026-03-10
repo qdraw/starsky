@@ -1,42 +1,38 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 {
-	public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
+	public int QueueBackgroundWorkItemCalledCounter { get; set; }
+
+	public bool QueueBackgroundWorkItemCalled { get; set; }
+
+	public int Count()
 	{
+		return 0;
+	}
 
-		public int Count()
-		{
-			return 0;
-		}
+	public async ValueTask QueueJobAsync(BackgroundTaskQueueJob job)
+	{
+		await InMemoryBackgroundJobCallbackRegistry.TryExecuteAsync(job, CancellationToken.None);
+		QueueBackgroundWorkItemCalled = true;
+		QueueBackgroundWorkItemCalledCounter++;
+	}
 
-		public async ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string? metaData = null,
-			string? traceParentId = null)
-		{
-			await workItem.Invoke(CancellationToken.None);
-			QueueBackgroundWorkItemCalled = true;
-			QueueBackgroundWorkItemCalledCounter++;
-		}
-
-		public int QueueBackgroundWorkItemCalledCounter { get; set; }
-
-		public bool QueueBackgroundWorkItemCalled { get; set; }
-
-		public ValueTask<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> DequeueAsync(CancellationToken cancellationToken)
-		{
-			Func<CancellationToken, ValueTask> sayHello = GetMessage;
-			var res =
-				new Tuple<Func<CancellationToken, ValueTask>, string?, string?>(
-					sayHello, "", "");
-			return ValueTask.FromResult(res);
-		}
-
-		private ValueTask GetMessage(CancellationToken arg)
-		{
-			return ValueTask.CompletedTask;
-		}
+	public ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(CancellationToken cancellationToken)
+	{
+		var job = InMemoryBackgroundJobCallbackRegistry.Register(
+			_ => ValueTask.CompletedTask,
+			string.Empty,
+			string.Empty,
+			ProcessTaskQueue.PriorityLaneUpdate,
+			nameof(FakeIUpdateBackgroundTaskQueue));
+		return ValueTask.FromResult(job);
 	}
 }

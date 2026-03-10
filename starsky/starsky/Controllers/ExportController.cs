@@ -9,6 +9,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.Helpers;
 using starsky.project.web.Helpers;
@@ -66,9 +67,12 @@ public sealed class ExportController : Controller
 		// NOT covered: when try to export for example image thumbnails of xml file
 
 		// Creating a zip is a background task
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
+		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
 			async _ => { await _export.CreateZip(fileIndexResultsList, thumbnail, zipOutputName); },
-			zipOutputName, Activity.Current?.Id);
+			zipOutputName,
+			Activity.Current?.Id,
+			ProcessTaskQueue.PriorityLaneUpdate,
+			nameof(IUpdateBackgroundTaskQueue)));
 
 		// for the rest api
 		return Json(zipOutputName);

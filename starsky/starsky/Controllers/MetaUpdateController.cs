@@ -14,6 +14,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 namespace starsky.Controllers;
@@ -87,15 +88,20 @@ public sealed class MetaUpdateController : Controller
 				[.. inputFilePaths], append, collections, rotateClock);
 
 		// Update >
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			var metaUpdateService = _scopeFactory.CreateScope()
-				.ServiceProvider.GetRequiredService<IMetaUpdateService>();
+		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
+			async _ =>
+			{
+				var metaUpdateService = _scopeFactory.CreateScope()
+					.ServiceProvider.GetRequiredService<IMetaUpdateService>();
 
-			await metaUpdateService.UpdateAsync(
-				changedFileIndexItemName, fileIndexResultsList, null,
-				collections, append, rotateClock);
-		}, "MetaUpdate", Activity.Current?.Id);
+				await metaUpdateService.UpdateAsync(
+					changedFileIndexItemName, fileIndexResultsList, null,
+					collections, append, rotateClock);
+			},
+			"MetaUpdate",
+			Activity.Current?.Id,
+			ProcessTaskQueue.PriorityLaneUpdate,
+			nameof(IUpdateBackgroundTaskQueue)));
 
 		// before sending not founds
 		new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f, collections,

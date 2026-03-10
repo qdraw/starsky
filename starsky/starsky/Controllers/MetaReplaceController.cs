@@ -12,6 +12,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 namespace starsky.Controllers;
@@ -77,14 +78,19 @@ public sealed class MetaReplaceController : Controller
 			_ => new List<string> { fieldName });
 
 		// Update >
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			var metaUpdateService = _scopeFactory.CreateScope()
-				.ServiceProvider.GetRequiredService<IMetaUpdateService>();
-			await metaUpdateService
-				.UpdateAsync(changedFileIndexItemName, resultsOkOrDeleteList,
-					null, collections, false, 0);
-		}, string.Empty);
+		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
+			async _ =>
+			{
+				var metaUpdateService = _scopeFactory.CreateScope()
+					.ServiceProvider.GetRequiredService<IMetaUpdateService>();
+				await metaUpdateService
+					.UpdateAsync(changedFileIndexItemName, resultsOkOrDeleteList,
+						null, collections, false, 0);
+			},
+			string.Empty,
+			null,
+			ProcessTaskQueue.PriorityLaneUpdate,
+			nameof(IUpdateBackgroundTaskQueue)));
 
 		// before sending not founds
 		new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update",

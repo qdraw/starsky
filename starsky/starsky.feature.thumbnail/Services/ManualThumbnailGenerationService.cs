@@ -5,6 +5,7 @@ using starsky.feature.thumbnail.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -34,8 +35,12 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 	public async Task ManualBackgroundQueue(string subPath)
 	{
 		// When the CPU is too high its gives an Error 500
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
-			async _ => { await WorkThumbnailGeneration(subPath); }, subPath);
+		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
+			async _ => { await WorkThumbnailGeneration(subPath); },
+			subPath,
+			null,
+			ProcessTaskQueue.PriorityLaneThumbnail,
+			nameof(IThumbnailQueuedHostedService)));
 	}
 
 	internal async Task WorkThumbnailGeneration(string subPath)

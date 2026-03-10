@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -17,20 +18,23 @@ public sealed class DiskWatcherQueuedHostedService : BackgroundService
 {
 	private readonly AppSettings _appSettings;
 	private readonly IWebLogger _logger;
+	private readonly IServiceScopeFactory _scopeFactory;
 	private readonly IDiskWatcherBackgroundTaskQueue _taskQueue;
 
 	public DiskWatcherQueuedHostedService(
 		IDiskWatcherBackgroundTaskQueue taskQueue,
-		IWebLogger logger, AppSettings appSettings)
+		IWebLogger logger, AppSettings appSettings,
+		IServiceScopeFactory scopeFactory)
 	{
-		( _taskQueue, _logger, _appSettings ) = ( taskQueue, logger, appSettings );
+		(_taskQueue, _logger, _appSettings, _scopeFactory) = (taskQueue, logger, appSettings,
+			scopeFactory);
 	}
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		_logger.LogInformation("Queued Hosted Service for DiskWatcher");
 		await ProcessTaskQueue.ProcessBatchedLoopAsync(_taskQueue, _logger,
-			_appSettings, stoppingToken);
+			_appSettings, stoppingToken, _scopeFactory);
 	}
 
 	public override async Task StopAsync(CancellationToken cancellationToken)

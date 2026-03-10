@@ -7,6 +7,7 @@ using starsky.foundation.injection;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.native.Trash.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -75,19 +76,25 @@ public class MoveToTrashService : IMoveToTrashService
 
 		var isSystemTrashEnabled = IsEnabled();
 
-		await _queue.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			await _connectionService.ConnectionServiceAsync(moveToTrashList, isSystemTrashEnabled);
-
-			if ( isSystemTrashEnabled )
+		await _queue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
+			async _ =>
 			{
-				await SystemTrashInQueue(moveToTrashList);
-				return;
-			}
+				await _connectionService.ConnectionServiceAsync(moveToTrashList,
+					isSystemTrashEnabled);
 
-			await MetaTrashInQueue(changedFileIndexItemName,
-				fileIndexResultsList, inputModel, collections);
-		}, "trash");
+				if ( isSystemTrashEnabled )
+				{
+					await SystemTrashInQueue(moveToTrashList);
+					return;
+				}
+
+				await MetaTrashInQueue(changedFileIndexItemName,
+					fileIndexResultsList, inputModel, collections);
+			},
+			"trash",
+			null,
+			ProcessTaskQueue.PriorityLaneUpdate,
+			nameof(IUpdateBackgroundTaskQueue)));
 
 		return TrashConnectionService.StatusUpdate(moveToTrashList, isSystemTrashEnabled);
 	}

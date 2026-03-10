@@ -14,7 +14,9 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
 namespace starsky.Controllers;
 
@@ -197,30 +199,36 @@ public class MetaTimeCorrectController(
 		IExifTimeCorrectionRequest request,
 		string correctionType)
 	{
-		await queue.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			using var scope = scopeFactory.CreateScope();
-			var scopedService =
-				scope.ServiceProvider.GetRequiredService<IExifTimezoneCorrectionService>();
+		await queue.QueueJobAsync(
+			InMemoryBackgroundJobCallbackRegistry.Register(
+				async _ =>
+				{
+					using var scope = scopeFactory.CreateScope();
+					var scopedService =
+						scope.ServiceProvider.GetRequiredService<IExifTimezoneCorrectionService>();
 
-			var fileIndexResultsList = validateResults
-				.Where(r => r.FileIndexItem != null)
-				.Select(r => r.FileIndexItem!)
-				.ToList();
+					var fileIndexResultsList = validateResults
+						.Where(r => r.FileIndexItem != null)
+						.Select(r => r.FileIndexItem!)
+						.ToList();
 
-			logger.LogInformation(
-				$"[MetaTimeCorrectController] Starting {correctionType} correction for {fileIndexResultsList.Count} files");
+					logger.LogInformation(
+						$"[MetaTimeCorrectController] Starting {correctionType} correction for {fileIndexResultsList.Count} files");
 
-			var results = await scopedService.CorrectTimezoneAsync(
-				fileIndexResultsList,
-				request);
+					var results = await scopedService.CorrectTimezoneAsync(
+						fileIndexResultsList,
+						request);
 
-			logger.LogInformation(
-				$"[MetaTimeCorrectController] Completed {correctionType} correction: " +
-				$"{results.Count(r => r.Success)} succeeded, {results.Count(r => !r.Success)} failed");
+					logger.LogInformation(
+						$"[MetaTimeCorrectController] Completed {correctionType} correction: " +
+						$"{results.Count(r => r.Success)} succeeded, {results.Count(r => !r.Success)} failed");
 
-			await UpdateWebSocketTaskRun(fileIndexResultsList);
-		});
+					await UpdateWebSocketTaskRun(fileIndexResultsList);
+				},
+				"MetaTimeCorrect",
+				null,
+				ProcessTaskQueue.PriorityLaneUpdate,
+				nameof(IUpdateBackgroundTaskQueue)));
 	}
 
 	private async Task UpdateWebSocketTaskRun(List<FileIndexItem> fileIndexResultsList)

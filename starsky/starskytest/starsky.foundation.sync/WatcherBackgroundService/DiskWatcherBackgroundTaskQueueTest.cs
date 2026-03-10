@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.sync.Metrics;
 using starsky.foundation.sync.WatcherBackgroundService;
+using starsky.foundation.worker.Helpers;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
@@ -27,14 +28,17 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		public async Task QueueBackgroundWorkItemAsync_DequeueAsync()
 		{
 			var queue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
-			await queue.QueueBackgroundWorkItemAsync(_ =>
-					ValueTask.CompletedTask,
-				string.Empty);
+			await queue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
+				_ => ValueTask.CompletedTask,
+				string.Empty,
+				null,
+				ProcessTaskQueue.PriorityLaneDiskWatcher,
+				nameof(IDiskWatcherBackgroundTaskQueue)));
 
 			Assert.AreEqual(1, queue.Count());
 
 			var token = new CancellationToken();
-			await queue!.DequeueAsync(token);
+			await queue.DequeueJobAsync(token);
 
 			Assert.AreEqual(0, queue.Count());
 		}
@@ -43,8 +47,12 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		public async Task Count_AddOneForCount()
 		{
 			var backgroundQueue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
-			await backgroundQueue.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask,
-				string.Empty);
+			await backgroundQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
+				_ => ValueTask.CompletedTask,
+				string.Empty,
+				null,
+				ProcessTaskQueue.PriorityLaneDiskWatcher,
+				nameof(IDiskWatcherBackgroundTaskQueue)));
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(1, count);
 		}

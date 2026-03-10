@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.Json;
 using starsky.feature.thumbnail.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -13,6 +14,8 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.Models;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 namespace starsky.feature.thumbnail.Services;
@@ -21,6 +24,9 @@ namespace starsky.feature.thumbnail.Services;
 	InjectionLifetime = InjectionLifetime.Scoped)]
 public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationService
 {
+	public const string DatabaseThumbnailGenerationJobType =
+		"Thumbnail.DatabaseGenerationLoop.v1";
+
 	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
 	private readonly IWebSocketConnectionsService _connectionsService;
 	private readonly IWebLogger _logger;
@@ -54,9 +60,20 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			return;
 		}
 
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
-			async _ => { await WorkThumbnailGenerationLoop(); },
-			"DatabaseThumbnailGenerationService");
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "DatabaseThumbnailGenerationService",
+			TraceParentId = null,
+			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
+			QueueName = nameof(IThumbnailQueuedHostedService),
+			JobType = DatabaseThumbnailGenerationJobType,
+			PayloadJson = JsonSerializer.Serialize(new DatabaseThumbnailGenerationPayload())
+		});
+	}
+
+	public async Task ExecuteQueuedJobAsync()
+	{
+		await WorkThumbnailGenerationLoop();
 	}
 
 	private async Task WorkThumbnailGenerationLoop()
@@ -168,4 +185,8 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 
 		return chuckedItems;
 	}
+}
+
+public sealed class DatabaseThumbnailGenerationPayload
+{
 }

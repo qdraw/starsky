@@ -25,6 +25,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailmeta.Interfaces;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 
@@ -86,12 +87,16 @@ public sealed class ImportController : Controller
 		var fileIndexResultsList = await _import.Preflight(tempImportPaths, importSettings);
 
 		// Import files >
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
+		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
 			async _ =>
 			{
 				await ImportPostBackgroundTask(tempImportPaths, importSettings,
 					_appSettings.IsVerbose());
-			}, string.Join(",", tempImportPaths));
+			},
+			string.Join(",", tempImportPaths),
+			null,
+			ProcessTaskQueue.PriorityLaneUpdate,
+			nameof(IUpdateBackgroundTaskQueue)));
 
 		// When all items are already imported
 		if ( importSettings.IndexMode &&
