@@ -1,8 +1,10 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starskytest.FakeMocks;
@@ -157,5 +159,58 @@ public class ExecuteWithRetryTest
 		Assert.AreEqual(123, res);
 		Assert.IsGreaterThanOrEqualTo(2, call);
 		Assert.IsNotEmpty(logger.TrackedWarnings);
+	}
+	
+	[TestMethod]
+	public void IsTransientDbException_Null_ReturnsFalse()
+	{
+		Assert.IsFalse(ExecuteWithRetry.IsTransientDbException(null));
+	}
+
+	[TestMethod]
+	public void IsTransientDbException_InvalidOperationException_ReturnsTrue()
+	{
+		Assert.IsTrue(ExecuteWithRetry.IsTransientDbException(new InvalidOperationException()));
+	}
+
+	[TestMethod]
+	public void IsTransientDbException_NullReferenceException_ReturnsTrue()
+	{
+		Assert.IsTrue(ExecuteWithRetry.IsTransientDbException(new NullReferenceException()));
+	}
+
+	[TestMethod]
+	public void IsTransientDbException_MySqlExceptionInstance_ReturnsTrue()
+	{
+		// Create an instance of MySqlException without invoking constructor
+		var mysqlType = typeof(MySqlException);
+		var mysqlEx = (Exception)RuntimeHelpers.GetUninitializedObject(mysqlType);
+		Assert.IsTrue(ExecuteWithRetry.IsTransientDbException(mysqlEx));
+	}
+
+	[TestMethod]
+	public void IsTransientDbException_InnerExceptionChainContainingMySql_ReturnsTrue()
+	{
+		var mysqlType = typeof(MySqlException);
+		var mysqlEx = (Exception)RuntimeHelpers.GetUninitializedObject(mysqlType);
+
+		var inner = new Exception("inner", mysqlEx);
+		var outer = new Exception("outer", inner);
+
+		Assert.IsTrue(ExecuteWithRetry.IsTransientDbException(outer));
+	}
+
+	[TestMethod]
+	public void IsTransientDbException_ArgumentException_ReturnsFalse()
+	{
+		Assert.IsFalse(ExecuteWithRetry.IsTransientDbException(new ArgumentException("bad")));
+	}
+
+	[TestMethod]
+	public void IsTransientDbException_InnerChainWithoutMySql_ReturnsFalse()
+	{
+		var inner = new Exception("inner", new InvalidCastException());
+		var outer = new Exception("outer", inner);
+		Assert.IsFalse(ExecuteWithRetry.IsTransientDbException(outer));
 	}
 }

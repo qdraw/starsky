@@ -76,7 +76,7 @@ public class ExecuteWithRetry(
 		}
 	}
 
-	private static bool IsTransientDbException(Exception? ex)
+	internal static bool IsTransientDbException(Exception? ex)
 	{
 		switch ( ex )
 		{
