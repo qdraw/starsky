@@ -166,6 +166,31 @@ public sealed class WebLoggerTest
 		Assert.AreEqual(expectedException.Message, error);
 		Assert.AreEqual(LogLevel.Information, logLevel);
 	}
+	
+	[TestMethod]
+	public void Warning_Exception_String_ShouldPassFakeLogger()
+	{
+		var factory = new FakeILoggerFactory();
+		new WebLogger(factory).LogWarning(new Exception(), 
+			"warning");
+		var error = factory.Storage.ErrorLog[0];
+		var logLevel = factory.Storage.LogLevelLog[0];
+
+		Assert.Contains("Exception", error);
+		Assert.AreEqual(LogLevel.Warning, logLevel);
+	}
+	
+	[TestMethod]
+	public void Warning_Exception_String_ConsoleFallback()
+	{
+		new WebLogger(null, _scopeFactory).LogWarning(new Exception(), 
+			"warning");
+		var fakeConsole =
+			_scopeFactory.CreateScope().ServiceProvider
+				.GetService<IConsole>() as FakeConsoleWrapper;
+		
+		Assert.Contains("Exception", fakeConsole?.WrittenLines[0]!);
+	}
 
 	[TestMethod]
 	public void Information_Exception_ConsoleFallback()
