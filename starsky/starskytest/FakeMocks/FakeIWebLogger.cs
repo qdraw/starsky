@@ -97,6 +97,15 @@ public class FakeIWebLogger : IWebLogger
 			TrackedWarnings.Add(( exception, message ));
 		}
 
-		Console.WriteLine(exception.Message + message, args);
+		try
+		{
+			var safeMessage = message.Replace("{", "{{").Replace("}", "}}");
+			var exceptionMessage = exception.Message.Replace("{", "{{").Replace("}", "}}");
+			Console.WriteLine(exceptionMessage + safeMessage, args);
+		}
+		catch ( Exception e )
+		{
+			Console.WriteLine(e);
+		}
 	}
 }
