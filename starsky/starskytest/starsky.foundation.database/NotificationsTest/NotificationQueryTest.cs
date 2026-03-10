@@ -34,6 +34,8 @@ public sealed class NotificationQueryTest
 			new NotificationQuery(_dbContext, new FakeIWebLogger(), serviceScopeFactory);
 	}
 
+	public TestContext TestContext { get; set; }
+
 	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
@@ -118,7 +120,7 @@ public sealed class NotificationQueryTest
 		{
 			var sut = new NotificationQuery(dbContextDisposed, new FakeIWebLogger(),
 				serviceScopeFactory);
-			result = await sut.AddNotification(dbContextDisposed,
+			result = await sut.AddNotification(
 				NotificationQuery.NewNotificationItem(content), content);
 
 			// Assert
@@ -240,6 +242,4 @@ public sealed class NotificationQueryTest
 			await _dbContext.Notifications.CountAsync(TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(0, countAsync);
 	}
-
-	public TestContext TestContext { get; set; }
 }
