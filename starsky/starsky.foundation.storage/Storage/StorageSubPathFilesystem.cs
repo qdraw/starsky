@@ -167,11 +167,6 @@ public sealed class StorageSubPathFilesystem : IStorage
 		var storage = new StorageHostFullPathFilesystem(_logger);
 		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 
-		if ( !storage.ExistFolder(fullFilePath) )
-		{
-			return Enumerable.Empty<string>();
-		}
-
 		var imageFilesList = storage.GetAllFilesInDirectory(fullFilePath);
 
 		// to filter use:
@@ -245,11 +240,6 @@ public sealed class StorageSubPathFilesystem : IStorage
 		var storage = new StorageHostFullPathFilesystem(_logger);
 
 		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
-		if ( !storage.ExistFolder(fullFilePath) )
-		{
-			return [];
-		}
-
 		var folders = storage.GetDirectoryRecursive(fullFilePath);
 
 		// Used For subfolders
