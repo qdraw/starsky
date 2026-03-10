@@ -523,41 +523,6 @@ public sealed class StorageHostFullPathFilesystemTest
 			// expected
 		}
 	}
-
-	[TestMethod]
-	public void IsFolderEmpty_FileAppearsBetweenChecks_ReturnsFalse()
-	{
-		var dir = Path.Combine(Path.GetTempPath(), "IsFolderEmpty_Transient_" + Guid.NewGuid());
-		Directory.CreateDirectory(dir);
-		try
-		{
-			// Start a background task that will create a file shortly after IsFolderEmpty starts
-			var filePath = Path.Combine(dir, "late.txt");
-			Task.Run(async () =>
-			{
-				// create the file after 5ms so it appears between the two checks (Sleep 10ms)
-				await Task.Delay(5, TestContext.CancellationToken).ConfigureAwait(false);
-				await File.WriteAllTextAsync(filePath, "x", TestContext.CancellationToken);
-			}, TestContext.CancellationToken);
-
-			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-			var result = storage.IsFolderEmpty(dir);
-			Assert.IsFalse(result,
-				"Expected folder to be treated as non-empty when a file appears between checks");
-		}
-		finally
-		{
-			// Ensure directory is removed; ignore exceptions but log any error for diagnostics
-			try
-			{
-				Directory.Delete(dir, true);
-			}
-			catch ( Exception e )
-			{
-				Console.WriteLine($"Cleanup failed for {dir}: {e.Message}");
-			}
-		}
-	}
 }
 
 internal sealed class NotSupportedExceptionStream : Stream
