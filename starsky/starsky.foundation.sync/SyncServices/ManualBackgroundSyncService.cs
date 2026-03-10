@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
@@ -9,12 +10,14 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
 namespace starsky.foundation.sync.SyncServices;
 
 [Service(typeof(IManualBackgroundSyncService), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 {
+	public const string JobType = "Sync.ManualBackground.v1";
 	internal const string ManualSyncCacheName = "ManualSync_";
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly IMemoryCache _cache;
@@ -61,12 +64,18 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 		CreateSyncLock(subPath);
 
 		// Runs within IUpdateBackgroundTaskQueue
-		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-			async _ => { await BackgroundTaskExceptionWrapper(fileIndexItem.FilePath!); },
-			fileIndexItem.FilePath!,
-			null,
-			ProcessTaskQueue.PriorityLaneUpdate,
-			nameof(IUpdateBackgroundTaskQueue)));
+		var payload = new ManualBackgroundSyncPayload
+		{
+			SubPath = fileIndexItem.FilePath ?? string.Empty
+		};
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = fileIndexItem.FilePath,
+			TraceParentId = null,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = JobType,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
 
 		return FileIndexItem.ExifStatus.Ok;
 	}
@@ -117,4 +126,9 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 			$"[ManualBackgroundSyncService] Ok: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)}" +
 			$" ~ OkAndSame: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)}");
 	}
+}
+
+public sealed class ManualBackgroundSyncPayload
+{
+	public string SubPath { get; set; } = string.Empty;
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +15,8 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
+using starsky.Helpers;
 
 namespace starsky.Controllers;
 
@@ -78,19 +81,19 @@ public sealed class MetaReplaceController : Controller
 			_ => new List<string> { fieldName });
 
 		// Update >
-		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-			async _ =>
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = string.Empty,
+			TraceParentId = null,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = ControllerBackgroundJobTypes.MetaReplace,
+			PayloadJson = JsonSerializer.Serialize(new MetaReplaceBackgroundPayload
 			{
-				var metaUpdateService = _scopeFactory.CreateScope()
-					.ServiceProvider.GetRequiredService<IMetaUpdateService>();
-				await metaUpdateService
-					.UpdateAsync(changedFileIndexItemName, resultsOkOrDeleteList,
-						null, collections, false, 0);
-			},
-			string.Empty,
-			null,
-			ProcessTaskQueue.PriorityLaneUpdate,
-			nameof(IUpdateBackgroundTaskQueue)));
+				ChangedFileIndexItemName = changedFileIndexItemName,
+				ResultsOkOrDeleteList = resultsOkOrDeleteList,
+				Collections = collections
+			})
+		});
 
 		// before sending not founds
 		new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update",

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text.Json;
 using starsky.feature.thumbnail.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -65,7 +65,6 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			MetaData = "DatabaseThumbnailGenerationService",
 			TraceParentId = null,
 			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
-			QueueName = nameof(IThumbnailQueuedHostedService),
 			JobType = DatabaseThumbnailGenerationJobType,
 			PayloadJson = JsonSerializer.Serialize(new DatabaseThumbnailGenerationPayload())
 		});

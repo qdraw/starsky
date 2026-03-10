@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -27,6 +28,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 using starsky.foundation.writemeta.Interfaces;
 
 namespace starsky.Controllers;
@@ -87,16 +89,20 @@ public sealed class ImportController : Controller
 		var fileIndexResultsList = await _import.Preflight(tempImportPaths, importSettings);
 
 		// Import files >
-		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-			async _ =>
-			{
-				await ImportPostBackgroundTask(tempImportPaths, importSettings,
-					_appSettings.IsVerbose());
-			},
-			string.Join(",", tempImportPaths),
-			null,
-			ProcessTaskQueue.PriorityLaneUpdate,
-			nameof(IUpdateBackgroundTaskQueue)));
+		var payload = new ImportBackgroundPayload
+		{
+			TempImportPaths = tempImportPaths,
+			ImportSettings = importSettings,
+			IsVerbose = _appSettings.IsVerbose()
+		};
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = string.Join(",", tempImportPaths),
+			TraceParentId = null,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = ImportBackgroundJobHandler.Import,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
 
 		// When all items are already imported
 		if ( importSettings.IndexMode &&

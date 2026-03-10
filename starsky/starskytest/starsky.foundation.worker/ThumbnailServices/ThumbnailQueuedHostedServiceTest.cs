@@ -16,10 +16,9 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.CpuEventListener.Interfaces;
-using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
-using starsky.foundation.worker.Models;
 using starsky.foundation.worker.Metrics;
+using starsky.foundation.worker.Models;
 using starsky.foundation.worker.ThumbnailServices;
 using starsky.foundation.worker.ThumbnailServices.Exceptions;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
@@ -33,6 +32,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices;
 [TestClass]
 public sealed class ThumbnailQueuedHostedServiceTest
 {
+	private const string TestJobType = "Test.ThumbnailQueue.v1";
 	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
 	private readonly IServiceScopeFactory _scopeFactory;
 
@@ -58,7 +58,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		// metrics
 		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
 		services.AddSingleton<ThumbnailBackgroundQueuedMetrics>();
-		services.AddScoped<IBackgroundJobHandler, InMemoryBackgroundJobCallbackHandler>();
+		services.AddScoped<IBackgroundJobHandler, TestThumbnailBackgroundJobHandler>();
 
 		// build the service
 		var serviceProvider = services.BuildServiceProvider();
@@ -66,20 +66,20 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
 
+	public TestContext TestContext { get; set; }
+
+	private static BackgroundTaskQueueJob CreateJob(string payload = "ok")
+	{
+		return new BackgroundTaskQueueJob
+		{
+			JobType = TestJobType, PayloadJson = payload, MetaData = string.Empty
+		};
+	}
+
 	[TestMethod]
 	public async Task ThumbnailQueuedHostedServiceTest_DequeueAsync()
 	{
-		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(async token =>
-		{
-			for ( var delayLoop = 0; delayLoop < 3; delayLoop++ )
-			{
-				await Task.Delay(TimeSpan.FromSeconds(1), token);
-				Console.WriteLine(delayLoop);
-				await _bgTaskQueue.DequeueJobAsync(token);
-			}
-		}, string.Empty, null, ProcessTaskQueue.PriorityLaneThumbnail,
-			nameof(IThumbnailQueuedHostedService)));
-
+		await _bgTaskQueue.QueueJobAsync(CreateJob());
 		Assert.AreEqual(1, _bgTaskQueue.Count());
 	}
 
@@ -88,12 +88,9 @@ public sealed class ThumbnailQueuedHostedServiceTest
 	{
 		var backgroundQueue = new ThumbnailBackgroundTaskQueue(new FakeICpuUsageListener(),
 			new FakeIWebLogger(), new AppSettings(), _scopeFactory);
-		await backgroundQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-			_ => ValueTask.CompletedTask, string.Empty, null,
-			ProcessTaskQueue.PriorityLaneThumbnail, nameof(IThumbnailQueuedHostedService)));
+		await backgroundQueue.QueueJobAsync(CreateJob());
 
 		var count = backgroundQueue.Count();
-
 		Assert.AreEqual(1, count);
 	}
 
@@ -114,9 +111,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 
 		async Task Test()
 		{
-			await backgroundQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-				_ => ValueTask.CompletedTask, string.Empty, null,
-				ProcessTaskQueue.PriorityLaneThumbnail, nameof(IThumbnailQueuedHostedService)));
+			await backgroundQueue.QueueJobAsync(CreateJob());
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(0, count);
 		}
@@ -140,13 +135,11 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		services.AddSingleton<ICpuUsageListener, FakeICpuUsageListener>();
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		services.AddSingleton<AppSettings, AppSettings>();
-		// metrics
 		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
 		services.AddSingleton<ThumbnailBackgroundQueuedMetrics>();
-		services.AddScoped<IBackgroundJobHandler, InMemoryBackgroundJobCallbackHandler>();
+		services.AddScoped<IBackgroundJobHandler, TestThumbnailBackgroundJobHandler>();
 
 		var serviceProvider = services.BuildServiceProvider();
-
 		var hostedServices = serviceProvider.GetServices<IHostedService>().ToList();
 		if ( hostedServices.Count != 1 )
 		{
@@ -154,39 +147,28 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		}
 
 		var service = hostedServices[0] as ThumbnailQueuedHostedService;
-
 		var backgroundQueue = serviceProvider.GetService<IThumbnailQueuedHostedService>();
-
 		if ( service == null )
 		{
 			throw new NullReferenceException("bg is null");
 		}
 
 		await service.StartAsync(CancellationToken.None);
-
-		var isExecuted = false;
-		await backgroundQueue!.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-			async _ =>
-			{
-				await Task.Yield();
-				isExecuted = true;
-			},
-			string.Empty, null, ProcessTaskQueue.PriorityLaneThumbnail,
-			nameof(IThumbnailQueuedHostedService)));
+		TestThumbnailBackgroundJobHandler.ExecutedCount = 0;
+		await backgroundQueue!.QueueJobAsync(CreateJob());
 
 		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
-		if ( !isExecuted )
+		if ( TestThumbnailBackgroundJobHandler.ExecutedCount == 0 )
 		{
 			await Task.Delay(400, TestContext.CancellationTokenSource.Token);
 		}
 
-		if ( !isExecuted )
+		if ( TestThumbnailBackgroundJobHandler.ExecutedCount == 0 )
 		{
 			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
-		Assert.IsTrue(isExecuted);
-
+		Assert.IsTrue(TestThumbnailBackgroundJobHandler.ExecutedCount > 0);
 		await service.StopAsync(CancellationToken.None);
 	}
 
@@ -246,13 +228,11 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		services.AddSingleton<AppSettings, AppSettings>();
 		services.AddSingleton<ICpuUsageListener, FakeICpuUsageListener>();
-		// metrics
 		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
 		services.AddSingleton<ThumbnailBackgroundQueuedMetrics>();
-		services.AddScoped<IBackgroundJobHandler, InMemoryBackgroundJobCallbackHandler>();
+		services.AddScoped<IBackgroundJobHandler, TestThumbnailBackgroundJobHandler>();
 
 		var serviceProvider = services.BuildServiceProvider();
-
 		var hostedServices = serviceProvider.GetServices<IHostedService>().ToList();
 		if ( hostedServices.Count != 1 )
 		{
@@ -260,33 +240,24 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		}
 
 		var service = hostedServices[0] as ThumbnailQueuedHostedService;
-
 		var backgroundQueue = serviceProvider.GetService<IThumbnailQueuedHostedService>();
-
 		await service!.StartAsync(CancellationToken.None);
 
-		var isExecuted = false;
-		await backgroundQueue!.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(async _ =>
-		{
-			await Task.Yield();
-			isExecuted = true;
-			throw new Exception();
-			// EXCEPTION IS IGNORED
-		}, string.Empty, null, ProcessTaskQueue.PriorityLaneThumbnail,
-			nameof(IThumbnailQueuedHostedService)));
+		TestThumbnailBackgroundJobHandler.ExecutedCount = 0;
+		await backgroundQueue!.QueueJobAsync(CreateJob("throw"));
 
 		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
-		if ( !isExecuted )
+		if ( TestThumbnailBackgroundJobHandler.ExecutedCount == 0 )
 		{
 			await Task.Delay(400, TestContext.CancellationTokenSource.Token);
 		}
 
-		if ( !isExecuted )
+		if ( TestThumbnailBackgroundJobHandler.ExecutedCount == 0 )
 		{
 			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
-		Assert.IsTrue(isExecuted);
+		Assert.IsTrue(TestThumbnailBackgroundJobHandler.ExecutedCount > 0);
 	}
 
 	[TestMethod]
@@ -327,6 +298,21 @@ public sealed class ThumbnailQueuedHostedServiceTest
 
 		Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("is stopping"));
 	}
+}
 
-	public TestContext TestContext { get; set; }
+internal sealed class TestThumbnailBackgroundJobHandler : IBackgroundJobHandler
+{
+	public static int ExecutedCount { get; set; }
+	public string JobType => "Test.ThumbnailQueue.v1";
+
+	public Task ExecuteAsync(string? payloadJson, CancellationToken cancellationToken)
+	{
+		ExecutedCount++;
+		if ( payloadJson == "throw" )
+		{
+			throw new Exception();
+		}
+
+		return Task.CompletedTask;
+	}
 }

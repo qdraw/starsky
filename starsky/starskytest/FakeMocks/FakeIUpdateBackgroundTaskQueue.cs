@@ -1,7 +1,5 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
 
@@ -20,19 +18,19 @@ public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 
 	public async ValueTask QueueJobAsync(BackgroundTaskQueueJob job)
 	{
-		await InMemoryBackgroundJobCallbackRegistry.TryExecuteAsync(job, CancellationToken.None);
+		await Task.Yield();
 		QueueBackgroundWorkItemCalled = true;
 		QueueBackgroundWorkItemCalledCounter++;
 	}
 
 	public ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(CancellationToken cancellationToken)
 	{
-		var job = InMemoryBackgroundJobCallbackRegistry.Register(
-			_ => ValueTask.CompletedTask,
-			string.Empty,
-			string.Empty,
-			ProcessTaskQueue.PriorityLaneUpdate,
-			nameof(FakeIUpdateBackgroundTaskQueue));
-		return ValueTask.FromResult(job);
+		return ValueTask.FromResult(new BackgroundTaskQueueJob
+		{
+			JobType = "Fake.Noop",
+			PayloadJson = "{}",
+			MetaData = string.Empty,
+			TraceParentId = string.Empty
+		});
 	}
 }

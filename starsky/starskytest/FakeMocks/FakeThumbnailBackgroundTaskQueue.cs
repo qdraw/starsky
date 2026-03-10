@@ -1,7 +1,5 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Models;
 using starsky.foundation.worker.ThumbnailServices.Exceptions;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
@@ -22,7 +20,7 @@ public class FakeThumbnailBackgroundTaskQueue(bool cpuOverload = false)
 
 	public async ValueTask QueueJobAsync(BackgroundTaskQueueJob job)
 	{
-		await InMemoryBackgroundJobCallbackRegistry.TryExecuteAsync(job, CancellationToken.None);
+		await Task.Yield();
 		QueueBackgroundWorkItemCalled = true;
 		QueueBackgroundWorkItemCalledCounter++;
 	}
@@ -30,13 +28,13 @@ public class FakeThumbnailBackgroundTaskQueue(bool cpuOverload = false)
 	public ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(
 		CancellationToken cancellationToken)
 	{
-		var job = InMemoryBackgroundJobCallbackRegistry.Register(
-			_ => ValueTask.CompletedTask,
-			string.Empty,
-			string.Empty,
-			ProcessTaskQueue.PriorityLaneThumbnail,
-			nameof(FakeThumbnailBackgroundTaskQueue));
-		return ValueTask.FromResult(job);
+		return ValueTask.FromResult(new BackgroundTaskQueueJob
+		{
+			JobType = "Fake.Noop",
+			PayloadJson = "{}",
+			MetaData = string.Empty,
+			TraceParentId = string.Empty
+		});
 	}
 
 	public bool ThrowExceptionIfCpuUsageIsToHigh(string metaData)

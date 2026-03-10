@@ -37,7 +37,7 @@ public class MoveToTrashServiceTest
 			trashService, new FakeIMetaUpdateService(),
 			new FakeITrashConnectionService());
 
-		await moveToTrashService.MoveToTrashAsync(new List<string> { path }, true);
+		await moveToTrashService.MoveToTrashAsync([path], true);
 
 		Assert.HasCount(1, trashService.InTrash);
 		var expected = appSettings.StorageFolder +

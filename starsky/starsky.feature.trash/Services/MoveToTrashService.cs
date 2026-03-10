@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -9,6 +10,7 @@ using starsky.foundation.native.Trash.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -17,6 +19,7 @@ namespace starsky.feature.trash.Services;
 [Service(typeof(IMoveToTrashService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MoveToTrashService : IMoveToTrashService
 {
+	public const string JobType = "Trash.MoveToTrash.v1";
 	private readonly AppSettings _appSettings;
 	private readonly ITrashConnectionService _connectionService;
 	private readonly IMetaPreflight _metaPreflight;
@@ -76,25 +79,23 @@ public class MoveToTrashService : IMoveToTrashService
 
 		var isSystemTrashEnabled = IsEnabled();
 
-		await _queue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-			async _ =>
-			{
-				await _connectionService.ConnectionServiceAsync(moveToTrashList,
-					isSystemTrashEnabled);
-
-				if ( isSystemTrashEnabled )
-				{
-					await SystemTrashInQueue(moveToTrashList);
-					return;
-				}
-
-				await MetaTrashInQueue(changedFileIndexItemName,
-					fileIndexResultsList, inputModel, collections);
-			},
-			"trash",
-			null,
-			ProcessTaskQueue.PriorityLaneUpdate,
-			nameof(IUpdateBackgroundTaskQueue)));
+		var payload = new MoveToTrashPayload
+		{
+			MoveToTrashList = moveToTrashList,
+			IsSystemTrashEnabled = isSystemTrashEnabled,
+			ChangedFileIndexItemName = changedFileIndexItemName,
+			FileIndexResultsList = fileIndexResultsList,
+			InputModel = inputModel,
+			Collections = collections
+		};
+		await _queue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "trash",
+			TraceParentId = null,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = JobType,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
 
 		return TrashConnectionService.StatusUpdate(moveToTrashList, isSystemTrashEnabled);
 	}
@@ -164,4 +165,14 @@ public class MoveToTrashService : IMoveToTrashService
 
 		await _query.RemoveItemAsync(moveToTrash);
 	}
+}
+
+public sealed class MoveToTrashPayload
+{
+	public List<FileIndexItem> MoveToTrashList { get; set; } = [];
+	public bool IsSystemTrashEnabled { get; set; }
+	public Dictionary<string, List<string>> ChangedFileIndexItemName { get; set; } = new();
+	public List<FileIndexItem> FileIndexResultsList { get; set; } = [];
+	public FileIndexItem InputModel { get; set; } = new();
+	public bool Collections { get; set; }
 }

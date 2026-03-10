@@ -1,8 +1,6 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.sync.WatcherBackgroundService;
-using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Models;
 
 namespace starskytest.FakeMocks;
@@ -32,19 +30,21 @@ public class FakeDiskWatcherUpdateBackgroundTaskQueue : IDiskWatcherBackgroundTa
 	{
 		QueueBackgroundWorkItemCalled = true;
 		QueueBackgroundWorkItemCalledCounter++;
-		await InMemoryBackgroundJobCallbackRegistry.TryExecuteAsync(job, CancellationToken.None);
+		await Task.Yield();
 	}
 
-	public async ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(CancellationToken cancellationToken)
+	public async ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(
+		CancellationToken cancellationToken)
 	{
 		_count--;
 		DequeueAsyncCounter++;
 		await Task.Yield();
-		return InMemoryBackgroundJobCallbackRegistry.Register(
-			_ => ValueTask.CompletedTask,
-			string.Empty,
-			string.Empty,
-			ProcessTaskQueue.PriorityLaneDiskWatcher,
-			nameof(FakeDiskWatcherUpdateBackgroundTaskQueue));
+		return new BackgroundTaskQueueJob
+		{
+			JobType = "Fake.Noop",
+			PayloadJson = "{}",
+			MetaData = string.Empty,
+			TraceParentId = string.Empty
+		};
 	}
 }

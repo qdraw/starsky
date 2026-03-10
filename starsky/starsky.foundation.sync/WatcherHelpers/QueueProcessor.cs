@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Models;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.sync.WatcherInterfaces;
 using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -17,6 +19,8 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 {
 	public delegate Task<List<FileIndexItem>> SynchronizeDelegate(
 		Tuple<string, string?, WatcherChangeTypes> value);
+
+	public const string JobType = "Sync.QueueProcessorInput.v1";
 
 	private readonly IDiskWatcherBackgroundTaskQueue _bgTaskQueue;
 	private readonly SynchronizeDelegate _processFile;
@@ -40,15 +44,25 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 	public async Task QueueInput(string filepath, string? toPath,
 		WatcherChangeTypes changeTypes)
 	{
-		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-			async _ =>
-			{
-				await _processFile.Invoke(
-					new Tuple<string, string?, WatcherChangeTypes>(filepath, toPath, changeTypes));
-			},
-			$"from:{filepath}" + ( string.IsNullOrEmpty(toPath) ? string.Empty : "_to:" + toPath ),
-			null,
-			ProcessTaskQueue.PriorityLaneDiskWatcher,
-			nameof(IDiskWatcherBackgroundTaskQueue)));
+		var payload = new QueueProcessorPayload
+		{
+			FilePath = filepath, ToPath = toPath, ChangeTypes = changeTypes
+		};
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = $"from:{filepath}" +
+			           ( string.IsNullOrEmpty(toPath) ? string.Empty : "_to:" + toPath ),
+			TraceParentId = null,
+			PriorityLane = ProcessTaskQueue.PriorityLaneDiskWatcher,
+			JobType = JobType,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
 	}
+}
+
+public sealed class QueueProcessorPayload
+{
+	public string FilePath { get; set; } = string.Empty;
+	public string? ToPath { get; set; }
+	public WatcherChangeTypes ChangeTypes { get; set; }
 }

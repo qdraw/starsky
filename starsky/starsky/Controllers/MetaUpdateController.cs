@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +17,8 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
+using starsky.Helpers;
 
 namespace starsky.Controllers;
 
@@ -88,20 +91,21 @@ public sealed class MetaUpdateController : Controller
 				[.. inputFilePaths], append, collections, rotateClock);
 
 		// Update >
-		await _bgTaskQueue.QueueJobAsync(InMemoryBackgroundJobCallbackRegistry.Register(
-			async _ =>
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "MetaUpdate",
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = ControllerBackgroundJobTypes.MetaUpdate,
+			PayloadJson = JsonSerializer.Serialize(new MetaUpdateBackgroundPayload
 			{
-				var metaUpdateService = _scopeFactory.CreateScope()
-					.ServiceProvider.GetRequiredService<IMetaUpdateService>();
-
-				await metaUpdateService.UpdateAsync(
-					changedFileIndexItemName, fileIndexResultsList, null,
-					collections, append, rotateClock);
-			},
-			"MetaUpdate",
-			Activity.Current?.Id,
-			ProcessTaskQueue.PriorityLaneUpdate,
-			nameof(IUpdateBackgroundTaskQueue)));
+				ChangedFileIndexItemName = changedFileIndexItemName,
+				FileIndexResultsList = fileIndexResultsList,
+				Collections = collections,
+				Append = append,
+				RotateClock = rotateClock
+			})
+		});
 
 		// before sending not founds
 		new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f, collections,

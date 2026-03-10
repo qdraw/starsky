@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -17,6 +17,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
+using starsky.Helpers;
 
 namespace starsky.Controllers;
 
@@ -199,36 +200,27 @@ public class MetaTimeCorrectController(
 		IExifTimeCorrectionRequest request,
 		string correctionType)
 	{
-		await queue.QueueJobAsync(
-			InMemoryBackgroundJobCallbackRegistry.Register(
-				async _ =>
-				{
-					using var scope = scopeFactory.CreateScope();
-					var scopedService =
-						scope.ServiceProvider.GetRequiredService<IExifTimezoneCorrectionService>();
-
-					var fileIndexResultsList = validateResults
-						.Where(r => r.FileIndexItem != null)
-						.Select(r => r.FileIndexItem!)
-						.ToList();
-
-					logger.LogInformation(
-						$"[MetaTimeCorrectController] Starting {correctionType} correction for {fileIndexResultsList.Count} files");
-
-					var results = await scopedService.CorrectTimezoneAsync(
-						fileIndexResultsList,
-						request);
-
-					logger.LogInformation(
-						$"[MetaTimeCorrectController] Completed {correctionType} correction: " +
-						$"{results.Count(r => r.Success)} succeeded, {results.Count(r => !r.Success)} failed");
-
-					await UpdateWebSocketTaskRun(fileIndexResultsList);
-				},
-				"MetaTimeCorrect",
-				null,
-				ProcessTaskQueue.PriorityLaneUpdate,
-				nameof(IUpdateBackgroundTaskQueue)));
+		var requestType = request switch
+		{
+			ExifTimezoneBasedCorrectionRequest => "timezone",
+			ExifCustomOffsetCorrectionRequest => "offset",
+			_ => throw new ArgumentException("Unsupported correction request type")
+		};
+		var payload = new MetaTimeCorrectBackgroundPayload
+		{
+			ValidateResults = validateResults,
+			RequestType = requestType,
+			RequestJson = JsonSerializer.Serialize(request),
+			CorrectionType = correctionType
+		};
+		await queue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "MetaTimeCorrect",
+			TraceParentId = null,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = ControllerBackgroundJobTypes.MetaTimeCorrect,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
 	}
 
 	private async Task UpdateWebSocketTaskRun(List<FileIndexItem> fileIndexResultsList)

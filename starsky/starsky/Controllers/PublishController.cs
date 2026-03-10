@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,6 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
-using System.Text.Json;
 using starsky.foundation.worker.Models;
 using starsky.Helpers;
 
@@ -121,13 +121,12 @@ public sealed class PublishController : Controller
 			ItemName = itemName,
 			Location = location
 		};
-		
+
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = publishProfileName + "_" + itemName,
 			TraceParentId = null,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
-			QueueName = nameof(IUpdateBackgroundTaskQueue),
 			JobType = PublishCreateBackgroundJobHandler.JobTypeValue,
 			PayloadJson = JsonSerializer.Serialize(payload)
 		});

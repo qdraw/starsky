@@ -9,7 +9,6 @@ public sealed class BackgroundTaskQueueJob
 	public string? MetaData { get; init; }
 	public string? TraceParentId { get; init; }
 	public int PriorityLane { get; init; }
-	public string QueueName { get; init; } = string.Empty;
 	public DateTime CreatedAtUtc { get; init; } = DateTime.UtcNow;
 	public string? JobType { get; init; }
 	public string? PayloadJson { get; init; }
