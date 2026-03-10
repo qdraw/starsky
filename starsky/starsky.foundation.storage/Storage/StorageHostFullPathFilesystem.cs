@@ -297,6 +297,11 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Folder;
 	}
 
+	/// <summary>
+	///     Checks if a folder is empty
+	/// </summary>
+	/// <param name="path">path</param>
+	/// <returns>true if empty</returns>
 	public bool IsFolderEmpty(string path)
 	{
 		if ( Directory.EnumerateFileSystemEntries(path).Any() )

@@ -322,4 +322,102 @@ public sealed class StorageSubPathFilesystemTest
 			}
 		}
 	}
+
+	[TestMethod]
+	public void IsFolderEmpty_EmptyFolder_ReturnsTrue()
+	{
+		var baseStorage = Path.Combine(Path.GetTempPath(),
+			"StorageSubPathFilesystemTest_" + Guid.NewGuid());
+		try
+		{
+			var appSettings = new AppSettings { StorageFolder = baseStorage };
+			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+			// create a folder via storage (database style path)
+			var dbPath = "/emptyfolder";
+			storage.CreateDirectory(dbPath);
+
+			var result = storage.IsFolderEmpty(dbPath);
+			Assert.IsTrue(result, "Newly created empty folder should be reported empty");
+		}
+		finally
+		{
+			try
+			{
+				Directory.Delete(baseStorage, true);
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+	}
+
+	[TestMethod]
+	public void IsFolderEmpty_FolderWithFile_ReturnsFalse()
+	{
+		var baseStorage = Path.Combine(Path.GetTempPath(),
+			"StorageSubPathFilesystemTest_" + Guid.NewGuid());
+		try
+		{
+			var appSettings = new AppSettings { StorageFolder = baseStorage };
+			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+			const string dbPath = "/folderwithfile";
+			storage.CreateDirectory(dbPath);
+
+			// write a file into the created folder using full path
+			var fullPath = appSettings.DatabasePathToFilePath(dbPath);
+			var filePath = Path.Combine(fullPath, "a.txt");
+			File.WriteAllText(filePath, "x");
+
+			var result = storage.IsFolderEmpty(dbPath);
+			Assert.IsFalse(result, "Folder with a file should be reported as not empty");
+		}
+		finally
+		{
+			try
+			{
+				Directory.Delete(baseStorage, true);
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+	}
+
+	[TestMethod]
+	public void IsFolderEmpty_NonExistent_Throws()
+	{
+		var baseStorage = Path.Combine(Path.GetTempPath(),
+			"StorageSubPathFilesystemTest_" + Guid.NewGuid());
+		try
+		{
+			var appSettings = new AppSettings { StorageFolder = baseStorage };
+			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+			var dbPath = "/doesnotexist";
+			try
+			{
+				storage.IsFolderEmpty(dbPath);
+				Assert.Fail("Expected DirectoryNotFoundException");
+			}
+			catch ( DirectoryNotFoundException )
+			{
+				// expected
+			}
+		}
+		finally
+		{
+			try
+			{
+				Directory.Delete(baseStorage, true);
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+	}
 }

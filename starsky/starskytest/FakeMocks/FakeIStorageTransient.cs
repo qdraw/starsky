@@ -108,38 +108,15 @@ public class FakeIStorageTransient : IStorage
 		_getDirCalls++;
 		if ( _getDirCalls >= 2 && _subdirsAppearOnSecondCall )
 		{
-			return new List<KeyValuePair<string, DateTime>>
-			{
-				new KeyValuePair<string, DateTime>(path + "/sub", DateTime.Now)
-			};
+			return new List<KeyValuePair<string, DateTime>> { new(path + "/sub", DateTime.Now) };
 		}
 
 		return new List<KeyValuePair<string, DateTime>>();
 	}
 
-	Stream IStorage.ReadStream(string path, int maxRead)
-	{
-		return ReadStream(path, maxRead);
-	}
-
-	bool IStorage.WriteStream(Stream stream, string path)
-	{
-		return WriteStream(stream, path);
-	}
-
-	bool IStorage.WriteStreamOpenOrCreate(Stream stream, string path)
-	{
-		return WriteStreamOpenOrCreate(stream, path);
-	}
-
-	Task<bool> IStorage.WriteStreamAsync(Stream stream, string path)
-	{
-		return WriteStreamAsync(stream, path);
-	}
-
 	public Stream ReadStream(string path, int maxRead = -1)
 	{
-		return Stream.Null;
+		throw new NotImplementedException();
 	}
 
 	public bool WriteStream(Stream stream, string path)
