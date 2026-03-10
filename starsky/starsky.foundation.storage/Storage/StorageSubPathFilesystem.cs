@@ -83,6 +83,12 @@ public sealed class StorageSubPathFilesystem : IStorage
 		return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Folder;
 	}
 
+	public bool IsFolderEmpty(string path)
+	{
+		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		return new StorageHostFullPathFilesystem(_logger).IsFolderEmpty(fullFilePath);
+	}
+
 	/// <summary>
 	///     is the subPath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
 	/// </summary>

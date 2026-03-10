@@ -78,6 +78,12 @@ public sealed class StorageTemporaryFilesystem : IStorage
 		return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Folder;
 	}
 
+	public bool IsFolderEmpty(string path)
+	{
+		var fullFilePath = _appSettings.DatabasePathToTempFolderFilePath(path);
+		return new StorageHostFullPathFilesystem(_logger).IsFolderEmpty(fullFilePath);
+	}
+
 	/// <summary>
 	///     is the subPath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
 	/// </summary>

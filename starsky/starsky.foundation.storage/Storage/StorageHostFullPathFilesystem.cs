@@ -297,6 +297,18 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Folder;
 	}
 
+	public bool IsFolderEmpty(string path)
+	{
+		if ( Directory.EnumerateFileSystemEntries(path).Any() )
+		{
+			return false;
+		}
+
+		Thread.Sleep(10);
+
+		return !Directory.EnumerateFileSystemEntries(path).Any();
+	}
+
 	/// <summary>
 	///     is the subPath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
 	/// </summary>
