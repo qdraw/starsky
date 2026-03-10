@@ -23,14 +23,15 @@ namespace starsky.foundation.database.Notifications;
 public sealed class NotificationQuery : INotificationQuery
 {
 	internal const string ErrorMessageContentToLong = "Serialized content is too large";
+
+	/// <summary>
+	///     should be lower than MEDIUMTEXT: 5_000_000 is 5MB
+	/// </summary>
+	private const int MaxContentLength = 5_000_000;
+
 	private readonly ApplicationDbContext _context;
 	private readonly IWebLogger _logger;
 	private readonly IServiceScopeFactory _scopeFactory;
-
-	/// <summary>
-	/// should be lower than MEDIUMTEXT: 5_000_000 is 5MB
-	/// </summary>
-	private const int MaxContentLength = 5_000_000;
 
 	public NotificationQuery(ApplicationDbContext context, IWebLogger logger,
 		IServiceScopeFactory scopeFactory)
@@ -92,7 +93,7 @@ public sealed class NotificationQuery : INotificationQuery
 
 		async Task<NotificationItem> LocalAddQuery()
 		{
-			return await AddNotification(_context, item, content);
+			return await AddNotification(item, content);
 		}
 	}
 
@@ -106,7 +107,7 @@ public sealed class NotificationQuery : INotificationQuery
 		};
 	}
 
-	internal async Task<NotificationItem> AddNotification(ApplicationDbContext context,
+	internal async Task<NotificationItem> AddNotification(
 		NotificationItem item, string content)
 	{
 		try
@@ -123,7 +124,7 @@ public sealed class NotificationQuery : INotificationQuery
 				SolveConcurrency.SolveConcurrencyExceptionLoop(updateException.Entries);
 				try
 				{
-					await _context.SaveChangesAsync();
+					return await LocalAddQuery(item);
 				}
 				catch ( DbUpdateConcurrencyException e )
 				{
@@ -164,22 +165,22 @@ public sealed class NotificationQuery : INotificationQuery
 
 		async Task<NotificationItem> LocalAddQuery(NotificationItem addItem)
 		{
-			try
+			if ( _scopeFactory == null! )
 			{
-				context.Entry(addItem).State = EntityState.Added;
-				await context.Notifications.AddAsync(addItem);
-				await context.SaveChangesAsync();
+				_context.Entry(addItem).State = EntityState.Added;
+				await _context.Notifications.AddAsync(addItem);
+				await _context.SaveChangesAsync();
 				return addItem;
 			}
-			catch ( ObjectDisposedException )
-			{
-				// Include create new scope factory
-				var dbContext = new InjectServiceScope(_scopeFactory).Context();
-				dbContext.Entry(addItem).State = EntityState.Added;
-				await dbContext.Notifications.AddAsync(addItem);
-				await dbContext.SaveChangesAsync();
-				return addItem;
-			}
+
+			using var scope = _scopeFactory.CreateScope();
+			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+			dbContext.Entry(addItem).State = EntityState.Added;
+			await dbContext.Notifications.AddAsync(addItem);
+			await dbContext.SaveChangesAsync();
+
+			return addItem;
 		}
 	}
 }

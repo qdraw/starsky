@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.13 - _(Unreleased)_ - 2026-?-? {#v0.7.13}
 
+- [x] (Fixed) _Back-end_ Notification Item Cannot Open when State is Connecting (PR #2842)
 - [x] (Fixed) _Back-end_ If a directory is empty to delete, improving resilience against transient
   filesystem states (PR #2841)
 - [x] (Fixed) _Back-end_ Increasing the hashing buffer size for MP4 files (PR #2836)
