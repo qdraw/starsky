@@ -201,8 +201,8 @@ public sealed class GeoControllerTest
 		geoBackgroundTaskBefore.Count = 0;
 		// end reset
 
-		var storage = new FakeIStorage(new List<string> { "/" });
-		var controller = new GeoController(new FakeIUpdateBackgroundTaskQueue(),
+		var storage = new FakeIStorage(["/"]);
+		var controller = new GeoController(new FakeIUpdateBackgroundTaskQueue(_scopeFactory),
 			new FakeSelectorStorage(storage), null!, new FakeIWebLogger(), _scopeFactory)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
