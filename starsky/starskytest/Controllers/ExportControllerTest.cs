@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.export.Interfaces;
 using starsky.feature.export.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
@@ -26,6 +27,7 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Services;
@@ -151,26 +153,21 @@ public sealed class ExportControllerTest
 			new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(toDelPath);
 		}
 
+		// Setup DI with ExportBackgroundJobHandler so it can be executed
 		IServiceCollection services = new ServiceCollection();
-		services.AddHostedService<UpdateBackgroundQueuedHostedService>();
-		services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
-		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+		
+		// Register the export handler so fake queue can execute it
+		services.AddScoped<IBackgroundJobHandler, ExportBackgroundJobHandler>();
+		services.AddScoped<IExport, ExportService>();
+		services.AddScoped<IThumbnailService, FakeIThumbnailService>();
 
 		var serviceProvider = services.BuildServiceProvider();
-
-		var service =
-			serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
-
-		var backgroundQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
-
-		if ( service == null )
-		{
-			throw new Exception("service should not be null");
-		}
-
-		await service.StartAsync(CancellationToken.None);
+		
+		// Use FakeIUpdateBackgroundTaskQueue which will execute handlers immediately
+		var backgroundQueue = new FakeIUpdateBackgroundTaskQueue(
+			serviceProvider.GetRequiredService<IServiceScopeFactory>());
 
 		// the test
 		_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
@@ -225,15 +222,14 @@ public sealed class ExportControllerTest
 		var actionResult2Zip = controller.Status(zipHash, true) as JsonResult;
 		Assert.IsNotNull(actionResult2Zip);
 
-		var resultValue = ( string? ) actionResult2Zip?.Value;
+		var resultValue = ( string? ) actionResult2Zip.Value;
 
 		if ( resultValue != "OK" && resultValue != "Not Ready" )
 		{
-			throw new Exception(actionResult2Zip?.StatusCode.ToString());
+			throw new Exception(actionResult2Zip.StatusCode.ToString());
 		}
 
 		// Don't check if file exist due async
-		await service.StopAsync(CancellationToken.None);
 
 		File.Delete(sourceFullPath);
 		Directory.Delete(appSettings.TempFolder);
