@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -71,7 +72,7 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = fileIndexItem.FilePath,
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = JobType,
 			PayloadJson = JsonSerializer.Serialize(payload)

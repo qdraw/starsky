@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.feature.metaupdate.Models;
+using starsky.feature.metaupdate.Services;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
@@ -17,7 +20,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
-using starsky.Helpers;
 
 namespace starsky.Controllers;
 
@@ -216,9 +218,9 @@ public class MetaTimeCorrectController(
 		await queue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = "MetaTimeCorrect",
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
-			JobType = ControllerBackgroundJobTypes.MetaTimeCorrect,
+			JobType = MetaTimeCorrectBackgroundJobHandler.MetaTimeCorrect,
 			PayloadJson = JsonSerializer.Serialize(payload)
 		});
 	}

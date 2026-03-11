@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = subPath,
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
 			JobType = JobType,
 			PayloadJson = JsonSerializer.Serialize(new ManualThumbnailGenerationPayload

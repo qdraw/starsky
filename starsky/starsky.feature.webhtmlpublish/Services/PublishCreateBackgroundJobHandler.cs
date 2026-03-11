@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.Models;
@@ -18,18 +17,15 @@ public sealed class PublishCreateBackgroundJobRunner(
 {
 	public const string JobTypeValue = "Publish.Create.v1";
 
-	public async Task ExecuteAsync(string? payloadJson, CancellationToken cancellationToken)
+	public async Task ExecuteAsync(string? payloadJson)
 	{
 		if ( string.IsNullOrWhiteSpace(payloadJson) )
 		{
 			throw new ArgumentException("Missing payload", nameof(payloadJson));
 		}
 
-		var payload = JsonSerializer.Deserialize<PublishCreateBackgroundJobPayload>(payloadJson);
-		if ( payload == null )
-		{
-			throw new ArgumentException("Invalid payload", nameof(payloadJson));
-		}
+		var payload = JsonSerializer.Deserialize<PublishCreateBackgroundJobPayload>(payloadJson) ??
+		              throw new ArgumentException("Invalid payload", nameof(payloadJson));
 
 		var renderCopyResult = await publishService.RenderCopy(payload.Info,
 			payload.PublishProfileName, payload.ItemName, payload.Location);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -52,7 +53,7 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 		{
 			MetaData = $"from:{filepath}" +
 			           ( string.IsNullOrEmpty(toPath) ? string.Empty : "_to:" + toPath ),
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneDiskWatcher,
 			JobType = JobType,
 			PayloadJson = JsonSerializer.Serialize(payload)

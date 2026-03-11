@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -10,6 +11,7 @@ using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
+using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -17,7 +19,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
-using starsky.Helpers;
 
 namespace starsky.Controllers;
 
@@ -85,9 +86,9 @@ public sealed class MetaReplaceController : Controller
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = string.Empty,
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
-			JobType = ControllerBackgroundJobTypes.MetaReplace,
+			JobType = MetaUpdateBackgroundJobHandler.MetaUpdate,
 			PayloadJson = JsonSerializer.Serialize(new MetaReplaceBackgroundPayload
 			{
 				ChangedFileIndexItemName = changedFileIndexItemName,

@@ -103,7 +103,7 @@ public sealed class GeoController : Controller
 			MetaData = f,
 			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
-			JobType = ControllerBackgroundJobTypes.GeoSync,
+			JobType = GeoSyncBackgroundJobHandler.GeoSync,
 			PayloadJson = JsonSerializer.Serialize(new GeoSyncBackgroundPayload
 			{
 				SubPath = f, Index = index, OverwriteLocationNames = overwriteLocationNames

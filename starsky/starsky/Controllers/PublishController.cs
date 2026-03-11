@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -125,7 +126,7 @@ public sealed class PublishController : Controller
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = publishProfileName + "_" + itemName,
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = PublishCreateBackgroundJobHandler.JobTypeValue,
 			PayloadJson = JsonSerializer.Serialize(payload)

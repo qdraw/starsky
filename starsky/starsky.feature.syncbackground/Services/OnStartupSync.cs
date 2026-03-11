@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,7 +65,7 @@ public class OnStartupSync(
 	{
 		await backgroundTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneDiskWatcher,
 			JobType = JobType,
 			PayloadJson = JsonSerializer.Serialize(new OnStartupSyncPayload())

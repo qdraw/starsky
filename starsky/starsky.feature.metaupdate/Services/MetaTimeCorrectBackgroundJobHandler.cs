@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.feature.metaupdate.Models;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.metaupdate.Interfaces;
@@ -12,18 +14,20 @@ using starsky.foundation.metaupdate.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.worker.Interfaces;
 
 namespace starsky.feature.metaupdate.Services;
-
 
 [Service(typeof(IBackgroundJobHandler), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class MetaTimeCorrectBackgroundJobHandler(
 	IServiceScopeFactory scopeFactory,
 	IWebLogger logger,
-	IRealtimeConnectionsService realtimeConnectionsService) : IBackgroundJobHandler
+	IWebSocketConnectionsService webSocketConnectionsService,
+	INotificationQuery notificationQuery) : IBackgroundJobHandler
 {
-	public string JobType => ControllerBackgroundJobTypes.MetaTimeCorrect;
+	public const string MetaTimeCorrect = "Controller.MetaTimeCorrect.v1";
+	public string JobType => MetaTimeCorrect;
 
 	public async Task ExecuteAsync(string? payloadJson, CancellationToken cancellationToken)
 	{
@@ -60,7 +64,14 @@ public sealed class MetaTimeCorrectBackgroundJobHandler(
 		var webSocketResponse = new ApiNotificationResponseModel<List<FileIndexItem>>(
 			fileIndexResultsList,
 			ApiNotificationType.MetaTimeCorrect);
-		await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse,
+		await NotificationToAllAsync(webSocketResponse,
 			CancellationToken.None);
+	}
+
+	private async Task NotificationToAllAsync<T>(ApiNotificationResponseModel<T> message,
+		CancellationToken cancellationToken)
+	{
+		await webSocketConnectionsService.SendToAllAsync(message, cancellationToken);
+		await notificationQuery.AddNotification(message);
 	}
 }

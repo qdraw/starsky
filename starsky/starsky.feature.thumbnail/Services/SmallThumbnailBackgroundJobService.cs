@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.feature.thumbnail.Interfaces;
@@ -45,7 +46,7 @@ public class SmallThumbnailBackgroundJobService(
 		await bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = "SmallThumbnailBackgroundJobService",
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
 			JobType = JobType,
 			PayloadJson =

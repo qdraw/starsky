@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
@@ -93,7 +94,7 @@ public sealed class ImportController : Controller
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = string.Join(",", tempImportPaths),
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = ImportBackgroundJobHandler.Import,
 			PayloadJson = JsonSerializer.Serialize(payload)

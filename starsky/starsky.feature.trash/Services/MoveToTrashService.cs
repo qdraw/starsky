@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -91,7 +92,7 @@ public class MoveToTrashService : IMoveToTrashService
 		await _queue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = "trash",
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = JobType,
 			PayloadJson = JsonSerializer.Serialize(payload)

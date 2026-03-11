@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -63,7 +64,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = "DatabaseThumbnailGenerationService",
-			TraceParentId = null,
+			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
 			JobType = DatabaseThumbnailGenerationJobType,
 			PayloadJson = JsonSerializer.Serialize(new DatabaseThumbnailGenerationPayload())

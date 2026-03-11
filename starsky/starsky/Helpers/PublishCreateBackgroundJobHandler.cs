@@ -15,7 +15,6 @@ public sealed class PublishCreateBackgroundJobHandler(
 
 	public async Task ExecuteAsync(string? payloadJson, CancellationToken cancellationToken)
 	{
-		await runner.ExecuteAsync(payloadJson, cancellationToken);
+		await runner.ExecuteAsync(payloadJson);
 	}
 }
-
