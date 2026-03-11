@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
+using starsky.foundation.metaupdate.Models;
+using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -18,7 +20,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
-using starsky.Helpers;
 
 namespace starsky.Controllers;
 
@@ -96,7 +97,7 @@ public sealed class MetaUpdateController : Controller
 			MetaData = "MetaUpdate",
 			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
-			JobType = ControllerBackgroundJobTypes.MetaUpdate,
+			JobType = MetaUpdateBackgroundJobHandler.MetaUpdate,
 			PayloadJson = JsonSerializer.Serialize(new MetaUpdateBackgroundPayload
 			{
 				ChangedFileIndexItemName = changedFileIndexItemName,

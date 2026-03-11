@@ -11,10 +11,12 @@
 
     <ItemGroup>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.metaupdate\starsky.foundation.metaupdate.csproj" />
         <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj"/>
         <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
         <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj"/>
         <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj" />
         <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj"/>
     </ItemGroup>
 

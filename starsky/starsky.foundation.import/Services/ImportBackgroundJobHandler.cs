@@ -23,7 +23,6 @@ namespace starsky.foundation.import.Services;
 
 [Service(typeof(IBackgroundJobHandler), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class ImportBackgroundJobHandler(
-	ISelectorStorage selectorStorage,
 	IServiceScopeFactory scopeFactory,
 	IWebLogger logger,
 	AppSettings appSettings) : IBackgroundJobHandler
@@ -41,41 +40,51 @@ public sealed class ImportBackgroundJobHandler(
 		var payload = JsonSerializer.Deserialize<ImportBackgroundPayload>(payloadJson)
 		              ?? throw new ArgumentException("Invalid payload");
 
-		List<ImportIndexItem> importedFiles;
-		using ( var scope = scopeFactory.CreateScope() )
-		{
-			var localSelectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
-			var importQuery = scope.ServiceProvider.GetRequiredService<IImportQuery>();
-			var exifTool = scope.ServiceProvider.GetRequiredService<IExifTool>();
-			var query = scope.ServiceProvider.GetRequiredService<IQuery>();
-			var console = scope.ServiceProvider.GetRequiredService<IConsole>();
-			var metaExifThumbnailService =
-				scope.ServiceProvider.GetRequiredService<IMetaExifThumbnailService>();
-			var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
-			var thumbnailQuery = scope.ServiceProvider.GetRequiredService<IThumbnailQuery>();
-			var geoCode = scope.ServiceProvider.GetRequiredService<IReverseGeoCodeService>();
+		await ImportPostBackgroundTask(payload.TempImportPaths, payload.ImportSettings);
+	}
 
-			var service = new Import(localSelectorStorage, appSettings,
-				importQuery, exifTool, query, console,
-				metaExifThumbnailService, logger, thumbnailQuery, geoCode, memoryCache);
-			importedFiles = await service.Importer(payload.TempImportPaths, payload.ImportSettings);
-		}
+	internal async Task<List<ImportIndexItem>> ImportPostBackgroundTask(
+		List<string> tempImportPaths,
+		ImportSettingsModel importSettings, bool isVerbose = false)
+	{
+		using var scope = scopeFactory.CreateScope();
+		var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
+		var importQuery = scope.ServiceProvider.GetRequiredService<IImportQuery>();
+		var exifTool = scope.ServiceProvider.GetRequiredService<IExifTool>();
+		var query = scope.ServiceProvider.GetRequiredService<IQuery>();
+		var console = scope.ServiceProvider.GetRequiredService<IConsole>();
+		var metaExifThumbnailService =
+			scope.ServiceProvider.GetRequiredService<IMetaExifThumbnailService>();
+		var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
+		var thumbnailQuery = scope.ServiceProvider.GetRequiredService<IThumbnailQuery>();
+		var geoCode = scope.ServiceProvider.GetRequiredService<IReverseGeoCodeService>();
 
-		if ( payload.IsVerbose )
+		// use of IImport direct does not work
+		var service = new Import(selectorStorage, appSettings,
+			importQuery, exifTool, query, console,
+			metaExifThumbnailService, logger, thumbnailQuery, geoCode, memoryCache);
+		var importedFiles = await service.Importer(tempImportPaths, importSettings);
+
+		if ( isVerbose )
 		{
 			foreach ( var file in importedFiles )
 			{
 				logger.LogInformation(
-					$"[ImportPostBackgroundTask] import {file.Status} => {file.FilePath} ~ {file.FileIndexItem?.FilePath}");
+					$"[ImportPostBackgroundTask] import {file.Status} " +
+					$"=> {file.FilePath} ~ {file.FileIndexItem?.FilePath}");
 			}
 		}
 
 		var hostFileSystemStorage =
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-		foreach ( var toDelPath in payload.TempImportPaths )
+
+		// Remove source files
+		foreach ( var toDelPath in tempImportPaths )
 		{
 			new RemoveTempAndParentStreamFolderHelper(hostFileSystemStorage, appSettings)
 				.RemoveTempAndParentStreamFolder(toDelPath);
 		}
+
+		return importedFiles;
 	}
 }
