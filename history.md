@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.13 - _(Unreleased)_ - 2026-?-? {#v0.7.13}
+## version 0.7.14 - _(Unreleased)_ - 2026-?-? {#v0.7.14}
+
+- nothing yet
+
+## version 0.7.13 - 2026-03-11 {#v0.7.13}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.419 (Runtime: 8.0.25) (PR #2849)
 - [x] (Fixed) _Back-end_ Retry mechanism for database operations in the ThumbnailQuery (PR #2843)
