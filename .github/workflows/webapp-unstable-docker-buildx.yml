@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
         
       - name: Log in to Github Container registry
-        uses: docker/login-action@3227f5311cb93ffd14d13e65d8cc400d30f4dd8a
+        uses: docker/login-action@9fe7774c8f8ebfade96f0a62aa10f3882309d517
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -51,14 +51,14 @@ jobs:
 
       - name: Extract metadata Github Actions (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@a60f0f62b5c12316066c8db464bfb2faafd7907b
+        uses: docker/metadata-action@b13d25e5fcf2e04305d8aedc9a6c28ebe258e934
         with:
           images: |
             ghcr.io/${{ github.repository }}-unstable-nightly
 
       - name: Build and push master
         id: docker_build_push
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
+        uses: docker/build-push-action@dbac3ca1e5410ec04d2cce48cfbcfa3175fb8f4f
         if: github.event_name != 'pull_request'
         with:
           context: ./starsky
@@ -72,7 +72,7 @@ jobs:
 
       - name: Build and don't push
         id: docker_build_pull_request
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
+        uses: docker/build-push-action@dbac3ca1e5410ec04d2cce48cfbcfa3175fb8f4f
         if: github.event_name == 'pull_request'
         with:
           context: ./starsky
