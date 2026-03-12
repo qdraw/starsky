@@ -185,10 +185,6 @@ public sealed class ExportControllerTest
 		appSettings.StorageFolder = _createAnImage.BasePath;
 
 		var storageSelector = serviceProvider.GetRequiredService<ISelectorStorage>();
-		//
-		// var fakeStorage = storageSelector.Get(SelectorStorage.StorageServices.SubPath);
-		// await fakeStorage.WriteStreamAsync(new MemoryStream([.. CreateAnImage.Bytes]),
-		// 	_createAnImage.DbPath);
 
 		var query = serviceProvider.GetRequiredService<IQuery>();
 		await query.AddItemAsync(new FileIndexItem
