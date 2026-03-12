@@ -478,11 +478,13 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	[SuppressMessage("ReSharper", "MustUseReturnValue")]
 	[SuppressMessage("Sonar", "S2674: stream.Read return value isn't used")]
+	[SuppressMessage("ReSharper", "StreamReadReturnValueIgnored")]
 	private byte[] ReadBuffer(Stream stream, int size)
 	{
 		var buffer = new byte[size];
 		try
 		{
+			// Do not use ReadExactly here
 			stream.Read(buffer, 0, buffer.Length);
 			stream.Close();
 			stream.Flush();
@@ -523,8 +525,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	{
 		// see http://web.archive.org/web/20150524232918/http://www.mikekunz.com/image_file_header.html
 		// on posix: 'od -t x1 -N 10 file.mp4'  
-		var bmp = Encoding.ASCII.GetBytes("BM"); // BMP
-		var gif = Encoding.ASCII.GetBytes("GIF"); // GIF
+		var bmp = "BM"u8.ToArray(); // BMP
+		var gif = "GIF"u8.ToArray(); // GIF
 		var png = new byte[] { 137, 80, 78, 71 }; // PNG
 		var pdf = new byte[] { 37, 80, 68, 70, 45 }; // pdf
 
@@ -781,6 +783,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 		if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
 		     gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
+		     gpx.SequenceEqual(bytes.Skip(38).Take(gpx.Length)) ||
 		     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
 		     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
 		     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
@@ -809,8 +812,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	private static ImageFormat? GetImageFormatXmp(byte[] bytes)
 	{
-		var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
-		var xmp2 = Encoding.ASCII.GetBytes("<?xpacket"); // xmp
+		var xmp = "<x:xmpmeta"u8.ToArray(); // xmp
+		var xmp2 = "<?xpacket"u8.ToArray(); // xmp
 
 		if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
 		{
