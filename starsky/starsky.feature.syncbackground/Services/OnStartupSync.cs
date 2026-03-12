@@ -5,7 +5,9 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.feature.syncbackground.Interfaces;
 using starsky.feature.syncbackground.Models;
+using starsky.feature.syncbackground.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -40,8 +42,6 @@ public class OnStartupSync(
 	ISettingsService settingsService,
 	IWebLogger logger) : IOnStartupSync
 {
-	public const string JobType = "Sync.OnStartup.v1";
-
 	public async Task StartUpSyncTask()
 	{
 		if ( appSettings.SyncOnStartup != true )
@@ -61,13 +61,13 @@ public class OnStartupSync(
 		logger.LogInformation("Sync on startup done");
 	}
 
-	public async Task StartUpSync()
+	public async Task CreateJobAsync()
 	{
 		await backgroundTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneDiskWatcher,
-			JobType = JobType,
+			JobType = OnStartupSyncJobHandler.OnStartup,
 			PayloadJson = JsonSerializer.Serialize(new OnStartupSyncPayload())
 		});
 	}
@@ -85,9 +85,4 @@ public class OnStartupSync(
 		await webSocketConnectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 		await notificationQuery.AddNotification(webSocketResponse);
 	}
-}
-
-public interface IOnStartupSync
-{
-	Task StartUpSyncTask();
 }

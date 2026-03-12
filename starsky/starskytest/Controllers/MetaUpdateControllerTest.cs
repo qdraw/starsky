@@ -145,6 +145,8 @@ public sealed class MetaUpdateControllerTest
 		services.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>();
 		services.AddSingleton<IRealtimeConnectionsService,
 			FakeIRealtimeConnectionsService>();
+		services.AddSingleton<IBackgroundJobHandler, MetaUpdateBackgroundJobHandler>();
+
 		var serviceProvider = services.BuildServiceProvider();
 		_serviceProvider = serviceProvider;
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -251,7 +253,7 @@ public sealed class MetaUpdateControllerTest
 			FakeIMetaUpdateService;
 		Assert.IsNotNull(fakeIMetaUpdateService);
 		fakeIMetaUpdateService.ChangedFileIndexItemNameContent =
-			new List<Dictionary<string, List<string>>>();
+			[];
 
 		var selectorStorage =
 			new FakeSelectorStorage(
@@ -265,15 +267,15 @@ public sealed class MetaUpdateControllerTest
 			new FakeIThumbnailService(), new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
-			new FakeIUpdateBackgroundTaskQueue(NewScopeFactory()),
+			new FakeIUpdateBackgroundTaskQueue(serviceScopeFactory),
 			new FakeIWebLogger(), serviceScopeFactory)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
 		var input = new FileIndexItem { Tags = "test" };
 		var jsonResult = await controller.UpdateAsync(input,
-			createAnImage.DbPath, false, false) as JsonResult;
-		if ( jsonResult == null )
+			createAnImage.DbPath, false, false);
+		if ( jsonResult is not JsonResult )
 		{
 			Console.WriteLine("json should not be null");
 			throw new NullReferenceException(nameof(jsonResult));

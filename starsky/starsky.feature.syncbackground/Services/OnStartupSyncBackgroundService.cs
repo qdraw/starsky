@@ -16,15 +16,9 @@ using starsky.foundation.sync.WatcherBackgroundService;
 namespace starsky.feature.syncbackground.Services;
 
 [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-public class OnStartupSyncBackgroundService : BackgroundService
+public class OnStartupSyncBackgroundService(IServiceScopeFactory serviceScopeFactory)
+	: BackgroundService
 {
-	private readonly IServiceScopeFactory _serviceScopeFactory;
-
-	public OnStartupSyncBackgroundService(IServiceScopeFactory serviceScopeFactory)
-	{
-		_serviceScopeFactory = serviceScopeFactory;
-	}
-
 	/// <summary>
 	///     Running scoped services
 	/// </summary>
@@ -32,7 +26,12 @@ public class OnStartupSyncBackgroundService : BackgroundService
 	/// <returns>CompletedTask</returns>
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		using var scope = _serviceScopeFactory.CreateScope();
+		await StartAsync();
+	}
+
+	private async Task StartAsync()
+	{
+		using var scope = serviceScopeFactory.CreateScope();
 		var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 		var diskWatcherBackgroundTaskQueue = scope.ServiceProvider
 			.GetRequiredService<IDiskWatcherBackgroundTaskQueue>();
@@ -41,7 +40,7 @@ public class OnStartupSyncBackgroundService : BackgroundService
 		var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
 		var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
 
-		await new OnStartupSync(_serviceScopeFactory, diskWatcherBackgroundTaskQueue,
-			appSettings, synchronize, settingsService, logger).StartUpSync();
+		await new OnStartupSync(serviceScopeFactory, diskWatcherBackgroundTaskQueue,
+			appSettings, synchronize, settingsService, logger).CreateJobAsync();
 	}
 }

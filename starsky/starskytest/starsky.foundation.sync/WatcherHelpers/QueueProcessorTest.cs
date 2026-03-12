@@ -24,7 +24,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 
 			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local);
 
-			await queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
+			await queueProcessor.QueueJob("t","T", WatcherChangeTypes.All);
 			Assert.IsTrue(diskWatcherBackgroundTaskQueue.QueueBackgroundWorkItemCalled);
 		}
 		
@@ -40,10 +40,10 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local);
 			
 			// Run 3 times & 1 time different
-			await queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
-			await queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
-			await queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
-			await queueProcessor.QueueInput("1","T", WatcherChangeTypes.All);
+			await queueProcessor.QueueJob("t","T", WatcherChangeTypes.All);
+			await queueProcessor.QueueJob("t","T", WatcherChangeTypes.All);
+			await queueProcessor.QueueJob("t","T", WatcherChangeTypes.All);
+			await queueProcessor.QueueJob("1","T", WatcherChangeTypes.All);
 
 			Assert.AreEqual(4, diskWatcherBackgroundTaskQueue.QueueBackgroundWorkItemCalledCounter);
 		}
@@ -62,9 +62,9 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			
 			// Run 3 times & 1 time different
 #pragma warning disable CS4014
-			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
+			queueProcessor.QueueJob("t","T", WatcherChangeTypes.All);
 			await Task.Delay(TimeSpan.FromMilliseconds(2), TestContext.CancellationTokenSource.Token); // Sleep async
-			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
+			queueProcessor.QueueJob("t","T", WatcherChangeTypes.All);
 #pragma warning restore CS4014
 			Assert.AreEqual(2, diskWatcherBackgroundTaskQueue.QueueBackgroundWorkItemCalledCounter);
 		}

@@ -64,12 +64,14 @@ public sealed class OnStartupSyncTest
 		var scope = GetNewScope();
 		var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
 		var synchronize = scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
-		var settingsService = scope.CreateScope().ServiceProvider.GetRequiredService<ISettingsService>();
+		var settingsService =
+			scope.CreateScope().ServiceProvider.GetRequiredService<ISettingsService>();
 		var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
 		var queue = new FakeDiskWatcherUpdateBackgroundTaskQueue();
 
-		var startupSync = new OnStartupSync(scope, queue, appSettings, synchronize, settingsService, logger);
-		await startupSync.StartUpSync();
+		var startupSync = new OnStartupSync(scope, queue, appSettings, synchronize, settingsService,
+			logger);
+		await startupSync.CreateJobAsync();
 
 		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
 		Assert.AreEqual(1, queue.QueueBackgroundWorkItemCalledCounter);

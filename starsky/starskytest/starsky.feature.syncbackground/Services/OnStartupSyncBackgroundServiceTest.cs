@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.realtime.Interface;
 using starsky.feature.syncbackground.Helpers;
+using starsky.feature.syncbackground.Interfaces;
 using starsky.feature.syncbackground.Services;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -28,18 +29,16 @@ public sealed class OnStartupSyncBackgroundServiceTest
 		services.AddSingleton<ISynchronize, FakeISynchronize>();
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		services.AddSingleton<ISettingsService, FakeISettingsService>();
-		// Register the OnStartupSyncJobHandler so it can be executed
-		services.AddScoped<IOnStartupSync, OnStartupSync>();
-		services.AddScoped<IBackgroundJobHandler, OnStartupSyncJobHandler>();
-		
+		services.AddSingleton<IOnStartupSync, OnStartupSync>();
+		services.AddSingleton<IBackgroundJobHandler, OnStartupSyncJobHandler>();
+
 		// Create a factory first
 		var tempProvider = services.BuildServiceProvider();
 		var scopeFactory = tempProvider.GetRequiredService<IServiceScopeFactory>();
-		
 		// Now register the fake queue with the scope factory
 		services.AddSingleton<IDiskWatcherBackgroundTaskQueue>(
 			new FakeDiskWatcherUpdateBackgroundTaskQueue(scopeFactory));
-		
+
 		var serviceProvider = services.BuildServiceProvider();
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}

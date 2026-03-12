@@ -142,6 +142,7 @@ public sealed class MetaReplaceControllerTest
 		services.AddSingleton<IMetaReplaceService, FakeIMetaReplaceService>();
 		services.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>();
 		services.AddSingleton<IBackgroundJobHandler, MetaReplaceBackgroundJobHandler>();
+		services.AddSingleton<IBackgroundJobHandler, MetaUpdateBackgroundJobHandler>();
 
 		var serviceProvider = services.BuildServiceProvider();
 		_serviceProvider = serviceProvider;
@@ -274,13 +275,13 @@ public sealed class MetaReplaceControllerTest
 		]);
 
 		var scope = _serviceProvider?.GetRequiredService<IServiceScopeFactory>();
-		
+
 		var controller = new MetaReplaceController(metaReplaceService,
 			new FakeIUpdateBackgroundTaskQueue(scope!),
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(), serviceScopeFactory);
 
 		var jsonResult =
-			await controller.Replace(createAnImage.DbPath, 
+			await controller.Replace(createAnImage.DbPath,
 				"tags", "a", "b") as JsonResult;
 		if ( jsonResult == null )
 		{

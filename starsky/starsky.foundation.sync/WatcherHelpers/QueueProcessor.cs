@@ -42,7 +42,7 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 	}
 
 
-	public async Task QueueInput(string filepath, string? toPath,
+	public async Task QueueJob(string filepath, string? toPath,
 		WatcherChangeTypes changeTypes)
 	{
 		var payload = new QueueProcessorPayload
