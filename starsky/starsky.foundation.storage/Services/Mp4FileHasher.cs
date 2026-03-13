@@ -79,19 +79,18 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		}
 
 		// Delegate handling based on stream seekability to reduce method complexity
-		if ( stream.CanSeek )
-		{
-			return await ProcessSeekableStreamAsync(stream, md5, buffer, cancellationToken);
-		}
-
-		return await ProcessNonSeekableStreamAsync(stream, md5, buffer, cancellationToken);
+		return await ProcessAtomsCommonAsync(stream, md5, buffer, cancellationToken,
+			stream.CanSeek);
 	}
 
-	// Handle streams that support seeking: collect mdat atoms and hash them after
-	private async Task<string> ProcessSeekableStreamAsync(Stream stream,
-		MD5 md5, byte[] buffer, CancellationToken cancellationToken)
+	// Consolidated atom processing for both seekable and non-seekable streams
+	// If isSeekable is true we collect mdat atoms and hash them after scanning.
+	// If false we hash the first mdat encountered immediately.
+	private async Task<string> ProcessAtomsCommonAsync(Stream stream,
+		MD5 md5, byte[] buffer, CancellationToken cancellationToken, bool isSeekable)
 	{
-		var mdats = new List<Mp4Atom>();
+		var mdats = isSeekable ? new List<Mp4Atom>() : null;
+
 		while ( true )
 		{
 			var atom = await ReadAtomAsync(stream, cancellationToken);
@@ -104,40 +103,20 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 				$"Found atom: Type={atom.Value.Type}, " +
 				$"Size={atom.Value.Size}, HeaderSize={atom.Value.HeaderSize}, DataOffset={atom.Value.DataOffset}");
 
-			var payloadSize = atom.Value.Size - atom.Value.HeaderSize;
-			if ( payloadSize < 0 )
+			var (shouldContinue, immediateResult) =
+				await ProcessAtomAsync(stream, md5, buffer, atom.Value, mdats, isSeekable);
+			if ( !shouldContinue )
 			{
-				logger.LogInformation("Mp4FileHasher.ProcessSeekableStreamAsync invalid payload size");
-				return string.Empty;
+				return immediateResult ?? string.Empty;
 			}
+		}
 
-			if ( atom.Value.Type == "mdat" )
-			{
-				mdats.Add(atom.Value);
-				if ( !await TrySkipAtomOrAbortAsync(stream, buffer, payloadSize, "ProcessSeekableStreamAsync_mdat") )
-				{
-					return string.Empty;
-				}
-				continue;
-			}
-
-			// non-mdat atoms
-			if ( payloadSize == 0 )
-			{
-				logger.LogInformation(
-					"Mp4FileHasher.ProcessSeekableStreamAsync invalid zero-size non-mdat atom");
-				return string.Empty;
-			}
-
-			if ( await TrySkipAtomOrAbortAsync(stream, buffer, payloadSize, "ProcessSeekableStreamAsync_non_mdat") )
-			{
-				continue;
-			}
-
+		if ( !isSeekable )
+		{
 			return string.Empty;
 		}
 
-		if ( mdats.Count == 0 )
+		if ( mdats!.Count == 0 )
 		{
 			return string.Empty; // no mdats found
 		}
@@ -146,53 +125,86 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		return await HashMdatAtomsSeekableAsync(stream, md5, buffer, mdats);
 	}
 
-	// Handle non-seekable streams: process atoms sequentially and hash first mdat found
-	private async Task<string> ProcessNonSeekableStreamAsync(Stream stream,
-		MD5 md5, byte[] buffer, CancellationToken cancellationToken)
+	/// <summary>
+	///     Process a single atom and decide whether scanning should continue.
+	///     Returns (true, null) when scanning should continue; (false, result) when an immediate result is
+	///     produced.
+	/// </summary>
+	private async Task<(bool shouldContinue, string? immediateResult)> ProcessAtomAsync(
+		Stream stream,
+		MD5 md5,
+		byte[] buffer,
+		Mp4Atom atom,
+		List<Mp4Atom>? mdats,
+		bool isSeekable)
 	{
-		while ( true )
+		var payloadSize = atom.Size - atom.HeaderSize;
+		if ( payloadSize < 0 )
 		{
-			var atom = await ReadAtomAsync(stream, cancellationToken);
-			if ( atom == null )
-			{
-				break;
-			}
-
-			logger.LogDebug(
-				$"Found atom: Type={atom.Value.Type}, " +
-				$"Size={atom.Value.Size}, HeaderSize={atom.Value.HeaderSize}, DataOffset={atom.Value.DataOffset}");
-
-			var payloadSize = atom.Value.Size - atom.Value.HeaderSize;
-			if ( payloadSize < 0 )
-			{
-				logger.LogInformation("Mp4FileHasher.ProcessNonSeekableStreamAsync invalid payload size");
-				return string.Empty;
-			}
-
-			if ( atom.Value.Type == "mdat" )
-			{
-				// non-seekable: hash immediately from current position
-				return await HashMdatAtomAsync(stream, md5, buffer, payloadSize);
-			}
-
-			// non-mdat atoms
-			if ( payloadSize == 0 )
-			{
-				logger.LogInformation(
-					"Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom");
-				return string.Empty;
-			}
-
-			if ( await TrySkipAtomOrAbortAsync(stream, buffer, payloadSize, "ProcessNonSeekableStreamAsync_non_mdat") )
-			{
-				continue;
-			}
-
-			return string.Empty;
+			logger.LogInformation(isSeekable
+				? "Mp4FileHasher.ProcessSeekableStreamAsync invalid payload size"
+				: "Mp4FileHasher.ProcessNonSeekableStreamAsync invalid payload size");
+			return ( false, string.Empty );
 		}
 
-		return string.Empty;
+		if ( atom.Type == "mdat" )
+		{
+			if ( isSeekable )
+			{
+				return await HandleMdatSeekableAsync(stream, atom, mdats!, buffer, payloadSize);
+			}
+
+			// non-seekable: hash immediately from current position
+			var hash = await HashMdatAtomAsync(stream, md5, buffer, payloadSize);
+			return ( false, hash );
+		}
+
+		// non-mdat atoms
+		if ( payloadSize == 0 )
+		{
+			logger.LogInformation(isSeekable
+				? "Mp4FileHasher.ProcessSeekableStreamAsync invalid zero-size non-mdat atom"
+				: "Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom");
+			return ( false, string.Empty );
+		}
+
+		return await HandleNonMdatSkipAsync(stream, buffer, payloadSize, isSeekable);
 	}
+
+	private async Task<(bool shouldContinue, string? immediateResult)> HandleMdatSeekableAsync(
+		Stream stream,
+		Mp4Atom atom,
+		List<Mp4Atom> mdats,
+		byte[] buffer,
+		long payloadSize)
+	{
+		mdats.Add(atom);
+		if ( !await TrySkipAtomOrAbortAsync(stream, buffer, payloadSize,
+			    "ProcessSeekableStreamAsync_mdat") )
+		{
+			return ( false, string.Empty );
+		}
+
+		return ( true, null );
+	}
+
+	private async Task<(bool shouldContinue, string? immediateResult)> HandleNonMdatSkipAsync(
+		Stream stream,
+		byte[] buffer,
+		long payloadSize,
+		bool isSeekable)
+	{
+		var tag = isSeekable
+			? "ProcessSeekableStreamAsync_non_mdat"
+			: "ProcessNonSeekableStreamAsync_non_mdat";
+		if ( await TrySkipAtomOrAbortAsync(stream, buffer, payloadSize, tag) )
+		{
+			return ( true, null );
+		}
+
+		return ( false, string.Empty );
+	}
+
 
 	/// <summary>
 	///     Hashes the mdat atom content
@@ -320,10 +332,11 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	}
 
 	/// <summary>
-	/// Try skip an atom and log a consistent message when it fails.
-	/// Returns true when skip succeeded, false when caller should abort processing.
+	///     Try skip an atom and log a consistent message when it fails.
+	///     Returns true when skip succeeded, false when caller should abort processing.
 	/// </summary>
-	private async Task<bool> TrySkipAtomOrAbortAsync(Stream stream, byte[] buffer, long payloadSize, string tag)
+	private async Task<bool> TrySkipAtomOrAbortAsync(Stream stream, byte[] buffer, long payloadSize,
+		string tag)
 	{
 		var ok = await SkipAtomAsync(stream, buffer, payloadSize);
 		if ( ok )
