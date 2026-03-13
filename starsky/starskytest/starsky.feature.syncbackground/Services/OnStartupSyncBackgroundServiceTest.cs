@@ -23,29 +23,6 @@ namespace starskytest.starsky.feature.syncbackground.Services;
 [TestClass]
 public sealed class OnStartupSyncBackgroundServiceTest
 {
-	private static IServiceScopeFactory GetNewScope()
-	{
-		var services = new ServiceCollection();
-		services.AddSingleton<IRealtimeConnectionsService, FakeIRealtimeConnectionsService>();
-		services.AddSingleton(new AppSettings { SyncOnStartup = true });
-		services.AddSingleton<ISynchronize, FakeISynchronize>();
-		services.AddSingleton<IWebLogger, FakeIWebLogger>();
-		services.AddSingleton<ISettingsService, FakeISettingsService>();
-		services.AddSingleton<IOnStartupSync, OnStartupSync>();
-		services.AddSingleton<IBackgroundJobHandler, OnStartupSyncJobHandler>();
-		services.AddSingleton<INotificationQuery, FakeINotificationQuery>();
-		services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
-
-		// Create a factory first
-		var tempProvider = services.BuildServiceProvider();
-		var scopeFactory = tempProvider.GetRequiredService<IServiceScopeFactory>();
-		// Now register the fake queue with the scope factory
-		services.AddSingleton<IDiskWatcherBackgroundTaskQueue>(
-			new FakeDiskWatcherUpdateBackgroundTaskQueue(scopeFactory));
-
-		var serviceProvider = services.BuildServiceProvider();
-		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
-	}
 
 	[TestMethod]
 	public async Task OnStartupSyncBackgroundService_DoesStoreAfterWards()
@@ -60,29 +37,37 @@ public sealed class OnStartupSyncBackgroundServiceTest
 		services.AddSingleton<IBackgroundJobHandler, OnStartupSyncJobHandler>();
 		services.AddSingleton<INotificationQuery, FakeINotificationQuery>();
 		services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
-		services.AddSingleton<IDiskWatcherBackgroundTaskQueue,
-				FakeDiskWatcherUpdateBackgroundTaskQueue>();
+		services.AddSingleton<IDiskWatcherBackgroundTaskQueue>(sp =>
+			new FakeDiskWatcherUpdateBackgroundTaskQueue(sp.GetRequiredService<IServiceScopeFactory>()));
 
 		var serviceProvider = services.BuildServiceProvider();
 		var finalScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
 		var startupSync = new OnStartupSyncBackgroundService(finalScopeFactory);
 		await startupSync.StartAsync(CancellationToken.None);
-
-		var settingsService = serviceProvider.GetRequiredService<ISettingsService>();
-
-		var setting = await settingsService.GetSetting<DateTime>(SettingsType
-			.LastSyncBackgroundDateTime);
-
-		Assert.AreNotEqual(0, setting.Year);
-		Assert.AreNotEqual(0, setting.Month);
-		Assert.AreNotEqual(0, setting.Day);
-
-
-		Assert.AreEqual(DateTime.UtcNow.Day, setting.ToUniversalTime().Day);
-		Assert.AreEqual(DateTime.UtcNow.Hour, setting.ToUniversalTime().Hour);
+		
 		var synchronize = serviceProvider.GetRequiredService<ISynchronize>() as FakeISynchronize;
 		Assert.IsNotNull(synchronize);
+
+		// Poll the settings service until LastSyncBackgroundDateTime is persisted.
+		var settingsService = serviceProvider.GetRequiredService<ISettingsService>();
+		DateTime setting = default;
+		var sw = System.Diagnostics.Stopwatch.StartNew();
+		while (sw.Elapsed < TimeSpan.FromSeconds(5))
+		{
+			setting = await settingsService.GetSetting<DateTime>(SettingsType.LastSyncBackgroundDateTime);
+			if (setting.Year >= 2000)
+			{
+				break;
+			}
+			await Task.Delay(50, TestContext.CancellationToken);
+		}
+
+		Assert.IsGreaterThanOrEqualTo(2000, setting.Year, "LastSyncBackgroundDateTime was not written in time");
+		var delta = (DateTime.UtcNow - setting.ToUniversalTime()).Duration();
+		Assert.IsLessThan(TimeSpan.FromMinutes(2), delta, $"LastSyncBackgroundDateTime is not recent: delta={delta}");
 		Assert.IsTrue(synchronize.Inputs.Exists(p => p.Item1 == "/"));
 	}
+
+	public TestContext TestContext { get; set; }
 }
