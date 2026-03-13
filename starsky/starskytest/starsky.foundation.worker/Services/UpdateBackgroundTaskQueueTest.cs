@@ -128,6 +128,16 @@ public sealed class UpdateBackgroundTaskQueueTest
 	}
 
 	[TestMethod]
+	public async Task BackgroundTaskQueueTest_JobTypeRequired_ArgumentException()
+	{
+		// Act & Assert
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
+		{
+			await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob());
+		});
+	}
+
+	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
 	[SuppressMessage("Usage", "S2589:Dup isExecuted")]
 	public async Task BackgroundQueuedHostedServiceTestHandleException()

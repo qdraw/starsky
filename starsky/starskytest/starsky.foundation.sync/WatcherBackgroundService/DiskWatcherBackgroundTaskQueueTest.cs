@@ -52,4 +52,14 @@ public sealed class DiskWatcherBackgroundTaskQueueTest
 		var count = backgroundQueue.Count();
 		Assert.AreEqual(1, count);
 	}
+
+	[TestMethod]
+	public async Task QueueJobAsync_JobTypeRequired_ArgumentException()
+	{
+		var backgroundQueue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
+		await Assert.ThrowsExactlyAsync<System.ArgumentException>(async () =>
+		{
+			await backgroundQueue.QueueJobAsync(new BackgroundTaskQueueJob());
+		});
+	}
 }

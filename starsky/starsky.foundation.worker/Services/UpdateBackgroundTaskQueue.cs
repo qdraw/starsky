@@ -37,11 +37,9 @@ public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 	public ValueTask QueueJobAsync(BackgroundTaskQueueJob job)
 	{
 		ArgumentNullException.ThrowIfNull(job);
-		if ( string.IsNullOrWhiteSpace(job.JobType) )
-		{
-			throw new ArgumentException("JobType is required", nameof(job));
-		}
-		return _queue.Writer.WriteAsync(job);
+		return string.IsNullOrWhiteSpace(job.JobType)
+			? throw new ArgumentException("JobType is required", nameof(job))
+			: _queue.Writer.WriteAsync(job);
 	}
 
 	public async ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(

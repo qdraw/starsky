@@ -217,6 +217,15 @@ public sealed class ThumbnailQueuedHostedServiceTest
 	}
 
 	[TestMethod]
+	public async Task ThumbnailQueuedHostedServiceTest_JobTypeRequired_ArgumentException()
+	{
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
+		{
+			await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob());
+		});
+	}
+
+	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
 	[SuppressMessage("Usage", "S2589:Dup isExecuted")]
 	public async Task BackgroundQueuedHostedServiceTestHandleException()
