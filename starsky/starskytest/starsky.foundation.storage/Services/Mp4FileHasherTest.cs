@@ -656,6 +656,32 @@ public sealed class Mp4FileHasherTest
 	}
 
 	[TestMethod]
+	public async Task HashMp4VideoContentAsync_NonSeekable_Mdat_HashesSameAsSeekable()
+	{
+		// Arrange - create an mp4 with a single mdat payload
+		var mdatContent = "nonseek mdat payload"u8.ToArray();
+		var mp4Data = CreateMinimalMp4WithMdatHelper.CreateMinimalMp4WithMdat(mdatContent);
+
+		// Seekable storage (reference)
+		var storageSeek = CreateStorageWithMp4("/seek.mp4", mp4Data);
+		var loggerSeek = new FakeIWebLogger();
+		var hasherSeek = new Mp4FileHasher(storageSeek, loggerSeek);
+		var hashSeek = await hasherSeek.HashMp4VideoContentAsync("/seek.mp4");
+
+		// Non-seekable storage: wrap bytes in NonSeekableStream and return via StreamReturningStorage
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+		var storageNonSeek = new StreamReturningStorage(nonSeek);
+		var loggerNonSeek = new FakeIWebLogger();
+		var hasherNonSeek = new Mp4FileHasher(storageNonSeek, loggerNonSeek);
+		var hashNonSeek = await hasherNonSeek.HashMp4VideoContentAsync("/seek.mp4");
+
+		// Assert - non-seekable should hash the mdat immediately and match seekable hash
+		Assert.IsNotNull(hashSeek);
+		Assert.IsNotNull(hashNonSeek);
+		Assert.AreEqual(hashSeek, hashNonSeek);
+	}
+
+	[TestMethod]
 	public async Task HashMp4VideoContentAsync_MdatDeclaredTooLarge_Truncated_ReturnsEmptyString()
 	{
 		// Arrange: mdat claims very large size but file is truncated (no payload)
