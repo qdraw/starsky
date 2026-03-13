@@ -6,15 +6,21 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.trash.Interfaces;
 using starsky.feature.trash.Services;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.database.Thumbnails;
+using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Services;
 using starsky.foundation.native.Trash;
+using starsky.foundation.native.Trash.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
+using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.worker.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.trash.Services;
@@ -22,29 +28,53 @@ namespace starskytest.starsky.feature.trash.Services;
 [TestClass]
 public class MoveToTrashServiceTest
 {
+	private static IServiceScopeFactory CreateServiceScope()
+	{
+		var serviceProvider = new ServiceCollection()
+			.AddSingleton<AppSettings>()
+			.AddSingleton<ITrashService, FakeITrashService>()
+			.AddSingleton<IQuery, FakeIQuery>()
+			.AddSingleton<IUpdateBackgroundTaskQueue, FakeIUpdateBackgroundTaskQueue>()
+			.AddSingleton<IMetaPreflight, FakeMetaPreflight>()
+			.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>()
+			.AddSingleton<ITrashConnectionService, TrashConnectionService>()
+			.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>()
+			.AddSingleton<INotificationQuery, FakeINotificationQuery>()
+			.AddSingleton<IMoveToTrashService, MoveToTrashService>()
+			.AddSingleton<IBackgroundJobHandler, MoveToTrashJobHandler>()
+			.BuildServiceProvider();
+		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	}
+
 	[TestMethod]
 	public async Task InSystemTrash_ShouldMoveToTrash()
 	{
+		var scopeFactory = CreateServiceScope();
 		const string path = "/test/test.jpg";
 		var trashService = new FakeITrashService();
 		var appSettings = new AppSettings { UseSystemTrash = true };
 		var moveToTrashService = new MoveToTrashService(appSettings,
 			new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
+			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(scopeFactory),
 			trashService, new FakeIMetaUpdateService(),
 			new FakeITrashConnectionService());
 
-		await moveToTrashService.MoveToTrashAsync([path], true);
+		await moveToTrashService.CreateEvent([path], true);
 
-		Assert.HasCount(1, trashService.InTrash);
+		var scope = scopeFactory.CreateScope();
+		var trashService2 = scope.ServiceProvider.GetService<ITrashService>() as FakeITrashService;
+		Assert.IsNotNull(trashService2);
+
+		Assert.HasCount(1, trashService2.InTrash);
 		var expected = appSettings.StorageFolder +
 		               path.Replace('/', Path.DirectorySeparatorChar);
-		Assert.AreEqual(expected, trashService.InTrash.FirstOrDefault());
+		Assert.AreEqual(expected, trashService2.InTrash.FirstOrDefault());
 	}
 
 	[TestMethod]
 	public async Task InSystemTrash_ShouldMoveToTrash_Directory()
 	{
+		var scopeFactory = CreateServiceScope();
 		const string dirPath = "/test";
 		const string path = "/test/test.jpg";
 		var trashService = new FakeITrashService();
@@ -60,16 +90,20 @@ public class MoveToTrashServiceTest
 					IsDirectory = true, Status = FileIndexItem.ExifStatus.Ok
 				}
 			]),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
+			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(scopeFactory),
 			trashService, new FakeIMetaUpdateService(),
 			new FakeITrashConnectionService());
 
-		await moveToTrashService.MoveToTrashAsync([dirPath], true);
+		await moveToTrashService.CreateEvent([dirPath], true);
+		
+		var scope = scopeFactory.CreateScope();
+		var trashService2 = scope.ServiceProvider.GetService<ITrashService>() as FakeITrashService;
+		Assert.IsNotNull(trashService2);
 
-		Assert.HasCount(1, trashService.InTrash);
+		Assert.HasCount(1, trashService2.InTrash);
 		var expected = appSettings.StorageFolder +
 		               dirPath.Replace('/', Path.DirectorySeparatorChar);
-		Assert.AreEqual(expected, trashService.InTrash.FirstOrDefault());
+		Assert.AreEqual(expected, trashService2.InTrash.FirstOrDefault());
 	}
 
 	[TestMethod]
@@ -84,7 +118,7 @@ public class MoveToTrashServiceTest
 			trashService, new FakeIMetaUpdateService(),
 			new FakeITrashConnectionService());
 
-		var result = await moveToTrashService.MoveToTrashAsync(
+		var result = await moveToTrashService.CreateEvent(
 			[path], true);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -103,7 +137,7 @@ public class MoveToTrashServiceTest
 			trashService, new FakeIMetaUpdateService(),
 			new FakeITrashConnectionService());
 
-		var result = await moveToTrashService.MoveToTrashAsync(
+		var result = await moveToTrashService.CreateEvent(
 			[path], true);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result.FirstOrDefault()?.Status);
@@ -122,7 +156,7 @@ public class MoveToTrashServiceTest
 			trashService, metaUpdate,
 			new FakeITrashConnectionService());
 
-		var result = await moveToTrashService.MoveToTrashAsync(
+		var result = await moveToTrashService.CreateEvent(
 			[path], true);
 
 		Assert.IsEmpty(trashService.InTrash);
@@ -144,7 +178,7 @@ public class MoveToTrashServiceTest
 			trashService, metaUpdate,
 			new FakeITrashConnectionService());
 
-		var result = await moveToTrashService.MoveToTrashAsync(
+		var result = await moveToTrashService.CreateEvent(
 			[path], true);
 
 		Assert.IsEmpty(trashService.InTrash);
@@ -165,7 +199,7 @@ public class MoveToTrashServiceTest
 			trashService, metaUpdate,
 			new FakeITrashConnectionService());
 
-		var result = await moveToTrashService.MoveToTrashAsync(
+		var result = await moveToTrashService.CreateEvent(
 			[path], true);
 
 		Assert.IsEmpty(trashService.InTrash);
@@ -219,7 +253,7 @@ public class MoveToTrashServiceTest
 			metaPreflight, new FakeIUpdateBackgroundTaskQueue(),
 			new TrashService(), metaUpdate, new FakeITrashConnectionService());
 
-		var result = await moveToTrashService.MoveToTrashAsync(
+		var result = await moveToTrashService.CreateEvent(
 			[path], true);
 
 		await query.RemoveItemAsync(addedItem);
@@ -280,7 +314,7 @@ public class MoveToTrashServiceTest
 			metaPreflight, new FakeIUpdateBackgroundTaskQueue(),
 			new TrashService(), metaUpdate, new FakeITrashConnectionService());
 
-		var result = await moveToTrashService.MoveToTrashAsync(
+		var result = await moveToTrashService.CreateEvent(
 			[path], true);
 
 		await query.RemoveItemAsync(addedItem);

@@ -20,7 +20,6 @@ namespace starsky.feature.trash.Services;
 [Service(typeof(IMoveToTrashService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MoveToTrashService : IMoveToTrashService
 {
-	public const string JobType = "Trash.MoveToTrash.v1";
 	private readonly AppSettings _appSettings;
 	private readonly ITrashConnectionService _connectionService;
 	private readonly IMetaPreflight _metaPreflight;
@@ -62,7 +61,7 @@ public class MoveToTrashService : IMoveToTrashService
 	/// <param name="inputFilePaths">list of paths</param>
 	/// <param name="collections">is stack collections enabled</param>
 	/// <returns>list of files</returns>
-	public async Task<List<FileIndexItem>> MoveToTrashAsync(
+	public async Task<List<FileIndexItem>> CreateEvent(
 		List<string> inputFilePaths, bool collections)
 	{
 		var inputModel = new FileIndexItem { Tags = TrashKeyword.TrashKeywordString };
@@ -94,7 +93,7 @@ public class MoveToTrashService : IMoveToTrashService
 			MetaData = "trash",
 			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
-			JobType = JobType,
+			JobType = MoveToTrashJobHandler.MoveToTrash,
 			PayloadJson = JsonSerializer.Serialize(payload)
 		});
 
@@ -102,9 +101,9 @@ public class MoveToTrashService : IMoveToTrashService
 	}
 
 	/// <summary>
-	///     Is it supported to use the system trash
-	///     But it does NOT check if the feature toggle is enabled
-	///     Used for end2end test to check if it an option to enable / disable the system trash
+	///     Is it supported to use the system Trash
+	///     It does NOT check if the feature toggle is enabled
+	///     Used for end2end test to check if it's an option to enable / disable the system trash
 	/// </summary>
 	/// <returns>true if supported</returns>
 	public bool DetectToUseSystemTrash()
@@ -117,6 +116,21 @@ public class MoveToTrashService : IMoveToTrashService
 	{
 		await _metaUpdateService.UpdateAsync(changedFileIndexItemName,
 			fileIndexResultsList, inputModel, collections, false, 0);
+	}
+
+	public async Task MoveToTrashAsync(MoveToTrashPayload payload)
+	{
+		await _connectionService.ConnectionServiceAsync(payload.MoveToTrashList,
+			payload.IsSystemTrashEnabled);
+
+		if ( payload.IsSystemTrashEnabled )
+		{
+			await SystemTrashInQueue(payload.MoveToTrashList);
+			return;
+		}
+
+		await MetaTrashInQueue(payload.ChangedFileIndexItemName,
+			payload.FileIndexResultsList, payload.InputModel, payload.Collections);
 	}
 
 	/// <summary>

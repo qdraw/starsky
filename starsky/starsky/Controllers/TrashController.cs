@@ -48,7 +48,7 @@ public class TrashController : Controller
 		}
 
 		var fileIndexResultsList =
-			await _moveToTrashService.MoveToTrashAsync(inputFilePaths.ToList(), collections);
+			await _moveToTrashService.CreateEvent(inputFilePaths.ToList(), collections);
 
 		return Json(fileIndexResultsList);
 	}

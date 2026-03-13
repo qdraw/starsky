@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.feature.trash.Interfaces;
+using starsky.feature.trash.Services;
 using starsky.foundation.database.Models;
 
 namespace starskytest.FakeMocks;
@@ -18,7 +19,7 @@ public class FakeIMoveToTrashService : IMoveToTrashService
 
 	public List<FileIndexItem> FileIndexItems { get; set; }
 
-	public Task<List<FileIndexItem>> MoveToTrashAsync(List<string> inputFilePaths, bool collections)
+	public Task<List<FileIndexItem>> CreateEvent(List<string> inputFilePaths, bool collections)
 	{
 		var result = new List<FileIndexItem>();
 		foreach ( var inputFilePath in inputFilePaths )
@@ -36,6 +37,11 @@ public class FakeIMoveToTrashService : IMoveToTrashService
 	public bool DetectToUseSystemTrash()
 	{
 		return DetectToUseSystemTrashToggle;
+	}
+
+	public Task MoveToTrashAsync(MoveToTrashPayload payload)
+	{
+		throw new System.NotImplementedException();
 	}
 
 	public bool IsEnabled()
