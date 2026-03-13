@@ -447,6 +447,26 @@ public sealed class ExtensionRolesHelperTest
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
 
+
+	[TestMethod]
+	public void Files_GetImageFormat_gpx_Test_38()
+	{
+		// the offset is 38
+		var calcOffsetBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"u8.ToArray();
+		Assert.HasCount(38, calcOffsetBytes);
+
+		var bmBytes = Encoding.ASCII.GetBytes(
+			"<?xml version=\"1.0\" encoding=\"UTF-8\"?><gpx creator=\"" +
+			"Wikiloc - https://www.wikiloc.com\" " +
+			"version=\"1.1\" xmlns=\"http://www.topografix.com/GPX/1/1\" " +
+			"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+			"xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 " +
+			"http://www.topografix.com/GPX/1/1/gpx.xsd\"><metadata>" +
+			"<name>Wikiloc - PR-CV 78 Els Paratges de Xàtiva.</name><author><name>");
+		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+	}
+
 	[TestMethod]
 	public void ExtensionRolesHelperTest_IsExtensionForceXmp_Positive()
 	{
