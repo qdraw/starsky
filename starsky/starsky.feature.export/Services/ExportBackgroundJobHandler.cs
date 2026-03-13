@@ -12,7 +12,7 @@ namespace starsky.feature.export.Services;
 [Service(typeof(IBackgroundJobHandler), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class ExportBackgroundJobHandler(IExport exportService) : IBackgroundJobHandler
 {
-	public const string Export = "Controller.Export.v1";
+	public const string Export = "Export.v1";
 
 	public string JobType => Export;
 

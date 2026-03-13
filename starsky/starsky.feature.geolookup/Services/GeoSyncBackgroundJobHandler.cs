@@ -16,7 +16,7 @@ public sealed class GeoSyncBackgroundJobHandler(
 	IServiceScopeFactory scopeFactory,
 	IWebLogger logger) : IBackgroundJobHandler
 {
-	public const string GeoSync = "Controller.GeoSync.v1";
+	public const string GeoSync = "GeoSync.v1";
 
 	public string JobType => GeoSync;
 

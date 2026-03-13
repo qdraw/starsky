@@ -11,7 +11,7 @@ namespace starsky.foundation.metaupdate.Services;
 public sealed class MetaReplaceBackgroundJobHandler(IServiceScopeFactory scopeFactory)
 	: IBackgroundJobHandler
 {
-	public const string MetaReplace = "Controller.MetaReplace.v1";
+	public const string MetaReplace = "MetaReplace.v1";
 
 	public string JobType => MetaReplace;
 

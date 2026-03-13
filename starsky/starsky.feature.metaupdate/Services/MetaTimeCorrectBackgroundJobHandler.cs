@@ -26,7 +26,7 @@ public sealed class MetaTimeCorrectBackgroundJobHandler(
 	IWebSocketConnectionsService webSocketConnectionsService,
 	INotificationQuery notificationQuery) : IBackgroundJobHandler
 {
-	public const string MetaTimeCorrect = "Controller.MetaTimeCorrect.v1";
+	public const string MetaTimeCorrect = "MetaTimeCorrect.v1";
 	public string JobType => MetaTimeCorrect;
 
 	public async Task ExecuteAsync(string? payloadJson, CancellationToken cancellationToken)

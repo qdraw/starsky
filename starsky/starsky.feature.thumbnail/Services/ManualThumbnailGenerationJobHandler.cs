@@ -21,11 +21,8 @@ public sealed class ManualThumbnailGenerationJobHandler(
 			throw new ArgumentException("Missing payload", nameof(payloadJson));
 		}
 
-		var payload = JsonSerializer.Deserialize<ManualThumbnailGenerationPayload>(payloadJson);
-		if ( payload == null )
-		{
-			throw new ArgumentException("Invalid payload", nameof(payloadJson));
-		}
+		var payload = JsonSerializer.Deserialize<ManualThumbnailGenerationPayload>(payloadJson) ??
+		              throw new ArgumentException("Invalid payload", nameof(payloadJson));
 
 		if ( service is not ManualThumbnailGenerationService concrete )
 		{

@@ -11,7 +11,7 @@ namespace starsky.foundation.metaupdate.Services;
 public sealed class MetaUpdateBackgroundJobHandler(IServiceScopeFactory scopeFactory)
 	: IBackgroundJobHandler
 {
-	public const string MetaUpdate = "Controller.MetaUpdate.v1";
+	public const string MetaUpdate = "MetaUpdate.v1";
 	public string JobType => MetaUpdate;
 
 	public async Task ExecuteAsync(string? payloadJson, CancellationToken cancellationToken)
