@@ -215,6 +215,12 @@
         <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4_Test_Verify.verified.txt">
             <DependentUpon>FileHashTest.cs</DependentUpon>
         </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_CreateAnImage_Test_Verify.verified.txt">
+          <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_CreateAnImageWithThumbnail_Test_Verify.verified.txt">
+          <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip"/>
