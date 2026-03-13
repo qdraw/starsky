@@ -682,6 +682,37 @@ public sealed class Mp4FileHasherTest
 	}
 
 	[TestMethod]
+	public async Task
+		HashMp4VideoContentAsync_SeekThrowsNotSupported_FallbacksToRead_HashesSameAsSeekable()
+	{
+		// Arrange - create an mp4 with atoms before mdat so SkipAtomAsync will be invoked
+		var mdatContent = "fallback read mdat"u8.ToArray();
+		var mp4Data = CreateMp4WithMultipleAtoms(mdatContent);
+
+		// Reference seekable storage
+		var storageSeek = CreateStorageWithMp4("/seekref.mp4", mp4Data);
+		var loggerSeek = new FakeIWebLogger();
+		var hasherSeek = new Mp4FileHasher(storageSeek, loggerSeek);
+		var hashSeek = await hasherSeek.HashMp4VideoContentAsync("/seekref.mp4");
+
+		// Stream that reports CanSeek=true but whose Seek throws NotSupportedException
+		using var inner = new MemoryStream(mp4Data);
+		using var seekNotSupported = new SeekNotSupportedStream(inner);
+
+		var storage = new StreamReturningStorage(seekNotSupported);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/seekref.mp4");
+
+		// Assert - fallback-to-read should allow scanning and produce same hash
+		Assert.IsNotNull(hashSeek);
+		Assert.IsNotNull(hash);
+		Assert.AreEqual(hashSeek, hash);
+	}
+
+	[TestMethod]
 	public async Task HashMp4VideoContentAsync_MdatDeclaredTooLarge_Truncated_ReturnsEmptyString()
 	{
 		// Arrange: mdat claims very large size but file is truncated (no payload)
@@ -1062,7 +1093,8 @@ public sealed class Mp4FileHasherTest
 
 		// Assert
 		Assert.AreEqual(string.Empty, result);
-		Assert.Contains(t => t.Item2?.Contains("Failed to skip") == true, logger.TrackedInformation);
+		Assert.Contains(t => t.Item2?.Contains("Failed to skip") == true,
+			logger.TrackedInformation);
 	}
 
 	[TestMethod]
@@ -1098,8 +1130,10 @@ public sealed class Mp4FileHasherTest
 		{
 			Array.Reverse(badSize);
 		}
+
 		await ms.WriteAsync(badSize.AsMemory(0, 4), TestContext.CancellationToken);
-		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken); // atom type
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken); // atom type
 		var mp4Data = ms.ToArray();
 
 		var storage = CreateStorageWithMp4("/bad-seekable.mp4", mp4Data);
@@ -1111,7 +1145,10 @@ public sealed class Mp4FileHasherTest
 
 		// Assert
 		Assert.AreEqual(string.Empty, hash);
-		Assert.Contains(t => t.Item2?.Contains("Mp4FileHasher.ProcessSeekableStreamAsync invalid payload size") == true, logger.TrackedInformation);
+		Assert.Contains(
+			t => t.Item2?.Contains(
+				"Mp4FileHasher.ProcessSeekableStreamAsync invalid payload size") == true,
+			logger.TrackedInformation);
 	}
 
 	[TestMethod]
@@ -1124,6 +1161,7 @@ public sealed class Mp4FileHasherTest
 		{
 			Array.Reverse(badSize);
 		}
+
 		await ms.WriteAsync(badSize.AsMemory(0, 4), TestContext.CancellationToken);
 		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
 		var mp4Data = ms.ToArray();
@@ -1138,7 +1176,10 @@ public sealed class Mp4FileHasherTest
 
 		// Assert
 		Assert.AreEqual(string.Empty, hash);
-		Assert.Contains(t => t.Item2?.Contains("Mp4FileHasher.ProcessNonSeekableStreamAsync invalid payload size") == true, logger.TrackedInformation);
+		Assert.Contains(
+			t => t.Item2?.Contains(
+				"Mp4FileHasher.ProcessNonSeekableStreamAsync invalid payload size") == true,
+			logger.TrackedInformation);
 	}
 
 	private sealed class NonSeekableStream(byte[] buffer) : MemoryStream(buffer)
@@ -1151,6 +1192,81 @@ public sealed class Mp4FileHasherTest
 		public override long Seek(long offset, SeekOrigin loc)
 		{
 			throw new IOException("Seek failed");
+		}
+	}
+
+	/// <summary>
+	///     Stream that reports CanSeek=true but throws NotSupportedException when Seek is used
+	///     to force SkipAtomAsync to fallback to SkipByReadingAsync path.
+	/// </summary>
+	private sealed class SeekNotSupportedStream : Stream
+	{
+		private readonly Stream _inner;
+
+		public SeekNotSupportedStream(Stream inner)
+		{
+			_inner = inner;
+		}
+
+		public override bool CanRead => _inner.CanRead;
+		public override bool CanSeek => true; // report seekable so Seek branch is taken
+		public override bool CanWrite => _inner.CanWrite;
+		public override long Length => _inner.Length;
+
+		public override long Position
+		{
+			get => _inner.Position;
+			set => _inner.Position = value;
+		}
+
+		public override void Flush()
+		{
+			_inner.Flush();
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return _inner.Read(buffer, offset, count);
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			// Simulate a stream that doesn't support relative seeks (Current), but supports absolute seeks (Begin)
+			return origin == SeekOrigin.Current
+				? throw new NotSupportedException("Simulated NotSupported Seek for Current")
+				: _inner.Seek(offset, origin);
+		}
+
+		public override void SetLength(long value)
+		{
+			_inner.SetLength(value);
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			_inner.Write(buffer, offset, count);
+		}
+
+		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
+			CancellationToken cancellationToken = default)
+		{
+			return _inner.ReadAsync(buffer, cancellationToken);
+		}
+
+		public override Task<int> ReadAsync(byte[] buffer, int offset, int count,
+			CancellationToken cancellationToken)
+		{
+			return _inner.ReadAsync(buffer, offset, count, cancellationToken);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if ( disposing )
+			{
+				_inner.Dispose();
+			}
+
+			base.Dispose(disposing);
 		}
 	}
 
@@ -1253,22 +1369,22 @@ public sealed class Mp4FileHasherTest
 
 		public IEnumerable<string> GetAllFilesInDirectory(string path)
 		{
-			return Array.Empty<string>();
+			return [];
 		}
 
 		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
 		{
-			return Array.Empty<string>();
+			return [];
 		}
 
 		public IEnumerable<string> GetDirectories(string path)
 		{
-			return Array.Empty<string>();
+			return [];
 		}
 
 		public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
 		{
-			return Array.Empty<KeyValuePair<string, DateTime>>();
+			return [];
 		}
 
 		public Stream ReadStream(string path, int maxRead = -1)
@@ -1311,6 +1427,5 @@ public sealed class Mp4FileHasherTest
 		{
 			throw new NotImplementedException();
 		}
-
 	}
 }
