@@ -1062,6 +1062,59 @@ public sealed class Mp4FileHasherTest
 			t => t.Item2?.Contains("Failed to skip") == true, logger.TrackedInformation);
 	}
 
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_InvalidPayloadSize_Seekable_LogsAndReturnsEmpty()
+	{
+		// Arrange - craft an atom with size smaller than header (size=4 < header 8) to force payloadSize < 0
+		using var ms = new MemoryStream();
+		var badSize = BitConverter.GetBytes(( uint ) 4);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(badSize);
+		}
+		await ms.WriteAsync(badSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken); // atom type
+		var mp4Data = ms.ToArray();
+
+		var storage = CreateStorageWithMp4("/bad-seekable.mp4", mp4Data);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/bad-seekable.mp4");
+
+		// Assert
+		Assert.AreEqual(string.Empty, hash);
+		Assert.Contains(t => t.Item2?.Contains("Mp4FileHasher.ProcessSeekableStreamAsync invalid payload size") == true, logger.TrackedInformation);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_InvalidPayloadSize_NonSeekable_LogsAndReturnsEmpty()
+	{
+		// Arrange - same malformed atom but use non-seekable stream
+		using var ms = new MemoryStream();
+		var badSize = BitConverter.GetBytes(( uint ) 4);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(badSize);
+		}
+		await ms.WriteAsync(badSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		var mp4Data = ms.ToArray();
+
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+		var storage = new StreamReturningStorage(nonSeek);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/bad-nonseek.mp4");
+
+		// Assert
+		Assert.AreEqual(string.Empty, hash);
+		Assert.Contains(t => t.Item2?.Contains("Mp4FileHasher.ProcessNonSeekableStreamAsync invalid payload size") == true, logger.TrackedInformation);
+	}
+
 	private sealed class NonSeekableStream(byte[] buffer) : MemoryStream(buffer)
 	{
 		public override bool CanSeek => false;

@@ -160,15 +160,16 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		}
 
 		// non-mdat atoms
-		if ( payloadSize == 0 )
+		if ( payloadSize != 0 )
 		{
-			logger.LogInformation(isSeekable
-				? "Mp4FileHasher.ProcessSeekableStreamAsync invalid zero-size non-mdat atom"
-				: "Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom");
-			return ( false, string.Empty );
+			return await HandleNonMdatSkipAsync(stream, buffer, payloadSize, isSeekable);
 		}
 
-		return await HandleNonMdatSkipAsync(stream, buffer, payloadSize, isSeekable);
+		logger.LogInformation(isSeekable
+			? "Mp4FileHasher.ProcessSeekableStreamAsync invalid zero-size non-mdat atom"
+			: "Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom");
+		return ( false, string.Empty );
+
 	}
 
 	private async Task<(bool shouldContinue, string? immediateResult)> HandleMdatSeekableAsync(
