@@ -242,10 +242,10 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 
 	private static async Task<string> HashMdatAtomsSeekableAsync(Stream stream, MD5 md5,
 		byte[] buffer,
-		List<Mp4Atom> mdats)
+		List<Mp4Atom> mDats)
 	{
 		// Choose mdats by largest payload first
-		var sorted = mdats.OrderByDescending(a => a.Size - a.HeaderSize).ToList();
+		var sorted = mDats.OrderByDescending(a => a.Size - a.HeaderSize).ToList();
 		long remainingToHash = MaxBytesToHash;
 		long totalHashed = 0;
 		foreach ( var atom in sorted )
@@ -417,17 +417,8 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		}
 
 		// Large-size atom: size field = 1, actual size follows in next 8 bytes
-		if ( size == 1 )
+		if ( size != 1 )
 		{
-			var largeSize = new byte[8];
-			read = await stream.ReadAsync(largeSize.AsMemory(0, 8), ct);
-			if ( read < 8 )
-			{
-				return null;
-			}
-
-			atomSize = ( long ) BinaryPrimitives.ReadUInt64BigEndian(largeSize);
-			headerSize = 16;
 			return new Mp4Atom
 			{
 				Size = atomSize,
@@ -437,11 +428,24 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			};
 		}
 
-		// Normal atom with 32-bit size
+		var largeSize = new byte[8];
+		read = await stream.ReadAsync(largeSize.AsMemory(0, 8), ct);
+		if ( read < 8 )
+		{
+			return null;
+		}
+
+		atomSize = ( long ) BinaryPrimitives.ReadUInt64BigEndian(largeSize);
+		headerSize = 16;
 		return new Mp4Atom
 		{
-			Size = atomSize, Type = type, DataOffset = stream.Position, HeaderSize = headerSize
+			Size = atomSize,
+			Type = type,
+			DataOffset = stream.Position,
+			HeaderSize = headerSize
 		};
+
+		// Normal atom with 32-bit size
 	}
 
 	/// <summary>
