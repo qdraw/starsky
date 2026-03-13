@@ -66,7 +66,7 @@ jobs:
           systemctl --user -l status starsky
 
       - name: Run Cypress in Electron 
-        uses: cypress-io/github-action@cdc8a6d83b09bdcd28c71950676526e9972e16f0
+        uses: cypress-io/github-action@fab0c391166b0d46b20e031a20e5c0ae3daaada3
         env:
           CYPRESS_BASE_URL: http://localhost:4000
           cypress_name: local
