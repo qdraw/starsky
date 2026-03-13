@@ -79,15 +79,15 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		}
 
 		// Delegate handling based on stream seekability to reduce method complexity
-		return await ProcessAtomsCommonAsync(stream, md5, buffer, cancellationToken,
-			stream.CanSeek);
+		return await ProcessAtomsCommonAsync(stream, md5, buffer,
+			stream.CanSeek, cancellationToken);
 	}
 
 	// Consolidated atom processing for both seekable and non-seekable streams
 	// If isSeekable is true we collect mdat atoms and hash them after scanning.
 	// If false we hash the first mdat encountered immediately.
 	private async Task<string> ProcessAtomsCommonAsync(Stream stream,
-		MD5 md5, byte[] buffer, CancellationToken cancellationToken, bool isSeekable)
+		MD5 md5, byte[] buffer, bool isSeekable, CancellationToken cancellationToken)
 	{
 		var mdats = isSeekable ? new List<Mp4Atom>() : null;
 
@@ -439,10 +439,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		headerSize = 16;
 		return new Mp4Atom
 		{
-			Size = atomSize,
-			Type = type,
-			DataOffset = stream.Position,
-			HeaderSize = headerSize
+			Size = atomSize, Type = type, DataOffset = stream.Position, HeaderSize = headerSize
 		};
 
 		// Normal atom with 32-bit size
