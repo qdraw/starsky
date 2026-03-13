@@ -1158,7 +1158,7 @@ public sealed class Mp4FileHasherTest
 		// Assert - should return empty and log the mdat-specific skip failure
 		Assert.AreEqual(string.Empty, result);
 		Assert.Contains(
-			t => t.Item2?.Contains("Mp4FileHasher.ProcessSeekableStreamAsync_mdat Failed to skip atom") == true,
+			t => t.Item2?.Contains("Mp4FileHasher.ProcessSeekableStreamAsync_non_mdat Failed to skip atom") == true,
 			logger.TrackedInformation);
 	}
 
