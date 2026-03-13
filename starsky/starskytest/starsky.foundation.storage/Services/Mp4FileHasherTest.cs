@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starskytest.FakeMocks;
 
@@ -538,7 +540,7 @@ public sealed class Mp4FileHasherTest
 		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
 		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
 		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
-		await ms.WriteAsync(( new byte[4] ).AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4), TestContext.CancellationToken);
 		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
 
 		// mdat header size = 8 (header only)
@@ -1009,8 +1011,8 @@ public sealed class Mp4FileHasherTest
 
 		// Assert - Should return empty string when skip fails
 		Assert.AreEqual(string.Empty, hash);
-		Assert.IsTrue(logger.TrackedInformation[0].Item2?.
-			Contains("Mp4FileHasher.ProcessNonSeekableStreamAsync_non_mdat Failed to skip atom"));
+		Assert.IsTrue(logger.TrackedInformation[0].Item2
+			?.Contains("Mp4FileHasher.ProcessNonSeekableStreamAsync_non_mdat Failed to skip atom"));
 	}
 
 	[TestMethod]
@@ -1028,11 +1030,36 @@ public sealed class Mp4FileHasherTest
 		var sut = new Mp4FileHasher(storage, logger);
 
 		// Act - ProcessMp4AtomsAsync should take the seekable path and fail when SkipAtomAsync triggers Seek exception
-		var result = await sut.ProcessMp4AtomsAsync(throwingStream, md5, new byte[16], CancellationToken.None);
+		var result =
+			await sut.ProcessMp4AtomsAsync(throwingStream, md5, new byte[16],
+				CancellationToken.None);
 
 		// Assert
 		Assert.AreEqual(string.Empty, result);
 		Assert.Contains(t => t.Item2?.Contains("Failed to skip") == true, logger.TrackedInformation);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_LimitedNonSeekableStream_ReturnsEmptyString()
+	{
+		// Arrange - create MP4 with atoms before mdat so parser will try to skip a non-mdat atom
+		var mdatContent = "nonseek-fail"u8.ToArray();
+		var mp4Data = CreateMp4WithMultipleAtoms(mdatContent);
+
+		// Use LimitedStream which is non-seekable and will throw during skip/read
+		await using var failingStream = new LimitedStream(mp4Data);
+
+		var storage = new StreamReturningStorage(failingStream);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/nonseek-fail.mp4");
+
+		// Assert - when skipping fails on non-seekable stream we get empty result
+		Assert.AreEqual(string.Empty, hash);
+		Assert.Contains(
+			t => t.Item2?.Contains("Failed to skip") == true, logger.TrackedInformation);
 	}
 
 	private sealed class NonSeekableStream(byte[] buffer) : MemoryStream(buffer)
@@ -1080,5 +1107,131 @@ public sealed class Mp4FileHasherTest
 					return await base.ReadAsync(buffer, cancellationToken);
 			}
 		}
+	}
+
+	/// <summary>
+	///     Simple IStorage implementation that returns a preconfigured stream for ReadStream.
+	///     Only the members used by Mp4FileHasher are implemented; others are minimal stubs.
+	/// </summary>
+	private sealed class StreamReturningStorage : IStorage
+	{
+		private readonly Stream _stream;
+
+		public StreamReturningStorage(Stream stream)
+		{
+			_stream = stream;
+		}
+
+		public bool ExistFile(string path)
+		{
+			return true;
+		}
+
+		public bool ExistFolder(string path)
+		{
+			return false;
+		}
+
+		public bool IsFolderEmpty(string path)
+		{
+			return false;
+		}
+
+		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
+		{
+			return FolderOrFileModel.FolderOrFileTypeList.File;
+		}
+
+		public void FolderMove(string fromPath, string toPath)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool FileMove(string fromPath, string toPath)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void FileCopy(string fromPath, string toPath)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool FileDelete(string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool CreateDirectory(string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool FolderDelete(string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<string> GetAllFilesInDirectory(string path)
+		{
+			return Array.Empty<string>();
+		}
+
+		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
+		{
+			return Array.Empty<string>();
+		}
+
+		public IEnumerable<string> GetDirectories(string path)
+		{
+			return Array.Empty<string>();
+		}
+
+		public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
+		{
+			return Array.Empty<KeyValuePair<string, DateTime>>();
+		}
+
+		public Stream ReadStream(string path, int maxRead = -1)
+		{
+			if ( _stream.CanSeek )
+			{
+				_stream.Position = 0;
+			}
+
+			return _stream;
+		}
+
+		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool WriteStream(Stream stream, string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<bool> WriteStreamAsync(Stream stream, string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public StorageInfo Info(string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsFileReady(string path)
+		{
+			return true;
+		}
+
+		public IAsyncEnumerable<string> ReadLinesAsync(string path,
+			CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException();
+		}
+
 	}
 }
