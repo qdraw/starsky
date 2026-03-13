@@ -1139,6 +1139,30 @@ public sealed class Mp4FileHasherTest
 	}
 
 	[TestMethod]
+	public async Task ProcessSeekableStream_MdatSkipFails_ReturnsEmptyAndLogs()
+	{
+		// Arrange - create MP4 whose first atom is mdat so HandleMdatSeekableAsync will try to skip it
+		var mdatContent = "mdat-skip-fail"u8.ToArray();
+		var mp4Data = CreateMinimalMp4WithMdatHelper.CreateMinimalMp4WithMdat(mdatContent);
+		await using var throwingStream = new ThrowingSeekStream(mp4Data);
+
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		using var md5 = MD5.Create();
+
+		var sut = new Mp4FileHasher(storage, logger);
+
+		// Act - ProcessMp4AtomsAsync should attempt to skip the mdat payload and fail
+		var result = await sut.ProcessMp4AtomsAsync(throwingStream, md5, new byte[16], CancellationToken.None);
+
+		// Assert - should return empty and log the mdat-specific skip failure
+		Assert.AreEqual(string.Empty, result);
+		Assert.Contains(
+			t => t.Item2?.Contains("Mp4FileHasher.ProcessSeekableStreamAsync_mdat Failed to skip atom") == true,
+			logger.TrackedInformation);
+	}
+
+	[TestMethod]
 	public async Task HashMp4VideoContentAsync_LimitedNonSeekableStream_ReturnsEmptyString()
 	{
 		// Arrange - create MP4 with atoms before mdat so parser will try to skip a non-mdat atom
