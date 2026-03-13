@@ -86,9 +86,16 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 
 			logger.LogDebug(
 				$"Found atom: Type={atom.Value.Type}, " +
-				$"Size={atom.Value.Size}, DataOffset={atom.Value.DataOffset}");
+				$"Size={atom.Value.Size}, HeaderSize={atom.Value.HeaderSize}, DataOffset={atom.Value.DataOffset}");
 
-			var payloadSize = atom.Value.Size - 8;
+			// Calculate payload size by subtracting the header size we consumed
+			var payloadSize = atom.Value.Size - atom.Value.HeaderSize;
+			if ( payloadSize <= 0 )
+			{
+				// Invalid or empty atom payload
+				logger.LogInformation("Mp4FileHasher.ProcessMp4AtomsAsync invalid payload size");
+				return string.Empty;
+			}
 
 			if ( atom.Value.Type == "mdat" )
 			{
@@ -116,6 +123,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		MD5 md5, byte[] buffer, long payloadSize)
 	{
 		var remaining = Math.Min(payloadSize, MaxBytesToHash);
+		long totalHashed = 0;
 		while ( remaining > 0 )
 		{
 			var toRead = ( int ) Math.Min(buffer.Length, remaining);
@@ -128,9 +136,16 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 
 			md5.TransformBlock(buffer, 0, bytesRead, null, 0);
 			remaining -= bytesRead;
+			totalHashed += bytesRead;
 		}
 
-		md5.TransformFinalBlock([], 0, 0);
+		// If nothing was hashed, return empty to indicate fallback is needed
+		if ( totalHashed == 0 )
+		{
+			return string.Empty;
+		}
+
+		md5.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
 		var hash = md5.Hash;
 		return Base32.Encode(hash!);
 	}
@@ -145,7 +160,18 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		{
 			if ( payloadSize > 0 && stream.CanSeek )
 			{
-				stream.Seek(payloadSize, SeekOrigin.Current);
+				// Clamp seek to remaining length to avoid exceptions on truncated files
+				try
+				{
+					var remaining = Math.Max(0L, stream.Length - stream.Position);
+					var toSeek = Math.Min(payloadSize, remaining);
+					stream.Seek(toSeek, SeekOrigin.Current);
+				}
+				catch ( NotSupportedException )
+				{
+					// Fallback to reading when seek is not supported
+					await SkipByReadingAsync(stream, buffer, payloadSize);
+				}
 			}
 			else
 			{
@@ -200,27 +226,60 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			return null;
 		}
 
+
 		var size = BinaryPrimitives.ReadUInt32BigEndian(header.AsSpan(0, 4));
 		var type = Encoding.ASCII.GetString(header, 4, 4);
 
 		long atomSize = size;
+		var headerSize = 8;
+
+		// size == 0 : atom extends to end of file (if stream supports Length)
+		if ( size == 0 )
+		{
+			if ( !stream.CanSeek )
+			{
+				// Unknown size and cannot determine, treat as invalid
+				return null;
+			}
+
+			var startPos = stream.Position - headerSize;
+			atomSize = Math.Max(0, stream.Length - startPos);
+			headerSize = 8;
+			return new Mp4Atom
+			{
+				Size = atomSize,
+				Type = type,
+				DataOffset = stream.Position,
+				HeaderSize = headerSize
+			};
+		}
 
 		// Large-size atom: size field = 1, actual size follows in next 8 bytes
-		if ( size != 1 )
+		if ( size == 1 )
 		{
-			return new Mp4Atom { Size = atomSize, Type = type, DataOffset = stream.Position };
+			var largeSize = new byte[8];
+			read = await stream.ReadAsync(largeSize.AsMemory(0, 8), ct);
+			if ( read < 8 )
+			{
+				return null;
+			}
+
+			atomSize = ( long ) BinaryPrimitives.ReadUInt64BigEndian(largeSize);
+			headerSize = 16;
+			return new Mp4Atom
+			{
+				Size = atomSize,
+				Type = type,
+				DataOffset = stream.Position,
+				HeaderSize = headerSize
+			};
 		}
 
-		var largeSize = new byte[8];
-		read = await stream.ReadAsync(largeSize.AsMemory(0, 8), ct);
-		if ( read < 8 )
+		// Normal atom with 32-bit size
+		return new Mp4Atom
 		{
-			return null;
-		}
-
-		atomSize = ( long ) BinaryPrimitives.ReadUInt64BigEndian(largeSize);
-
-		return new Mp4Atom { Size = atomSize, Type = type, DataOffset = stream.Position };
+			Size = atomSize, Type = type, DataOffset = stream.Position, HeaderSize = headerSize
+		};
 	}
 
 	/// <summary>
@@ -231,5 +290,6 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		public long Size;
 		public string Type;
 		public long DataOffset;
+		public int HeaderSize;
 	}
 }
