@@ -1,0 +1,5 @@
+﻿[
+  {
+    BOZKZS6Y2IY5CLYVKGFYXUUTFI: true
+  }
+]

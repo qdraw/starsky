@@ -191,6 +191,30 @@
         <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsInvalidJson_Verify.verified.txt">
             <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
         </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnImage_Test.received.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnImage_Test.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4A6700_Test_Verify.received.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4A6700_Test_Verify.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4Wapp_Test_Verify.received.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4Wapp_Test_Verify.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4_BytesWithLocation_Test_Verify.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4_Test_Verify.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip"/>
@@ -258,6 +282,16 @@
         </Content>
         <None Remove="FakeCreateAn\CreateAnImageA6700\a6700.jpg"/>
         <Content Include="FakeCreateAn\CreateAnImageA6700\a6700.jpg">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnQuickTimeMp4\20260309_041447_head_part.mp4"/>
+        <Content Include="FakeCreateAn\CreateAnQuickTimeMp4\20260309_041447_wapp_head_part.mp4">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="FakeCreateAn\CreateAnQuickTimeMp4\C0008_head_part.mp4"/>
+        <Content Include="FakeCreateAn\CreateAnQuickTimeMp4\C0008_head_part.mp4">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Buffers;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -76,6 +78,8 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			return string.Empty;
 		}
 
+		// collect mdats for seekable streams, for non-seekable hash on-the-fly
+		var mdats = new List<Mp4Atom>();
 		while ( true )
 		{
 			var atom = await ReadAtomAsync(stream, cancellationToken);
@@ -88,18 +92,40 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 				$"Found atom: Type={atom.Value.Type}, " +
 				$"Size={atom.Value.Size}, HeaderSize={atom.Value.HeaderSize}, DataOffset={atom.Value.DataOffset}");
 
-			// Calculate payload size by subtracting the header size we consumed
 			var payloadSize = atom.Value.Size - atom.Value.HeaderSize;
-			if ( payloadSize <= 0 )
+			if ( payloadSize < 0 )
 			{
-				// Invalid or empty atom payload
 				logger.LogInformation("Mp4FileHasher.ProcessMp4AtomsAsync invalid payload size");
 				return string.Empty;
 			}
 
 			if ( atom.Value.Type == "mdat" )
 			{
-				return await HashMdatAtomAsync(stream, md5, buffer, payloadSize);
+				if ( stream.CanSeek )
+				{
+					mdats.Add(atom.Value);
+					if ( !await SkipAtomAsync(stream, buffer, payloadSize) )
+					{
+						logger.LogInformation(
+							"Mp4FileHasher.ProcessMp4AtomsAsync Failed to skip mdat atom");
+						return string.Empty;
+					}
+				}
+				else
+				{
+					// non-seekable: hash immediately from current position
+					return await HashMdatAtomAsync(stream, md5, buffer, payloadSize);
+				}
+
+				continue;
+			}
+
+			// non-mdat atoms
+			if ( payloadSize == 0 )
+			{
+				logger.LogInformation(
+					"Mp4FileHasher.ProcessMp4AtomsAsync invalid zero-size non-mdat atom");
+				return string.Empty;
 			}
 
 			if ( await SkipAtomAsync(stream, buffer, payloadSize) )
@@ -107,13 +133,18 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 				continue;
 			}
 
-			logger.LogInformation("Mp4FileHasher.ProcessMp4AtomsAsync " +
-			                      "Failed to skip non-mdat atom");
+			logger.LogInformation(
+				"Mp4FileHasher.ProcessMp4AtomsAsync Failed to skip non-mdat atom");
 			return string.Empty;
 		}
 
-		// No mdat atom found, return empty to fall back to standard hashing
-		return string.Empty;
+		if ( mdats.Count == 0 )
+		{
+			return string.Empty; // no mdats found
+		}
+
+		// Hash collected mdats for seekable streams
+		return await HashMdatAtomsSeekableAsync(stream, md5, buffer, mdats);
 	}
 
 	/// <summary>
@@ -145,9 +176,63 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			return string.Empty;
 		}
 
-		md5.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+		md5.TransformFinalBlock([], 0, 0);
 		var hash = md5.Hash;
 		return Base32.Encode(hash!);
+	}
+
+	private static async Task<string> HashMdatAtomsSeekableAsync(Stream stream, MD5 md5,
+		byte[] buffer,
+		List<Mp4Atom> mdats)
+	{
+		// Choose mdats by largest payload first
+		var sorted = mdats.OrderByDescending(a => a.Size - a.HeaderSize).ToList();
+		long remainingToHash = MaxBytesToHash;
+		long totalHashed = 0;
+		foreach ( var atom in sorted )
+		{
+			var payloadSize = atom.Size - atom.HeaderSize;
+			if ( payloadSize <= 0 )
+			{
+				continue;
+			}
+
+			var toHash = ( int ) Math.Min(payloadSize, remainingToHash);
+			if ( toHash <= 0 )
+			{
+				break;
+			}
+
+			stream.Seek(atom.DataOffset, SeekOrigin.Begin);
+			long rem = toHash;
+			while ( rem > 0 )
+			{
+				var chunk = ( int ) Math.Min(buffer.Length, rem);
+				var read = await stream.ReadAsync(buffer.AsMemory(0, chunk));
+				if ( read <= 0 )
+				{
+					break;
+				}
+
+				md5.TransformBlock(buffer, 0, read, null, 0);
+				rem -= read;
+				totalHashed += read;
+				remainingToHash -= read;
+			}
+
+			if ( remainingToHash <= 0 )
+			{
+				break;
+			}
+		}
+
+		if ( totalHashed == 0 )
+		{
+			return string.Empty;
+		}
+
+		md5.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+		return Base32.Encode(md5.Hash!);
 	}
 
 	/// <summary>

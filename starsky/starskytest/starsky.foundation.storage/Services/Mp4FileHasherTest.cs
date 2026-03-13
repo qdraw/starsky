@@ -72,6 +72,62 @@ public sealed class Mp4FileHasherTest
 		return ms.ToArray();
 	}
 
+	/// <summary>
+	///     Creates an MP4 with two mdat atoms in the specified order
+	/// </summary>
+	private static byte[] CreateMp4WithTwoMdats(byte[] firstMdat, byte[] secondMdat)
+	{
+		using var ms = new MemoryStream();
+
+		// ftyp
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		ms.Write(ftypSize, 0, 4);
+		ms.Write("ftyp"u8.ToArray(), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
+		ms.Write(new byte[4], 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
+
+		// first mdat
+		var mdat1Size = BitConverter.GetBytes(( uint ) ( 8 + firstMdat.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdat1Size);
+		}
+
+		ms.Write(mdat1Size, 0, 4);
+		ms.Write("mdat"u8.ToArray(), 0, 4);
+		ms.Write(firstMdat, 0, firstMdat.Length);
+
+		// some small filler atom
+		var freeSize = BitConverter.GetBytes(( uint ) 12);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(freeSize);
+		}
+
+		ms.Write(freeSize, 0, 4);
+		ms.Write("free"u8.ToArray(), 0, 4);
+		ms.Write(new byte[4], 0, 4);
+
+		// second mdat
+		var mdat2Size = BitConverter.GetBytes(( uint ) ( 8 + secondMdat.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdat2Size);
+		}
+
+		ms.Write(mdat2Size, 0, 4);
+		ms.Write("mdat"u8.ToArray(), 0, 4);
+		ms.Write(secondMdat, 0, secondMdat.Length);
+
+		return ms.ToArray();
+	}
+
 	[TestMethod]
 	public async Task HashMp4VideoContentAsync_ValidMp4WithMdat_ReturnsHash()
 	{
@@ -324,7 +380,7 @@ public sealed class Mp4FileHasherTest
 	}
 
 	[TestMethod]
-	public async Task HashMp4VideoContentAsync_ZeroSizedMdatAtom_ReturnsHash()
+	public async Task HashMp4VideoContentAsync_ZeroSizedMdatAtom_Invalid()
 	{
 		// Arrange - mdat with zero content
 		var mp4Data = CreateMinimalMp4WithMdatHelper.CreateMinimalMp4WithMdat([]);
@@ -337,7 +393,7 @@ public sealed class Mp4FileHasherTest
 
 		// Assert
 		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
+		Assert.AreEqual(0, hash.Length);
 	}
 
 	[TestMethod]
@@ -637,6 +693,44 @@ public sealed class Mp4FileHasherTest
 
 		// Assert - since nothing hashed, should return empty
 		Assert.AreEqual(string.Empty, hash);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_MultipleSmallMdats_OrderInvariant_LargestFirst()
+	{
+		// Arrange - create two small mdats where one is larger than the other
+		var small1 = "aaa"u8.ToArray();
+		var small2 = "bbbbbbbb"u8.ToArray(); // larger
+
+		// File A: small1 then small2
+		var mp4A = CreateMp4WithTwoMdats(small1, small2);
+		// File B: small2 then small1
+		var mp4B = CreateMp4WithTwoMdats(small2, small1);
+
+		var mp4C = CreateMp4WithTwoMdats([], small1);
+
+		var storageA = CreateStorageWithMp4("/a.mp4", mp4A);
+		var storageB = CreateStorageWithMp4("/b.mp4", mp4B);
+		var storageC = CreateStorageWithMp4("/c.mp4", mp4C);
+
+		var logger = new FakeIWebLogger();
+		var hasherA = new Mp4FileHasher(storageA, logger);
+		var hasherB = new Mp4FileHasher(storageB, logger);
+		var hasherC = new Mp4FileHasher(storageC, logger);
+
+		// Act
+		var hashA = await hasherA.HashMp4VideoContentAsync("/a.mp4");
+		var hashB = await hasherB.HashMp4VideoContentAsync("/b.mp4");
+		var hashC = await hasherC.HashMp4VideoContentAsync("/c.mp4");
+
+		// Assert - since largest-first is used, both should produce same result
+		Assert.IsNotNull(hashA);
+		Assert.IsNotNull(hashB);
+		Assert.HasCount(26, hashA);
+		Assert.HasCount(26, hashB);
+		Assert.HasCount(26, hashC);
+		Assert.AreEqual(hashA, hashB);
+		Assert.AreNotEqual(hashB, hashC);
 	}
 
 	/// <summary>
