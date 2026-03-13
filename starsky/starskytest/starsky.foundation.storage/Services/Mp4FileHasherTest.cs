@@ -535,11 +535,11 @@ public sealed class Mp4FileHasherTest
 			Array.Reverse(ftypSize);
 		}
 
-		await ms.WriteAsync(ftypSize, 0, 4, TestContext.CancellationToken);
-		await ms.WriteAsync("ftyp"u8.ToArray(), 0, 4, TestContext.CancellationToken);
-		await ms.WriteAsync("isom"u8.ToArray(), 0, 4, TestContext.CancellationToken);
-		await ms.WriteAsync(new byte[4], 0, 4, TestContext.CancellationToken);
-		await ms.WriteAsync("isom"u8.ToArray(), 0, 4, TestContext.CancellationToken);
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(( new byte[4] ).AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
 
 		// mdat header size = 8 (header only)
 		var mdatSize = BitConverter.GetBytes(( uint ) 8);
@@ -548,8 +548,8 @@ public sealed class Mp4FileHasherTest
 			Array.Reverse(mdatSize);
 		}
 
-		await ms.WriteAsync(mdatSize, 0, 4, TestContext.CancellationToken);
-		await ms.WriteAsync("mdat"u8.ToArray(), 0, 4, TestContext.CancellationToken);
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
 
 		var mp4Data = ms.ToArray();
 		var storage = CreateStorageWithMp4("/mdat-header-only.mp4", mp4Data);
