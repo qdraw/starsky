@@ -34,7 +34,6 @@ public class FakeDiskWatcherUpdateBackgroundTaskQueue : IDiskWatcherBackgroundTa
 
 	public async ValueTask QueueJobAsync(BackgroundTaskQueueJob job)
 	{
-		System.Console.WriteLine($"[DEBUG_LOG] QueueJobAsync called for JobType: {job.JobType}");
 		QueueBackgroundWorkItemCalled = true;
 		QueueBackgroundWorkItemCalledCounter++;
 		await Task.Yield();
@@ -44,19 +43,13 @@ public class FakeDiskWatcherUpdateBackgroundTaskQueue : IDiskWatcherBackgroundTa
 		{
 			using var scope = _scopeFactory.CreateScope();
 			var handlers = scope.ServiceProvider.GetServices<IBackgroundJobHandler>();
-			System.Console.WriteLine(
-				$"[DEBUG_LOG] Handlers found: {System.Linq.Enumerable.Count(handlers)}");
 			foreach ( var handler in handlers )
 			{
-				System.Console.WriteLine(
-					$"[DEBUG_LOG] Checking handler JobType: {handler.JobType}");
 				if ( handler.JobType != job.JobType )
 				{
 					continue;
 				}
 
-				System.Console.WriteLine(
-					$"[DEBUG_LOG] Executing handler for JobType: {job.JobType}");
 				// execute and don't await exceptions here; bubble up if desired
 				await handler.ExecuteAsync(job.PayloadJson, CancellationToken.None);
 				break;
