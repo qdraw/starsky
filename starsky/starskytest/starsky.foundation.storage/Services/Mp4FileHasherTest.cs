@@ -682,6 +682,47 @@ public sealed class Mp4FileHasherTest
 	}
 
 	[TestMethod]
+	public async Task HashMp4VideoContentAsync_NonSeekable_Mdat_NoPayload_ReturnsEmpty()
+	{
+		// Arrange: create MP4 with mdat header declaring payload but no payload bytes
+		using var ms = new MemoryStream();
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(( new byte[4] ).AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// mdat header with declared payload size 50 but do not write payload
+		var payloadLen = 50;
+		var mdatSize = BitConverter.GetBytes(( uint ) ( 8 + payloadLen ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdatSize);
+		}
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		// no payload written
+
+		var mp4Data = ms.ToArray();
+
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+		var storage = new StreamReturningStorage(nonSeek);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/no-payload.mp4");
+
+		// Assert - HashMdatAtomAsync should read 0 bytes and return empty to indicate fallback
+		Assert.AreEqual(string.Empty, hash);
+	}
+
+	[TestMethod]
 	public async Task
 		HashMp4VideoContentAsync_SeekThrowsNotSupported_FallbacksToRead_HashesSameAsSeekable()
 	{
