@@ -168,7 +168,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
-		Assert.IsTrue(TestThumbnailBackgroundJobHandler.ExecutedCount > 0);
+		Assert.IsGreaterThan(0, TestThumbnailBackgroundJobHandler.ExecutedCount);
 		await service.StopAsync(CancellationToken.None);
 	}
 
@@ -257,7 +257,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
-		Assert.IsTrue(TestThumbnailBackgroundJobHandler.ExecutedCount > 0);
+		Assert.IsGreaterThan(0, TestThumbnailBackgroundJobHandler.ExecutedCount);
 	}
 
 	[TestMethod]

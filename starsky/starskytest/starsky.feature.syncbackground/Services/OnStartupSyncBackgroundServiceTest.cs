@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.realtime.Interfaces;
 using starsky.feature.realtime.Interface;
 using starsky.feature.syncbackground.Helpers;
 using starsky.feature.syncbackground.Interfaces;
@@ -25,12 +27,14 @@ public sealed class OnStartupSyncBackgroundServiceTest
 	{
 		var services = new ServiceCollection();
 		services.AddSingleton<IRealtimeConnectionsService, FakeIRealtimeConnectionsService>();
-		services.AddSingleton<AppSettings>();
+		services.AddSingleton(new AppSettings { SyncOnStartup = true });
 		services.AddSingleton<ISynchronize, FakeISynchronize>();
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		services.AddSingleton<ISettingsService, FakeISettingsService>();
 		services.AddSingleton<IOnStartupSync, OnStartupSync>();
 		services.AddSingleton<IBackgroundJobHandler, OnStartupSyncJobHandler>();
+		services.AddSingleton<INotificationQuery, FakeINotificationQuery>();
+		services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
 
 		// Create a factory first
 		var tempProvider = services.BuildServiceProvider();
@@ -46,13 +50,26 @@ public sealed class OnStartupSyncBackgroundServiceTest
 	[TestMethod]
 	public async Task OnStartupSyncBackgroundService_DoesStoreAfterWards()
 	{
-		var scope = GetNewScope();
-		var synchronize =
-			scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
-		var settingsService = scope.CreateScope().ServiceProvider
-			.GetRequiredService<ISettingsService>();
-		var startupSync = new OnStartupSyncBackgroundService(scope);
+		var services = new ServiceCollection();
+		services.AddSingleton<IRealtimeConnectionsService, FakeIRealtimeConnectionsService>();
+		services.AddSingleton(new AppSettings { SyncOnStartup = true });
+		services.AddSingleton<ISynchronize, FakeISynchronize>();
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		services.AddSingleton<ISettingsService, FakeISettingsService>();
+		services.AddSingleton<IOnStartupSync, OnStartupSync>();
+		services.AddSingleton<IBackgroundJobHandler, OnStartupSyncJobHandler>();
+		services.AddSingleton<INotificationQuery, FakeINotificationQuery>();
+		services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+		services.AddSingleton<IDiskWatcherBackgroundTaskQueue,
+				FakeDiskWatcherUpdateBackgroundTaskQueue>();
+
+		var serviceProvider = services.BuildServiceProvider();
+		var finalScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var startupSync = new OnStartupSyncBackgroundService(finalScopeFactory);
 		await startupSync.StartAsync(CancellationToken.None);
+
+		var settingsService = serviceProvider.GetRequiredService<ISettingsService>();
 
 		var setting = await settingsService.GetSetting<DateTime>(SettingsType
 			.LastSyncBackgroundDateTime);
@@ -61,8 +78,11 @@ public sealed class OnStartupSyncBackgroundServiceTest
 		Assert.AreNotEqual(0, setting.Month);
 		Assert.AreNotEqual(0, setting.Day);
 
+
 		Assert.AreEqual(DateTime.UtcNow.Day, setting.ToUniversalTime().Day);
 		Assert.AreEqual(DateTime.UtcNow.Hour, setting.ToUniversalTime().Hour);
-		Assert.IsTrue(( synchronize as FakeISynchronize )!.Inputs.Exists(p => p.Item1 == "/"));
+		var synchronize = serviceProvider.GetRequiredService<ISynchronize>() as FakeISynchronize;
+		Assert.IsNotNull(synchronize);
+		Assert.IsTrue(synchronize.Inputs.Exists(p => p.Item1 == "/"));
 	}
 }

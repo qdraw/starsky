@@ -113,7 +113,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
-		Assert.IsTrue(TestUpdateBackgroundJobHandler.ExecutedCount > 0);
+		Assert.IsGreaterThan(0, TestUpdateBackgroundJobHandler.ExecutedCount);
 		await service.StopAsync(CancellationToken.None);
 	}
 
@@ -158,7 +158,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 			await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
 		}
 
-		Assert.IsTrue(TestUpdateBackgroundJobHandler.ExecutedCount > 0);
+		Assert.IsGreaterThan(0, TestUpdateBackgroundJobHandler.ExecutedCount);
 	}
 
 	[TestMethod]

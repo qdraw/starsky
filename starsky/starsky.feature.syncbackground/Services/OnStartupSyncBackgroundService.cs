@@ -29,7 +29,7 @@ public class OnStartupSyncBackgroundService(IServiceScopeFactory serviceScopeFac
 		await StartAsync();
 	}
 
-	private async Task StartAsync()
+	internal async Task StartAsync()
 	{
 		using var scope = serviceScopeFactory.CreateScope();
 		var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
