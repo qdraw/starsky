@@ -107,7 +107,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 				await ProcessAtomAsync(stream, md5, buffer, atom.Value, mdats, isSeekable);
 			if ( !shouldContinue )
 			{
-				return immediateResult ?? string.Empty;
+				return immediateResult;
 			}
 		}
 
@@ -130,7 +130,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	///     Returns (true, null) when scanning should continue; (false, result) when an immediate result is
 	///     produced.
 	/// </summary>
-	private async Task<(bool shouldContinue, string? immediateResult)> ProcessAtomAsync(
+	private async Task<(bool shouldContinue, string immediateResult)> ProcessAtomAsync(
 		Stream stream,
 		MD5 md5,
 		byte[] buffer,
@@ -169,10 +169,9 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			? "Mp4FileHasher.ProcessSeekableStreamAsync invalid zero-size non-mdat atom"
 			: "Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom");
 		return ( false, string.Empty );
-
 	}
 
-	private async Task<(bool shouldContinue, string? immediateResult)> HandleMdatSeekableAsync(
+	private async Task<(bool shouldContinue, string immediateResult)> HandleMdatSeekableAsync(
 		Stream stream,
 		Mp4Atom atom,
 		List<Mp4Atom> mdats,
@@ -186,10 +185,10 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			return ( false, string.Empty );
 		}
 
-		return ( true, null );
+		return ( true, string.Empty );
 	}
 
-	private async Task<(bool shouldContinue, string? immediateResult)> HandleNonMdatSkipAsync(
+	private async Task<(bool shouldContinue, string immediateResult)> HandleNonMdatSkipAsync(
 		Stream stream,
 		byte[] buffer,
 		long payloadSize,
@@ -200,7 +199,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			: "ProcessNonSeekableStreamAsync_non_mdat";
 		if ( await TrySkipAtomOrAbortAsync(stream, buffer, payloadSize, tag) )
 		{
-			return ( true, null );
+			return ( true, string.Empty );
 		}
 
 		return ( false, string.Empty );
