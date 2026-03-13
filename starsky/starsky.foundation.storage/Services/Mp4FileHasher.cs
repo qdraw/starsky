@@ -70,7 +70,6 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	/// <summary>
 	///     Processes MP4 atoms and finds/hashes the mdat atom
 	/// </summary>
-	#pragma warning disable S3776 // Cognitive Complexity
 	internal async Task<string> ProcessMp4AtomsAsync(Stream stream,
 		MD5 md5, byte[] buffer, CancellationToken cancellationToken)
 	{
@@ -84,12 +83,9 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		{
 			return await ProcessSeekableStreamAsync(stream, md5, buffer, cancellationToken);
 		}
-		else
-		{
-			return await ProcessNonSeekableStreamAsync(stream, md5, buffer, cancellationToken);
-		}
+
+		return await ProcessNonSeekableStreamAsync(stream, md5, buffer, cancellationToken);
 	}
-	#pragma warning restore S3776 // Cognitive Complexity
 
 	// Handle streams that support seeking: collect mdat atoms and hash them after
 	private async Task<string> ProcessSeekableStreamAsync(Stream stream,
@@ -118,10 +114,8 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			if ( atom.Value.Type == "mdat" )
 			{
 				mdats.Add(atom.Value);
-				if ( !await SkipAtomAsync(stream, buffer, payloadSize) )
+				if ( !await TrySkipAtomOrAbortAsync(stream, buffer, payloadSize, "ProcessSeekableStreamAsync_mdat") )
 				{
-					logger.LogInformation(
-						"Mp4FileHasher.ProcessSeekableStreamAsync Failed to skip mdat atom");
 					return string.Empty;
 				}
 				continue;
@@ -135,13 +129,11 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 				return string.Empty;
 			}
 
-			if ( await SkipAtomAsync(stream, buffer, payloadSize) )
+			if ( await TrySkipAtomOrAbortAsync(stream, buffer, payloadSize, "ProcessSeekableStreamAsync_non_mdat") )
 			{
 				continue;
 			}
 
-			logger.LogInformation(
-				"Mp4FileHasher.ProcessSeekableStreamAsync Failed to skip non-mdat atom");
 			return string.Empty;
 		}
 
@@ -191,13 +183,11 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 				return string.Empty;
 			}
 
-			if ( await SkipAtomAsync(stream, buffer, payloadSize) )
+			if ( await TrySkipAtomOrAbortAsync(stream, buffer, payloadSize, "ProcessNonSeekableStreamAsync_non_mdat") )
 			{
 				continue;
 			}
 
-			logger.LogInformation(
-				"Mp4FileHasher.ProcessNonSeekableStreamAsync Failed to skip non-mdat atom");
 			return string.Empty;
 		}
 
@@ -327,6 +317,23 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			// If seek/read fails, return empty to fall back to standard hashing
 			return false;
 		}
+	}
+
+	/// <summary>
+	/// Try skip an atom and log a consistent message when it fails.
+	/// Returns true when skip succeeded, false when caller should abort processing.
+	/// </summary>
+	private async Task<bool> TrySkipAtomOrAbortAsync(Stream stream, byte[] buffer, long payloadSize, string tag)
+	{
+		var ok = await SkipAtomAsync(stream, buffer, payloadSize);
+		if ( ok )
+		{
+			return true;
+		}
+
+		// Uniform logging for failures originating from skip attempts
+		logger.LogInformation($"Mp4FileHasher.{tag} Failed to skip atom");
+		return false;
 	}
 
 	/// <summary>

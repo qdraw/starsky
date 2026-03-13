@@ -1009,7 +1009,30 @@ public sealed class Mp4FileHasherTest
 
 		// Assert - Should return empty string when skip fails
 		Assert.AreEqual(string.Empty, hash);
-		Assert.IsTrue(logger.TrackedInformation[0].Item2?.Contains("Failed to skip non-mdat atom"));
+		Assert.IsTrue(logger.TrackedInformation[0].Item2?.
+			Contains("Mp4FileHasher.ProcessNonSeekableStreamAsync_non_mdat Failed to skip atom"));
+	}
+
+	[TestMethod]
+	public async Task ProcessSeekableStream_SkipAtomThrows_ReturnsEmptyString()
+	{
+		// Arrange - create MP4 with atoms before mdat so parser will try to skip a non-mdat atom
+		var mdatContent = "seek-fail"u8.ToArray();
+		var mp4Data = CreateMp4WithMultipleAtoms(mdatContent);
+		await using var throwingStream = new ThrowingSeekStream(mp4Data);
+
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		using var md5 = MD5.Create();
+
+		var sut = new Mp4FileHasher(storage, logger);
+
+		// Act - ProcessMp4AtomsAsync should take the seekable path and fail when SkipAtomAsync triggers Seek exception
+		var result = await sut.ProcessMp4AtomsAsync(throwingStream, md5, new byte[16], CancellationToken.None);
+
+		// Assert
+		Assert.AreEqual(string.Empty, result);
+		Assert.Contains(t => t.Item2?.Contains("Failed to skip") == true, logger.TrackedInformation);
 	}
 
 	private sealed class NonSeekableStream(byte[] buffer) : MemoryStream(buffer)
