@@ -1247,6 +1247,37 @@ public sealed class Mp4FileHasherTest
 			logger.TrackedInformation);
 	}
 
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_NonSeekable_ZeroSizeNonMdat_LogsAndReturnsEmpty()
+	{
+		// Arrange - craft a non-mdat atom with size == header (8) and use a non-seekable stream
+		using var ms = new MemoryStream();
+		var size8 = BitConverter.GetBytes(( uint ) 8);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(size8);
+		}
+
+		await ms.WriteAsync(size8.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		var mp4Data = ms.ToArray();
+
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+		var storage = new StreamReturningStorage(nonSeek);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/bad-zero-nonseek.mp4");
+
+		// Assert
+		Assert.AreEqual(string.Empty, hash);
+		Assert.Contains(
+			t => t.Item2?.Contains(
+					"Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom") == true,
+			logger.TrackedInformation);
+	}
+
 	private sealed class NonSeekableStream(byte[] buffer) : MemoryStream(buffer)
 	{
 		public override bool CanSeek => false;
