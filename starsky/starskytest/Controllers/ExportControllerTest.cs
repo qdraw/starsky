@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +13,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.export.Interfaces;
 using starsky.feature.export.Services;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
@@ -26,6 +27,7 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Services;
@@ -151,60 +153,56 @@ public sealed class ExportControllerTest
 			new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(toDelPath);
 		}
 
-		IServiceCollection services = new ServiceCollection();
-		services.AddHostedService<UpdateBackgroundQueuedHostedService>();
-		services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
+		// Setup DI with ExportBackgroundJobHandler so it can be executed
+		var services = new ServiceCollection();
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
-		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+
+		// Register the export handler so fake queue can execute it
+		services.AddScoped<IBackgroundJobHandler, ExportBackgroundJobHandler>();
+		services.AddScoped<IQuery, FakeIQuery>();
+		services.AddSingleton<AppSettings>();
+		services.AddScoped<IExport, ExportService>();
+		services.AddScoped<IThumbnailService, FakeIThumbnailService>();
+		services.AddScoped<ISelectorStorage, SelectorStorage>();
+		services.AddScoped<IStorage, StorageHostFullPathFilesystem>();
+		services.AddScoped<IStorage, StorageSubPathFilesystem>();
 
 		var serviceProvider = services.BuildServiceProvider();
 
-		var service =
-			serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
-
-		var backgroundQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
-
-		if ( service == null )
-		{
-			throw new Exception("service should not be null");
-		}
-
-		await service.StartAsync(CancellationToken.None);
-
-		// the test
-		_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
-
-		var fakeStorage = new FakeIStorage(["/"],
-			[_createAnImage.DbPath],
-			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
-
-		var storageSelector = new FakeSelectorStorage(fakeStorage);
-
-		var fakeQuery = new FakeIQuery([
-			new FileIndexItem
-			{
-				FileName = _createAnImage.DbPath,
-				ParentDirectory = "/",
-				FileHash = "file-hash",
-				ColorClass = ColorClassParser.Color.Winner // 1
-			}
-		]);
+		// Use FakeIUpdateBackgroundTaskQueue which will execute handlers immediately
+		var backgroundQueue = new FakeIUpdateBackgroundTaskQueue(
+			serviceProvider.GetRequiredService<IServiceScopeFactory>());
 
 		var tmpFolder = Path.Combine(_createAnImage.BasePath, "test-zip");
 		Directory.CreateDirectory(tmpFolder);
 
-		var appSettings =
-			new AppSettings { TempFolder = tmpFolder, Verbose = true };
+		// the test
+		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+		appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
+		appSettings.TempFolder = tmpFolder;
+		appSettings.Verbose = true;
+		appSettings.StorageFolder = _createAnImage.BasePath;
 
-		var export = new ExportService(fakeQuery, appSettings, storageSelector,
-			new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
+		var storageSelector = serviceProvider.GetRequiredService<ISelectorStorage>();
+
+		var query = serviceProvider.GetRequiredService<IQuery>();
+		await query.AddItemAsync(new FileIndexItem
+		{
+			FileName = _createAnImage.DbPath,
+			ParentDirectory = "/",
+			FileHash = "file-hash",
+			ColorClass = ColorClassParser.Color.Winner // 1
+		});
+
+		var export = new ExportService(query, appSettings, storageSelector,
+			new FakeIWebLogger(),
+			new FakeIThumbnailService(storageSelector as FakeSelectorStorage));
 		var controller = new ExportController(
 			backgroundQueue, storageSelector, export)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
-
 
 		var actionResult = await controller.CreateZip(_createAnImage.DbPath) as JsonResult;
 
@@ -218,24 +216,22 @@ public sealed class ExportControllerTest
 
 		// Get from real fs in to fake memory
 		var sourceFullPath = Path.Join(appSettings.TempFolder, zipHash) + ".zip";
-		await fakeStorage.WriteStreamAsync(
-			new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(sourceFullPath),
-			sourceFullPath);
+		var sourceFullPathDoneFile = Path.Join(appSettings.TempFolder, zipHash) + ".done";
 
 		var actionResult2Zip = controller.Status(zipHash, true) as JsonResult;
 		Assert.IsNotNull(actionResult2Zip);
 
-		var resultValue = ( string? ) actionResult2Zip?.Value;
+		var resultValue = ( string? ) actionResult2Zip.Value;
 
 		if ( resultValue != "OK" && resultValue != "Not Ready" )
 		{
-			throw new Exception(actionResult2Zip?.StatusCode.ToString());
+			throw new Exception(actionResult2Zip.StatusCode.ToString());
 		}
 
 		// Don't check if file exist due async
-		await service.StopAsync(CancellationToken.None);
 
 		File.Delete(sourceFullPath);
+		File.Delete(sourceFullPathDoneFile);
 		Directory.Delete(appSettings.TempFolder);
 	}
 

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.feature.thumbnail.Interfaces;
@@ -13,6 +15,8 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.Models;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 namespace starsky.feature.thumbnail.Services;
@@ -21,6 +25,9 @@ namespace starsky.feature.thumbnail.Services;
 	InjectionLifetime = InjectionLifetime.Scoped)]
 public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationService
 {
+	public const string DatabaseThumbnailGenerationJobType =
+		"Thumbnail.DatabaseGenerationLoop.v1";
+
 	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
 	private readonly IWebSocketConnectionsService _connectionsService;
 	private readonly IWebLogger _logger;
@@ -54,9 +61,19 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			return;
 		}
 
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
-			async _ => { await WorkThumbnailGenerationLoop(); },
-			"DatabaseThumbnailGenerationService");
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "DatabaseThumbnailGenerationService",
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
+			JobType = DatabaseThumbnailGenerationJobType,
+			PayloadJson = JsonSerializer.Serialize(new DatabaseThumbnailGenerationPayload())
+		});
+	}
+
+	public async Task ExecuteQueuedJobAsync()
+	{
+		await WorkThumbnailGenerationLoop();
 	}
 
 	private async Task WorkThumbnailGenerationLoop()
@@ -168,4 +185,8 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 
 		return chuckedItems;
 	}
+}
+
+public sealed class DatabaseThumbnailGenerationPayload
+{
 }

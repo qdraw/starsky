@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.geo.ReverseGeoCode.Interface;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.import.Helpers;
@@ -24,9 +23,9 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailmeta.Interfaces;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
-using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.worker.Models;
 
 namespace starsky.Controllers;
 
@@ -86,12 +85,20 @@ public sealed class ImportController : Controller
 		var fileIndexResultsList = await _import.Preflight(tempImportPaths, importSettings);
 
 		// Import files >
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
-			async _ =>
-			{
-				await ImportPostBackgroundTask(tempImportPaths, importSettings,
-					_appSettings.IsVerbose());
-			}, string.Join(",", tempImportPaths));
+		var payload = new ImportBackgroundPayload
+		{
+			TempImportPaths = tempImportPaths,
+			ImportSettings = importSettings,
+			IsVerbose = _appSettings.IsVerbose()
+		};
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = string.Join(",", tempImportPaths),
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = ImportBackgroundJobHandler.Import,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
 
 		// When all items are already imported
 		if ( importSettings.IndexMode &&
@@ -107,52 +114,6 @@ public sealed class ImportController : Controller
 		}
 
 		return Json(fileIndexResultsList);
-	}
-
-	internal async Task<List<ImportIndexItem>> ImportPostBackgroundTask(
-		List<string> tempImportPaths,
-		ImportSettingsModel importSettings, bool isVerbose = false)
-	{
-		List<ImportIndexItem> importedFiles;
-
-		using ( var scope = _scopeFactory.CreateScope() )
-		{
-			var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
-			var importQuery = scope.ServiceProvider.GetRequiredService<IImportQuery>();
-			var exifTool = scope.ServiceProvider.GetRequiredService<IExifTool>();
-			var query = scope.ServiceProvider.GetRequiredService<IQuery>();
-			var console = scope.ServiceProvider.GetRequiredService<IConsole>();
-			var metaExifThumbnailService =
-				scope.ServiceProvider.GetRequiredService<IMetaExifThumbnailService>();
-			var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
-			var thumbnailQuery = scope.ServiceProvider.GetRequiredService<IThumbnailQuery>();
-			var geoCode = scope.ServiceProvider.GetRequiredService<IReverseGeoCodeService>();
-
-			// use of IImport direct does not work
-			var service = new Import(selectorStorage, _appSettings,
-				importQuery, exifTool, query, console,
-				metaExifThumbnailService, _logger, thumbnailQuery, geoCode, memoryCache);
-			importedFiles = await service.Importer(tempImportPaths, importSettings);
-		}
-
-		if ( isVerbose )
-		{
-			foreach ( var file in importedFiles )
-			{
-				_logger.LogInformation(
-					$"[ImportPostBackgroundTask] import {file.Status} " +
-					$"=> {file.FilePath} ~ {file.FileIndexItem?.FilePath}");
-			}
-		}
-
-		// Remove source files
-		foreach ( var toDelPath in tempImportPaths )
-		{
-			new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage, _appSettings)
-				.RemoveTempAndParentStreamFolder(toDelPath);
-		}
-
-		return importedFiles;
 	}
 
 

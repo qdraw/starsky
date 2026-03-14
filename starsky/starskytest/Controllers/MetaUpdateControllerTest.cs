@@ -41,7 +41,6 @@ namespace starskytest.Controllers;
 public sealed class MetaUpdateControllerTest
 {
 	private readonly AppSettings _appSettings;
-	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly CreateAnImage _createAnImage;
 	private readonly IExifTool _exifTool;
 	private readonly IStorage _iStorage;
@@ -102,7 +101,7 @@ public sealed class MetaUpdateControllerTest
 		_exifTool = new FakeExifTool(_iStorage!, _appSettings);
 
 		// get the background helper
-		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+		serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 
 		_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 	}
@@ -146,6 +145,8 @@ public sealed class MetaUpdateControllerTest
 		services.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>();
 		services.AddSingleton<IRealtimeConnectionsService,
 			FakeIRealtimeConnectionsService>();
+		services.AddSingleton<IBackgroundJobHandler, MetaUpdateBackgroundJobHandler>();
+
 		var serviceProvider = services.BuildServiceProvider();
 		_serviceProvider = serviceProvider;
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -169,7 +170,7 @@ public sealed class MetaUpdateControllerTest
 			new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
-			_bgTaskQueue,
+			new FakeIUpdateBackgroundTaskQueue(NewScopeFactory()),
 			new FakeIWebLogger(), NewScopeFactory());
 
 		var input = new FileIndexItem { Tags = "test" };
@@ -213,7 +214,7 @@ public sealed class MetaUpdateControllerTest
 			new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
-			_bgTaskQueue,
+			new FakeIUpdateBackgroundTaskQueue(NewScopeFactory()),
 			new FakeIWebLogger(), NewScopeFactory())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
@@ -252,7 +253,7 @@ public sealed class MetaUpdateControllerTest
 			FakeIMetaUpdateService;
 		Assert.IsNotNull(fakeIMetaUpdateService);
 		fakeIMetaUpdateService.ChangedFileIndexItemNameContent =
-			new List<Dictionary<string, List<string>>>();
+			[];
 
 		var selectorStorage =
 			new FakeSelectorStorage(
@@ -266,15 +267,15 @@ public sealed class MetaUpdateControllerTest
 			new FakeIThumbnailService(), new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
-			new FakeIUpdateBackgroundTaskQueue(),
+			new FakeIUpdateBackgroundTaskQueue(serviceScopeFactory),
 			new FakeIWebLogger(), serviceScopeFactory)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
 		var input = new FileIndexItem { Tags = "test" };
 		var jsonResult = await controller.UpdateAsync(input,
-			createAnImage.DbPath, false, false) as JsonResult;
-		if ( jsonResult == null )
+			createAnImage.DbPath, false, false);
+		if ( jsonResult is not JsonResult )
 		{
 			Console.WriteLine("json should not be null");
 			throw new NullReferenceException(nameof(jsonResult));
@@ -309,7 +310,7 @@ public sealed class MetaUpdateControllerTest
 			new FakeIThumbnailService(), new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
-			new FakeIUpdateBackgroundTaskQueue(),
+			new FakeIUpdateBackgroundTaskQueue(NewScopeFactory()),
 			new FakeIWebLogger(), serviceScopeFactory);
 		controller.ControllerContext = context;
 

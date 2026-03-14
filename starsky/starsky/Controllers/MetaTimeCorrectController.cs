@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.feature.metaupdate.Models;
+using starsky.feature.metaupdate.Services;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
@@ -14,7 +17,9 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
 namespace starsky.Controllers;
 
@@ -197,29 +202,26 @@ public class MetaTimeCorrectController(
 		IExifTimeCorrectionRequest request,
 		string correctionType)
 	{
-		await queue.QueueBackgroundWorkItemAsync(async _ =>
+		var requestType = request switch
 		{
-			using var scope = scopeFactory.CreateScope();
-			var scopedService =
-				scope.ServiceProvider.GetRequiredService<IExifTimezoneCorrectionService>();
-
-			var fileIndexResultsList = validateResults
-				.Where(r => r.FileIndexItem != null)
-				.Select(r => r.FileIndexItem!)
-				.ToList();
-
-			logger.LogInformation(
-				$"[MetaTimeCorrectController] Starting {correctionType} correction for {fileIndexResultsList.Count} files");
-
-			var results = await scopedService.CorrectTimezoneAsync(
-				fileIndexResultsList,
-				request);
-
-			logger.LogInformation(
-				$"[MetaTimeCorrectController] Completed {correctionType} correction: " +
-				$"{results.Count(r => r.Success)} succeeded, {results.Count(r => !r.Success)} failed");
-
-			await UpdateWebSocketTaskRun(fileIndexResultsList);
+			ExifTimezoneBasedCorrectionRequest => "timezone",
+			ExifCustomOffsetCorrectionRequest => "offset",
+			_ => throw new ArgumentException("Unsupported correction request type")
+		};
+		var payload = new MetaTimeCorrectBackgroundPayload
+		{
+			ValidateResults = validateResults,
+			RequestType = requestType,
+			RequestJson = JsonSerializer.Serialize(request),
+			CorrectionType = correctionType
+		};
+		await queue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "MetaTimeCorrect",
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = MetaTimeCorrectBackgroundJobHandler.MetaTimeCorrect,
+			PayloadJson = JsonSerializer.Serialize(payload)
 		});
 	}
 

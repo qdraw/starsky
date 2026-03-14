@@ -1,18 +1,20 @@
-using System;
 using System.Diagnostics;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
+using starsky.Helpers;
 
 namespace starsky.Controllers;
 
@@ -96,18 +98,17 @@ public sealed class GeoController : Controller
 		}
 
 
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			_logger.LogInformation(
-				$"{nameof(GeoSyncFolder)} started {f} {DateTime.UtcNow.ToShortTimeString()}");
-
-			var geoBackgroundTask = _serviceScopeFactory.CreateScope().ServiceProvider
-				.GetRequiredService<IGeoBackgroundTask>();
-			var result = await geoBackgroundTask.GeoBackgroundTaskAsync(f, index,
-				overwriteLocationNames);
-
-			_logger.LogInformation($"{nameof(GeoSyncFolder)} end {f} {result.Count}");
-		}, f, Activity.Current?.Id);
+			MetaData = f,
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = GeoSyncBackgroundJobHandler.GeoSync,
+			PayloadJson = JsonSerializer.Serialize(new GeoSyncBackgroundPayload
+			{
+				SubPath = f, Index = index, OverwriteLocationNames = overwriteLocationNames
+			})
+		});
 
 		return Json("job started");
 	}

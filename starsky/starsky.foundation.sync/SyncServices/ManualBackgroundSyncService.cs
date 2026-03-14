@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
@@ -7,113 +9,127 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
-namespace starsky.foundation.sync.SyncServices
+namespace starsky.foundation.sync.SyncServices;
+
+[Service(typeof(IManualBackgroundSyncService), InjectionLifetime = InjectionLifetime.Scoped)]
+public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 {
-	[Service(typeof(IManualBackgroundSyncService), InjectionLifetime = InjectionLifetime.Scoped)]
-	public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
+	public const string JobType = "Sync.ManualBackground.v1";
+	internal const string ManualSyncCacheName = "ManualSync_";
+	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
+	private readonly IMemoryCache _cache;
+	private readonly IWebLogger _logger;
+	private readonly IQuery _query;
+	private readonly ISocketSyncUpdateService _socketUpdateService;
+	private readonly ISynchronize _synchronize;
+
+	public ManualBackgroundSyncService(ISynchronize synchronize, IQuery query,
+		ISocketSyncUpdateService socketUpdateService,
+		IMemoryCache cache, IWebLogger logger, IUpdateBackgroundTaskQueue bgTaskQueue)
 	{
-		private readonly ISynchronize _synchronize;
-		private readonly IQuery _query;
-		private readonly ISocketSyncUpdateService _socketUpdateService;
-		private readonly IMemoryCache _cache;
-		private readonly IWebLogger _logger;
-		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
+		_synchronize = synchronize;
+		_socketUpdateService = socketUpdateService;
+		_query = query;
+		_cache = cache;
+		_logger = logger;
+		_bgTaskQueue = bgTaskQueue;
+	}
 
-		public ManualBackgroundSyncService(ISynchronize synchronize, IQuery query,
-			ISocketSyncUpdateService socketUpdateService,
-			IMemoryCache cache, IWebLogger logger, IUpdateBackgroundTaskQueue bgTaskQueue)
+	public async Task<FileIndexItem.ExifStatus> ManualSync(string subPath)
+	{
+		var fileIndexItem = await _query.GetObjectByFilePathAsync(subPath);
+		// on a new database ->
+		if ( subPath == "/" && fileIndexItem == null )
 		{
-			_synchronize = synchronize;
-			_socketUpdateService = socketUpdateService;
-			_query = query;
-			_cache = cache;
-			_logger = logger;
-			_bgTaskQueue = bgTaskQueue;
+			fileIndexItem = new FileIndexItem();
 		}
 
-		internal const string ManualSyncCacheName = "ManualSync_";
-
-		public async Task<FileIndexItem.ExifStatus> ManualSync(string subPath)
+		if ( fileIndexItem == null )
 		{
-			var fileIndexItem = await _query.GetObjectByFilePathAsync(subPath);
-			// on a new database ->
-			if ( subPath == "/" && fileIndexItem == null )
-			{
-				fileIndexItem = new FileIndexItem();
-			}
-
-			if ( fileIndexItem == null )
-			{
-				_logger.LogInformation($"[ManualSync] NotFoundNotInIndex skip for: {subPath}");
-				return FileIndexItem.ExifStatus.NotFoundNotInIndex;
-			}
-
-			if ( _cache.TryGetValue(ManualSyncCacheName + subPath, out _) )
-			{
-				// also used in removeCache
-				_query.RemoveCacheParentItem(subPath);
-				_logger.LogInformation($"[ManualSync] Cache hit skip for: {subPath}");
-				return FileIndexItem.ExifStatus.OperationNotSupported;
-			}
-
-			CreateSyncLock(subPath);
-
-			// Runs within IUpdateBackgroundTaskQueue
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
-			{
-				await BackgroundTaskExceptionWrapper(fileIndexItem.FilePath!);
-			}, fileIndexItem.FilePath!);
-
-			return FileIndexItem.ExifStatus.Ok;
+			_logger.LogInformation($"[ManualSync] NotFoundNotInIndex skip for: {subPath}");
+			return FileIndexItem.ExifStatus.NotFoundNotInIndex;
 		}
 
-		internal void CreateSyncLock(string subPath)
+		if ( _cache.TryGetValue(ManualSyncCacheName + subPath, out _) )
 		{
-			_cache.Set(ManualSyncCacheName + subPath, true,
-				new TimeSpan(0, 2, 0));
+			// also used in removeCache
+			_query.RemoveCacheParentItem(subPath);
+			_logger.LogInformation($"[ManualSync] Cache hit skip for: {subPath}");
+			return FileIndexItem.ExifStatus.OperationNotSupported;
 		}
 
-		private void RemoveSyncLock(string? subPath)
+		CreateSyncLock(subPath);
+
+		// Runs within IUpdateBackgroundTaskQueue
+		var payload = new ManualBackgroundSyncPayload
 		{
-			subPath ??= string.Empty;
-			_cache.Remove(ManualSyncCacheName + subPath);
+			SubPath = fileIndexItem.FilePath ?? string.Empty
+		};
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = fileIndexItem.FilePath,
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = JobType,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
+
+		return FileIndexItem.ExifStatus.Ok;
+	}
+
+	internal void CreateSyncLock(string subPath)
+	{
+		_cache.Set(ManualSyncCacheName + subPath, true,
+			new TimeSpan(0, 2, 0));
+	}
+
+	private void RemoveSyncLock(string? subPath)
+	{
+		subPath ??= string.Empty;
+		_cache.Remove(ManualSyncCacheName + subPath);
+	}
+
+	internal async Task BackgroundTaskExceptionWrapper(string? subPath)
+	{
+		try
+		{
+			await BackgroundTask(subPath);
 		}
-
-		internal async Task BackgroundTaskExceptionWrapper(string? subPath)
+		catch ( Exception exception )
 		{
-			try
-			{
-				await BackgroundTask(subPath);
-			}
-			catch ( Exception exception )
-			{
-				_logger.LogError(exception,
-					"ManualBackgroundSyncService [ManualSync] catch-ed exception");
-				RemoveSyncLock(subPath);
-				throw;
-			}
-		}
-
-		internal async Task BackgroundTask(string? subPath)
-		{
-			subPath ??= string.Empty;
-
-			_logger.LogInformation($"[ManualBackgroundSyncService] start {subPath} " +
-								   $"{DateTime.Now.ToShortTimeString()}");
-
-			var updatedList = await _synchronize.Sync(subPath, _socketUpdateService.PushToSockets);
-
-			_query.CacheUpdateItem(updatedList.Where(p => p.ParentDirectory == subPath).ToList());
-
-			// so you can click on the button again
+			_logger.LogError(exception,
+				"ManualBackgroundSyncService [ManualSync] catch-ed exception");
 			RemoveSyncLock(subPath);
-			_logger.LogInformation($"[ManualBackgroundSyncService] done {subPath} " +
-								   $"{DateTime.Now.ToShortTimeString()}");
-			_logger.LogInformation(
-				$"[ManualBackgroundSyncService] Ok: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)}" +
-				$" ~ OkAndSame: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)}");
+			throw;
 		}
 	}
+
+	internal async Task BackgroundTask(string? subPath)
+	{
+		subPath ??= string.Empty;
+
+		_logger.LogInformation($"[ManualBackgroundSyncService] start {subPath} " +
+		                       $"{DateTime.Now.ToShortTimeString()}");
+
+		var updatedList = await _synchronize.Sync(subPath, _socketUpdateService.PushToSockets);
+
+		_query.CacheUpdateItem(updatedList.Where(p => p.ParentDirectory == subPath).ToList());
+
+		// so you can click on the button again
+		RemoveSyncLock(subPath);
+		_logger.LogInformation($"[ManualBackgroundSyncService] done {subPath} " +
+		                       $"{DateTime.Now.ToShortTimeString()}");
+		_logger.LogInformation(
+			$"[ManualBackgroundSyncService] Ok: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)}" +
+			$" ~ OkAndSame: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)}");
+	}
+}
+
+public sealed class ManualBackgroundSyncPayload
+{
+	public string SubPath { get; set; } = string.Empty;
 }

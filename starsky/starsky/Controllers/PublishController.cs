@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.webhtmlpublish.Interfaces;
+using starsky.feature.webhtmlpublish.Models;
+using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
@@ -14,7 +18,9 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
 namespace starsky.Controllers;
 
@@ -109,15 +115,22 @@ public sealed class PublishController : Controller
 		}
 
 		// Creating Publish is a background task
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
+		var payload = new PublishCreateBackgroundJobPayload
 		{
-			var renderCopyResult = await _publishService.RenderCopy(info,
-				publishProfileName, itemName, location);
-			await _publishService.GenerateZip(_appSettings.TempFolder, itemName,
-				renderCopyResult);
-			_webLogger.LogInformation($"[/api/publish/create] done: " +
-			                          $"{itemName} {DateTime.UtcNow}");
-		}, publishProfileName + "_" + itemName);
+			Info = info,
+			PublishProfileName = publishProfileName,
+			ItemName = itemName,
+			Location = location
+		};
+
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = publishProfileName + "_" + itemName,
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = PublishCreateBackgroundJobHandler.JobTypeValue,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
 
 		// Get the zip 	by	[HttpGet("/export/zip/{f}.zip")]
 		return Json(slugItemName);

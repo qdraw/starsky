@@ -77,7 +77,7 @@ public class ProcessTaskQueueTest
 		using var source = new CancellationTokenSource();
 		var token = source.Token;
 
-		var fakeService = new FakeDiskWatcherUpdateBackgroundTaskQueue(2);
+		var fakeService = new FakeDiskWatcherUpdateBackgroundTaskQueue(null, 2);
 		var logger = new FakeIWebLogger();
 		var appSettings = new AppSettings { UseDiskWatcherIntervalInMilliseconds = 0 };
 

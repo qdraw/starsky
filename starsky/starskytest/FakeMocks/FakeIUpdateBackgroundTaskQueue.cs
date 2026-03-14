@@ -1,42 +1,66 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 {
-	public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
+	private readonly IServiceScopeFactory? _scopeFactory;
+
+	public FakeIUpdateBackgroundTaskQueue()
 	{
+	}
 
-		public int Count()
+	public FakeIUpdateBackgroundTaskQueue(IServiceScopeFactory scopeFactory)
+	{
+		_scopeFactory = scopeFactory;
+	}
+
+	public int QueueBackgroundWorkItemCalledCounter { get; set; }
+
+	public bool QueueBackgroundWorkItemCalled { get; set; }
+
+	public int Count()
+	{
+		return 0;
+	}
+
+	public async ValueTask QueueJobAsync(BackgroundTaskQueueJob job)
+	{
+		await Task.Yield();
+		QueueBackgroundWorkItemCalled = true;
+		QueueBackgroundWorkItemCalledCounter++;
+
+		// If a scope factory is provided, attempt to resolve a matching IBackgroundJobHandler and execute immediately
+		if ( _scopeFactory != null )
 		{
-			return 0;
-		}
+			using var scope = _scopeFactory.CreateScope();
+			var handlers = scope.ServiceProvider.GetServices<IBackgroundJobHandler>();
+			foreach ( var handler in handlers )
+			{
+				if ( handler.JobType != job.JobType )
+				{
+					continue;
+				}
 
-		public async ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string? metaData = null,
-			string? traceParentId = null)
+				// execute and don't await exceptions here; bubble up if desired
+				await handler.ExecuteAsync(job.PayloadJson, CancellationToken.None);
+				break;
+			}
+		}
+	}
+
+	public ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(CancellationToken cancellationToken)
+	{
+		return ValueTask.FromResult(new BackgroundTaskQueueJob
 		{
-			await workItem.Invoke(CancellationToken.None);
-			QueueBackgroundWorkItemCalled = true;
-			QueueBackgroundWorkItemCalledCounter++;
-		}
-
-		public int QueueBackgroundWorkItemCalledCounter { get; set; }
-
-		public bool QueueBackgroundWorkItemCalled { get; set; }
-
-		public ValueTask<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> DequeueAsync(CancellationToken cancellationToken)
-		{
-			Func<CancellationToken, ValueTask> sayHello = GetMessage;
-			var res =
-				new Tuple<Func<CancellationToken, ValueTask>, string?, string?>(
-					sayHello, "", "");
-			return ValueTask.FromResult(res);
-		}
-
-		private ValueTask GetMessage(CancellationToken arg)
-		{
-			return ValueTask.CompletedTask;
-		}
+			JobType = "Fake.Noop",
+			PayloadJson = "{}",
+			MetaData = string.Empty,
+			TraceParentId = string.Empty
+		});
 	}
 }

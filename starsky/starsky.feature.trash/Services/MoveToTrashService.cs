@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -7,7 +9,9 @@ using starsky.foundation.injection;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.native.Trash.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -57,7 +61,7 @@ public class MoveToTrashService : IMoveToTrashService
 	/// <param name="inputFilePaths">list of paths</param>
 	/// <param name="collections">is stack collections enabled</param>
 	/// <returns>list of files</returns>
-	public async Task<List<FileIndexItem>> MoveToTrashAsync(
+	public async Task<List<FileIndexItem>> CreateEvent(
 		List<string> inputFilePaths, bool collections)
 	{
 		var inputModel = new FileIndexItem { Tags = TrashKeyword.TrashKeywordString };
@@ -75,27 +79,31 @@ public class MoveToTrashService : IMoveToTrashService
 
 		var isSystemTrashEnabled = IsEnabled();
 
-		await _queue.QueueBackgroundWorkItemAsync(async _ =>
+		var payload = new MoveToTrashPayload
 		{
-			await _connectionService.ConnectionServiceAsync(moveToTrashList, isSystemTrashEnabled);
-
-			if ( isSystemTrashEnabled )
-			{
-				await SystemTrashInQueue(moveToTrashList);
-				return;
-			}
-
-			await MetaTrashInQueue(changedFileIndexItemName,
-				fileIndexResultsList, inputModel, collections);
-		}, "trash");
+			MoveToTrashList = moveToTrashList,
+			IsSystemTrashEnabled = isSystemTrashEnabled,
+			ChangedFileIndexItemName = changedFileIndexItemName,
+			FileIndexResultsList = fileIndexResultsList,
+			InputModel = inputModel,
+			Collections = collections
+		};
+		await _queue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "trash",
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = MoveToTrashJobHandler.MoveToTrash,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
 
 		return TrashConnectionService.StatusUpdate(moveToTrashList, isSystemTrashEnabled);
 	}
 
 	/// <summary>
-	///     Is it supported to use the system trash
-	///     But it does NOT check if the feature toggle is enabled
-	///     Used for end2end test to check if it an option to enable / disable the system trash
+	///     Is it supported to use the system Trash
+	///     It does NOT check if the feature toggle is enabled
+	///     Used for end2end test to check if it's an option to enable / disable the system trash
 	/// </summary>
 	/// <returns>true if supported</returns>
 	public bool DetectToUseSystemTrash()
@@ -108,6 +116,21 @@ public class MoveToTrashService : IMoveToTrashService
 	{
 		await _metaUpdateService.UpdateAsync(changedFileIndexItemName,
 			fileIndexResultsList, inputModel, collections, false, 0);
+	}
+
+	public async Task MoveToTrashAsync(MoveToTrashPayload payload)
+	{
+		await _connectionService.ConnectionServiceAsync(payload.MoveToTrashList,
+			payload.IsSystemTrashEnabled);
+
+		if ( payload.IsSystemTrashEnabled )
+		{
+			await SystemTrashInQueue(payload.MoveToTrashList);
+			return;
+		}
+
+		await MetaTrashInQueue(payload.ChangedFileIndexItemName,
+			payload.FileIndexResultsList, payload.InputModel, payload.Collections);
 	}
 
 	/// <summary>
@@ -157,4 +180,14 @@ public class MoveToTrashService : IMoveToTrashService
 
 		await _query.RemoveItemAsync(moveToTrash);
 	}
+}
+
+public sealed class MoveToTrashPayload
+{
+	public List<FileIndexItem> MoveToTrashList { get; set; } = [];
+	public bool IsSystemTrashEnabled { get; set; }
+	public Dictionary<string, List<string>> ChangedFileIndexItemName { get; set; } = new();
+	public List<FileIndexItem> FileIndexResultsList { get; set; } = [];
+	public FileIndexItem InputModel { get; set; } = new();
+	public bool Collections { get; set; }
 }

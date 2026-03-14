@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -17,20 +18,23 @@ namespace starsky.foundation.worker.ThumbnailServices;
 public sealed class ThumbnailQueuedHostedService : BackgroundService
 {
 	private readonly IWebLogger _logger;
+	private readonly IServiceScopeFactory _scopeFactory;
 	private readonly IThumbnailQueuedHostedService _taskQueue;
 
 	public ThumbnailQueuedHostedService(
 		IThumbnailQueuedHostedService taskQueue,
-		IWebLogger logger, AppSettings appSettings)
+		IWebLogger logger, AppSettings appSettings,
+		IServiceScopeFactory scopeFactory)
 	{
-		( _taskQueue, _logger, _ ) = ( taskQueue, logger, appSettings );
+		(_taskQueue, _logger, _, _scopeFactory) = (taskQueue, logger, appSettings,
+			scopeFactory);
 	}
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		_logger.LogInformation("Queued Hosted Service for Thumbnails");
 		await ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger,
-			stoppingToken);
+			stoppingToken, _scopeFactory);
 	}
 
 	public override async Task StopAsync(CancellationToken cancellationToken)

@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.worker.CpuEventListener.Interfaces;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Metrics;
+using starsky.foundation.worker.Models;
 using starsky.foundation.worker.ThumbnailServices.Exceptions;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
@@ -28,8 +28,7 @@ public sealed class ThumbnailBackgroundTaskQueue : IThumbnailQueuedHostedService
 
 	private readonly ThumbnailBackgroundQueuedMetrics _metrics;
 
-	private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>
-		_queue;
+	private readonly Channel<BackgroundTaskQueueJob> _queue;
 
 	public ThumbnailBackgroundTaskQueue(ICpuUsageListener cpuUsageListenerService,
 		IWebLogger logger, AppSettings appSettings, IServiceScopeFactory scopeFactory)
@@ -37,9 +36,8 @@ public sealed class ThumbnailBackgroundTaskQueue : IThumbnailQueuedHostedService
 		_cpuUsageListenerService = cpuUsageListenerService;
 		_logger = logger;
 		_appSettings = appSettings;
-		_queue = Channel
-			.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>(
-				ProcessTaskQueue.DefaultBoundedChannelOptions);
+		_queue = Channel.CreateBounded<BackgroundTaskQueueJob>(
+			ProcessTaskQueue.DefaultBoundedChannelOptions);
 		_metrics = scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<ThumbnailBackgroundQueuedMetrics>();
 	}
@@ -62,22 +60,21 @@ public sealed class ThumbnailBackgroundTaskQueue : IThumbnailQueuedHostedService
 		                               $"Skip {metaData} because of high CPU usage");
 	}
 
-	[SuppressMessage("ReSharper", "InvertIf")]
-	public ValueTask QueueBackgroundWorkItemAsync(
-		Func<CancellationToken, ValueTask> workItem, string? metaData = null,
-		string? traceParentId = null)
+	public ValueTask QueueJobAsync(BackgroundTaskQueueJob job)
 	{
-		ThrowExceptionIfCpuUsageIsToHigh(metaData);
-		return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue,
-			workItem, metaData, traceParentId);
+		ArgumentNullException.ThrowIfNull(job);
+		if ( string.IsNullOrWhiteSpace(job.JobType) )
+		{
+			throw new ArgumentException("JobType is required", nameof(job));
+		}
+		ThrowExceptionIfCpuUsageIsToHigh(job.MetaData);
+		return _queue.Writer.WriteAsync(job);
 	}
 
-	public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>
-		DequeueAsync(
-			CancellationToken cancellationToken)
+	public async ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(
+		CancellationToken cancellationToken)
 	{
-		var workItem =
-			await _queue.Reader.ReadAsync(cancellationToken);
+		var workItem = await _queue.Reader.ReadAsync(cancellationToken);
 		_metrics.Value = Count();
 		return workItem;
 	}

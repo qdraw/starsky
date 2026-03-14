@@ -15,6 +15,7 @@ using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.worker.Interfaces;
@@ -79,6 +80,9 @@ public sealed class GeoControllerTest
 		// metrics
 		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
 		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+		// BG
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		services.AddScoped<IBackgroundJobHandler, GeoSyncBackgroundJobHandler>();
 
 		// build the service
 		var serviceProvider = services.BuildServiceProvider();
@@ -201,8 +205,8 @@ public sealed class GeoControllerTest
 		geoBackgroundTaskBefore.Count = 0;
 		// end reset
 
-		var storage = new FakeIStorage(new List<string> { "/" });
-		var controller = new GeoController(new FakeIUpdateBackgroundTaskQueue(),
+		var storage = new FakeIStorage(["/"]);
+		var controller = new GeoController(new FakeIUpdateBackgroundTaskQueue(_scopeFactory),
 			new FakeSelectorStorage(storage), null!, new FakeIWebLogger(), _scopeFactory)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
@@ -212,6 +216,7 @@ public sealed class GeoControllerTest
 
 		var geoBackgroundTask = _scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<IGeoBackgroundTask>() as FakeIGeoBackgroundTask;
+		
 		Assert.IsNotNull(geoBackgroundTask);
 		Assert.AreEqual(1, geoBackgroundTask.Count);
 	}

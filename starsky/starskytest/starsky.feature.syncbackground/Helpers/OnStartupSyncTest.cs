@@ -44,10 +44,11 @@ public sealed class OnStartupSyncTest
 			.GetRequiredService<ISettingsService>();
 		var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
 
+		var queue = new FakeDiskWatcherUpdateBackgroundTaskQueue();
 		var startupSync = new OnStartupSync(scope,
-			new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize,
+			queue, appSettings, synchronize,
 			settingsService, logger);
-		await startupSync.StartUpSync();
+		await startupSync.StartUpSyncTask();
 
 		var setting = await settingsService.GetSetting<DateTime>(SettingsType
 			.LastSyncBackgroundDateTime);
@@ -55,6 +56,25 @@ public sealed class OnStartupSyncTest
 		Assert.AreEqual(DateTime.UtcNow.Day, setting.ToUniversalTime().Day);
 		Assert.AreEqual(DateTime.UtcNow.Hour, setting.ToUniversalTime().Hour);
 		Assert.IsTrue(( synchronize as FakeISynchronize )!.Inputs.Exists(p => p.Item1 == "/"));
+	}
+
+	[TestMethod]
+	public async Task StartUpSync_QueuesJob()
+	{
+		var scope = GetNewScope();
+		var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
+		var synchronize = scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
+		var settingsService =
+			scope.CreateScope().ServiceProvider.GetRequiredService<ISettingsService>();
+		var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
+		var queue = new FakeDiskWatcherUpdateBackgroundTaskQueue();
+
+		var startupSync = new OnStartupSync(scope, queue, appSettings, synchronize, settingsService,
+			logger);
+		await startupSync.CreateJobAsync();
+
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+		Assert.AreEqual(1, queue.QueueBackgroundWorkItemCalledCounter);
 	}
 
 	[TestMethod]
@@ -69,12 +89,13 @@ public sealed class OnStartupSyncTest
 		var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
 
 		appSettings.SyncOnStartup = false;
+		var queue = new FakeDiskWatcherUpdateBackgroundTaskQueue();
 		var startupSync = new OnStartupSync(scope,
-			new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize,
+			queue, appSettings, synchronize,
 			settingsService, logger);
 
 		// Assert
-		await startupSync.StartUpSync();
+		await startupSync.StartUpSyncTask();
 
 		var setting = await settingsService.GetSetting<DateTime>(SettingsType
 			.LastSyncBackgroundDateTime);

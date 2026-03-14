@@ -141,6 +141,9 @@ public sealed class MetaReplaceControllerTest
 		services.AddSingleton<IExifTool, FakeExifTool>();
 		services.AddSingleton<IMetaReplaceService, FakeIMetaReplaceService>();
 		services.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>();
+		services.AddSingleton<IBackgroundJobHandler, MetaReplaceBackgroundJobHandler>();
+		services.AddSingleton<IBackgroundJobHandler, MetaUpdateBackgroundJobHandler>();
+
 		var serviceProvider = services.BuildServiceProvider();
 		_serviceProvider = serviceProvider;
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -262,19 +265,24 @@ public sealed class MetaReplaceControllerTest
 			FakeIMetaUpdateService;
 		Assert.IsNotNull(fakeIMetaUpdateService);
 		fakeIMetaUpdateService.ChangedFileIndexItemNameContent =
-			new List<Dictionary<string, List<string>>>();
+			[];
 
-		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
-		{
-			new(createAnImage.DbPath) { Tags = "a", Status = FileIndexItem.ExifStatus.Ok }
-		});
+		var metaReplaceService = new FakeIMetaReplaceService([
+			new FileIndexItem(createAnImage.DbPath)
+			{
+				Tags = "a", Status = FileIndexItem.ExifStatus.Ok
+			}
+		]);
+
+		var scope = _serviceProvider?.GetRequiredService<IServiceScopeFactory>();
 
 		var controller = new MetaReplaceController(metaReplaceService,
-			new FakeIUpdateBackgroundTaskQueue(),
+			new FakeIUpdateBackgroundTaskQueue(scope!),
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(), serviceScopeFactory);
 
 		var jsonResult =
-			await controller.Replace(createAnImage.DbPath, "tags", "a", "b") as JsonResult;
+			await controller.Replace(createAnImage.DbPath,
+				"tags", "a", "b") as JsonResult;
 		if ( jsonResult == null )
 		{
 			Console.WriteLine("json should not be null");

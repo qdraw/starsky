@@ -6,52 +6,46 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 using starsky.foundation.sync.Metrics;
 using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.Models;
 
-namespace starsky.foundation.sync.WatcherBackgroundService
+namespace starsky.foundation.sync.WatcherBackgroundService;
+
+/// <summary>
+///     @see: https://learn.microsoft.com/en-us/dotnet/core/extensions/queue-service
+/// </summary>
+[Service(typeof(IDiskWatcherBackgroundTaskQueue),
+	InjectionLifetime = InjectionLifetime.Singleton)]
+public sealed class DiskWatcherBackgroundTaskQueue : IDiskWatcherBackgroundTaskQueue
 {
-	/// <summary>
-	/// @see: https://learn.microsoft.com/en-us/dotnet/core/extensions/queue-service
-	/// </summary>
-	[Service(typeof(IDiskWatcherBackgroundTaskQueue),
-		InjectionLifetime = InjectionLifetime.Singleton)]
-	public sealed class DiskWatcherBackgroundTaskQueue : IDiskWatcherBackgroundTaskQueue
+	private readonly DiskWatcherBackgroundTaskQueueMetrics _metrics;
+	private readonly Channel<BackgroundTaskQueueJob> _queue;
+
+	public DiskWatcherBackgroundTaskQueue(IServiceScopeFactory scopeFactory)
 	{
-		private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>
-			_queue;
+		_queue = Channel.CreateBounded<BackgroundTaskQueueJob>(
+			ProcessTaskQueue.DefaultBoundedChannelOptions);
+		_metrics = scopeFactory.CreateScope().ServiceProvider
+			.GetRequiredService<DiskWatcherBackgroundTaskQueueMetrics>();
+	}
 
-		private readonly DiskWatcherBackgroundTaskQueueMetrics _metrics;
+	public int Count()
+	{
+		return _queue.Reader.Count;
+	}
 
-		public DiskWatcherBackgroundTaskQueue(IServiceScopeFactory scopeFactory)
-		{
-			_queue = Channel
-				.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>(
-					ProcessTaskQueue.DefaultBoundedChannelOptions);
-			_metrics = scopeFactory.CreateScope().ServiceProvider
-				.GetRequiredService<DiskWatcherBackgroundTaskQueueMetrics>();
-		}
+	public ValueTask QueueJobAsync(BackgroundTaskQueueJob job)
+	{
+		ArgumentNullException.ThrowIfNull(job);
+		return string.IsNullOrWhiteSpace(job.JobType)
+			? throw new ArgumentException("JobType is required", nameof(job))
+			: _queue.Writer.WriteAsync(job);
+	}
 
-		public int Count()
-		{
-			return _queue.Reader.Count;
-		}
-
-		public ValueTask QueueBackgroundWorkItemAsync(
-			Func<CancellationToken, ValueTask> workItem, string? metaData = null,
-			string? traceParentId = null)
-		{
-			_metrics.Value = Count();
-			return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue, workItem, metaData);
-		}
-
-		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>
-			DequeueAsync(
-				CancellationToken cancellationToken)
-		{
-			var workItem =
-				await _queue.Reader.ReadAsync(cancellationToken);
-
-			_metrics.Value = Count();
-			return workItem;
-		}
+	public async ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(
+		CancellationToken cancellationToken)
+	{
+		var workItem = await _queue.Reader.ReadAsync(cancellationToken);
+		_metrics.Value = Count();
+		return workItem;
 	}
 }
