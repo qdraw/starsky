@@ -59,17 +59,19 @@ public class MozJpegService : IMozJpegService
 			}
 
 			var tempFilePath = outputInputPath + ".optimizing";
-			using var outputStream = new MemoryStream();
 
 			var parent = Directory.GetParent(exePath);
 
-			var command = await CommandRetry(exePath, outputInputPath, optimizer, parent, outputStream);
-			if ( command == null )
+			var (command, outputStream) =
+				await CommandRetry(exePath, outputInputPath, optimizer, parent);
+			if ( command == null || outputStream == null )
 			{
 				continue;
 			}
 
 			await _hostFileSystemStorage.WriteStreamAsync(outputStream, tempFilePath);
+
+			await outputStream.DisposeAsync();
 
 			if ( !command.Result.Success )
 			{
@@ -92,21 +94,22 @@ public class MozJpegService : IMozJpegService
 		}
 	}
 
-	private async Task<Command?> CommandRetry(string exePath,
-		string outputInputPath, Optimizer optimizer, DirectoryInfo? parent,
-		MemoryStream outputStream)
+	private async Task<(Command? command, MemoryStream? outputStream)> CommandRetry(string exePath,
+		string outputInputPath, Optimizer optimizer, DirectoryInfo? parent)
 	{
 		Command command;
+		MemoryStream outputStream;
 		try
 		{
-			command = await Command( exePath, outputInputPath, optimizer, parent, outputStream);
+			( command, outputStream ) = await Command(exePath, outputInputPath, optimizer, parent);
 		}
 		catch ( Exception )
 		{
 			await _mozJpegDownload.FixPermissions(exePath);
 			try
 			{
-				command = await Command(exePath,outputInputPath, optimizer, parent, outputStream);
+				( command, outputStream ) =
+					await Command(exePath, outputInputPath, optimizer, parent);
 			}
 			catch ( Exception exception )
 			{
@@ -114,20 +117,23 @@ public class MozJpegService : IMozJpegService
 					$"[ImageOptimisationService] " +
 					$"MozJPEG failed to run for {outputInputPath}: " +
 					$"{exception.Message}");
-				return null;
+				return ( null, null );
 			}
 		}
 
-		return command;
+		return ( command, outputStream );
 	}
 
-	private static async Task<Command> Command(string exePath,
-		string outputInputPath, Optimizer optimizer, DirectoryInfo? parent,
-		MemoryStream outputStream)
+	private static async Task<(Command command, MemoryStream outputStream)> Command(string exePath,
+		string outputInputPath, Optimizer optimizer, DirectoryInfo? parent)
 	{
+		var outputStream = new MemoryStream();
+
 		List<string> arguments =
-			["-quality", optimizer.Options.Quality.ToString(), 
-				"-optimize", outputInputPath];
+		[
+			"-quality", optimizer.Options.Quality.ToString(),
+			"-optimize", outputInputPath
+		];
 
 		var command = Default.Run(
 			exePath,
@@ -138,7 +144,7 @@ public class MozJpegService : IMozJpegService
 			}
 		) > outputStream;
 		await command.Task;
-		return command;
+		return ( command, outputStream );
 	}
 
 

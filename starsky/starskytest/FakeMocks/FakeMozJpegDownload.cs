@@ -9,7 +9,11 @@ public sealed class FakeMozJpegDownload(
 		ImageOptimisationDownloadStatus.DownloadBinariesFailed)
 	: IMozJpegDownload
 {
+	public delegate Task<bool> FixPermissionsDelegateHandler(string exePath);
+
 	public int DownloadCount { get; private set; }
+
+	public FixPermissionsDelegateHandler? FixPermissionsDelegate { get; set; }
 
 	public Task<ImageOptimisationDownloadStatus> Download(string? architecture = null,
 		int retryInSeconds = 15)
@@ -18,8 +22,18 @@ public sealed class FakeMozJpegDownload(
 		return Task.FromResult(status);
 	}
 
-	public Task<bool> FixPermissions(string exePath)
+	/// <summary>
+	///     Add delegate
+	/// </summary>
+	/// <param name="exePath"></param>
+	/// <returns></returns>
+	public async Task<bool> FixPermissions(string exePath)
 	{
-		return Task.FromResult(true);
+		if ( FixPermissionsDelegate == null )
+		{
+			return true;
+		}
+
+		return await FixPermissionsDelegate(exePath);
 	}
 }
