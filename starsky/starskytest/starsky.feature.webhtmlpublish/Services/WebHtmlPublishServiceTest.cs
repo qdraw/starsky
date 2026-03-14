@@ -673,7 +673,9 @@ public sealed class WebHtmlPublishServiceTest
 
 	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
-	public async Task GenerateJpeg_ResizerLocal_ImageOptimisationThrows__UnixOnly()
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task GenerateJpeg_ResizerLocal_ImageOptimisationThrows__UnixOnly(bool optimizerFailsBashScript)
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -697,12 +699,11 @@ public sealed class WebHtmlPublishServiceTest
 
 		var appSettings = new AppSettings
 		{
-			DependenciesFolder = tempBase, 
-			StorageFolder = new CreateAnImage().BasePath
+			DependenciesFolder = tempBase, StorageFolder = new CreateAnImage().BasePath
 		};
-		
+
 		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp.jpg"));
-		File.Copy(new CreateAnImage().FullFilePath, 
+		File.Copy(new CreateAnImage().FullFilePath,
 			new CreateAnImage().FullFilePath.Replace(".jpg", "_temp.jpg"));
 
 		// Create a dummy mozjpeg file without +x permissions (Unix) to trigger permission denied
@@ -712,7 +713,16 @@ public sealed class WebHtmlPublishServiceTest
 		Directory.CreateDirectory(parentFolder);
 
 		// Write a small file and intentionally do NOT set executable bit
-		await File.WriteAllLinesAsync(exePath, ["#!/bin/bash\nwhile IFS= read -r line; do\n    echo \"$line\"\ndone"], TestContext.CancellationToken);
+		if ( optimizerFailsBashScript )
+		{
+			await File.WriteAllLinesAsync(exePath, [""],
+				TestContext.CancellationToken);
+		}
+		else
+		{
+			await File.WriteAllLinesAsync(exePath, ["#!/bin/bash\necho -ne '\\xFF\\xD8\\xFF\\xE0'"],
+				TestContext.CancellationToken);
+		}
 
 		// Ensure it's not executable on unix systems
 		if ( !appSettings.IsWindows )
@@ -814,22 +824,31 @@ public sealed class WebHtmlPublishServiceTest
 			new List<FileIndexItem> { item },
 			appSettings.StorageFolder, 1);
 
-		// Combine all logged messages to handle cases where the aggregated error is split across multiple log entries
-		var allLogs = string.Join(" ",
-			logger.TrackedExceptions.Select(t => t.Item2 ?? string.Empty));
+		if ( optimizerFailsBashScript )
+		{
+			Assert.Contains(
+				p =>
+					p.Item2!.Contains("[ImageOptimisationService] MozJPEG failed to run"),
+				logger.TrackedExceptions);
+			Assert.DoesNotContain( // NOT CONTAIN
+				p =>
+					p.Item2!.Contains("[ImageOptimisationService] MozJPEG optimized"),
+				logger.TrackedInformation);
+		}
+		else
+		{
+			Assert.Contains(
+				p =>
+					p.Item2!.Contains("[ImageOptimisationService] MozJPEG optimized"),
+				logger.TrackedInformation);
+			Assert.DoesNotContain( // NOT CONTAIN
+				p =>
+					p.Item2!.Contains("[ImageOptimisationService] MozJPEG failed to run"),
+				logger.TrackedExceptions);
+		}
 
-		var hasPrefix =
-			allLogs.Contains(
-				"[WebHtmlPublishService/ResizerLocal] Skip due errors: (catch-ed exception)");
-		var hasPath = allLogs.Contains(photoPath);
-		var hasHash = allLogs.Contains(fileHash);
-		var hasErrorText = allLogs.Contains("Permission denied") ||
-		                   allLogs.Contains("Read-only file system") ||
-		                   allLogs.Contains("One or more errors occurred");
 
-		Assert.IsTrue(hasPrefix && hasPath && hasHash && hasErrorText,
-			"Expected skip due errors log entry not found. Combined logs: " + allLogs);
-		
+		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp.jpg"));
 		Directory.Delete(tempBase, true);
 	}
 }

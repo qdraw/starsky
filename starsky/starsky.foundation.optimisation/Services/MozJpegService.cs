@@ -4,6 +4,7 @@ using starsky.foundation.optimisation.Helpers;
 using starsky.foundation.optimisation.Interfaces;
 using starsky.foundation.optimisation.Models;
 using starsky.foundation.platform.Architecture;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -143,7 +144,7 @@ public class MozJpegService : IMozJpegService
 				opts.WorkingDirectory(parent!.FullName);
 			}
 		) > outputStream;
-		await command.Task;
+		await command.Task.TimeoutAfter(TimeSpan.FromMinutes(5));
 		return ( command, outputStream );
 	}
 
