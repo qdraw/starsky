@@ -52,5 +52,10 @@ public class MozJpegDownloadTests
 			ReceivedRetrySeconds = retryInSeconds;
 			return Task.FromResult(ImageOptimisationDownloadStatus.Ok);
 		}
+
+		public Task<bool> FixPermissions(string exePath)
+		{
+			return Task.FromResult(true);
+		}
 	}
 }

@@ -242,5 +242,10 @@ public sealed class MozJpegServiceTests
 		{
 			return Task.FromResult(_status);
 		}
+
+		public Task<bool> FixPermissions(string exePath)
+		{
+			return Task.FromResult(true);
+		}
 	}
 }

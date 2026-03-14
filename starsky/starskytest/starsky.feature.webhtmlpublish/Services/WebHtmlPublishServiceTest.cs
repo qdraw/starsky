@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.database.Models;
+using starsky.foundation.optimisation.Helpers;
+using starsky.foundation.optimisation.Models;
+using starsky.foundation.optimisation.Services;
+using starsky.foundation.platform.Architecture;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.platform.Thumbnails;
@@ -21,6 +27,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services;
 [TestClass]
 public sealed class WebHtmlPublishServiceTest
 {
+	public TestContext TestContext { get; set; }
+
 	private static ThumbnailService SetThumbnailService(IStorage storage)
 	{
 		return new ThumbnailService(new FakeSelectorStorage(storage),
@@ -286,7 +294,8 @@ public sealed class WebHtmlPublishServiceTest
 				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(), new FakeImageOptimisationService());
+			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(),
+			new FakeImageOptimisationService());
 
 		// Write to actual Disk
 
@@ -614,7 +623,8 @@ public sealed class WebHtmlPublishServiceTest
 				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(), new FakeImageOptimisationService());
+			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(),
+			new FakeImageOptimisationService());
 
 		// Write to actual Disk
 
@@ -659,5 +669,146 @@ public sealed class WebHtmlPublishServiceTest
 
 		// this realFS
 		storage.FolderDelete(outputFolderPath);
+	}
+
+	[TestMethod]
+	public async Task GenerateJpeg_ResizerLocal_ImageOptimisationThrows__UnixOnly()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+
+		// Use real filesystem storage so we can create a non-executable mozjpeg file
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var logger = new FakeIWebLogger();
+
+		// Prepare appsettings with dependencies folder inside a temp folder
+		var tempBase = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test_deps_mozjpeg");
+		if ( Directory.Exists(tempBase) )
+		{
+			Directory.Delete(tempBase, true);
+		}
+
+		Directory.CreateDirectory(tempBase);
+
+		var appSettings = new AppSettings { DependenciesFolder = tempBase };
+
+		// Create a dummy mozjpeg file without +x permissions (Unix) to trigger permission denied
+		var exePath = new ImageOptimisationExePath(appSettings).GetExePath("mozjpeg",
+			CurrentArchitecture.GetCurrentRuntimeIdentifier());
+		var parentFolder = Path.GetDirectoryName(exePath)!;
+		Directory.CreateDirectory(parentFolder);
+
+		// Write a small file and intentionally do NOT set executable bit
+		await File.WriteAllBytesAsync(exePath, [0x00], TestContext.CancellationToken);
+
+		// Ensure it's not executable on unix systems
+		if ( !appSettings.IsWindows )
+		{
+			// remove all execute bits if any (best-effort)
+			try
+			{
+				var fi = new FileInfo(exePath);
+				fi.Attributes &= ~FileAttributes.ReadOnly;
+				// chmod 0644
+				var proc = Process.Start(new ProcessStartInfo
+				{
+					FileName = "/bin/chmod",
+					Arguments = "644 " + exePath,
+					RedirectStandardOutput = true,
+					RedirectStandardError = true,
+					UseShellExecute = false,
+					CreateNoWindow = true
+				});
+				await proc?.WaitForExitAsync(TestContext.CancellationToken)!;
+			}
+			catch
+			{
+				// best effort, continue
+			}
+		}
+
+		// Use real MozJpegService but fake the download as already OK
+		var download = new
+			FakeMozJpegDownload(ImageOptimisationDownloadStatus.Ok);
+		var mozService = new MozJpegService(appSettings, new FakeSelectorStorage(storage), logger,
+			download);
+
+		// Use ImageOptimisationService that will call MozJpegService
+		var optimisationService = new ImageOptimisationService(appSettings,
+			new FakeSelectorStorage(storage), logger, mozService);
+
+		// Use WebHtmlPublishService with the real optimisation service via dependency
+		var publishProfile = new AppSettingsPublishProfiles
+		{
+			ContentType = TemplateContentType.Jpeg,
+			Path = "index.html",
+			SourceMaxWidth = 1001,
+			// enable optimizer
+			MetaData = false
+		};
+
+		appSettings.PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+		{
+			{ "default", [publishProfile] }
+		};
+
+		// create an optimizer that matches jpg and is enabled
+		appSettings.PublishProfilesDefaults.Optimizers = new List<Optimizer>
+		{
+			new()
+			{
+				Enabled = true,
+				Id = "mozjpeg",
+				ImageFormats =
+					[ExtensionRolesHelper.ImageFormat.jpg],
+				Options = new OptimizerOptions { Quality = 80 }
+			}
+		};
+
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), logger,
+			new FakeIThumbnailService(selectorStorage), optimisationService);
+
+		var profiles = new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
+			.GetPublishProfileName("default");
+
+		var filePath = Path.Combine(tempBase, "photo.jpg");
+		await File.WriteAllBytesAsync(filePath, [.. CreateAnImage.Bytes],
+			TestContext.CancellationToken);
+
+		const string fileHash = "BA65AKADKJK7X7JCOGYADPPHF4";
+		var item = new FileIndexItem(filePath)
+		{
+			FileHash = fileHash,
+			FileName = Path.GetFileName(filePath),
+			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
+			Status = FileIndexItem.ExifStatus.Ok
+		};
+
+		await service.GenerateJpeg(profiles.FirstOrDefault()!,
+			new List<FileIndexItem> { item },
+			Path.DirectorySeparatorChar.ToString(), 1);
+
+		// Verify the logger captured the aggregated skip message including file path, hash and permission text
+		var found = logger.TrackedExceptions.Any(t =>
+			t.Item2 != null &&
+			t.Item2.Contains(
+				"[WebHtmlPublishService/ResizerLocal] Skip due errors: (catch-ed exception)") &&
+			t.Item2.Contains(filePath) &&
+			t.Item2.Contains(fileHash) &&
+			t.Item2.Contains("Permission denied")
+		);
+
+		Assert.IsTrue(found,
+			"Expected skip due errors log entry not found. Logs: " +
+			string.Join(" | ", logger.TrackedExceptions.Select(t => t.Item2)));
 	}
 }

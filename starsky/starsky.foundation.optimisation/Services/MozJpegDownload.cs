@@ -32,4 +32,14 @@ public class MozJpegDownload(IImageOptimisationToolDownload imageOptimisationToo
 		return await imageOptimisationToolDownload.Download(Options, architecture,
 			retryInSeconds);
 	}
+
+	/// <summary>
+	///     Fix Chmod permissions on Windows it always true
+	/// </summary>
+	/// <param name="exePath">full path</param>
+	/// <returns>true if fixed success and on Windows it always true</returns>
+	public async Task<bool> FixPermissions(string exePath)
+	{
+		return await imageOptimisationToolDownload.FixPermissions(exePath);
+	}
 }

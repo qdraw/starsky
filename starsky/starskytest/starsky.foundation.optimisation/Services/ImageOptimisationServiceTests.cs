@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.optimisation.Interfaces;
 using starsky.foundation.optimisation.Models;
 using starsky.foundation.optimisation.Services;
 using starsky.foundation.platform.Architecture;
@@ -297,25 +296,5 @@ public class ImageOptimisationServiceTests
 		Assert.AreEqual(1, fakeDownloaders.DownloadCount);
 		Assert.IsTrue(storage.ExistFile("/out.jpg"));
 		Assert.IsFalse(storage.ExistFile("/out.jpg.optimizing"));
-	}
-
-	private sealed class FakeMozJpegDownload : IMozJpegDownload
-	{
-		private readonly ImageOptimisationDownloadStatus _status;
-
-		public FakeMozJpegDownload(ImageOptimisationDownloadStatus status =
-			ImageOptimisationDownloadStatus.DownloadBinariesFailed)
-		{
-			_status = status;
-		}
-
-		public int DownloadCount { get; private set; }
-
-		public Task<ImageOptimisationDownloadStatus> Download(string? architecture = null,
-			int retryInSeconds = 15)
-		{
-			DownloadCount++;
-			return Task.FromResult(_status);
-		}
 	}
 }
