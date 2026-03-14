@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starskytest.FakeMocks;
 
@@ -14,6 +16,8 @@ namespace starskytest.starsky.foundation.storage.Services;
 [TestClass]
 public sealed class Mp4FileHasherTest
 {
+	public TestContext TestContext { get; set; } = null!;
+
 	private static FakeIStorage CreateStorageWithMp4(string path, byte[] mp4Data)
 	{
 		return new FakeIStorage(
@@ -25,7 +29,7 @@ public sealed class Mp4FileHasherTest
 
 
 	/// <summary>
-	/// Creates an MP4 with multiple atoms before mdat
+	///     Creates an MP4 with multiple atoms before mdat
 	/// </summary>
 	private static byte[] CreateMp4WithMultipleAtoms(byte[] mdatContent)
 	{
@@ -66,6 +70,62 @@ public sealed class Mp4FileHasherTest
 		ms.Write(mdatSize, 0, 4);
 		ms.Write("mdat"u8.ToArray(), 0, 4);
 		ms.Write(mdatContent, 0, mdatContent.Length);
+
+		return ms.ToArray();
+	}
+
+	/// <summary>
+	///     Creates an MP4 with two mdat atoms in the specified order
+	/// </summary>
+	private static byte[] CreateMp4WithTwoMdats(byte[] firstMdat, byte[] secondMdat)
+	{
+		using var ms = new MemoryStream();
+
+		// ftyp
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		ms.Write(ftypSize, 0, 4);
+		ms.Write("ftyp"u8.ToArray(), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
+		ms.Write(new byte[4], 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
+
+		// first mdat
+		var mdat1Size = BitConverter.GetBytes(( uint ) ( 8 + firstMdat.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdat1Size);
+		}
+
+		ms.Write(mdat1Size, 0, 4);
+		ms.Write("mdat"u8.ToArray(), 0, 4);
+		ms.Write(firstMdat, 0, firstMdat.Length);
+
+		// some small filler atom
+		var freeSize = BitConverter.GetBytes(( uint ) 12);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(freeSize);
+		}
+
+		ms.Write(freeSize, 0, 4);
+		ms.Write("free"u8.ToArray(), 0, 4);
+		ms.Write(new byte[4], 0, 4);
+
+		// second mdat
+		var mdat2Size = BitConverter.GetBytes(( uint ) ( 8 + secondMdat.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdat2Size);
+		}
+
+		ms.Write(mdat2Size, 0, 4);
+		ms.Write("mdat"u8.ToArray(), 0, 4);
+		ms.Write(secondMdat, 0, secondMdat.Length);
 
 		return ms.ToArray();
 	}
@@ -239,8 +299,10 @@ public sealed class Mp4FileHasherTest
 			Array.Reverse(sizeOne);
 		}
 
-		await ms.WriteAsync(sizeOne.AsMemory(0, 4), TestContext.CancellationToken);
-		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(sizeOne.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
 		await ms.WriteAsync(new byte[4].AsMemory(0, 4),
 			TestContext.CancellationToken); // Only 4 bytes instead of 8
 
@@ -322,7 +384,7 @@ public sealed class Mp4FileHasherTest
 	}
 
 	[TestMethod]
-	public async Task HashMp4VideoContentAsync_ZeroSizedMdatAtom_ReturnsHash()
+	public async Task HashMp4VideoContentAsync_ZeroSizedMdatAtom_Invalid()
 	{
 		// Arrange - mdat with zero content
 		var mp4Data = CreateMinimalMp4WithMdatHelper.CreateMinimalMp4WithMdat([]);
@@ -335,7 +397,7 @@ public sealed class Mp4FileHasherTest
 
 		// Assert
 		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
+		Assert.AreEqual(0, hash.Length);
 	}
 
 	[TestMethod]
@@ -414,7 +476,8 @@ public sealed class Mp4FileHasherTest
 			Array.Reverse(ftypSize);
 		}
 
-		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
 		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4),
 			TestContext.CancellationToken);
 		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
@@ -465,8 +528,355 @@ public sealed class Mp4FileHasherTest
 		Assert.AreEqual(26, hash.Length);
 	}
 
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_MdatHeaderOnly_ReturnsEmptyString()
+	{
+		// Arrange: ftyp + mdat header only (size = 8, no payload)
+		using var ms = new MemoryStream();
+
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+
+		// mdat header size = 8 (header only)
+		var mdatSize = BitConverter.GetBytes(( uint ) 8);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdatSize);
+		}
+
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+
+		var mp4Data = ms.ToArray();
+		var storage = CreateStorageWithMp4("/mdat-header-only.mp4", mp4Data);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/mdat-header-only.mp4");
+
+		// Assert - nothing hashed, should return empty to force fallback
+		Assert.AreEqual(string.Empty, hash);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_SizeZeroAtom_ExtendsToEOF_HashesPayload()
+	{
+		// Arrange: size==0 atom extends to EOF and contains payload
+		using var ms = new MemoryStream();
+
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+
+		// mdat size = 0 -> extends to EOF
+		var zeroSize = BitConverter.GetBytes(( uint ) 0);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(zeroSize);
+		}
+
+		await ms.WriteAsync(zeroSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		// payload
+		var payload = "payload-data"u8.ToArray();
+		await ms.WriteAsync(payload, TestContext.CancellationToken);
+
+		var mp4Data = ms.ToArray();
+		var storage = CreateStorageWithMp4("/size-zero.mp4", mp4Data);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/size-zero.mp4");
+
+		// Assert - should hash payload and return a Base32 string
+		Assert.IsNotNull(hash);
+		Assert.AreEqual(26, hash.Length);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_SizeZeroNonSeekable_ReturnsEmptyString()
+	{
+		// Arrange: size==0 atom but stream is non-seekable -> ReadAtomAsync should return null
+		using var ms = new MemoryStream();
+
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+
+		var zeroSize = BitConverter.GetBytes(( uint ) 0);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(zeroSize);
+		}
+
+		await ms.WriteAsync(zeroSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		// no payload
+
+		var mp4Data = ms.ToArray();
+
+		// Non-seekable stream class defined in this test file
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		using var md5 = MD5.Create();
+		var sut = new Mp4FileHasher(storage, logger);
+
+		// Act - call internal ProcessMp4AtomsAsync directly using non-seekable stream
+		var hash =
+			await sut.ProcessMp4AtomsAsync(nonSeek, md5, new byte[16],
+				CancellationToken.None);
+
+		// Assert - should return empty since ReadAtomAsync cannot determine atom size
+		Assert.AreEqual(string.Empty, hash);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_NonSeekable_Mdat_HashesSameAsSeekable()
+	{
+		// Arrange - create an mp4 with a single mdat payload
+		var mdatContent = "nonseek mdat payload"u8.ToArray();
+		var mp4Data = CreateMinimalMp4WithMdatHelper.CreateMinimalMp4WithMdat(mdatContent);
+
+		// Seekable storage (reference)
+		var storageSeek = CreateStorageWithMp4("/seek.mp4", mp4Data);
+		var loggerSeek = new FakeIWebLogger();
+		var hasherSeek = new Mp4FileHasher(storageSeek, loggerSeek);
+		var hashSeek = await hasherSeek.HashMp4VideoContentAsync("/seek.mp4");
+
+		// Non-seekable storage: wrap bytes in NonSeekableStream and return via
+		// StreamReturningStorage
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+		var storageNonSeek = new StreamReturningStorage(nonSeek);
+		var loggerNonSeek = new FakeIWebLogger();
+		var hasherNonSeek = new Mp4FileHasher(storageNonSeek, loggerNonSeek);
+		var hashNonSeek = await hasherNonSeek.HashMp4VideoContentAsync("/seek.mp4");
+
+		// Assert - non-seekable should hash the mdat immediately and match seekable hash
+		Assert.IsNotNull(hashSeek);
+		Assert.IsNotNull(hashNonSeek);
+		Assert.AreEqual(hashSeek, hashNonSeek);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_NonSeekable_Mdat_NoPayload_ReturnsEmpty()
+	{
+		// Arrange: create MP4 with mdat header declaring payload but no payload bytes
+		using var ms = new MemoryStream();
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+
+		// mdat header with declared payload size 50 but do not write payload
+		var payloadLen = 50;
+		var mdatSize = BitConverter.GetBytes(( uint ) ( 8 + payloadLen ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdatSize);
+		}
+
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		// no payload written
+
+		var mp4Data = ms.ToArray();
+
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+		var storage = new StreamReturningStorage(nonSeek);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/no-payload.mp4");
+
+		// Assert - HashMdatAtomAsync should read 0 bytes and return empty to indicate fallback
+		Assert.AreEqual(string.Empty, hash);
+	}
+
+	[TestMethod]
+	public async Task
+		HashMp4VideoContentAsync_SeekThrowsNotSupported_FallbacksToRead_HashesSameAsSeekable()
+	{
+		// Arrange - create an mp4 with atoms before mdat so SkipAtomAsync will be invoked
+		var mdatContent = "fallback read mdat"u8.ToArray();
+		var mp4Data = CreateMp4WithMultipleAtoms(mdatContent);
+
+		// Reference seekable storage
+		var storageSeek = CreateStorageWithMp4("/seekref.mp4", mp4Data);
+		var loggerSeek = new FakeIWebLogger();
+		var hasherSeek = new Mp4FileHasher(storageSeek, loggerSeek);
+		var hashSeek = await hasherSeek.HashMp4VideoContentAsync("/seekref.mp4");
+
+		// Stream that reports CanSeek=true but whose Seek throws NotSupportedException
+		using var inner = new MemoryStream(mp4Data);
+		using var seekNotSupported = new SeekNotSupportedStream(inner);
+
+		var storage = new StreamReturningStorage(seekNotSupported);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/seekref.mp4");
+
+		// Assert - fallback-to-read should allow scanning and produce same hash
+		Assert.IsNotNull(hashSeek);
+		Assert.IsNotNull(hash);
+		Assert.AreEqual(hashSeek, hash);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_MdatDeclaredTooLarge_Truncated_ReturnsEmptyString()
+	{
+		// Arrange: mdat claims very large size but file is truncated (no payload)
+		using var ms = new MemoryStream();
+
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+
+		// huge declared size
+		var hugeSize = ( uint ) 67108880; // large number
+		var hugeSizeBytes = BitConverter.GetBytes(hugeSize);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(hugeSizeBytes);
+		}
+
+		await ms.WriteAsync(hugeSizeBytes.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		// no payload - stream truncated
+
+		var mp4Data = ms.ToArray();
+		var storage = CreateStorageWithMp4("/huge-declared.mp4", mp4Data);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/huge-declared.mp4");
+
+		// Assert - since nothing hashed, should return empty
+		Assert.AreEqual(string.Empty, hash);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_MultipleSmallMdats_OrderInvariant_LargestFirst()
+	{
+		// Arrange - create two small mdats where one is larger than the other
+		var small1 = "aaa"u8.ToArray();
+		var small2 = "bbbbbbbb"u8.ToArray(); // larger
+
+		// File A: small1 then small2
+		var mp4A = CreateMp4WithTwoMdats(small1, small2);
+		// File B: small2 then small1
+		var mp4B = CreateMp4WithTwoMdats(small2, small1);
+
+		var mp4C = CreateMp4WithTwoMdats([], small1);
+
+		var storageA = CreateStorageWithMp4("/a.mp4", mp4A);
+		var storageB = CreateStorageWithMp4("/b.mp4", mp4B);
+		var storageC = CreateStorageWithMp4("/c.mp4", mp4C);
+
+		var logger = new FakeIWebLogger();
+		var hasherA = new Mp4FileHasher(storageA, logger);
+		var hasherB = new Mp4FileHasher(storageB, logger);
+		var hasherC = new Mp4FileHasher(storageC, logger);
+
+		// Act
+		var hashA = await hasherA.HashMp4VideoContentAsync("/a.mp4");
+		var hashB = await hasherB.HashMp4VideoContentAsync("/b.mp4");
+		var hashC = await hasherC.HashMp4VideoContentAsync("/c.mp4");
+
+		// Assert - since largest-first is used, both should produce same result
+		Assert.IsNotNull(hashA);
+		Assert.IsNotNull(hashB);
+		Assert.HasCount(26, hashA);
+		Assert.HasCount(26, hashB);
+		Assert.HasCount(26, hashC);
+		Assert.AreEqual(hashA, hashB);
+		Assert.AreNotEqual(hashB, hashC);
+	}
+
 	/// <summary>
-	/// Tests that if SkipAtomAsync throws (seek/read fails), the hasher returns string.Empty
+	///     Tests that if SkipAtomAsync throws (seek/read fails), the hasher returns string.Empty
 	/// </summary>
 	[TestMethod]
 	public async Task HashMp4VideoContentAsync_SkipAtomThrows_ReturnsEmptyString()
@@ -639,11 +1049,6 @@ public sealed class Mp4FileHasherTest
 		Assert.AreEqual(60, stream.Position);
 	}
 
-	private sealed class NonSeekableStream(byte[] buffer) : MemoryStream(buffer)
-	{
-		public override bool CanSeek => false;
-	}
-
 	[TestMethod]
 	public async Task SkipAtomAsync_NonSeekableStream_SkipsByReading()
 	{
@@ -654,14 +1059,6 @@ public sealed class Mp4FileHasherTest
 		var result = await Mp4FileHasher.SkipAtomAsync(stream, buffer, 50);
 		Assert.IsTrue(result);
 		Assert.AreEqual(60, stream.Position);
-	}
-
-	private sealed class ThrowingSeekStream(byte[] buffer) : MemoryStream(buffer)
-	{
-		public override long Seek(long offset, SeekOrigin loc)
-		{
-			throw new IOException("Seek failed");
-		}
 	}
 
 	[TestMethod]
@@ -676,9 +1073,10 @@ public sealed class Mp4FileHasherTest
 	}
 
 	/// <summary>
-	/// Tests that when SkipAtomAsync fails (returns false),
-	/// HashMp4VideoContentAsync returns empty string
-	/// This covers the untested code path: if ( !await SkipAtomAsync(...) ) { return string.Empty; }
+	///     Tests that when SkipAtomAsync fails (returns false),
+	///     HashMp4VideoContentAsync returns empty string
+	///     This covers the untested code path:
+	/// if ( !await SkipAtomAsync(...) ) { return string.Empty; }
 	/// </summary>
 	[TestMethod]
 	public async Task HashMp4VideoContentAsync_SkipAtomFails_ReturnsEmptyString()
@@ -694,40 +1092,6 @@ public sealed class Mp4FileHasherTest
 
 		// Assert - Should return empty string when skip/stream operation fails
 		Assert.AreEqual(string.Empty, hash);
-	}
-
-	/// <summary>
-	/// Stream that throws IOException when trying to seek, simulating a skip failure
-	/// This forces SkipMp4AtomAsync to catch IOException and return false
-	/// </summary>
-	private sealed class LimitedStream(byte[] buffer) : MemoryStream(buffer)
-	{
-		private int _readCount;
-
-		public override long Seek(long offset, SeekOrigin loc)
-		{
-			// Throw exception when trying to seek (used by skip operations)
-			throw new IOException("Cannot seek on limited stream");
-		}
-
-		public override bool CanSeek => false;
-
-		public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
-			CancellationToken cancellationToken = default)
-		{
-			switch ( _readCount )
-			{
-				// First read: atom header (allowed)
-				case 0:
-					_readCount++;
-					return await base.ReadAsync(buffer, cancellationToken);
-				// Subsequent reads should fail when trying to read during skip
-				case > 0 when Position < 20:
-					throw new IOException("Cannot read during skip");
-				default:
-					return await base.ReadAsync(buffer, cancellationToken);
-			}
-		}
 	}
 
 	[TestMethod]
@@ -788,9 +1152,442 @@ public sealed class Mp4FileHasherTest
 
 		// Assert - Should return empty string when skip fails
 		Assert.AreEqual(string.Empty, hash);
-		Assert.IsTrue(logger.TrackedInformation[0].Item2?.Contains("Failed to skip non-mdat atom"));
+		Assert.IsTrue(logger.TrackedInformation[0].Item2
+			?.Contains("Mp4FileHasher.ProcessNonSeekableStreamAsync_non_mdat Failed to skip atom"));
 	}
 
+	[TestMethod]
+	public async Task ProcessSeekableStream_SkipAtomThrows_ReturnsEmptyString()
+	{
+		// Arrange - create MP4 with atoms before mdat so parser will try to skip a non-mdat atom
+		var mdatContent = "seek-fail"u8.ToArray();
+		var mp4Data = CreateMp4WithMultipleAtoms(mdatContent);
+		await using var throwingStream = new ThrowingSeekStream(mp4Data);
 
-	public TestContext TestContext { get; set; } = null!;
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		using var md5 = MD5.Create();
+
+		var sut = new Mp4FileHasher(storage, logger);
+
+		// Act - ProcessMp4AtomsAsync should take the seekable path and fail when
+		// SkipAtomAsync triggers Seek exception
+		var result =
+			await sut.ProcessMp4AtomsAsync(throwingStream, md5, new byte[16],
+				CancellationToken.None);
+
+		// Assert
+		Assert.AreEqual(string.Empty, result);
+		Assert.Contains(t => t.Item2?.Contains("Failed to skip") == true,
+			logger.TrackedInformation);
+	}
+
+	[TestMethod]
+	public async Task ProcessSeekableStream_MdatSkipFails_ReturnsEmptyAndLogs()
+	{
+		// Arrange - create MP4 whose first atom is mdat so HandleMdatSeekableAsync will try to skip it
+		var mdatContent = "mdat-skip-fail"u8.ToArray();
+		using var ms = new MemoryStream();
+		// mdat atom: 4-byte big-endian size, 4-byte type, then payload
+		var mdatSize = BitConverter.GetBytes(( uint ) ( 8 + mdatContent.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdatSize);
+		}
+
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync(mdatContent, TestContext.CancellationToken);
+		var mp4Data = ms.ToArray();
+		await using var throwingStream = new ThrowingSeekStream(mp4Data);
+
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		using var md5 = MD5.Create();
+
+		var sut = new Mp4FileHasher(storage, logger);
+
+		// Act - ProcessMp4AtomsAsync should attempt to skip the mdat payload and fail
+		var result =
+			await sut.ProcessMp4AtomsAsync(throwingStream, md5, new byte[16],
+				CancellationToken.None);
+
+		// Assert - should return empty and log the mdat-specific skip failure
+		Assert.AreEqual(string.Empty, result);
+		Assert.Contains(
+			t => t.Item2?.Contains(
+				"Mp4FileHasher.ProcessSeekableStreamAsync_mdat Failed to skip atom") == true,
+			logger.TrackedInformation);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_LimitedNonSeekableStream_ReturnsEmptyString()
+	{
+		// Arrange - create MP4 with atoms before mdat so parser will try to skip a non-mdat atom
+		var mdatContent = "nonseek-fail"u8.ToArray();
+		var mp4Data = CreateMp4WithMultipleAtoms(mdatContent);
+
+		// Use LimitedStream which is non-seekable and will throw during skip/read
+		await using var failingStream = new LimitedStream(mp4Data);
+
+		var storage = new StreamReturningStorage(failingStream);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/nonseek-fail.mp4");
+
+		// Assert - when skipping fails on non-seekable stream we get empty result
+		Assert.AreEqual(string.Empty, hash);
+		Assert.Contains(
+			t => t.Item2?.Contains("Failed to skip") == true, logger.TrackedInformation);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_InvalidPayloadSize_Seekable_LogsAndReturnsEmpty()
+	{
+		// Arrange - craft an atom with size smaller than header (size=4 < header 8) to force payloadSize < 0
+		using var ms = new MemoryStream();
+		var badSize = BitConverter.GetBytes(( uint ) 4);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(badSize);
+		}
+
+		await ms.WriteAsync(badSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken); // atom type
+		var mp4Data = ms.ToArray();
+
+		var storage = CreateStorageWithMp4("/bad-seekable.mp4", mp4Data);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/bad-seekable.mp4");
+
+		// Assert
+		Assert.AreEqual(string.Empty, hash);
+		Assert.Contains(
+			t => t.Item2?.Contains(
+				"Mp4FileHasher.ProcessSeekableStreamAsync invalid payload size") == true,
+			logger.TrackedInformation);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_InvalidPayloadSize_NonSeekable_LogsAndReturnsEmpty()
+	{
+		// Arrange - same malformed atom but use non-seekable stream
+		using var ms = new MemoryStream();
+		var badSize = BitConverter.GetBytes(( uint ) 4);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(badSize);
+		}
+
+		await ms.WriteAsync(badSize.AsMemory(0, 4),
+			TestContext.CancellationToken);
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4),
+			TestContext.CancellationToken);
+		var mp4Data = ms.ToArray();
+
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+		var storage = new StreamReturningStorage(nonSeek);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/bad-nonseek.mp4");
+
+		// Assert
+		Assert.AreEqual(string.Empty, hash);
+		Assert.Contains(
+			t => t.Item2?.Contains(
+				"Mp4FileHasher.ProcessNonSeekableStreamAsync invalid payload size") == true,
+			logger.TrackedInformation);
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_NonSeekable_ZeroSizeNonMdat_LogsAndReturnsEmpty()
+	{
+		// Arrange - craft a non-mdat atom with size == header (8) and use a non-seekable stream
+		using var ms = new MemoryStream();
+		var size8 = BitConverter.GetBytes(( uint ) 8);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(size8);
+		}
+
+		await ms.WriteAsync(size8.AsMemory(0, 4), 
+			TestContext.CancellationToken);
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4), 
+			TestContext.CancellationToken);
+		var mp4Data = ms.ToArray();
+
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+		var storage = new StreamReturningStorage(nonSeek);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/bad-zero-nonseek.mp4");
+
+		// Assert
+		Assert.AreEqual(string.Empty, hash);
+		Assert.Contains(
+			t => t.Item2?.Contains(
+				     "Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom") ==
+			     true,
+			logger.TrackedInformation);
+	}
+
+	private sealed class NonSeekableStream(byte[] buffer) : MemoryStream(buffer)
+	{
+		public override bool CanSeek => false;
+	}
+
+	private sealed class ThrowingSeekStream(byte[] buffer) : MemoryStream(buffer)
+	{
+		public override long Seek(long offset, SeekOrigin loc)
+		{
+			throw new IOException("Seek failed");
+		}
+	}
+
+	/// <summary>
+	///     Stream that reports CanSeek=true but throws NotSupportedException when Seek is used
+	///     to force SkipAtomAsync to fallback to SkipByReadingAsync path.
+	/// </summary>
+	private sealed class SeekNotSupportedStream : Stream
+	{
+		private readonly Stream _inner;
+
+		public SeekNotSupportedStream(Stream inner)
+		{
+			_inner = inner;
+		}
+
+		public override bool CanRead => _inner.CanRead;
+		public override bool CanSeek => true; // report seekable so Seek branch is taken
+		public override bool CanWrite => _inner.CanWrite;
+		public override long Length => _inner.Length;
+
+		public override long Position
+		{
+			get => _inner.Position;
+			set => _inner.Position = value;
+		}
+
+		public override void Flush()
+		{
+			_inner.Flush();
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return _inner.Read(buffer, offset, count);
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			// Simulate a stream that doesn't support relative seeks (Current),
+			// but supports absolute seeks (Begin)
+			return origin == SeekOrigin.Current
+				? throw new NotSupportedException("Simulated NotSupported Seek for Current")
+				: _inner.Seek(offset, origin);
+		}
+
+		public override void SetLength(long value)
+		{
+			_inner.SetLength(value);
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			_inner.Write(buffer, offset, count);
+		}
+
+		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
+			CancellationToken cancellationToken = default)
+		{
+			return _inner.ReadAsync(buffer, cancellationToken);
+		}
+
+		public override Task<int> ReadAsync(byte[] buffer, int offset, int count,
+			CancellationToken cancellationToken)
+		{
+			return _inner.ReadAsync(buffer, offset, count, cancellationToken);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if ( disposing )
+			{
+				_inner.Dispose();
+			}
+
+			base.Dispose(disposing);
+		}
+	}
+
+	/// <summary>
+	///     Stream that throws IOException when trying to seek, simulating a skip failure
+	///     This forces SkipMp4AtomAsync to catch IOException and return false
+	/// </summary>
+	private sealed class LimitedStream(byte[] buffer) : MemoryStream(buffer)
+	{
+		private int _readCount;
+
+		public override bool CanSeek => false;
+
+		public override long Seek(long offset, SeekOrigin loc)
+		{
+			// Throw exception when trying to seek (used by skip operations)
+			throw new IOException("Cannot seek on limited stream");
+		}
+
+		public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
+			CancellationToken cancellationToken = default)
+		{
+			switch ( _readCount )
+			{
+				// First read: atom header (allowed)
+				case 0:
+					_readCount++;
+					return await base.ReadAsync(buffer, cancellationToken);
+				// Subsequent reads should fail when trying to read during skip
+				case > 0 when Position < 20:
+					throw new IOException("Cannot read during skip");
+				default:
+					return await base.ReadAsync(buffer, cancellationToken);
+			}
+		}
+	}
+
+	/// <summary>
+	///     Simple IStorage implementation that returns a preconfigured stream for ReadStream.
+	///     Only the members used by Mp4FileHasher are implemented; others are minimal stubs.
+	/// </summary>
+	private sealed class StreamReturningStorage : IStorage
+	{
+		private readonly Stream _stream;
+
+		public StreamReturningStorage(Stream stream)
+		{
+			_stream = stream;
+		}
+
+		public bool ExistFile(string path)
+		{
+			return true;
+		}
+
+		public bool ExistFolder(string path)
+		{
+			return false;
+		}
+
+		public bool IsFolderEmpty(string path)
+		{
+			return false;
+		}
+
+		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
+		{
+			return FolderOrFileModel.FolderOrFileTypeList.File;
+		}
+
+		public void FolderMove(string fromPath, string toPath)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool FileMove(string fromPath, string toPath)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void FileCopy(string fromPath, string toPath)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool FileDelete(string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool CreateDirectory(string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool FolderDelete(string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<string> GetAllFilesInDirectory(string path)
+		{
+			return [];
+		}
+
+		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
+		{
+			return [];
+		}
+
+		public IEnumerable<string> GetDirectories(string path)
+		{
+			return [];
+		}
+
+		public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
+		{
+			return [];
+		}
+
+		public Stream ReadStream(string path, int maxRead = -1)
+		{
+			if ( _stream.CanSeek )
+			{
+				_stream.Position = 0;
+			}
+
+			return _stream;
+		}
+
+		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool WriteStream(Stream stream, string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<bool> WriteStreamAsync(Stream stream, string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public StorageInfo Info(string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsFileReady(string path)
+		{
+			return true;
+		}
+
+		public IAsyncEnumerable<string> ReadLinesAsync(string path,
+			CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

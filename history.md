@@ -43,6 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.14 - _(Unreleased)_ - 2026-?-? {#v0.7.14}
 
+- [x] (Fixed) _Back-end_ Enhanced the MP4 atom parsing logic in Mp4FileHasher to correctly handle
+  atoms with variable header sizes, zero-size atoms, and large-size atoms (PR #2860)
 - [x] (Fixed) _Back-end_ GPX now works with a offset of 38 bytes (PR #2858)
 
 ## version 0.7.13 - 2026-03-11 {#v0.7.13}
