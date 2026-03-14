@@ -173,4 +173,19 @@ public class ImageOptimisationToolDownload(
 
 		return false;
 	}
+
+	/// <summary>
+	///     Fixing Chmod permissions
+	/// </summary>
+	/// <param name="exePath"></param>
+	/// <returns></returns>
+	public async Task<bool> FixPermissions(string exePath)
+	{
+		if ( appSettings.IsWindows )
+		{
+			return true;
+		}
+
+		return await chmod.Chmod(exePath);
+	}
 }

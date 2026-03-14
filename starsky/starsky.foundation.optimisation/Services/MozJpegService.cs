@@ -1,8 +1,10 @@
-﻿using starsky.foundation.injection;
+﻿using Medallion.Shell;
+using starsky.foundation.injection;
 using starsky.foundation.optimisation.Helpers;
 using starsky.foundation.optimisation.Interfaces;
 using starsky.foundation.optimisation.Models;
 using starsky.foundation.platform.Architecture;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -15,10 +17,10 @@ namespace starsky.foundation.optimisation.Services;
 [Service(typeof(IMozJpegService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MozJpegService : IMozJpegService
 {
+	private readonly ImageOptimisationExePath _exePathHelper;
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IWebLogger _logger;
 	private readonly IMozJpegDownload _mozJpegDownload;
-	private readonly ImageOptimisationExePath _exePathHelper;
 
 	public MozJpegService(AppSettings appSettings,
 		ISelectorStorage selectorStorage, IWebLogger logger, IMozJpegDownload mozJpegDownload)
@@ -58,23 +60,19 @@ public class MozJpegService : IMozJpegService
 			}
 
 			var tempFilePath = outputInputPath + ".optimizing";
-			using var outputStream = new MemoryStream();
 
 			var parent = Directory.GetParent(exePath);
-			List<string> arguments =
-				["-quality", optimizer.Options.Quality.ToString(), "-optimize", outputInputPath];
 
-			var command = Default.Run(
-				exePath,
-				options: opts =>
-				{
-					opts.StartInfo(i => i.Arguments = string.Join(" ", arguments));
-					opts.WorkingDirectory(parent!.FullName);
-				}
-			) > outputStream;
-			await command.Task;
+			var (command, outputStream) =
+				await CommandRetry(exePath, outputInputPath, optimizer, parent);
+			if ( command == null || outputStream == null )
+			{
+				continue;
+			}
 
 			await _hostFileSystemStorage.WriteStreamAsync(outputStream, tempFilePath);
+
+			await outputStream.DisposeAsync();
 
 			if ( !command.Result.Success )
 			{
@@ -91,9 +89,63 @@ public class MozJpegService : IMozJpegService
 
 			_hostFileSystemStorage.FileDelete(outputInputPath);
 			_hostFileSystemStorage.FileMove(tempFilePath, outputInputPath);
-			
-			_logger.LogInformation("[ImageOptimisationService] MozJPEG optimized: " + outputInputPath);
+
+			_logger.LogInformation("[ImageOptimisationService] MozJPEG optimized: " +
+			                       outputInputPath);
 		}
+	}
+
+	private async Task<(Command? command, MemoryStream? outputStream)> CommandRetry(string exePath,
+		string outputInputPath, Optimizer optimizer, DirectoryInfo? parent)
+	{
+		Command command;
+		MemoryStream outputStream;
+		try
+		{
+			( command, outputStream ) = await Command(exePath, outputInputPath, optimizer, parent);
+		}
+		catch ( Exception )
+		{
+			await _mozJpegDownload.FixPermissions(exePath);
+			try
+			{
+				( command, outputStream ) =
+					await Command(exePath, outputInputPath, optimizer, parent);
+			}
+			catch ( Exception exception )
+			{
+				_logger.LogError(
+					$"[ImageOptimisationService] " +
+					$"MozJPEG failed to run for {outputInputPath}: " +
+					$"{exception.Message}");
+				return ( null, null );
+			}
+		}
+
+		return ( command, outputStream );
+	}
+
+	private static async Task<(Command command, MemoryStream outputStream)> Command(string exePath,
+		string outputInputPath, Optimizer optimizer, DirectoryInfo? parent)
+	{
+		var outputStream = new MemoryStream();
+
+		List<string> arguments =
+		[
+			"-quality", optimizer.Options.Quality.ToString(),
+			"-optimize", outputInputPath
+		];
+
+		var command = Default.Run(
+			exePath,
+			options: opts =>
+			{
+				opts.StartInfo(i => i.Arguments = string.Join(" ", arguments));
+				opts.WorkingDirectory(parent!.FullName);
+			}
+		) > outputStream;
+		await command.Task.TimeoutAfter(TimeSpan.FromMinutes(5));
+		return ( command, outputStream );
 	}
 
 

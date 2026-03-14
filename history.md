@@ -43,7 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.15 - _(Unreleased)_ - 2026-?-? {#v0.7.15}
 
-- nothing yet
+- [x] (Fixed) _Back-end_ Fix when MozJPEG for unix permission errors (PR #2863)
 
 ## version 0.7.14 - 2026-03-14 {#v0.7.14}
 
