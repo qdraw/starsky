@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.14 - _(Unreleased)_ - 2026-?-? {#v0.7.14}
+## version 0.7.15 - _(Unreleased)_ - 2026-?-? {#v0.7.15}
+
+- nothing yet
+
+## version 0.7.14 - 2026-03-14 {#v0.7.14}
 
 - [x] (Fixed) _Back-end_ Enhanced the MP4 atom parsing logic in Mp4FileHasher to correctly handle
   atoms with variable header sizes, zero-size atoms, and large-size atoms (PR #2860)
