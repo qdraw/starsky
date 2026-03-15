@@ -20752,6 +20752,22 @@
             "deprecated": false,
             "extensions": {},
             "unresolvedReference": false
+          },
+          "copyAllContent": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
           }
         },
         "additionalPropertiesAllowed": false,
@@ -22762,5 +22778,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "461C5B94A4C312344DC7261DFC531563987B71D5F6AEF5F9C99CAED3707D49C3D1162363F8F98D9C80612066A9455546A708FBBB5E9C4CEDD3511E4DD7BCC878"
+  "hashCode": "62FBE459B842805E67BC3DE43D6345CADAECF7BB03F1FAFB8A6D826F2140564967C89EA913D3FB50E046CFD43C49BF82187581DCFD22B43FA1EBAABA78BB37CE"
 }
