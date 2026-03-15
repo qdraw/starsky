@@ -151,9 +151,9 @@ public class LocalFileSystemPublishServiceTest
 								Type = RemoteCredentialType.LocalFileSystem,
 								LocalFileSystem =
 									new LocalFileSystemCredential
-									{
-										Path = "dest".PrefixBackSlash()
-									}
+										{
+											Path = "dest".PrefixBackSlash()
+										}
 							}
 						]
 					}
@@ -732,6 +732,37 @@ public class LocalFileSystemPublishServiceTest
 			{
 				Directory.Delete(tempDir, true);
 			}
+		}
+	}
+
+	[TestMethod]
+	[DataRow(true)]
+	[DataRow(false)]
+	public void SelectContentToCopy_CopyAllContent_Behaviour(bool copyAllContent)
+	{
+		// arrange
+		var copyContent = new Dictionary<string, bool>
+		{
+			{ "folder1/fileA.jpg", true },
+			{ "folder1/fileB.jpg", false },
+			{ "folder2/fileC.jpg", true }
+		};
+
+		var setting = new LocalFileSystemCredential { CopyAllContent = copyAllContent };
+
+		// act
+		var result = LocalFileSystemPublishService.SelectContentToCopy(copyContent, setting)
+			.ToList();
+
+		// assert
+		if ( copyAllContent )
+		{
+			CollectionAssert.AreEquivalent(copyContent.ToList(), result);
+		}
+		else
+		{
+			var expected = copyContent.Where(p => p.Value).ToList();
+			CollectionAssert.AreEquivalent(expected, result);
 		}
 	}
 }
