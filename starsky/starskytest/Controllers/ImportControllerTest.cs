@@ -92,6 +92,32 @@ public sealed class ImportControllerTest
 	}
 
 	[TestMethod]
+	public async Task IndexPost_WrongInput_Sets415AndLogs()
+	{
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+		var fakeLogger = new FakeIWebLogger();
+
+		// Use the FakeIImport which returns FileError items in Preflight
+		var importController = new ImportController(new FakeIImport(fakeStorageSelector),
+			_appSettings,
+			_bgTaskQueue, null!, fakeStorageSelector, fakeLogger)
+		{
+			ControllerContext = RequestWithFile()
+		};
+
+		var actionResult = await importController.IndexPost() as JsonResult;
+		var list = actionResult?.Value as List<ImportIndexItem>;
+
+		Assert.IsNotNull(list);
+		Assert.IsTrue(list.Count > 0, "Preflight should return at least one item");
+		Assert.IsTrue(list.TrueForAll(p => p.Status == ImportStatus.FileError), "All items should be FileError");
+
+		// Controller should set 415 and log a debug message
+		Assert.AreEqual(415, importController.Response.StatusCode);
+		Assert.IsTrue(fakeLogger.TrackedDebug.Any(t => (t.Item2 ?? string.Empty).Contains("Wrong input")), "Logger should contain 'Wrong input' debug entry");
+	}
+
+	[TestMethod]
 	public async Task IndexPost_AllItemsAlreadyImported_Returns206()
 	{
 		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
