@@ -178,7 +178,24 @@ public class MoveToTrashService : IMoveToTrashService
 
 		_systemTrashService.Trash(fullFilePaths);
 
-		await _query.RemoveItemAsync(moveToTrash);
+		var subPaths = moveToTrash
+			.Where(p => !string.IsNullOrEmpty(p.FilePath))
+			.Select(p => p.FilePath!)
+			.Distinct()
+			.ToList();
+		if ( subPaths.Count == 0 )
+		{
+			return;
+		}
+
+		// Payload items come from JSON where Id is JsonIgnored; remove persisted DB rows by path.
+		var persistedItems = await _query.GetObjectsByFilePathQueryAsync(subPaths);
+		if ( persistedItems.Count == 0 )
+		{
+			return;
+		}
+
+		await _query.RemoveItemAsync(persistedItems);
 	}
 }
 

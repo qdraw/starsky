@@ -22,6 +22,7 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starskytest.FakeMocks;
+using System.Text.Json;
 
 namespace starskytest.starsky.feature.trash.Services;
 
@@ -363,5 +364,49 @@ public class MoveToTrashServiceTest
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Default,
 			fileIndexResultsList.FirstOrDefault()?.Status);
+	}
+
+	[TestMethod]
+	public async Task MoveToTrashAsync_SystemTrash_SerializedPayload_RemovesByFilePath()
+	{
+		const string path = "/trash/payload.jpg";
+		var appSettings = new AppSettings
+		{
+			UseSystemTrash = true,
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+		};
+
+		var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builderDb.UseInMemoryDatabase($"{nameof(MoveToTrashServiceTest)}_{Guid.NewGuid()}");
+		var options = builderDb.Options;
+		var dbContext = new ApplicationDbContext(options);
+
+		var serviceCollection =
+			new ServiceCollection().AddScoped(_ => new ApplicationDbContext(options));
+		var serviceScopeFactory =
+			serviceCollection.BuildServiceProvider().GetService<IServiceScopeFactory>();
+
+		var query = new Query(dbContext, appSettings, serviceScopeFactory,
+			new FakeIWebLogger());
+		await query.AddItemAsync(new FileIndexItem(path));
+
+		var trashService = new FakeITrashService();
+		var sut = new MoveToTrashService(appSettings, query,
+			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
+			trashService, new FakeIMetaUpdateService(), new FakeITrashConnectionService());
+
+		var payload = new MoveToTrashPayload
+		{
+			IsSystemTrashEnabled = true,
+			MoveToTrashList = [new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]
+		};
+		var payloadRoundTrip =
+			JsonSerializer.Deserialize<MoveToTrashPayload>(JsonSerializer.Serialize(payload));
+
+		await sut.MoveToTrashAsync(payloadRoundTrip!);
+
+		var removed = await query.GetObjectByFilePathAsync(path);
+		Assert.IsNull(removed);
+		Assert.HasCount(1, trashService.InTrash);
 	}
 }
