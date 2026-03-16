@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Metrics;
+using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -81,23 +82,25 @@ public class ImportBackgroundJobHandlerTests
 		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
 		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
 		services.AddMemoryCache();
-
+		
 		var serviceProvider = services.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var storage = serviceProvider.GetRequiredService<IStorage>();
+		await storage.WriteStreamAsync( new MemoryStream(
+			[..FakeCreateAn.CreateAnImage.Bytes]), "/test.jpg");
 
 		var handler =
 			new ImportBackgroundJobHandler(scopeFactory, new FakeIWebLogger(), new AppSettings());
 
 		var payload = new ImportBackgroundPayload
 		{
-			TempImportPaths = ["/test"], ImportSettings = new ImportSettingsModel()
+			TempImportPaths = ["/test.jpg"], ImportSettings = new ImportSettingsModel()
 		};
 		var json = JsonSerializer.Serialize(payload);
 
 		await handler.ExecuteAsync(json, CancellationToken.None);
 
-		// Verification is implicit here, it shouldn't throw.
-		// Detailed verification of ImportPostBackgroundTask is in other tests.
+		Assert.IsTrue(storage.ExistFile("/2018/04/2018_04_22/20180422_161454_test.jpg"));
 	}
 
 	[TestMethod]
