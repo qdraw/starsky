@@ -56,7 +56,8 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 	[TestMethod]
 	public async Task ExecuteAsync_UnknownRequestType_ShouldThrowArgumentException()
 	{
-		var timezoneService = new FakeIExifTimezoneCorrectionService();
+		var timezoneService =
+			new FakeIExifTimezoneCorrectionService(new FakeIUpdateBackgroundTaskQueue());
 
 		var scopeFactory = new FakeIServiceScopeFactory(null,
 			services =>
@@ -83,9 +84,10 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 	[TestMethod]
 	public async Task ExecuteAsync_TimezoneRequest_ShouldCallServiceAndNotify()
 	{
-		var timezoneService = new FakeIExifTimezoneCorrectionService([
-			new ExifTimezoneCorrectionResult { Success = true }
-		]);
+		var timezoneService = new FakeIExifTimezoneCorrectionService(
+			new FakeIUpdateBackgroundTaskQueue(), [
+				new ExifTimezoneCorrectionResult { Success = true }
+			]);
 
 		var scopeFactory = new FakeIServiceScopeFactory(null,
 			services =>
@@ -129,9 +131,10 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 	[TestMethod]
 	public async Task ExecuteAsync_OffsetRequest_ShouldCallServiceAndNotify()
 	{
-		var timezoneService = new FakeIExifTimezoneCorrectionService([
-			new ExifTimezoneCorrectionResult { Success = true }
-		]);
+		var timezoneService = new FakeIExifTimezoneCorrectionService(
+			new FakeIUpdateBackgroundTaskQueue(), [
+				new ExifTimezoneCorrectionResult { Success = true }
+			]);
 
 		var scopeFactory = new FakeIServiceScopeFactory(null,
 			services =>
