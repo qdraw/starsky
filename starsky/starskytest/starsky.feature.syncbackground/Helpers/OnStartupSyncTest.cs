@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.syncbackground.Helpers;
+using starsky.feature.syncbackground.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Interfaces;

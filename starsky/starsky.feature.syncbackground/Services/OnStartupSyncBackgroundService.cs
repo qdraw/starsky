@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using starsky.feature.syncbackground.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;

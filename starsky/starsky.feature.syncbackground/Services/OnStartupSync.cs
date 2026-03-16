@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.syncbackground.Interfaces;
 using starsky.feature.syncbackground.Models;
-using starsky.feature.syncbackground.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -23,7 +22,7 @@ using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Models;
 
-namespace starsky.feature.syncbackground.Helpers;
+namespace starsky.feature.syncbackground.Services;
 
 /// <summary>
 /// </summary>

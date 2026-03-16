@@ -129,7 +129,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 
 			_logger.LogError(exception, "[GetAllFilesInDirectory] " +
 			                            "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
-			return Array.Empty<string>();
+			return [];
 		}
 
 		var imageFilesList = new List<string>();

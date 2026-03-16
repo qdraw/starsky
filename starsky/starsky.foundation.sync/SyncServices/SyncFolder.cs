@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -81,8 +82,7 @@ public sealed class SyncFolder
 				fileIndexItems = await new Duplicate(query).RemoveDuplicateAsync(fileIndexItems);
 
 				// And check files within this folder
-				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
-					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+				var pathsOnDisk = GetAllFilesInDirectory(subPath);
 
 				if ( fileIndexItems.Count != 0 )
 				{
@@ -139,6 +139,19 @@ public sealed class SyncFolder
 		}
 
 		return allResults;
+	}
+
+	private List<string> GetAllFilesInDirectory(string subPath)
+	{
+		try
+		{
+			return _subPathStorage.GetAllFilesInDirectory(subPath)
+				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+		}
+		catch ( Exception )
+		{
+			return [];
+		}
 	}
 
 	internal async Task CompareFolderListAndFixMissingFolders(List<string> subPaths,
@@ -359,12 +372,20 @@ public sealed class SyncFolder
 			{
 				// assume only the input of directories
 				var helper = new HasDiskContentOrExistsHelper(_subPathStorage);
-				var (hasDiskContentOrExists, reason) =
+				var (hasDiskContentOrExists, reason, logAsDebug) =
 					await helper.HasDiskContentOrExistsAsync(item.FilePath!);
 				if ( hasDiskContentOrExists )
 				{
-					_logger.LogInformation(
-						$"[SyncFolder] Skipping deletion of {item.FilePath} - {reason}");
+					var logRule = $"[SyncFolder] Skipping deletion of {item.FilePath} - {reason}";
+					if ( logAsDebug )
+					{
+						_logger.LogDebug(logRule);
+					}
+					else
+					{
+						_logger.LogInformation(logRule);
+					}
+
 					return null;
 				}
 

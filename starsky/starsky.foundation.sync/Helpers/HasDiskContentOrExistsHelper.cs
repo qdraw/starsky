@@ -27,27 +27,27 @@ namespace starsky.foundation.sync.Helpers;
 */
 internal class HasDiskContentOrExistsHelper(IStorage subPathStorage)
 {
-	internal async Task<(bool hasDiskContentOrExists, string reason)>
+	internal async Task<(bool hasDiskContentOrExists, string reason, bool logAsDebug)>
 		HasDiskContentOrExistsAsync(
 			string filePath)
 	{
 		if ( subPathStorage.ExistFolder(filePath) )
 		{
-			return ( true, "folder exists on disk" );
+			return ( true, "folder exists on disk", true );
 		}
 
 		var subDirectories = subPathStorage
 			.GetDirectoryRecursive(filePath).ToList();
 		if ( subDirectories.Count != 0 )
 		{
-			return ( true, "subdirectories exist on disk" );
+			return ( true, "subdirectories exist on disk", false );
 		}
 
 		var filesInFolder = subPathStorage
 			.GetAllFilesInDirectory(filePath).ToList();
 		if ( filesInFolder.Count != 0 )
 		{
-			return ( true, "files exist on disk" );
+			return ( true, "files exist on disk", false );
 		}
 
 		// Transient IO states can briefly report a folder as missing.
@@ -59,21 +59,21 @@ internal class HasDiskContentOrExistsHelper(IStorage subPathStorage)
 
 		if ( subPathStorage.ExistFolder(filePath) )
 		{
-			return ( true, "folder exists on disk" );
+			return ( true, "folder exists on disk", false );
 		}
 
 		subDirectories = subPathStorage.GetDirectoryRecursive(filePath).ToList();
 		if ( subDirectories.Count != 0 )
 		{
-			return ( true, "subdirectories exist on disk" );
+			return ( true, "subdirectories exist on disk", false );
 		}
 
 		filesInFolder = subPathStorage.GetAllFilesInDirectory(filePath).ToList();
 		if ( filesInFolder.Count != 0 )
 		{
-			return ( true, "files exist on disk" );
+			return ( true, "files exist on disk", false );
 		}
 
-		return ( false, "folder missing and no content found" );
+		return ( false, "folder missing and no content found", false );
 	}
 }
