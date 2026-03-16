@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -20,8 +19,6 @@ using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
-using starsky.foundation.thumbnailgeneration.Models;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -449,38 +446,5 @@ public sealed class DownloadPhotoControllerTest
 		Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(t => t.Item2 != null &&
 		                                                       t.Item2.Contains(
 			                                                       "Thumbnail file not found after generation (marked success)")));
-	}
-
-	// Fake thumbnail service that returns success generation results but doesn't write files
-	private class FakeIThumbnailServiceNoWrite : IThumbnailService
-	{
-		public Task<List<GenerationResultModel>> GenerateThumbnail(string fileOrFolderPath,
-			ThumbnailGenerationType type = ThumbnailGenerationType.All)
-		{
-			return Task.FromResult(new List<GenerationResultModel>());
-		}
-
-		public Task<List<GenerationResultModel>> GenerateThumbnail(string subPath, string fileHash,
-			ThumbnailGenerationType type = ThumbnailGenerationType.All)
-		{
-			return Task.FromResult(new List<GenerationResultModel>());
-		}
-
-		public Task<(Stream?, GenerationResultModel)> GenerateThumbnail(string subPath,
-			string fileHash, ThumbnailImageFormat imageFormat,
-			ThumbnailSize size)
-		{
-			return Task.FromResult(new ValueTuple<Stream?, GenerationResultModel>(null,
-				new GenerationResultModel
-				{
-					FileHash = fileHash, Size = size, ImageFormat = imageFormat, Success = true
-				}));
-		}
-
-		public Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
-			int height = 0)
-		{
-			return Task.FromResult(false);
-		}
 	}
 }
