@@ -164,7 +164,7 @@ public static class ProcessTaskQueue
 		}
 	}
 
-	private static async Task<bool> TryExecuteViaRegisteredHandlersAsync(
+	internal static async Task<bool> TryExecuteViaRegisteredHandlersAsync(
 		IServiceScopeFactory? scopeFactory,
 		BackgroundTaskQueueJob queueJob,
 		CancellationToken cancellationToken)
