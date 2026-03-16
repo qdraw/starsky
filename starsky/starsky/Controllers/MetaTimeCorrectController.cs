@@ -202,6 +202,7 @@ public class MetaTimeCorrectController(
 			ExifCustomOffsetCorrectionRequest => "offset",
 			_ => throw new ArgumentException("Unsupported correction request type")
 		};
+		
 		var payload = new MetaTimeCorrectBackgroundPayload
 		{
 			ValidateResults = validateResults,
@@ -210,6 +211,7 @@ public class MetaTimeCorrectController(
 			RequestJson = JsonSerializer.Serialize(request, request.GetType()),
 			CorrectionType = correctionType
 		};
+		
 		await queue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = "MetaTimeCorrect",
