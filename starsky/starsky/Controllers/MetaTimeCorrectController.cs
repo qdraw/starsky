@@ -2,21 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.metaupdate.Models;
 using starsky.feature.metaupdate.Services;
-using starsky.feature.realtime.Interface;
-using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
@@ -224,19 +219,5 @@ public class MetaTimeCorrectController(
 			JobType = MetaTimeCorrectBackgroundJobHandler.MetaTimeCorrect,
 			PayloadJson = JsonSerializer.Serialize(payload)
 		});
-	}
-
-	private async Task UpdateWebSocketTaskRun(List<FileIndexItem> fileIndexResultsList)
-	{
-		// Update via websocket
-		var webSocketResponse =
-			new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList,
-				ApiNotificationType.MetaTimeCorrect);
-
-		var realtimeConnectionsService = scopeFactory.CreateScope()
-			.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
-
-		await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse,
-			CancellationToken.None);
 	}
 }

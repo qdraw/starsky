@@ -259,6 +259,7 @@ public sealed class MetaReplaceControllerTest
 	{
 		var createAnImage = new CreateAnImage();
 		await InsertSearchData();
+		NewScopeFactory();
 
 		var fakeIMetaUpdateService = _serviceProvider?.GetService<IMetaUpdateService>() as
 			FakeIMetaUpdateService;

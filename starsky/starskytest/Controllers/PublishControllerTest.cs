@@ -85,7 +85,7 @@ public sealed class PublishControllerTest
 	public void PublishGet_List()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(), new FakeIMetaInfo(null!),
+			 new FakeIMetaInfo(null!),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -99,11 +99,7 @@ public sealed class PublishControllerTest
 	public async Task PublishCreate_newItem()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			}),
+			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -118,11 +114,7 @@ public sealed class PublishControllerTest
 	public async Task PublishCreate_newItem_readonly()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.ReadOnly }
-			}),
+			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.ReadOnly }]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -137,9 +129,7 @@ public sealed class PublishControllerTest
 	public async Task PublishCreate_FakeBg_Expect_Generate_FakeZip_newItem()
 	{
 		var fakeBg = new FakeIUpdateBackgroundTaskQueue(_serviceScopeFactory);
-		var fakeIWebHtmlPublishService = new FakeIWebHtmlPublishService();
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			fakeIWebHtmlPublishService,
 			new FakeIMetaInfo([
 				new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
 			]),
@@ -163,12 +153,8 @@ public sealed class PublishControllerTest
 	{
 		var controller = new PublishController(new AppSettings(),
 			new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
 			new FakeIMetaInfo(
-				new List<FileIndexItem>
-				{
-					new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }
-				}
+				[new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }]
 			),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
@@ -186,7 +172,6 @@ public sealed class PublishControllerTest
 		// Arrange
 		var controller = new PublishController(new AppSettings(),
 			new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
 			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
@@ -205,13 +190,9 @@ public sealed class PublishControllerTest
 	public async Task PublishCreate_InvalidResult()
 	{
 		var controller = new PublishController(new AppSettings(),
-			new FakeIPublishPreflight(new List<AppSettingsPublishProfiles>(), false),
-			new FakeIWebHtmlPublishService(),
+			new FakeIPublishPreflight([], false),
 			new FakeIMetaInfo(
-				new List<FileIndexItem>
-				{
-					new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }
-				}
+				[new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }]
 			),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
@@ -228,15 +209,11 @@ public sealed class PublishControllerTest
 		var appSettings =
 			new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage(
-			new List<string> { Path.DirectorySeparatorChar + "test" },
-			new List<string> { Path.DirectorySeparatorChar + "test.zip" });
+			[Path.DirectorySeparatorChar + "test"],
+			[Path.DirectorySeparatorChar + "test.zip"]);
 
 		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			}),
+			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(storage),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -253,15 +230,11 @@ public sealed class PublishControllerTest
 		var appSettings =
 			new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage(
-			new List<string> { Path.DirectorySeparatorChar + "test" },
-			new List<string> { Path.DirectorySeparatorChar + "test.zip" });
+			[Path.DirectorySeparatorChar + "test"],
+			[Path.DirectorySeparatorChar + "test.zip"]);
 
 		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			}),
+			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(storage),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -278,8 +251,7 @@ public sealed class PublishControllerTest
 	public void Exist_EmptyString()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>()),
+			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
 		var actionResult = controller.Exist(string.Empty) as JsonResult;
@@ -291,7 +263,6 @@ public sealed class PublishControllerTest
 	public void Exist_ModelState()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
 			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());

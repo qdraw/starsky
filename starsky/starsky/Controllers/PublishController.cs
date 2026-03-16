@@ -32,17 +32,14 @@ public sealed class PublishController : Controller
 	private readonly IStorage _hostStorage;
 	private readonly IMetaInfo _metaInfo;
 	private readonly IPublishPreflight _publishPreflight;
-	private readonly IWebHtmlPublishService _publishService;
 	private readonly IWebLogger _webLogger;
 
-	public PublishController(AppSettings appSettings, IPublishPreflight publishPreflight,
-		IWebHtmlPublishService publishService, IMetaInfo metaInfo,
+	public PublishController(AppSettings appSettings, IPublishPreflight publishPreflight, IMetaInfo metaInfo,
 		ISelectorStorage selectorStorage,
 		IUpdateBackgroundTaskQueue queue, IWebLogger webLogger)
 	{
 		_appSettings = appSettings;
 		_publishPreflight = publishPreflight;
-		_publishService = publishService;
 		_metaInfo = metaInfo;
 		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_bgTaskQueue = queue;
