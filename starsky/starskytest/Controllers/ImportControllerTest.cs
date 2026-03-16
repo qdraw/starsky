@@ -66,7 +66,7 @@ public sealed class ImportControllerTest
 	{
 		var httpContext = new DefaultHttpContext();
 		httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
-		httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes.ToArray());
+		httpContext.Request.Body = new MemoryStream([.. CreateAnImage.Bytes]);
 
 		var actionContext = new ActionContext(httpContext, new RouteData(),
 			new ControllerActionDescriptor());
@@ -91,6 +91,32 @@ public sealed class ImportControllerTest
 		Assert.AreEqual(ImportStatus.FileError, list?.FirstOrDefault()?.Status);
 	}
 
+	[TestMethod]
+	public async Task IndexPost_AllItemsAlreadyImported_Returns206()
+	{
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+		// Use a FakeIImport implementation that returns an empty Preflight list
+		var fakeImport = new FakeIImportForImportTest();
+
+		var importController = new ImportController(fakeImport,
+			_appSettings,
+			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
+		{
+			ControllerContext = RequestWithFile()
+		};
+
+		// Call the action
+		var actionResult = await importController.IndexPost() as JsonResult;
+		var list = actionResult?.Value as List<ImportIndexItem>;
+
+		// Preflight returns empty list => JSON result list should be empty
+		Assert.IsNotNull(list);
+		Assert.IsEmpty(list);
+
+		// When Preflight returns an empty list (no Ok items) and IndexMode is true,
+		// the controller should set Response.StatusCode to 206
+		Assert.AreEqual(206, importController.Response.StatusCode);
+	}
 
 	[TestMethod]
 	public async Task FromUrl_PathInjection()
