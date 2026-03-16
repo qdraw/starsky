@@ -29,14 +29,11 @@ public sealed class MetaReplaceController : Controller
 	private readonly IRealtimeConnectionsService _connectionsService;
 	private readonly IWebLogger _logger;
 	private readonly IMetaReplaceService _metaReplaceService;
-	private readonly IServiceScopeFactory _scopeFactory;
 
 	public MetaReplaceController(IMetaReplaceService metaReplaceService,
 		IUpdateBackgroundTaskQueue queue,
-		IRealtimeConnectionsService connectionsService, IWebLogger logger,
-		IServiceScopeFactory scopeFactory)
+		IRealtimeConnectionsService connectionsService, IWebLogger logger)
 	{
-		_scopeFactory = scopeFactory;
 		_metaReplaceService = metaReplaceService;
 		_bgTaskQueue = queue;
 		_connectionsService = connectionsService;

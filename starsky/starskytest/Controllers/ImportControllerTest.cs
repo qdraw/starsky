@@ -33,7 +33,6 @@ public sealed class ImportControllerTest
 	private readonly AppSettings _appSettings;
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly IImport _import;
-	private readonly IServiceScopeFactory _scopeFactory;
 
 	public ImportControllerTest()
 	{
@@ -56,7 +55,6 @@ public sealed class ImportControllerTest
 		// get the background helper
 		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 
-		_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		_import = new FakeIImport(new FakeSelectorStorage(new FakeIStorage()));
 	}
 
@@ -82,7 +80,7 @@ public sealed class ImportControllerTest
 
 		var importController = new ImportController(new FakeIImport(fakeStorageSelector),
 			_appSettings,
-			_bgTaskQueue, null!, fakeStorageSelector, _scopeFactory, new FakeIWebLogger())
+			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
 		{
 			ControllerContext = RequestWithFile()
 		};
@@ -98,7 +96,7 @@ public sealed class ImportControllerTest
 	public async Task FromUrl_PathInjection()
 	{
 		var importController = new ImportController(_import, _appSettings,
-			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory,
+			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()),
 			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
 		var actionResult =
 			await importController.FromUrl("", "../../path-injection.dll", null!) as
@@ -110,7 +108,7 @@ public sealed class ImportControllerTest
 	public async Task FromUrl_BadRequest()
 	{
 		var importController = new ImportController(_import, _appSettings,
-			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory,
+			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()),
 			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
 		importController.ModelState.AddModelError("Key", "ErrorMessage");
 
@@ -136,8 +134,7 @@ public sealed class ImportControllerTest
 			serviceProvider.GetRequiredService<IServiceScopeFactory>(), new FakeIWebLogger());
 
 		var importController = new ImportController(_import, _appSettings,
-			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()),
-			_scopeFactory, new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
 		// download.geoNames is in the FakeHttpMessageHandler always a 404
 		var actionResult =
 			await importController.FromUrl("https://download.geonames.org", "example.tiff",
@@ -163,8 +160,7 @@ public sealed class ImportControllerTest
 
 		var importController = new ImportController(
 			new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider),
-			_scopeFactory, new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider), new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
 
 		var actionResult =
 			await importController.FromUrl("https://qdraw.nl", "example_image.tiff", null!) as

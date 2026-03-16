@@ -61,6 +61,7 @@ public class MetaTimeCorrectController(
 		var validationResult = ValidateRequest(ModelState.IsValid, f, collections);
 		if ( validationResult != null )
 		{
+			logger.LogDebug("Validation Result: {0}", validationResult);
 			return validationResult;
 		}
 

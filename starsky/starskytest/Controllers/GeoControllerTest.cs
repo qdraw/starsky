@@ -102,7 +102,7 @@ public sealed class GeoControllerTest
 			new List<string> { "/test.jpg" });
 
 		var controller = new GeoController(_bgTaskQueue,
-			new FakeSelectorStorage(fakeIStorage), null!, new FakeIWebLogger(), _scopeFactory)
+			new FakeSelectorStorage(fakeIStorage), null!)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -117,10 +117,7 @@ public sealed class GeoControllerTest
 			new List<string> { "/test.jpg" });
 
 		var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(fakeIStorage),
-			_memoryCache, new FakeIWebLogger(), _scopeFactory)
-		{
-			ControllerContext = { HttpContext = new DefaultHttpContext() }
-		};
+			_memoryCache) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
 		var result = await controller.GeoSyncFolder("/not-found") as NotFoundObjectResult;
 		Assert.AreEqual(404, result?.StatusCode);
 	}
@@ -130,7 +127,7 @@ public sealed class GeoControllerTest
 	{
 		var storage = new FakeIStorage();
 		var controller = new GeoController(_bgTaskQueue,
-			new FakeSelectorStorage(storage), null!, new FakeIWebLogger(), _scopeFactory)
+			new FakeSelectorStorage(storage), null!)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -153,10 +150,7 @@ public sealed class GeoControllerTest
 		var storage = new FakeIStorage();
 
 		var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(storage),
-			_memoryCache, new FakeIWebLogger(), _scopeFactory)
-		{
-			ControllerContext = { HttpContext = new DefaultHttpContext() }
-		};
+			_memoryCache) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
 
 		var statusJson = controller.Status("/StatusCheck_CachedItemExist") as JsonResult;
 		var status = statusJson!.Value as GeoCacheStatus;
@@ -169,7 +163,7 @@ public sealed class GeoControllerTest
 	{
 		var storage = new FakeIStorage();
 		var controller = new GeoController(_bgTaskQueue,
-			new FakeSelectorStorage(storage), null!, new FakeIWebLogger(), _scopeFactory)
+			new FakeSelectorStorage(storage), null!)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -184,7 +178,7 @@ public sealed class GeoControllerTest
 	{
 		var storage = new FakeIStorage();
 		var controller = new GeoController(_bgTaskQueue,
-			new FakeSelectorStorage(storage), null!, new FakeIWebLogger(), _scopeFactory)
+			new FakeSelectorStorage(storage), null!)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -207,7 +201,7 @@ public sealed class GeoControllerTest
 
 		var storage = new FakeIStorage(["/"]);
 		var controller = new GeoController(new FakeIUpdateBackgroundTaskQueue(_scopeFactory),
-			new FakeSelectorStorage(storage), null!, new FakeIWebLogger(), _scopeFactory)
+			new FakeSelectorStorage(storage), null!)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -216,7 +210,7 @@ public sealed class GeoControllerTest
 
 		var geoBackgroundTask = _scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<IGeoBackgroundTask>() as FakeIGeoBackgroundTask;
-		
+
 		Assert.IsNotNull(geoBackgroundTask);
 		Assert.AreEqual(1, geoBackgroundTask.Count);
 	}

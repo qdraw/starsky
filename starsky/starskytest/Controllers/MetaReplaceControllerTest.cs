@@ -163,7 +163,7 @@ public sealed class MetaReplaceControllerTest
 		var metaReplaceService = new MetaReplaceService(_query, _appSettings, selectorStorage,
 			new FakeIWebLogger());
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
-			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(), NewScopeFactory());
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 
 		var jsonResult = await controller.Replace("/test09.jpg", "Tags", "test",
 			string.Empty) as JsonResult;
@@ -195,7 +195,7 @@ public sealed class MetaReplaceControllerTest
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.Ok }
 		});
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
-			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(), NewScopeFactory());
+			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -212,7 +212,7 @@ public sealed class MetaReplaceControllerTest
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.OkAndSame }
 		});
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
-			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(), NewScopeFactory());
+			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -229,7 +229,7 @@ public sealed class MetaReplaceControllerTest
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.DeletedAndSame }
 		});
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
-			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(), NewScopeFactory());
+			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -247,7 +247,7 @@ public sealed class MetaReplaceControllerTest
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.OperationNotSupported }
 		});
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
-			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(), NewScopeFactory());
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -259,7 +259,6 @@ public sealed class MetaReplaceControllerTest
 	{
 		var createAnImage = new CreateAnImage();
 		await InsertSearchData();
-		var serviceScopeFactory = NewScopeFactory();
 
 		var fakeIMetaUpdateService = _serviceProvider?.GetService<IMetaUpdateService>() as
 			FakeIMetaUpdateService;
@@ -278,7 +277,7 @@ public sealed class MetaReplaceControllerTest
 
 		var controller = new MetaReplaceController(metaReplaceService,
 			new FakeIUpdateBackgroundTaskQueue(scope!),
-			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(), serviceScopeFactory);
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 
 		var jsonResult =
 			await controller.Replace(createAnImage.DbPath,
@@ -306,8 +305,7 @@ public sealed class MetaReplaceControllerTest
 		// Arrange
 		var controller = new MetaReplaceController(new FakeIMetaReplaceService(),
 			new FakeIUpdateBackgroundTaskQueue(),
-			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIServiceScopeFactory());
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act
@@ -315,5 +313,38 @@ public sealed class MetaReplaceControllerTest
 
 		// Assert
 		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+	}
+
+	[TestMethod]
+	public async Task Replace_WithNewScopeFactory_ExecutesMetaUpdate()
+	{
+		// Arrange: build scope factory which registers FakeIMetaUpdateService
+		var scopeFactory = NewScopeFactory();
+
+		// retrieve the singleton FakeIMetaUpdateService from the created service provider
+		var fakeMetaUpdateService = _serviceProvider?.GetService<IMetaUpdateService>() as FakeIMetaUpdateService;
+		Assert.IsNotNull(fakeMetaUpdateService);
+
+		// Prepare a fake replace service that returns one item which should trigger an update
+		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
+		{
+			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.Ok }
+		});
+
+		// Use FakeIUpdateBackgroundTaskQueue with the scope factory so queued jobs execute immediately
+		var controller = new MetaReplaceController(metaReplaceService,
+			new FakeIUpdateBackgroundTaskQueue(scopeFactory),
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
+
+		// Act
+		var result = await controller.Replace("/test09.jpg", "tags", "a", "b");
+
+		// Assert: the controller returns JSON and the background handler executed UpdateAsync
+		Assert.IsNotNull(result);
+		Assert.HasCount(1, fakeMetaUpdateService.ChangedFileIndexItemNameContent);
+
+		var changed = fakeMetaUpdateService.ChangedFileIndexItemNameContent[0];
+		Assert.IsTrue(changed.ContainsKey("/test09.jpg"));
+		Assert.HasCount(1, changed["/test09.jpg"]);
 	}
 }

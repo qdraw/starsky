@@ -8,7 +8,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Interfaces;
@@ -41,13 +40,11 @@ public sealed class ImportController : Controller
 	private readonly IHttpClientHelper _httpClientHelper;
 	private readonly IImport _import;
 	private readonly IWebLogger _logger;
-	private readonly IServiceScopeFactory _scopeFactory;
 	private readonly ISelectorStorage _selectorStorage;
 
 	public ImportController(IImport import, AppSettings appSettings,
 		IUpdateBackgroundTaskQueue queue,
-		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage,
-		IServiceScopeFactory scopeFactory, IWebLogger logger)
+		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, IWebLogger logger)
 	{
 		_appSettings = appSettings;
 		_import = import;
@@ -56,7 +53,6 @@ public sealed class ImportController : Controller
 		_selectorStorage = selectorStorage;
 		_hostFileSystemStorage =
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-		_scopeFactory = scopeFactory;
 		_logger = logger;
 	}
 
@@ -110,6 +106,7 @@ public sealed class ImportController : Controller
 		// Wrong input (extension is not allowed)
 		if ( fileIndexResultsList.TrueForAll(p => p.Status == ImportStatus.FileError) )
 		{
+			_logger.LogDebug("Wrong input");
 			Response.StatusCode = 415;
 		}
 

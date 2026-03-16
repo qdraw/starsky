@@ -4,39 +4,26 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
-using starsky.Helpers;
 
 namespace starsky.Controllers;
 
 [Authorize]
-public sealed class GeoController : Controller
+public sealed class GeoController(
+	IUpdateBackgroundTaskQueue queue,
+	ISelectorStorage selectorStorage,
+	IMemoryCache? memoryCache)
+	: Controller
 {
-	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
-	private readonly IMemoryCache? _cache;
-	private readonly IStorage _iStorage;
-	private readonly IWebLogger _logger;
-	private readonly IServiceScopeFactory _serviceScopeFactory;
-
-	public GeoController(IUpdateBackgroundTaskQueue queue,
-		ISelectorStorage selectorStorage,
-		IMemoryCache? memoryCache, IWebLogger logger, IServiceScopeFactory serviceScopeFactory)
-	{
-		_bgTaskQueue = queue;
-		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-		_cache = memoryCache;
-		_serviceScopeFactory = serviceScopeFactory;
-		_logger = logger;
-	}
+	private readonly IStorage _iStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
 	/// <summary>
 	///     Get Geo sync status
@@ -57,12 +44,12 @@ public sealed class GeoController : Controller
 			return BadRequest("Model invalid");
 		}
 
-		if ( _cache == null )
+		if ( memoryCache == null )
 		{
 			return NotFound("cache service is missing");
 		}
 
-		return Json(new GeoCacheStatusService(_cache).Status(f));
+		return Json(new GeoCacheStatusService(memoryCache).Status(f));
 	}
 
 
@@ -98,7 +85,7 @@ public sealed class GeoController : Controller
 		}
 
 
-		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		await queue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = f,
 			TraceParentId = Activity.Current?.Id,
