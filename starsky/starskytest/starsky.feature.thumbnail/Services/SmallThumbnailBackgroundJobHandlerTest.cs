@@ -67,35 +67,38 @@ public sealed class SmallThumbnailBackgroundJobHandlerTest
 			handler.ExecuteAsync(json, CancellationToken.None));
 	}
 
-	private class FakeISmallThumbnailBackgroundJobService : ISmallThumbnailBackgroundJobService
+	[TestMethod]
+	public async Task ExecuteAsync_ValidPayload_CallsService()
 	{
-		public Task<bool> CreateJob(bool? isAuthenticated, string? filePath) =>
-			Task.FromResult(true);
+		var fakeQueue = new FakeThumbnailBackgroundTaskQueue();
+		var fakeStorage = new FakeIStorage();
+		var fakeSelectorStorage = new FakeSelectorStorage(fakeStorage);
+		var fakeThumbnailService = new FakeIThumbnailService(fakeSelectorStorage);
+		var fakeSocketService = new FakeIThumbnailSocketService();
+		var fakeLogger = new FakeIWebLogger();
+
+		var service = new SmallThumbnailBackgroundJobService(
+			fakeQueue,
+			fakeThumbnailService,
+			fakeSelectorStorage,
+			fakeSocketService,
+			fakeLogger);
+
+		var handler = new SmallThumbnailBackgroundJobHandler(service);
+		var payload = new SmallThumbnailBackgroundPayload { Path = "/test.jpg" };
+		var json = JsonSerializer.Serialize(payload);
+
+		await handler.ExecuteAsync(json, CancellationToken.None);
+
+		Assert.AreEqual("/test.jpg", fakeThumbnailService.Inputs[0].Item1);
 	}
 
-		[TestMethod]
-		public async Task ExecuteAsync_ValidPayload_CallsService()
+	private sealed class
+		FakeISmallThumbnailBackgroundJobService : ISmallThumbnailBackgroundJobService
+	{
+		public Task<bool> CreateJob(bool? isAuthenticated, string? filePath)
 		{
-			var fakeQueue = new FakeThumbnailBackgroundTaskQueue();
-			var fakeStorage = new FakeIStorage();
-			var fakeSelectorStorage = new FakeSelectorStorage(fakeStorage);
-			var fakeThumbnailService = new FakeIThumbnailService(fakeSelectorStorage);
-			var fakeSocketService = new FakeIThumbnailSocketService();
-			var fakeLogger = new FakeIWebLogger();
-
-			var service = new SmallThumbnailBackgroundJobService(
-				fakeQueue,
-				fakeThumbnailService,
-				fakeSelectorStorage,
-				fakeSocketService,
-				fakeLogger);
-
-			var handler = new SmallThumbnailBackgroundJobHandler(service);
-			var payload = new SmallThumbnailBackgroundPayload { Path = "/test.jpg" };
-			var json = JsonSerializer.Serialize(payload);
-
-			await handler.ExecuteAsync(json, CancellationToken.None);
-
-			Assert.AreEqual("/test.jpg", fakeThumbnailService.Inputs[0].Item1);
+			return Task.FromResult(true);
 		}
+	}
 }

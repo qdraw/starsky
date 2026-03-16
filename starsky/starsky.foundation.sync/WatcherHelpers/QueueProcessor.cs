@@ -24,21 +24,16 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 	public const string JobType = "Sync.QueueProcessorInput.v1";
 
 	private readonly IDiskWatcherBackgroundTaskQueue _bgTaskQueue;
-	private readonly SynchronizeDelegate _processFile;
 
-	public QueueProcessor(IServiceScopeFactory serviceProvider,
-		SynchronizeDelegate processFile)
+	public QueueProcessor(IServiceScopeFactory serviceProvider)
 	{
 		_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider
 			.GetRequiredService<IDiskWatcherBackgroundTaskQueue>();
-		_processFile = processFile;
 	}
 
-	internal QueueProcessor(IDiskWatcherBackgroundTaskQueue diskWatcherBackgroundTaskQueue,
-		SynchronizeDelegate processFile)
+	internal QueueProcessor(IDiskWatcherBackgroundTaskQueue diskWatcherBackgroundTaskQueue)
 	{
 		_bgTaskQueue = diskWatcherBackgroundTaskQueue;
-		_processFile = processFile;
 	}
 
 

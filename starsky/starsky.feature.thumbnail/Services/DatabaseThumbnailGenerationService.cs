@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -182,6 +183,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 	}
 }
 
+[SuppressMessage("Usage", "S2094: Remove this empty class, write its code or make it an interface")]
 public sealed class DatabaseThumbnailGenerationPayload
 {
 	// left empty for now, but can be used in the future if needed

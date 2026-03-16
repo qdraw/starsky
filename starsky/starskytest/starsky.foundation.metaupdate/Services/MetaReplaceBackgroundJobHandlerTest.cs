@@ -12,74 +12,72 @@ using starsky.foundation.metaupdate.Models;
 using starsky.foundation.metaupdate.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.metaupdate.Services
+namespace starskytest.starsky.foundation.metaupdate.Services;
+
+[TestClass]
+public sealed class MetaReplaceBackgroundJobHandlerTest
 {
-	[TestClass]
-	public sealed class MetaReplaceBackgroundJobHandlerTest
+	[TestMethod]
+	public void JobType_CheckValue()
 	{
-		[TestMethod]
-		public void JobType_CheckValue()
-		{
-			var handler = new MetaReplaceBackgroundJobHandler(new FakeIServiceScopeFactory());
-			Assert.AreEqual("MetaReplace.v1", handler.JobType);
-		}
+		var handler = new MetaReplaceBackgroundJobHandler(new FakeIServiceScopeFactory());
+		Assert.AreEqual("MetaReplace.v1", handler.JobType);
+	}
 
-		[TestMethod]
-		public async Task ExecuteAsync_NullPayload_ThrowsArgumentException()
-		{
-			var handler = new MetaReplaceBackgroundJobHandler(new FakeIServiceScopeFactory());
-			await Assert.ThrowsExactlyAsync<ArgumentException>(() => 
-				handler.ExecuteAsync(null, CancellationToken.None));
-		}
+	[TestMethod]
+	public async Task ExecuteAsync_NullPayload_ThrowsArgumentException()
+	{
+		var handler = new MetaReplaceBackgroundJobHandler(new FakeIServiceScopeFactory());
+		await Assert.ThrowsExactlyAsync<ArgumentException>(() =>
+			handler.ExecuteAsync(null, CancellationToken.None));
+	}
 
-		[TestMethod]
-		public async Task ExecuteAsync_WhitespacePayload_ThrowsArgumentException()
-		{
-			var handler = new MetaReplaceBackgroundJobHandler(new FakeIServiceScopeFactory());
-			await Assert.ThrowsExactlyAsync<ArgumentException>(() => 
-				handler.ExecuteAsync(" ", CancellationToken.None));
-		}
+	[TestMethod]
+	public async Task ExecuteAsync_WhitespacePayload_ThrowsArgumentException()
+	{
+		var handler = new MetaReplaceBackgroundJobHandler(new FakeIServiceScopeFactory());
+		await Assert.ThrowsExactlyAsync<ArgumentException>(() =>
+			handler.ExecuteAsync(" ", CancellationToken.None));
+	}
 
-		[TestMethod]
-		public async Task ExecuteAsync_InvalidJson_ThrowsException()
-		{
-			var handler = new MetaReplaceBackgroundJobHandler(new FakeIServiceScopeFactory());
-			// Depending on what JsonSerializer throws, it could be JsonException
-			await Assert.ThrowsExactlyAsync<JsonException>(() => 
-				handler.ExecuteAsync("{ invalid }", CancellationToken.None));
-		}
+	[TestMethod]
+	public async Task ExecuteAsync_InvalidJson_ThrowsException()
+	{
+		var handler = new MetaReplaceBackgroundJobHandler(new FakeIServiceScopeFactory());
+		// Depending on what JsonSerializer throws, it could be JsonException
+		await Assert.ThrowsExactlyAsync<JsonException>(() =>
+			handler.ExecuteAsync("{ invalid }", CancellationToken.None));
+	}
 
-		[TestMethod]
-		public async Task ExecuteAsync_ValidPayload_CallsUpdateAsync()
-		{
-			var fakeMetaUpdateService = new FakeIMetaUpdateService();
-			var scopeFactory = new FakeIServiceScopeFactory(null, (services) =>
-			{
-				services.AddSingleton<IMetaUpdateService>(fakeMetaUpdateService);
-			});
-			
-			var handler = new MetaReplaceBackgroundJobHandler(scopeFactory);
+	[TestMethod]
+	public async Task ExecuteAsync_ValidPayload_CallsUpdateAsync()
+	{
+		var fakeMetaUpdateService = new FakeIMetaUpdateService();
+		var scopeFactory = new FakeIServiceScopeFactory(null,
+			services => { services.AddSingleton<IMetaUpdateService>(fakeMetaUpdateService); });
 
-			var payload = new MetaReplaceBackgroundPayload
-			{
-				ChangedFileIndexItemName = new Dictionary<string, List<string>>
+		var handler = new MetaReplaceBackgroundJobHandler(scopeFactory);
+
+		var payload = new MetaReplaceBackgroundPayload
+		{
+			ChangedFileIndexItemName =
+				new Dictionary<string, List<string>>
 				{
 					{ "/test", new List<string> { "Tags" } }
 				},
-				ResultsOkOrDeleteList = new List<FileIndexItem>
-				{
-					new FileIndexItem("/test") { Status = FileIndexItem.ExifStatus.Ok }
-				},
-				Collections = true
-			};
+			ResultsOkOrDeleteList = new List<FileIndexItem>
+			{
+				new("/test") { Status = FileIndexItem.ExifStatus.Ok }
+			},
+			Collections = true
+		};
 
-			var jsonPayload = JsonSerializer.Serialize(payload);
-			await handler.ExecuteAsync(jsonPayload, CancellationToken.None);
+		var jsonPayload = JsonSerializer.Serialize(payload);
+		await handler.ExecuteAsync(jsonPayload, CancellationToken.None);
 
-			Assert.AreEqual(1, fakeMetaUpdateService.ChangedFileIndexItemNameContent.Count);
-			var actualChanged = fakeMetaUpdateService.ChangedFileIndexItemNameContent.First();
-			Assert.IsTrue(actualChanged.ContainsKey("/test"));
-			Assert.AreEqual("Tags", actualChanged["/test"].First());
-		}
+		Assert.HasCount(1, fakeMetaUpdateService.ChangedFileIndexItemNameContent);
+		var actualChanged = fakeMetaUpdateService.ChangedFileIndexItemNameContent.First();
+		Assert.IsTrue(actualChanged.ContainsKey("/test"));
+		Assert.AreEqual("Tags", actualChanged["/test"].First());
 	}
 }

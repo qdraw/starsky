@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Threading;
@@ -86,12 +85,12 @@ public class ImportBackgroundJobHandlerTests
 		var serviceProvider = services.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-		var handler = new ImportBackgroundJobHandler(scopeFactory, new FakeIWebLogger(), new AppSettings());
+		var handler =
+			new ImportBackgroundJobHandler(scopeFactory, new FakeIWebLogger(), new AppSettings());
 
 		var payload = new ImportBackgroundPayload
 		{
-			TempImportPaths = ["/test"],
-			ImportSettings = new ImportSettingsModel()
+			TempImportPaths = ["/test"], ImportSettings = new ImportSettingsModel()
 		};
 		var json = JsonSerializer.Serialize(payload);
 
