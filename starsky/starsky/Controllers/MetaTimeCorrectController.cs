@@ -5,7 +5,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.metaupdate.Models;
 using starsky.feature.metaupdate.Services;
 using starsky.foundation.metaupdate.Interfaces;
@@ -26,8 +25,7 @@ namespace starsky.Controllers;
 public class MetaTimeCorrectController(
 	IExifTimezoneCorrectionService exifTimezoneCorrectionService,
 	IUpdateBackgroundTaskQueue queue,
-	IWebLogger logger,
-	IServiceScopeFactory scopeFactory)
+	IWebLogger logger)
 	: Controller
 {
 	private const string ModelNotValidError = "Model is not valid";

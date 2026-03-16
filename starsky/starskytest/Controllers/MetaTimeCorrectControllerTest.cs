@@ -43,8 +43,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = new MetaTimeCorrectController(
 			timezoneService,
 			queue,
-			logger,
-			scopeFactory) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
+			logger) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
 
 		return controller;
 	}

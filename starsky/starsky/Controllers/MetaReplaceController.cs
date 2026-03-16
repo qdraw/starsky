@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
