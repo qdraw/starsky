@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -93,26 +92,15 @@ public sealed class SyncFolder
 					await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate, false);
 				allResults.AddRange(indexItems);
 
-			var dirItems = ( await CheckIfFolderExistOnDisk(fileIndexItems) )
-				.Where(p => p != null).ToList();
-			if ( dirItems.Count != 0 )
-			{
-				allResults.AddRange(dirItems!);
-
-				// Notify socket about folders removed from DB (e.g. renamed on disk).
-				// This mirrors how SyncRemove notifies about deleted files.
-				var deletedFolderItems = dirItems
-					.Where(p =>
-						p?.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing)
-					.ToList();
-				if ( updateDelegate != null && deletedFolderItems.Count != 0 )
+				var dirItems = ( await CheckIfFolderExistOnDisk(fileIndexItems) )
+					.Where(p => p != null).ToList();
+				if ( dirItems.Count != 0 )
 				{
-					await updateDelegate(deletedFolderItems!);
+					allResults.AddRange(dirItems!);
 				}
-			}
 
-			await query.DisposeAsync();
-			return allResults;
+				await query.DisposeAsync();
+				return allResults;
 			}, _appSettings.MaxDegreesOfParallelism);
 
 		// Convert chunks into one list
@@ -146,7 +134,8 @@ public sealed class SyncFolder
 
 		var socketUpdates = allResults.Where(p =>
 			p.Status is FileIndexItem.ExifStatus.Ok
-				or FileIndexItem.ExifStatus.Deleted).ToList();
+				or FileIndexItem.ExifStatus.Deleted
+				or FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
 
 		if ( updateDelegate != null && socketUpdates.Count != 0 )
 		{
