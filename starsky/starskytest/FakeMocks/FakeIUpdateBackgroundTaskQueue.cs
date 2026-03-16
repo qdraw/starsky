@@ -6,6 +6,24 @@ using starsky.foundation.worker.Models;
 
 namespace starskytest.FakeMocks;
 
+/// <summary>
+/// Test double for <see cref="IUpdateBackgroundTaskQueue"/>.
+///
+/// Important: when constructed with an <see cref="IServiceScopeFactory"/>, this fake
+/// resolves the matching <see cref="IBackgroundJobHandler"/> and executes it synchronously
+/// (awaits <c>ExecuteAsync</c>) before returning from <c>QueueJobAsync</c>.
+///
+/// Rationale: many unit tests in this codebase expect background work (DB updates,
+/// filesystem actions, websocket notifications) to be completed immediately after the
+/// controller or service method returns. Running the handler synchronously avoids
+/// race conditions where assertions run before the background handler finished.
+///
+/// How to change behavior: if you want to simulate true asynchronous/background
+/// execution, modify the implementation in <c>QueueJobAsync</c> to call
+/// <c>Task.Run(() =&gt; handler.ExecuteAsync(...))</c> (or otherwise start the work
+/// without awaiting). To keep deterministic tests, assign that Task to
+/// <c>LastExecutionTask</c> and have tests await it explicitly when needed.
+/// </summary>
 public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 {
 	private readonly IServiceScopeFactory? _scopeFactory;
