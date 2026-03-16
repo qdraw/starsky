@@ -149,7 +149,7 @@ public sealed class DownloadPhotoController : Controller
 			_logger.LogDebug("Thumbnail generation started");
 			var generationResults = await _thumbnailService.GenerateThumbnail(
 				fileIndexItem.FilePath!,
-				fileIndexItem.FileHash);
+				fileIndexItem.FileHash!);
 
 			// Check if generation failed
 			if ( generationResults.Any(r => !r.Success) )
@@ -170,7 +170,7 @@ public sealed class DownloadPhotoController : Controller
 		}
 
 		var thumbnailFileStream = _thumbnailStorage.ReadStream(
-			ThumbnailNameHelper.Combine(fileIndexItem.FileHash, ThumbnailSize.Large,
+			ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.Large,
 				_appSettings.ThumbnailImageFormat));
 		return File(thumbnailFileStream,
 			MimeHelper.GetMimeType(_appSettings.ThumbnailImageFormat.ToString())
