@@ -201,7 +201,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 					throw;
 				}
 
-				_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed " +
+				_logger?.LogDebug("[StorageHostFullPathFilesystem] Catch-ed " +
 				                  "DirectoryNotFoundException/UnauthorizedAccessException => " +
 				                  exception.Message);
 			}
