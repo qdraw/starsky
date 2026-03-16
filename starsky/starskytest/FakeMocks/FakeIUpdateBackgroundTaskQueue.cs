@@ -43,6 +43,9 @@ public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 		// store job for tests
 		LastQueuedJob = job;
 
+		// Debug: print payload to help trace JSON issues in tests
+		System.Console.WriteLine($"[FakeQueue] Queued PayloadJson: {job.PayloadJson}");
+
 		// If a scope factory is provided, attempt to resolve a matching IBackgroundJobHandler and execute in background
 		if ( _scopeFactory != null )
 		{

@@ -206,7 +206,8 @@ public class MetaTimeCorrectController(
 		{
 			ValidateResults = validateResults,
 			RequestType = requestType,
-			RequestJson = JsonSerializer.Serialize(request),
+			// Serialize using the concrete runtime type so required properties are preserved
+			RequestJson = JsonSerializer.Serialize(request, request.GetType()),
 			CorrectionType = correctionType
 		};
 		await queue.QueueJobAsync(new BackgroundTaskQueueJob
