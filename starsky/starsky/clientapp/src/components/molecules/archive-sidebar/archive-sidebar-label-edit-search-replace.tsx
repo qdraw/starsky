@@ -9,6 +9,7 @@ import { ISidebarGenericUpdate, ISidebarUpdate } from "../../../interfaces/ISide
 import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchPost from "../../../shared/fetch/fetch-post";
+import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { SidebarUpdate } from "../../../shared/sidebar-update";
@@ -92,6 +93,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       if (element.status === IExifStatus.NotFoundSourceMissing)
         setIsError(MessageErrorNotFoundSourceMissingRunSync);
       if (element.status === IExifStatus.Ok || element.status === IExifStatus.Deleted) {
+        new FileListCache().CacheCleanEverything();
         dispatch({
           type: "update",
           ...element,

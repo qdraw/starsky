@@ -8,6 +8,7 @@ import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
 import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchPost from "../../../shared/fetch/fetch-post";
+import { FileListCache } from "../../../shared/filelist-cache";
 import { Keyboard } from "../../../shared/keyboard/keyboard";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
@@ -115,6 +116,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         setIsLoading(false);
         setInputEnabled(true);
         ClearSearchCache(history.location.search);
+        new FileListCache().CacheCleanEverything();
         // undo error message when success
         if (isError === MessageErrorGenericFail) {
           setIsError("");
