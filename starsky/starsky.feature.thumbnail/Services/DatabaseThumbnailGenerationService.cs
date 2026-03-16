@@ -73,11 +73,6 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 
 	public async Task ExecuteQueuedJobAsync()
 	{
-		await WorkThumbnailGenerationLoop();
-	}
-
-	private async Task WorkThumbnailGenerationLoop()
-	{
 		_thumbnailQuery.SetRunningJob(true);
 
 		List<ThumbnailItem> missingThumbnails;
@@ -181,7 +176,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filteredData,
 				ApiNotificationType.ThumbnailGeneration);
 		await _connectionsService.SendToAllAsync(webSocketResponse,
-			new CancellationToken());
+			CancellationToken.None);
 
 		return chuckedItems;
 	}
@@ -189,4 +184,5 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 
 public sealed class DatabaseThumbnailGenerationPayload
 {
+	// left empty for now, but can be used in the future if needed
 }

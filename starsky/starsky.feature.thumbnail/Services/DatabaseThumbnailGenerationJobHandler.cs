@@ -21,14 +21,7 @@ public sealed class DatabaseThumbnailGenerationJobHandler(
 			_ = JsonSerializer.Deserialize<DatabaseThumbnailGenerationPayload>(payloadJson);
 		}
 
-		if ( service is DatabaseThumbnailGenerationService concrete )
-		{
-			await concrete.ExecuteQueuedJobAsync();
-			return;
-		}
-
-		// Fallback for alternate implementations.
-		await service.StartBackgroundQueue();
+		await service.ExecuteQueuedJobAsync();
 	}
 }
 
