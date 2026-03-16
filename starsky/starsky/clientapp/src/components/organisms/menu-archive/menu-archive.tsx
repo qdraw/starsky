@@ -154,6 +154,7 @@ const MenuArchive: React.FunctionComponent = memo(() => {
           {/* ForceSyncWaitButton is not shown on mobile due limited space (450px) */}
           <ForceSyncWaitButton
             isShortLabel={true}
+            propsParentFolder={state ? state.subPath : "/"}
             historyLocationSearch={history.location.search}
             className="item item--force-sync"
             dataTest="menu-item-force-sync"

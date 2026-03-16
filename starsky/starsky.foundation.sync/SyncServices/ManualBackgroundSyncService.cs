@@ -69,6 +69,7 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 		{
 			SubPath = fileIndexItem.FilePath ?? string.Empty
 		};
+		
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = fileIndexItem.FilePath,
