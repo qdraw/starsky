@@ -46,24 +46,23 @@ public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 		// Debug: print payload to help trace JSON issues in tests
 		System.Console.WriteLine($"[FakeQueue] Queued PayloadJson: {job.PayloadJson}");
 
-		// If a scope factory is provided, attempt to resolve a matching IBackgroundJobHandler and execute in background
+		// If a scope factory is provided, attempt to resolve a matching IBackgroundJobHandler and execute synchronously
 		if ( _scopeFactory != null )
 		{
-			LastExecutionTask = Task.Run(async () =>
+			using var scope = _scopeFactory.CreateScope();
+			var handlers = scope.ServiceProvider.GetServices<IBackgroundJobHandler>();
+			foreach ( var handler in handlers )
 			{
-				using var scope = _scopeFactory.CreateScope();
-				var handlers = scope.ServiceProvider.GetServices<IBackgroundJobHandler>();
-				foreach ( var handler in handlers )
+				if ( handler.JobType != job.JobType )
 				{
-					if ( handler.JobType != job.JobType )
-					{
-						continue;
-					}
-
-					await handler.ExecuteAsync(job.PayloadJson, CancellationToken.None);
-					break;
+					continue;
 				}
-			});
+
+				// Execute and await so tests can assert immediately after QueueJobAsync completes
+				LastExecutionTask = handler.ExecuteAsync(job.PayloadJson, CancellationToken.None);
+				await LastExecutionTask;
+				break;
+			}
 		}
 	}
 
