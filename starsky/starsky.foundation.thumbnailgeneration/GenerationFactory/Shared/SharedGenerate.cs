@@ -43,7 +43,7 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 				imageFormat);
 
 		thumbnailSizes = PreflightThumbnailGeneration.MapThumbnailSizes(preflightResult);
-		if ( preflightResult.Any(p => !p.ToGenerate) || thumbnailSizes.Count == 0 )
+		if ( thumbnailSizes.Count == 0 )
 		{
 			return preflightResult;
 		}
