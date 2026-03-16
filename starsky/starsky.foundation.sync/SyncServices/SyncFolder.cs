@@ -150,14 +150,14 @@ public sealed class SyncFolder
 
 		var result = filteredSubPaths.Select(p => p.Key).ToList();
 
-		if ( childDirectoriesAfter is not { Year: > 2000 } )
+		var lastEditedOnRootFolder = _subPathStorage.Info(inputSubPath).LastWriteTime;
+		if ( childDirectoriesAfter is not { Year: > 2000 } || lastEditedOnRootFolder.Year <= 2000 )
 		{
 			return result.Distinct();
 		}
 
-		var rootLastWrite = _subPathStorage.Info(inputSubPath).LastWriteTime
-			.AddSeconds(-1);
-		if ( rootLastWrite > childDirectoriesAfter.Value )
+		// It's very often the same
+		if ( lastEditedOnRootFolder.AddSeconds(-1) > childDirectoriesAfter.Value )
 		{
 			result.AddRange(_subPathStorage.GetDirectories(inputSubPath));
 		}
