@@ -351,50 +351,21 @@ public sealed class DownloadPhotoControllerTest
 	}
 
 	[TestMethod]
-	public async Task DownloadPhoto_Thumbnail_MissingFileHash_Returns500()
+	[DataRow("")]
+	[DataRow(null)]
+	public async Task DownloadPhoto_Thumbnail_MissingFileHash_Returns500(string? fileHash)
 	{
 		// Arrange
 		var fileIndexItem = new FileIndexItem
 		{
 			FileName = "test.jpg",
 			ParentDirectory = "/",
-			FileHash = null, // Missing hash
+			FileHash = fileHash, // Missing hash
 			ColorClass = ColorClassParser.Color.Winner
 		};
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("home0012304590_nomissinghash")) )
-		{
-			await _query.AddItemAsync(fileIndexItem);
-		}
-
-		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-			new FakeIThumbnailService(), new AppSettings());
-
-		controller.ControllerContext.HttpContext = new DefaultHttpContext();
-
-		// Act
-		var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath!) as JsonResult;
-
-		// Assert
-		Assert.IsNotNull(actionResult);
-		Assert.AreEqual(500, controller.Response.StatusCode);
-		Assert.AreEqual("Thumbnail generation failed: missing file hash", actionResult.Value);
-	}
-
-	[TestMethod]
-	public async Task DownloadPhoto_Thumbnail_EmptyFileHash_Returns500()
-	{
-		// Arrange
-		var fileIndexItem = new FileIndexItem
-		{
-			FileName = "test.jpg",
-			ParentDirectory = "/",
-			FileHash = "", // Empty hash
-			ColorClass = ColorClassParser.Color.Winner
-		};
-
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("home0012304590_emptyhash")) )
+		if ( string.IsNullOrEmpty(
+			    await _query.GetSubPathByHashAsync("home0012304590_nomissinghash")) )
 		{
 			await _query.AddItemAsync(fileIndexItem);
 		}
