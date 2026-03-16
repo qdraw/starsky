@@ -13,6 +13,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.sync.SyncServices;
+using starsky.foundation.sync.SyncInterfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -1500,11 +1501,136 @@ public sealed class SyncFolderTest
 			"Expected log message about skipping deletion due to subdirectories");
 	}
 
-	/// <summary>
-	/// Test: Folder missing on disk, but has files => should skip deletion and log reason
-	/// </summary>
-	[TestMethod]
-	public async Task CheckIfFolderExistOnDisk_MissingFolderWithFiles_ShouldSkipDeletionAndLog()
+        /// <summary>
+        /// Regression test: when a folder is in the DB but no longer on disk (e.g. renamed),
+        /// the updateDelegate (socket) must be called with the NotFoundSourceMissing item so the
+        /// client is notified about the removal.
+        /// </summary>
+        [TestMethod]
+        public async Task Folder_DeletedFolderOnDisk_NotifiesSocket()
+        {
+                // Arrange: folder in DB but NOT on disk (simulates a rename on disk)
+                var query = new FakeIQuery([
+                        new FileIndexItem("/") { IsDirectory = true },
+                        new FileIndexItem("/old_name") { IsDirectory = true }
+                ]);
+                // Storage: root exists, but /old_name is gone (renamed to /new_name)
+                var storage = new FakeIStorage(["/"], [], new List<byte[]>());
+
+                var appSettings = new AppSettings
+                {
+                        DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+                        SyncIgnore = ["/.git"]
+                };
+                var syncFolder = new SyncFolder(appSettings, query, new FakeSelectorStorage(storage),
+                        new ConsoleWrapper(), new FakeIWebLogger(),
+                        new FakeMemoryCache(new Dictionary<string, object>()), null);
+
+                var socketCalls = new List<List<FileIndexItem>>();
+                ISynchronize.SocketUpdateDelegate captureDelegate =
+                        items =>
+                        {
+                                socketCalls.Add(items.ToList());
+                                return Task.CompletedTask;
+                        };
+
+                // Act
+                await syncFolder.Folder("/", captureDelegate);
+
+                // Assert: socket was called with the deleted folder
+                var allSocketItems = socketCalls.SelectMany(x => x).ToList();
+                Assert.IsTrue(
+                        allSocketItems.Exists(p =>
+                                p.FilePath == "/old_name" &&
+                                p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing),
+                        "Expected socket notification for deleted folder /old_name");
+        }
+
+        /// <summary>
+        /// Regression test: when a folder exists on disk but is missing from the DB (e.g. the
+        /// folder was just renamed on disk), CompareFolderListAndFixMissingFolders must return
+        /// the new folder item with Ok status so it is included in the sync result and sent via socket.
+        /// </summary>
+        [TestMethod]
+        public async Task CompareFolderListAndFixMissingFolders_ReturnsNewFolders_WithOkStatus()
+        {
+                var storage = new FakeIStorage(["/", "/new_name"], [], new List<byte[]>());
+                var appSettings = new AppSettings
+                {
+                        DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+                        SyncIgnore = ["/.git"]
+                };
+                var query = new FakeIQuery([new FileIndexItem("/") { IsDirectory = true }]);
+                var syncFolder = new SyncFolder(appSettings, query, new FakeSelectorStorage(storage),
+                        new ConsoleWrapper(), new FakeIWebLogger(),
+                        new FakeMemoryCache(new Dictionary<string, object>()), null);
+
+                // subPaths has /new_name but folderList (from DB) does not
+                var result = await syncFolder.CompareFolderListAndFixMissingFolders(
+                        ["/", "/new_name"],
+                        [new FileIndexItem("/") { IsDirectory = true }]);
+
+                Assert.AreEqual(1, result.Count, "Should return exactly one new folder item");
+                Assert.AreEqual("/new_name", result[0].FilePath);
+                Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
+                Assert.IsTrue(result[0].IsDirectory);
+        }
+
+        /// <summary>
+        /// Regression test: a folder rename is reflected in the Folder() sync result –
+        /// the old path gets NotFoundSourceMissing (via socket) and the new path is included
+        /// in the returned allResults with Ok status.
+        /// </summary>
+        [TestMethod]
+        public async Task Folder_RenamedChildFolder_OldPathDeletedNewPathInResults()
+        {
+                // Arrange: DB has /old_name; disk has /new_name (simulates a rename)
+                var query = new FakeIQuery([
+                        new FileIndexItem("/") { IsDirectory = true },
+                        new FileIndexItem("/old_name") { IsDirectory = true }
+                ]);
+                var storage = new FakeIStorage(["/", "/new_name"], [], new List<byte[]>());
+                var appSettings = new AppSettings
+                {
+                        DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+                        SyncIgnore = ["/.git"]
+                };
+                var syncFolder = new SyncFolder(appSettings, query, new FakeSelectorStorage(storage),
+                        new ConsoleWrapper(), new FakeIWebLogger(),
+                        new FakeMemoryCache(new Dictionary<string, object>()), null);
+
+                var socketCalls = new List<List<FileIndexItem>>();
+                ISynchronize.SocketUpdateDelegate captureDelegate =
+                        items =>
+                        {
+                                socketCalls.Add(items.ToList());
+                                return Task.CompletedTask;
+                        };
+
+                // Act
+                var result = await syncFolder.Folder("/", captureDelegate);
+
+                // Assert old path is in socket notifications as NotFoundSourceMissing
+                var allSocketItems = socketCalls.SelectMany(x => x).ToList();
+                Assert.IsTrue(
+                        allSocketItems.Exists(p =>
+                                p.FilePath == "/old_name" &&
+                                p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing),
+                        "Expected socket notification for old (deleted) folder /old_name");
+
+                // Assert new path is in the Folder() result with Ok status
+                Assert.IsTrue(
+                        result.Exists(p =>
+                                p.FilePath == "/new_name" &&
+                                p.Status == FileIndexItem.ExifStatus.Ok),
+                        "Expected /new_name to appear in result with Ok status");
+        }
+
+        /// <summary>
+        /// Test: Folder missing on disk, but has files => should skip deletion and log reason
+        /// </summary>
+        [TestMethod]
+        public async Task CheckIfFolderExistOnDisk_MissingFolderWithFiles_ShouldSkipDeletionAndLog()
 	{
 		// Add folder to DB, but do NOT add it to storage folders
 		await _query.AddItemAsync(new FileIndexItem("/missing_with_files") { IsDirectory = true });

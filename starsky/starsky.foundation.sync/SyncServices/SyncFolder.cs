@@ -93,15 +93,26 @@ public sealed class SyncFolder
 					await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate, false);
 				allResults.AddRange(indexItems);
 
-				var dirItems = ( await CheckIfFolderExistOnDisk(fileIndexItems) )
-					.Where(p => p != null).ToList();
-				if ( dirItems.Count != 0 )
-				{
-					allResults.AddRange(dirItems!);
-				}
+			var dirItems = ( await CheckIfFolderExistOnDisk(fileIndexItems) )
+				.Where(p => p != null).ToList();
+			if ( dirItems.Count != 0 )
+			{
+				allResults.AddRange(dirItems!);
 
-				await query.DisposeAsync();
-				return allResults;
+				// Notify socket about folders removed from DB (e.g. renamed on disk).
+				// This mirrors how SyncRemove notifies about deleted files.
+				var deletedFolderItems = dirItems
+					.Where(p =>
+						p?.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing)
+					.ToList();
+				if ( updateDelegate != null && deletedFolderItems.Count != 0 )
+				{
+					await updateDelegate(deletedFolderItems!);
+				}
+			}
+
+			await query.DisposeAsync();
+			return allResults;
 			}, _appSettings.MaxDegreesOfParallelism);
 
 		// Convert chunks into one list
@@ -120,7 +131,11 @@ public sealed class SyncFolder
 		var folderList = await _query.GetObjectsByFilePathQueryAsync(subPaths);
 		folderList = await _duplicate.RemoveDuplicateAsync(folderList);
 
-		await CompareFolderListAndFixMissingFolders(subPaths, folderList);
+		var newFolderItems = await CompareFolderListAndFixMissingFolders(subPaths, folderList);
+		if ( newFolderItems.Count != 0 )
+		{
+			allResults.AddRange(newFolderItems);
+		}
 
 		var parentItems = ( await AddParentFolder(inputSubPath, allResults) )
 			.Where(p => p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
@@ -154,26 +169,33 @@ public sealed class SyncFolder
 		}
 	}
 
-	internal async Task CompareFolderListAndFixMissingFolders(List<string> subPaths,
+	internal async Task<List<FileIndexItem>> CompareFolderListAndFixMissingFolders(
+		List<string> subPaths,
 		List<FileIndexItem> folderList)
 	{
 		if ( subPaths.Count == folderList.Count )
 		{
-			return;
+			return [];
 		}
 
+		var newItems = new List<FileIndexItem>();
 		foreach ( var path in subPaths.Where(path =>
 			         folderList.TrueForAll(p => p.FilePath != path) &&
 			         _subPathStorage.ExistFolder(path) && !_syncIgnoreCheck.Filter(path)) )
 		{
-			await _query.AddItemAsync(new FileIndexItem(path)
+			var newFolder = new FileIndexItem(path)
 			{
 				IsDirectory = true,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
 				AddToDatabase = DateTime.UtcNow,
-				ColorClass = ColorClassParser.Color.None
-			});
+				ColorClass = ColorClassParser.Color.None,
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+			await _query.AddItemAsync(newFolder);
+			newItems.Add(newFolder);
 		}
+
+		return newItems;
 	}
 
 	internal async Task<List<FileIndexItem>> AddParentFolder(string subPath,
