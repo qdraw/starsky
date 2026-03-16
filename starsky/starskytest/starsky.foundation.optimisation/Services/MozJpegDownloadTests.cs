@@ -31,6 +31,16 @@ public class MozJpegDownloadTests
 		Assert.AreEqual(9, fake.ReceivedRetrySeconds);
 	}
 
+	[TestMethod]
+	public async Task FixPermissions()
+	{
+		var fake = new FakeImageOptimisationToolDownload();
+		var sut = new MozJpegDownload(fake);
+
+		var result = await sut.FixPermissions("linux-x64");
+		Assert.IsTrue(result);
+	}
+
 	private sealed class FakeImageOptimisationToolDownload : IImageOptimisationToolDownload
 	{
 		public ImageOptimisationToolDownloadOptions? ReceivedOptions { get; private set; }
@@ -51,6 +61,11 @@ public class MozJpegDownloadTests
 			ReceivedArchitecture = architecture;
 			ReceivedRetrySeconds = retryInSeconds;
 			return Task.FromResult(ImageOptimisationDownloadStatus.Ok);
+		}
+
+		public Task<bool> FixPermissions(string exePath)
+		{
+			return Task.FromResult(true);
 		}
 	}
 }

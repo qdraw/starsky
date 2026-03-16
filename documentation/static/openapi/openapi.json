@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "Starsky",
-    "version": "0.7.13.0",
+    "version": "0.7.14.0",
     "extensions": {}
   },
   "servers": [
@@ -20752,6 +20752,22 @@
             "deprecated": false,
             "extensions": {},
             "unresolvedReference": false
+          },
+          "copyAllContent": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
           }
         },
         "additionalPropertiesAllowed": false,
@@ -22762,5 +22778,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "B1B008E42106EC786606401245B20398B03400EBAB2DA0AE7D15695B0D2B3E46120F475E50BD72A39187ACAAC3AB696F8A81AD62446A162EC58335E952685D4E"
+  "hashCode": "62FBE459B842805E67BC3DE43D6345CADAECF7BB03F1FAFB8A6D826F2140564967C89EA913D3FB50E046CFD43C49BF82187581DCFD22B43FA1EBAABA78BB37CE"
 }

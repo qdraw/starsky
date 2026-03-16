@@ -27,4 +27,11 @@ public interface IImageOptimisationToolDownload
 	/// <returns>status of download</returns>
 	Task<ImageOptimisationDownloadStatus> Download(ImageOptimisationToolDownloadOptions options,
 		string? architecture = null, int retryInSeconds = 15);
+
+	/// <summary>
+	///     Fix Chmod permissions on Windows it always true
+	/// </summary>
+	/// <param name="exePath">where is the exe located</param>
+	/// <returns>true if fixed success and on Windows it always true</returns>
+	Task<bool> FixPermissions(string exePath);
 }

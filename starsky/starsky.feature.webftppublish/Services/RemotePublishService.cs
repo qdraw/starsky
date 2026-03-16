@@ -51,7 +51,8 @@ public class RemotePublishService(
 
 					break;
 				case RemoteCredentialType.LocalFileSystem:
-					if ( localFileSystemService.Run(parentDirectoryOrZipFile, profileId, slug,
+					if ( localFileSystemService.Run(parentDirectoryOrZipFile, 
+						    profileId, slug,
 						    copyContent).IsSuccess )
 					{
 						success = true;

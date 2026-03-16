@@ -61,7 +61,8 @@ public class LocalFileSystemPublishService(
 
 		foreach ( var setting in settings )
 		{
-			if ( !CopyToLocalFileSystem(setting, resultModel.FullFileFolderPath, slug,
+			if ( !CopyToLocalFileSystem(setting,
+				    resultModel.FullFileFolderPath, slug,
 				    copyContent) )
 			{
 				return new PublishServiceResultModel(false);
@@ -104,7 +105,11 @@ public class LocalFileSystemPublishService(
 		}
 
 		// Create subdirectories
-		foreach ( var copyItem in copyContent.Where(p => p.Value) )
+		var selectedCopyContent = SelectContentToCopy(
+			copyContent,
+			setting);
+
+		foreach ( var copyItem in selectedCopyContent )
 		{
 			var parentItems = Breadcrumbs.BreadcrumbHelper(copyItem.Key);
 			var validItems = parentItems
@@ -125,7 +130,8 @@ public class LocalFileSystemPublishService(
 		}
 
 		// Copy files
-		var filesToCopy = copyContent.Where(p => p.Value).Select(p => p.Key).ToList();
+		var filesToCopy = copyContent.Where(p => p.Value)
+			.Select(p => p.Key).ToList();
 		foreach ( var fileSubPath in filesToCopy )
 		{
 			var sourcePath = Path.Combine(sourceDirectory, fileSubPath);
@@ -153,5 +159,15 @@ public class LocalFileSystemPublishService(
 		}
 
 		return true;
+	}
+
+	internal static IEnumerable<KeyValuePair<string, bool>> SelectContentToCopy(
+		Dictionary<string, bool>
+			copyContent,
+		LocalFileSystemCredential setting)
+	{
+		return setting.CopyAllContent
+			? copyContent.AsEnumerable()
+			: copyContent.Where(p => p.Value);
 	}
 }

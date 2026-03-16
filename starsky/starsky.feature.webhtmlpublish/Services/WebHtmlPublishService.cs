@@ -338,12 +338,18 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			}
 			catch ( AggregateException e )
 			{
+				// Flatten the aggregate exception and join inner exception messages into a single message
+				var flat = e.Flatten();
+				var details = string.Join(" | ", flat.InnerExceptions.Select(ex =>
+				{
+					var innerMsg = ex.InnerException?.Message;
+					return string.IsNullOrEmpty(innerMsg)
+						? $"{ex.Message} ({ex.GetType().Name})"
+						: $"{ex.Message} - {innerMsg} ({ex.GetType().Name})";
+				}));
+
 				var errorMessage =
-					$"[WebHtmlPublishService/ResizerLocal] Skip due errors: (catch-ed exception) {item.FilePath} {item.FileHash} - ";
-				errorMessage = e.InnerExceptions.Aggregate(errorMessage,
-					(current, exception) =>
-						current +
-						$" {exception.Message} {exception.InnerException?.Message} {exception.GetType().Name}");
+					$"[WebHtmlPublishService/ResizerLocal] Skip due errors: (catch-ed exception) {item.FilePath} {item.FileHash} - {details}";
 				_logger.LogError(errorMessage);
 			}
 		}
