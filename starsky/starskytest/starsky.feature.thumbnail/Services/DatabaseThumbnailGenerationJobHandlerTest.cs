@@ -44,7 +44,7 @@ public sealed class DatabaseThumbnailGenerationJobHandlerTest
 	}
 
 	// Simple spy implementation for IDatabaseThumbnailGenerationService used only in this test
-	private class SpyDatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationService
+	private sealed class SpyDatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationService
 	{
 		public int ExecuteCount { get; private set; }
 		public int StartCount { get; private set; }

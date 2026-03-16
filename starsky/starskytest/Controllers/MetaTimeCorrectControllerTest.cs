@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.feature.metaupdate.Models;
 using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -1218,9 +1217,9 @@ public sealed class MetaTimeCorrectControllerTest
 				sp.GetRequiredService<MetaTimeCorrectBackgroundJobHandler>());
 		});
 
-		// Use a non-executing queue for the controller call so it only records the enqueue
-		var queueForController = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queueForController, new FakeIWebLogger());
+		// Use a queue that executes handlers immediately by providing the scopeFactory
+		var queue = new FakeIUpdateBackgroundTaskQueue(scopeFactory);
+		var controller = CreateController(timezoneService, queue, new FakeIWebLogger());
 
 		// Build request
 		if ( requestType == "timezone" )
@@ -1246,43 +1245,28 @@ public sealed class MetaTimeCorrectControllerTest
 			Assert.IsNotNull(result);
 		}
 
-		// Assert - controller enqueued the job
-		Assert.IsTrue(queueForController.QueueBackgroundWorkItemCalled);
-		Assert.IsGreaterThanOrEqualTo(1, queueForController.QueueBackgroundWorkItemCalledCounter);
-
-		// Now build a valid payload and run the background handler manually
-		var payload = new MetaTimeCorrectBackgroundPayload
+		// Wait for background execution to finish (the fake queue runs handler in background)
+		if ( queue.LastExecutionTask != null )
 		{
-			ValidateResults = mockResults,
-			RequestType = requestType == "timezone" ? "timezone" : "offset",
-			RequestJson = requestType == "timezone"
-				? System.Text.Json.JsonSerializer.Serialize(new ExifTimezoneBasedCorrectionRequest
-				{
-					RecordedTimezoneId = "UTC",
-					CorrectTimezoneId = "Europe/Amsterdam"
-				})
-				: System.Text.Json.JsonSerializer.Serialize(new ExifCustomOffsetCorrectionRequest { Hour = 1 }),
-			CorrectionType = requestType
-		};
+			var finished = await Task.WhenAny(queue.LastExecutionTask, Task.Delay(2000, TestContext.CancellationToken));
+			if ( finished != queue.LastExecutionTask )
+			{
+				Assert.Fail("Background handler did not complete in time");
+			}
 
-		var payloadJson = System.Text.Json.JsonSerializer.Serialize(payload);
+			// propagate any exception thrown by the background task to fail the test
+			await queue.LastExecutionTask!;
+		}
 
-		// Create a scope factory for the handler to resolve dependencies
-		var handlerScopeFactory = new FakeIServiceScopeFactory(null, services =>
-		{
-			services.AddSingleton<IExifTimezoneCorrectionService>(timezoneService);
-			services.AddSingleton<IWebLogger>(new FakeIWebLogger());
-			services.AddSingleton<IWebSocketConnectionsService>(webSocketService);
-			services.AddSingleton<INotificationQuery>(notificationQuery);
-		});
+		// Assert - queue executed handler and produced websocket/notification side effects
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+		Assert.IsGreaterThanOrEqualTo(1, queue.QueueBackgroundWorkItemCalledCounter);
 
-		var handler = new MetaTimeCorrectBackgroundJobHandler(handlerScopeFactory, new FakeIWebLogger(), webSocketService, notificationQuery);
-		await handler.ExecuteAsync(payloadJson, System.Threading.CancellationToken.None);
-
-		// Assert - handler executed and produced websocket/notification side effects
 		Assert.HasCount(1, webSocketService.FakeSendToAllAsync);
 		Assert.Contains("/test.jpg", webSocketService.FakeSendToAllAsync[0]);
 
 		Assert.IsGreaterThanOrEqualTo(1, notificationQuery.FakeContent.Count);
 	}
+
+	public TestContext TestContext { get; set; }
 }

@@ -23,6 +23,12 @@ public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 
 	public bool QueueBackgroundWorkItemCalled { get; set; }
 
+	// Expose the last queued job for inspection in tests
+	public BackgroundTaskQueueJob? LastQueuedJob { get; set; }
+
+	// Expose the last background execution task so tests can await completion if desired
+	public Task? LastExecutionTask { get; set; }
+
 	public int Count()
 	{
 		return 0;
@@ -34,22 +40,27 @@ public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 		QueueBackgroundWorkItemCalled = true;
 		QueueBackgroundWorkItemCalledCounter++;
 
-		// If a scope factory is provided, attempt to resolve a matching IBackgroundJobHandler and execute immediately
+		// store job for tests
+		LastQueuedJob = job;
+
+		// If a scope factory is provided, attempt to resolve a matching IBackgroundJobHandler and execute in background
 		if ( _scopeFactory != null )
 		{
-			using var scope = _scopeFactory.CreateScope();
-			var handlers = scope.ServiceProvider.GetServices<IBackgroundJobHandler>();
-			foreach ( var handler in handlers )
+			LastExecutionTask = Task.Run(async () =>
 			{
-				if ( handler.JobType != job.JobType )
+				using var scope = _scopeFactory.CreateScope();
+				var handlers = scope.ServiceProvider.GetServices<IBackgroundJobHandler>();
+				foreach ( var handler in handlers )
 				{
-					continue;
-				}
+					if ( handler.JobType != job.JobType )
+					{
+						continue;
+					}
 
-				// execute and don't await exceptions here; bubble up if desired
-				await handler.ExecuteAsync(job.PayloadJson, CancellationToken.None);
-				break;
-			}
+					await handler.ExecuteAsync(job.PayloadJson, CancellationToken.None);
+					break;
+				}
+			});
 		}
 	}
 
