@@ -34,4 +34,11 @@ internal sealed class FakeIExifTimezoneCorrectionService(
 	{
 		return Task.FromResult(_validationResults);
 	}
+
+	public Task QueueCorrectionTask(List<ExifTimezoneCorrectionResult> validateResults,
+		IExifTimeCorrectionRequest request,
+		string correctionType)
+	{
+		return Task.CompletedTask;
+	}
 }

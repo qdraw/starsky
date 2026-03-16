@@ -4,11 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.metaupdate.Models;
-using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
+using starsky.foundation.metaupdate.Services;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.metaupdate.Services;
@@ -59,10 +58,11 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 	{
 		var timezoneService = new FakeIExifTimezoneCorrectionService();
 
-		var scopeFactory = new FakeIServiceScopeFactory(null, (services) =>
-		{
-			services.AddSingleton<IExifTimezoneCorrectionService>(timezoneService);
-		});
+		var scopeFactory = new FakeIServiceScopeFactory(null,
+			services =>
+			{
+				services.AddSingleton<IExifTimezoneCorrectionService>(timezoneService);
+			});
 
 		var handler = new MetaTimeCorrectBackgroundJobHandler(
 			scopeFactory,
@@ -72,8 +72,7 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 
 		var payload = new MetaTimeCorrectBackgroundPayload
 		{
-			RequestType = "unknown",
-			RequestJson = "{}"
+			RequestType = "unknown", RequestJson = "{}"
 		};
 		var payloadJson = JsonSerializer.Serialize(payload);
 
@@ -88,10 +87,11 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 			new ExifTimezoneCorrectionResult { Success = true }
 		]);
 
-		var scopeFactory = new FakeIServiceScopeFactory(null, (services) =>
-		{
-			services.AddSingleton<IExifTimezoneCorrectionService>(timezoneService);
-		});
+		var scopeFactory = new FakeIServiceScopeFactory(null,
+			services =>
+			{
+				services.AddSingleton<IExifTimezoneCorrectionService>(timezoneService);
+			});
 		var webSocketService = new FakeIWebSocketConnectionsService();
 		var notificationQuery = new FakeINotificationQuery();
 
@@ -103,8 +103,7 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezoneId = "UTC",
-			CorrectTimezoneId = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		var payload = new MetaTimeCorrectBackgroundPayload
@@ -114,10 +113,7 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 			CorrectionType = "timezone",
 			ValidateResults =
 			[
-				new ExifTimezoneCorrectionResult
-				{
-					FileIndexItem = new FileIndexItem("/test.jpg")
-				}
+				new ExifTimezoneCorrectionResult { FileIndexItem = new FileIndexItem("/test.jpg") }
 			]
 		};
 		var payloadJson = JsonSerializer.Serialize(payload);
@@ -137,10 +133,11 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 			new ExifTimezoneCorrectionResult { Success = true }
 		]);
 
-		var scopeFactory = new FakeIServiceScopeFactory(null, (services) =>
-		{
-			services.AddSingleton<IExifTimezoneCorrectionService>(timezoneService);
-		});
+		var scopeFactory = new FakeIServiceScopeFactory(null,
+			services =>
+			{
+				services.AddSingleton<IExifTimezoneCorrectionService>(timezoneService);
+			});
 		var webSocketService = new FakeIWebSocketConnectionsService();
 		var notificationQuery = new FakeINotificationQuery();
 
@@ -150,10 +147,7 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 			webSocketService,
 			notificationQuery);
 
-		var request = new ExifCustomOffsetCorrectionRequest
-		{
-			Hour = 1
-		};
+		var request = new ExifCustomOffsetCorrectionRequest { Hour = 1 };
 
 		var payload = new MetaTimeCorrectBackgroundPayload
 		{
@@ -162,10 +156,7 @@ public sealed class MetaTimeCorrectBackgroundJobHandlerTest
 			CorrectionType = "offset",
 			ValidateResults =
 			[
-				new ExifTimezoneCorrectionResult
-				{
-					FileIndexItem = new FileIndexItem("/test.jpg")
-				}
+				new ExifTimezoneCorrectionResult { FileIndexItem = new FileIndexItem("/test.jpg") }
 			]
 		};
 		var payloadJson = JsonSerializer.Serialize(payload);

@@ -1,19 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.feature.metaupdate.Models;
-using starsky.feature.metaupdate.Services;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.worker.Helpers;
-using starsky.foundation.worker.Interfaces;
-using starsky.foundation.worker.Models;
 
 namespace starsky.Controllers;
 
@@ -24,7 +15,6 @@ namespace starsky.Controllers;
 [Authorize]
 public class MetaTimeCorrectController(
 	IExifTimezoneCorrectionService exifTimezoneCorrectionService,
-	IUpdateBackgroundTaskQueue queue,
 	IWebLogger logger)
 	: Controller
 {
@@ -97,7 +87,8 @@ public class MetaTimeCorrectController(
 				collections!.Value,
 				request);
 
-		await QueueCorrectionTask(validateResults, request, "timezone");
+		await exifTimezoneCorrectionService.QueueCorrectionTask(validateResults, request,
+			"timezone");
 
 		return new JsonResult(validateResults);
 	}
@@ -168,7 +159,8 @@ public class MetaTimeCorrectController(
 				collections!.Value,
 				request);
 
-		await QueueCorrectionTask(validateResults, request, "custom offset");
+		await exifTimezoneCorrectionService.QueueCorrectionTask(validateResults, request,
+			"custom offset");
 
 		return new JsonResult(validateResults);
 	}
@@ -186,39 +178,5 @@ public class MetaTimeCorrectController(
 
 		var subPaths = PathHelper.SplitInputFilePaths(f);
 		return subPaths.Length == 0 ? BadRequest(NoInputFilesError) : null;
-	}
-
-	/// <summary>
-	///     Queue background task for correction
-	/// </summary>
-	private async Task QueueCorrectionTask(
-		List<ExifTimezoneCorrectionResult> validateResults,
-		IExifTimeCorrectionRequest request,
-		string correctionType)
-	{
-		var requestType = request switch
-		{
-			ExifTimezoneBasedCorrectionRequest => "timezone",
-			ExifCustomOffsetCorrectionRequest => "offset",
-			_ => throw new ArgumentException("Unsupported correction request type")
-		};
-		
-		var payload = new MetaTimeCorrectBackgroundPayload
-		{
-			ValidateResults = validateResults,
-			RequestType = requestType,
-			// Serialize using the concrete runtime type so required properties are preserved
-			RequestJson = JsonSerializer.Serialize(request, request.GetType()),
-			CorrectionType = correctionType
-		};
-		
-		await queue.QueueJobAsync(new BackgroundTaskQueueJob
-		{
-			MetaData = "MetaTimeCorrect",
-			TraceParentId = Activity.Current?.Id,
-			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
-			JobType = MetaTimeCorrectBackgroundJobHandler.MetaTimeCorrect,
-			PayloadJson = JsonSerializer.Serialize(payload)
-		});
 	}
 }

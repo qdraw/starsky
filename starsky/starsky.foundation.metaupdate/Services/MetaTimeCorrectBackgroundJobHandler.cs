@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.feature.metaupdate.Models;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -17,7 +11,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.worker.Interfaces;
 
-namespace starsky.feature.metaupdate.Services;
+namespace starsky.foundation.metaupdate.Services;
 
 [Service(typeof(IBackgroundJobHandler), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class MetaTimeCorrectBackgroundJobHandler(

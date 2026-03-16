@@ -31,7 +31,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		appSettings ??= new AppSettings();
 		query ??= new FakeIQuery();
 
-		return new ExifTimezoneCorrectionService(exifTool,
+		return new ExifTimezoneCorrectionService(new FakeIUpdateBackgroundTaskQueue(),
+			exifTool,
 			new FakeSelectorStorageByType(storage, thumbnailStorage,
 				null!, null!),
 			query, thumbnailQuery, appSettings, logger);
@@ -1898,4 +1899,33 @@ public sealed class ExifTimezoneCorrectionServiceTest
 	}
 
 	#endregion
+	
+	[TestMethod]
+	public async Task QueueCorrectionTask_UnsupportedRequest_ThrowsArgumentException()
+	{
+		// Arrange: create controller with fakes
+
+		var sut = CreateService();
+
+		var validateResults = new List<ExifTimezoneCorrectionResult>();
+		var invalidRequest = new InvalidExifTimeCorrectionRequest();
+
+		// Act: call QueueCorrectionTask and capture exception
+		string? message = null;
+		try
+		{
+			await sut.QueueCorrectionTask(validateResults, invalidRequest, "unsupported");
+			Assert.Fail("Expected ArgumentException");
+		}
+		catch ( ArgumentException ex )
+		{
+			message = ex.Message;
+		}
+
+		Assert.IsNotNull(message);
+		Assert.Contains("Unsupported correction request type", message);
+	}
+	
+	// Add a lightweight invalid request implementation for tests
+	private sealed class InvalidExifTimeCorrectionRequest : IExifTimeCorrectionRequest;
 }

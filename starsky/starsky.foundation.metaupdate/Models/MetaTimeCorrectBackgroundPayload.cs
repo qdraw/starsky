@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using starsky.foundation.metaupdate.Models;
-
-namespace starsky.feature.metaupdate.Models;
+namespace starsky.foundation.metaupdate.Models;
 
 public sealed class MetaTimeCorrectBackgroundPayload
 {

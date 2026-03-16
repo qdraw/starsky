@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
+using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.worker.Interfaces;
@@ -21,18 +21,17 @@ namespace starskytest.Controllers;
 [TestClass]
 public sealed class MetaTimeCorrectControllerTest
 {
+	public TestContext TestContext { get; set; }
+
 	private static MetaTimeCorrectController CreateController(
 		IExifTimezoneCorrectionService? timezoneService = null,
-		IUpdateBackgroundTaskQueue? queue = null,
 		IWebLogger? logger = null)
 	{
 		timezoneService ??= new FakeIExifTimezoneCorrectionService();
-		queue ??= new FakeIUpdateBackgroundTaskQueue();
 		logger ??= new FakeIWebLogger();
 
 		var controller = new MetaTimeCorrectController(
 			timezoneService,
-			queue,
 			logger) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
 
 		return controller;
@@ -422,7 +421,7 @@ public sealed class MetaTimeCorrectControllerTest
 		Assert.IsNotNull(returnedResults);
 		Assert.IsFalse(returnedResults[0].Success);
 	}
-
+	
 	[TestMethod]
 	public async Task PreviewTimezoneCorrectionAsync_NegativeDelta_CorrectlyCalculated()
 	{
@@ -506,7 +505,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -559,7 +558,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -691,7 +690,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -736,7 +735,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -780,7 +779,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -823,7 +822,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -865,7 +864,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -901,7 +900,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -942,7 +941,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -984,7 +983,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -1036,7 +1035,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -1121,7 +1120,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var queue = new FakeIUpdateBackgroundTaskQueue();
-		var controller = CreateController(timezoneService, queue);
+		var controller = CreateController(timezoneService);
 
 		var request = new ExifCustomOffsetCorrectionRequest { Hour = 1 };
 
@@ -1219,7 +1218,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		// Use a queue that executes handlers immediately by providing the scopeFactory
 		var queue = new FakeIUpdateBackgroundTaskQueue(scopeFactory);
-		var controller = CreateController(timezoneService, queue, new FakeIWebLogger());
+		var controller = CreateController(timezoneService, new FakeIWebLogger());
 
 		// Build request
 		if ( requestType == "timezone" )
@@ -1248,7 +1247,8 @@ public sealed class MetaTimeCorrectControllerTest
 		// Wait for background execution to finish (the fake queue runs handler in background)
 		if ( queue.LastExecutionTask != null )
 		{
-			var finished = await Task.WhenAny(queue.LastExecutionTask, Task.Delay(2000, TestContext.CancellationToken));
+			var finished = await Task.WhenAny(queue.LastExecutionTask,
+				Task.Delay(2000, TestContext.CancellationToken));
 			if ( finished != queue.LastExecutionTask )
 			{
 				Assert.Fail("Background handler did not complete in time");
@@ -1267,6 +1267,6 @@ public sealed class MetaTimeCorrectControllerTest
 
 		Assert.IsGreaterThanOrEqualTo(1, notificationQuery.FakeContent.Count);
 	}
-
-	public TestContext TestContext { get; set; }
 }
+
+
