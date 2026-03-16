@@ -104,7 +104,9 @@ public sealed class ImportController : Controller
 		}
 
 		// Wrong input (extension is not allowed)
-		if ( fileIndexResultsList.TrueForAll(p => p.Status == ImportStatus.FileError) )
+		// Only treat as wrong input when there are items and all of them are FileError.
+		// An empty preflight list should not be considered a wrong input (it may mean nothing to import)
+		if ( fileIndexResultsList.Count > 0 && fileIndexResultsList.TrueForAll(p => p.Status == ImportStatus.FileError) )
 		{
 			_logger.LogDebug("Wrong input");
 			Response.StatusCode = 415;
