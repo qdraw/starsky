@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.thumbnail.Interfaces;
 using starsky.feature.thumbnail.Services;
 using starskytest.FakeMocks;
 
@@ -15,7 +16,8 @@ public sealed class DatabaseThumbnailGenerationJobHandlerTest
 	{
 		var service = new FakeIDatabaseThumbnailGenerationService();
 		var handler = new DatabaseThumbnailGenerationJobHandler(service);
-		Assert.AreEqual(DatabaseThumbnailGenerationService.DatabaseThumbnailGenerationJobType, handler.JobType);
+		Assert.AreEqual(DatabaseThumbnailGenerationService.DatabaseThumbnailGenerationJobType,
+			handler.JobType);
 	}
 
 	[TestMethod]
@@ -42,7 +44,7 @@ public sealed class DatabaseThumbnailGenerationJobHandlerTest
 	}
 
 	// Simple spy implementation for IDatabaseThumbnailGenerationService used only in this test
-	private class SpyDatabaseThumbnailGenerationService : starsky.feature.thumbnail.Interfaces.IDatabaseThumbnailGenerationService
+	private class SpyDatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationService
 	{
 		public int ExecuteCount { get; private set; }
 		public int StartCount { get; private set; }

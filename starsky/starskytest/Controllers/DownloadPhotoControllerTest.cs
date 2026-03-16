@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -12,10 +13,15 @@ using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
+using starsky.foundation.thumbnailgeneration.Models;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -332,7 +338,7 @@ public sealed class DownloadPhotoControllerTest
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
 		var storage =
-			new FakeIStorage(null!, 
+			new FakeIStorage(null!,
 				["/test.jpg"],
 				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
@@ -372,14 +378,14 @@ public sealed class DownloadPhotoControllerTest
 		}
 
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var controller = new DownloadPhotoController(_query, selectorStorage, 
+		var controller = new DownloadPhotoController(_query, selectorStorage,
 			new FakeIWebLogger(),
 			new FakeIThumbnailService(), new AppSettings());
 
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		// Act
-		var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath!) 
+		var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath!)
 			as JsonResult;
 
 		// Assert
@@ -387,5 +393,94 @@ public sealed class DownloadPhotoControllerTest
 		Assert.AreEqual(500, controller.Response.StatusCode);
 		Assert.IsTrue(actionResult.Value?.ToString()?
 			.Contains("Thumbnail generation failed"));
+	}
+
+	[TestMethod]
+	public async Task
+		DownloadPhoto_GenerationMarkedSuccess_ButLargeMissing_Returns500_AndLogsError()
+	{
+		// Arrange
+		var filePath = "/test-gen.jpg";
+		var fileHash = "FAKEHASH123";
+
+		// subpath storage has the source file
+		var subPathStorage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { filePath },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		// thumbnail storage only has small and meta but NOT large
+		var thumbFiles = new List<string>
+		{
+			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small,
+				ThumbnailImageFormat.webp),
+			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta, ThumbnailImageFormat.webp)
+		};
+		var thumbnailStorage = new FakeIStorage(["/"], thumbFiles,
+			new List<byte[]> { new byte[10], new byte[10] });
+
+		var selectorStorage = new FakeSelectorStorageByType(subPathStorage, thumbnailStorage,
+			new FakeIStorage(), new FakeIStorage());
+
+		// Query contains the FileIndexItem with a FileHash
+		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+		{
+			new(filePath) { FileHash = fileHash, IsDirectory = false }
+		});
+
+		var fakeLogger = new FakeIWebLogger();
+
+		// Fake thumbnail service that returns success results but does NOT write the large thumbnail
+		var fakeThumbnailService = new FakeIThumbnailServiceNoWrite();
+
+		var controller = new DownloadPhotoController(fakeQuery, selectorStorage, fakeLogger,
+			fakeThumbnailService, new AppSettings());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		// Act
+		var actionResult = await controller.DownloadPhoto(filePath) as JsonResult;
+
+		// Assert - controller should respond with 500 and the specific JSON message
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(500, controller.Response.StatusCode);
+		Assert.AreEqual("Thumbnail generation failed: file not persisted after generation",
+			actionResult.Value);
+
+		// Logger should have recorded the missing thumbnail error message
+		Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(t => t.Item2 != null &&
+		                                                       t.Item2.Contains(
+			                                                       "Thumbnail file not found after generation (marked success)")));
+	}
+
+	// Fake thumbnail service that returns success generation results but doesn't write files
+	private class FakeIThumbnailServiceNoWrite : IThumbnailService
+	{
+		public Task<List<GenerationResultModel>> GenerateThumbnail(string fileOrFolderPath,
+			ThumbnailGenerationType type = ThumbnailGenerationType.All)
+		{
+			return Task.FromResult(new List<GenerationResultModel>());
+		}
+
+		public Task<List<GenerationResultModel>> GenerateThumbnail(string subPath, string fileHash,
+			ThumbnailGenerationType type = ThumbnailGenerationType.All)
+		{
+			return Task.FromResult(new List<GenerationResultModel>());
+		}
+
+		public Task<(Stream?, GenerationResultModel)> GenerateThumbnail(string subPath,
+			string fileHash, ThumbnailImageFormat imageFormat,
+			ThumbnailSize size)
+		{
+			return Task.FromResult(new ValueTuple<Stream?, GenerationResultModel>(null,
+				new GenerationResultModel
+				{
+					FileHash = fileHash, Size = size, ImageFormat = imageFormat, Success = true
+				}));
+		}
+
+		public Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
+			int height = 0)
+		{
+			return Task.FromResult(false);
+		}
 	}
 }
