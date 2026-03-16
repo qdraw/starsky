@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,14 +60,9 @@ public sealed class MetaReplaceBackgroundJobHandlerTest
 		var payload = new MetaReplaceBackgroundPayload
 		{
 			ChangedFileIndexItemName =
-				new Dictionary<string, List<string>>
-				{
-					{ "/test", new List<string> { "Tags" } }
-				},
-			ResultsOkOrDeleteList = new List<FileIndexItem>
-			{
-				new("/test") { Status = FileIndexItem.ExifStatus.Ok }
-			},
+				new Dictionary<string, List<string>> { { "/test", ["Tags"] } },
+			ResultsOkOrDeleteList =
+				[new FileIndexItem("/test") { Status = FileIndexItem.ExifStatus.Ok }],
 			Collections = true
 		};
 
@@ -76,8 +70,8 @@ public sealed class MetaReplaceBackgroundJobHandlerTest
 		await handler.ExecuteAsync(jsonPayload, CancellationToken.None);
 
 		Assert.HasCount(1, fakeMetaUpdateService.ChangedFileIndexItemNameContent);
-		var actualChanged = fakeMetaUpdateService.ChangedFileIndexItemNameContent.First();
+		var actualChanged = fakeMetaUpdateService.ChangedFileIndexItemNameContent[0];
 		Assert.IsTrue(actualChanged.ContainsKey("/test"));
-		Assert.AreEqual("Tags", actualChanged["/test"].First());
+		Assert.AreEqual("Tags", actualChanged["/test"][0]);
 	}
 }
