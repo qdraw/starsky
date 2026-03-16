@@ -20,7 +20,8 @@ public class FakeIStorage : IStorage
 
 	private readonly Exception? _exception;
 
-	private readonly Dictionary<string, DateTime>? _lastEditDict = new();
+	private readonly Dictionary<string, DateTime>? _lastEditFilesDict = new();
+	private readonly Dictionary<string, DateTime>? _lastEditFoldersDict = new();
 
 	private readonly List<string?>
 		_outputSubPathFiles = new();
@@ -32,11 +33,12 @@ public class FakeIStorage : IStorage
 	/// <param name="outputSubPathFolders">/</param>
 	/// <param name="outputSubPathFiles">/test.jpg</param>
 	/// <param name="byteListSource"></param>
-	/// <param name="lastEdited"></param>
+	/// <param name="lastEditedFiles"></param>
 	public FakeIStorage(List<string>? outputSubPathFolders = null,
 		List<string>? outputSubPathFiles = null,
 		IReadOnlyList<byte[]?>? byteListSource = null,
-		IReadOnlyList<DateTime>? lastEdited = null)
+		IReadOnlyList<DateTime>? lastEditedFiles = null,
+		IReadOnlyList<DateTime>? lastEditedFolders = null)
 	{
 		if ( outputSubPathFolders != null )
 		{
@@ -63,13 +65,25 @@ public class FakeIStorage : IStorage
 			}
 		}
 
-		if ( lastEdited != null && lastEdited.Any() )
+		if ( lastEditedFiles != null && lastEditedFiles.Any() )
 		{
 			for ( var i = 0; i < _outputSubPathFiles.Count; i++ )
 			{
 				if ( _outputSubPathFiles[i] != null )
 				{
-					_lastEditDict?.Add(_outputSubPathFiles[i]!, lastEdited[i]);
+					_lastEditFilesDict?.Add(_outputSubPathFiles[i]!, lastEditedFiles[i]);
+				}
+			}
+		}
+
+		if ( lastEditedFolders != null && lastEditedFolders.Any() )
+		{
+			for ( var i = 0; i < _outputSubPathFolders.Count; i++ )
+			{
+				if ( _outputSubPathFolders[i] != null )
+				{
+					_lastEditFoldersDict?.Add(_outputSubPathFolders[i]!,
+						lastEditedFolders[i]);
 				}
 			}
 		}
@@ -431,10 +445,19 @@ public class FakeIStorage : IStorage
 	{
 		if ( ExistFolder(path) )
 		{
+			var lastEditFolders =
+				new DateTime(1994, 7, 5, 16, 23, 42, DateTimeKind.Utc);
+			if ( _lastEditFoldersDict != null )
+			{
+				lastEditFolders = _lastEditFoldersDict.FirstOrDefault(p => p.Key == path)
+					.Value;
+			}
+
 			return new StorageInfo
 			{
 				IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList
-					.Folder
+					.Folder,
+				LastWriteTime = lastEditFolders
 			};
 		}
 
@@ -451,9 +474,9 @@ public class FakeIStorage : IStorage
 
 		var lastEdit =
 			new DateTime(1994, 7, 5, 16, 23, 42, DateTimeKind.Utc);
-		if ( _lastEditDict != null )
+		if ( _lastEditFilesDict != null )
 		{
-			lastEdit = _lastEditDict.FirstOrDefault(p => p.Key == path)
+			lastEdit = _lastEditFilesDict.FirstOrDefault(p => p.Key == path)
 				.Value;
 		}
 
@@ -509,17 +532,17 @@ public class FakeIStorage : IStorage
 
 	private void SetDateTime(string path, DateTime dateTime)
 	{
-		if ( _lastEditDict == null )
+		if ( _lastEditFilesDict == null )
 		{
 			return;
 		}
 
-		if ( _lastEditDict.Any(p => p.Key == path) )
+		if ( _lastEditFilesDict.Any(p => p.Key == path) )
 		{
-			_lastEditDict[path] = dateTime;
+			_lastEditFilesDict[path] = dateTime;
 			return;
 		}
 
-		_lastEditDict.Add(path, dateTime);
+		_lastEditFilesDict.Add(path, dateTime);
 	}
 }

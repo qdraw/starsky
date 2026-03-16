@@ -54,18 +54,7 @@ public sealed class SyncFolder
 		DateTime? childDirectoriesAfter = null)
 	{
 		var subPaths = new List<string> { inputSubPath };
-
-		subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath)
-			.Where(p =>
-			{
-				if ( childDirectoriesAfter is not { Year: > 2000 } )
-				{
-					return true;
-				}
-
-				return p.Value >= childDirectoriesAfter;
-			})
-			.Select(p => p.Key));
+		subPaths.AddRange(GetDirectoryRecursive(inputSubPath, childDirectoriesAfter));
 
 		// Loop through all folders recursive
 		var resultChunkList = await subPaths.ForEachAsync(
@@ -145,37 +134,60 @@ public sealed class SyncFolder
 		return allResults;
 	}
 
+	private IEnumerable<string> GetDirectoryRecursive(string inputSubPath,
+		DateTime? childDirectoriesAfter = null)
+	{
+		var subPaths = _subPathStorage.GetDirectoryRecursive(inputSubPath).ToList();
+		var filteredSubPaths = subPaths.Where(p =>
+			{
+				if ( childDirectoriesAfter is not { Year: > 2000 } )
+				{
+					return true;
+				}
+
+				return p.Value >= childDirectoriesAfter;
+			});
+
+		var result = filteredSubPaths.Select(p => p.Key).ToList();
+
+		if ( childDirectoriesAfter is not { Year: > 2000 } )
+		{
+			return result.Distinct();
+		}
+
+		var rootLastWrite = _subPathStorage.Info(inputSubPath).LastWriteTime
+			.AddSeconds(-1);
+		if ( rootLastWrite > childDirectoriesAfter.Value )
+		{
+			result.AddRange(_subPathStorage.GetDirectories(inputSubPath));
+		}
+
+		return result.Distinct();
+	}
+
 	private List<string> GetAllFilesInDirectory(string subPath)
 	{
-		try
-		{
-			return _subPathStorage.GetAllFilesInDirectory(subPath)
-				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
-		}
-		catch ( Exception )
-		{
-			return [];
-		}
+		return _subPathStorage.GetAllFilesInDirectory(subPath)
+			.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 	}
 
 	internal async Task<List<FileIndexItem>> CompareFolderListAndFixMissingFolders(
 		List<string> subPaths,
 		List<FileIndexItem> folderList)
 	{
-		if ( subPaths.Count == folderList.Count )
-		{
-			return [];
-		}
 
 		var newItems = new List<FileIndexItem>();
 		foreach ( var path in subPaths.Where(path =>
 			         folderList.TrueForAll(p => p.FilePath != path) &&
 			         _subPathStorage.ExistFolder(path) && !_syncIgnoreCheck.Filter(path)) )
 		{
+			var storageInfo = _subPathStorage.Info(path);
 			var newFolder = new FileIndexItem(path)
 			{
 				IsDirectory = true,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
+				DateTime = storageInfo.LastWriteTime,
+				LastEdited = storageInfo.LastWriteTime,
 				AddToDatabase = DateTime.UtcNow,
 				ColorClass = ColorClassParser.Color.None,
 				Status = FileIndexItem.ExifStatus.Ok

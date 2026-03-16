@@ -1554,13 +1554,16 @@ public sealed class SyncFolderTest
 	[TestMethod]
 	public async Task CompareFolderListAndFixMissingFolders_ReturnsNewFolders_WithOkStatus()
 	{
-		var storage = new FakeIStorage(["/", "/new_name"], [], new List<byte[]>());
+		var storage = new FakeIStorage(["/", "/new_name"], [],
+			new List<byte[]>(), [],
+			new List<DateTime> { DateTime.Now, DateTime.Now.AddDays(-1) });
 		var appSettings = new AppSettings
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase, SyncIgnore = ["/.git"]
 		};
 		var query = new FakeIQuery([new FileIndexItem("/") { IsDirectory = true }]);
-		var syncFolder = new SyncFolder(appSettings, query, new FakeSelectorStorage(storage),
+		var syncFolder = new SyncFolder(appSettings, query,
+			new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
 			new FakeMemoryCache(new Dictionary<string, object>()), null);
 
@@ -1573,6 +1576,38 @@ public sealed class SyncFolderTest
 		Assert.AreEqual("/new_name", result[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 		Assert.IsTrue(result[0].IsDirectory);
+		Assert.IsGreaterThan(2000, result[0].DateTime.Year,
+			"Expected new folder DateTime to be set");
+	}
+
+	[TestMethod]
+	public async Task CompareFolderListAndFixMissingFolders_SameCountButDifferentPaths_AddsMissing()
+	{
+		var storage = new FakeIStorage(["/", "/new_name"], [],
+			new List<byte[]>(), [],
+			new List<DateTime> { DateTime.Now, DateTime.Now.AddDays(-1) });
+		var appSettings = new AppSettings
+		{
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+			SyncIgnore = ["/.git"]
+		};
+		var query = new FakeIQuery([
+			new FileIndexItem("/") { IsDirectory = true },
+			new FileIndexItem("/old_name") { IsDirectory = true }
+		]);
+		var syncFolder = new SyncFolder(appSettings, query,
+			new FakeSelectorStorage(storage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeMemoryCache(new Dictionary<string, object>()), null);
+
+		// Same count, different names: should still add /new_name.
+		var result = await syncFolder.CompareFolderListAndFixMissingFolders(
+			["/", "/new_name"],
+			[new FileIndexItem("/") { IsDirectory = true }, new FileIndexItem("/old_name") { IsDirectory = true }]);
+
+		Assert.IsTrue(result.Exists(p =>
+			p is { FilePath: "/new_name", Status: FileIndexItem.ExifStatus.Ok }),
+			"Expected /new_name to be added even when counts are equal");
 	}
 
 	/// <summary>
@@ -1588,7 +1623,9 @@ public sealed class SyncFolderTest
 			new FileIndexItem("/") { IsDirectory = true },
 			new FileIndexItem("/old_name") { IsDirectory = true }
 		]);
-		var storage = new FakeIStorage(["/", "/new_name"], [], new List<byte[]>());
+		var storage = new FakeIStorage(["/", "/new_name"],
+			[], new List<byte[]>(), [],
+			[DateTime.Now, DateTime.Now]);
 		var appSettings = new AppSettings
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase, SyncIgnore = ["/.git"]
@@ -1629,6 +1666,9 @@ public sealed class SyncFolderTest
 			result.Exists(p =>
 				p is { FilePath: "/new_name", Status: FileIndexItem.ExifStatus.Ok }),
 			"Expected /new_name to appear in result with Ok status");
+		var newResultItem = result.First(p => p.FilePath == "/new_name");
+		Assert.IsGreaterThan(2000, newResultItem.DateTime.Year,
+			"Expected /new_name DateTime to be set in sync result");
 
 		// Assert database is updated: old removed, new inserted
 		Assert.IsNull(await query.GetObjectByFilePathAsync("/old_name"),
@@ -1638,6 +1678,49 @@ public sealed class SyncFolderTest
 			"Expected /new_name to be inserted into database");
 		Assert.IsTrue(newFolderInDb.IsDirectory,
 			"Expected /new_name DB item to be marked as directory");
+		Assert.IsTrue(newFolderInDb.DateTime.Year > 2000,
+			"Expected /new_name DateTime to be set in database");
+	}
+
+	[TestMethod]
+	public async Task Folder_RenamedChildFolder_WithChildDirectoriesAfter_RootNotUpdated_SkipsNewChildScan()
+	{
+		var query = new FakeIQuery([
+			new FileIndexItem("/") { IsDirectory = true },
+			new FileIndexItem("/old_name") { IsDirectory = true }
+		]);
+		var storage = new FakeIStorage(["/", "/new_name"], [],
+			new List<byte[]>(), [],
+			new List<DateTime> { DateTime.Now, DateTime.Now });
+		var appSettings = new AppSettings
+		{
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+			SyncIgnore = ["/.git"]
+		};
+		var syncFolder = new SyncFolder(appSettings, query,
+			new FakeSelectorStorage(storage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeMemoryCache(new Dictionary<string, object>()), null);
+
+		var socketCalls = new List<List<FileIndexItem>>();
+		ISynchronize.SocketUpdateDelegate captureDelegate = items =>
+		{
+			socketCalls.Add(items.ToList());
+			return Task.CompletedTask;
+		};
+
+		// Use far-future cutoff so recursive date filtering excludes all recursive entries.
+		var result = await syncFolder.Folder("/", captureDelegate, DateTime.MaxValue);
+
+		Assert.HasCount(1, socketCalls);
+		Assert.IsTrue(socketCalls[0].Exists(p =>
+			p is { FilePath: "/old_name", Status: FileIndexItem.ExifStatus.NotFoundSourceMissing }));
+		Assert.IsFalse(socketCalls[0].Exists(p =>
+			p is { FilePath: "/new_name", Status: FileIndexItem.ExifStatus.Ok }));
+		Assert.IsNull(await query.GetObjectByFilePathAsync("/old_name"));
+		Assert.IsNull(await query.GetObjectByFilePathAsync("/new_name"));
+		Assert.IsFalse(result.Exists(p =>
+			p is { FilePath: "/new_name", Status: FileIndexItem.ExifStatus.Ok }));
 	}
 
 	/// <summary>

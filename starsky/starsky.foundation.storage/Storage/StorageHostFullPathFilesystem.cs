@@ -126,9 +126,8 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			{
 				throw;
 			}
-
-			_logger.LogError(exception, "[GetAllFilesInDirectory] " +
-			                            "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
+			
+			// Does not throw when UnauthorizedAccessException or DirectoryNotFoundException
 			return [];
 		}
 
