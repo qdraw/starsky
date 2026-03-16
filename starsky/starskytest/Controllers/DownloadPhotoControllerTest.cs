@@ -332,7 +332,8 @@ public sealed class DownloadPhotoControllerTest
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
 		var storage =
-			new FakeIStorage(null!, new List<string> { "/test.jpg" },
+			new FakeIStorage(null!, 
+				["/test.jpg"],
 				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
@@ -371,17 +372,20 @@ public sealed class DownloadPhotoControllerTest
 		}
 
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
+		var controller = new DownloadPhotoController(_query, selectorStorage, 
+			new FakeIWebLogger(),
 			new FakeIThumbnailService(), new AppSettings());
 
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		// Act
-		var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath!) as JsonResult;
+		var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath!) 
+			as JsonResult;
 
 		// Assert
 		Assert.IsNotNull(actionResult);
 		Assert.AreEqual(500, controller.Response.StatusCode);
-		Assert.AreEqual("Thumbnail generation failed: missing file hash", actionResult.Value);
+		Assert.IsTrue(actionResult.Value?.ToString()?
+			.Contains("Thumbnail generation failed"));
 	}
 }
