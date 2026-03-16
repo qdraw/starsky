@@ -142,6 +142,29 @@ public sealed class ImportControllerTest
 	}
 
 	[TestMethod]
+	public async Task IndexPost_AllItemsAlreadyImported_Returns206_EmptyPreflight()
+	{
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+		var fakeImport = new FakeIImportForImportTest();
+
+		var importController = new ImportController(fakeImport,
+			_appSettings,
+			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
+		{
+			ControllerContext = RequestWithFile()
+		};
+
+		// Act
+		var actionResult = await importController.IndexPost() as JsonResult;
+		var list = actionResult?.Value as List<ImportIndexItem>;
+
+		// Assert
+		Assert.IsNotNull(list);
+		Assert.IsEmpty(list);
+		Assert.AreEqual(206, importController.Response.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task FromUrl_PathInjection()
 	{
 		var importController = new ImportController(_import, _appSettings,

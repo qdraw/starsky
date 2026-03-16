@@ -67,7 +67,7 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 		// Runs within IUpdateBackgroundTaskQueue
 		var payload = new ManualBackgroundSyncPayload
 		{
-			SubPath = fileIndexItem.FilePath ?? string.Empty
+			SubPath = fileIndexItem.FilePath!
 		};
 		
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
@@ -88,13 +88,12 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 			new TimeSpan(0, 2, 0));
 	}
 
-	private void RemoveSyncLock(string? subPath)
+	private void RemoveSyncLock(string subPath)
 	{
-		subPath ??= string.Empty;
 		_cache.Remove(ManualSyncCacheName + subPath);
 	}
 
-	internal async Task BackgroundTaskExceptionWrapper(string? subPath)
+	internal async Task BackgroundTaskExceptionWrapper(string subPath)
 	{
 		try
 		{
