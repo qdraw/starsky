@@ -409,4 +409,68 @@ public class MoveToTrashServiceTest
 		Assert.IsNull(removed);
 		Assert.HasCount(1, trashService.InTrash);
 	}
+
+	[TestMethod]
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task MoveToTrashAsync_BehavesCorrectly_BasedOnIsSystemFlag(bool isSystem)
+	{
+		const string path = "/dt-test/test.jpg";
+		var appSettings = new AppSettings { UseSystemTrash = true };
+
+		if ( isSystem )
+		{
+			// prepare a fake DB row so SystemTrashInQueue will remove it
+			var fakeQuery = new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]);
+			var trashService = new FakeITrashService();
+			var sut = new MoveToTrashService(appSettings, fakeQuery,
+				new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
+				trashService, new FakeIMetaUpdateService(), new FakeITrashConnectionService());
+
+			var payload = new MoveToTrashPayload
+			{
+				MoveToTrashList = [new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
+				IsSystemTrashEnabled = true,
+				ChangedFileIndexItemName = new Dictionary<string, List<string>>(),
+				FileIndexResultsList = [new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
+				InputModel = new FileIndexItem(),
+				Collections = false
+			};
+
+			await sut.MoveToTrashAsync(payload);
+
+			// system trash should have been called and DB row removed
+			Assert.HasCount(1, trashService.InTrash);
+			var expected = appSettings.StorageFolder + path.Replace('/', Path.DirectorySeparatorChar);
+			Assert.AreEqual(expected, trashService.InTrash.FirstOrDefault());
+
+			var removed = await fakeQuery.GetObjectByFilePathAsync(path);
+			Assert.IsNull(removed);
+		}
+		else
+		{
+			var fakeQuery = new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]);
+			var fakeMetaUpdate = new FakeIMetaUpdateService();
+			var trashService = new FakeITrashService();
+			var sut = new MoveToTrashService(appSettings, fakeQuery,
+				new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
+				trashService, fakeMetaUpdate, new FakeITrashConnectionService());
+
+			var payload = new MoveToTrashPayload
+			{
+				MoveToTrashList = [new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
+				IsSystemTrashEnabled = false,
+				ChangedFileIndexItemName = new Dictionary<string, List<string>>(),
+				FileIndexResultsList = [new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
+				InputModel = new FileIndexItem(),
+				Collections = false
+			};
+
+			await sut.MoveToTrashAsync(payload);
+
+			// meta update service should have been called; system trash not used
+			Assert.IsEmpty(trashService.InTrash);
+			Assert.IsNotEmpty(fakeMetaUpdate.ChangedFileIndexItemNameContent);
+		}
+	}
 }
