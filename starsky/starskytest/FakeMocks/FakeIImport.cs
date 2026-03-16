@@ -65,17 +65,20 @@ public class FakeIImport : IImport
 				results.Add(importIndexFileError);
 			}
 
-			results.Add(new ImportIndexItem
+			if ( ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath) )
 			{
-				Id = 4,
-				SourceFullFilePath = inputFileFullPath,
-				FilePath = inputFileFullPath,
-				Status = ImportStatus.Ok,
-				FileHash = "FAKE",
-				MakeModel = "added okay",
-				FileIndexItem =
-					new FileIndexItem { FileHash = "FAKE_OK", FilePath = inputFileFullPath }
-			});
+				results.Add(new ImportIndexItem
+				{
+					Id = 4,
+					SourceFullFilePath = inputFileFullPath,
+					FilePath = inputFileFullPath,
+					Status = ImportStatus.Ok,
+					FileHash = "FAKE",
+					MakeModel = "added okay",
+					FileIndexItem =
+						new FileIndexItem { FileHash = "FAKE_OK", FilePath = inputFileFullPath }
+				});
+			}
 		}
 
 		PreflightList.AddRange(results);

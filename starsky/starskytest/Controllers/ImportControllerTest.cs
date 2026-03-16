@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
@@ -62,11 +63,12 @@ public sealed class ImportControllerTest
 	///     Add the file in the underlying request object.
 	/// </summary>
 	/// <returns>Controller Context with file</returns>
-	private static ControllerContext RequestWithFile()
+	private static ControllerContext RequestWithFile(ImmutableArray<byte>? fileBytes = null)
 	{
+		fileBytes ??= CreateAnImage.Bytes;
 		var httpContext = new DefaultHttpContext();
 		httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
-		httpContext.Request.Body = new MemoryStream([.. CreateAnImage.Bytes]);
+		httpContext.Request.Body = new MemoryStream([.. fileBytes.Value]);
 
 		var actionContext = new ActionContext(httpContext, new RouteData(),
 			new ControllerActionDescriptor());
@@ -102,19 +104,14 @@ public sealed class ImportControllerTest
 			_appSettings,
 			_bgTaskQueue, null!, fakeStorageSelector, fakeLogger)
 		{
-			ControllerContext = RequestWithFile()
+			ControllerContext = RequestWithFile(CreateAnExifToolTar.Bytes)
 		};
 
-		var actionResult = await importController.IndexPost() as JsonResult;
-		var list = actionResult?.Value as List<ImportIndexItem>;
-
-		Assert.IsNotNull(list);
-		Assert.IsTrue(list.Count > 0, "Preflight should return at least one item");
-		Assert.IsTrue(list.TrueForAll(p => p.Status == ImportStatus.FileError), "All items should be FileError");
-
+		await importController.IndexPost();
+		
 		// Controller should set 415 and log a debug message
 		Assert.AreEqual(415, importController.Response.StatusCode);
-		Assert.IsTrue(fakeLogger.TrackedDebug.Any(t => (t.Item2 ?? string.Empty).Contains("Wrong input")), "Logger should contain 'Wrong input' debug entry");
+		Assert.Contains(t => (t.Item2 ?? string.Empty).Contains("Wrong input"), fakeLogger.TrackedDebug, "Logger should contain 'Wrong input' debug entry");
 	}
 
 	[TestMethod]

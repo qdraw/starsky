@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -87,5 +88,32 @@ public class ProcessTaskQueueTest
 
 		Assert.AreNotEqual(0, fakeService.DequeueAsyncCounter);
 		Assert.AreEqual(2, fakeService.DequeueAsyncCounter);
+	}
+
+	[TestMethod]
+	public void ExecuteTask_NullQueuedJob_ThrowsInvalidOperationException()
+	{
+		var mi = typeof(ProcessTaskQueue).GetMethod("ExecuteTask",
+			BindingFlags.NonPublic | BindingFlags.Static);
+
+		Assert.IsNotNull(mi, "Could not find private static ExecuteTask method");
+
+		var logger = new FakeIWebLogger();
+
+		// Parameters: (BackgroundTaskQueueJob? queueJob, IWebLogger logger, IBaseBackgroundTaskQueue? taskQueue,
+		// CancellationToken cancellationToken, IServiceScopeFactory? scopeFactory)
+		var parameters = new object?[] { null, logger, null, CancellationToken.None, null };
+
+		var task = (Task)mi.Invoke(null, parameters)!;
+
+		// Execute the task - the method catches exceptions internally and logs them
+		task.GetAwaiter().GetResult();
+
+		// The implementation logs the exception via logger.LogError(ex, ...)
+		Assert.IsNotEmpty(logger.TrackedExceptions, "Logger should have recorded at least one exception");
+		var recorded = logger.TrackedExceptions[0];
+		Assert.IsNotNull(recorded.Item1);
+		Assert.Contains("Queued job is null", recorded.Item1.Message, "Exception message should contain 'Queued job is null'");
+		Assert.Contains("Error occurred executing task work item", recorded.Item2 ?? string.Empty, "Log message should indicate error executing task work item");
 	}
 }

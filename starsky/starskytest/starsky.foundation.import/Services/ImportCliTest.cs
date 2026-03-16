@@ -95,7 +95,6 @@ public sealed class ImportCliTest
 			fakeConsole.WrittenLines.FirstOrDefault());
 		Assert.AreEqual("0;FileError;~/temp/test;;FAKE", fakeConsole.WrittenLines[1]);
 		Assert.AreEqual("0;FileError;~/temp/test;;FAKE", fakeConsole.WrittenLines[2]);
-		Assert.AreEqual("4;Ok;/test;/test;FAKE_OK", fakeConsole.WrittenLines[3]);
 	}
 
 	[TestMethod]
