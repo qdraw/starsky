@@ -131,12 +131,6 @@ public sealed class DownloadPhotoController : Controller
 			return NotFound("ThumbnailTempFolder not found");
 		}
 
-		if ( string.IsNullOrWhiteSpace(fileIndexItem.FileHash) )
-		{
-			Response.StatusCode = 500;
-			return Json("Thumbnail generation failed: missing file hash");
-		}
-
 		var data = new ThumbnailSizesExistStatusModel
 		{
 			Small = _thumbnailStorage.ExistFile(

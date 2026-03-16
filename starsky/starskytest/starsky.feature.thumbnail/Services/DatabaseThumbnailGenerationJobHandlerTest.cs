@@ -26,4 +26,37 @@ public sealed class DatabaseThumbnailGenerationJobHandlerTest
 		await Assert.ThrowsExactlyAsync<JsonException>(() =>
 			handler.ExecuteAsync("{ invalid }", CancellationToken.None));
 	}
+
+	[TestMethod]
+	public async Task ExecuteAsync_CallsServiceExecuteQueuedJobAsync()
+	{
+		// Arrange: create a spy service that tracks ExecuteQueuedJobAsync calls
+		var service = new SpyDatabaseThumbnailGenerationService();
+		var handler = new DatabaseThumbnailGenerationJobHandler(service);
+
+		// Act: call ExecuteAsync with no payload
+		await handler.ExecuteAsync(null, CancellationToken.None);
+
+		// Assert: the service's ExecuteQueuedJobAsync was invoked once
+		Assert.AreEqual(1, service.ExecuteCount);
+	}
+
+	// Simple spy implementation for IDatabaseThumbnailGenerationService used only in this test
+	private class SpyDatabaseThumbnailGenerationService : starsky.feature.thumbnail.Interfaces.IDatabaseThumbnailGenerationService
+	{
+		public int ExecuteCount { get; private set; }
+		public int StartCount { get; private set; }
+
+		public Task StartBackgroundQueue()
+		{
+			StartCount++;
+			return Task.CompletedTask;
+		}
+
+		public Task ExecuteQueuedJobAsync()
+		{
+			ExecuteCount++;
+			return Task.CompletedTask;
+		}
+	}
 }
