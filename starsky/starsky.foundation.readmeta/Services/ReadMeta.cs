@@ -136,6 +136,14 @@ public sealed class ReadMeta : IReadMeta
 			UpdateReadMetaCache(item.FilePath!, item);
 		}
 	}
+	
+	public void RemoveReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+	{
+		foreach ( var item in objectExifToolModel )
+		{
+			RemoveReadMetaCache(item.FilePath!);
+		}
+	}
 
 	/// <summary>
 	///     only for ReadMeta! Cache
