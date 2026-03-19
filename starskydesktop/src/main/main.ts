@@ -14,6 +14,7 @@ import RestoreWarmupMainWindowAndCloseSplash from "../app/startup/restore-warmup
 import { willNavigateSecurity } from "../app/startup/will-navigate-security";
 import { IsRemote } from "../app/warmup/is-remote";
 import { SetupSplash } from "../app/warmup/splash";
+import beforeQuit from "../app/startup/before-quit";
 
 MakeLogsPath();
 ipcBridge();
@@ -21,6 +22,9 @@ defaultAppSettings();
 setupChildProcess();
 MakeTempPath();
 SetupFileWatcher();
+
+// register before-quit handler to ensure we perform async cleanup
+beforeQuit();
 
 console.log(`running in: :${os.arch()}`);
 
