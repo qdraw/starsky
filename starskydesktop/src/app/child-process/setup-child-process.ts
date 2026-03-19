@@ -124,7 +124,9 @@ export async function setupChildProcess() {
   function kill() {
     setRawMode(false);
     if (!starskyChild) return;
-    starskyChild.stdin.end();
+    if (starskyChild.stdin) {
+      starskyChild.stdin.end();
+    }
     starskyChild.kill();
   }
 
@@ -134,18 +136,12 @@ export async function setupChildProcess() {
     if (key.ctrl && key.name === "c") {
       kill();
       logger.info("=> (pressed ctrl & c) to the end of starsky");
-      setTimeout(() => {
-        process.exit(0);
-      }, 400);
+      app.quit();
     }
   });
 
   app.on("before-quit", (event) => {
-    event.preventDefault();
     logger.info("=> end default");
     kill();
-    setTimeout(() => {
-      process.exit(0);
-    }, 400);
   });
 }
