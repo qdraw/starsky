@@ -44,7 +44,7 @@ public sealed class MetaReplaceControllerTest
 	private readonly AppSettings _appSettings;
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly CreateAnImage _createAnImage;
-	private readonly IStorage _iStorage;
+	private readonly StorageSubPathFilesystem _iStorage;
 	private readonly Query _query;
 
 	public MetaReplaceControllerTest()
