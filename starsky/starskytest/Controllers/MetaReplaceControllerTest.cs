@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.metaupdate.Interfaces;
@@ -64,6 +65,12 @@ public sealed class MetaReplaceControllerTest
 
 		// Fake the readMeta output
 		services.AddSingleton<IReadMeta, FakeReadMeta>();
+		
+		// Query
+		services.AddSingleton(context);
+
+		services.AddSingleton<IQuery>(_query);
+		services.AddSingleton<IMetaPreflight, MetaPreflight>();
 
 		// Inject Config helper
 		services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
