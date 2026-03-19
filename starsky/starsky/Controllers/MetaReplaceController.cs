@@ -75,20 +75,16 @@ public sealed class MetaReplaceController : Controller
 				or FileIndexItem.ExifStatus.Deleted
 				or FileIndexItem.ExifStatus.DeletedAndSame).ToList();
 
-		var changedFileIndexItemName = resultsOkOrDeleteList.ToDictionary(item => item.FilePath!,
-			_ => new List<string> { fieldName });
-
 		// Update >
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = string.Empty,
 			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
-			JobType = MetaUpdateBackgroundJobHandler.MetaUpdate,
+			JobType = MetaReplaceBackgroundJobHandler.MetaReplace,
 			PayloadJson = JsonSerializer.Serialize(new MetaReplaceBackgroundPayload
 			{
-				ChangedFileIndexItemName = changedFileIndexItemName,
-				ResultsOkOrDeleteList = resultsOkOrDeleteList,
+				SubPaths = resultsOkOrDeleteList.Select(p => p.FilePath!).ToList(),
 				Collections = collections
 			})
 		});
