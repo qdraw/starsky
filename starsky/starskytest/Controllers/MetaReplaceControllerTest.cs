@@ -66,7 +66,7 @@ public sealed class MetaReplaceControllerTest
 
 		// Fake the readMeta output
 		services.AddSingleton<IReadMeta, FakeReadMeta>();
-		
+
 		// Query
 		services.AddSingleton(context);
 
@@ -165,10 +165,14 @@ public sealed class MetaReplaceControllerTest
 			FileName = "test09.jpg", ParentDirectory = "/", Tags = "7test"
 		});
 
-		await _iStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes.ToArray()), "/test09.jpg");
+		await _iStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes.ToArray()),
+			"/test09.jpg");
 
-		var metaReplaceService = new MetaReplaceService(_query, _appSettings, new FakeSelectorStorage(_iStorage),
-			new FakeIWebLogger());
+		var metaReplaceService = new MetaReplaceService(_query, _appSettings,
+			new FakeSelectorStorage(_iStorage),
+			new FakeIWebLogger(),
+			new MetaUpdateConnectionService(new FakeIWebSocketConnectionsService(),
+				new FakeINotificationQuery()));
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 
@@ -277,10 +281,7 @@ public sealed class MetaReplaceControllerTest
 
 		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
 		{
-			new FileIndexItem(createAnImage.DbPath)
-			{
-				Tags = "a", Status = FileIndexItem.ExifStatus.Ok
-			}
+			new(createAnImage.DbPath) { Tags = "a", Status = FileIndexItem.ExifStatus.Ok }
 		});
 
 		var scope = _serviceProvider?.GetRequiredService<IServiceScopeFactory>();
@@ -332,7 +333,8 @@ public sealed class MetaReplaceControllerTest
 		var scopeFactory = NewScopeFactory();
 
 		// retrieve the singleton FakeIMetaUpdateService from the created service provider
-		var fakeMetaUpdateService = _serviceProvider?.GetService<IMetaUpdateService>() as FakeIMetaUpdateService;
+		var fakeMetaUpdateService =
+			_serviceProvider?.GetService<IMetaUpdateService>() as FakeIMetaUpdateService;
 		Assert.IsNotNull(fakeMetaUpdateService);
 
 		// Prepare a fake replace service that returns one item which should trigger an update
@@ -363,28 +365,35 @@ public sealed class MetaReplaceControllerTest
 internal sealed class TestMetaPreflight : IMetaPreflight
 {
 	private readonly IQuery _q;
-	public TestMetaPreflight(IQuery q) { _q = q; }
 
-	public async Task<(List<FileIndexItem> fileIndexResultsList, Dictionary<string, List<string>> changedFileIndexItemName)>
-		PreflightAsync(FileIndexItem? inputModel, List<string> inputFilePaths, bool append, bool collections, int rotateClock)
+	public TestMetaPreflight(IQuery q)
+	{
+		_q = q;
+	}
+
+	public async Task<(List<FileIndexItem> fileIndexResultsList, Dictionary<string, List<string>>
+			changedFileIndexItemName)>
+		PreflightAsync(FileIndexItem? inputModel, List<string> inputFilePaths, bool append,
+			bool collections, int rotateClock)
 	{
 		var list = await _q.GetObjectsByFilePathAsync(inputFilePaths, collections);
 
 		// If DB doesn't contain these items, fabricate simple FileIndexItem entries
 		// so tests that rely on a result list behave deterministically.
-		if (list.Count == 0)
+		if ( list.Count == 0 )
 		{
-			list = inputFilePaths.Select(p => new FileIndexItem(p) { Status = FileIndexItem.ExifStatus.Ok }).ToList();
+			list = inputFilePaths
+				.Select(p => new FileIndexItem(p) { Status = FileIndexItem.ExifStatus.Ok })
+				.ToList();
 		}
 
 		var changed = new Dictionary<string, List<string>>();
-		foreach (var p in inputFilePaths)
+		foreach ( var p in inputFilePaths )
 		{
 			// Mark every requested path as having 'tags' changed to trigger updates
 			changed[p] = ["tags"];
 		}
 
-		return (list, changed);
+		return ( list, changed );
 	}
 }
-

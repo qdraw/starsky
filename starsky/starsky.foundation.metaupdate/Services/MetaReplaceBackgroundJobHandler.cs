@@ -31,12 +31,12 @@ public sealed class MetaReplaceBackgroundJobHandler(IServiceScopeFactory scopeFa
 			.GetRequiredService<IMetaPreflight>();
 
 		var (fileIndexResultsList, changedFileIndexItemName) = await metaPreflight.PreflightAsync(
-			null, payload.SubPaths, false, payload.Collections, 0);
+			null, payload.SubPaths, false, false, 0);
 
 		await metaUpdateService.UpdateAsync(changedFileIndexItemName,
 			fileIndexResultsList,
 			null,
-			payload.Collections,
+			false,
 			false,
 			0);
 	}

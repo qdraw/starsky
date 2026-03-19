@@ -22,6 +22,7 @@ public class MetaReplaceService : IMetaReplaceService
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
+	private readonly IMetaUpdateConnectionService _connectionService;
 
 	/// <summary>Replace meta content</summary>
 	/// <param name="query">Starsky IQuery interface to do calls on the database</param>
@@ -29,7 +30,8 @@ public class MetaReplaceService : IMetaReplaceService
 	/// <param name="selectorStorage">storage abstraction</param>
 	/// <param name="logger">web logger</param>
 	public MetaReplaceService(IQuery query, AppSettings appSettings,
-		ISelectorStorage? selectorStorage, IWebLogger logger)
+		ISelectorStorage? selectorStorage, IWebLogger logger,
+		IMetaUpdateConnectionService connectionService)
 	{
 		_query = query;
 		_appSettings = appSettings;
@@ -40,6 +42,7 @@ public class MetaReplaceService : IMetaReplaceService
 		}
 
 		_logger = logger;
+		_connectionService = connectionService;
 	}
 
 	/// <summary>
@@ -70,10 +73,7 @@ public class MetaReplaceService : IMetaReplaceService
 
 		if ( !FileIndexCompareHelper.CheckIfPropertyExist(fieldName) )
 		{
-			return [new FileIndexItem
-			{
-				Status = FileIndexItem.ExifStatus.OperationNotSupported
-			}];
+			return [new FileIndexItem { Status = FileIndexItem.ExifStatus.OperationNotSupported }];
 		}
 
 		var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
@@ -139,19 +139,20 @@ public class MetaReplaceService : IMetaReplaceService
 			fileIndexResultList.Add(fileIndexItem);
 		}
 
+		await _connectionService.UpdateWebSocketTaskRun(fileIndexResultList);
+
 		return await new Duplicate(_query).RemoveDuplicateAsync(fileIndexResultList);
 	}
 
 	public static List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList,
 		string fieldName, string search, string replace)
 	{
-		foreach ( var fileIndexItem in fileIndexResultsList.Where(
-			         p => p.Status
-				         is FileIndexItem.ExifStatus.Ok
-				         or FileIndexItem.ExifStatus.Default
-				         or FileIndexItem.ExifStatus.OkAndSame
-				         or FileIndexItem.ExifStatus.Deleted
-				         or FileIndexItem.ExifStatus.DeletedAndSame) )
+		foreach ( var fileIndexItem in fileIndexResultsList.Where(p => p.Status
+			         is FileIndexItem.ExifStatus.Ok
+			         or FileIndexItem.ExifStatus.Default
+			         or FileIndexItem.ExifStatus.OkAndSame
+			         or FileIndexItem.ExifStatus.Deleted
+			         or FileIndexItem.ExifStatus.DeletedAndSame) )
 		{
 			var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
 			var replacedToObject = new object();

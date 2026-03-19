@@ -50,8 +50,9 @@ public sealed class ReplaceServiceTest
 				"/test_default_status.jpg"
 			});
 		_metaReplace = new MetaReplaceService(_query,
-			new AppSettings { ReadOnlyFolders = new List<string> { "/readonly" } },
-			new FakeSelectorStorage(iStorage), new FakeIWebLogger());
+			new AppSettings { ReadOnlyFolders = ["/readonly"] },
+			new FakeSelectorStorage(iStorage), new FakeIWebLogger(),new MetaUpdateConnectionService(new FakeIWebSocketConnectionsService(),
+				new FakeINotificationQuery()));
 	}
 
 	[TestMethod]

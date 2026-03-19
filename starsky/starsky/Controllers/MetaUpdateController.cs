@@ -31,19 +31,19 @@ public sealed class MetaUpdateController : Controller
 	private readonly IWebLogger _logger;
 	private readonly IMetaPreflight _metaPreflight;
 	private readonly IMetaUpdateService _metaUpdateService;
-	private readonly IServiceScopeFactory _scopeFactory;
+	private readonly IMetaUpdateConnectionService _connectionService;
 
 	public MetaUpdateController(IMetaPreflight metaPreflight,
 		IMetaUpdateService metaUpdateService,
 		IUpdateBackgroundTaskQueue queue,
 		IWebLogger logger,
-		IServiceScopeFactory scopeFactory)
+		IMetaUpdateConnectionService connectionService)
 	{
 		_metaPreflight = metaPreflight;
-		_scopeFactory = scopeFactory;
 		_metaUpdateService = metaUpdateService;
 		_bgTaskQueue = queue;
 		_logger = logger;
+		_connectionService = connectionService;
 	}
 
 	/// <summary>
@@ -130,19 +130,9 @@ public sealed class MetaUpdateController : Controller
 		_logger.LogInformation(
 			$"[UpdateController] send to socket {inputFilePaths[0]}");
 
-		await Task.Run(async () => await UpdateWebSocketTaskRun(fileIndexResultsList));
+		await Task.Run(async () =>
+			await _connectionService.UpdateWebSocketTaskRun(fileIndexResultsList));
 
 		return Json(returnNewResultList);
-	}
-
-	private async Task UpdateWebSocketTaskRun(List<FileIndexItem> fileIndexResultsList)
-	{
-		var webSocketResponse =
-			new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList,
-				ApiNotificationType.MetaUpdate);
-		var realtimeConnectionsService = _scopeFactory.CreateScope()
-			.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
-		await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse,
-			CancellationToken.None);
 	}
 }

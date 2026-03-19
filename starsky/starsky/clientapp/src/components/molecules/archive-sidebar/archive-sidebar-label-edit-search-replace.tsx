@@ -93,7 +93,6 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       if (element.status === IExifStatus.NotFoundSourceMissing)
         setIsError(MessageErrorNotFoundSourceMissingRunSync);
       if (element.status === IExifStatus.Ok || element.status === IExifStatus.Deleted) {
-        new FileListCache().CacheCleanEverything();
         dispatch({
           type: "update",
           ...element,
@@ -110,6 +109,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       setIsError("");
     }
 
+    new FileListCache().CacheCleanEverything();
     ClearSearchCache(history.location.search);
   }
 

@@ -171,7 +171,9 @@ public sealed class MetaUpdateControllerTest
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			new FakeIUpdateBackgroundTaskQueue(NewScopeFactory()),
-			new FakeIWebLogger(), NewScopeFactory());
+			new FakeIWebLogger(),
+			new MetaUpdateConnectionService(new FakeIWebSocketConnectionsService(),
+				new FakeINotificationQuery()));
 
 		var input = new FileIndexItem { Tags = "test" };
 		var jsonResult = await controller.UpdateAsync(input, createAnImage.DbPath, false,
@@ -215,7 +217,9 @@ public sealed class MetaUpdateControllerTest
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			new FakeIUpdateBackgroundTaskQueue(NewScopeFactory()),
-			new FakeIWebLogger(), NewScopeFactory())
+			new FakeIWebLogger(), new MetaUpdateConnectionService(
+				new FakeIWebSocketConnectionsService(),
+				new FakeINotificationQuery()))
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -268,7 +272,9 @@ public sealed class MetaUpdateControllerTest
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			new FakeIUpdateBackgroundTaskQueue(serviceScopeFactory),
-			new FakeIWebLogger(), serviceScopeFactory)
+			new FakeIWebLogger(), new MetaUpdateConnectionService(
+				new FakeIWebSocketConnectionsService(),
+				new FakeINotificationQuery()))
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -292,12 +298,10 @@ public sealed class MetaUpdateControllerTest
 		Assert.AreEqual(expected, actual);
 	}
 
-
 	[TestMethod]
 	public async Task UpdateAsync_BadRequest()
 	{
 		var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
-		var serviceScopeFactory = NewScopeFactory();
 		var selectorStorage =
 			new FakeSelectorStorage(
 				new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger()));
@@ -311,8 +315,9 @@ public sealed class MetaUpdateControllerTest
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			new FakeIUpdateBackgroundTaskQueue(NewScopeFactory()),
-			new FakeIWebLogger(), serviceScopeFactory);
-		controller.ControllerContext = context;
+			new FakeIWebLogger(), new MetaUpdateConnectionService(
+				new FakeIWebSocketConnectionsService(),
+				new FakeINotificationQuery())) { ControllerContext = context };
 
 		var result =
 			await controller.UpdateAsync(new FileIndexItem(), string.Empty, true) as
@@ -327,7 +332,9 @@ public sealed class MetaUpdateControllerTest
 		var controller = new MetaUpdateController(new FakeMetaPreflight(),
 			new FakeIMetaUpdateService(),
 			new FakeIUpdateBackgroundTaskQueue(),
-			new FakeIWebLogger(), new FakeIServiceScopeFactory());
+			new FakeIWebLogger(), new MetaUpdateConnectionService(
+				new FakeIWebSocketConnectionsService(),
+				new FakeINotificationQuery()));
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		var result = await controller.UpdateAsync(new FileIndexItem(), string.Empty, true) as

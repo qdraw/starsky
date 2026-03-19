@@ -84,8 +84,8 @@ public sealed class MetaReplaceController : Controller
 			JobType = MetaReplaceBackgroundJobHandler.MetaReplace,
 			PayloadJson = JsonSerializer.Serialize(new MetaReplaceBackgroundPayload
 			{
-				SubPaths = resultsOkOrDeleteList.Select(p => p.FilePath!).ToList(),
-				Collections = collections
+				// List should be explicit for collections
+				SubPaths = resultsOkOrDeleteList.Select(p => p.FilePath!).ToList()
 			})
 		});
 

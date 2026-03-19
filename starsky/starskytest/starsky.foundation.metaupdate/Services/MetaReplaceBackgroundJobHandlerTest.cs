@@ -69,7 +69,7 @@ public sealed class MetaReplaceBackgroundJobHandlerTest
 
 		var handler = new MetaReplaceBackgroundJobHandler(scopeFactory);
 
-		var payload = new MetaReplaceBackgroundPayload { SubPaths = ["/test"], Collections = true };
+		var payload = new MetaReplaceBackgroundPayload { SubPaths = ["/test"] };
 
 		var jsonPayload = JsonSerializer.Serialize(payload);
 		await handler.ExecuteAsync(jsonPayload, CancellationToken.None);
