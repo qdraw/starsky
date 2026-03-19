@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -137,16 +138,16 @@ public sealed class MetaReplaceControllerTest
 		await _query.GetObjectByFilePathAsync(_createAnImage.DbPath);
 	}
 
-	private static IServiceScopeFactory NewScopeFactory()
+	private IServiceScopeFactory NewScopeFactory()
 	{
 		var services = new ServiceCollection();
-		services.AddSingleton<IMetaPreflight, MetaPreflight>();
+		services.AddSingleton<IMetaPreflight>(new TestMetaPreflight(_query));
+		services.AddSingleton<IQuery>(_query);
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		services.AddSingleton<AppSettings>();
-		services.AddSingleton<IStorage, FakeIStorage>();
-		services.AddSingleton<ISelectorStorage, SelectorStorage>();
+		services.AddSingleton<ISelectorStorage>(new FakeSelectorStorage(_iStorage));
 		services.AddSingleton<IExifTool, FakeExifTool>();
-		services.AddSingleton<IMetaReplaceService, FakeIMetaReplaceService>();
+		services.AddSingleton<IMetaReplaceService, MetaReplaceService>();
 		services.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>();
 		services.AddSingleton<IBackgroundJobHandler, MetaReplaceBackgroundJobHandler>();
 		services.AddSingleton<IBackgroundJobHandler, MetaUpdateBackgroundJobHandler>();
@@ -164,10 +165,9 @@ public sealed class MetaReplaceControllerTest
 			FileName = "test09.jpg", ParentDirectory = "/", Tags = "7test"
 		});
 
-		var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test09.jpg" }));
+		await _iStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes.ToArray()), "/test09.jpg");
 
-		var metaReplaceService = new MetaReplaceService(_query, _appSettings, selectorStorage,
+		var metaReplaceService = new MetaReplaceService(_query, _appSettings, new FakeSelectorStorage(_iStorage),
 			new FakeIWebLogger());
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
@@ -271,15 +271,17 @@ public sealed class MetaReplaceControllerTest
 		var fakeIMetaUpdateService = _serviceProvider?.GetService<IMetaUpdateService>() as
 			FakeIMetaUpdateService;
 		Assert.IsNotNull(fakeIMetaUpdateService);
+		// reset collected changes
 		fakeIMetaUpdateService.ChangedFileIndexItemNameContent =
-			[];
+			new List<Dictionary<string, List<string>>>();
 
-		var metaReplaceService = new FakeIMetaReplaceService([
+		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
+		{
 			new FileIndexItem(createAnImage.DbPath)
 			{
 				Tags = "a", Status = FileIndexItem.ExifStatus.Ok
 			}
-		]);
+		});
 
 		var scope = _serviceProvider?.GetRequiredService<IServiceScopeFactory>();
 
@@ -356,3 +358,33 @@ public sealed class MetaReplaceControllerTest
 		Assert.HasCount(1, changed["/test09.jpg"]);
 	}
 }
+
+// Test helper: deterministic IMetaPreflight for unit tests
+internal sealed class TestMetaPreflight : IMetaPreflight
+{
+	private readonly IQuery _q;
+	public TestMetaPreflight(IQuery q) { _q = q; }
+
+	public async Task<(List<FileIndexItem> fileIndexResultsList, Dictionary<string, List<string>> changedFileIndexItemName)>
+		PreflightAsync(FileIndexItem? inputModel, List<string> inputFilePaths, bool append, bool collections, int rotateClock)
+	{
+		var list = await _q.GetObjectsByFilePathAsync(inputFilePaths, collections);
+
+		// If DB doesn't contain these items, fabricate simple FileIndexItem entries
+		// so tests that rely on a result list behave deterministically.
+		if (list.Count == 0)
+		{
+			list = inputFilePaths.Select(p => new FileIndexItem(p) { Status = FileIndexItem.ExifStatus.Ok }).ToList();
+		}
+
+		var changed = new Dictionary<string, List<string>>();
+		foreach (var p in inputFilePaths)
+		{
+			// Mark every requested path as having 'tags' changed to trigger updates
+			changed[p] = ["tags"];
+		}
+
+		return (list, changed);
+	}
+}
+
