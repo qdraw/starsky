@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -38,6 +39,14 @@ public sealed class ReadMetaSubPathStorage : IReadMetaSubPathStorage
 	public bool? RemoveReadMetaCache(string fullFilePath)
 	{
 		return _readMeta.RemoveReadMetaCache(fullFilePath);
+	}
+
+	public void RemoveReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+	{
+		foreach ( var item in objectExifToolModel )
+		{
+			RemoveReadMetaCache(item.FilePath!);
+		}
 	}
 
 	public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
