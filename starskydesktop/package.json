@@ -97,10 +97,10 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/wait-on": "^5.3.4",
-    "@typescript-eslint/eslint-plugin": "^8.57.0",
-    "@typescript-eslint/parser": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.1",
+    "@typescript-eslint/parser": "^8.57.1",
     "cross-env": "^10.1.0",
-    "electron": "^41.0.2",
+    "electron": "^41.0.3",
     "electron-builder": "^26.8.1",
     "eslint": "^10.0.3",
     "eslint-config-airbnb": "^19.0.4",
@@ -129,7 +129,7 @@
     "tsconfig-paths": "^4.2.0",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
     "webpack": "^5.105.4",
-    "webpack-cli": "^7.0.0",
+    "webpack-cli": "^7.0.2",
     "webpack-merge": "^6.0.1"
   },
   "repository": {
