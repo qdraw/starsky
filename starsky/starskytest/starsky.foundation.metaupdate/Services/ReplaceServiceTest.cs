@@ -51,8 +51,7 @@ public sealed class ReplaceServiceTest
 			});
 		_metaReplace = new MetaReplaceService(_query,
 			new AppSettings { ReadOnlyFolders = ["/readonly"] },
-			new FakeSelectorStorage(iStorage), new FakeIWebLogger(),new MetaUpdateConnectionService(new FakeIWebSocketConnectionsService(),
-				new FakeINotificationQuery()));
+			new FakeSelectorStorage(iStorage), new FakeIWebLogger());
 	}
 
 	[TestMethod]

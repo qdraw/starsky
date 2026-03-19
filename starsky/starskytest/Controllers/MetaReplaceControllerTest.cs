@@ -170,9 +170,7 @@ public sealed class MetaReplaceControllerTest
 
 		var metaReplaceService = new MetaReplaceService(_query, _appSettings,
 			new FakeSelectorStorage(_iStorage),
-			new FakeIWebLogger(),
-			new MetaUpdateConnectionService(new FakeIWebSocketConnectionsService(),
-				new FakeINotificationQuery()));
+			new FakeIWebLogger());
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 

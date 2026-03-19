@@ -22,7 +22,6 @@ public class MetaReplaceService : IMetaReplaceService
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
-	private readonly IMetaUpdateConnectionService _connectionService;
 
 	/// <summary>Replace meta content</summary>
 	/// <param name="query">Starsky IQuery interface to do calls on the database</param>
@@ -30,8 +29,7 @@ public class MetaReplaceService : IMetaReplaceService
 	/// <param name="selectorStorage">storage abstraction</param>
 	/// <param name="logger">web logger</param>
 	public MetaReplaceService(IQuery query, AppSettings appSettings,
-		ISelectorStorage? selectorStorage, IWebLogger logger,
-		IMetaUpdateConnectionService connectionService)
+		ISelectorStorage? selectorStorage, IWebLogger logger)
 	{
 		_query = query;
 		_appSettings = appSettings;
@@ -42,7 +40,6 @@ public class MetaReplaceService : IMetaReplaceService
 		}
 
 		_logger = logger;
-		_connectionService = connectionService;
 	}
 
 	/// <summary>
@@ -139,7 +136,6 @@ public class MetaReplaceService : IMetaReplaceService
 			fileIndexResultList.Add(fileIndexItem);
 		}
 
-		await _connectionService.UpdateWebSocketTaskRun(fileIndexResultList);
 
 		return await new Duplicate(_query).RemoveDuplicateAsync(fileIndexResultList);
 	}
