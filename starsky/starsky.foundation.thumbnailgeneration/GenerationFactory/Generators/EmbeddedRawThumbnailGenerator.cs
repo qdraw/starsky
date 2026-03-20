@@ -56,7 +56,7 @@ public class EmbeddedRawThumbnailGenerator(
 
 		var previewTempName = $"{fileHash}.embedded-raw-preview.jpg";
 		var previewFullPath = appSettings.DatabasePathToTempFolderFilePath(previewTempName);
-		var extracted = await embeddedRawThumbnailService.TryExtractPreviewAsync(fullFilePath,
+		var extracted = await embeddedRawThumbnailService.TryExtractPreview(fullFilePath,
 			previewFullPath, null);
 
 		fullFilePathExistsService.CleanTemporaryFile(tempInputName, isTempInput);

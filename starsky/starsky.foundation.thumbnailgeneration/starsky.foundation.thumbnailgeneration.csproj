@@ -14,13 +14,14 @@
     <ItemGroup>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
         <ProjectReference Include="..\starsky.foundation.native\starsky.foundation.native.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.optimisation\starsky.foundation.optimisation.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
         <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
         <ProjectReference Include="..\starsky.foundation.video\starsky.foundation.video.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12"/>
         <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7"/>
     </ItemGroup>
 

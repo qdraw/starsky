@@ -33,12 +33,23 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	private const int MinJpegBytes = 4 * 1024; // ignore tiny thumbnails
 	private const uint MinDimension = 1024;
 
+	// Maximum allowed preview size: 50 MB (prevents extracting entire file by mistake)
+	private const long MaxPreviewBytes = 50 * 1024 * 1024;
+
 	// Prefer a preview of at least this width; fall back to largest otherwise.
 	private const uint PreferredWidth = 2048;
 
 	// Sanity cap on IFD entry count; prevents pathological/malformed RAW files
 	// from causing huge allocations or hangs. Real RAW files rarely exceed 1000 entries per IFD.
-	private const int MaxIfdEntryCount = 8192;
+	// Updated: Many modern RAW files (Sony, Nikon high-res) have 8K+ entries legitimately.
+	// Increased to 32768 (32K entries) to process high-res preview IFDs.
+	// At 12 bytes/entry, this is only 768 KB allocation—acceptable for preview extraction.
+	// Further updated: entry counts up to 60K observed in real files. Increased to 65535 (ushort.MaxValue).
+	// At 12 bytes/entry, worst case = 786 KB allocation. Added size-based check below.
+
+	// Secondary sanity check: skip IFDs that would consume >50% of file size.
+	// Real image data IFDs should never take half the file.
+	private const double MaxIfdSizeRatio = 0.5;
 
 	/// <summary>
 	///     Tries to extract embedded JPEG previews from a RAW file.
@@ -167,37 +178,31 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 		var entryCount = ReadUInt16(countBuf, littleEndian);
 
-		switch ( entryCount )
+		// Secondary sanity check: reject IFDs consuming >50% of file as corrupted.
+		var entryBytes = ( long ) entryCount * 12;
+		if ( entryBytes > input.Length * MaxIfdSizeRatio )
 		{
-			// Sanity guard: avoid absurd entry counts that may cause OOM or hangs
-			case 0:
-				return;
-			case > MaxIfdEntryCount:
-			{
-				var streamPos = input.Position;
-				var streamLen = input.Length;
-				logger.LogInformation(
-					$"[EmbeddedPreviewExtractor] IFD at offset {offset} skipped: entryCount {entryCount} exceeds cap {MaxIfdEntryCount} (stream pos: {streamPos}, len: {streamLen})");
-
-				// Skip this IFD entirely: can't safely read the entries, so we skip to the next IFD pointer
-				// The next IFD pointer should be at: current position + (entryCount * 12) + 4
-				// But since we can't trust this file, just return and don't recurse
-				return;
-			}
+			logger.LogDebug(
+				$"[EmbeddedPreviewExtractor] IFD at offset {offset} skipped: entryCount {entryCount} would require {entryBytes} bytes ({( double ) entryBytes / input.Length:P} of {input.Length} byte file), likely corrupted");
+			return;
 		}
 
-		// Read all IFD entries into a local buffer to avoid many small seeks.
-		var entryBytes = entryCount * 12;
-		var entryBuf = ArrayPool<byte>.Shared.Rent(entryBytes);
+		if ( entryCount == 0 )
+		{
+			return;
+		}
+
+		var entryBuf = ArrayPool<byte>.Shared.Rent(( int ) entryBytes);
 
 		try
 		{
-			if ( !TryReadExact(input, entryBuf, 0, entryBytes) )
+			if ( !TryReadExact(input, entryBuf, 0, ( int ) entryBytes) )
 			{
 				return;
 			}
 
-			ParseIfdEntries(input, entryBuf.AsSpan(0, entryBytes), littleEndian, previews, visited,
+			ParseIfdEntries(input, entryBuf.AsSpan(0, ( int ) entryBytes), littleEndian, previews,
+				visited,
 				depth);
 		}
 		finally
@@ -492,10 +497,20 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	// -------------------------------------------------------------------------
 	// I/O
 
-	private static bool WritePreview(Stream input, PreviewCandidate preview, string outputPath)
+	private bool WritePreview(Stream input, PreviewCandidate preview, string outputPath)
 	{
 		if ( !TrySeek(input, preview.Offset) )
 		{
+			logger.LogDebug(
+				$"[EmbeddedPreviewExtractor] Failed to seek to offset {preview.Offset} for JPEG preview");
+			return false;
+		}
+
+		// Sanity check: reject previews > 50 MB
+		if ( preview.Length > MaxPreviewBytes )
+		{
+			logger.LogDebug(
+				$"[EmbeddedPreviewExtractor] Skipping preview at offset {preview.Offset}: size {preview.Length} exceeds max {MaxPreviewBytes}");
 			return false;
 		}
 
@@ -503,6 +518,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 		long remaining = preview.Length;
 		var buffer = ArrayPool<byte>.Shared.Rent(64 * 1024);
+		long bytesWritten = 0;
 
 		try
 		{
@@ -512,10 +528,13 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 				if ( read == 0 )
 				{
+					logger.LogDebug(
+						$"[EmbeddedPreviewExtractor] Truncated read at offset {preview.Offset}: got {bytesWritten}/{preview.Length} bytes");
 					break;
 				}
 
 				output.Write(buffer, 0, read);
+				bytesWritten += read;
 				remaining -= read;
 			}
 		}
@@ -524,7 +543,102 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			ArrayPool<byte>.Shared.Return(buffer);
 		}
 
-		return remaining == 0; // false if file was truncated
+		// Validate extracted JPEG
+		if ( bytesWritten == 0 )
+		{
+			logger.LogDebug(
+				$"[EmbeddedPreviewExtractor] Rejecting empty preview at offset {preview.Offset}");
+			try
+			{
+				File.Delete(outputPath);
+			}
+			catch
+			{
+				/* ignore */
+			}
+
+			return false;
+		}
+
+		if ( remaining != 0 )
+		{
+			logger.LogDebug(
+				$"[EmbeddedPreviewExtractor] Rejecting truncated preview at offset {preview.Offset}: got {bytesWritten}/{preview.Length} bytes");
+			try
+			{
+				File.Delete(outputPath);
+			}
+			catch
+			{
+				/* ignore */
+			}
+
+			return false;
+		}
+
+		// Verify JPEG signature
+		if ( !ValidateJpegFile(outputPath, preview.Offset) )
+		{
+			try
+			{
+				File.Delete(outputPath);
+			}
+			catch
+			{
+				/* ignore */
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
+	private bool ValidateJpegFile(string filePath, uint expectedOffset)
+	{
+		try
+		{
+			var fileInfo = new FileInfo(filePath);
+			if ( fileInfo.Length < 4 )
+			{
+				logger.LogDebug(
+					$"[EmbeddedPreviewExtractor] Rejecting file at offset {expectedOffset}: too small ({fileInfo.Length} bytes)");
+				return false;
+			}
+
+			using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+			Span<byte> header = stackalloc byte[4];
+			if ( fs.Read(header) < 4 )
+			{
+				return false;
+			}
+
+			// JPEG must start with FFD8 (SOI marker)
+			if ( header[0] != 0xFF || header[1] != 0xD8 )
+			{
+				logger.LogDebug(
+					$"[EmbeddedPreviewExtractor] Rejecting file at offset {expectedOffset}: invalid JPEG SOI marker ({header[0]:X2} {header[1]:X2})");
+				return false;
+			}
+
+			// Quick EOF check: JPEG should end with FFD9 (EOI marker)
+			fs.Seek(-2, SeekOrigin.End);
+			Span<byte> footer = stackalloc byte[2];
+			if ( fs.Read(footer) < 2 || footer[0] != 0xFF || footer[1] != 0xD9 )
+			{
+				logger.LogDebug(
+					$"[EmbeddedPreviewExtractor] Warning: file at offset {expectedOffset} missing JPEG EOI marker (may be lossless JPEG)");
+				// Don't reject on missing EOI - some LJPEG files may not have it
+			}
+
+			return true;
+		}
+		catch ( Exception ex )
+		{
+			logger.LogDebug(
+				$"[EmbeddedPreviewExtractor] Exception validating file at offset {expectedOffset}: {ex.Message}");
+			return false;
+		}
 	}
 
 	// -------------------------------------------------------------------------
