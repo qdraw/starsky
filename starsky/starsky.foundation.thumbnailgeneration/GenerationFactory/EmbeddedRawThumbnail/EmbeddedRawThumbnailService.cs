@@ -28,9 +28,9 @@ public class EmbeddedRawThumbnailService(IWebLogger logger) : IEmbeddedRawThumbn
 
 		try
 		{
-			return await Task.FromResult(
+			return await
 				new EmbeddedPreviewExtractor(logger).TryExtract(rawFilePath, outputLargePath,
-					outputMediumPath));
+					outputMediumPath);
 		}
 		catch ( Exception exception )
 		{

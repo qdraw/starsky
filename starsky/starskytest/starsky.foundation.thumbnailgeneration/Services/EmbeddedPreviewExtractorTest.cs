@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starskytest.FakeMocks;
@@ -115,7 +116,7 @@ public class EmbeddedPreviewExtractorTest
 	}
 
 	[TestMethod]
-	public void TryExtract_WithValidTiffHeader_ReturnsTrue()
+	public async Task TryExtract_WithValidTiffHeader_ReturnsTrue()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -128,7 +129,7 @@ public class EmbeddedPreviewExtractorTest
 		string? mediumOutput = null;
 
 		// Act
-		var result =
+		var result = await
 			new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, largeOutput,
 				mediumOutput);
 
@@ -137,7 +138,7 @@ public class EmbeddedPreviewExtractorTest
 	}
 
 	[TestMethod]
-	public void TryExtract_WithInvalidMagic_ReturnsFalse()
+	public async Task TryExtract_WithInvalidMagic_ReturnsFalse()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -148,31 +149,33 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with invalid TIFF magic");
 	}
 
 	[TestMethod]
-	public void TryExtract_WithEmptyIfd_ReturnsFalse()
+	public async Task TryExtract_WithEmptyIfd_ReturnsFalse()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
 		ms.Write(CreateMinimalTiffHeader());
 		// Empty IFD (0 entries)
-		ms.Write(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 });
+		ms.Write("\0\0\0\0\0\0\0\0"u8);
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with no preview candidates");
 	}
 
 	[TestMethod]
-	public void TryExtract_WithTooSmallJpeg_ReturnsFalse()
+	public async Task TryExtract_WithTooSmallJpeg_ReturnsFalse()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -194,14 +197,15 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with too small JPEG");
 	}
 
 	[TestMethod]
-	public void TryExtract_WithValidFile_WritesOutput()
+	public async Task TryExtract_WithValidFile_WritesOutput()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -217,7 +221,7 @@ public class EmbeddedPreviewExtractorTest
 		try
 		{
 			// Act
-			var result =
+			var result = await
 				new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, largeOutput,
 					mediumOutput);
 
@@ -240,7 +244,7 @@ public class EmbeddedPreviewExtractorTest
 	}
 
 	[TestMethod]
-	public void TryExtract_WithNullOutputPaths_ReturnsTrue()
+	public async Task TryExtract_WithNullOutputPaths_ReturnsTrue()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -250,14 +254,15 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsTrue(result, "Should return true even with null outputs");
 	}
 
 	[TestMethod]
-	public void TryExtract_WithPathString_ReturnsTrue()
+	public async Task TryExtract_WithPathString_ReturnsTrue()
 	{
 		// Arrange
 		var tempFile = Path.Combine(Path.GetTempPath(), $"test_raw_{Guid.NewGuid()}.arw");
@@ -271,7 +276,7 @@ public class EmbeddedPreviewExtractorTest
 			}
 
 			// Act
-			var result =
+			var result = await
 				new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(tempFile, null, null);
 
 			// Assert
@@ -287,11 +292,12 @@ public class EmbeddedPreviewExtractorTest
 	}
 
 	[TestMethod]
-	public void TryExtract_WithNonExistentFile_ReturnsFalse()
+	public async Task TryExtract_WithNonExistentFile_ReturnsFalse()
 	{
 		try
 		{
-			new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract("/nonexistent/file.arw",
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(
+				"/nonexistent/file.arw",
 				null, null);
 			Assert.Fail("Expected DirectoryNotFoundException");
 		}
@@ -302,7 +308,7 @@ public class EmbeddedPreviewExtractorTest
 	}
 
 	[TestMethod]
-	public void TryExtract_WithBigEndianTiff_Processes()
+	public async Task TryExtract_WithBigEndianTiff_Processes()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -382,14 +388,15 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsTrue(result, "Should handle big-endian TIFF");
 	}
 
 	[TestMethod]
-	public void TryExtract_StreamAtNonZeroPosition_Reads()
+	public async Task TryExtract_StreamAtNonZeroPosition_Reads()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -401,7 +408,8 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(100, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result,
@@ -409,7 +417,7 @@ public class EmbeddedPreviewExtractorTest
 	}
 
 	[TestMethod]
-	public void TryExtract_WithTruncatedHeader_ReturnsFalse()
+	public async Task TryExtract_WithTruncatedHeader_ReturnsFalse()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -417,14 +425,15 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with truncated header");
 	}
 
 	[TestMethod]
-	public void TryExtract_WithInvalidIfdOffset_ReturnsFalse()
+	public async Task TryExtract_WithInvalidIfdOffset_ReturnsFalse()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -432,14 +441,15 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with invalid IFD offset");
 	}
 
 	[TestMethod]
-	public void TryExtract_WithCorruptedData_ReturnsFalse()
+	public async Task TryExtract_WithCorruptedData_ReturnsFalse()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -449,7 +459,8 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with corrupted data");

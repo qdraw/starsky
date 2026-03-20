@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starskytest.FakeMocks;
@@ -90,14 +91,15 @@ public class EmbeddedPreviewExtractorOversizedIfdTest
 
 
 	[TestMethod]
-	public void TryExtract_WithValidTiff_ReturnsTrue()
+	public async Task TryExtract_WithValidTiff_ReturnsTrue()
 	{
 		// Arrange
 		using var ms = new MemoryStream(CreateValidTiffWithJpeg());
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsTrue(result,
@@ -105,14 +107,15 @@ public class EmbeddedPreviewExtractorOversizedIfdTest
 	}
 
 	[TestMethod]
-	public void TryExtract_WithOversizedIfdEntryCount_ReturnsFalseButDoesNotHang()
+	public async Task TryExtract_WithOversizedIfdEntryCount_ReturnsFalseButDoesNotHang()
 	{
 		// Arrange
 		using var ms = new MemoryStream(CreateTiffWithOversizedIfdCount());
 
 		// Act
 		var startTime = DateTime.UtcNow;
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 		var elapsed = DateTime.UtcNow - startTime;
 
 		// Assert
@@ -123,14 +126,15 @@ public class EmbeddedPreviewExtractorOversizedIfdTest
 	}
 
 	[TestMethod]
-	public void TryExtract_WithExtremeOversizedCount_DoesNotHang()
+	public async Task TryExtract_WithExtremeOversizedCount_DoesNotHang()
 	{
 		// Arrange
 		using var ms = new MemoryStream(CreateTiffWithOversizedIfdCount(100000));
 
 		// Act
 		var startTime = DateTime.UtcNow;
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 		var elapsed = DateTime.UtcNow - startTime;
 
 		// Assert
@@ -140,7 +144,7 @@ public class EmbeddedPreviewExtractorOversizedIfdTest
 	}
 
 	[TestMethod]
-	public void TryExtract_WithZeroEntryCount_ReturnsFalse()
+	public async Task TryExtract_WithZeroEntryCount_ReturnsFalse()
 	{
 		// Arrange
 		using var ms = new MemoryStream();
@@ -159,7 +163,8 @@ public class EmbeddedPreviewExtractorOversizedIfdTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
+		var result =
+			await new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		// Empty IFD means no previews found

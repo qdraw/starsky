@@ -53,12 +53,12 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var createAnImage = new CreateAnImage();
 		File.Exists(createAnImage.FullFilePath);
 		var tempImagePath = Path.Combine(_tempOutputDir, "test_image.jpg");
-		File.WriteAllBytes(tempImagePath, CreateAnImage.Bytes.ToArray());
+		await File.WriteAllBytesAsync(tempImagePath, CreateAnImage.Bytes.ToArray(), TestContext.CancellationToken);
 
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act - JPG is not a RAW file with embedded previews
-		var result = service.TryExtractPreview(tempImagePath, null, null).Result;
+		var result = await service.TryExtractPreview(tempImagePath, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "JPEG file should not contain embedded RAW preview");

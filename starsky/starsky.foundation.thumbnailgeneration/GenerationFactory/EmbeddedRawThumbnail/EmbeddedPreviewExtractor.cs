@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
@@ -58,10 +59,10 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	/// <param name="outputLarge">Output path for the large preview (or null)</param>
 	/// <param name="outputMedium">Output path for the medium preview (or null)</param>
 	/// <returns>true if at least one preview was successfully extracted</returns>
-	public bool TryExtract(string rawPath, string? outputLarge, string? outputMedium)
+	public async Task<bool> TryExtract(string rawPath, string? outputLarge, string? outputMedium)
 	{
 		using var fs = new FileStream(rawPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-		return TryExtract(fs, outputLarge, outputMedium);
+		return await TryExtract(fs, outputLarge, outputMedium);
 	}
 
 	/// <summary>
@@ -71,11 +72,11 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	/// <param name="outputLarge">Output path for the large preview (or null)</param>
 	/// <param name="outputMedium">Output path for the medium preview (or null)</param>
 	/// <returns>true if at least one preview was successfully extracted</returns>
-	public bool TryExtract(Stream input, string? outputLarge, string? outputMedium)
+	public Task<bool> TryExtract(Stream input, string? outputLarge, string? outputMedium)
 	{
 		if ( !TryParseTiffHeader(input, out var littleEndian, out var firstIfd) )
 		{
-			return false;
+			return Task.FromResult(false);
 		}
 
 		var previews = new List<PreviewCandidate>(MaxPreviews);
@@ -85,7 +86,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 		if ( previews.Count == 0 )
 		{
-			return false;
+			return Task.FromResult(false);
 		}
 
 		// Sort descending by width (unknown width sorts last), then by byte length.
@@ -114,7 +115,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			ok &= WritePreview(input, medium.Value, outputMedium);
 		}
 
-		return ok;
+		return Task.FromResult(ok);
 	}
 
 	private static bool TryParseTiffHeader(Stream s, out bool littleEndian, out uint firstIfd)
