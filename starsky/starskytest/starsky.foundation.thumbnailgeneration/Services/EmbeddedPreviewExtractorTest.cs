@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.Services;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.Services;

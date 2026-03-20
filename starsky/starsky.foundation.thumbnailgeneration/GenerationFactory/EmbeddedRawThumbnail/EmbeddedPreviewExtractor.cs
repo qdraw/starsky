@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace starsky.foundation.thumbnailgeneration.Services;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
 /// <summary>
 ///     Production-style embedded RAW preview extractor.
@@ -17,23 +17,23 @@ namespace starsky.foundation.thumbnailgeneration.Services;
 /// </summary>
 public static class EmbeddedPreviewExtractor
 {
-	const ushort TagJpegOffset = 0x0201;
-	const ushort TagJpegLength = 0x0202;
-	const ushort TagStripOffsets = 0x0111;
-	const ushort TagStripByteCounts = 0x0117;
-	const ushort TagSubIfds = 0x014A;
-	const ushort TagImageWidth = 0x0100;
-	const ushort TagImageHeight = 0x0101;
+	private const ushort TagJpegOffset = 0x0201;
+	private const ushort TagJpegLength = 0x0202;
+	private const ushort TagStripOffsets = 0x0111;
+	private const ushort TagStripByteCounts = 0x0117;
+	private const ushort TagSubIfds = 0x014A;
+	private const ushort TagImageWidth = 0x0100;
+	private const ushort TagImageHeight = 0x0101;
 
-	const ushort TiffMagicLe = 0x002A;
+	private const ushort TiffMagicLe = 0x002A;
 
-	const int MaxIfdDepth = 6;
-	const int MaxPreviews = 32;
-	const int MinJpegBytes = 4 * 1024; // ignore tiny thumbnails
-	const uint MinDimension = 1024;
+	private const int MaxIfdDepth = 6;
+	private const int MaxPreviews = 32;
+	private const int MinJpegBytes = 4 * 1024; // ignore tiny thumbnails
+	private const uint MinDimension = 1024;
 
 	// Prefer a preview of at least this width; fall back to largest otherwise.
-	const uint PreferredWidth = 2048;
+	private const uint PreferredWidth = 2048;
 
 	/// <summary>
 	///     Tries to extract embedded JPEG previews from a RAW file.
@@ -75,25 +75,25 @@ public static class EmbeddedPreviewExtractor
 		// Sort descending by width (unknown width sorts last), then by byte length.
 		previews.Sort((a, b) =>
 		{
-			int cmp = b.Width.CompareTo(a.Width);
+			var cmp = b.Width.CompareTo(a.Width);
 			return cmp != 0 ? cmp : b.Length.CompareTo(a.Length);
 		});
 
-		PreviewCandidate? large = SelectAtLeast(previews, PreferredWidth);
-		PreviewCandidate? medium = SelectAtLeast(previews, MinDimension);
+		var large = SelectAtLeast(previews, PreferredWidth);
+		var medium = SelectAtLeast(previews, MinDimension);
 
 		// Fall back: if no large, use the biggest we have.
 		large ??= previews[0];
 		medium ??= previews[0];
 
-		bool ok = true;
+		var ok = true;
 
 		if ( outputLarge is not null )
 		{
 			ok &= WritePreview(input, large.Value, outputLarge);
 		}
 
-		if ( outputMedium is not null && medium.Value.Offset != large!.Value.Offset )
+		if ( outputMedium is not null && medium.Value.Offset != large.Value.Offset )
 		{
 			ok &= WritePreview(input, medium.Value, outputMedium);
 		}
@@ -103,7 +103,7 @@ public static class EmbeddedPreviewExtractor
 
 	// -------------------------------------------------------------------------
 
-	struct PreviewCandidate
+	private struct PreviewCandidate
 	{
 		public uint Offset;
 		public uint Length;
@@ -111,7 +111,7 @@ public static class EmbeddedPreviewExtractor
 		public uint Height; // 0 = unknown
 	}
 
-	static bool TryParseTiffHeader(Stream s, out bool littleEndian, out uint firstIfd)
+	private static bool TryParseTiffHeader(Stream s, out bool littleEndian, out uint firstIfd)
 	{
 		littleEndian = false;
 		firstIfd = 0;
@@ -136,7 +136,7 @@ public static class EmbeddedPreviewExtractor
 			return false; // not a TIFF-based file
 		}
 
-		ushort magic = ReadUInt16(header.Slice(2), littleEndian);
+		var magic = ReadUInt16(header.Slice(2), littleEndian);
 		if ( magic != TiffMagicLe )
 		{
 			return false;
@@ -146,7 +146,7 @@ public static class EmbeddedPreviewExtractor
 		return firstIfd != 0;
 	}
 
-	static void ParseIfdRecursive(
+	private static void ParseIfdRecursive(
 		Stream input,
 		uint offset,
 		bool littleEndian,
@@ -175,11 +175,11 @@ public static class EmbeddedPreviewExtractor
 			return;
 		}
 
-		ushort entryCount = ReadUInt16(countBuf, littleEndian);
+		var entryCount = ReadUInt16(countBuf, littleEndian);
 
 		// Read all IFD entries into a local buffer to avoid many small seeks.
-		int entryBytes = entryCount * 12;
-		byte[] entryBuf = ArrayPool<byte>.Shared.Rent(entryBytes);
+		var entryBytes = entryCount * 12;
+		var entryBuf = ArrayPool<byte>.Shared.Rent(entryBytes);
 
 		try
 		{
@@ -204,14 +204,14 @@ public static class EmbeddedPreviewExtractor
 			return;
 		}
 
-		uint nextIfd = ReadUInt32(nextBuf, littleEndian);
+		var nextIfd = ReadUInt32(nextBuf, littleEndian);
 		if ( nextIfd != 0 )
 		{
 			ParseIfdRecursive(input, nextIfd, littleEndian, previews, visited, depth + 1);
 		}
 	}
 
-	static void ParseIfdEntries(
+	private static void ParseIfdEntries(
 		Stream input,
 		ReadOnlySpan<byte> entries,
 		bool littleEndian,
@@ -224,18 +224,18 @@ public static class EmbeddedPreviewExtractor
 		uint stripOffset = 0, stripLength = 0;
 		uint ifdWidth = 0, ifdHeight = 0;
 		var subIfdOffsets = new List<uint>(4);
-		bool stripMulti = false;
+		var stripMulti = false;
 
-		int count = entries.Length / 12;
+		var count = entries.Length / 12;
 
-		for ( int i = 0; i < count; i++ )
+		for ( var i = 0; i < count; i++ )
 		{
 			var e = entries.Slice(i * 12, 12);
 
-			ushort tag = ReadUInt16(e, littleEndian);
-			ushort type = ReadUInt16(e.Slice(2), littleEndian);
-			uint n = ReadUInt32(e.Slice(4), littleEndian);
-			uint value = ReadUInt32(e.Slice(8), littleEndian);
+			var tag = ReadUInt16(e, littleEndian);
+			var type = ReadUInt16(e.Slice(2), littleEndian);
+			var n = ReadUInt32(e.Slice(4), littleEndian);
+			var value = ReadUInt32(e.Slice(8), littleEndian);
 
 			switch ( tag )
 			{
@@ -318,7 +318,7 @@ public static class EmbeddedPreviewExtractor
 	// Indirect value helpers
 
 	/// <summary>Reads a single scalar from an indirect pointer (for SHORT or LONG types).</summary>
-	static uint ReadIndirectUInt32(Stream s, uint offset, ushort type, bool little)
+	private static uint ReadIndirectUInt32(Stream s, uint offset, ushort type, bool little)
 	{
 		if ( !TrySeek(s, offset) )
 		{
@@ -337,7 +337,7 @@ public static class EmbeddedPreviewExtractor
 	}
 
 	/// <summary>Sums n values from an indirect pointer.</summary>
-	static uint SumIndirectUInt32(Stream s, uint offset, ushort type, uint n, bool little)
+	private static uint SumIndirectUInt32(Stream s, uint offset, ushort type, uint n, bool little)
 	{
 		if ( !TrySeek(s, offset) )
 		{
@@ -346,12 +346,12 @@ public static class EmbeddedPreviewExtractor
 
 		uint sum = 0;
 		Span<byte> b = stackalloc byte[4];
+		Span<byte> s2 = stackalloc byte[2];
 
 		for ( uint i = 0; i < n; i++ )
 		{
 			if ( type == 3 )
 			{
-				Span<byte> s2 = stackalloc byte[2];
 				if ( !TryReadExact(s, s2) )
 				{
 					break;
@@ -374,7 +374,7 @@ public static class EmbeddedPreviewExtractor
 	}
 
 	/// <summary>Reads n IFD offsets from an indirect pointer into the list.</summary>
-	static void ReadIndirectOffsets(Stream s, uint offset, ushort type, uint n, bool little,
+	private static void ReadIndirectOffsets(Stream s, uint offset, ushort type, uint n, bool little,
 		List<uint> result)
 	{
 		if ( !TrySeek(s, offset) )
@@ -417,7 +417,7 @@ public static class EmbeddedPreviewExtractor
 	// -------------------------------------------------------------------------
 	// Candidate management
 
-	static void AddCandidate(
+	private static void AddCandidate(
 		List<PreviewCandidate> previews,
 		uint offset, uint length,
 		uint width, uint height)
@@ -437,7 +437,7 @@ public static class EmbeddedPreviewExtractor
 		});
 	}
 
-	static PreviewCandidate? SelectAtLeast(List<PreviewCandidate> previews, uint minWidth)
+	private static PreviewCandidate? SelectAtLeast(List<PreviewCandidate> previews, uint minWidth)
 	{
 		// List is already sorted widest-first.
 		foreach ( var p in previews )
@@ -459,7 +459,7 @@ public static class EmbeddedPreviewExtractor
 	// -------------------------------------------------------------------------
 	// I/O
 
-	static bool WritePreview(Stream input, PreviewCandidate preview, string outputPath)
+	private static bool WritePreview(Stream input, PreviewCandidate preview, string outputPath)
 	{
 		if ( !TrySeek(input, preview.Offset) )
 		{
@@ -469,13 +469,13 @@ public static class EmbeddedPreviewExtractor
 		using var output = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
 
 		long remaining = preview.Length;
-		byte[] buffer = ArrayPool<byte>.Shared.Rent(64 * 1024);
+		var buffer = ArrayPool<byte>.Shared.Rent(64 * 1024);
 
 		try
 		{
 			while ( remaining > 0 )
 			{
-				int read = input.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
+				var read = input.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
 
 				if ( read == 0 )
 				{
@@ -499,10 +499,10 @@ public static class EmbeddedPreviewExtractor
 
 	/// <summary>Reads a SHORT (type 3) or LONG (type 4) scalar from an inline IFD value.</summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	static uint ReadScalar(ushort type, uint raw)
+	private static uint ReadScalar(ushort type, uint raw)
 		=> type == 3 ? (raw & 0xFFFF) : raw; // SHORT is stored in the low 16 bits
 
-	static bool TrySeek(Stream s, uint offset)
+	private static bool TrySeek(Stream s, uint offset)
 	{
 		try
 		{
@@ -515,13 +515,13 @@ public static class EmbeddedPreviewExtractor
 		}
 	}
 
-	static bool TryReadExact(Stream s, Span<byte> buffer)
+	private static bool TryReadExact(Stream s, Span<byte> buffer)
 	{
-		int total = 0;
+		var total = 0;
 
 		while ( total < buffer.Length )
 		{
-			int read = s.Read(buffer.Slice(total));
+			var read = s.Read(buffer.Slice(total));
 
 			if ( read == 0 )
 			{
@@ -535,13 +535,13 @@ public static class EmbeddedPreviewExtractor
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	static ushort ReadUInt16(ReadOnlySpan<byte> b, bool little)
+	private static ushort ReadUInt16(ReadOnlySpan<byte> b, bool little)
 		=> little
 			? (ushort)(b[0] | (b[1] << 8))
 			: (ushort)(b[1] | (b[0] << 8));
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	static uint ReadUInt32(ReadOnlySpan<byte> b, bool little)
+	private static uint ReadUInt32(ReadOnlySpan<byte> b, bool little)
 		=> little
 			? (uint)(b[0] | (b[1] << 8) | (b[2] << 16) | (b[3] << 24))
 			: (uint)(b[3] | (b[2] << 8) | (b[1] << 16) | (b[0] << 24));
