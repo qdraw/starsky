@@ -75,6 +75,15 @@ public sealed class MetaReplaceController : Controller
 				or FileIndexItem.ExifStatus.Deleted
 				or FileIndexItem.ExifStatus.DeletedAndSame).ToList();
 
+		// Build the pre-computed change map so the background job does not have
+		// to re-read from a potentially stale parent-folder cache.
+		// Using the fieldName (lower-case) as the single changed field for every
+		// affected item mirrors what MetaUpdateController passes via PreflightAsync.
+		var changedFileIndexItemName = resultsOkOrDeleteList
+			.ToDictionary(
+				p => p.FilePath!,
+				_ => new List<string> { fieldName.ToLowerInvariant() });
+
 		// Update >
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
@@ -84,8 +93,8 @@ public sealed class MetaReplaceController : Controller
 			JobType = MetaReplaceBackgroundJobHandler.MetaReplace,
 			PayloadJson = JsonSerializer.Serialize(new MetaReplaceBackgroundPayload
 			{
-				// List should be explicit for collections
-				SubPaths = resultsOkOrDeleteList.Select(p => p.FilePath!).ToList()
+				ChangedFileIndexItemName = changedFileIndexItemName,
+				FileIndexResultsList = resultsOkOrDeleteList
 			})
 		});
 

@@ -53,23 +53,19 @@ public sealed class MetaReplaceBackgroundJobHandlerTest
 	public async Task ExecuteAsync_ValidPayload_CallsUpdateAsync()
 	{
 		var fakeMetaUpdateService = new FakeIMetaUpdateService();
-		var fakeMetaPreflight = new FakeMetaPreflight2
-		{
-			ChangedFileIndexItemName =
-				new Dictionary<string, List<string>> { { "/test", ["tags"] } },
-			FileIndexResultsList =
-				[new FileIndexItem("/test") { Status = FileIndexItem.ExifStatus.Ok }]
-		};
 		var scopeFactory = new FakeIServiceScopeFactory(null,
-			services =>
-			{
-				services.AddSingleton<IMetaUpdateService>(fakeMetaUpdateService);
-				services.AddSingleton<IMetaPreflight>(fakeMetaPreflight);
-			});
+			services => { services.AddSingleton<IMetaUpdateService>(fakeMetaUpdateService); });
 
 		var handler = new MetaReplaceBackgroundJobHandler(scopeFactory);
 
-		var payload = new MetaReplaceBackgroundPayload { SubPaths = ["/test"] };
+		var payload = new MetaReplaceBackgroundPayload
+		{
+			ChangedFileIndexItemName = new Dictionary<string, List<string>>
+			{
+				{ "/test", ["tags"] }
+			},
+			FileIndexResultsList = [new FileIndexItem("/test") { Status = FileIndexItem.ExifStatus.Ok }]
+		};
 
 		var jsonPayload = JsonSerializer.Serialize(payload);
 		await handler.ExecuteAsync(jsonPayload, CancellationToken.None);

@@ -1,10 +1,18 @@
+using starsky.foundation.database.Models;
+
 namespace starsky.foundation.metaupdate.Models;
 
 public sealed class MetaReplaceBackgroundPayload
 {
 	/// <summary>
-	/// All subPaths that need to be updated should be in this list.
-	///  So if Collections is true, then it will be all subPaths
+	/// Pre-computed map of filePath → changed field names, so the job does not
+	/// have to re-read from a potentially stale cache.
 	/// </summary>
-	public List<string> SubPaths { get; set; } = [];
+	public Dictionary<string, List<string>> ChangedFileIndexItemName { get; set; } = new();
+
+	/// <summary>
+	/// The already-modified items (with the replaced values) to be written to
+	/// EXIF / the database by the background job.
+	/// </summary>
+	public List<FileIndexItem> FileIndexResultsList { get; set; } = [];
 }

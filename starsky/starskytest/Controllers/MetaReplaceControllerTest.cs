@@ -18,6 +18,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.metaupdate.Interfaces;
+using starsky.foundation.metaupdate.Models;
 using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -356,6 +357,36 @@ public sealed class MetaReplaceControllerTest
 		var changed = fakeMetaUpdateService.ChangedFileIndexItemNameContent[0];
 		Assert.IsTrue(changed.ContainsKey("/test09.jpg"));
 		Assert.HasCount(1, changed["/test09.jpg"]);
+	}
+
+	[TestMethod]
+	public async Task Replace_QueuesPrecomputedPayload_ForBackgroundJob()
+	{
+		var fakeQueue = new FakeIUpdateBackgroundTaskQueue();
+		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
+		{
+			new("/test09.jpg")
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				Tags = "replaced"
+			}
+		});
+		var controller = new MetaReplaceController(metaReplaceService,
+			fakeQueue,
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
+
+		await controller.Replace("/test09.jpg", "Tags", "old", "new");
+
+		Assert.IsNotNull(fakeQueue.LastQueuedJob);
+		var payloadJson = fakeQueue.LastQueuedJob!.PayloadJson;
+		var payload = JsonSerializer.Deserialize<MetaReplaceBackgroundPayload>(
+			payloadJson ?? "");
+		Assert.IsNotNull(payload);
+		Assert.IsTrue(payload.ChangedFileIndexItemName.ContainsKey("/test09.jpg"));
+		Assert.AreEqual("tags", payload.ChangedFileIndexItemName["/test09.jpg"][0]);
+		Assert.HasCount(1, payload.FileIndexResultsList);
+		Assert.AreEqual("/test09.jpg", payload.FileIndexResultsList[0].FilePath);
+
 	}
 }
 

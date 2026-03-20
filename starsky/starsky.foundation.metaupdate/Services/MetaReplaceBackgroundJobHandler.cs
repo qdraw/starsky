@@ -24,17 +24,14 @@ public sealed class MetaReplaceBackgroundJobHandler(IServiceScopeFactory scopeFa
 
 		var payload = JsonSerializer.Deserialize<MetaReplaceBackgroundPayload>(payloadJson)
 		              ?? throw new ArgumentException("Invalid payload");
+
 		var scope = scopeFactory.CreateScope();
 		var metaUpdateService = scope.ServiceProvider
 			.GetRequiredService<IMetaUpdateService>();
-		var metaPreflight = scope.ServiceProvider
-			.GetRequiredService<IMetaPreflight>();
 
-		var (fileIndexResultsList, changedFileIndexItemName) = await metaPreflight.PreflightAsync(
-			null, payload.SubPaths, false, false, 0);
-
-		await metaUpdateService.UpdateAsync(changedFileIndexItemName,
-			fileIndexResultsList,
+		await metaUpdateService.UpdateAsync(
+			payload.ChangedFileIndexItemName,
+			payload.FileIndexResultsList,
 			null,
 			false,
 			false,
