@@ -12,16 +12,22 @@ public class CreateAnImageSonyA100ArwRaw
 
 	public CreateAnImageSonyA100ArwRaw()
 	{
-		var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		if ( string.IsNullOrEmpty(dirName) )
+		Bytes = [..StreamToBytes(FullFilePath)];
+	}
+
+	public static string FullFilePath
+	{
+		get
 		{
-			return;
+			var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			if ( string.IsNullOrEmpty(dirName) )
+			{
+				return string.Empty;
+			}
+
+			return Path.Combine(dirName, "FakeCreateAn",
+				"CreateAnImageA6600Raw", "RAW_SONY_A100.ARW");
 		}
-
-		var path = Path.Combine(dirName, "FakeCreateAn",
-			"CreateAnImageA6600Raw", "RAW_SONY_A100.ARW");
-
-		Bytes = [..StreamToBytes(path)];
 	}
 
 	private static byte[] StreamToBytes(string path)
