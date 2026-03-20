@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,7 +44,7 @@ public class CleanThumbnailHostedServiceTest
 			serviceProvider.GetRequiredService<AppSettings>();
 		appSettings.ThumbnailCleanupSkipOnStartup = thumbnailCleanupSkipOnStartup;
 
-		var serviceScopeFactory = new FakeServiceScopeFactory(serviceProvider);
+		var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		var hostedService = new CleanThumbnailHostedService(serviceScopeFactory);
 		return hostedService;
 	}
@@ -140,43 +139,5 @@ public class CleanThumbnailHostedServiceTest
 
 		// Assert
 		Assert.AreEqual(expectedResult, result);
-	}
-
-	[SuppressMessage("Performance",
-		"CA1852: Type can be sealed because it has no subtypes in its containing assembly")]
-	private class FakeServiceScope : IServiceScope
-	{
-		public FakeServiceScope(IServiceProvider serviceProvider)
-		{
-			ServiceProvider = serviceProvider;
-		}
-
-		public IServiceProvider ServiceProvider { get; }
-
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		protected virtual void Dispose(bool disposing)
-		{
-			// Cleanup
-		}
-	}
-
-	private sealed class FakeServiceScopeFactory : IServiceScopeFactory
-	{
-		private readonly IServiceProvider _serviceProvider;
-
-		public FakeServiceScopeFactory(IServiceProvider serviceProvider)
-		{
-			_serviceProvider = serviceProvider;
-		}
-
-		public IServiceScope CreateScope()
-		{
-			return new FakeServiceScope(_serviceProvider);
-		}
 	}
 }
