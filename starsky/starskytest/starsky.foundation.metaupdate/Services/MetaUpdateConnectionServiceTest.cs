@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -56,69 +55,16 @@ public sealed class MetaUpdateConnectionServiceTest
 			"Expected CreateScope to be called twice in constructor");
 	}
 
-	private class FakeServiceScope : IServiceScope
+	private class SimpleProvider(object ws, object nq) : IServiceProvider
 	{
-		public FakeServiceScope(IServiceProvider serviceProvider)
-		{
-			ServiceProvider = serviceProvider;
-		}
-
-		public IServiceProvider ServiceProvider { get; }
-
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		protected virtual void Dispose(bool _)
-		{
-			// nothing to dispose in this fake
-		}
-	}
-
-	private class FakeServiceScopeFactory : IServiceScopeFactory
-	{
-		private readonly Func<IServiceScope> _create;
-
-		public FakeServiceScopeFactory(Func<IServiceScope> create)
-		{
-			_create = create;
-		}
-
-		public int CreateScopeCount { get; private set; }
-
-		public IServiceScope CreateScope()
-		{
-			CreateScopeCount++;
-			return _create();
-		}
-	}
-
-	private class SimpleProvider : IServiceProvider
-	{
-		private readonly object _nq;
-		private readonly object _ws;
-
-		public SimpleProvider(object ws, object nq)
-		{
-			_ws = ws;
-			_nq = nq;
-		}
-
 		public object GetService(Type serviceType)
 		{
 			if ( serviceType == typeof(IWebSocketConnectionsService) )
 			{
-				return _ws;
+				return ws;
 			}
 
-			if ( serviceType == typeof(INotificationQuery) )
-			{
-				return _nq;
-			}
-
-			return null!;
+			return serviceType == typeof(INotificationQuery) ? nq : null!;
 		}
 	}
 }
