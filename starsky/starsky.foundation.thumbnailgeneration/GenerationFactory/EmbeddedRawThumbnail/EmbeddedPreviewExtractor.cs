@@ -35,6 +35,10 @@ public static class EmbeddedPreviewExtractor
 	// Prefer a preview of at least this width; fall back to largest otherwise.
 	private const uint PreferredWidth = 2048;
 
+	// Sanity cap on IFD entry count; prevents pathological/malformed RAW files
+	// from causing huge allocations or hangs. Real RAW files rarely exceed 1000 entries per IFD.
+	private const int MaxIfdEntryCount = 8192;
+
 	/// <summary>
 	///     Tries to extract embedded JPEG previews from a RAW file.
 	/// </summary>
@@ -162,16 +166,23 @@ public static class EmbeddedPreviewExtractor
 
 		var entryCount = ReadUInt16(countBuf, littleEndian);
 
-		// Sanity guard: avoid absurd entry counts that may cause OOM or hangs
-		const int maxEntryCount = 4096; // arbitrary large safety cap
-		switch ( entryCount )
+		switch (entryCount)
 		{
+			// Sanity guard: avoid absurd entry counts that may cause OOM or hangs
 			case 0:
 				return;
-			case > maxEntryCount:
+			case > MaxIfdEntryCount:
+			{
+				var streamPos = input.Position;
+				var streamLen = input.Length;
 				Console.WriteLine(
-					$"[EmbeddedPreviewExtractor] Skipping IFD at offset {offset}: entryCount {entryCount} exceeds MaxEntryCount {maxEntryCount}");
+					$"[EmbeddedPreviewExtractor] IFD at offset {offset} skipped: entryCount {entryCount} exceeds cap {MaxIfdEntryCount} (stream pos: {streamPos}, len: {streamLen})");
+			
+				// Skip this IFD entirely: can't safely read the entries, so we skip to the next IFD pointer
+				// The next IFD pointer should be at: current position + (entryCount * 12) + 4
+				// But since we can't trust this file, just return and don't recurse
 				return;
+			}
 		}
 
 		// Read all IFD entries into a local buffer to avoid many small seeks.
