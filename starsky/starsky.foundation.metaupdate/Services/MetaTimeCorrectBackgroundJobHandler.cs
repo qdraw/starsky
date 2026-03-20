@@ -59,7 +59,7 @@ public sealed class MetaTimeCorrectBackgroundJobHandler(
 			fileIndexResultsList,
 			ApiNotificationType.MetaTimeCorrect);
 		await NotificationToAllAsync(webSocketResponse,
-			CancellationToken.None);
+			cancellationToken);
 	}
 
 	private async Task NotificationToAllAsync<T>(ApiNotificationResponseModel<T> message,

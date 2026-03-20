@@ -31,8 +31,8 @@ public sealed class GeoSyncBackgroundJobHandler(
 		              ?? throw new ArgumentException("Invalid payload");
 		logger.LogInformation(
 			$"GeoSyncFolder started {payload.SubPath} {DateTime.UtcNow.ToShortTimeString()}");
-		var geoBackgroundTask = scopeFactory.CreateScope().ServiceProvider
-			.GetRequiredService<IGeoBackgroundTask>();
+		using var scope = scopeFactory.CreateScope();
+		var geoBackgroundTask = scope.ServiceProvider.GetRequiredService<IGeoBackgroundTask>();
 		var result = await geoBackgroundTask.GeoBackgroundTaskAsync(payload.SubPath,
 			payload.Index,
 			payload.OverwriteLocationNames);

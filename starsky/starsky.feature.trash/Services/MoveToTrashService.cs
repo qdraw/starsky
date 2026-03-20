@@ -111,13 +111,6 @@ public class MoveToTrashService : IMoveToTrashService
 		return _systemTrashService.DetectToUseSystemTrash();
 	}
 
-	private async Task MetaTrashInQueue(Dictionary<string, List<string>> changedFileIndexItemName,
-		List<FileIndexItem> fileIndexResultsList, FileIndexItem inputModel, bool collections)
-	{
-		await _metaUpdateService.UpdateAsync(changedFileIndexItemName,
-			fileIndexResultsList, inputModel, collections, false, 0);
-	}
-
 	public async Task MoveToTrashAsync(MoveToTrashPayload payload)
 	{
 		await _connectionService.ConnectionServiceAsync(payload.MoveToTrashList,
@@ -131,6 +124,13 @@ public class MoveToTrashService : IMoveToTrashService
 
 		await MetaTrashInQueue(payload.ChangedFileIndexItemName,
 			payload.FileIndexResultsList, payload.InputModel, payload.Collections);
+	}
+
+	private async Task MetaTrashInQueue(Dictionary<string, List<string>> changedFileIndexItemName,
+		List<FileIndexItem> fileIndexResultsList, FileIndexItem inputModel, bool collections)
+	{
+		await _metaUpdateService.UpdateAsync(changedFileIndexItemName,
+			fileIndexResultsList, inputModel, collections, false, 0);
 	}
 
 	/// <summary>
@@ -188,7 +188,7 @@ public class MoveToTrashService : IMoveToTrashService
 			return;
 		}
 
-		// Payload items come from JSON where Id is JsonIgnored; remove persisted DB rows by path.
+		// Payload items may originate from JSON; remove persisted DB rows by matching their file paths.
 		var persistedItems = await _query.GetObjectsByFilePathQueryAsync(subPaths);
 		if ( persistedItems.Count == 0 )
 		{

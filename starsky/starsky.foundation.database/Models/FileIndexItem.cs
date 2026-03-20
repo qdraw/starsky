@@ -175,6 +175,7 @@ public sealed class FileIndexItem
 	///     The identifier.
 	/// </value>
 	[Key]
+	[JsonIgnore]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	public int Id { get; set; }
 

@@ -17,11 +17,13 @@ public class MetaUpdateConnectionService : IMetaUpdateConnectionService
 
 	public MetaUpdateConnectionService(IServiceScopeFactory scopeFactory)
 	{
-		_connectionsService = scopeFactory.CreateScope()
+		var scope = scopeFactory.CreateScope();
+		_connectionsService = scope
 			.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
 
-		_notificationQuery = scopeFactory.CreateScope()
+		_notificationQuery = scope
 			.ServiceProvider.GetRequiredService<INotificationQuery>();
+		scope.Dispose();
 	}
 
 	internal MetaUpdateConnectionService(IWebSocketConnectionsService connectionsService,

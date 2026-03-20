@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,22 +8,19 @@ using starsky.foundation.worker.Models;
 namespace starskytest.FakeMocks;
 
 /// <summary>
-/// Test double for <see cref="IUpdateBackgroundTaskQueue"/>.
-///
-/// Important: when constructed with an <see cref="IServiceScopeFactory"/>, this fake
-/// resolves the matching <see cref="IBackgroundJobHandler"/> and executes it synchronously
-/// (awaits <c>ExecuteAsync</c>) before returning from <c>QueueJobAsync</c>.
-///
-/// Rationale: many unit tests in this codebase expect background work (DB updates,
-/// filesystem actions, websocket notifications) to be completed immediately after the
-/// controller or service method returns. Running the handler synchronously avoids
-/// race conditions where assertions run before the background handler finished.
-///
-/// How to change behavior: if you want to simulate true asynchronous/background
-/// execution, modify the implementation in <c>QueueJobAsync</c> to call
-/// <c>Task.Run(() =&gt; handler.ExecuteAsync(...))</c> (or otherwise start the work
-/// without awaiting). To keep deterministic tests, assign that Task to
-/// <c>LastExecutionTask</c> and have tests await it explicitly when needed.
+///     Test double for <see cref="IUpdateBackgroundTaskQueue" />.
+///     Important: when constructed with an <see cref="IServiceScopeFactory" />, this fake
+///     resolves the matching <see cref="IBackgroundJobHandler" /> and executes it synchronously
+///     (awaits <c>ExecuteAsync</c>) before returning from <c>QueueJobAsync</c>.
+///     Rationale: many unit tests in this codebase expect background work (DB updates,
+///     filesystem actions, websocket notifications) to be completed immediately after the
+///     controller or service method returns. Running the handler synchronously avoids
+///     race conditions where assertions run before the background handler finished.
+///     How to change behavior: if you want to simulate true asynchronous/background
+///     execution, modify the implementation in <c>QueueJobAsync</c> to call
+///     <c>Task.Run(() =&gt; handler.ExecuteAsync(...))</c> (or otherwise start the work
+///     without awaiting). To keep deterministic tests, assign that Task to
+///     <c>LastExecutionTask</c> and have tests await it explicitly when needed.
 /// </summary>
 public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 {
@@ -38,6 +36,8 @@ public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 	}
 
 	public int QueueBackgroundWorkItemCalledCounter { get; set; }
+
+	public bool Debug { get; set; }
 
 	public bool QueueBackgroundWorkItemCalled { get; set; }
 
@@ -61,8 +61,10 @@ public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 		// store job for tests
 		LastQueuedJob = job;
 
-		// Debug: print payload to help trace JSON issues in tests
-		System.Console.WriteLine($"[FakeQueue] Queued PayloadJson: {job.PayloadJson}");
+		if ( Debug )
+		{
+			Console.WriteLine($"[FakeQueue] Queued PayloadJson: {job.PayloadJson}");
+		}
 
 		// If a scope factory is provided, attempt to resolve a matching IBackgroundJobHandler and execute synchronously
 		if ( _scopeFactory != null )
