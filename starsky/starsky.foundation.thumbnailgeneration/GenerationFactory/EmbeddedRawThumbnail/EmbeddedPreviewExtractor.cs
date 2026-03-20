@@ -146,68 +146,67 @@ public static class EmbeddedPreviewExtractor
 		return firstIfd != 0;
 	}
 
-	private static void ParseIfdRecursive(
-		Stream input,
-		uint offset,
-		bool littleEndian,
-		List<PreviewCandidate> previews,
-		HashSet<uint> visited,
-		int depth)
+	private static void ParseIfdRecursive(Stream input, uint offset, bool littleEndian, List<PreviewCandidate> previews, HashSet<uint> visited, int depth)
 	{
-		if ( depth > MaxIfdDepth || offset == 0 )
+		while ( true )
 		{
-			return;
-		}
-
-		if ( !visited.Add(offset) )
-		{
-			return; // cycle detected
-		}
-
-		if ( !TrySeek(input, offset) )
-		{
-			return;
-		}
-
-		Span<byte> countBuf = stackalloc byte[2];
-		if ( !TryReadExact(input, countBuf) )
-		{
-			return;
-		}
-
-		var entryCount = ReadUInt16(countBuf, littleEndian);
-
-		// Read all IFD entries into a local buffer to avoid many small seeks.
-		var entryBytes = entryCount * 12;
-		var entryBuf = ArrayPool<byte>.Shared.Rent(entryBytes);
-
-		try
-		{
-			if ( !TryReadExact(input, entryBuf.AsSpan(0, entryBytes)) )
+			if ( depth > MaxIfdDepth || offset == 0 )
 			{
 				return;
 			}
 
-			ParseIfdEntries(
-				input, entryBuf.AsSpan(0, entryBytes),
-				littleEndian, previews, visited, depth);
-		}
-		finally
-		{
-			ArrayPool<byte>.Shared.Return(entryBuf);
-		}
+			if ( !visited.Add(offset) )
+			{
+				return; // cycle detected
+			}
 
-		// Next IFD pointer follows the entry block.
-		Span<byte> nextBuf = stackalloc byte[4];
-		if ( !TryReadExact(input, nextBuf) )
-		{
-			return;
-		}
+			if ( !TrySeek(input, offset) )
+			{
+				return;
+			}
 
-		var nextIfd = ReadUInt32(nextBuf, littleEndian);
-		if ( nextIfd != 0 )
-		{
-			ParseIfdRecursive(input, nextIfd, littleEndian, previews, visited, depth + 1);
+			Span<byte> countBuf = stackalloc byte[2];
+			if ( !TryReadExact(input, countBuf) )
+			{
+				return;
+			}
+
+			var entryCount = ReadUInt16(countBuf, littleEndian);
+
+			// Read all IFD entries into a local buffer to avoid many small seeks.
+			var entryBytes = entryCount * 12;
+			var entryBuf = ArrayPool<byte>.Shared.Rent(entryBytes);
+
+			try
+			{
+				if ( !TryReadExact(input, entryBuf.AsSpan(0, entryBytes)) )
+				{
+					return;
+				}
+
+				ParseIfdEntries(input, entryBuf.AsSpan(0, entryBytes), littleEndian, previews, visited, depth);
+			}
+			finally
+			{
+				ArrayPool<byte>.Shared.Return(entryBuf);
+			}
+
+			// Next IFD pointer follows the entry block.
+			Span<byte> nextBuf = stackalloc byte[4];
+			if ( !TryReadExact(input, nextBuf) )
+			{
+				return;
+			}
+
+			var nextIfd = ReadUInt32(nextBuf, littleEndian);
+			if ( nextIfd != 0 )
+			{
+				offset = nextIfd;
+				depth = depth + 1;
+				continue;
+			}
+
+			break;
 		}
 	}
 
