@@ -51,8 +51,8 @@ public sealed class MetaUpdateConnectionServiceTest
 		// construct
 		_ = new MetaUpdateConnectionService(factory);
 
-		Assert.AreEqual(2, factory.CreateScopeCount,
-			"Expected CreateScope to be called twice in constructor");
+		Assert.AreEqual(1, factory.CreateScopeCount,
+			"Expected CreateScope to be called once in constructor");
 	}
 
 	private class SimpleProvider(object ws, object nq) : IServiceProvider
