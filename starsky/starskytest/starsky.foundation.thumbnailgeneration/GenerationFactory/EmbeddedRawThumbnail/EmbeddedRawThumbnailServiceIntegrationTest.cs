@@ -47,7 +47,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithCreateAnImageJpg_ReturnsFalse()
+	public async Task TryExtractPreview_WithCreateAnImageJpg_ReturnsFalse()
 	{
 		// Arrange
 		var createAnImage = new CreateAnImage();
@@ -58,14 +58,14 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act - JPG is not a RAW file with embedded previews
-		var result = service.TryExtractPreview(tempImagePath, null, null);
+		var result = service.TryExtractPreview(tempImagePath, null, null).Result;
 
 		// Assert
 		Assert.IsFalse(result, "JPEG file should not contain embedded RAW preview");
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithCreateAnImageA6600RawArw_ReturnsTrue()
+	public async Task TryExtractPreview_WithCreateAnImageA6600RawArw_ReturnsTrue()
 	{
 		// Arrange
 		var createAnImageRaw = new CreateAnImageA6600Raw();
@@ -83,7 +83,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
-		var result = service.TryExtractPreview(tempRawPath, null, null);
+		var result = await service.TryExtractPreview(tempRawPath, null, null);
 
 		// Assert
 		// A6600 RAW files should contain embedded JPEG previews
@@ -91,7 +91,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithCreateAnImageA6600Raw_WritesOutput()
+	public async Task TryExtractPreview_WithCreateAnImageA6600Raw_WritesOutput()
 	{
 		// Arrange
 		var createAnImageRaw = new CreateAnImageA6600Raw();
@@ -111,7 +111,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
-		var result = service.TryExtractPreview(tempRawPath, largeOutput, mediumOutput);
+		var result = await service.TryExtractPreview(tempRawPath, largeOutput, mediumOutput);
 
 		// Assert
 		// Fixture contains only the first 50KB of an ARW; candidate detection can work,
@@ -120,7 +120,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithCreateAnImageA6600Raw_LargePreviewOnly()
+	public async Task TryExtractPreview_WithCreateAnImageA6600Raw_LargePreviewOnly()
 	{
 		// Arrange
 		var createAnImageRaw = new CreateAnImageA6600Raw();
@@ -139,7 +139,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
-		var result = service.TryExtractPreview(tempRawPath, largeOutput, null);
+		var result = await service.TryExtractPreview(tempRawPath, largeOutput, null);
 
 		// Assert
 		Assert.IsFalse(result,
@@ -147,7 +147,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithCreateAnImageA6600Raw_MediumPreviewOnly()
+	public async Task TryExtractPreview_WithCreateAnImageA6600Raw_MediumPreviewOnly()
 	{
 		// Arrange
 		var createAnImageRaw = new CreateAnImageA6600Raw();
@@ -166,7 +166,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
-		var result = service.TryExtractPreview(tempRawPath, null, mediumOutput);
+		var result = await service.TryExtractPreview(tempRawPath, null, mediumOutput);
 
 		// Assert
 		Assert.IsTrue(result, "Should extract medium preview only");
@@ -191,7 +191,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
-		var result = await service.TryExtractPreviewAsync(tempRawPath, null, null);
+		var result = await service.TryExtractPreview(tempRawPath, null, null);
 
 		// Assert
 		Assert.IsTrue(result, "Async extraction should work with A6600 RAW");
@@ -219,7 +219,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
-		var result = await service.TryExtractPreviewAsync(tempRawPath, largeOutput, mediumOutput);
+		var result = await service.TryExtractPreview(tempRawPath, largeOutput, mediumOutput);
 
 		// Assert
 		Assert.IsFalse(result,
@@ -244,9 +244,9 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act - Extract multiple times to same file
-		var result1 = service.TryExtractPreview(tempRawPath, null, null);
-		var result2 = service.TryExtractPreview(tempRawPath, null, null);
-		var result3 = service.TryExtractPreview(tempRawPath, null, null);
+		var result1 = service.TryExtractPreview(tempRawPath, null, null).Result;
+		var result2 = service.TryExtractPreview(tempRawPath, null, null).Result;
+		var result3 = service.TryExtractPreview(tempRawPath, null, null).Result;
 
 		// Assert
 		Assert.IsTrue(result1, "First extraction should succeed");
@@ -255,7 +255,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithCreateAnImageA6600Raw_DifferentOutputLocations()
+	public async Task TryExtractPreview_WithCreateAnImageA6600Raw_DifferentOutputLocations()
 	{
 		// Arrange
 		var createAnImageRaw = new CreateAnImageA6600Raw();
@@ -277,8 +277,10 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		Directory.CreateDirectory(dir2);
 
 		// Act - Extract to different directories
-		var result1 = service.TryExtractPreview(tempRawPath, Path.Combine(dir1, "large.jpg"), null);
-		var result2 = service.TryExtractPreview(tempRawPath, Path.Combine(dir2, "large.jpg"), null);
+		var result1 =
+			await service.TryExtractPreview(tempRawPath, Path.Combine(dir1, "large.jpg"), null);
+		var result2 =
+			await service.TryExtractPreview(tempRawPath, Path.Combine(dir2, "large.jpg"), null);
 
 		// Assert
 		Assert.IsFalse(result1,
@@ -288,7 +290,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithCreateAnImageA6600Raw_LargeAndMediumSeparate()
+	public async Task TryExtractPreview_WithCreateAnImageA6600Raw_LargeAndMediumSeparate()
 	{
 		// Arrange
 		var createAnImageRaw = new CreateAnImageA6600Raw();
@@ -308,7 +310,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
-		var result = service.TryExtractPreview(tempRawPath, largeOutput, mediumOutput);
+		var result = await service.TryExtractPreview(tempRawPath, largeOutput, mediumOutput);
 
 		// Assert
 		Assert.IsFalse(result,
@@ -316,7 +318,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithCreateAnImageJpg_CreatedAndTested()
+	public async Task TryExtractPreview_WithCreateAnImageJpg_CreatedAndTested()
 	{
 		// Arrange
 		var createAnImage = new CreateAnImage();
@@ -332,7 +334,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act - JPG is not RAW, should fail
-		var result = service.TryExtractPreview(jpgPath, null, null);
+		var result = await service.TryExtractPreview(jpgPath, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Regular JPEG should not be extracted as RAW");

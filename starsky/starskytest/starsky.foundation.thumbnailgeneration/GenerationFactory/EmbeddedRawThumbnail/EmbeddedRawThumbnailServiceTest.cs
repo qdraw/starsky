@@ -124,29 +124,30 @@ public class EmbeddedRawThumbnailServiceTest
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithNonExistentFile_ReturnsFalse()
+	public async Task TryExtractPreview_WithNonExistentFile_ReturnsFalse()
 	{
 		// Arrange
-		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger(), new FakeImageOptimisationService());
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 		var nonExistent = Path.Combine(_tempDir, "nonexistent.arw");
 
 		// Act
-		var result = service.TryExtractPreview(nonExistent, null, null);
+		var result = await service.TryExtractPreview(nonExistent, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should return false for nonexistent file");
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithValidRawFile_ReturnsTrue()
+	public async Task TryExtractPreview_WithValidRawFile_ReturnsTrue()
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 		var rawFile = Path.Combine(_tempDir, "test.arw");
-		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
+		await File.WriteAllBytesAsync(rawFile, CreateMinimalTiffData(),
+			TestContext.CancellationToken);
 
 		// Act
-		var result = service.TryExtractPreview(rawFile, null, null);
+		var result = await service.TryExtractPreview(rawFile, null, null);
 
 		// Assert
 		Assert.IsTrue(result, "Should extract preview from valid RAW");
@@ -154,33 +155,35 @@ public class EmbeddedRawThumbnailServiceTest
 
 
 	[TestMethod]
-	public void TryExtractPreview_WithBothOutputs_ReturnsTrue()
+	public async Task TryExtractPreview_WithBothOutputs_ReturnsTrue()
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 		var rawFile = Path.Combine(_tempDir, "test.arw");
-		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
+		await File.WriteAllBytesAsync(rawFile, CreateMinimalTiffData(),
+			TestContext.CancellationToken);
 
 		var largeOutput = Path.Combine(_tempDir, "large.jpg");
 		var mediumOutput = Path.Combine(_tempDir, "medium.jpg");
 
 		// Act
-		var result = service.TryExtractPreview(rawFile, largeOutput, mediumOutput);
+		var result = await service.TryExtractPreview(rawFile, largeOutput, mediumOutput);
 
 		// Assert
 		Assert.IsTrue(result, "Should extract both previews");
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithInvalidTiffData_ReturnsFalse()
+	public async Task TryExtractPreview_WithInvalidTiffData_ReturnsFalse()
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 		var rawFile = Path.Combine(_tempDir, "invalid.arw");
-		File.WriteAllBytes(rawFile, new byte[100]); // Random data
+		await File.WriteAllBytesAsync(rawFile, new byte[100],
+			TestContext.CancellationToken); // Random data
 
 		// Act
-		var result = service.TryExtractPreview(rawFile, null, null);
+		var result = await service.TryExtractPreview(rawFile, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with invalid TIFF data");
@@ -195,7 +198,7 @@ public class EmbeddedRawThumbnailServiceTest
 		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
 		// Act
-		var result = service.TryExtractPreview(rawFile, null, null);
+		var result = service.TryExtractPreview(rawFile, null, null).Result;
 
 		// Assert
 		// Should still return true because preview exists, just not written
@@ -212,7 +215,7 @@ public class EmbeddedRawThumbnailServiceTest
 			TestContext.CancellationToken);
 
 		// Act
-		var result = await service.TryExtractPreviewAsync(rawFile, null, null);
+		var result = await service.TryExtractPreview(rawFile, null, null);
 
 		// Assert
 		Assert.IsTrue(result, "Async method should return same result");
@@ -226,7 +229,7 @@ public class EmbeddedRawThumbnailServiceTest
 		var nonExistent = Path.Combine(_tempDir, "nonexistent.arw");
 
 		// Act
-		var result = await service.TryExtractPreviewAsync(nonExistent, null, null);
+		var result = await service.TryExtractPreview(nonExistent, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Async should return false for nonexistent file");
@@ -234,43 +237,44 @@ public class EmbeddedRawThumbnailServiceTest
 
 
 	[TestMethod]
-	public void TryExtractPreview_WithEmptyFile_ReturnsFalse()
+	public async Task TryExtractPreview_WithEmptyFile_ReturnsFalse()
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 		var rawFile = Path.Combine(_tempDir, "empty.arw");
-		File.WriteAllBytes(rawFile, []);
+		await File.WriteAllBytesAsync(rawFile, [], TestContext.CancellationToken);
 
 		// Act
-		var result = service.TryExtractPreview(rawFile, null, null);
+		var result = await service.TryExtractPreview(rawFile, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with empty file");
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithTinyFile_ReturnsFalse()
+	public async Task TryExtractPreview_WithTinyFile_ReturnsFalse()
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 		var rawFile = Path.Combine(_tempDir, "tiny.arw");
-		File.WriteAllBytes(rawFile, new byte[3]); // Less than header
+		await File.WriteAllBytesAsync(rawFile, new byte[3],
+			TestContext.CancellationToken); // Less than header
 
 		// Act
-		var result = service.TryExtractPreview(rawFile, null, null);
+		var result = await service.TryExtractPreview(rawFile, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with too small file");
 	}
 
 	[TestMethod]
-	public void TryExtractPreview_WithInvalidPath_ReturnsFalse()
+	public async Task TryExtractPreview_WithInvalidPath_ReturnsFalse()
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
-		var result = service.TryExtractPreview("", null, null);
+		var result = await service.TryExtractPreview("", null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with empty path");
@@ -289,7 +293,7 @@ public class EmbeddedRawThumbnailServiceTest
 			File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
 			// Act
-			var result = service.TryExtractPreview(rawFile, null, null);
+			var result = service.TryExtractPreview(rawFile, null, null).Result;
 
 			// Assert
 			Assert.IsTrue(result, $"Should work with {ext} extension");
@@ -307,8 +311,8 @@ public class EmbeddedRawThumbnailServiceTest
 		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
 		// Act
-		var result1 = service.TryExtractPreview(rawFile, null, null);
-		var result2 = service.TryExtractPreview(rawFile, null, null);
+		var result1 = service.TryExtractPreview(rawFile, null, null).Result;
+		var result2 = service.TryExtractPreview(rawFile, null, null).Result;
 
 		// Assert
 		Assert.AreEqual(result1, result2, "Multiple calls should be consistent");
@@ -316,17 +320,18 @@ public class EmbeddedRawThumbnailServiceTest
 
 
 	[TestMethod]
-	public void TryExtractPreview_OutputPathWithSpecialCharacters_Works()
+	public async Task TryExtractPreview_OutputPathWithSpecialCharacters_Works()
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 		var rawFile = Path.Combine(_tempDir, "test.arw");
-		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
+		await File.WriteAllBytesAsync(rawFile, CreateMinimalTiffData(),
+			TestContext.CancellationToken);
 
 		var output = Path.Combine(_tempDir, "output_[special]_characters.jpg");
 
 		// Act
-		var result = service.TryExtractPreview(rawFile, output, null);
+		var result = await service.TryExtractPreview(rawFile, output, null);
 
 		// Assert
 		Assert.IsTrue(result, "Should work with special characters in path");

@@ -13,6 +13,8 @@ public class CreateAnImageSonyA100ArwRawTest
 {
 	private string _tempOutputDir = null!;
 
+	public TestContext TestContext { get; set; }
+
 	[TestInitialize]
 	public void Setup()
 	{
@@ -52,7 +54,7 @@ public class CreateAnImageSonyA100ArwRawTest
 		var largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
 		var mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
 
-		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger(), new FakeImageOptimisationService());
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
 		var result = await service.TryExtractPreview(fixture.FullFilePath,
@@ -63,10 +65,8 @@ public class CreateAnImageSonyA100ArwRawTest
 		Assert.IsTrue(File.Exists(largeOutput), "Large preview output should exist");
 
 		var bytes = await File.ReadAllBytesAsync(largeOutput, TestContext.CancellationToken);
-		Assert.IsGreaterThan(2, bytes.Length, "Output JPEG should contain data");
+		Assert.IsGreaterThan(bytes.Length, 2, "Output JPEG should contain data");
 		Assert.AreEqual(0xFF, bytes[0], "JPEG SOI marker byte 1");
 		Assert.AreEqual(0xD8, bytes[1], "JPEG SOI marker byte 2");
 	}
-
-	public TestContext TestContext { get; set; }
 }
