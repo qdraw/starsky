@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -24,6 +25,8 @@ using starsky.foundation.video.Process.Interfaces;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory;
 
+[SuppressMessage("Usage",
+	"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 [Service(typeof(IThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class ThumbnailService(
 	ISelectorStorage selectorStorage,
@@ -33,7 +36,7 @@ public class ThumbnailService(
 	IVideoProcess videoProcess,
 	IFileHashSubPathStorage fileHashSubPathStorage,
 	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator,
-	IEmbeddedRawThumbnailGenerator? embeddedRawThumbnailGenerator = null)
+	IEmbeddedRawThumbnailGenerator embeddedRawThumbnailGenerator)
 	: IThumbnailService
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>

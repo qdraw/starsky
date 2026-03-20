@@ -36,7 +36,7 @@ public sealed class WebHtmlPublishServiceTest
 			new FakeIUpdateStatusGeneratedThumbnailService(),
 			new FakeIVideoProcess(new FakeSelectorStorage(storage)),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+			new FakeINativePreviewThumbnailGenerator(), new FakeIEmbeddedRawThumbnailGenerator());
 	}
 
 	[TestMethod]

@@ -26,7 +26,7 @@ public sealed class ToBase64DataUriListTest
 			new FakeIUpdateStatusGeneratedThumbnailService(),
 			new FakeIVideoProcess(new FakeSelectorStorage(fakeStorage)),
 			new FileHashSubPathStorage(new FakeSelectorStorage(fakeStorage), new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+			new FakeINativePreviewThumbnailGenerator(), new FakeIEmbeddedRawThumbnailGenerator());
 
 		var result = await new ToBase64DataUriList(thumbnailService)
 			.Create(
@@ -45,7 +45,7 @@ public sealed class ToBase64DataUriListTest
 			new FakeIUpdateStatusGeneratedThumbnailService(),
 			new FakeIVideoProcess(new FakeSelectorStorage(fakeStorage)),
 			new FileHashSubPathStorage(new FakeSelectorStorage(fakeStorage), new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+			new FakeINativePreviewThumbnailGenerator(), new FakeIEmbeddedRawThumbnailGenerator());
 
 		var result = await new ToBase64DataUriList(thumbnailService)
 			.Create(

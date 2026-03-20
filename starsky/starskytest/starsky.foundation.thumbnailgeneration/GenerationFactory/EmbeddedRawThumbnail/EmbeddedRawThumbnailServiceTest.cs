@@ -3,9 +3,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
-using starsky.foundation.thumbnailgeneration.Services;
 
-namespace starskytest.starsky.foundation.thumbnailgeneration.Services;
+namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
 [TestClass]
 public class EmbeddedRawThumbnailServiceTest

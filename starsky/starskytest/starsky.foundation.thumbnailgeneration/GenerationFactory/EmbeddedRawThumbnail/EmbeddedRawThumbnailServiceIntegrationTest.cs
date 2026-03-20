@@ -4,11 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
-using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 
-namespace starskytest.starsky.foundation.thumbnailgeneration.Services;
+namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
 /// <summary>
 ///     Integration tests for the embedded RAW thumbnail service.
@@ -18,16 +17,6 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services;
 public class EmbeddedRawThumbnailServiceIntegrationTest
 {
 	private string _tempOutputDir = null!;
-
-	private static void WriteImmutableArrayToFile(string path, 
-		System.Collections.Immutable.ImmutableArray<byte> bytes)
-	{
-		using var fs = new FileStream(path, FileMode.Create, FileAccess.Write);
-		foreach ( var b in bytes )
-		{
-			fs.WriteByte(b);
-		}
-	}
 
 	[TestInitialize]
 	public void Setup()
@@ -39,16 +28,18 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	[TestCleanup]
 	public void Cleanup()
 	{
-		if ( Directory.Exists(_tempOutputDir) )
+		if ( !Directory.Exists(_tempOutputDir) )
 		{
-			try
-			{
-				Directory.Delete(_tempOutputDir, true);
-			}
-			catch
-			{
-				// Ignore cleanup errors
-			}
+			return;
+		}
+
+		try
+		{
+			Directory.Delete(_tempOutputDir, true);
+		}
+		catch
+		{
+			// Ignore cleanup errors
 		}
 	}
 
@@ -57,7 +48,8 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	{
 		// Arrange
 		var createAnImage = new CreateAnImage();
-		string tempImagePath = Path.Combine(_tempOutputDir, "test_image.jpg");
+		File.Exists(createAnImage.FullFilePath);
+		var tempImagePath = Path.Combine(_tempOutputDir, "test_image.jpg");
 		File.WriteAllBytes(tempImagePath, CreateAnImage.Bytes.ToArray());
 
 		var service = new EmbeddedRawThumbnailService();
@@ -82,7 +74,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			return;
 		}
 
-		string tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
+		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
 		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
 
 		var service = new EmbeddedRawThumbnailService();
@@ -107,11 +99,11 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			return;
 		}
 
-		string tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
+		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
 		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
 
-		string largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
-		string mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
+		var largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
+		var mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
 
 		var service = new EmbeddedRawThumbnailService();
 
@@ -136,10 +128,10 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			return;
 		}
 
-		string tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
+		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
 		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
 
-		string largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
+		var largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
 
 		var service = new EmbeddedRawThumbnailService();
 
@@ -163,10 +155,10 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			return;
 		}
 
-		string tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
+		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
 		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
 
-		string mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
+		var mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
 
 		var service = new EmbeddedRawThumbnailService();
 
@@ -189,8 +181,9 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			return;
 		}
 
-		string tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
+		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
+		await File.WriteAllBytesAsync(tempRawPath, 
+			[.. createAnImageRaw.Bytes], TestContext.CancellationToken);
 
 		var service = new EmbeddedRawThumbnailService();
 
@@ -213,11 +206,12 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			return;
 		}
 
-		string tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
+		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
+		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes], 
+			TestContext.CancellationToken);
 
-		string largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
-		string mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
+		var largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
+		var mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
 
 		var service = new EmbeddedRawThumbnailService();
 
@@ -241,7 +235,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			return;
 		}
 
-		string tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
+		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
 		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
 
 		var service = new EmbeddedRawThumbnailService();
@@ -269,13 +263,13 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			return;
 		}
 
-		string tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
+		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
 		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
 
 		var service = new EmbeddedRawThumbnailService();
 
-		string dir1 = Path.Combine(_tempOutputDir, "dir1");
-		string dir2 = Path.Combine(_tempOutputDir, "dir2");
+		var dir1 = Path.Combine(_tempOutputDir, "dir1");
+		var dir2 = Path.Combine(_tempOutputDir, "dir2");
 		Directory.CreateDirectory(dir1);
 		Directory.CreateDirectory(dir2);
 
@@ -302,11 +296,11 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			return;
 		}
 
-		string tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
+		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
 		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
 
-		string largeOutput = Path.Combine(_tempOutputDir, "large.jpg");
-		string mediumOutput = Path.Combine(_tempOutputDir, "medium.jpg");
+		var largeOutput = Path.Combine(_tempOutputDir, "large.jpg");
+		var mediumOutput = Path.Combine(_tempOutputDir, "medium.jpg");
 
 		var service = new EmbeddedRawThumbnailService();
 
@@ -323,7 +317,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	{
 		// Arrange
 		var createAnImage = new CreateAnImage();
-		string jpgPath = createAnImage.FullFilePath;
+		var jpgPath = createAnImage.FullFilePath;
 
 		// Skip if test image doesn't exist
 		if ( !File.Exists(jpgPath) )
@@ -354,20 +348,22 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		// Verify it's a real ARW file
-		Assert.IsTrue(createAnImageRaw.Bytes.Length > 0, "A6600 RAW bytes should not be empty");
+		Assert.IsNotEmpty(createAnImageRaw.Bytes, "A6600 RAW bytes should not be empty");
 
 		// First 4 bytes should be TIFF header
 		var header = new byte[4];
-		for ( int i = 0; i < 4; i++ )
+		for ( var i = 0; i < 4; i++ )
 		{
 			header[i] = createAnImageRaw.Bytes[i];
 		}
 
-		bool isValidTiff = (header[0] == 'I' && header[1] == 'I') // Little-endian
-							|| (header[0] == 'M' && header[1] == 'M'); // Big-endian
+		var isValidTiff = (header[0] == 'I' && header[1] == 'I') // Little-endian
+		                  || (header[0] == 'M' && header[1] == 'M'); // Big-endian
 
 		Assert.IsTrue(isValidTiff, "A6600 RAW should be a valid TIFF-based file");
 	}
+
+	public TestContext TestContext { get; set; }
 }
 
 

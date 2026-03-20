@@ -64,7 +64,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 			_fakeIUpdateStatusGeneratedThumbnailService,
 			new FakeIVideoProcess(selectorStorage),
 			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator()
+			new FakeINativePreviewThumbnailGenerator(), new FakeIEmbeddedRawThumbnailGenerator()
 		);
 	}
 
@@ -78,7 +78,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 			_fakeIUpdateStatusGeneratedThumbnailService,
 			new FakeIVideoProcess(selectorStorage),
 			hashService,
-			new FakeINativePreviewThumbnailGenerator()
+			new FakeINativePreviewThumbnailGenerator(), new FakeIEmbeddedRawThumbnailGenerator()
 		);
 	}
 
@@ -141,7 +141,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 			_appSettings, new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
 			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(_selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+			new FakeINativePreviewThumbnailGenerator(), new FakeIEmbeddedRawThumbnailGenerator());
 
 		var isCreated = await sut.GenerateThumbnail(
 			_fakeIStorageImageSubPathVideo);

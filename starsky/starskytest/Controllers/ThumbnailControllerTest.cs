@@ -171,7 +171,7 @@ public sealed class ThumbnailControllerTest
 			new FakeIUpdateStatusGeneratedThumbnailService(),
 			new FakeIVideoProcess(new FakeSelectorStorage(storage)),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+			new FakeINativePreviewThumbnailGenerator(), new FakeIEmbeddedRawThumbnailGenerator());
 
 		await service.GenerateThumbnail(createAnImage.FilePath!, createAnImage.FileHash!);
 
@@ -217,7 +217,7 @@ public sealed class ThumbnailControllerTest
 			new FakeIUpdateStatusGeneratedThumbnailService(),
 			new FakeIVideoProcess(new FakeSelectorStorage(storage)),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+			new FakeINativePreviewThumbnailGenerator(), new FakeIEmbeddedRawThumbnailGenerator());
 
 		await thumbnailService.GenerateThumbnail(createAnImage.FilePath!, createAnImage.FileHash!);
 
