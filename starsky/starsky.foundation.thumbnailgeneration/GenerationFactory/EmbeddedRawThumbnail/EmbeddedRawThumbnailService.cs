@@ -3,15 +3,16 @@ using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.thumbnailgeneration.Services;
 
-namespace starsky.foundation.thumbnailgeneration.Services;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
 /// <summary>
 ///     Service for extracting embedded JPEG previews from RAW image files.
 ///     Supports: CR2 (Canon), NEF (Nikon), ARW (Sony), DNG (Adobe)
 /// </summary>
 [Service(typeof(IEmbeddedRawThumbnailService),
-	InjectionLifetime = InjectionLifetime.Singleton)]
+	InjectionLifetime = InjectionLifetime.Scoped)]
 public class EmbeddedRawThumbnailService : IEmbeddedRawThumbnailService
 {
 	/// <summary>

@@ -24,10 +24,8 @@ public static class EmbeddedPreviewExtractor
 	const ushort TagSubIfds = 0x014A;
 	const ushort TagImageWidth = 0x0100;
 	const ushort TagImageHeight = 0x0101;
-	const ushort TagNewSubfileType = 0x00FE;
 
 	const ushort TiffMagicLe = 0x002A;
-	const ushort TiffMagicBe = 0x002A; // same value, byte order already applied
 
 	const int MaxIfdDepth = 6;
 	const int MaxPreviews = 32;
@@ -347,7 +345,6 @@ public static class EmbeddedPreviewExtractor
 		}
 
 		uint sum = 0;
-		int stride = type == 3 ? 2 : 4;
 		Span<byte> b = stackalloc byte[4];
 
 		for ( uint i = 0; i < n; i++ )

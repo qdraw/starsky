@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;

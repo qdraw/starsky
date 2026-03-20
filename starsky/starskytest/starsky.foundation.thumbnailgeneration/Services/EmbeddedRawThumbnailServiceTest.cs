@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.Services;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.Services;
@@ -36,21 +37,39 @@ public class EmbeddedRawThumbnailServiceTest
 
 	private static byte[] CreateMinimalTiffData(int jpegSize = 5000)
 	{
-		var data = new byte[8 + 18 + jpegSize]; // header + ifd + jpeg
+		const int ifdOffset = 8;
+		const int entryCount = 3; // width + jpeg offset + jpeg length
+		const int ifdLength = 2 + (entryCount * 12) + 4;
+		var jpegOffset = ifdOffset + ifdLength;
+		var data = new byte[jpegOffset + jpegSize]; // header + ifd + jpeg
 
 		// TIFF header (little-endian)
 		data[0] = (byte)'I';
 		data[1] = (byte)'I';
 		data[2] = 42;
 		data[3] = 0;
-		data[4] = 8;
+		data[4] = ifdOffset;
 		data[5] = 0;
 		data[6] = 0;
 		data[7] = 0;
 
 		// IFD
-		int ifdPos = 8;
-		data[ifdPos++] = 1; // 1 entry
+		int ifdPos = ifdOffset;
+		data[ifdPos++] = entryCount;
+		data[ifdPos++] = 0;
+
+		// TAG_IMAGE_WIDTH (0x0100), LONG, count=1, value=3000
+		data[ifdPos++] = 0x00;
+		data[ifdPos++] = 0x01;
+		data[ifdPos++] = 4;
+		data[ifdPos++] = 0;
+		data[ifdPos++] = 1;
+		data[ifdPos++] = 0;
+		data[ifdPos++] = 0;
+		data[ifdPos++] = 0;
+		data[ifdPos++] = 0xB8; // 3000 LE
+		data[ifdPos++] = 0x0B;
+		data[ifdPos++] = 0;
 		data[ifdPos++] = 0;
 
 		// TAG_JPEG_OFFSET
@@ -62,10 +81,24 @@ public class EmbeddedRawThumbnailServiceTest
 		data[ifdPos++] = 0;
 		data[ifdPos++] = 0;
 		data[ifdPos++] = 0;
-		data[ifdPos++] = 26; // Offset (8 + 18 = 26)
+		data[ifdPos++] = (byte)(jpegOffset & 0xFF);
+		data[ifdPos++] = (byte)((jpegOffset >> 8) & 0xFF);
+		data[ifdPos++] = 0;
+		data[ifdPos++] = 0;
+
+		// TAG_JPEG_LENGTH
+		data[ifdPos++] = 0x02;
+		data[ifdPos++] = 0x02;
+		data[ifdPos++] = 4;
+		data[ifdPos++] = 0;
+		data[ifdPos++] = 1;
 		data[ifdPos++] = 0;
 		data[ifdPos++] = 0;
 		data[ifdPos++] = 0;
+		data[ifdPos++] = (byte)(jpegSize & 0xFF);
+		data[ifdPos++] = (byte)((jpegSize >> 8) & 0xFF);
+		data[ifdPos++] = (byte)((jpegSize >> 16) & 0xFF);
+		data[ifdPos++] = (byte)((jpegSize >> 24) & 0xFF);
 
 		// Next IFD
 		data[ifdPos++] = 0;
@@ -74,7 +107,7 @@ public class EmbeddedRawThumbnailServiceTest
 		data[ifdPos] = 0;
 
 		// JPEG data
-		int jpegPos = 26;
+		int jpegPos = jpegOffset;
 		data[jpegPos++] = 0xFF;
 		data[jpegPos++] = 0xD8;
 		for ( int i = 0; i < jpegSize - 4; i++ )
