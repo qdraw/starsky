@@ -99,6 +99,79 @@ public class SharedGenerateTest : VerifyBase
 		await Verify(result);
 	}
 
+	[TestMethod]
+	public async Task GenerateThumbnail_SomeSizesExist_AttemptsMissingGeneration()
+	{
+		// Arrange - Simulate scenario where Small and TinyMeta already exist
+		// but ExtraLarge and Large don't
+		var fakeLogger = new FakeIWebLogger();
+		
+		var combinedStorage = new FakeIStorage(["/"], 
+			["/test.jpg", "/6GNRDDAMA2YQFRFAGRPH7XEOYY@300.jpg", "/6GNRDDAMA2YQFRFAGRPH7XEOYY@meta.jpg"],
+			new List<byte[]> { new byte[1000], new byte[100], new byte[100] });
+		
+		var fakeSelectorStorage = new FakeSelectorStorage(combinedStorage);
+		var sharedGenerate = new SharedGenerate(fakeSelectorStorage, fakeLogger);
+
+		const string singleSubPath = "/test.jpg";
+		const string fileHash = "6GNRDDAMA2YQFRFAGRPH7XEOYY";
+		const ThumbnailImageFormat imageFormat = ThumbnailImageFormat.jpg;
+		
+		var generationCallCount = 0;
+		var generatedSizes = new List<ThumbnailSize>();
+		
+		Task<GenerationResultModel> MockResizeThumbnailFromSourceImage(
+			ThumbnailSize biggestThumbnailSize, string _, string __, ThumbnailImageFormat ___)
+		{
+			generationCallCount++;
+			generatedSizes.Add(biggestThumbnailSize);
+			return Task.FromResult(new GenerationResultModel
+			{
+				Success = true,
+				Size = biggestThumbnailSize,
+				FileHash = fileHash,
+				SubPath = singleSubPath,
+				ToGenerate = false,
+				IsNotFound = false,
+				ImageFormat = imageFormat,
+				ErrorLog = false,
+				ErrorMessage = string.Empty
+			});
+		}
+
+		// Request all sizes: ExtraLarge, Large, Small, TinyMeta
+		var thumbnailSizes = new List<ThumbnailSize> 
+		{ 
+			ThumbnailSize.ExtraLarge, 
+			ThumbnailSize.Large, 
+			ThumbnailSize.Small, 
+			ThumbnailSize.TinyMeta 
+		};
+
+		// Act - Should attempt to generate missing sizes (ExtraLarge and Large) 
+		// even though Small and TinyMeta already exist in storage
+		var results = await sharedGenerate.GenerateThumbnail(
+			MockResizeThumbnailFromSourceImage,
+			_ => true,
+			singleSubPath, fileHash, imageFormat, thumbnailSizes);
+
+		// Assert
+		var resultList = results.ToList();
+		Assert.IsNotNull(resultList);
+		
+		// Should have results for all 4 sizes
+		Assert.HasCount(4, resultList);
+		
+		// Generation should have been attempted for at least the largest missing size
+		// (With the bug fix, it should attempt to generate, whereas before it would skip)
+		Assert.IsGreaterThan(0, generationCallCount, 
+			"Generator should have been called to create missing sizes");
+		
+		// Verify that ExtraLarge was in the generated sizes list (it's the largest)
+		Assert.Contains(ThumbnailSize.ExtraLarge, generatedSizes,
+			"ExtraLarge should have been generated from source image");
+	}
+
 	/// <summary>
 	///     Validator for the GenerationResultModel
 	/// </summary>

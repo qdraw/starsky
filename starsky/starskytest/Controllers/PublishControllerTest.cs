@@ -9,8 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.webhtmlpublish.Interfaces;
+using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.worker.Interfaces;
@@ -26,12 +29,14 @@ namespace starskytest.Controllers;
 public sealed class PublishControllerTest
 {
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
+	private readonly IServiceScopeFactory _serviceScopeFactory;
 
 	public PublishControllerTest()
 	{
 		// Inject Fake Exiftool; dependency injection
 		var services = new ServiceCollection();
 		services.AddSingleton<IExifTool, FakeExifTool>();
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
 		// Fake the readmeta output
 		services.AddSingleton<IReadMeta, FakeReadMeta>();
@@ -63,6 +68,9 @@ public sealed class PublishControllerTest
 		services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
 		services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 
+		services.AddSingleton<IBackgroundJobHandler, PublishCreateBackgroundJobHandler>();
+		services.AddSingleton<IWebHtmlPublishService, FakeIWebHtmlPublishService>();
+
 		// build the service
 		var serviceProvider = services.BuildServiceProvider();
 		// get the service
@@ -70,13 +78,14 @@ public sealed class PublishControllerTest
 
 		// get the background helper
 		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
 
 	[TestMethod]
 	public void PublishGet_List()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(), new FakeIMetaInfo(null!),
+			 new FakeIMetaInfo(null!),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -90,11 +99,7 @@ public sealed class PublishControllerTest
 	public async Task PublishCreate_newItem()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			}),
+			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -109,11 +114,7 @@ public sealed class PublishControllerTest
 	public async Task PublishCreate_newItem_readonly()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.ReadOnly }
-			}),
+			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.ReadOnly }]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -127,22 +128,24 @@ public sealed class PublishControllerTest
 	[TestMethod]
 	public async Task PublishCreate_FakeBg_Expect_Generate_FakeZip_newItem()
 	{
-		var fakeBg = new FakeIUpdateBackgroundTaskQueue();
-		var fakeIWebHtmlPublishService = new FakeIWebHtmlPublishService();
+		var fakeBg = new FakeIUpdateBackgroundTaskQueue(_serviceScopeFactory);
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			fakeIWebHtmlPublishService,
-			new FakeIMetaInfo(new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			}),
+			new FakeIMetaInfo([
+				new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
+			]),
 			new FakeSelectorStorage(),
 			fakeBg, new FakeIWebLogger());
 
 		await controller.PublishCreateAsync("/test.jpg",
 			"test", "test", true);
 
-		Assert.HasCount(1, fakeIWebHtmlPublishService.ItemNamesGenerateZip);
-		Assert.AreEqual("test", fakeIWebHtmlPublishService.ItemNamesGenerateZip[0]);
+		var webHtmlPublishService =
+			_serviceScopeFactory.CreateScope().ServiceProvider
+				.GetRequiredService<IWebHtmlPublishService>() as FakeIWebHtmlPublishService;
+
+		Assert.IsNotNull(webHtmlPublishService);
+		Assert.HasCount(1, webHtmlPublishService.ItemNamesGenerateZip);
+		Assert.AreEqual("test", webHtmlPublishService.ItemNamesGenerateZip[0]);
 	}
 
 	[TestMethod]
@@ -150,12 +153,8 @@ public sealed class PublishControllerTest
 	{
 		var controller = new PublishController(new AppSettings(),
 			new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
 			new FakeIMetaInfo(
-				new List<FileIndexItem>
-				{
-					new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }
-				}
+				[new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }]
 			),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
@@ -173,7 +172,6 @@ public sealed class PublishControllerTest
 		// Arrange
 		var controller = new PublishController(new AppSettings(),
 			new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
 			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
@@ -192,13 +190,9 @@ public sealed class PublishControllerTest
 	public async Task PublishCreate_InvalidResult()
 	{
 		var controller = new PublishController(new AppSettings(),
-			new FakeIPublishPreflight(new List<AppSettingsPublishProfiles>(), false),
-			new FakeIWebHtmlPublishService(),
+			new FakeIPublishPreflight([], false),
 			new FakeIMetaInfo(
-				new List<FileIndexItem>
-				{
-					new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }
-				}
+				[new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }]
 			),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
@@ -215,15 +209,11 @@ public sealed class PublishControllerTest
 		var appSettings =
 			new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage(
-			new List<string> { Path.DirectorySeparatorChar + "test" },
-			new List<string> { Path.DirectorySeparatorChar + "test.zip" });
+			[Path.DirectorySeparatorChar + "test"],
+			[Path.DirectorySeparatorChar + "test.zip"]);
 
 		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			}),
+			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(storage),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -240,15 +230,11 @@ public sealed class PublishControllerTest
 		var appSettings =
 			new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage(
-			new List<string> { Path.DirectorySeparatorChar + "test" },
-			new List<string> { Path.DirectorySeparatorChar + "test.zip" });
+			[Path.DirectorySeparatorChar + "test"],
+			[Path.DirectorySeparatorChar + "test.zip"]);
 
 		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>
-			{
-				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			}),
+			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(storage),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -265,8 +251,7 @@ public sealed class PublishControllerTest
 	public void Exist_EmptyString()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>()),
+			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
 		var actionResult = controller.Exist(string.Empty) as JsonResult;
@@ -278,7 +263,6 @@ public sealed class PublishControllerTest
 	public void Exist_ModelState()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIWebHtmlPublishService(),
 			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());

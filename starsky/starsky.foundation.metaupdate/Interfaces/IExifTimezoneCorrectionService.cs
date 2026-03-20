@@ -4,7 +4,8 @@ using starsky.foundation.metaupdate.Models;
 namespace starsky.foundation.metaupdate.Interfaces;
 
 /// <summary>
-///     Service to correct EXIF timestamps for images recorded in the wrong timezone or with custom offsets
+///     Service to correct EXIF timestamps for images recorded in the wrong timezone or with custom
+///     offsets
 /// </summary>
 public interface IExifTimezoneCorrectionService
 {
@@ -41,4 +42,9 @@ public interface IExifTimezoneCorrectionService
 	Task<List<ExifTimezoneCorrectionResult>> CorrectTimezoneAsync(
 		List<FileIndexItem> fileIndexItems,
 		IExifTimeCorrectionRequest request);
+
+	Task QueueCorrectionTask(
+		List<ExifTimezoneCorrectionResult> validateResults,
+		IExifTimeCorrectionRequest request,
+		string correctionType);
 }

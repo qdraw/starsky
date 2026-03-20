@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,9 +14,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.metaupdate.Interfaces;
+using starsky.foundation.metaupdate.Models;
 using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -42,7 +45,7 @@ public sealed class MetaReplaceControllerTest
 	private readonly AppSettings _appSettings;
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly CreateAnImage _createAnImage;
-	private readonly IStorage _iStorage;
+	private readonly StorageSubPathFilesystem _iStorage;
 	private readonly Query _query;
 
 	public MetaReplaceControllerTest()
@@ -64,6 +67,12 @@ public sealed class MetaReplaceControllerTest
 
 		// Fake the readMeta output
 		services.AddSingleton<IReadMeta, FakeReadMeta>();
+
+		// Query
+		services.AddSingleton(context);
+
+		services.AddSingleton<IQuery>(_query);
+		services.AddSingleton<IMetaPreflight, MetaPreflight>();
 
 		// Inject Config helper
 		services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -130,17 +139,20 @@ public sealed class MetaReplaceControllerTest
 		await _query.GetObjectByFilePathAsync(_createAnImage.DbPath);
 	}
 
-	private static IServiceScopeFactory NewScopeFactory()
+	private IServiceScopeFactory NewScopeFactory()
 	{
 		var services = new ServiceCollection();
-		services.AddSingleton<IMetaPreflight, MetaPreflight>();
+		services.AddSingleton<IMetaPreflight>(new TestMetaPreflight(_query));
+		services.AddSingleton<IQuery>(_query);
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		services.AddSingleton<AppSettings>();
-		services.AddSingleton<IStorage, FakeIStorage>();
-		services.AddSingleton<ISelectorStorage, SelectorStorage>();
+		services.AddSingleton<ISelectorStorage>(new FakeSelectorStorage(_iStorage));
 		services.AddSingleton<IExifTool, FakeExifTool>();
-		services.AddSingleton<IMetaReplaceService, FakeIMetaReplaceService>();
+		services.AddSingleton<IMetaReplaceService, MetaReplaceService>();
 		services.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>();
+		services.AddSingleton<IBackgroundJobHandler, MetaReplaceBackgroundJobHandler>();
+		services.AddSingleton<IBackgroundJobHandler, MetaUpdateBackgroundJobHandler>();
+
 		var serviceProvider = services.BuildServiceProvider();
 		_serviceProvider = serviceProvider;
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -154,13 +166,14 @@ public sealed class MetaReplaceControllerTest
 			FileName = "test09.jpg", ParentDirectory = "/", Tags = "7test"
 		});
 
-		var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test09.jpg" }));
+		await _iStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes.ToArray()),
+			"/test09.jpg");
 
-		var metaReplaceService = new MetaReplaceService(_query, _appSettings, selectorStorage,
+		var metaReplaceService = new MetaReplaceService(_query, _appSettings,
+			new FakeSelectorStorage(_iStorage),
 			new FakeIWebLogger());
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
-			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(), NewScopeFactory());
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 
 		var jsonResult = await controller.Replace("/test09.jpg", "Tags", "test",
 			string.Empty) as JsonResult;
@@ -192,7 +205,7 @@ public sealed class MetaReplaceControllerTest
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.Ok }
 		});
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
-			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(), NewScopeFactory());
+			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -209,7 +222,7 @@ public sealed class MetaReplaceControllerTest
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.OkAndSame }
 		});
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
-			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(), NewScopeFactory());
+			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -226,7 +239,7 @@ public sealed class MetaReplaceControllerTest
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.DeletedAndSame }
 		});
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
-			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(), NewScopeFactory());
+			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -244,7 +257,7 @@ public sealed class MetaReplaceControllerTest
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.OperationNotSupported }
 		});
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
-			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(), NewScopeFactory());
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -256,11 +269,12 @@ public sealed class MetaReplaceControllerTest
 	{
 		var createAnImage = new CreateAnImage();
 		await InsertSearchData();
-		var serviceScopeFactory = NewScopeFactory();
+		NewScopeFactory();
 
 		var fakeIMetaUpdateService = _serviceProvider?.GetService<IMetaUpdateService>() as
 			FakeIMetaUpdateService;
 		Assert.IsNotNull(fakeIMetaUpdateService);
+		// reset collected changes
 		fakeIMetaUpdateService.ChangedFileIndexItemNameContent =
 			new List<Dictionary<string, List<string>>>();
 
@@ -269,12 +283,15 @@ public sealed class MetaReplaceControllerTest
 			new(createAnImage.DbPath) { Tags = "a", Status = FileIndexItem.ExifStatus.Ok }
 		});
 
+		var scope = _serviceProvider?.GetRequiredService<IServiceScopeFactory>();
+
 		var controller = new MetaReplaceController(metaReplaceService,
-			new FakeIUpdateBackgroundTaskQueue(),
-			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(), serviceScopeFactory);
+			new FakeIUpdateBackgroundTaskQueue(scope!),
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 
 		var jsonResult =
-			await controller.Replace(createAnImage.DbPath, "tags", "a", "b") as JsonResult;
+			await controller.Replace(createAnImage.DbPath,
+				"tags", "a", "b") as JsonResult;
 		if ( jsonResult == null )
 		{
 			Console.WriteLine("json should not be null");
@@ -298,8 +315,7 @@ public sealed class MetaReplaceControllerTest
 		// Arrange
 		var controller = new MetaReplaceController(new FakeIMetaReplaceService(),
 			new FakeIUpdateBackgroundTaskQueue(),
-			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIServiceScopeFactory());
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act
@@ -307,5 +323,106 @@ public sealed class MetaReplaceControllerTest
 
 		// Assert
 		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+	}
+
+	[TestMethod]
+	public async Task Replace_WithNewScopeFactory_ExecutesMetaUpdate()
+	{
+		// Arrange: build scope factory which registers FakeIMetaUpdateService
+		var scopeFactory = NewScopeFactory();
+
+		// retrieve the singleton FakeIMetaUpdateService from the created service provider
+		var fakeMetaUpdateService =
+			_serviceProvider?.GetService<IMetaUpdateService>() as FakeIMetaUpdateService;
+		Assert.IsNotNull(fakeMetaUpdateService);
+
+		// Prepare a fake replace service that returns one item which should trigger an update
+		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
+		{
+			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.Ok }
+		});
+
+		// Use FakeIUpdateBackgroundTaskQueue with the scope factory so queued jobs execute immediately
+		var controller = new MetaReplaceController(metaReplaceService,
+			new FakeIUpdateBackgroundTaskQueue(scopeFactory),
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
+
+		// Act
+		var result = await controller.Replace("/test09.jpg", "tags", "a", "b");
+
+		// Assert: the controller returns JSON and the background handler executed UpdateAsync
+		Assert.IsNotNull(result);
+		Assert.HasCount(1, fakeMetaUpdateService.ChangedFileIndexItemNameContent);
+
+		var changed = fakeMetaUpdateService.ChangedFileIndexItemNameContent[0];
+		Assert.IsTrue(changed.ContainsKey("/test09.jpg"));
+		Assert.HasCount(1, changed["/test09.jpg"]);
+	}
+
+	[TestMethod]
+	public async Task Replace_QueuesPrecomputedPayload_ForBackgroundJob()
+	{
+		var fakeQueue = new FakeIUpdateBackgroundTaskQueue();
+		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
+		{
+			new("/test09.jpg")
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				Tags = "replaced"
+			}
+		});
+		var controller = new MetaReplaceController(metaReplaceService,
+			fakeQueue,
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
+
+		await controller.Replace("/test09.jpg", "Tags", "old", "new");
+
+		Assert.IsNotNull(fakeQueue.LastQueuedJob);
+		var payloadJson = fakeQueue.LastQueuedJob!.PayloadJson;
+		var payload = JsonSerializer.Deserialize<MetaReplaceBackgroundPayload>(
+			payloadJson ?? "");
+		Assert.IsNotNull(payload);
+		Assert.IsTrue(payload.ChangedFileIndexItemName.ContainsKey("/test09.jpg"));
+		Assert.AreEqual("tags", payload.ChangedFileIndexItemName["/test09.jpg"][0]);
+		Assert.HasCount(1, payload.FileIndexResultsList);
+		Assert.AreEqual("/test09.jpg", payload.FileIndexResultsList[0].FilePath);
+
+	}
+}
+
+// Test helper: deterministic IMetaPreflight for unit tests
+internal sealed class TestMetaPreflight : IMetaPreflight
+{
+	private readonly IQuery _q;
+
+	public TestMetaPreflight(IQuery q)
+	{
+		_q = q;
+	}
+
+	public async Task<(List<FileIndexItem> fileIndexResultsList, Dictionary<string, List<string>>
+			changedFileIndexItemName)>
+		PreflightAsync(FileIndexItem? inputModel, List<string> inputFilePaths, bool append,
+			bool collections, int rotateClock)
+	{
+		var list = await _q.GetObjectsByFilePathAsync(inputFilePaths, collections);
+
+		// If DB doesn't contain these items, fabricate simple FileIndexItem entries
+		// so tests that rely on a result list behave deterministically.
+		if ( list.Count == 0 )
+		{
+			list = inputFilePaths
+				.Select(p => new FileIndexItem(p) { Status = FileIndexItem.ExifStatus.Ok })
+				.ToList();
+		}
+
+		var changed = new Dictionary<string, List<string>>();
+		foreach ( var p in inputFilePaths )
+		{
+			// Mark every requested path as having 'tags' changed to trigger updates
+			changed[p] = ["tags"];
+		}
+
+		return ( list, changed );
 	}
 }

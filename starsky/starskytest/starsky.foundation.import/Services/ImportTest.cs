@@ -596,6 +596,8 @@ public sealed class ImportTest : VerifyBase
 		Assert.AreEqual("NLD", fileIndexItem.LocationCountryCode);
 		Assert.AreEqual("Netherlands", fileIndexItem.LocationCountry);
 		Assert.AreEqual("Overijssel", fileIndexItem.LocationState);
+
+		Directory.Delete(appSettings.DependenciesFolder, true);
 	}
 
 	[TestMethod]
@@ -1365,7 +1367,7 @@ public sealed class ImportTest : VerifyBase
 			new ImportIndexItem(), new ImportSettingsModel { IndexMode = false });
 
 		Assert.ContainsSingle(p =>
-			p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true, 
+				p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true,
 			logger.TrackedInformation);
 	}
 

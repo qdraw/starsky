@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.feature.thumbnail.Interfaces;
@@ -13,6 +16,8 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.Models;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 namespace starsky.feature.thumbnail.Services;
@@ -21,6 +26,9 @@ namespace starsky.feature.thumbnail.Services;
 	InjectionLifetime = InjectionLifetime.Scoped)]
 public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationService
 {
+	public const string DatabaseThumbnailGenerationJobType =
+		"Thumbnail.DatabaseGenerationLoop.v1";
+
 	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
 	private readonly IWebSocketConnectionsService _connectionsService;
 	private readonly IWebLogger _logger;
@@ -54,12 +62,17 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			return;
 		}
 
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
-			async _ => { await WorkThumbnailGenerationLoop(); },
-			"DatabaseThumbnailGenerationService");
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "DatabaseThumbnailGenerationService",
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
+			JobType = DatabaseThumbnailGenerationJobType,
+			PayloadJson = JsonSerializer.Serialize(new DatabaseThumbnailGenerationPayload())
+		});
 	}
 
-	private async Task WorkThumbnailGenerationLoop()
+	public async Task ExecuteQueuedJobAsync()
 	{
 		_thumbnailQuery.SetRunningJob(true);
 
@@ -164,8 +177,14 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filteredData,
 				ApiNotificationType.ThumbnailGeneration);
 		await _connectionsService.SendToAllAsync(webSocketResponse,
-			new CancellationToken());
+			CancellationToken.None);
 
 		return chuckedItems;
 	}
+}
+
+[SuppressMessage("Usage", "S2094: Remove this empty class, write its code or make it an interface")]
+public sealed class DatabaseThumbnailGenerationPayload
+{
+	// left empty for now, but can be used in the future if needed
 }

@@ -39,6 +39,16 @@ namespace starskytest.FakeMocks
 			return true;
 		}
 
+		public void RemoveReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+		{
+			// dont do anything
+			foreach ( var item in objectExifToolModel )
+			{
+				RemoveReadMetaCache(item.FilePath!);
+			}
+			return;
+		}
+
 		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
 		{
 		}

@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -12,6 +14,9 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 
@@ -28,9 +33,11 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	private readonly ExifToolCmdHelper _exifToolCmdHelper;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
+	private readonly IUpdateBackgroundTaskQueue _queue;
 	private readonly IStorage _storage;
 
 	public ExifTimezoneCorrectionService(
+		IUpdateBackgroundTaskQueue queue,
 		IExifTool exifTool,
 		ISelectorStorage selectorStorage,
 		IQuery query,
@@ -38,6 +45,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		AppSettings appSettings,
 		IWebLogger logger)
 	{
+		_queue = queue;
 		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_exifToolCmdHelper = new ExifToolCmdHelper(exifTool,
 			_storage,
@@ -67,6 +75,36 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		}
 
 		return results;
+	}
+
+	public async Task QueueCorrectionTask(List<ExifTimezoneCorrectionResult> validateResults,
+		IExifTimeCorrectionRequest request,
+		string correctionType)
+	{
+		var requestType = request switch
+		{
+			ExifTimezoneBasedCorrectionRequest => "timezone",
+			ExifCustomOffsetCorrectionRequest => "offset",
+			_ => throw new ArgumentException("Unsupported correction request type")
+		};
+
+		var payload = new MetaTimeCorrectBackgroundPayload
+		{
+			ValidateResults = validateResults,
+			RequestType = requestType,
+			// Serialize using the concrete runtime type so required properties are preserved
+			RequestJson = JsonSerializer.Serialize(request, request.GetType()),
+			CorrectionType = correctionType
+		};
+
+		await _queue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "MetaTimeCorrect",
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = MetaTimeCorrectBackgroundJobHandler.MetaTimeCorrect,
+			PayloadJson = JsonSerializer.Serialize(payload)
+		});
 	}
 
 	public async Task<List<ExifTimezoneCorrectionResult>> Validate(string f, bool collections,

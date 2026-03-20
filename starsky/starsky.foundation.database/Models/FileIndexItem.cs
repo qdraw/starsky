@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -175,15 +174,15 @@ public sealed class FileIndexItem
 	/// <value>
 	///     The identifier.
 	/// </value>
-	[JsonIgnore]
 	[Key]
+	[JsonIgnore]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-	[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
 	public int Id { get; set; }
 
 	/// <summary>
 	///     Internal API for storing full file path's
 	/// </summary>
+	[MaxLength(380)]
 	private string FilePathPrivate { get; set; } = string.Empty;
 
 	/// <summary>

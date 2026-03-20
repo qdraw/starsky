@@ -54,18 +54,7 @@ public sealed class SyncFolder
 		DateTime? childDirectoriesAfter = null)
 	{
 		var subPaths = new List<string> { inputSubPath };
-
-		subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath)
-			.Where(p =>
-			{
-				if ( childDirectoriesAfter is not { Year: > 2000 } )
-				{
-					return true;
-				}
-
-				return p.Value >= childDirectoriesAfter;
-			})
-			.Select(p => p.Key));
+		subPaths.AddRange(GetDirectoryRecursive(inputSubPath, childDirectoriesAfter));
 
 		// Loop through all folders recursive
 		var resultChunkList = await subPaths.ForEachAsync(
@@ -81,8 +70,7 @@ public sealed class SyncFolder
 				fileIndexItems = await new Duplicate(query).RemoveDuplicateAsync(fileIndexItems);
 
 				// And check files within this folder
-				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
-					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+				var pathsOnDisk = GetAllFilesInDirectory(subPath);
 
 				if ( fileIndexItems.Count != 0 )
 				{
@@ -120,7 +108,11 @@ public sealed class SyncFolder
 		var folderList = await _query.GetObjectsByFilePathQueryAsync(subPaths);
 		folderList = await _duplicate.RemoveDuplicateAsync(folderList);
 
-		await CompareFolderListAndFixMissingFolders(subPaths, folderList);
+		var newFolderItems = await CompareFolderListAndFixMissingFolders(subPaths, folderList);
+		if ( newFolderItems.Count != 0 )
+		{
+			allResults.AddRange(newFolderItems);
+		}
 
 		var parentItems = ( await AddParentFolder(inputSubPath, allResults) )
 			.Where(p => p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
@@ -131,7 +123,8 @@ public sealed class SyncFolder
 
 		var socketUpdates = allResults.Where(p =>
 			p.Status is FileIndexItem.ExifStatus.Ok
-				or FileIndexItem.ExifStatus.Deleted).ToList();
+				or FileIndexItem.ExifStatus.Deleted
+				or FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
 
 		if ( updateDelegate != null && socketUpdates.Count != 0 )
 		{
@@ -141,26 +134,69 @@ public sealed class SyncFolder
 		return allResults;
 	}
 
-	internal async Task CompareFolderListAndFixMissingFolders(List<string> subPaths,
-		List<FileIndexItem> folderList)
+	private IEnumerable<string> GetDirectoryRecursive(string inputSubPath,
+		DateTime? childDirectoriesAfter = null)
 	{
-		if ( subPaths.Count == folderList.Count )
+		var subPaths = _subPathStorage.GetDirectoryRecursive(inputSubPath).ToList();
+		var filteredSubPaths = subPaths.Where(p =>
+			{
+				if ( childDirectoriesAfter is not { Year: > 2000 } )
+				{
+					return true;
+				}
+
+				return p.Value >= childDirectoriesAfter;
+			});
+
+		var result = filteredSubPaths.Select(p => p.Key).ToList();
+
+		var lastEditedOnRootFolder = _subPathStorage.Info(inputSubPath).LastWriteTime;
+		if ( childDirectoriesAfter is not { Year: > 2000 } || lastEditedOnRootFolder.Year <= 2000 )
 		{
-			return;
+			return result.Distinct();
 		}
 
+		// It's very often the same
+		if ( lastEditedOnRootFolder.AddSeconds(-1) > childDirectoriesAfter.Value )
+		{
+			result.AddRange(_subPathStorage.GetDirectories(inputSubPath));
+		}
+
+		return result.Distinct();
+	}
+
+	private List<string> GetAllFilesInDirectory(string subPath)
+	{
+		return _subPathStorage.GetAllFilesInDirectory(subPath)
+			.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+	}
+
+	internal async Task<List<FileIndexItem>> CompareFolderListAndFixMissingFolders(
+		List<string> subPaths,
+		List<FileIndexItem> folderList)
+	{
+
+		var newItems = new List<FileIndexItem>();
 		foreach ( var path in subPaths.Where(path =>
 			         folderList.TrueForAll(p => p.FilePath != path) &&
 			         _subPathStorage.ExistFolder(path) && !_syncIgnoreCheck.Filter(path)) )
 		{
-			await _query.AddItemAsync(new FileIndexItem(path)
+			var storageInfo = _subPathStorage.Info(path);
+			var newFolder = new FileIndexItem(path)
 			{
 				IsDirectory = true,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
+				DateTime = storageInfo.LastWriteTime,
+				LastEdited = storageInfo.LastWriteTime,
 				AddToDatabase = DateTime.UtcNow,
-				ColorClass = ColorClassParser.Color.None
-			});
+				ColorClass = ColorClassParser.Color.None,
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+			await _query.AddItemAsync(newFolder);
+			newItems.Add(newFolder);
 		}
+
+		return newItems;
 	}
 
 	internal async Task<List<FileIndexItem>> AddParentFolder(string subPath,
@@ -359,12 +395,20 @@ public sealed class SyncFolder
 			{
 				// assume only the input of directories
 				var helper = new HasDiskContentOrExistsHelper(_subPathStorage);
-				var (hasDiskContentOrExists, reason) =
+				var (hasDiskContentOrExists, reason, logAsDebug) =
 					await helper.HasDiskContentOrExistsAsync(item.FilePath!);
 				if ( hasDiskContentOrExists )
 				{
-					_logger.LogInformation(
-						$"[SyncFolder] Skipping deletion of {item.FilePath} - {reason}");
+					var logRule = $"[SyncFolder] Skipping deletion of {item.FilePath} - {reason}";
+					if ( logAsDebug )
+					{
+						_logger.LogDebug(logRule);
+					}
+					else
+					{
+						_logger.LogInformation(logRule);
+					}
+
 					return null;
 				}
 

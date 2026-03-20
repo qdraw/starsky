@@ -5,48 +5,61 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.sync.Metrics;
 using starsky.foundation.sync.WatcherBackgroundService;
+using starsky.foundation.worker.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
+namespace starskytest.starsky.foundation.sync.WatcherBackgroundService;
+
+[TestClass]
+public sealed class DiskWatcherBackgroundTaskQueueTest
 {
-	[TestClass]
-	public sealed class DiskWatcherBackgroundTaskQueueTest
+	private readonly IServiceScopeFactory _scopeFactory;
+
+	public DiskWatcherBackgroundTaskQueueTest()
 	{
-		private readonly IServiceScopeFactory _scopeFactory;
+		var services = new ServiceCollection();
+		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+		services.AddSingleton<DiskWatcherBackgroundTaskQueueMetrics>();
+		var serviceProvider = services.BuildServiceProvider();
+		_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	}
 
-		public DiskWatcherBackgroundTaskQueueTest()
+	[TestMethod]
+	public async Task QueueBackgroundWorkItemAsync_DequeueAsync()
+	{
+		var queue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
+		await queue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
-			services.AddSingleton<DiskWatcherBackgroundTaskQueueMetrics>();
-			var serviceProvider = services.BuildServiceProvider();
-			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-		}
+			JobType = "Test.DiskWatcherQueue.v1", PayloadJson = "{}", MetaData = string.Empty
+		});
 
-		[TestMethod]
-		public async Task QueueBackgroundWorkItemAsync_DequeueAsync()
+		Assert.AreEqual(1, queue.Count());
+
+		var token = new CancellationToken();
+		await queue.DequeueJobAsync(token);
+
+		Assert.AreEqual(0, queue.Count());
+	}
+
+	[TestMethod]
+	public async Task Count_AddOneForCount()
+	{
+		var backgroundQueue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
+		await backgroundQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			var queue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
-			await queue.QueueBackgroundWorkItemAsync(_ =>
-					ValueTask.CompletedTask,
-				string.Empty);
+			JobType = "Test.DiskWatcherQueue.v1", PayloadJson = "{}", MetaData = string.Empty
+		});
+		var count = backgroundQueue.Count();
+		Assert.AreEqual(1, count);
+	}
 
-			Assert.AreEqual(1, queue.Count());
-
-			var token = new CancellationToken();
-			await queue!.DequeueAsync(token);
-
-			Assert.AreEqual(0, queue.Count());
-		}
-
-		[TestMethod]
-		public async Task Count_AddOneForCount()
+	[TestMethod]
+	public async Task QueueJobAsync_JobTypeRequired_ArgumentException()
+	{
+		var backgroundQueue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
+		await Assert.ThrowsExactlyAsync<System.ArgumentException>(async () =>
 		{
-			var backgroundQueue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
-			await backgroundQueue.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask,
-				string.Empty);
-			var count = backgroundQueue.Count();
-			Assert.AreEqual(1, count);
-		}
+			await backgroundQueue.QueueJobAsync(new BackgroundTaskQueueJob());
+		});
 	}
 }

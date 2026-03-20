@@ -10,18 +10,11 @@ namespace starsky.feature.trash.Services;
 
 [Service(typeof(ITrashConnectionService),
 	InjectionLifetime = InjectionLifetime.Scoped)]
-public class TrashConnectionService : ITrashConnectionService
+public class TrashConnectionService(
+	IWebSocketConnectionsService webSocketConnectionsService,
+	INotificationQuery notificationQuery)
+	: ITrashConnectionService
 {
-	private readonly IWebSocketConnectionsService _webSocketConnectionsService;
-	private readonly INotificationQuery _notificationQuery;
-
-	public TrashConnectionService(IWebSocketConnectionsService webSocketConnectionsService,
-		INotificationQuery notificationQuery)
-	{
-		_webSocketConnectionsService = webSocketConnectionsService;
-		_notificationQuery = notificationQuery;
-	}
-
 	public static List<FileIndexItem> StatusUpdate(
 		List<FileIndexItem> moveToTrash,
 		bool isSystemTrash)
@@ -34,6 +27,7 @@ public class TrashConnectionService : ITrashConnectionService
 		{
 			item.Status = status;
 		}
+
 		return moveToTrash;
 	}
 
@@ -44,10 +38,8 @@ public class TrashConnectionService : ITrashConnectionService
 
 		var webSocketResponse = new ApiNotificationResponseModel<List<FileIndexItem>>(
 			moveToTrash, ApiNotificationType.MoveToTrash);
-		await _webSocketConnectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
-		await _notificationQuery.AddNotification(webSocketResponse);
+		await webSocketConnectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
+		await notificationQuery.AddNotification(webSocketResponse);
 		return moveToTrash;
 	}
 }
-
-

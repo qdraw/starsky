@@ -203,6 +203,41 @@ public sealed class WebLoggerTest
 		Assert.AreEqual("some thing bad happens message info", fakeConsole?.WrittenLines[0]);
 	}
 
+	[TestMethod]
+	public void AllLogMethods_WithNullLoggerAndNullConsole_DoNotThrow_And_PrivateFieldsRemainNull()
+	{
+		// Arrange
+		var webLogger = new WebLogger();
+		Assert.IsNotNull(webLogger);
+
+		var type = typeof(WebLogger);
+		var loggerField = type.GetField("_logger", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+		var consoleField = type.GetField("_console", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+		Assert.IsNotNull(loggerField, "Expected private field '_logger' to exist");
+		Assert.IsNotNull(consoleField, "Expected private field '_console' to exist");
+
+		var loggerValueBefore = loggerField.GetValue(webLogger);
+		var consoleValueBefore = consoleField.GetValue(webLogger);
+
+		Assert.IsNull(loggerValueBefore, "_logger should be null when no ILoggerFactory provided");
+		Assert.IsNull(consoleValueBefore, "_console should be null when no IServiceScopeFactory provided");
+
+		// Act: call all logging methods (should not throw)
+		webLogger.LogDebug("debug {0}", 1);
+		webLogger.LogInformation("info {0}", 2);
+		webLogger.LogInformation(new Exception("ex"), "info ex {0}", 3);
+		webLogger.LogError("error {0}", 4);
+		webLogger.LogError(new Exception("err"), "error ex {0}", 5);
+
+		// Assert: private fields remain null after calls
+		var loggerValueAfter = loggerField.GetValue(webLogger);
+		var consoleValueAfter = consoleField.GetValue(webLogger);
+
+		Assert.IsNull(loggerValueAfter, "_logger should remain null after log calls");
+		Assert.IsNull(consoleValueAfter, "_console should remain null after log calls");
+	}
+
 	private sealed class FakeILogger : ILogger
 	{
 		public List<string> ErrorLog { get; } = new();

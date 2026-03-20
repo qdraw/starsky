@@ -17,5 +17,6 @@ public interface IReadMeta
 		List<string>? fileHashes = null);
 
 	bool? RemoveReadMetaCache(string fullFilePath);
+	void RemoveReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel);
 	void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel);
 }

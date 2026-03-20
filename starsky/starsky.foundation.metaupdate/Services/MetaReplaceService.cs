@@ -9,6 +9,7 @@ using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
@@ -22,14 +23,17 @@ public class MetaReplaceService : IMetaReplaceService
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
+	private readonly IReadMeta? _readMeta;
 
 	/// <summary>Replace meta content</summary>
 	/// <param name="query">Starsky IQuery interface to do calls on the database</param>
 	/// <param name="appSettings">Settings of the application</param>
 	/// <param name="selectorStorage">storage abstraction</param>
 	/// <param name="logger">web logger</param>
+	/// <param name="readMeta">read meta cache abstraction</param>
 	public MetaReplaceService(IQuery query, AppSettings appSettings,
-		ISelectorStorage? selectorStorage, IWebLogger logger)
+		ISelectorStorage? selectorStorage, IWebLogger logger,
+		IReadMeta? readMeta = null)
 	{
 		_query = query;
 		_appSettings = appSettings;
@@ -40,6 +44,7 @@ public class MetaReplaceService : IMetaReplaceService
 		}
 
 		_logger = logger;
+		_readMeta = readMeta;
 	}
 
 	/// <summary>
@@ -70,10 +75,7 @@ public class MetaReplaceService : IMetaReplaceService
 
 		if ( !FileIndexCompareHelper.CheckIfPropertyExist(fieldName) )
 		{
-			return [new FileIndexItem
-			{
-				Status = FileIndexItem.ExifStatus.OperationNotSupported
-			}];
+			return [new FileIndexItem { Status = FileIndexItem.ExifStatus.OperationNotSupported }];
 		}
 
 		var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
@@ -139,19 +141,39 @@ public class MetaReplaceService : IMetaReplaceService
 			fileIndexResultList.Add(fileIndexItem);
 		}
 
-		return await new Duplicate(_query).RemoveDuplicateAsync(fileIndexResultList);
+
+		var deduplicatedResults = await new Duplicate(_query)
+			.RemoveDuplicateAsync(fileIndexResultList);
+
+		var cacheableResults = deduplicatedResults.Where(p =>
+			!string.IsNullOrEmpty(p.FilePath) &&
+			p.Status is FileIndexItem.ExifStatus.Ok
+				or FileIndexItem.ExifStatus.Default
+				or FileIndexItem.ExifStatus.OkAndSame
+				or FileIndexItem.ExifStatus.Deleted
+				or FileIndexItem.ExifStatus.DeletedAndSame).ToList();
+
+		foreach ( var fileIndexItem in cacheableResults )
+		{
+			_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!,
+				fileIndexItem.Clone(),
+				TimeSpan.FromSeconds(10));
+		}
+
+		_readMeta?.RemoveReadMetaCache(cacheableResults.Select(p => p.Clone()).ToList());
+
+		return deduplicatedResults;
 	}
 
 	public static List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList,
 		string fieldName, string search, string replace)
 	{
-		foreach ( var fileIndexItem in fileIndexResultsList.Where(
-			         p => p.Status
-				         is FileIndexItem.ExifStatus.Ok
-				         or FileIndexItem.ExifStatus.Default
-				         or FileIndexItem.ExifStatus.OkAndSame
-				         or FileIndexItem.ExifStatus.Deleted
-				         or FileIndexItem.ExifStatus.DeletedAndSame) )
+		foreach ( var fileIndexItem in fileIndexResultsList.Where(p => p.Status
+			         is FileIndexItem.ExifStatus.Ok
+			         or FileIndexItem.ExifStatus.Default
+			         or FileIndexItem.ExifStatus.OkAndSame
+			         or FileIndexItem.ExifStatus.Deleted
+			         or FileIndexItem.ExifStatus.DeletedAndSame) )
 		{
 			var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
 			var replacedToObject = new object();

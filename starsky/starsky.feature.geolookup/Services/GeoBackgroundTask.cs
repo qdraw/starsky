@@ -50,7 +50,7 @@ public class GeoBackgroundTask : IGeoBackgroundTask
 	{
 		if ( !_iStorage.ExistFolder(f) )
 		{
-			return new List<FileIndexItem>();
+			return [];
 		}
 
 		// use relative to StorageFolder

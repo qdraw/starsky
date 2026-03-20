@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.feature.thumbnail.Interfaces;
 using starsky.foundation.injection;
@@ -6,6 +8,8 @@ using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
+using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.Models;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 namespace starsky.feature.thumbnail.Services;
@@ -19,6 +23,8 @@ public class SmallThumbnailBackgroundJobService(
 	IThumbnailSocketService socketService,
 	IWebLogger logger) : ISmallThumbnailBackgroundJobService
 {
+	public const string JobType = "Thumbnail.SmallGeneration.v1";
+
 	private readonly IStorage _storage =
 		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
@@ -37,17 +43,28 @@ public class SmallThumbnailBackgroundJobService(
 			return false;
 		}
 
-		await bgTaskQueue.QueueBackgroundWorkItemAsync(
-			async _ => { await WorkThumbnailGenerationLoop(path); },
-			"SmallThumbnailBackgroundJobService");
+		await bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "SmallThumbnailBackgroundJobService",
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
+			JobType = JobType,
+			PayloadJson =
+				JsonSerializer.Serialize(new SmallThumbnailBackgroundPayload { Path = path })
+		});
 		return true;
 	}
 
-	private async Task WorkThumbnailGenerationLoop(string path)
+	internal async Task WorkThumbnailGenerationLoop(string path)
 	{
 		await Task.Yield();
 		var result =
 			await thumbnailService.GenerateThumbnail(path, ThumbnailGenerationType.SmallOnly);
 		await socketService.NotificationSocketUpdate(path, result);
 	}
+}
+
+public sealed class SmallThumbnailBackgroundPayload
+{
+	public string Path { get; set; } = string.Empty;
 }

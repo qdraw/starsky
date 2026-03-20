@@ -1,18 +1,23 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
+using starsky.foundation.metaupdate.Models;
+using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
 namespace starsky.Controllers;
 
@@ -23,14 +28,11 @@ public sealed class MetaReplaceController : Controller
 	private readonly IRealtimeConnectionsService _connectionsService;
 	private readonly IWebLogger _logger;
 	private readonly IMetaReplaceService _metaReplaceService;
-	private readonly IServiceScopeFactory _scopeFactory;
 
 	public MetaReplaceController(IMetaReplaceService metaReplaceService,
 		IUpdateBackgroundTaskQueue queue,
-		IRealtimeConnectionsService connectionsService, IWebLogger logger,
-		IServiceScopeFactory scopeFactory)
+		IRealtimeConnectionsService connectionsService, IWebLogger logger)
 	{
-		_scopeFactory = scopeFactory;
 		_metaReplaceService = metaReplaceService;
 		_bgTaskQueue = queue;
 		_connectionsService = connectionsService;
@@ -73,18 +75,28 @@ public sealed class MetaReplaceController : Controller
 				or FileIndexItem.ExifStatus.Deleted
 				or FileIndexItem.ExifStatus.DeletedAndSame).ToList();
 
-		var changedFileIndexItemName = resultsOkOrDeleteList.ToDictionary(item => item.FilePath!,
-			_ => new List<string> { fieldName });
+		// Build the pre-computed change map so the background job does not have
+		// to re-read from a potentially stale parent-folder cache.
+		// Using the fieldName (lower-case) as the single changed field for every
+		// affected item mirrors what MetaUpdateController passes via PreflightAsync.
+		var changedFileIndexItemName = resultsOkOrDeleteList
+			.ToDictionary(
+				p => p.FilePath!,
+				_ => new List<string> { fieldName.ToLowerInvariant() });
 
 		// Update >
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			var metaUpdateService = _scopeFactory.CreateScope()
-				.ServiceProvider.GetRequiredService<IMetaUpdateService>();
-			await metaUpdateService
-				.UpdateAsync(changedFileIndexItemName, resultsOkOrDeleteList,
-					null, collections, false, 0);
-		}, string.Empty);
+			MetaData = string.Empty,
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = MetaReplaceBackgroundJobHandler.MetaReplace,
+			PayloadJson = JsonSerializer.Serialize(new MetaReplaceBackgroundPayload
+			{
+				ChangedFileIndexItemName = changedFileIndexItemName,
+				FileIndexResultsList = resultsOkOrDeleteList
+			})
+		});
 
 		// before sending not founds
 		new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update",

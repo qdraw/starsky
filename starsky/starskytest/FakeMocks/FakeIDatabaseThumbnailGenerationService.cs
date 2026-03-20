@@ -12,4 +12,9 @@ public class FakeIDatabaseThumbnailGenerationService : IDatabaseThumbnailGenerat
 		Count++;
 		return Task.CompletedTask;
 	}
+
+	public Task ExecuteQueuedJobAsync()
+	{
+		throw new System.NotImplementedException();
+	}
 }

@@ -8,45 +8,43 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 
-namespace starsky.feature.realtime.Services
+namespace starsky.feature.realtime.Services;
+
+[Service(typeof(IRealtimeConnectionsService), InjectionLifetime = InjectionLifetime.Scoped)]
+public class RealtimeConnectionsService : IRealtimeConnectionsService
 {
-	[Service(typeof(IRealtimeConnectionsService), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class RealtimeConnectionsService : IRealtimeConnectionsService
+	private readonly IWebLogger _logger;
+	private readonly INotificationQuery _notificationQuery;
+	private readonly IWebSocketConnectionsService _webSocketConnectionsService;
+
+	public RealtimeConnectionsService(IWebSocketConnectionsService webSocketConnectionsService,
+		INotificationQuery notificationQuery, IWebLogger logger)
 	{
-		private readonly IWebSocketConnectionsService _webSocketConnectionsService;
-		private readonly INotificationQuery _notificationQuery;
-		private readonly IWebLogger _logger;
+		_webSocketConnectionsService = webSocketConnectionsService;
+		_notificationQuery = notificationQuery;
+		_logger = logger;
+	}
 
-		public RealtimeConnectionsService(IWebSocketConnectionsService webSocketConnectionsService, INotificationQuery notificationQuery, IWebLogger logger)
+	public async Task NotificationToAllAsync<T>(ApiNotificationResponseModel<T> message,
+		CancellationToken cancellationToken)
+	{
+		await _webSocketConnectionsService.SendToAllAsync(message, cancellationToken);
+		await _notificationQuery.AddNotification(message);
+	}
+
+	public async Task CleanOldMessagesAsync()
+	{
+		try
 		{
-			_webSocketConnectionsService = webSocketConnectionsService;
-			_notificationQuery = notificationQuery;
-			_logger = logger;
+			var messages = await _notificationQuery.GetOlderThan(DateTime.UtcNow.AddDays(-30));
+			await _notificationQuery.RemoveAsync(messages);
 		}
-
-		public async Task NotificationToAllAsync<T>(ApiNotificationResponseModel<T> message,
-			CancellationToken cancellationToken)
+		catch ( Exception exception )
 		{
-			await _webSocketConnectionsService.SendToAllAsync(message, cancellationToken);
-			await _notificationQuery.AddNotification(message);
-		}
-
-		public async Task CleanOldMessagesAsync()
-		{
-			try
+			if ( !exception.Message.Contains("Notifications' doesn't exist") )
 			{
-				var messages = await _notificationQuery.GetOlderThan(DateTime.UtcNow.AddDays(-30));
-				await _notificationQuery.RemoveAsync(messages);
+				_logger.LogError(exception, "[CleanOldMessagesAsync] catch-ed exception");
 			}
-			catch ( Exception exception )
-			{
-				if ( !exception.Message.Contains("Notifications' doesn't exist") )
-				{
-					_logger.LogError(exception, "[CleanOldMessagesAsync] catch-ed exception");
-				}
-			}
-
 		}
 	}
 }
-

@@ -43,6 +43,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.15 - _(Unreleased)_ - 2026-?-? {#v0.7.15}
 
+- [x] (Changed) _Back-end_ Refactor background job export, geolookup, sync background, and thumbnail
+  generation features (PR #2844)
+- [x] (Changed) _Back-end_ new background job handling infrastructure (PR #2844)
 - [x] (Added) _Back-end_ Overwrite CopyContent in PublishProfile false Copy flag (PR #2866)
 - [x] (Fixed) _Back-end_ Fix when MozJPEG for unix permission errors (PR #2863)
 

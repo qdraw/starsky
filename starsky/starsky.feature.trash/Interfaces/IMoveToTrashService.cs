@@ -1,3 +1,4 @@
+using starsky.feature.trash.Services;
 using starsky.foundation.database.Models;
 
 namespace starsky.feature.trash.Interfaces;
@@ -11,7 +12,7 @@ public interface IMoveToTrashService
 	/// <param name="inputFilePaths">list of paths</param>
 	/// <param name="collections">is stack collections enabled</param>
 	/// <returns>list of files</returns>
-	Task<List<FileIndexItem>> MoveToTrashAsync(List<string> inputFilePaths,
+	Task<List<FileIndexItem>> CreateEvent(List<string> inputFilePaths,
 		bool collections);
 
 	/// <summary>
@@ -21,10 +22,17 @@ public interface IMoveToTrashService
 	bool IsEnabled();
 
 	/// <summary>
-	/// Is it supported to use the system trash
-	/// But it does NOT check if the feature toggle is enabled
+	/// Is it supported to use the system Trash
+	/// It does NOT check if the feature toggle is enabled
 	/// Used by End2End test to enable system trash if supported on the platform
 	/// </summary>
 	/// <returns>true if supported</returns>
 	public bool DetectToUseSystemTrash();
+
+	/// <summary>
+	/// Moves the specified list of files to the trash asynchronously.
+	/// </summary>
+	/// <param name="payload">Payload</param>
+	/// <returns>A task representing the asynchronous operation.</returns>
+	Task MoveToTrashAsync(MoveToTrashPayload payload);
 }

@@ -1,15 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.export.Interfaces;
+using starsky.feature.export.Models;
+using starsky.feature.export.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 using starsky.Helpers;
 using starsky.project.web.Helpers;
 
@@ -66,9 +71,19 @@ public sealed class ExportController : Controller
 		// NOT covered: when try to export for example image thumbnails of xml file
 
 		// Creating a zip is a background task
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
-			async _ => { await _export.CreateZip(fileIndexResultsList, thumbnail, zipOutputName); },
-			zipOutputName, Activity.Current?.Id);
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = zipOutputName,
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = ExportBackgroundJobHandler.Export,
+			PayloadJson = JsonSerializer.Serialize(new ExportBackgroundPayload
+			{
+				FileIndexResultsList = fileIndexResultsList,
+				Thumbnail = thumbnail,
+				ZipOutputName = zipOutputName
+			})
+		});
 
 		// for the rest api
 		return Json(zipOutputName);

@@ -126,10 +126,9 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			{
 				throw;
 			}
-
-			_logger.LogError(exception, "[GetAllFilesInDirectory] " +
-			                            "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
-			return Array.Empty<string>();
+			
+			// Does not throw when UnauthorizedAccessException or DirectoryNotFoundException
+			return [];
 		}
 
 		var imageFilesList = new List<string>();
@@ -202,7 +201,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 					throw;
 				}
 
-				_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed " +
+				_logger?.LogDebug("[StorageHostFullPathFilesystem] Catch-ed " +
 				                  "DirectoryNotFoundException/UnauthorizedAccessException => " +
 				                  exception.Message);
 			}

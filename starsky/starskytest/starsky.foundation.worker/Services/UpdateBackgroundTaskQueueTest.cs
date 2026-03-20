@@ -17,6 +17,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Metrics;
+using starsky.foundation.worker.Models;
 using starsky.foundation.worker.Services;
 using starskytest.FakeMocks;
 
@@ -25,6 +26,7 @@ namespace starskytest.starsky.foundation.worker.Services;
 [TestClass]
 public sealed class UpdateBackgroundTaskQueueTest
 {
+	private const string TestJobType = "Test.UpdateQueue.v1";
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly IServiceScopeFactory _scopeFactory;
 
@@ -47,6 +49,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 		services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
 		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+		services.AddScoped<IBackgroundJobHandler, TestUpdateBackgroundJobHandler>();
 
 		// build the service
 		var serviceProvider = services.BuildServiceProvider();
@@ -54,19 +57,12 @@ public sealed class UpdateBackgroundTaskQueueTest
 		_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
 
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task BackgroundTaskQueueTest_DequeueAsync()
 	{
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
-		{
-			for ( var delayLoop = 0; delayLoop < 3; delayLoop++ )
-			{
-				await Task.Delay(TimeSpan.FromSeconds(1), token);
-				Console.WriteLine(delayLoop);
-				// Cancel request > not tested very good
-				await _bgTaskQueue.DequeueAsync(token);
-			}
-		}, string.Empty);
+		await _bgTaskQueue.QueueJobAsync(CreateJob());
 
 		Assert.AreEqual(1, _bgTaskQueue.Count());
 	}
@@ -75,8 +71,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 	public async Task Count_AddOneForCount()
 	{
 		var backgroundQueue = new UpdateBackgroundTaskQueue(_scopeFactory);
-		await backgroundQueue.QueueBackgroundWorkItemAsync(_ =>
-			ValueTask.CompletedTask, string.Empty);
+		await backgroundQueue.QueueJobAsync(CreateJob());
 		var count = backgroundQueue.Count();
 		Assert.AreEqual(1, count);
 	}
@@ -94,12 +89,11 @@ public sealed class UpdateBackgroundTaskQueueTest
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
 		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+		services.AddScoped<IBackgroundJobHandler, TestUpdateBackgroundJobHandler>();
 
 		var serviceProvider = services.BuildServiceProvider();
-
 		var service =
 			serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
-
 		var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
 
 		if ( service == null )
@@ -108,53 +102,39 @@ public sealed class UpdateBackgroundTaskQueueTest
 		}
 
 		await service.StartAsync(CancellationToken.None);
+		TestUpdateBackgroundJobHandler.ExecutedCount = 0;
 
-		var isExecuted = false;
-		await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
-			{
-				await Task.Yield();
-				isExecuted = true;
-			},
-			string.Empty);
-
+		await backgroundQueue!.QueueJobAsync(CreateJob());
 		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
-		await backgroundQueue.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			await Task.Yield();
-			isExecuted = true;
-			throw new Exception();
-			// EXCEPTION IS IGNORED
-		}, string.Empty);
+		await backgroundQueue.QueueJobAsync(CreateJob("throw"));
 
-		if ( !isExecuted )
+		if ( TestUpdateBackgroundJobHandler.ExecutedCount == 0 )
 		{
 			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
-		if ( !isExecuted )
-		{
-			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
-		}
-
-		Assert.IsTrue(isExecuted);
-
+		Assert.IsGreaterThan(0, TestUpdateBackgroundJobHandler.ExecutedCount);
 		await service.StopAsync(CancellationToken.None);
 	}
 
 	[TestMethod]
 	public async Task BackgroundTaskQueueTest_ArgumentNullExceptionFail()
 	{
-		// Arrange
-		Func<CancellationToken, ValueTask>? func = null;
-
 		// Act & Assert
 		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 		{
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
+			await _bgTaskQueue.QueueJobAsync(null!);
 		});
+	}
 
-		// Additional assert to verify state if needed
-		Assert.IsNull(func);
+	[TestMethod]
+	public async Task BackgroundTaskQueueTest_JobTypeRequired_ArgumentException()
+	{
+		// Act & Assert
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
+		{
+			await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob());
+		});
 	}
 
 	[TestMethod]
@@ -169,40 +149,26 @@ public sealed class UpdateBackgroundTaskQueueTest
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
 		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+		services.AddScoped<IBackgroundJobHandler, TestUpdateBackgroundJobHandler>();
 
 		var serviceProvider = services.BuildServiceProvider();
-
 		var service =
 			serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
-
 		var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
 
 		await service!.StartAsync(CancellationToken.None);
+		TestUpdateBackgroundJobHandler.ExecutedCount = 0;
 
-		var isExecuted = false;
-		await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			await Task.Yield();
-			isExecuted = true;
-			throw new Exception();
-			// EXCEPTION IS IGNORED
-		}, string.Empty);
-
+		await backgroundQueue!.QueueJobAsync(CreateJob("throw"));
 		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
-		await backgroundQueue.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			await Task.Yield();
-			isExecuted = true;
-			throw new Exception();
-			// EXCEPTION IS IGNORED
-		}, string.Empty);
+		await backgroundQueue.QueueJobAsync(CreateJob("throw"));
 
-		if ( !isExecuted )
+		if ( TestUpdateBackgroundJobHandler.ExecutedCount == 0 )
 		{
 			await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
 		}
 
-		Assert.IsTrue(isExecuted);
+		Assert.IsGreaterThan(0, TestUpdateBackgroundJobHandler.ExecutedCount);
 	}
 
 	[TestMethod]
@@ -210,9 +176,11 @@ public sealed class UpdateBackgroundTaskQueueTest
 	public async Task StartAsync_CancelBeforeStart()
 	{
 		var fakeLogger = new FakeIWebLogger();
+		var scopeFactory = new ServiceCollection().BuildServiceProvider()
+			.GetRequiredService<IServiceScopeFactory>();
 		var service =
 			new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(),
-				fakeLogger);
+				fakeLogger, scopeFactory);
 
 		using var cancelTokenSource = new CancellationTokenSource();
 		await cancelTokenSource.CancelAsync();
@@ -229,9 +197,11 @@ public sealed class UpdateBackgroundTaskQueueTest
 	public async Task UpdateBackgroundTaskQueue_Update_End_StopAsync_Test()
 	{
 		var logger = new FakeIWebLogger();
+		var scopeFactory = new ServiceCollection().BuildServiceProvider()
+			.GetRequiredService<IServiceScopeFactory>();
 		var service =
 			new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(),
-				logger);
+				logger, scopeFactory);
 
 		using var source = new CancellationTokenSource();
 		var token = source.Token;
@@ -242,5 +212,28 @@ public sealed class UpdateBackgroundTaskQueueTest
 		Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("is stopping"));
 	}
 
-	public TestContext TestContext { get; set; }
+	private static BackgroundTaskQueueJob CreateJob(string payload = "ok")
+	{
+		return new BackgroundTaskQueueJob
+		{
+			JobType = TestJobType, PayloadJson = payload, MetaData = string.Empty
+		};
+	}
+}
+
+internal sealed class TestUpdateBackgroundJobHandler : IBackgroundJobHandler
+{
+	public static int ExecutedCount { get; set; }
+	public string JobType => "Test.UpdateQueue.v1";
+
+	public Task ExecuteAsync(string? payloadJson, CancellationToken cancellationToken)
+	{
+		ExecutedCount++;
+		if ( payloadJson == "throw" )
+		{
+			throw new Exception();
+		}
+
+		return Task.CompletedTask;
+	}
 }
