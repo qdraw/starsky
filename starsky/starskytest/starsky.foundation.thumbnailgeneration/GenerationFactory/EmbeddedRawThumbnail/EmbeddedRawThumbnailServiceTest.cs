@@ -53,7 +53,7 @@ public class EmbeddedRawThumbnailServiceTest
 		data[7] = 0;
 
 		// IFD
-		int ifdPos = ifdOffset;
+		var ifdPos = ifdOffset;
 		data[ifdPos++] = entryCount;
 		data[ifdPos++] = 0;
 
@@ -106,10 +106,10 @@ public class EmbeddedRawThumbnailServiceTest
 		data[ifdPos] = 0;
 
 		// JPEG data
-		int jpegPos = jpegOffset;
+		var jpegPos = jpegOffset;
 		data[jpegPos++] = 0xFF;
 		data[jpegPos++] = 0xD8;
-		for ( int i = 0; i < jpegSize - 4; i++ )
+		for ( var i = 0; i < jpegSize - 4; i++ )
 		{
 			data[jpegPos++] = 0x00;
 		}
@@ -125,7 +125,7 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string nonExistent = Path.Combine(_tempDir, "nonexistent.arw");
+		var nonExistent = Path.Combine(_tempDir, "nonexistent.arw");
 
 		// Act
 		var result = service.TryExtractPreview(nonExistent, null, null);
@@ -139,7 +139,7 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "test.arw");
+		var rawFile = Path.Combine(_tempDir, "test.arw");
 		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
 		// Act
@@ -154,10 +154,10 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "test.arw");
+		var rawFile = Path.Combine(_tempDir, "test.arw");
 		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
-		string largeOutput = Path.Combine(_tempDir, "large.jpg");
+		var largeOutput = Path.Combine(_tempDir, "large.jpg");
 
 		// Act
 		var result = service.TryExtractPreview(rawFile, largeOutput, null);
@@ -172,10 +172,10 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "test.arw");
+		var rawFile = Path.Combine(_tempDir, "test.arw");
 		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
-		string mediumOutput = Path.Combine(_tempDir, "medium.jpg");
+		var mediumOutput = Path.Combine(_tempDir, "medium.jpg");
 
 		// Act
 		var result = service.TryExtractPreview(rawFile, null, mediumOutput);
@@ -189,11 +189,11 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "test.arw");
+		var rawFile = Path.Combine(_tempDir, "test.arw");
 		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
-		string largeOutput = Path.Combine(_tempDir, "large.jpg");
-		string mediumOutput = Path.Combine(_tempDir, "medium.jpg");
+		var largeOutput = Path.Combine(_tempDir, "large.jpg");
+		var mediumOutput = Path.Combine(_tempDir, "medium.jpg");
 
 		// Act
 		var result = service.TryExtractPreview(rawFile, largeOutput, mediumOutput);
@@ -207,7 +207,7 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "invalid.arw");
+		var rawFile = Path.Combine(_tempDir, "invalid.arw");
 		File.WriteAllBytes(rawFile, new byte[100]); // Random data
 
 		// Act
@@ -222,7 +222,7 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "test.arw");
+		var rawFile = Path.Combine(_tempDir, "test.arw");
 		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
 		// Act
@@ -238,8 +238,8 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "test.arw");
-		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
+		var rawFile = Path.Combine(_tempDir, "test.arw");
+		await File.WriteAllBytesAsync(rawFile, CreateMinimalTiffData(), TestContext.CancellationToken);
 
 		// Act
 		var result = await service.TryExtractPreviewAsync(rawFile, null, null);
@@ -253,7 +253,7 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string nonExistent = Path.Combine(_tempDir, "nonexistent.arw");
+		var nonExistent = Path.Combine(_tempDir, "nonexistent.arw");
 
 		// Act
 		var result = await service.TryExtractPreviewAsync(nonExistent, null, null);
@@ -267,11 +267,11 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "test.arw");
-		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
+		var rawFile = Path.Combine(_tempDir, "test.arw");
+		await File.WriteAllBytesAsync(rawFile, CreateMinimalTiffData(), TestContext.CancellationToken);
 
-		string largeOutput = Path.Combine(_tempDir, "large.jpg");
-		string mediumOutput = Path.Combine(_tempDir, "medium.jpg");
+		var largeOutput = Path.Combine(_tempDir, "large.jpg");
+		var mediumOutput = Path.Combine(_tempDir, "medium.jpg");
 
 		// Act
 		var result = await service.TryExtractPreviewAsync(rawFile, largeOutput, mediumOutput);
@@ -285,7 +285,7 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "empty.arw");
+		var rawFile = Path.Combine(_tempDir, "empty.arw");
 		File.WriteAllBytes(rawFile, new byte[0]);
 
 		// Act
@@ -300,7 +300,7 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "tiny.arw");
+		var rawFile = Path.Combine(_tempDir, "tiny.arw");
 		File.WriteAllBytes(rawFile, new byte[3]); // Less than header
 
 		// Act
@@ -332,7 +332,7 @@ public class EmbeddedRawThumbnailServiceTest
 
 		foreach ( var ext in extensions )
 		{
-			string rawFile = Path.Combine(_tempDir, $"test{ext}");
+			var rawFile = Path.Combine(_tempDir, $"test{ext}");
 			File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
 			// Act
@@ -350,7 +350,7 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "test.arw");
+		var rawFile = Path.Combine(_tempDir, "test.arw");
 		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
 		// Act
@@ -366,11 +366,11 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "test.arw");
+		var rawFile = Path.Combine(_tempDir, "test.arw");
 		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
-		string output1 = Path.Combine(_tempDir, "output1.jpg");
-		string output2 = Path.Combine(_tempDir, "output2.jpg");
+		var output1 = Path.Combine(_tempDir, "output1.jpg");
+		var output2 = Path.Combine(_tempDir, "output2.jpg");
 
 		// Act
 		var result = service.TryExtractPreview(rawFile, output1, output2);
@@ -384,10 +384,10 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService();
-		string rawFile = Path.Combine(_tempDir, "test.arw");
+		var rawFile = Path.Combine(_tempDir, "test.arw");
 		File.WriteAllBytes(rawFile, CreateMinimalTiffData());
 
-		string output = Path.Combine(_tempDir, "output_[special]_characters.jpg");
+		var output = Path.Combine(_tempDir, "output_[special]_characters.jpg");
 
 		// Act
 		var result = service.TryExtractPreview(rawFile, output, null);
@@ -395,6 +395,8 @@ public class EmbeddedRawThumbnailServiceTest
 		// Assert
 		Assert.IsTrue(result, "Should work with special characters in path");
 	}
+
+	public TestContext TestContext { get; set; }
 }
 
 
