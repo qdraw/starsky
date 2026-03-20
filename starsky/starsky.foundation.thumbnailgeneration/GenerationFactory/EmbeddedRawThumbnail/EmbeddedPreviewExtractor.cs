@@ -1,9 +1,9 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
@@ -65,7 +65,7 @@ public static class EmbeddedPreviewExtractor
 		var previews = new List<PreviewCandidate>(MaxPreviews);
 		var visited = new HashSet<uint>();
 
-		ParseIfdRecursive(input, firstIfd, littleEndian, previews, visited, depth: 0);
+		ParseIfdRecursive(input, firstIfd, littleEndian, previews, visited, 0);
 
 		if ( previews.Count == 0 )
 		{
@@ -99,16 +99,6 @@ public static class EmbeddedPreviewExtractor
 		}
 
 		return ok;
-	}
-
-	// -------------------------------------------------------------------------
-
-	private struct PreviewCandidate
-	{
-		public uint Offset;
-		public uint Length;
-		public uint Width; // 0 = unknown
-		public uint Height; // 0 = unknown
 	}
 
 	private static bool TryParseTiffHeader(Stream s, out bool littleEndian, out uint firstIfd)
@@ -146,67 +136,74 @@ public static class EmbeddedPreviewExtractor
 		return firstIfd != 0;
 	}
 
-	private static void ParseIfdRecursive(Stream input, uint offset, bool littleEndian, List<PreviewCandidate> previews, HashSet<uint> visited, int depth)
+	private static void ParseIfdRecursive(Stream input, uint offset,
+		bool littleEndian, List<PreviewCandidate> previews, HashSet<uint> visited, int depth)
 	{
-		while ( true )
+		if ( depth > MaxIfdDepth || offset == 0 )
 		{
-			if ( depth > MaxIfdDepth || offset == 0 )
+			return;
+		}
+
+		if ( !visited.Add(offset) )
+		{
+			return; // cycle detected
+		}
+
+		if ( !TrySeek(input, offset) )
+		{
+			return;
+		}
+
+		Span<byte> countBuf = stackalloc byte[2];
+		if ( !TryReadExact(input, countBuf) )
+		{
+			return;
+		}
+
+		var entryCount = ReadUInt16(countBuf, littleEndian);
+
+		// Sanity guard: avoid absurd entry counts that may cause OOM or hangs
+		const int maxEntryCount = 4096; // arbitrary large safety cap
+		switch ( entryCount )
+		{
+			case 0:
+				return;
+			case > maxEntryCount:
+				Console.WriteLine(
+					$"[EmbeddedPreviewExtractor] Skipping IFD at offset {offset}: entryCount {entryCount} exceeds MaxEntryCount {maxEntryCount}");
+				return;
+		}
+
+		// Read all IFD entries into a local buffer to avoid many small seeks.
+		var entryBytes = entryCount * 12;
+		var entryBuf = ArrayPool<byte>.Shared.Rent(entryBytes);
+
+		try
+		{
+			if ( !TryReadExact(input, entryBuf, 0, entryBytes) )
 			{
 				return;
 			}
 
-			if ( !visited.Add(offset) )
-			{
-				return; // cycle detected
-			}
+			ParseIfdEntries(input, entryBuf.AsSpan(0, entryBytes), littleEndian, previews, visited,
+				depth);
+		}
+		finally
+		{
+			ArrayPool<byte>.Shared.Return(entryBuf);
+		}
 
-			if ( !TrySeek(input, offset) )
-			{
-				return;
-			}
+		// Next IFD pointer follows the entry block.
+		Span<byte> nextBuf = stackalloc byte[4];
+		if ( !TryReadExact(input, nextBuf) )
+		{
+			return;
+		}
 
-			Span<byte> countBuf = stackalloc byte[2];
-			if ( !TryReadExact(input, countBuf) )
-			{
-				return;
-			}
-
-			var entryCount = ReadUInt16(countBuf, littleEndian);
-
-			// Read all IFD entries into a local buffer to avoid many small seeks.
-			var entryBytes = entryCount * 12;
-			var entryBuf = ArrayPool<byte>.Shared.Rent(entryBytes);
-
-			try
-			{
-				if ( !TryReadExact(input, entryBuf.AsSpan(0, entryBytes)) )
-				{
-					return;
-				}
-
-				ParseIfdEntries(input, entryBuf.AsSpan(0, entryBytes), littleEndian, previews, visited, depth);
-			}
-			finally
-			{
-				ArrayPool<byte>.Shared.Return(entryBuf);
-			}
-
-			// Next IFD pointer follows the entry block.
-			Span<byte> nextBuf = stackalloc byte[4];
-			if ( !TryReadExact(input, nextBuf) )
-			{
-				return;
-			}
-
-			var nextIfd = ReadUInt32(nextBuf, littleEndian);
-			if ( nextIfd != 0 )
-			{
-				offset = nextIfd;
-				depth = depth + 1;
-				continue;
-			}
-
-			break;
+		var nextIfd = ReadUInt32(nextBuf, littleEndian);
+		if ( nextIfd != 0 )
+		{
+			ParseIfdRecursive(input, nextIfd, littleEndian, previews, visited, depth + 1);
 		}
 	}
 
@@ -266,6 +263,7 @@ public static class EmbeddedPreviewExtractor
 						stripOffset = ReadIndirectUInt32(input, value, type, littleEndian);
 						stripMulti = true;
 					}
+
 					break;
 
 				case TagStripByteCounts:
@@ -279,6 +277,7 @@ public static class EmbeddedPreviewExtractor
 						stripLength = SumIndirectUInt32(input, value, type, n, littleEndian);
 						stripMulti = true;
 					}
+
 					break;
 
 				case TagSubIfds:
@@ -291,6 +290,7 @@ public static class EmbeddedPreviewExtractor
 						// value is a pointer to an array of IFD offsets.
 						ReadIndirectOffsets(input, value, type, n, littleEndian, subIfdOffsets);
 					}
+
 					break;
 			}
 		}
@@ -421,19 +421,41 @@ public static class EmbeddedPreviewExtractor
 		uint offset, uint length,
 		uint width, uint height)
 	{
+		var candidate = new PreviewCandidate
+		{
+			Offset = offset, Length = length, Width = width, Height = height
+		};
+
 		if ( previews.Count >= MaxPreviews )
 		{
-			Debug.Fail("MAX_PREVIEWS exceeded — some candidates were dropped.");
+			var worstIndex = 0;
+			for ( var i = 1; i < previews.Count; i++ )
+			{
+				if ( IsBetterCandidate(previews[worstIndex], previews[i]) )
+				{
+					worstIndex = i;
+				}
+			}
+
+			if ( IsBetterCandidate(candidate, previews[worstIndex]) )
+			{
+				previews[worstIndex] = candidate;
+			}
+
 			return;
 		}
 
-		previews.Add(new PreviewCandidate
+		previews.Add(candidate);
+	}
+
+	private static bool IsBetterCandidate(PreviewCandidate left, PreviewCandidate right)
+	{
+		if ( left.Width != right.Width )
 		{
-			Offset = offset,
-			Length = length,
-			Width = width,
-			Height = height,
-		});
+			return left.Width > right.Width;
+		}
+
+		return left.Length > right.Length;
 	}
 
 	private static PreviewCandidate? SelectAtLeast(List<PreviewCandidate> previews, uint minWidth)
@@ -474,7 +496,7 @@ public static class EmbeddedPreviewExtractor
 		{
 			while ( remaining > 0 )
 			{
-				var read = input.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
+				var read = input.Read(buffer, 0, ( int ) Math.Min(buffer.Length, remaining));
 
 				if ( read == 0 )
 				{
@@ -499,7 +521,10 @@ public static class EmbeddedPreviewExtractor
 	/// <summary>Reads a SHORT (type 3) or LONG (type 4) scalar from an inline IFD value.</summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private static uint ReadScalar(ushort type, uint raw)
-		=> type == 3 ? (raw & 0xFFFF) : raw; // SHORT is stored in the low 16 bits
+	{
+		return type == 3 ? raw & 0xFFFF : raw;
+		// SHORT is stored in the low 16 bits
+	}
 
 	private static bool TrySeek(Stream s, uint offset)
 	{
@@ -533,19 +558,73 @@ public static class EmbeddedPreviewExtractor
 		return true;
 	}
 
+	// Timeout-enabled read for rented byte[] buffers
+	private static bool TryReadExact(Stream s, byte[] buffer, int offset, int count,
+		int timeoutMs = 5000)
+	{
+		if ( count == 0 )
+		{
+			return true;
+		}
+
+		using var cts = new CancellationTokenSource(timeoutMs);
+		var total = 0;
+
+		try
+		{
+			while ( total < count )
+			{
+				var task = s.ReadAsync(buffer, offset + total, count - total, cts.Token);
+				var read = task.GetAwaiter().GetResult();
+
+				if ( read == 0 )
+				{
+					Console.WriteLine(
+						$"[EmbeddedPreviewExtractor] TryReadExact: EOF after reading {total} of {count} bytes");
+					return false;
+				}
+
+				total += read;
+			}
+
+			return true;
+		}
+		catch ( OperationCanceledException )
+		{
+			Console.WriteLine(
+				$"[EmbeddedPreviewExtractor] TryReadExact: timeout after {timeoutMs}ms when reading {count} bytes");
+			return false;
+		}
+		catch ( Exception ex )
+		{
+			Console.WriteLine($"[EmbeddedPreviewExtractor] TryReadExact: exception: {ex.Message}");
+			return false;
+		}
+	}
+
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private static ushort ReadUInt16(ReadOnlySpan<byte> b, bool little)
-		=> little
-			? (ushort)(b[0] | (b[1] << 8))
-			: (ushort)(b[1] | (b[0] << 8));
+	{
+		return little
+			? ( ushort ) ( b[0] | ( b[1] << 8 ) )
+			: ( ushort ) ( b[1] | ( b[0] << 8 ) );
+	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private static uint ReadUInt32(ReadOnlySpan<byte> b, bool little)
-		=> little
-			? (uint)(b[0] | (b[1] << 8) | (b[2] << 16) | (b[3] << 24))
-			: (uint)(b[3] | (b[2] << 8) | (b[1] << 16) | (b[0] << 24));
+	{
+		return little
+			? ( uint ) ( b[0] | ( b[1] << 8 ) | ( b[2] << 16 ) | ( b[3] << 24 ) )
+			: ( uint ) ( b[3] | ( b[2] << 8 ) | ( b[1] << 16 ) | ( b[0] << 24 ) );
+	}
+
+	// -------------------------------------------------------------------------
+
+	private struct PreviewCandidate
+	{
+		public uint Offset;
+		public uint Length;
+		public uint Width; // 0 = unknown
+		public uint Height; // 0 = unknown
+	}
 }
-
-
-
-
