@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
@@ -17,6 +18,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.E
 public class EmbeddedRawThumbnailServiceIntegrationTest
 {
 	private string _tempOutputDir = null!;
+
+	public TestContext TestContext { get; set; }
 
 	[TestInitialize]
 	public void Setup()
@@ -52,7 +55,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var tempImagePath = Path.Combine(_tempOutputDir, "test_image.jpg");
 		File.WriteAllBytes(tempImagePath, CreateAnImage.Bytes.ToArray());
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act - JPG is not a RAW file with embedded previews
 		var result = service.TryExtractPreview(tempImagePath, null, null);
@@ -77,7 +80,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
 		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
 		var result = service.TryExtractPreview(tempRawPath, null, null);
@@ -105,7 +108,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
 		var mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
 		var result = service.TryExtractPreview(tempRawPath, largeOutput, mediumOutput);
@@ -133,7 +136,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 
 		var largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
 		var result = service.TryExtractPreview(tempRawPath, largeOutput, null);
@@ -160,7 +163,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 
 		var mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
 		var result = service.TryExtractPreview(tempRawPath, null, mediumOutput);
@@ -182,10 +185,10 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		await File.WriteAllBytesAsync(tempRawPath, 
+		await File.WriteAllBytesAsync(tempRawPath,
 			[.. createAnImageRaw.Bytes], TestContext.CancellationToken);
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
 		var result = await service.TryExtractPreviewAsync(tempRawPath, null, null);
@@ -207,13 +210,13 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes], 
+		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes],
 			TestContext.CancellationToken);
 
 		var largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
 		var mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
 		var result = await service.TryExtractPreviewAsync(tempRawPath, largeOutput, mediumOutput);
@@ -238,7 +241,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
 		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act - Extract multiple times to same file
 		var result1 = service.TryExtractPreview(tempRawPath, null, null);
@@ -266,7 +269,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
 		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		var dir1 = Path.Combine(_tempOutputDir, "dir1");
 		var dir2 = Path.Combine(_tempOutputDir, "dir2");
@@ -302,7 +305,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		var largeOutput = Path.Combine(_tempOutputDir, "large.jpg");
 		var mediumOutput = Path.Combine(_tempOutputDir, "medium.jpg");
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act
 		var result = service.TryExtractPreview(tempRawPath, largeOutput, mediumOutput);
@@ -326,7 +329,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			return;
 		}
 
-		var service = new EmbeddedRawThumbnailService();
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
 		// Act - JPG is not RAW, should fail
 		var result = service.TryExtractPreview(jpgPath, null, null);
@@ -357,15 +360,9 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 			header[i] = createAnImageRaw.Bytes[i];
 		}
 
-		var isValidTiff = (header[0] == 'I' && header[1] == 'I') // Little-endian
-		                  || (header[0] == 'M' && header[1] == 'M'); // Big-endian
+		var isValidTiff = ( header[0] == 'I' && header[1] == 'I' ) // Little-endian
+		                  || ( header[0] == 'M' && header[1] == 'M' ); // Big-endian
 
 		Assert.IsTrue(isValidTiff, "A6600 RAW should be a valid TIFF-based file");
 	}
-
-	public TestContext TestContext { get; set; }
 }
-
-
-
-

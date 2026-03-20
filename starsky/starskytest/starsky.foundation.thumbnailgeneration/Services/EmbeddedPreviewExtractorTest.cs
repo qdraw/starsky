@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
-using starsky.foundation.thumbnailgeneration.Services;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.Services;
 
@@ -16,16 +16,16 @@ public class EmbeddedPreviewExtractorTest
 	{
 		var header = new byte[8];
 		// Little-endian byte order
-		header[0] = (byte)'I';
-		header[1] = (byte)'I';
+		header[0] = ( byte ) 'I';
+		header[1] = ( byte ) 'I';
 		// Magic number (42 in little-endian)
 		header[2] = 42;
 		header[3] = 0;
 		// First IFD offset (little-endian)
-		header[4] = (byte)(firstIfdOffset & 0xFF);
-		header[5] = (byte)((firstIfdOffset >> 8) & 0xFF);
-		header[6] = (byte)((firstIfdOffset >> 16) & 0xFF);
-		header[7] = (byte)((firstIfdOffset >> 24) & 0xFF);
+		header[4] = ( byte ) ( firstIfdOffset & 0xFF );
+		header[5] = ( byte ) ( ( firstIfdOffset >> 8 ) & 0xFF );
+		header[6] = ( byte ) ( ( firstIfdOffset >> 16 ) & 0xFF );
+		header[7] = ( byte ) ( ( firstIfdOffset >> 24 ) & 0xFF );
 		return header;
 	}
 
@@ -36,7 +36,7 @@ public class EmbeddedPreviewExtractorTest
 		uint width = 3000)
 	{
 		var ifd = new byte[2 + 36 + 4]; // count + 3 entries + next IFD pointer
-		int pos = 0;
+		var pos = 0;
 
 		// Entry count (3 entries, little-endian)
 		ifd[pos++] = 3;
@@ -51,10 +51,10 @@ public class EmbeddedPreviewExtractorTest
 		ifd[pos++] = 0;
 		ifd[pos++] = 0;
 		ifd[pos++] = 0;
-		ifd[pos++] = (byte)(width & 0xFF);
-		ifd[pos++] = (byte)((width >> 8) & 0xFF);
-		ifd[pos++] = (byte)((width >> 16) & 0xFF);
-		ifd[pos++] = (byte)((width >> 24) & 0xFF);
+		ifd[pos++] = ( byte ) ( width & 0xFF );
+		ifd[pos++] = ( byte ) ( ( width >> 8 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( width >> 16 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( width >> 24 ) & 0xFF );
 
 		// Tag: JPEG offset (0x0201)
 		ifd[pos++] = 0x01;
@@ -68,10 +68,10 @@ public class EmbeddedPreviewExtractorTest
 		ifd[pos++] = 0;
 		ifd[pos++] = 0;
 		// Value: JPEG offset
-		ifd[pos++] = (byte)(jpegOffset & 0xFF);
-		ifd[pos++] = (byte)((jpegOffset >> 8) & 0xFF);
-		ifd[pos++] = (byte)((jpegOffset >> 16) & 0xFF);
-		ifd[pos++] = (byte)((jpegOffset >> 24) & 0xFF);
+		ifd[pos++] = ( byte ) ( jpegOffset & 0xFF );
+		ifd[pos++] = ( byte ) ( ( jpegOffset >> 8 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( jpegOffset >> 16 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( jpegOffset >> 24 ) & 0xFF );
 
 		// Tag: JPEG length (0x0202)
 		ifd[pos++] = 0x02;
@@ -85,10 +85,10 @@ public class EmbeddedPreviewExtractorTest
 		ifd[pos++] = 0;
 		ifd[pos++] = 0;
 		// Value: JPEG length
-		ifd[pos++] = (byte)(jpegLength & 0xFF);
-		ifd[pos++] = (byte)((jpegLength >> 8) & 0xFF);
-		ifd[pos++] = (byte)((jpegLength >> 16) & 0xFF);
-		ifd[pos++] = (byte)((jpegLength >> 24) & 0xFF);
+		ifd[pos++] = ( byte ) ( jpegLength & 0xFF );
+		ifd[pos++] = ( byte ) ( ( jpegLength >> 8 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( jpegLength >> 16 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( jpegLength >> 24 ) & 0xFF );
 
 		// Next IFD offset (0, little-endian)
 		ifd[pos++] = 0;
@@ -128,7 +128,9 @@ public class EmbeddedPreviewExtractorTest
 		string? mediumOutput = null;
 
 		// Act
-		var result = EmbeddedPreviewExtractor.TryExtract(ms, largeOutput, mediumOutput);
+		var result =
+			new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, largeOutput,
+				mediumOutput);
 
 		// Assert
 		Assert.IsTrue(result, "Should extract preview from valid TIFF");
@@ -140,13 +142,13 @@ public class EmbeddedPreviewExtractorTest
 		// Arrange
 		using var ms = new MemoryStream();
 		var header = new byte[8];
-		header[0] = (byte)'X'; // Invalid magic
-		header[1] = (byte)'X';
+		header[0] = ( byte ) 'X'; // Invalid magic
+		header[1] = ( byte ) 'X';
 		ms.Write(header);
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = EmbeddedPreviewExtractor.TryExtract(ms, null, null);
+		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with invalid TIFF magic");
@@ -163,7 +165,7 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = EmbeddedPreviewExtractor.TryExtract(ms, null, null);
+		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with no preview candidates");
@@ -192,7 +194,7 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = EmbeddedPreviewExtractor.TryExtract(ms, null, null);
+		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with too small JPEG");
@@ -205,17 +207,19 @@ public class EmbeddedPreviewExtractorTest
 		using var ms = new MemoryStream();
 		ms.Write(CreateMinimalTiffHeader());
 		ms.Write(CreateSimpleIfd());
-		ms.Write(CreateMinimalJpeg(5000));
+		ms.Write(CreateMinimalJpeg());
 		ms.Seek(0, SeekOrigin.Begin);
 
-		string largeOutput = Path.Combine(Path.GetTempPath(), $"test_large_{Guid.NewGuid()}.jpg");
-		string mediumOutput = Path.Combine(Path.GetTempPath(),
+		var largeOutput = Path.Combine(Path.GetTempPath(), $"test_large_{Guid.NewGuid()}.jpg");
+		var mediumOutput = Path.Combine(Path.GetTempPath(),
 			$"test_medium_{Guid.NewGuid()}.jpg");
 
 		try
 		{
 			// Act
-			var result = EmbeddedPreviewExtractor.TryExtract(ms, largeOutput, mediumOutput);
+			var result =
+				new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, largeOutput,
+					mediumOutput);
 
 			// Assert
 			Assert.IsTrue(result, "Should successfully extract preview");
@@ -246,7 +250,7 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = EmbeddedPreviewExtractor.TryExtract(ms, null, null);
+		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsTrue(result, "Should return true even with null outputs");
@@ -256,7 +260,7 @@ public class EmbeddedPreviewExtractorTest
 	public void TryExtract_WithPathString_ReturnsTrue()
 	{
 		// Arrange
-		string tempFile = Path.Combine(Path.GetTempPath(), $"test_raw_{Guid.NewGuid()}.arw");
+		var tempFile = Path.Combine(Path.GetTempPath(), $"test_raw_{Guid.NewGuid()}.arw");
 		try
 		{
 			using ( var fs = new FileStream(tempFile, FileMode.Create) )
@@ -267,7 +271,8 @@ public class EmbeddedPreviewExtractorTest
 			}
 
 			// Act
-			var result = EmbeddedPreviewExtractor.TryExtract(tempFile, null, null);
+			var result =
+				new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(tempFile, null, null);
 
 			// Assert
 			Assert.IsTrue(result, "Should extract from file path");
@@ -286,7 +291,8 @@ public class EmbeddedPreviewExtractorTest
 	{
 		try
 		{
-			EmbeddedPreviewExtractor.TryExtract("/nonexistent/file.arw", null, null);
+			new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract("/nonexistent/file.arw",
+				null, null);
 			Assert.Fail("Expected DirectoryNotFoundException");
 		}
 		catch ( DirectoryNotFoundException )
@@ -303,8 +309,8 @@ public class EmbeddedPreviewExtractorTest
 
 		// Big-endian header
 		var header = new byte[8];
-		header[0] = (byte)'M';
-		header[1] = (byte)'M';
+		header[0] = ( byte ) 'M';
+		header[1] = ( byte ) 'M';
 		header[2] = 0;
 		header[3] = 42; // 42 in big-endian
 		// IFD offset 8 in big-endian
@@ -376,7 +382,7 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = EmbeddedPreviewExtractor.TryExtract(ms, null, null);
+		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsTrue(result, "Should handle big-endian TIFF");
@@ -395,7 +401,7 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(100, SeekOrigin.Begin);
 
 		// Act
-		var result = EmbeddedPreviewExtractor.TryExtract(ms, null, null);
+		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result,
@@ -411,7 +417,7 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = EmbeddedPreviewExtractor.TryExtract(ms, null, null);
+		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with truncated header");
@@ -426,7 +432,7 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = EmbeddedPreviewExtractor.TryExtract(ms, null, null);
+		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with invalid IFD offset");
@@ -443,14 +449,9 @@ public class EmbeddedPreviewExtractorTest
 		ms.Seek(0, SeekOrigin.Begin);
 
 		// Act
-		var result = EmbeddedPreviewExtractor.TryExtract(ms, null, null);
+		var result = new EmbeddedPreviewExtractor(new FakeIWebLogger()).TryExtract(ms, null, null);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with corrupted data");
 	}
 }
-
-
-
-
-

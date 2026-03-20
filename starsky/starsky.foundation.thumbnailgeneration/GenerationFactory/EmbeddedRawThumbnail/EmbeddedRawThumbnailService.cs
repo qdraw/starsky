@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.thumbnailgeneration.Interfaces;
-using starsky.foundation.thumbnailgeneration.Services;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
@@ -13,7 +13,7 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 /// </summary>
 [Service(typeof(IEmbeddedRawThumbnailService),
 	InjectionLifetime = InjectionLifetime.Scoped)]
-public class EmbeddedRawThumbnailService : IEmbeddedRawThumbnailService
+public class EmbeddedRawThumbnailService(IWebLogger logger) : IEmbeddedRawThumbnailService
 {
 	/// <summary>
 	///     Extracts embedded JPEG previews from a RAW file asynchronously.
@@ -46,7 +46,7 @@ public class EmbeddedRawThumbnailService : IEmbeddedRawThumbnailService
 
 		try
 		{
-			return EmbeddedPreviewExtractor.TryExtract(rawFilePath, outputLargePath,
+			return new EmbeddedPreviewExtractor(logger).TryExtract(rawFilePath, outputLargePath,
 				outputMediumPath);
 		}
 		catch ( Exception )
@@ -55,5 +55,3 @@ public class EmbeddedRawThumbnailService : IEmbeddedRawThumbnailService
 		}
 	}
 }
-
-

@@ -12,10 +12,15 @@ public class CreateAnImageSonyA100ArwRaw
 
 	public CreateAnImageSonyA100ArwRaw()
 	{
+		if ( string.IsNullOrEmpty(FullFilePath) || !File.Exists(FullFilePath) )
+		{
+			throw new FileNotFoundException(FullFilePath);
+		}
+
 		Bytes = [..StreamToBytes(FullFilePath)];
 	}
 
-	public static string FullFilePath
+	public string FullFilePath
 	{
 		get
 		{
@@ -26,7 +31,7 @@ public class CreateAnImageSonyA100ArwRaw
 			}
 
 			return Path.Combine(dirName, "FakeCreateAn",
-				"CreateAnImageA6600Raw", "RAW_SONY_A100.ARW");
+				"CreateAnImageSonyA100ArwRaw", "RAW_SONY_A100.ARW");
 		}
 	}
 

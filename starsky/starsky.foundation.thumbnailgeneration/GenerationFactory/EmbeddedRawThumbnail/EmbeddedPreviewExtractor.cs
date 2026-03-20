@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
@@ -15,7 +16,7 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 ///     - Recursive TIFF IFD traversal
 ///     Supports RAW formats based on TIFF: DNG, CR2, NEF, ARW
 /// </summary>
-public static class EmbeddedPreviewExtractor
+public class EmbeddedPreviewExtractor(IWebLogger logger)
 {
 	private const ushort TagJpegOffset = 0x0201;
 	private const ushort TagJpegLength = 0x0202;
@@ -46,7 +47,7 @@ public static class EmbeddedPreviewExtractor
 	/// <param name="outputLarge">Output path for the large preview (or null)</param>
 	/// <param name="outputMedium">Output path for the medium preview (or null)</param>
 	/// <returns>true if at least one preview was successfully extracted</returns>
-	public static bool TryExtract(string rawPath, string? outputLarge, string? outputMedium)
+	public bool TryExtract(string rawPath, string? outputLarge, string? outputMedium)
 	{
 		using var fs = new FileStream(rawPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 		return TryExtract(fs, outputLarge, outputMedium);
@@ -59,7 +60,7 @@ public static class EmbeddedPreviewExtractor
 	/// <param name="outputLarge">Output path for the large preview (or null)</param>
 	/// <param name="outputMedium">Output path for the medium preview (or null)</param>
 	/// <returns>true if at least one preview was successfully extracted</returns>
-	public static bool TryExtract(Stream input, string? outputLarge, string? outputMedium)
+	public bool TryExtract(Stream input, string? outputLarge, string? outputMedium)
 	{
 		if ( !TryParseTiffHeader(input, out var littleEndian, out var firstIfd) )
 		{
@@ -140,7 +141,7 @@ public static class EmbeddedPreviewExtractor
 		return firstIfd != 0;
 	}
 
-	private static void ParseIfdRecursive(Stream input, uint offset,
+	private void ParseIfdRecursive(Stream input, uint offset,
 		bool littleEndian, List<PreviewCandidate> previews, HashSet<uint> visited, int depth)
 	{
 		if ( depth > MaxIfdDepth || offset == 0 )
@@ -166,7 +167,7 @@ public static class EmbeddedPreviewExtractor
 
 		var entryCount = ReadUInt16(countBuf, littleEndian);
 
-		switch (entryCount)
+		switch ( entryCount )
 		{
 			// Sanity guard: avoid absurd entry counts that may cause OOM or hangs
 			case 0:
@@ -175,9 +176,9 @@ public static class EmbeddedPreviewExtractor
 			{
 				var streamPos = input.Position;
 				var streamLen = input.Length;
-				Console.WriteLine(
+				logger.LogInformation(
 					$"[EmbeddedPreviewExtractor] IFD at offset {offset} skipped: entryCount {entryCount} exceeds cap {MaxIfdEntryCount} (stream pos: {streamPos}, len: {streamLen})");
-			
+
 				// Skip this IFD entirely: can't safely read the entries, so we skip to the next IFD pointer
 				// The next IFD pointer should be at: current position + (entryCount * 12) + 4
 				// But since we can't trust this file, just return and don't recurse
@@ -218,7 +219,7 @@ public static class EmbeddedPreviewExtractor
 		}
 	}
 
-	private static void ParseIfdEntries(
+	private void ParseIfdEntries(
 		Stream input,
 		ReadOnlySpan<byte> entries,
 		bool littleEndian,
@@ -570,7 +571,7 @@ public static class EmbeddedPreviewExtractor
 	}
 
 	// Timeout-enabled read for rented byte[] buffers
-	private static bool TryReadExact(Stream s, byte[] buffer, int offset, int count,
+	private bool TryReadExact(Stream s, byte[] buffer, int offset, int count,
 		int timeoutMs = 5000)
 	{
 		if ( count == 0 )
@@ -590,7 +591,7 @@ public static class EmbeddedPreviewExtractor
 
 				if ( read == 0 )
 				{
-					Console.WriteLine(
+					logger.LogInformation(
 						$"[EmbeddedPreviewExtractor] TryReadExact: EOF after reading {total} of {count} bytes");
 					return false;
 				}
@@ -602,13 +603,13 @@ public static class EmbeddedPreviewExtractor
 		}
 		catch ( OperationCanceledException )
 		{
-			Console.WriteLine(
+			logger.LogError(
 				$"[EmbeddedPreviewExtractor] TryReadExact: timeout after {timeoutMs}ms when reading {count} bytes");
 			return false;
 		}
 		catch ( Exception ex )
 		{
-			Console.WriteLine($"[EmbeddedPreviewExtractor] TryReadExact: exception: {ex.Message}");
+			logger.LogError($"[EmbeddedPreviewExtractor] TryReadExact: exception: {ex.Message}");
 			return false;
 		}
 	}
