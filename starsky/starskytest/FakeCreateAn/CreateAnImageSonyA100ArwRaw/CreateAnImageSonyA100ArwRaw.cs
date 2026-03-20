@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using starsky.foundation.storage.Storage;
@@ -8,7 +9,7 @@ namespace starskytest.FakeCreateAn.CreateAnImageSonyA100ArwRaw;
 
 public class CreateAnImageSonyA100ArwRaw
 {
-	public readonly ImmutableArray<byte> Bytes = [];
+	public readonly ImmutableArray<byte> Bytes;
 
 	public CreateAnImageSonyA100ArwRaw()
 	{
@@ -20,6 +21,8 @@ public class CreateAnImageSonyA100ArwRaw
 		Bytes = [..StreamToBytes(FullFilePath)];
 	}
 
+	[SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
+	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public string FullFilePath
 	{
 		get
