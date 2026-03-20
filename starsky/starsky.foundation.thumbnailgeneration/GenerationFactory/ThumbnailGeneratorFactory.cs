@@ -12,10 +12,20 @@ internal class ThumbnailGeneratorFactory(
 	ISelectorStorage selectorStorage,
 	IWebLogger logger,
 	IVideoProcess videoProcess,
-	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator)
+	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator,
+	IEmbeddedRawThumbnailGenerator embeddedRawThumbnailGenerator)
 {
 	internal IThumbnailGenerator GetGenerator(string filePath)
 	{
+		if (ExtensionRolesHelper.IsExtensionEmbeddedRawThumbnailSupported(filePath) )
+		{
+			return new CompositeThumbnailGenerator(
+			[
+				embeddedRawThumbnailGenerator,
+				nativePreviewThumbnailGenerator
+			], logger);
+		}
+
 		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(filePath) )
 		{
 			return new CompositeThumbnailGenerator(

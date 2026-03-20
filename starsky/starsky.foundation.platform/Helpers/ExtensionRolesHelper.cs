@@ -232,6 +232,15 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		}
 	}
 
+	public static List<string> ExtensionEmbeddedRawThumbnailSupportedList
+	{
+		get
+		{
+			// TIFF-based RAW formats with embedded JPEG previews.
+			return ["arw", "cr2", "dng", "nef"];
+		}
+	}
+
 	/// <summary>
 	///     List of extension that are forced to use site car xmp files
 	/// </summary>
@@ -344,6 +353,12 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	public static bool IsExtensionVideoSupported(string? fileName)
 	{
 		return IsExtensionForce(fileName?.ToLowerInvariant(), ExtensionVideoSupportedList);
+	}
+
+	public static bool IsExtensionEmbeddedRawThumbnailSupported(string? fileName)
+	{
+		return IsExtensionForce(fileName?.ToLowerInvariant(),
+			ExtensionEmbeddedRawThumbnailSupportedList);
 	}
 
 	/// <summary>

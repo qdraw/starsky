@@ -44,6 +44,26 @@ public sealed class ExtensionRolesHelperTest
 	}
 
 	[TestMethod]
+	[DataRow("file.arw")]
+	[DataRow("file.cr2")]
+	[DataRow("file.dng")]
+	[DataRow("file.nef")]
+	public void Files_IsExtensionEmbeddedRawThumbnailSupported_IsTrue(string filePath)
+	{
+		Assert.IsTrue(ExtensionRolesHelper.IsExtensionEmbeddedRawThumbnailSupported(filePath));
+	}
+
+	[TestMethod]
+	[DataRow(null)]
+	[DataRow("file.jpg")]
+	[DataRow("file.tiff")]
+	[DataRow("file.txt")]
+	public void Files_IsExtensionEmbeddedRawThumbnailSupported_IsFalse(string? filePath)
+	{
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionEmbeddedRawThumbnailSupported(filePath));
+	}
+
+	[TestMethod]
 	public void Files_ExtensionThumbSupportedList_JpgCheck()
 	{
 		Assert.IsTrue(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.jpg"));

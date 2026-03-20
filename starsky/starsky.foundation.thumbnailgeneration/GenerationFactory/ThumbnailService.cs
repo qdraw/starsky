@@ -32,12 +32,14 @@ public class ThumbnailService(
 	IUpdateStatusGeneratedThumbnailService updateStatusGeneratedThumbnailService,
 	IVideoProcess videoProcess,
 	IFileHashSubPathStorage fileHashSubPathStorage,
-	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator)
+	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator,
+	IEmbeddedRawThumbnailGenerator? embeddedRawThumbnailGenerator = null)
 	: IThumbnailService
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
 		ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(e) ||
-		ExtensionRolesHelper.IsExtensionVideoSupported(e);
+		ExtensionRolesHelper.IsExtensionVideoSupported(e) ||
+		ExtensionRolesHelper.IsExtensionEmbeddedRawThumbnailSupported(e);
 
 	private readonly FolderToFileList _folderToFileList = new(selectorStorage);
 
@@ -146,7 +148,7 @@ public class ThumbnailService(
 		string singleSubPath, string? fileHash, List<ThumbnailSize> sizes)
 	{
 		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
-			nativePreviewThumbnailGenerator);
+			nativePreviewThumbnailGenerator, embeddedRawThumbnailGenerator);
 		var generator = factory.GetGenerator(singleSubPath);
 		if ( !string.IsNullOrEmpty(fileHash) )
 		{
@@ -169,7 +171,7 @@ public class ThumbnailService(
 		string singleSubPath, ThumbnailImageFormat thumbnailImageFormat, ThumbnailSize size)
 	{
 		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
-			nativePreviewThumbnailGenerator);
+			nativePreviewThumbnailGenerator, embeddedRawThumbnailGenerator);
 		var generator = factory.GetGenerator(singleSubPath);
 
 		var (fileHash, success) =

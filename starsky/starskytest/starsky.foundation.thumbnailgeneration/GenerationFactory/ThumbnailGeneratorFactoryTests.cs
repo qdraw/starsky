@@ -17,12 +17,14 @@ public class ThumbnailGeneratorFactoryTests
 		var loggerMock = new FakeIWebLogger();
 		var videoProcessMock = new FakeIVideoProcess(selectorStorageMock);
 		_factory = new ThumbnailGeneratorFactory(selectorStorageMock, loggerMock, videoProcessMock,
-			new FakeINativePreviewThumbnailGenerator());
+			new FakeINativePreviewThumbnailGenerator(),
+			new FakeIEmbeddedRawThumbnailGenerator());
 	}
 
 	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
 	[DataRow("test.jpg", typeof(CompositeThumbnailGenerator))]
+	[DataRow("test.arw", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.mp4", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.txt", typeof(NotSupportedFallbackThumbnailGenerator))]
 	public void GetGenerator_ReturnsCorrectGenerator(string filePath, Type expectedType)
