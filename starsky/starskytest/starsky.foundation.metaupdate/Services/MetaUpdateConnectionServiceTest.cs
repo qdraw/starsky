@@ -55,7 +55,7 @@ public sealed class MetaUpdateConnectionServiceTest
 			"Expected CreateScope to be called once in constructor");
 	}
 
-	private class SimpleProvider(object ws, object nq) : IServiceProvider
+	private sealed class SimpleProvider(object ws, object nq) : IServiceProvider
 	{
 		public object GetService(Type serviceType)
 		{
