@@ -96,26 +96,64 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			return cmp != 0 ? cmp : b.Length.CompareTo(a.Length);
 		});
 
-		var large = SelectAtLeast(previews, PreferredWidth);
-		var medium = SelectAtLeast(previews, MinDimension);
-
-		// Fall back: if no large, use the biggest we have.
-		large ??= previews[0];
-		medium ??= previews[0];
-
 		var ok = true;
+		uint? selectedLargeOffset = null;
 
 		if ( outputLarge is not null )
 		{
-			ok &= WritePreview(input, large.Value, outputLarge);
+			ok &= TryWriteBestPreview(input, previews, outputLarge, PreferredWidth, null,
+				out selectedLargeOffset);
 		}
 
-		if ( outputMedium is not null && medium.Value.Offset != large.Value.Offset )
+		if ( outputMedium is not null )
 		{
-			ok &= WritePreview(input, medium.Value, outputMedium);
+			ok &= TryWriteBestPreview(input, previews, outputMedium, MinDimension,
+				selectedLargeOffset, out _);
 		}
 
 		return Task.FromResult(ok);
+	}
+
+	private bool TryWriteBestPreview(Stream input, List<PreviewCandidate> previews,
+		string outputPath, uint minWidth, uint? skipOffset, out uint? selectedOffset)
+	{
+		selectedOffset = null;
+
+		foreach ( var candidate in previews )
+		{
+			if ( skipOffset.HasValue && candidate.Offset == skipOffset.Value )
+			{
+				continue;
+			}
+
+			if ( candidate.Width != 0 && candidate.Width < minWidth )
+			{
+				continue;
+			}
+
+			if ( WritePreview(input, candidate, outputPath) )
+			{
+				selectedOffset = candidate.Offset;
+				return true;
+			}
+		}
+
+		// Fallback to any candidate when strict width preference finds none.
+		foreach ( var candidate in previews )
+		{
+			if ( skipOffset.HasValue && candidate.Offset == skipOffset.Value )
+			{
+				continue;
+			}
+
+			if ( WritePreview(input, candidate, outputPath) )
+			{
+				selectedOffset = candidate.Offset;
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private static bool TryParseTiffHeader(Stream s, out bool littleEndian, out uint firstIfd)
@@ -622,6 +660,14 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 				return false;
 			}
 
+			// Ensure JPEG contains a scan marker; avoids metadata-only blobs with SOI/EOI.
+			if ( !HasStartOfScanMarker(fs) )
+			{
+				logger.LogDebug(
+					$"[EmbeddedPreviewExtractor] Rejecting file at offset {expectedOffset}: no SOS marker found");
+				return false;
+			}
+
 			// Quick EOF check: JPEG should end with FFD9 (EOI marker)
 			fs.Seek(-2, SeekOrigin.End);
 			Span<byte> footer = stackalloc byte[2];
@@ -640,6 +686,72 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 				$"[EmbeddedPreviewExtractor] Exception validating file at offset {expectedOffset}: {ex.Message}");
 			return false;
 		}
+	}
+
+	private static bool HasStartOfScanMarker(Stream stream)
+	{
+		stream.Seek(2, SeekOrigin.Begin); // after SOI
+		Span<byte> marker = stackalloc byte[2];
+
+		while ( stream.Position + 1 < stream.Length )
+		{
+			if ( stream.Read(marker) < 2 )
+			{
+				return false;
+			}
+
+			if ( marker[0] != 0xFF )
+			{
+				continue;
+			}
+
+			// Skip fill bytes (FF FF ...)
+			while ( marker[1] == 0xFF )
+			{
+				if ( stream.Read(marker.Slice(1, 1)) < 1 )
+				{
+					return false;
+				}
+			}
+
+			var code = marker[1];
+			if ( code == 0xDA )
+			{
+				return true; // SOS
+			}
+
+			if ( code == 0xD9 )
+			{
+				return false; // EOI before SOS
+			}
+
+			if ( code is >= 0xD0 and <= 0xD7 || code == 0x01 )
+			{
+				continue; // markers without length
+			}
+
+			Span<byte> lenBuf = stackalloc byte[2];
+			if ( stream.Read(lenBuf) < 2 )
+			{
+				return false;
+			}
+
+			var segmentLength = (lenBuf[0] << 8) | lenBuf[1];
+			if ( segmentLength < 2 )
+			{
+				return false;
+			}
+
+			var skip = segmentLength - 2;
+			if ( stream.Position + skip > stream.Length )
+			{
+				return false;
+			}
+
+			stream.Seek(skip, SeekOrigin.Current);
+		}
+
+		return false;
 	}
 
 	// -------------------------------------------------------------------------
