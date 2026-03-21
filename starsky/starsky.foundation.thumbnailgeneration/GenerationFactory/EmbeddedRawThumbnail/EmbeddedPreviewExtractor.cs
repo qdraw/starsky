@@ -82,18 +82,26 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		var previews = new List<PreviewCandidate>(MaxPreviews);
 		var visited = new HashSet<uint>();
 
-		ParseIfdRecursive(input, firstIfd, littleEndian, previews, visited, 0);
+		ParseIfdRecursive(input, firstIfd, littleEndian, previews, visited, 0,
+			new IfdPathContext(false, 0, 0));
 
 		if ( previews.Count == 0 )
 		{
 			return Task.FromResult(false);
 		}
 
-		// Sort descending by width (unknown width sorts last), then by byte length.
+		// Sort by source priority first, then width, then byte length.
 		previews.Sort((a, b) =>
 		{
-			var cmp = b.Width.CompareTo(a.Width);
-			return cmp != 0 ? cmp : b.Length.CompareTo(a.Length);
+			var sourceCompare = GetSourcePriority(b.SourceKind).CompareTo(
+				GetSourcePriority(a.SourceKind));
+			if ( sourceCompare != 0 )
+			{
+				return sourceCompare;
+			}
+
+			var widthCompare = b.Width.CompareTo(a.Width);
+			return widthCompare != 0 ? widthCompare : b.Length.CompareTo(a.Length);
 		});
 
 		var ok = true;
@@ -192,7 +200,8 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	}
 
 	private void ParseIfdRecursive(Stream input, uint offset,
-		bool littleEndian, List<PreviewCandidate> previews, HashSet<uint> visited, int depth)
+		bool littleEndian, List<PreviewCandidate> previews, HashSet<uint> visited, int depth,
+		IfdPathContext context)
 	{
 		if ( depth > MaxIfdDepth || offset == 0 )
 		{
@@ -242,7 +251,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 			ParseIfdEntries(input, entryBuf.AsSpan(0, ( int ) entryBytes), littleEndian, previews,
 				visited,
-				depth);
+				depth, context);
 		}
 		finally
 		{
@@ -259,7 +268,11 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		var nextIfd = ReadUInt32(nextBuf, littleEndian);
 		if ( nextIfd != 0 )
 		{
-			ParseIfdRecursive(input, nextIfd, littleEndian, previews, visited, depth + 1);
+			ParseIfdRecursive(input, nextIfd, littleEndian, previews, visited, depth + 1,
+				context with
+				{
+					RootIfdIndex = context.RootIfdIndex + 1
+				});
 		}
 	}
 
@@ -269,7 +282,8 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		bool littleEndian,
 		List<PreviewCandidate> previews,
 		HashSet<uint> visited,
-		int depth)
+		int depth,
+		IfdPathContext context)
 	{
 		// Tags we care about in this IFD.
 		uint jpegOffset = 0, jpegLength = 0;
@@ -354,19 +368,49 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		// Prefer an explicit JPEG thumbnail over raw strips.
 		if ( jpegOffset > 0 && jpegLength >= MinJpegBytes )
 		{
-			AddCandidate(previews, jpegOffset, jpegLength, ifdWidth, ifdHeight);
+			AddCandidate(previews, jpegOffset, jpegLength, ifdWidth, ifdHeight,
+				ResolveSourceKind(context));
 		}
 		else if ( !stripMulti && stripOffset > 0 && stripLength >= MinJpegBytes )
 		{
 			// Single-strip — might be an embedded JPEG (e.g. in some Canon IFDs).
-			AddCandidate(previews, stripOffset, stripLength, ifdWidth, ifdHeight);
+			AddCandidate(previews, stripOffset, stripLength, ifdWidth, ifdHeight,
+				ResolveSourceKind(context));
 		}
 		// Multi-strip raw data is intentionally skipped; it's sensor data, not a preview.
 
-		foreach ( var sub in subIfdOffsets )
+		for ( var i = 0; i < subIfdOffsets.Count; i++ )
 		{
-			ParseIfdRecursive(input, sub, littleEndian, previews, visited, depth + 1);
+			ParseIfdRecursive(input, subIfdOffsets[i], littleEndian, previews, visited,
+				depth + 1,
+				new IfdPathContext(true, i + 1, context.RootIfdIndex));
 		}
+	}
+
+	private static PreviewSourceKind ResolveSourceKind(IfdPathContext context)
+	{
+		if ( context.IsSubIfd )
+		{
+			return context.SubIfdOrdinal <= 1
+				? PreviewSourceKind.JpgFromRaw
+				: PreviewSourceKind.OtherImage;
+		}
+
+		return context.RootIfdIndex == 0
+			? PreviewSourceKind.PreviewImage
+			: PreviewSourceKind.Thumbnail;
+	}
+
+	private static int GetSourcePriority(PreviewSourceKind kind)
+	{
+		return kind switch
+		{
+			PreviewSourceKind.JpgFromRaw => 4,
+			PreviewSourceKind.PreviewImage => 3,
+			PreviewSourceKind.OtherImage => 2,
+			PreviewSourceKind.Thumbnail => 1,
+			_ => 0
+		};
 	}
 
 	// -------------------------------------------------------------------------
@@ -475,11 +519,16 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	private static void AddCandidate(
 		List<PreviewCandidate> previews,
 		uint offset, uint length,
-		uint width, uint height)
+		uint width, uint height,
+		PreviewSourceKind sourceKind)
 	{
 		var candidate = new PreviewCandidate
 		{
-			Offset = offset, Length = length, Width = width, Height = height
+			Offset = offset,
+			Length = length,
+			Width = width,
+			Height = height,
+			SourceKind = sourceKind
 		};
 
 		if ( previews.Count >= MaxPreviews )
@@ -506,6 +555,13 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 	private static bool IsBetterCandidate(PreviewCandidate left, PreviewCandidate right)
 	{
+		var leftSource = GetSourcePriority(left.SourceKind);
+		var rightSource = GetSourcePriority(right.SourceKind);
+		if ( leftSource != rightSource )
+		{
+			return leftSource > rightSource;
+		}
+
 		if ( left.Width != right.Width )
 		{
 			return left.Width > right.Width;
@@ -865,5 +921,19 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		public uint Length;
 		public uint Width; // 0 = unknown
 		public uint Height; // 0 = unknown
+		public PreviewSourceKind SourceKind;
+	}
+
+	private readonly record struct IfdPathContext(
+		bool IsSubIfd,
+		int SubIfdOrdinal,
+		int RootIfdIndex);
+
+	private enum PreviewSourceKind
+	{
+		Thumbnail,
+		OtherImage,
+		PreviewImage,
+		JpgFromRaw
 	}
 }
