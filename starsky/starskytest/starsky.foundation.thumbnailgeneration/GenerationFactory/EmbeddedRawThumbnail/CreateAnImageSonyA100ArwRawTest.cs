@@ -65,7 +65,7 @@ public class CreateAnImageSonyA100ArwRawTest
 		Assert.IsTrue(File.Exists(largeOutput), "Large preview output should exist");
 
 		var bytes = await File.ReadAllBytesAsync(largeOutput, TestContext.CancellationToken);
-		Assert.IsGreaterThan(bytes.Length, 2, "Output JPEG should contain data");
+		Assert.IsGreaterThan(2, bytes.Length, "Output JPEG should contain data");
 		Assert.AreEqual(0xFF, bytes[0], "JPEG SOI marker byte 1");
 		Assert.AreEqual(0xD8, bytes[1], "JPEG SOI marker byte 2");
 	}
