@@ -59,6 +59,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		Assert.IsTrue(called, "Expected RunStartupJobAsync to invoke StartBackgroundQueue on the database thumbnail generation service");
 	}
 
+	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task StartBackgroundAsync_Cancel()
 	{

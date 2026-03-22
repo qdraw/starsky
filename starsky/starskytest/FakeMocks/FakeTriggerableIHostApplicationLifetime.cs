@@ -10,6 +10,7 @@ public class FakeTriggerableIHostApplicationLifetime : IHostApplicationLifetime,
     private readonly CancellationTokenSource _startedCts = new();
     private readonly CancellationTokenSource _stoppingCts = new();
     private readonly CancellationTokenSource _stoppedCts = new();
+    private bool _disposed;
 
     public void StopApplication()
     {
@@ -48,9 +49,32 @@ public class FakeTriggerableIHostApplicationLifetime : IHostApplicationLifetime,
 
     public void Dispose()
     {
-        _startedCts.Dispose();
-        _stoppingCts.Dispose();
-        _stoppedCts.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            // dispose managed
+            _startedCts.Dispose();
+            _stoppingCts.Dispose();
+            _stoppedCts.Dispose();
+        }
+
+        // no unmanaged resources to free
+        _disposed = true;
+    }
+
+    ~FakeTriggerableIHostApplicationLifetime()
+    {
+        Dispose(false);
     }
 }
 
