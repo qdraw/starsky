@@ -15,9 +15,6 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 	InjectionLifetime = InjectionLifetime.Scoped)]
 public class EmbeddedRawThumbnailService(IWebLogger logger) : IEmbeddedRawThumbnailService
 {
-	/// <summary>
-	///     Synchronously extracts embedded JPEG previews from a RAW file.
-	/// </summary>
 	public async Task<bool> TryExtractPreview(string rawFilePath, string? outputLargePath,
 		string? outputMediumPath)
 	{
@@ -28,9 +25,30 @@ public class EmbeddedRawThumbnailService(IWebLogger logger) : IEmbeddedRawThumbn
 
 		try
 		{
-			return await
-				new EmbeddedPreviewExtractor(logger).TryExtract(rawFilePath, outputLargePath,
-					outputMediumPath);
+			var extension = Path.GetExtension(rawFilePath).ToLowerInvariant();
+			var result = extension switch
+			{
+				".cr3" => await new Cr3BmffPreviewExtractor(logger).TryExtract(rawFilePath,
+					outputLargePath, outputMediumPath),
+				".raf" => await new RafPreviewExtractor(logger).TryExtract(rawFilePath,
+					outputLargePath, outputMediumPath),
+				".fff" or ".x3f" =>
+					await new LightweightContainerPreviewExtractor(logger).TryExtract(rawFilePath,
+						outputLargePath, outputMediumPath),
+				_ => await new EmbeddedPreviewExtractor(logger).TryExtract(rawFilePath,
+					outputLargePath,
+					outputMediumPath)
+			};
+
+			if ( result )
+			{
+				return true;
+			}
+
+			// Fallback for files with non-standard/unsupported preview variants.
+			var fullFileLength = new FileInfo(rawFilePath).Length;
+			return new JpegSegmentScanner(logger).TryExtract(rawFilePath,
+				[(0, fullFileLength)], outputLargePath, outputMediumPath);
 		}
 		catch ( Exception exception )
 		{

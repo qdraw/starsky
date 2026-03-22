@@ -159,7 +159,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
+		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes], TestContext.CancellationToken);
 
 		var mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
 

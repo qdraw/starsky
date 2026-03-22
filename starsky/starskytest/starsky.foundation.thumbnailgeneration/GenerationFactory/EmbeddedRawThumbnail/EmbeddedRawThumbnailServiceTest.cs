@@ -24,16 +24,18 @@ public class EmbeddedRawThumbnailServiceTest
 	[TestCleanup]
 	public void Cleanup()
 	{
-		if ( Directory.Exists(_tempDir) )
+		if ( !Directory.Exists(_tempDir) )
 		{
-			try
-			{
-				Directory.Delete(_tempDir, true);
-			}
-			catch
-			{
-				// Ignore cleanup errors
-			}
+			return;
+		}
+
+		try
+		{
+			Directory.Delete(_tempDir, true);
+		}
+		catch
+		{
+			// Ignore cleanup errors
 		}
 	}
 
@@ -112,7 +114,9 @@ public class EmbeddedRawThumbnailServiceTest
 		var jpegPos = jpegOffset;
 		data[jpegPos++] = 0xFF;
 		data[jpegPos++] = 0xD8;
-		for ( var i = 0; i < jpegSize - 4; i++ )
+		data[jpegPos++] = 0xFF;
+		data[jpegPos++] = 0xDA;
+		for ( var i = 0; i < jpegSize - 6; i++ )
 		{
 			data[jpegPos++] = 0x00;
 		}
@@ -121,6 +125,79 @@ public class EmbeddedRawThumbnailServiceTest
 		data[jpegPos] = 0xD9;
 
 		return data;
+	}
+
+	private static byte[] CreateMinimalJpeg(int size = 5000)
+	{
+		if ( size < 64 )
+		{
+			size = 64;
+		}
+
+		using var ms = new MemoryStream(size);
+		using var bw = new BinaryWriter(ms);
+
+		bw.Write((byte)0xFF); bw.Write((byte)0xD8); // SOI
+
+		// SOF0 segment (baseline, 8-bit, 16x16, 3 components)
+		bw.Write((byte)0xFF); bw.Write((byte)0xC0);
+		bw.Write((byte)0x00); bw.Write((byte)0x11);
+		bw.Write((byte)0x08);
+		bw.Write((byte)0x00); bw.Write((byte)0x10);
+		bw.Write((byte)0x00); bw.Write((byte)0x10);
+		bw.Write((byte)0x03);
+		bw.Write((byte)0x01); bw.Write((byte)0x11); bw.Write((byte)0x00);
+		bw.Write((byte)0x02); bw.Write((byte)0x11); bw.Write((byte)0x00);
+		bw.Write((byte)0x03); bw.Write((byte)0x11); bw.Write((byte)0x00);
+
+		// SOS segment header
+		bw.Write((byte)0xFF); bw.Write((byte)0xDA);
+		bw.Write((byte)0x00); bw.Write((byte)0x0C);
+		bw.Write((byte)0x03);
+		bw.Write((byte)0x01); bw.Write((byte)0x00);
+		bw.Write((byte)0x02); bw.Write((byte)0x11);
+		bw.Write((byte)0x03); bw.Write((byte)0x11);
+		bw.Write((byte)0x00); bw.Write((byte)0x3F); bw.Write((byte)0x00);
+
+		var payloadBytes = Math.Max(8, size - (int)ms.Length - 2);
+		for ( var i = 0; i < payloadBytes; i++ )
+		{
+			bw.Write((byte)0x55);
+		}
+
+		bw.Write((byte)0xFF); bw.Write((byte)0xD9); // EOI
+		bw.Flush();
+		return ms.ToArray();
+	}
+
+	private static byte[] CreateMinimalCr3WithMdatJpeg()
+	{
+		var jpeg = CreateMinimalJpeg();
+		using var ms = new MemoryStream();
+		using var bw = new BinaryWriter(ms);
+
+		// ftyp box
+		bw.Write(BitConverter.GetBytes(System.Net.IPAddress.HostToNetworkOrder(16)));
+		bw.Write("ftyp"u8.ToArray());
+		bw.Write("crx "u8.ToArray());
+		bw.Write("\0\0\0\0"u8.ToArray());
+
+		// mdat box containing a full JPEG segment
+		var mdatSize = 8 + jpeg.Length;
+		bw.Write(BitConverter.GetBytes(System.Net.IPAddress.HostToNetworkOrder(mdatSize)));
+		bw.Write("mdat"u8.ToArray());
+		bw.Write(jpeg);
+		bw.Flush();
+
+		return ms.ToArray();
+	}
+
+	private static byte[] CreateLightweightContainerWithEmbeddedJpeg()
+	{
+		var jpeg = CreateMinimalJpeg();
+		var bytes = new byte[256 + jpeg.Length + 256];
+		Array.Copy(jpeg, 0, bytes, 256, jpeg.Length);
+		return bytes;
 	}
 
 	[TestMethod]
@@ -285,12 +362,21 @@ public class EmbeddedRawThumbnailServiceTest
 	{
 		// Arrange
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
-		string[] extensions = { ".arw", ".cr2", ".nef", ".dng" };
+		string[] extensions =
+		[
+			".arw", ".cr2", ".nef", ".dng", ".cr3", ".raf", ".fff", ".x3f"
+		];
 
 		foreach ( var ext in extensions )
 		{
 			var rawFile = Path.Combine(_tempDir, $"test{ext}");
-			File.WriteAllBytes(rawFile, CreateMinimalTiffData());
+			var content = ext switch
+			{
+				".cr3" => CreateMinimalCr3WithMdatJpeg(),
+				".raf" or ".fff" or ".x3f" => CreateLightweightContainerWithEmbeddedJpeg(),
+				_ => CreateMinimalTiffData()
+			};
+			File.WriteAllBytes(rawFile, content);
 
 			// Act
 			var result = service.TryExtractPreview(rawFile, null, null).Result;
@@ -335,5 +421,31 @@ public class EmbeddedRawThumbnailServiceTest
 
 		// Assert
 		Assert.IsTrue(result, "Should work with special characters in path");
+	}
+
+	[TestMethod]
+	public async Task TryExtractPreview_Cr3BmffRoute_WithMdatJpeg_ReturnsTrue()
+	{
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
+		var rawFile = Path.Combine(_tempDir, "test.cr3");
+		await File.WriteAllBytesAsync(rawFile, CreateMinimalCr3WithMdatJpeg(),
+			TestContext.CancellationToken);
+
+		var result = await service.TryExtractPreview(rawFile, null, null);
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtractPreview_LightweightContainerRoute_WithEmbeddedJpeg_ReturnsTrue()
+	{
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
+		var rawFile = Path.Combine(_tempDir, "test.raf");
+		await File.WriteAllBytesAsync(rawFile, CreateLightweightContainerWithEmbeddedJpeg(),
+			TestContext.CancellationToken);
+
+		var result = await service.TryExtractPreview(rawFile, null, null);
+
+		Assert.IsTrue(result);
 	}
 }

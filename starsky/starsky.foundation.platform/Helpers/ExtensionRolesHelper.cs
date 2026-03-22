@@ -232,14 +232,9 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		}
 	}
 
-	public static List<string> ExtensionEmbeddedRawThumbnailSupportedList
-	{
-		get
-		{
-			// TIFF-based RAW formats with embedded JPEG previews.
-			return ["arw", "cr2", "dng", "nef"];
-		}
-	}
+	public static List<string> ExtensionEmbeddedRawThumbnailSupportedList =>
+		// TIFF path + container-specific extractors.
+		["arw", "cr2", "cr3", "dng", "nef", "raf", "fff", "x3f"];
 
 	/// <summary>
 	///     List of extension that are forced to use site car xmp files

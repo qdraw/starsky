@@ -90,19 +90,8 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			return Task.FromResult(false);
 		}
 
-		// Sort by source priority first, then width, then byte length.
-		previews.Sort((a, b) =>
-		{
-			var sourceCompare = GetSourcePriority(b.SourceKind).CompareTo(
-				GetSourcePriority(a.SourceKind));
-			if ( sourceCompare != 0 )
-			{
-				return sourceCompare;
-			}
-
-			var widthCompare = b.Width.CompareTo(a.Width);
-			return widthCompare != 0 ? widthCompare : b.Length.CompareTo(a.Length);
-		});
+		// Sort by source priority first, then dimensions, then byte length.
+		previews.Sort((a, b) => CompareCandidates(a, b));
 
 		var ok = true;
 		uint? selectedLargeOffset = null;
@@ -115,8 +104,16 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 		if ( outputMedium is not null )
 		{
-			ok &= TryWriteBestPreview(input, previews, outputMedium, MinDimension,
+			var mediumWritten = TryWriteBestPreview(input, previews, outputMedium, MinDimension,
 				selectedLargeOffset, out _);
+			if ( !mediumWritten && selectedLargeOffset.HasValue && outputLarge is not null &&
+			     File.Exists(outputLarge) )
+			{
+				File.Copy(outputLarge, outputMedium, true);
+				mediumWritten = true;
+			}
+
+			ok &= mediumWritten;
 		}
 
 		return Task.FromResult(ok);
@@ -126,10 +123,32 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		string outputPath, uint minWidth, uint? skipOffset, out uint? selectedOffset)
 	{
 		selectedOffset = null;
+		var hasNonTiny = previews.Exists(p => p.Length >= MinJpegBytes);
 
+		if ( TryWriteBestPreviewPass(input, previews, outputPath, minWidth, skipOffset,
+				hasNonTiny ? (uint)MinJpegBytes : 0u, out selectedOffset) )
+		{
+			return true;
+		}
+
+		// Fallback: allow tiny candidates when no viable larger preview exists.
+		return hasNonTiny && TryWriteBestPreviewPass(input, previews, outputPath, minWidth,
+			skipOffset, 0, out selectedOffset);
+	}
+
+	private bool TryWriteBestPreviewPass(Stream input, List<PreviewCandidate> previews,
+		string outputPath, uint minWidth, uint? skipOffset, uint minLength,
+		out uint? selectedOffset)
+	{
+		selectedOffset = null;
 		foreach ( var candidate in previews )
 		{
 			if ( skipOffset.HasValue && candidate.Offset == skipOffset.Value )
+			{
+				continue;
+			}
+
+			if ( candidate.Length < minLength )
 			{
 				continue;
 			}
@@ -146,10 +165,14 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			}
 		}
 
-		// Fallback to any candidate when strict width preference finds none.
 		foreach ( var candidate in previews )
 		{
 			if ( skipOffset.HasValue && candidate.Offset == skipOffset.Value )
+			{
+				continue;
+			}
+
+			if ( candidate.Length < minLength )
 			{
 				continue;
 			}
@@ -377,6 +400,17 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			AddCandidate(previews, stripOffset, stripLength, ifdWidth, ifdHeight,
 				ResolveSourceKind(context));
 		}
+		else if ( jpegOffset > 0 && jpegLength > 0 )
+		{
+			// Keep tiny JPEGs only as fallback; they are filtered during selection.
+			AddCandidate(previews, jpegOffset, jpegLength, ifdWidth, ifdHeight,
+				ResolveSourceKind(context));
+		}
+		else if ( !stripMulti && stripOffset > 0 && stripLength > 0 )
+		{
+			AddCandidate(previews, stripOffset, stripLength, ifdWidth, ifdHeight,
+				ResolveSourceKind(context));
+		}
 		// Multi-strip raw data is intentionally skipped; it's sensor data, not a preview.
 
 		for ( var i = 0; i < subIfdOffsets.Count; i++ )
@@ -553,40 +587,45 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		previews.Add(candidate);
 	}
 
-	private static bool IsBetterCandidate(PreviewCandidate left, PreviewCandidate right)
+	private static int CompareCandidates(PreviewCandidate left, PreviewCandidate right)
 	{
-		var leftSource = GetSourcePriority(left.SourceKind);
-		var rightSource = GetSourcePriority(right.SourceKind);
-		if ( leftSource != rightSource )
+		var sourceCompare = GetSourcePriority(right.SourceKind).CompareTo(
+			GetSourcePriority(left.SourceKind));
+		if ( sourceCompare != 0 )
 		{
-			return leftSource > rightSource;
+			return sourceCompare;
+		}
+
+		var dimensionCompare = CompareByDimensions(right, left);
+		if ( dimensionCompare != 0 )
+		{
+			return dimensionCompare;
+		}
+
+		return right.Length.CompareTo(left.Length);
+	}
+
+	private static int CompareByDimensions(PreviewCandidate left, PreviewCandidate right)
+	{
+		var leftArea = (long)left.Width * left.Height;
+		var rightArea = (long)right.Width * right.Height;
+
+		if ( leftArea != 0 && rightArea != 0 && leftArea != rightArea )
+		{
+			return leftArea.CompareTo(rightArea);
 		}
 
 		if ( left.Width != right.Width )
 		{
-			return left.Width > right.Width;
+			return left.Width.CompareTo(right.Width);
 		}
 
-		return left.Length > right.Length;
+		return left.Height.CompareTo(right.Height);
 	}
 
-	private static PreviewCandidate? SelectAtLeast(List<PreviewCandidate> previews, uint minWidth)
+	private static bool IsBetterCandidate(PreviewCandidate left, PreviewCandidate right)
 	{
-		// List is already sorted widest-first.
-		foreach ( var p in previews )
-		{
-			if ( p.Width == 0 )
-			{
-				continue; // unknown dimension — handled as fallback by caller
-			}
-
-			if ( p.Width >= minWidth )
-			{
-				return p;
-			}
-		}
-
-		return null;
+		return CompareCandidates(left, right) < 0;
 	}
 
 	// -------------------------------------------------------------------------
@@ -730,8 +769,8 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			if ( fs.Read(footer) < 2 || footer[0] != 0xFF || footer[1] != 0xD9 )
 			{
 				logger.LogDebug(
-					$"[EmbeddedPreviewExtractor] Warning: file at offset {expectedOffset} missing JPEG EOI marker (may be lossless JPEG)");
-				// Don't reject on missing EOI - some LJPEG files may not have it
+					$"[EmbeddedPreviewExtractor] Rejecting file at offset {expectedOffset}: missing JPEG EOI marker");
+				return false;
 			}
 
 			return true;
@@ -748,6 +787,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	{
 		stream.Seek(2, SeekOrigin.Begin); // after SOI
 		Span<byte> marker = stackalloc byte[2];
+		Span<byte> lenBuf = stackalloc byte[2];
 
 		while ( stream.Position + 1 < stream.Length )
 		{
@@ -786,7 +826,6 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 				continue; // markers without length
 			}
 
-			Span<byte> lenBuf = stackalloc byte[2];
 			if ( stream.Read(lenBuf) < 2 )
 			{
 				return false;
@@ -798,16 +837,46 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 				return false;
 			}
 
-			var skip = segmentLength - 2;
-			if ( stream.Position + skip > stream.Length )
+			var payloadLength = segmentLength - 2;
+			if ( stream.Position + payloadLength > stream.Length )
 			{
 				return false;
 			}
 
-			stream.Seek(skip, SeekOrigin.Current);
+			if ( IsSofMarker(code) )
+			{
+				if ( IsLosslessSofMarker(code) )
+				{
+					return false;
+				}
+
+				var precision = stream.ReadByte();
+				if ( precision is not 8 and not 12 )
+				{
+					return false;
+				}
+
+				payloadLength -= 1;
+			}
+
+			if ( payloadLength > 0 )
+			{
+				stream.Seek(payloadLength, SeekOrigin.Current);
+			}
 		}
 
 		return false;
+	}
+
+	private static bool IsSofMarker(int marker)
+	{
+		return marker is 0xC0 or 0xC1 or 0xC2 or 0xC3 or 0xC5 or 0xC6 or 0xC7 or 0xC9
+		       or 0xCA or 0xCB or 0xCD or 0xCE or 0xCF;
+	}
+
+	private static bool IsLosslessSofMarker(int marker)
+	{
+		return marker is 0xC3 or 0xC7 or 0xCB or 0xCF;
 	}
 
 	// -------------------------------------------------------------------------

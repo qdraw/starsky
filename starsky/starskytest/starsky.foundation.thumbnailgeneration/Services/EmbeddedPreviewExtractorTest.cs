@@ -109,6 +109,9 @@ public class EmbeddedPreviewExtractorTest
 		// JPEG SOI marker
 		jpeg[0] = 0xFF;
 		jpeg[1] = 0xD8;
+		// Include SOS marker so validation sees scan data
+		jpeg[2] = 0xFF;
+		jpeg[3] = 0xDA;
 		// EOI marker at the end
 		jpeg[size - 2] = 0xFF;
 		jpeg[size - 1] = 0xD9;
