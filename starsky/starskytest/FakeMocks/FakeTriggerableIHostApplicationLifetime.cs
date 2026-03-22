@@ -1,10 +1,11 @@
+using System;
 using System.Threading;
 using Microsoft.Extensions.Hosting;
 
 namespace starskytest.FakeMocks;
 
 // Test double that allows tests to trigger the ApplicationStarted token
-public class FakeTriggerableIHostApplicationLifetime : IHostApplicationLifetime
+public class FakeTriggerableIHostApplicationLifetime : IHostApplicationLifetime, IDisposable
 {
     private readonly CancellationTokenSource _startedCts = new();
     private readonly CancellationTokenSource _stoppingCts = new();
@@ -22,25 +23,34 @@ public class FakeTriggerableIHostApplicationLifetime : IHostApplicationLifetime
     // Trigger the ApplicationStarted token to invoke registered callbacks
     public void TriggerApplicationStarted()
     {
-        try
+        if ( !_startedCts.IsCancellationRequested )
         {
             _startedCts.Cancel();
-        }
-        catch
-        {
-            // ignore if already canceled
         }
     }
 
     // Optional helpers to trigger other lifecycle events if needed
     public void TriggerApplicationStopping()
     {
-        try { _stoppingCts.Cancel(); } catch { }
+        if ( !_stoppingCts.IsCancellationRequested )
+        {
+            _stoppingCts.Cancel();
+        }
     }
 
     public void TriggerApplicationStopped()
     {
-        try { _stoppedCts.Cancel(); } catch { }
+        if ( !_stoppedCts.IsCancellationRequested )
+        {
+            _stoppedCts.Cancel();
+        }
+    }
+
+    public void Dispose()
+    {
+        _startedCts.Dispose();
+        _stoppingCts.Dispose();
+        _stoppedCts.Dispose();
     }
 }
 
