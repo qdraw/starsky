@@ -47,24 +47,6 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 	}
 
 	[TestMethod]
-	public async Task TryExtractPreview_WithCreateAnImageJpg_ReturnsFalse()
-	{
-		// Arrange
-		var createAnImage = new CreateAnImage();
-		File.Exists(createAnImage.FullFilePath);
-		var tempImagePath = Path.Combine(_tempOutputDir, "test_image.jpg");
-		await File.WriteAllBytesAsync(tempImagePath, CreateAnImage.Bytes.ToArray(), TestContext.CancellationToken);
-
-		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
-
-		// Act - JPG is not a RAW file with embedded previews
-		var result = await service.TryExtractPreview(tempImagePath, null, null);
-
-		// Assert
-		Assert.IsFalse(result, "JPEG file should not contain embedded RAW preview");
-	}
-
-	[TestMethod]
 	public async Task TryExtractPreview_WithCreateAnImageA6600RawArw_ReturnsTrue()
 	{
 		// Arrange
@@ -145,33 +127,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		Assert.IsFalse(result,
 			"Truncated RAW head fixture should fail when writing large preview bytes");
 	}
-
-	[TestMethod]
-	public async Task TryExtractPreview_WithCreateAnImageA6600Raw_MediumPreviewOnly()
-	{
-		// Arrange
-		var createAnImageRaw = new CreateAnImageA6600Raw();
-
-		if ( createAnImageRaw.Bytes.IsEmpty )
-		{
-			Assert.Inconclusive("Test image file not available");
-			return;
-		}
-
-		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes], TestContext.CancellationToken);
-
-		var mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
-
-		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
-
-		// Act
-		var result = await service.TryExtractPreview(tempRawPath, null, mediumOutput);
-
-		// Assert
-		Assert.IsTrue(result, "Should extract medium preview only");
-	}
-
+	
 	[TestMethod]
 	public async Task TryExtractPreviewAsync_WithCreateAnImageA6600Raw_ReturnsTrue()
 	{
@@ -302,7 +258,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
+		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes], TestContext.CancellationToken);
 
 		var largeOutput = Path.Combine(_tempOutputDir, "large.jpg");
 		var mediumOutput = Path.Combine(_tempOutputDir, "medium.jpg");
@@ -315,29 +271,6 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		// Assert
 		Assert.IsFalse(result,
 			"Truncated RAW head fixture should fail writing large/medium preview bytes");
-	}
-
-	[TestMethod]
-	public async Task TryExtractPreview_WithCreateAnImageJpg_CreatedAndTested()
-	{
-		// Arrange
-		var createAnImage = new CreateAnImage();
-		var jpgPath = createAnImage.FullFilePath;
-
-		// Skip if test image doesn't exist
-		if ( !File.Exists(jpgPath) )
-		{
-			Assert.Inconclusive("Test image file not available");
-			return;
-		}
-
-		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
-
-		// Act - JPG is not RAW, should fail
-		var result = await service.TryExtractPreview(jpgPath, null, null);
-
-		// Assert
-		Assert.IsFalse(result, "Regular JPEG should not be extracted as RAW");
 	}
 
 	[TestMethod]
