@@ -37,7 +37,7 @@ public class EmbeddedRawThumbnailRealWorldIntegrationTest
 		}
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("fujifilm_x_t3_01.raf")]
 	[DataRow("fujifilm_x_s10_01.raf")]
 	[DataRow("pentax_k_1_mark_ii_01.dng")]
@@ -62,7 +62,7 @@ public class EmbeddedRawThumbnailRealWorldIntegrationTest
 		Assert.IsTrue(result, $"Expected preview extraction to succeed for {fileName}");
 		Assert.IsTrue(File.Exists(large), $"Expected large preview for {fileName}");
 		var bytes = new FileInfo(large).Length;
-		Assert.IsTrue(bytes > 1024, $"Expected non-trivial JPEG size for {fileName}");
+		Assert.IsGreaterThan(1024, bytes, $"Expected non-trivial JPEG size for {fileName}");
 	}
 
 	private static string ResolveRawRoot()

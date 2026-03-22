@@ -1,10 +1,8 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
-using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeMocks;
 
@@ -60,7 +58,8 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
+		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes],
+			TestContext.CancellationToken);
 
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
@@ -85,7 +84,8 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
+		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes],
+			TestContext.CancellationToken);
 
 		var largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
 		var mediumOutput = Path.Combine(_tempOutputDir, "preview_medium.jpg");
@@ -114,7 +114,8 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
+		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes],
+			TestContext.CancellationToken);
 
 		var largeOutput = Path.Combine(_tempOutputDir, "preview_large.jpg");
 
@@ -127,7 +128,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		Assert.IsFalse(result,
 			"Truncated RAW head fixture should fail when writing large preview bytes");
 	}
-	
+
 	[TestMethod]
 	public async Task TryExtractPreviewAsync_WithCreateAnImageA6600Raw_ReturnsTrue()
 	{
@@ -195,7 +196,7 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
+		File.WriteAllBytes(tempRawPath, [.. createAnImageRaw.Bytes]);
 
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
@@ -223,7 +224,8 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		File.WriteAllBytes(tempRawPath, createAnImageRaw.Bytes.ToArray());
+		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes],
+			TestContext.CancellationToken);
 
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger());
 
@@ -258,7 +260,8 @@ public class EmbeddedRawThumbnailServiceIntegrationTest
 		}
 
 		var tempRawPath = Path.Combine(_tempOutputDir, "test_raw.arw");
-		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes], TestContext.CancellationToken);
+		await File.WriteAllBytesAsync(tempRawPath, [.. createAnImageRaw.Bytes],
+			TestContext.CancellationToken);
 
 		var largeOutput = Path.Combine(_tempOutputDir, "large.jpg");
 		var mediumOutput = Path.Combine(_tempOutputDir, "medium.jpg");
