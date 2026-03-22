@@ -18,6 +18,8 @@ namespace starskytest.starsky.feature.thumbnail.Services;
 [TestClass]
 public class CleanThumbnailHostedServiceTest
 {
+	public TestContext TestContext { get; set; }
+
 	private static CleanThumbnailHostedService CreateServiceScope(
 		bool thumbnailCleanupSkipOnStartup, DateTime? lastRun = null)
 	{
@@ -68,7 +70,7 @@ public class CleanThumbnailHostedServiceTest
 		await Assert.ThrowsExactlyAsync<TimeoutException>(async () =>
 		{
 			await dynMethod.InvokeAsync(hostedService, stoppingToken)
-				.WaitAsync(TimeSpan.FromSeconds(1), new CancellationToken());
+				.WaitAsync(TimeSpan.FromSeconds(1), TestContext.CancellationToken);
 		});
 	}
 
