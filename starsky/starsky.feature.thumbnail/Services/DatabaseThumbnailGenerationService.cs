@@ -72,47 +72,54 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		});
 	}
 
-	public async Task ExecuteQueuedJobAsync()
+	public async Task ExecuteQueuedJobAsync(CancellationToken cancellationToken)
 	{
 		_thumbnailQuery.SetRunningJob(true);
 
-		List<ThumbnailItem> missingThumbnails;
-		var totalProcessed = 0;
-		var currentPage = 0;
-		const int batchSize = 100;
-
-		do
+		try
 		{
-			missingThumbnails =
-				await _thumbnailQuery.GetMissingThumbnailsBatchAsync(currentPage,
-					batchSize);
+			List<ThumbnailItem> missingThumbnails;
+			var totalProcessed = 0;
+			var currentPage = 0;
+			const int batchSize = 100;
 
-			// Process each batch
-			var fileHashesList = missingThumbnails.Select(p => p.FileHash).ToList();
-			var queryItems = await _query.GetObjectsByFileHashAsync(fileHashesList);
-			if ( queryItems.Count == 0 )
+			do
 			{
-				break;
+				cancellationToken.ThrowIfCancellationRequested();
+
+				missingThumbnails =
+					await _thumbnailQuery.GetMissingThumbnailsBatchAsync(currentPage,
+						batchSize);
+
+				// Process each batch
+				var fileHashesList = missingThumbnails.Select(p => p.FileHash).ToList();
+				var queryItems = await _query.GetObjectsByFileHashAsync(fileHashesList);
+				if ( queryItems.Count == 0 )
+				{
+					break;
+				}
+
+				await WorkThumbnailGeneration(missingThumbnails, queryItems);
+
+				totalProcessed += missingThumbnails.Count;
+				currentPage++;
+
+				_logger.LogInformation(
+					$"[DatabaseThumbnailGenerationService] " +
+					$"Processed {totalProcessed} thumbnails so far... ({DateTime.UtcNow:HH:mm:ss})");
+			} while ( missingThumbnails.Count == batchSize );
+
+			if ( totalProcessed >= 1 )
+			{
+				_logger.LogInformation(
+					$"[DatabaseThumbnailGenerationService] Done" +
+					$"Processed {totalProcessed} thumbnails in total, next clear running job ({DateTime.UtcNow:HH:mm:ss})");
 			}
-
-			await WorkThumbnailGeneration(missingThumbnails, queryItems);
-
-			totalProcessed += missingThumbnails.Count;
-			currentPage++;
-
-			_logger.LogInformation(
-				$"[DatabaseThumbnailGenerationService] " +
-				$"Processed {totalProcessed} thumbnails so far... ({DateTime.UtcNow:HH:mm:ss})");
-		} while ( missingThumbnails.Count == batchSize );
-
-		if ( totalProcessed >= 1 )
-		{
-			_logger.LogInformation(
-				$"[DatabaseThumbnailGenerationService] Done" +
-				$"Processed {totalProcessed} thumbnails in total, next clear running job ({DateTime.UtcNow:HH:mm:ss})");
 		}
-
-		_thumbnailQuery.SetRunningJob(false);
+		finally
+		{
+			_thumbnailQuery.SetRunningJob(false);
+		}
 	}
 
 	internal async Task<IEnumerable<ThumbnailItem>> WorkThumbnailGeneration(

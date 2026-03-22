@@ -55,7 +55,7 @@ public sealed class DatabaseThumbnailGenerationJobHandlerTest
 			return Task.CompletedTask;
 		}
 
-		public Task ExecuteQueuedJobAsync()
+		public Task ExecuteQueuedJobAsync(CancellationToken cancellationToken)
 		{
 			ExecuteCount++;
 			return Task.CompletedTask;

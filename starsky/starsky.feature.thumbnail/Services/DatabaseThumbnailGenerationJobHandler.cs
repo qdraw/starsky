@@ -21,7 +21,7 @@ public sealed class DatabaseThumbnailGenerationJobHandler(
 			_ = JsonSerializer.Deserialize<DatabaseThumbnailGenerationPayload>(payloadJson);
 		}
 
-		await service.ExecuteQueuedJobAsync();
+		await service.ExecuteQueuedJobAsync(cancellationToken);
 	}
 }
 

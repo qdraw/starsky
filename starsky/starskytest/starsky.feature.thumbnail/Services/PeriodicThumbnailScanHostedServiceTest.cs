@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +28,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(
 			new AppSettings { ThumbnailGenerationIntervalInMinutes = -1 },
 			new FakeIWebLogger(),
-			scopeFactory);
+			scopeFactory, new FakeIApplicationLifetime());
 
 		using var cancelToken = new CancellationTokenSource();
 		await cancelToken.CancelAsync();
@@ -59,7 +58,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(
 			new AppSettings(),
 			new FakeIWebLogger(),
-			scopeFactory);
+			scopeFactory, new FakeIApplicationLifetime());
 		using var cancelToken = new CancellationTokenSource();
 		cancelToken.Cancel();
 
@@ -81,7 +80,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(
 			new AppSettings { ThumbnailGenerationIntervalInMinutes = 0 },
 			new FakeIWebLogger(),
-			scopeFactory) { MinimumIntervalInMinutes = 0, IsEnabled = true };
+			scopeFactory, new FakeIApplicationLifetime()) { MinimumIntervalInMinutes = 0, IsEnabled = true };
 		using var cancelToken = new CancellationTokenSource();
 		await cancelToken.CancelAsync();
 
@@ -105,7 +104,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(
 			new AppSettings { ThumbnailGenerationIntervalInMinutes = 1 },
 			new FakeIWebLogger(),
-			scopeFactory);
+			scopeFactory, new FakeIApplicationLifetime());
 		using var cancelToken = new CancellationTokenSource();
 		cancelToken.Cancel();
 
@@ -128,7 +127,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(
 			new AppSettings { ThumbnailGenerationIntervalInMinutes = 0 },
 			new FakeIWebLogger(),
-			scopeFactory);
+			scopeFactory, new FakeIApplicationLifetime());
 
 		periodicThumbnailScanHostedService.IsEnabled = true;
 		periodicThumbnailScanHostedService.MinimumIntervalInMinutes = 0;
@@ -156,7 +155,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(
 			new AppSettings(),
 			new FakeIWebLogger(),
-			scopeFactory);
+			scopeFactory, new FakeIApplicationLifetime());
 
 		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationTokenSource.Token);
 		Assert.IsTrue(result);
@@ -176,7 +175,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(
 			new AppSettings(),
 			new FakeIWebLogger(),
-			scopeFactory);
+			scopeFactory, new FakeIApplicationLifetime());
 		periodicThumbnailScanHostedService.IsEnabled = false;
 
 		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationTokenSource.Token);
@@ -195,7 +194,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(
 			new AppSettings(),
 			new FakeIWebLogger(),
-			scopeFactory);
+			scopeFactory, new FakeIApplicationLifetime());
 
 		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(result);
@@ -217,7 +216,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(
 			new AppSettings { ThumbnailGenerationIntervalInMinutes = 0 },
 			new FakeIWebLogger(),
-			scopeFactory);
+			scopeFactory, new FakeIApplicationLifetime());
 
 		periodicThumbnailScanHostedService.IsEnabled = true;
 		periodicThumbnailScanHostedService.MinimumIntervalInMinutes = 0;
@@ -232,7 +231,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 
 	[TestMethod]
 	[Timeout(2000, CooperativeCancellation = true)]
-	public void PeriodicThumbnailScanHostedService_ExecuteAsync_StartAsync_Test()
+	public async Task PeriodicThumbnailScanHostedService_StartAsync_StopAsync_Test()
 	{
 		var services = new ServiceCollection();
 		// missing service in service scope
@@ -243,20 +242,10 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var service = new PeriodicThumbnailScanHostedService(
 			new AppSettings { ThumbnailGenerationIntervalInMinutes = 0 },
 			logger,
-			scopeFactory);
+			scopeFactory, new FakeIApplicationLifetime());
 
-		using var source = new CancellationTokenSource();
-		var token = source.Token;
-		source.Cancel(); // <- cancel before start
-
-		var dynMethod = service.GetType().GetMethod("ExecuteAsync",
-			BindingFlags.NonPublic | BindingFlags.Instance);
-		if ( dynMethod == null )
-		{
-			throw new Exception("missing ExecuteAsync");
-		}
-
-		dynMethod.Invoke(service, new object[] { token });
+		await service.StartAsync(TestContext.CancellationTokenSource.Token);
+		await service.StopAsync(TestContext.CancellationTokenSource.Token);
 
 		Assert.IsEmpty(logger.TrackedInformation);
 		Assert.IsEmpty(logger.TrackedExceptions);

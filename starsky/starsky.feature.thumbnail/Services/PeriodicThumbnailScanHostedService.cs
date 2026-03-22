@@ -19,18 +19,23 @@ namespace starsky.feature.thumbnail.Services;
 /// </summary>
 [Service(typeof(IHostedService),
 	InjectionLifetime = InjectionLifetime.Singleton)]
-public class PeriodicThumbnailScanHostedService : BackgroundService
+public class PeriodicThumbnailScanHostedService : IHostedService
 {
 	private readonly IServiceScopeFactory _factory;
+	private readonly IHostApplicationLifetime? _hostApplicationLifetime;
 	private readonly IWebLogger _logger;
+	private readonly CancellationTokenSource _stopCts = new();
+	private Task? _runTask;
 	private int _executionCount;
 
 	public PeriodicThumbnailScanHostedService(AppSettings appSettings,
 		IWebLogger logger,
-		IServiceScopeFactory factory)
+		IServiceScopeFactory factory,
+		IHostApplicationLifetime hostApplicationLifetime)
 	{
 		_logger = logger;
 		_factory = factory;
+		_hostApplicationLifetime = hostApplicationLifetime;
 
 		if ( appSettings.ThumbnailGenerationIntervalInMinutes >= MinimumIntervalInMinutes )
 		{
@@ -49,11 +54,52 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 
 	internal bool IsEnabled { get; set; }
 
-	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+	public Task StartAsync(CancellationToken cancellationToken)
 	{
-		// why Task.Yield -> https://medium.com/@thepen0411/how-to-resolve-the-net-background-service-blocking-issue-c96086de8acd
-		await Task.Yield();
-		await StartBackgroundAsync(IsEnabled, stoppingToken);
+		_runTask = StartBackgroundAsync(false, _stopCts.Token);
+
+		if ( _hostApplicationLifetime == null )
+		{
+			_ = RunStartupJobAsync();
+		}
+		else
+		{
+			_hostApplicationLifetime.ApplicationStarted.Register(() =>
+			{
+				_ = RunStartupJobAsync();
+			});
+		}
+
+		return Task.CompletedTask;
+	}
+
+	public async Task StopAsync(CancellationToken cancellationToken)
+	{
+		await _stopCts.CancelAsync();
+		if ( _runTask != null )
+		{
+			await _runTask.ConfigureAwait(false);
+		}
+
+		_stopCts.Dispose();
+	}
+
+	private async Task RunStartupJobAsync()
+	{
+		try
+		{
+			await RunJob(_stopCts.Token);
+		}
+		catch ( OperationCanceledException )
+		{
+			// Expected when the host is shutting down
+		}
+		catch ( Exception exception )
+		{
+			_logger.LogError(
+				$"Failed startup execution in {nameof(PeriodicThumbnailScanHostedService)} with {exception.Message}",
+				exception);
+		}
 	}
 
 	internal async Task<bool?> StartBackgroundAsync(bool startDirect,
