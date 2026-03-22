@@ -22,11 +22,11 @@ namespace starsky.feature.thumbnail.Services;
 public class PeriodicThumbnailScanHostedService : IHostedService
 {
 	private readonly IServiceScopeFactory _factory;
-	private readonly IHostApplicationLifetime? _hostApplicationLifetime;
+	private readonly IHostApplicationLifetime _hostApplicationLifetime;
 	private readonly IWebLogger _logger;
 	private readonly CancellationTokenSource _stopCts = new();
-	private Task? _runTask;
 	private int _executionCount;
+	private Task? _runTask;
 
 	public PeriodicThumbnailScanHostedService(AppSettings appSettings,
 		IWebLogger logger,
@@ -58,17 +58,11 @@ public class PeriodicThumbnailScanHostedService : IHostedService
 	{
 		_runTask = StartBackgroundAsync(false, _stopCts.Token);
 
-		if ( _hostApplicationLifetime == null )
+		_hostApplicationLifetime.ApplicationStarted.Register(() =>
 		{
+			// Run as background app
 			_ = RunStartupJobAsync();
-		}
-		else
-		{
-			_hostApplicationLifetime.ApplicationStarted.Register(() =>
-			{
-				_ = RunStartupJobAsync();
-			});
-		}
+		});
 
 		return Task.CompletedTask;
 	}
