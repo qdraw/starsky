@@ -15,6 +15,51 @@ public class PeriodicThumbnailScanHostedServiceTest
 {
 	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
+	public async Task StartAsync_ApplicationStarted_InvokesRunStartupJobAsync()
+	{
+		var services = new ServiceCollection();
+		// register as singleton so test can inspect the same instance
+		services
+			.AddSingleton<IDatabaseThumbnailGenerationService,
+				FakeIDatabaseThumbnailGenerationService>();
+
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var fakeLifetime = new FakeTriggerableIHostApplicationLifetime();
+		var logger = new FakeIWebLogger();
+
+		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(
+			new AppSettings(),
+			logger,
+			scopeFactory, fakeLifetime);
+
+		// Start the hosted service which will register the ApplicationStarted callback
+		await periodicThumbnailScanHostedService.StartAsync(CancellationToken.None);
+
+		// Trigger the ApplicationStarted to invoke RunStartupJobAsync
+		fakeLifetime.TriggerApplicationStarted();
+
+		// Wait for the fake service to be invoked (with timeout)
+		var sw = System.Diagnostics.Stopwatch.StartNew();
+		var called = false;
+		while (sw.ElapsedMilliseconds < 2000)
+		{
+			if ( serviceProvider.GetService<IDatabaseThumbnailGenerationService>() is FakeIDatabaseThumbnailGenerationService fakeService && fakeService.Count > 0 )
+			{
+				called = true;
+				break;
+			}
+			await Task.Delay(50, TestContext.CancellationToken);
+		}
+
+		// Stop the hosted service to cleanup
+		await periodicThumbnailScanHostedService.StopAsync(CancellationToken.None);
+
+		Assert.IsTrue(called, "Expected RunStartupJobAsync to invoke StartBackgroundQueue on the database thumbnail generation service");
+	}
+
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task StartBackgroundAsync_Cancel()
 	{
 		var services = new ServiceCollection();
