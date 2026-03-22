@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace starsky.feature.thumbnail.Interfaces;
 
@@ -14,5 +15,5 @@ public interface IDatabaseThumbnailGenerationService
 	///     Execute job
 	/// </summary>
 	/// <returns></returns>
-	Task ExecuteQueuedJobAsync();
+	Task ExecuteQueuedJobAsync(CancellationToken cancellationToken);
 }

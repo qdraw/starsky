@@ -46,7 +46,7 @@ public class DatabaseThumbnailGenerationServiceTest
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery())
 		);
 
-		await service.ExecuteQueuedJobAsync();
+		await service.ExecuteQueuedJobAsync(System.Threading.CancellationToken.None);
 
 		// Ensure the running flag was cleared
 		Assert.IsFalse(fakeThumbnailQuery.IsRunningJob());
@@ -85,7 +85,7 @@ public class DatabaseThumbnailGenerationServiceTest
 			new UpdateStatusGeneratedThumbnailService(thumbnailQuery)
 		);
 
-		await service.ExecuteQueuedJobAsync();
+		await service.ExecuteQueuedJobAsync(System.Threading.CancellationToken.None);
 
 		// Ensure the running flag was cleared
 		Assert.IsFalse(thumbnailQuery.IsRunningJob());
