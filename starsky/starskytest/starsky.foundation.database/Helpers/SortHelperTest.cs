@@ -36,9 +36,10 @@ public sealed class SortHelperTest
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.bmp, extensionList[4]);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gif, extensionList[5]);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.png, extensionList[6]);
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp, extensionList[7]);
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, extensionList[8]);
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, extensionList[9]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, extensionList[7]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, extensionList[8]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp, extensionList[9]);
+
 	}
 
 	[TestMethod]
@@ -69,9 +70,9 @@ public sealed class SortHelperTest
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.bmp, extensionList[4]);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gif, extensionList[5]);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.png, extensionList[6]);
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp, extensionList[7]);
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, extensionList[8]);
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, extensionList[9]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, extensionList[7]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, extensionList[8]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp, extensionList[9]);
 
 		Assert.AreEqual("test.jpg", fileNameList[0]);
 		Assert.AreEqual("test2.jpg", fileNameList[1]);
