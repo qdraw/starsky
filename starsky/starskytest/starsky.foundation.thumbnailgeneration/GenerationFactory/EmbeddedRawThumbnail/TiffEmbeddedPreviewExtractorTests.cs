@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
@@ -639,9 +639,9 @@ public class TiffEmbeddedPreviewExtractorTests
 		TryExtract_WithCanonIfd0StripPreviewAndIfd1SmallThumbnailAndIfd3LosslessRaw_PrefersIfd0Preview()
 	{
 		const uint ifd0PreviewOffset = 2000;
-		const int ifd0PreviewLength = 60000;  // standard JPEG – large preview
+		const int ifd0PreviewLength = 60000; // standard JPEG – large preview
 		const uint ifd1ThumbOffset = 1000;
-		const int ifd1ThumbLength = 5000;     // small standard JPEG thumbnail
+		const int ifd1ThumbLength = 5000; // small standard JPEG thumbnail
 		const uint ifd3LosslessOffset = 80000;
 		const int ifd3LosslessLength = 130000; // bigger bytes but lossless – must be skipped
 
@@ -665,13 +665,18 @@ public class TiffEmbeddedPreviewExtractorTests
 			{
 				buf[p++] = ( byte ) ( tag & 0xFF );
 				buf[p++] = ( byte ) ( ( tag >> 8 ) & 0xFF );
-				buf[p++] = 4; buf[p++] = 0;        // type LONG
-				buf[p++] = 1; buf[p++] = 0; buf[p++] = 0; buf[p++] = 0; // count=1
+				buf[p++] = 4;
+				buf[p++] = 0; // type LONG
+				buf[p++] = 1;
+				buf[p++] = 0;
+				buf[p++] = 0;
+				buf[p++] = 0; // count=1
 				buf[p++] = ( byte ) ( val & 0xFF );
 				buf[p++] = ( byte ) ( ( val >> 8 ) & 0xFF );
 				buf[p++] = ( byte ) ( ( val >> 16 ) & 0xFF );
 				buf[p++] = ( byte ) ( ( val >> 24 ) & 0xFF );
 			}
+
 			buf[p++] = ( byte ) ( nextIfd & 0xFF );
 			buf[p++] = ( byte ) ( ( nextIfd >> 8 ) & 0xFF );
 			buf[p++] = ( byte ) ( ( nextIfd >> 16 ) & 0xFF );
@@ -680,12 +685,13 @@ public class TiffEmbeddedPreviewExtractorTests
 		}
 
 		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
-		await ms.WriteAsync(MakeIfd(ifd0Entries, ifd1Offset, (0x0103, 6), (0x0111, ifd0PreviewOffset),
-			(0x0117, ifd0PreviewLength)), TestContext.CancellationToken);
-		await ms.WriteAsync(MakeIfd(ifd1Entries, ifd3Offset, (0x0201, ifd1ThumbOffset),
-			(0x0202, ifd1ThumbLength)), TestContext.CancellationToken);
-		await ms.WriteAsync(MakeIfd(ifd0Entries, 0, (0x0103, 6), (0x0111, ifd3LosslessOffset),
-			(0x0117, ifd3LosslessLength)), TestContext.CancellationToken);
+		await ms.WriteAsync(MakeIfd(ifd0Entries, ifd1Offset, ( 0x0103, 6 ),
+			( 0x0111, ifd0PreviewOffset ),
+			( 0x0117, ifd0PreviewLength )), TestContext.CancellationToken);
+		await ms.WriteAsync(MakeIfd(ifd1Entries, ifd3Offset, ( 0x0201, ifd1ThumbOffset ),
+			( 0x0202, ifd1ThumbLength )), TestContext.CancellationToken);
+		await ms.WriteAsync(MakeIfd(ifd0Entries, 0, ( 0x0103, 6 ), ( 0x0111, ifd3LosslessOffset ),
+			( 0x0117, ifd3LosslessLength )), TestContext.CancellationToken);
 
 		ms.Seek(ifd1ThumbOffset, SeekOrigin.Begin);
 		await ms.WriteAsync(CreateMinimalJpeg(), TestContext.CancellationToken);
@@ -756,7 +762,8 @@ public class TiffEmbeddedPreviewExtractorTests
 	}
 
 	[TestMethod]
-	public async Task TryExtract_WithAppleIPhoneXsDng_16BitLittleEndian_4By3Aspect_ExtractsLargePreview()
+	public async Task
+		TryExtract_WithAppleIPhoneXsDng_16BitLittleEndian_4By3Aspect_ExtractsLargePreview()
 	{
 		// Arrange: Simulate Apple iPhone XS DNG characteristics
 		// - Little-endian TIFF (iPhone uses 'II' byte order marker)
@@ -766,7 +773,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		const uint iPhoneWidth = 4096;
 		const uint iPhoneHeight = 3072;
 		const uint jpegPreviewOffset = 200;
-		const uint jpegPreviewLength = 65000;  // >= 50KB minimum
+		const uint jpegPreviewLength = 65000; // >= 50KB minimum
 
 		using var ms = new MemoryStream();
 
