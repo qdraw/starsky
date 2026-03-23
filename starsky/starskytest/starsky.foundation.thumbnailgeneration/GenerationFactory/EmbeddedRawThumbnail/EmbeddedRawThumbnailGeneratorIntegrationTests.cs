@@ -28,6 +28,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	private const string Canon5dMarkIvSample = "canon_eos_5d_mark_iv_01.cr2";
 	private const int Canon5dMarkIvMinLongEdge = 1200;
 	private IEmbeddedRawThumbnailService _embeddedRawThumbnailService = null!;
+	private FakeIStorage _tempStorage = null!;
 
 	private IWebLogger _logger = null!;
 	private ISelectorStorage _selectorStorage = null!;
@@ -39,8 +40,23 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	{
 		_logger = new FakeIWebLogger();
 		_selectorStorage = new FakeSelectorStorage();
-		_embeddedRawThumbnailService =
-			new EmbeddedRawThumbnailService(_logger, _selectorStorage);
+		_embeddedRawThumbnailService = new EmbeddedRawThumbnailService(_logger, _selectorStorage);
+	}
+
+	private async Task ConfigureStorageForInputFile(string filePath)
+	{
+		var bytes = await File.ReadAllBytesAsync(filePath, TestContext.CancellationToken);
+		var parent = Path.GetDirectoryName(filePath) ?? "/";
+		var subPathStorage = new FakeIStorage(outputSubPathFolders: [parent],
+			outputSubPathFiles: [filePath],
+			byteListSource: [bytes]);
+		_tempStorage = new FakeIStorage(outputSubPathFolders: ["/tmp"]);
+		var thumbnailStorage = new FakeIStorage();
+		var hostStorage = new FakeIStorage();
+		_selectorStorage = new FakeSelectorStorageByType(subPathStorage, thumbnailStorage,
+			hostStorage,
+			_tempStorage);
+		_embeddedRawThumbnailService = new EmbeddedRawThumbnailService(_logger, _selectorStorage);
 	}
 
 	private static string[] GetTestFiles()
@@ -82,6 +98,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 		}
 
 		var largePath = Path.Combine(Path.GetTempPath(), $"large_{Guid.NewGuid()}.jpg");
+		await ConfigureStorageForInputFile(filePath);
 
 		try
 		{
@@ -90,22 +107,31 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			// File should be successfully processed
 			if ( result )
 			{
-				Assert.IsTrue(File.Exists(largePath),
+				Assert.IsTrue(_tempStorage.ExistFile(largePath),
 					$"At least one preview should be extracted for {fileName}");
 
-				// Verify preview files are valid JPEG by checking magic bytes
-				if ( File.Exists(largePath) )
+				if ( _tempStorage.ExistFile(largePath) )
 				{
-					var bytes =
-						await File.ReadAllBytesAsync(largePath, TestContext.CancellationToken);
+					using var stream = _tempStorage.ReadStream(largePath);
+					using var outMs = new MemoryStream();
+					await stream.CopyToAsync(outMs, TestContext.CancellationToken);
+					var bytes = outMs.ToArray();
 					Assert.IsGreaterThan(4, bytes.Length, "Extracted preview should have content");
 					Assert.AreEqual(0xFF, bytes[0], "JPEG should start with 0xFF");
 					Assert.AreEqual(0xD8, bytes[1], "JPEG should start with 0xD8");
 
-					await AssertLargePreviewForKnownSamples(fileName, largePath);
+					await AssertLargePreviewForKnownSamples(fileName, bytes);
 
-					await WriteImageSharp(largePath);
+					await WriteImageSharp(bytes);
 				}
+				else 
+				{
+					Assert.Fail($"Did not find preview for {fileName}");
+				}
+			}
+			else
+			{
+				Assert.Fail($"Failed to extract preview for {fileName}");
 			}
 		}
 		finally
@@ -113,9 +139,9 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			// Cleanup
 			try
 			{
-				if ( File.Exists(largePath) )
+				if ( _tempStorage.ExistFile(largePath) )
 				{
-					File.Delete(largePath);
+					_tempStorage.FileDelete(largePath);
 				}
 			}
 			catch
@@ -126,7 +152,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	}
 
 	private async Task AssertLargePreviewForKnownSamples(string fileName,
-		string extractedPreviewPath)
+		byte[] extractedPreviewBytes)
 	{
 		var isCanon5dMarkIv = fileName.Equals(Canon5dMarkIvSample,
 			StringComparison.OrdinalIgnoreCase);
@@ -138,8 +164,8 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			return;
 		}
 
-		using var image =
-			await Image.LoadAsync(extractedPreviewPath, TestContext.CancellationToken);
+		using var source = new MemoryStream(extractedPreviewBytes);
+		using var image = await Image.LoadAsync(source, TestContext.CancellationToken);
 		var longEdge = Math.Max(image.Width, image.Height);
 		var minLongEdge = isCanon5dMarkIv
 			? Canon5dMarkIvMinLongEdge
@@ -150,18 +176,19 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 
 		if ( isKnownDngSample )
 		{
-			var bytes = new FileInfo(extractedPreviewPath).Length;
+			var bytes = extractedPreviewBytes.LongLength;
 			Assert.IsGreaterThanOrEqualTo(DngAdobeSampleMinBytes,
 				bytes,
 				$"Expected DNG preview payload >= {DngAdobeSampleMinBytes} bytes for {fileName}, but got {bytes}");
 		}
 	}
 
-	private async Task WriteImageSharp(string path)
+	private async Task WriteImageSharp(byte[] sourceBytes)
 	{
 		var fakeStorage = new FakeIStorage();
 		var outputStream = new MemoryStream();
-		using var image = await Image.LoadAsync(path, TestContext.CancellationToken);
+		using var input = new MemoryStream(sourceBytes);
+		using var image = await Image.LoadAsync(input, TestContext.CancellationToken);
 		ImageSharpImageResizeHelper.ImageSharpImageResize(image, 1000, true);
 		await SaveThumbnailImageFormatHelper.SaveThumbnailImageFormat(image,
 			ThumbnailImageFormat.jpg,

@@ -253,7 +253,7 @@ public class TiffEmbeddedPreviewExtractor
 				state);
 		}
 
-		AppendDirectJpegCandidate(context.Previews, state, input);
+		AppendDirectJpegCandidate(context.Previews, state, input, context.RawFlavor);
 		TryParseMakerNoteCandidate(input, littleEndian, context, state);
 		ParseSubIfdChain(input, littleEndian, context, depth, subIfdOffsets);
 	}
@@ -316,13 +316,15 @@ public class TiffEmbeddedPreviewExtractor
 	}
 
 	private static void AppendDirectJpegCandidate(List<PreviewCandidate> previews,
-		IfdEntryState state, Stream input)
+		IfdEntryState state, Stream input, RawFlavor rawFlavor)
 	{
 		// Strip-based JPEG (Canon CR2 IFD0: 0x0111 / 0x0117, count=1)
-		// IFD3/IFD4 also use 0x0111/0x0117 for lossless raw data — those must be excluded.
+		// Canon CR2 IFD3/IFD4 use strip tags for raw lossless data; reject those markers.
+		var shouldRejectCanonLosslessStrip = rawFlavor == RawFlavor.CanonCr2 &&
+		                                    IsLosslessJpegAtOffset(input, state.StripOffset);
 		if ( IsJpegCompression(state.IfdCompression) && state.HasStrip && state.StripOffset > 0 &&
 		     state.StripLength >= MinJpegSize &&
-		     !IsLosslessJpegAtOffset(input, state.StripOffset) )
+		     !shouldRejectCanonLosslessStrip )
 		{
 			previews.Add(new PreviewCandidate
 			{
