@@ -33,6 +33,7 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 
 			var tiffExtractor = new TiffEmbeddedPreviewExtractor(logger, selectorStorage);
 			var rafExtractor = new RafPreviewExtractor(logger, selectorStorage);
+			var containerExtractor = new ContainerFormatPreviewExtractor(logger, selectorStorage);
 			var lightweightContainerExtractor =
 				new LightweightContainerPreviewExtractor(logger, selectorStorage);
 
@@ -47,6 +48,10 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 					await tiffExtractor.TryExtract(rawFilePath, outputLargePath),
 				ExtensionRolesHelper.ImageFormat.raf =>
 					await rafExtractor.TryExtract(rawFilePath, outputLargePath),
+				ExtensionRolesHelper.ImageFormat.cr3 =>
+					await containerExtractor.TryExtract(rawFilePath, outputLargePath),
+				_ when extension == ".cr3" =>
+					await containerExtractor.TryExtract(rawFilePath, outputLargePath),
 				_ when extension is ".fff" or ".x3f" =>
 					await lightweightContainerExtractor.TryExtract(rawFilePath, outputLargePath),
 				_ => false

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -42,7 +39,6 @@ internal class ThumbnailGeneratorFactory(
 			[
 				new EmbeddedRawThumbnailGenerator(selectorStorage,
 					new EmbeddedRawThumbnailService(logger, selectorStorage), logger),
-//				nativePreviewThumbnailGenerator
 			], logger);
 		}
 

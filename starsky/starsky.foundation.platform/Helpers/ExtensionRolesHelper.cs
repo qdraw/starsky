@@ -697,9 +697,10 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return ImageFormat.gpx;
 		}
 
-		if ( GetImageFormatMpeg4(bytes) != null )
+		var mpeg4 = GetImageFormatMpeg4(bytes);
+		if ( mpeg4 != null )
 		{
-			return ImageFormat.mp4;
+			return ( ImageFormat ) mpeg4;
 		}
 
 		if ( GetImageFormatMJpegFormat(bytes) != null )
@@ -905,6 +906,19 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
 	{
+		if ( bytes.Length < 8 )
+		{
+			return null;
+		}
+
+		// ISOBMFF: [size:4][ftyp:4][majorBrand:4]
+		// Canon CR3 uses brand "crx "
+		var fTypCr3 = new byte[] { 102, 116, 121, 112, 99, 114, 120, 32 }; // ftypcrx 
+		if ( bytes.Length >= 12 && fTypCr3.SequenceEqual(bytes.Skip(4).Take(fTypCr3.Length)) )
+		{
+			return ImageFormat.cr3;
+		}
+
 		var fTypMp4 = new byte[] { 102, 116, 121, 112 }; //  00  00  00  [skip this byte]
 		// 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
 
@@ -916,7 +930,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		var fTypIsoM = new byte[] { 102, 116, 121, 112, 105, 115, 111, 109 };
 		if ( fTypIsoM.SequenceEqual(bytes.Take(fTypIsoM.Length)) )
 		{
-			return ImageFormat.xmp;
+			return ImageFormat.mp4;
 		}
 
 		return null;

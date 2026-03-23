@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starskytest.FakeCreateAn;
+using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
+using starskytest.FakeCreateAn.CreateAnImageA6700;
 using starskytest.FakeCreateAn.CreateAnImageCorrupt;
 using starskytest.FakeCreateAn.CreateAnImagePsd;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
@@ -171,6 +173,26 @@ public sealed class ExtensionRolesHelperTest
 	}
 
 	[TestMethod]
+	public void Files_GetImageFormat_Cr3_IsobmffFtypCrxBrand_ReturnsCr3()
+	{
+		// [size:4][ftyp][crx ]
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			ExtensionRolesHelper.HexStringToByteArray(
+				"00 00 00 18 66 74 79 70 63 72 78 20".Replace(" ", "")));
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr3, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_Mp4_IsobmffFtypIsomAtOffset4_ReturnsMp4()
+	{
+		// [size:4][ftyp][isom]
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			ExtensionRolesHelper.HexStringToByteArray(
+				"00 00 00 18 66 74 79 70 69 73 6F 6D".Replace(" ", "")));
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, fileType);
+	}
+
+	[TestMethod]
 	[DataRow("47 40 11 10 00 42 F0 25 00 01 C1 00 00 FF 01 FF 00 01 FC 80 14 " +
 	         "48 12 01 06 46 46 6D 70 65 67 09 53 65 72 76 69 63 65 30 31 77 7C 43 CA",
 		ExtensionRolesHelper.ImageFormat.mts,
@@ -259,6 +281,23 @@ public sealed class ExtensionRolesHelperTest
 		var fullBytes = bytes.Concat("SONY"u8.ToArray()).ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, fileType);
+	}
+	
+	[TestMethod]
+	public void Files_GetImageFormat_SonyArw1_WithTiffHeader()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			[.. new CreateAnImageA6600Raw().Bytes]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, fileType);
+	}
+	
+		
+	[TestMethod]
+	public void Files_CreateAnQuickTimeMp4A6700()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			[.. new CreateAnQuickTimeMp4A6700().Bytes]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, fileType);
 	}
 
 	[TestMethod]
