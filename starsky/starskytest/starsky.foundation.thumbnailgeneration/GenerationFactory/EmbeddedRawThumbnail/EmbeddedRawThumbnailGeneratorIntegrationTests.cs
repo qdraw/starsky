@@ -53,7 +53,8 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			"RAW_OLYMPUS_E1.ORF", "RAW_NIKON_D50.NEF", "RAW_CANON_EOS_1DX.CR2",
 			"nikon_z7_ii_01.nef", "canon_eos_1d_x_mark_iii_01.cr3", "fujifilm_x_s10_01.raf",
 			"leica_cl_01.dng", "nikon_d850_01.nef", "panasonic_lumix_gh5_ii_01.rw2",
-			"canon_eos_5d_mark_iv_01.cr2"
+			"canon_eos_5d_mark_iv_01.cr2",
+			"HUAWEI - EVA-AL00 - 16bit (4_3).dng"
 		};
 
 		return testFiles
@@ -71,6 +72,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	[DataRow("nikon_d850_01.nef")]
 	[DataRow("canon_eos_5d_mark_iv_01.cr2")]
 	[DataRow("nikon_z7_ii_01.nef")]
+	[DataRow("HUAWEI - EVA-AL00 - 16bit (4_3).dng")]
 	public async Task TryExtractPreview_WithRealRawFile_ExtractsPreview(string fileName)
 	{
 		var filePath = Path.Combine(TestRawDirectory, fileName);
