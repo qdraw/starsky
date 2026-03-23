@@ -238,7 +238,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	public async Task GenerateThumbnail_1arg_FolderWithNoSupportedFiles_ReturnsEmpty()
 	{
 		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/notes.txt" },
+			["/notes.txt"],
 			new List<byte[]> { "hello"u8.ToArray() });
 
 		var sut = CreateSut(storage);
