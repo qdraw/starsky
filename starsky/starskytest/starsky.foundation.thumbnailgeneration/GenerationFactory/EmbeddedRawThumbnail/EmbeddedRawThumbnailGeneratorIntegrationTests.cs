@@ -24,6 +24,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	private const string TestRawDirectory = "/Users/dion/data/testcontent/raws";
 	private const string DngAdobeSample = "20260308_210002_DSC05386-Verbeterd-NR.dng";
 	private const int DngAdobeSampleMinLongEdge = 1000;
+	private const int DngAdobeSampleMinBytes = 50 * 1024;
 	private const string Canon5dMarkIvSample = "canon_eos_5d_mark_iv_01.cr2";
 	private const int Canon5dMarkIvMinLongEdge = 1200;
 	private IEmbeddedRawThumbnailService _embeddedRawThumbnailService = null!;
@@ -144,6 +145,14 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 		Assert.IsGreaterThanOrEqualTo(minLongEdge,
 			longEdge,
 			$"Expected a large preview for {fileName}, but got {image.Width}x{image.Height}");
+
+		if ( isKnownDngSample )
+		{
+			var bytes = new FileInfo(extractedPreviewPath).Length;
+			Assert.IsGreaterThanOrEqualTo(DngAdobeSampleMinBytes,
+				bytes,
+				$"Expected DNG preview payload >= {DngAdobeSampleMinBytes} bytes for {fileName}, but got {bytes}");
+		}
 	}
 
 	private async Task WriteImageSharp(string path)
