@@ -57,8 +57,8 @@ public class ContainerFormatPreviewExtractor
 			}
 
 			output.Seek(0, SeekOrigin.Begin);
-			return outputLargePath != null &&
-			       await _tempStorage.WriteStreamAsync(output, outputLargePath);
+			return 
+			       await _tempStorage.WriteStreamAsync(output, outputLargePath!);
 		}
 		catch ( Exception ex )
 		{
@@ -101,52 +101,75 @@ public class ContainerFormatPreviewExtractor
 			return false;
 		}
 
-		input.Seek(0, SeekOrigin.Begin);
-		using var ms = new MemoryStream(( int ) Math.Min(input.Length, int.MaxValue));
-		input.CopyTo(ms);
-		var bytes = ms.ToArray();
-
-		var bestOffset = -1;
-		var bestLength = 0;
-
-		for ( var i = 0; i <= bytes.Length - 3; i++ )
-		{
-			if ( bytes[i] != 0xFF || bytes[i + 1] != 0xD8 || bytes[i + 2] != 0xFF )
-			{
-				continue;
-			}
-
-			for ( var j = i + 3; j < bytes.Length; j++ )
-			{
-				if ( bytes[j - 1] != 0xFF || bytes[j] != 0xD9 )
-				{
-					continue;
-				}
-
-				var length = j - i + 1;
-				if ( length >= MinJpegSize && length > bestLength )
-				{
-					bestOffset = i;
-					bestLength = length;
-				}
-
-				i = j;
-				break;
-			}
-		}
-
-		if ( bestOffset < 0 || bestLength < MinJpegSize )
+		var bytes = ReadAllBytes(input);
+		var (bestOffset, bestLength) = FindBestJpegRange(bytes);
+		if ( bestOffset < 0 )
 		{
 			return false;
 		}
 
-		if ( output == null )
+		output?.Write(bytes, bestOffset, bestLength);
+		return true;
+	}
+
+	private static byte[] ReadAllBytes(Stream input)
+	{
+		input.Seek(0, SeekOrigin.Begin);
+		using var ms = new MemoryStream(( int ) Math.Min(input.Length, int.MaxValue));
+		input.CopyTo(ms);
+		return ms.ToArray();
+	}
+
+	private static (int Offset, int Length) FindBestJpegRange(byte[] bytes)
+	{
+		var bestOffset = -1;
+		var bestLength = 0;
+		var i = 0;
+
+		while ( i <= bytes.Length - 3 )
 		{
-			return true;
+			if ( !IsJpegStart(bytes, i) )
+			{
+				i++;
+				continue;
+			}
+
+			var end = FindJpegEnd(bytes, i + 3);
+			if ( end < 0 )
+			{
+				i++;
+				continue;
+			}
+
+			var length = end - i + 1;
+			if ( length >= MinJpegSize && length > bestLength )
+			{
+				bestOffset = i;
+				bestLength = length;
+			}
+
+			i = end + 1;
 		}
 
-		output.Write(bytes, bestOffset, bestLength);
-		return true;
+		return (bestOffset, bestLength);
+	}
+
+	private static bool IsJpegStart(byte[] bytes, int index)
+	{
+		return bytes[index] == 0xFF && bytes[index + 1] == 0xD8 && bytes[index + 2] == 0xFF;
+	}
+
+	private static int FindJpegEnd(byte[] bytes, int start)
+	{
+		for ( var j = start; j < bytes.Length; j++ )
+		{
+			if ( bytes[j - 1] == 0xFF && bytes[j] == 0xD9 )
+			{
+				return j;
+			}
+		}
+
+		return -1;
 	}
 
 	private static bool TryVerifyIsobmffFormat(Stream input, out string containerType)
