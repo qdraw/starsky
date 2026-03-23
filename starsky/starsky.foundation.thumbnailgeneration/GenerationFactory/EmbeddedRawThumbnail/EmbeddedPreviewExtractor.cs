@@ -62,7 +62,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	public async Task<bool> TryExtract(string rawPath, string? outputLarge, string? outputMedium)
 	{
 		using var fs = new FileStream(rawPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-		return await TryExtract(fs, outputLarge, outputMedium);
+		return await TryExtract(fs, outputLarge, outputMedium, "Reference: " + rawPath);
 	}
 
 	/// <summary>
@@ -72,7 +72,8 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	/// <param name="outputLarge">Output path for the large preview (or null)</param>
 	/// <param name="outputMedium">Output path for the medium preview (or null)</param>
 	/// <returns>true if at least one preview was successfully extracted</returns>
-	public Task<bool> TryExtract(Stream input, string? outputLarge, string? outputMedium)
+	public Task<bool> TryExtract(Stream input, string? outputLarge, string? outputMedium,
+		string referenceInfo)
 	{
 		if ( !TryParseTiffHeader(input, out var littleEndian, out var firstIfd) )
 		{
@@ -83,7 +84,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		var visited = new HashSet<uint>();
 
 		ParseIfdRecursive(input, firstIfd, littleEndian, previews, visited, 0,
-			new IfdPathContext(false, 0, 0));
+			new IfdPathContext(false, 0, 0), referenceInfo);
 
 		if ( previews.Count == 0 )
 		{
@@ -126,7 +127,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		var hasNonTiny = previews.Exists(p => p.Length >= MinJpegBytes);
 
 		if ( TryWriteBestPreviewPass(input, previews, outputPath, minWidth, skipOffset,
-				hasNonTiny ? (uint)MinJpegBytes : 0u, out selectedOffset) )
+			    hasNonTiny ? MinJpegBytes : 0u, out selectedOffset) )
 		{
 			return true;
 		}
@@ -212,19 +213,19 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			return false; // not a TIFF-based file
 		}
 
-		var magic = ReadUInt16(header.Slice(2), littleEndian);
+		var magic = ReadUInt16(header[2..], littleEndian);
 		if ( magic != TiffMagicLe )
 		{
 			return false;
 		}
 
-		firstIfd = ReadUInt32(header.Slice(4), littleEndian);
+		firstIfd = ReadUInt32(header[4..], littleEndian);
 		return firstIfd != 0;
 	}
 
 	private void ParseIfdRecursive(Stream input, uint offset,
 		bool littleEndian, List<PreviewCandidate> previews, HashSet<uint> visited, int depth,
-		IfdPathContext context)
+		IfdPathContext context, string referenceInfo)
 	{
 		if ( depth > MaxIfdDepth || offset == 0 )
 		{
@@ -254,7 +255,9 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		if ( entryBytes > input.Length * MaxIfdSizeRatio )
 		{
 			logger.LogDebug(
-				$"[EmbeddedPreviewExtractor] IFD at offset {offset} skipped: entryCount {entryCount} would require {entryBytes} bytes ({( double ) entryBytes / input.Length:P} of {input.Length} byte file), likely corrupted");
+				$"[EmbeddedPreviewExtractor] IFD at offset {offset} skipped: entryCount {entryCount} would require {entryBytes} bytes " +
+				$"({( double ) entryBytes / input.Length:P} of {input.Length} byte file), " +
+				$"likely corrupted referenceInfo: {referenceInfo}");
 			return;
 		}
 
@@ -267,14 +270,14 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 		try
 		{
-			if ( !TryReadExact(input, entryBuf, 0, ( int ) entryBytes) )
+			if ( !TryReadExact(input, entryBuf, 0, ( int ) entryBytes, referenceInfo) )
 			{
 				return;
 			}
 
 			ParseIfdEntries(input, entryBuf.AsSpan(0, ( int ) entryBytes), littleEndian, previews,
 				visited,
-				depth, context);
+				depth, context, referenceInfo);
 		}
 		finally
 		{
@@ -292,10 +295,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		if ( nextIfd != 0 )
 		{
 			ParseIfdRecursive(input, nextIfd, littleEndian, previews, visited, depth + 1,
-				context with
-				{
-					RootIfdIndex = context.RootIfdIndex + 1
-				});
+				context with { RootIfdIndex = context.RootIfdIndex + 1 }, referenceInfo);
 		}
 	}
 
@@ -306,7 +306,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		List<PreviewCandidate> previews,
 		HashSet<uint> visited,
 		int depth,
-		IfdPathContext context)
+		IfdPathContext context, string referenceInfo)
 	{
 		// Tags we care about in this IFD.
 		uint jpegOffset = 0, jpegLength = 0;
@@ -322,9 +322,9 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			var e = entries.Slice(i * 12, 12);
 
 			var tag = ReadUInt16(e, littleEndian);
-			var type = ReadUInt16(e.Slice(2), littleEndian);
-			var n = ReadUInt32(e.Slice(4), littleEndian);
-			var value = ReadUInt32(e.Slice(8), littleEndian);
+			var type = ReadUInt16(e[2..], littleEndian);
+			var n = ReadUInt32(e[4..], littleEndian);
+			var value = ReadUInt32(e[8..], littleEndian);
 
 			switch ( tag )
 			{
@@ -417,7 +417,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		{
 			ParseIfdRecursive(input, subIfdOffsets[i], littleEndian, previews, visited,
 				depth + 1,
-				new IfdPathContext(true, i + 1, context.RootIfdIndex));
+				new IfdPathContext(true, i + 1, context.RootIfdIndex), referenceInfo);
 		}
 	}
 
@@ -607,8 +607,8 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 	private static int CompareByDimensions(PreviewCandidate left, PreviewCandidate right)
 	{
-		var leftArea = (long)left.Width * left.Height;
-		var rightArea = (long)right.Width * right.Height;
+		var leftArea = ( long ) left.Width * left.Height;
+		var rightArea = ( long ) right.Width * right.Height;
 
 		if ( leftArea != 0 && rightArea != 0 && leftArea != rightArea )
 		{
@@ -831,7 +831,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 				return false;
 			}
 
-			var segmentLength = (lenBuf[0] << 8) | lenBuf[1];
+			var segmentLength = ( lenBuf[0] << 8 ) | lenBuf[1];
 			if ( segmentLength < 2 )
 			{
 				return false;
@@ -871,7 +871,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	private static bool IsSofMarker(int marker)
 	{
 		return marker is 0xC0 or 0xC1 or 0xC2 or 0xC3 or 0xC5 or 0xC6 or 0xC7 or 0xC9
-		       or 0xCA or 0xCB or 0xCD or 0xCE or 0xCF;
+			or 0xCA or 0xCB or 0xCD or 0xCE or 0xCF;
 	}
 
 	private static bool IsLosslessSofMarker(int marker)
@@ -909,7 +909,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 		while ( total < buffer.Length )
 		{
-			var read = s.Read(buffer.Slice(total));
+			var read = s.Read(buffer[total..]);
 
 			if ( read == 0 )
 			{
@@ -924,6 +924,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 
 	// Timeout-enabled read for rented byte[] buffers
 	private bool TryReadExact(Stream s, byte[] buffer, int offset, int count,
+		string referenceInfo,
 		int timeoutMs = 5000)
 	{
 		if ( count == 0 )
@@ -944,7 +945,8 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 				if ( read == 0 )
 				{
 					logger.LogInformation(
-						$"[EmbeddedPreviewExtractor] TryReadExact: EOF after reading {total} of {count} bytes");
+						$"[EmbeddedPreviewExtractor] TryReadExact: " +
+						$"EOF after reading {total} of {count} bytes referenceInfo {referenceInfo}");
 					return false;
 				}
 
