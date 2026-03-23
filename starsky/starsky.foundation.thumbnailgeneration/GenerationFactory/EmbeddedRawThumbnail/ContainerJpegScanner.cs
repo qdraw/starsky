@@ -65,22 +65,13 @@ internal static class ContainerJpegScanner
 					if ( previous == 0xFF && current == 0xD8 && next == 0xFF )
 					{
 						var soi = ( uint ) ( scanned + i - 1 );
-						var maxProbe = ( int ) Math.Min(MaxJpegProbe, input.Length - soi);
-						var length = DetectJpegLengthByEoi(input, soi, maxProbe);
-						if ( length >= MinJpegSize )
-						{
-							var hasIptc = HasIptcApp13(input, soi, length);
-							candidates.Add(new PreviewCandidate(soi, length, hasIptc));
-						}
+						TryAddJpegCandidate(input, soi, candidates);
 					}
 
 					previous = current;
 				}
 
-				if ( read > 0 )
-				{
-					previous = buffer[read - 1];
-				}
+				previous = buffer[read - 1];
 				scanned += read;
 			}
 		}
@@ -90,6 +81,17 @@ internal static class ContainerJpegScanner
 		}
 
 		return candidates;
+	}
+
+	private static void TryAddJpegCandidate(Stream input, uint soi, List<PreviewCandidate> candidates)
+	{
+		var maxProbe = ( int ) Math.Min(MaxJpegProbe, input.Length - soi);
+		var length = DetectJpegLengthByEoi(input, soi, maxProbe);
+		if ( length >= MinJpegSize )
+		{
+			var hasIptc = HasIptcApp13(input, soi, length);
+			candidates.Add(new PreviewCandidate(soi, length, hasIptc));
+		}
 	}
 
 	private static PreviewCandidate? SelectBest(List<PreviewCandidate> candidates)
