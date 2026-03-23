@@ -16,6 +16,7 @@ using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
+using starskytest.FakeCreateAn.CreateAnImageA330Raw;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 using VerifyMSTest;
@@ -28,6 +29,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	private readonly AppSettings _appSettings;
 	private readonly string _fakeIStorageImageSubPath;
 	private readonly string _fakeIStorageImageSubPathVideo;
+	private readonly string _fakeIStorageRawImageSubPath;
 
 	private readonly IUpdateStatusGeneratedThumbnailService
 		_fakeIUpdateStatusGeneratedThumbnailService;
@@ -40,12 +42,19 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	{
 		_fakeIStorageImageSubPath = "/test.jpg";
 		_fakeIStorageImageSubPathVideo = "/test.mp4";
+		_fakeIStorageRawImageSubPath = "/test.arw";
 
 		var iStorage = new FakeIStorage(["/"],
-			[_fakeIStorageImageSubPath, _fakeIStorageImageSubPathVideo],
+			[
+				_fakeIStorageImageSubPath,
+				_fakeIStorageImageSubPathVideo,
+				_fakeIStorageRawImageSubPath
+			],
 			new List<byte[]>
 			{
-				CreateAnImage.Bytes.ToArray(), CreateAnQuickTimeMp4.Bytes.ToArray()
+				CreateAnImage.Bytes.ToArray(),
+				CreateAnQuickTimeMp4.Bytes.ToArray(),
+				new CreateAnImageA330Raw().Bytes.ToArray()
 			});
 		_selectorStorage = new FakeSelectorStorage(iStorage);
 		_appSettings = new AppSettings();
@@ -152,6 +161,24 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	}
 
 	[TestMethod]
+	public async Task GenerateThumbnail_FileHash_Raw_HappyFlow()
+	{
+		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
+			_appSettings, new UpdateStatusGeneratedThumbnailService(
+				new FakeIThumbnailQuery()),
+			new FakeIVideoProcess(_selectorStorage),
+			new FileHashSubPathStorage(_selectorStorage, new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
+
+		var isCreated = await sut.GenerateThumbnail(
+			_fakeIStorageRawImageSubPath);
+
+		Assert.IsTrue(isCreated[0].Success);
+		Assert.IsTrue(isCreated[1].Success);
+		Assert.IsTrue(isCreated[2].Success);
+	}
+
+	[TestMethod]
 	public async Task GenerateThumbnail_FileHash_Video_ProcessFailed()
 	{
 		var sut = CreateSut(new FakeIStorage());
@@ -224,8 +251,8 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	[TestMethod]
 	public async Task GenerateThumbnail_1arg_Folder()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { _fakeIStorageImageSubPath },
+		var storage = new FakeIStorage(["/"],
+			[_fakeIStorageImageSubPath],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var sut = CreateSut(storage);
@@ -237,7 +264,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	[TestMethod]
 	public async Task GenerateThumbnail_1arg_FolderWithNoSupportedFiles_ReturnsEmpty()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
+		var storage = new FakeIStorage(["/"],
 			["/notes.txt"],
 			new List<byte[]> { "hello"u8.ToArray() });
 
@@ -252,7 +279,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	public async Task GenerateThumbnail_NullFail()
 	{
 		var storage = new FakeIStorage(["/test"],
-			new List<string> { "/test/test.jpg" },
+			["/test/test.jpg"],
 			new List<byte[]?> { null });
 
 		var sut = CreateSut(storage);
@@ -291,8 +318,8 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	public async Task RotateThumbnail_Rotate()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var sut = CreateSut(storage);
@@ -305,8 +332,8 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	public async Task RotateThumbnail_Corrupt()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "test" },
+			["/"],
+			["test"],
 			new List<byte[]> { Array.Empty<byte>() });
 
 		var sut = CreateSut(storage);

@@ -65,7 +65,7 @@ public class TiffEmbeddedPreviewExtractor
 
 		try
 		{
-			using var input = _subPathStorage.ReadStream(subPathRawFile);
+			await using var input = _subPathStorage.ReadStream(subPathRawFile);
 			await using var output = outputLargePath != null ? new MemoryStream() : null;
 			var rawFlavor = GetRawFlavorFromPath(subPathRawFile);
 
@@ -321,7 +321,7 @@ public class TiffEmbeddedPreviewExtractor
 		// Strip-based JPEG (Canon CR2 IFD0: 0x0111 / 0x0117, count=1)
 		// Canon CR2 IFD3/IFD4 use strip tags for raw lossless data; reject those markers.
 		var shouldRejectCanonLosslessStrip = rawFlavor == RawFlavor.CanonCr2 &&
-		                                    IsLosslessJpegAtOffset(input, state.StripOffset);
+		                                     IsLosslessJpegAtOffset(input, state.StripOffset);
 		if ( IsJpegCompression(state.IfdCompression) && state.HasStrip && state.StripOffset > 0 &&
 		     state.StripLength >= MinJpegSize &&
 		     !shouldRejectCanonLosslessStrip )

@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
-using starskytest.FakeCreateAn.CreateAnImageA6700;
 using starskytest.FakeCreateAn.CreateAnImageCorrupt;
 using starskytest.FakeCreateAn.CreateAnImagePsd;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
@@ -282,7 +281,7 @@ public sealed class ExtensionRolesHelperTest
 		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, fileType);
 	}
-	
+
 	[TestMethod]
 	public void Files_GetImageFormat_SonyArw1_WithTiffHeader()
 	{
@@ -290,8 +289,8 @@ public sealed class ExtensionRolesHelperTest
 			[.. new CreateAnImageA6600Raw().Bytes]);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, fileType);
 	}
-	
-		
+
+
 	[TestMethod]
 	public void Files_CreateAnQuickTimeMp4A6700()
 	{
@@ -690,7 +689,8 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	[DataRow("/test/sample.fff")]
 	[DataRow("/test/sample.x3f")]
-	public void ExtensionRolesHelperTest_IsExtensionRawThumbnailSupported_Phase3Formats(string filePath)
+	public void ExtensionRolesHelperTest_IsExtensionRawThumbnailSupported_Phase3Formats(
+		string filePath)
 	{
 		var result = ExtensionRolesHelper.IsExtensionRawThumbnailSupported(filePath);
 		Assert.IsTrue(result);
