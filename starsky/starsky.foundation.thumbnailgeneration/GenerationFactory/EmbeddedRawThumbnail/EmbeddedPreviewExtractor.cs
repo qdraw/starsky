@@ -34,6 +34,7 @@ public class EmbeddedPreviewExtractor
 	private const int MaxSubIfdOffsets = 32;
 	private const int MaxPreviews = 8;
 	private const int MinJpegSize = 4096; // 4KB minimum for valid JPEG
+	private const int MaxMakerNoteScanBytes = 50 * 1024 * 1024;
 
 	// TIFF IFD Tags
 	private const ushort TagImageWidth = 0x0100;
@@ -42,6 +43,12 @@ public class EmbeddedPreviewExtractor
 	private const ushort TagJpegLength = 0x0202;
 	private const ushort TagSubIfds = 0x014A;
 	private const ushort TagMakerNote = 0x927C;
+
+	private const ushort TagSonyPreviewOffset = 0x2010;
+	private const ushort TagSonyPreviewLength = 0x2011;
+	private const ushort TagSonyPreviewAlt = 0x2020;
+	private const ushort TagCanonPreviewOffset = 0x0001;
+	private const ushort TagCanonPreviewLength = 0x0004;
 
 
 	public async Task<bool> TryExtract(string subPathRawFile,
@@ -57,9 +64,11 @@ public class EmbeddedPreviewExtractor
 		{
 			using var input = _subPathStorage.ReadStream(subPathRawFile);
 			await using var output = outputLargePath != null ? new MemoryStream() : null;
+			var rawFlavor = GetRawFlavorFromPath(subPathRawFile);
 
-			var ok = await TryExtract(input, output, $"Reference: {subPathRawFile}");
-			if ( !ok || outputLargePath == null )
+			var ok = await TryExtractFromStream(input, output,
+				$"Reference: {subPathRawFile}", rawFlavor);
+			if ( !ok || outputLargePath == null || output.Length == 0)
 			{
 				return ok;
 			}
@@ -75,21 +84,8 @@ public class EmbeddedPreviewExtractor
 		}
 	}
 
-	public async Task<bool> TryExtract(Stream input, Stream? outputLarge,
-		string referenceInfo = "Reference: stream")
-	{
-		if ( input.CanSeek )
-		{
-			return await TryExtractFromStream(input, outputLarge, referenceInfo);
-		}
-
-		_logger.LogDebug(
-			$"[EmbeddedPreviewExtractor] Input stream must support seek. {referenceInfo}");
-		return false;
-
-	}
-
-	private async Task<bool> TryExtractFromStream(Stream input, Stream? outputLarge, string referenceInfo)
+	private async Task<bool> TryExtractFromStream(Stream input, Stream? outputLarge,
+		string referenceInfo, RawFlavor rawFlavor)
 	{
 		var candidates = new List<PreviewCandidate>();
 
@@ -100,14 +96,15 @@ public class EmbeddedPreviewExtractor
 		}
 
 		// Traverse IFD structure
-		var visited = new HashSet<uint>();
-		ParseIfdRecursive(input, firstIfdOffset, littleEndian, candidates, visited, 0, false,
-			referenceInfo);
-
-		if ( candidates.Count == 0 )
+		var traversalContext = new ParseTraversalContext
 		{
-			return false;
-		}
+			Previews = candidates,
+			Visited = [],
+			ReferenceInfo = referenceInfo,
+			RawFlavor = rawFlavor
+		};
+		ParseIfdRecursive(input, firstIfdOffset, littleEndian, traversalContext, 0, false);
+
 
 		// Select and extract best preview
 		var best = SelectBestPreview(candidates);
@@ -150,15 +147,14 @@ public class EmbeddedPreviewExtractor
 	}
 
 	private void ParseIfdRecursive(Stream input, uint offset, bool littleEndian,
-		List<PreviewCandidate> previews, HashSet<uint> visited, int depth, bool isSubIfd,
-		string referenceInfo)
+		ParseTraversalContext context, int depth, bool isSubIfd)
 	{
-		if ( depth > MaxIfdDepth || offset == 0 || previews.Count >= MaxPreviews )
+		if ( ShouldStopTraversal(context, offset, depth) )
 		{
 			return;
 		}
 
-		if ( !visited.Add(offset) || visited.Count >= MaxIfdVisits )
+		if ( !TryMarkVisited(context.Visited, offset) )
 		{
 			return;
 		}
@@ -196,118 +192,519 @@ public class EmbeddedPreviewExtractor
 				return;
 			}
 
-			ParseIfdEntries(input, entryBuf.AsSpan(0, ( int ) entryBytes), littleEndian, previews,
-				visited, depth, referenceInfo);
+			ParseIfdEntries(input, entryBuf.AsSpan(0, ( int ) entryBytes), littleEndian,
+				context, depth);
 		}
 		finally
 		{
 			ArrayPool<byte>.Shared.Return(entryBuf);
 		}
 
-		// Next IFD pointer (only for root IFD chain)
-		if ( !isSubIfd )
+		ParseNextIfd(input, littleEndian, context, depth, isSubIfd);
+	}
+
+	private static bool ShouldStopTraversal(ParseTraversalContext context, uint offset, int depth)
+	{
+		return depth > MaxIfdDepth || offset == 0 || context.Previews.Count >= MaxPreviews;
+	}
+
+	private static bool TryMarkVisited(HashSet<uint> visited, uint offset)
+	{
+		return visited.Add(offset) && visited.Count < MaxIfdVisits;
+	}
+
+	private void ParseNextIfd(Stream input, bool littleEndian, ParseTraversalContext context,
+		int depth, bool isSubIfd)
+	{
+		if ( isSubIfd )
 		{
-			Span<byte> nextBuf = stackalloc byte[4];
-			if ( input.Read(nextBuf) == 4 )
-			{
-				var nextIfd = ReadUInt32(nextBuf, littleEndian);
-				if ( nextIfd != 0 && depth < MaxRootIfdChain )
-				{
-					ParseIfdRecursive(input, nextIfd, littleEndian, previews, visited, depth + 1,
-						false, referenceInfo);
-				}
-			}
+			return;
 		}
+
+		Span<byte> nextBuf = stackalloc byte[4];
+		if ( input.Read(nextBuf) != 4 )
+		{
+			return;
+		}
+
+		var nextIfd = ReadUInt32(nextBuf, littleEndian);
+		if ( nextIfd == 0 || depth >= MaxRootIfdChain )
+		{
+			return;
+		}
+
+		ParseIfdRecursive(input, nextIfd, littleEndian, context, depth + 1, false);
 	}
 
 	private void ParseIfdEntries(Stream input, ReadOnlySpan<byte> entries, bool littleEndian,
-		List<PreviewCandidate> previews, HashSet<uint> visited, int depth,
-		string referenceInfo)
+		ParseTraversalContext context, int depth)
 	{
-		uint jpegOffset = 0;
-		uint jpegLength = 0;
-		uint ifdWidth = 0;
-		uint ifdHeight = 0;
-		var hasJpeg = false;
+		var state = new IfdEntryState();
 		var subIfdOffsets = new List<uint>(4);
 
 		var count = entries.Length / 12;
 
 		for ( var i = 0; i < count; i++ )
 		{
-			var e = entries.Slice(i * 12, 12);
-
-			var tag = ReadUInt16(e, littleEndian);
-			var type = ReadUInt16(e[2..], littleEndian);
-			var n = ReadUInt32(e[4..], littleEndian);
-			var value = ReadUInt32(e[8..], littleEndian);
-
-			switch ( tag )
-			{
-				case TagImageWidth:
-					if ( n == 1 )
-					{
-						ifdWidth = ReadScalarValue(type, value);
-					}
-
-					break;
-
-				case TagImageLength:
-					if ( n == 1 )
-					{
-						ifdHeight = ReadScalarValue(type, value);
-					}
-
-					break;
-
-				case TagJpegOffset:
-					jpegOffset = value;
-					hasJpeg = true;
-					break;
-
-				case TagJpegLength:
-					jpegLength = value;
-					break;
-
-				case TagSubIfds:
-					if ( n == 1 )
-					{
-						subIfdOffsets.Add(value);
-					}
-					else
-					{
-						var boundedCount = ClampIndirectCount(input, value, type, n,
-							MaxSubIfdOffsets);
-						ReadIndirectOffsets(input, value, type, boundedCount, littleEndian,
-							subIfdOffsets);
-					}
-
-					break;
-			}
+			HandleIfdEntry(input, entries.Slice(i * 12, 12), littleEndian, subIfdOffsets,
+				state);
 		}
 
-		// Add JPEG preview if found
-		if ( hasJpeg && jpegOffset > 0 && jpegLength >= MinJpegSize )
+		AppendDirectJpegCandidate(context.Previews, state);
+		TryParseMakerNoteCandidate(input, littleEndian, context, state);
+		ParseSubIfdChain(input, littleEndian, context, depth, subIfdOffsets);
+	}
+
+	private static void HandleIfdEntry(Stream input, ReadOnlySpan<byte> entry, bool littleEndian,
+		List<uint> subIfdOffsets, IfdEntryState state)
+	{
+		var tag = ReadUInt16(entry, littleEndian);
+		var type = ReadUInt16(entry[2..], littleEndian);
+		var n = ReadUInt32(entry[4..], littleEndian);
+		var value = ReadUInt32(entry[8..], littleEndian);
+
+		switch ( tag )
+		{
+			case TagImageWidth when n == 1:
+				state.IfdWidth = ReadScalarValue(type, value);
+				return;
+			case TagImageLength when n == 1:
+				state.IfdHeight = ReadScalarValue(type, value);
+				return;
+			case TagJpegOffset:
+				state.JpegOffset = value;
+				state.HasJpeg = true;
+				return;
+			case TagJpegLength:
+				state.JpegLength = value;
+				return;
+			case TagSubIfds:
+				AddSubIfdOffsets(input, littleEndian, subIfdOffsets, type, n, value);
+				return;
+			case TagMakerNote when n > 4 && value > 0:
+				state.HasMakerNote = true;
+				state.MakerNoteOffset = value;
+				state.MakerNoteLength = n;
+				return;
+		}
+	}
+
+	private static void AddSubIfdOffsets(Stream input, bool littleEndian,
+		List<uint> subIfdOffsets, ushort type, uint n, uint value)
+	{
+		if ( n == 1 )
+		{
+			subIfdOffsets.Add(value);
+			return;
+		}
+
+		var boundedCount = ClampIndirectCount(input, value, type, n, MaxSubIfdOffsets);
+		ReadIndirectOffsets(input, value, type, boundedCount, littleEndian, subIfdOffsets);
+	}
+
+	private static void AppendDirectJpegCandidate(List<PreviewCandidate> previews,
+		IfdEntryState state)
+	{
+		if ( !state.HasJpeg || state.JpegOffset == 0 || state.JpegLength < MinJpegSize )
+		{
+			return;
+		}
+
+		previews.Add(new PreviewCandidate
+		{
+			Offset = state.JpegOffset,
+			Length = state.JpegLength,
+			Width = state.IfdWidth,
+			Height = state.IfdHeight
+		});
+	}
+
+	private void TryParseMakerNoteCandidate(Stream input, bool littleEndian,
+		ParseTraversalContext context, IfdEntryState state)
+	{
+		if ( !state.HasMakerNote || context.Previews.Count >= MaxPreviews )
+		{
+			return;
+		}
+
+		ParseMakerNote(input, littleEndian, context.RawFlavor, state.MakerNoteOffset,
+			state.MakerNoteLength,
+			context.Previews);
+	}
+
+	private void ParseSubIfdChain(Stream input, bool littleEndian,
+		ParseTraversalContext context, int depth, List<uint> subIfdOffsets)
+	{
+		foreach ( var subIfdOffset in subIfdOffsets )
+		{
+			if ( context.Previews.Count >= MaxPreviews )
+			{
+				return;
+			}
+
+			ParseIfdRecursive(input, subIfdOffset, littleEndian, context, depth + 1, true);
+		}
+	}
+
+	private sealed record ParseTraversalContext
+	{
+		public required List<PreviewCandidate> Previews { get; init; }
+		public required HashSet<uint> Visited { get; init; }
+		public required string ReferenceInfo { get; init; }
+		public required RawFlavor RawFlavor { get; init; }
+	}
+
+	private sealed class IfdEntryState
+	{
+		public uint JpegOffset { get; set; }
+		public uint JpegLength { get; set; }
+		public uint IfdWidth { get; set; }
+		public uint IfdHeight { get; set; }
+		public uint MakerNoteOffset { get; set; }
+		public uint MakerNoteLength { get; set; }
+		public bool HasJpeg { get; set; }
+		public bool HasMakerNote { get; set; }
+	}
+
+	private void ParseMakerNote(Stream input, bool littleEndian, RawFlavor rawFlavor,
+		uint makerNoteOffset, uint makerNoteLength, List<PreviewCandidate> previews)
+	{
+		if ( makerNoteOffset == 0 || makerNoteLength == 0 )
+		{
+			return;
+		}
+
+		var boundedLength = Math.Min(makerNoteLength, MaxMakerNoteScanBytes);
+		if ( makerNoteOffset + boundedLength > input.Length )
+		{
+			boundedLength = makerNoteOffset >= input.Length
+				? 0
+				: ( uint ) ( input.Length - makerNoteOffset );
+		}
+
+		if ( boundedLength == 0 )
+		{
+			return;
+		}
+
+		switch ( rawFlavor )
+		{
+			case RawFlavor.SonyArw:
+				ParseSonyMakerNote(input, makerNoteOffset, boundedLength, littleEndian, previews);
+				break;
+			case RawFlavor.CanonCr2:
+				ParseCanonMakerNote(input, makerNoteOffset, boundedLength, littleEndian, previews);
+				break;
+		}
+	}
+
+	private void ParseSonyMakerNote(Stream input, uint makerNoteOffset, uint makerNoteLength,
+		bool littleEndian, List<PreviewCandidate> previews)
+	{
+		var (hasPair, rawOffset, rawLength) = ReadIfdTagPair(input, makerNoteOffset,
+			makerNoteLength,
+			new IfdTagPairQuery(TagSonyPreviewOffset, TagSonyPreviewLength, TagSonyPreviewAlt,
+				littleEndian));
+
+		if ( hasPair &&
+		     TryResolveMakerNoteOffset(input, makerNoteOffset, rawOffset, out var resolvedOffset) )
+		{
+			var resolvedLength = rawLength;
+			if ( resolvedLength < MinJpegSize )
+			{
+				resolvedLength = DetectJpegLengthByEoi(input, resolvedOffset,
+					Math.Min(MaxMakerNoteScanBytes, ( int ) ( input.Length - resolvedOffset )));
+			}
+
+			if ( resolvedLength >= MinJpegSize )
+			{
+				previews.Add(new PreviewCandidate
+				{
+					Offset = resolvedOffset,
+					Length = resolvedLength
+				});
+			}
+		}
+	}
+
+	private void ParseCanonMakerNote(Stream input, uint makerNoteOffset, uint makerNoteLength,
+		bool littleEndian, List<PreviewCandidate> previews)
+	{
+		var (hasPair, rawOffset, rawLength) = ReadIfdTagPair(input, makerNoteOffset,
+			makerNoteLength,
+			new IfdTagPairQuery(TagCanonPreviewOffset, TagCanonPreviewLength, 0,
+				littleEndian));
+
+		if ( hasPair &&
+		     TryResolveMakerNoteOffset(input, makerNoteOffset, rawOffset, out var resolvedOffset) &&
+		     rawLength >= MinJpegSize )
 		{
 			previews.Add(new PreviewCandidate
 			{
-				Offset = jpegOffset,
-				Length = jpegLength,
-				Width = ifdWidth,
-				Height = ifdHeight
+				Offset = resolvedOffset,
+				Length = rawLength
 			});
 		}
 
-		// Process SubIFDs (these are thumbnail/preview IFDs)
-		foreach ( var subIfdOffset in subIfdOffsets )
+		foreach ( var candidate in ScanJpegsInRange(input, makerNoteOffset, makerNoteLength) )
 		{
+			previews.Add(candidate);
 			if ( previews.Count >= MaxPreviews )
 			{
 				break;
 			}
+		}
+	}
 
-			ParseIfdRecursive(input, subIfdOffset, littleEndian, previews, visited, depth + 1,
-				true, referenceInfo);
+	private static (bool HasPair, uint CandidateOffset, uint CandidateLength) ReadIfdTagPair(
+		Stream input,
+		uint ifdOffset,
+		uint blockLength,
+		IfdTagPairQuery query)
+	{
+		if ( !TryReadIfdEntryHeader(input, ifdOffset, blockLength, query.LittleEndian,
+				out var entryCount, out var entryBytes) )
+		{
+			return (false, 0, 0);
+		}
+
+		var buf = ArrayPool<byte>.Shared.Rent(entryBytes);
+		try
+		{
+			if ( !TryReadFull(input, buf, entryBytes) )
+			{
+				return (false, 0, 0);
+			}
+
+			var (candidateOffset, candidateLength) = ExtractTagPairValues(
+				buf.AsSpan(0, entryBytes), entryCount, query);
+			return (candidateOffset > 0, candidateOffset, candidateLength);
+		}
+		finally
+		{
+			ArrayPool<byte>.Shared.Return(buf);
+		}
+	}
+
+	private static bool TryReadIfdEntryHeader(Stream input, uint ifdOffset, uint blockLength,
+		bool littleEndian, out ushort entryCount, out int entryBytes)
+	{
+		entryCount = 0;
+		entryBytes = 0;
+
+		if ( !TrySeek(input, ifdOffset) || blockLength < 6 )
+		{
+			return false;
+		}
+
+		Span<byte> countBuf = stackalloc byte[2];
+		if ( input.Read(countBuf) < 2 )
+		{
+			return false;
+		}
+
+		entryCount = ReadUInt16(countBuf, littleEndian);
+		if ( entryCount is 0 or > 512 )
+		{
+			return false;
+		}
+
+		entryBytes = entryCount * 12;
+		return entryBytes + 6 <= blockLength;
+	}
+
+	private static bool TryReadFull(Stream input, byte[] buffer, int bytesToRead)
+	{
+		return input.Read(buffer, 0, bytesToRead) >= bytesToRead;
+	}
+
+	private static (uint Offset, uint Length) ExtractTagPairValues(ReadOnlySpan<byte> entries,
+		int entryCount,
+		IfdTagPairQuery query)
+	{
+		var candidateOffset = 0u;
+		var candidateLength = 0u;
+
+		for ( var i = 0; i < entryCount; i++ )
+		{
+			var e = entries.Slice(i * 12, 12);
+			var tag = ReadUInt16(e, query.LittleEndian);
+			var type = ReadUInt16(e[2..], query.LittleEndian);
+			var n = ReadUInt32(e[4..], query.LittleEndian);
+			if ( n != 1 )
+			{
+				continue;
+			}
+
+			var value = ReadScalarValue(type, ReadUInt32(e[8..], query.LittleEndian));
+			if ( tag == query.PrimaryOffsetTag )
+			{
+				candidateOffset = value;
+				continue;
+			}
+
+			if ( tag == query.PrimaryLengthTag )
+			{
+				candidateLength = value;
+				continue;
+			}
+
+			if ( query.AltTag == 0 || tag != query.AltTag )
+			{
+				continue;
+			}
+
+			if ( candidateOffset == 0 )
+			{
+				candidateOffset = value;
+			}
+			else if ( candidateLength == 0 )
+			{
+				candidateLength = value;
+			}
+		}
+
+		return (candidateOffset, candidateLength);
+	}
+
+	private static bool TryResolveMakerNoteOffset(Stream input, uint makerNoteBase,
+		uint rawOffset, out uint resolvedOffset)
+	{
+		resolvedOffset = 0;
+		if ( rawOffset == 0 )
+		{
+			return false;
+		}
+
+		if ( rawOffset < input.Length && IsJpegAtOffset(input, rawOffset) )
+		{
+			resolvedOffset = rawOffset;
+			return true;
+		}
+
+		var relative = makerNoteBase + rawOffset;
+		if ( relative < input.Length && IsJpegAtOffset(input, relative) )
+		{
+			resolvedOffset = relative;
+			return true;
+		}
+
+		return false;
+	}
+
+	private static bool IsJpegAtOffset(Stream input, uint offset)
+	{
+		if ( !TrySeek(input, offset) )
+		{
+			return false;
+		}
+
+		Span<byte> header = stackalloc byte[3];
+		if ( input.Read(header) < 3 )
+		{
+			return false;
+		}
+
+		return header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF;
+	}
+
+	private static uint DetectJpegLengthByEoi(Stream input, uint startOffset, int maxScanBytes)
+	{
+		if ( maxScanBytes < 2 || !TrySeek(input, startOffset) )
+		{
+			return 0;
+		}
+
+		var buffer = ArrayPool<byte>.Shared.Rent(64 * 1024);
+		try
+		{
+			var scanned = 0;
+			var previous = -1;
+			while ( scanned < maxScanBytes )
+			{
+				var toRead = Math.Min(buffer.Length, maxScanBytes - scanned);
+				var read = input.Read(buffer, 0, toRead);
+				if ( read <= 0 )
+				{
+					break;
+				}
+
+				for ( var i = 0; i < read; i++ )
+				{
+					var current = buffer[i];
+					if ( previous == 0xFF && current == 0xD9 )
+					{
+						return ( uint ) ( scanned + i + 1 );
+					}
+
+					previous = current;
+				}
+
+				scanned += read;
+			}
+		}
+		finally
+		{
+			ArrayPool<byte>.Shared.Return(buffer);
+		}
+
+		return 0;
+	}
+
+	private static IEnumerable<PreviewCandidate> ScanJpegsInRange(Stream input, uint rangeOffset,
+		uint rangeLength)
+	{
+		var maxScan = ( int ) Math.Min(rangeLength, MaxMakerNoteScanBytes);
+		if ( maxScan < 4 || !TrySeek(input, rangeOffset) )
+		{
+			yield break;
+		}
+
+		var buffer = ArrayPool<byte>.Shared.Rent(64 * 1024);
+		try
+		{
+			var scanned = 0;
+			var b0 = -1;
+			var b1 = -1;
+			while ( scanned < maxScan )
+			{
+				var toRead = Math.Min(buffer.Length, maxScan - scanned);
+				var read = input.Read(buffer, 0, toRead);
+				if ( read <= 0 )
+				{
+					break;
+				}
+
+				for ( var i = 0; i < read; i++ )
+				{
+					var b2 = buffer[i];
+					if ( b0 == 0xFF && b1 == 0xD8 && b2 == 0xFF )
+					{
+						var resumePosition = input.Position;
+						var soi = ( uint ) ( rangeOffset + scanned + i - 2 );
+						var remaining = maxScan - ( scanned + i - 2 );
+						var length = DetectJpegLengthByEoi(input, soi, remaining);
+						input.Seek(resumePosition, SeekOrigin.Begin);
+						if ( length >= MinJpegSize )
+						{
+							yield return new PreviewCandidate
+							{
+								Offset = soi,
+								Length = length
+							};
+						}
+					}
+
+					b0 = b1;
+					b1 = b2;
+				}
+
+				scanned += read;
+			}
+		}
+		finally
+		{
+			ArrayPool<byte>.Shared.Return(buffer);
 		}
 	}
 
@@ -369,7 +766,7 @@ public class EmbeddedPreviewExtractor
 				while ( remaining > 0 )
 				{
 					var toRead = ( int ) Math.Min(65536, remaining);
-					var read = input.Read(buffer, 0, toRead);
+					var read = await input.ReadAsync(buffer.AsMemory(0, toRead));
 					if ( read == 0 )
 					{
 						break;
@@ -546,5 +943,29 @@ public class EmbeddedPreviewExtractor
 		public uint Length { get; set; }
 		public uint Width { get; set; }
 		public uint Height { get; set; }
+	}
+
+	private enum RawFlavor
+	{
+		Unknown,
+		SonyArw,
+		CanonCr2
+	}
+
+	private readonly record struct IfdTagPairQuery(
+		ushort PrimaryOffsetTag,
+		ushort PrimaryLengthTag,
+		ushort AltTag,
+		bool LittleEndian);
+
+	private static RawFlavor GetRawFlavorFromPath(string pathOrReference)
+	{
+		var ext = Path.GetExtension(pathOrReference).ToLowerInvariant();
+		return ext switch
+		{
+			".arw" => RawFlavor.SonyArw,
+			".cr2" => RawFlavor.CanonCr2,
+			_ => RawFlavor.Unknown
+		};
 	}
 }

@@ -15,16 +15,19 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.E
 public class EmbeddedPreviewExtractorTests
 {
 	private const string InputSubPath = "/raw/test.dng";
+	private const string InputArwSubPath = "/raw/test.arw";
+	private const string InputCr2SubPath = "/raw/test.cr2";
 	private const string OutputSubPath = "/tmp/output.jpg";
 
 	private static FakeSelectorStorageByType CreateSelectorStorage(byte[]? inputBytes,
+		string inputSubPath,
 		out FakeIStorage subPathStorage,
 		out FakeIStorage tempStorage)
 	{
 		subPathStorage = inputBytes != null
 			? new FakeIStorage(
 				outputSubPathFolders: ["/raw"],
-				outputSubPathFiles: [InputSubPath],
+				outputSubPathFiles: [inputSubPath],
 				byteListSource: [inputBytes])
 			: new FakeIStorage(outputSubPathFolders: ["/raw"]);
 
@@ -34,6 +37,14 @@ public class EmbeddedPreviewExtractorTests
 
 		return new FakeSelectorStorageByType(subPathStorage, thumbnailStorage, hostStorage,
 			tempStorage);
+	}
+
+	private static FakeSelectorStorageByType CreateSelectorStorage(byte[]? inputBytes,
+		out FakeIStorage subPathStorage,
+		out FakeIStorage tempStorage)
+	{
+		return CreateSelectorStorage(inputBytes, InputSubPath, out subPathStorage,
+			out tempStorage);
 	}
 
 	private static byte[] CreateMinimalTiffHeader(uint firstIfdOffset = 8, bool littleEndian = true)
@@ -137,6 +148,85 @@ public class EmbeddedPreviewExtractorTests
 		jpeg[size - 2] = 0xFF;
 		jpeg[size - 1] = 0xD9;
 		return jpeg;
+	}
+
+	private static byte[] CreateIfdWithMakerNote(uint makerNoteOffset, uint makerNoteLength)
+	{
+		var ifd = new byte[2 + 12 + 4];
+		var pos = 0;
+
+		ifd[pos++] = 1;
+		ifd[pos++] = 0;
+
+		// Tag: MakerNote (0x927C)
+		ifd[pos++] = 0x7C;
+		ifd[pos++] = 0x92;
+		ifd[pos++] = 7; // UNDEFINED
+		ifd[pos++] = 0;
+		ifd[pos++] = ( byte ) ( makerNoteLength & 0xFF );
+		ifd[pos++] = ( byte ) ( ( makerNoteLength >> 8 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( makerNoteLength >> 16 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( makerNoteLength >> 24 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( makerNoteOffset & 0xFF );
+		ifd[pos++] = ( byte ) ( ( makerNoteOffset >> 8 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( makerNoteOffset >> 16 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( makerNoteOffset >> 24 ) & 0xFF );
+
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+
+		return ifd;
+	}
+
+	private static byte[] CreateSonyMakerNote(uint jpegOffset, uint jpegLength,
+		bool includeLengthTag = true)
+	{
+		var entryCount = includeLengthTag ? 2 : 1;
+		var makerNote = new byte[2 + entryCount * 12 + 4];
+		var pos = 0;
+
+		makerNote[pos++] = ( byte ) entryCount;
+		makerNote[pos++] = 0;
+
+		// TagSonyPreviewOffset 0x2010
+		makerNote[pos++] = 0x10;
+		makerNote[pos++] = 0x20;
+		makerNote[pos++] = 4;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 1;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = ( byte ) ( jpegOffset & 0xFF );
+		makerNote[pos++] = ( byte ) ( ( jpegOffset >> 8 ) & 0xFF );
+		makerNote[pos++] = ( byte ) ( ( jpegOffset >> 16 ) & 0xFF );
+		makerNote[pos++] = ( byte ) ( ( jpegOffset >> 24 ) & 0xFF );
+
+		if ( includeLengthTag )
+		{
+			// TagSonyPreviewLength 0x2011
+			makerNote[pos++] = 0x11;
+			makerNote[pos++] = 0x20;
+			makerNote[pos++] = 4;
+			makerNote[pos++] = 0;
+			makerNote[pos++] = 1;
+			makerNote[pos++] = 0;
+			makerNote[pos++] = 0;
+			makerNote[pos++] = 0;
+			makerNote[pos++] = ( byte ) ( jpegLength & 0xFF );
+			makerNote[pos++] = ( byte ) ( ( jpegLength >> 8 ) & 0xFF );
+			makerNote[pos++] = ( byte ) ( ( jpegLength >> 16 ) & 0xFF );
+			makerNote[pos++] = ( byte ) ( ( jpegLength >> 24 ) & 0xFF );
+		}
+
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+
+		return makerNote;
 	}
 
 	[TestMethod]
@@ -304,7 +394,7 @@ public class EmbeddedPreviewExtractorTests
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
 
 		// Assert - should process without error
-		Assert.IsNotNull(result, "Should process big-endian TIFF");
+		Assert.IsFalse(result, "Big-endian file without JPEG length should not extract");
 	}
 
 	[TestMethod]
@@ -335,6 +425,95 @@ public class EmbeddedPreviewExtractorTests
 			"Output file should contain valid JPEG data");
 		Assert.AreEqual(0xFF, extractedBytes[0], "Output should be valid JPEG");
 		Assert.AreEqual(0xD8, extractedBytes[1], "Output should be valid JPEG");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithSonyMakerNoteOffsetAndLength_ExtractsPreview()
+	{
+		const uint makerNoteOffset = 128;
+		const uint jpegOffset = 512;
+		const uint jpegLength = 5200;
+
+		using var ms = new MemoryStream();
+		ms.Write(CreateMinimalTiffHeader());
+		var makerNote = CreateSonyMakerNote(jpegOffset, jpegLength);
+		ms.Write(CreateIfdWithMakerNote(makerNoteOffset, ( uint ) makerNote.Length));
+		ms.Seek(makerNoteOffset, SeekOrigin.Begin);
+		ms.Write(makerNote);
+		ms.Seek(jpegOffset, SeekOrigin.Begin);
+		ms.Write(CreateMinimalJpeg(( int ) jpegLength));
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputArwSubPath,
+			out _, out var tempStorage);
+		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputArwSubPath, OutputSubPath);
+
+		Assert.IsTrue(result, "Sony MakerNote offset/length should extract preview");
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath),
+			"Expected extracted preview written to temp storage");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithSonyMakerNoteOffsetWithoutLength_DetectsEoi()
+	{
+		const uint makerNoteOffset = 160;
+		const uint jpegOffset = 600;
+		const uint jpegLength = 5300;
+
+		using var ms = new MemoryStream();
+		ms.Write(CreateMinimalTiffHeader());
+		var makerNote = CreateSonyMakerNote(jpegOffset, 0, false);
+		ms.Write(CreateIfdWithMakerNote(makerNoteOffset, ( uint ) makerNote.Length));
+		ms.Seek(makerNoteOffset, SeekOrigin.Begin);
+		ms.Write(makerNote);
+		ms.Seek(jpegOffset, SeekOrigin.Begin);
+		ms.Write(CreateMinimalJpeg(( int ) jpegLength));
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputArwSubPath,
+			out _, out var tempStorage);
+		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputArwSubPath, OutputSubPath);
+
+		Assert.IsTrue(result, "Sony MakerNote without length should detect JPEG EOI");
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath),
+			"Expected extracted preview written to temp storage");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithCanonMakerNoteScan_FindsLargestJpeg()
+	{
+		const uint makerNoteOffset = 192;
+		const int firstJpegLength = 4500;
+		const int secondJpegLength = 6200;
+
+		using var ms = new MemoryStream();
+		ms.Write(CreateMinimalTiffHeader());
+
+		var firstJpegOffset = makerNoteOffset + 100;
+		var secondJpegOffset = makerNoteOffset + 9000;
+		var makerNoteLength = ( uint ) ( secondJpegOffset + secondJpegLength - makerNoteOffset +
+			200 );
+		ms.Write(CreateIfdWithMakerNote(makerNoteOffset, makerNoteLength));
+
+		ms.Seek(firstJpegOffset, SeekOrigin.Begin);
+		ms.Write(CreateMinimalJpeg(firstJpegLength));
+		ms.Seek(secondJpegOffset, SeekOrigin.Begin);
+		ms.Write(CreateMinimalJpeg(secondJpegLength));
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath,
+			out _, out var tempStorage);
+		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
+
+		Assert.IsTrue(result, "Canon MakerNote scan should find an embedded JPEG");
+		using var written = tempStorage.ReadStream(OutputSubPath);
+		using var outMs = new MemoryStream();
+		await written.CopyToAsync(outMs, TestContext.CancellationToken);
+		Assert.IsGreaterThanOrEqualTo(secondJpegLength, outMs.ToArray().Length,
+			"Largest JPEG in MakerNote should be selected");
 	}
 
 	public TestContext TestContext { get; set; }
