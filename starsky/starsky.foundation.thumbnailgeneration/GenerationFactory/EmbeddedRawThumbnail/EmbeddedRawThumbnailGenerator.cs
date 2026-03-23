@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
@@ -30,23 +29,18 @@ public class EmbeddedRawThumbnailGenerator(
 	IWebLogger logger)
 	: IThumbnailGenerator
 {
-	private static readonly string[] SupportedExtensions =
-		["arw", "cr2", "cr3", "dng", "nef", "raf", "fff", "x3f"];
-
 	public async Task<IEnumerable<GenerationResultModel>> GenerateThumbnail(string singleSubPath,
 		string fileHash, ThumbnailImageFormat imageFormat,
 		List<ThumbnailSize> thumbnailSizes)
 	{
-		var extension = Path.GetExtension(singleSubPath).TrimStart('.').ToLowerInvariant();
-		if ( !SupportedExtensions.Contains(extension) )
+		if ( !ExtensionRolesHelper.IsExtensionRawThumbnailSupported(singleSubPath) )
 		{
 			return [];
 		}
 
 		return await new SharedGenerate(selectorStorage, logger).GenerateThumbnail(
 			ResizeThumbnailFromEmbeddedPreview,
-			_ => SupportedExtensions.Contains(
-				Path.GetExtension(_).TrimStart('.').ToLowerInvariant()),
+			ExtensionRolesHelper.IsExtensionRawThumbnailSupported,
 			singleSubPath, fileHash,
 			imageFormat, thumbnailSizes);
 	}

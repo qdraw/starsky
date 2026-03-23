@@ -227,7 +227,8 @@ public sealed class ExtensionRolesHelperTest
 	public void Files_GetImageFormat_Tiff_fujiFilmRaw()
 	{
 		// Fuji RAF files start with FUJI marker (not standard TIFF header at start)
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 0x46, 0x55, 0x4A, 0x49 }); // FUJI
+		var fileType =
+			ExtensionRolesHelper.GetImageFormat(new byte[] { 0x46, 0x55, 0x4A, 0x49 }); // FUJI
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.raf, fileType);
 	}
 
@@ -248,6 +249,92 @@ public sealed class ExtensionRolesHelperTest
 			ExtensionRolesHelper.HexStringToByteArray("4D 4D 00 2A".Replace(" ", "")));
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
 	}
+
+
+	[TestMethod]
+	public void Files_GetImageFormat_SonyArw_WithTiffHeader()
+	{
+		// Sony ARW files have little-endian TIFF header + SONY marker
+		var bytes = new byte[] { 0x49, 0x49, 0x2A, 0x00 };
+		var fullBytes = bytes.Concat("SONY"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_AdobeDng_WithTiffHeader()
+	{
+		// Adobe DNG files have TIFF header + DNG marker
+		var bytes = new byte[] { 0x49, 0x49, 0x2A, 0x00 };
+		var fullBytes = bytes.Concat("DNG"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.dng, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_NikonNef_WithTiffHeader()
+	{
+		// Nikon NEF files have TIFF header + NIKON marker
+		var bytes = new byte[] { 0x4D, 0x4D, 0x00, 0x2A }; // Big-endian TIFF
+		var fullBytes = bytes.Concat("NIKON"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.nef, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_CanonCr2_WithTiffHeader()
+	{
+		// Canon CR2 files have TIFF header + CR2 marker
+		var bytes = new byte[] { 0x49, 0x49, 0x2A, 0x00 };
+		var fullBytes = bytes.Concat("CR2"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr2, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_CanonCr3_WithTiffHeader()
+	{
+		// Canon CR3 files have TIFF header + CR3 marker
+		var bytes = new byte[] { 0x49, 0x49, 0x2A, 0x00 };
+		var fullBytes = bytes.Concat("CR3"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr3, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_PentaxPef_WithTiffHeader()
+	{
+		// Pentax PEF files have TIFF header + PENTAX marker
+		var bytes = new byte[] { 0x4D, 0x4D, 0x00, 0x2A }; // Big-endian TIFF
+		var fullBytes = bytes.Concat("PENTAX"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.pef, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_RawMarkerAtDifferentOffsets()
+	{
+		// Test that raw markers are found even when at different offsets
+		var bytes = new byte[] { 0x49, 0x49, 0x2A, 0x00 };
+		// SONY marker at offset 20
+		var fullBytes = bytes
+			.Concat(new byte[16])
+			.Concat("SONY"u8.ToArray())
+			.ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_DefaultTiffWhenNoRawMarker()
+	{
+		// TIFF header without any raw format marker should return TIFF
+		var bytes = new byte[] { 0x49, 0x49, 0x2A, 0x00 };
+		var fullBytes = bytes.Concat(new byte[100]).ToArray(); // Add padding without raw markers
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
+	}
+
 
 	[TestMethod]
 	public void Files_GetImageFormat_zip_50_4B_03_04()
@@ -364,7 +451,9 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_gpx_Test_57()
 	{
-		var bmBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n<gpx creator"u8.ToArray();
+		var bmBytes =
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n<gpx creator"u8
+				.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -372,7 +461,9 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_gpx_Test_56()
 	{
-		var bmBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<gpx creator"u8.ToArray();
+		var bmBytes =
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<gpx creator"u8
+				.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -587,7 +678,9 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Gpx_WithXmlPrefix()
 	{
-		var gpxExample = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\""u8.ToArray();
+		var gpxExample =
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" ?><gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\""u8
+				.ToArray();
 
 		var result = ExtensionRolesHelper.GetImageFormat(gpxExample);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, result);
@@ -607,7 +700,8 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Gpx_WithXmlNoPrefix()
 	{
-		var gpxExample = "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:gpxx=\"h"u8.ToArray();
+		var gpxExample =
+			"<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:gpxx=\"h"u8.ToArray();
 
 		var result = ExtensionRolesHelper.GetImageFormat(gpxExample);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, result);

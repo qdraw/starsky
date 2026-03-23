@@ -654,7 +654,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return ImageFormat.png;
 		}
 
-		var tiff = GetImageFormatTiff(bytes);
+		var tiff = GetImageFormatRawTiff(bytes);
 		if ( tiff != null )
 		{
 			return ( ImageFormat ) tiff;
@@ -779,7 +779,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		return null;
 	}
 
-	private static ImageFormat? GetImageFormatTiff(byte[] bytes)
+	private static ImageFormat? GetImageFormatRawTiff(byte[] bytes)
 	{
 		if ( bytes.Length < 4 )
 		{
@@ -798,8 +798,10 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		// TIFF headers
 		// Little-endian: 49 49 2A 00 (II*)
 		// Big-endian:   4D 4D 00 2A (MM*)
-		var isLittleEndianTiff = bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x2A && bytes[3] == 0x00;
-		var isBigEndianTiff = bytes[0] == 0x4D && bytes[1] == 0x4D && bytes[2] == 0x00 && bytes[3] == 0x2A;
+		var isLittleEndianTiff = bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x2A &&
+		                         bytes[3] == 0x00;
+		var isBigEndianTiff = bytes[0] == 0x4D && bytes[1] == 0x4D && bytes[2] == 0x00 &&
+		                      bytes[3] == 0x2A;
 
 		if ( !isLittleEndianTiff && !isBigEndianTiff )
 		{
@@ -832,6 +834,11 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return ImageFormat.cr2;
 		}
 
+		// Canon CR3
+		if ( Contains(bytes, "CR3") )
+		{
+			return ImageFormat.cr3;
+		}
 
 		// Olympus ORF
 		if ( Contains(bytes, "OLYMP") )
