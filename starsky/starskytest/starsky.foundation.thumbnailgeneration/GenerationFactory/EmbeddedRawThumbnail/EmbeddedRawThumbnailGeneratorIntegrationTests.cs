@@ -22,6 +22,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.E
 public class EmbeddedRawThumbnailGeneratorIntegrationTests
 {
 	private const string TestRawDirectory = "/Users/dion/data/testcontent/raws";
+	private const string Canon5dMarkIvSample = "canon_eos_5d_mark_iv_01.cr2";
+	private const int Canon5dMarkIvMinLongEdge = 1200;
 	private IEmbeddedRawThumbnailService _embeddedRawThumbnailService = null!;
 
 	private IWebLogger _logger = null!;
@@ -47,7 +49,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			"Sony - ILCE-7SM3 - 14bit 14bit uncompressed (3_2).arw", "RAW_SONY_A700.ARW",
 			"RAW_OLYMPUS_E1.ORF", "RAW_NIKON_D50.NEF", "RAW_CANON_EOS_1DX.CR2",
 			"canon_eos_1d_x_mark_iii_01.cr3", "fujifilm_x_s10_01.raf", "leica_cl_01.dng",
-			"nikon_d850_01.nef", "panasonic_lumix_gh5_ii_01.rw2"
+			"nikon_d850_01.nef", "panasonic_lumix_gh5_ii_01.rw2", "canon_eos_5d_mark_iv_01.cr2"
 		};
 
 		return testFiles
@@ -63,6 +65,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	[DataRow("RAW_CANON_EOS_1DX.CR2")]
 	[DataRow("leica_cl_01.dng")]
 	[DataRow("nikon_d850_01.nef")]
+	[DataRow("canon_eos_5d_mark_iv_01.cr2")]
 	public async Task TryExtractPreview_WithRealRawFile_ExtractsPreview(string fileName)
 	{
 		var filePath = Path.Combine(TestRawDirectory, fileName);
@@ -92,6 +95,8 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 					Assert.AreEqual(0xFF, bytes[0], "JPEG should start with 0xFF");
 					Assert.AreEqual(0xD8, bytes[1], "JPEG should start with 0xD8");
 
+					await AssertLargePreviewForKnownSamples(fileName, largePath);
+
 					await WriteImageSharp(largePath);
 				}
 			}
@@ -111,6 +116,22 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 				// Ignore cleanup errors
 			}
 		}
+	}
+
+	private async Task AssertLargePreviewForKnownSamples(string fileName,
+		string extractedPreviewPath)
+	{
+		if ( !fileName.Equals(Canon5dMarkIvSample, StringComparison.OrdinalIgnoreCase) )
+		{
+			return;
+		}
+
+		using var image =
+			await Image.LoadAsync(extractedPreviewPath, TestContext.CancellationToken);
+		var longEdge = Math.Max(image.Width, image.Height);
+		Assert.IsGreaterThanOrEqualTo(Canon5dMarkIvMinLongEdge,
+			longEdge,
+			$"Expected a large preview for {fileName}, but got {image.Width}x{image.Height}");
 	}
 
 	private async Task WriteImageSharp(string path)
@@ -136,6 +157,6 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 				$"No test RAW files found in {TestRawDirectory}. Some tests will be skipped.");
 		}
 
-		Assert.IsTrue(files.Length > 0, "Should find at least one test RAW file");
+		Assert.IsNotEmpty(files, "Should find at least one test RAW file");
 	}
 }

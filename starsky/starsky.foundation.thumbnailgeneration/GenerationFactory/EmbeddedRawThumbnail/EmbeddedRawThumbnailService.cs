@@ -20,7 +20,7 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage selectorStorage)
 	: IEmbeddedRawThumbnailService
 {
-	private IStorage subPathStorage => selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+	private IStorage SubPathStorage => selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
 	public async Task<bool> TryExtractPreview(string rawFilePath, string? outputLargePath)
 	{
@@ -29,7 +29,7 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 			var extension = Path.GetExtension(rawFilePath).ToLowerInvariant();
 			var imageFormat =
 				new ExtensionRolesHelper(logger).GetImageFormat(
-					subPathStorage.ReadStream(rawFilePath, 160));
+					SubPathStorage.ReadStream(rawFilePath, 160));
 
 			var tiffExtractor = new TiffEmbeddedPreviewExtractor(logger, selectorStorage);
 			var rafExtractor = new RafPreviewExtractor(logger, selectorStorage);
@@ -42,7 +42,8 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 				ExtensionRolesHelper.ImageFormat.arw
 					or ExtensionRolesHelper.ImageFormat.cr2
 					or ExtensionRolesHelper.ImageFormat.nef
-					or ExtensionRolesHelper.ImageFormat.dng =>
+					or ExtensionRolesHelper.ImageFormat.dng
+					or ExtensionRolesHelper.ImageFormat.tiff =>
 					await tiffExtractor.TryExtract(rawFilePath, outputLargePath),
 				ExtensionRolesHelper.ImageFormat.raf =>
 					await rafExtractor.TryExtract(rawFilePath, outputLargePath),

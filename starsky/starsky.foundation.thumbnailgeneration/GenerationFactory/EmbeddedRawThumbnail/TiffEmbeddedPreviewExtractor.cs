@@ -17,17 +17,6 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 /// </summary>
 public class TiffEmbeddedPreviewExtractor
 {
-	private readonly IWebLogger _logger;
-	private readonly IStorage _subPathStorage;
-	private readonly IStorage _tempStorage;
-
-	public TiffEmbeddedPreviewExtractor(IWebLogger logger, ISelectorStorage selectorStorage)
-	{
-		_logger = logger;
-		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-		_tempStorage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
-	}
-
 	private const int MaxIfdDepth = 6;
 	private const int MaxIfdVisits = 64;
 	private const int MaxRootIfdChain = 6;
@@ -35,6 +24,7 @@ public class TiffEmbeddedPreviewExtractor
 	private const int MaxPreviews = 8;
 	private const int MinJpegSize = 4096; // 4KB minimum for valid JPEG
 	private const int MaxMakerNoteScanBytes = 50 * 1024 * 1024;
+	private const int CanonFallbackScanBytes = 2 * 1024 * 1024;
 
 	// TIFF IFD Tags
 	private const ushort TagImageWidth = 0x0100;
@@ -49,13 +39,25 @@ public class TiffEmbeddedPreviewExtractor
 	private const ushort TagSonyPreviewAlt = 0x2020;
 	private const ushort TagCanonPreviewOffset = 0x0001;
 	private const ushort TagCanonPreviewLength = 0x0004;
+	private const ushort TagStripOffsets = 0x0111;
+	private const ushort TagStripByteCounts = 0x0117;
+	private readonly IWebLogger _logger;
+	private readonly IStorage _subPathStorage;
+	private readonly IStorage _tempStorage;
+
+	public TiffEmbeddedPreviewExtractor(IWebLogger logger, ISelectorStorage selectorStorage)
+	{
+		_logger = logger;
+		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		_tempStorage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
+	}
 
 
 	public async Task<bool> TryExtract(string subPathRawFile,
 		string? outputLargePath)
 	{
 		if (
-		     !_subPathStorage.ExistFile(subPathRawFile) )
+			!_subPathStorage.ExistFile(subPathRawFile) )
 		{
 			return false;
 		}
@@ -68,7 +70,7 @@ public class TiffEmbeddedPreviewExtractor
 
 			var ok = await TryExtractFromStream(input, output,
 				$"Reference: {subPathRawFile}", rawFlavor);
-			if ( !ok || outputLargePath == null || output.Length == 0)
+			if ( !ok || outputLargePath == null || output.Length == 0 )
 			{
 				return ok;
 			}
@@ -271,6 +273,13 @@ public class TiffEmbeddedPreviewExtractor
 			case TagImageLength when n == 1:
 				state.IfdHeight = ReadScalarValue(type, value);
 				return;
+			case TagStripOffsets when n == 1:
+				state.StripOffset = value;
+				state.HasStrip = true;
+				return;
+			case TagStripByteCounts when n == 1:
+				state.StripLength = value;
+				return;
 			case TagJpegOffset:
 				state.JpegOffset = value;
 				state.HasJpeg = true;
@@ -305,6 +314,19 @@ public class TiffEmbeddedPreviewExtractor
 	private static void AppendDirectJpegCandidate(List<PreviewCandidate> previews,
 		IfdEntryState state)
 	{
+		// Strip-based JPEG (Canon CR2 IFD0: 0x0111 / 0x0117, count=1)
+		if ( state.HasStrip && state.StripOffset > 0 && state.StripLength >= MinJpegSize )
+		{
+			previews.Add(new PreviewCandidate
+			{
+				Offset = state.StripOffset,
+				Length = state.StripLength,
+				Width = state.IfdWidth,
+				Height = state.IfdHeight
+			});
+		}
+
+		// Standard JPEG-in-IFD (0x0201 / 0x0202)
 		if ( !state.HasJpeg || state.JpegOffset == 0 || state.JpegLength < MinJpegSize )
 		{
 			return;
@@ -344,26 +366,6 @@ public class TiffEmbeddedPreviewExtractor
 
 			ParseIfdRecursive(input, subIfdOffset, littleEndian, context, depth + 1, true);
 		}
-	}
-
-	private sealed record ParseTraversalContext
-	{
-		public required List<PreviewCandidate> Previews { get; init; }
-		public required HashSet<uint> Visited { get; init; }
-		public required string ReferenceInfo { get; init; }
-		public required RawFlavor RawFlavor { get; init; }
-	}
-
-	private sealed class IfdEntryState
-	{
-		public uint JpegOffset { get; set; }
-		public uint JpegLength { get; set; }
-		public uint IfdWidth { get; set; }
-		public uint IfdHeight { get; set; }
-		public uint MakerNoteOffset { get; set; }
-		public uint MakerNoteLength { get; set; }
-		public bool HasJpeg { get; set; }
-		public bool HasMakerNote { get; set; }
 	}
 
 	private void ParseMakerNote(Stream input, bool littleEndian, RawFlavor rawFlavor,
@@ -420,8 +422,7 @@ public class TiffEmbeddedPreviewExtractor
 			{
 				previews.Add(new PreviewCandidate
 				{
-					Offset = resolvedOffset,
-					Length = resolvedLength
+					Offset = resolvedOffset, Length = resolvedLength
 				});
 			}
 		}
@@ -430,23 +431,55 @@ public class TiffEmbeddedPreviewExtractor
 	private void ParseCanonMakerNote(Stream input, uint makerNoteOffset, uint makerNoteLength,
 		bool littleEndian, List<PreviewCandidate> previews)
 	{
-		var (hasPair, rawOffset, rawLength) = ReadIfdTagPair(input, makerNoteOffset,
-			makerNoteLength,
-			new IfdTagPairQuery(TagCanonPreviewOffset, TagCanonPreviewLength, 0,
-				littleEndian));
-
-		if ( hasPair &&
-		     TryResolveMakerNoteOffset(input, makerNoteOffset, rawOffset, out var resolvedOffset) &&
-		     rawLength >= MinJpegSize )
+		var queries = new[]
 		{
-			previews.Add(new PreviewCandidate
+			new IfdTagPairQuery(TagCanonPreviewOffset, TagCanonPreviewLength, 0, littleEndian),
+			new IfdTagPairQuery(TagJpegOffset, TagJpegLength, 0, littleEndian),
+			new IfdTagPairQuery(TagStripOffsets, TagStripByteCounts, 0, littleEndian)
+		};
+
+		var foundExplicitCandidate = false;
+		foreach ( var query in queries )
+		{
+			var (hasPair, rawOffset, rawLength) = ReadIfdTagPair(input, makerNoteOffset,
+				makerNoteLength,
+				query);
+
+			if ( !hasPair ||
+			     !TryResolveMakerNoteOffset(input, makerNoteOffset, rawOffset,
+				     out var resolvedOffset) )
 			{
-				Offset = resolvedOffset,
-				Length = rawLength
-			});
+				continue;
+			}
+
+			var resolvedLength = rawLength;
+			if ( resolvedLength < MinJpegSize )
+			{
+				resolvedLength = DetectJpegLengthByEoi(input, resolvedOffset,
+					Math.Min(MaxMakerNoteScanBytes, ( int ) ( input.Length - resolvedOffset )));
+			}
+
+			if ( resolvedLength < MinJpegSize )
+			{
+				continue;
+			}
+
+			foundExplicitCandidate = true;
+			previews.Add(new PreviewCandidate { Offset = resolvedOffset, Length = resolvedLength });
+
+			if ( previews.Count >= MaxPreviews )
+			{
+				return;
+			}
 		}
 
-		foreach ( var candidate in ScanJpegsInRange(input, makerNoteOffset, makerNoteLength) )
+		if ( foundExplicitCandidate )
+		{
+			return;
+		}
+
+		var boundedCanonScan = Math.Min(makerNoteLength, CanonFallbackScanBytes);
+		foreach ( var candidate in ScanJpegsInRange(input, makerNoteOffset, boundedCanonScan) )
 		{
 			previews.Add(candidate);
 			if ( previews.Count >= MaxPreviews )
@@ -463,9 +496,9 @@ public class TiffEmbeddedPreviewExtractor
 		IfdTagPairQuery query)
 	{
 		if ( !TryReadIfdEntryHeader(input, ifdOffset, blockLength, query.LittleEndian,
-				out var entryCount, out var entryBytes) )
+			    out var entryCount, out var entryBytes) )
 		{
-			return (false, 0, 0);
+			return ( false, 0, 0 );
 		}
 
 		var buf = ArrayPool<byte>.Shared.Rent(entryBytes);
@@ -473,12 +506,12 @@ public class TiffEmbeddedPreviewExtractor
 		{
 			if ( !TryReadFull(input, buf, entryBytes) )
 			{
-				return (false, 0, 0);
+				return ( false, 0, 0 );
 			}
 
 			var (candidateOffset, candidateLength) = ExtractTagPairValues(
 				buf.AsSpan(0, entryBytes), entryCount, query);
-			return (candidateOffset > 0, candidateOffset, candidateLength);
+			return ( candidateOffset > 0, candidateOffset, candidateLength );
 		}
 		finally
 		{
@@ -564,7 +597,7 @@ public class TiffEmbeddedPreviewExtractor
 			}
 		}
 
-		return (candidateOffset, candidateLength);
+		return ( candidateOffset, candidateLength );
 	}
 
 	private static bool TryResolveMakerNoteOffset(Stream input, uint makerNoteBase,
@@ -687,11 +720,7 @@ public class TiffEmbeddedPreviewExtractor
 						input.Seek(resumePosition, SeekOrigin.Begin);
 						if ( length >= MinJpegSize )
 						{
-							yield return new PreviewCandidate
-							{
-								Offset = soi,
-								Length = length
-							};
+							yield return new PreviewCandidate { Offset = soi, Length = length };
 						}
 					}
 
@@ -727,6 +756,28 @@ public class TiffEmbeddedPreviewExtractor
 
 			var candidatePixels = ( ulong ) candidate.Width * candidate.Height;
 			var bestPixels = ( ulong ) best.Width * best.Height;
+			var candidateHasDimensions = candidatePixels > 0;
+			var bestHasDimensions = bestPixels > 0;
+
+			if ( candidateHasDimensions && !bestHasDimensions )
+			{
+				if ( !ShouldPreferUnknownDimensions(best.Length, candidate.Length) )
+				{
+					best = candidate;
+				}
+
+				continue;
+			}
+
+			if ( !candidateHasDimensions && bestHasDimensions )
+			{
+				if ( ShouldPreferUnknownDimensions(candidate.Length, best.Length) )
+				{
+					best = candidate;
+				}
+
+				continue;
+			}
 
 			// Prefer higher resolution preview when dimensions are available; fallback to byte size.
 			if ( candidatePixels > bestPixels ||
@@ -737,6 +788,13 @@ public class TiffEmbeddedPreviewExtractor
 		}
 
 		return best;
+	}
+
+	private static bool ShouldPreferUnknownDimensions(uint unknownLength, uint knownLength)
+	{
+		// Some RAW files expose only tiny IFD dimensions for thumbnails while the true
+		// preview is discovered by scanning MakerNote JPEG blobs without dimensions.
+		return unknownLength >= ( ulong ) knownLength * 2;
 	}
 
 	private static async Task<bool> ExtractPreviewToStream(Stream input, PreviewCandidate preview,
@@ -937,6 +995,43 @@ public class TiffEmbeddedPreviewExtractor
 		};
 	}
 
+	private static RawFlavor GetRawFlavorFromPath(string pathOrReference)
+	{
+		var ext = Path.GetExtension(pathOrReference).ToLowerInvariant();
+		return ext switch
+		{
+			".arw" => RawFlavor.SonyArw,
+			".cr2" => RawFlavor.CanonCr2,
+			_ => RawFlavor.Unknown
+		};
+	}
+
+	private sealed record ParseTraversalContext
+	{
+		public required List<PreviewCandidate> Previews { get; init; }
+		public required HashSet<uint> Visited { get; init; }
+		public required string ReferenceInfo { get; init; }
+		public required RawFlavor RawFlavor { get; init; }
+	}
+
+	private sealed class IfdEntryState
+	{
+		public uint JpegOffset { get; set; }
+		public uint JpegLength { get; set; }
+		public uint IfdWidth { get; set; }
+		public uint IfdHeight { get; set; }
+		public uint MakerNoteOffset { get; set; }
+		public uint MakerNoteLength { get; set; }
+		public bool HasJpeg { get; set; }
+
+		public bool HasMakerNote { get; set; }
+
+		// Strip-based preview: Canon CR2 IFD0 stores the large JPEG at 0x0111/0x0117 (count=1)
+		public uint StripOffset { get; set; }
+		public uint StripLength { get; set; }
+		public bool HasStrip { get; set; }
+	}
+
 	private sealed record PreviewCandidate
 	{
 		public uint Offset { get; set; }
@@ -957,15 +1052,4 @@ public class TiffEmbeddedPreviewExtractor
 		ushort PrimaryLengthTag,
 		ushort AltTag,
 		bool LittleEndian);
-
-	private static RawFlavor GetRawFlavorFromPath(string pathOrReference)
-	{
-		var ext = Path.GetExtension(pathOrReference).ToLowerInvariant();
-		return ext switch
-		{
-			".arw" => RawFlavor.SonyArw,
-			".cr2" => RawFlavor.CanonCr2,
-			_ => RawFlavor.Unknown
-		};
-	}
 }

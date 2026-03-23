@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,6 +18,8 @@ public class TiffEmbeddedPreviewExtractorTests
 	private const string InputCr2SubPath = "/raw/test.cr2";
 	private const string OutputSubPath = "/tmp/output.jpg";
 
+	public TestContext TestContext { get; set; }
+
 	private static FakeSelectorStorageByType CreateSelectorStorage(byte[]? inputBytes,
 		string inputSubPath,
 		out FakeIStorage subPathStorage,
@@ -26,12 +27,12 @@ public class TiffEmbeddedPreviewExtractorTests
 	{
 		subPathStorage = inputBytes != null
 			? new FakeIStorage(
-				outputSubPathFolders: ["/raw"],
-				outputSubPathFiles: [inputSubPath],
-				byteListSource: [inputBytes])
-			: new FakeIStorage(outputSubPathFolders: ["/raw"]);
+				["/raw"],
+				[inputSubPath],
+				[inputBytes])
+			: new FakeIStorage(["/raw"]);
 
-		tempStorage = new FakeIStorage(outputSubPathFolders: ["/tmp"]);
+		tempStorage = new FakeIStorage(["/tmp"]);
 		var thumbnailStorage = new FakeIStorage();
 		var hostStorage = new FakeIStorage();
 
@@ -40,10 +41,9 @@ public class TiffEmbeddedPreviewExtractorTests
 	}
 
 	private static FakeSelectorStorageByType CreateSelectorStorage(byte[]? inputBytes,
-		out FakeIStorage subPathStorage,
 		out FakeIStorage tempStorage)
 	{
-		return CreateSelectorStorage(inputBytes, InputSubPath, out subPathStorage,
+		return CreateSelectorStorage(inputBytes, InputSubPath, out _,
 			out tempStorage);
 	}
 
@@ -124,7 +124,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		ifd[pos++] = 0;
 		ifd[pos++] = 0;
 		ifd[pos++] = 0;
-		ifd[pos++] = 0;
+		ifd[pos] = 0;
 
 		return ifd;
 	}
@@ -175,7 +175,46 @@ public class TiffEmbeddedPreviewExtractorTests
 		ifd[pos++] = 0;
 		ifd[pos++] = 0;
 		ifd[pos++] = 0;
+		ifd[pos] = 0;
+
+		return ifd;
+	}
+
+	private static byte[] CreateIfdWithJpegAndMakerNote(uint jpegOffset, uint jpegLength,
+		uint width, uint height, uint makerNoteOffset, uint makerNoteLength)
+	{
+		var ifd = new byte[2 + 5 * 12 + 4];
+		var pos = 0;
+
+		ifd[pos++] = 5;
 		ifd[pos++] = 0;
+
+		void WriteEntry(ushort tag, ushort type, uint count, uint value)
+		{
+			ifd[pos++] = ( byte ) ( tag & 0xFF );
+			ifd[pos++] = ( byte ) ( ( tag >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( type & 0xFF );
+			ifd[pos++] = ( byte ) ( ( type >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( count & 0xFF );
+			ifd[pos++] = ( byte ) ( ( count >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( count >> 16 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( count >> 24 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( value & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 16 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 24 ) & 0xFF );
+		}
+
+		WriteEntry(0x0100, 4, 1, width);
+		WriteEntry(0x0101, 4, 1, height);
+		WriteEntry(0x0201, 4, 1, jpegOffset);
+		WriteEntry(0x0202, 4, 1, jpegLength);
+		WriteEntry(0x927C, 7, makerNoteLength, makerNoteOffset);
+
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos] = 0;
 
 		return ifd;
 	}
@@ -224,7 +263,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		makerNote[pos++] = 0;
 		makerNote[pos++] = 0;
 		makerNote[pos++] = 0;
-		makerNote[pos++] = 0;
+		makerNote[pos] = 0;
 
 		return makerNote;
 	}
@@ -234,13 +273,13 @@ public class TiffEmbeddedPreviewExtractorTests
 	{
 		// Arrange
 		using var ms = new MemoryStream();
-		ms.Write(CreateMinimalTiffHeader());
-		ms.Write(CreateIfdWithJpegTags());
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+		await ms.WriteAsync(CreateIfdWithJpegTags(), TestContext.CancellationToken);
 		ms.Seek(100, SeekOrigin.Begin);
-		ms.Write(CreateMinimalJpeg());
+		await ms.WriteAsync(CreateMinimalJpeg(), TestContext.CancellationToken);
 		ms.Seek(0, SeekOrigin.Begin);
 
-		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out var tempStorage);
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out var tempStorage);
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
@@ -260,10 +299,10 @@ public class TiffEmbeddedPreviewExtractorTests
 		var header = new byte[8];
 		header[0] = ( byte ) 'X'; // Invalid magic
 		header[1] = ( byte ) 'X';
-		ms.Write(header);
+		await ms.WriteAsync(header, TestContext.CancellationToken);
 		ms.Seek(0, SeekOrigin.Begin);
 
-		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out _);
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _);
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
@@ -278,11 +317,12 @@ public class TiffEmbeddedPreviewExtractorTests
 	{
 		// Arrange
 		using var ms = new MemoryStream();
-		ms.Write(CreateMinimalTiffHeader());
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
 		// Empty IFD (0 entries)
-		ms.Write(new byte[6]); // count (0) + next IFD pointer (0)
+		await ms.WriteAsync(new byte[6],
+			TestContext.CancellationToken); // count (0) + next IFD pointer (0)
 
-		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out _);
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _);
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
@@ -297,14 +337,14 @@ public class TiffEmbeddedPreviewExtractorTests
 	{
 		// Arrange
 		using var ms = new MemoryStream();
-		ms.Write(CreateMinimalTiffHeader());
-		ms.Write(CreateIfdWithJpegTags());
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+		await ms.WriteAsync(CreateIfdWithJpegTags(), TestContext.CancellationToken);
 		ms.Seek(100, SeekOrigin.Begin);
 		// Write invalid JPEG data (no SOI marker)
-		ms.Write(new byte[5000]);
+		await ms.WriteAsync(new byte[5000], TestContext.CancellationToken);
 		ms.Seek(0, SeekOrigin.Begin);
 
-		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out _);
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _);
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
@@ -319,13 +359,14 @@ public class TiffEmbeddedPreviewExtractorTests
 	{
 		// Arrange
 		using var ms = new MemoryStream();
-		ms.Write(CreateMinimalTiffHeader());
-		ms.Write(CreateIfdWithJpegTags(100, 1024)); // Less than 4KB minimum
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+		await ms.WriteAsync(CreateIfdWithJpegTags(100, 1024),
+			TestContext.CancellationToken); // Less than 4KB minimum
 		ms.Seek(100, SeekOrigin.Begin);
-		ms.Write(CreateMinimalJpeg(1024));
+		await ms.WriteAsync(CreateMinimalJpeg(1024), TestContext.CancellationToken);
 		ms.Seek(0, SeekOrigin.Begin);
 
-		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out _);
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _);
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
@@ -339,7 +380,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	public async Task TryExtract_WithMissingSubPath_ReturnsFalse()
 	{
 		// Arrange
-		var selectorStorage = CreateSelectorStorage(null, out _, out _);
+		var selectorStorage = CreateSelectorStorage(null, out _);
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
@@ -354,7 +395,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	{
 		// Arrange
 		using var ms = new MemoryStream();
-		ms.Write(CreateMinimalTiffHeader(8, false));
+		await ms.WriteAsync(CreateMinimalTiffHeader(8, false), TestContext.CancellationToken);
 		// Big-endian IFD
 		var ifd = new byte[2 + 12 + 4];
 		// Entry count (1)
@@ -382,12 +423,12 @@ public class TiffEmbeddedPreviewExtractorTests
 		ifd[16] = 0x00;
 		ifd[17] = 0x00;
 
-		ms.Write(ifd);
+		await ms.WriteAsync(ifd, TestContext.CancellationToken);
 		ms.Seek(100, SeekOrigin.Begin);
-		ms.Write(CreateMinimalJpeg());
+		await ms.WriteAsync(CreateMinimalJpeg(), TestContext.CancellationToken);
 		ms.Seek(0, SeekOrigin.Begin);
 
-		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out _);
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _);
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
@@ -402,12 +443,12 @@ public class TiffEmbeddedPreviewExtractorTests
 	{
 		// Arrange
 		using var ms = new MemoryStream();
-		ms.Write(CreateMinimalTiffHeader());
-		ms.Write(CreateIfdWithJpegTags());
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+		await ms.WriteAsync(CreateIfdWithJpegTags(), TestContext.CancellationToken);
 		ms.Seek(100, SeekOrigin.Begin);
-		ms.Write(CreateMinimalJpeg());
+		await ms.WriteAsync(CreateMinimalJpeg(), TestContext.CancellationToken);
 
-		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out var tempStorage);
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out var tempStorage);
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
@@ -435,13 +476,14 @@ public class TiffEmbeddedPreviewExtractorTests
 		const uint jpegLength = 5200;
 
 		using var ms = new MemoryStream();
-		ms.Write(CreateMinimalTiffHeader());
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
 		var makerNote = CreateSonyMakerNote(jpegOffset, jpegLength);
-		ms.Write(CreateIfdWithMakerNote(makerNoteOffset, ( uint ) makerNote.Length));
+		await ms.WriteAsync(CreateIfdWithMakerNote(makerNoteOffset, ( uint ) makerNote.Length),
+			TestContext.CancellationToken);
 		ms.Seek(makerNoteOffset, SeekOrigin.Begin);
-		ms.Write(makerNote);
+		await ms.WriteAsync(makerNote, TestContext.CancellationToken);
 		ms.Seek(jpegOffset, SeekOrigin.Begin);
-		ms.Write(CreateMinimalJpeg(( int ) jpegLength));
+		await ms.WriteAsync(CreateMinimalJpeg(( int ) jpegLength), TestContext.CancellationToken);
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputArwSubPath,
 			out _, out var tempStorage);
@@ -462,13 +504,14 @@ public class TiffEmbeddedPreviewExtractorTests
 		const uint jpegLength = 5300;
 
 		using var ms = new MemoryStream();
-		ms.Write(CreateMinimalTiffHeader());
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
 		var makerNote = CreateSonyMakerNote(jpegOffset, 0, false);
-		ms.Write(CreateIfdWithMakerNote(makerNoteOffset, ( uint ) makerNote.Length));
+		await ms.WriteAsync(CreateIfdWithMakerNote(makerNoteOffset, ( uint ) makerNote.Length),
+			TestContext.CancellationToken);
 		ms.Seek(makerNoteOffset, SeekOrigin.Begin);
-		ms.Write(makerNote);
+		await ms.WriteAsync(makerNote, TestContext.CancellationToken);
 		ms.Seek(jpegOffset, SeekOrigin.Begin);
-		ms.Write(CreateMinimalJpeg(( int ) jpegLength));
+		await ms.WriteAsync(CreateMinimalJpeg(( int ) jpegLength), TestContext.CancellationToken);
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputArwSubPath,
 			out _, out var tempStorage);
@@ -489,18 +532,19 @@ public class TiffEmbeddedPreviewExtractorTests
 		const int secondJpegLength = 6200;
 
 		using var ms = new MemoryStream();
-		ms.Write(CreateMinimalTiffHeader());
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
 
 		var firstJpegOffset = makerNoteOffset + 100;
 		var secondJpegOffset = makerNoteOffset + 9000;
-		var makerNoteLength = ( uint ) ( secondJpegOffset + secondJpegLength - makerNoteOffset +
-			200 );
-		ms.Write(CreateIfdWithMakerNote(makerNoteOffset, makerNoteLength));
+		var makerNoteLength = secondJpegOffset + secondJpegLength - makerNoteOffset +
+		                      200;
+		await ms.WriteAsync(CreateIfdWithMakerNote(makerNoteOffset, makerNoteLength),
+			TestContext.CancellationToken);
 
 		ms.Seek(firstJpegOffset, SeekOrigin.Begin);
-		ms.Write(CreateMinimalJpeg(firstJpegLength));
+		await ms.WriteAsync(CreateMinimalJpeg(firstJpegLength), TestContext.CancellationToken);
 		ms.Seek(secondJpegOffset, SeekOrigin.Begin);
-		ms.Write(CreateMinimalJpeg(secondJpegLength));
+		await ms.WriteAsync(CreateMinimalJpeg(secondJpegLength), TestContext.CancellationToken);
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath,
 			out _, out var tempStorage);
@@ -516,5 +560,162 @@ public class TiffEmbeddedPreviewExtractorTests
 			"Largest JPEG in MakerNote should be selected");
 	}
 
-	public TestContext TestContext { get; set; }
+	/// <summary>
+	///     Reproduces canon_eos_5d_mark_iv_01.cr2 layout:
+	///     IFD0  0x0111/0x0117 (count=1) → 3MB large preview JPEG
+	///     IFD1  0x0201/0x0202            → 15KB small thumbnail
+	///     The extractor must pick the large strip-based candidate.
+	/// </summary>
+	[TestMethod]
+	public async Task TryExtract_WithCanonIfd0StripPreviewAndIfd1SmallThumbnail_PrefersLargeStrip()
+	{
+		const uint largeJpegOffset = 2000;
+		const int largeJpegLength = 60000; // simulates large preview
+		const uint smallJpegOffset = 1000;
+		const int smallJpegLength = 5000; // simulates tiny thumbnail (IFD1)
+
+		using var ms = new MemoryStream();
+
+		// IFD0 at offset 8: 2 entries (0x0111 + 0x0117), next IFD = IFD1 position
+		var ifd0Entries = 2;
+		var ifd0Size = 2 + ifd0Entries * 12 + 4;
+		var ifd1Offset = ( uint ) ( 8 + ifd0Size );
+
+		var ifd0 = new byte[ifd0Size];
+		var pos = 0;
+		ifd0[pos++] = ( byte ) ifd0Entries;
+		ifd0[pos++] = 0;
+		// Tag 0x0111 StripOffsets, LONG, count=1, value=largeJpegOffset
+		ifd0[pos++] = 0x11;
+		ifd0[pos++] = 0x01;
+		ifd0[pos++] = 4;
+		ifd0[pos++] = 0;
+		ifd0[pos++] = 1;
+		ifd0[pos++] = 0;
+		ifd0[pos++] = 0;
+		ifd0[pos++] = 0;
+		ifd0[pos++] = ( byte ) ( largeJpegOffset & 0xFF );
+		ifd0[pos++] = ( byte ) ( ( largeJpegOffset >> 8 ) & 0xFF );
+		ifd0[pos++] = ( byte ) ( ( largeJpegOffset >> 16 ) & 0xFF );
+		ifd0[pos++] = ( byte ) ( ( largeJpegOffset >> 24 ) & 0xFF );
+		// Tag 0x0117 StripByteCounts, LONG, count=1, value=largeJpegLength
+		ifd0[pos++] = 0x17;
+		ifd0[pos++] = 0x01;
+		ifd0[pos++] = 4;
+		ifd0[pos++] = 0;
+		ifd0[pos++] = 1;
+		ifd0[pos++] = 0;
+		ifd0[pos++] = 0;
+		ifd0[pos++] = 0;
+		ifd0[pos++] = largeJpegLength & 0xFF;
+		ifd0[pos++] = ( largeJpegLength >> 8 ) & 0xFF;
+		ifd0[pos++] = ( largeJpegLength >> 16 ) & 0xFF;
+		ifd0[pos++] = ( largeJpegLength >> 24 ) & 0xFF;
+		// next IFD pointer → IFD1
+		ifd0[pos++] = ( byte ) ( ifd1Offset & 0xFF );
+		ifd0[pos++] = ( byte ) ( ( ifd1Offset >> 8 ) & 0xFF );
+		ifd0[pos++] = ( byte ) ( ( ifd1Offset >> 16 ) & 0xFF );
+		ifd0[pos] = ( byte ) ( ( ifd1Offset >> 24 ) & 0xFF );
+
+		// IFD1: 2 entries (0x0201 + 0x0202), small thumbnail
+		var ifd1 = new byte[2 + 2 * 12 + 4];
+		pos = 0;
+		ifd1[pos++] = 2;
+		ifd1[pos++] = 0;
+		// Tag 0x0201, LONG, count=1, value=smallJpegOffset
+		ifd1[pos++] = 0x01;
+		ifd1[pos++] = 0x02;
+		ifd1[pos++] = 4;
+		ifd1[pos++] = 0;
+		ifd1[pos++] = 1;
+		ifd1[pos++] = 0;
+		ifd1[pos++] = 0;
+		ifd1[pos++] = 0;
+		ifd1[pos++] = ( byte ) ( smallJpegOffset & 0xFF );
+		ifd1[pos++] = ( byte ) ( ( smallJpegOffset >> 8 ) & 0xFF );
+		ifd1[pos++] = ( byte ) ( ( smallJpegOffset >> 16 ) & 0xFF );
+		ifd1[pos++] = ( byte ) ( ( smallJpegOffset >> 24 ) & 0xFF );
+		// Tag 0x0202, LONG, count=1, value=smallJpegLength
+		ifd1[pos++] = 0x02;
+		ifd1[pos++] = 0x02;
+		ifd1[pos++] = 4;
+		ifd1[pos++] = 0;
+		ifd1[pos++] = 1;
+		ifd1[pos++] = 0;
+		ifd1[pos++] = 0;
+		ifd1[pos++] = 0;
+		ifd1[pos++] = smallJpegLength & 0xFF;
+		ifd1[pos++] = ( smallJpegLength >> 8 ) & 0xFF;
+		ifd1[pos++] = ( smallJpegLength >> 16 ) & 0xFF;
+		ifd1[pos++] = ( smallJpegLength >> 24 ) & 0xFF;
+		// next IFD = 0
+		ifd1[pos++] = 0;
+		ifd1[pos++] = 0;
+		ifd1[pos++] = 0;
+		ifd1[pos] = 0;
+
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+		await ms.WriteAsync(ifd0, TestContext.CancellationToken);
+		await ms.WriteAsync(ifd1, TestContext.CancellationToken);
+		ms.Seek(smallJpegOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateMinimalJpeg(), TestContext.CancellationToken);
+		ms.Seek(largeJpegOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateMinimalJpeg(largeJpegLength), TestContext.CancellationToken);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath,
+			out _, out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
+
+		Assert.IsTrue(result, "Should extract when IFD0 has strip-based large preview");
+		using var written = tempStorage.ReadStream(OutputSubPath);
+		using var outMs = new MemoryStream();
+		await written.CopyToAsync(outMs, TestContext.CancellationToken);
+		Assert.IsGreaterThanOrEqualTo(largeJpegLength, outMs.ToArray().Length,
+			"Strip-based large IFD0 preview should be preferred over small IFD1 thumbnail");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithCanonLargeMakerNoteAndSmallIfdThumbnail_PrefersMakerNote()
+	{
+		const uint makerNoteOffset = 192;
+		const uint smallIfdJpegOffset = 1000;
+		const int smallIfdJpegLength = 6000;
+		const int largeMakerNoteJpegLength = 18000;
+
+		using var ms = new MemoryStream();
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+
+		var largeMakerNoteJpegOffset = makerNoteOffset + 9000;
+		var makerNoteLength = largeMakerNoteJpegOffset + largeMakerNoteJpegLength -
+		                      makerNoteOffset +
+		                      200;
+		await ms.WriteAsync(CreateIfdWithJpegAndMakerNote(smallIfdJpegOffset,
+			smallIfdJpegLength,
+			320,
+			240,
+			makerNoteOffset,
+			makerNoteLength), TestContext.CancellationToken);
+
+		ms.Seek(smallIfdJpegOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateMinimalJpeg(smallIfdJpegLength), TestContext.CancellationToken);
+		ms.Seek(largeMakerNoteJpegOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateMinimalJpeg(largeMakerNoteJpegLength),
+			TestContext.CancellationToken);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath,
+			out _, out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
+
+		Assert.IsTrue(result,
+			"Canon extraction should succeed when both IFD and MakerNote JPEGs are present");
+		using var written = tempStorage.ReadStream(OutputSubPath);
+		using var outMs = new MemoryStream();
+		await written.CopyToAsync(outMs, TestContext.CancellationToken);
+		Assert.IsGreaterThanOrEqualTo(largeMakerNoteJpegLength, outMs.ToArray().Length,
+			"Larger MakerNote preview should win over a small IFD thumbnail");
+	}
 }
