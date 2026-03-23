@@ -10,7 +10,6 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
-using starsky.foundation.thumbnailgeneration.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
@@ -31,17 +30,20 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	private const int AppleXsDngMinBytes = 150 * 1024;
 	private const string Canon5dMarkIvSample = "canon_eos_5d_mark_iv_01.cr2";
 	private const int Canon5dMarkIvMinLongEdge = 1200;
+
 	private const string HuaweiNoEmbeddedPreviewSample =
 		"HUAWEI - EVA-AL00 - 16bit (4_3).dng";
+
 	private const string LeicaLosslessJpegSample =
 		"Leica - M (Typ 240) - 16bit 16bit compressed (3_2).dng";
+
 	// NOTE: CR3 files are ISO Base Media containers (not TIFF-based) and require a separate extractor
 	// They are currently skipped as TiffEmbeddedPreviewExtractor is TIFF-specific
-	private IEmbeddedRawThumbnailService _embeddedRawThumbnailService = null!;
-	private FakeIStorage _tempStorage = null!;
+	private EmbeddedRawThumbnailService _embeddedRawThumbnailService = null!;
 
 	private IWebLogger _logger = null!;
 	private ISelectorStorage _selectorStorage = null!;
+	private FakeIStorage _tempStorage = null!;
 
 	public TestContext TestContext { get; set; }
 
@@ -57,10 +59,10 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	{
 		var bytes = await File.ReadAllBytesAsync(filePath, TestContext.CancellationToken);
 		var parent = Path.GetDirectoryName(filePath) ?? "/";
-		var subPathStorage = new FakeIStorage(outputSubPathFolders: [parent],
-			outputSubPathFiles: [filePath],
-			byteListSource: [bytes]);
-		_tempStorage = new FakeIStorage(outputSubPathFolders: ["/tmp"]);
+		var subPathStorage = new FakeIStorage([parent],
+			[filePath],
+			[bytes]);
+		_tempStorage = new FakeIStorage(["/tmp"]);
 		var thumbnailStorage = new FakeIStorage();
 		var hostStorage = new FakeIStorage();
 		_selectorStorage = new FakeSelectorStorageByType(subPathStorage, thumbnailStorage,
@@ -79,8 +81,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			"RAW_OLYMPUS_E1.ORF", "RAW_NIKON_D50.NEF", "RAW_CANON_EOS_1DX.CR2",
 			"nikon_z7_ii_01.nef", "canon_eos_1d_x_mark_iii_01.cr3", "fujifilm_x_s10_01.raf",
 			"leica_cl_01.dng", "nikon_d850_01.nef", "panasonic_lumix_gh5_ii_01.rw2",
-			"canon_eos_5d_mark_iv_01.cr2",
-			"HUAWEI - EVA-AL00 - 16bit (4_3).dng",
+			"canon_eos_5d_mark_iv_01.cr2", "HUAWEI - EVA-AL00 - 16bit (4_3).dng",
 			"Apple - iPhone XS - 16bit (4_3).dng",
 			"Leica - M (Typ 240) - 16bit 16bit compressed (3_2).dng",
 			"Canon - EOS M200 - CRAW (3_2).CR3"
@@ -107,7 +108,6 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	[DataRow("Canon - EOS M200 - CRAW (3_2).CR3")]
 	public async Task TryExtractPreview_WithRealRawFile_ExtractsPreview(string fileName)
 	{
-
 		var filePath = Path.Combine(TestRawDirectory, fileName);
 		if ( !File.Exists(filePath) )
 		{
@@ -128,12 +128,13 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 					$"At least one preview should be extracted for {fileName}");
 
 				await using var stream1 = _tempStorage.ReadStream(largePath);
-				await new StorageHostFullPathFilesystem(logger: _logger).WriteStreamAsync(stream1, largePath);
-				
+				await new StorageHostFullPathFilesystem(_logger).WriteStreamAsync(stream1,
+					largePath);
+
 				if ( _tempStorage.ExistFile(largePath) )
 				{
 					await using var stream = _tempStorage.ReadStream(largePath);
-					
+
 
 					using var outMs = new MemoryStream();
 					await stream.CopyToAsync(outMs, TestContext.CancellationToken);
@@ -156,7 +157,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 							$"Skipping ImageSharp validation for {fileName}: {ex.Message}");
 					}
 				}
-				else 
+				else
 				{
 					Assert.Fail($"Did not find preview for {fileName}");
 				}
@@ -164,7 +165,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			else
 			{
 				if ( fileName.Equals(HuaweiNoEmbeddedPreviewSample,
-					     StringComparison.OrdinalIgnoreCase) )
+					    StringComparison.OrdinalIgnoreCase) )
 				{
 					Assert.Inconclusive(
 						$"No embedded JPEG preview is present in {fileName}; extractor correctly returned false.");
@@ -187,18 +188,6 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			{
 				// Ignore cleanup errors
 			}
-		}
-	}
-
-	[TestMethod]
-	[DataRow("Canon - EOS M200 - CRAW (3_2).CR3")]
-	public async Task TryExtractPreview1_WithRealRawFile_ExtractsPreview(string fileName)
-	{
-
-		var filePath = Path.Combine(TestRawDirectory, fileName);
-		if ( !File.Exists(filePath) )
-		{
-			Assert.Inconclusive($"Test file not found: {filePath}");
 		}
 	}
 

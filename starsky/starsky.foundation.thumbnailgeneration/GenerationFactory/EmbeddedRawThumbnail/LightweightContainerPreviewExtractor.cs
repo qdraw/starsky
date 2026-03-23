@@ -11,7 +11,9 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 ///     Extracts embedded JPEG previews from lightweight RAW containers (FFF/X3F).
 ///     Selection prefers JPEG candidates with IPTC APP13 metadata.
 /// </summary>
-public class LightweightContainerPreviewExtractor(IWebLogger logger, ISelectorStorage selectorStorage)
+public class LightweightContainerPreviewExtractor(
+	IWebLogger logger,
+	ISelectorStorage selectorStorage)
 {
 	private IStorage subPathStorage => selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 	private IStorage tempStorage => selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
@@ -25,11 +27,11 @@ public class LightweightContainerPreviewExtractor(IWebLogger logger, ISelectorSt
 
 		try
 		{
-			using var input = subPathStorage.ReadStream(subPathRawFile);
-			await using var output = outputLargePath != null ? new MemoryStream() : null;
+			await using var input = subPathStorage.ReadStream(subPathRawFile);
+			await using var output = new MemoryStream();
 
 			var ok = await ContainerJpegScanner.TryExtractBestPreview(input, output);
-			if ( !ok || outputLargePath == null || output == null || output.Length == 0 )
+			if ( !ok || outputLargePath == null || output.Length == 0 )
 			{
 				return ok;
 			}
@@ -45,4 +47,3 @@ public class LightweightContainerPreviewExtractor(IWebLogger logger, ISelectorSt
 		}
 	}
 }
-

@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -119,7 +118,7 @@ public class ContainerFormatPreviewExtractorTests
 	{
 		// Arrange: Create minimal CR3 with FTYP header but no preview
 		using var ms = new MemoryStream();
-		await ms.WriteAsync(CreateMinimalCr3Header("crx "), TestContext.CancellationToken);
+		await ms.WriteAsync(CreateMinimalCr3Header(), TestContext.CancellationToken);
 		ms.Seek(0, SeekOrigin.Begin);
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _);
@@ -137,7 +136,7 @@ public class ContainerFormatPreviewExtractorTests
 	{
 		// Arrange: Create CR3-like container with embedded JPEG preview
 		using var ms = new MemoryStream();
-		await ms.WriteAsync(CreateMinimalCr3Header("crx "), TestContext.CancellationToken);
+		await ms.WriteAsync(CreateMinimalCr3Header(), TestContext.CancellationToken);
 
 		// Create a meta box with embedded JPEG preview
 		const uint jpegOffset = 256;
@@ -229,7 +228,7 @@ public class ContainerFormatPreviewExtractorTests
 	{
 		// Arrange: Container with multiple JPEG previews (small then large)
 		using var ms = new MemoryStream();
-		await ms.WriteAsync(CreateMinimalCr3Header("crx "), TestContext.CancellationToken);
+		await ms.WriteAsync(CreateMinimalCr3Header(), TestContext.CancellationToken);
 
 		// Add small JPEG at offset 100
 		const uint smallJpegOffset = 100;
@@ -243,7 +242,7 @@ public class ContainerFormatPreviewExtractorTests
 		const uint largeJpegOffset = 20000;
 		const int largeJpegSize = 75000;
 		ms.Seek(smallJpegOffset + smallJpegSize, SeekOrigin.Begin);
-		var padding2 = new byte[largeJpegOffset - (smallJpegOffset + smallJpegSize)];
+		var padding2 = new byte[largeJpegOffset - ( smallJpegOffset + smallJpegSize )];
 		await ms.WriteAsync(padding2, TestContext.CancellationToken);
 		await ms.WriteAsync(CreateMinimalJpeg(largeJpegSize), TestContext.CancellationToken);
 
@@ -264,4 +263,3 @@ public class ContainerFormatPreviewExtractorTests
 			"Should select largest preview found");
 	}
 }
-

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace starsky.foundation.thumbnailgeneration.Interfaces;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Interfaces;
 
 /// <summary>
 ///     Service for extracting embedded preview images from RAW file formats.

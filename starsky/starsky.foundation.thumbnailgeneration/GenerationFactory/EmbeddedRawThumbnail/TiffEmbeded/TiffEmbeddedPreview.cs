@@ -70,7 +70,7 @@ public partial class TiffEmbeddedPreviewExtractor
 
 			var ok = await TryExtractFromStream(input, output,
 				$"Reference: {subPathRawFile}", rawFlavor);
-			if ( !ok || outputLargePath == null || output.Length == 0 )
+			if ( !ok || outputLargePath == null || output == null )
 			{
 				return ok;
 			}
@@ -414,7 +414,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 	}
 
-	private void ParseSonyMakerNote(Stream input, uint makerNoteOffset, uint makerNoteLength,
+	private static void ParseSonyMakerNote(Stream input, uint makerNoteOffset, uint makerNoteLength,
 		bool littleEndian, List<PreviewCandidate> previews)
 	{
 		var (hasPair, rawOffset, rawLength) = ReadIfdTagPair(input, makerNoteOffset,

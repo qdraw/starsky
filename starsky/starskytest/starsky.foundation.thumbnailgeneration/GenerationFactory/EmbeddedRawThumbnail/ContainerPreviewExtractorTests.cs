@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,16 +22,16 @@ public class ContainerPreviewExtractorTests
 	{
 		FakeIStorage subPathStorage;
 		subPathStorage = new FakeIStorage(
-			outputSubPathFolders: ["/raw"],
-			outputSubPathFiles: [filePath],
-			byteListSource: [bytes]);
+			["/raw"],
+			[filePath],
+			[bytes]);
 
 		tempStorage = includeInTemp
 			? new FakeIStorage(
-				outputSubPathFolders: ["/tmp", "/raw"],
-				outputSubPathFiles: [filePath],
-				byteListSource: [bytes])
-			: new FakeIStorage(outputSubPathFolders: ["/tmp"]);
+				["/tmp", "/raw"],
+				[filePath],
+				[bytes])
+			: new FakeIStorage(["/tmp"]);
 
 		var thumbnailStorage = new FakeIStorage();
 		var hostStorage = new FakeIStorage();
@@ -104,7 +102,7 @@ public class ContainerPreviewExtractorTests
 	public async Task LightweightContainerPreviewExtractor_PrefersIptcCandidate()
 	{
 		var bytes = CreateContainerWithTwoJpegsPreferIptc();
-		var selectorStorage = CreateSelectorStorage(bytes, RawPathFff, includeInTemp: false, out var tempStorage);
+		var selectorStorage = CreateSelectorStorage(bytes, RawPathFff, false, out var tempStorage);
 		var extractor = new LightweightContainerPreviewExtractor(new FakeIWebLogger(),
 			selectorStorage);
 
@@ -124,7 +122,7 @@ public class ContainerPreviewExtractorTests
 	public async Task EmbeddedRawThumbnailService_RoutesX3fToLightweightExtractor()
 	{
 		var bytes = CreateContainerWithTwoJpegsPreferIptc();
-		var selectorStorage = CreateSelectorStorage(bytes, RawPathX3f, includeInTemp: false, out var tempStorage);
+		var selectorStorage = CreateSelectorStorage(bytes, RawPathX3f, false, out var tempStorage);
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger(), selectorStorage);
 
 		var result = await service.TryExtractPreview(RawPathX3f, OutputPath);
@@ -137,7 +135,7 @@ public class ContainerPreviewExtractorTests
 	public async Task EmbeddedRawThumbnailService_RoutesRafToRafExtractor()
 	{
 		var bytes = CreateRafContainerWithIptcJpeg();
-		var selectorStorage = CreateSelectorStorage(bytes, RawPathRaf, includeInTemp: true, out var tempStorage);
+		var selectorStorage = CreateSelectorStorage(bytes, RawPathRaf, true, out var tempStorage);
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger(), selectorStorage);
 
 		var result = await service.TryExtractPreview(RawPathRaf, OutputPath);
@@ -146,4 +144,3 @@ public class ContainerPreviewExtractorTests
 		Assert.IsTrue(tempStorage.ExistFile(OutputPath), "Expected output preview file");
 	}
 }
-
