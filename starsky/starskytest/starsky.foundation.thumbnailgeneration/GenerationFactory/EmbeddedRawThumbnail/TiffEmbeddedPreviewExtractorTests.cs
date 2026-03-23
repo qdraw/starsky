@@ -632,7 +632,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	///     IFD0  0x0111/0x0117 (count=1) → standard JPEG preview (large)
 	///     IFD1  0x0201/0x0202            → 15KB small thumbnail
 	///     IFD3  0x0111/0x0117 (count=1) → lossless JPEG (raw, must be skipped)
-	///     The extractor must pick IFD0's standard preview and ignore IFD3's lossless JPEG.
+	///     The extractor must pick IFD0's standard preview and ignore IFD3's lossless.
 	/// </summary>
 	[TestMethod]
 	public async Task
