@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
@@ -67,7 +68,7 @@ public class TiffEmbeddedPreviewExtractor
 		{
 			await using var input = _subPathStorage.ReadStream(subPathRawFile);
 			await using var output = outputLargePath != null ? new MemoryStream() : null;
-			var rawFlavor = GetRawFlavorFromPath(subPathRawFile);
+			var rawFlavor = RawFlavorHelper.GetRawFlavorFromPath(subPathRawFile);
 
 			var ok = await TryExtractFromStream(input, output,
 				$"Reference: {subPathRawFile}", rawFlavor);
@@ -443,7 +444,8 @@ public class TiffEmbeddedPreviewExtractor
 		}
 	}
 
-	private void ParseCanonMakerNote(Stream input, uint makerNoteOffset, uint makerNoteLength,
+	private static void ParseCanonMakerNote(Stream input, uint makerNoteOffset,
+		uint makerNoteLength,
 		bool littleEndian, List<PreviewCandidate> previews)
 	{
 		var queries = new[]
@@ -755,23 +757,19 @@ public class TiffEmbeddedPreviewExtractor
 				for ( var i = 0; i < read; i++ )
 				{
 					var b2 = buffer[i];
-					if ( b0 == 0xFF && b1 == 0xD8 && b2 == 0xFF )
+					if ( !IsJpegStartMarker(b0, b1, b2) )
 					{
-						var resumePosition = input.Position;
-						var soi = ( uint ) ( rangeOffset + scanned + i - 2 );
-						if ( IsLosslessJpegAtOffset(input, soi) )
-						{
-							input.Seek(resumePosition, SeekOrigin.Begin);
-							continue;
-						}
+						b0 = b1;
+						b1 = b2;
+						continue;
+					}
 
-						var remaining = maxScan - ( scanned + i - 2 );
-						var length = DetectJpegLengthByEoi(input, soi, remaining);
-						input.Seek(resumePosition, SeekOrigin.Begin);
-						if ( length >= MinJpegSize )
-						{
-							yield return new PreviewCandidate { Offset = soi, Length = length };
-						}
+					var soi = ( uint ) ( rangeOffset + scanned + i - 2 );
+					if ( TryBuildScanCandidate(input, soi,
+						    maxScan - ( scanned + i - 2 ),
+						    out var candidate) )
+					{
+						yield return candidate;
 					}
 
 					b0 = b1;
@@ -785,6 +783,35 @@ public class TiffEmbeddedPreviewExtractor
 		{
 			ArrayPool<byte>.Shared.Return(buffer);
 		}
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	private static bool IsJpegStartMarker(int b0, int b1, int b2)
+	{
+		return b0 == 0xFF && b1 == 0xD8 && b2 == 0xFF;
+	}
+
+	private static bool TryBuildScanCandidate(Stream input, uint soi, int remaining,
+		out PreviewCandidate candidate)
+	{
+		candidate = default!;
+		var resumePosition = input.Position;
+
+		if ( IsLosslessJpegAtOffset(input, soi) )
+		{
+			input.Seek(resumePosition, SeekOrigin.Begin);
+			return false;
+		}
+
+		var length = DetectJpegLengthByEoi(input, soi, remaining);
+		input.Seek(resumePosition, SeekOrigin.Begin);
+		if ( length < MinJpegSize )
+		{
+			return false;
+		}
+
+		candidate = new PreviewCandidate { Offset = soi, Length = length };
+		return true;
 	}
 
 	private static PreviewCandidate? SelectBestPreview(List<PreviewCandidate> candidates)
@@ -804,40 +831,48 @@ public class TiffEmbeddedPreviewExtractor
 				continue;
 			}
 
-			var candidatePixels = ( ulong ) candidate.Width * candidate.Height;
-			var bestPixels = ( ulong ) best.Width * best.Height;
-			var candidateHasDimensions = candidatePixels > 0;
-			var bestHasDimensions = bestPixels > 0;
-
-			if ( candidateHasDimensions && !bestHasDimensions )
-			{
-				if ( !ShouldPreferUnknownDimensions(best.Length, candidate.Length) )
-				{
-					best = candidate;
-				}
-
-				continue;
-			}
-
-			if ( !candidateHasDimensions && bestHasDimensions )
-			{
-				if ( ShouldPreferUnknownDimensions(candidate.Length, best.Length) )
-				{
-					best = candidate;
-				}
-
-				continue;
-			}
-
-			// Prefer higher resolution preview when dimensions are available; fallback to byte size.
-			if ( candidatePixels > bestPixels ||
-			     ( candidatePixels == bestPixels && candidate.Length > best.Length ) )
+			if ( ShouldReplaceBest(best, candidate) )
 			{
 				best = candidate;
 			}
 		}
 
 		return best;
+	}
+
+	private static bool ShouldReplaceBest(PreviewCandidate best, PreviewCandidate candidate)
+	{
+		var candidatePixels = GetPixelCount(candidate);
+		var bestPixels = GetPixelCount(best);
+		var candidateHasDimensions = candidatePixels > 0;
+		var bestHasDimensions = bestPixels > 0;
+
+		if ( candidateHasDimensions != bestHasDimensions )
+		{
+			return ResolveMixedDimensionPreference(candidate, best, candidateHasDimensions);
+		}
+
+		// Prefer higher resolution preview when dimensions are available; fallback to byte size.
+		return candidatePixels > bestPixels ||
+		       ( candidatePixels == bestPixels && candidate.Length > best.Length );
+	}
+
+	private static bool ResolveMixedDimensionPreference(PreviewCandidate candidate,
+		PreviewCandidate best,
+		bool candidateHasDimensions)
+	{
+		if ( candidateHasDimensions )
+		{
+			return !ShouldPreferUnknownDimensions(best.Length, candidate.Length);
+		}
+
+		return ShouldPreferUnknownDimensions(candidate.Length, best.Length);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	private static ulong GetPixelCount(PreviewCandidate candidate)
+	{
+		return ( ulong ) candidate.Width * candidate.Height;
 	}
 
 	private static bool ShouldPreferUnknownDimensions(uint unknownLength, uint knownLength)
@@ -1045,16 +1080,6 @@ public class TiffEmbeddedPreviewExtractor
 		};
 	}
 
-	private static RawFlavor GetRawFlavorFromPath(string pathOrReference)
-	{
-		var ext = Path.GetExtension(pathOrReference).ToLowerInvariant();
-		return ext switch
-		{
-			".arw" => RawFlavor.SonyArw,
-			".cr2" => RawFlavor.CanonCr2,
-			_ => RawFlavor.Unknown
-		};
-	}
 
 	private sealed record ParseTraversalContext
 	{
@@ -1091,12 +1116,6 @@ public class TiffEmbeddedPreviewExtractor
 		public uint Height { get; set; }
 	}
 
-	private enum RawFlavor
-	{
-		Unknown,
-		SonyArw,
-		CanonCr2
-	}
 
 	private readonly record struct IfdTagPairQuery(
 		ushort PrimaryOffsetTag,
