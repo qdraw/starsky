@@ -216,22 +216,29 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_Tiff_olympusRaw()
 	{
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 73, 73, 82 });
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
+		// Provide proper little-endian TIFF header with Olympus marker
+		var bytes = new byte[] { 0x49, 0x49, 0x2A, 0x00 };
+		var fullBytes = bytes.Concat("OLYMP"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.orf, fileType);
 	}
 
 	[TestMethod]
 	public void Files_GetImageFormat_Tiff_fujiFilmRaw()
 	{
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 70, 85, 74 });
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
+		// Fuji RAF files start with FUJI marker (not standard TIFF header at start)
+		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 0x46, 0x55, 0x4A, 0x49 }); // FUJI
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.raf, fileType);
 	}
 
 	[TestMethod]
 	public void Files_GetImageFormat_Tiff_panasonicRaw()
 	{
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 73, 73, 85, 0 });
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
+		// Provide proper little-endian TIFF header with Panasonic marker
+		var bytes = new byte[] { 0x49, 0x49, 0x2A, 0x00 };
+		var fullBytes = bytes.Concat("Panasonic"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.rw2, fileType);
 	}
 
 	[TestMethod]
@@ -309,21 +316,23 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_tiff2_Test()
 	{
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 77, 77, 42 });
+		// Valid little-endian TIFF header: II* (0x49 0x49 0x2A 0x00)
+		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 0x49, 0x49, 0x2A, 0x00 });
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
 	}
 
 	[TestMethod]
 	public void Files_GetImageFormat_tiff3_Test()
 	{
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 77, 77, 0 });
+		// Valid big-endian TIFF header: MM\0* (0x4D 0x4D 0x00 0x2A)
+		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 0x4D, 0x4D, 0x00, 0x2A });
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
 	}
 
 	[TestMethod]
 	public void Files_GetImageFormat_bmp_Test()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes("BM");
+		var bmBytes = "BM"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.bmp, fileType);
 	}
@@ -331,7 +340,7 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_gif_Test()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes("GIF");
+		var bmBytes = "GIF"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gif, fileType);
 	}
@@ -339,7 +348,7 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_xmp_Test()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes("<x:xmpmeta");
+		var bmBytes = "<x:xmpmeta"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp, fileType);
 	}
@@ -347,7 +356,7 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_xmp2_Test()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes("<?xpacket");
+		var bmBytes = "<?xpacket"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp, fileType);
 	}
@@ -355,8 +364,7 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_gpx_Test_57()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes(
-			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n<gpx creator");
+		var bmBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n<gpx creator"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -364,8 +372,7 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_gpx_Test_56()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes(
-			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<gpx creator");
+		var bmBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<gpx creator"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -402,7 +409,7 @@ public sealed class ExtensionRolesHelperTest
 	public void Files_GetImageFormat_gpx_Test_1()
 	{
 		// there is one space offset
-		var bmBytes = Encoding.ASCII.GetBytes(" <gpx creator");
+		var bmBytes = " <gpx creator"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -412,8 +419,7 @@ public sealed class ExtensionRolesHelperTest
 	{
 		// there is 21 offset
 		var bmBytes =
-			Encoding.ASCII.GetBytes(
-				"<?xml version=\"1.0\"?><gpx version=\"1.0\" creator=\"Trails 1.05");
+			"<?xml version=\"1.0\"?><gpx version=\"1.0\" creator=\"Trails 1.05"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -442,7 +448,7 @@ public sealed class ExtensionRolesHelperTest
 	{
 		// the number of spaces is 39 before <gpx creator
 		var bmBytes =
-			Encoding.ASCII.GetBytes("                                       <gpx creator");
+			"                                       <gpx creator"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -581,8 +587,7 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Gpx_WithXmlPrefix()
 	{
-		var gpxExample = Encoding.ASCII.GetBytes(
-			"<?xml version=\"1.0\" encoding=\"UTF-8\" ?><gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\"");
+		var gpxExample = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\""u8.ToArray();
 
 		var result = ExtensionRolesHelper.GetImageFormat(gpxExample);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, result);
@@ -602,8 +607,7 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Gpx_WithXmlNoPrefix()
 	{
-		var gpxExample = Encoding.ASCII.GetBytes(
-			"<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:gpxx=\"h");
+		var gpxExample = "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:gpxx=\"h"u8.ToArray();
 
 		var result = ExtensionRolesHelper.GetImageFormat(gpxExample);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, result);

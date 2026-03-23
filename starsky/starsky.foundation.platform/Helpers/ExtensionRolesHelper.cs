@@ -348,6 +348,16 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionGif);
 			// Used for raw files =>
 			extensionList.AddRange(ExtensionTiff);
+			// Raw formats need external XMP
+			extensionList.AddRange(ExtensionRawSony);
+			extensionList.AddRange(ExtensionRawAdobe);
+			extensionList.AddRange(ExtensionRawNef);
+			extensionList.AddRange(ExtensionRawCr2);
+			extensionList.AddRange(ExtensionRawCr3);
+			extensionList.AddRange(ExtensionRawOrf);
+			extensionList.AddRange(ExtensionRawRw2);
+			extensionList.AddRange(ExtensionRawPef);
+			extensionList.AddRange(ExtensionRawRaf);
 			// reading does not allow xmp
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);
@@ -776,9 +786,20 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return null;
 		}
 
+		// Fuji RAF (special case: starts with FUJI marker, not standard TIFF header)
+		if ( bytes[0] == 0x46 && // F
+		     bytes[1] == 0x55 && // U
+		     bytes[2] == 0x4A && // J
+		     bytes[3] == 0x49 ) // I
+		{
+			return ImageFormat.raf;
+		}
+
 		// TIFF headers
-		var isLittleEndianTiff = bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x2A;
-		var isBigEndianTiff = bytes[0] == 0x4D && bytes[1] == 0x4D && bytes[2] == 0x2A;
+		// Little-endian: 49 49 2A 00 (II*)
+		// Big-endian:   4D 4D 00 2A (MM*)
+		var isLittleEndianTiff = bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x2A && bytes[3] == 0x00;
+		var isBigEndianTiff = bytes[0] == 0x4D && bytes[1] == 0x4D && bytes[2] == 0x00 && bytes[3] == 0x2A;
 
 		if ( !isLittleEndianTiff && !isBigEndianTiff )
 		{
@@ -811,15 +832,6 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return ImageFormat.cr2;
 		}
 
-		// Fuji RAF (special case: not standard TIFF header at start)
-		if ( bytes.Length >= 4 &&
-		     bytes[0] == 0x46 && // F
-		     bytes[1] == 0x55 && // U
-		     bytes[2] == 0x4A && // J
-		     bytes[3] == 0x49 ) // I
-		{
-			return ImageFormat.raf;
-		}
 
 		// Olympus ORF
 		if ( Contains(bytes, "OLYMP") )
@@ -845,27 +857,21 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	private static bool Contains(byte[] bytes, string value)
 	{
-		var strBytes = Encoding.ASCII.GetBytes(value);
-
-		for ( var i = 0; i <= bytes.Length - strBytes.Length; i++ )
+		if ( string.IsNullOrEmpty(value) )
 		{
-			var match = true;
-			for ( var j = 0; j < strBytes.Length; j++ )
-			{
-				if ( bytes[i + j] != strBytes[j] )
-				{
-					match = false;
-					break;
-				}
-			}
-
-			if ( match )
-			{
-				return true;
-			}
+			return false;
 		}
 
-		return false;
+		var strBytes = Encoding.ASCII.GetBytes(value);
+
+		// Early exit if search pattern is longer than the source
+		if ( strBytes.Length > bytes.Length )
+		{
+			return false;
+		}
+
+		// Use MemoryExtensions for efficient byte sequence search
+		return bytes.AsSpan().IndexOf(strBytes) >= 0;
 	}
 
 	private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
