@@ -572,6 +572,61 @@ public class TiffEmbeddedPreviewExtractorTests
 		return jpeg;
 	}
 
+	[TestMethod]
+	public async Task TryExtract_WithStripJpegCompression7_ExtractsPreview()
+	{
+		const uint stripOffset = 1200;
+		const int stripLength = 7000;
+
+		using var ms = new MemoryStream();
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+
+		// IFD0 with Compression=7 + StripOffsets + StripByteCounts
+		var ifd = new byte[2 + 3 * 12 + 4];
+		var pos = 0;
+		ifd[pos++] = 3;
+		ifd[pos++] = 0;
+
+		WriteLongEntry(0x0103, 7);
+		WriteLongEntry(0x0111, stripOffset);
+		WriteLongEntry(0x0117, stripLength);
+
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos] = 0;
+
+		await ms.WriteAsync(ifd, TestContext.CancellationToken);
+		ms.Seek(stripOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateMinimalJpeg(stripLength), TestContext.CancellationToken);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputSubPath, out _,
+			out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsTrue(result, "Compression=7 strip JPEG should be extracted");
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath), "Expected output preview written");
+		return;
+
+		void WriteLongEntry(ushort tag, uint value)
+		{
+			ifd[pos++] = ( byte ) ( tag & 0xFF );
+			ifd[pos++] = ( byte ) ( ( tag >> 8 ) & 0xFF );
+			ifd[pos++] = 4;
+			ifd[pos++] = 0;
+			ifd[pos++] = 1;
+			ifd[pos++] = 0;
+			ifd[pos++] = 0;
+			ifd[pos++] = 0;
+			ifd[pos++] = ( byte ) ( value & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 16 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 24 ) & 0xFF );
+		}
+	}
+
 	/// <summary>
 	///     Reproduces canon_eos_5d_mark_iv_01.cr2 layout:
 	///     IFD0  0x0111/0x0117 (count=1) → standard JPEG preview (large)
@@ -624,20 +679,20 @@ public class TiffEmbeddedPreviewExtractorTests
 			return buf;
 		}
 
-		ms.Write(CreateMinimalTiffHeader());
-		ms.Write(MakeIfd(ifd0Entries, ifd1Offset, (0x0103, 6), (0x0111, ifd0PreviewOffset),
-			(0x0117, ( uint ) ifd0PreviewLength)));
-		ms.Write(MakeIfd(ifd1Entries, ifd3Offset, (0x0201, ifd1ThumbOffset),
-			(0x0202, ( uint ) ifd1ThumbLength)));
-		ms.Write(MakeIfd(ifd0Entries, 0, (0x0103, 6), (0x0111, ifd3LosslessOffset),
-			(0x0117, ( uint ) ifd3LosslessLength)));
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+		await ms.WriteAsync(MakeIfd(ifd0Entries, ifd1Offset, (0x0103, 6), (0x0111, ifd0PreviewOffset),
+			(0x0117, ifd0PreviewLength)), TestContext.CancellationToken);
+		await ms.WriteAsync(MakeIfd(ifd1Entries, ifd3Offset, (0x0201, ifd1ThumbOffset),
+			(0x0202, ifd1ThumbLength)), TestContext.CancellationToken);
+		await ms.WriteAsync(MakeIfd(ifd0Entries, 0, (0x0103, 6), (0x0111, ifd3LosslessOffset),
+			(0x0117, ifd3LosslessLength)), TestContext.CancellationToken);
 
 		ms.Seek(ifd1ThumbOffset, SeekOrigin.Begin);
-		ms.Write(CreateMinimalJpeg(ifd1ThumbLength));
+		await ms.WriteAsync(CreateMinimalJpeg(), TestContext.CancellationToken);
 		ms.Seek(ifd0PreviewOffset, SeekOrigin.Begin);
-		ms.Write(CreateMinimalJpeg(ifd0PreviewLength));
+		await ms.WriteAsync(CreateMinimalJpeg(ifd0PreviewLength), TestContext.CancellationToken);
 		ms.Seek(ifd3LosslessOffset, SeekOrigin.Begin);
-		ms.Write(CreateLosslessJpeg(ifd3LosslessLength));
+		await ms.WriteAsync(CreateLosslessJpeg(ifd3LosslessLength), TestContext.CancellationToken);
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath,
 			out _, out var tempStorage);

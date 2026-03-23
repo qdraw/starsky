@@ -320,7 +320,7 @@ public class TiffEmbeddedPreviewExtractor
 	{
 		// Strip-based JPEG (Canon CR2 IFD0: 0x0111 / 0x0117, count=1)
 		// IFD3/IFD4 also use 0x0111/0x0117 for lossless raw data — those must be excluded.
-		if ( state.IfdCompression == 6 && state.HasStrip && state.StripOffset > 0 &&
+		if ( IsJpegCompression(state.IfdCompression) && state.HasStrip && state.StripOffset > 0 &&
 		     state.StripLength >= MinJpegSize &&
 		     !IsLosslessJpegAtOffset(input, state.StripOffset) )
 		{
@@ -346,6 +346,12 @@ public class TiffEmbeddedPreviewExtractor
 			Width = state.IfdWidth,
 			Height = state.IfdHeight
 		});
+	}
+
+	private static bool IsJpegCompression(uint compression)
+	{
+		// TIFF JPEG old-style (6) and new-style (7)
+		return compression is 6 or 7;
 	}
 
 	private void TryParseMakerNoteCandidate(Stream input, bool littleEndian,

@@ -22,6 +22,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.E
 public class EmbeddedRawThumbnailGeneratorIntegrationTests
 {
 	private const string TestRawDirectory = "/Users/dion/data/testcontent/raws";
+	private const string DngAdobeSample = "20260308_210002_DSC05386-Verbeterd-NR.dng";
+	private const int DngAdobeSampleMinLongEdge = 1000;
 	private const string Canon5dMarkIvSample = "canon_eos_5d_mark_iv_01.cr2";
 	private const int Canon5dMarkIvMinLongEdge = 1200;
 	private IEmbeddedRawThumbnailService _embeddedRawThumbnailService = null!;
@@ -123,7 +125,12 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	private async Task AssertLargePreviewForKnownSamples(string fileName,
 		string extractedPreviewPath)
 	{
-		if ( !fileName.Equals(Canon5dMarkIvSample, StringComparison.OrdinalIgnoreCase) )
+		var isCanon5dMarkIv = fileName.Equals(Canon5dMarkIvSample,
+			StringComparison.OrdinalIgnoreCase);
+		var isKnownDngSample = fileName.Equals(DngAdobeSample,
+			StringComparison.OrdinalIgnoreCase);
+
+		if ( !isCanon5dMarkIv && !isKnownDngSample )
 		{
 			return;
 		}
@@ -131,7 +138,10 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 		using var image =
 			await Image.LoadAsync(extractedPreviewPath, TestContext.CancellationToken);
 		var longEdge = Math.Max(image.Width, image.Height);
-		Assert.IsGreaterThanOrEqualTo(Canon5dMarkIvMinLongEdge,
+		var minLongEdge = isCanon5dMarkIv
+			? Canon5dMarkIvMinLongEdge
+			: DngAdobeSampleMinLongEdge;
+		Assert.IsGreaterThanOrEqualTo(minLongEdge,
 			longEdge,
 			$"Expected a large preview for {fileName}, but got {image.Width}x{image.Height}");
 	}
