@@ -48,8 +48,9 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			"20260308_210002_DSC05386-Verbeterd-NR.dng",
 			"Sony - ILCE-7SM3 - 14bit 14bit uncompressed (3_2).arw", "RAW_SONY_A700.ARW",
 			"RAW_OLYMPUS_E1.ORF", "RAW_NIKON_D50.NEF", "RAW_CANON_EOS_1DX.CR2",
-			"canon_eos_1d_x_mark_iii_01.cr3", "fujifilm_x_s10_01.raf", "leica_cl_01.dng",
-			"nikon_d850_01.nef", "panasonic_lumix_gh5_ii_01.rw2", "canon_eos_5d_mark_iv_01.cr2"
+			"nikon_z7_ii_01.nef", "canon_eos_1d_x_mark_iii_01.cr3", "fujifilm_x_s10_01.raf",
+			"leica_cl_01.dng", "nikon_d850_01.nef", "panasonic_lumix_gh5_ii_01.rw2",
+			"canon_eos_5d_mark_iv_01.cr2"
 		};
 
 		return testFiles
@@ -66,6 +67,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	[DataRow("leica_cl_01.dng")]
 	[DataRow("nikon_d850_01.nef")]
 	[DataRow("canon_eos_5d_mark_iv_01.cr2")]
+	[DataRow("nikon_z7_ii_01.nef")]
 	public async Task TryExtractPreview_WithRealRawFile_ExtractsPreview(string fileName)
 	{
 		var filePath = Path.Combine(TestRawDirectory, fileName);

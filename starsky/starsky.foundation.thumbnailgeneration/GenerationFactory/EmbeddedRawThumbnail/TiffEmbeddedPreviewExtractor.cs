@@ -29,6 +29,7 @@ public class TiffEmbeddedPreviewExtractor
 	// TIFF IFD Tags
 	private const ushort TagImageWidth = 0x0100;
 	private const ushort TagImageLength = 0x0101;
+	private const ushort TagCompression = 0x0103;
 	private const ushort TagJpegOffset = 0x0201;
 	private const ushort TagJpegLength = 0x0202;
 	private const ushort TagSubIfds = 0x014A;
@@ -267,6 +268,9 @@ public class TiffEmbeddedPreviewExtractor
 
 		switch ( tag )
 		{
+			case TagCompression when n == 1:
+				state.IfdCompression = ReadScalarValue(type, value);
+				return;
 			case TagImageWidth when n == 1:
 				state.IfdWidth = ReadScalarValue(type, value);
 				return;
@@ -316,7 +320,8 @@ public class TiffEmbeddedPreviewExtractor
 	{
 		// Strip-based JPEG (Canon CR2 IFD0: 0x0111 / 0x0117, count=1)
 		// IFD3/IFD4 also use 0x0111/0x0117 for lossless raw data — those must be excluded.
-		if ( state.HasStrip && state.StripOffset > 0 && state.StripLength >= MinJpegSize &&
+		if ( state.IfdCompression == 6 && state.HasStrip && state.StripOffset > 0 &&
+		     state.StripLength >= MinJpegSize &&
 		     !IsLosslessJpegAtOffset(input, state.StripOffset) )
 		{
 			previews.Add(new PreviewCandidate
@@ -745,6 +750,12 @@ public class TiffEmbeddedPreviewExtractor
 					{
 						var resumePosition = input.Position;
 						var soi = ( uint ) ( rangeOffset + scanned + i - 2 );
+						if ( IsLosslessJpegAtOffset(input, soi) )
+						{
+							input.Seek(resumePosition, SeekOrigin.Begin);
+							continue;
+						}
+
 						var remaining = maxScan - ( scanned + i - 2 );
 						var length = DetectJpegLengthByEoi(input, soi, remaining);
 						input.Seek(resumePosition, SeekOrigin.Begin);
@@ -884,25 +895,20 @@ public class TiffEmbeddedPreviewExtractor
 			return false;
 		}
 
+		// Check JPEG SOI marker
 		if ( !TrySeek(s, offset) )
 		{
 			return false;
 		}
 
-		Span<byte> marker = stackalloc byte[4];
-		if ( s.Read(marker) < 4 )
+		Span<byte> marker = stackalloc byte[3];
+		if ( s.Read(marker) < 3 )
 		{
 			return false;
 		}
 
-		// Must start with JPEG SOI (FF D8 FF)
-		if ( marker[0] != 0xFF || marker[1] != 0xD8 || marker[2] != 0xFF )
-		{
-			return false;
-		}
-
-		// Reject lossless JPEG — ImageSharp cannot decode these
-		return marker[3] != 0xC4 && marker[3] != 0xC3;
+		// JPEG should start with 0xFFD8FF
+		return marker[0] == 0xFF && marker[1] == 0xD8 && marker[2] == 0xFF;
 	}
 
 	private static bool TrySeek(Stream s, uint offset)
@@ -1053,6 +1059,7 @@ public class TiffEmbeddedPreviewExtractor
 	{
 		public uint JpegOffset { get; set; }
 		public uint JpegLength { get; set; }
+		public uint IfdCompression { get; set; }
 		public uint IfdWidth { get; set; }
 		public uint IfdHeight { get; set; }
 		public uint MakerNoteOffset { get; set; }

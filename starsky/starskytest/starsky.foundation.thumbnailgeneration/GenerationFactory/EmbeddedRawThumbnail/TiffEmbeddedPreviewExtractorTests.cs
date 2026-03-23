@@ -592,8 +592,8 @@ public class TiffEmbeddedPreviewExtractorTests
 
 		using var ms = new MemoryStream();
 
-		// IFD0: 2 entries (0x0111 + 0x0117), next → IFD1
-		var ifd0Entries = 2;
+		// IFD0: 3 entries (Compression + 0x0111 + 0x0117), next → IFD1
+		var ifd0Entries = 3;
 		var ifd0Size = 2 + ifd0Entries * 12 + 4;
 		var ifd1Offset = ( uint ) ( 8 + ifd0Size );
 		var ifd1Entries = 2;
@@ -625,11 +625,11 @@ public class TiffEmbeddedPreviewExtractorTests
 		}
 
 		ms.Write(CreateMinimalTiffHeader());
-		ms.Write(MakeIfd(ifd0Entries, ifd1Offset, (0x0111, ifd0PreviewOffset),
+		ms.Write(MakeIfd(ifd0Entries, ifd1Offset, (0x0103, 6), (0x0111, ifd0PreviewOffset),
 			(0x0117, ( uint ) ifd0PreviewLength)));
 		ms.Write(MakeIfd(ifd1Entries, ifd3Offset, (0x0201, ifd1ThumbOffset),
 			(0x0202, ( uint ) ifd1ThumbLength)));
-		ms.Write(MakeIfd(ifd0Entries, 0, (0x0111, ifd3LosslessOffset),
+		ms.Write(MakeIfd(ifd0Entries, 0, (0x0103, 6), (0x0111, ifd3LosslessOffset),
 			(0x0117, ( uint ) ifd3LosslessLength)));
 
 		ms.Seek(ifd1ThumbOffset, SeekOrigin.Begin);
