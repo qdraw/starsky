@@ -754,4 +754,109 @@ public class TiffEmbeddedPreviewExtractorTests
 		Assert.IsGreaterThanOrEqualTo(largeMakerNoteJpegLength, outMs.ToArray().Length,
 			"Larger MakerNote preview should win over a small IFD thumbnail");
 	}
+
+	[TestMethod]
+	public async Task TryExtract_WithAppleIPhoneXsDng_16BitLittleEndian_4By3Aspect_ExtractsLargePreview()
+	{
+		// Arrange: Simulate Apple iPhone XS DNG characteristics
+		// - Little-endian TIFF (iPhone uses 'II' byte order marker)
+		// - 16-bit image data
+		// - 4:3 aspect ratio (e.g., 4096x3072)
+		// - Large embedded JPEG preview >= 50KB
+		const uint iPhoneWidth = 4096;
+		const uint iPhoneHeight = 3072;
+		const uint jpegPreviewOffset = 200;
+		const uint jpegPreviewLength = 65000;  // >= 50KB minimum
+
+		using var ms = new MemoryStream();
+
+		// Write little-endian TIFF header (Apple iPhone XS uses little-endian)
+		await ms.WriteAsync(CreateMinimalTiffHeader(),
+			TestContext.CancellationToken);
+
+		// Create IFD with image dimensions and JPEG preview offset/length
+		var ifd = new byte[2 + 4 * 12 + 4];
+		var pos = 0;
+
+		// Entry count = 4 (ImageWidth, ImageLength, JPEGInterchangeFormat, JPEGInterchangeFormatLength)
+		ifd[pos++] = 4;
+		ifd[pos++] = 0;
+
+		// Helper to write a LONG entry (little-endian)
+		void WriteLongEntry(ushort tag, uint value)
+		{
+			ifd[pos++] = ( byte ) ( tag & 0xFF );
+			ifd[pos++] = ( byte ) ( ( tag >> 8 ) & 0xFF );
+			ifd[pos++] = 4; // Type: LONG
+			ifd[pos++] = 0;
+			ifd[pos++] = 1; // Count: 1
+			ifd[pos++] = 0;
+			ifd[pos++] = 0;
+			ifd[pos++] = 0;
+			ifd[pos++] = ( byte ) ( value & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 16 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 24 ) & 0xFF );
+		}
+
+		// Tag 0x0100: ImageWidth
+		WriteLongEntry(0x0100, iPhoneWidth);
+
+		// Tag 0x0101: ImageLength (height)
+		WriteLongEntry(0x0101, iPhoneHeight);
+
+		// Tag 0x0201: JPEGInterchangeFormat (offset to JPEG preview)
+		WriteLongEntry(0x0201, jpegPreviewOffset);
+
+		// Tag 0x0202: JPEGInterchangeFormatLength (JPEG size in bytes)
+		WriteLongEntry(0x0202, jpegPreviewLength);
+
+		// Next IFD offset (0, no more IFDs)
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos] = 0;
+
+		await ms.WriteAsync(ifd, TestContext.CancellationToken);
+
+		// Write the JPEG preview at offset 200
+		ms.Seek(jpegPreviewOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateMinimalJpeg(( int ) jpegPreviewLength),
+			TestContext.CancellationToken);
+
+		ms.Seek(0, SeekOrigin.Begin);
+
+		// Arrange: Create fake storage and extractor
+		const string iPhoneDngPath = "/raw/Apple-iPhone-XS-16bit-4_3.dng";
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), iPhoneDngPath,
+			out _, out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		// Act
+		var result = await extractor.TryExtract(iPhoneDngPath, OutputSubPath);
+
+		// Assert: Verify extraction succeeded
+		Assert.IsTrue(result,
+			"Apple iPhone XS DNG with little-endian TIFF should successfully extract preview");
+
+		// Assert: Verify output file exists
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath),
+			"Expected extracted JPEG preview written to temp storage");
+
+		// Assert: Verify extracted JPEG has valid markers and size
+		await using var written = tempStorage.ReadStream(OutputSubPath);
+		using var outMs = new MemoryStream();
+		await written.CopyToAsync(outMs, TestContext.CancellationToken);
+		var extractedBytes = outMs.ToArray();
+
+		// Verify JPEG SOI marker (0xFF 0xD8)
+		Assert.AreEqual(0xFF, extractedBytes[0], "JPEG should start with SOI marker");
+		Assert.AreEqual(0xD8, extractedBytes[1], "JPEG should start with SOI marker");
+
+		// Verify extracted preview size is large enough for Apple iPhone XS
+		const int minPreviewBytes = 50000;
+		Assert.IsGreaterThanOrEqualTo(minPreviewBytes, extractedBytes.Length,
+			$"Apple iPhone XS DNG preview payload should be >= {minPreviewBytes} bytes, " +
+			$"but got {extractedBytes.Length}");
+	}
 }

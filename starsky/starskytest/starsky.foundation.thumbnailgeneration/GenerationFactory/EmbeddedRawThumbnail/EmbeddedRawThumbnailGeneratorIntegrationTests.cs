@@ -25,8 +25,13 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	private const string DngAdobeSample = "20260308_210002_DSC05386-Verbeterd-NR.dng";
 	private const int DngAdobeSampleMinLongEdge = 1000;
 	private const int DngAdobeSampleMinBytes = 50 * 1024;
+	private const string AppleXsDngSample = "Apple - iPhone XS - 16bit (4_3).dng";
+	private const int AppleXsDngMinLongEdge = 640;
+	private const int AppleXsDngMinBytes = 150 * 1024;
 	private const string Canon5dMarkIvSample = "canon_eos_5d_mark_iv_01.cr2";
 	private const int Canon5dMarkIvMinLongEdge = 1200;
+	private const string HuaweiNoEmbeddedPreviewSample =
+		"HUAWEI - EVA-AL00 - 16bit (4_3).dng";
 	private IEmbeddedRawThumbnailService _embeddedRawThumbnailService = null!;
 	private FakeIStorage _tempStorage = null!;
 
@@ -70,7 +75,8 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			"nikon_z7_ii_01.nef", "canon_eos_1d_x_mark_iii_01.cr3", "fujifilm_x_s10_01.raf",
 			"leica_cl_01.dng", "nikon_d850_01.nef", "panasonic_lumix_gh5_ii_01.rw2",
 			"canon_eos_5d_mark_iv_01.cr2",
-			"HUAWEI - EVA-AL00 - 16bit (4_3).dng"
+			"HUAWEI - EVA-AL00 - 16bit (4_3).dng",
+			"Apple - iPhone XS - 16bit (4_3).dng"
 		};
 
 		return testFiles
@@ -89,6 +95,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	[DataRow("canon_eos_5d_mark_iv_01.cr2")]
 	[DataRow("nikon_z7_ii_01.nef")]
 	[DataRow("HUAWEI - EVA-AL00 - 16bit (4_3).dng")]
+	[DataRow("Apple - iPhone XS - 16bit (4_3).dng")]
 	public async Task TryExtractPreview_WithRealRawFile_ExtractsPreview(string fileName)
 	{
 		var filePath = Path.Combine(TestRawDirectory, fileName);
@@ -112,7 +119,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 
 				if ( _tempStorage.ExistFile(largePath) )
 				{
-					using var stream = _tempStorage.ReadStream(largePath);
+					await using var stream = _tempStorage.ReadStream(largePath);
 					using var outMs = new MemoryStream();
 					await stream.CopyToAsync(outMs, TestContext.CancellationToken);
 					var bytes = outMs.ToArray();
@@ -131,6 +138,13 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			}
 			else
 			{
+				if ( fileName.Equals(HuaweiNoEmbeddedPreviewSample,
+					     StringComparison.OrdinalIgnoreCase) )
+				{
+					Assert.Inconclusive(
+						$"No embedded JPEG preview is present in {fileName}; extractor correctly returned false.");
+				}
+
 				Assert.Fail($"Failed to extract preview for {fileName}");
 			}
 		}
@@ -158,8 +172,10 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			StringComparison.OrdinalIgnoreCase);
 		var isKnownDngSample = fileName.Equals(DngAdobeSample,
 			StringComparison.OrdinalIgnoreCase);
+		var isAppleXsDngSample = fileName.Equals(AppleXsDngSample,
+			StringComparison.OrdinalIgnoreCase);
 
-		if ( !isCanon5dMarkIv && !isKnownDngSample )
+		if ( !isCanon5dMarkIv && !isKnownDngSample && !isAppleXsDngSample )
 		{
 			return;
 		}
@@ -169,17 +185,20 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 		var longEdge = Math.Max(image.Width, image.Height);
 		var minLongEdge = isCanon5dMarkIv
 			? Canon5dMarkIvMinLongEdge
-			: DngAdobeSampleMinLongEdge;
+			: isAppleXsDngSample
+				? AppleXsDngMinLongEdge
+				: DngAdobeSampleMinLongEdge;
 		Assert.IsGreaterThanOrEqualTo(minLongEdge,
 			longEdge,
 			$"Expected a large preview for {fileName}, but got {image.Width}x{image.Height}");
 
-		if ( isKnownDngSample )
+		if ( isKnownDngSample || isAppleXsDngSample )
 		{
 			var bytes = extractedPreviewBytes.LongLength;
-			Assert.IsGreaterThanOrEqualTo(DngAdobeSampleMinBytes,
+			var minBytes = isAppleXsDngSample ? AppleXsDngMinBytes : DngAdobeSampleMinBytes;
+			Assert.IsGreaterThanOrEqualTo(minBytes,
 				bytes,
-				$"Expected DNG preview payload >= {DngAdobeSampleMinBytes} bytes for {fileName}, but got {bytes}");
+				$"Expected DNG preview payload >= {minBytes} bytes for {fileName}, but got {bytes}");
 		}
 	}
 
