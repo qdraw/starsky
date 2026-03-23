@@ -200,7 +200,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 
 		var hash =
 			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
-				_fakeIStorageImageSubPath, 
+				_fakeIStorageImageSubPath,
 				ExtensionRolesHelper.ImageFormat.jpg) )
 			.Key;
 		await storage.WriteStreamAsync(
@@ -232,6 +232,20 @@ public sealed class ThumbnailServiceTests : VerifyBase
 		var isCreated = await sut.GenerateThumbnail("/");
 
 		Assert.IsTrue(isCreated[0].Success);
+	}
+
+	[TestMethod]
+	public async Task GenerateThumbnail_1arg_FolderWithNoSupportedFiles_ReturnsEmpty()
+	{
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/notes.txt" },
+			new List<byte[]> { "hello"u8.ToArray() });
+
+		var sut = CreateSut(storage);
+		var result = await sut.GenerateThumbnail("/");
+
+		Assert.IsNotNull(result);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]

@@ -27,6 +27,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		png = 15,
 		webp = 16,
 		psd = 17,
+		raw = 18,
 
 		// Sidecar files
 		xmp = 30,
@@ -49,7 +50,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		zip = 60,
 
 		// folder
-		directory = 1000
+		directory = 1000,
 	}
 
 	/// <summary>
@@ -70,14 +71,18 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	private static readonly List<string> ExtensionJpg = new() { "jpg", "jpeg" };
 
 	/// <summary>
-	///     Tiff based, tiff, including raws
-	///     tiff, arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon,  orf:olympus, rw2:panasonic,
+	///     Tiff
+	/// </summary>
+	private static readonly List<string> ExtensionTiff = new() { "tiff" };
+
+	/// <summary>
+	///     Raws
+	///     arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon,  orf:olympus, rw2:panasonic,
 	///     pef:pentax,
 	///     Not supported due Image Processing Error x3f:sigma, crw:canon
 	/// </summary>
-	private static readonly List<string> ExtensionTiff = new()
+	private static readonly List<string> ExtensionRaw = new()
 	{
-		"tiff",
 		"arw",
 		"dng",
 		"nef",
@@ -85,7 +90,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		"cr2",
 		"orf",
 		"rw2",
-		"pef"
+		"pef",
+		"cr3"
 	};
 
 	/// <summary>
@@ -139,6 +145,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			{
 				{ ImageFormat.jpg, ExtensionJpg },
 				{ ImageFormat.tiff, ExtensionTiff },
+				{ ImageFormat.raw, ExtensionRaw },
 				{ ImageFormat.bmp, ExtensionBmp },
 				{ ImageFormat.gif, ExtensionGif },
 				{ ImageFormat.png, ExtensionPng },
@@ -216,6 +223,16 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionWebp);
+			return extensionList;
+		}
+	}
+
+	public static List<string> ExtensionRawThumbnailSupportedList
+	{
+		get
+		{
+			var extensionList = new List<string>();
+			extensionList.AddRange(ExtensionTiff);
 			return extensionList;
 		}
 	}
@@ -344,6 +361,12 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	public static bool IsExtensionVideoSupported(string? fileName)
 	{
 		return IsExtensionForce(fileName?.ToLowerInvariant(), ExtensionVideoSupportedList);
+	}
+
+	public static bool IsExtensionRawThumbnailSupported(string? filename)
+	{
+		return IsExtensionForce(filename?.ToLowerInvariant(),
+			ExtensionRawThumbnailSupportedList);
 	}
 
 	/// <summary>

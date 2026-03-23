@@ -37,7 +37,8 @@ public class ThumbnailService(
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
 		ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(e) ||
-		ExtensionRolesHelper.IsExtensionVideoSupported(e);
+		ExtensionRolesHelper.IsExtensionVideoSupported(e) ||
+		ExtensionRolesHelper.IsExtensionRawThumbnailSupported(e);
 
 	private readonly FolderToFileList _folderToFileList = new(selectorStorage);
 
@@ -66,7 +67,7 @@ public class ThumbnailService(
 			appSettings.MaxDegreesOfParallelismThumbnail);
 
 		var generationResults = new List<GenerationResultModel>();
-		foreach ( var resultChunk in resultChunkList! )
+		foreach ( var resultChunk in resultChunkList ?? [] )
 		{
 			generationResults.AddRange(resultChunk);
 		}
@@ -141,7 +142,7 @@ public class ThumbnailService(
 		return service.RotateThumbnail(fileHash, orientation,
 			width, height);
 	}
-
+	
 	private async Task<IEnumerable<GenerationResultModel>> GenerateThumbnailAsync(
 		string singleSubPath, string? fileHash, List<ThumbnailSize> sizes)
 	{
