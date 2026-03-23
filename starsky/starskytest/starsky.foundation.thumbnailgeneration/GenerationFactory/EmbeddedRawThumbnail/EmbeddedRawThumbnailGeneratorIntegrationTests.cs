@@ -35,8 +35,6 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 		"HUAWEI - EVA-AL00 - 16bit (4_3).dng";
 	private const string LeicaLosslessJpegSample =
 		"Leica - M (Typ 240) - 16bit 16bit compressed (3_2).dng";
-	private const string Canon1dXMarkIiiCr3Sample = "canon_eos_1d_x_mark_iii_01.cr3";
-	private const string CanonEosM200Cr3Sample = "Canon - EOS M200 - CRAW (3_2).CR3";
 	// NOTE: CR3 files are ISO Base Media containers (not TIFF-based) and require a separate extractor
 	// They are currently skipped as TiffEmbeddedPreviewExtractor is TIFF-specific
 	private IEmbeddedRawThumbnailService _embeddedRawThumbnailService = null!;
