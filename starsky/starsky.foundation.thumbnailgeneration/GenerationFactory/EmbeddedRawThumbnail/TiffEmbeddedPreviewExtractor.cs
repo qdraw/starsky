@@ -269,13 +269,13 @@ public class TiffEmbeddedPreviewExtractor
 		switch ( tag )
 		{
 			case TagCompression when n == 1:
-				state.IfdCompression = ReadScalarValue(type, value);
+				state.IfdCompression = ReadScalarValue(type, value, littleEndian);
 				return;
 			case TagImageWidth when n == 1:
-				state.IfdWidth = ReadScalarValue(type, value);
+				state.IfdWidth = ReadScalarValue(type, value, littleEndian);
 				return;
 			case TagImageLength when n == 1:
-				state.IfdHeight = ReadScalarValue(type, value);
+				state.IfdHeight = ReadScalarValue(type, value, littleEndian);
 				return;
 			case TagStripOffsets when n == 1:
 				state.StripOffset = value;
@@ -584,7 +584,8 @@ public class TiffEmbeddedPreviewExtractor
 				continue;
 			}
 
-			var value = ReadScalarValue(type, ReadUInt32(e[8..], query.LittleEndian));
+			var value = ReadScalarValue(type, ReadUInt32(e[8..], query.LittleEndian),
+				query.LittleEndian);
 			if ( tag == query.PrimaryOffsetTag )
 			{
 				candidateOffset = value;
@@ -1034,11 +1035,11 @@ public class TiffEmbeddedPreviewExtractor
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static uint ReadScalarValue(ushort type, uint rawValue)
+	private static uint ReadScalarValue(ushort type, uint rawValue, bool littleEndian)
 	{
 		return type switch
 		{
-			3 => rawValue & 0xFFFF,
+			3 => littleEndian ? rawValue & 0xFFFF : ( rawValue >> 16 ) & 0xFFFF,
 			4 => rawValue,
 			_ => 0
 		};
