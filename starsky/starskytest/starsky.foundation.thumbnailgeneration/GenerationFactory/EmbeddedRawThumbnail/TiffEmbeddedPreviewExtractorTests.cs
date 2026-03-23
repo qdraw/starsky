@@ -12,7 +12,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.E
 ///     Unit tests for EmbeddedPreviewExtractor - TIFF metadata parser
 /// </summary>
 [TestClass]
-public class EmbeddedPreviewExtractorTests
+public class TiffEmbeddedPreviewExtractorTests
 {
 	private const string InputSubPath = "/raw/test.dng";
 	private const string InputArwSubPath = "/raw/test.arw";
@@ -241,7 +241,7 @@ public class EmbeddedPreviewExtractorTests
 		ms.Seek(0, SeekOrigin.Begin);
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out var tempStorage);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
@@ -264,7 +264,7 @@ public class EmbeddedPreviewExtractorTests
 		ms.Seek(0, SeekOrigin.Begin);
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out _);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
@@ -283,7 +283,7 @@ public class EmbeddedPreviewExtractorTests
 		ms.Write(new byte[6]); // count (0) + next IFD pointer (0)
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out _);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
@@ -305,7 +305,7 @@ public class EmbeddedPreviewExtractorTests
 		ms.Seek(0, SeekOrigin.Begin);
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out _);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
@@ -326,7 +326,7 @@ public class EmbeddedPreviewExtractorTests
 		ms.Seek(0, SeekOrigin.Begin);
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out _);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
@@ -340,7 +340,7 @@ public class EmbeddedPreviewExtractorTests
 	{
 		// Arrange
 		var selectorStorage = CreateSelectorStorage(null, out _, out _);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
@@ -388,7 +388,7 @@ public class EmbeddedPreviewExtractorTests
 		ms.Seek(0, SeekOrigin.Begin);
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out _);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
@@ -408,7 +408,7 @@ public class EmbeddedPreviewExtractorTests
 		ms.Write(CreateMinimalJpeg());
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _, out var tempStorage);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
@@ -445,7 +445,7 @@ public class EmbeddedPreviewExtractorTests
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputArwSubPath,
 			out _, out var tempStorage);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		var result = await extractor.TryExtract(InputArwSubPath, OutputSubPath);
 
@@ -472,7 +472,7 @@ public class EmbeddedPreviewExtractorTests
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputArwSubPath,
 			out _, out var tempStorage);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		var result = await extractor.TryExtract(InputArwSubPath, OutputSubPath);
 
@@ -504,7 +504,7 @@ public class EmbeddedPreviewExtractorTests
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath,
 			out _, out var tempStorage);
-		var extractor = new EmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
 

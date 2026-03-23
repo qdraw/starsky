@@ -15,13 +15,13 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 ///     Supports: DNG (Adobe), CR2 (Canon EOS), NEF (Nikon), ARW (Sony)
 ///     High-performance implementation focusing on metadata extraction only.
 /// </summary>
-public class EmbeddedPreviewExtractor
+public class TiffEmbeddedPreviewExtractor
 {
 	private readonly IWebLogger _logger;
 	private readonly IStorage _subPathStorage;
 	private readonly IStorage _tempStorage;
 
-	public EmbeddedPreviewExtractor(IWebLogger logger, ISelectorStorage selectorStorage)
+	public TiffEmbeddedPreviewExtractor(IWebLogger logger, ISelectorStorage selectorStorage)
 	{
 		_logger = logger;
 		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);

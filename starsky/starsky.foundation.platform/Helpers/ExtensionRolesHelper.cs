@@ -39,14 +39,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		orf = 26, // olympus 
 		rw2 = 27, // Panasonic
 		pef = 28, // pentax
-
-		// Sidecar files
-		xmp = 30,
-
-		/// <summary>
-		///     Extension: .meta.json
-		/// </summary>
-		meta_json = 31,
+		fff = 29, // hasselblad
+		x3f = 32, // sigma
 
 		// documents
 		gpx = 40,
@@ -60,6 +54,14 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		// archives
 		zip = 60,
 
+		// Sidecar files
+		xmp = 70,
+
+		/// <summary>
+		///     Extension: .meta.json
+		/// </summary>
+		meta_json = 71,
+		
 		// folder
 		directory = 1000
 	}
@@ -89,8 +91,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	/// <summary>
 	///     Raws
 	///     arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon,  orf:olympus, rw2:panasonic,
-	///     pef:pentax,
-	///     Not supported due Image Processing Error x3f:sigma, crw:canon
+	///     pef:pentax, fff:hasselblad, x3f:sigma,
+	///     Not supported: crw:canon
 	/// </summary>
 	private static readonly List<string> ExtensionRawSony =
 	[
@@ -135,6 +137,16 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	private static readonly List<string> ExtensionRawPef =
 	[
 		"pef"
+	];
+
+	private static readonly List<string> ExtensionRawFff =
+	[
+		"fff"
+	];
+
+	private static readonly List<string> ExtensionRawX3F =
+	[
+		"x3f"
 	];
 
 	/// <summary>
@@ -197,6 +209,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 				{ ImageFormat.orf, ExtensionRawOrf },
 				{ ImageFormat.rw2, ExtensionRawRw2 },
 				{ ImageFormat.pef, ExtensionRawPef },
+				{ ImageFormat.fff, ExtensionRawFff },
+				{ ImageFormat.x3f, ExtensionRawX3F },
 				{ ImageFormat.bmp, ExtensionBmp },
 				{ ImageFormat.gif, ExtensionGif },
 				{ ImageFormat.png, ExtensionPng },
@@ -228,6 +242,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawOrf);
 			extensionList.AddRange(ExtensionRawRw2);
 			extensionList.AddRange(ExtensionRawPef);
+			extensionList.AddRange(ExtensionRawFff);
+			extensionList.AddRange(ExtensionRawX3F);
 			extensionList.AddRange(ExtensionBmp);
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
@@ -270,6 +286,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawOrf);
 			extensionList.AddRange(ExtensionRawRw2);
 			extensionList.AddRange(ExtensionRawPef);
+			extensionList.AddRange(ExtensionRawFff);
+			extensionList.AddRange(ExtensionRawX3F);
 			return extensionList;
 		}
 	}
@@ -311,6 +329,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawOrf);
 			extensionList.AddRange(ExtensionRawRw2);
 			extensionList.AddRange(ExtensionRawPef);
+			extensionList.AddRange(ExtensionRawFff);
+			extensionList.AddRange(ExtensionRawX3F);
 			return extensionList;
 		}
 	}
@@ -358,6 +378,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawRw2);
 			extensionList.AddRange(ExtensionRawPef);
 			extensionList.AddRange(ExtensionRawRaf);
+			extensionList.AddRange(ExtensionRawFff);
+			extensionList.AddRange(ExtensionRawX3F);
 			// reading does not allow xmp
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);

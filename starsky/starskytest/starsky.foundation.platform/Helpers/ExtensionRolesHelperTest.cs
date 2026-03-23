@@ -649,6 +649,24 @@ public sealed class ExtensionRolesHelperTest
 	}
 
 	[TestMethod]
+	[DataRow("/test/sample.fff")]
+	[DataRow("/test/sample.x3f")]
+	public void ExtensionRolesHelperTest_IsExtensionRawThumbnailSupported_Phase3Formats(string filePath)
+	{
+		var result = ExtensionRolesHelper.IsExtensionRawThumbnailSupported(filePath);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	[DataRow("/test/sample.fff")]
+	[DataRow("/test/sample.x3f")]
+	public void ExtensionRolesHelperTest_IsExtensionForceXmp_Phase3Formats(string filePath)
+	{
+		var result = ExtensionRolesHelper.IsExtensionForceXmp(filePath);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
 	public void Files_GetImageFormat_h264_Test()
 	{
 		var fileType = ExtensionRolesHelper.GetImageFormat(

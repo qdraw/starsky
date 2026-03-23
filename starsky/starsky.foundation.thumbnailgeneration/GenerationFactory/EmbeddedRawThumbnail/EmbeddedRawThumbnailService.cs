@@ -2,8 +2,10 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
@@ -18,22 +20,34 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage selectorStorage)
 	: IEmbeddedRawThumbnailService
 {
+	private IStorage subPathStorage => selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+
 	public async Task<bool> TryExtractPreview(string rawFilePath, string? outputLargePath)
 	{
 		try
 		{
 			var extension = Path.GetExtension(rawFilePath).ToLowerInvariant();
-			var extractor = new EmbeddedPreviewExtractor(logger, selectorStorage);
+			var imageFormat =
+				new ExtensionRolesHelper(logger).GetImageFormat(
+					subPathStorage.ReadStream(rawFilePath, 160));
+
+			var tiffExtractor = new TiffEmbeddedPreviewExtractor(logger, selectorStorage);
+			var rafExtractor = new RafPreviewExtractor(logger, selectorStorage);
+			var lightweightContainerExtractor =
+				new LightweightContainerPreviewExtractor(logger, selectorStorage);
 
 			// Use TIFF-based extractor for DNG, CR2, NEF, ARW
-			var result = extension switch
+			var result = imageFormat switch
 			{
-				".dng" or ".cr2" or ".nef" or ".arw" =>
-					await extractor.TryExtract(rawFilePath, outputLargePath),
-				// TODO: Add format-specific extractors
-				// ".cr3" => await new Cr3BmffPreviewExtractor(logger).TryExtract(...),
-				// ".raf" => await new RafPreviewExtractor(logger).TryExtract(...),
-				// ".fff" or ".x3f" => await new LightweightContainerPreviewExtractor(logger).TryExtract(...),
+				ExtensionRolesHelper.ImageFormat.arw
+					or ExtensionRolesHelper.ImageFormat.cr2
+					or ExtensionRolesHelper.ImageFormat.nef
+					or ExtensionRolesHelper.ImageFormat.dng =>
+					await tiffExtractor.TryExtract(rawFilePath, outputLargePath),
+				ExtensionRolesHelper.ImageFormat.raf =>
+					await rafExtractor.TryExtract(rawFilePath, outputLargePath),
+				_ when extension is ".fff" or ".x3f" =>
+					await lightweightContainerExtractor.TryExtract(rawFilePath, outputLargePath),
 				_ => false
 			};
 
