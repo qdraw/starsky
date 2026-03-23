@@ -560,107 +560,84 @@ public class TiffEmbeddedPreviewExtractorTests
 			"Largest JPEG in MakerNote should be selected");
 	}
 
+	private static byte[] CreateLosslessJpeg(int size = 5000)
+	{
+		var jpeg = new byte[size];
+		jpeg[0] = 0xFF;
+		jpeg[1] = 0xD8;
+		jpeg[2] = 0xFF;
+		jpeg[3] = 0xC4; // DHT without DQT → lossless marker
+		jpeg[size - 2] = 0xFF;
+		jpeg[size - 1] = 0xD9;
+		return jpeg;
+	}
+
 	/// <summary>
 	///     Reproduces canon_eos_5d_mark_iv_01.cr2 layout:
-	///     IFD0  0x0111/0x0117 (count=1) → 3MB large preview JPEG
+	///     IFD0  0x0111/0x0117 (count=1) → standard JPEG preview (large)
 	///     IFD1  0x0201/0x0202            → 15KB small thumbnail
-	///     The extractor must pick the large strip-based candidate.
+	///     IFD3  0x0111/0x0117 (count=1) → lossless JPEG (raw, must be skipped)
+	///     The extractor must pick IFD0's standard preview and ignore IFD3's lossless JPEG.
 	/// </summary>
 	[TestMethod]
-	public async Task TryExtract_WithCanonIfd0StripPreviewAndIfd1SmallThumbnail_PrefersLargeStrip()
+	public async Task
+		TryExtract_WithCanonIfd0StripPreviewAndIfd1SmallThumbnailAndIfd3LosslessRaw_PrefersIfd0Preview()
 	{
-		const uint largeJpegOffset = 2000;
-		const int largeJpegLength = 60000; // simulates large preview
-		const uint smallJpegOffset = 1000;
-		const int smallJpegLength = 5000; // simulates tiny thumbnail (IFD1)
+		const uint ifd0PreviewOffset = 2000;
+		const int ifd0PreviewLength = 60000;  // standard JPEG – large preview
+		const uint ifd1ThumbOffset = 1000;
+		const int ifd1ThumbLength = 5000;     // small standard JPEG thumbnail
+		const uint ifd3LosslessOffset = 80000;
+		const int ifd3LosslessLength = 130000; // bigger bytes but lossless – must be skipped
 
 		using var ms = new MemoryStream();
 
-		// IFD0 at offset 8: 2 entries (0x0111 + 0x0117), next IFD = IFD1 position
+		// IFD0: 2 entries (0x0111 + 0x0117), next → IFD1
 		var ifd0Entries = 2;
 		var ifd0Size = 2 + ifd0Entries * 12 + 4;
 		var ifd1Offset = ( uint ) ( 8 + ifd0Size );
+		var ifd1Entries = 2;
+		var ifd1Size = 2 + ifd1Entries * 12 + 4;
+		var ifd3Offset = ( uint ) ( ifd1Offset + ifd1Size );
 
-		var ifd0 = new byte[ifd0Size];
-		var pos = 0;
-		ifd0[pos++] = ( byte ) ifd0Entries;
-		ifd0[pos++] = 0;
-		// Tag 0x0111 StripOffsets, LONG, count=1, value=largeJpegOffset
-		ifd0[pos++] = 0x11;
-		ifd0[pos++] = 0x01;
-		ifd0[pos++] = 4;
-		ifd0[pos++] = 0;
-		ifd0[pos++] = 1;
-		ifd0[pos++] = 0;
-		ifd0[pos++] = 0;
-		ifd0[pos++] = 0;
-		ifd0[pos++] = ( byte ) ( largeJpegOffset & 0xFF );
-		ifd0[pos++] = ( byte ) ( ( largeJpegOffset >> 8 ) & 0xFF );
-		ifd0[pos++] = ( byte ) ( ( largeJpegOffset >> 16 ) & 0xFF );
-		ifd0[pos++] = ( byte ) ( ( largeJpegOffset >> 24 ) & 0xFF );
-		// Tag 0x0117 StripByteCounts, LONG, count=1, value=largeJpegLength
-		ifd0[pos++] = 0x17;
-		ifd0[pos++] = 0x01;
-		ifd0[pos++] = 4;
-		ifd0[pos++] = 0;
-		ifd0[pos++] = 1;
-		ifd0[pos++] = 0;
-		ifd0[pos++] = 0;
-		ifd0[pos++] = 0;
-		ifd0[pos++] = largeJpegLength & 0xFF;
-		ifd0[pos++] = ( largeJpegLength >> 8 ) & 0xFF;
-		ifd0[pos++] = ( largeJpegLength >> 16 ) & 0xFF;
-		ifd0[pos++] = ( largeJpegLength >> 24 ) & 0xFF;
-		// next IFD pointer → IFD1
-		ifd0[pos++] = ( byte ) ( ifd1Offset & 0xFF );
-		ifd0[pos++] = ( byte ) ( ( ifd1Offset >> 8 ) & 0xFF );
-		ifd0[pos++] = ( byte ) ( ( ifd1Offset >> 16 ) & 0xFF );
-		ifd0[pos] = ( byte ) ( ( ifd1Offset >> 24 ) & 0xFF );
+		byte[] MakeIfd(int entryCount, uint nextIfd, params (ushort tag, uint val)[] entries)
+		{
+			var buf = new byte[2 + entryCount * 12 + 4];
+			var p = 0;
+			buf[p++] = ( byte ) entryCount;
+			buf[p++] = 0;
+			foreach ( var (tag, val) in entries )
+			{
+				buf[p++] = ( byte ) ( tag & 0xFF );
+				buf[p++] = ( byte ) ( ( tag >> 8 ) & 0xFF );
+				buf[p++] = 4; buf[p++] = 0;        // type LONG
+				buf[p++] = 1; buf[p++] = 0; buf[p++] = 0; buf[p++] = 0; // count=1
+				buf[p++] = ( byte ) ( val & 0xFF );
+				buf[p++] = ( byte ) ( ( val >> 8 ) & 0xFF );
+				buf[p++] = ( byte ) ( ( val >> 16 ) & 0xFF );
+				buf[p++] = ( byte ) ( ( val >> 24 ) & 0xFF );
+			}
+			buf[p++] = ( byte ) ( nextIfd & 0xFF );
+			buf[p++] = ( byte ) ( ( nextIfd >> 8 ) & 0xFF );
+			buf[p++] = ( byte ) ( ( nextIfd >> 16 ) & 0xFF );
+			buf[p] = ( byte ) ( ( nextIfd >> 24 ) & 0xFF );
+			return buf;
+		}
 
-		// IFD1: 2 entries (0x0201 + 0x0202), small thumbnail
-		var ifd1 = new byte[2 + 2 * 12 + 4];
-		pos = 0;
-		ifd1[pos++] = 2;
-		ifd1[pos++] = 0;
-		// Tag 0x0201, LONG, count=1, value=smallJpegOffset
-		ifd1[pos++] = 0x01;
-		ifd1[pos++] = 0x02;
-		ifd1[pos++] = 4;
-		ifd1[pos++] = 0;
-		ifd1[pos++] = 1;
-		ifd1[pos++] = 0;
-		ifd1[pos++] = 0;
-		ifd1[pos++] = 0;
-		ifd1[pos++] = ( byte ) ( smallJpegOffset & 0xFF );
-		ifd1[pos++] = ( byte ) ( ( smallJpegOffset >> 8 ) & 0xFF );
-		ifd1[pos++] = ( byte ) ( ( smallJpegOffset >> 16 ) & 0xFF );
-		ifd1[pos++] = ( byte ) ( ( smallJpegOffset >> 24 ) & 0xFF );
-		// Tag 0x0202, LONG, count=1, value=smallJpegLength
-		ifd1[pos++] = 0x02;
-		ifd1[pos++] = 0x02;
-		ifd1[pos++] = 4;
-		ifd1[pos++] = 0;
-		ifd1[pos++] = 1;
-		ifd1[pos++] = 0;
-		ifd1[pos++] = 0;
-		ifd1[pos++] = 0;
-		ifd1[pos++] = smallJpegLength & 0xFF;
-		ifd1[pos++] = ( smallJpegLength >> 8 ) & 0xFF;
-		ifd1[pos++] = ( smallJpegLength >> 16 ) & 0xFF;
-		ifd1[pos++] = ( smallJpegLength >> 24 ) & 0xFF;
-		// next IFD = 0
-		ifd1[pos++] = 0;
-		ifd1[pos++] = 0;
-		ifd1[pos++] = 0;
-		ifd1[pos] = 0;
+		ms.Write(CreateMinimalTiffHeader());
+		ms.Write(MakeIfd(ifd0Entries, ifd1Offset, (0x0111, ifd0PreviewOffset),
+			(0x0117, ( uint ) ifd0PreviewLength)));
+		ms.Write(MakeIfd(ifd1Entries, ifd3Offset, (0x0201, ifd1ThumbOffset),
+			(0x0202, ( uint ) ifd1ThumbLength)));
+		ms.Write(MakeIfd(ifd0Entries, 0, (0x0111, ifd3LosslessOffset),
+			(0x0117, ( uint ) ifd3LosslessLength)));
 
-		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
-		await ms.WriteAsync(ifd0, TestContext.CancellationToken);
-		await ms.WriteAsync(ifd1, TestContext.CancellationToken);
-		ms.Seek(smallJpegOffset, SeekOrigin.Begin);
-		await ms.WriteAsync(CreateMinimalJpeg(), TestContext.CancellationToken);
-		ms.Seek(largeJpegOffset, SeekOrigin.Begin);
-		await ms.WriteAsync(CreateMinimalJpeg(largeJpegLength), TestContext.CancellationToken);
+		ms.Seek(ifd1ThumbOffset, SeekOrigin.Begin);
+		ms.Write(CreateMinimalJpeg(ifd1ThumbLength));
+		ms.Seek(ifd0PreviewOffset, SeekOrigin.Begin);
+		ms.Write(CreateMinimalJpeg(ifd0PreviewLength));
+		ms.Seek(ifd3LosslessOffset, SeekOrigin.Begin);
+		ms.Write(CreateLosslessJpeg(ifd3LosslessLength));
 
 		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath,
 			out _, out var tempStorage);
@@ -668,12 +645,16 @@ public class TiffEmbeddedPreviewExtractorTests
 
 		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
 
-		Assert.IsTrue(result, "Should extract when IFD0 has strip-based large preview");
+		Assert.IsTrue(result,
+			"Should extract IFD0 standard preview ignoring the IFD3 lossless raw strip");
 		using var written = tempStorage.ReadStream(OutputSubPath);
 		using var outMs = new MemoryStream();
 		await written.CopyToAsync(outMs, TestContext.CancellationToken);
-		Assert.IsGreaterThanOrEqualTo(largeJpegLength, outMs.ToArray().Length,
-			"Strip-based large IFD0 preview should be preferred over small IFD1 thumbnail");
+		var extracted = outMs.ToArray();
+		Assert.IsGreaterThanOrEqualTo(ifd0PreviewLength, extracted.Length,
+			"Should pick the IFD0 standard preview, not the larger lossless IFD3 raw data");
+		Assert.AreNotEqual(( byte ) 0xC4, extracted[3],
+			"Extracted JPEG must not be lossless (FF D8 FF C4)");
 	}
 
 	[TestMethod]

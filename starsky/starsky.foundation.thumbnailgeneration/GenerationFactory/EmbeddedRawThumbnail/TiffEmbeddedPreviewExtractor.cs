@@ -252,7 +252,7 @@ public class TiffEmbeddedPreviewExtractor
 				state);
 		}
 
-		AppendDirectJpegCandidate(context.Previews, state);
+		AppendDirectJpegCandidate(context.Previews, state, input);
 		TryParseMakerNoteCandidate(input, littleEndian, context, state);
 		ParseSubIfdChain(input, littleEndian, context, depth, subIfdOffsets);
 	}
@@ -312,10 +312,12 @@ public class TiffEmbeddedPreviewExtractor
 	}
 
 	private static void AppendDirectJpegCandidate(List<PreviewCandidate> previews,
-		IfdEntryState state)
+		IfdEntryState state, Stream input)
 	{
 		// Strip-based JPEG (Canon CR2 IFD0: 0x0111 / 0x0117, count=1)
-		if ( state.HasStrip && state.StripOffset > 0 && state.StripLength >= MinJpegSize )
+		// IFD3/IFD4 also use 0x0111/0x0117 for lossless raw data — those must be excluded.
+		if ( state.HasStrip && state.StripOffset > 0 && state.StripLength >= MinJpegSize &&
+		     !IsLosslessJpegAtOffset(input, state.StripOffset) )
 		{
 			previews.Add(new PreviewCandidate
 			{
@@ -641,6 +643,34 @@ public class TiffEmbeddedPreviewExtractor
 		return header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF;
 	}
 
+	/// <summary>
+	///     Returns true when the JPEG at <paramref name="offset" /> is lossless.
+	///     Canon CR2 stores lossless raw strips starting with FF D8 FF C4 (SOI + DHT, no DQT).
+	///     ImageSharp cannot decode these; they must be excluded from preview candidates.
+	/// </summary>
+	private static bool IsLosslessJpegAtOffset(Stream input, uint offset)
+	{
+		if ( !TrySeek(input, offset) )
+		{
+			return false;
+		}
+
+		Span<byte> header = stackalloc byte[4];
+		if ( input.Read(header) < 4 )
+		{
+			return false;
+		}
+
+		// FF D8 = SOI; FF C4 = DHT without prior DQT → lossless JPEG
+		// FF D8 = SOI; FF C3 = SOF3 = lossless sequential
+		if ( header[0] != 0xFF || header[1] != 0xD8 || header[2] != 0xFF )
+		{
+			return false;
+		}
+
+		return header[3] == 0xC4 || header[3] == 0xC3;
+	}
+
 	private static uint DetectJpegLengthByEoi(Stream input, uint startOffset, int maxScanBytes)
 	{
 		if ( maxScanBytes < 2 || !TrySeek(input, startOffset) )
@@ -854,20 +884,25 @@ public class TiffEmbeddedPreviewExtractor
 			return false;
 		}
 
-		// Check JPEG SOI marker
 		if ( !TrySeek(s, offset) )
 		{
 			return false;
 		}
 
-		Span<byte> marker = stackalloc byte[3];
-		if ( s.Read(marker) < 3 )
+		Span<byte> marker = stackalloc byte[4];
+		if ( s.Read(marker) < 4 )
 		{
 			return false;
 		}
 
-		// JPEG should start with 0xFFD8FF
-		return marker[0] == 0xFF && marker[1] == 0xD8 && marker[2] == 0xFF;
+		// Must start with JPEG SOI (FF D8 FF)
+		if ( marker[0] != 0xFF || marker[1] != 0xD8 || marker[2] != 0xFF )
+		{
+			return false;
+		}
+
+		// Reject lossless JPEG — ImageSharp cannot decode these
+		return marker[3] != 0xC4 && marker[3] != 0xC3;
 	}
 
 	private static bool TrySeek(Stream s, uint offset)
