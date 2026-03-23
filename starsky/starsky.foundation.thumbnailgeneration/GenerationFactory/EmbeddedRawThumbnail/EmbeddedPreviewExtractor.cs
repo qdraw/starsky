@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 
@@ -30,6 +29,9 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	private const ushort TiffMagicLe = 0x002A;
 
 	private const int MaxIfdDepth = 6;
+	private const int MaxIfdVisits = 64;
+	private const int MaxRootIfdChain = 6;
+	private const int MaxSubIfdOffsets = 32;
 	private const int MaxPreviews = 32;
 	private const int MinJpegBytes = 4 * 1024; // ignore tiny thumbnails
 	private const uint MinDimension = 1024;
@@ -73,7 +75,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 	/// <param name="outputMedium">Output path for the medium preview (or null)</param>
 	/// <returns>true if at least one preview was successfully extracted</returns>
 	public Task<bool> TryExtract(Stream input, string? outputLarge, string? outputMedium,
-		string referenceInfo)
+		string referenceInfo = "Reference: stream")
 	{
 		if ( !TryParseTiffHeader(input, out var littleEndian, out var firstIfd) )
 		{
@@ -227,7 +229,12 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		bool littleEndian, List<PreviewCandidate> previews, HashSet<uint> visited, int depth,
 		IfdPathContext context, string referenceInfo)
 	{
-		if ( depth > MaxIfdDepth || offset == 0 )
+		if ( depth > MaxIfdDepth || offset == 0 || previews.Count >= MaxPreviews )
+		{
+			return;
+		}
+
+		if ( context.RootIfdIndex >= MaxRootIfdChain || visited.Count >= MaxIfdVisits )
 		{
 			return;
 		}
@@ -266,11 +273,19 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			return;
 		}
 
+		if ( !TryGetRemainingBytes(input, out var remainingAfterCount) ||
+		     entryBytes + 4 > remainingAfterCount )
+		{
+			logger.LogDebug(
+				$"[EmbeddedPreviewExtractor] IFD at offset {offset} skipped: truncated entry block (need {entryBytes + 4} bytes, have {remainingAfterCount}) referenceInfo: {referenceInfo}");
+			return;
+		}
+
 		var entryBuf = ArrayPool<byte>.Shared.Rent(( int ) entryBytes);
 
 		try
 		{
-			if ( !TryReadExact(input, entryBuf, 0, ( int ) entryBytes, referenceInfo) )
+			if ( !TryReadExact(input, entryBuf, 0, ( int ) entryBytes, referenceInfo, offset) )
 			{
 				return;
 			}
@@ -292,7 +307,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		}
 
 		var nextIfd = ReadUInt32(nextBuf, littleEndian);
-		if ( nextIfd != 0 )
+		if ( nextIfd != 0 && !context.IsSubIfd )
 		{
 			ParseIfdRecursive(input, nextIfd, littleEndian, previews, visited, depth + 1,
 				context with { RootIfdIndex = context.RootIfdIndex + 1 }, referenceInfo);
@@ -352,8 +367,8 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 					}
 					else
 					{
-						// value is a pointer to an array of offsets; read first one.
-						stripOffset = ReadIndirectUInt32(input, value, type, littleEndian);
+						// Multi-strip payload is sensor data, not a JPEG preview candidate.
+						// Skip indirect reads to keep metadata parsing bounded.
 						stripMulti = true;
 					}
 
@@ -366,8 +381,7 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 					}
 					else
 					{
-						// Sum all strip byte counts to get total image size.
-						stripLength = SumIndirectUInt32(input, value, type, n, littleEndian);
+						// Multi-strip payload is skipped entirely; avoid large indirect loops.
 						stripMulti = true;
 					}
 
@@ -381,7 +395,10 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 					else
 					{
 						// value is a pointer to an array of IFD offsets.
-						ReadIndirectOffsets(input, value, type, n, littleEndian, subIfdOffsets);
+						var boundedSubIfdCount = ClampIndirectCount(input, value, type, n,
+							MaxSubIfdOffsets);
+						ReadIndirectOffsets(input, value, type, boundedSubIfdCount,
+							littleEndian, subIfdOffsets);
 					}
 
 					break;
@@ -504,6 +521,39 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		}
 
 		return sum;
+	}
+
+	private static uint ClampIndirectCount(Stream s, uint offset, ushort type, uint requested,
+		uint hardCap)
+	{
+		if ( requested == 0 )
+		{
+			return 0;
+		}
+
+		var bounded = Math.Min(requested, hardCap);
+		var bytesPerValue = type == 3 ? 2u : 4u;
+
+		if ( !s.CanSeek )
+		{
+			return bounded;
+		}
+
+		try
+		{
+			if ( offset >= s.Length )
+			{
+				return 0;
+			}
+
+			var availableBytes = ( ulong ) ( s.Length - offset );
+			var maxFromFile = availableBytes / bytesPerValue;
+			return ( uint ) Math.Min(( ulong ) bounded, maxFromFile);
+		}
+		catch
+		{
+			return bounded;
+		}
 	}
 
 	/// <summary>Reads n IFD offsets from an indirect pointer into the list.</summary>
@@ -922,31 +972,55 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 		return true;
 	}
 
-	// Timeout-enabled read for rented byte[] buffers
+	private static bool TryGetRemainingBytes(Stream s, out long remainingBytes)
+	{
+		remainingBytes = 0;
+
+		if ( !s.CanSeek )
+		{
+			return false;
+		}
+
+		try
+		{
+			remainingBytes = s.Length - s.Position;
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	// Fast sync read for in-memory/file streams; avoids sync-over-async overhead in hot path.
 	private bool TryReadExact(Stream s, byte[] buffer, int offset, int count,
-		string referenceInfo,
-		int timeoutMs = 5000)
+		string referenceInfo, uint ifdOffset)
 	{
 		if ( count == 0 )
 		{
 			return true;
 		}
 
-		using var cts = new CancellationTokenSource(timeoutMs);
+		if ( TryGetRemainingBytes(s, out var remaining) && count > remaining )
+		{
+			logger.LogDebug(
+				$"[EmbeddedPreviewExtractor] TryReadExact: truncated read precheck at IFD {ifdOffset}: need {count}, have {remaining} bytes referenceInfo {referenceInfo}");
+			return false;
+		}
+
 		var total = 0;
 
 		try
 		{
 			while ( total < count )
 			{
-				var task = s.ReadAsync(buffer, offset + total, count - total, cts.Token);
-				var read = task.GetAwaiter().GetResult();
+				var read = s.Read(buffer, offset + total, count - total);
 
 				if ( read == 0 )
 				{
-					logger.LogInformation(
+					logger.LogDebug(
 						$"[EmbeddedPreviewExtractor] TryReadExact: " +
-						$"EOF after reading {total} of {count} bytes referenceInfo {referenceInfo}");
+						$"EOF after reading {total} of {count} bytes at IFD {ifdOffset} referenceInfo {referenceInfo}");
 					return false;
 				}
 
@@ -954,12 +1028,6 @@ public class EmbeddedPreviewExtractor(IWebLogger logger)
 			}
 
 			return true;
-		}
-		catch ( OperationCanceledException )
-		{
-			logger.LogError(
-				$"[EmbeddedPreviewExtractor] TryReadExact: timeout after {timeoutMs}ms when reading {count} bytes");
-			return false;
 		}
 		catch ( Exception ex )
 		{
