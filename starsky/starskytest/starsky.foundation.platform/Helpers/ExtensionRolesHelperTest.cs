@@ -695,6 +695,16 @@ public sealed class ExtensionRolesHelperTest
 		var result = ExtensionRolesHelper.IsExtensionRawThumbnailSupported(filePath);
 		Assert.IsTrue(result);
 	}
+	
+	[TestMethod]
+	[DataRow("/test/sample.jpg")]
+	[DataRow("/test/sample.mp3")]
+	public void ExtensionRolesHelperTest_IsExtensionRawThumbnailSupported_NonRawFormats(
+		string filePath)
+	{
+		var result = ExtensionRolesHelper.IsExtensionRawThumbnailSupported(filePath);
+		Assert.IsFalse(result);
+	}
 
 	[TestMethod]
 	[DataRow("/test/sample.fff")]

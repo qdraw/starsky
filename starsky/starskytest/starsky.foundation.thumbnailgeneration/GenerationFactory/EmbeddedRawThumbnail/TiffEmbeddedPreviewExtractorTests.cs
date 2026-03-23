@@ -268,6 +268,50 @@ public class TiffEmbeddedPreviewExtractorTests
 		return makerNote;
 	}
 
+	private static byte[] CreateSonyMakerNoteWithAltLength(uint jpegOffset, uint altLength)
+	{
+		var makerNote = new byte[2 + 2 * 12 + 4];
+		var pos = 0;
+
+		makerNote[pos++] = 2;
+		makerNote[pos++] = 0;
+
+		// TagSonyPreviewOffset 0x2010
+		makerNote[pos++] = 0x10;
+		makerNote[pos++] = 0x20;
+		makerNote[pos++] = 4;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 1;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = ( byte ) ( jpegOffset & 0xFF );
+		makerNote[pos++] = ( byte ) ( ( jpegOffset >> 8 ) & 0xFF );
+		makerNote[pos++] = ( byte ) ( ( jpegOffset >> 16 ) & 0xFF );
+		makerNote[pos++] = ( byte ) ( ( jpegOffset >> 24 ) & 0xFF );
+
+		// TagSonyPreviewAlt 0x2020 (used as fallback length when 0x2011 is absent)
+		makerNote[pos++] = 0x20;
+		makerNote[pos++] = 0x20;
+		makerNote[pos++] = 4;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 1;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = ( byte ) ( altLength & 0xFF );
+		makerNote[pos++] = ( byte ) ( ( altLength >> 8 ) & 0xFF );
+		makerNote[pos++] = ( byte ) ( ( altLength >> 16 ) & 0xFF );
+		makerNote[pos++] = ( byte ) ( ( altLength >> 24 ) & 0xFF );
+
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+		makerNote[pos++] = 0;
+		makerNote[pos] = 0;
+
+		return makerNote;
+	}
+
 	[TestMethod]
 	public async Task TryExtract_WithValidTiffAndJpeg_ReturnsTrue()
 	{
@@ -522,6 +566,47 @@ public class TiffEmbeddedPreviewExtractorTests
 		Assert.IsTrue(result, "Sony MakerNote without length should detect JPEG EOI");
 		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath),
 			"Expected extracted preview written to temp storage");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithSonyMakerNoteAltLengthTag_ExtractsViaMainEndpoint()
+	{
+		const uint makerNoteOffset = 176;
+		const uint jpegOffset = 720;
+		const uint altLength = 5400;
+
+		using var ms = new MemoryStream();
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+
+		var makerNote = CreateSonyMakerNoteWithAltLength(jpegOffset, altLength);
+		await ms.WriteAsync(CreateIfdWithMakerNote(makerNoteOffset, ( uint ) makerNote.Length),
+			TestContext.CancellationToken);
+
+		ms.Seek(makerNoteOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(makerNote, TestContext.CancellationToken);
+
+		// Start with JPEG signature but omit EOI so this path depends on alt length,
+		// not on DetectJpegLengthByEoi fallback.
+		ms.Seek(jpegOffset, SeekOrigin.Begin);
+		var rawPreviewBytes = new byte[altLength];
+		rawPreviewBytes[0] = 0xFF;
+		rawPreviewBytes[1] = 0xD8;
+		rawPreviewBytes[2] = 0xFF;
+		await ms.WriteAsync(rawPreviewBytes, TestContext.CancellationToken);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputArwSubPath,
+			out _, out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputArwSubPath, OutputSubPath);
+
+		Assert.IsTrue(result, "Sony MakerNote alt tag (0x2020) should provide preview length");
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath),
+			"Expected extracted preview written to temp storage");
+
+		await using var written = tempStorage.ReadStream(OutputSubPath);
+		Assert.AreEqual(altLength, written.Length,
+			"Output length should come from TagSonyPreviewAlt when TagSonyPreviewLength is absent");
 	}
 
 	[TestMethod]
