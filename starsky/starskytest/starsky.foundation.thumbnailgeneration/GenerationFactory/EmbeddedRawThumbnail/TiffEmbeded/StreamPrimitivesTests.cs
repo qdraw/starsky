@@ -191,7 +191,7 @@ public class StreamPrimitivesTests
 		using var ns = new NonSeekableMemoryStream(buf);
 		var list = new List<uint>();
 		StreamPrimitives.ReadIndirectOffsets(ns, 10u, 4, 2u, true, list);
-		Assert.AreEqual(0, list.Count);
+		Assert.IsEmpty(list);
 	}
 
 	private sealed class NonSeekableMemoryStream(byte[] buffer) : MemoryStream(buffer)

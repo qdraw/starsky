@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +26,8 @@ public class EmbeddedRawThumbnailGeneratorTests
 	{
 		_logger = new FakeIWebLogger();
 		_selectorStorage = new FakeSelectorStorage();
-		_embeddedRawThumbnailService = new FakeEmbeddedRawThumbnailService();
+		_embeddedRawThumbnailService =
+			new FakeEmbeddedRawThumbnailService(new FakeSelectorStorage());
 		_generator = new EmbeddedRawThumbnailGenerator(_selectorStorage,
 			_embeddedRawThumbnailService,
 			_logger);
@@ -78,16 +80,58 @@ public class EmbeddedRawThumbnailGeneratorTests
 
 		Assert.IsNotNull(result);
 	}
-}
 
-/// <summary>
-///     Fake implementation for testing without external dependencies
-/// </summary>
-public class FakeEmbeddedRawThumbnailService : IEmbeddedRawThumbnailService
-{
-	public Task<bool> TryExtractPreview(string rawFilePath, string? outputLargePath)
+	[TestMethod]
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task GenerateThumbnail_WhenPreviewExtracted_ProducesResult(bool tryExtractStatus)
 	{
-		// Return false by default - tests can override if needed
-		return Task.FromResult(false);
+		var selectorStorage = new FakeSelectorStorage(
+			new FakeIStorage(["/"], ["/test/image.dng"])
+		);
+		var mockService = new FakeEmbeddedRawThumbnailService(selectorStorage,
+			[], tryExtractStatus);
+		var logger = new FakeIWebLogger();
+
+		var generator = new EmbeddedRawThumbnailGenerator(selectorStorage, mockService, logger);
+
+		var results = ( await generator.GenerateThumbnail(
+			"/test/image.dng",
+			"hash1",
+			ThumbnailImageFormat.jpg,
+			[ThumbnailSize.Large]) ).ToList();
+
+		Assert.IsNotNull(results);
+		Assert.IsNotEmpty(results);
+		Assert.IsTrue(results[0].ErrorLog);
+		Assert.Contains(
+			tryExtractStatus
+				? "Failed to extract preview files"
+				: "No embedded preview found in RAW file", results[0].ErrorMessage!);
+	}
+
+	[TestMethod]
+	public async Task GenerateThumbnail_WhenPreviewExtracted_Exception()
+	{
+		var selectorStorage = new FakeSelectorStorage(
+			new FakeIStorage(["/"], ["/test/image.dng"])
+		);
+		var mockService = new FakeEmbeddedRawThumbnailService(selectorStorage,
+			[], true, new Exception("EXCEPTION"));
+		var logger = new FakeIWebLogger();
+
+		var generator = new EmbeddedRawThumbnailGenerator(selectorStorage, mockService, logger);
+
+		var results = ( await generator.GenerateThumbnail(
+			"/test/image.dng",
+			"hash1",
+			ThumbnailImageFormat.jpg,
+			[ThumbnailSize.Large]) ).ToList();
+
+		Assert.IsNotNull(results);
+		Assert.IsNotEmpty(results);
+		Assert.IsTrue(results[0].ErrorLog);
+		Assert.Contains(
+			"EXCEPTION", results[0].ErrorMessage!);
 	}
 }
