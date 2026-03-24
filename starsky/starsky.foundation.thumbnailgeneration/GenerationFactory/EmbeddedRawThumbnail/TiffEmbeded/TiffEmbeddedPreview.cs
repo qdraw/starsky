@@ -271,7 +271,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		ParseSubIfdChain(input, littleEndian, context, depth, subIfdOffsets);
 	}
 
-	private static void HandleIfdEntry(Stream input, ReadOnlySpan<byte> entry, bool littleEndian,
+	internal static void HandleIfdEntry(Stream input, ReadOnlySpan<byte> entry, bool littleEndian,
 		List<uint> subIfdOffsets, IfdEntryState state)
 	{
 		var tag = ReadUInt16(entry, littleEndian);
@@ -315,7 +315,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 	}
 
-	private static void AddSubIfdOffsets(Stream input, bool littleEndian,
+	internal static void AddSubIfdOffsets(Stream input, bool littleEndian,
 		List<uint> subIfdOffsets, ushort type, uint n, uint value)
 	{
 		if ( n == 1 )
@@ -330,7 +330,7 @@ public partial class TiffEmbeddedPreviewExtractor
 			subIfdOffsets);
 	}
 
-	private static void AppendDirectJpegCandidate(List<PreviewCandidate> previews,
+	internal static void AppendDirectJpegCandidate(List<PreviewCandidate> previews,
 		IfdEntryState state, Stream input, RawFlavor rawFlavor)
 	{
 		// Strip-based JPEG (Canon CR2 IFD0: 0x0111 / 0x0117, count=1)
@@ -365,7 +365,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		});
 	}
 
-	private static bool IsJpegCompression(uint compression)
+	internal static bool IsJpegCompression(uint compression)
 	{
 		// TIFF JPEG old-style (6) and new-style (7)
 		return compression is 6 or 7;
@@ -582,7 +582,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		return input.Read(buffer, 0, bytesToRead) >= bytesToRead;
 	}
 
-	private static (uint Offset, uint Length) ExtractTagPairValues(ReadOnlySpan<byte> entries,
+	internal static (uint Offset, uint Length) ExtractTagPairValues(ReadOnlySpan<byte> entries,
 		int entryCount,
 		IfdTagPairQuery query)
 	{
@@ -657,7 +657,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		return false;
 	}
 
-	private static bool IsJpegAtOffset(Stream input, uint offset)
+	internal static bool IsJpegAtOffset(Stream input, uint offset)
 	{
 		if ( !StreamPrimitives.TrySeek(input, offset) )
 		{
