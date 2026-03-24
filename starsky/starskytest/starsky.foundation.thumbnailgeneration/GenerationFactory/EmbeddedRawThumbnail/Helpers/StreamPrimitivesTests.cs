@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.
-	TiffEmbeded;
+	Helpers;
 
 [TestClass]
 public class StreamPrimitivesTests

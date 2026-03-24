@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 
-namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 
 public static class SelectBestPreviewHelper
 {
