@@ -64,9 +64,7 @@ public class EmbeddedRawThumbnailGenerator(
 					singleSubPath, fileHash, true, imageFormat, true,
 					"No embedded preview found in RAW file");
 			}
-
-			// Use the largest available preview
-
+			
 			if ( !tempStorage.ExistFile(previewPath) )
 			{
 				return ErrorGenerationResultModel.FailedResult(biggestThumbnailSize,
