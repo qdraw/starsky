@@ -17,7 +17,7 @@ public class TiffEmbeddedPreviewOutputTests
 	}
 
 	[TestMethod]
-	public void ExtractPreview_OffsetPlusLengthGreaterThanStream_ShouldReturnFalse()
+	public async Task ExtractPreview_OffsetPlusLengthGreaterThanStream_ShouldReturnFalse()
 	{
 		var ms = MakeStream(new byte[10]);
 		var preview =
@@ -25,13 +25,12 @@ public class TiffEmbeddedPreviewOutputTests
 			{
 				Offset = 8, Length = 4, Width = 0, Height = 0
 			};
-		var res = TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null)
-			.GetAwaiter().GetResult();
+		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null);
 		Assert.IsFalse(res);
 	}
 
 	[TestMethod]
-	public void ExtractPreview_OutputNullWithValidJpeg_ShouldReturnTrue()
+	public async Task ExtractPreview_OutputNullWithValidJpeg_ShouldReturnTrue()
 	{
 		var smallJpeg = new byte[] { 0xFF, 0xD8, 0xFF, 0x00, 0x01, 0x02, 0xFF, 0xD9 };
 		var data = new byte[20];
@@ -41,13 +40,12 @@ public class TiffEmbeddedPreviewOutputTests
 		{
 			Offset = 5, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null)
-			.GetAwaiter().GetResult();
+		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null);
 		Assert.IsTrue(res);
 	}
 
 	[TestMethod]
-	public void ExtractPreview_WriteToOutput_WritesCorrectBytes()
+	public async Task ExtractPreview_WriteToOutput_WritesCorrectBytes()
 	{
 		var smallJpeg = new byte[] { 0xFF, 0xD8, 0xFF, 0x00, 0x01, 0x02, 0xFF, 0xD9 };
 		var data = new byte[50];
@@ -58,11 +56,9 @@ public class TiffEmbeddedPreviewOutputTests
 		{
 			Offset = 10, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, outMs)
-			.GetAwaiter().GetResult();
-		Assert.IsTrue(res);
+		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, outMs);Assert.IsTrue(res);
 		var written = outMs.ToArray();
-		Assert.AreEqual(smallJpeg.Length, written.Length);
+		Assert.HasCount(smallJpeg.Length, written);
 		for ( var i = 0; i < written.Length; i++ )
 		{
 			Assert.AreEqual(smallJpeg[i], written[i]);
@@ -70,7 +66,7 @@ public class TiffEmbeddedPreviewOutputTests
 	}
 
 	[TestMethod]
-	public void ExtractPreview_TruncatedRead_ShouldReturnFalse()
+	public async Task ExtractPreview_TruncatedRead_ShouldReturnFalse()
 	{
 		var smallJpeg = new byte[] { 0xFF, 0xD8, 0xFF, 0x00, 0x01, 0x02, 0xFF, 0xD9 };
 		var data = new byte[12];
@@ -81,13 +77,12 @@ public class TiffEmbeddedPreviewOutputTests
 		{
 			Offset = 8, Length = ( uint ) ( smallJpeg.Length + 10 ), Width = 0, Height = 0
 		};
-		var res = TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, outMs)
-			.GetAwaiter().GetResult();
+		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, outMs);
 		Assert.IsFalse(res);
 	}
 
 	[TestMethod]
-	public void ExtractPreview_NonSeekableStream_ShouldReturnFalse()
+	public async Task ExtractPreview_NonSeekableStream_ShouldReturnFalse()
 	{
 		var smallJpeg = new byte[] { 0xFF, 0xD8, 0xFF, 0x00, 0x01, 0x02, 0xFF, 0xD9 };
 		var data = new byte[30];
@@ -99,13 +94,12 @@ public class TiffEmbeddedPreviewOutputTests
 		{
 			Offset = 4, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ns, preview, outMs)
-			.GetAwaiter().GetResult();
+		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ns, preview, outMs);
 		Assert.IsFalse(res);
 	}
 
 	[TestMethod]
-	public void ExtractPreview_InsufficientMarkerBytes_ShouldReturnFalse()
+	public async Task ExtractPreview_InsufficientMarkerBytes_ShouldReturnFalse()
 	{
 		var data = new byte[4];
 		data[3] = 0xFF;
@@ -115,8 +109,8 @@ public class TiffEmbeddedPreviewOutputTests
 			{
 				Offset = 3, Length = 1, Width = 0, Height = 0
 			};
-		var res = TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null)
-			.GetAwaiter().GetResult();
+		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null);
+		
 		Assert.IsFalse(res);
 	}
 

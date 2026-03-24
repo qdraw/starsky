@@ -141,7 +141,7 @@ public class ProcessTaskQueueTest
 	}
 
 	[TestMethod]
-	public void ExecuteTask_NullQueuedJob_ThrowsInvalidOperationException()
+	public async Task ExecuteTask_NullQueuedJob_ThrowsInvalidOperationException()
 	{
 		var mi = typeof(ProcessTaskQueue).GetMethod("ExecuteTask",
 			BindingFlags.NonPublic | BindingFlags.Static);
@@ -157,7 +157,7 @@ public class ProcessTaskQueueTest
 		var task = ( Task ) mi.Invoke(null, parameters)!;
 
 		// Execute the task - the method catches exceptions internally and logs them
-		task.GetAwaiter().GetResult();
+		await task.ConfigureAwait(false);
 
 		// The implementation logs the exception via logger.LogError(ex, ...)
 		Assert.IsNotEmpty(logger.TrackedExceptions,
