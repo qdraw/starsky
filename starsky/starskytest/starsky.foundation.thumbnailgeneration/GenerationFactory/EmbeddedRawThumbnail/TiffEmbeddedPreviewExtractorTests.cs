@@ -13,7 +13,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.E
 [TestClass]
 public class TiffEmbeddedPreviewExtractorTests
 {
-	private const string InputSubPath = "/raw/test.dng";
+	private const string InputDngSubPath = "/raw/test.dng";
 	private const string InputArwSubPath = "/raw/test.arw";
 	private const string InputCr2SubPath = "/raw/test.cr2";
 	private const string OutputSubPath = "/tmp/output.jpg";
@@ -43,7 +43,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	private static FakeSelectorStorageByType CreateSelectorStorage(byte[]? inputBytes,
 		out FakeIStorage tempStorage)
 	{
-		return CreateSelectorStorage(inputBytes, InputSubPath, out _,
+		return CreateSelectorStorage(inputBytes, InputDngSubPath, out _,
 			out tempStorage);
 	}
 
@@ -327,7 +327,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
-		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+		var result = await extractor.TryExtract(InputDngSubPath, OutputSubPath);
 
 		// Assert
 		Assert.IsTrue(result, "Should successfully extract from valid TIFF via storage");
@@ -350,7 +350,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
-		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+		var result = await extractor.TryExtract(InputDngSubPath, OutputSubPath);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with invalid TIFF magic");
@@ -370,7 +370,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
-		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+		var result = await extractor.TryExtract(InputDngSubPath, OutputSubPath);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with empty IFD");
@@ -392,7 +392,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
-		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+		var result = await extractor.TryExtract(InputDngSubPath, OutputSubPath);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with invalid JPEG marker");
@@ -414,7 +414,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
-		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+		var result = await extractor.TryExtract(InputDngSubPath, OutputSubPath);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail with JPEG smaller than 4KB");
@@ -428,7 +428,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
-		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+		var result = await extractor.TryExtract(InputDngSubPath, OutputSubPath);
 
 		// Assert
 		Assert.IsFalse(result, "Should fail gracefully for missing subpath source file");
@@ -476,7 +476,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
-		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+		var result = await extractor.TryExtract(InputDngSubPath, OutputSubPath);
 
 		// Assert - should process without error
 		Assert.IsFalse(result, "Big-endian file without JPEG length should not extract");
@@ -496,7 +496,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
-		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+		var result = await extractor.TryExtract(InputDngSubPath, OutputSubPath);
 
 		// Assert
 		Assert.IsTrue(result, "Expected successful extraction to temp storage output");
@@ -685,11 +685,11 @@ public class TiffEmbeddedPreviewExtractorTests
 		ms.Seek(stripOffset, SeekOrigin.Begin);
 		await ms.WriteAsync(CreateMinimalJpeg(stripLength), TestContext.CancellationToken);
 
-		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputSubPath, out _,
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputDngSubPath, out _,
 			out var tempStorage);
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
-		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+		var result = await extractor.TryExtract(InputDngSubPath, OutputSubPath);
 
 		Assert.IsTrue(result, "Compression=7 strip JPEG should be extracted");
 		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath), "Expected output preview written");
@@ -950,5 +950,22 @@ public class TiffEmbeddedPreviewExtractorTests
 		Assert.IsGreaterThanOrEqualTo(minPreviewBytes, extractedBytes.Length,
 			$"Apple iPhone XS DNG preview payload should be >= {minPreviewBytes} bytes, " +
 			$"but got {extractedBytes.Length}");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_EmbeddedPreviewExtractor_Exception()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var selectorStorage = new FakeSelectorStorage(new FakeIStorage([
+				"/"
+			], [InputDngSubPath], ["EXCEPTION"u8.ToArray()],
+			[], [], new Exception()));
+		var extractor = new TiffEmbeddedPreviewExtractor(logger, selectorStorage);
+
+		var result = await extractor.TryExtract(InputDngSubPath, OutputSubPath);
+		Assert.IsFalse(result);
+		Assert.Contains("[EmbeddedPreviewExtractor] Failed to extract from",
+			logger.TrackedExceptions[0].Item2 ?? "");
 	}
 }

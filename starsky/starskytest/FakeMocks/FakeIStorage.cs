@@ -38,8 +38,14 @@ public class FakeIStorage : IStorage
 		List<string>? outputSubPathFiles = null,
 		IReadOnlyList<byte[]?>? byteListSource = null,
 		IReadOnlyList<DateTime>? lastEditedFiles = null,
-		IReadOnlyList<DateTime>? lastEditedFolders = null)
+		IReadOnlyList<DateTime>? lastEditedFolders = null,
+		Exception? exception = null)
 	{
+		if ( exception != null )
+		{
+			_exception = exception;
+		}
+
 		if ( outputSubPathFolders != null )
 		{
 			foreach ( var subPath in outputSubPathFolders )

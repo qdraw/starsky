@@ -80,7 +80,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogDebug(
+			_logger.LogError(
 				$"[EmbeddedPreviewExtractor] Failed to extract from {subPathRawFile}: {ex.Message}");
 			return false;
 		}
