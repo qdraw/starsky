@@ -152,7 +152,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		return firstIfdOffset > 0 && firstIfdOffset <= s.Length;
 	}
 
-	private void ParseIfdRecursive(Stream input, uint offset, bool littleEndian,
+	internal static void ParseIfdRecursive(Stream input, uint offset, bool littleEndian,
 		ParseTraversalContext context, int depth, bool isSubIfd)
 	{
 		// Check depth and preview capacity limits
@@ -229,7 +229,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		return visited.Add(offset);
 	}
 
-	private void ParseNextIfd(Stream input, bool littleEndian, ParseTraversalContext context,
+	private static void ParseNextIfd(Stream input, bool littleEndian, ParseTraversalContext context,
 		int depth, bool isSubIfd)
 	{
 		if ( isSubIfd )
@@ -252,7 +252,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		ParseIfdRecursive(input, nextIfd, littleEndian, context, depth + 1, false);
 	}
 
-	private void ParseIfdEntries(Stream input, ReadOnlySpan<byte> entries, bool littleEndian,
+	private static void ParseIfdEntries(Stream input, ReadOnlySpan<byte> entries, bool littleEndian,
 		ParseTraversalContext context, int depth)
 	{
 		var state = new IfdEntryState();
@@ -384,7 +384,7 @@ public partial class TiffEmbeddedPreviewExtractor
 			context.Previews);
 	}
 
-	private void ParseSubIfdChain(Stream input, bool littleEndian,
+	private static void ParseSubIfdChain(Stream input, bool littleEndian,
 		ParseTraversalContext context, int depth, List<uint> subIfdOffsets)
 	{
 		foreach ( var subIfdOffset in subIfdOffsets )
