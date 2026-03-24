@@ -65,12 +65,12 @@ public partial class TiffEmbeddedPreviewExtractor
 		try
 		{
 			await using var input = _subPathStorage.ReadStream(subPathRawFile);
-			await using var output = outputLargePath != null ? new MemoryStream() : null;
+			await using var output = new MemoryStream();
 			var rawFlavor = RawFlavorHelper.GetRawFlavorFromPath(subPathRawFile);
 
 			var ok = await TryExtractFromStream(input, output,
 				$"Reference: {subPathRawFile}", rawFlavor);
-			if ( !ok || outputLargePath == null || output == null )
+			if ( !ok || outputLargePath == null )
 			{
 				return ok;
 			}
@@ -355,7 +355,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		return compression is 6 or 7;
 	}
 
-	private void TryParseMakerNoteCandidate(Stream input, bool littleEndian,
+	private static void TryParseMakerNoteCandidate(Stream input, bool littleEndian,
 		ParseTraversalContext context, IfdEntryState state)
 	{
 		if ( !state.HasMakerNote || context.Previews.Count >= MaxPreviews )
@@ -382,7 +382,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 	}
 
-	private void ParseMakerNote(Stream input, bool littleEndian, RawFlavor rawFlavor,
+	private static void ParseMakerNote(Stream input, bool littleEndian, RawFlavor rawFlavor,
 		uint makerNoteOffset, uint makerNoteLength, List<PreviewCandidate> previews)
 	{
 		if ( makerNoteOffset == 0 || makerNoteLength == 0 )

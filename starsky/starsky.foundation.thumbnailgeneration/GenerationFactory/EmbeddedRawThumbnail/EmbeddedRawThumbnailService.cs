@@ -46,15 +46,17 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 					or ExtensionRolesHelper.ImageFormat.nef
 					or ExtensionRolesHelper.ImageFormat.dng
 					or ExtensionRolesHelper.ImageFormat.tiff =>
-					await tiffExtractor.TryExtract(rawFilePath, outputLargePath),
+					await tiffExtractor.TryExtract(rawFilePath,
+						outputLargePath),
 				ExtensionRolesHelper.ImageFormat.raf =>
-					await rafExtractor.TryExtract(rawFilePath, outputLargePath),
+					await rafExtractor.TryExtract(rawFilePath,
+						outputLargePath),
 				ExtensionRolesHelper.ImageFormat.cr3 =>
-					await containerExtractor.TryExtract(rawFilePath, outputLargePath),
-				_ when extension == ".cr3" =>
-					await containerExtractor.TryExtract(rawFilePath, outputLargePath),
+					await containerExtractor.TryExtract(rawFilePath,
+						outputLargePath),
 				_ when extension is ".fff" or ".x3f" =>
-					await lightweightContainerExtractor.TryExtract(rawFilePath, outputLargePath),
+					await lightweightContainerExtractor.TryExtract(rawFilePath,
+						outputLargePath),
 				_ => false
 			};
 
@@ -63,9 +65,8 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 				return true;
 			}
 
-			// Fallback: scan for JPEG segments in file
-			// TODO: Implement JpegSegmentScanner for fallback
-			logger.LogDebug($"[EmbeddedRawThumbnailService] No preview found for {rawFilePath}");
+			logger.LogInformation(
+				$"[EmbeddedRawThumbnailService] No preview found for {rawFilePath}");
 			return false;
 		}
 		catch ( Exception exception )
