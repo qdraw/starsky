@@ -241,6 +241,42 @@ public class RafPreviewExtractorTests
 	}
 
 	[TestMethod]
+	public async Task TryExtract_WithNonSeekableStream_ReturnsFalse()
+	{
+		var bytes = new byte[100];
+		var subPathStorage = new FakeIStorage(["/raw"], [InputSubPath], [bytes]);
+		var selectorStorage = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
+			new FakeIStorage(), new FakeIStorage());
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		// We need a way to make the stream non-seekable. FakeIStorage returns MemoryStream by default.
+		// I'll use a wrapper that returns a non-seekable stream for this test.
+		var nonSeekableStorage = new NonSeekableFakeStorage(bytes);
+		var selectorStorageNonSeekable = new FakeSelectorStorageByType(nonSeekableStorage,
+			new FakeIStorage(), new FakeIStorage(), new FakeIStorage());
+		var extractorNonSeekable =
+			new RafPreviewExtractor(new FakeIWebLogger(), selectorStorageNonSeekable);
+
+		var result = await extractorNonSeekable.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result, "Should return false when stream cannot seek (TryReadHeaderPreviewRange fails)");
+	}
+
+	private sealed class NonSeekableFakeStorage(byte[] data) : FakeIStorage(
+		["/raw"], [InputSubPath], [data])
+	{
+		public override Stream ReadStream(string path, int maxRead = -1)
+		{
+			return new NonSeekableStream(data);
+		}
+
+		private sealed class NonSeekableStream(byte[] data) : MemoryStream(data)
+		{
+			public override bool CanSeek => false;
+		}
+	}
+
+	[TestMethod]
 	public async Task TryExtract_WithInvalidHeaderRange_FallsBackToScanner()
 	{
 		var jpeg = CreateMinimalJpeg(6500);

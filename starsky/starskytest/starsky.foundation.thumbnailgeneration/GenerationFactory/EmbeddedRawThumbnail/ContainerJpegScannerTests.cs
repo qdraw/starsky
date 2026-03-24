@@ -301,6 +301,49 @@ public class ContainerJpegScannerTests
 		Assert.IsGreaterThan(0, output.Length);
 	}
 
+	[TestMethod]
+	public async Task TryExtractBestPreview_ReturnsFalse_WhenReadAsyncReturnsZero()
+	{
+		// This tests the case where input.Read returns <= 0 during scanning
+		// However, it's hard to trigger read <= 0 in the MIDDLE of the stream Length.
+		// ContainerJpegScanner has:
+		// while ( scanned < input.Length && candidates.Count < MaxCandidates ) {
+		//    var toRead = ( int ) Math.Min(buffer.Length, input.Length - scanned);
+		//    var read = input.Read(buffer, 0, toRead);
+		//    if ( read <= 0 ) break;
+		// }
+		
+		// If input.Read returns 0, it means EOF or an error.
+		// We can mock a stream that claims to have more data than it actually returns.
+		var input = new TruncatedReadStream(new byte[MinJpeg * 2]);
+		using var output = new MemoryStream();
+
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, output);
+
+		Assert.IsFalse(result);
+	}
+
+	private sealed class TruncatedReadStream(byte[] data) : MemoryStream(data)
+	{
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			// Return 0 even if data might be available (though MemoryStream wouldn't do this)
+			// Actually, let's just return 0 to trigger the break.
+			return 0;
+		}
+
+		public override Task<int> ReadAsync(byte[] buffer, int offset, int count,
+			System.Threading.CancellationToken cancellationToken)
+		{
+			return Task.FromResult(0);
+		}
+		
+		public override ValueTask<int> ReadAsync(Memory<byte> buffer, System.Threading.CancellationToken cancellationToken = default)
+		{
+			return new ValueTask<int>(0);
+		}
+	}
+
 	// ── Non-seekable stream helper ────────────────────────────────────────────
 
 	/// <summary>A pass-through stream wrapper with <see cref="CanSeek" /> = <c>false</c>.</summary>

@@ -319,7 +319,7 @@ public class FakeIStorage : IStorage
 	/// <param name="path">location</param>
 	/// <param name="maxRead">how many bytes are read (default all or -1)</param>
 	/// <returns>Stream with data (non-disposed)</returns>
-	public Stream ReadStream(string path, int maxRead = -1)
+	public virtual Stream ReadStream(string path, int maxRead = -1)
 	{
 		if ( _exception != null )
 		{

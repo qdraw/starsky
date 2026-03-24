@@ -273,13 +273,13 @@ internal static class ContainerJpegScanner
 	/// </summary>
 	private static bool AdvanceSegmentAndCheckIptc(Stream input, int marker, int payloadLength)
 	{
-		if ( marker != 0xED )
+		if ( marker == 0xED )
 		{
-			input.Seek(payloadLength, SeekOrigin.Current);
-			return false;
+			return IsIptcApp13Payload(input, payloadLength);
 		}
 
-		return IsIptcApp13Payload(input, payloadLength);
+		input.Seek(payloadLength, SeekOrigin.Current);
+		return false;
 	}
 
 	/// <summary>
@@ -317,5 +317,5 @@ internal static class ContainerJpegScanner
 		return false;
 	}
 
-	internal sealed record PreviewCandidate(uint Offset, uint Length, bool HasIptc);
+	private sealed record PreviewCandidate(uint Offset, uint Length, bool HasIptc);
 }
