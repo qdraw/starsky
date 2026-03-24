@@ -54,7 +54,7 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 				ExtensionRolesHelper.ImageFormat.cr3 =>
 					await containerExtractor.TryExtract(rawFilePath,
 						outputLargePath),
-				_ when extension is ".fff" or ".x3f" =>
+				_ when extension is ".x3f" =>
 					await lightweightContainerExtractor.TryExtract(rawFilePath,
 						outputLargePath),
 				_ => false

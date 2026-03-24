@@ -39,8 +39,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		orf = 26, // olympus 
 		rw2 = 27, // Panasonic
 		pef = 28, // pentax
-		fff = 29, // hasselblad
-		x3f = 32, // sigma
+		x3f = 29, // sigma
+		// fff hasselblad has tiff previews
 
 		// documents
 		gpx = 40,
