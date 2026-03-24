@@ -208,4 +208,34 @@ public class StreamPrimitivesTests
 	{
 		public override long Length => throw new InvalidOperationException("Length not available");
 	}
+
+	[TestMethod]
+	public void TryGetRemainingBytes_LengthThrows_ReturnsFalseAndZeroRemaining()
+	{
+		using var ts = new ThrowingLengthStream(new byte[10]);
+		// Ensure CanSeek is true for this stream
+		Assert.IsTrue(ts.CanSeek);
+		var ok = StreamPrimitives.TryGetRemainingBytes(ts, out var remaining);
+		Assert.IsFalse(ok);
+		Assert.AreEqual(0, remaining);
+	}
+
+	private sealed class SeekThrowsStream(byte[] buf) : MemoryStream(buf)
+	{
+		public override long Seek(long offset, SeekOrigin loc)
+		{
+			throw new InvalidOperationException("seek failed");
+		}
+	}
+
+	[TestMethod]
+	public void TrySeek_SeekThrows_ReturnsFalseAndPositionUnchanged()
+	{
+		using var ss = new SeekThrowsStream(new byte[20]);
+		// Position should start at 0
+		Assert.AreEqual(0, ss.Position);
+		var ok = StreamPrimitives.TrySeek(ss, 5);
+		Assert.IsFalse(ok);
+		Assert.AreEqual(0, ss.Position);
+	}
 }
