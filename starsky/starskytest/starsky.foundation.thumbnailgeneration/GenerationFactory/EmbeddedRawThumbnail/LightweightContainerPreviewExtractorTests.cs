@@ -649,3 +649,143 @@ public class LightweightContainerPreviewExtractorTests
 	    public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
     }
 }
+
+[TestClass]
+public class LightweightContainerPreviewExtractor_TryReadIfdJpegPairTests
+{
+	private static void WriteUInt16Little(byte[] buf, int pos, ushort v)
+	{
+		buf[pos] = ( byte ) ( v & 0xFF );
+		buf[pos + 1] = ( byte ) ( ( v >> 8 ) & 0xFF );
+	}
+
+	private static void WriteUInt32Little(byte[] buf, int pos, uint v)
+	{
+		buf[pos] = ( byte ) ( v & 0xFF );
+		buf[pos + 1] = ( byte ) ( ( v >> 8 ) & 0xFF );
+		buf[pos + 2] = ( byte ) ( ( v >> 16 ) & 0xFF );
+		buf[pos + 3] = ( byte ) ( ( v >> 24 ) & 0xFF );
+	}
+
+	[TestMethod]
+	public void TryReadIfdJpegPair_ReturnsFalse_When_IfdOffsetOutOfRange()
+	{
+		using var ms = new MemoryStream(new byte[10]);
+		var ok = LightweightContainerPreviewExtractor.TryReadIfdJpegPair(ms, 100, true, out var off,
+			out var len, out var comp, out var next);
+		Assert.IsFalse(ok);
+		Assert.AreEqual(0u, off);
+		Assert.AreEqual(0u, len);
+		Assert.AreEqual(( ushort ) 0, comp);
+		Assert.AreEqual(0u, next);
+	}
+
+	[TestMethod]
+	public void TryReadIfdJpegPair_ReturnsFalse_When_EntryCountTooLarge()
+	{
+		var buf = new byte[20];
+		// place entryCount (ushort) at offset 0 = 2000
+		WriteUInt16Little(buf, 0, 2000);
+		using var ms = new MemoryStream(buf);
+
+		var ok = LightweightContainerPreviewExtractor.TryReadIfdJpegPair(ms, 0, true, out _, out _,
+			out _, out _);
+		Assert.IsFalse(ok);
+	}
+
+	[TestMethod]
+	public void TryReadIfdJpegPair_ReturnsFalse_When_TryReadIfdEntryFails()
+	{
+		// entryCount=1 but not enough bytes for entry (12 bytes)
+		var buf = new byte[4];
+		WriteUInt16Little(buf, 0, 1);
+		using var ms = new MemoryStream(buf);
+
+		var ok = LightweightContainerPreviewExtractor.TryReadIfdJpegPair(ms, 0, true, out _, out _,
+			out _, out _);
+		Assert.IsFalse(ok);
+	}
+
+	[TestMethod]
+	public void TryReadIfdJpegPair_SkipsEntries_When_CountNotOne_And_ReadsNextIfd()
+	{
+		// Compose: entryCount=1; entry with count=2; then nextIfdRelative = 0x11223344
+		var buf = new byte[2 + 12 + 4];
+		WriteUInt16Little(buf, 0, 1);
+		var pos = 2;
+		// tag (2 bytes)
+		WriteUInt16Little(buf, pos, 0x9999);
+		pos += 2;
+		// type (2 bytes)
+		WriteUInt16Little(buf, pos, 4);
+		pos += 2;
+		// count (4 bytes) -> 2 (not 1)
+		WriteUInt32Little(buf, pos, 2);
+		pos += 4;
+		// value (4 bytes)
+		WriteUInt32Little(buf, pos, 0x01020304);
+		pos += 4;
+		// nextIfdRelative
+		WriteUInt32Little(buf, pos, 0x11223344);
+
+		using var ms = new MemoryStream(buf);
+		var ok = LightweightContainerPreviewExtractor.TryReadIfdJpegPair(ms, 0, true, out var off,
+			out var len, out var comp, out var next);
+		Assert.IsTrue(ok);
+		Assert.AreEqual(0u, off);
+		Assert.AreEqual(0u, len);
+		Assert.AreEqual(( ushort ) 0, comp);
+		Assert.AreEqual(0x11223344u, next);
+	}
+
+	[TestMethod]
+	public void TryReadIfdJpegPair_ParsesEntriesAndReturnsTrue()
+	{
+		// Build IFD with 3 entries: Compression (0x0103, type=4, count=1, value=7), Offset (0x0201), Length (0x0202), then nextIfdRelative
+		var buf = new byte[2 + 3 * 12 + 4];
+		WriteUInt16Little(buf, 0, 3);
+		var pos = 2;
+
+		// Entry 1: Compression tag 0x0103, type=4, count=1, value=7
+		WriteUInt16Little(buf, pos, 0x0103);
+		pos += 2;
+		WriteUInt16Little(buf, pos, 4);
+		pos += 2;
+		WriteUInt32Little(buf, pos, 1);
+		pos += 4;
+		WriteUInt32Little(buf, pos, 7);
+		pos += 4;
+
+		// Entry 2: JpegOffset tag 0x0201, type=4, count=1, value=0x200
+		WriteUInt16Little(buf, pos, 0x0201);
+		pos += 2;
+		WriteUInt16Little(buf, pos, 4);
+		pos += 2;
+		WriteUInt32Little(buf, pos, 1);
+		pos += 4;
+		WriteUInt32Little(buf, pos, 0x200);
+		pos += 4;
+
+		// Entry 3: JpegLength tag 0x0202, type=4, count=1, value=0x3000
+		WriteUInt16Little(buf, pos, 0x0202);
+		pos += 2;
+		WriteUInt16Little(buf, pos, 4);
+		pos += 2;
+		WriteUInt32Little(buf, pos, 1);
+		pos += 4;
+		WriteUInt32Little(buf, pos, 0x3000);
+		pos += 4;
+
+		// nextIfdRelative
+		WriteUInt32Little(buf, pos, 0x0);
+
+		using var ms = new MemoryStream(buf);
+		var ok = LightweightContainerPreviewExtractor.TryReadIfdJpegPair(ms, 0, true, out var off,
+			out var len, out var comp, out var next);
+		Assert.IsTrue(ok);
+		Assert.AreEqual(0x200u, off);
+		Assert.AreEqual(0x3000u, len);
+		Assert.AreEqual(( ushort ) 7, comp);
+		Assert.AreEqual(0u, next);
+	}
+}
