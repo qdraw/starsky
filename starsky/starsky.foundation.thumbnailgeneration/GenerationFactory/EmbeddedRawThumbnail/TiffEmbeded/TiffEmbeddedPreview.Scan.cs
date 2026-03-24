@@ -15,7 +15,7 @@ public partial class TiffEmbeddedPreviewExtractor
 	/// </summary>
 	private static bool IsLosslessJpegAtOffset(Stream input, uint offset)
 	{
-		if ( !TrySeek(input, offset) )
+		if ( !StreamPrimitives.TrySeek(input, offset) )
 		{
 			return false;
 		}
@@ -38,7 +38,7 @@ public partial class TiffEmbeddedPreviewExtractor
 
 	private static uint DetectJpegLengthByEoi(Stream input, uint startOffset, int maxScanBytes)
 	{
-		if ( maxScanBytes < 2 || !TrySeek(input, startOffset) )
+		if ( maxScanBytes < 2 || !StreamPrimitives.TrySeek(input, startOffset) )
 		{
 			return 0;
 		}
@@ -83,7 +83,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		uint rangeLength)
 	{
 		var maxScan = ( int ) Math.Min(rangeLength, MaxMakerNoteScanBytes);
-		if ( maxScan < 4 || !TrySeek(input, rangeOffset) )
+		if ( maxScan < 4 || !StreamPrimitives.TrySeek(input, rangeOffset) )
 		{
 			yield break;
 		}

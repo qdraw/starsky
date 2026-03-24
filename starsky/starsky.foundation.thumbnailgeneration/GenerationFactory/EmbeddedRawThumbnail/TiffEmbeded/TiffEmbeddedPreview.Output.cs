@@ -22,7 +22,7 @@ public partial class TiffEmbeddedPreviewExtractor
 
 		try
 		{
-			if ( !TrySeek(input, preview.Offset) )
+			if ( !StreamPrimitives.TrySeek(input, preview.Offset) )
 			{
 				return false;
 			}
@@ -65,7 +65,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 
 		// Check JPEG SOI marker
-		if ( !TrySeek(s, offset) )
+		if ( !StreamPrimitives.TrySeek(s, offset) )
 		{
 			return false;
 		}

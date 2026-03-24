@@ -161,7 +161,7 @@ public partial class TiffEmbeddedPreviewExtractor
 			return;
 		}
 
-		if ( !TrySeek(input, offset) )
+		if ( !StreamPrimitives.TrySeek(input, offset) )
 		{
 			return;
 		}
@@ -180,7 +180,7 @@ public partial class TiffEmbeddedPreviewExtractor
 
 		// Early bounds check
 		var entryBytes = ( long ) entryCount * 12;
-		if ( !TryGetRemainingBytes(input, out var remaining) || entryBytes + 4 > remaining )
+		if ( !StreamPrimitives.TryGetRemainingBytes(input, out var remaining) || entryBytes + 4 > remaining )
 		{
 			return;
 		}
@@ -310,8 +310,8 @@ public partial class TiffEmbeddedPreviewExtractor
 			return;
 		}
 
-		var boundedCount = ClampIndirectCount(input, value, type, n, MaxSubIfdOffsets);
-		ReadIndirectOffsets(input, value, type, boundedCount, littleEndian, subIfdOffsets);
+		var boundedCount = StreamPrimitives.ClampIndirectCount(input, value, type, n, MaxSubIfdOffsets);
+		StreamPrimitives.ReadIndirectOffsets(input, value, type, boundedCount, littleEndian, subIfdOffsets);
 	}
 
 	private static void AppendDirectJpegCandidate(List<PreviewCandidate> previews,
@@ -540,7 +540,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		entryCount = 0;
 		entryBytes = 0;
 
-		if ( !TrySeek(input, ifdOffset) || blockLength < 6 )
+		if ( !StreamPrimitives.TrySeek(input, ifdOffset) || blockLength < 6 )
 		{
 			return false;
 		}
@@ -643,7 +643,7 @@ public partial class TiffEmbeddedPreviewExtractor
 
 	private static bool IsJpegAtOffset(Stream input, uint offset)
 	{
-		if ( !TrySeek(input, offset) )
+		if ( !StreamPrimitives.TrySeek(input, offset) )
 		{
 			return false;
 		}
