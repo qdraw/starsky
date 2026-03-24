@@ -167,7 +167,8 @@ public class ContainerFormatPreviewExtractorTests
 	{
 		// Arrange
 
-		var selectorStorage = new FakeSelectorStorageByType(new FakeIStorageThrowException(), new FakeIStorage(), new FakeIStorage(), new FakeIStorage());
+		var selectorStorage = new FakeSelectorStorageByType(new FakeIStorageThrowException(),
+			new FakeIStorage(), new FakeIStorage(), new FakeIStorage());
 		var extractor = new ContainerFormatPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// Act
@@ -175,12 +176,6 @@ public class ContainerFormatPreviewExtractorTests
 
 		// Assert
 		Assert.IsFalse(result);
-	}
-
-	private class FakeIStorageThrowException : FakeIStorage
-	{
-		public override bool ExistFile(string path) => true;
-		public override Stream ReadStream(string path, int maxRead = -1) => throw new IOException("Fake exception");
 	}
 
 	[TestMethod]
@@ -246,7 +241,10 @@ public class ContainerFormatPreviewExtractorTests
 	public async Task TryExtract_BoxSizeTooSmall_ReturnsFalse()
 	{
 		var header = CreateMinimalCr3Header();
-		header[0] = 0; header[1] = 0; header[2] = 0; header[3] = 10; // Box size 10 (too small)
+		header[0] = 0;
+		header[1] = 0;
+		header[2] = 0;
+		header[3] = 10; // Box size 10 (too small)
 		var selectorStorage = CreateSelectorStorage(header, out _);
 		var extractor = new ContainerFormatPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
@@ -257,7 +255,10 @@ public class ContainerFormatPreviewExtractorTests
 	public async Task TryExtract_BoxSizeTooLarge_ReturnsFalse()
 	{
 		var header = CreateMinimalCr3Header();
-		header[0] = 0; header[1] = 0; header[2] = 1; header[3] = 0; // Box size 256 (larger than stream)
+		header[0] = 0;
+		header[1] = 0;
+		header[2] = 1;
+		header[3] = 0; // Box size 256 (larger than stream)
 		var selectorStorage = CreateSelectorStorage(header, out _);
 		var extractor = new ContainerFormatPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
@@ -290,7 +291,8 @@ public class ContainerFormatPreviewExtractorTests
 			ms.Seek(0, SeekOrigin.Begin);
 
 			var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _);
-			var extractor = new ContainerFormatPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+			var extractor =
+				new ContainerFormatPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 			var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
 			Assert.IsTrue(result, $"Should work for brand {brand}");
 		}
@@ -299,30 +301,11 @@ public class ContainerFormatPreviewExtractorTests
 	[TestMethod]
 	public async Task TryExtract_NonSeekableStream_ReturnsFalse()
 	{
-		var selectorStorage = new FakeSelectorStorageByType(new FakeIStorageNonSeekable(), new FakeIStorage(), new FakeIStorage(), new FakeIStorage());
+		var selectorStorage = new FakeSelectorStorageByType(new FakeIStorageNonSeekable(),
+			new FakeIStorage(), new FakeIStorage(), new FakeIStorage());
 		var extractor = new ContainerFormatPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
 		Assert.IsFalse(result);
-	}
-
-	private class FakeIStorageNonSeekable : FakeIStorage
-	{
-		public override bool ExistFile(string path) => true;
-		public override Stream ReadStream(string path, int maxRead = -1) => new NonSeekableStream(new MemoryStream(CreateMinimalCr3Header()));
-	}
-
-	private class NonSeekableStream(Stream inner) : Stream
-	{
-		public override bool CanRead => inner.CanRead;
-		public override bool CanSeek => false;
-		public override bool CanWrite => inner.CanWrite;
-		public override long Length => inner.Length;
-		public override long Position { get => inner.Position; set => throw new NotSupportedException(); }
-		public override void Flush() => inner.Flush();
-		public override int Read(byte[] buffer, int offset, int count) => inner.Read(buffer, offset, count);
-		public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
-		public override void SetLength(long value) => inner.SetLength(value);
-		public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
 	}
 
 	[TestMethod]
@@ -404,10 +387,12 @@ public class ContainerFormatPreviewExtractorTests
 		using var ms = new MemoryStream();
 		await ms.WriteAsync(CreateMinimalCr3Header(), TestContext.CancellationToken);
 		// FF D8 FF followed by some data but no FF D9
-		await ms.WriteAsync(new byte[] { 0xFF, 0xD8, 0xFF, 0x01, 0x02 }, TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[] { 0xFF, 0xD8, 0xFF, 0x01, 0x02 },
+			TestContext.CancellationToken);
 		await ms.WriteAsync(new byte[5000], TestContext.CancellationToken);
 		// Another start
-		await ms.WriteAsync(new byte[] { 0xFF, 0xD8, 0xFF, 0x03, 0x04 }, TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[] { 0xFF, 0xD8, 0xFF, 0x03, 0x04 },
+			TestContext.CancellationToken);
 		await ms.WriteAsync(new byte[5000], TestContext.CancellationToken);
 		ms.Seek(0, SeekOrigin.Begin);
 
@@ -455,5 +440,70 @@ public class ContainerFormatPreviewExtractorTests
 		await written.CopyToAsync(outMs, TestContext.CancellationToken);
 		Assert.IsGreaterThanOrEqualTo(largeJpegSize, outMs.ToArray().Length,
 			"Should select largest preview found");
+	}
+
+	private sealed class FakeIStorageThrowException : FakeIStorage
+	{
+		public override bool ExistFile(string path)
+		{
+			return true;
+		}
+
+		public override Stream ReadStream(string path, int maxRead = -1)
+		{
+			throw new IOException("Fake exception");
+		}
+	}
+
+	private sealed class FakeIStorageNonSeekable : FakeIStorage
+	{
+		public override bool ExistFile(string path)
+		{
+			return true;
+		}
+
+		public override Stream ReadStream(string path, int maxRead = -1)
+		{
+			return new NonSeekableStream(new MemoryStream(CreateMinimalCr3Header()));
+		}
+	}
+
+	private sealed class NonSeekableStream(Stream inner) : Stream
+	{
+		public override bool CanRead => inner.CanRead;
+		public override bool CanSeek => false;
+		public override bool CanWrite => inner.CanWrite;
+		public override long Length => inner.Length;
+
+		public override long Position
+		{
+			get => inner.Position;
+			set => throw new NotSupportedException();
+		}
+
+		public override void Flush()
+		{
+			inner.Flush();
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return inner.Read(buffer, offset, count);
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			throw new NotSupportedException();
+		}
+
+		public override void SetLength(long value)
+		{
+			inner.SetLength(value);
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			inner.Write(buffer, offset, count);
+		}
 	}
 }

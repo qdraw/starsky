@@ -89,7 +89,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 	}
 
-	private async Task<bool> TryExtractFromStream(Stream input, Stream? outputLarge,
+	private static async Task<bool> TryExtractFromStream(Stream input, Stream? outputLarge,
 		string referenceInfo, RawFlavor rawFlavor)
 	{
 		var candidates = new List<PreviewCandidate>();

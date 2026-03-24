@@ -61,6 +61,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		{
 			Array.Reverse(magic);
 		}
+
 		Array.Copy(magic, 0, header, 2, 2);
 		// First IFD offset
 		var offset = BitConverter.GetBytes(firstIfdOffset);
@@ -1278,13 +1279,13 @@ public class TiffEmbeddedPreviewExtractorTests
 		// Arrange: Entry count = 2, requires 24 bytes + 4 bytes for next offset
 		// Total 28 bytes remaining from position
 		// Create stream that is too short
-		var data = new byte[20]; 
+		var data = new byte[20];
 		data[8] = 2; // Entry count = 2 at offset 8
 		data[9] = 0;
 		// Position at 8, 2 bytes read for count -> position 10. Remaining 10 bytes.
 		// entryBytes = 2 * 12 = 24.
 		// entryBytes + 4 = 28. 28 > 10, so should return.
-		
+
 		using var ms = new MemoryStream(data);
 
 		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
@@ -1306,12 +1307,14 @@ public class TiffEmbeddedPreviewExtractorTests
 	{
 		// Arrange: Entry count = 1 (12 bytes)
 		// Stream has enough total length but read returns fewer bytes than requested
-		var data = new byte[30]; 
+		var data = new byte[30];
 		data[8] = 1; // Entry count = 1 at offset 8
 		data[9] = 0;
-		
+
 		// Use a custom stream that returns fewer bytes
-		using var ms = new PartialReadStream(new MemoryStream(data), 5); // Only allow reading 5 bytes at a time
+		using var
+			ms = new PartialReadStream(new MemoryStream(data),
+				5); // Only allow reading 5 bytes at a time
 
 		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
 		{
@@ -1332,32 +1335,33 @@ public class TiffEmbeddedPreviewExtractorTests
 		const uint firstIfdOffset = 16;
 		const uint jpegOffset = 100;
 		const uint jpegLength = 5000;
-		
+
 		var header = CreateMinimalTiffHeader(firstIfdOffset);
 		var ifd = CreateIfdWithJpegTags();
-		
+
 		var data = new byte[200];
 		Array.Copy(header, 0, data, 0, header.Length);
 		Array.Copy(ifd, 0, data, firstIfdOffset, ifd.Length);
-		
+
 		using var ms = new MemoryStream(data);
-		
+
 		// Act: Step 1 - Parse TIFF header
-		var headerOk = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms, 
+		var headerOk = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms,
 			out var littleEndian, out var discoveredOffset);
-		
+
 		Assert.IsTrue(headerOk, "Should parse valid TIFF header");
 		Assert.AreEqual(firstIfdOffset, discoveredOffset);
 		Assert.IsTrue(littleEndian);
-		
+
 		// Act: Step 2 - Parse IFD structure starting from discovered offset
 		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
 		};
-		
-		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, discoveredOffset, littleEndian, context, 0, false);
-		
+
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, discoveredOffset, littleEndian, context,
+			0, false);
+
 		// Assert
 		Assert.HasCount(1, context.Previews, "Should find one preview");
 		Assert.AreEqual(jpegOffset, context.Previews[0].Offset);
@@ -1365,20 +1369,42 @@ public class TiffEmbeddedPreviewExtractorTests
 		Assert.Contains(firstIfdOffset, context.Visited, "Should have visited the first IFD");
 	}
 
-	private class PartialReadStream : Stream
+	private sealed class PartialReadStream(Stream inner, int maxRead) : Stream
 	{
-		private readonly Stream _inner;
-		private readonly int _maxRead;
-		public PartialReadStream(Stream inner, int maxRead) { _inner = inner; _maxRead = maxRead; }
-		public override bool CanRead => _inner.CanRead;
-		public override bool CanSeek => _inner.CanSeek;
-		public override bool CanWrite => _inner.CanWrite;
-		public override long Length => _inner.Length;
-		public override long Position { get => _inner.Position; set => _inner.Position = value; }
-		public override void Flush() => _inner.Flush();
-		public override int Read(byte[] buffer, int offset, int count) => _inner.Read(buffer, offset, Math.Min(count, _maxRead));
-		public override long Seek(long offset, SeekOrigin origin) => _inner.Seek(offset, origin);
-		public override void SetLength(long value) => _inner.SetLength(value);
-		public override void Write(byte[] buffer, int offset, int count) => _inner.Write(buffer, offset, count);
+		public override bool CanRead => inner.CanRead;
+		public override bool CanSeek => inner.CanSeek;
+		public override bool CanWrite => inner.CanWrite;
+		public override long Length => inner.Length;
+
+		public override long Position
+		{
+			get => inner.Position;
+			set => inner.Position = value;
+		}
+
+		public override void Flush()
+		{
+			inner.Flush();
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return inner.Read(buffer, offset, Math.Min(count, maxRead));
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			return inner.Seek(offset, origin);
+		}
+
+		public override void SetLength(long value)
+		{
+			inner.SetLength(value);
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			inner.Write(buffer, offset, count);
+		}
 	}
 }
