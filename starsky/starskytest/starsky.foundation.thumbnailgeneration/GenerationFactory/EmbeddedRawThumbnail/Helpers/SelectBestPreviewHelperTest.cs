@@ -1,31 +1,27 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 
-namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.
+	Helpers;
 
 [TestClass]
-public class TiffEmbeddedPreviewSelectionTests
+public class SelectBestPreviewHelperTest
 {
 	[TestMethod]
 	public void SelectBestPreview_MixedDimensions_KeepsUnknownWhenUnknownLengthIsAtLeastDouble()
 	{
 		var unknownDimensions = new TiffEmbeddedPreviewExtractor.PreviewCandidate
 		{
-			Offset = 100,
-			Length = 10_000,
-			Width = 0,
-			Height = 0
+			Offset = 100, Length = 10_000, Width = 0, Height = 0
 		};
 
 		var knownDimensions = new TiffEmbeddedPreviewExtractor.PreviewCandidate
 		{
-			Offset = 200,
-			Length = 4_000,
-			Width = 1200,
-			Height = 800
+			Offset = 200, Length = 4_000, Width = 1200, Height = 800
 		};
 
-		var best = TiffEmbeddedPreviewExtractor.SelectBestPreview(
+		var best = SelectBestPreviewHelper.SelectBestPreview(
 		[
 			unknownDimensions,
 			knownDimensions
@@ -41,21 +37,15 @@ public class TiffEmbeddedPreviewSelectionTests
 	{
 		var unknownDimensions = new TiffEmbeddedPreviewExtractor.PreviewCandidate
 		{
-			Offset = 300,
-			Length = 7_000,
-			Width = 0,
-			Height = 0
+			Offset = 300, Length = 7_000, Width = 0, Height = 0
 		};
 
 		var knownDimensions = new TiffEmbeddedPreviewExtractor.PreviewCandidate
 		{
-			Offset = 400,
-			Length = 4_000,
-			Width = 1200,
-			Height = 800
+			Offset = 400, Length = 4_000, Width = 1200, Height = 800
 		};
 
-		var best = TiffEmbeddedPreviewExtractor.SelectBestPreview(
+		var best = SelectBestPreviewHelper.SelectBestPreview(
 		[
 			unknownDimensions,
 			knownDimensions
@@ -66,4 +56,3 @@ public class TiffEmbeddedPreviewSelectionTests
 			"Known-dimension candidate should replace unknown-dimension candidate when unknown is < 2x length.");
 	}
 }
-

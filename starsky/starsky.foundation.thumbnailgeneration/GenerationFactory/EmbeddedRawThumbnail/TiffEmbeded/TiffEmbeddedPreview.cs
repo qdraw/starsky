@@ -112,7 +112,7 @@ public partial class TiffEmbeddedPreviewExtractor
 
 
 		// Select and extract best preview
-		var best = SelectBestPreview(candidates);
+		var best = SelectBestPreviewHelper.SelectBestPreview(candidates);
 		if ( best == null )
 		{
 			return false;
@@ -229,7 +229,8 @@ public partial class TiffEmbeddedPreviewExtractor
 		return visited.Add(offset);
 	}
 
-	internal static void ParseNextIfd(Stream input, bool littleEndian, ParseTraversalContext context,
+	internal static void ParseNextIfd(Stream input, bool littleEndian,
+		ParseTraversalContext context,
 		int depth, bool isSubIfd)
 	{
 		if ( isSubIfd )

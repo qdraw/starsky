@@ -1,18 +1,20 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 
-namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
-public partial class TiffEmbeddedPreviewExtractor
+public static class SelectBestPreviewHelper
 {
-	internal static PreviewCandidate? SelectBestPreview(List<PreviewCandidate> candidates)
+	internal static TiffEmbeddedPreviewExtractor.PreviewCandidate? SelectBestPreview(
+		List<TiffEmbeddedPreviewExtractor.PreviewCandidate> candidates)
 	{
 		if ( candidates.Count == 0 )
 		{
 			return null;
 		}
 
-		PreviewCandidate? best = null;
+		TiffEmbeddedPreviewExtractor.PreviewCandidate? best = null;
 
 		foreach ( var candidate in candidates )
 		{
@@ -31,7 +33,8 @@ public partial class TiffEmbeddedPreviewExtractor
 		return best;
 	}
 
-	private static bool ShouldReplaceBest(PreviewCandidate best, PreviewCandidate candidate)
+	private static bool ShouldReplaceBest(TiffEmbeddedPreviewExtractor.PreviewCandidate best,
+		TiffEmbeddedPreviewExtractor.PreviewCandidate candidate)
 	{
 		var candidatePixels = GetPixelCount(candidate);
 		var bestPixels = GetPixelCount(best);
@@ -48,8 +51,9 @@ public partial class TiffEmbeddedPreviewExtractor
 		       ( candidatePixels == bestPixels && candidate.Length > best.Length );
 	}
 
-	private static bool ResolveMixedDimensionPreference(PreviewCandidate candidate,
-		PreviewCandidate best,
+	private static bool ResolveMixedDimensionPreference(
+		TiffEmbeddedPreviewExtractor.PreviewCandidate candidate,
+		TiffEmbeddedPreviewExtractor.PreviewCandidate best,
 		bool candidateHasDimensions)
 	{
 		if ( candidateHasDimensions )
@@ -61,7 +65,7 @@ public partial class TiffEmbeddedPreviewExtractor
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static ulong GetPixelCount(PreviewCandidate candidate)
+	private static ulong GetPixelCount(TiffEmbeddedPreviewExtractor.PreviewCandidate candidate)
 	{
 		return ( ulong ) candidate.Width * candidate.Height;
 	}
