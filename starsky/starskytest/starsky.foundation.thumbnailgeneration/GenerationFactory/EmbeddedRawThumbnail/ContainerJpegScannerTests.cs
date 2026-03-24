@@ -982,14 +982,14 @@ public class ContainerJpegScannerTests
 				data[i] = 0x00;
 			}
 
-			data[data.Length - 2] = 0xFF;
-			data[data.Length - 1] = 0xD9; // EOI
+			data[^2] = 0xFF;
+			data[^1] = 0xD9; // EOI
 
 			using var ms = new MemoryStream(data);
 
 			var candidates = ContainerJpegScanner.ScanCandidates(ms);
 
-			Assert.IsTrue(candidates.Count > 0);
+			Assert.IsNotEmpty(candidates);
 		}
 
 		private sealed class UnseekableStream : Stream
