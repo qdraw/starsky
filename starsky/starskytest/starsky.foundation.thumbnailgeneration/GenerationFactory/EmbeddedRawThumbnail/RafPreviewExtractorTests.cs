@@ -244,10 +244,6 @@ public class RafPreviewExtractorTests
 	public async Task TryExtract_WithNonSeekableStream_ReturnsFalse()
 	{
 		var bytes = new byte[100];
-		var subPathStorage = new FakeIStorage(["/raw"], [InputSubPath], [bytes]);
-		var selectorStorage = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
-			new FakeIStorage(), new FakeIStorage());
-		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
 
 		// We need a way to make the stream non-seekable. FakeIStorage returns MemoryStream by default.
 		// I'll use a wrapper that returns a non-seekable stream for this test.
@@ -308,5 +304,133 @@ public class RafPreviewExtractorTests
 		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
 
 		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WriteStreamAsyncFails_ReturnsFalse()
+	{
+		var jpeg = CreateMinimalJpeg(7000);
+		var raf = CreateRafWithHeaderPreview(148, jpeg);
+		var subPathStorage = new FakeIStorage(["/raw"], [InputSubPath], [raf]);
+		var tempStorage = new FakeIStorage(new Exception("Write error"));
+		var selectorStorage = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
+			new FakeIStorage(), tempStorage);
+
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtractByRafHeader_ShortHeader_ReturnsFalse()
+	{
+		// input.Length < RafHeaderMinBytes (0x5C = 92)
+		var bytes = new byte[90];
+		var selectorStorage = CreateSelectorStorage(bytes, out _);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task HasJpegSoiAt_ShortRead_ReturnsFalse()
+	{
+		// This is hard to trigger with MemoryStream, need a custom stream that returns less than 3 bytes.
+		var bytes = CreateRafWithHeaderPreview(148, CreateMinimalJpeg());
+		var subPathStorage = new PartialReadStorage(bytes, 148, 2); // Read only 2 bytes at SOI offset
+		var logger = new FakeIWebLogger();
+		var selectorStorage = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
+			new FakeIStorage(), new FakeIStorage());
+		var extractor = new RafPreviewExtractor(logger, selectorStorage);
+
+		// Fallback scanner would find it, so we need to make it fail as well by providing invalid data elsewhere?
+		// Or just check if TryExtractByRafHeader returns false. But it's private.
+		// Let's make the scanner also fail by corrupting the rest of the file.
+		for ( var i = 151; i < bytes.Length; i++ )
+		{
+			bytes[i] = 0x00;
+		}
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result, "Should fail if SOI read is incomplete");
+	}
+
+	private sealed class PartialReadStorage(byte[] data, uint partialOffset, int partialReadSize)
+		: FakeIStorage(["/raw"], [InputSubPath], [data])
+	{
+		public override Stream ReadStream(string path, int maxRead = -1)
+		{
+			return new PartialReadStream(data, partialOffset, partialReadSize);
+		}
+
+		private sealed class PartialReadStream(byte[] data, uint partialOffset, int partialReadSize)
+			: MemoryStream(data)
+		{
+			public override int Read(Span<byte> buffer)
+			{
+				if ( Position != partialOffset || buffer.Length < partialReadSize )
+				{
+					return base.Read(buffer);
+				}
+
+				// Move position forward as if we read partialReadSize
+				var toCopy = ( int ) Math.Min(partialReadSize, data.Length - Position);
+				data.AsSpan(( int ) Position, toCopy).CopyTo(buffer);
+				Position += toCopy;
+				return toCopy;
+
+			}
+		}
+	}
+
+	[TestMethod]
+	public async Task CopyRange_SeekFails_ReturnsFalse()
+	{
+		var bytes = CreateRafWithHeaderPreview(148, CreateMinimalJpeg());
+		var subPathStorage = new SeekFailingStorage(bytes, 3); // Fail on 3rd seek
+		var logger = new FakeIWebLogger();
+		var selectorStorage = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
+			new FakeIStorage(), new FakeIStorage());
+		var extractor = new RafPreviewExtractor(logger, selectorStorage);
+
+		// Also corrupt the file so fallback scanner fails
+		for ( var i = 148; i < bytes.Length; i++ )
+		{
+			bytes[i] = 0x00;
+		}
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result);
+	}
+
+	private sealed class SeekFailingStorage(byte[] data, int failOnSeekCount)
+		: FakeIStorage(["/raw"], [InputSubPath], [data])
+	{
+		public override Stream ReadStream(string path, int maxRead = -1)
+		{
+			return new SeekFailingStream(data, failOnSeekCount);
+		}
+
+		private sealed class SeekFailingStream(byte[] data, int failOnSeekCount) : MemoryStream(data)
+		{
+			private int _seekCount;
+
+			public override long Seek(long offset, SeekOrigin loc)
+			{
+				_seekCount++;
+				if ( _seekCount == failOnSeekCount )
+				{
+					throw new IOException("Seek failed");
+				}
+
+				return base.Seek(offset, loc);
+			}
+		}
 	}
 }
