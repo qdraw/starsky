@@ -246,4 +246,120 @@ public class LightweightContainerPreviewExtractorTests
 
 		Assert.IsFalse(result);
 	}
+
+	[TestMethod]
+	public async Task TryExtract_X3fTaggedPreview_WithRelativeOffset_WritesToTemp()
+	{
+		const int tiffBase = 304;
+		const uint taggedOffset = 3816;
+		const int taggedLength = 15345;
+		var relativeOffset = ( uint )( taggedOffset - tiffBase );
+		var leadingJpeg = CreateJpeg(18869);
+		var taggedJpeg = CreateJpeg(taggedLength);
+		var totalLength = ( int ) taggedOffset + taggedLength + 16;
+		var bytes = new byte[totalLength];
+		Array.Copy(leadingJpeg, 0, bytes, 292, leadingJpeg.Length);
+
+		bytes[tiffBase] = 0x4D; bytes[tiffBase + 1] = 0x4D; bytes[tiffBase + 2] = 0x00; bytes[tiffBase + 3] = 0x2A;
+		WriteUInt32BigEndian(bytes, tiffBase + 4, 8);
+		WriteUInt16BigEndian(bytes, tiffBase + 8, 0);
+		WriteUInt32BigEndian(bytes, tiffBase + 10, 16);
+
+		var ifd1 = tiffBase + 16;
+		WriteUInt16BigEndian(bytes, ifd1, 3);
+		WriteUInt16BigEndian(bytes, ifd1 + 2, 0x0103);
+		WriteUInt16BigEndian(bytes, ifd1 + 4, 3);
+		WriteUInt32BigEndian(bytes, ifd1 + 6, 1);
+		WriteUInt16BigEndian(bytes, ifd1 + 10, 6);
+
+		WriteUInt16BigEndian(bytes, ifd1 + 14, 0x0201);
+		WriteUInt16BigEndian(bytes, ifd1 + 16, 4);
+		WriteUInt32BigEndian(bytes, ifd1 + 18, 1);
+		WriteUInt32BigEndian(bytes, ifd1 + 22, relativeOffset);
+
+		WriteUInt16BigEndian(bytes, ifd1 + 26, 0x0202);
+		WriteUInt16BigEndian(bytes, ifd1 + 28, 4);
+		WriteUInt32BigEndian(bytes, ifd1 + 30, 1);
+		WriteUInt32BigEndian(bytes, ifd1 + 34, ( uint ) taggedLength);
+		WriteUInt32BigEndian(bytes, ifd1 + 38, 0);
+
+		Array.Copy(taggedJpeg, 0, bytes, taggedOffset, taggedJpeg.Length);
+
+		var subPathStorage = new FakeIStorage(["/raw"], [RawPathX3F], [bytes]);
+		var tempStorage = new FakeIStorage(["/tmp"]);
+		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(), new FakeIStorage(), tempStorage);
+		var extractor = new LightweightContainerPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var result = await extractor.TryExtract(RawPathX3F, OutputPath);
+
+		Assert.IsTrue(result);
+		Assert.IsTrue(tempStorage.ExistFile(OutputPath));
+		await using var output = tempStorage.ReadStream(OutputPath);
+		Assert.AreEqual(taggedLength, output.Length);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_X3fTaggedPreview_UnsupportedCompression_ReturnsFalse()
+	{
+		const int tiffBase = 304;
+		const uint taggedOffset = 2000u;
+		const int taggedLength = 4096;
+		var bytes = new byte[taggedOffset + taggedLength + 64];
+		bytes[tiffBase] = 0x4D; bytes[tiffBase + 1] = 0x4D; bytes[tiffBase + 2] = 0x00; bytes[tiffBase + 3] = 0x2A;
+		WriteUInt32BigEndian(bytes, tiffBase + 4, 8);
+		WriteUInt16BigEndian(bytes, tiffBase + 8, 0);
+		WriteUInt32BigEndian(bytes, tiffBase + 10, 16);
+		var ifd1 = tiffBase + 16;
+		WriteUInt16BigEndian(bytes, ifd1, 3);
+		WriteUInt16BigEndian(bytes, ifd1 + 2, 0x0103);
+		WriteUInt16BigEndian(bytes, ifd1 + 4, 3);
+		WriteUInt32BigEndian(bytes, ifd1 + 6, 1);
+		WriteUInt16BigEndian(bytes, ifd1 + 10, 1);
+		WriteUInt32BigEndian(bytes, ifd1 + 38, 0);
+
+		var subPathStorage = new FakeIStorage(["/raw"], [RawPathX3F], [bytes]);
+		var tempStorage = new FakeIStorage(["/tmp"]);
+		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(), new FakeIStorage(), tempStorage);
+		var extractor = new LightweightContainerPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var result = await extractor.TryExtract(RawPathX3F, OutputPath);
+
+		Assert.IsFalse(result);
+		Assert.IsFalse(tempStorage.ExistFile(OutputPath));
+	}
+
+	[TestMethod]
+	public async Task TryReadIfdJpegPair_TooManyEntries_ReturnsFalse()
+	{
+		const int tiffBase = 304;
+		var bytes = new byte[1024 + tiffBase + 64];
+		bytes[tiffBase] = 0x4D; bytes[tiffBase + 1] = 0x4D; bytes[tiffBase + 2] = 0x00; bytes[tiffBase + 3] = 0x2A;
+		WriteUInt32BigEndian(bytes, tiffBase + 4, 8);
+		WriteUInt16BigEndian(bytes, tiffBase + 8, 2000);
+
+		var subPathStorage = new FakeIStorage(["/raw"], [RawPathX3F], [bytes]);
+		var tempStorage = new FakeIStorage(["/tmp"]);
+		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(), new FakeIStorage(), tempStorage);
+		var extractor = new LightweightContainerPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var result = await extractor.TryExtract(RawPathX3F, OutputPath);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_FffExtension_UsesScanner()
+	{
+		var bytes = CreateContainerWithTwoJpegsPreferIptc();
+		var subPath = "/raw/test.fff";
+		var subPathStorage = new FakeIStorage(["/raw"], [subPath], [bytes]);
+		var tempStorage = new FakeIStorage(["/tmp"]);
+		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(), new FakeIStorage(), tempStorage);
+		var extractor = new LightweightContainerPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var result = await extractor.TryExtract(subPath, OutputPath);
+
+		Assert.IsTrue(result);
+		Assert.IsTrue(tempStorage.ExistFile(OutputPath));
+	}
 }
