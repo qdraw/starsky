@@ -3,23 +3,29 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
-namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
 internal static class StreamPrimitives
 {
-	internal static bool TrySeek(Stream s, uint offset)
+	internal static bool TrySeek(Stream input, long offset)
 	{
-		if ( !s.CanSeek )
+		if ( !input.CanSeek )
+		{
+			return false;
+		}
+
+		if ( offset < 0 || offset > input.Length )
 		{
 			return false;
 		}
 
 		try
 		{
-			s.Seek(offset, SeekOrigin.Begin);
+			input.Seek(offset, SeekOrigin.Begin);
 			return true;
 		}
 		catch

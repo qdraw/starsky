@@ -76,7 +76,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 		// List of test RAW files to process
 		var testFiles = new[]
 		{
-			"20260308_210002_DSC05386-Verbeterd-NR.dng",
+			"20260308_210002_DSC05386-Verbeterd-NR.dng", "fujifilm_x_t3_01.raf",
 			"Sony - ILCE-7SM3 - 14bit 14bit uncompressed (3_2).arw", "RAW_SONY_A700.ARW",
 			"RAW_OLYMPUS_E1.ORF", "RAW_NIKON_D50.NEF", "RAW_CANON_EOS_1DX.CR2",
 			"nikon_z7_ii_01.nef", "canon_eos_1d_x_mark_iii_01.cr3", "fujifilm_x_s10_01.raf",
@@ -94,6 +94,8 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 
 	[TestMethod]
 	[DataRow("20260308_210002_DSC05386-Verbeterd-NR.dng")]
+	[DataRow("fujifilm_x_t3_01.raf")]
+	[DataRow("fujifilm_x_s10_01.raf")]
 	[DataRow("Sony - ILCE-7SM3 - 14bit 14bit uncompressed (3_2).arw")]
 	[DataRow("RAW_SONY_A700.ARW")]
 	[DataRow("RAW_NIKON_D50.NEF")]
@@ -217,11 +219,16 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 		using var source = new MemoryStream(extractedPreviewBytes);
 		using var image = await Image.LoadAsync(source, TestContext.CancellationToken);
 		var longEdge = Math.Max(image.Width, image.Height);
-		var minLongEdge = isCanon5dMarkIv
-			? Canon5dMarkIvMinLongEdge
-			: isAppleXsDngSample
-				? AppleXsDngMinLongEdge
-				: DngAdobeSampleMinLongEdge;
+		var minLongEdge = DngAdobeSampleMinLongEdge;
+		if ( isCanon5dMarkIv )
+		{
+			minLongEdge = Canon5dMarkIvMinLongEdge;
+		}
+		else if ( isAppleXsDngSample )
+		{
+			minLongEdge = AppleXsDngMinLongEdge;
+		}
+
 		Assert.IsGreaterThanOrEqualTo(minLongEdge,
 			longEdge,
 			$"Expected a large preview for {fileName}, but got {image.Width}x{image.Height}");

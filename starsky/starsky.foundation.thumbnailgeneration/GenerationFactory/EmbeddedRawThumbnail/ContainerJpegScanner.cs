@@ -39,7 +39,7 @@ internal static class ContainerJpegScanner
 	private static List<PreviewCandidate> ScanCandidates(Stream input)
 	{
 		var candidates = new List<PreviewCandidate>();
-		if ( !TrySeek(input, 0) )
+		if ( !StreamPrimitives.TrySeek(input, 0) )
 		{
 			return candidates;
 		}
@@ -124,7 +124,7 @@ internal static class ContainerJpegScanner
 	private static async Task<bool> CopyRangeToOutput(Stream input, Stream output, uint offset,
 		uint length)
 	{
-		if ( !TrySeek(input, offset) || offset + length > input.Length )
+		if ( !StreamPrimitives.TrySeek(input, offset) || offset + length > input.Length )
 		{
 			return false;
 		}
@@ -155,7 +155,7 @@ internal static class ContainerJpegScanner
 
 	private static uint DetectJpegLengthByEoi(Stream input, uint soiOffset, int maxBytes)
 	{
-		if ( maxBytes < 4 || !TrySeek(input, soiOffset + 2) )
+		if ( maxBytes < 4 || !StreamPrimitives.TrySeek(input, soiOffset + 2) )
 		{
 			return 0;
 		}
@@ -197,7 +197,7 @@ internal static class ContainerJpegScanner
 
 	private static bool HasIptcApp13(Stream input, uint offset, uint length)
 	{
-		if ( length < 8 || !TrySeek(input, offset + 2) )
+		if ( length < 8 || !StreamPrimitives.TrySeek(input, offset + 2) )
 		{
 			return false;
 		}
@@ -351,22 +351,6 @@ internal static class ContainerJpegScanner
 		}
 
 		return false;
-	}
-
-	private static bool TrySeek(Stream input, long offset)
-	{
-		if ( !input.CanSeek )
-		{
-			return false;
-		}
-
-		if ( offset < 0 || offset > input.Length )
-		{
-			return false;
-		}
-
-		input.Seek(offset, SeekOrigin.Begin);
-		return true;
 	}
 }
 
