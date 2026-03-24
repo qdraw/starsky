@@ -221,6 +221,15 @@
         <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_CreateAnImageWithThumbnail_Test_Verify.verified.txt">
           <DependentUpon>FileHashTest.cs</DependentUpon>
         </None>
+        <None Update="starsky.foundation.thumbnailgeneration\GenerationFactory\ThumbnailServiceTests.GenerateThumbnail__CorruptDng_Verify.verified.txt">
+          <DependentUpon>ThumbnailServiceTests.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.thumbnailgeneration\GenerationFactory\ThumbnailServiceTests.GenerateThumbnail__CorruptJpeg_Verify.verified.txt">
+          <DependentUpon>ThumbnailServiceTests.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.thumbnailgeneration\GenerationFactory\ThumbnailServiceTests.GenerateThumbnail_FileHash_WrongImageType_Verify.verified.txt">
+          <DependentUpon>ThumbnailServiceTests.cs</DependentUpon>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip"/>

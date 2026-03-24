@@ -290,7 +290,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	}
 
 	[TestMethod]
-	public async Task GenerateThumbnail__Corrupt_Verify()
+	public async Task GenerateThumbnail__CorruptJpeg_Verify()
 	{
 		var storage = new FakeIStorage(
 			["/test"],
@@ -300,6 +300,22 @@ public sealed class ThumbnailServiceTests : VerifyBase
 		var sut = CreateSut(storage);
 
 		var result = await sut.GenerateThumbnail("/test/test.jpg");
+
+		await Verify(result);
+	}
+
+	[TestMethod]
+	public async Task GenerateThumbnail__CorruptDng_Verify()
+	{
+		var storage = new FakeIStorage(
+			["/test"],
+			["/test/test.dng"],
+			new List<byte[]> { Array.Empty<byte>() });
+
+		var sut = CreateSut(storage);
+
+		var result = await sut.GenerateThumbnail(
+			"/test/test.dng");
 
 		await Verify(result);
 	}
