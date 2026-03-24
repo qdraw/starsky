@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 
 public partial class TiffEmbeddedPreviewExtractor
@@ -22,7 +23,7 @@ public partial class TiffEmbeddedPreviewExtractor
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static uint ReadScalarValue(ushort type, uint rawValue, bool littleEndian)
+	internal static uint ReadScalarValue(ushort type, uint rawValue, bool littleEndian)
 	{
 		return type switch
 		{
