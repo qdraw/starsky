@@ -56,7 +56,8 @@ public class TiffEmbeddedPreviewOutputTests
 		{
 			Offset = 10, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, outMs);Assert.IsTrue(res);
+		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, outMs);
+		Assert.IsTrue(res);
 		var written = outMs.ToArray();
 		Assert.HasCount(smallJpeg.Length, written);
 		for ( var i = 0; i < written.Length; i++ )
@@ -110,7 +111,7 @@ public class TiffEmbeddedPreviewOutputTests
 				Offset = 3, Length = 1, Width = 0, Height = 0
 			};
 		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null);
-		
+
 		Assert.IsFalse(res);
 	}
 
@@ -121,11 +122,11 @@ public class TiffEmbeddedPreviewOutputTests
 		var data = new byte[20];
 		Array.Copy(smallJpeg, 0, data, 0, smallJpeg.Length);
 		var ms = MakeStream(data);
-		
+
 		// This stream will allow the first seek (in TryValidateJpegOffset)
 		// but fail the second seek (inside ExtractPreviewToStream)
-		var ss = new SequenceSeekFailingStream(ms, 1); 
-		
+		var ss = new SequenceSeekFailingStream(ms, 1);
+
 		var outMs = new MemoryStream();
 		var preview = new TiffEmbeddedPreviewExtractor.PreviewCandidate
 		{
@@ -142,11 +143,32 @@ public class TiffEmbeddedPreviewOutputTests
 		public override bool CanSeek => true;
 		public override bool CanWrite => inner.CanWrite;
 		public override long Length => inner.Length;
-		public override long Position { get => inner.Position; set => inner.Position = value; }
-		public override void Flush() => inner.Flush();
-		public override int Read(byte[] buffer, int offset, int count) => inner.Read(buffer, offset, count);
-		public override void SetLength(long value) => inner.SetLength(value);
-		public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
+
+		public override long Position
+		{
+			get => inner.Position;
+			set => inner.Position = value;
+		}
+
+		public override void Flush()
+		{
+			inner.Flush();
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return inner.Read(buffer, offset, count);
+		}
+
+		public override void SetLength(long value)
+		{
+			inner.SetLength(value);
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			inner.Write(buffer, offset, count);
+		}
 
 		public override long Seek(long offset, SeekOrigin origin)
 		{
@@ -154,12 +176,16 @@ public class TiffEmbeddedPreviewOutputTests
 			{
 				throw new IOException("Mock Seek Exception");
 			}
+
 			_seekCount++;
 			return inner.Seek(offset, origin);
 		}
 
-		public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-			=> inner.ReadAsync(buffer, cancellationToken);
+		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
+			CancellationToken cancellationToken = default)
+		{
+			return inner.ReadAsync(buffer, cancellationToken);
+		}
 	}
 
 	[TestMethod]
@@ -167,7 +193,9 @@ public class TiffEmbeddedPreviewOutputTests
 	{
 		var data = new byte[30];
 		// Not 0xFF, 0xD8, 0xFF
-		data[0] = 0x00; data[1] = 0x01; data[2] = 0x02; 
+		data[0] = 0x00;
+		data[1] = 0x01;
+		data[2] = 0x02;
 		var ms = MakeStream(data);
 		var preview = new TiffEmbeddedPreviewExtractor.PreviewCandidate
 		{
@@ -182,8 +210,14 @@ public class TiffEmbeddedPreviewOutputTests
 	{
 		const int size = 70000; // > 65536
 		var data = new byte[size];
-		data[0] = 0xFF; data[1] = 0xD8; data[2] = 0xFF; // SOI
-		for ( var i = 3; i < size; i++ ) data[i] = ( byte ) ( i % 256 );
+		data[0] = 0xFF;
+		data[1] = 0xD8;
+		data[2] = 0xFF; // SOI
+		for ( var i = 3; i < size; i++ )
+		{
+			data[i] = ( byte ) ( i % 256 );
+		}
+
 		var ms = MakeStream(data);
 		var outMs = new MemoryStream();
 		var preview = new TiffEmbeddedPreviewExtractor.PreviewCandidate
@@ -257,14 +291,40 @@ public class TiffEmbeddedPreviewOutputTests
 		public override bool CanSeek => inner.CanSeek;
 		public override bool CanWrite => inner.CanWrite;
 		public override long Length => inner.Length;
-		public override long Position { get => inner.Position; set => inner.Position = value; }
-		public override void Flush() => inner.Flush();
-		public override int Read(byte[] buffer, int offset, int count) => 0;
-		public override long Seek(long offset, SeekOrigin origin) => inner.Seek(offset, origin);
-		public override void SetLength(long value) => inner.SetLength(value);
-		public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
 
-		public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+		public override long Position
+		{
+			get => inner.Position;
+			set => inner.Position = value;
+		}
+
+		public override void Flush()
+		{
+			inner.Flush();
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return 0;
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			return inner.Seek(offset, origin);
+		}
+
+		public override void SetLength(long value)
+		{
+			inner.SetLength(value);
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			inner.Write(buffer, offset, count);
+		}
+
+		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
+			CancellationToken cancellationToken = default)
 		{
 			return new ValueTask<int>(0);
 		}
@@ -276,22 +336,52 @@ public class TiffEmbeddedPreviewOutputTests
 		public override bool CanSeek => inner.CanSeek;
 		public override bool CanWrite => inner.CanWrite;
 		public override long Length => inner.Length;
-		public override long Position { get => inner.Position; set => inner.Position = value; }
-		public override void Flush() => inner.Flush();
-		public override int Read(byte[] buffer, int offset, int count) => inner.Read(buffer, offset, count);
-		public override long Seek(long offset, SeekOrigin origin) => inner.Seek(offset, origin);
-		public override void SetLength(long value) => inner.SetLength(value);
-		public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
 
-		public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+		public override long Position
 		{
-			if ( throwOnRead ) throw new IOException("Mock Read Exception");
-			return inner.ReadAsync(buffer, cancellationToken);
+			get => inner.Position;
+			set => inner.Position = value;
 		}
 
-		public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+		public override void Flush()
 		{
-			if ( throwOnWrite ) throw new IOException("Mock Write Exception");
+			inner.Flush();
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return inner.Read(buffer, offset, count);
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			return inner.Seek(offset, origin);
+		}
+
+		public override void SetLength(long value)
+		{
+			inner.SetLength(value);
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			inner.Write(buffer, offset, count);
+		}
+
+		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
+			CancellationToken cancellationToken = default)
+		{
+			return throwOnRead ? throw new IOException("Mock Read Exception") : inner.ReadAsync(buffer, cancellationToken);
+		}
+
+		public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer,
+			CancellationToken cancellationToken = default)
+		{
+			if ( throwOnWrite )
+			{
+				throw new IOException("Mock Write Exception");
+			}
+
 			return inner.WriteAsync(buffer, cancellationToken);
 		}
 	}
