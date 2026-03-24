@@ -64,7 +64,7 @@ public class EmbeddedRawThumbnailGenerator(
 					singleSubPath, fileHash, true, imageFormat, true,
 					"No embedded preview found in RAW file");
 			}
-			
+
 			if ( !tempStorage.ExistFile(previewPath) )
 			{
 				return ErrorGenerationResultModel.FailedResult(biggestThumbnailSize,
@@ -90,14 +90,7 @@ public class EmbeddedRawThumbnailGenerator(
 				// Clean up temporary preview files
 				if ( tempStorage.ExistFile(previewPath) )
 				{
-					try
-					{
-						tempStorage.FileDelete(previewPath);
-					}
-					catch
-					{
-						// Ignore cleanup errors
-					}
+					tempStorage.FileDelete(previewPath);
 				}
 			}
 		}
