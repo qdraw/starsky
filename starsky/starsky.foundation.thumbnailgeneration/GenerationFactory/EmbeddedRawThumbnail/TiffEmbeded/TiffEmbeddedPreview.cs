@@ -133,14 +133,14 @@ public partial class TiffEmbeddedPreviewExtractor
 			return false;
 		}
 
-		// Check byte order
+		// Check byte order (TIFF standard: 'II' for little-endian, 'MM' for big-endian)
 		littleEndian = header[0] == 'I' && header[1] == 'I';
 		if ( !littleEndian && !( header[0] == 'M' && header[1] == 'M' ) )
 		{
 			return false;
 		}
 
-		// Check magic number (42) - this is not a joke
+		// Check magic number (42) - TIFF standard magic constant
 		var magic = ReadUInt16(header[2..], littleEndian);
 		if ( magic != 42 )
 		{
@@ -149,17 +149,25 @@ public partial class TiffEmbeddedPreviewExtractor
 
 		// Read first IFD offset
 		firstIfdOffset = ReadUInt32(header[4..], littleEndian);
-		return firstIfdOffset > 0 && firstIfdOffset < s.Length;
+		return firstIfdOffset > 0 && firstIfdOffset <= s.Length;
 	}
 
 	private void ParseIfdRecursive(Stream input, uint offset, bool littleEndian,
 		ParseTraversalContext context, int depth, bool isSubIfd)
 	{
-		if ( ShouldStopTraversal(context, offset, depth) )
+		// Check depth and preview capacity limits
+		if ( depth > MaxIfdDepth || context.Previews.Count >= MaxPreviews )
 		{
 			return;
 		}
 
+		// offset = 0 is a sentinel value meaning "no more IFDs" - return early without visiting
+		if ( offset == 0 )
+		{
+			return;
+		}
+
+		// Try to mark this offset as visited to prevent cycles
 		if ( !TryMarkVisited(context.Visited, offset) )
 		{
 			return;
@@ -210,14 +218,15 @@ public partial class TiffEmbeddedPreviewExtractor
 		ParseNextIfd(input, littleEndian, context, depth, isSubIfd);
 	}
 
-	private static bool ShouldStopTraversal(ParseTraversalContext context, uint offset, int depth)
-	{
-		return depth > MaxIfdDepth || offset == 0 || context.Previews.Count >= MaxPreviews;
-	}
 
 	private static bool TryMarkVisited(HashSet<uint> visited, uint offset)
 	{
-		return visited.Add(offset) && visited.Count < MaxIfdVisits;
+		if ( visited.Count >= MaxIfdVisits )
+		{
+			return false;
+		}
+
+		return visited.Add(offset);
 	}
 
 	private void ParseNextIfd(Stream input, bool littleEndian, ParseTraversalContext context,

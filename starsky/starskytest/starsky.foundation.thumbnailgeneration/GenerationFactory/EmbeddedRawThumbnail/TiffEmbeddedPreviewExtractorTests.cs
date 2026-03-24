@@ -56,9 +56,13 @@ public class TiffEmbeddedPreviewExtractorTests
 		// Byte order
 		header[0] = littleEndian ? ( byte ) 'I' : ( byte ) 'M';
 		header[1] = littleEndian ? ( byte ) 'I' : ( byte ) 'M';
-		// Magic number (42)
-		header[2] = 42;
-		header[3] = 0;
+		// Magic number (42) - encode in specified byte order
+		var magic = BitConverter.GetBytes(( ushort ) 42);
+		if ( BitConverter.IsLittleEndian != littleEndian )
+		{
+			Array.Reverse(magic);
+		}
+		Array.Copy(magic, 0, header, 2, 2);
 		// First IFD offset
 		var offset = BitConverter.GetBytes(firstIfdOffset);
 		if ( BitConverter.IsLittleEndian != littleEndian )
@@ -1250,9 +1254,9 @@ public class TiffEmbeddedPreviewExtractorTests
 	public void ParseIfdRecursive_WithZeroEntryCount_ReturnsEarly()
 	{
 		// Arrange: Valid stream at offset with 0 entry count
-		var data = new byte[10];
-		data[0] = 0; // Entry count = 0
-		data[1] = 0;
+		var data = new byte[20]; // Enough space for IFD at offset 8
+		data[8] = 0; // Entry count = 0 at offset 8
+		data[9] = 0;
 		using var ms = new MemoryStream(data);
 
 		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
@@ -1264,7 +1268,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
 			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
 				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 0, true, context, 0, false);
+		ParseIfdRecursivePublic(extractor, ms, 8, true, context, 0, false);
 
 		// Assert
 		Assert.HasCount(1, context.Visited,
@@ -1275,9 +1279,9 @@ public class TiffEmbeddedPreviewExtractorTests
 	public void ParseIfdRecursive_WithExcessiveEntryCount_ReturnsEarly()
 	{
 		// Arrange: Entry count > 10000
-		var data = new byte[4];
-		data[0] = 0xFF; // Entry count = 65535
-		data[1] = 0xFF;
+		var data = new byte[20]; // Enough space for IFD at offset 8
+		data[8] = 0xFF; // Entry count = 65535 at offset 8
+		data[9] = 0xFF;
 		using var ms = new MemoryStream(data);
 
 		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
@@ -1289,7 +1293,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
 			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
 				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 0, true, context, 0, false);
+		ParseIfdRecursivePublic(extractor, ms, 8, true, context, 0, false);
 
 		// Assert
 		Assert.HasCount(1, context.Visited,
