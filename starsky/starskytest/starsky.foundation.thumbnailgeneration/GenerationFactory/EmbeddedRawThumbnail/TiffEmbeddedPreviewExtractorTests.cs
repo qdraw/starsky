@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
@@ -1097,10 +1096,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		using var ms = new MemoryStream(new byte[512]);
 
 		// Act: Call ParseIfdRecursive with depth = 7 (exceeds MaxIfdDepth of 6)
-		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
-			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
-				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 8, true, context, 7, false);
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 8, true, context, 7, false);
 
 		// Assert: Should not visit any IFDs
 		Assert.IsEmpty(context.Visited,
@@ -1118,10 +1114,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		using var ms = new MemoryStream(new byte[512]);
 
 		// Act: Call with offset = 0
-		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
-			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
-				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 0, true, context, 0, false);
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 0, true, context, 0, false);
 
 		// Assert
 		Assert.IsEmpty(context.Visited,
@@ -1147,10 +1140,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		using var ms = new MemoryStream(new byte[512]);
 
 		// Act
-		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
-			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
-				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 8, true, context, 0, false);
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 8, true, context, 0, false);
 
 		// Assert
 		Assert.IsEmpty(context.Visited,
@@ -1171,10 +1161,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		using var ms = new MemoryStream(new byte[512]);
 
 		// Act
-		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
-			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
-				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 8, true, context, 0, false);
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 8, true, context, 0, false);
 
 		// Assert: Visited should still have only the original entry
 		Assert.HasCount(1, context.Visited,
@@ -1195,10 +1182,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		using var ms = new MemoryStream(new byte[512]);
 
 		// Act: Try to visit offset 100 when visited count = 64
-		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
-			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
-				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 100, true, context, 0, false);
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 100, true, context, 0, false);
 
 		// Assert
 		Assert.HasCount(64, context.Visited,
@@ -1218,10 +1202,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		using var ms = new MemoryStream(new byte[10]); // Only 10 bytes
 
 		// Act: Try to seek to offset 1000
-		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
-			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
-				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 1000, true, context, 0, false);
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 1000, true, context, 0, false);
 
 		// Assert
 		Assert.HasCount(1, context.Visited,
@@ -1240,10 +1221,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		ms.Seek(7, SeekOrigin.Begin); // Position near end
 
 		// Act
-		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
-			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
-				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 7, true, context, 0, false);
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 7, true, context, 0, false);
 
 		// Assert
 		Assert.HasCount(1, context.Visited,
@@ -1265,10 +1243,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		};
 
 		// Act
-		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
-			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
-				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 8, true, context, 0, false);
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 8, true, context, 0, false);
 
 		// Assert
 		Assert.HasCount(1, context.Visited,
@@ -1290,34 +1265,120 @@ public class TiffEmbeddedPreviewExtractorTests
 		};
 
 		// Act
-		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
-			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
-				new FakeIStorage(), new FakeIStorage()));
-		ParseIfdRecursivePublic(extractor, ms, 8, true, context, 0, false);
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 8, true, context, 0, false);
 
 		// Assert
 		Assert.HasCount(1, context.Visited,
 			"Should mark as visited even with excessive entry count");
 	}
 
-	private static void ParseIfdRecursivePublic(TiffEmbeddedPreviewExtractor extractor,
-		Stream input, uint offset, bool littleEndian,
-		TiffEmbeddedPreviewExtractor.ParseTraversalContext context,
-		int depth, bool isSubIfd)
+	[TestMethod]
+	public void ParseIfdRecursive_WithInsufficientRemainingBytesForEntries_ReturnsEarly()
 	{
-		var method = typeof(TiffEmbeddedPreviewExtractor)
-			.GetMethod("ParseIfdRecursive",
-				BindingFlags.NonPublic | BindingFlags.Instance,
-				null,
-				new[]
-				{
-					typeof(Stream), typeof(uint), typeof(bool),
-					typeof(TiffEmbeddedPreviewExtractor.ParseTraversalContext), typeof(int),
-					typeof(bool)
-				},
-				null);
+		// Arrange: Entry count = 2, requires 24 bytes + 4 bytes for next offset
+		// Total 28 bytes remaining from position
+		// Create stream that is too short
+		var data = new byte[20]; 
+		data[8] = 2; // Entry count = 2 at offset 8
+		data[9] = 0;
+		// Position at 8, 2 bytes read for count -> position 10. Remaining 10 bytes.
+		// entryBytes = 2 * 12 = 24.
+		// entryBytes + 4 = 28. 28 > 10, so should return.
+		
+		using var ms = new MemoryStream(data);
 
-		method!.Invoke(extractor,
-			new object[] { input, offset, littleEndian, context, depth, isSubIfd });
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
+		};
+
+		// Act
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 8, true, context, 0, false);
+
+		// Assert
+		Assert.HasCount(1, context.Visited);
+		// If it continued, it would have tried to rent from ArrayPool and then read.
+		// We can't easily check internal state, but it should not crash.
+	}
+
+	[TestMethod]
+	public void ParseIfdRecursive_WithReadFailureForEntries_ReturnsEarly()
+	{
+		// Arrange: Entry count = 1 (12 bytes)
+		// Stream has enough total length but read returns fewer bytes than requested
+		var data = new byte[30]; 
+		data[8] = 1; // Entry count = 1 at offset 8
+		data[9] = 0;
+		
+		// Use a custom stream that returns fewer bytes
+		using var ms = new PartialReadStream(new MemoryStream(data), 5); // Only allow reading 5 bytes at a time
+
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
+		};
+
+		// Act
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, 8, true, context, 0, false);
+
+		// Assert
+		Assert.HasCount(1, context.Visited);
+	}
+
+	[TestMethod]
+	public void ParseIfdRecursive_StartingFromTiffHeader_WorksCorrectly()
+	{
+		// Arrange: Valid TIFF header + IFD with JPEG tags
+		const uint firstIfdOffset = 16;
+		const uint jpegOffset = 100;
+		const uint jpegLength = 5000;
+		
+		var header = CreateMinimalTiffHeader(firstIfdOffset);
+		var ifd = CreateIfdWithJpegTags();
+		
+		var data = new byte[200];
+		Array.Copy(header, 0, data, 0, header.Length);
+		Array.Copy(ifd, 0, data, firstIfdOffset, ifd.Length);
+		
+		using var ms = new MemoryStream(data);
+		
+		// Act: Step 1 - Parse TIFF header
+		var headerOk = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms, 
+			out var littleEndian, out var discoveredOffset);
+		
+		Assert.IsTrue(headerOk, "Should parse valid TIFF header");
+		Assert.AreEqual(firstIfdOffset, discoveredOffset);
+		Assert.IsTrue(littleEndian);
+		
+		// Act: Step 2 - Parse IFD structure starting from discovered offset
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
+		};
+		
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(ms, discoveredOffset, littleEndian, context, 0, false);
+		
+		// Assert
+		Assert.HasCount(1, context.Previews, "Should find one preview");
+		Assert.AreEqual(jpegOffset, context.Previews[0].Offset);
+		Assert.AreEqual(jpegLength, context.Previews[0].Length);
+		Assert.Contains(firstIfdOffset, context.Visited, "Should have visited the first IFD");
+	}
+
+	private class PartialReadStream : Stream
+	{
+		private readonly Stream _inner;
+		private readonly int _maxRead;
+		public PartialReadStream(Stream inner, int maxRead) { _inner = inner; _maxRead = maxRead; }
+		public override bool CanRead => _inner.CanRead;
+		public override bool CanSeek => _inner.CanSeek;
+		public override bool CanWrite => _inner.CanWrite;
+		public override long Length => _inner.Length;
+		public override long Position { get => _inner.Position; set => _inner.Position = value; }
+		public override void Flush() => _inner.Flush();
+		public override int Read(byte[] buffer, int offset, int count) => _inner.Read(buffer, offset, Math.Min(count, _maxRead));
+		public override long Seek(long offset, SeekOrigin origin) => _inner.Seek(offset, origin);
+		public override void SetLength(long value) => _inner.SetLength(value);
+		public override void Write(byte[] buffer, int offset, int count) => _inner.Write(buffer, offset, count);
 	}
 }
