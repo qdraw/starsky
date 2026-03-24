@@ -66,17 +66,17 @@ public class LightweightContainerPreviewExtractor_HandleIfdEntryTests
     }
 
     [TestMethod]
-    public void HandleIfdEntry_Sets_JpegLength()
+    public void HandleIfdEntry_UnknownTag_DoesNothing()
     {
-        ushort compression = 0;
-        uint jpegOffset = 0;
-        uint jpegLength = 0;
+        ushort compression = 1;
+        uint jpegOffset = 2;
+        uint jpegLength = 3;
 
-        const uint value = 0x00001000u;
-        LightweightContainerPreviewExtractor.HandleIfdEntry(0x0202, 4, value, true, ref compression, ref jpegOffset, ref jpegLength);
+        LightweightContainerPreviewExtractor.HandleIfdEntry(0xFFFF, 4, 100u, true, ref compression, ref jpegOffset, ref jpegLength);
 
-        Assert.AreEqual(0u, jpegOffset);
-        Assert.AreEqual(0x00001000u, jpegLength);
+        Assert.AreEqual((ushort)1, compression);
+        Assert.AreEqual(2u, jpegOffset);
+        Assert.AreEqual(3u, jpegLength);
     }
 }
 
