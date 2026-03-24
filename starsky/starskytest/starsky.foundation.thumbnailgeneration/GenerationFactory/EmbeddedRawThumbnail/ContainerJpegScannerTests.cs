@@ -438,10 +438,10 @@ public class ContainerJpegScannerTests
 	{
 		// MaxCandidates = 8
 		var jpeg = BuildJpeg(MinJpeg);
-		var container = new byte[0];
+		var container = Array.Empty<byte>();
 		for ( var i = 0; i < 10; i++ )
 		{
-			container = container.Concat(jpeg).ToArray();
+			container = [.. container, .. jpeg];
 		}
 
 		using var input = StreamOf(container);

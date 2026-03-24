@@ -229,7 +229,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		return visited.Add(offset);
 	}
 
-	private static void ParseNextIfd(Stream input, bool littleEndian, ParseTraversalContext context,
+	internal static void ParseNextIfd(Stream input, bool littleEndian, ParseTraversalContext context,
 		int depth, bool isSubIfd)
 	{
 		if ( isSubIfd )
@@ -384,7 +384,7 @@ public partial class TiffEmbeddedPreviewExtractor
 			context.Previews);
 	}
 
-	private static void ParseSubIfdChain(Stream input, bool littleEndian,
+	internal static void ParseSubIfdChain(Stream input, bool littleEndian,
 		ParseTraversalContext context, int depth, List<uint> subIfdOffsets)
 	{
 		foreach ( var subIfdOffset in subIfdOffsets )
@@ -398,7 +398,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 	}
 
-	private static void ParseMakerNote(Stream input, bool littleEndian, RawFlavor rawFlavor,
+	internal static void ParseMakerNote(Stream input, bool littleEndian, RawFlavor rawFlavor,
 		uint makerNoteOffset, uint makerNoteLength, List<PreviewCandidate> previews)
 	{
 		if ( makerNoteOffset == 0 || makerNoteLength == 0 )
@@ -458,7 +458,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 	}
 
-	private static void ParseCanonMakerNote(Stream input, uint makerNoteOffset,
+	internal static void ParseCanonMakerNote(Stream input, uint makerNoteOffset,
 		uint makerNoteLength,
 		bool littleEndian, List<PreviewCandidate> previews)
 	{
@@ -550,7 +550,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 	}
 
-	private static bool TryReadIfdEntryHeader(Stream input, uint ifdOffset, uint blockLength,
+	internal static bool TryReadIfdEntryHeader(Stream input, uint ifdOffset, uint blockLength,
 		bool littleEndian, out ushort entryCount, out int entryBytes)
 	{
 		entryCount = 0;
@@ -632,7 +632,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		return ( candidateOffset, candidateLength );
 	}
 
-	private static bool TryResolveMakerNoteOffset(Stream input, uint makerNoteBase,
+	internal static bool TryResolveMakerNoteOffset(Stream input, uint makerNoteBase,
 		uint rawOffset, out uint resolvedOffset)
 	{
 		resolvedOffset = 0;
