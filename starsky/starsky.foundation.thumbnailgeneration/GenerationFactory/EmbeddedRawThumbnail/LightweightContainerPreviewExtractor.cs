@@ -279,13 +279,13 @@ public class LightweightContainerPreviewExtractor(
 		}
 
 		var relativeOffset = ( uint ) ( tiffBase + ( int ) candidateOffset );
-		if ( IsValidJpegRange(input, relativeOffset, candidateLength) )
+		if ( !IsValidJpegRange(input, relativeOffset, candidateLength) )
 		{
-			resolvedOffset = relativeOffset;
-			return true;
+			return false;
 		}
 
-		return false;
+		resolvedOffset = relativeOffset;
+		return true;
 	}
 
 	internal static bool IsValidJpegRange(Stream input, uint offset, uint length)

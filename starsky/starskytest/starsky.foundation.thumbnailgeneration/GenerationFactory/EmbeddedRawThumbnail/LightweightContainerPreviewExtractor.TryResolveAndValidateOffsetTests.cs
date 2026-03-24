@@ -13,7 +13,7 @@ public class LightweightContainerPreviewExtractor_TryResolveAndValidateOffsetTes
     public void TryResolveAndValidateOffset_ReturnsFalse_When_CandidateOffsetZero()
     {
         using var ms = new MemoryStream(new byte[1000]);
-        var ok = LightweightContainerPreviewExtractor.TryResolveAndValidateOffset(ms, 0, 0u, (uint)MinJpegSize, out var resolved);
+        var ok = LightweightContainerPreviewExtractor.TryResolveAndValidateOffset(ms, 0, 0u, MinJpegSize, out var resolved);
         Assert.IsFalse(ok);
         Assert.AreEqual(0u, resolved);
     }
@@ -22,7 +22,7 @@ public class LightweightContainerPreviewExtractor_TryResolveAndValidateOffsetTes
     public void TryResolveAndValidateOffset_ReturnsFalse_When_CandidateLengthTooSmall()
     {
         using var ms = new MemoryStream(new byte[2000]);
-        var ok = LightweightContainerPreviewExtractor.TryResolveAndValidateOffset(ms, 0, 100u, (uint)(MinJpegSize - 1), out var resolved);
+        var ok = LightweightContainerPreviewExtractor.TryResolveAndValidateOffset(ms, 0, 100u, MinJpegSize - 1, out var resolved);
         Assert.IsFalse(ok);
         Assert.AreEqual(0u, resolved);
     }
@@ -47,10 +47,10 @@ public class LightweightContainerPreviewExtractor_TryResolveAndValidateOffsetTes
     [TestMethod]
     public void TryResolveAndValidateOffset_ReturnsTrue_When_RelativeOffsetValid()
     {
-        var tiffBase = 1000;
-        var candidateOffset = 200u; // candidate offset alone will not have marker
-        var candidateLength = (uint)MinJpegSize;
-        var relativeOffset = (uint)(tiffBase + (int)candidateOffset);
+        const int tiffBase = 1000;
+        const uint candidateOffset = 200u; // candidate offset alone will not have marker
+        const uint candidateLength = MinJpegSize;
+        const uint relativeOffset = tiffBase + (int)candidateOffset;
 
         // Create buffer with marker only at relativeOffset
         var buf = new byte[relativeOffset + candidateLength];

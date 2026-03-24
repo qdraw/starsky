@@ -447,28 +447,16 @@ public class LightweightContainerPreviewExtractorTests
 		Assert.IsFalse(ok);
 	}
 
-	private class TestSeekableStream : Stream
+	private sealed class TestSeekableStream(byte[] data) : Stream
 	{
-		private readonly byte[] _data;
 		private readonly Queue<byte[]> _smallResponses = new();
-		private long _pos;
-
-		public TestSeekableStream(byte[] data)
-		{
-			_data = data;
-			_pos = 0;
-		}
 
 		public override bool CanRead => true;
 		public override bool CanSeek => true;
 		public override bool CanWrite => false;
-		public override long Length => _data.Length;
+		public override long Length => data.Length;
 
-		public override long Position
-		{
-			get => _pos;
-			set => _pos = value;
-		}
+		public override long Position { get; set; }
 
 		public void EnqueueSmallResponse(byte[] resp)
 		{
@@ -481,11 +469,11 @@ public class LightweightContainerPreviewExtractorTests
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			if ( count > 256 && _pos == 0 )
+			if ( count > 256 && Position == 0 )
 			{
-				var toRead = ( int ) Math.Min(count, _data.Length - _pos);
-				Array.Copy(_data, _pos, buffer, offset, toRead);
-				_pos += toRead;
+				var toRead = ( int ) Math.Min(count, data.Length - Position);
+				Array.Copy(data, Position, buffer, offset, toRead);
+				Position += toRead;
 				return toRead;
 			}
 
@@ -494,18 +482,18 @@ public class LightweightContainerPreviewExtractorTests
 				var resp = _smallResponses.Dequeue();
 				var toCopy = Math.Min(resp.Length, count);
 				Array.Copy(resp, 0, buffer, offset, toCopy);
-				_pos += toCopy;
+				Position += toCopy;
 				return toCopy;
 			}
 
-			if ( _pos >= _data.Length )
+			if ( Position >= data.Length )
 			{
 				return 0;
 			}
 
-			var avail = ( int ) Math.Min(count, _data.Length - _pos);
-			Array.Copy(_data, _pos, buffer, offset, avail);
-			_pos += avail;
+			var avail = ( int ) Math.Min(count, data.Length - Position);
+			Array.Copy(data, Position, buffer, offset, avail);
+			Position += avail;
 			return avail;
 		}
 
@@ -513,22 +501,22 @@ public class LightweightContainerPreviewExtractorTests
 		{
 			switch ( origin )
 			{
-				case SeekOrigin.Begin: _pos = offset; break;
-				case SeekOrigin.Current: _pos += offset; break;
-				case SeekOrigin.End: _pos = _data.Length + offset; break;
+				case SeekOrigin.Begin: Position = offset; break;
+				case SeekOrigin.Current: Position += offset; break;
+				case SeekOrigin.End: Position = data.Length + offset; break;
 			}
 
-			if ( _pos < 0 )
+			if ( Position < 0 )
 			{
-				_pos = 0;
+				Position = 0;
 			}
 
-			if ( _pos > _data.Length )
+			if ( Position > data.Length )
 			{
-				_pos = _data.Length;
+				Position = data.Length;
 			}
 
-			return _pos;
+			return Position;
 		}
 
 		public override void SetLength(long value)
