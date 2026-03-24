@@ -7,7 +7,7 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 
 public partial class TiffEmbeddedPreviewExtractor
 {
-	private static async Task<bool> ExtractPreviewToStream(Stream input, PreviewCandidate preview,
+	internal static async Task<bool> ExtractPreviewToStream(Stream input, PreviewCandidate preview,
 		Stream? output)
 	{
 		if ( !TryValidateJpegOffset(input, preview.Offset, preview.Length) )
@@ -57,7 +57,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 	}
 
-	private static bool TryValidateJpegOffset(Stream s, uint offset, uint length)
+	internal static bool TryValidateJpegOffset(Stream s, uint offset, uint length)
 	{
 		if ( offset + length > s.Length )
 		{
