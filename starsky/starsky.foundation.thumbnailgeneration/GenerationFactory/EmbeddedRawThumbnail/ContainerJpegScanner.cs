@@ -35,7 +35,7 @@ internal static class ContainerJpegScanner
 		return await CopyRangeToOutput(input, output, best.Offset, best.Length);
 	}
 
-	private static List<PreviewCandidate> ScanCandidates(Stream input)
+	internal static List<PreviewCandidate> ScanCandidates(Stream input)
 	{
 		var candidates = new List<PreviewCandidate>();
 		if ( !StreamPrimitives.TrySeek(input, 0) )
@@ -96,7 +96,7 @@ internal static class ContainerJpegScanner
 		candidates.Add(new PreviewCandidate(soi, length, hasIptc));
 	}
 
-	private static PreviewCandidate? SelectBest(List<PreviewCandidate> candidates)
+	internal static PreviewCandidate? SelectBest(List<PreviewCandidate> candidates)
 	{
 		if ( candidates.Count == 0 )
 		{
@@ -121,7 +121,7 @@ internal static class ContainerJpegScanner
 		return best;
 	}
 
-	private static async Task<bool> CopyRangeToOutput(Stream input, Stream output, uint offset,
+	internal static async Task<bool> CopyRangeToOutput(Stream input, Stream output, uint offset,
 		uint length)
 	{
 		if ( !StreamPrimitives.TrySeek(input, offset) || offset + length > input.Length )
@@ -202,7 +202,7 @@ internal static class ContainerJpegScanner
 	///     Scans forward until a valid JPEG marker (0xFF + non-padding byte) is found within
 	///     <paramref name="end" />, handling 0xFF padding bytes.
 	/// </summary>
-	private static bool TrySkipToMarker(Stream input, long end, out int marker)
+	internal static bool TrySkipToMarker(Stream input, long end, out int marker)
 	{
 		marker = -1;
 		while ( input.Position < end )
@@ -234,13 +234,13 @@ internal static class ContainerJpegScanner
 	}
 
 	/// <summary>Returns true for EOI (0xD9) and SOS (0xDA) markers that signal the end of scannable data.</summary>
-	private static bool IsJpegStreamEndMarker(int marker)
+	internal static bool IsJpegStreamEndMarker(int marker)
 	{
 		return marker is 0xD9 or 0xDA;
 	}
 
 	/// <summary>Returns true for JPEG markers that have no length/payload (RST0–RST7, TEM).</summary>
-	private static bool IsStandaloneMarker(int marker)
+	internal static bool IsStandaloneMarker(int marker)
 	{
 		return marker is >= 0xD0 and <= 0xD7 or 0x01;
 	}
@@ -248,7 +248,7 @@ internal static class ContainerJpegScanner
 	/// <summary>
 	///     Reads the 2-byte segment length field and returns the payload length (length − 2).
 	/// </summary>
-	private static bool TryReadSegmentPayloadLength(Stream input, out int payloadLength)
+	internal static bool TryReadSegmentPayloadLength(Stream input, out int payloadLength)
 	{
 		payloadLength = 0;
 		Span<byte> lenBuffer = stackalloc byte[2];
@@ -271,7 +271,7 @@ internal static class ContainerJpegScanner
 	///     Seeks past <paramref name="payloadLength" /> bytes for non-APP13 segments, or
 	///     delegates to <see cref="IsIptcApp13Payload" /> for APP13 (0xED).
 	/// </summary>
-	private static bool AdvanceSegmentAndCheckIptc(Stream input, int marker, int payloadLength)
+	internal static bool AdvanceSegmentAndCheckIptc(Stream input, int marker, int payloadLength)
 	{
 		if ( marker == 0xED )
 		{
@@ -286,7 +286,7 @@ internal static class ContainerJpegScanner
 	///     Probes the first 64 bytes of an APP13 payload for the IPTC/Photoshop signature,
 	///     then advances the stream to the end of the segment.
 	/// </summary>
-	private static bool IsIptcApp13Payload(Stream input, int payloadLength)
+	internal static bool IsIptcApp13Payload(Stream input, int payloadLength)
 	{
 		var probeLength = Math.Min(payloadLength, 64);
 		var probe = ArrayPool<byte>.Shared.Rent(probeLength);
@@ -317,5 +317,5 @@ internal static class ContainerJpegScanner
 		return false;
 	}
 
-	private sealed record PreviewCandidate(uint Offset, uint Length, bool HasIptc);
+	internal sealed record PreviewCandidate(uint Offset, uint Length, bool HasIptc);
 }

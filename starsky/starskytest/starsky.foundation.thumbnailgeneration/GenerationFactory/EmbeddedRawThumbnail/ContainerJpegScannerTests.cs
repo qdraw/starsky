@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
@@ -308,7 +310,6 @@ public class ContainerJpegScannerTests
 	[TestMethod]
 	public async Task TryExtractBestPreview_ReturnsFalse_WhenReadAsyncReturnsZero()
 	{
-
 		// If input.Read returns 0, it means EOF or an error.
 		// We can mock a stream that claims to have more data than it actually returns.
 		var input = new TruncatedStream(new byte[MinJpeg * 2], MinJpeg * 2);
@@ -331,7 +332,7 @@ public class ContainerJpegScannerTests
 		smallJpeg[2] = 0xFF;
 		smallJpeg[3] = 0xE0;
 		// No EOI (FF D9) in the rest.
-		
+
 		using var input = StreamOf(smallJpeg);
 		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
 		// result will be false because only candidate was length 0 < 4096
@@ -412,13 +413,13 @@ public class ContainerJpegScannerTests
 		}
 
 		public override Task<int> ReadAsync(byte[] buffer, int offset, int count,
-			System.Threading.CancellationToken cancellationToken)
+			CancellationToken cancellationToken)
 		{
 			return Task.FromResult(0);
 		}
 
 		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
-			System.Threading.CancellationToken cancellationToken = default)
+			CancellationToken cancellationToken = default)
 		{
 			return new ValueTask<int>(0);
 		}
@@ -567,7 +568,7 @@ public class ContainerJpegScannerTests
 		}
 
 		public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
-			System.Threading.CancellationToken cancellationToken = default)
+			CancellationToken cancellationToken = default)
 		{
 			if ( FailAtPosition >= 0 && Position >= FailAtPosition )
 			{
@@ -594,8 +595,8 @@ public class ContainerJpegScannerTests
 
 	private sealed class SeekFailureStream(byte[] data) : MemoryStream(data)
 	{
-		public bool AllowFirstSeek { get; set; }
 		private int _seekCount;
+		public bool AllowFirstSeek { get; set; }
 
 		public override long Seek(long offset, SeekOrigin loc)
 		{
@@ -661,6 +662,390 @@ public class ContainerJpegScannerTests
 		public override void Write(byte[] buffer, int offset, int count)
 		{
 			throw new NotSupportedException();
+		}
+	}
+
+	/// <summary>
+	///     Additional coverage tests for edge cases and internal helper methods.
+	/// </summary>
+	[TestClass]
+	public class ContainerJpegScannerCoverageTests
+	{
+		[TestMethod]
+		public void IsJpegStreamEndMarker_WithEoiMarker_ReturnsTrue()
+		{
+			// EOI marker is 0xD9
+			var result = ContainerJpegScanner.IsJpegStreamEndMarker(0xD9);
+			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
+		public void IsJpegStreamEndMarker_WithSosMarker_ReturnsTrue()
+		{
+			// SOS marker is 0xDA
+			var result = ContainerJpegScanner.IsJpegStreamEndMarker(0xDA);
+			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
+		public void IsJpegStreamEndMarker_WithOtherMarker_ReturnsFalse()
+		{
+			// APP0 marker is 0xE0
+			var result = ContainerJpegScanner.IsJpegStreamEndMarker(0xE0);
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void IsStandaloneMarker_WithRst0Marker_ReturnsTrue()
+		{
+			// RST0 is 0xD0
+			var result = ContainerJpegScanner.IsStandaloneMarker(0xD0);
+			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
+		public void IsStandaloneMarker_WithRst7Marker_ReturnsTrue()
+		{
+			// RST7 is 0xD7
+			var result = ContainerJpegScanner.IsStandaloneMarker(0xD7);
+			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
+		public void IsStandaloneMarker_WithTemMarker_ReturnsTrue()
+		{
+			// TEM is 0x01
+			var result = ContainerJpegScanner.IsStandaloneMarker(0x01);
+			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
+		public void IsStandaloneMarker_WithNonStandaloneMarker_ReturnsFalse()
+		{
+			// APP0 is 0xE0, not standalone
+			var result = ContainerJpegScanner.IsStandaloneMarker(0xE0);
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void TryReadSegmentPayloadLength_WithValidLength_ReturnsTrue()
+		{
+			// Write a 2-byte length field: 0x00 0x10 = 16 bytes total, so payload = 14
+			using var ms = new MemoryStream(new byte[] { 0x00, 0x10 });
+
+			var result =
+				ContainerJpegScanner.TryReadSegmentPayloadLength(ms, out var payloadLength);
+
+			Assert.IsTrue(result);
+			Assert.AreEqual(14, payloadLength);
+		}
+
+		[TestMethod]
+		public void TryReadSegmentPayloadLength_WithLengthTooSmall_ReturnsFalse()
+		{
+			// Write a 2-byte length field: 0x00 0x01 = 1 byte total, which is invalid (< 2)
+			using var ms = new MemoryStream(new byte[] { 0x00, 0x01 });
+
+			var result = ContainerJpegScanner.TryReadSegmentPayloadLength(ms, out _);
+
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void TryReadSegmentPayloadLength_WithInsufficientBytes_ReturnsFalse()
+		{
+			// Only 1 byte available
+			using var ms = new MemoryStream(new byte[] { 0x00 });
+
+			var result = ContainerJpegScanner.TryReadSegmentPayloadLength(ms, out _);
+
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void AdvanceSegmentAndCheckIptc_WithNonApp13Marker_ReturnsFalse()
+		{
+			// APP0 marker (0xE0) is not APP13 (0xED)
+			using var ms = new MemoryStream(new byte[100]);
+
+			var result = ContainerJpegScanner.AdvanceSegmentAndCheckIptc(ms, 0xE0, 50);
+
+			Assert.IsFalse(result);
+			// Stream should have advanced
+			Assert.AreEqual(50, ms.Position);
+		}
+
+		[TestMethod]
+		public void AdvanceSegmentAndCheckIptc_WithApp13Marker_CallsIsIptcApp13Payload()
+		{
+			// APP13 marker (0xED) should delegate to IsIptcApp13Payload
+			using var ms =
+				new MemoryStream(Encoding.ASCII.GetBytes("Photoshop 3.0" + new string(' ', 100)));
+
+			var result = ContainerJpegScanner.AdvanceSegmentAndCheckIptc(ms, 0xED, 114);
+
+			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
+		public void SelectBest_WithEmptyList_ReturnsNull()
+		{
+			var candidates = new List<ContainerJpegScanner.PreviewCandidate>();
+
+			var result = ContainerJpegScanner.SelectBest(candidates);
+
+			Assert.IsNull(result);
+		}
+
+		[TestMethod]
+		public void SelectBest_WithSingleCandidate_ReturnsIt()
+		{
+			var candidates = new List<ContainerJpegScanner.PreviewCandidate>
+			{
+				new(100, 5000, false)
+			};
+
+			var result = ContainerJpegScanner.SelectBest(candidates);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(100u, result.Offset);
+		}
+
+		[TestMethod]
+		public void SelectBest_PrefersIptcCandidate_OverNonIptc()
+		{
+			var candidates = new List<ContainerJpegScanner.PreviewCandidate>
+			{
+				new(100, 5000, false), new(200, 4000, true)
+			};
+
+			var result = ContainerJpegScanner.SelectBest(candidates);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(200u, result.Offset, "Should prefer IPTC candidate");
+		}
+
+		[TestMethod]
+		public void SelectBest_PrefersLongerLengthWhenSameIptcStatus()
+		{
+			var candidates = new List<ContainerJpegScanner.PreviewCandidate>
+			{
+				new(100, 4000, true), new(200, 5000, true)
+			};
+
+			var result = ContainerJpegScanner.SelectBest(candidates);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(200u, result.Offset, "Should prefer longer length");
+		}
+
+		[TestMethod]
+		public async Task CopyRangeToOutput_WithValidRange_CopiesBytesSuccessfully()
+		{
+			var inputData = new byte[300];
+			for ( var i = 0; i < inputData.Length; i++ )
+			{
+				inputData[i] = ( byte ) ( i % 256 );
+			}
+
+			using var input = new MemoryStream(inputData);
+			using var output = new MemoryStream();
+
+			var result = await ContainerJpegScanner.CopyRangeToOutput(input, output, 50, 100);
+
+			Assert.IsTrue(result);
+			Assert.AreEqual(100, output.Length);
+		}
+
+		[TestMethod]
+		public async Task CopyRangeToOutput_WithRangeExceedingStreamLength_ReturnsFalse()
+		{
+			using var input = new MemoryStream(new byte[100]);
+			using var output = new MemoryStream();
+
+			var result = await ContainerJpegScanner.CopyRangeToOutput(input, output, 50, 100);
+
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public async Task CopyRangeToOutput_WithUnseekableStream_ReturnsFalse()
+		{
+			var inner = new MemoryStream(new byte[300]);
+			var unseekable = new UnseekableStream(inner);
+			using var output = new MemoryStream();
+
+			var result = await ContainerJpegScanner.CopyRangeToOutput(unseekable, output, 50, 100);
+
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void TrySkipToMarker_WithValidMarkerAtStart_ReturnsTrue()
+		{
+			// 0xFF followed by non-0xFF byte (0xE0)
+			using var ms = new MemoryStream(new byte[] { 0xFF, 0xE0, 0x00, 0x00 });
+
+			var result = ContainerJpegScanner.TrySkipToMarker(ms, 4, out var marker);
+
+			Assert.IsTrue(result);
+			Assert.AreEqual(0xE0, marker);
+		}
+
+		[TestMethod]
+		public void TrySkipToMarker_WithPaddingBytes_SkipsAndFindsMarker()
+		{
+			// Some padding (0xFF 0xFF) then marker 0xE0
+			using var ms = new MemoryStream(new byte[] { 0x00, 0xFF, 0xFF, 0xE0, 0x00 });
+
+			var result = ContainerJpegScanner.TrySkipToMarker(ms, 5, out var marker);
+
+			Assert.IsTrue(result);
+			Assert.AreEqual(0xE0, marker);
+		}
+
+		[TestMethod]
+		public void TrySkipToMarker_WithNoValidMarker_ReturnsFalse()
+		{
+			// No 0xFF byte at all
+			using var ms = new MemoryStream(new byte[] { 0x00, 0x01, 0x02 });
+
+			var result = ContainerJpegScanner.TrySkipToMarker(ms, 3, out _);
+
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void TrySkipToMarker_AtEndOfRange_ReturnsFalse()
+		{
+			using var ms = new MemoryStream(new byte[] { 0x00, 0x01 });
+
+			var result = ContainerJpegScanner.TrySkipToMarker(ms, 2, out _);
+
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void IsIptcApp13Payload_WithPhotoshopSignature_ReturnsTrue()
+		{
+			var payload = Encoding.ASCII.GetBytes("Photoshop 3.0");
+			using var ms = new MemoryStream(payload);
+
+			var result = ContainerJpegScanner.IsIptcApp13Payload(ms, payload.Length);
+
+			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
+		public void IsIptcApp13Payload_With8BimSignature_ReturnsTrue()
+		{
+			var payload = Encoding.ASCII.GetBytes("8BIM");
+			using var ms = new MemoryStream(payload);
+
+			var result = ContainerJpegScanner.IsIptcApp13Payload(ms, payload.Length);
+
+			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
+		public void IsIptcApp13Payload_WithoutIptcSignature_ReturnsFalse()
+		{
+			var payload = Encoding.ASCII.GetBytes("Some random data here");
+			using var ms = new MemoryStream(payload);
+
+			var result = ContainerJpegScanner.IsIptcApp13Payload(ms, payload.Length);
+
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void IsIptcApp13Payload_WithInsufficientBytes_ReturnsFalse()
+		{
+			using var ms = new MemoryStream(new byte[0]);
+
+			var result = ContainerJpegScanner.IsIptcApp13Payload(ms, 0);
+
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void ScanCandidates_WithValidJpegData_FindsCandidates()
+		{
+			// Create stream with JPEG SOI marker
+			var data = new byte[10000];
+			data[0] = 0xFF;
+			data[1] = 0xD8;
+			data[2] = 0xFF;
+			// Fill with some data to reach minimum size
+			for ( var i = 3; i < data.Length - 2; i++ )
+			{
+				data[i] = 0x00;
+			}
+
+			data[data.Length - 2] = 0xFF;
+			data[data.Length - 1] = 0xD9; // EOI
+
+			using var ms = new MemoryStream(data);
+
+			var candidates = ContainerJpegScanner.ScanCandidates(ms);
+
+			Assert.IsTrue(candidates.Count > 0);
+		}
+
+		private sealed class UnseekableStream : Stream
+		{
+			private readonly Stream _inner;
+
+			public UnseekableStream(Stream inner)
+			{
+				_inner = inner;
+			}
+
+			public override bool CanRead => _inner.CanRead;
+			public override bool CanSeek => false;
+			public override bool CanWrite => _inner.CanWrite;
+			public override long Length => _inner.Length;
+
+			public override long Position
+			{
+				get => _inner.Position;
+				set => throw new NotSupportedException();
+			}
+
+			public override void Flush()
+			{
+				_inner.Flush();
+			}
+
+			public override int Read(byte[] buffer, int offset, int count)
+			{
+				return _inner.Read(buffer, offset, count);
+			}
+
+			public override long Seek(long offset, SeekOrigin origin)
+			{
+				throw new NotSupportedException();
+			}
+
+			public override void SetLength(long value)
+			{
+				_inner.SetLength(value);
+			}
+
+			public override void Write(byte[] buffer, int offset, int count)
+			{
+				_inner.Write(buffer, offset, count);
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				if ( disposing )
+				{
+					_inner.Dispose();
+				}
+
+				base.Dispose(disposing);
+			}
 		}
 	}
 }
