@@ -61,24 +61,61 @@ public class LightweightContainerPreviewExtractor(
 
 	private static async Task<bool> TryExtractX3FTaggedPreview(Stream input, Stream output)
 	{
+		if ( !TryParseTiffHeader(input, out var tiffBase, out var littleEndian, out var firstIfdRelative) )
+		{
+			return false;
+		}
+
+		var ifdOffset = tiffBase + firstIfdRelative;
+		for ( var i = 0; i < 4 && ifdOffset > 0; i++ )
+		{
+			if ( !TryReadIfdJpegPair(input, ifdOffset, littleEndian,
+				out var candidateOffset, out var candidateLength, out var compression,
+				out var nextIfdRelative) )
+			{
+				break;
+			}
+
+						if ( compression is 6 or 7 && TryResolveAndValidateOffset(input, tiffBase, candidateOffset, candidateLength, out var resolvedOffset) )
+						{
+							return await CopyRangeAsync(input, output, resolvedOffset, candidateLength);
+						}
+
+						if ( nextIfdRelative == 0 )
+						{
+							break;
+						}
+
+			ifdOffset = tiffBase + nextIfdRelative;
+		}
+
+		return false;
+	}
+
+	private static bool TryParseTiffHeader(Stream input, out int tiffBase, out bool littleEndian, out uint firstIfdRelative)
+	{
+		tiffBase = -1;
+		littleEndian = false;
+		firstIfdRelative = 0;
+
 		if ( !input.CanSeek || input.Length < 512 )
 		{
 			return false;
 		}
 
-		var tiffBase = FindTiffHeaderOffset(input);
-		if ( tiffBase < 0 || !TrySeek(input, tiffBase) )
+		var found = FindTiffHeaderOffset(input);
+		if ( found < 0 || !TrySeek(input, found) )
 		{
 			return false;
 		}
 
 		var endianBuf = new byte[2];
-		if ( await input.ReadAsync(endianBuf.AsMemory(0, 2)) != 2 )
+		if ( input.Read(endianBuf, 0, 2) != 2 )
 		{
 			return false;
 		}
 
-		var littleEndian = endianBuf[0] == 0x49 && endianBuf[1] == 0x49;
+		littleEndian = endianBuf[0] == 0x49 && endianBuf[1] == 0x49;
 		if ( !littleEndian && !( endianBuf[0] == 0x4D && endianBuf[1] == 0x4D ) )
 		{
 			return false;
@@ -88,38 +125,13 @@ public class LightweightContainerPreviewExtractor(
 		{
 			return false;
 		}
-
-		if ( !TryReadUInt32(input, littleEndian, out var firstIfdRelative) )
+		if ( !TryReadUInt32(input, littleEndian, out firstIfdRelative) )
 		{
 			return false;
 		}
 
-		var ifdOffset = tiffBase + firstIfdRelative;
-		for ( var i = 0; i < 4 && ifdOffset > 0; i++ )
-		{
-			if ( !TryReadIfdJpegPair(input, ifdOffset, littleEndian,
-				    out var candidateOffset, out var candidateLength, out var compression,
-				    out var nextIfdRelative) )
-			{
-				break;
-			}
-
-			if ( compression is 6 or 7 &&
-			     TryResolveAndValidateOffset(input, tiffBase, candidateOffset, candidateLength,
-				     out var resolvedOffset) )
-			{
-				return await CopyRangeAsync(input, output, resolvedOffset, candidateLength);
-			}
-
-			if ( nextIfdRelative == 0 )
-			{
-				break;
-			}
-
-			ifdOffset = tiffBase + nextIfdRelative;
-		}
-
-		return false;
+		tiffBase = found;
+		return true;
 	}
 
 	private static int FindTiffHeaderOffset(Stream input)
@@ -159,6 +171,7 @@ public class LightweightContainerPreviewExtractor(
 		compression = 0;
 		nextIfdRelative = 0;
 
+		// Read entry count
 		if ( !TrySeek(input, ifdOffset) || !TryReadUInt16(input, littleEndian, out var entryCount) )
 		{
 			return false;
@@ -171,10 +184,7 @@ public class LightweightContainerPreviewExtractor(
 
 		for ( var i = 0; i < entryCount; i++ )
 		{
-			if ( !TryReadUInt16(input, littleEndian, out var tag) ||
-			     !TryReadUInt16(input, littleEndian, out var type) ||
-			     !TryReadUInt32(input, littleEndian, out var count) ||
-			     !TryReadUInt32(input, littleEndian, out var value) )
+			if ( !TryReadIfdEntry(input, littleEndian, out var tag, out var type, out var count, out var value) )
 			{
 				return false;
 			}
@@ -184,24 +194,63 @@ public class LightweightContainerPreviewExtractor(
 				continue;
 			}
 
-			switch ( tag )
-			{
-				case 0x0103:
-					compression = type == 3
-						? ( ushort ) ( littleEndian ? value & 0xFFFF : value >> 16 )
-						: ( ushort ) value;
-					continue;
-				case 0x0201:
-					jpegOffset = value;
-					continue;
-				case 0x0202:
-					jpegLength = value;
-					break;
-			}
+			HandleIfdEntry(tag, type, value, littleEndian, ref compression, ref jpegOffset, ref jpegLength);
 		}
 
 		return TryReadUInt32(input, littleEndian, out nextIfdRelative);
 	}
+
+	private static bool TryReadIfdEntry(Stream input, bool littleEndian, out ushort tag, out ushort type,
+		out uint count, out uint value)
+	{
+		tag = 0;
+		type = 0;
+		count = 0;
+		value = 0;
+		if ( !TryReadUInt16(input, littleEndian, out tag) ||
+		     !TryReadUInt16(input, littleEndian, out type) ||
+		     !TryReadUInt32(input, littleEndian, out count) ||
+		     !TryReadUInt32(input, littleEndian, out value) )
+		{
+			return false;
+		}
+		return true;
+	}
+
+	private static void HandleIfdEntry(ushort tag, ushort type, uint value, bool littleEndian,
+		ref ushort compression, ref uint jpegOffset, ref uint jpegLength)
+	{
+		switch ( tag )
+		{
+			case 0x0103: // Compression
+				if ( type == 3 )
+				{
+					ushort compVal;
+					if ( littleEndian )
+					{
+						compVal = ( ushort )( value & 0xFFFF );
+					}
+					else
+					{
+						compVal = ( ushort )( value >> 16 );
+					}
+
+					compression = compVal;
+				}
+				else
+				{
+					compression = ( ushort ) value;
+				}
+				break;
+			case 0x0201: // Thumbnail offset
+				jpegOffset = value;
+				break;
+			case 0x0202: // Thumbnail length
+				jpegLength = value;
+				break;
+		}
+	}
+
 
 	private static bool TryResolveAndValidateOffset(Stream input, int tiffBase,
 		uint candidateOffset,
