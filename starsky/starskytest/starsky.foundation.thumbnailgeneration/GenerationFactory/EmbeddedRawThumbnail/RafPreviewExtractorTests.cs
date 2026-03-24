@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
@@ -225,7 +226,8 @@ public class RafPreviewExtractorTests
 		var signature = "FUJIFILMCCD-RAW "u8.ToArray();
 		Array.Copy(signature, 0, bytes, 0, signature.Length);
 		WriteUInt32BigEndian(bytes, 0x54, 100);
-		WriteUInt32BigEndian(bytes, 0x58, 10000); // Claims 10000 bytes available at 100, but file ends at 10000
+		WriteUInt32BigEndian(bytes, 0x58,
+			10000); // Claims 10000 bytes available at 100, but file ends at 10000
 
 		// JPEG SOI at 100
 		bytes[100] = 0xFF;
@@ -255,7 +257,8 @@ public class RafPreviewExtractorTests
 
 		var result = await extractorNonSeekable.TryExtract(InputSubPath, OutputSubPath);
 
-		Assert.IsFalse(result, "Should return false when stream cannot seek (TryReadHeaderPreviewRange fails)");
+		Assert.IsFalse(result,
+			"Should return false when stream cannot seek (TryReadHeaderPreviewRange fails)");
 	}
 
 	private sealed class NonSeekableFakeStorage : FakeIStorage
@@ -275,7 +278,10 @@ public class RafPreviewExtractorTests
 
 		private sealed class NonSeekableStream : MemoryStream
 		{
-			public NonSeekableStream(byte[] data) : base(data) { }
+			public NonSeekableStream(byte[] data) : base(data)
+			{
+			}
+
 			public override bool CanSeek => false;
 		}
 	}
@@ -349,7 +355,8 @@ public class RafPreviewExtractorTests
 	{
 		// This is hard to trigger with MemoryStream, need a custom stream that returns less than 3 bytes.
 		var bytes = CreateRafWithHeaderPreview(148, CreateMinimalJpeg());
-		var subPathStorage = new PartialReadStorage(bytes, 148, 2); // Read only 2 bytes at SOI offset
+		var subPathStorage =
+			new PartialReadStorage(bytes, 148, 2); // Read only 2 bytes at SOI offset
 		var logger = new FakeIWebLogger();
 		var selectorStorage = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
 			new FakeIStorage(), new FakeIStorage());
@@ -375,7 +382,7 @@ public class RafPreviewExtractorTests
 		private readonly int _partialReadSize;
 
 		public PartialReadStorage(byte[] data, uint partialOffset, int partialReadSize)
-			: base([ "/raw"], [ InputSubPath ], [data])
+			: base(["/raw"], [InputSubPath], [data])
 		{
 			_data = data;
 			_partialOffset = partialOffset;
@@ -393,7 +400,8 @@ public class RafPreviewExtractorTests
 			private readonly uint _partialOffset;
 			private readonly int _partialReadSize;
 
-			public PartialReadStream(byte[] data, uint partialOffset, int partialReadSize) : base(data)
+			public PartialReadStream(byte[] data, uint partialOffset, int partialReadSize) :
+				base(data)
 			{
 				_data = data;
 				_partialOffset = partialOffset;
@@ -402,13 +410,13 @@ public class RafPreviewExtractorTests
 
 			public override int Read(Span<byte> buffer)
 			{
-				if (Position != _partialOffset || buffer.Length < _partialReadSize)
+				if ( Position != _partialOffset || buffer.Length < _partialReadSize )
 				{
 					return base.Read(buffer);
 				}
 
-				var toCopy = (int)Math.Min(_partialReadSize, _data.Length - Position);
-				_data.AsSpan((int)Position, toCopy).CopyTo(buffer);
+				var toCopy = ( int ) Math.Min(_partialReadSize, _data.Length - Position);
+				_data.AsSpan(( int ) Position, toCopy).CopyTo(buffer);
 				Position += toCopy;
 				return toCopy;
 			}
@@ -457,13 +465,61 @@ public class RafPreviewExtractorTests
 			public override long Seek(long offset, SeekOrigin loc)
 			{
 				_seekCount++;
-				if (_seekCount == _failOnSeekCount)
+				if ( _seekCount == _failOnSeekCount )
 				{
 					throw new IOException("Seek failed");
 				}
 
 				return base.Seek(offset, loc);
 			}
+		}
+	}
+
+	[TestMethod]
+	public async Task CopyRange_LargeContent_Success()
+	{
+		var offset = 148u;
+		var length = 128u * 1024u; // 128KB, twice the buffer size
+		var previewBytes = new byte[length];
+		new Random().NextBytes(previewBytes);
+		previewBytes[0] = 0xFF; // Valid-ish JPEG SOI for HasJpegSoiAt
+		previewBytes[1] = 0xD8;
+		previewBytes[2] = 0xFF;
+
+		var rafBytes = CreateRafWithHeaderPreview(offset, previewBytes);
+
+		var result = await RafPreviewExtractor.CopyRange(new MemoryStream(rafBytes),
+			new MemoryStream(), offset, length);
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task CopyRange_ReadReturnsZero_ReturnsFalse()
+	{
+		const uint offset = 10u;
+		const uint length = 100u;
+		var input = new ZeroReadStream();
+		var output = new MemoryStream();
+
+		var result = await RafPreviewExtractor.CopyRange(input, output, offset, length);
+
+		Assert.IsFalse(result);
+	}
+
+	private sealed class ZeroReadStream : MemoryStream
+	{
+		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
+			CancellationToken cancellationToken = default)
+		{
+			return ValueTask.FromResult(0);
+		}
+
+		public override bool CanSeek => true;
+
+		public override long Seek(long offset, SeekOrigin loc)
+		{
+			return offset;
 		}
 	}
 }

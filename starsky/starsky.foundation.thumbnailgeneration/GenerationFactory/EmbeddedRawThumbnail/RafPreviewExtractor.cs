@@ -30,6 +30,7 @@ public class RafPreviewExtractor(IWebLogger logger, ISelectorStorage selectorSto
 			{
 				return false;
 			}
+
 			await using var input = SubPathStorage.ReadStream(subPathRawFile);
 			await using var output = new MemoryStream();
 
@@ -118,7 +119,8 @@ public class RafPreviewExtractor(IWebLogger logger, ISelectorStorage selectorSto
 		return input.Read(soi) == 3 && soi[0] == 0xFF && soi[1] == 0xD8 && soi[2] == 0xFF;
 	}
 
-	private static async Task<bool> CopyRange(Stream input, Stream output, uint offset, uint length)
+	internal static async Task<bool> CopyRange(Stream input, Stream output, uint offset,
+		uint length)
 	{
 		if ( !StreamPrimitives.TrySeek(input, offset) )
 		{
