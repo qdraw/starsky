@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Interfaces;
 
@@ -833,49 +832,49 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		// --- RAW format hints inside TIFF container ---
 
 		// Sony ARW
-		if ( Contains(bytes, "SONY") )
+		if ( bytes.Contain("SONY") )
 		{
 			return ImageFormat.arw;
 		}
 
 		// Adobe DNG
-		if ( Contains(bytes, "DNG") )
+		if ( bytes.Contain("DNG") )
 		{
 			return ImageFormat.dng;
 		}
 
 		// Nikon NEF
-		if ( Contains(bytes, "NIKON") )
+		if ( bytes.Contain("NIKON") )
 		{
 			return ImageFormat.nef;
 		}
 
 		// Canon CR2
-		if ( Contains(bytes, "CR2") )
+		if ( bytes.Contain("CR2") )
 		{
 			return ImageFormat.cr2;
 		}
 
 		// Canon CR3
-		if ( Contains(bytes, "CR3") )
+		if ( bytes.Contain("CR3") )
 		{
 			return ImageFormat.cr3;
 		}
 
 		// Olympus ORF
-		if ( Contains(bytes, "OLYMP") )
+		if ( bytes.Contain("OLYMP") )
 		{
 			return ImageFormat.orf;
 		}
 
 		// Panasonic RW2
-		if ( Contains(bytes, "Panasonic") )
+		if ( bytes.Contain("Panasonic") )
 		{
 			return ImageFormat.rw2;
 		}
 
 		// Pentax PEF
-		if ( Contains(bytes, "PENTAX") )
+		if ( bytes.Contain("PENTAX") )
 		{
 			return ImageFormat.pef;
 		}
@@ -884,24 +883,6 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		return ImageFormat.tiff;
 	}
 
-	private static bool Contains(byte[] bytes, string value)
-	{
-		if ( string.IsNullOrEmpty(value) )
-		{
-			return false;
-		}
-
-		var strBytes = Encoding.ASCII.GetBytes(value);
-
-		// Early exit if search pattern is longer than the source
-		if ( strBytes.Length > bytes.Length )
-		{
-			return false;
-		}
-
-		// Use MemoryExtensions for efficient byte sequence search
-		return bytes.AsSpan().IndexOf(strBytes) >= 0;
-	}
 
 	private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
 	{
