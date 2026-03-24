@@ -262,4 +262,49 @@ public class ContainerFormatPreviewExtractorTests
 		Assert.IsGreaterThanOrEqualTo(largeJpegSize, outMs.ToArray().Length,
 			"Should select largest preview found");
 	}
+
+	[TestMethod]
+	public async Task TryExtract_WithNullOutputPath_ReturnsTrue()
+	{
+		// Arrange: Create CR3 with JPEG preview, but request NO output file (outputLargePath = null)
+		using var ms = new MemoryStream();
+		await ms.WriteAsync(CreateMinimalCr3Header(), TestContext.CancellationToken);
+
+		// Add JPEG preview at offset 256
+		ms.Seek(32, SeekOrigin.Begin);
+		var padding = new byte[256 - 32];
+		await ms.WriteAsync(padding, TestContext.CancellationToken);
+		await ms.WriteAsync(CreateMinimalJpeg(50000), TestContext.CancellationToken);
+		ms.Seek(0, SeekOrigin.Begin);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), out _);
+		var extractor = new ContainerFormatPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		// Act: Pass NULL for outputLargePath - extraction succeeds but no file is written
+		var result = await extractor.TryExtract(InputSubPath, null);
+
+		// Assert: Should return true because extraction succeeded, even though output was null
+		Assert.IsTrue(result,
+			"TryExtract should return true when extraction succeeds even with null output path");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithExceptionDuringExtraction_LogsAndReturnsFalse()
+	{
+		// Arrange: Create a selector storage that throws an exception when reading the input stream
+		var fakeLogger = new FakeIWebLogger();
+		var subPathStorage = new FakeIStorage(["/raw"]);
+		var tempStorage = new FakeIStorage(["/tmp"]);
+
+		var selectorStorage = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
+			new FakeIStorage(), tempStorage);
+
+		var extractor = new ContainerFormatPreviewExtractor(fakeLogger, selectorStorage);
+
+		// Act: Call with non-existent file (will throw in ReadStream)
+		var result = await extractor.TryExtract("/nonexistent/file.cr3", OutputSubPath);
+
+		// Assert: Should return false due to exception
+		Assert.IsFalse(result, "TryExtract should return false when exception occurs");
+	}
 }
