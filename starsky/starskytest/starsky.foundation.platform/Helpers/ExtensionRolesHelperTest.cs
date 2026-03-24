@@ -271,6 +271,22 @@ public sealed class ExtensionRolesHelperTest
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
 	}
 
+	[TestMethod]
+	public void Files_GetImageFormat_Rw2_IiuHeader_ReturnsRw2()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			new byte[] { 0x49, 0x49, 0x55, 0x00, 0x18, 0x00, 0x00, 0x00 });
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.rw2, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_X3f_FovbHeader_ReturnsX3f()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			new byte[] { 0x46, 0x4F, 0x56, 0x62, 0x03, 0x00, 0x02, 0x00 });
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.x3f, fileType);
+	}
+
 
 	[TestMethod]
 	public void Files_GetImageFormat_SonyArw_WithTiffHeader()

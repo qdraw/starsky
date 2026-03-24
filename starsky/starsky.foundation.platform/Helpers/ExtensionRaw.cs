@@ -45,6 +45,16 @@ public static class ExtensionRaw
 			return ExtensionRolesHelper.ImageFormat.unknown;
 		}
 
+		if ( HasX3FHeader(bytes) )
+		{
+			return ExtensionRolesHelper.ImageFormat.x3f;
+		}
+
+		if ( HasRw2Header(bytes) )
+		{
+			return ExtensionRolesHelper.ImageFormat.rw2;
+		}
+
 		var probe = bytes.AsSpan(0, Math.Min(bytes.Length, ProbeLength));
 
 		// RAF can start with "FUJI" instead of TIFF header.
@@ -59,33 +69,38 @@ public static class ExtensionRaw
 		}
 
 		var firstIfdOffset = ( int ) ReadUInt32(probe, 4, littleEndian);
-		if ( firstIfdOffset < 8 || firstIfdOffset + 2 > probe.Length )
+		
+		if ( firstIfdOffset < 8 || firstIfdOffset + 2 > probe.Length || !TryParseFirstIfdForTags(probe, firstIfdOffset, littleEndian,
+			    out var make, out var model, out var hasDngTag) )
 		{
 			return DetectByMarker(probe);
 		}
 
-		if ( TryParseFirstIfdForTags(probe, firstIfdOffset, littleEndian,
-			    out var make, out var model, out var hasDngTag) )
+		if ( hasDngTag )
 		{
-			if ( hasDngTag )
-			{
-				return ExtensionRolesHelper.ImageFormat.dng;
-			}
-
-			var byMake = DetectFromMake(make);
-			if ( byMake.HasValue )
-			{
-				return byMake.Value;
-			}
-
-			var byModel = DetectFromModel(model);
-			if ( byModel.HasValue )
-			{
-				return byModel.Value;
-			}
+			return ExtensionRolesHelper.ImageFormat.dng;
 		}
 
-		return DetectByMarker(probe);
+		var byMake = DetectFromMake(make);
+		if ( byMake.HasValue )
+		{
+			return byMake.Value;
+		}
+
+		var byModel = DetectFromModel(model);
+		return byModel ??  DetectByMarker(probe) ;
+	}
+
+	private static bool HasX3FHeader(ReadOnlySpan<byte> bytes)
+	{
+		return bytes[0] == ( byte ) 'F' && bytes[1] == ( byte ) 'O' &&
+		       bytes[2] == ( byte ) 'V' && bytes[3] == ( byte ) 'b';
+	}
+
+	private static bool HasRw2Header(ReadOnlySpan<byte> bytes)
+	{
+		// Panasonic RW2 starts with "IIU\0" instead of classic TIFF "II*\0".
+		return bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x55 && bytes[3] == 0x00;
 	}
 
 	private static ExtensionRolesHelper.ImageFormat DetectByMarker(ReadOnlySpan<byte> probe)
