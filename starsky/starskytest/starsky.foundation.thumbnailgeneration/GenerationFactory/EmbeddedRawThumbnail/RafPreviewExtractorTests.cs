@@ -83,15 +83,139 @@ public class RafPreviewExtractorTests
 		Assert.IsTrue(result, "RAF header preview should be extracted");
 		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath), "Preview should be written to temp");
 
-		using var stream = tempStorage.ReadStream(OutputSubPath);
+		await using var stream = tempStorage.ReadStream(OutputSubPath);
 		using var ms = new MemoryStream();
 		await stream.CopyToAsync(ms, TestContext.CancellationToken);
 		var written = ms.ToArray();
-		Assert.HasCount(jpeg.Length,
-			written,
-			"Should write exact RAF header preview range");
+		Assert.HasCount(jpeg.Length, written, "Should write exact RAF header preview range");
 		Assert.AreEqual(0xFF, written[0]);
 		Assert.AreEqual(0xD8, written[1]);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithNullOutputPath_ReturnsOkWithoutWriting()
+	{
+		var jpeg = CreateMinimalJpeg(7000);
+		var raf = CreateRafWithHeaderPreview(148, jpeg);
+		var selectorStorage = CreateSelectorStorage(raf, out var tempStorage);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, null);
+
+		Assert.IsTrue(result);
+		Assert.IsFalse(tempStorage.ExistFile(OutputSubPath));
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithShortInput_ReturnsFalse()
+	{
+		var bytes = new byte[10];
+		var selectorStorage = CreateSelectorStorage(bytes, out _);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithInvalidSignature_ReturnsFalse()
+	{
+		var bytes = new byte[100];
+		// No signature
+		var selectorStorage = CreateSelectorStorage(bytes, out _);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithPreviewOffsetZero_ReturnsFalse()
+	{
+		var bytes = new byte[100];
+		var signature = "FUJIFILMCCD-RAW "u8.ToArray();
+		Array.Copy(signature, 0, bytes, 0, signature.Length);
+		WriteUInt32BigEndian(bytes, 0x54, 0); // Offset 0
+		WriteUInt32BigEndian(bytes, 0x58, 5000);
+
+		var selectorStorage = CreateSelectorStorage(bytes, out _);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithPreviewLengthTooSmall_ReturnsFalse()
+	{
+		var bytes = new byte[10000];
+		var signature = "FUJIFILMCCD-RAW "u8.ToArray();
+		Array.Copy(signature, 0, bytes, 0, signature.Length);
+		WriteUInt32BigEndian(bytes, 0x54, 100);
+		WriteUInt32BigEndian(bytes, 0x58, 100); // Too small (< 4096)
+
+		var selectorStorage = CreateSelectorStorage(bytes, out _);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithPreviewRangeOutsideFile_ReturnsFalse()
+	{
+		var bytes = new byte[200];
+		var signature = "FUJIFILMCCD-RAW "u8.ToArray();
+		Array.Copy(signature, 0, bytes, 0, signature.Length);
+		WriteUInt32BigEndian(bytes, 0x54, 100);
+		WriteUInt32BigEndian(bytes, 0x58, 5000); // End = 5100 > 200
+
+		var selectorStorage = CreateSelectorStorage(bytes, out _);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithInvalidJpegSoi_ReturnsFalse()
+	{
+		var bytes = new byte[10000];
+		var signature = "FUJIFILMCCD-RAW "u8.ToArray();
+		Array.Copy(signature, 0, bytes, 0, signature.Length);
+		WriteUInt32BigEndian(bytes, 0x54, 100);
+		WriteUInt32BigEndian(bytes, 0x58, 5000);
+
+		// Not a JPEG SOI at offset 100
+		bytes[100] = 0x00;
+		bytes[101] = 0x00;
+		bytes[102] = 0x00;
+
+		var selectorStorage = CreateSelectorStorage(bytes, out _);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithException_ReturnsFalseAndLogs()
+	{
+		var logger = new FakeIWebLogger();
+		// Passing null for selectorStorage will cause a NullReferenceException in TryExtract
+		var extractor = new RafPreviewExtractor(logger, null!);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result);
+		Assert.Contains(l =>
+			l.Item2 != null && l.Item2.Contains("[RafPreviewExtractor]"), logger.TrackedDebug);
 	}
 
 	[TestMethod]
