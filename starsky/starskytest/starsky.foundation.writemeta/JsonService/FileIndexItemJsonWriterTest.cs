@@ -65,7 +65,7 @@ public sealed class FileIndexItemJsonParserTest
 		Console.WriteLine(BitConverter.ToString(byteArray).Replace("-", string.Empty));
 
 		var imageFormat = new ExtensionRolesHelper(new FakeIWebLogger()).GetImageFormat(
-			fakeStorage.ReadStream(jsonSubPath, 67));
+			fakeStorage.ReadStream(jsonSubPath, ExtensionRolesHelper.ImageFormatByteSize));
 
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.meta_json, imageFormat);
 	}

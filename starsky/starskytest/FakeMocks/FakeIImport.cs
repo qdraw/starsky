@@ -58,7 +58,7 @@ public class FakeIImport : IImport
 			// Check if the file is correct
 			var imageFormat = new ExtensionRolesHelper(new FakeIWebLogger()).GetImageFormat(
 				_selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem)
-					.ReadStream(inputFileFullPath, 160));
+					.ReadStream(inputFileFullPath, ExtensionRolesHelper.ImageFormatByteSize));
 
 			if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains($"{imageFormat}") )
 			{

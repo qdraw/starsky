@@ -151,7 +151,8 @@ public class MozJpegService : IMozJpegService
 
 	private bool IsJpegOutput(string outputPath)
 	{
-		using var stream = _hostFileSystemStorage.ReadStream(outputPath, 68);
+		using var stream = _hostFileSystemStorage.ReadStream(outputPath,
+			ExtensionRolesHelper.ImageFormatByteSize);
 		var format = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 		return format == ExtensionRolesHelper.ImageFormat.jpg;
 	}

@@ -24,7 +24,7 @@
       Orientation: Horizontal,
       ImageWidth: 6000,
       ImageHeight: 4000,
-      ImageFormat: tiff,
+      ImageFormat: arw,
       SidecarExtensions: ,
       ShutterSpeed: ,
       Software: ILCE-6600 v1.10,
@@ -44,7 +44,7 @@
     MakeModel: Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE|,
     Artist: Dion van Velde,
     DateTimeFromFileName: false,
-    ImageFormat: tiff,
+    ImageFormat: arw,
     Size: 50000,
     Origin: 
   }

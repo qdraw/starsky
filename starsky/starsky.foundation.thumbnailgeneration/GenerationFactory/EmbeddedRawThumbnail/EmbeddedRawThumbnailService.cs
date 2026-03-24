@@ -13,7 +13,7 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 
 /// <summary>
 ///     Service for extracting embedded JPEG previews from RAW image files.
-///     Supports: CR2 (Canon), NEF (Nikon), ARW (Sony), DNG (Adobe), RAF (Fujifilm), FFF (Hasselblad),
+///     Supports: CR2 (Canon), NEF (Nikon), ARW (Sony), DNG (Adobe), RAF (Fujifilm),
 ///     X3F (Sigma)
 /// </summary>
 [Service(typeof(IEmbeddedRawThumbnailService),
@@ -54,7 +54,7 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 				ExtensionRolesHelper.ImageFormat.cr3 =>
 					await containerExtractor.TryExtract(rawFilePath,
 						outputLargePath),
-				_ when extension is ".fff" or ".x3f" =>
+				_ when extension is ".x3f" =>
 					await lightweightContainerExtractor.TryExtract(rawFilePath,
 						outputLargePath),
 				_ => false

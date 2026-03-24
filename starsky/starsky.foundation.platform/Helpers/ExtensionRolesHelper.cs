@@ -65,6 +65,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		directory = 1000
 	}
 
+	public const int ImageFormatByteSize = 400;
+
 	/// <summary>
 	///     Xmp sidecar file
 	/// </summary>
@@ -627,7 +629,6 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		return buffer;
 	}
 
-
 	/// <summary>
 	///     Get the format of the image by looking the first bytes
 	///     Stream is Flushed / Disposed afterward
@@ -641,7 +642,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return ImageFormat.notfound;
 		}
 
-		var format = GetImageFormat(ReadBuffer(stream, 300));
+		var format = GetImageFormat(ReadBuffer(stream, ImageFormatByteSize));
 		return format;
 	}
 
@@ -807,76 +808,19 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return null;
 		}
 
-		// Fuji RAF (special case: starts with FUJI marker, not standard TIFF header)
-		if ( bytes[0] == 0x46 && // F
-		     bytes[1] == 0x55 && // U
-		     bytes[2] == 0x4A && // J
-		     bytes[3] == 0x49 ) // I
+		var value = ExtensionRaw.Detect(bytes);
+		if ( value != ImageFormat.unknown )
 		{
-			return ImageFormat.raf;
+			return value;
 		}
 
-		// TIFF headers
-		// Little-endian: 49 49 2A 00 (II*)
-		// Big-endian:   4D 4D 00 2A (MM*)
-		var isLittleEndianTiff = bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x2A &&
-		                         bytes[3] == 0x00;
-		var isBigEndianTiff = bytes[0] == 0x4D && bytes[1] == 0x4D && bytes[2] == 0x00 &&
-		                      bytes[3] == 0x2A;
-
-		if ( !isLittleEndianTiff && !isBigEndianTiff )
+		var hasLittleEndianTiffHeader =
+			bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x2A && bytes[3] == 0x00;
+		var hasBigEndianTiffHeader =
+			bytes[0] == 0x4D && bytes[1] == 0x4D && bytes[2] == 0x00 && bytes[3] == 0x2A;
+		if ( !hasLittleEndianTiffHeader && !hasBigEndianTiffHeader )
 		{
 			return null;
-		}
-
-		// --- RAW format hints inside TIFF container ---
-
-		// Adobe DNG
-		if ( bytes.Contain("DNG") )
-		{
-			return ImageFormat.dng;
-		}
-
-		// Sony ARW
-		if ( bytes.Contain("SONY") )
-		{
-			return ImageFormat.arw;
-		}
-
-		// Nikon NEF
-		if ( bytes.Contain("NIKON") )
-		{
-			return ImageFormat.nef;
-		}
-
-		// Canon CR2
-		if ( bytes.Contain("CR2") )
-		{
-			return ImageFormat.cr2;
-		}
-
-		// Canon CR3
-		if ( bytes.Contain("CR3") )
-		{
-			return ImageFormat.cr3;
-		}
-
-		// Olympus ORF
-		if ( bytes.Contain("OLYMP") )
-		{
-			return ImageFormat.orf;
-		}
-
-		// Panasonic RW2
-		if ( bytes.Contain("Panasonic") )
-		{
-			return ImageFormat.rw2;
-		}
-
-		// Pentax PEF
-		if ( bytes.Contain("PENTAX") )
-		{
-			return ImageFormat.pef;
 		}
 
 		// Default TIFF
@@ -893,7 +837,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 		// ISOBMFF: [size:4][ftyp:4][majorBrand:4]
 		// Canon CR3 uses brand "crx "
-		var fTypCr3 = new byte[] { 102, 116, 121, 112, 99, 114, 120, 32 }; // ftypcrx 
+		var fTypCr3 = "ftypcrx "u8.ToArray(); // ftypcrx 
 		if ( bytes.Length >= 12 && fTypCr3.SequenceEqual(bytes.Skip(4).Take(fTypCr3.Length)) )
 		{
 			return ImageFormat.cr3;

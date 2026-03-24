@@ -400,7 +400,7 @@ public class Import : IImport
 
 		var imageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(
 			_filesystemStorage.ReadStream(inputFileFullPath.Key,
-				160));
+				ExtensionRolesHelper.ImageFormatByteSize));
 
 		// Check if extension is correct && Check if the file is correct
 		if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
