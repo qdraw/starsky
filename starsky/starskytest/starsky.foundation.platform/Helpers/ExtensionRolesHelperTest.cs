@@ -287,6 +287,19 @@ public sealed class ExtensionRolesHelperTest
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.x3f, fileType);
 	}
 
+	[TestMethod]
+	public void Files_GetImageFormat_Cr2_NativeHeader_ReturnsCr2()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			new byte[]
+			{
+				0x49, 0x49, 0x2A, 0x00,
+				0x10, 0x00, 0x00, 0x00,
+				0x43, 0x52, 0x02, 0x00
+			});
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr2, fileType);
+	}
+
 
 	[TestMethod]
 	public void Files_GetImageFormat_SonyArw_WithTiffHeader()

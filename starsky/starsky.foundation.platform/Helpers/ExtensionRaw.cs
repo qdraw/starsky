@@ -55,6 +55,11 @@ public static class ExtensionRaw
 			return ExtensionRolesHelper.ImageFormat.rw2;
 		}
 
+		if ( HasCr2Header(bytes) )
+		{
+			return ExtensionRolesHelper.ImageFormat.cr2;
+		}
+
 		var probe = bytes.AsSpan(0, Math.Min(bytes.Length, ProbeLength));
 
 		// RAF can start with "FUJI" instead of TIFF header.
@@ -101,6 +106,25 @@ public static class ExtensionRaw
 	{
 		// Panasonic RW2 starts with "IIU\0" instead of classic TIFF "II*\0".
 		return bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x55 && bytes[3] == 0x00;
+	}
+
+	private static bool HasCr2Header(ReadOnlySpan<byte> bytes)
+	{
+		// Canon CR2: TIFF little-endian header + "CR" and version bytes at offset 8.
+		if ( bytes.Length < 12 )
+		{
+			return false;
+		}
+
+		var hasLittleEndianTiff =
+			bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x2A && bytes[3] == 0x00;
+		if ( !hasLittleEndianTiff )
+		{
+			return false;
+		}
+
+		return bytes[8] == ( byte ) 'C' && bytes[9] == ( byte ) 'R' &&
+		       bytes[10] == 0x02 && bytes[11] == 0x00;
 	}
 
 	private static ExtensionRolesHelper.ImageFormat DetectByMarker(ReadOnlySpan<byte> probe)

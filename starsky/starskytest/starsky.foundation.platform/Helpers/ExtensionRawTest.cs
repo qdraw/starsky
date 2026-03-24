@@ -90,6 +90,19 @@ public sealed class ExtensionRawTest
 	}
 
 	[TestMethod]
+	public void Detect_Cr2NativeHeader_ReturnsCr2()
+	{
+		var bytes = new byte[]
+		{
+			0x49, 0x49, 0x2A, 0x00,
+			0x10, 0x00, 0x00, 0x00,
+			0x43, 0x52, 0x02, 0x00
+		};
+		var result = ExtensionRaw.Detect(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr2, result);
+	}
+
+	[TestMethod]
 	public void Detect_FujiMarkerWithoutTiffHeader_ReturnsRaf()
 	{
 		var bytes = Encoding.ASCII.GetBytes("fuji");
