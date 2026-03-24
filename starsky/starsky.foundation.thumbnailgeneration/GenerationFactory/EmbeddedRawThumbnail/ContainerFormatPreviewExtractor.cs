@@ -12,21 +12,16 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 ///     Supports: CR3 (Canon EOS RAW 3), HEIF/HEIC (Apple, etc.)
 ///     Parses box hierarchies to find preview metadata and extract JPEG images.
 /// </summary>
-public class ContainerFormatPreviewExtractor
+public class ContainerFormatPreviewExtractor(IWebLogger logger, ISelectorStorage selectorStorage)
 {
 	private const int MinJpegSize = 4096;
 	private const uint BoxTypeFtyp = 0x66747970; // 'ftyp' - File type box
 
-	private readonly IWebLogger _logger;
-	private readonly IStorage _subPathStorage;
-	private readonly IStorage _tempStorage;
+	private readonly IStorage _subPathStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
-	public ContainerFormatPreviewExtractor(IWebLogger logger, ISelectorStorage selectorStorage)
-	{
-		_logger = logger;
-		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-		_tempStorage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
-	}
+	private readonly IStorage _tempStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
 
 	/// <summary>
 	///     Attempts to extract preview from ISOBMFF container (CR3, HEIF, etc.)
@@ -41,7 +36,7 @@ public class ContainerFormatPreviewExtractor
 		try
 		{
 			await using var input = _subPathStorage.ReadStream(subPathRawFile);
-			await using var output = 
+			await using var output =
 				outputLargePath != null ? new MemoryStream() : null;
 
 			var ok = TryExtractFromStream(input,
@@ -57,12 +52,12 @@ public class ContainerFormatPreviewExtractor
 			}
 
 			output.Seek(0, SeekOrigin.Begin);
-			return 
-			       await _tempStorage.WriteStreamAsync(output, outputLargePath!);
+			return
+				await _tempStorage.WriteStreamAsync(output, outputLargePath!);
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogDebug(
+			logger.LogDebug(
 				$"[ContainerFormatPreviewExtractor] " +
 				$"Failed to extract from {subPathRawFile}: {ex.Message}");
 			return false;
@@ -74,13 +69,13 @@ public class ContainerFormatPreviewExtractor
 		// Verify ISOBMFF format
 		if ( !TryVerifyIsobmffFormat(input, out var containerType) )
 		{
-			_logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
-			                 $"Not a valid ISOBMFF container");
+			logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
+			                $"Not a valid ISOBMFF container");
 			return false;
 		}
 
-		_logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
-		                 $"Detected {containerType} container");
+		logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
+		                $"Detected {containerType} container");
 
 		var ok = TryExtractBestJpegByStrictScan(input, output);
 		if ( ok )
@@ -88,10 +83,9 @@ public class ContainerFormatPreviewExtractor
 			return true;
 		}
 
-		_logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
-		                 $"No JPEG preview found in container");
+		logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
+		                $"No JPEG preview found in container");
 		return false;
-
 	}
 
 	private static bool TryExtractBestJpegByStrictScan(Stream input, Stream? output)
@@ -151,7 +145,7 @@ public class ContainerFormatPreviewExtractor
 			i = end + 1;
 		}
 
-		return (bestOffset, bestLength);
+		return ( bestOffset, bestLength );
 	}
 
 	private static bool IsJpegStart(byte[] bytes, int index)
@@ -188,7 +182,7 @@ public class ContainerFormatPreviewExtractor
 		}
 
 		// First box must be 'ftyp'
-		var boxSize = ReadUInt32BigEndian(header[0..4]);
+		var boxSize = ReadUInt32BigEndian(header[..4]);
 		var boxType = ReadUInt32BigEndian(header[4..8]);
 
 		if ( boxType != BoxTypeFtyp || boxSize < 20 || boxSize > input.Length )
@@ -197,8 +191,10 @@ public class ContainerFormatPreviewExtractor
 		}
 
 		// Check brand
-		var brand = new string(new[] { ( char ) header[8], ( char ) header[9], 
-			( char ) header[10], ( char ) header[11] });
+		var brand = new string(new[]
+		{
+			( char ) header[8], ( char ) header[9], ( char ) header[10], ( char ) header[11]
+		});
 
 		containerType = brand.Trim('\0') switch
 		{
@@ -217,4 +213,3 @@ public class ContainerFormatPreviewExtractor
 		return ( ( uint ) b[0] << 24 ) | ( ( uint ) b[1] << 16 ) | ( ( uint ) b[2] << 8 ) | b[3];
 	}
 }
-
