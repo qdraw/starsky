@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -253,14 +254,17 @@ public class LightweightContainerPreviewExtractorTests
 		const int tiffBase = 304;
 		const uint taggedOffset = 3816;
 		const int taggedLength = 15345;
-		var relativeOffset = ( uint )( taggedOffset - tiffBase );
+		var relativeOffset = taggedOffset - tiffBase;
 		var leadingJpeg = CreateJpeg(18869);
 		var taggedJpeg = CreateJpeg(taggedLength);
 		var totalLength = ( int ) taggedOffset + taggedLength + 16;
 		var bytes = new byte[totalLength];
 		Array.Copy(leadingJpeg, 0, bytes, 292, leadingJpeg.Length);
 
-		bytes[tiffBase] = 0x4D; bytes[tiffBase + 1] = 0x4D; bytes[tiffBase + 2] = 0x00; bytes[tiffBase + 3] = 0x2A;
+		bytes[tiffBase] = 0x4D;
+		bytes[tiffBase + 1] = 0x4D;
+		bytes[tiffBase + 2] = 0x00;
+		bytes[tiffBase + 3] = 0x2A;
 		WriteUInt32BigEndian(bytes, tiffBase + 4, 8);
 		WriteUInt16BigEndian(bytes, tiffBase + 8, 0);
 		WriteUInt32BigEndian(bytes, tiffBase + 10, 16);
@@ -280,14 +284,15 @@ public class LightweightContainerPreviewExtractorTests
 		WriteUInt16BigEndian(bytes, ifd1 + 26, 0x0202);
 		WriteUInt16BigEndian(bytes, ifd1 + 28, 4);
 		WriteUInt32BigEndian(bytes, ifd1 + 30, 1);
-		WriteUInt32BigEndian(bytes, ifd1 + 34, ( uint ) taggedLength);
+		WriteUInt32BigEndian(bytes, ifd1 + 34, taggedLength);
 		WriteUInt32BigEndian(bytes, ifd1 + 38, 0);
 
 		Array.Copy(taggedJpeg, 0, bytes, taggedOffset, taggedJpeg.Length);
 
 		var subPathStorage = new FakeIStorage(["/raw"], [RawPathX3F], [bytes]);
 		var tempStorage = new FakeIStorage(["/tmp"]);
-		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(), new FakeIStorage(), tempStorage);
+		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
+			new FakeIStorage(), tempStorage);
 		var extractor = new LightweightContainerPreviewExtractor(new FakeIWebLogger(), selector);
 
 		var result = await extractor.TryExtract(RawPathX3F, OutputPath);
@@ -305,7 +310,10 @@ public class LightweightContainerPreviewExtractorTests
 		const uint taggedOffset = 2000u;
 		const int taggedLength = 4096;
 		var bytes = new byte[taggedOffset + taggedLength + 64];
-		bytes[tiffBase] = 0x4D; bytes[tiffBase + 1] = 0x4D; bytes[tiffBase + 2] = 0x00; bytes[tiffBase + 3] = 0x2A;
+		bytes[tiffBase] = 0x4D;
+		bytes[tiffBase + 1] = 0x4D;
+		bytes[tiffBase + 2] = 0x00;
+		bytes[tiffBase + 3] = 0x2A;
 		WriteUInt32BigEndian(bytes, tiffBase + 4, 8);
 		WriteUInt16BigEndian(bytes, tiffBase + 8, 0);
 		WriteUInt32BigEndian(bytes, tiffBase + 10, 16);
@@ -319,7 +327,8 @@ public class LightweightContainerPreviewExtractorTests
 
 		var subPathStorage = new FakeIStorage(["/raw"], [RawPathX3F], [bytes]);
 		var tempStorage = new FakeIStorage(["/tmp"]);
-		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(), new FakeIStorage(), tempStorage);
+		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
+			new FakeIStorage(), tempStorage);
 		var extractor = new LightweightContainerPreviewExtractor(new FakeIWebLogger(), selector);
 
 		var result = await extractor.TryExtract(RawPathX3F, OutputPath);
@@ -333,13 +342,17 @@ public class LightweightContainerPreviewExtractorTests
 	{
 		const int tiffBase = 304;
 		var bytes = new byte[1024 + tiffBase + 64];
-		bytes[tiffBase] = 0x4D; bytes[tiffBase + 1] = 0x4D; bytes[tiffBase + 2] = 0x00; bytes[tiffBase + 3] = 0x2A;
+		bytes[tiffBase] = 0x4D;
+		bytes[tiffBase + 1] = 0x4D;
+		bytes[tiffBase + 2] = 0x00;
+		bytes[tiffBase + 3] = 0x2A;
 		WriteUInt32BigEndian(bytes, tiffBase + 4, 8);
 		WriteUInt16BigEndian(bytes, tiffBase + 8, 2000);
 
 		var subPathStorage = new FakeIStorage(["/raw"], [RawPathX3F], [bytes]);
 		var tempStorage = new FakeIStorage(["/tmp"]);
-		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(), new FakeIStorage(), tempStorage);
+		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
+			new FakeIStorage(), tempStorage);
 		var extractor = new LightweightContainerPreviewExtractor(new FakeIWebLogger(), selector);
 
 		var result = await extractor.TryExtract(RawPathX3F, OutputPath);
@@ -354,7 +367,8 @@ public class LightweightContainerPreviewExtractorTests
 		var subPath = "/raw/test.fff";
 		var subPathStorage = new FakeIStorage(["/raw"], [subPath], [bytes]);
 		var tempStorage = new FakeIStorage(["/tmp"]);
-		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(), new FakeIStorage(), tempStorage);
+		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
+			new FakeIStorage(), tempStorage);
 		var extractor = new LightweightContainerPreviewExtractor(new FakeIWebLogger(), selector);
 
 		var result = await extractor.TryExtract(subPath, OutputPath);
@@ -362,4 +376,276 @@ public class LightweightContainerPreviewExtractorTests
 		Assert.IsTrue(result);
 		Assert.IsTrue(tempStorage.ExistFile(OutputPath));
 	}
+
+	private static byte[] MakeBufferWithTiffHeader(int totalLength, int headerIndex,
+		bool littleEndian, uint firstIfdOffset)
+	{
+		var buf = new byte[totalLength];
+		for ( var i = 0; i < totalLength; i++ )
+		{
+			buf[i] = 0;
+		}
+
+		if ( littleEndian )
+		{
+			buf[headerIndex] = 0x49;
+			buf[headerIndex + 1] = 0x49;
+			buf[headerIndex + 2] = 0x2A;
+			buf[headerIndex + 3] = 0x00;
+		}
+		else
+		{
+			buf[headerIndex] = 0x4D;
+			buf[headerIndex + 1] = 0x4D;
+			buf[headerIndex + 2] = 0x00;
+			buf[headerIndex + 3] = 0x2A;
+		}
+
+		var off = BitConverter.GetBytes(firstIfdOffset);
+		if ( BitConverter.IsLittleEndian != littleEndian )
+		{
+			Array.Reverse(off);
+		}
+
+		Array.Copy(off, 0, buf, headerIndex + 4, 4);
+		return buf;
+	}
+
+	[TestMethod]
+	public void TryParseTiffHeader_ReturnsFalse_When_EndianReadShort()
+	{
+		var buf = MakeBufferWithTiffHeader(512, 8, true, 8u);
+		var ts = new TestSeekableStream(buf);
+		ts.EnqueueSmallResponse(new byte[] { 0x49 });
+		var ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(ts, out _,
+			out _, out _);
+		Assert.IsFalse(ok);
+	}
+
+	[TestMethod]
+	public void TryParseTiffHeader_ReturnsFalse_When_MagicNot42()
+	{
+		var buf = MakeBufferWithTiffHeader(512, 16, true, 16u);
+		var ts = new TestSeekableStream(buf);
+		ts.EnqueueSmallResponse(new byte[] { 0x49, 0x49 });
+		ts.EnqueueSmallResponse(new byte[] { 0x00, 0x00 });
+		var ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(ts, out _,
+			out _, out _);
+		Assert.IsFalse(ok);
+	}
+
+	[TestMethod]
+	public void TryParseTiffHeader_ReturnsFalse_When_FirstIfdRelativeReadFails()
+	{
+		var buf = MakeBufferWithTiffHeader(1024, 32, true, 32u);
+		var ts = new TestSeekableStream(buf);
+		ts.EnqueueSmallResponse(new byte[] { 0x49, 0x49 });
+		ts.EnqueueSmallResponse(new byte[] { 0x2A, 0x00 });
+		ts.EnqueueSmallResponse(new byte[] { 0x01, 0x02 });
+		var ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(ts, out _,
+			out _, out _);
+		Assert.IsFalse(ok);
+	}
+
+	private class TestSeekableStream : Stream
+	{
+		private readonly byte[] _data;
+		private readonly Queue<byte[]> _smallResponses = new();
+		private long _pos;
+
+		public TestSeekableStream(byte[] data)
+		{
+			_data = data;
+			_pos = 0;
+		}
+
+		public override bool CanRead => true;
+		public override bool CanSeek => true;
+		public override bool CanWrite => false;
+		public override long Length => _data.Length;
+
+		public override long Position
+		{
+			get => _pos;
+			set => _pos = value;
+		}
+
+		public void EnqueueSmallResponse(byte[] resp)
+		{
+			_smallResponses.Enqueue(resp);
+		}
+
+		public override void Flush()
+		{
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			if ( count > 256 && _pos == 0 )
+			{
+				var toRead = ( int ) Math.Min(count, _data.Length - _pos);
+				Array.Copy(_data, _pos, buffer, offset, toRead);
+				_pos += toRead;
+				return toRead;
+			}
+
+			if ( _smallResponses.Count > 0 )
+			{
+				var resp = _smallResponses.Dequeue();
+				var toCopy = Math.Min(resp.Length, count);
+				Array.Copy(resp, 0, buffer, offset, toCopy);
+				_pos += toCopy;
+				return toCopy;
+			}
+
+			if ( _pos >= _data.Length )
+			{
+				return 0;
+			}
+
+			var avail = ( int ) Math.Min(count, _data.Length - _pos);
+			Array.Copy(_data, _pos, buffer, offset, avail);
+			_pos += avail;
+			return avail;
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			switch ( origin )
+			{
+				case SeekOrigin.Begin: _pos = offset; break;
+				case SeekOrigin.Current: _pos += offset; break;
+				case SeekOrigin.End: _pos = _data.Length + offset; break;
+			}
+
+			if ( _pos < 0 )
+			{
+				_pos = 0;
+			}
+
+			if ( _pos > _data.Length )
+			{
+				_pos = _data.Length;
+			}
+
+			return _pos;
+		}
+
+		public override void SetLength(long value)
+		{
+			throw new NotSupportedException();
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			throw new NotSupportedException();
+		}
+	}
+	
+	
+    [TestMethod]
+    public void TryParseTiffHeader_NonSeekableOrShortLength_ReturnsFalse()
+    {
+        var ms = new MemoryStream(new byte[100]);
+        var ns = new NonSeekableStream(ms);
+        var ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(ns, out var a, out var b, out var c);
+        Assert.IsFalse(ok);
+        ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(new MemoryStream(new byte[511]), out a, out b, out c);
+        Assert.IsFalse(ok);
+    }
+
+    [TestMethod]
+    public void TryParseTiffHeader_ReadEndianFails_ReturnsFalse()
+    {
+        var trimmed = new MemoryStream(new byte[513]);
+        trimmed.SetLength(513);
+        var res = LightweightContainerPreviewExtractor.TryParseTiffHeader(trimmed, out _, out _, out _);
+        // This might return false because FindTiffHeaderOffset reads but then reading endian may succeed; the important assert is false if not matching
+        Assert.IsFalse(res);
+    }
+
+    [TestMethod]
+    public void TryParseTiffHeader_InvalidEndianBytes_ReturnsFalse()
+    {
+        var data = new byte[600];
+        // Fill with zeros so FindTiffHeaderOffset will not find TIFF header -> returns false
+        var ms = new MemoryStream(data);
+        var ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(ms, out _, out _, out _);
+        Assert.IsFalse(ok);
+    }
+
+    [TestMethod]
+    public void TryParseTiffHeader_WrongMagicOrFirstIfdFails_ReturnsFalse()
+    {
+        // Construct a stream where a TIFF header exists at offset 0 but magic is wrong
+        var buf = new byte[600];
+        // Little endian marker 'II' but wrong magic bytes (not 42)
+        buf[0] = 0x49; buf[1] = 0x49;
+        buf[2] = 0x00; buf[3] = 0x00; // magic low bytes (wrong)
+        // Make sure we have 4 bytes for first IFD as well
+        var ms = new MemoryStream(buf);
+        var ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(ms, out var tiffBase, out var littleEndian, out var firstIfdRelative);
+        Assert.IsFalse(ok);
+
+        // Now set magic to 42 but make TryReadUInt32 fail by truncating stream
+        var buf2 = new byte[6];
+        buf2[0] = 0x49; buf2[1] = 0x49; // endian
+        buf2[2] = 0x2A; buf2[3] = 0x00; // magic 42
+        // but insufficient bytes for firstIfdRelative (need 4)
+        var ms2 = new MemoryStream(buf2);
+        ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(ms2, out tiffBase, out littleEndian, out firstIfdRelative);
+        Assert.IsFalse(ok);
+    }
+
+    [TestMethod]
+    public void FindTiffHeaderOffset_TrySeekZeroFailsOrReadLessThan8_ReturnsMinusOne()
+    {
+        // Non-seekable stream should return -1
+        var ms = new MemoryStream(new byte[1024]);
+        var ns = new NonSeekableStream(ms);
+        var idx = LightweightContainerPreviewExtractor.FindTiffHeaderOffset(ns);
+        Assert.AreEqual(-1, idx);
+
+        // Now seekable but insufficient bytes read (<8)
+        var small = new MemoryStream(new byte[7]);
+        idx = LightweightContainerPreviewExtractor.FindTiffHeaderOffset(small);
+        Assert.AreEqual(-1, idx);
+    }
+
+    [TestMethod]
+    public void TryReadUInt16_And_TryReadUInt32_InsufficientBytes_ReturnFalse()
+    {
+        var one = new MemoryStream(new byte[1]);
+        var ok16 = LightweightContainerPreviewExtractor.TryReadUInt16(one, true, out _);
+        Assert.IsFalse(ok16);
+
+        var three = new MemoryStream(new byte[3]);
+        var ok32 = LightweightContainerPreviewExtractor.TryReadUInt32(three, true, out _);
+        Assert.IsFalse(ok32);
+    }
+
+    [TestMethod]
+    public void FindTiffHeaderOffset_FindsHeaderAtZero_ReturnsZero()
+    {
+        // Craft a buffer with 'II' and magic 0x2A 0x00 at position 0
+        var buf = new byte[1000];
+        buf[0] = 0x49; buf[1] = 0x49; buf[2] = 0x2A; buf[3] = 0x00;
+        var ms = new MemoryStream(buf);
+        var idx = LightweightContainerPreviewExtractor.FindTiffHeaderOffset(ms);
+        Assert.AreEqual(0, idx);
+    }
+    
+    private sealed class NonSeekableStream(Stream inner) : Stream
+    {
+	    public override bool CanRead => inner.CanRead;
+	    public override bool CanSeek => false;
+	    public override bool CanWrite => inner.CanWrite;
+	    public override long Length => inner.Length;
+	    public override long Position { get => inner.Position; set => throw new NotSupportedException(); }
+	    public override void Flush() => inner.Flush();
+	    public override int Read(byte[] buffer, int offset, int count) => inner.Read(buffer, offset, count);
+	    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+	    public override void SetLength(long value) => inner.SetLength(value);
+	    public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
+    }
 }

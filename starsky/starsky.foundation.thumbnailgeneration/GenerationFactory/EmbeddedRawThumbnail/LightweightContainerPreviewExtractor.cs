@@ -61,7 +61,8 @@ public class LightweightContainerPreviewExtractor(
 
 	internal static async Task<bool> TryExtractX3FTaggedPreview(Stream input, Stream output)
 	{
-		if ( !TryParseTiffHeader(input, out var tiffBase, out var littleEndian, out var firstIfdRelative) )
+		if ( !TryParseTiffHeader(input, out var tiffBase, out var littleEndian,
+			    out var firstIfdRelative) )
 		{
 			return false;
 		}
@@ -70,21 +71,22 @@ public class LightweightContainerPreviewExtractor(
 		for ( var i = 0; i < 4 && ifdOffset > 0; i++ )
 		{
 			if ( !TryReadIfdJpegPair(input, ifdOffset, littleEndian,
-				out var candidateOffset, out var candidateLength, out var compression,
-				out var nextIfdRelative) )
+				    out var candidateOffset, out var candidateLength, out var compression,
+				    out var nextIfdRelative) )
 			{
 				break;
 			}
 
-						if ( compression is 6 or 7 && TryResolveAndValidateOffset(input, tiffBase, candidateOffset, candidateLength, out var resolvedOffset) )
-						{
-							return await CopyRangeAsync(input, output, resolvedOffset, candidateLength);
-						}
+			if ( compression is 6 or 7 && TryResolveAndValidateOffset(input, tiffBase,
+				    candidateOffset, candidateLength, out var resolvedOffset) )
+			{
+				return await CopyRangeAsync(input, output, resolvedOffset, candidateLength);
+			}
 
-						if ( nextIfdRelative == 0 )
-						{
-							break;
-						}
+			if ( nextIfdRelative == 0 )
+			{
+				break;
+			}
 
 			ifdOffset = tiffBase + nextIfdRelative;
 		}
@@ -92,7 +94,8 @@ public class LightweightContainerPreviewExtractor(
 		return false;
 	}
 
-	internal static bool TryParseTiffHeader(Stream input, out int tiffBase, out bool littleEndian, out uint firstIfdRelative)
+	internal static bool TryParseTiffHeader(Stream input, out int tiffBase, out bool littleEndian,
+		out uint firstIfdRelative)
 	{
 		tiffBase = -1;
 		littleEndian = false;
@@ -104,7 +107,7 @@ public class LightweightContainerPreviewExtractor(
 		}
 
 		var found = FindTiffHeaderOffset(input);
-		if ( found < 0 || !TrySeek(input, found) )
+		if ( found < 0 || !StreamPrimitives.TrySeek(input, found) )
 		{
 			return false;
 		}
@@ -125,6 +128,7 @@ public class LightweightContainerPreviewExtractor(
 		{
 			return false;
 		}
+
 		if ( !TryReadUInt32(input, littleEndian, out firstIfdRelative) )
 		{
 			return false;
@@ -136,7 +140,7 @@ public class LightweightContainerPreviewExtractor(
 
 	internal static int FindTiffHeaderOffset(Stream input)
 	{
-		if ( !TrySeek(input, 0) )
+		if ( !StreamPrimitives.TrySeek(input, 0) )
 		{
 			return -1;
 		}
@@ -172,7 +176,8 @@ public class LightweightContainerPreviewExtractor(
 		nextIfdRelative = 0;
 
 		// Read entry count
-		if ( !TrySeek(input, ifdOffset) || !TryReadUInt16(input, littleEndian, out var entryCount) )
+		if ( !StreamPrimitives.TrySeek(input, ifdOffset) ||
+		     !TryReadUInt16(input, littleEndian, out var entryCount) )
 		{
 			return false;
 		}
@@ -184,7 +189,8 @@ public class LightweightContainerPreviewExtractor(
 
 		for ( var i = 0; i < entryCount; i++ )
 		{
-			if ( !TryReadIfdEntry(input, littleEndian, out var tag, out var type, out var count, out var value) )
+			if ( !TryReadIfdEntry(input, littleEndian, out var tag, out var type, out var count,
+				    out var value) )
 			{
 				return false;
 			}
@@ -194,13 +200,15 @@ public class LightweightContainerPreviewExtractor(
 				continue;
 			}
 
-			HandleIfdEntry(tag, type, value, littleEndian, ref compression, ref jpegOffset, ref jpegLength);
+			HandleIfdEntry(tag, type, value, littleEndian, ref compression, ref jpegOffset,
+				ref jpegLength);
 		}
 
 		return TryReadUInt32(input, littleEndian, out nextIfdRelative);
 	}
 
-	internal static bool TryReadIfdEntry(Stream input, bool littleEndian, out ushort tag, out ushort type,
+	internal static bool TryReadIfdEntry(Stream input, bool littleEndian, out ushort tag,
+		out ushort type,
 		out uint count, out uint value)
 	{
 		tag = 0;
@@ -214,6 +222,7 @@ public class LightweightContainerPreviewExtractor(
 		{
 			return false;
 		}
+
 		return true;
 	}
 
@@ -228,11 +237,11 @@ public class LightweightContainerPreviewExtractor(
 					ushort compVal;
 					if ( littleEndian )
 					{
-						compVal = ( ushort )( value & 0xFFFF );
+						compVal = ( ushort ) ( value & 0xFFFF );
 					}
 					else
 					{
-						compVal = ( ushort )( value >> 16 );
+						compVal = ( ushort ) ( value >> 16 );
 					}
 
 					compression = compVal;
@@ -241,6 +250,7 @@ public class LightweightContainerPreviewExtractor(
 				{
 					compression = ( ushort ) value;
 				}
+
 				break;
 			case 0x0201: // Thumbnail offset
 				jpegOffset = value;
@@ -281,7 +291,7 @@ public class LightweightContainerPreviewExtractor(
 
 	internal static bool IsValidJpegRange(Stream input, uint offset, uint length)
 	{
-		if ( offset + length > input.Length || !TrySeek(input, offset) )
+		if ( offset + length > input.Length || !StreamPrimitives.TrySeek(input, offset) )
 		{
 			return false;
 		}
@@ -298,7 +308,7 @@ public class LightweightContainerPreviewExtractor(
 	internal static async Task<bool> CopyRangeAsync(Stream input, Stream output, uint offset,
 		uint length)
 	{
-		if ( !TrySeek(input, offset) )
+		if ( !StreamPrimitives.TrySeek(input, offset) )
 		{
 			return false;
 		}
@@ -348,17 +358,6 @@ public class LightweightContainerPreviewExtractor(
 		value = littleEndian
 			? ( uint ) ( b[0] | ( b[1] << 8 ) | ( b[2] << 16 ) | ( b[3] << 24 ) )
 			: ( ( uint ) b[0] << 24 ) | ( ( uint ) b[1] << 16 ) | ( ( uint ) b[2] << 8 ) | b[3];
-		return true;
-	}
-
-	internal static bool TrySeek(Stream input, long offset)
-	{
-		if ( !input.CanSeek || offset < 0 || offset > input.Length )
-		{
-			return false;
-		}
-
-		input.Seek(offset, SeekOrigin.Begin);
 		return true;
 	}
 }
