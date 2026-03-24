@@ -53,7 +53,7 @@ public class ContainerFormatPreviewExtractor
 
 			if ( output == null )
 			{
-				return true; // Success, just not saving
+				return true;
 			}
 
 			output.Seek(0, SeekOrigin.Begin);
