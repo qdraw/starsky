@@ -2,10 +2,13 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+
+[assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 
@@ -118,7 +121,8 @@ public partial class TiffEmbeddedPreviewExtractor
 		return await ExtractPreviewToStream(input, best, outputLarge);
 	}
 
-	private static bool TryParseTiffHeader(Stream s, out bool littleEndian, out uint firstIfdOffset)
+	internal static bool TryParseTiffHeader(Stream s, out bool littleEndian,
+		out uint firstIfdOffset)
 	{
 		littleEndian = false;
 		firstIfdOffset = 0;
@@ -180,7 +184,8 @@ public partial class TiffEmbeddedPreviewExtractor
 
 		// Early bounds check
 		var entryBytes = ( long ) entryCount * 12;
-		if ( !StreamPrimitives.TryGetRemainingBytes(input, out var remaining) || entryBytes + 4 > remaining )
+		if ( !StreamPrimitives.TryGetRemainingBytes(input, out var remaining) ||
+		     entryBytes + 4 > remaining )
 		{
 			return;
 		}
@@ -310,8 +315,10 @@ public partial class TiffEmbeddedPreviewExtractor
 			return;
 		}
 
-		var boundedCount = StreamPrimitives.ClampIndirectCount(input, value, type, n, MaxSubIfdOffsets);
-		StreamPrimitives.ReadIndirectOffsets(input, value, type, boundedCount, littleEndian, subIfdOffsets);
+		var boundedCount =
+			StreamPrimitives.ClampIndirectCount(input, value, type, n, MaxSubIfdOffsets);
+		StreamPrimitives.ReadIndirectOffsets(input, value, type, boundedCount, littleEndian,
+			subIfdOffsets);
 	}
 
 	private static void AppendDirectJpegCandidate(List<PreviewCandidate> previews,

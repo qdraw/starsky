@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
@@ -967,5 +970,350 @@ public class TiffEmbeddedPreviewExtractorTests
 		Assert.IsFalse(result);
 		Assert.Contains("[EmbeddedPreviewExtractor] Failed to extract from",
 			logger.TrackedExceptions[0].Item2 ?? "");
+	}
+
+	// ============================================================================
+	// Tests for TryParseTiffHeader
+	// ============================================================================
+
+	[TestMethod]
+	public void TryParseTiffHeader_WithValidLittleEndianHeader_ReturnsTrueAndSetsValues()
+	{
+		// Arrange: Valid little-endian TIFF header
+		var data = CreateMinimalTiffHeader();
+		using var ms = new MemoryStream(data);
+
+		// Act
+		var result = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms,
+			out var littleEndian, out var firstIfdOffset);
+		// Assert
+		Assert.IsTrue(result, "Should parse valid little-endian TIFF header");
+		Assert.IsTrue(littleEndian, "Should detect little-endian byte order");
+		Assert.AreEqual(8u, firstIfdOffset, "Should read correct first IFD offset");
+	}
+
+	[TestMethod]
+	public void TryParseTiffHeader_WithValidBigEndianHeader_ReturnsTrueAndSetsValues()
+	{
+		// Arrange: Valid big-endian TIFF header
+		var data = CreateMinimalTiffHeader(8, false);
+		using var ms = new MemoryStream(data);
+
+		// Act
+		var result = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms,
+			out var littleEndian, out var firstIfdOffset);
+
+		// Assert
+		Assert.IsTrue(result, "Should parse valid big-endian TIFF header");
+		Assert.IsFalse(littleEndian, "Should detect big-endian byte order");
+		Assert.AreEqual(8u, firstIfdOffset, "Should read correct first IFD offset");
+	}
+
+	[TestMethod]
+	public void TryParseTiffHeader_WithTooShortStream_ReturnsFalse()
+	{
+		// Arrange: Stream with only 4 bytes (needs 8)
+		using var ms = new MemoryStream("II*\0"u8.ToArray());
+
+		// Act
+		var result = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms, out _, out _);
+
+		// Assert
+		Assert.IsFalse(result, "Should return false for stream shorter than 8 bytes");
+	}
+
+	[TestMethod]
+	public void TryParseTiffHeader_WithInvalidByteOrder_ReturnsFalse()
+	{
+		// Arrange: Invalid byte order (neither II nor MM)
+		var data = new byte[] { 0x58, 0x58, 0x2A, 0x00, 0x08, 0x00, 0x00, 0x00 };
+		using var ms = new MemoryStream(data);
+
+		// Act
+		var result = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms, out _, out _);
+
+		// Assert
+		Assert.IsFalse(result, "Should return false for invalid byte order marker");
+	}
+
+	[TestMethod]
+	public void TryParseTiffHeader_WithInvalidMagicNumber_ReturnsFalse()
+	{
+		// Arrange: Valid byte order but invalid magic number (not 42)
+		var data = new byte[] { 0x49, 0x49, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00 };
+		using var ms = new MemoryStream(data);
+
+		// Act
+		var result = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms, out _, out _);
+
+		// Assert
+		Assert.IsFalse(result, "Should return false for invalid magic number");
+	}
+
+	[TestMethod]
+	public void TryParseTiffHeader_WithZeroIfdOffset_ReturnsFalse()
+	{
+		// Arrange: Valid header but first IFD offset is 0
+		var data = "II*\0\0\0\0\0"u8.ToArray();
+		using var ms = new MemoryStream(data);
+
+		// Act
+		var result = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms, out _, out _);
+
+		// Assert
+		Assert.IsFalse(result, "Should return false when IFD offset is 0");
+	}
+
+	[TestMethod]
+	public void TryParseTiffHeader_WithIfdOffsetBeyondStreamLength_ReturnsFalse()
+	{
+		// Arrange: Valid header but IFD offset is beyond stream length
+		var data = new byte[] { 0x49, 0x49, 0x2A, 0x00, 0x00, 0x01, 0x00, 0x00 }; // IFD at 256
+		using var ms = new MemoryStream(data); // But stream is only 8 bytes
+
+		// Act
+		var result = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms, out _, out _);
+
+		// Assert
+		Assert.IsFalse(result, "Should return false when IFD offset is beyond stream length");
+	}
+
+	// ============================================================================
+	// Tests for ParseIfdRecursive - early exit conditions
+	// ============================================================================
+
+	[TestMethod]
+	public void ParseIfdRecursive_WithDepthExceedingMaxIfdDepth_ReturnsEarly()
+	{
+		// Arrange: Create context with depth > MaxIfdDepth (6)
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
+		};
+		using var ms = new MemoryStream(new byte[512]);
+
+		// Act: Call ParseIfdRecursive with depth = 7 (exceeds MaxIfdDepth of 6)
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
+			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
+				new FakeIStorage(), new FakeIStorage()));
+		ParseIfdRecursivePublic(extractor, ms, 8, true, context, 7, false);
+
+		// Assert: Should not visit any IFDs
+		Assert.IsEmpty(context.Visited,
+			"Should not visit IFDs when depth exceeds MaxIfdDepth");
+	}
+
+	[TestMethod]
+	public void ParseIfdRecursive_WithOffsetZero_ReturnsEarly()
+	{
+		// Arrange
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
+		};
+		using var ms = new MemoryStream(new byte[512]);
+
+		// Act: Call with offset = 0
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
+			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
+				new FakeIStorage(), new FakeIStorage()));
+		ParseIfdRecursivePublic(extractor, ms, 0, true, context, 0, false);
+
+		// Assert
+		Assert.IsEmpty(context.Visited,
+			"Should not visit when offset is 0");
+	}
+
+	[TestMethod]
+	public void ParseIfdRecursive_WithMaxPreviewsReached_ReturnsEarly()
+	{
+		// Arrange: Fill previews list to capacity
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown,
+			Previews = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>(
+				Enumerable.Range(0, 8).Select(i =>
+					new TiffEmbeddedPreviewExtractor.PreviewCandidate
+					{
+						Offset = ( uint ) i, Length = 100
+					})),
+			Visited = [],
+			ReferenceInfo = "test"
+		};
+		using var ms = new MemoryStream(new byte[512]);
+
+		// Act
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
+			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
+				new FakeIStorage(), new FakeIStorage()));
+		ParseIfdRecursivePublic(extractor, ms, 8, true, context, 0, false);
+
+		// Assert
+		Assert.IsEmpty(context.Visited,
+			"Should not visit when max previews reached");
+	}
+
+	[TestMethod]
+	public void ParseIfdRecursive_WithAlreadyVisitedOffset_ReturnsEarly()
+	{
+		// Arrange: Offset already in visited set
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown,
+			Previews = [],
+			Visited = new HashSet<uint> { 8 },
+			ReferenceInfo = "test"
+		};
+		using var ms = new MemoryStream(new byte[512]);
+
+		// Act
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
+			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
+				new FakeIStorage(), new FakeIStorage()));
+		ParseIfdRecursivePublic(extractor, ms, 8, true, context, 0, false);
+
+		// Assert: Visited should still have only the original entry
+		Assert.HasCount(1, context.Visited,
+			"Should not add duplicate to visited set");
+	}
+
+	[TestMethod]
+	public void ParseIfdRecursive_WithVisitCountExceedingMax_ReturnsEarly()
+	{
+		// Arrange: Already visited MaxIfdVisits (64) offsets
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown,
+			Previews = [],
+			Visited = new HashSet<uint>(Enumerable.Range(0, 64).Select(i => ( uint ) i)),
+			ReferenceInfo = "test"
+		};
+		using var ms = new MemoryStream(new byte[512]);
+
+		// Act: Try to visit offset 100 when visited count = 64
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
+			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
+				new FakeIStorage(), new FakeIStorage()));
+		ParseIfdRecursivePublic(extractor, ms, 100, true, context, 0, false);
+
+		// Assert
+		Assert.HasCount(64, context.Visited,
+			"Should not exceed MaxIfdVisits (64)");
+		Assert.DoesNotContain(100, context.Visited,
+			"Should not add offset 100 when visit count at max");
+	}
+
+	[TestMethod]
+	public void ParseIfdRecursive_WithInvalidSeek_ReturnsEarly()
+	{
+		// Arrange: Offset beyond stream length
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
+		};
+		using var ms = new MemoryStream(new byte[10]); // Only 10 bytes
+
+		// Act: Try to seek to offset 1000
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
+			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
+				new FakeIStorage(), new FakeIStorage()));
+		ParseIfdRecursivePublic(extractor, ms, 1000, true, context, 0, false);
+
+		// Assert
+		Assert.HasCount(1, context.Visited,
+			"Should mark as visited even if seek fails");
+	}
+
+	[TestMethod]
+	public void ParseIfdRecursive_WithTooFewCountBytes_ReturnsEarly()
+	{
+		// Arrange: Stream positioned at end (can't read 2-byte entry count)
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
+		};
+		using var ms = new MemoryStream(new byte[8]); // Only 8 bytes total
+		ms.Seek(7, SeekOrigin.Begin); // Position near end
+
+		// Act
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
+			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
+				new FakeIStorage(), new FakeIStorage()));
+		ParseIfdRecursivePublic(extractor, ms, 7, true, context, 0, false);
+
+		// Assert
+		Assert.HasCount(1, context.Visited,
+			"Should mark offset as visited");
+	}
+
+	[TestMethod]
+	public void ParseIfdRecursive_WithZeroEntryCount_ReturnsEarly()
+	{
+		// Arrange: Valid stream at offset with 0 entry count
+		var data = new byte[10];
+		data[0] = 0; // Entry count = 0
+		data[1] = 0;
+		using var ms = new MemoryStream(data);
+
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
+		};
+
+		// Act
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
+			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
+				new FakeIStorage(), new FakeIStorage()));
+		ParseIfdRecursivePublic(extractor, ms, 0, true, context, 0, false);
+
+		// Assert
+		Assert.HasCount(1, context.Visited,
+			"Should mark as visited even with 0 entry count");
+	}
+
+	[TestMethod]
+	public void ParseIfdRecursive_WithExcessiveEntryCount_ReturnsEarly()
+	{
+		// Arrange: Entry count > 10000
+		var data = new byte[4];
+		data[0] = 0xFF; // Entry count = 65535
+		data[1] = 0xFF;
+		using var ms = new MemoryStream(data);
+
+		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		{
+			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
+		};
+
+		// Act
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(),
+			new FakeSelectorStorageByType(new FakeIStorage(), new FakeIStorage(),
+				new FakeIStorage(), new FakeIStorage()));
+		ParseIfdRecursivePublic(extractor, ms, 0, true, context, 0, false);
+
+		// Assert
+		Assert.HasCount(1, context.Visited,
+			"Should mark as visited even with excessive entry count");
+	}
+
+	private static void ParseIfdRecursivePublic(TiffEmbeddedPreviewExtractor extractor,
+		Stream input, uint offset, bool littleEndian,
+		TiffEmbeddedPreviewExtractor.ParseTraversalContext context,
+		int depth, bool isSubIfd)
+	{
+		var method = typeof(TiffEmbeddedPreviewExtractor)
+			.GetMethod("ParseIfdRecursive",
+				BindingFlags.NonPublic | BindingFlags.Instance,
+				null,
+				new[]
+				{
+					typeof(Stream), typeof(uint), typeof(bool),
+					typeof(TiffEmbeddedPreviewExtractor.ParseTraversalContext), typeof(int),
+					typeof(bool)
+				},
+				null);
+
+		method!.Invoke(extractor,
+			new object[] { input, offset, littleEndian, context, depth, isSubIfd });
 	}
 }
