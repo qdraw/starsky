@@ -15,7 +15,7 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 /// <summary>
 ///     Extracts embedded JPEG previews from TIFF-based RAW formats.
 ///     Supports: DNG (Adobe), CR2 (Canon EOS), NEF (Nikon), ARW (Sony)
-///     High-performance implementation focusing on metadata extraction only.
+///     Implementation focusing on metadata extraction only.
 /// </summary>
 public partial class TiffEmbeddedPreviewExtractor
 {
