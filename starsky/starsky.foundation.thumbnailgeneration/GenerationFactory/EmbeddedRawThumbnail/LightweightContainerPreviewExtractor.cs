@@ -36,7 +36,7 @@ public class LightweightContainerPreviewExtractor(
 
 			var extension = Path.GetExtension(subPathRawFile).ToLowerInvariant();
 			var ok = extension == ".x3f" &&
-			         await TryExtractX3fTaggedPreview(input, output);
+			         await TryExtractX3FTaggedPreview(input, output);
 
 			if ( !ok )
 			{
@@ -59,7 +59,7 @@ public class LightweightContainerPreviewExtractor(
 		}
 	}
 
-	private static async Task<bool> TryExtractX3fTaggedPreview(Stream input, Stream output)
+	private static async Task<bool> TryExtractX3FTaggedPreview(Stream input, Stream output)
 	{
 		if ( !input.CanSeek || input.Length < 512 )
 		{
@@ -73,7 +73,7 @@ public class LightweightContainerPreviewExtractor(
 		}
 
 		var endianBuf = new byte[2];
-		if ( input.Read(endianBuf, 0, 2) != 2 )
+		if ( await input.ReadAsync(endianBuf.AsMemory(0, 2)) != 2 )
 		{
 			return false;
 		}
@@ -184,23 +184,19 @@ public class LightweightContainerPreviewExtractor(
 				continue;
 			}
 
-			if ( tag == 0x0103 )
+			switch ( tag )
 			{
-				compression = type == 3
-					? ( ushort ) ( littleEndian ? value & 0xFFFF : value >> 16 )
-					: ( ushort ) value;
-				continue;
-			}
-
-			if ( tag == 0x0201 )
-			{
-				jpegOffset = value;
-				continue;
-			}
-
-			if ( tag == 0x0202 )
-			{
-				jpegLength = value;
+				case 0x0103:
+					compression = type == 3
+						? ( ushort ) ( littleEndian ? value & 0xFFFF : value >> 16 )
+						: ( ushort ) value;
+					continue;
+				case 0x0201:
+					jpegOffset = value;
+					continue;
+				case 0x0202:
+					jpegLength = value;
+					break;
 			}
 		}
 
