@@ -731,7 +731,7 @@ public class ContainerJpegScannerTests
 		public void TryReadSegmentPayloadLength_WithValidLength_ReturnsTrue()
 		{
 			// Write a 2-byte length field: 0x00 0x10 = 16 bytes total, so payload = 14
-			using var ms = new MemoryStream(new byte[] { 0x00, 0x10 });
+			using var ms = new MemoryStream([0x00, 0x10]);
 
 			var result =
 				ContainerJpegScanner.TryReadSegmentPayloadLength(ms, out var payloadLength);
@@ -744,7 +744,7 @@ public class ContainerJpegScannerTests
 		public void TryReadSegmentPayloadLength_WithLengthTooSmall_ReturnsFalse()
 		{
 			// Write a 2-byte length field: 0x00 0x01 = 1 byte total, which is invalid (< 2)
-			using var ms = new MemoryStream(new byte[] { 0x00, 0x01 });
+			using var ms = new MemoryStream([0x00, 0x01]);
 
 			var result = ContainerJpegScanner.TryReadSegmentPayloadLength(ms, out _);
 
@@ -755,7 +755,7 @@ public class ContainerJpegScannerTests
 		public void TryReadSegmentPayloadLength_WithInsufficientBytes_ReturnsFalse()
 		{
 			// Only 1 byte available
-			using var ms = new MemoryStream(new byte[] { 0x00 });
+			using var ms = new MemoryStream([0x00]);
 
 			var result = ContainerJpegScanner.TryReadSegmentPayloadLength(ms, out _);
 
@@ -884,7 +884,7 @@ public class ContainerJpegScannerTests
 		public void TrySkipToMarker_WithValidMarkerAtStart_ReturnsTrue()
 		{
 			// 0xFF followed by non-0xFF byte (0xE0)
-			using var ms = new MemoryStream(new byte[] { 0xFF, 0xE0, 0x00, 0x00 });
+			using var ms = new MemoryStream([0xFF, 0xE0, 0x00, 0x00]);
 
 			var result = ContainerJpegScanner.TrySkipToMarker(ms, 4, out var marker);
 
@@ -896,7 +896,7 @@ public class ContainerJpegScannerTests
 		public void TrySkipToMarker_WithPaddingBytes_SkipsAndFindsMarker()
 		{
 			// Some padding (0xFF 0xFF) then marker 0xE0
-			using var ms = new MemoryStream(new byte[] { 0x00, 0xFF, 0xFF, 0xE0, 0x00 });
+			using var ms = new MemoryStream([0x00, 0xFF, 0xFF, 0xE0, 0x00]);
 
 			var result = ContainerJpegScanner.TrySkipToMarker(ms, 5, out var marker);
 
@@ -908,7 +908,7 @@ public class ContainerJpegScannerTests
 		public void TrySkipToMarker_WithNoValidMarker_ReturnsFalse()
 		{
 			// No 0xFF byte at all
-			using var ms = new MemoryStream(new byte[] { 0x00, 0x01, 0x02 });
+			using var ms = new MemoryStream([0x00, 0x01, 0x02]);
 
 			var result = ContainerJpegScanner.TrySkipToMarker(ms, 3, out _);
 
@@ -918,7 +918,7 @@ public class ContainerJpegScannerTests
 		[TestMethod]
 		public void TrySkipToMarker_AtEndOfRange_ReturnsFalse()
 		{
-			using var ms = new MemoryStream(new byte[] { 0x00, 0x01 });
+			using var ms = new MemoryStream([0x00, 0x01]);
 
 			var result = ContainerJpegScanner.TrySkipToMarker(ms, 2, out _);
 
@@ -961,7 +961,7 @@ public class ContainerJpegScannerTests
 		[TestMethod]
 		public void IsIptcApp13Payload_WithInsufficientBytes_ReturnsFalse()
 		{
-			using var ms = new MemoryStream(new byte[0]);
+			using var ms = new MemoryStream([]);
 
 			var result = ContainerJpegScanner.IsIptcApp13Payload(ms, 0);
 

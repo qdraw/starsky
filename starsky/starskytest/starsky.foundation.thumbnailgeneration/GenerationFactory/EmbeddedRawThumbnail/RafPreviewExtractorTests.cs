@@ -258,16 +258,24 @@ public class RafPreviewExtractorTests
 		Assert.IsFalse(result, "Should return false when stream cannot seek (TryReadHeaderPreviewRange fails)");
 	}
 
-	private sealed class NonSeekableFakeStorage(byte[] data) : FakeIStorage(
-		["/raw"], [InputSubPath], [data])
+	private sealed class NonSeekableFakeStorage : FakeIStorage
 	{
-		public override Stream ReadStream(string path, int maxRead = -1)
+		private readonly byte[] _data;
+
+		public NonSeekableFakeStorage(byte[] data)
+			: base(["/raw"], [InputSubPath], [data])
 		{
-			return new NonSeekableStream(data);
+			_data = data;
 		}
 
-		private sealed class NonSeekableStream(byte[] data) : MemoryStream(data)
+		public override Stream ReadStream(string path, int maxRead = -1)
 		{
+			return new NonSeekableStream(_data);
+		}
+
+		private sealed class NonSeekableStream : MemoryStream
+		{
+			public NonSeekableStream(byte[] data) : base(data) { }
 			public override bool CanSeek => false;
 		}
 	}
@@ -360,30 +368,49 @@ public class RafPreviewExtractorTests
 		Assert.IsFalse(result, "Should fail if SOI read is incomplete");
 	}
 
-	private sealed class PartialReadStorage(byte[] data, uint partialOffset, int partialReadSize)
-		: FakeIStorage(["/raw"], [InputSubPath], [data])
+	private sealed class PartialReadStorage : FakeIStorage
 	{
-		public override Stream ReadStream(string path, int maxRead = -1)
+		private readonly byte[] _data;
+		private readonly uint _partialOffset;
+		private readonly int _partialReadSize;
+
+		public PartialReadStorage(byte[] data, uint partialOffset, int partialReadSize)
+			: base([ "/raw"], [ InputSubPath ], [data])
 		{
-			return new PartialReadStream(data, partialOffset, partialReadSize);
+			_data = data;
+			_partialOffset = partialOffset;
+			_partialReadSize = partialReadSize;
 		}
 
-		private sealed class PartialReadStream(byte[] data, uint partialOffset, int partialReadSize)
-			: MemoryStream(data)
+		public override Stream ReadStream(string path, int maxRead = -1)
 		{
+			return new PartialReadStream(_data, _partialOffset, _partialReadSize);
+		}
+
+		private sealed class PartialReadStream : MemoryStream
+		{
+			private readonly byte[] _data;
+			private readonly uint _partialOffset;
+			private readonly int _partialReadSize;
+
+			public PartialReadStream(byte[] data, uint partialOffset, int partialReadSize) : base(data)
+			{
+				_data = data;
+				_partialOffset = partialOffset;
+				_partialReadSize = partialReadSize;
+			}
+
 			public override int Read(Span<byte> buffer)
 			{
-				if ( Position != partialOffset || buffer.Length < partialReadSize )
+				if (Position != _partialOffset || buffer.Length < _partialReadSize)
 				{
 					return base.Read(buffer);
 				}
 
-				// Move position forward as if we read partialReadSize
-				var toCopy = ( int ) Math.Min(partialReadSize, data.Length - Position);
-				data.AsSpan(( int ) Position, toCopy).CopyTo(buffer);
+				var toCopy = (int)Math.Min(_partialReadSize, _data.Length - Position);
+				_data.AsSpan((int)Position, toCopy).CopyTo(buffer);
 				Position += toCopy;
 				return toCopy;
-
 			}
 		}
 	}
@@ -417,14 +444,20 @@ public class RafPreviewExtractorTests
 			return new SeekFailingStream(data, failOnSeekCount);
 		}
 
-		private sealed class SeekFailingStream(byte[] data, int failOnSeekCount) : MemoryStream(data)
+		private sealed class SeekFailingStream : MemoryStream
 		{
 			private int _seekCount;
+			private readonly int _failOnSeekCount;
+
+			public SeekFailingStream(byte[] data, int failOnSeekCount) : base(data)
+			{
+				_failOnSeekCount = failOnSeekCount;
+			}
 
 			public override long Seek(long offset, SeekOrigin loc)
 			{
 				_seekCount++;
-				if ( _seekCount == failOnSeekCount )
+				if (_seekCount == _failOnSeekCount)
 				{
 					throw new IOException("Seek failed");
 				}
