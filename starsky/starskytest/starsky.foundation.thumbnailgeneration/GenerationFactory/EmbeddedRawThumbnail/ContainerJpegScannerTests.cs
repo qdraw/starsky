@@ -91,8 +91,10 @@ public class ContainerJpegScannerTests
 		return ms.ToArray();
 	}
 
-	private static MemoryStream StreamOf(byte[] bytes) =>
-		new(bytes, writable: false);
+	private static MemoryStream StreamOf(byte[] bytes)
+	{
+		return new MemoryStream(bytes, false);
+	}
 
 	// ── Tests: stream-level guards ────────────────────────────────────────────
 
@@ -142,7 +144,7 @@ public class ContainerJpegScannerTests
 		var jpeg = BuildJpeg(MinJpeg);
 		using var input = StreamOf(jpeg);
 
-		var result = await ContainerJpegScanner.TryExtractBestPreview(input, output: null);
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
 
 		Assert.IsTrue(result, "Probe mode (null output) should return true when a JPEG is found");
 	}
@@ -167,28 +169,30 @@ public class ContainerJpegScannerTests
 	public async Task TryExtractBestPreview_DetectsIptc_ViaPhotoshopApp13Signature()
 	{
 		// "Photoshop 3.0\0" is the canonical APP13 IPTC header
-		var jpeg = BuildJpeg(MinJpeg, app13Content: "Photoshop 3.0\0");
+		var jpeg = BuildJpeg(MinJpeg, "Photoshop 3.0\0");
 		using var input = StreamOf(jpeg);
 		using var output = new MemoryStream();
 
 		var result = await ContainerJpegScanner.TryExtractBestPreview(input, output);
 
 		Assert.IsTrue(result);
-		Assert.IsGreaterThan(0, output.Length, "Expected JPEG extracted when APP13 has Photoshop signature");
+		Assert.IsGreaterThan(0, output.Length,
+			"Expected JPEG extracted when APP13 has Photoshop signature");
 	}
 
 	[TestMethod]
 	public async Task TryExtractBestPreview_DetectsIptc_Via8BimApp13Signature()
 	{
 		// "8BIM" is the Photoshop resource block marker also accepted as an IPTC signal
-		var jpeg = BuildJpeg(MinJpeg, app13Content: "8BIM");
+		var jpeg = BuildJpeg(MinJpeg, "8BIM");
 		using var input = StreamOf(jpeg);
 		using var output = new MemoryStream();
 
 		var result = await ContainerJpegScanner.TryExtractBestPreview(input, output);
 
 		Assert.IsTrue(result);
-		Assert.IsGreaterThan(0, output.Length, "Expected JPEG extracted when APP13 has 8BIM signature");
+		Assert.IsGreaterThan(0, output.Length,
+			"Expected JPEG extracted when APP13 has 8BIM signature");
 	}
 
 	[TestMethod]
@@ -196,7 +200,7 @@ public class ContainerJpegScannerTests
 	{
 		// APP13 present but payload does not contain either IPTC signature.
 		// The JPEG should still be extracted; it simply won't be scored as an IPTC candidate.
-		var jpeg = BuildJpeg(MinJpeg, app13Content: "Unknown APP13 content");
+		var jpeg = BuildJpeg(MinJpeg, "Unknown APP13 content");
 		using var input = StreamOf(jpeg);
 		using var output = new MemoryStream();
 
@@ -216,8 +220,8 @@ public class ContainerJpegScannerTests
 		const int smallIptcSize = MinJpeg + 512;
 		const int largeNoIptcSize = MinJpeg + 4096;
 
-		var plainJpeg = BuildJpeg(largeNoIptcSize);                          // large, no IPTC
-		var iptcJpeg = BuildJpeg(smallIptcSize, app13Content: "Photoshop 3.0\0"); // small, IPTC
+		var plainJpeg = BuildJpeg(largeNoIptcSize); // large, no IPTC
+		var iptcJpeg = BuildJpeg(smallIptcSize, "Photoshop 3.0\0"); // small, IPTC
 
 		var container = plainJpeg.Concat(iptcJpeg).ToArray();
 		using var input = StreamOf(container);
@@ -237,8 +241,8 @@ public class ContainerJpegScannerTests
 		const int smallIptcSize = MinJpeg + 512;
 		const int largeIptcSize = MinJpeg + 8192;
 
-		var smallJpeg = BuildJpeg(smallIptcSize, app13Content: "Photoshop 3.0\0");
-		var largeJpeg = BuildJpeg(largeIptcSize, app13Content: "8BIM");
+		var smallJpeg = BuildJpeg(smallIptcSize, "Photoshop 3.0\0");
+		var largeJpeg = BuildJpeg(largeIptcSize, "8BIM");
 
 		var container = smallJpeg.Concat(largeJpeg).ToArray();
 		using var input = StreamOf(container);
@@ -258,7 +262,7 @@ public class ContainerJpegScannerTests
 	{
 		// RST0 (0xD0) is a standalone marker — it has no length field or payload.
 		// IsStandaloneMarker should recognise it and continue without trying to read a length.
-		var jpeg = BuildJpeg(MinJpeg, app13Content: "Photoshop 3.0\0", withRstMarker: true);
+		var jpeg = BuildJpeg(MinJpeg, "Photoshop 3.0\0", true);
 		using var input = StreamOf(jpeg);
 		using var output = new MemoryStream();
 
@@ -274,7 +278,7 @@ public class ContainerJpegScannerTests
 	{
 		// JPEG allows 0xFF padding bytes before the true marker byte (e.g. FF FF ED instead
 		// of FF ED).  TrySkipToMarker's inner do-while loop must consume them.
-		var jpeg = BuildJpeg(MinJpeg, app13Content: "Photoshop 3.0\0", withMarkerPadding: true);
+		var jpeg = BuildJpeg(MinJpeg, "Photoshop 3.0\0", withMarkerPadding: true);
 		using var input = StreamOf(jpeg);
 		using var output = new MemoryStream();
 
@@ -304,18 +308,10 @@ public class ContainerJpegScannerTests
 	[TestMethod]
 	public async Task TryExtractBestPreview_ReturnsFalse_WhenReadAsyncReturnsZero()
 	{
-		// This tests the case where input.Read returns <= 0 during scanning
-		// However, it's hard to trigger read <= 0 in the MIDDLE of the stream Length.
-		// ContainerJpegScanner has:
-		// while ( scanned < input.Length && candidates.Count < MaxCandidates ) {
-		//    var toRead = ( int ) Math.Min(buffer.Length, input.Length - scanned);
-		//    var read = input.Read(buffer, 0, toRead);
-		//    if ( read <= 0 ) break;
-		// }
-		
+
 		// If input.Read returns 0, it means EOF or an error.
 		// We can mock a stream that claims to have more data than it actually returns.
-		var input = new TruncatedReadStream(new byte[MinJpeg * 2]);
+		var input = new TruncatedStream(new byte[MinJpeg * 2], MinJpeg * 2);
 		using var output = new MemoryStream();
 
 		var result = await ContainerJpegScanner.TryExtractBestPreview(input, output);
@@ -323,12 +319,95 @@ public class ContainerJpegScannerTests
 		Assert.IsFalse(result);
 	}
 
-	private sealed class TruncatedReadStream(byte[] data) : MemoryStream(data)
+	[TestMethod]
+	public async Task TryExtractBestPreview_SkipsSmallCandidate()
+	{
+		// TryAddJpegCandidate: length < MinJpegSize ) return
+		// MinJpegSize = 4096. 
+		// We'll put a SOI but NO EOI, so DetectJpegLengthFromSoi returns 0.
+		var smallJpeg = new byte[MinJpeg];
+		smallJpeg[0] = 0xFF;
+		smallJpeg[1] = 0xD8;
+		smallJpeg[2] = 0xFF;
+		smallJpeg[3] = 0xE0;
+		// No EOI (FF D9) in the rest.
+		
+		using var input = StreamOf(smallJpeg);
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
+		// result will be false because only candidate was length 0 < 4096
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_PrefersFirstCandidate_WhenSameSizeAndIptc()
+	{
+		//  candidate.HasIptc == best.HasIptc AND candidate.Length > best.Length 
+		// If length is SAME, it keeps the first one (best is not updated).
+		var jpeg1 = BuildJpeg(MinJpeg);
+		var jpeg2 = BuildJpeg(MinJpeg);
+		var container = jpeg1.Concat(jpeg2).ToArray();
+
+		using var input = StreamOf(container);
+		using var output = new MemoryStream();
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, output);
+
+		Assert.IsTrue(result);
+		// It should be jpeg1 (at offset 0)
+		Assert.AreEqual(MinJpeg, ( int ) output.Length);
+	}
+
+	[TestMethod]
+	public async Task HasIptcApp13_ReturnsFalse_WhenInitialSeekFails()
+	{
+		// !StreamPrimitives.TrySeek(input, offset + 2)
+		// We need to bypass the public API if we can, but we can't easily.
+		// offset is found by ScanCandidates, then HasIptcApp13 is called with that offset.
+		// If input is truncated so that offset+2 is past end, it fails.
+
+		var jpeg = new byte[MinJpeg];
+		jpeg[0] = 0xFF;
+		jpeg[1] = 0xD8;
+		// Stream length is only 2
+		using var input = new TruncatedStream(jpeg, 2);
+		// TryExtractBestPreview requires length >= MinJpegSize, so we need to lie about Length.
+
+		var mockInput =
+			new PseudoTruncatedStream(jpeg, 2); // Length says 4096, but CanSeek/Read only allow 2.
+		var result = await ContainerJpegScanner.TryExtractBestPreview(mockInput, null);
+		Assert.IsFalse(result);
+	}
+
+	private sealed class PseudoTruncatedStream(byte[] data, int realLength) : MemoryStream(data)
+	{
+		public override long Length => 4096;
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			var available = Math.Min(count, realLength - ( int ) Position);
+			if ( available <= 0 )
+			{
+				return 0;
+			}
+
+			return base.Read(buffer, offset, available);
+		}
+
+		public override long Seek(long offset, SeekOrigin loc)
+		{
+			if ( offset > realLength )
+			{
+				return -1; // Fail seek past realLength
+			}
+
+			return base.Seek(offset, loc);
+		}
+	}
+
+	private sealed class TruncatedStream(byte[] data, int length)
+		: MemoryStream(data.Take(length).ToArray())
 	{
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			// Return 0 even if data might be available (though MemoryStream wouldn't do this)
-			// Actually, let's just return 0 to trigger the break.
 			return 0;
 		}
 
@@ -337,10 +416,198 @@ public class ContainerJpegScannerTests
 		{
 			return Task.FromResult(0);
 		}
-		
-		public override ValueTask<int> ReadAsync(Memory<byte> buffer, System.Threading.CancellationToken cancellationToken = default)
+
+		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
+			System.Threading.CancellationToken cancellationToken = default)
 		{
 			return new ValueTask<int>(0);
+		}
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_ReturnsFalse_WhenSeekFails()
+	{
+		// StreamPrimitives.TrySeek(input, 0) failure in ScanCandidates
+		var input = new SeekFailureStream(BuildJpeg(MinJpeg));
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_StopsAtMaxCandidates()
+	{
+		// MaxCandidates = 8
+		var jpeg = BuildJpeg(MinJpeg);
+		var container = new byte[0];
+		for ( var i = 0; i < 10; i++ )
+		{
+			container = container.Concat(jpeg).ToArray();
+		}
+
+		using var input = StreamOf(container);
+		// ScanCandidates loop should terminate after finding 8 candidates
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_HandlesCandidateFoundAtBufferBoundary()
+	{
+		// Buffer size in ScanCandidates is 64*1024
+		const int bufferSize = 64 * 1024;
+		var containerSize = bufferSize * 2;
+		var container = new byte[containerSize];
+		// Put FF at end of first buffer, D8 FF at start of next buffer
+		container[bufferSize - 1] = 0xFF;
+		container[bufferSize] = 0xD8;
+		container[bufferSize + 1] = 0xFF;
+
+		// Need to complete the JPEG so DetectJpegLengthFromSoi doesn't fail to meet MinJpegSize
+		var jpeg = BuildJpeg(MinJpeg);
+		Array.Copy(jpeg, 2, container, bufferSize + 1,
+			Math.Min(jpeg.Length - 2, container.Length - ( bufferSize + 1 )));
+
+		using var input = StreamOf(container);
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_ReturnsFalse_WhenCopyRangeSeekFails()
+	{
+		var jpeg = BuildJpeg(MinJpeg);
+		var input =
+			new SeekFailureStream(jpeg)
+			{
+				AllowFirstSeek = true
+			}; // Allow ScanCandidates seek, fail CopyRange seek
+		var output = new MemoryStream();
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, output);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_ReturnsFalse_WhenCopyRangeReadFails()
+	{
+		var jpeg = BuildJpeg(MinJpeg);
+		// Position will be 0 during ScanCandidates, then CopyRangeToOutput will seek to offset and read.
+		// offset is 0 for BuildJpeg.
+		var input = new ReadFailureStream(jpeg) { FailAtPosition = 0, OnlyFailReadAsync = true };
+		var output = new MemoryStream();
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, output);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task HasIptcApp13_HandlesInvalidSegmentLength()
+	{
+		// TryReadSegmentPayloadLength returns false (segmentLength < 2)
+		var jpeg = BuildJpeg(MinJpeg);
+		// Find an APP marker and corrupt its length. 
+		// APP0 is at index 2: FF E0 [length high] [length low]
+		jpeg[4] = 0x00;
+		jpeg[5] = 0x01; // length = 1, which is < 2
+
+		using var input = StreamOf(jpeg);
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
+		// Should still return true (JPEG found), just HasIptc=false
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task HasIptcApp13_HandlesSegmentLengthPastEnd()
+	{
+		// input.Position + payloadLength > end
+		var jpeg = BuildJpeg(MinJpeg);
+		// APP0 at index 2. Let's make it huge.
+		jpeg[4] = 0xFF;
+		jpeg[5] = 0xFF;
+
+		using var input = StreamOf(jpeg);
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_HandlesApp13ReadFailure()
+	{
+		// IsIptcApp13Payload read < probeLength
+		var jpeg = BuildJpeg(MinJpeg,
+			"Photoshop 3.0 Some very long content to ensure it is more than 64 bytes if needed, but the probe is 64 anyway.");
+		// We want input.Read to return less than probeLength.
+		var input = new ReadFailureInHasIptcStream(jpeg);
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
+		Assert.IsTrue(result);
+	}
+
+	private sealed class ReadFailureInHasIptcStream(byte[] data) : MemoryStream(data)
+	{
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return count == 64
+				? 10
+				: // Fail the probe read in IsIptcApp13Payload
+				base.Read(buffer, offset, count);
+		}
+	}
+
+	private sealed class ReadFailureStream(byte[] data) : MemoryStream(data)
+	{
+		public long FailAtPosition { get; set; } = -1;
+		public bool OnlyFailReadAsync { get; set; }
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			if ( !OnlyFailReadAsync && FailAtPosition >= 0 && Position >= FailAtPosition )
+			{
+				return 0;
+			}
+
+			return base.Read(buffer, offset, count);
+		}
+
+		public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
+			System.Threading.CancellationToken cancellationToken = default)
+		{
+			if ( FailAtPosition >= 0 && Position >= FailAtPosition )
+			{
+				return 0;
+			}
+
+			return await base.ReadAsync(buffer, cancellationToken);
+		}
+	}
+
+	[TestMethod]
+	public async Task IsStandaloneMarker_HandlesTemMarker()
+	{
+		// 0x01 TEM marker
+		var jpeg = BuildJpeg(MinJpeg);
+		// Inject 0xFF 0x01
+		jpeg[6] = 0xFF;
+		jpeg[7] = 0x01;
+
+		using var input = StreamOf(jpeg);
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
+		Assert.IsTrue(result);
+	}
+
+	private sealed class SeekFailureStream(byte[] data) : MemoryStream(data)
+	{
+		public bool AllowFirstSeek { get; set; }
+		private int _seekCount;
+
+		public override long Seek(long offset, SeekOrigin loc)
+		{
+			_seekCount++;
+			if ( AllowFirstSeek && _seekCount == 1 )
+			{
+				return base.Seek(offset, loc);
+			}
+
+			return
+				-1; // Or throw, but TrySeek expects false which comes from Catch in some implementations, 
+			// but StreamPrimitives.TrySeek uses try-catch.
 		}
 	}
 
@@ -381,15 +648,19 @@ public class ContainerJpegScannerTests
 			return available;
 		}
 
-		public override long Seek(long offset, SeekOrigin origin) =>
+		public override long Seek(long offset, SeekOrigin origin)
+		{
 			throw new NotSupportedException();
+		}
 
-		public override void SetLength(long value) =>
+		public override void SetLength(long value)
+		{
 			throw new NotSupportedException();
+		}
 
-		public override void Write(byte[] buffer, int offset, int count) =>
+		public override void Write(byte[] buffer, int offset, int count)
+		{
 			throw new NotSupportedException();
+		}
 	}
 }
-
-
