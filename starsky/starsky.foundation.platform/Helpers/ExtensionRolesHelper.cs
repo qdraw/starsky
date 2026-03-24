@@ -641,7 +641,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return ImageFormat.notfound;
 		}
 
-		var format = GetImageFormat(ReadBuffer(stream, 68));
+		var format = GetImageFormat(ReadBuffer(stream, 300));
 		return format;
 	}
 
@@ -657,7 +657,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		var bmp = "BM"u8.ToArray(); // BMP
 		var gif = "GIF"u8.ToArray(); // GIF
 		var png = new byte[] { 137, 80, 78, 71 }; // PNG
-		var pdf = new byte[] { 37, 80, 68, 70, 45 }; // pdf
+		var pdf = "%PDF-"u8.ToArray(); // pdf
 
 		if ( bmp.SequenceEqual(bytes.Take(bmp.Length)) )
 		{
@@ -831,16 +831,16 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 		// --- RAW format hints inside TIFF container ---
 
-		// Sony ARW
-		if ( bytes.Contain("SONY") )
-		{
-			return ImageFormat.arw;
-		}
-
 		// Adobe DNG
 		if ( bytes.Contain("DNG") )
 		{
 			return ImageFormat.dng;
+		}
+
+		// Sony ARW
+		if ( bytes.Contain("SONY") )
+		{
+			return ImageFormat.arw;
 		}
 
 		// Nikon NEF
