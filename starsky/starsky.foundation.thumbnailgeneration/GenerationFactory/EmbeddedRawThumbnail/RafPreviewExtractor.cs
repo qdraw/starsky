@@ -24,13 +24,12 @@ public class RafPreviewExtractor(IWebLogger logger, ISelectorStorage selectorSto
 
 	public async Task<bool> TryExtract(string subPathRawFile, string? outputLargePath)
 	{
-		if ( !SubPathStorage.ExistFile(subPathRawFile) )
-		{
-			return false;
-		}
-
 		try
 		{
+			if ( !SubPathStorage.ExistFile(subPathRawFile) )
+			{
+				return false;
+			}
 			await using var input = SubPathStorage.ReadStream(subPathRawFile);
 			await using var output = new MemoryStream();
 

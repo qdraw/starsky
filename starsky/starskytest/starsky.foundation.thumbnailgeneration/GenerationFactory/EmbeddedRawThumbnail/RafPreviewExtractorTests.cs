@@ -219,6 +219,28 @@ public class RafPreviewExtractorTests
 	}
 
 	[TestMethod]
+	public async Task TryExtract_WithTruncatedFileDuringCopy_ReturnsFalse()
+	{
+		var bytes = new byte[10000];
+		var signature = "FUJIFILMCCD-RAW "u8.ToArray();
+		Array.Copy(signature, 0, bytes, 0, signature.Length);
+		WriteUInt32BigEndian(bytes, 0x54, 100);
+		WriteUInt32BigEndian(bytes, 0x58, 10000); // Claims 10000 bytes available at 100, but file ends at 10000
+
+		// JPEG SOI at 100
+		bytes[100] = 0xFF;
+		bytes[101] = 0xD8;
+		bytes[102] = 0xFF;
+
+		var selectorStorage = CreateSelectorStorage(bytes, out _);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+
+		Assert.IsFalse(result, "Copy should fail when file is shorter than metadata claims");
+	}
+
+	[TestMethod]
 	public async Task TryExtract_WithInvalidHeaderRange_FallsBackToScanner()
 	{
 		var jpeg = CreateMinimalJpeg(6500);
