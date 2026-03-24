@@ -8,20 +8,18 @@ namespace starskytest.starsky.foundation.thumbnailgeneration;
 [TestClass]
 public class LightweightContainerPreviewExtractorTests
 {
-    private sealed class NonSeekableStream : Stream
+    private sealed class NonSeekableStream(Stream inner) : Stream
     {
-        private readonly Stream _inner;
-        public NonSeekableStream(Stream inner) => _inner = inner;
-        public override bool CanRead => _inner.CanRead;
+	    public override bool CanRead => inner.CanRead;
         public override bool CanSeek => false;
-        public override bool CanWrite => _inner.CanWrite;
-        public override long Length => _inner.Length;
-        public override long Position { get => _inner.Position; set => throw new NotSupportedException(); }
-        public override void Flush() => _inner.Flush();
-        public override int Read(byte[] buffer, int offset, int count) => _inner.Read(buffer, offset, count);
+        public override bool CanWrite => inner.CanWrite;
+        public override long Length => inner.Length;
+        public override long Position { get => inner.Position; set => throw new NotSupportedException(); }
+        public override void Flush() => inner.Flush();
+        public override int Read(byte[] buffer, int offset, int count) => inner.Read(buffer, offset, count);
         public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
-        public override void SetLength(long value) => _inner.SetLength(value);
-        public override void Write(byte[] buffer, int offset, int count) => _inner.Write(buffer, offset, count);
+        public override void SetLength(long value) => inner.SetLength(value);
+        public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
     }
 
     [TestMethod]
