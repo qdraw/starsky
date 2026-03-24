@@ -307,6 +307,10 @@
         <Content Include="FakeCreateAn\CreateAnImageA6700Raw\20260308_144118_DSC05172.arw">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="FakeCreateAn\CreateAnImageEOSM50Raw\IMG_0483_Canon EOS M50.CR3" />
+        <Content Include="FakeCreateAn\CreateAnImageEOSM50Raw\IMG_0483_Canon EOS M50.CR3">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateAnQuickTimeMp4\C0008_head_part.mp4"/>

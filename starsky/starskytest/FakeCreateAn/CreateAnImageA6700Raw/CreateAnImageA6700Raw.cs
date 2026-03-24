@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.IO;
 using System.Reflection;
@@ -9,7 +8,7 @@ namespace starskytest.FakeCreateAn.CreateAnImageA6700Raw;
 
 public class CreateAnImageA6700Raw
 {
-	public readonly ImmutableArray<byte> Bytes = [..Array.Empty<byte>()];
+	public readonly ImmutableArray<byte> Bytes = [];
 
 	public CreateAnImageA6700Raw()
 	{

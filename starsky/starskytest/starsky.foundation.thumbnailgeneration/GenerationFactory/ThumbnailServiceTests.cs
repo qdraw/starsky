@@ -17,6 +17,7 @@ using starsky.foundation.thumbnailgeneration.Models;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA6700Raw;
+using starskytest.FakeCreateAn.CreateAnImageEOSM50Raw;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 using VerifyMSTest;
@@ -29,7 +30,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	private readonly AppSettings _appSettings;
 	private readonly string _fakeIStorageImageSubPath;
 	private readonly string _fakeIStorageImageSubPathVideo;
-	private readonly string _fakeIStorageRawImageSubPath;
+	private readonly string _fakeIStorageRawArwImageSubPath;
 
 	private readonly IUpdateStatusGeneratedThumbnailService
 		_fakeIUpdateStatusGeneratedThumbnailService;
@@ -37,24 +38,28 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	private readonly ThumbnailImageFormat _imageFormat;
 
 	private readonly FakeSelectorStorage _selectorStorage;
+	private readonly string _fakeIStorageRawCr3ImageSubPath;
 
 	public ThumbnailServiceTests()
 	{
 		_fakeIStorageImageSubPath = "/test.jpg";
 		_fakeIStorageImageSubPathVideo = "/test.mp4";
-		_fakeIStorageRawImageSubPath = "/test.arw";
+		_fakeIStorageRawArwImageSubPath = "/test.arw";
+		_fakeIStorageRawCr3ImageSubPath = "/test.cr3";
 
 		var iStorage = new FakeIStorage(["/"],
 			[
 				_fakeIStorageImageSubPath,
 				_fakeIStorageImageSubPathVideo,
-				_fakeIStorageRawImageSubPath
+				_fakeIStorageRawArwImageSubPath,
+				_fakeIStorageRawCr3ImageSubPath
 			],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(),
 				CreateAnQuickTimeMp4.Bytes.ToArray(),
-				new CreateAnImageA6700Raw().Bytes.ToArray()
+				new CreateAnImageA6700Raw().Bytes.ToArray(),
+				new CreateAnImageEOSM50Raw().Bytes.ToArray()
 			});
 		_selectorStorage = new FakeSelectorStorage(iStorage);
 		_appSettings = new AppSettings();
@@ -161,7 +166,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	}
 
 	[TestMethod]
-	public async Task GenerateThumbnail_FileHash_Raw_HappyFlow()
+	public async Task GenerateThumbnail_FileHash_RawArw_HappyFlow()
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
 			_appSettings, new UpdateStatusGeneratedThumbnailService(
@@ -171,11 +176,31 @@ public sealed class ThumbnailServiceTests : VerifyBase
 			new FakeINativePreviewThumbnailGenerator());
 
 		var isCreated = await sut.GenerateThumbnail(
-			_fakeIStorageRawImageSubPath);
+			_fakeIStorageRawArwImageSubPath);
 
 		Assert.IsTrue(isCreated[0].Success);
 		Assert.IsTrue(isCreated[1].Success);
 		Assert.IsTrue(isCreated[2].Success);
+	}
+	
+	[TestMethod]
+	public async Task GenerateThumbnail_FileHash_RawCr3_HappyFlow()
+	{
+		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
+			_appSettings, new UpdateStatusGeneratedThumbnailService(
+				new FakeIThumbnailQuery()),
+			new FakeIVideoProcess(_selectorStorage),
+			new FileHashSubPathStorage(_selectorStorage, new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
+
+		var isCreated = await sut.GenerateThumbnail(
+			_fakeIStorageRawCr3ImageSubPath);
+
+		Assert.IsTrue(isCreated[0].Success);
+		Assert.IsTrue(isCreated[1].Success);
+		Assert.IsTrue(isCreated[2].Success);
+		
+		// can you check with ImageSharp here if the output is valid
 	}
 
 	[TestMethod]

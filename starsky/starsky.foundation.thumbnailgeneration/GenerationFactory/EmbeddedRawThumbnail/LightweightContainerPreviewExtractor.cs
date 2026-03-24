@@ -261,7 +261,6 @@ public class LightweightContainerPreviewExtractor(
 		}
 	}
 
-
 	internal static bool TryResolveAndValidateOffset(Stream input, int tiffBase,
 		uint candidateOffset,
 		uint candidateLength,
