@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 
 public partial class TiffEmbeddedPreviewExtractor
@@ -13,7 +15,7 @@ public partial class TiffEmbeddedPreviewExtractor
 	///     Canon CR2 stores lossless raw strips starting with FF D8 FF C4 (SOI + DHT, no DQT).
 	///     ImageSharp cannot decode these; they must be excluded from preview candidates.
 	/// </summary>
-	private static bool IsLosslessJpegAtOffset(Stream input, uint offset)
+	internal static bool IsLosslessJpegAtOffset(Stream input, uint offset)
 	{
 		if ( !StreamPrimitives.TrySeek(input, offset) )
 		{
@@ -41,7 +43,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		return JpegScannerUtilities.DetectJpegLengthFromStart(input, startOffset, maxScanBytes);
 	}
 
-	internal static IEnumerable<PreviewCandidate> ScanJpegsInRange(Stream input, uint rangeOffset,
+	internal static IEnumerable<PreviewCandidate?> ScanJpegsInRange(Stream input, uint rangeOffset,
 		uint rangeLength)
 	{
 		var maxScan = ( int ) Math.Min(rangeLength, MaxMakerNoteScanBytes);
@@ -102,10 +104,10 @@ public partial class TiffEmbeddedPreviewExtractor
 		return b0 == 0xFF && b1 == 0xD8 && b2 == 0xFF;
 	}
 
-	private static bool TryBuildScanCandidate(Stream input, uint soi, int remaining,
-		out PreviewCandidate candidate)
+	internal static bool TryBuildScanCandidate(Stream input, uint soi, int remaining,
+		out PreviewCandidate? candidate)
 	{
-		candidate = default!;
+		candidate = null;
 		var resumePosition = input.Position;
 
 		if ( IsLosslessJpegAtOffset(input, soi) )

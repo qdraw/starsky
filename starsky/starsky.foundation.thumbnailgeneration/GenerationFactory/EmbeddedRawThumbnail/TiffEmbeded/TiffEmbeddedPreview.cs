@@ -512,7 +512,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		var boundedCanonScan = Math.Min(makerNoteLength, CanonFallbackScanBytes);
 		foreach ( var candidate in ScanJpegsInRange(input, makerNoteOffset, boundedCanonScan) )
 		{
-			previews.Add(candidate);
+			previews.Add(candidate!);
 			if ( previews.Count >= MaxPreviews )
 			{
 				break;
