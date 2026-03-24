@@ -84,7 +84,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 			"canon_eos_5d_mark_iv_01.cr2", "HUAWEI - EVA-AL00 - 16bit (4_3).dng",
 			"Apple - iPhone XS - 16bit (4_3).dng",
 			"Leica - M (Typ 240) - 16bit 16bit compressed (3_2).dng",
-			"Canon - EOS M200 - CRAW (3_2).CR3"
+			"Canon - EOS M200 - CRAW (3_2).CR3", "sigma_sd1_merrill_01.x3f"
 		};
 
 		return testFiles
@@ -108,6 +108,7 @@ public class EmbeddedRawThumbnailGeneratorIntegrationTests
 	[DataRow("Apple - iPhone XS - 16bit (4_3).dng")]
 	[DataRow("Leica - M (Typ 240) - 16bit 16bit compressed (3_2).dng")]
 	[DataRow("Canon - EOS M200 - CRAW (3_2).CR3")]
+	[DataRow("sigma_sd1_merrill_01.x3f")]
 	public async Task TryExtractPreview_WithRealRawFile_ExtractsPreview(string fileName)
 	{
 		var filePath = Path.Combine(TestRawDirectory, fileName);

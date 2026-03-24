@@ -61,7 +61,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		///     Extension: .meta.json
 		/// </summary>
 		meta_json = 71,
-		
+
 		// folder
 		directory = 1000
 	}
@@ -209,7 +209,6 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 				{ ImageFormat.orf, ExtensionRawOrf },
 				{ ImageFormat.rw2, ExtensionRawRw2 },
 				{ ImageFormat.pef, ExtensionRawPef },
-				{ ImageFormat.fff, ExtensionRawFff },
 				{ ImageFormat.x3f, ExtensionRawX3F },
 				{ ImageFormat.bmp, ExtensionBmp },
 				{ ImageFormat.gif, ExtensionGif },

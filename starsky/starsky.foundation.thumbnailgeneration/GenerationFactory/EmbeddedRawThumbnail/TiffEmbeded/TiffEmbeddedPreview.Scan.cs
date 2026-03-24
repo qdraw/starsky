@@ -38,45 +38,7 @@ public partial class TiffEmbeddedPreviewExtractor
 
 	private static uint DetectJpegLengthByEoi(Stream input, uint startOffset, int maxScanBytes)
 	{
-		if ( maxScanBytes < 2 || !StreamPrimitives.TrySeek(input, startOffset) )
-		{
-			return 0;
-		}
-
-		var buffer = ArrayPool<byte>.Shared.Rent(64 * 1024);
-		try
-		{
-			var scanned = 0;
-			var previous = -1;
-			while ( scanned < maxScanBytes )
-			{
-				var toRead = Math.Min(buffer.Length, maxScanBytes - scanned);
-				var read = input.Read(buffer, 0, toRead);
-				if ( read <= 0 )
-				{
-					break;
-				}
-
-				for ( var i = 0; i < read; i++ )
-				{
-					var current = buffer[i];
-					if ( previous == 0xFF && current == 0xD9 )
-					{
-						return ( uint ) ( scanned + i + 1 );
-					}
-
-					previous = current;
-				}
-
-				scanned += read;
-			}
-		}
-		finally
-		{
-			ArrayPool<byte>.Shared.Return(buffer);
-		}
-
-		return 0;
+		return JpegScannerUtilities.DetectJpegLengthFromStart(input, startOffset, maxScanBytes);
 	}
 
 	internal static IEnumerable<PreviewCandidate> ScanJpegsInRange(Stream input, uint rangeOffset,

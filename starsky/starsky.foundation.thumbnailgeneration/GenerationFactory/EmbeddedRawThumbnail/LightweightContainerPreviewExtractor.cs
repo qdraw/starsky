@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -15,29 +16,40 @@ public class LightweightContainerPreviewExtractor(
 	IWebLogger logger,
 	ISelectorStorage selectorStorage)
 {
-	private IStorage subPathStorage => selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-	private IStorage tempStorage => selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
+	private const int MinJpegSize = 4096;
+	private const int MaxTiffHeaderScanBytes = 64 * 1024;
+
+	private IStorage SubPathStorage => selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+	private IStorage TempStorage => selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
 
 	public async Task<bool> TryExtract(string subPathRawFile, string? outputLargePath)
 	{
-		if ( !subPathStorage.ExistFile(subPathRawFile) )
+		if ( !SubPathStorage.ExistFile(subPathRawFile) )
 		{
 			return false;
 		}
 
 		try
 		{
-			await using var input = subPathStorage.ReadStream(subPathRawFile);
+			await using var input = SubPathStorage.ReadStream(subPathRawFile);
 			await using var output = new MemoryStream();
 
-			var ok = await ContainerJpegScanner.TryExtractBestPreview(input, output);
+			var extension = Path.GetExtension(subPathRawFile).ToLowerInvariant();
+			var ok = extension == ".x3f" &&
+			         await TryExtractX3fTaggedPreview(input, output);
+
+			if ( !ok )
+			{
+				ok = await ContainerJpegScanner.TryExtractBestPreview(input, output);
+			}
+
 			if ( !ok || outputLargePath == null || output.Length == 0 )
 			{
 				return ok;
 			}
 
 			output.Seek(0, SeekOrigin.Begin);
-			return await tempStorage.WriteStreamAsync(output, outputLargePath);
+			return await TempStorage.WriteStreamAsync(output, outputLargePath);
 		}
 		catch ( Exception exception )
 		{
@@ -45,5 +57,263 @@ public class LightweightContainerPreviewExtractor(
 				$"[LightweightContainerPreviewExtractor] Failed to extract from {subPathRawFile}: {exception.Message}");
 			return false;
 		}
+	}
+
+	private static async Task<bool> TryExtractX3fTaggedPreview(Stream input, Stream output)
+	{
+		if ( !input.CanSeek || input.Length < 512 )
+		{
+			return false;
+		}
+
+		var tiffBase = FindTiffHeaderOffset(input);
+		if ( tiffBase < 0 || !TrySeek(input, tiffBase) )
+		{
+			return false;
+		}
+
+		var endianBuf = new byte[2];
+		if ( input.Read(endianBuf, 0, 2) != 2 )
+		{
+			return false;
+		}
+
+		var littleEndian = endianBuf[0] == 0x49 && endianBuf[1] == 0x49;
+		if ( !littleEndian && !( endianBuf[0] == 0x4D && endianBuf[1] == 0x4D ) )
+		{
+			return false;
+		}
+
+		if ( !TryReadUInt16(input, littleEndian, out var magic) || magic != 42 )
+		{
+			return false;
+		}
+
+		if ( !TryReadUInt32(input, littleEndian, out var firstIfdRelative) )
+		{
+			return false;
+		}
+
+		var ifdOffset = tiffBase + firstIfdRelative;
+		for ( var i = 0; i < 4 && ifdOffset > 0; i++ )
+		{
+			if ( !TryReadIfdJpegPair(input, ifdOffset, littleEndian,
+				    out var candidateOffset, out var candidateLength, out var compression,
+				    out var nextIfdRelative) )
+			{
+				break;
+			}
+
+			if ( compression is 6 or 7 &&
+			     TryResolveAndValidateOffset(input, tiffBase, candidateOffset, candidateLength,
+				     out var resolvedOffset) )
+			{
+				return await CopyRangeAsync(input, output, resolvedOffset, candidateLength);
+			}
+
+			if ( nextIfdRelative == 0 )
+			{
+				break;
+			}
+
+			ifdOffset = tiffBase + nextIfdRelative;
+		}
+
+		return false;
+	}
+
+	private static int FindTiffHeaderOffset(Stream input)
+	{
+		if ( !TrySeek(input, 0) )
+		{
+			return -1;
+		}
+
+		var scanLength = ( int ) Math.Min(MaxTiffHeaderScanBytes, input.Length);
+		var bytes = new byte[scanLength];
+		if ( input.Read(bytes, 0, scanLength) < 8 )
+		{
+			return -1;
+		}
+
+		for ( var i = 0; i <= scanLength - 4; i++ )
+		{
+			var isLittle = bytes[i] == 0x49 && bytes[i + 1] == 0x49 && bytes[i + 2] == 0x2A &&
+			               bytes[i + 3] == 0x00;
+			var isBig = bytes[i] == 0x4D && bytes[i + 1] == 0x4D && bytes[i + 2] == 0x00 &&
+			            bytes[i + 3] == 0x2A;
+			if ( isLittle || isBig )
+			{
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	private static bool TryReadIfdJpegPair(Stream input, long ifdOffset, bool littleEndian,
+		out uint jpegOffset, out uint jpegLength, out ushort compression, out uint nextIfdRelative)
+	{
+		jpegOffset = 0;
+		jpegLength = 0;
+		compression = 0;
+		nextIfdRelative = 0;
+
+		if ( !TrySeek(input, ifdOffset) || !TryReadUInt16(input, littleEndian, out var entryCount) )
+		{
+			return false;
+		}
+
+		if ( entryCount > 1024 )
+		{
+			return false;
+		}
+
+		for ( var i = 0; i < entryCount; i++ )
+		{
+			if ( !TryReadUInt16(input, littleEndian, out var tag) ||
+			     !TryReadUInt16(input, littleEndian, out var type) ||
+			     !TryReadUInt32(input, littleEndian, out var count) ||
+			     !TryReadUInt32(input, littleEndian, out var value) )
+			{
+				return false;
+			}
+
+			if ( count != 1 )
+			{
+				continue;
+			}
+
+			if ( tag == 0x0103 )
+			{
+				compression = type == 3
+					? ( ushort ) ( littleEndian ? value & 0xFFFF : value >> 16 )
+					: ( ushort ) value;
+				continue;
+			}
+
+			if ( tag == 0x0201 )
+			{
+				jpegOffset = value;
+				continue;
+			}
+
+			if ( tag == 0x0202 )
+			{
+				jpegLength = value;
+			}
+		}
+
+		return TryReadUInt32(input, littleEndian, out nextIfdRelative);
+	}
+
+	private static bool TryResolveAndValidateOffset(Stream input, int tiffBase,
+		uint candidateOffset,
+		uint candidateLength,
+		out uint resolvedOffset)
+	{
+		resolvedOffset = 0;
+		if ( candidateOffset == 0 || candidateLength < MinJpegSize )
+		{
+			return false;
+		}
+
+		if ( IsValidJpegRange(input, candidateOffset, candidateLength) )
+		{
+			resolvedOffset = candidateOffset;
+			return true;
+		}
+
+		var relativeOffset = ( uint ) ( tiffBase + ( int ) candidateOffset );
+		if ( IsValidJpegRange(input, relativeOffset, candidateLength) )
+		{
+			resolvedOffset = relativeOffset;
+			return true;
+		}
+
+		return false;
+	}
+
+	private static bool IsValidJpegRange(Stream input, uint offset, uint length)
+	{
+		if ( offset + length > input.Length || !TrySeek(input, offset) )
+		{
+			return false;
+		}
+
+		var marker = new byte[3];
+		if ( input.Read(marker, 0, 3) != 3 )
+		{
+			return false;
+		}
+
+		return marker.SequenceEqual(new byte[] { 0xFF, 0xD8, 0xFF });
+	}
+
+	private static async Task<bool> CopyRangeAsync(Stream input, Stream output, uint offset,
+		uint length)
+	{
+		if ( !TrySeek(input, offset) )
+		{
+			return false;
+		}
+
+		var remaining = ( long ) length;
+		var buffer = new byte[64 * 1024];
+		while ( remaining > 0 )
+		{
+			var toRead = ( int ) Math.Min(buffer.Length, remaining);
+			var read = await input.ReadAsync(buffer.AsMemory(0, toRead));
+			if ( read <= 0 )
+			{
+				return false;
+			}
+
+			await output.WriteAsync(buffer.AsMemory(0, read));
+			remaining -= read;
+		}
+
+		return true;
+	}
+
+	private static bool TryReadUInt16(Stream input, bool littleEndian, out ushort value)
+	{
+		var b = new byte[2];
+		value = 0;
+		if ( input.Read(b, 0, 2) != 2 )
+		{
+			return false;
+		}
+
+		value = littleEndian
+			? ( ushort ) ( b[0] | ( b[1] << 8 ) )
+			: ( ushort ) ( ( b[0] << 8 ) | b[1] );
+		return true;
+	}
+
+	private static bool TryReadUInt32(Stream input, bool littleEndian, out uint value)
+	{
+		var b = new byte[4];
+		value = 0;
+		if ( input.Read(b, 0, 4) != 4 )
+		{
+			return false;
+		}
+
+		value = littleEndian
+			? ( uint ) ( b[0] | ( b[1] << 8 ) | ( b[2] << 16 ) | ( b[3] << 24 ) )
+			: ( ( uint ) b[0] << 24 ) | ( ( uint ) b[1] << 16 ) | ( ( uint ) b[2] << 8 ) | b[3];
+		return true;
+	}
+
+	private static bool TrySeek(Stream input, long offset)
+	{
+		if ( !input.CanSeek || offset < 0 || offset > input.Length )
+		{
+			return false;
+		}
+
+		input.Seek(offset, SeekOrigin.Begin);
+		return true;
 	}
 }

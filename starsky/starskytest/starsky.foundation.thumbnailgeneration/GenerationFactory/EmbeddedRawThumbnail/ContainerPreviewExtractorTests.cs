@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.E
 public class ContainerPreviewExtractorTests
 {
 	private const string RawPathFff = "/raw/test.fff";
-	private const string RawPathX3f = "/raw/test.x3f";
+	private const string RawPathX3F = "/raw/test.x3f";
 	private const string RawPathRaf = "/raw/test.raf";
 	private const string OutputPath = "/tmp/preview.jpg";
 
@@ -98,6 +99,119 @@ public class ContainerPreviewExtractorTests
 		return fujiHeader.Concat(padding).Concat(jpeg).ToArray();
 	}
 
+	private static void WriteUInt16BigEndian(byte[] bytes, int offset, ushort value)
+	{
+		bytes[offset] = ( byte ) ( value >> 8 );
+		bytes[offset + 1] = ( byte ) value;
+	}
+
+	private static void WriteUInt32BigEndian(byte[] bytes, int offset, uint value)
+	{
+		bytes[offset] = ( byte ) ( value >> 24 );
+		bytes[offset + 1] = ( byte ) ( value >> 16 );
+		bytes[offset + 2] = ( byte ) ( value >> 8 );
+		bytes[offset + 3] = ( byte ) value;
+	}
+
+	private static byte[] CreateX3FWithTaggedIfd1Preview(uint taggedOffset, int taggedLength)
+	{
+		var leadingJpeg = CreateJpeg(18869, false); // earlier JPEG should not be preferred
+		var taggedJpeg = CreateJpeg(taggedLength, false);
+		var totalLength = ( int ) taggedOffset + taggedLength + 16;
+		var bytes = new byte[totalLength];
+
+		// Simulate existing early JPEG in container data.
+		Array.Copy(leadingJpeg, 0, bytes, 292, leadingJpeg.Length);
+
+		// Embedded TIFF header at offset 304 (as seen in real sigma sample).
+		const int tiffBase = 304;
+		bytes[tiffBase] = 0x4D;
+		bytes[tiffBase + 1] = 0x4D;
+		bytes[tiffBase + 2] = 0x00;
+		bytes[tiffBase + 3] = 0x2A;
+		WriteUInt32BigEndian(bytes, tiffBase + 4, 8); // first IFD offset
+
+		// IFD0: zero entries + pointer to IFD1 at relative offset 16
+		WriteUInt16BigEndian(bytes, tiffBase + 8, 0);
+		WriteUInt32BigEndian(bytes, tiffBase + 10, 16);
+
+		// IFD1 at tiffBase + 16: Compression + Thumbnail Offset + Thumbnail Length
+		var ifd1 = tiffBase + 16;
+		WriteUInt16BigEndian(bytes, ifd1, 3);
+
+		// Tag 0x0103 Compression, type SHORT(3), count 1, value 6
+		WriteUInt16BigEndian(bytes, ifd1 + 2, 0x0103);
+		WriteUInt16BigEndian(bytes, ifd1 + 4, 3);
+		WriteUInt32BigEndian(bytes, ifd1 + 6, 1);
+		WriteUInt16BigEndian(bytes, ifd1 + 10, 6);
+
+		// Tag 0x0201 Thumbnail Offset (LONG)
+		WriteUInt16BigEndian(bytes, ifd1 + 14, 0x0201);
+		WriteUInt16BigEndian(bytes, ifd1 + 16, 4);
+		WriteUInt32BigEndian(bytes, ifd1 + 18, 1);
+		WriteUInt32BigEndian(bytes, ifd1 + 22, taggedOffset);
+
+		// Tag 0x0202 Thumbnail Length (LONG)
+		WriteUInt16BigEndian(bytes, ifd1 + 26, 0x0202);
+		WriteUInt16BigEndian(bytes, ifd1 + 28, 4);
+		WriteUInt32BigEndian(bytes, ifd1 + 30, 1);
+		WriteUInt32BigEndian(bytes, ifd1 + 34, ( uint ) taggedLength);
+
+		// next IFD offset = 0
+		WriteUInt32BigEndian(bytes, ifd1 + 38, 0);
+
+		Array.Copy(taggedJpeg, 0, bytes, taggedOffset, taggedJpeg.Length);
+		return bytes;
+	}
+
+	private static byte[] CreateX3FWithRelativeTaggedIfd1Preview(uint taggedOffset,
+		int taggedLength)
+	{
+		const int tiffBase = 304;
+		var relativeTaggedOffset = taggedOffset - tiffBase;
+		var leadingJpeg = CreateJpeg(18869, false); // absolute scanner candidate
+		var taggedJpeg = CreateJpeg(taggedLength, false); // tagged candidate
+		var totalLength = ( int ) taggedOffset + taggedLength + 16;
+		var bytes = new byte[totalLength];
+
+		Array.Copy(leadingJpeg, 0, bytes, 292, leadingJpeg.Length);
+
+		// Embedded TIFF header at offset 304 (big-endian)
+		bytes[tiffBase] = 0x4D;
+		bytes[tiffBase + 1] = 0x4D;
+		bytes[tiffBase + 2] = 0x00;
+		bytes[tiffBase + 3] = 0x2A;
+		WriteUInt32BigEndian(bytes, tiffBase + 4, 8);
+
+		// IFD0 -> next IFD points to IFD1
+		WriteUInt16BigEndian(bytes, tiffBase + 8, 0);
+		WriteUInt32BigEndian(bytes, tiffBase + 10, 16);
+
+		var ifd1 = tiffBase + 16;
+		WriteUInt16BigEndian(bytes, ifd1, 3);
+
+		// Compression=6
+		WriteUInt16BigEndian(bytes, ifd1 + 2, 0x0103);
+		WriteUInt16BigEndian(bytes, ifd1 + 4, 3);
+		WriteUInt32BigEndian(bytes, ifd1 + 6, 1);
+		WriteUInt16BigEndian(bytes, ifd1 + 10, 6);
+
+		// 0x0201 uses TIFF-base-relative offset here (real edge-case)
+		WriteUInt16BigEndian(bytes, ifd1 + 14, 0x0201);
+		WriteUInt16BigEndian(bytes, ifd1 + 16, 4);
+		WriteUInt32BigEndian(bytes, ifd1 + 18, 1);
+		WriteUInt32BigEndian(bytes, ifd1 + 22, relativeTaggedOffset);
+
+		WriteUInt16BigEndian(bytes, ifd1 + 26, 0x0202);
+		WriteUInt16BigEndian(bytes, ifd1 + 28, 4);
+		WriteUInt32BigEndian(bytes, ifd1 + 30, 1);
+		WriteUInt32BigEndian(bytes, ifd1 + 34, ( uint ) taggedLength);
+
+		WriteUInt32BigEndian(bytes, ifd1 + 38, 0);
+		Array.Copy(taggedJpeg, 0, bytes, taggedOffset, taggedJpeg.Length);
+		return bytes;
+	}
+
 	[TestMethod]
 	public async Task LightweightContainerPreviewExtractor_PrefersIptcCandidate()
 	{
@@ -122,13 +236,51 @@ public class ContainerPreviewExtractorTests
 	public async Task EmbeddedRawThumbnailService_RoutesX3fToLightweightExtractor()
 	{
 		var bytes = CreateContainerWithTwoJpegsPreferIptc();
-		var selectorStorage = CreateSelectorStorage(bytes, RawPathX3f, false, out var tempStorage);
+		var selectorStorage = CreateSelectorStorage(bytes, RawPathX3F, false, out var tempStorage);
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger(), selectorStorage);
 
-		var result = await service.TryExtractPreview(RawPathX3f, OutputPath);
+		var result = await service.TryExtractPreview(RawPathX3F, OutputPath);
 
 		Assert.IsTrue(result, "Expected service route for .x3f via lightweight extractor");
 		Assert.IsTrue(tempStorage.ExistFile(OutputPath), "Expected output preview file");
+	}
+
+	[TestMethod]
+	public async Task EmbeddedRawThumbnailService_X3fWithIfd1Tags_UsesTaggedThumbnail()
+	{
+		const uint taggedOffset = 3816;
+		const int taggedLength = 15345;
+		var bytes = CreateX3FWithTaggedIfd1Preview(taggedOffset, taggedLength);
+		var selectorStorage = CreateSelectorStorage(bytes, RawPathX3F, false, out var tempStorage);
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger(), selectorStorage);
+
+		var result = await service.TryExtractPreview(RawPathX3F, OutputPath);
+
+		Assert.IsTrue(result, "Expected tagged IFD1 thumbnail extraction for .x3f");
+		Assert.IsTrue(tempStorage.ExistFile(OutputPath), "Expected output preview file");
+
+		await using var output = tempStorage.ReadStream(OutputPath);
+		Assert.AreEqual(taggedLength, output.Length,
+			"Expected output length to match IFD1 tagged thumbnail length");
+	}
+
+	[TestMethod]
+	public async Task EmbeddedRawThumbnailService_X3fWithRelativeIfd1Offset_UsesTaggedThumbnail()
+	{
+		const uint taggedOffset = 3816;
+		const int taggedLength = 15345;
+		var bytes = CreateX3FWithRelativeTaggedIfd1Preview(taggedOffset, taggedLength);
+		var selectorStorage = CreateSelectorStorage(bytes, RawPathX3F, false, out var tempStorage);
+		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger(), selectorStorage);
+
+		var result = await service.TryExtractPreview(RawPathX3F, OutputPath);
+
+		Assert.IsTrue(result, "Expected tagged IFD1 relative-offset thumbnail extraction");
+		Assert.IsTrue(tempStorage.ExistFile(OutputPath), "Expected output preview file");
+
+		await using var output = tempStorage.ReadStream(OutputPath);
+		Assert.AreEqual(taggedLength, output.Length,
+			"Expected output length to match relative IFD1 tagged thumbnail length");
 	}
 
 	[TestMethod]
