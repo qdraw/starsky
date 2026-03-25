@@ -237,7 +237,7 @@ public class JpegExifPreviewExtractorTests
 		}
 
 		// write preview at offset
-		await tiff.WriteAsync(preview, 0, preview.Length, TestContext.CancellationToken);
+		await tiff.WriteAsync(preview, TestContext.CancellationToken);
 		var app1Payload = tiff.ToArray();
 
 		// Sanity-check TIFF parsing and direct extraction before embedding into JPEG
@@ -253,7 +253,7 @@ public class JpegExifPreviewExtractorTests
 			// Validate entryCount bytes at the IFD offset are 0x02 0x00 (little-endian 2)
 			checkTiffMs.Seek(firstIfdOffset, SeekOrigin.Begin);
 			var entryCountBuf = new byte[2];
-			var rc = await checkTiffMs.ReadAsync(entryCountBuf, 0, 2,
+			var rc = await checkTiffMs.ReadAsync(entryCountBuf.AsMemory(0, 2),
 				TestContext.CancellationToken);
 			Assert.AreEqual(2, rc, "Should read 2 bytes for entry count");
 			Assert.AreEqual(0x02, entryCountBuf[0]);
@@ -288,8 +288,7 @@ public class JpegExifPreviewExtractorTests
 			Assert.IsTrue(okExtract, "ExtractPreviewToStream should succeed");
 			outMs.Seek(0, SeekOrigin.Begin);
 			var extracted = new byte[outMs.Length];
-			var read = await outMs.ReadAsync(extracted, 0, extracted.Length,
-				TestContext.CancellationToken);
+			var read = await outMs.ReadAsync(extracted, TestContext.CancellationToken);
 			Assert.AreEqual(previewCandidate.Length, ( uint ) read);
 		}
 
@@ -307,7 +306,7 @@ public class JpegExifPreviewExtractorTests
 		await using var written = temp.ReadStream("out.jpg");
 		Assert.IsNotNull(written);
 		var buf = new byte[preview.Length];
-		var r = await written.ReadAsync(buf, 0, buf.Length, TestContext.CancellationToken);
+		var r = await written.ReadAsync(buf, TestContext.CancellationToken);
 		Assert.AreEqual(preview.Length, r);
 		CollectionAssert.AreEqual(preview, buf);
 	}
