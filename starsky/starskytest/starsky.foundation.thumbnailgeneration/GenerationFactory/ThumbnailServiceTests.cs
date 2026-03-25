@@ -16,7 +16,7 @@ using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
-using starskytest.FakeCreateAn.CreateAnImageA6700Raw;
+using starskytest.FakeCreateAn.CreateAnImageA6700PreviewRawJpeg;
 using starskytest.FakeCreateAn.CreateAnImageEOSM50Raw;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
@@ -58,7 +58,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 			{
 				CreateAnImage.Bytes.ToArray(),
 				CreateAnQuickTimeMp4.Bytes.ToArray(),
-				new CreateAnImageA6700Raw().Bytes.ToArray(),
+				new CreateAnImageA6700PreviewRawJpeg().Bytes.ToArray(),
 				new CreateAnImageEOSM50Raw().Bytes.ToArray()
 			});
 		_selectorStorage = new FakeSelectorStorage(iStorage);

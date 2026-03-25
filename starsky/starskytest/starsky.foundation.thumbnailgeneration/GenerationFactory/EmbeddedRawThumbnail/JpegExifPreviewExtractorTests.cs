@@ -1,11 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using MetadataExtractor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Enums;
+using starsky.foundation.readmeta.ReadMetaHelpers;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+using starskytest.FakeCreateAn.CreateAnImageA6700PreviewRawJpeg;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
@@ -13,6 +20,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.E
 [TestClass]
 public class JpegExifPreviewExtractorTests
 {
+	public TestContext TestContext { get; set; }
 
 	private static byte[] BuildJpegWithApp1(byte[] app1Payload)
 	{
@@ -32,6 +40,44 @@ public class JpegExifPreviewExtractorTests
 		ms.WriteByte(0xFF);
 		ms.WriteByte(0xD9);
 		return ms.ToArray();
+	}
+
+	[TestMethod]
+	public async Task TryExtract_IntegrationTest()
+	{
+		var path = new CreateAnImageA6700PreviewRawJpeg().FilePathJpeg;
+
+		var host = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var temp = new FakeIStorage();
+		var thumb = new FakeIStorage();
+		var selector = new FakeSelectorStorageByType(host, thumb, host, temp);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+		await extractor.TryExtract(path, "preview.jpg");
+
+		Assert.IsTrue(temp.ExistFile("preview.jpg"));
+		var stream1 = temp.ReadStream("preview.jpg");
+		var metaPreview = ImageMetadataReader.ReadMetadata(stream1).ToList();
+		await stream1.DisposeAsync();
+		Assert.AreEqual(1616, ReadMetaExif.GetImageWidthHeight(metaPreview, true));
+		Assert.AreEqual(1080, ReadMetaExif.GetImageWidthHeight(metaPreview, false));
+
+		var sut = new ResizeThumbnailFromSourceImageHelper(
+			selector,
+			new FakeIWebLogger());
+
+		await sut.ResizeThumbnailFromSourceImage(
+			"preview.jpg",
+			SelectorStorage.StorageServices.Temporary,
+			1000, "output",
+			true, ThumbnailImageFormat.jpg);
+
+		var stream = selector.Get(SelectorStorage.StorageServices.Thumbnail)
+			.ReadStream("output.jpg");
+		var meta = ImageMetadataReader.ReadMetadata(stream).ToList();
+		await stream.DisposeAsync();
+
+		Assert.AreEqual(1000, ReadMetaExif.GetImageWidthHeight(meta, true));
+		Assert.AreEqual(668, ReadMetaExif.GetImageWidthHeight(meta, false));
 	}
 
 	[TestMethod]
@@ -162,7 +208,8 @@ public class JpegExifPreviewExtractorTests
 		tiff.WriteByte(0x00);
 		tiff.WriteByte(0x00); // count=1
 		const uint jpegOffset = 100u;
-		await tiff.WriteAsync(BitConverter.GetBytes(jpegOffset), TestContext.CancellationToken); // little-endian
+		await tiff.WriteAsync(BitConverter.GetBytes(jpegOffset),
+			TestContext.CancellationToken); // little-endian
 
 		// Entry 2: Tag 0x0202 (JPEGLENGTH), type=4, count=1, value = length
 		tiff.WriteByte(0x02);
@@ -174,7 +221,7 @@ public class JpegExifPreviewExtractorTests
 		tiff.WriteByte(0x00);
 		tiff.WriteByte(0x00);
 		var jpegLength = ( uint ) preview.Length;
-		await tiff.WriteAsync(BitConverter.GetBytes(jpegLength), 
+		await tiff.WriteAsync(BitConverter.GetBytes(jpegLength),
 			TestContext.CancellationToken);
 
 		// next IFD pointer = 0
@@ -190,7 +237,7 @@ public class JpegExifPreviewExtractorTests
 		}
 
 		// write preview at offset
-		await tiff.WriteAsync(preview, 0, preview.Length, TestContext.CancellationToken);
+		await tiff.WriteAsync(preview, TestContext.CancellationToken);
 		var app1Payload = tiff.ToArray();
 
 		// Sanity-check TIFF parsing and direct extraction before embedding into JPEG
@@ -206,7 +253,8 @@ public class JpegExifPreviewExtractorTests
 			// Validate entryCount bytes at the IFD offset are 0x02 0x00 (little-endian 2)
 			checkTiffMs.Seek(firstIfdOffset, SeekOrigin.Begin);
 			var entryCountBuf = new byte[2];
-			var rc = await checkTiffMs.ReadAsync(entryCountBuf, 0, 2, TestContext.CancellationToken);
+			var rc = await checkTiffMs.ReadAsync(entryCountBuf.AsMemory(0, 2),
+				TestContext.CancellationToken);
 			Assert.AreEqual(2, rc, "Should read 2 bytes for entry count");
 			Assert.AreEqual(0x02, entryCountBuf[0]);
 			Assert.AreEqual(0x00, entryCountBuf[1]);
@@ -240,7 +288,7 @@ public class JpegExifPreviewExtractorTests
 			Assert.IsTrue(okExtract, "ExtractPreviewToStream should succeed");
 			outMs.Seek(0, SeekOrigin.Begin);
 			var extracted = new byte[outMs.Length];
-			var read = await outMs.ReadAsync(extracted, 0, extracted.Length, TestContext.CancellationToken);
+			var read = await outMs.ReadAsync(extracted, TestContext.CancellationToken);
 			Assert.AreEqual(previewCandidate.Length, ( uint ) read);
 		}
 
@@ -258,10 +306,8 @@ public class JpegExifPreviewExtractorTests
 		await using var written = temp.ReadStream("out.jpg");
 		Assert.IsNotNull(written);
 		var buf = new byte[preview.Length];
-		var r = await written.ReadAsync(buf, 0, buf.Length, TestContext.CancellationToken);
+		var r = await written.ReadAsync(buf, TestContext.CancellationToken);
 		Assert.AreEqual(preview.Length, r);
 		CollectionAssert.AreEqual(preview, buf);
 	}
-
-	public TestContext TestContext { get; set; }
 }

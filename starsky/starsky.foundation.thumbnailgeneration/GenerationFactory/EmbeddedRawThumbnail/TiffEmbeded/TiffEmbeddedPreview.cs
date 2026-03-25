@@ -111,6 +111,19 @@ public partial class TiffEmbeddedPreviewExtractor
 		};
 		ParseIfdRecursive(input, firstIfdOffset, littleEndian, traversalContext, 0, false);
 
+		// Enrich candidates with dimensions when missing by probing JPEG SOF from the stream.
+		// This helps selection prefer true higher-resolution previews discovered via MakerNote scans.
+		foreach ( var c in traversalContext.Previews )
+		{
+			if ( ( c.Width != 0 && c.Height != 0 ) ||
+			     !TryGetJpegDimensionsAtOffset(input, c.Offset, c.Length, out var w, out var h) )
+			{
+				continue;
+			}
+
+			c.Width = w;
+			c.Height = h;
+		}
 
 		// Select and extract best preview
 		var best = SelectBestPreviewHelper.SelectBestPreview(candidates);
@@ -673,5 +686,148 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 
 		return header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF;
+	}
+
+	// Read minimal JPEG SOF to discover width/height for a JPEG located at `offset` with known `length`.
+	internal static bool TryGetJpegDimensionsAtOffset(Stream input, uint offset, uint length,
+		out uint width, out uint height)
+	{
+		width = 0;
+		height = 0;
+		if ( length < MinJpegSize )
+		{
+			return false;
+		}
+
+		if ( !StreamPrimitives.TrySeek(input, offset) )
+		{
+			return false;
+		}
+
+		var buf = new byte[4096];
+		var toRead = ( int ) Math.Min(( uint ) buf.Length, length);
+		if ( input.Read(buf, 0, toRead) < 2 )
+		{
+			return false;
+		}
+
+		// quick SOI check
+		if ( buf[0] != 0xFF || buf[1] != 0xD8 )
+		{
+			return false;
+		}
+
+		var pos = 2;
+		while ( TryFindNextMarker(buf, toRead, ref pos, out var marker, out var segLen) )
+		{
+			if ( IsSofMarker(marker) )
+			{
+				// attempt in-buffer parse
+				if ( TryParseSofFromBuffer(buf, toRead, pos, segLen, out width, out height) )
+				{
+					return true;
+				}
+
+				// fallback: read segment from stream and parse
+				var segStart = offset + pos + 2;
+				if ( ReadSegmentAndParseSof(input, segStart, segLen, out width, out height) )
+				{
+					return width > 0 && height > 0;
+				}
+
+				return false;
+			}
+
+			pos += 2 + Math.Max(0, segLen);
+		}
+
+		return false;
+	}
+
+	private static bool IsSofMarker(int marker)
+	{
+		// SOF marker family contains frame header with height/width
+		return marker is 0xC0 or 0xC1 or 0xC2 or 0xC3 or 0xC5 or 0xC6 or 0xC7 or 0xC9 or 0xCA
+			or 0xCB or 0xCD or 0xCE or 0xCF;
+	}
+
+	private static bool TryParseSofFromBuffer(byte[] buf, int toRead, int pos, int segLen,
+		out uint width, out uint height)
+	{
+		width = 0;
+		height = 0;
+		// Need at least 7 bytes of payload for SOF: [precision(1)] [height(2)] [width(2)] and ensure the
+		// buffer contains the full segment payload (pos points at marker start).
+		if ( segLen < 7 || ( long ) pos + 2 + segLen > toRead )
+		{
+			return false;
+		}
+
+		// payload layout: [length(2)] [precision(1)] [height(2)] [width(2)] ...
+		height = ( uint ) ( ( buf[pos + 5] << 8 ) | buf[pos + 6] );
+		width = ( uint ) ( ( buf[pos + 7] << 8 ) | buf[pos + 8] );
+		return width > 0 && height > 0;
+	}
+
+	private static bool ReadSegmentAndParseSof(Stream input, long segmentStart, int segLen,
+		out uint width, out uint height)
+	{
+		width = 0;
+		height = 0;
+		if ( !StreamPrimitives.TrySeek(input, segmentStart) )
+		{
+			return false;
+		}
+
+		var seg = new byte[segLen];
+		if ( input.Read(seg, 0, segLen) < segLen )
+		{
+			return false;
+		}
+
+		// seg is read starting at the length bytes; the payload follows
+
+		height = ( uint ) ( ( seg[1] << 8 ) | seg[2] );
+		width = ( uint ) ( ( seg[3] << 8 ) | seg[4] );
+		return width > 0 && height > 0;
+	}
+
+	private static bool TryFindNextMarker(byte[] buf, int toRead, ref int pos, out int marker,
+		out int segLen)
+	{
+		marker = -1;
+		segLen = 0;
+		// allow cases where we can read marker bytes (pos+1) even if the 2-byte length
+		// may not yet be present in the buffer; the subsequent check handles that.
+		while ( pos + 2 <= toRead )
+		{
+			if ( buf[pos] != 0xFF )
+			{
+				pos++;
+				continue;
+			}
+
+			marker = buf[pos + 1] & 0xFF;
+			switch ( marker )
+			{
+				case 0xFF:
+					pos++;
+					continue;
+				case 0xD8:
+				case 0xD9:
+					pos += 2;
+					continue;
+			}
+
+			if ( pos + 4 > toRead )
+			{
+				return false;
+			}
+
+			segLen = ( buf[pos + 2] << 8 ) | buf[pos + 3];
+			return true;
+		}
+
+		return false;
 	}
 }
