@@ -1,12 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Interfaces;
-using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starskytest.FakeMocks;
 
@@ -33,7 +28,7 @@ public class EmbeddedRawThumbnailServiceTests
 	{
 		var logger = new FakeIWebLogger();
 		// Header for an unknown format
-		var blob = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+		var blob = "\0\0\0\0\0\0\0\0"u8.ToArray();
 		var storage = new FakeIStorage(outputSubPathFiles: ["test.unknown"],
 			byteListSource: new List<byte[]?> { blob });
 		var selector = new FakeSelectorStorageByType(storage, storage, storage, storage);
@@ -48,13 +43,13 @@ public class EmbeddedRawThumbnailServiceTests
 	public async Task TryExtractPreview_Exception_ReturnsFalse()
 	{
 		var logger = new FakeIWebLogger();
-		// Passing null to selector will cause exception in constructor of extractor or when accessing SubPathStorage
+		// Passing null to selector will cause Exception in the constructor of extractor or when accessing SubPathStorage
 		var service = new EmbeddedRawThumbnailService(logger, null!);
 
 		var result = await service.TryExtractPreview("test.cr2", "output.jpg");
 
 		Assert.IsFalse(result);
-		Assert.IsTrue(logger.TrackedExceptions.Count > 0);
+		Assert.IsNotEmpty(logger.TrackedExceptions);
 	}
 
 	[TestMethod]
