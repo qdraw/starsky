@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -27,18 +26,19 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 	{
 		try
 		{
-			var extension = Path.GetExtension(rawFilePath).ToLowerInvariant();
 			var imageFormat =
 				new ExtensionRolesHelper(logger).GetImageFormat(
-					SubPathStorage.ReadStream(rawFilePath, 160));
+					SubPathStorage.ReadStream(rawFilePath,
+						ExtensionRolesHelper.ImageFormatByteSize));
 
 			var tiffExtractor = new TiffEmbeddedPreviewExtractor(logger, selectorStorage);
 			var rafExtractor = new RafPreviewExtractor(logger, selectorStorage);
 			var containerExtractor = new ContainerFormatPreviewExtractor(logger, selectorStorage);
 			var lightweightContainerExtractor =
 				new LightweightContainerPreviewExtractor(logger, selectorStorage);
+			var jpegExifPreviewExtractor =
+				new JpegExifPreviewExtractor(logger, selectorStorage);
 
-			// Use TIFF-based extractor for DNG, CR2, NEF, ARW
 			var result = imageFormat switch
 			{
 				ExtensionRolesHelper.ImageFormat.arw
@@ -51,10 +51,13 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 				ExtensionRolesHelper.ImageFormat.raf =>
 					await rafExtractor.TryExtract(rawFilePath,
 						outputLargePath),
+				ExtensionRolesHelper.ImageFormat.jpg =>
+					await jpegExifPreviewExtractor.TryExtract(rawFilePath,
+						outputLargePath),
 				ExtensionRolesHelper.ImageFormat.cr3 =>
 					await containerExtractor.TryExtract(rawFilePath,
 						outputLargePath),
-				_ when extension is ".x3f" =>
+				ExtensionRolesHelper.ImageFormat.x3f =>
 					await lightweightContainerExtractor.TryExtract(rawFilePath,
 						outputLargePath),
 				_ => false

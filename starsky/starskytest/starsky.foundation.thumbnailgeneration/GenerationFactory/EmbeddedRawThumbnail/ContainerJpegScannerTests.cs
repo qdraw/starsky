@@ -378,53 +378,6 @@ public class ContainerJpegScannerTests
 		Assert.IsFalse(result);
 	}
 
-	private sealed class PseudoTruncatedStream(byte[] data, int realLength) : MemoryStream(data)
-	{
-		public override long Length => 4096;
-
-		public override int Read(byte[] buffer, int offset, int count)
-		{
-			var available = Math.Min(count, realLength - ( int ) Position);
-			if ( available <= 0 )
-			{
-				return 0;
-			}
-
-			return base.Read(buffer, offset, available);
-		}
-
-		public override long Seek(long offset, SeekOrigin loc)
-		{
-			if ( offset > realLength )
-			{
-				return -1; // Fail seek past realLength
-			}
-
-			return base.Seek(offset, loc);
-		}
-	}
-
-	private sealed class TruncatedStream(byte[] data, int length)
-		: MemoryStream(data.Take(length).ToArray())
-	{
-		public override int Read(byte[] buffer, int offset, int count)
-		{
-			return 0;
-		}
-
-		public override Task<int> ReadAsync(byte[] buffer, int offset, int count,
-			CancellationToken cancellationToken)
-		{
-			return Task.FromResult(0);
-		}
-
-		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
-			CancellationToken cancellationToken = default)
-		{
-			return new ValueTask<int>(0);
-		}
-	}
-
 	[TestMethod]
 	public async Task TryExtractBestPreview_ReturnsFalse_WhenSeekFails()
 	{
@@ -541,6 +494,67 @@ public class ContainerJpegScannerTests
 		Assert.IsTrue(result);
 	}
 
+	[TestMethod]
+	public async Task IsStandaloneMarker_HandlesTemMarker()
+	{
+		// 0x01 TEM marker
+		var jpeg = BuildJpeg(MinJpeg);
+		// Inject 0xFF 0x01
+		jpeg[6] = 0xFF;
+		jpeg[7] = 0x01;
+
+		using var input = StreamOf(jpeg);
+		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
+		Assert.IsTrue(result);
+	}
+
+	private sealed class PseudoTruncatedStream(byte[] data, int realLength) : MemoryStream(data)
+	{
+		public override long Length => 4096;
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			var available = Math.Min(count, realLength - ( int ) Position);
+			if ( available <= 0 )
+			{
+				return 0;
+			}
+
+			return base.Read(buffer, offset, available);
+		}
+
+		public override long Seek(long offset, SeekOrigin loc)
+		{
+			if ( offset > realLength )
+			{
+				return -1; // Fail seek past realLength
+			}
+
+			return base.Seek(offset, loc);
+		}
+	}
+
+	private sealed class TruncatedStream(byte[] data, int length)
+		: MemoryStream(data.Take(length).ToArray())
+	{
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return 0;
+		}
+
+		public override Task<int> ReadAsync(byte[] buffer, int offset, int count,
+			CancellationToken cancellationToken)
+		{
+			return Task.FromResult(0);
+		}
+
+		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
+			CancellationToken cancellationToken = default)
+		{
+			return new ValueTask<int>(0);
+		}
+	}
+
 	private sealed class ReadFailureInHasIptcStream(byte[] data) : MemoryStream(data)
 	{
 		public override int Read(byte[] buffer, int offset, int count)
@@ -577,20 +591,6 @@ public class ContainerJpegScannerTests
 
 			return await base.ReadAsync(buffer, cancellationToken);
 		}
-	}
-
-	[TestMethod]
-	public async Task IsStandaloneMarker_HandlesTemMarker()
-	{
-		// 0x01 TEM marker
-		var jpeg = BuildJpeg(MinJpeg);
-		// Inject 0xFF 0x01
-		jpeg[6] = 0xFF;
-		jpeg[7] = 0x01;
-
-		using var input = StreamOf(jpeg);
-		var result = await ContainerJpegScanner.TryExtractBestPreview(input, null);
-		Assert.IsTrue(result);
 	}
 
 	private sealed class SeekFailureStream(byte[] data) : MemoryStream(data)
@@ -790,7 +790,7 @@ public class ContainerJpegScannerTests
 		[TestMethod]
 		public void SelectBest_WithEmptyList_ReturnsNull()
 		{
-			var candidates = new List<ContainerJpegScanner.PreviewCandidate>();
+			var candidates = new List<ContainerJpegScanner.PreviewContainerJpegScannerCandidate>();
 
 			var result = ContainerJpegScanner.SelectBest(candidates);
 
@@ -800,7 +800,7 @@ public class ContainerJpegScannerTests
 		[TestMethod]
 		public void SelectBest_WithSingleCandidate_ReturnsIt()
 		{
-			var candidates = new List<ContainerJpegScanner.PreviewCandidate>
+			var candidates = new List<ContainerJpegScanner.PreviewContainerJpegScannerCandidate>
 			{
 				new(100, 5000, false)
 			};
@@ -814,7 +814,7 @@ public class ContainerJpegScannerTests
 		[TestMethod]
 		public void SelectBest_PrefersIptcCandidate_OverNonIptc()
 		{
-			var candidates = new List<ContainerJpegScanner.PreviewCandidate>
+			var candidates = new List<ContainerJpegScanner.PreviewContainerJpegScannerCandidate>
 			{
 				new(100, 5000, false), new(200, 4000, true)
 			};
@@ -828,7 +828,7 @@ public class ContainerJpegScannerTests
 		[TestMethod]
 		public void SelectBest_PrefersLongerLengthWhenSameIptcStatus()
 		{
-			var candidates = new List<ContainerJpegScanner.PreviewCandidate>
+			var candidates = new List<ContainerJpegScanner.PreviewContainerJpegScannerCandidate>
 			{
 				new(100, 4000, true), new(200, 5000, true)
 			};

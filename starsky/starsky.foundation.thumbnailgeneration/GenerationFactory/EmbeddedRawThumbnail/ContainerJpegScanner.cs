@@ -35,9 +35,9 @@ internal static class ContainerJpegScanner
 		return await CopyRangeToOutput(input, output, best.Offset, best.Length);
 	}
 
-	internal static List<PreviewCandidate> ScanCandidates(Stream input)
+	internal static List<PreviewContainerJpegScannerCandidate> ScanCandidates(Stream input)
 	{
-		var candidates = new List<PreviewCandidate>();
+		var candidates = new List<PreviewContainerJpegScannerCandidate>();
 		if ( !StreamPrimitives.TrySeek(input, 0) )
 		{
 			return candidates;
@@ -83,7 +83,7 @@ internal static class ContainerJpegScanner
 	}
 
 	private static void TryAddJpegCandidate(Stream input, uint soi,
-		List<PreviewCandidate> candidates)
+		List<PreviewContainerJpegScannerCandidate> candidates)
 	{
 		var maxProbe = ( int ) Math.Min(MaxJpegProbe, input.Length - soi);
 		var length = JpegScannerUtilities.DetectJpegLengthFromSoi(input, soi, maxProbe);
@@ -93,17 +93,18 @@ internal static class ContainerJpegScanner
 		}
 
 		var hasIptc = HasIptcApp13(input, soi, length);
-		candidates.Add(new PreviewCandidate(soi, length, hasIptc));
+		candidates.Add(new PreviewContainerJpegScannerCandidate(soi, length, hasIptc));
 	}
 
-	internal static PreviewCandidate? SelectBest(List<PreviewCandidate> candidates)
+	internal static PreviewContainerJpegScannerCandidate? SelectBest(
+		List<PreviewContainerJpegScannerCandidate> candidates)
 	{
 		if ( candidates.Count == 0 )
 		{
 			return null;
 		}
 
-		PreviewCandidate? best = null;
+		PreviewContainerJpegScannerCandidate? best = null;
 		foreach ( var candidate in candidates )
 		{
 			if ( best == null || ( candidate.HasIptc && !best.HasIptc ) )
@@ -317,5 +318,8 @@ internal static class ContainerJpegScanner
 		return false;
 	}
 
-	internal sealed record PreviewCandidate(uint Offset, uint Length, bool HasIptc);
+	internal sealed record PreviewContainerJpegScannerCandidate(
+		uint Offset,
+		uint Length,
+		bool HasIptc);
 }

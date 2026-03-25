@@ -84,11 +84,21 @@ public class ContainerPreviewExtractorTests
 		var leading = Enumerable.Repeat(( byte ) 0xAA, 256).ToArray();
 		var middle = Enumerable.Repeat(( byte ) 0xBB, 128).ToArray();
 
-		return leading
-			.Concat(largerNoIptc)
-			.Concat(middle)
-			.Concat(smallerWithIptc)
-			.ToArray();
+		return [.. leading, .. largerNoIptc, .. middle, .. smallerWithIptc];
+	}
+
+	private static byte[] CreateContainerWithTwoJpegsPreferIptcWithX3FHeader()
+	{
+		var baseBytes = CreateContainerWithTwoJpegsPreferIptc();
+		// Prepend or overwrite the first four bytes with X3F signature: 'F','O','V','b'
+		if ( baseBytes.Length >= 4 )
+		{
+			baseBytes[0] = ( byte ) 'F';
+			baseBytes[1] = ( byte ) 'O';
+			baseBytes[2] = ( byte ) 'V';
+			baseBytes[3] = ( byte ) 'b';
+		}
+		return baseBytes;
 	}
 
 	private static byte[] CreateRafContainerWithIptcJpeg()
@@ -161,6 +171,12 @@ public class ContainerPreviewExtractorTests
 		WriteUInt32BigEndian(bytes, ifd1 + 38, 0);
 
 		Array.Copy(taggedJpeg, 0, bytes, taggedOffset, taggedJpeg.Length);
+
+		// Ensure X3F header at start so content-detection recognizes the format
+		bytes[0] = ( byte ) 'F';
+		bytes[1] = ( byte ) 'O';
+		bytes[2] = ( byte ) 'V';
+		bytes[3] = ( byte ) 'b';
 		return bytes;
 	}
 
@@ -209,6 +225,12 @@ public class ContainerPreviewExtractorTests
 
 		WriteUInt32BigEndian(bytes, ifd1 + 38, 0);
 		Array.Copy(taggedJpeg, 0, bytes, taggedOffset, taggedJpeg.Length);
+
+		// Ensure X3F header at start so content-detection recognizes the format
+		bytes[0] = ( byte ) 'F';
+		bytes[1] = ( byte ) 'O';
+		bytes[2] = ( byte ) 'V';
+		bytes[3] = ( byte ) 'b';
 		return bytes;
 	}
 
@@ -235,7 +257,7 @@ public class ContainerPreviewExtractorTests
 	[TestMethod]
 	public async Task EmbeddedRawThumbnailService_RoutesX3fToLightweightExtractor()
 	{
-		var bytes = CreateContainerWithTwoJpegsPreferIptc();
+		var bytes = CreateContainerWithTwoJpegsPreferIptcWithX3FHeader();
 		var selectorStorage = CreateSelectorStorage(bytes, RawPathX3F, false, out var tempStorage);
 		var service = new EmbeddedRawThumbnailService(new FakeIWebLogger(), selectorStorage);
 
