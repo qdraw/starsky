@@ -10,8 +10,6 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 
 public class JpegExifPreviewExtractor(IWebLogger logger, ISelectorStorage selectorStorage)
 {
-	private readonly IWebLogger _logger = logger;
-
 	private readonly IStorage _subPathStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
@@ -48,7 +46,7 @@ public class JpegExifPreviewExtractor(IWebLogger logger, ISelectorStorage select
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(
+			logger.LogError(
 				$"[JpegExifPreviewExtractor] Failed to extract from {subPathRawFile}: {ex.Message}");
 			return false;
 		}
@@ -105,8 +103,9 @@ public class JpegExifPreviewExtractor(IWebLogger logger, ISelectorStorage select
 			return MarkerProcessingResult.Error;
 		}
 
-		var processed = await ProcessApp1PayloadAsync(payload, outputLarge, input, payloadStart)
-			.ConfigureAwait(false);
+		var processed = await App1PayloadProcessor
+			.Process(payload, outputLarge, input, payloadStart);
+
 		return processed ? MarkerProcessingResult.Found : MarkerProcessingResult.Continue;
 	}
 
@@ -206,15 +205,6 @@ public class JpegExifPreviewExtractor(IWebLogger logger, ISelectorStorage select
 
 		return true;
 	}
-
-	private static async Task<bool> ProcessApp1PayloadAsync(byte[] payload, Stream? outputLarge,
-		Stream? originalStream, long payloadStart)
-	{
-		// Delegate the heavy lifting to a dedicated processor to keep this method trivial
-		return await App1PayloadProcessor
-			.Process(payload, outputLarge, originalStream, payloadStart).ConfigureAwait(false);
-	}
-	// helper methods moved to App1PayloadProcessor.cs
 
 	private static async Task<bool> ProcessJpegMarkersAsync(Stream input, Stream? outputLarge)
 	{
