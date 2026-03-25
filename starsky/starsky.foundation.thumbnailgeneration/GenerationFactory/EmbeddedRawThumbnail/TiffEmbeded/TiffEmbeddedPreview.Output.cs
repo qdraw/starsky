@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.Threading.Tasks;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 

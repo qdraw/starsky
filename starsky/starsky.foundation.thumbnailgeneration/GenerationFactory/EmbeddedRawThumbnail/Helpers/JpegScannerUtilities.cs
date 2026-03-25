@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.IO;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 

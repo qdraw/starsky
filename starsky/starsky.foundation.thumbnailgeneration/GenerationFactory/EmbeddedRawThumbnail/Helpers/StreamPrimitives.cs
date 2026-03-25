@@ -7,7 +7,7 @@ using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbn
 
 [assembly: InternalsVisibleTo("starskytest")]
 
-namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 
 internal static class StreamPrimitives
 {
