@@ -165,15 +165,16 @@ public sealed class ThumbnailControllerTest
 
 	private static ThumbnailService SetThumbnailService(IStorage storage)
 	{
-		return new ThumbnailService(new FakeSelectorStorage(storage),
+		var selectorStorage = new FakeSelectorStorage(storage);
+		return new ThumbnailService(selectorStorage,
 			new FakeIWebLogger(), new AppSettings(),
 			new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
-			new ThumbnailGeneratorFactory(new FakeSelectorStorage(storage), new FakeIWebLogger(),
-				new FakeIVideoProcess(new FakeSelectorStorage(storage)),
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
+			new ThumbnailGeneratorFactory(selectorStorage, new FakeIWebLogger(),
+				new FakeIVideoProcess(selectorStorage),
 				new FakeINativePreviewThumbnailGenerator(),
-				new EmbeddedRawThumbnailGenerator(new FakeSelectorStorage(storage),
-					new FakeEmbeddedRawThumbnailService(new FakeSelectorStorage(storage)),
+				new EmbeddedRawThumbnailGenerator(selectorStorage,
+					new FakeEmbeddedRawThumbnailService(selectorStorage),
 					new FakeIWebLogger())));
 	}
 

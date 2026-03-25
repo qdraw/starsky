@@ -13,6 +13,10 @@ public class FakeIManualThumbnailGenerationService : IManualThumbnailGenerationS
 
 	public Task WorkThumbnailGeneration(string subPath)
 	{
-		throw new NotImplementedException();
+		if ( subPath == "/" )
+		{
+			throw new InvalidOperationException();
+		}
+		return Task.CompletedTask;
 	}
 }
