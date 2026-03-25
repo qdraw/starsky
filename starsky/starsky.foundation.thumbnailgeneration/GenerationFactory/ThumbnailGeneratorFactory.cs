@@ -19,7 +19,7 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory;
 /// <param name="nativePreviewThumbnailGenerator">native</param>
 /// <param name="embeddedRawThumbnailGenerator">embedded</param>
 [Service(typeof(IThumbnailGeneratorFactory), InjectionLifetime = InjectionLifetime.Scoped)]
-internal class ThumbnailGeneratorFactory(
+public class ThumbnailGeneratorFactory(
 	ISelectorStorage selectorStorage,
 	IWebLogger logger,
 	IVideoProcess videoProcess,
