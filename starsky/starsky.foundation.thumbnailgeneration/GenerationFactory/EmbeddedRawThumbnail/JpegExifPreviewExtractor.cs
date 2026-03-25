@@ -204,14 +204,14 @@ public class JpegExifPreviewExtractor(IWebLogger logger, ISelectorStorage select
 	{
 		if ( payloadSize == 0 )
 		{
-			return Array.Empty<byte>();
+			return [];
 		}
 
 		var payload = new byte[payloadSize];
 		var read = 0;
 		while ( read < payloadSize )
 		{
-			var r = await input.ReadAsync(payload, read, payloadSize - read);
+			var r = await input.ReadAsync(payload.AsMemory(read, payloadSize - read));
 			if ( r <= 0 )
 			{
 				return null;
@@ -240,7 +240,7 @@ public class JpegExifPreviewExtractor(IWebLogger logger, ISelectorStorage select
 		while ( remaining > 0 )
 		{
 			var toRead = Math.Min(skipBuf.Length, remaining);
-			var rr = await input.ReadAsync(skipBuf, 0, toRead);
+			var rr = await input.ReadAsync(skipBuf.AsMemory(0, toRead));
 			if ( rr <= 0 )
 			{
 				return false;
@@ -275,7 +275,7 @@ public class JpegExifPreviewExtractor(IWebLogger logger, ISelectorStorage select
 		var ctx = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
 		{
 			Previews = candidates,
-			Visited = new HashSet<uint>(),
+			Visited = [],
 			ReferenceInfo = "EXIF(APP1)",
 			RawFlavor = RawFlavor.Unknown
 		};
