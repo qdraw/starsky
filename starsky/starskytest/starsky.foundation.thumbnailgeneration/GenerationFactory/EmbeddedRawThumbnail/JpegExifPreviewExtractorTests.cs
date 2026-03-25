@@ -1,0 +1,267 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+using starskytest.FakeMocks;
+
+namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
+
+[TestClass]
+public class JpegExifPreviewExtractorTests
+{
+
+	private static byte[] BuildJpegWithApp1(byte[] app1Payload)
+	{
+		var segLen = app1Payload.Length + 2; // includes length bytes
+		using var ms = new MemoryStream();
+		// SOI
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD8);
+		// APP1 marker
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xE1);
+		// length (big-endian)
+		ms.WriteByte(( byte ) ( ( segLen >> 8 ) & 0xFF ));
+		ms.WriteByte(( byte ) ( segLen & 0xFF ));
+		ms.Write(app1Payload, 0, app1Payload.Length);
+		// EOI
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD9);
+		return ms.ToArray();
+	}
+
+	[TestMethod]
+	public async Task TryExtract_FileMissing_ReturnsFalse()
+	{
+		var sub = new FakeIStorage();
+		var temp = new FakeIStorage();
+		var selector = new FakeSelectorStorageByType(sub, sub, sub, temp);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var res = await extractor.TryExtract("missing.jpg", null);
+		Assert.IsFalse(res);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_InvalidSoi_ReturnsFalse()
+	{
+		var blob = "\0\0"u8.ToArray();
+		var sub = new FakeIStorage(outputSubPathFiles: ["f"],
+			byteListSource: new List<byte[]?> { blob });
+		var temp = new FakeIStorage();
+		var selector = new FakeSelectorStorageByType(sub, sub, sub, temp);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var res = await extractor.TryExtract("f", null);
+		Assert.IsFalse(res);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_MinimalJpeg_NoApp1_ReturnsFalse()
+	{
+		var blob = new byte[] { 0xFF, 0xD8, 0xFF, 0xD9 };
+		var sub = new FakeIStorage(outputSubPathFiles: ["f"],
+			byteListSource: new List<byte[]?> { blob });
+		var temp = new FakeIStorage();
+		var selector = new FakeSelectorStorageByType(sub, sub, sub, temp);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var res = await extractor.TryExtract("f", null);
+		Assert.IsFalse(res);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_App1NonExif_ReturnsFalse()
+	{
+		var payload = "NOTEXIF"u8.ToArray();
+		var blob = BuildJpegWithApp1(payload);
+		var sub = new FakeIStorage(outputSubPathFiles: ["f"],
+			byteListSource: new List<byte[]?> { blob });
+		var temp = new FakeIStorage();
+		var selector = new FakeSelectorStorageByType(sub, sub, sub, temp);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var res = await extractor.TryExtract("f", null);
+		Assert.IsFalse(res);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_App1Exif_NoPreview_ReturnsFalse()
+	{
+		// Build APP1 payload: Exif\0\0 + TIFF header (II 42, first IFD offset = 8)
+		using var tiff = new MemoryStream();
+		// header
+		await tiff.WriteAsync("Exif\0\0"u8.ToArray(), TestContext.CancellationToken);
+		// TIFF header
+		tiff.WriteByte(( byte ) 'I');
+		tiff.WriteByte(( byte ) 'I');
+		tiff.WriteByte(0x2A);
+		tiff.WriteByte(0x00);
+		// first IFD offset = 8 (little-endian)
+		tiff.WriteByte(0x08);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+		// At offset 8, put entryCount = 0
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+
+		var app1Payload = tiff.ToArray();
+		var blob = BuildJpegWithApp1(app1Payload);
+		var sub = new FakeIStorage(outputSubPathFiles: ["f"],
+			byteListSource: new List<byte[]?> { blob });
+		var temp = new FakeIStorage();
+		var selector = new FakeSelectorStorageByType(sub, sub, sub, temp);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var res = await extractor.TryExtract("f", null);
+		Assert.IsFalse(res);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_App1Exif_WithPreview_ReturnsTrue_And_WritesTemp()
+	{
+		// Build a JPEG preview with minimum accepted JPEG size (>= 4096 bytes)
+		var preview = new byte[4096];
+		// Set JPEG SOI and EOI markers in the buffer
+		preview[0] = 0xFF;
+		preview[1] = 0xD8;
+		preview[2] = 0xFF;
+		preview[^2] = 0xFF;
+		preview[^1] = 0xD9;
+
+		using var tiff = new MemoryStream();
+		await tiff.WriteAsync("Exif\0\0"u8.ToArray(), TestContext.CancellationToken);
+		// TIFF header (little endian)
+		tiff.WriteByte(( byte ) 'I');
+		tiff.WriteByte(( byte ) 'I');
+		tiff.WriteByte(0x2A);
+		tiff.WriteByte(0x00);
+		// first IFD offset = 8
+		tiff.WriteByte(0x08);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+
+		// Start IFD at offset 8
+		// entry count = 2
+		tiff.WriteByte(0x02);
+		tiff.WriteByte(0x00);
+
+		// Entry 1: Tag 0x0201 (JPEGOffset), type=4 (LONG), count=1, value = offset (we'll set to 100)
+		tiff.WriteByte(0x01);
+		tiff.WriteByte(0x02); // tag 0x0201 little-endian
+		tiff.WriteByte(0x04);
+		tiff.WriteByte(0x00); // type LONG
+		tiff.WriteByte(0x01);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00); // count=1
+		const uint jpegOffset = 100u;
+		await tiff.WriteAsync(BitConverter.GetBytes(jpegOffset), TestContext.CancellationToken); // little-endian
+
+		// Entry 2: Tag 0x0202 (JPEGLENGTH), type=4, count=1, value = length
+		tiff.WriteByte(0x02);
+		tiff.WriteByte(0x02);
+		tiff.WriteByte(0x04);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x01);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+		var jpegLength = ( uint ) preview.Length;
+		await tiff.WriteAsync(BitConverter.GetBytes(jpegLength), 
+			TestContext.CancellationToken);
+
+		// next IFD pointer = 0
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+		tiff.WriteByte(0x00);
+
+		// pad until absolute position (Exif header length + jpegOffset)
+		while ( tiff.Length < jpegOffset + 6 )
+		{
+			tiff.WriteByte(0x00);
+		}
+
+		// write preview at offset
+		await tiff.WriteAsync(preview, 0, preview.Length, TestContext.CancellationToken);
+		var app1Payload = tiff.ToArray();
+
+		// Sanity-check TIFF parsing and direct extraction before embedding into JPEG
+		using ( var checkTiffMs = new MemoryStream(app1Payload, 6, app1Payload.Length - 6, false) )
+		{
+			var headerOk =
+				TiffEmbeddedPreviewExtractor.TryParseTiffHeader(checkTiffMs, out var le,
+					out var firstIfdOffset);
+			Assert.IsTrue(headerOk, "TIFF header should parse");
+			Assert.IsTrue(le, "Expected little-endian");
+			Assert.AreEqual(8u, firstIfdOffset, "Expected first IFD offset 8");
+
+			// Validate entryCount bytes at the IFD offset are 0x02 0x00 (little-endian 2)
+			checkTiffMs.Seek(firstIfdOffset, SeekOrigin.Begin);
+			var entryCountBuf = new byte[2];
+			var rc = await checkTiffMs.ReadAsync(entryCountBuf, 0, 2, TestContext.CancellationToken);
+			Assert.AreEqual(2, rc, "Should read 2 bytes for entry count");
+			Assert.AreEqual(0x02, entryCountBuf[0]);
+			Assert.AreEqual(0x00, entryCountBuf[1]);
+
+			var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+			var ctx = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+			{
+				Previews = candidates,
+				Visited = [],
+				ReferenceInfo = "unit-test",
+				RawFlavor = RawFlavor.Unknown
+			};
+
+			TiffEmbeddedPreviewExtractor.ParseIfdRecursive(checkTiffMs, firstIfdOffset, le, ctx, 0,
+				false);
+			Assert.IsNotEmpty(candidates,
+				"Expected at least one preview candidate from TIFF");
+			var best = SelectBestPreviewHelper.SelectBestPreview(candidates);
+			Assert.IsNotNull(best);
+
+			// Try extracting directly from TIFF stream
+			using var outMs = new MemoryStream();
+			var previewCandidate =
+				new TiffEmbeddedPreviewExtractor.PreviewCandidate
+				{
+					Offset = best.Offset, Length = best.Length
+				};
+			var okExtract =
+				await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(checkTiffMs,
+					previewCandidate, outMs);
+			Assert.IsTrue(okExtract, "ExtractPreviewToStream should succeed");
+			outMs.Seek(0, SeekOrigin.Begin);
+			var extracted = new byte[outMs.Length];
+			var read = await outMs.ReadAsync(extracted, 0, extracted.Length, TestContext.CancellationToken);
+			Assert.AreEqual(previewCandidate.Length, ( uint ) read);
+		}
+
+		var blob = BuildJpegWithApp1(app1Payload);
+		var sub = new FakeIStorage(outputSubPathFiles: ["f"],
+			byteListSource: new List<byte[]?> { blob });
+		var temp = new FakeIStorage();
+		var selector = new FakeSelectorStorageByType(sub, sub, sub, temp);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		// request that extractor write outputLargePath so it uses _tempStorage.WriteStreamAsync
+		var res = await extractor.TryExtract("f", "out.jpg");
+		Assert.IsTrue(res);
+		// verify temp storage got written via ReadStream
+		await using var written = temp.ReadStream("out.jpg");
+		Assert.IsNotNull(written);
+		var buf = new byte[preview.Length];
+		var r = await written.ReadAsync(buf, 0, buf.Length, TestContext.CancellationToken);
+		Assert.AreEqual(preview.Length, r);
+		CollectionAssert.AreEqual(preview, buf);
+	}
+
+	public TestContext TestContext { get; set; }
+}
