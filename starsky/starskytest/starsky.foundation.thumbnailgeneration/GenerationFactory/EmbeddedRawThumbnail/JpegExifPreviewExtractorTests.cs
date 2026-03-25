@@ -310,4 +310,43 @@ public class JpegExifPreviewExtractorTests
 		Assert.AreEqual(preview.Length, r);
 		CollectionAssert.AreEqual(preview, buf);
 	}
+
+	[TestMethod]
+	public async Task TryExtract_StandaloneMarkers_HandlesCorrectly()
+	{
+		// Standalone markers don't have length bytes. 0xFF01 is a standalone marker.
+		using var ms = new MemoryStream();
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD8); // SOI
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0x01); // Standalone TEM
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD9); // EOI
+
+		var storage = new FakeIStorage(outputSubPathFiles: ["test.jpg"],
+			byteListSource: [ms.ToArray()]);
+		var selector = new FakeSelectorStorageByType(storage, storage, storage, storage);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var result = await extractor.TryExtract("test.jpg", null);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_UnexpectedEndOfStream_ReturnsFalse()
+	{
+		using var ms = new MemoryStream();
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD8); // SOI
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xDB); // DQT but no length
+
+		var storage = new FakeIStorage(outputSubPathFiles: ["test.jpg"],
+			byteListSource: [ms.ToArray()]);
+		var selector = new FakeSelectorStorageByType(storage, storage, storage, storage);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var result = await extractor.TryExtract("test.jpg", null);
+		Assert.IsFalse(result);
+	}
 }
