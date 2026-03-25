@@ -23,6 +23,7 @@ using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -162,6 +163,20 @@ public sealed class ThumbnailControllerTest
 		Assert.AreEqual(404, thumbnailAnswer);
 	}
 
+	private static ThumbnailService SetThumbnailService(IStorage storage)
+	{
+		return new ThumbnailService(new FakeSelectorStorage(storage),
+			new FakeIWebLogger(), new AppSettings(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			new ThumbnailGeneratorFactory(new FakeSelectorStorage(storage), new FakeIWebLogger(),
+				new FakeIVideoProcess(new FakeSelectorStorage(storage)),
+				new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(new FakeSelectorStorage(storage),
+					new FakeEmbeddedRawThumbnailService(new FakeSelectorStorage(storage)),
+					new FakeIWebLogger())));
+	}
+
 	[TestMethod]
 	public async Task Thumbnail_HappyFlowDisplayJson_API_Test()
 	{
@@ -171,12 +186,7 @@ public sealed class ThumbnailControllerTest
 
 		// Act
 		// Create thumbnail in fake storage
-		var service = new ThumbnailService(new FakeSelectorStorage(storage),
-			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(new FakeSelectorStorage(storage)),
-			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var service = SetThumbnailService(storage);
 
 		await service.GenerateThumbnail(createAnImage.FilePath!, createAnImage.FileHash!);
 
@@ -219,12 +229,7 @@ public sealed class ThumbnailControllerTest
 
 		// Act
 		// Create thumbnail in fake storage
-		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(storage),
-			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(new FakeSelectorStorage(storage)),
-			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var thumbnailService = SetThumbnailService(storage);
 
 		await thumbnailService.GenerateThumbnail(createAnImage.FilePath!, createAnImage.FileHash!);
 

@@ -457,6 +457,18 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	}
 
 	/// <summary>
+	///     List of non-raw files supported by the raw preview extractor,
+	/// which only supports jpg previews
+	/// </summary>
+	/// <param name="filename">the name of the file with extenstion</param>
+	/// <returns>true, </returns>
+	public static bool IsExtensionJpeg(string filename)
+	{
+		return IsExtensionForce(filename.ToLowerInvariant(), ExtensionJpg);
+	}
+
+
+	/// <summary>
 	///     is this filename with extension a filetype that imageSharp can read/write
 	/// </summary>
 	/// <param name="filename">the name of the file with extenstion</param>

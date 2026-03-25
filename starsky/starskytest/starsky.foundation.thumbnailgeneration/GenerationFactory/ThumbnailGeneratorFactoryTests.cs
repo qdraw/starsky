@@ -1,6 +1,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Generators;
 using starskytest.FakeMocks;
 
@@ -17,7 +18,9 @@ public class ThumbnailGeneratorFactoryTests
 		var loggerMock = new FakeIWebLogger();
 		var videoProcessMock = new FakeIVideoProcess(selectorStorageMock);
 		_factory = new ThumbnailGeneratorFactory(selectorStorageMock, loggerMock, videoProcessMock,
-			new FakeINativePreviewThumbnailGenerator());
+			new FakeINativePreviewThumbnailGenerator(),
+			new EmbeddedRawThumbnailGenerator(selectorStorageMock,
+				new FakeEmbeddedRawThumbnailService(selectorStorageMock), loggerMock));
 	}
 
 	[TestMethod]
@@ -25,6 +28,7 @@ public class ThumbnailGeneratorFactoryTests
 	[DataRow("test.jpg", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.mp4", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.txt", typeof(NotSupportedFallbackThumbnailGenerator))]
+	[DataRow("test.arw", typeof(CompositeThumbnailGenerator))]
 	public void GetGenerator_ReturnsCorrectGenerator(string filePath, Type expectedType)
 	{
 		// Act

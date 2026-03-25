@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.thumbnail.Interfaces;
 using starsky.feature.thumbnail.Services;
 using starskytest.FakeMocks;
 

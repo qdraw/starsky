@@ -16,9 +16,11 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -150,17 +152,28 @@ public sealed class DownloadPhotoControllerTest
 		Assert.AreEqual(404, actionResult.StatusCode);
 	}
 
+	private static ThumbnailService SetThumbnailService(IStorage storage)
+	{
+		return new ThumbnailService(new FakeSelectorStorage(storage),
+			new FakeIWebLogger(), new AppSettings(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			new ThumbnailGeneratorFactory(new FakeSelectorStorage(storage), new FakeIWebLogger(),
+				new FakeIVideoProcess(new FakeSelectorStorage(storage)),
+				new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(new FakeSelectorStorage(storage),
+					new FakeEmbeddedRawThumbnailService(new FakeSelectorStorage(storage)),
+					new FakeIWebLogger())));
+	}
+
 	[TestMethod]
 	public async Task DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test()
 	{
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
-		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var storage = ArrangeStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var thumbnailService = SetThumbnailService(storage);
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
@@ -177,12 +190,9 @@ public sealed class DownloadPhotoControllerTest
 	public async Task DownloadPhoto_WrongInputNotFound()
 	{
 		// Arrange
-		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var storage = ArrangeStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var thumbnailService = SetThumbnailService(storage);
 
 		// Act
 		var controller =
@@ -285,12 +295,9 @@ public sealed class DownloadPhotoControllerTest
 	{
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
-		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var storage = ArrangeStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var thumbnailService = SetThumbnailService(storage);
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),

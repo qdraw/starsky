@@ -19,6 +19,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -34,9 +35,13 @@ public sealed class WebHtmlPublishServiceTest
 		return new ThumbnailService(new FakeSelectorStorage(storage),
 			new FakeIWebLogger(), new AppSettings(),
 			new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(new FakeSelectorStorage(storage)),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+			new ThumbnailGeneratorFactory(new FakeSelectorStorage(storage), new FakeIWebLogger(),
+				new FakeIVideoProcess(new FakeSelectorStorage(storage)),
+				new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(new FakeSelectorStorage(storage),
+					new FakeEmbeddedRawThumbnailService(new FakeSelectorStorage(storage)),
+					new FakeIWebLogger())));
 	}
 
 	[TestMethod]
@@ -675,7 +680,8 @@ public sealed class WebHtmlPublishServiceTest
 	[Timeout(5000, CooperativeCancellation = true)]
 	[DataRow(true)]
 	[DataRow(false)]
-	public async Task GenerateJpeg_ResizerLocal_ImageOptimisationThrows__UnixOnly(bool optimizerFailsBashScript)
+	public async Task GenerateJpeg_ResizerLocal_ImageOptimisationThrows__UnixOnly(
+		bool optimizerFailsBashScript)
 	{
 		if ( new AppSettings().IsWindows )
 		{

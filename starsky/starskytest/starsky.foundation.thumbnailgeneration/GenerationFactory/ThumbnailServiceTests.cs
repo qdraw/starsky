@@ -14,6 +14,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
@@ -73,30 +74,31 @@ public sealed class ThumbnailServiceTests : VerifyBase
 
 	private ThumbnailService CreateSut(IStorage storage)
 	{
-		var selectorStorage = new FakeSelectorStorage(storage);
-		return new ThumbnailService(
-			selectorStorage,
-			new FakeIWebLogger(),
-			_appSettings,
+		return new ThumbnailService(new FakeSelectorStorage(storage),
+			new FakeIWebLogger(), _appSettings,
 			_fakeIUpdateStatusGeneratedThumbnailService,
-			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator()
-		);
+			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			new ThumbnailGeneratorFactory(new FakeSelectorStorage(storage), new FakeIWebLogger(),
+				new FakeIVideoProcess(new FakeSelectorStorage(storage)),
+				new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(new FakeSelectorStorage(storage),
+					new FakeEmbeddedRawThumbnailService(new FakeSelectorStorage(storage)),
+					new FakeIWebLogger())));
 	}
 
 	private ThumbnailService CreateSut(ISelectorStorage selectorStorage,
 		FakeIFileHashSubPathStorage hashService)
 	{
-		return new ThumbnailService(
-			selectorStorage,
-			new FakeIWebLogger(),
-			_appSettings,
+		return new ThumbnailService(selectorStorage,
+			new FakeIWebLogger(), _appSettings,
 			_fakeIUpdateStatusGeneratedThumbnailService,
-			new FakeIVideoProcess(selectorStorage),
 			hashService,
-			new FakeINativePreviewThumbnailGenerator()
-		);
+			new ThumbnailGeneratorFactory(selectorStorage, new FakeIWebLogger(),
+				new FakeIVideoProcess(selectorStorage),
+				new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(selectorStorage,
+					new FakeEmbeddedRawThumbnailService(selectorStorage),
+					new FakeIWebLogger())));
 	}
 
 	[TestMethod]
@@ -156,9 +158,11 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
 			_appSettings, new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
-			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(_selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+			new ThumbnailGeneratorFactory(_selectorStorage, new FakeIWebLogger(),
+				new FakeIVideoProcess(_selectorStorage), new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(_selectorStorage,
+					new FakeEmbeddedRawThumbnailService(_selectorStorage), new FakeIWebLogger())));
 
 		var isCreated = await sut.GenerateThumbnail(
 			_fakeIStorageImageSubPathVideo);
@@ -172,11 +176,12 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	public async Task GenerateThumbnail_FileHash_RawArw_HappyFlow()
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
-			_appSettings, new UpdateStatusGeneratedThumbnailService(
-				new FakeIThumbnailQuery()),
-			new FakeIVideoProcess(_selectorStorage),
+			_appSettings, new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
 			new FileHashSubPathStorage(_selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+			new ThumbnailGeneratorFactory(_selectorStorage, new FakeIWebLogger(),
+				new FakeIVideoProcess(_selectorStorage), new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(_selectorStorage,
+					new FakeEmbeddedRawThumbnailService(_selectorStorage), new FakeIWebLogger())));
 
 		var isCreated = await sut.GenerateThumbnail(
 			_fakeIStorageRawArwImageSubPath);
@@ -190,11 +195,12 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	public async Task GenerateThumbnail_FileHash_RawCr3_HappyFlow()
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
-			_appSettings, new UpdateStatusGeneratedThumbnailService(
-				new FakeIThumbnailQuery()),
-			new FakeIVideoProcess(_selectorStorage),
+			_appSettings, new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
 			new FileHashSubPathStorage(_selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+			new ThumbnailGeneratorFactory(_selectorStorage, new FakeIWebLogger(),
+				new FakeIVideoProcess(_selectorStorage), new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(_selectorStorage,
+					new FakeEmbeddedRawThumbnailService(_selectorStorage), new FakeIWebLogger())));
 
 		var isCreated = await sut.GenerateThumbnail(
 			_fakeIStorageRawCr3ImageSubPath);

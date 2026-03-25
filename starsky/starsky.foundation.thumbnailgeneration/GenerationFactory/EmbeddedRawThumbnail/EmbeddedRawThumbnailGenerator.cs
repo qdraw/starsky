@@ -21,13 +21,13 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 ///     Generator for extracting embedded preview thumbnails from RAW image files.
 ///     Supports: CR2, CR3, NEF, ARW, DNG, RAF, FFF, X3F formats.
 /// </summary>
-[Service(typeof(IThumbnailGenerator),
+[Service(typeof(IEmbeddedRawThumbnailGenerator),
 	InjectionLifetime = InjectionLifetime.Transient)]
 public class EmbeddedRawThumbnailGenerator(
 	ISelectorStorage selectorStorage,
 	IEmbeddedRawThumbnailService embeddedRawThumbnailService,
 	IWebLogger logger)
-	: IThumbnailGenerator
+	: IEmbeddedRawThumbnailGenerator
 {
 	public async Task<IEnumerable<GenerationResultModel>> GenerateThumbnail(string singleSubPath,
 		string fileHash, ThumbnailImageFormat imageFormat,

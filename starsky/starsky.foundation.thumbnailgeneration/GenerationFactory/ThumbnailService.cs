@@ -18,7 +18,6 @@ using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
-using starsky.foundation.video.Process.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -30,9 +29,8 @@ public class ThumbnailService(
 	IWebLogger logger,
 	AppSettings appSettings,
 	IUpdateStatusGeneratedThumbnailService updateStatusGeneratedThumbnailService,
-	IVideoProcess videoProcess,
 	IFileHashSubPathStorage fileHashSubPathStorage,
-	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator)
+	IThumbnailGeneratorFactory thumbnailGeneratorFactory)
 	: IThumbnailService
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
@@ -142,13 +140,11 @@ public class ThumbnailService(
 		return service.RotateThumbnail(fileHash, orientation,
 			width, height);
 	}
-	
+
 	private async Task<IEnumerable<GenerationResultModel>> GenerateThumbnailAsync(
 		string singleSubPath, string? fileHash, List<ThumbnailSize> sizes)
 	{
-		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
-			nativePreviewThumbnailGenerator);
-		var generator = factory.GetGenerator(singleSubPath);
+		var generator = thumbnailGeneratorFactory.GetGenerator(singleSubPath);
 		if ( !string.IsNullOrEmpty(fileHash) )
 		{
 			return await generator.GenerateThumbnail(singleSubPath, fileHash,
@@ -169,9 +165,7 @@ public class ThumbnailService(
 	private async Task<(Stream?, GenerationResultModel)> GenerateSingleThumbnailAsync(
 		string singleSubPath, ThumbnailImageFormat thumbnailImageFormat, ThumbnailSize size)
 	{
-		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
-			nativePreviewThumbnailGenerator);
-		var generator = factory.GetGenerator(singleSubPath);
+		var generator = thumbnailGeneratorFactory.GetGenerator(singleSubPath);
 
 		var (fileHash, success) =
 			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath, null);
