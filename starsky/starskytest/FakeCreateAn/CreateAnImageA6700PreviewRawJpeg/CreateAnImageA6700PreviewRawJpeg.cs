@@ -27,8 +27,11 @@ public class CreateAnImageA6700PreviewRawJpeg
 		var pathJpg = Path.Combine(dirName, "FakeCreateAn",
 			"CreateAnImageA6700PreviewRawJpeg", "20260308_144118_DSC05172.jpg");
 
+		FilePathJpeg = pathJpg;
 		BytesJpeg = [..StreamToBytes(pathJpg)];
 	}
+
+	public string FilePathJpeg { get; set; } = null!;
 
 	private static byte[] StreamToBytes(string path)
 	{
