@@ -2,7 +2,7 @@
 slug: new-feature-batch-rename-by-date-and-time
 title: "New feature: Batch Rename by date and time"
 authors: dion
-tags: [photo mangement, software update]
+tags: [photo management, software update]
 date: 2026-01-14
 image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/1000/02_starsky_v052_kl1k.jpg
 ---

@@ -30,19 +30,23 @@ public sealed class ThumbnailController : Controller
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
-	private readonly ISmallThumbnailBackgroundJobService _thumbnailBgService;
+	private readonly ISmallThumbnailBackgroundJobService _smallThumbnailBgService;
+	private readonly IManualThumbnailGenerationService _manualThumbnailGenerationService;
+
 	private readonly IStorage _thumbnailStorage;
 
 	public ThumbnailController(IQuery query, ISelectorStorage selectorStorage,
 		AppSettings appSettings, IWebLogger logger,
-		ISmallThumbnailBackgroundJobService thumbnailBgService)
+		ISmallThumbnailBackgroundJobService smallThumbnailBgService,
+		IManualThumbnailGenerationService manualThumbnailGenerationService)
 	{
 		_query = query;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		_imageFormat = appSettings.ThumbnailImageFormat;
 		_logger = logger;
-		_thumbnailBgService = thumbnailBgService;
+		_smallThumbnailBgService = smallThumbnailBgService;
+		_manualThumbnailGenerationService = manualThumbnailGenerationService;
 	}
 
 	/// <summary>
@@ -104,7 +108,7 @@ public sealed class ThumbnailController : Controller
 		if ( !_thumbnailStorage.ExistFile(
 			    ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Large, _imageFormat)) )
 		{
-			_thumbnailBgService.CreateJob(HttpContext.User.Identity?.IsAuthenticated, f);
+			_smallThumbnailBgService.CreateJob(HttpContext.User.Identity?.IsAuthenticated, f);
 			SetExpiresResponseHeadersToZero();
 			return NotFound("hash not found");
 		}
@@ -390,6 +394,12 @@ public sealed class ThumbnailController : Controller
 			if ( await _query.GetObjectByFilePathAsync(filePath) == null )
 			{
 				return NotFound("not in index");
+			}
+
+			if ( ExtensionRolesHelper.IsExtensionRawThumbnailSupported(sourcePath) )
+			{
+				_manualThumbnailGenerationService.CreateJob(f);
+				SetExpiresResponseHeadersToZero();
 			}
 
 			sourcePath = filePath;

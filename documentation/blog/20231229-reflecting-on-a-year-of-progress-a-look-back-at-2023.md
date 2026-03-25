@@ -2,7 +2,7 @@
 slug: reflecting-on-a-year-of-progress-a-look-back-at-2023
 title: Reflecting on a Year of Progress; A Look Back at 2023
 authors: dion
-tags: [photo mangement, year in review]
+tags: [photo management, year in review]
 date: 2023-12-29
 image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/1000/02_starsky_v052_kl1k.jpg
 ---

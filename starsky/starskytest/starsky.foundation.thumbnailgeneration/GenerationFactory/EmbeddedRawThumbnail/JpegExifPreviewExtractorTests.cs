@@ -61,11 +61,11 @@ public class JpegExifPreviewExtractorTests
 		Assert.AreEqual(1616, ReadMetaExif.GetImageWidthHeight(metaPreview, true));
 		Assert.AreEqual(1080, ReadMetaExif.GetImageWidthHeight(metaPreview, false));
 
-		var sut = new ResizeThumbnailFromSourceImageHelper(
+		var imageHelper = new ResizeThumbnailFromSourceImageHelper(
 			selector,
 			new FakeIWebLogger());
 
-		await sut.ResizeThumbnailFromSourceImage(
+		await imageHelper.ResizeThumbnailFromSourceImage(
 			"preview.jpg",
 			SelectorStorage.StorageServices.Temporary,
 			1000, "output",

@@ -100,5 +100,10 @@ public sealed class SmallThumbnailBackgroundJobHandlerTest
 		{
 			return Task.FromResult(true);
 		}
+
+		public Task WorkThumbnailGenerationLoop(string path)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

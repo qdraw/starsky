@@ -24,12 +24,6 @@ public sealed class ManualThumbnailGenerationJobHandler(
 		var payload = JsonSerializer.Deserialize<ManualThumbnailGenerationPayload>(payloadJson) ??
 		              throw new ArgumentException("Invalid payload", nameof(payloadJson));
 
-		if ( service is not ManualThumbnailGenerationService concrete )
-		{
-			throw new InvalidOperationException(
-				"ManualThumbnailGenerationService implementation mismatch");
-		}
-
-		await concrete.WorkThumbnailGeneration(payload.SubPath);
+		await service.WorkThumbnailGeneration(payload.SubPath);
 	}
 }

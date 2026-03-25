@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MetadataExtractor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
+using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 using starsky.foundation.thumbnailgeneration.Services;
@@ -182,7 +185,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 		Assert.IsTrue(isCreated[1].Success);
 		Assert.IsTrue(isCreated[2].Success);
 	}
-	
+
 	[TestMethod]
 	public async Task GenerateThumbnail_FileHash_RawCr3_HappyFlow()
 	{
@@ -199,8 +202,25 @@ public sealed class ThumbnailServiceTests : VerifyBase
 		Assert.IsTrue(isCreated[0].Success);
 		Assert.IsTrue(isCreated[1].Success);
 		Assert.IsTrue(isCreated[2].Success);
-		
-		// can you check with ImageSharp here if the output is valid
+
+		var imageHelper = new ResizeThumbnailFromSourceImageHelper(
+			_selectorStorage,
+			new FakeIWebLogger());
+
+		var output = Guid.NewGuid().ToString();
+		await imageHelper.ResizeThumbnailFromSourceImage(
+			"preview.jpg",
+			SelectorStorage.StorageServices.Temporary,
+			1000, output,
+			true, ThumbnailImageFormat.jpg);
+
+		var stream = _selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail)
+			.ReadStream($"{output}.jpg");
+		var meta = ImageMetadataReader.ReadMetadata(stream).ToList();
+		await stream.DisposeAsync();
+
+		Assert.AreEqual(1000, ReadMetaExif.GetImageWidthHeight(meta, true));
+		Assert.AreEqual(668, ReadMetaExif.GetImageWidthHeight(meta, false));
 	}
 
 	[TestMethod]

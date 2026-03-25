@@ -42,7 +42,7 @@ public class EmbeddedRawThumbnailGeneratorTests
 			"/test/image.dng",
 			"test_hash",
 			ThumbnailImageFormat.jpg,
-			new List<ThumbnailSize> { ThumbnailSize.Large });
+			[ThumbnailSize.Large]);
 
 		// Result should be enumerable
 		Assert.IsNotNull(result);
@@ -55,7 +55,7 @@ public class EmbeddedRawThumbnailGeneratorTests
 			"/test/image.jpg",
 			"test_hash",
 			ThumbnailImageFormat.jpg,
-			new List<ThumbnailSize> { ThumbnailSize.Large });
+			[ThumbnailSize.Large]);
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(0, result.Count());
@@ -76,7 +76,7 @@ public class EmbeddedRawThumbnailGeneratorTests
 			$"/test/image.{extension}",
 			"test_hash",
 			ThumbnailImageFormat.jpg,
-			new List<ThumbnailSize> { ThumbnailSize.Large });
+			[ThumbnailSize.Large]);
 
 		Assert.IsNotNull(result);
 	}

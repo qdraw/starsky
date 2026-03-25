@@ -75,12 +75,4 @@ public sealed class ManualThumbnailGenerationJobHandlerTest
 
 		Assert.AreEqual("/test", thumbnailService.Inputs[0].Item1);
 	}
-
-	private sealed class FakeIManualThumbnailGenerationService : IManualThumbnailGenerationService
-	{
-		public Task ManualBackgroundQueue(string subPath)
-		{
-			return Task.CompletedTask;
-		}
-	}
 }

@@ -53,7 +53,8 @@ public sealed class ThumbnailControllerTest
 	{
 		bgService ??= new FakeISmallThumbnailBackgroundJobService();
 		var sut = new ThumbnailController(query, new FakeSelectorStorage(storage),
-			new AppSettings(), new FakeIWebLogger(), bgService);
+			new AppSettings(), new FakeIWebLogger(), bgService,
+			new FakeIManualThumbnailGenerationService());
 		sut.ControllerContext.HttpContext = new DefaultHttpContext();
 		return sut;
 	}
@@ -61,7 +62,8 @@ public sealed class ThumbnailControllerTest
 	private static ThumbnailController CreateSut(ISelectorStorage selectorStorage, IQuery query)
 	{
 		var sut = new ThumbnailController(query, selectorStorage,
-			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
 		sut.ControllerContext.HttpContext = new DefaultHttpContext();
 		return sut;
 	}
@@ -106,7 +108,8 @@ public sealed class ThumbnailControllerTest
 		var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 
 		var controller = new ThumbnailController(_query, storageSelector, new AppSettings(),
-			new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+			new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
 		var actionResult = await controller.Thumbnail("../") as BadRequestResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 	}
@@ -126,7 +129,8 @@ public sealed class ThumbnailControllerTest
 
 		// Act
 		var controller = new ThumbnailController(_query, new FakeSelectorStorage(storage),
-			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		var actionResult = await controller.Thumbnail("hash-corrupt-image", "/test2.jpg",
@@ -148,7 +152,8 @@ public sealed class ThumbnailControllerTest
 	{
 		var controller =
 			new ThumbnailController(_query, new FakeSelectorStorage(), new AppSettings(),
-				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+				new FakeIManualThumbnailGenerationService());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var actionResult =
 			await controller.Thumbnail("404filehash", null, false,
@@ -178,7 +183,8 @@ public sealed class ThumbnailControllerTest
 		// Check if exist
 		var controller =
 			new ThumbnailController(_query, new FakeSelectorStorage(storage), new AppSettings(),
-				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+				new FakeIManualThumbnailGenerationService());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		var actionResult =
@@ -196,7 +202,8 @@ public sealed class ThumbnailControllerTest
 	{
 		var controller =
 			new ThumbnailController(_query, new FakeSelectorStorage(), new AppSettings(),
-				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+				new FakeIManualThumbnailGenerationService());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 		var result = await controller.Thumbnail("Invalid");
@@ -224,7 +231,8 @@ public sealed class ThumbnailControllerTest
 		// Check if exist
 		var controller =
 			new ThumbnailController(_query, new FakeSelectorStorage(storage), new AppSettings(),
-				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+				new FakeIManualThumbnailGenerationService());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		var actionResult =
@@ -283,11 +291,11 @@ public sealed class ThumbnailControllerTest
 		await InsertSearchData();
 		var storage = ArrangeStorage();
 		var controller = new ThumbnailController(
-			new FakeIQuery(new List<FileIndexItem>
-			{
-				new("/not_on_disk.jpg") { FileHash = "not_on_disk_hash" }
-			}), new FakeSelectorStorage(storage), new AppSettings(), new FakeIWebLogger(),
-			new FakeISmallThumbnailBackgroundJobService());
+			new FakeIQuery(
+				[new FileIndexItem("/not_on_disk.jpg") { FileHash = "not_on_disk_hash" }]),
+			new FakeSelectorStorage(storage), new AppSettings(), new FakeIWebLogger(),
+			new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
 
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var actionResult =
@@ -303,7 +311,7 @@ public sealed class ThumbnailControllerTest
 		var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 
 		var query = new FakeIQuery(
-			new List<FileIndexItem> { new("/test.dng") { FileHash = "hash1" } });
+			[new FileIndexItem("/test.dng") { FileHash = "hash1" }]);
 		var sut = CreateSut(storageSelector, query);
 		await sut.Thumbnail("hash1", null, true);
 
@@ -384,16 +392,17 @@ public sealed class ThumbnailControllerTest
 	[TestMethod]
 	public async Task Thumbnail_GetLargeFirstChoiceResult()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 
 		var sut = CreateSut(storage, _query);
 
@@ -406,16 +415,17 @@ public sealed class ThumbnailControllerTest
 	[TestMethod]
 	public async Task Thumbnail_IgnoreAtInInF()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 
 		var sut = CreateSut(storage, _query);
 		await sut.Thumbnail("test@2000", null, true, false, false);
@@ -477,7 +487,7 @@ public sealed class ThumbnailControllerTest
 		var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 
 		var query = new FakeIQuery(
-			new List<FileIndexItem> { new("/test.dng") { FileHash = "hash1" } });
+			[new FileIndexItem("/test.dng") { FileHash = "hash1" }]);
 		var sut = CreateSut(storageSelector, query);
 
 		await sut.ByZoomFactorAsync("hash1");
@@ -553,60 +563,60 @@ public sealed class ThumbnailControllerTest
 	[TestMethod]
 	public void ThumbnailSmallOrTinyMeta_GetTinyResult_WhenSmallDoesNotExist()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 
 		var sut = CreateSut(storage, _query);
 
 		sut.ThumbnailSmallOrTinyMeta("test");
 
 		sut.Response.Headers.TryGetValue("x-image-size", out var value);
-		Assert.AreEqual(ThumbnailSize.TinyMeta.ToString(), value.ToString());
+		Assert.AreEqual(nameof(ThumbnailSize.TinyMeta), value.ToString());
 	}
 
 	[TestMethod]
 	public void ThumbnailSmallOrTinyMeta_GetSmallResult()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 
 		var sut = CreateSut(storage, _query);
 
 		sut.ThumbnailSmallOrTinyMeta("test");
 
 		sut.Response.Headers.TryGetValue("x-image-size", out var value);
-		Assert.AreEqual(ThumbnailSize.Small.ToString(), value.ToString());
+		Assert.AreEqual(nameof(ThumbnailSize.Small), value.ToString());
 	}
 
 	[TestMethod]
 	public void ThumbnailSmallOrTinyMeta_GetLargeResultWhenAllAreMissing()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 		var sut = CreateSut(storage, _query);
 
 		sut.ThumbnailSmallOrTinyMeta("test");
 
 		sut.Response.Headers.TryGetValue("x-image-size", out var value);
-		Assert.AreEqual(ThumbnailSize.Large.ToString(), value.ToString());
+		Assert.AreEqual(nameof(ThumbnailSize.Large), value.ToString());
 	}
 
 	[TestMethod]
@@ -624,8 +634,8 @@ public sealed class ThumbnailControllerTest
 	public async Task ListSizesByHash_NotFound()
 	{
 		// Arrange
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string> { "01234567890123456789123456" });
+		var storage = new FakeIStorage([],
+			["01234567890123456789123456"]);
 
 		// Check if exist
 		var sut = CreateSut(storage, _query);
@@ -647,11 +657,8 @@ public sealed class ThumbnailControllerTest
 		});
 
 		// Arrange
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string>
-			{
-				$"01234567890123456789123456.{new AppSettings().ThumbnailImageFormat}"
-			});
+		var storage = new FakeIStorage([],
+			[$"01234567890123456789123456.{new AppSettings().ThumbnailImageFormat}"]);
 
 		// Check if exist
 		var sut = CreateSut(storage, _query);
@@ -679,16 +686,17 @@ public sealed class ThumbnailControllerTest
 		var item = await _query.AddItemAsync(new FileIndexItem("/test123.jpg") { FileHash = hash });
 
 		// Arrange
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine(hash, ThumbnailSize.ExtraLarge,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage([],
+		[
+			ThumbnailNameHelper.Combine(hash, ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine(hash, ThumbnailSize.ExtraLarge,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 
 		// Check if exist
 		var sut = CreateSut(storage, _query);
@@ -738,8 +746,8 @@ public sealed class ThumbnailControllerTest
 		});
 
 		// Arrange
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string> { "91234567890123456789123451" });
+		var storage = new FakeIStorage([],
+			["91234567890123456789123451"]);
 
 		// Check if exist
 		var sut = CreateSut(storage, _query);

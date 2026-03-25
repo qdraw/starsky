@@ -2,7 +2,7 @@
 slug: using-cloud-import-with-dropbox-camera-uploads
 title: "New feature: Using Cloud Import with Dropbox Camera Uploads"
 authors: dion
-tags: [photo mangement, software update]
+tags: [photo management, software update]
 date: 2026-01-08
 image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/1000/02_starsky_v052_kl1k.jpg
 ---

@@ -2,7 +2,7 @@
 slug: new-release-version-060
 title: "New Release: Version 0.6.0 - March 15, 2024 🚀"
 authors: dion
-tags: [photo mangement, software update]
+tags: [photo management, software update]
 date: 2024-05-15
 image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/embeded/01_video_search_cloud_starsky_v050.gif
 ---
