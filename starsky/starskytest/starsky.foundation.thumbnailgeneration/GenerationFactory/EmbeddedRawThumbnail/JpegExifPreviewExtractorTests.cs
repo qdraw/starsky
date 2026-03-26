@@ -211,7 +211,7 @@ public class JpegExifPreviewExtractorTests
 		await tiff.WriteAsync(BitConverter.GetBytes(jpegOffset),
 			TestContext.CancellationToken); // little-endian
 
-		// Entry 2: Tag 0x0202 (JPEGLENGTH), type=4, count=1, value = length
+		// Entry 2: Tag 0x0202 (JPEG LENGTH), type=4, count=1, value = length
 		tiff.WriteByte(0x02);
 		tiff.WriteByte(0x02);
 		tiff.WriteByte(0x04);
@@ -275,7 +275,7 @@ public class JpegExifPreviewExtractorTests
 			var best = SelectBestPreviewHelper.SelectBestPreview(candidates);
 			Assert.IsNotNull(best);
 
-			// Try extracting directly from TIFF stream
+			// Try extracting directly from a TIFF stream
 			using var outMs = new MemoryStream();
 			var previewCandidate =
 				new TiffEmbeddedPreviewExtractor.PreviewCandidate
@@ -299,7 +299,7 @@ public class JpegExifPreviewExtractorTests
 		var selector = new FakeSelectorStorageByType(sub, sub, sub, temp);
 		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
 
-		// request that extractor write outputLargePath so it uses _tempStorage.WriteStreamAsync
+		// request that extractor write to outputLargePath so it uses _tempStorage.WriteStreamAsync
 		var res = await extractor.TryExtract("f", "out.jpg");
 		Assert.IsTrue(res);
 		// verify temp storage got written via ReadStream
@@ -340,6 +340,62 @@ public class JpegExifPreviewExtractorTests
 		ms.WriteByte(0xD8); // SOI
 		ms.WriteByte(0xFF);
 		ms.WriteByte(0xDB); // DQT but no length
+
+		var storage = new FakeIStorage(outputSubPathFiles: ["test.jpg"],
+			byteListSource: [ms.ToArray()]);
+		var selector = new FakeSelectorStorageByType(storage, storage, storage, storage);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var result = await extractor.TryExtract("test.jpg", null);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_OutputLargePathNull_ReturnsOk()
+	{
+		// Test case: outputLargePath is null, so it shouldn't try to write to temp storage
+		var path = new CreateAnImageA6700PreviewRawJpeg().FilePathJpeg;
+
+		var host = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var temp = new FakeIStorage();
+		var selector = new FakeSelectorStorageByType(host, temp, host, temp);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var res = await extractor.TryExtract(path, null);
+		Assert.IsTrue(res);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_Exception_ReturnsFalse()
+	{
+		var sub = new FakeIStorage(new Exception("fail"));
+		var selector = new FakeSelectorStorageByType(sub, sub, sub, sub);
+		var logger = new FakeIWebLogger();
+		var extractor = new JpegExifPreviewExtractor(logger, selector);
+
+		var res = await extractor.TryExtract("f", "out.jpg");
+		Assert.IsFalse(res);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_MultipleFF_AndStandaloneMarkers_HandlesCorrectly()
+	{
+		using var ms = new MemoryStream();
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD8); // SOI
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0x01); // Standalone TEM with extra FFs
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD0); // Standalone RST0
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xE0); // APP0
+		ms.WriteByte(0x00);
+		ms.WriteByte(0x03); // Length 3
+		ms.WriteByte(0x01); // payload
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD9); // EOI
 
 		var storage = new FakeIStorage(outputSubPathFiles: ["test.jpg"],
 			byteListSource: [ms.ToArray()]);
