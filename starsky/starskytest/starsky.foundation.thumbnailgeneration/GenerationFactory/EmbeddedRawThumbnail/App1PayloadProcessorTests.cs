@@ -169,7 +169,7 @@ public class AddScannedCandidatesTests
 	{
 		if ( offsets.Length == 0 )
 		{
-			return new MemoryStream(new byte[0]);
+			return new MemoryStream([]);
 		}
 
 		var maxOffset = 0;
