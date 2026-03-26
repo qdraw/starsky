@@ -74,7 +74,7 @@ internal static class App1PayloadProcessor
 		          payload[5] != 0 );
 	}
 
-	private static void AddScannedCandidates(Stream? originalStream,
+	internal static void AddScannedCandidates(Stream? originalStream,
 		List<TiffEmbeddedPreviewExtractor.PreviewCandidate> candidates)
 	{
 		if ( originalStream == null )

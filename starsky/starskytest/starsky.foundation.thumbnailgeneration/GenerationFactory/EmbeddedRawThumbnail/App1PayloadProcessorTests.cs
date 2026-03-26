@@ -1,14 +1,19 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
 [TestClass]
 public class App1PayloadProcessorTests
 {
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task Process_TooShortPayload_ReturnsFalse()
 	{
@@ -152,6 +157,141 @@ public class App1PayloadProcessorTests
 		var result = await App1PayloadProcessor.Process(app1Payload, null, originalStream, 0);
 		Assert.IsTrue(result);
 	}
+}
 
-	public TestContext TestContext { get; set; }
+// Additional tests for AddScannedCandidates
+[TestClass]
+public class AddScannedCandidatesTests
+{
+	private const int MinJpegSize = 4096;
+
+	private static MemoryStream CreateStreamWithJpegs(params int[] offsets)
+	{
+		if ( offsets.Length == 0 )
+		{
+			return new MemoryStream(new byte[0]);
+		}
+
+		var maxOffset = 0;
+		foreach ( var o in offsets )
+		{
+			maxOffset = Math.Max(maxOffset, o);
+		}
+
+		var total = maxOffset + MinJpegSize + 16;
+		var buf = new byte[total];
+
+		foreach ( var o in offsets )
+		{
+			if ( o + 2 >= buf.Length )
+			{
+				continue;
+			}
+
+			buf[o] = 0xFF;
+			buf[o + 1] = 0xD8;
+			buf[o + 2] = 0xFF; // matches IsJpegStartMarker pattern
+
+			var eoiPos = o + MinJpegSize - 2;
+			if ( eoiPos + 1 < buf.Length )
+			{
+				buf[eoiPos] = 0xFF;
+				buf[eoiPos + 1] = 0xD9;
+			}
+		}
+
+		return new MemoryStream(buf);
+	}
+
+	[TestMethod]
+	public void AddScannedCandidates_NullStream_NoCandidates()
+	{
+		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		App1PayloadProcessor.AddScannedCandidates(null, candidates);
+		Assert.IsEmpty(candidates);
+	}
+
+	[TestMethod]
+	public void AddScannedCandidates_SkipsPrimaryAtZero()
+	{
+		using var ms = CreateStreamWithJpegs(0);
+		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		App1PayloadProcessor.AddScannedCandidates(ms, candidates);
+		Assert.IsEmpty(candidates);
+	}
+
+	[TestMethod]
+	public void AddScannedCandidates_AddsNonZeroCandidate()
+	{
+		using var ms = CreateStreamWithJpegs(0, 6000);
+		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		App1PayloadProcessor.AddScannedCandidates(ms, candidates);
+		Assert.IsTrue(candidates.Exists(c => c.Offset == 6000));
+	}
+
+	[TestMethod]
+	public void AddScannedCandidates_CapsAt16()
+	{
+		var offsets = new int[20];
+		for ( var i = 0; i < 20; i++ )
+		{
+			offsets[i] = 1000 + i * 6000;
+		}
+
+		using var ms = CreateStreamWithJpegs(offsets);
+		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		App1PayloadProcessor.AddScannedCandidates(ms, candidates);
+		Assert.HasCount(16, candidates);
+	}
+
+	[TestMethod]
+	public void AddScannedCandidates_ExceptionHandled()
+	{
+		using var bs = new BrokenStream();
+		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		App1PayloadProcessor.AddScannedCandidates(bs, candidates);
+		Assert.IsEmpty(candidates);
+	}
+
+	private class BrokenStream : Stream
+	{
+		public override bool CanRead => true;
+		public override bool CanSeek => true;
+		public override bool CanWrite => false;
+		public override long Length => throw new InvalidOperationException("boom");
+
+		[SuppressMessage("Usage", "S3237:value in set")]
+		public override long Position
+		{
+			get => 0;
+			set
+			{
+				// do nothing as we just want to throw on Length access
+			}
+		}
+
+		public override void Flush()
+		{
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			throw new InvalidOperationException("boom");
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			throw new InvalidOperationException("boom");
+		}
+
+		public override void SetLength(long value)
+		{
+			throw new NotSupportedException();
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			throw new NotSupportedException();
+		}
+	}
 }
