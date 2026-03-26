@@ -12,10 +12,10 @@ public static class JpegExtractPreviewHelper
 {
 	internal static async Task<bool> TryExtractFromStream(Stream input, Stream? outputLarge)
 	{
-		// Verify JPEG SOI
-		if ( !StreamPrimitives.TrySeek(input, 0) )
+		// NO Seek to 0 here to allow testing non-seekable streams or streams already at 0
+		if ( input.CanSeek && input.Position != 0 )
 		{
-			return false;
+			input.Seek(0, SeekOrigin.Begin);
 		}
 
 		var soi = new byte[2];

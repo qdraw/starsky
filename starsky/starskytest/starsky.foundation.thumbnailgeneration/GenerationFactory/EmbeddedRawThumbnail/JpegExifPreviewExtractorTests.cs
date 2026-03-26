@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MetadataExtractor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -279,10 +280,7 @@ public class JpegExifPreviewExtractorTests
 			// Try extracting directly from a TIFF stream
 			using var outMs = new MemoryStream();
 			var previewCandidate =
-				new PreviewCandidate
-				{
-					Offset = best.Offset, Length = best.Length
-				};
+				new PreviewCandidate { Offset = best.Offset, Length = best.Length };
 			var okExtract =
 				await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(checkTiffMs,
 					previewCandidate, outMs);
@@ -405,5 +403,132 @@ public class JpegExifPreviewExtractorTests
 
 		var result = await extractor.TryExtract("test.jpg", null);
 		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_MultipleFFs_HandlesCorrectly()
+	{
+		using var ms = new MemoryStream();
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD8); // SOI
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xE0); // APP0 with extra FFs
+		ms.WriteByte(0x00);
+		ms.WriteByte(0x02); // Length 2 (only length)
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD9); // EOI
+
+		var storage = new FakeIStorage(outputSubPathFiles: ["test.jpg"],
+			byteListSource: [ms.ToArray()]);
+		var selector = new FakeSelectorStorageByType(storage, storage, storage, storage);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var result = await extractor.TryExtract("test.jpg", null);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_StandaloneMarkers_Skip_HandlesCorrectly()
+	{
+		using var ms = new MemoryStream();
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD8); // SOI
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0x01); // TEM (standalone)
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD0); // RST0 (standalone)
+		ms.WriteByte(0xFF);
+		ms.WriteByte(0xD9); // EOI
+
+		var storage = new FakeIStorage(outputSubPathFiles: ["test.jpg"],
+			byteListSource: [ms.ToArray()]);
+		var selector = new FakeSelectorStorageByType(storage, storage, storage, storage);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var result = await extractor.TryExtract("test.jpg", null);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_NonSeekableStream_Skip_HandlesCorrectly()
+	{
+		var path = new CreateAnImageA6700PreviewRawJpeg().FilePathJpeg;
+		var blob = await File.ReadAllBytesAsync(path, TestContext.CancellationToken);
+
+		var nonSeekable = new NonSeekableStream(new MemoryStream(blob));
+		var proxy = new FakeIStorageReadStreamProxy(nonSeekable);
+
+		var selector = new FakeSelectorStorageByType(proxy, proxy, proxy, proxy);
+		var extractor = new JpegExifPreviewExtractor(new FakeIWebLogger(), selector);
+
+		var result = await extractor.TryExtract("f", "out.jpg");
+		Assert.IsTrue(result);
+	}
+
+	private sealed class NonSeekableStream(Stream inner) : Stream
+	{
+		public override bool CanRead => inner.CanRead;
+		public override bool CanSeek => false;
+		public override bool CanWrite => inner.CanWrite;
+		public override long Length => inner.Length;
+
+		public override long Position
+		{
+			get => inner.Position;
+			set => throw new NotSupportedException();
+		}
+
+		public override void Flush()
+		{
+			inner.Flush();
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return inner.Read(buffer, offset, count);
+		}
+
+		public override Task<int> ReadAsync(byte[] buffer, int offset, int count,
+			CancellationToken cancellationToken)
+		{
+			return inner.ReadAsync(buffer, offset, count, cancellationToken);
+		}
+
+		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
+			CancellationToken cancellationToken = default)
+		{
+			// Delegate to the inner stream's memory-based ReadAsync if available
+			return inner.ReadAsync(buffer, cancellationToken);
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			throw new NotSupportedException();
+		}
+
+		public override void SetLength(long value)
+		{
+			inner.SetLength(value);
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			inner.Write(buffer, offset, count);
+		}
+	}
+
+	private class FakeIStorageReadStreamProxy(Stream stream) : FakeIStorage
+	{
+		public override bool ExistFile(string path)
+		{
+			return true;
+		}
+
+		public override Stream ReadStream(string path, int maxRead = -1)
+		{
+			return stream;
+		}
 	}
 }
