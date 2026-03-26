@@ -93,6 +93,17 @@ public class JpegExifPreviewExtractorTests
 		var res = await extractor.TryExtract("missing.jpg", null);
 		Assert.IsFalse(res);
 	}
+	
+	[TestMethod]
+	public async Task TryExtract_Exception()
+	{
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage(new Exception("EXCEPTION"));
+		var extractor = new JpegExifPreviewExtractor(logger, new FakeSelectorStorage(storage));
+
+		var res = await extractor.TryExtract("missing.jpg", null);
+		Assert.IsFalse(res);
+	}
 
 	[TestMethod]
 	public async Task TryExtract_InvalidSoi_ReturnsFalse()
@@ -519,7 +530,7 @@ public class JpegExifPreviewExtractorTests
 		}
 	}
 
-	private class FakeIStorageReadStreamProxy(Stream stream) : FakeIStorage
+	private sealed class FakeIStorageReadStreamProxy(Stream stream) : FakeIStorage
 	{
 		public override bool ExistFile(string path)
 		{
