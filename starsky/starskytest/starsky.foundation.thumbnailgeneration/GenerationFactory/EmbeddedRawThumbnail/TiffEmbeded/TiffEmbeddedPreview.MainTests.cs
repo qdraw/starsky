@@ -41,6 +41,37 @@ public class TiffEmbeddedPreviewCoverageTests
 	}
 
 	[TestMethod]
+	public void ParseSubIfdChain_WhenPreviewsAtMax_ReturnsFalse()
+	{
+		// Arrange: create a stream (not actually read because method returns early)
+		using var ms = new MemoryStream(new byte[200]);
+		// Fill previews to the maximum expected (internal MaxPreviews == 8)
+		var previews = new List<PreviewCandidate>();
+		for ( var i = 0; i < 8; i++ )
+		{
+			previews.Add(new PreviewCandidate());
+		}
+
+		var context = new ParseTraversalContext
+		{
+			Previews = previews,
+			Visited = [],
+			ReferenceInfo = "unit-test",
+			RawFlavor = RawFlavor.Unknown
+		};
+
+		var subIfdOffsets = new List<uint> { 100 };
+
+		// Act
+		var result =
+			TiffEmbeddedPreviewExtractor.ParseSubIfdChain(ms, true, context, 0, subIfdOffsets);
+
+		// Assert
+		Assert.IsFalse(result,
+			"ParseSubIfdChain should return false when Previews count >= MaxPreviews");
+	}
+
+	[TestMethod]
 	public void ParseMakerNote_WithZeroOffset_ExitsEarly()
 	{
 		// When makerNoteOffset is 0, ParseMakerNote returns early (line 404-406)

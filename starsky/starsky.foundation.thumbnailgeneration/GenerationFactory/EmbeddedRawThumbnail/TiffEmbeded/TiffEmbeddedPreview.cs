@@ -400,18 +400,20 @@ public partial class TiffEmbeddedPreviewExtractor
 			context.Previews);
 	}
 
-	internal static void ParseSubIfdChain(Stream input, bool littleEndian,
+	internal static bool ParseSubIfdChain(Stream input, bool littleEndian,
 		ParseTraversalContext context, int depth, List<uint> subIfdOffsets)
 	{
 		foreach ( var subIfdOffset in subIfdOffsets )
 		{
 			if ( context.Previews.Count >= MaxPreviews )
 			{
-				return;
+				return false;
 			}
 
 			ParseIfdRecursive(input, subIfdOffset, littleEndian, context, depth + 1, true);
 		}
+
+		return true;
 	}
 
 	internal static void ParseMakerNote(Stream input, bool littleEndian, RawFlavor rawFlavor,
