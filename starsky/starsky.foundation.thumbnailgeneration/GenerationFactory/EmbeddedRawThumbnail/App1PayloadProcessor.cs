@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
@@ -25,9 +26,9 @@ internal static class App1PayloadProcessor
 			return false; // Not a valid TIFF header inside EXIF
 		}
 
-		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		var candidates = new List<PreviewCandidate>();
 
-		var ctx = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var ctx = new ParseTraversalContext
 		{
 			Previews = candidates,
 			Visited = new HashSet<uint>(),
@@ -75,7 +76,7 @@ internal static class App1PayloadProcessor
 	}
 
 	internal static void AddScannedCandidates(Stream? originalStream,
-		List<TiffEmbeddedPreviewExtractor.PreviewCandidate> candidates)
+		List<PreviewCandidate> candidates)
 	{
 		if ( originalStream == null )
 		{
@@ -115,7 +116,7 @@ internal static class App1PayloadProcessor
 	}
 
 	private static void EnrichCandidatesWithDimensions(
-		List<TiffEmbeddedPreviewExtractor.PreviewCandidate> candidates, Stream tiffMs,
+		List<PreviewCandidate> candidates, Stream tiffMs,
 		Stream? originalStream, long payloadStart)
 	{
 		// only for candidates that don't already have dimensions from TIFF tags
@@ -162,17 +163,14 @@ internal static class App1PayloadProcessor
 	}
 
 	private static async Task<bool> TryExtractBestPreview(
-		TiffEmbeddedPreviewExtractor.PreviewCandidate best, Stream tiffMs, Stream? originalStream,
+		PreviewCandidate best, Stream tiffMs, Stream? originalStream,
 		long payloadStart, Stream outputLarge)
 	{
 		// Prefer extraction from the APP1 memory stream when the candidate lies within it.
 		if ( best.Offset + best.Length <= ( uint ) tiffMs.Length )
 		{
 			var preview =
-				new TiffEmbeddedPreviewExtractor.PreviewCandidate
-				{
-					Offset = best.Offset, Length = best.Length
-				};
+				new PreviewCandidate { Offset = best.Offset, Length = best.Length };
 			return await TiffEmbeddedPreviewExtractor
 				.ExtractPreviewToStream(tiffMs, preview, outputLarge).ConfigureAwait(false);
 		}
@@ -186,7 +184,7 @@ internal static class App1PayloadProcessor
 		var mappedBest = payloadStart + 6 + best.Offset;
 		if ( mappedBest >= 0 && mappedBest + best.Length <= originalStream.Length )
 		{
-			var preview = new TiffEmbeddedPreviewExtractor.PreviewCandidate
+			var preview = new PreviewCandidate
 			{
 				Offset = ( uint ) mappedBest, Length = best.Length
 			};
@@ -203,10 +201,7 @@ internal static class App1PayloadProcessor
 		if ( best.Offset + best.Length <= ( uint ) originalStream.Length )
 		{
 			var preview =
-				new TiffEmbeddedPreviewExtractor.PreviewCandidate
-				{
-					Offset = best.Offset, Length = best.Length
-				};
+				new PreviewCandidate { Offset = best.Offset, Length = best.Length };
 			if ( TiffEmbeddedPreviewExtractor.TryValidateJpegOffset(originalStream, preview.Offset,
 				    preview.Length) )
 			{

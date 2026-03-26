@@ -10,6 +10,7 @@ using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starskytest.FakeCreateAn.CreateAnImageA6700PreviewRawJpeg;
@@ -259,8 +260,8 @@ public class JpegExifPreviewExtractorTests
 			Assert.AreEqual(0x02, entryCountBuf[0]);
 			Assert.AreEqual(0x00, entryCountBuf[1]);
 
-			var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
-			var ctx = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+			var candidates = new List<PreviewCandidate>();
+			var ctx = new ParseTraversalContext
 			{
 				Previews = candidates,
 				Visited = [],
@@ -278,7 +279,7 @@ public class JpegExifPreviewExtractorTests
 			// Try extracting directly from a TIFF stream
 			using var outMs = new MemoryStream();
 			var previewCandidate =
-				new TiffEmbeddedPreviewExtractor.PreviewCandidate
+				new PreviewCandidate
 				{
 					Offset = best.Offset, Length = best.Length
 				};

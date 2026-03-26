@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.
 	Helpers;
@@ -11,12 +11,12 @@ public class SelectBestPreviewHelperTest
 	[TestMethod]
 	public void SelectBestPreview_MixedDimensions_KeepsUnknownWhenUnknownLengthIsAtLeastDouble()
 	{
-		var unknownDimensions = new TiffEmbeddedPreviewExtractor.PreviewCandidate
+		var unknownDimensions = new PreviewCandidate
 		{
 			Offset = 100, Length = 10_000, Width = 0, Height = 0
 		};
 
-		var knownDimensions = new TiffEmbeddedPreviewExtractor.PreviewCandidate
+		var knownDimensions = new PreviewCandidate
 		{
 			Offset = 200, Length = 4_000, Width = 1200, Height = 800
 		};
@@ -35,12 +35,12 @@ public class SelectBestPreviewHelperTest
 	[TestMethod]
 	public void SelectBestPreview_MixedDimensions_ReplacesUnknownWhenUnknownLengthIsNotDouble()
 	{
-		var unknownDimensions = new TiffEmbeddedPreviewExtractor.PreviewCandidate
+		var unknownDimensions = new PreviewCandidate
 		{
 			Offset = 300, Length = 7_000, Width = 0, Height = 0
 		};
 
-		var knownDimensions = new TiffEmbeddedPreviewExtractor.PreviewCandidate
+		var knownDimensions = new PreviewCandidate
 		{
 			Offset = 400, Length = 4_000, Width = 1200, Height = 800
 		};

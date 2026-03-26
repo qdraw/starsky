@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
 using starskytest.FakeMocks;
 
@@ -509,7 +510,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		Assert.IsTrue(result, "Expected successful extraction to temp storage output");
 		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath),
 			"Expected output preview written to temp storage");
-		using var written = tempStorage.ReadStream(OutputSubPath);
+		await using var written = tempStorage.ReadStream(OutputSubPath);
 		using var outMs = new MemoryStream();
 		await written.CopyToAsync(outMs, TestContext.CancellationToken);
 		var extractedBytes = outMs.ToArray();
@@ -645,7 +646,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
 
 		Assert.IsTrue(result, "Canon MakerNote scan should find an embedded JPEG");
-		using var written = tempStorage.ReadStream(OutputSubPath);
+		await using var written = tempStorage.ReadStream(OutputSubPath);
 		using var outMs = new MemoryStream();
 		await written.CopyToAsync(outMs, TestContext.CancellationToken);
 		Assert.IsGreaterThanOrEqualTo(secondJpegLength, outMs.ToArray().Length,
@@ -800,7 +801,7 @@ public class TiffEmbeddedPreviewExtractorTests
 
 		Assert.IsTrue(result,
 			"Should extract IFD0 standard preview ignoring the IFD3 lossless raw strip");
-		using var written = tempStorage.ReadStream(OutputSubPath);
+		await using var written = tempStorage.ReadStream(OutputSubPath);
 		using var outMs = new MemoryStream();
 		await written.CopyToAsync(outMs, TestContext.CancellationToken);
 		var extracted = outMs.ToArray();
@@ -846,7 +847,7 @@ public class TiffEmbeddedPreviewExtractorTests
 
 		Assert.IsTrue(result,
 			"Canon extraction should succeed when both IFD and MakerNote JPEGs are present");
-		using var written = tempStorage.ReadStream(OutputSubPath);
+		await using var written = tempStorage.ReadStream(OutputSubPath);
 		using var outMs = new MemoryStream();
 		await written.CopyToAsync(outMs, TestContext.CancellationToken);
 		Assert.IsGreaterThanOrEqualTo(largeMakerNoteJpegLength, outMs.ToArray().Length,
@@ -1090,7 +1091,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	public void ParseIfdRecursive_WithDepthExceedingMaxIfdDepth_ReturnsEarly()
 	{
 		// Arrange: Create context with depth > MaxIfdDepth (6)
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
 		};
@@ -1108,7 +1109,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	public void ParseIfdRecursive_WithOffsetZero_ReturnsEarly()
 	{
 		// Arrange
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
 		};
@@ -1126,15 +1127,14 @@ public class TiffEmbeddedPreviewExtractorTests
 	public void ParseIfdRecursive_WithMaxPreviewsReached_ReturnsEarly()
 	{
 		// Arrange: Fill previews list to capacity
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown,
-			Previews = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>(
-				Enumerable.Range(0, 8).Select(i =>
-					new TiffEmbeddedPreviewExtractor.PreviewCandidate
-					{
-						Offset = ( uint ) i, Length = 100
-					})),
+			Previews =
+			[
+				..Enumerable.Range(0, 8).Select(i =>
+					new PreviewCandidate { Offset = ( uint ) i, Length = 100 })
+			],
 			Visited = [],
 			ReferenceInfo = "test"
 		};
@@ -1152,7 +1152,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	public void ParseIfdRecursive_WithAlreadyVisitedOffset_ReturnsEarly()
 	{
 		// Arrange: Offset already in visited set
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown,
 			Previews = [],
@@ -1173,7 +1173,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	public void ParseIfdRecursive_WithVisitCountExceedingMax_ReturnsEarly()
 	{
 		// Arrange: Already visited MaxIfdVisits (64) offsets
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown,
 			Previews = [],
@@ -1196,7 +1196,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	public void ParseIfdRecursive_WithInvalidSeek_ReturnsEarly()
 	{
 		// Arrange: Offset beyond stream length
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
 		};
@@ -1214,7 +1214,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	public void ParseIfdRecursive_WithTooFewCountBytes_ReturnsEarly()
 	{
 		// Arrange: Stream positioned at end (can't read 2-byte entry count)
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
 		};
@@ -1238,7 +1238,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		data[9] = 0;
 		using var ms = new MemoryStream(data);
 
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
 		};
@@ -1260,7 +1260,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		data[9] = 0xFF;
 		using var ms = new MemoryStream(data);
 
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
 		};
@@ -1288,7 +1288,7 @@ public class TiffEmbeddedPreviewExtractorTests
 
 		using var ms = new MemoryStream(data);
 
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
 		};
@@ -1316,7 +1316,7 @@ public class TiffEmbeddedPreviewExtractorTests
 			ms = new PartialReadStream(new MemoryStream(data),
 				5); // Only allow reading 5 bytes at a time
 
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
 		};
@@ -1354,7 +1354,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		Assert.IsTrue(littleEndian);
 
 		// Act: Step 2 - Parse IFD structure starting from discovered offset
-		var context = new TiffEmbeddedPreviewExtractor.ParseTraversalContext
+		var context = new ParseTraversalContext
 		{
 			RawFlavor = RawFlavor.Unknown, Previews = [], Visited = [], ReferenceInfo = "test"
 		};

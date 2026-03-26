@@ -1,20 +1,20 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 
 public static class SelectBestPreviewHelper
 {
-	internal static TiffEmbeddedPreviewExtractor.PreviewCandidate? SelectBestPreview(
-		List<TiffEmbeddedPreviewExtractor.PreviewCandidate> candidates)
+	internal static PreviewCandidate? SelectBestPreview(
+		List<PreviewCandidate> candidates)
 	{
 		if ( candidates.Count == 0 )
 		{
 			return null;
 		}
 
-		TiffEmbeddedPreviewExtractor.PreviewCandidate? best = null;
+		PreviewCandidate? best = null;
 
 		foreach ( var candidate in candidates )
 		{
@@ -33,8 +33,8 @@ public static class SelectBestPreviewHelper
 		return best;
 	}
 
-	private static bool ShouldReplaceBest(TiffEmbeddedPreviewExtractor.PreviewCandidate best,
-		TiffEmbeddedPreviewExtractor.PreviewCandidate candidate)
+	private static bool ShouldReplaceBest(PreviewCandidate best,
+		PreviewCandidate candidate)
 	{
 		var candidatePixels = GetPixelCount(candidate);
 		var bestPixels = GetPixelCount(best);
@@ -52,8 +52,8 @@ public static class SelectBestPreviewHelper
 	}
 
 	private static bool ResolveMixedDimensionPreference(
-		TiffEmbeddedPreviewExtractor.PreviewCandidate candidate,
-		TiffEmbeddedPreviewExtractor.PreviewCandidate best,
+		PreviewCandidate candidate,
+		PreviewCandidate best,
 		bool candidateHasDimensions)
 	{
 		if ( candidateHasDimensions )
@@ -65,7 +65,7 @@ public static class SelectBestPreviewHelper
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static ulong GetPixelCount(TiffEmbeddedPreviewExtractor.PreviewCandidate candidate)
+	private static ulong GetPixelCount(PreviewCandidate candidate)
 	{
 		return ( ulong ) candidate.Width * candidate.Height;
 	}

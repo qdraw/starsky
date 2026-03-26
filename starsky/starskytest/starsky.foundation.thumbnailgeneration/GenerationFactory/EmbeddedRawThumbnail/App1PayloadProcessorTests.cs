@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
@@ -206,7 +206,7 @@ public class AddScannedCandidatesTests
 	[TestMethod]
 	public void AddScannedCandidates_NullStream_NoCandidates()
 	{
-		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		var candidates = new List<PreviewCandidate>();
 		App1PayloadProcessor.AddScannedCandidates(null, candidates);
 		Assert.IsEmpty(candidates);
 	}
@@ -215,7 +215,7 @@ public class AddScannedCandidatesTests
 	public void AddScannedCandidates_SkipsPrimaryAtZero()
 	{
 		using var ms = CreateStreamWithJpegs(0);
-		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		var candidates = new List<PreviewCandidate>();
 		App1PayloadProcessor.AddScannedCandidates(ms, candidates);
 		Assert.IsEmpty(candidates);
 	}
@@ -224,7 +224,7 @@ public class AddScannedCandidatesTests
 	public void AddScannedCandidates_AddsNonZeroCandidate()
 	{
 		using var ms = CreateStreamWithJpegs(0, 6000);
-		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		var candidates = new List<PreviewCandidate>();
 		App1PayloadProcessor.AddScannedCandidates(ms, candidates);
 		Assert.IsTrue(candidates.Exists(c => c.Offset == 6000));
 	}
@@ -239,7 +239,7 @@ public class AddScannedCandidatesTests
 		}
 
 		using var ms = CreateStreamWithJpegs(offsets);
-		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		var candidates = new List<PreviewCandidate>();
 		App1PayloadProcessor.AddScannedCandidates(ms, candidates);
 		Assert.HasCount(16, candidates);
 	}
@@ -248,7 +248,7 @@ public class AddScannedCandidatesTests
 	public void AddScannedCandidates_ExceptionHandled()
 	{
 		using var bs = new BrokenStream();
-		var candidates = new List<TiffEmbeddedPreviewExtractor.PreviewCandidate>();
+		var candidates = new List<PreviewCandidate>();
 		App1PayloadProcessor.AddScannedCandidates(bs, candidates);
 		Assert.IsEmpty(candidates);
 	}
