@@ -295,3 +295,166 @@ public class AddScannedCandidatesTests
 		}
 	}
 }
+
+[TestClass]
+public class TryExtractBestPreviewTests
+{
+	private static MemoryStream MakeStreamWithJpegAt(long offset, int length)
+	{
+		var total = ( int ) ( offset + length + 8 );
+		var buf = new byte[total];
+		// fill with deterministic data so we can assert later
+		for ( var i = 0; i < buf.Length; i++ )
+		{
+			buf[i] = ( byte ) ( i % 251 );
+		}
+
+		// now insert JPEG markers/EOI so they are not overwritten by the filler
+		if ( offset + 2 < buf.Length )
+		{
+			buf[offset] = 0xFF;
+			buf[offset + 1] = 0xD8;
+			buf[offset + 2] = 0xFF;
+		}
+
+		var eoi = offset + length - 2;
+		if ( eoi + 1 < buf.Length )
+		{
+			buf[eoi] = 0xFF;
+			buf[eoi + 1] = 0xD9;
+		}
+
+
+		return new MemoryStream(buf);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_ExtractsFromTiffMs_WhenInsideTiff()
+	{
+		const long offset = 100L;
+		const uint length = 1024u;
+		using var tiffMs = MakeStreamWithJpegAt(offset, ( int ) length);
+		// originalStream null
+		PreviewCandidate best = new() { Offset = ( uint ) offset, Length = length };
+		using var outMs = new MemoryStream();
+
+		var ok = await App1PayloadProcessor.TryExtractBestPreview(best, tiffMs, null, 0, outMs);
+		Assert.IsTrue(ok);
+		Assert.AreEqual(length, ( uint ) outMs.Length);
+		// verify first two bytes are JPEG SOI
+		outMs.Seek(0, SeekOrigin.Begin);
+		var b = outMs.ReadByte();
+		var b2 = outMs.ReadByte();
+		Assert.AreEqual(0xFF, b);
+		Assert.AreEqual(0xD8, b2);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_ReturnsFalse_WhenOriginalNullAndNotInTiff()
+	{
+		// tiffMs too short so inside-tiff check fails
+		using var tiffMs = new MemoryStream(new byte[10]);
+		PreviewCandidate best = new() { Offset = 1000, Length = 2000 };
+		using var outMs = new MemoryStream();
+
+		var ok = await App1PayloadProcessor.TryExtractBestPreview(best, tiffMs, null, 0, outMs);
+		Assert.IsFalse(ok);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_UsesMappedOffset_WhenValid()
+	{
+		// tiffMs doesn't contain candidate
+		using var tiffMs = new MemoryStream(new byte[100]);
+		var bestOffset = 50u;
+		var length = 1024u;
+		// payloadStart such that mappedBest = payloadStart + 6 + bestOffset
+		var payloadStart = 500L;
+		var mappedBest = payloadStart + 6 + bestOffset;
+		using var originalStream = MakeStreamWithJpegAt(mappedBest, ( int ) length);
+
+		PreviewCandidate best = new() { Offset = bestOffset, Length = length };
+		using var outMs = new MemoryStream();
+
+		var ok = await App1PayloadProcessor.TryExtractBestPreview(best, tiffMs, originalStream,
+			payloadStart, outMs);
+		Assert.IsTrue(ok);
+		Assert.AreEqual(length, ( uint ) outMs.Length);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_UsesAbsoluteOffset_WhenMappedFailsButAbsoluteValid()
+	{
+		using var tiffMs = new MemoryStream(new byte[100]);
+		var bestOffset = 300u;
+		var length = 1024u;
+		var payloadStart = 200L;
+		var mappedBest = payloadStart + 6 + bestOffset;
+
+		// build originalStream with NO JPEG at mappedBest but WITH JPEG at absolute bestOffset
+		var total = ( int ) ( mappedBest + length + 16 );
+		var buf = new byte[total];
+		// fill with deterministic data so we can assert later
+		for ( var i = 0; i < buf.Length; i++ )
+		{
+			buf[i] = ( byte ) ( ( i + 7 ) % 251 );
+		}
+
+		// put JPEG at absolute offset (after filler so markers are preserved)
+		var abs = ( int ) bestOffset;
+		if ( abs + 2 < buf.Length )
+		{
+			buf[abs] = 0xFF;
+			buf[abs + 1] = 0xD8;
+			buf[abs + 2] = 0xFF;
+		}
+
+		var eoi = abs + ( int ) length - 2;
+		if ( eoi + 1 < buf.Length )
+		{
+			buf[eoi] = 0xFF;
+			buf[eoi + 1] = 0xD9;
+		}
+
+		using var originalStream = new MemoryStream(buf);
+
+		PreviewCandidate best = new() { Offset = bestOffset, Length = length };
+		using var outMs = new MemoryStream();
+
+		var ok = await App1PayloadProcessor.TryExtractBestPreview(best, tiffMs, originalStream,
+			payloadStart, outMs);
+		Assert.IsTrue(ok);
+		Assert.AreEqual(length, ( uint ) outMs.Length);
+	}
+
+	[TestMethod]
+	public async Task TryExtractBestPreview_ReturnsFalse_WhenMappedInBoundsButAbsoluteOutOfBounds()
+	{
+		using var tiffMs = new MemoryStream(new byte[100]);
+		const uint bestOffset = 100u;
+		const uint length = 1024u;
+		const long payloadStart = 200L;
+		var mappedBest = payloadStart + 6 + bestOffset;
+		// original stream that contains mapped region but absolute offset is out-of-bounds
+		var total = ( int ) ( mappedBest + length + 8 );
+		var buf = new byte[total];
+		// put NO JPEG at mappedBest (so TryValidate will fail)
+		for ( var i = 0; i < buf.Length; i++ )
+		{
+			buf[i] = 0;
+		}
+
+		using var originalStream = new MemoryStream(buf);
+
+		// set best such that best.Offset + best.Length > originalStream.Length to trigger early false
+		PreviewCandidate best = new()
+		{
+			Offset = ( uint ) ( originalStream.Length - 10 ), Length = 1024
+		};
+		using var outMs = new MemoryStream();
+
+		var ok = await App1PayloadProcessor.TryExtractBestPreview(best, tiffMs, originalStream,
+			payloadStart, outMs);
+		Assert.IsFalse(ok);
+	}
+}

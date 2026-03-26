@@ -325,6 +325,68 @@ public sealed class WebHtmlPublishServiceTest
 	}
 
 	[TestMethod]
+	public async Task GenerateWebHtml_ParseRazorThrows_ReturnsEmpty()
+	{
+		// Create an invalid razor template so ParseRazor.EmbeddedViews will throw
+		var viewFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WebHtmlPublish",
+			"EmbeddedViews");
+		Directory.CreateDirectory(viewFolder);
+		var badView = Path.Combine(viewFolder, "Bad.cshtml");
+		await File.WriteAllTextAsync(badView, "@{ var x = ; }"); // invalid razor syntax
+
+		var appSettings = new AppSettings
+		{
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{
+					"default",
+					new List<AppSettingsPublishProfiles>
+					{
+						new()
+						{
+							ContentType = TemplateContentType.Html,
+							Path = "index.html",
+							Template = "Bad.cshtml"
+						}
+					}
+				}
+			}
+		};
+
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var selectorStorage = new FakeSelectorStorage(storage);
+
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(),
+			new FakeImageOptimisationService());
+
+		var profiles = new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
+			.GetPublishProfileName("default");
+
+		var output = await service.GenerateWebHtml(profiles,
+			profiles.FirstOrDefault()!, "testItem", new string[1],
+			new List<FileIndexItem> { new("test") }, AppDomain.CurrentDomain.BaseDirectory);
+
+		// Service should catch the exception thrown by ParseRazor and return empty dict
+		Assert.IsNotNull(output);
+		Assert.AreEqual(0, output.Count);
+
+		// cleanup
+		try
+		{
+			File.Delete(badView);
+		}
+		catch
+		{
+			// ignore cleanup errors
+		}
+	}
+
+	[TestMethod]
 	public async Task GenerateJpeg_Thumbnail_Test()
 	{
 		var appSettings = new AppSettings

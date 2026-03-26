@@ -287,23 +287,32 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			                Path.GetExtension(item.FileName);
 		}
 
-		// has a direct dependency on the filesystem
-		var embeddedResult = await new ParseRazor(_hostFileSystemStorage, _logger)
-			.EmbeddedViews(currentProfile.Template, viewModel);
-
-		var stream = StringToStreamHelper.StringToStream(embeddedResult);
-		await _hostFileSystemStorage.WriteStreamAsync(stream,
-			Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
-
-		_console.Write(_appSettings.IsVerbose() ? embeddedResult + "\n" : "•");
-
-		return new Dictionary<string, bool>
+		try
 		{
+			// has a direct dependency on the filesystem
+			var embeddedResult = await new ParseRazor(_hostFileSystemStorage, _logger)
+				.EmbeddedViews(currentProfile.Template, viewModel);
+
+			var stream = StringToStreamHelper.StringToStream(embeddedResult);
+			await _hostFileSystemStorage.WriteStreamAsync(stream,
+				Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
+
+			_console.Write(_appSettings.IsVerbose() ? embeddedResult + "\n" : "•");
+
+			return new Dictionary<string, bool>
 			{
-				currentProfile.Path.Replace(outputParentFullFilePathFolder, string.Empty),
-				currentProfile.Copy
-			}
-		};
+				{
+					currentProfile.Path.Replace(outputParentFullFilePathFolder, string.Empty),
+					currentProfile.Copy
+				}
+			};
+		}
+		catch ( Exception e )
+		{
+			_logger.LogError(
+				$"[WebHtmlPublishService/GenerateWebHtml] Skip due errors: (catch-ed exception) {currentProfile.Template} - {e.Message} - {e.StackTrace}");
+			return new Dictionary<string, bool>();
+		}
 	}
 
 	/// <summary>
