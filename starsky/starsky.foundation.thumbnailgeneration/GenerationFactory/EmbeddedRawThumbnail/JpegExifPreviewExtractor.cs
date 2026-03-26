@@ -75,7 +75,6 @@ public class JpegExifPreviewExtractor(IWebLogger logger, ISelectorStorage select
 		return await ProcessJpegMarkersAsync(input, outputLarge);
 	}
 
-	// helper methods moved to App1PayloadProcessor.cs
 	private static async Task<MarkerProcessingResult> ProcessNonStandaloneMarkerAsync(Stream input,
 		int marker, Stream? outputLarge)
 	{

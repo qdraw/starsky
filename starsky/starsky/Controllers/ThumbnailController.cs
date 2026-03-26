@@ -29,9 +29,9 @@ public sealed class ThumbnailController : Controller
 	private readonly ThumbnailImageFormat _imageFormat;
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
+	private readonly IManualThumbnailGenerationService _manualThumbnailGenerationService;
 	private readonly IQuery _query;
 	private readonly ISmallThumbnailBackgroundJobService _smallThumbnailBgService;
-	private readonly IManualThumbnailGenerationService _manualThumbnailGenerationService;
 
 	private readonly IStorage _thumbnailStorage;
 
@@ -398,7 +398,7 @@ public sealed class ThumbnailController : Controller
 
 			if ( ExtensionRolesHelper.IsExtensionRawThumbnailSupported(sourcePath) )
 			{
-				_manualThumbnailGenerationService.CreateJob(f);
+				await _manualThumbnailGenerationService.CreateJob(f);
 				SetExpiresResponseHeadersToZero();
 			}
 

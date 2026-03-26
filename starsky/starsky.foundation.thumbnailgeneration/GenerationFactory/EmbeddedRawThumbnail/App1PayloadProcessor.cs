@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
@@ -35,7 +36,9 @@ internal static class App1PayloadProcessor
 		};
 
 		// Traverse TIFF IFDs within the APP1 payload
-		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(tiffMs, firstIfdOffset, littleEndian, ctx, 0,
+		TiffEmbeddedPreviewExtractor.ParseIfdRecursive(
+			tiffMs,
+			firstIfdOffset, littleEndian, ctx, 0,
 			false);
 
 		// Optionally include scanned JPEGs from original stream (if available)
@@ -55,14 +58,19 @@ internal static class App1PayloadProcessor
 			return true;
 		}
 
-		return await TryExtractBestPreview(best, tiffMs, originalStream, payloadStart, outputLarge)
+		return await TryExtractBestPreview(best, tiffMs,
+				originalStream, payloadStart, outputLarge)
 			.ConfigureAwait(false);
 	}
 
 	private static bool IsValidExifHeader(byte[] payload)
 	{
-		return !( payload.Length < 6 || payload[0] != ( byte ) 'E' || payload[1] != ( byte ) 'x' ||
-		          payload[2] != ( byte ) 'i' || payload[3] != ( byte ) 'f' || payload[4] != 0 ||
+		return !( payload.Length < 6 ||
+		          payload[0] != ( byte ) 'E' ||
+		          payload[1] != ( byte ) 'x' ||
+		          payload[2] != ( byte ) 'i' ||
+		          payload[3] != ( byte ) 'f' ||
+		          payload[4] != 0 ||
 		          payload[5] != 0 );
 	}
 
@@ -110,20 +118,19 @@ internal static class App1PayloadProcessor
 		List<TiffEmbeddedPreviewExtractor.PreviewCandidate> candidates, Stream tiffMs,
 		Stream? originalStream, long payloadStart)
 	{
-		foreach ( var c in candidates )
+		// only for candidates that don't already have dimensions from TIFF tags
+		foreach ( var c in candidates.Where(c
+			         => c.Width == 0 || c.Height == 0)
+		        )
 		{
-			if ( c.Width != 0 && c.Height != 0 )
-			{
-				continue;
-			}
-
 			// Try mapped original stream first: payloadStart + 6 + offset
 			if ( originalStream != null )
 			{
 				var mapped = payloadStart + 6 + c.Offset;
 				if ( mapped >= 0 && mapped + c.Length <= originalStream.Length &&
 				     TiffEmbeddedPreviewExtractor.TryGetJpegDimensionsAtOffset(originalStream,
-					     ( uint ) mapped, c.Length, out var wMapped, out var hMapped) )
+					     ( uint ) mapped, c.Length,
+					     out var wMapped, out var hMapped) )
 				{
 					c.Width = wMapped;
 					c.Height = hMapped;
@@ -132,8 +139,11 @@ internal static class App1PayloadProcessor
 
 				// fallback: treat offset as absolute in original stream
 				if ( c.Offset < originalStream.Length &&
-				     TiffEmbeddedPreviewExtractor.TryGetJpegDimensionsAtOffset(originalStream,
-					     c.Offset, c.Length, out var wAbs, out var hAbs) )
+				     TiffEmbeddedPreviewExtractor.TryGetJpegDimensionsAtOffset(
+					     originalStream,
+					     c.Offset, c.Length,
+					     out var wAbs, out var hAbs)
+				   )
 				{
 					c.Width = wAbs;
 					c.Height = hAbs;
