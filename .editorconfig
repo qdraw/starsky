@@ -111,6 +111,10 @@ dotnet_diagnostic.MSTEST0051.severity = warning
 # Seal internal types
 dotnet_diagnostic.CA1852.severity = warning
 
+# 'NonSeekableStream' overrides array-based 'ReadAsync' 
+# but does not override memory-based 'ReadAsync'
+dotnet_diagnostic.CA1844.severity = warning
+
 # Indentation preferences
 csharp_indent_block_contents = true
 csharp_indent_braces = false
