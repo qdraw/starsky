@@ -162,7 +162,7 @@ internal static class App1PayloadProcessor
 		}
 	}
 
-	private static async Task<bool> TryExtractBestPreview(
+	internal static async Task<bool> TryExtractBestPreview(
 		PreviewCandidate best, Stream tiffMs, Stream? originalStream,
 		long payloadStart, Stream outputLarge)
 	{
@@ -198,17 +198,19 @@ internal static class App1PayloadProcessor
 		}
 
 		// Lastly, try interpreting the offset as an absolute offset in the original stream
-		if ( best.Offset + best.Length <= ( uint ) originalStream.Length )
+		if ( best.Offset + best.Length > ( uint ) originalStream.Length )
 		{
-			var preview =
-				new PreviewCandidate { Offset = best.Offset, Length = best.Length };
-			if ( TiffEmbeddedPreviewExtractor.TryValidateJpegOffset(originalStream, preview.Offset,
-				    preview.Length) )
-			{
-				return await TiffEmbeddedPreviewExtractor
-					.ExtractPreviewToStream(originalStream, preview, outputLarge)
-					.ConfigureAwait(false);
-			}
+			return false;
+		}
+
+		var preview2 =
+			new PreviewCandidate { Offset = best.Offset, Length = best.Length };
+		if ( TiffEmbeddedPreviewExtractor.TryValidateJpegOffset(originalStream, preview2.Offset,
+			    preview2.Length) )
+		{
+			return await TiffEmbeddedPreviewExtractor
+				.ExtractPreviewToStream(originalStream, preview2, outputLarge)
+				.ConfigureAwait(false);
 		}
 
 		return false;
