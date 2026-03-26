@@ -253,7 +253,7 @@ public class AddScannedCandidatesTests
 		Assert.IsEmpty(candidates);
 	}
 
-	private class BrokenStream : Stream
+	private sealed class BrokenStream : Stream
 	{
 		public override bool CanRead => true;
 		public override bool CanSeek => true;
