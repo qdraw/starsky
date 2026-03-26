@@ -56,7 +56,7 @@ public sealed class WebHtmlPublishServiceTest
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
 			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
-		var result = await service.RenderCopy(new List<FileIndexItem>(),
+		var result = await service.RenderCopy([],
 			"test", "test", "/");
 
 		Assert.IsNull(result);
@@ -72,10 +72,8 @@ public sealed class WebHtmlPublishServiceTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"same",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"same", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Jpeg,
 							SourceMaxWidth = 300,
@@ -83,7 +81,7 @@ public sealed class WebHtmlPublishServiceTest
 							Folder = "1000",
 							Append = "_kl1k"
 						}
-					}
+					]
 				}
 			}
 		};
@@ -92,7 +90,7 @@ public sealed class WebHtmlPublishServiceTest
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(),
 			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
-		var result = await service.RenderCopy(new List<FileIndexItem>(),
+		var result = await service.RenderCopy([],
 			"test", "test", "/");
 
 		Assert.IsNull(result);
@@ -108,11 +106,9 @@ public sealed class WebHtmlPublishServiceTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"test",
-					new List<AppSettingsPublishProfiles>
-					{
-						new() { ContentType = TemplateContentType.Html },
-						new()
+					"test", [
+						new AppSettingsPublishProfiles { ContentType = TemplateContentType.Html },
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Jpeg,
 							SourceMaxWidth = 300,
@@ -120,7 +116,8 @@ public sealed class WebHtmlPublishServiceTest
 							Folder = "1000",
 							Append = "_kl1k"
 						},
-						new()
+
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.OnlyFirstJpeg,
 							SourceMaxWidth = 300,
@@ -128,10 +125,11 @@ public sealed class WebHtmlPublishServiceTest
 							Folder = "1000",
 							Append = "__fi_kl"
 						},
-						new() { ContentType = TemplateContentType.MoveSourceFiles },
-						new() { ContentType = TemplateContentType.PublishContent },
-						new() { ContentType = TemplateContentType.PublishManifest }
-					}
+
+						new AppSettingsPublishProfiles { ContentType = TemplateContentType.MoveSourceFiles },
+						new AppSettingsPublishProfiles { ContentType = TemplateContentType.PublishContent },
+						new AppSettingsPublishProfiles { ContentType = TemplateContentType.PublishManifest }
+					]
 				}
 			}
 		};
@@ -142,7 +140,7 @@ public sealed class WebHtmlPublishServiceTest
 			new ConsoleWrapper(), new FakeIWebLogger(),
 			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
 
-		var result = await service.RenderCopy(new List<FileIndexItem>(),
+		var result = await service.RenderCopy([],
 			"test", "test", "/");
 
 		Assert.IsNotNull(result);
@@ -151,8 +149,8 @@ public sealed class WebHtmlPublishServiceTest
 	[TestMethod]
 	public async Task RenderCopy_OnlyFirstJpeg_ShouldNotCrash()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var selectorStorage = new FakeSelectorStorage(storage);
@@ -161,10 +159,8 @@ public sealed class WebHtmlPublishServiceTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"test",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"test", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.OnlyFirstJpeg,
 							SourceMaxWidth = 300,
@@ -172,7 +168,7 @@ public sealed class WebHtmlPublishServiceTest
 							Folder = "",
 							Append = "__fi_kl"
 						}
-					}
+					]
 				}
 			}
 		};
@@ -185,7 +181,7 @@ public sealed class WebHtmlPublishServiceTest
 			SetThumbnailService(storage), new FakeImageOptimisationService());
 
 		var result = await service.RenderCopy(
-			new List<FileIndexItem> { new("/test.jpg") },
+			[new FileIndexItem("/test.jpg")],
 			"test", "test", "/");
 
 		Assert.IsNotNull(result);
@@ -194,8 +190,8 @@ public sealed class WebHtmlPublishServiceTest
 	[TestMethod]
 	public void AddFileHashIfNotExist_Test()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
@@ -203,15 +199,15 @@ public sealed class WebHtmlPublishServiceTest
 			null!, null!, null!, new FakeIWebLogger(),
 			SetThumbnailService(storage), new FakeImageOptimisationService());
 		var list =
-			service.AddFileHashIfNotExist(new List<FileIndexItem> { new("/test.jpg") });
+			service.AddFileHashIfNotExist([new FileIndexItem("/test.jpg")]);
 		Assert.AreNotEqual(string.Empty, list.FirstOrDefault()?.FileHash);
 	}
 
 	[TestMethod]
 	public async Task PreGenerateThumbnail_Test()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
@@ -230,16 +226,13 @@ public sealed class WebHtmlPublishServiceTest
 	[TestMethod]
 	public void ShouldSkipExtraLarge_IncludeXtraLarge()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { new byte[10] });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var service = new WebHtmlPublishService(
-			new FakeIPublishPreflight(new List<AppSettingsPublishProfiles>
-			{
-				new() { SourceMaxWidth = 2000 }
-			}),
+			new FakeIPublishPreflight([new AppSettingsPublishProfiles { SourceMaxWidth = 2000 }]),
 			selectorStorage, null!,
 			null!, null!, null!, new FakeIWebLogger(),
 			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
@@ -251,16 +244,13 @@ public sealed class WebHtmlPublishServiceTest
 	[TestMethod]
 	public void ShouldSkipExtraLarge_SkipExtraLarge()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { new byte[10] });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var service = new WebHtmlPublishService(
-			new FakeIPublishPreflight(new List<AppSettingsPublishProfiles>
-			{
-				new() { SourceMaxWidth = 1000 }
-			}),
+			new FakeIPublishPreflight([new AppSettingsPublishProfiles { SourceMaxWidth = 1000 }]),
 			selectorStorage, null!,
 			null!, null!, null!, new FakeIWebLogger(),
 			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
@@ -277,16 +267,14 @@ public sealed class WebHtmlPublishServiceTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"default",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"default", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Html,
 							Path = "index.html",
 							Template = "Index.cshtml"
 						}
-					}
+					]
 				}
 			},
 			Verbose = true
@@ -332,23 +320,21 @@ public sealed class WebHtmlPublishServiceTest
 			"EmbeddedViews");
 		Directory.CreateDirectory(viewFolder);
 		var badView = Path.Combine(viewFolder, "Bad.cshtml");
-		await File.WriteAllTextAsync(badView, "@{ var x = ; }"); // invalid razor syntax
+		await File.WriteAllTextAsync(badView, "@{ var x = ; }", TestContext.CancellationToken); // invalid razor syntax
 
 		var appSettings = new AppSettings
 		{
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"default",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"default", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Html,
 							Path = "index.html",
 							Template = "Bad.cshtml"
 						}
-					}
+					]
 				}
 			}
 		};
@@ -373,7 +359,7 @@ public sealed class WebHtmlPublishServiceTest
 
 		// Service should catch the exception thrown by ParseRazor and return empty dict
 		Assert.IsNotNull(output);
-		Assert.AreEqual(0, output.Count);
+		Assert.IsEmpty(output);
 
 		// cleanup
 		try
@@ -394,16 +380,14 @@ public sealed class WebHtmlPublishServiceTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"default",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"default", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Jpeg,
 							Path = "index.html",
 							MetaData = true
 						}
-					}
+					]
 				}
 			},
 			Verbose = true
@@ -445,22 +429,20 @@ public sealed class WebHtmlPublishServiceTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"default",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"default", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Jpeg,
 							Path = "index.html",
 							MetaData = true
 						}
-					}
+					]
 				}
 			},
 			Verbose = true
 		};
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string> { "corrupt" },
+		var storage = new FakeIStorage([],
+			["corrupt"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var selectorStorage = new FakeSelectorStorage(storage);
@@ -495,17 +477,15 @@ public sealed class WebHtmlPublishServiceTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"default",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"default", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Jpeg,
 							Path = "index.html",
 							MetaData = false,
 							SourceMaxWidth = 1001
 						}
-					}
+					]
 				}
 			},
 			Verbose = true
@@ -540,23 +520,21 @@ public sealed class WebHtmlPublishServiceTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"default",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"default", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Jpeg,
 							Path = "index.html",
 							MetaData = false,
 							SourceMaxWidth = 1001
 						}
-					}
+					]
 				}
 			},
 			Verbose = true
 		};
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage([],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var selectorStorage = new FakeSelectorStorage(storage);
@@ -588,14 +566,14 @@ public sealed class WebHtmlPublishServiceTest
 			ContentType = TemplateContentType.MoveSourceFiles, Folder = "src"
 		};
 
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"]);
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings
 		{
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				{ "default", new List<AppSettingsPublishProfiles> { profile } }
+				{ "default", [profile] }
 			},
 			Verbose = true
 		};
@@ -628,14 +606,14 @@ public sealed class WebHtmlPublishServiceTest
 			ContentType = TemplateContentType.MoveSourceFiles, Folder = "src"
 		};
 
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"]);
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings
 		{
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				{ "default", new List<AppSettingsPublishProfiles> { profile } }
+				{ "default", [profile] }
 			},
 			Verbose = true
 		};
@@ -668,16 +646,14 @@ public sealed class WebHtmlPublishServiceTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"default",
-					new List<AppSettingsPublishProfiles>
-					{
-						new()
+					"default", [
+						new AppSettingsPublishProfiles
 						{
 							ContentType = TemplateContentType.Html,
 							Path = "index.html",
 							Template = "Index.cshtml"
 						}
-					}
+					]
 				}
 			},
 			Verbose = true

@@ -399,7 +399,6 @@ public class TryExtractBestPreviewTests
 		{
 			buf[i] = ( byte ) ( ( i + 7 ) % 251 );
 		}
-
 		// put JPEG at absolute offset (after filler so markers are preserved)
 		var abs = ( int ) bestOffset;
 		if ( abs + 2 < buf.Length )
@@ -408,7 +407,6 @@ public class TryExtractBestPreviewTests
 			buf[abs + 1] = 0xD8;
 			buf[abs + 2] = 0xFF;
 		}
-
 		var eoi = abs + ( int ) length - 2;
 		if ( eoi + 1 < buf.Length )
 		{
