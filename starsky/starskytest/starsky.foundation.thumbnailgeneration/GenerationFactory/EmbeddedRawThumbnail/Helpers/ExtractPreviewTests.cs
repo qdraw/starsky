@@ -166,8 +166,16 @@ public class TiffEmbeddedPreviewOutputTests
 
 		public override long Seek(long offset, SeekOrigin origin)
 		{
+			_seekCount++;
+			if ( _seekCount == 2 )
+			{
+				throw new IOException("Seek failed");
+			}
+
 			return inner.Seek(offset, origin);
 		}
+
+		private int _seekCount;
 
 		public override ValueTask<int> ReadAsync(Memory<byte> buffer,
 			CancellationToken cancellationToken = default)
@@ -361,7 +369,9 @@ public class TiffEmbeddedPreviewOutputTests
 		public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer,
 			CancellationToken cancellationToken = default)
 		{
-			return inner.WriteAsync(buffer, cancellationToken);
+			return !throwOnRead
+				? throw new IOException("Mock Write Exception")
+				: inner.WriteAsync(buffer, cancellationToken);
 		}
 	}
 
