@@ -30,15 +30,10 @@ public class JpegExifPreviewExtractor(IWebLogger logger, ISelectorStorage select
 			await using var input = _subPathStorage.ReadStream(subPathRawFile);
 			await using var output = new MemoryStream();
 
-			var ok = await JpegExtractPreviewHelper.TryExtractFromStream(input, output);
-			if ( !ok || outputLargePath == null )
+			var status = await JpegExtractPreviewHelper.TryExtractFromStream(input, output);
+			if ( !status || outputLargePath == null )
 			{
-				return ok;
-			}
-
-			if ( output.Length == 0 )
-			{
-				return false;
+				return status;
 			}
 
 			output.Seek(0, SeekOrigin.Begin);
