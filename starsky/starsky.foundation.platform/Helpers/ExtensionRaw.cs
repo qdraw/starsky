@@ -60,6 +60,13 @@ public static class ExtensionRaw
 			return ExtensionRolesHelper.ImageFormat.cr2;
 		}
 
+		// HEIC / HEIF files use the ISO BMFF container with an 'ftyp' box and
+		// well-known brands like 'heic', 'heix', 'hevc', 'hevx', 'mif1' and 'msf1'.
+		if ( HasHeicHeader(bytes) )
+		{
+			return ExtensionRolesHelper.ImageFormat.heic;
+		}
+
 		var probe = bytes.AsSpan(0, Math.Min(bytes.Length, ProbeLength));
 
 		// RAF can start with "FUJI" instead of TIFF header.
@@ -74,10 +81,10 @@ public static class ExtensionRaw
 		}
 
 		var firstIfdOffset = ( int ) ReadUInt32(probe, 4, littleEndian);
-		
+
 		if ( firstIfdOffset < 8 || firstIfdOffset + 2 > probe.Length ||
-		     !TryParseFirstIfdForTags(probe, firstIfdOffset, littleEndian,
-			    out var make, out var hasDngTag) )
+		     !TryParseFirstIfDForTags(probe, firstIfdOffset, littleEndian,
+			     out var make, out var hasDngTag) )
 		{
 			return DetectByMarker(probe);
 		}
@@ -93,7 +100,7 @@ public static class ExtensionRaw
 			return byMake.Value;
 		}
 
-		return DetectByMarker(probe) ;
+		return DetectByMarker(probe);
 	}
 
 	private static bool HasX3FHeader(ReadOnlySpan<byte> bytes)
@@ -157,7 +164,7 @@ public static class ExtensionRaw
 		return bytes[2] == 0x00 && bytes[3] == 0x2A;
 	}
 
-	private static bool TryParseFirstIfdForTags(ReadOnlySpan<byte> bytes, int ifdOffset,
+	private static bool TryParseFirstIfDForTags(ReadOnlySpan<byte> bytes, int ifdOffset,
 		bool littleEndian, out string? make, out bool hasDngTag)
 	{
 		make = null;
@@ -328,5 +335,32 @@ public static class ExtensionRaw
 		}
 
 		return ( ushort ) ( ( bytes[offset] << 8 ) | bytes[offset + 1] );
+	}
+
+	// Detect basic HEIC/HEIF signature by reading the initial 'ftyp' box and
+	// comparing the major brand against a small set of known HEIC/HEIF brands.
+	// This is intentionally minimal and safe (only checks the first 12 bytes).
+	internal static bool HasHeicHeader(ReadOnlySpan<byte> bytes)
+	{
+		if ( bytes.Length < 12 )
+		{
+			return false;
+		}
+
+		// 'ftyp' box should start at offset 4: [size (4)] 'ftyp' (4)
+		if ( bytes[4] != ( byte ) 'f' || bytes[5] != ( byte ) 't' ||
+		     bytes[6] != ( byte ) 'y' || bytes[7] != ( byte ) 'p' )
+		{
+			return false;
+		}
+
+		// Major brand at offset 8..11
+		var brand = Encoding.ASCII.GetString(bytes.Slice(8, 4));
+		// Known HEIC/HEIF brands
+		return brand switch
+		{
+			"heic" or "heix" or "hevc" or "hevx" or "mif1" or "msf1" => true,
+			_ => false
+		};
 	}
 }

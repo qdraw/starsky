@@ -291,12 +291,7 @@ public sealed class ExtensionRolesHelperTest
 	public void Files_GetImageFormat_Cr2_NativeHeader_ReturnsCr2()
 	{
 		var fileType = ExtensionRolesHelper.GetImageFormat(
-			new byte[]
-			{
-				0x49, 0x49, 0x2A, 0x00,
-				0x10, 0x00, 0x00, 0x00,
-				0x43, 0x52, 0x02, 0x00
-			});
+			new byte[] { 0x49, 0x49, 0x2A, 0x00, 0x10, 0x00, 0x00, 0x00, 0x43, 0x52, 0x02, 0x00 });
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr2, fileType);
 	}
 
@@ -319,6 +314,58 @@ public sealed class ExtensionRolesHelperTest
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, fileType);
 	}
 
+	[TestMethod]
+	public void GetImageFormat_Heic_FtypHeic_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		// size (big-endian) not important for detection here
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		// major brand = "heic"
+		bytes[8] = ( byte ) 'h';
+		bytes[9] = ( byte ) 'e';
+		bytes[10] = ( byte ) 'i';
+		bytes[11] = ( byte ) 'c';
+
+		var result = ExtensionRolesHelper.GetImageFormat(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void GetImageFormat_Heic_FtypHevc_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		bytes[8] = ( byte ) 'h';
+		bytes[9] = ( byte ) 'e';
+		bytes[10] = ( byte ) 'v';
+		bytes[11] = ( byte ) 'c';
+
+		var result = ExtensionRolesHelper.GetImageFormat(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void GetImageFormat_Heic_FtypMif1_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		bytes[8] = ( byte ) 'm';
+		bytes[9] = ( byte ) 'i';
+		bytes[10] = ( byte ) 'f';
+		bytes[11] = ( byte ) '1';
+
+		var result = ExtensionRolesHelper.GetImageFormat(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
 
 	[TestMethod]
 	public void Files_CreateAnQuickTimeMp4A6700()
@@ -392,7 +439,8 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_MetaJson_1()
 	{
-		var metaJson = "{\n  \"$id\": \"https://docs.qdraw.nl/schema/meta-data-container.json\","u8.ToArray();
+		var metaJson = "{\n  \"$id\": \"https://docs.qdraw.nl/schema/meta-data-container.json\","u8
+			.ToArray();
 
 		var fileType = ExtensionRolesHelper.GetImageFormat(metaJson);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.meta_json, fileType);

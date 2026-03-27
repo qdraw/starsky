@@ -94,9 +94,7 @@ public sealed class ExtensionRawTest
 	{
 		var bytes = new byte[]
 		{
-			0x49, 0x49, 0x2A, 0x00,
-			0x10, 0x00, 0x00, 0x00,
-			0x43, 0x52, 0x02, 0x00
+			0x49, 0x49, 0x2A, 0x00, 0x10, 0x00, 0x00, 0x00, 0x43, 0x52, 0x02, 0x00
 		};
 		var result = ExtensionRaw.Detect(bytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr2, result);
@@ -336,6 +334,85 @@ public sealed class ExtensionRawTest
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.dng, result);
 	}
 
+	[TestMethod]
+	public void Detect_Heic_FtypHeic_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		// size (big-endian) not important for detection here
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		// major brand = "heic"
+		bytes[8] = ( byte ) 'h';
+		bytes[9] = ( byte ) 'e';
+		bytes[10] = ( byte ) 'i';
+		bytes[11] = ( byte ) 'c';
+
+		var result = ExtensionRaw.Detect(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void Detect_Heic_FtypHevc_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		bytes[8] = ( byte ) 'h';
+		bytes[9] = ( byte ) 'e';
+		bytes[10] = ( byte ) 'v';
+		bytes[11] = ( byte ) 'c';
+
+		var result = ExtensionRaw.Detect(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void Detect_Heic_FtypMif1_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		bytes[8] = ( byte ) 'm';
+		bytes[9] = ( byte ) 'i';
+		bytes[10] = ( byte ) 'f';
+		bytes[11] = ( byte ) '1';
+
+		var result = ExtensionRaw.Detect(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void Detect_Heic_FtypOtherBrand_ReturnsUnknown()
+	{
+		var bytes = new byte[16];
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		bytes[8] = ( byte ) 'i';
+		bytes[9] = ( byte ) 's';
+		bytes[10] = ( byte ) 'o';
+		bytes[11] = ( byte ) 'm';
+
+		var result = ExtensionRaw.Detect(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+	}
+
+	[TestMethod]
+	public void Detect_Heic_ShortBytes_ReturnsUnknown()
+	{
+		var bytes = new byte[8];
+		var result = ExtensionRaw.Detect(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+	}
+
+
 	private static byte[] CreateTiff(bool littleEndian, int totalLength, uint firstIfdOffset,
 		params (ushort tag, ushort type, uint count, byte[] value, int? offsetOverride)[] entries)
 	{
@@ -441,4 +518,3 @@ public sealed class ExtensionRawTest
 		bytes[offset + 3] = ( byte ) ( value & 0xFF );
 	}
 }
-

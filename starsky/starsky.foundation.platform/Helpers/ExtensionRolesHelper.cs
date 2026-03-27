@@ -41,6 +41,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		x3f = 29, // sigma
 		// fff hasselblad has tiff previews
 
+		heic = 32,
+
 		// documents
 		gpx = 40,
 		pdf = 41,
@@ -150,6 +152,11 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		"x3f"
 	];
 
+	private static readonly List<string> ExtensionRawHeic =
+	[
+		"heic"
+	];
+
 	/// <summary>
 	///     Bitmaps
 	/// </summary>
@@ -211,6 +218,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 				{ ImageFormat.rw2, ExtensionRawRw2 },
 				{ ImageFormat.pef, ExtensionRawPef },
 				{ ImageFormat.x3f, ExtensionRawX3F },
+				{ ImageFormat.heic, ExtensionRawHeic },
 				{ ImageFormat.bmp, ExtensionBmp },
 				{ ImageFormat.gif, ExtensionGif },
 				{ ImageFormat.png, ExtensionPng },
@@ -244,6 +252,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawPef);
 			extensionList.AddRange(ExtensionRawFff);
 			extensionList.AddRange(ExtensionRawX3F);
+			extensionList.AddRange(ExtensionRawHeic);
 			extensionList.AddRange(ExtensionBmp);
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
@@ -288,6 +297,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawPef);
 			extensionList.AddRange(ExtensionRawFff);
 			extensionList.AddRange(ExtensionRawX3F);
+			extensionList.AddRange(ExtensionRawHeic);
 			return extensionList;
 		}
 	}
@@ -331,6 +341,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawPef);
 			extensionList.AddRange(ExtensionRawFff);
 			extensionList.AddRange(ExtensionRawX3F);
+			extensionList.AddRange(ExtensionRawHeic);
 			return extensionList;
 		}
 	}
@@ -380,6 +391,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawRaf);
 			extensionList.AddRange(ExtensionRawFff);
 			extensionList.AddRange(ExtensionRawX3F);
+			extensionList.AddRange(ExtensionRawHeic);
 			// reading does not allow xmp
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);
@@ -853,6 +865,12 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		if ( bytes.Length >= 12 && fTypCr3.SequenceEqual(bytes.Skip(4).Take(fTypCr3.Length)) )
 		{
 			return ImageFormat.cr3;
+		}
+
+		// Check for HEIC/HEIF using the ExtensionRaw helper (minimal 'ftyp' check)
+		if ( ExtensionRaw.HasHeicHeader(bytes) )
+		{
+			return ImageFormat.heic;
 		}
 
 		var fTypMp4 = new byte[] { 102, 116, 121, 112 }; //  00  00  00  [skip this byte]
