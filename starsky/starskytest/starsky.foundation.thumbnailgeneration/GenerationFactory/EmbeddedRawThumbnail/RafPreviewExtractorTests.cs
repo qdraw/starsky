@@ -15,7 +15,7 @@ public class RafPreviewExtractorTests
 	private const string InputSubPath = "/raw/test.raf";
 	private const string OutputSubPath = "/tmp/output.jpg";
 
-	public TestContext TestContext { get; set; } = null!;
+	public TestContext TestContext { get; set; }
 
 	private static FakeSelectorStorageByType CreateSelectorStorage(byte[]? inputBytes,
 		out FakeIStorage tempStorage)
@@ -227,7 +227,7 @@ public class RafPreviewExtractorTests
 		Array.Copy(signature, 0, bytes, 0, signature.Length);
 		WriteUInt32BigEndian(bytes, 0x54, 100);
 		WriteUInt32BigEndian(bytes, 0x58,
-			10000); // Claims 10000 bytes available at 100, but file ends at 10000
+			10000); // Claims 10.000 bytes available at 100, but the file ends at 10.000
 
 		// JPEG SOI at 100
 		bytes[100] = 0xFF;
@@ -261,30 +261,15 @@ public class RafPreviewExtractorTests
 			"Should return false when stream cannot seek (TryReadHeaderPreviewRange fails)");
 	}
 
-	private sealed class NonSeekableFakeStorage : FakeIStorage
+	private sealed class NonSeekableFakeStorage(byte[] data)
+		: FakeIStorage(["/raw"], [InputSubPath], [data])
 	{
-		private readonly byte[] _data;
-
-		public NonSeekableFakeStorage(byte[] data)
-			: base(["/raw"], [InputSubPath], [data])
-		{
-			_data = data;
-		}
-
 		public override Stream ReadStream(string path, int maxRead = -1)
 		{
-			return new NonSeekableStream(_data);
-		}
-
-		private sealed class NonSeekableStream : MemoryStream
-		{
-			public NonSeekableStream(byte[] data) : base(data)
-			{
-			}
-
-			public override bool CanSeek => false;
+			return new NonSeekableStream(data);
 		}
 	}
+
 
 	[TestMethod]
 	public async Task TryExtract_WithInvalidHeaderRange_FallsBackToScanner()
@@ -294,7 +279,7 @@ public class RafPreviewExtractorTests
 		var signature = Encoding.ASCII.GetBytes("FUJIFILMCCD-RAW ");
 		Array.Copy(signature, 0, bytes, 0, signature.Length);
 
-		// Invalid header metadata (range outside file) to force fallback path.
+		// Invalid header metadata (range outside the file) to force fall-back-path.
 		WriteUInt32BigEndian(bytes, 0x54, 999_999);
 		WriteUInt32BigEndian(bytes, 0x58, 20_000);
 
@@ -375,47 +360,27 @@ public class RafPreviewExtractorTests
 		Assert.IsFalse(result, "Should fail if SOI read is incomplete");
 	}
 
-	private sealed class PartialReadStorage : FakeIStorage
+	private sealed class PartialReadStorage(byte[] data, uint partialOffset, int partialReadSize)
+		: FakeIStorage(["/raw"], [InputSubPath], [data])
 	{
-		private readonly byte[] _data;
-		private readonly uint _partialOffset;
-		private readonly int _partialReadSize;
-
-		public PartialReadStorage(byte[] data, uint partialOffset, int partialReadSize)
-			: base(["/raw"], [InputSubPath], [data])
-		{
-			_data = data;
-			_partialOffset = partialOffset;
-			_partialReadSize = partialReadSize;
-		}
-
 		public override Stream ReadStream(string path, int maxRead = -1)
 		{
-			return new PartialReadStream(_data, _partialOffset, _partialReadSize);
+			return new PartialReadStream(data, partialOffset, partialReadSize);
 		}
 
-		private sealed class PartialReadStream : MemoryStream
+		private sealed class PartialReadStream(byte[] data, uint partialOffset, int partialReadSize)
+			: MemoryStream(data)
 		{
-			private readonly byte[] _data;
-			private readonly uint _partialOffset;
-			private readonly int _partialReadSize;
-
-			public PartialReadStream(byte[] data, uint partialOffset, int partialReadSize) :
-				base(data)
-			{
-				_data = data;
-				_partialOffset = partialOffset;
-				_partialReadSize = partialReadSize;
-			}
+			private readonly byte[] _data = data;
 
 			public override int Read(Span<byte> buffer)
 			{
-				if ( Position != _partialOffset || buffer.Length < _partialReadSize )
+				if ( Position != partialOffset || buffer.Length < partialReadSize )
 				{
 					return base.Read(buffer);
 				}
 
-				var toCopy = ( int ) Math.Min(_partialReadSize, _data.Length - Position);
+				var toCopy = ( int ) Math.Min(partialReadSize, _data.Length - Position);
 				_data.AsSpan(( int ) Position, toCopy).CopyTo(buffer);
 				Position += toCopy;
 				return toCopy;
@@ -433,7 +398,7 @@ public class RafPreviewExtractorTests
 			new FakeIStorage(), new FakeIStorage());
 		var extractor = new RafPreviewExtractor(logger, selectorStorage);
 
-		// Also corrupt the file so fallback scanner fails
+		// Also corrupt the file so the fallback scanner fails
 		for ( var i = 148; i < bytes.Length; i++ )
 		{
 			bytes[i] = 0x00;
@@ -452,25 +417,15 @@ public class RafPreviewExtractorTests
 			return new SeekFailingStream(data, failOnSeekCount);
 		}
 
-		private sealed class SeekFailingStream : MemoryStream
+		private sealed class SeekFailingStream(byte[] data, int failOnSeekCount)
+			: MemoryStream(data)
 		{
 			private int _seekCount;
-			private readonly int _failOnSeekCount;
-
-			public SeekFailingStream(byte[] data, int failOnSeekCount) : base(data)
-			{
-				_failOnSeekCount = failOnSeekCount;
-			}
 
 			public override long Seek(long offset, SeekOrigin loc)
 			{
 				_seekCount++;
-				if ( _seekCount == _failOnSeekCount )
-				{
-					throw new IOException("Seek failed");
-				}
-
-				return base.Seek(offset, loc);
+				return _seekCount == failOnSeekCount ? throw new IOException("Seek failed") : base.Seek(offset, loc);
 			}
 		}
 	}
@@ -508,7 +463,7 @@ public class RafPreviewExtractorTests
 	}
 
 	[TestMethod]
-	public async Task TryReadHeaderPreviewRange_SeekFails_ReturnsZero()
+	public void TryReadHeaderPreviewRange_SeekFails_ReturnsZero()
 	{
 		var input = new NonSeekableStream(new byte[100]);
 		var result = RafPreviewExtractor.TryReadHeaderPreviewRange(input);
@@ -517,7 +472,7 @@ public class RafPreviewExtractorTests
 	}
 
 	[TestMethod]
-	public async Task TryReadHeaderPreviewRange_ShortRead_ReturnsZero()
+	public void TryReadHeaderPreviewRange_ShortRead_ReturnsZero()
 	{
 		var bytes = "FUJIFILMCCD-RAW "u8.ToArray();
 		// Header needs 0x5C = 92 bytes
@@ -544,7 +499,7 @@ public class RafPreviewExtractorTests
 	}
 
 	[TestMethod]
-	public async Task HasJpegSoiAt_SeekFails_ReturnsFalse()
+	public void HasJpegSoiAt_SeekFails_ReturnsFalse()
 	{
 		var input = new NonSeekableStream(new byte[100]);
 		var result = RafPreviewExtractor.HasJpegSoiAt(input, 10);
