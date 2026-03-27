@@ -464,7 +464,7 @@ public partial class TiffEmbeddedPreviewExtractor
 			var resolvedLength = rawLength;
 			if ( resolvedLength < MinJpegSize )
 			{
-				resolvedLength = DetectJpegLengthByEoi(input, resolvedOffset,
+				resolvedLength = JpegScannerUtilities.DetectJpegLengthFromStart(input, resolvedOffset,
 					Math.Min(MaxMakerNoteScanBytes, ( int ) ( input.Length - resolvedOffset )));
 			}
 
@@ -506,7 +506,7 @@ public partial class TiffEmbeddedPreviewExtractor
 			var resolvedLength = rawLength;
 			if ( resolvedLength < MinJpegSize )
 			{
-				resolvedLength = DetectJpegLengthByEoi(input, resolvedOffset,
+				resolvedLength = JpegScannerUtilities.DetectJpegLengthFromStart(input, resolvedOffset,
 					Math.Min(MaxMakerNoteScanBytes,
 						( int ) ( input.Length - resolvedOffset )));
 			}

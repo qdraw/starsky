@@ -41,11 +41,6 @@ public partial class TiffEmbeddedPreviewExtractor
 		return header[3] == 0xC4 || header[3] == 0xC3;
 	}
 
-	private static uint DetectJpegLengthByEoi(Stream input, uint startOffset, int maxScanBytes)
-	{
-		return JpegScannerUtilities.DetectJpegLengthFromStart(input, startOffset, maxScanBytes);
-	}
-
 	internal static IEnumerable<PreviewCandidate?> ScanJpegsInRange(Stream input, uint rangeOffset,
 		uint rangeLength)
 	{
@@ -119,7 +114,7 @@ public partial class TiffEmbeddedPreviewExtractor
 			return false;
 		}
 
-		var length = DetectJpegLengthByEoi(input, soi, remaining);
+		var length = JpegScannerUtilities.DetectJpegLengthFromStart(input, soi, remaining);
 		input.Seek(resumePosition, SeekOrigin.Begin);
 		if ( length < MinJpegSize )
 		{
