@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -60,7 +61,7 @@ public partial class TiffEmbeddedPreviewExtractor
 
 
 	public async Task<bool> TryExtract(string subPathRawFile,
-		string? outputLargePath)
+		string? outputLargePath, ExtensionRolesHelper.ImageFormat? imageFormat = null)
 	{
 		if (
 			!_subPathStorage.ExistFile(subPathRawFile) )
@@ -72,7 +73,12 @@ public partial class TiffEmbeddedPreviewExtractor
 		{
 			await using var input = _subPathStorage.ReadStream(subPathRawFile);
 			await using var output = new MemoryStream();
+
 			var rawFlavor = RawFlavorHelper.GetRawFlavorFromPath(subPathRawFile);
+			if ( imageFormat != null )
+			{
+				rawFlavor = RawFlavorHelper.GetRawFlavorFromImageFormat(imageFormat);
+			}
 
 			var ok = await TryExtractFromStream(input, output,
 				$"Reference: {subPathRawFile}", rawFlavor);
@@ -464,7 +470,8 @@ public partial class TiffEmbeddedPreviewExtractor
 			var resolvedLength = rawLength;
 			if ( resolvedLength < MinJpegSize )
 			{
-				resolvedLength = JpegScannerUtilities.DetectJpegLengthFromStart(input, resolvedOffset,
+				resolvedLength = JpegScannerUtilities.DetectJpegLengthFromStart(input,
+					resolvedOffset,
 					Math.Min(MaxMakerNoteScanBytes, ( int ) ( input.Length - resolvedOffset )));
 			}
 
@@ -506,7 +513,8 @@ public partial class TiffEmbeddedPreviewExtractor
 			var resolvedLength = rawLength;
 			if ( resolvedLength < MinJpegSize )
 			{
-				resolvedLength = JpegScannerUtilities.DetectJpegLengthFromStart(input, resolvedOffset,
+				resolvedLength = JpegScannerUtilities.DetectJpegLengthFromStart(input,
+					resolvedOffset,
 					Math.Min(MaxMakerNoteScanBytes,
 						( int ) ( input.Length - resolvedOffset )));
 			}

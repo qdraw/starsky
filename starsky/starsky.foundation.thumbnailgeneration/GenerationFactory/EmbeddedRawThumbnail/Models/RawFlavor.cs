@@ -1,5 +1,6 @@
 using System.IO;
 using System.Runtime.CompilerServices;
+using starsky.foundation.platform.Helpers;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -14,6 +15,16 @@ internal static class RawFlavorHelper
 		{
 			".arw" => RawFlavor.SonyArw,
 			".cr2" => RawFlavor.CanonCr2,
+			_ => RawFlavor.Unknown
+		};
+	}
+
+	public static RawFlavor GetRawFlavorFromImageFormat(ExtensionRolesHelper.ImageFormat? imageFormat)
+	{
+		return imageFormat switch
+		{
+			ExtensionRolesHelper.ImageFormat.arw => RawFlavor.SonyArw,
+			ExtensionRolesHelper.ImageFormat.cr2 => RawFlavor.CanonCr2,
 			_ => RawFlavor.Unknown
 		};
 	}
