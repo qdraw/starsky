@@ -293,7 +293,7 @@ public class JpegExifPreviewExtractorTests
 			var previewCandidate =
 				new PreviewCandidate { Offset = best.Offset, Length = best.Length };
 			var okExtract =
-				await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(checkTiffMs,
+				await ExtractPreview.ExtractPreviewToStream(checkTiffMs,
 					previewCandidate, outMs);
 			Assert.IsTrue(okExtract, "ExtractPreviewToStream should succeed");
 			outMs.Seek(0, SeekOrigin.Begin);

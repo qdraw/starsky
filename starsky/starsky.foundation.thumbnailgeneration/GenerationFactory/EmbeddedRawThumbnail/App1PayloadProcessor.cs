@@ -171,7 +171,7 @@ internal static class App1PayloadProcessor
 		{
 			var preview =
 				new PreviewCandidate { Offset = best.Offset, Length = best.Length };
-			return await TiffEmbeddedPreviewExtractor
+			return await ExtractPreview
 				.ExtractPreviewToStream(tiffMs, preview, outputLarge).ConfigureAwait(false);
 		}
 
@@ -188,10 +188,10 @@ internal static class App1PayloadProcessor
 			{
 				Offset = ( uint ) mappedBest, Length = best.Length
 			};
-			if ( TiffEmbeddedPreviewExtractor.TryValidateJpegOffset(originalStream, preview.Offset,
+			if ( ExtractPreview.TryValidateJpegOffset(originalStream, preview.Offset,
 				    preview.Length) )
 			{
-				return await TiffEmbeddedPreviewExtractor
+				return await ExtractPreview
 					.ExtractPreviewToStream(originalStream, preview, outputLarge)
 					.ConfigureAwait(false);
 			}
@@ -205,10 +205,10 @@ internal static class App1PayloadProcessor
 
 		var preview2 =
 			new PreviewCandidate { Offset = best.Offset, Length = best.Length };
-		if ( TiffEmbeddedPreviewExtractor.TryValidateJpegOffset(originalStream, preview2.Offset,
+		if ( ExtractPreview.TryValidateJpegOffset(originalStream, preview2.Offset,
 			    preview2.Length) )
 		{
-			return await TiffEmbeddedPreviewExtractor
+			return await ExtractPreview
 				.ExtractPreviewToStream(originalStream, preview2, outputLarge)
 				.ConfigureAwait(false);
 		}

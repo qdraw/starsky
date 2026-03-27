@@ -3,11 +3,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbedded;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.
-	TiffEmbedded;
+	Helpers;
 
 [TestClass]
 public class TiffEmbeddedPreviewOutputTests
@@ -23,7 +23,7 @@ public class TiffEmbeddedPreviewOutputTests
 		var ms = MakeStream(new byte[10]);
 		var preview =
 			new PreviewCandidate { Offset = 8, Length = 4, Width = 0, Height = 0 };
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null);
+		var res = await ExtractPreview.ExtractPreviewToStream(ms, preview, null);
 		Assert.IsFalse(res);
 	}
 
@@ -38,7 +38,7 @@ public class TiffEmbeddedPreviewOutputTests
 		{
 			Offset = 5, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null);
+		var res = await ExtractPreview.ExtractPreviewToStream(ms, preview, null);
 		Assert.IsTrue(res);
 	}
 
@@ -54,7 +54,7 @@ public class TiffEmbeddedPreviewOutputTests
 		{
 			Offset = 10, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, outMs);
+		var res = await ExtractPreview.ExtractPreviewToStream(ms, preview, outMs);
 		Assert.IsTrue(res);
 		var written = outMs.ToArray();
 		Assert.HasCount(smallJpeg.Length, written);
@@ -76,7 +76,7 @@ public class TiffEmbeddedPreviewOutputTests
 		{
 			Offset = 8, Length = ( uint ) ( smallJpeg.Length + 10 ), Width = 0, Height = 0
 		};
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, outMs);
+		var res = await ExtractPreview.ExtractPreviewToStream(ms, preview, outMs);
 		Assert.IsFalse(res);
 	}
 
@@ -93,7 +93,7 @@ public class TiffEmbeddedPreviewOutputTests
 		{
 			Offset = 4, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ns, preview, outMs);
+		var res = await ExtractPreview.ExtractPreviewToStream(ns, preview, outMs);
 		Assert.IsFalse(res);
 	}
 
@@ -105,7 +105,7 @@ public class TiffEmbeddedPreviewOutputTests
 		var ms = MakeStream(data);
 		var preview =
 			new PreviewCandidate { Offset = 3, Length = 1, Width = 0, Height = 0 };
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null);
+		var res = await ExtractPreview.ExtractPreviewToStream(ms, preview, null);
 
 		Assert.IsFalse(res);
 	}
@@ -120,20 +120,19 @@ public class TiffEmbeddedPreviewOutputTests
 
 		// This stream will allow the first seek (in TryValidateJpegOffset)
 		// but fail the second seek (inside ExtractPreviewToStream)
-		var ss = new SequenceSeekFailingStream(ms, 1);
+		var ss = new SequenceSeekFailingStream(ms);
 
 		var outMs = new MemoryStream();
 		var preview = new PreviewCandidate
 		{
 			Offset = 0, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ss, preview, outMs);
+		var res = await ExtractPreview.ExtractPreviewToStream(ss, preview, outMs);
 		Assert.IsFalse(res);
 	}
 
-	private sealed class SequenceSeekFailingStream(Stream inner, int succeedCount) : Stream
+	private sealed class SequenceSeekFailingStream(Stream inner) : Stream
 	{
-		private int _seekCount;
 		public override bool CanRead => inner.CanRead;
 		public override bool CanSeek => true;
 		public override bool CanWrite => inner.CanWrite;
@@ -167,12 +166,6 @@ public class TiffEmbeddedPreviewOutputTests
 
 		public override long Seek(long offset, SeekOrigin origin)
 		{
-			if ( _seekCount >= succeedCount )
-			{
-				throw new IOException("Mock Seek Exception");
-			}
-
-			_seekCount++;
 			return inner.Seek(offset, origin);
 		}
 
@@ -193,7 +186,7 @@ public class TiffEmbeddedPreviewOutputTests
 		data[2] = 0x02;
 		var ms = MakeStream(data);
 		var preview = new PreviewCandidate { Offset = 0, Length = 10, Width = 0, Height = 0 };
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, null);
+		var res = await ExtractPreview.ExtractPreviewToStream(ms, preview, null);
 		Assert.IsFalse(res);
 	}
 
@@ -213,7 +206,7 @@ public class TiffEmbeddedPreviewOutputTests
 		var ms = MakeStream(data);
 		var outMs = new MemoryStream();
 		var preview = new PreviewCandidate { Offset = 0, Length = size, Width = 0, Height = 0 };
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, outMs);
+		var res = await ExtractPreview.ExtractPreviewToStream(ms, preview, outMs);
 		Assert.IsTrue(res);
 		Assert.AreEqual(size, outMs.Length);
 		var written = outMs.ToArray();
@@ -230,13 +223,13 @@ public class TiffEmbeddedPreviewOutputTests
 		var data = new byte[20];
 		Array.Copy(smallJpeg, 0, data, 0, smallJpeg.Length);
 		var inner = new MemoryStream(data);
-		var ts = new ThrowingStream(inner, true, false);
+		var ts = new ThrowingStream(inner, true);
 		var outMs = new MemoryStream();
 		var preview = new PreviewCandidate
 		{
 			Offset = 0, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ts, preview, outMs);
+		var res = await ExtractPreview.ExtractPreviewToStream(ts, preview, outMs);
 		Assert.IsFalse(res);
 	}
 
@@ -247,12 +240,12 @@ public class TiffEmbeddedPreviewOutputTests
 		var data = new byte[20];
 		Array.Copy(smallJpeg, 0, data, 0, smallJpeg.Length);
 		var ms = MakeStream(data);
-		var ts = new ThrowingStream(new MemoryStream(), false, true);
+		var ts = new ThrowingStream(new MemoryStream(), false);
 		var preview = new PreviewCandidate
 		{
 			Offset = 0, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(ms, preview, ts);
+		var res = await ExtractPreview.ExtractPreviewToStream(ms, preview, ts);
 		Assert.IsFalse(res);
 	}
 
@@ -270,7 +263,7 @@ public class TiffEmbeddedPreviewOutputTests
 		{
 			Offset = 0, Length = ( uint ) smallJpeg.Length, Width = 0, Height = 0
 		};
-		var res = await TiffEmbeddedPreviewExtractor.ExtractPreviewToStream(zr, preview, outMs);
+		var res = await ExtractPreview.ExtractPreviewToStream(zr, preview, outMs);
 		Assert.IsFalse(res);
 	}
 
@@ -319,7 +312,7 @@ public class TiffEmbeddedPreviewOutputTests
 		}
 	}
 
-	private sealed class ThrowingStream(Stream inner, bool throwOnRead, bool throwOnWrite) : Stream
+	private sealed class ThrowingStream(Stream inner, bool throwOnRead) : Stream
 	{
 		public override bool CanRead => inner.CanRead;
 		public override bool CanSeek => inner.CanSeek;
@@ -368,11 +361,6 @@ public class TiffEmbeddedPreviewOutputTests
 		public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer,
 			CancellationToken cancellationToken = default)
 		{
-			if ( throwOnWrite )
-			{
-				throw new IOException("Mock Write Exception");
-			}
-
 			return inner.WriteAsync(buffer, cancellationToken);
 		}
 	}

@@ -1,14 +1,12 @@
-using System;
+﻿using System;
 using System.Buffers;
 using System.IO;
 using System.Threading.Tasks;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 
-namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.
-	TiffEmbedded;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 
-public partial class TiffEmbeddedPreviewExtractor
+public static class ExtractPreview
 {
 	internal static async Task<bool> ExtractPreviewToStream(Stream input, PreviewCandidate preview,
 		Stream? output)

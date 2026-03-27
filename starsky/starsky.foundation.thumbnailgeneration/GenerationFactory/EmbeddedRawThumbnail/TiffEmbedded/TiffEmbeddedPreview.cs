@@ -134,7 +134,7 @@ public partial class TiffEmbeddedPreviewExtractor
 			return false;
 		}
 
-		return await ExtractPreviewToStream(input, best, outputLarge);
+		return await ExtractPreview.ExtractPreviewToStream(input, best, outputLarge);
 	}
 
 	internal static bool TryParseTiffHeader(Stream s, out bool littleEndian,
