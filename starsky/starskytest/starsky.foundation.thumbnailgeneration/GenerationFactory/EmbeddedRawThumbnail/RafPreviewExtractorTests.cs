@@ -507,6 +507,75 @@ public class RafPreviewExtractorTests
 		Assert.IsFalse(result);
 	}
 
+	[TestMethod]
+	public async Task TryReadHeaderPreviewRange_SeekFails_ReturnsZero()
+	{
+		var input = new NonSeekableStream(new byte[100]);
+		var result = RafPreviewExtractor.TryReadHeaderPreviewRange(input);
+		Assert.AreEqual(0u, result.Offset);
+		Assert.AreEqual(0u, result.Length);
+	}
+
+	[TestMethod]
+	public async Task TryReadHeaderPreviewRange_ShortRead_ReturnsZero()
+	{
+		var bytes = "FUJIFILMCCD-RAW "u8.ToArray();
+		// Header needs 0x5C = 92 bytes
+		var input = new MemoryStream(bytes);
+		var result = RafPreviewExtractor.TryReadHeaderPreviewRange(input);
+		Assert.AreEqual(0u, result.Offset);
+		Assert.AreEqual(0u, result.Length);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_OutsideFile_ReturnsFalse()
+	{
+		var bytes = new byte[5000];
+		var signature = "FUJIFILMCCD-RAW "u8.ToArray();
+		Array.Copy(signature, 0, bytes, 0, signature.Length);
+		WriteUInt32BigEndian(bytes, 0x54, 1000);
+		WriteUInt32BigEndian(bytes, 0x58, 4096); // end = 5096 > 5000
+
+		var selectorStorage = CreateSelectorStorage(bytes, out _);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, OutputSubPath);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task HasJpegSoiAt_SeekFails_ReturnsFalse()
+	{
+		var input = new NonSeekableStream(new byte[100]);
+		var result = RafPreviewExtractor.HasJpegSoiAt(input, 10);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task CopyRange_SeekFails_Static_ReturnsFalse()
+	{
+		var input = new NonSeekableStream(new byte[100]);
+		var result = await RafPreviewExtractor.CopyRange(input, new MemoryStream(), 10, 10);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task TryExtract_OkTrueButNoLength_ReturnsTrue()
+	{
+		var jpeg = CreateMinimalJpeg(7000);
+		var raf = CreateRafWithHeaderPreview(148, jpeg);
+		var selectorStorage = CreateSelectorStorage(raf, out _);
+		var extractor = new RafPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputSubPath, null);
+		Assert.IsTrue(result);
+	}
+
+	private sealed class NonSeekableStream(byte[] data) : MemoryStream(data)
+	{
+		public override bool CanSeek => false;
+	}
+
 	private sealed class ZeroReadStream : MemoryStream
 	{
 		public override ValueTask<int> ReadAsync(Memory<byte> buffer,

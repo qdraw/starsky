@@ -1,10 +1,13 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
+
+[assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
@@ -79,7 +82,7 @@ public class RafPreviewExtractor(IWebLogger logger, ISelectorStorage selectorSto
 		return await CopyRange(input, output, offset, length);
 	}
 
-	private static (uint Offset, uint Length) TryReadHeaderPreviewRange(Stream input)
+	internal static (uint Offset, uint Length) TryReadHeaderPreviewRange(Stream input)
 	{
 		if ( !StreamPrimitives.TrySeek(input, 0) )
 		{
@@ -109,7 +112,7 @@ public class RafPreviewExtractor(IWebLogger logger, ISelectorStorage selectorSto
 		return end > offset && end <= input.Length;
 	}
 
-	private static bool HasJpegSoiAt(Stream input, uint offset)
+	internal static bool HasJpegSoiAt(Stream input, uint offset)
 	{
 		if ( !StreamPrimitives.TrySeek(input, offset) )
 		{
