@@ -3,7 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbedded;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -103,8 +103,10 @@ internal static class StreamPrimitives
 			for ( var i = 0; i < count; i++ )
 			{
 				var val = type == 3
-					? TiffEmbeddedPreviewExtractor.ReadUInt16(buf.AsSpan(i * 2, 2), littleEndian)
-					: TiffEmbeddedPreviewExtractor.ReadUInt32(buf.AsSpan(i * 4, 4), littleEndian);
+					? TiffEmbeddedPreviewExtractor.ReadUInt16(
+						buf.AsSpan(i * 2, 2), littleEndian)
+					: TiffEmbeddedPreviewExtractor.ReadUInt32(
+						buf.AsSpan(i * 4, 4), littleEndian);
 				offsets.Add(val);
 			}
 		}

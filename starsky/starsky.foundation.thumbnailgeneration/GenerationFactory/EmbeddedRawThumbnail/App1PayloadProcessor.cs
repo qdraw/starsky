@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbedded;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 
@@ -42,7 +42,7 @@ internal static class App1PayloadProcessor
 			firstIfdOffset, littleEndian, ctx, 0,
 			false);
 
-		// Optionally include scanned JPEGs from original stream (if available)
+		// Optionally include scanned JPEGs from the original stream (if available)
 		AddScannedCandidates(originalStream, candidates);
 
 		// Fill missing dimensions by probing the appropriate streams
@@ -138,7 +138,7 @@ internal static class App1PayloadProcessor
 					continue;
 				}
 
-				// fallback: treat offset as absolute in original stream
+				// fallback: treat offset as absolute in the original stream
 				if ( c.Offset < originalStream.Length &&
 				     TiffEmbeddedPreviewExtractor.TryGetJpegDimensionsAtOffset(
 					     originalStream,
@@ -180,7 +180,7 @@ internal static class App1PayloadProcessor
 			return false;
 		}
 
-		// Try mapped offset next (payloadStart + 6 + offset)
+		// Try the mapped offset next (payloadStart + 6 + offset)
 		var mappedBest = payloadStart + 6 + best.Offset;
 		if ( mappedBest >= 0 && mappedBest + best.Length <= originalStream.Length )
 		{

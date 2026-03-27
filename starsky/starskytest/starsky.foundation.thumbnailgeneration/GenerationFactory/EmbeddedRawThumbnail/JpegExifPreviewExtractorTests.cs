@@ -12,7 +12,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbedded;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starskytest.FakeCreateAn.CreateAnImageA6700PreviewRawJpeg;
 using starskytest.FakeMocks;
@@ -93,7 +93,7 @@ public class JpegExifPreviewExtractorTests
 		var res = await extractor.TryExtract("missing.jpg", null);
 		Assert.IsFalse(res);
 	}
-	
+
 	[TestMethod]
 	public async Task TryExtract_Exception()
 	{

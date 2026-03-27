@@ -1,7 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbeded;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 
-namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
+namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.
+	Models;
 
 [TestClass]
 public class RawFlavorHelperTests
@@ -19,7 +20,7 @@ public class RawFlavorHelperTests
 	public void GetRawFlavorFromPath_RecognizesExtensions(string path, string expectedName)
 	{
 		var result = RawFlavorHelper.GetRawFlavorFromPath(path);
-		var expected = (RawFlavor)System.Enum.Parse(typeof(RawFlavor), expectedName);
+		var expected = ( RawFlavor ) System.Enum.Parse(typeof(RawFlavor), expectedName);
 		Assert.AreEqual(expected, result);
 	}
 }
