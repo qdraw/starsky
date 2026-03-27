@@ -75,8 +75,9 @@ public static class ExtensionRaw
 
 		var firstIfdOffset = ( int ) ReadUInt32(probe, 4, littleEndian);
 		
-		if ( firstIfdOffset < 8 || firstIfdOffset + 2 > probe.Length || !TryParseFirstIfdForTags(probe, firstIfdOffset, littleEndian,
-			    out var make, out var model, out var hasDngTag) )
+		if ( firstIfdOffset < 8 || firstIfdOffset + 2 > probe.Length ||
+		     !TryParseFirstIfdForTags(probe, firstIfdOffset, littleEndian,
+			    out var make, out var hasDngTag) )
 		{
 			return DetectByMarker(probe);
 		}
@@ -92,8 +93,7 @@ public static class ExtensionRaw
 			return byMake.Value;
 		}
 
-		var byModel = DetectFromModel(model);
-		return byModel ??  DetectByMarker(probe) ;
+		return DetectByMarker(probe) ;
 	}
 
 	private static bool HasX3FHeader(ReadOnlySpan<byte> bytes)
@@ -158,10 +158,10 @@ public static class ExtensionRaw
 	}
 
 	private static bool TryParseFirstIfdForTags(ReadOnlySpan<byte> bytes, int ifdOffset,
-		bool littleEndian, out string? make, out string? model, out bool hasDngTag)
+		bool littleEndian, out string? make, out bool hasDngTag)
 	{
 		make = null;
-		model = null;
+		string? model = null;
 		hasDngTag = false;
 
 		var entryCount = ReadUInt16(bytes, ifdOffset, littleEndian);
@@ -269,31 +269,6 @@ public static class ExtensionRaw
 					return mapping.format;
 				}
 			}
-		}
-
-		return null;
-	}
-
-	private static ExtensionRolesHelper.ImageFormat? DetectFromModel(string? model)
-	{
-		if ( string.IsNullOrEmpty(model) )
-		{
-			return null;
-		}
-
-		if ( model.Contains("CR3", StringComparison.Ordinal) )
-		{
-			return ExtensionRolesHelper.ImageFormat.cr3;
-		}
-
-		if ( model.Contains("CR2", StringComparison.Ordinal) )
-		{
-			return ExtensionRolesHelper.ImageFormat.cr2;
-		}
-
-		if ( model.Contains("X3F", StringComparison.Ordinal) )
-		{
-			return ExtensionRolesHelper.ImageFormat.x3f;
 		}
 
 		return null;
