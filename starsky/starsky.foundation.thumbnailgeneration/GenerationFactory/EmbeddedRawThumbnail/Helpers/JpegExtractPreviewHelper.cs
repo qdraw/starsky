@@ -33,7 +33,7 @@ public static class JpegExtractPreviewHelper
 		return await ProcessJpegMarkersAsync(input, outputLarge);
 	}
 
-	private static async Task<bool> ProcessJpegMarkersAsync(Stream input, Stream? outputLarge)
+	internal static async Task<bool> ProcessJpegMarkersAsync(Stream input, Stream? outputLarge)
 	{
 		while ( true )
 		{
@@ -103,7 +103,7 @@ public static class JpegExtractPreviewHelper
 	}
 
 
-	private static async Task<MarkerProcessingResult> ProcessNonStandaloneMarkerAsync(Stream input,
+	internal static async Task<MarkerProcessingResult> ProcessNonStandaloneMarkerAsync(Stream input,
 		int marker, Stream? outputLarge)
 	{
 		// Read the segment length for non-standalone markers
@@ -151,7 +151,7 @@ public static class JpegExtractPreviewHelper
 		return true;
 	}
 
-	private static async Task<byte[]?> ReadSegmentPayloadAsync(Stream input, int payloadSize)
+	internal static async Task<byte[]?> ReadSegmentPayloadAsync(Stream input, int payloadSize)
 	{
 		if ( payloadSize == 0 )
 		{
@@ -174,7 +174,7 @@ public static class JpegExtractPreviewHelper
 		return payload;
 	}
 
-	private static async Task<bool> SkipSegmentAsync(Stream input, int payloadSize)
+	internal static async Task<bool> SkipSegmentAsync(Stream input, int payloadSize)
 	{
 		if ( payloadSize == 0 )
 		{

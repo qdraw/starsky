@@ -35,11 +35,6 @@
         </PackageReference>
     </ItemGroup>
 
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.3.9"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.9"/>
-    </ItemGroup>
-
     <ItemGroup>
         <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}"/>
     </ItemGroup>
