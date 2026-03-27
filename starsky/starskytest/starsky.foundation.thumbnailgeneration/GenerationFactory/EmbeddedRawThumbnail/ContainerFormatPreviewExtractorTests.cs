@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
@@ -95,23 +96,30 @@ public class ContainerFormatPreviewExtractorTests
 
 	private static byte[] CreateMinimalJpeg(int size = 5000)
 	{
-		var jpeg = new byte[size];
-		// JPEG SOI marker
-		jpeg[0] = 0xFF;
-		jpeg[1] = 0xD8;
-		// APP0 marker
-		jpeg[2] = 0xFF;
-		jpeg[3] = 0xE0;
-		// Rest is just padding
-		for ( var i = 4; i < size - 2; i++ )
+		var source = (byte[])[.. CreateAnImage.Bytes];
+		if ( source.Length >= size )
 		{
-			jpeg[i] = 0x00;
+			return source;
 		}
 
-		// EOI marker at end
-		jpeg[size - 2] = 0xFF;
-		jpeg[size - 1] = 0xD9;
-		return jpeg;
+		// Keep the fixture JPEG valid while inflating size by injecting APP15 data after SOI.
+		using var ms = new MemoryStream();
+		ms.Write(source, 0, 2); // SOI
+		var remaining = size - source.Length;
+		while ( remaining > 0 )
+		{
+			var chunk = Math.Min(remaining, 65533); // max APP payload
+			ms.WriteByte(0xFF);
+			ms.WriteByte(0xEF); // APP15
+			var segmentLength = chunk + 2;
+			ms.WriteByte(( byte ) ( segmentLength >> 8 ));
+			ms.WriteByte(( byte ) segmentLength);
+			ms.Write(new byte[chunk], 0, chunk);
+			remaining -= chunk;
+		}
+
+		ms.Write(source, 2, source.Length - 2);
+		return ms.ToArray();
 	}
 
 	[TestMethod]

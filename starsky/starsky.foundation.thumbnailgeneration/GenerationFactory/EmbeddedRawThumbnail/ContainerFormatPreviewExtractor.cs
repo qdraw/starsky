@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -39,7 +40,7 @@ public class ContainerFormatPreviewExtractor(IWebLogger logger, ISelectorStorage
 			await using var output =
 				outputLargePath != null ? new MemoryStream() : null;
 
-			var ok = TryExtractFromStream(input,
+			var ok = await TryExtractFromStream(input,
 				$"Reference: {subPathRawFile}", output);
 			if ( !ok )
 			{
@@ -64,7 +65,7 @@ public class ContainerFormatPreviewExtractor(IWebLogger logger, ISelectorStorage
 		}
 	}
 
-	private bool TryExtractFromStream(Stream input, string referenceInfo, Stream? output)
+	private async Task<bool> TryExtractFromStream(Stream input, string referenceInfo, Stream? output)
 	{
 		// Verify ISOBMFF format
 		if ( !TryVerifyIsobmffFormat(input, out var containerType) )
@@ -77,7 +78,11 @@ public class ContainerFormatPreviewExtractor(IWebLogger logger, ISelectorStorage
 		logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
 		                $"Detected {containerType} container");
 
-		var ok = TryExtractBestJpegByStrictScan(input, output);
+		var ok = containerType.StartsWith("CR3", StringComparison.Ordinal)
+			? TryExtractBestJpegByStrictScan(input, output)
+			: await TryExtractBestValidatedScannerCandidate(input, output,
+				containerType.StartsWith("HEIC", StringComparison.Ordinal) ||
+				containerType.StartsWith("HEIF", StringComparison.Ordinal));
 		if ( ok )
 		{
 			return true;
@@ -86,6 +91,52 @@ public class ContainerFormatPreviewExtractor(IWebLogger logger, ISelectorStorage
 		logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
 		                $"No JPEG preview found in container");
 		return false;
+	}
+
+	private static async Task<bool> TryExtractBestValidatedScannerCandidate(Stream input,
+		Stream? output, bool validateJpegWithImageSharp)
+	{
+		var orderedCandidates = ContainerJpegScanner.GetOrderedCandidates(input);
+		foreach ( var candidate in orderedCandidates )
+		{
+			await using var preview = new MemoryStream();
+			var copied = await ContainerJpegScanner.CopyRangeToOutput(input, preview,
+				candidate.Offset, candidate.Length);
+			if ( !copied )
+			{
+				continue;
+			}
+
+			if ( validateJpegWithImageSharp && !IsValidJpeg(preview) )
+			{
+				continue;
+			}
+
+			if ( output == null )
+			{
+				return true;
+			}
+
+			preview.Seek(0, SeekOrigin.Begin);
+			await preview.CopyToAsync(output);
+			return true;
+		}
+
+		return false;
+	}
+
+	private static bool IsValidJpeg(Stream stream)
+	{
+		try
+		{
+			stream.Seek(0, SeekOrigin.Begin);
+			var info = Image.Identify(stream);
+			return info != null;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static bool TryExtractBestJpegByStrictScan(Stream input, Stream? output)
@@ -165,6 +216,7 @@ public class ContainerFormatPreviewExtractor(IWebLogger logger, ISelectorStorage
 
 		return -1;
 	}
+
 
 	private static bool TryVerifyIsobmffFormat(Stream input, out string containerType)
 	{

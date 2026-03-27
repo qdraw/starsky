@@ -21,8 +21,8 @@ internal static class ContainerJpegScanner
 			return false;
 		}
 
-		var candidates = ScanCandidates(input);
-		var best = SelectBest(candidates);
+		var orderedCandidates = GetOrderedCandidates(input);
+		var best = orderedCandidates.Count > 0 ? orderedCandidates[0] : null;
 		if ( best == null )
 		{
 			return false;
@@ -34,6 +34,21 @@ internal static class ContainerJpegScanner
 		}
 
 		return await CopyRangeToOutput(input, output, best.Offset, best.Length);
+	}
+
+	internal static List<PreviewContainerJpegScannerCandidate> GetOrderedCandidates(Stream input)
+	{
+		var candidates = ScanCandidates(input);
+		candidates.Sort((left, right) =>
+		{
+			if ( left.HasIptc != right.HasIptc )
+			{
+				return left.HasIptc ? -1 : 1;
+			}
+
+			return right.Length.CompareTo(left.Length);
+		});
+		return candidates;
 	}
 
 	internal static List<PreviewContainerJpegScannerCandidate> ScanCandidates(Stream input)
@@ -49,7 +64,7 @@ internal static class ContainerJpegScanner
 		{
 			long scanned = 0;
 			var previous = -1;
-			while ( scanned < input.Length && candidates.Count < MaxCandidates )
+			while ( scanned < input.Length )
 			{
 				var toRead = ( int ) Math.Min(buffer.Length, input.Length - scanned);
 				var read = input.Read(buffer, 0, toRead);
@@ -58,7 +73,7 @@ internal static class ContainerJpegScanner
 					break;
 				}
 
-				for ( var i = 0; i < read - 1 && candidates.Count < MaxCandidates; i++ )
+				for ( var i = 0; i < read - 1; i++ )
 				{
 					var current = buffer[i];
 					var next = buffer[i + 1];
@@ -94,7 +109,39 @@ internal static class ContainerJpegScanner
 		}
 
 		var hasIptc = HasIptcApp13(input, soi, length);
-		candidates.Add(new PreviewContainerJpegScannerCandidate(soi, length, hasIptc));
+		var candidate = new PreviewContainerJpegScannerCandidate(soi, length, hasIptc);
+		if ( candidates.Count < MaxCandidates )
+		{
+			candidates.Add(candidate);
+			return;
+		}
+
+		// Keep memory bounded while still scanning the full file.
+		// Replace the current worst candidate when a better one is found.
+		var worstIndex = 0;
+		for ( var i = 1; i < candidates.Count; i++ )
+		{
+			if ( IsBetter(candidates[worstIndex], candidates[i]) )
+			{
+				worstIndex = i;
+			}
+		}
+
+		if ( IsBetter(candidate, candidates[worstIndex]) )
+		{
+			candidates[worstIndex] = candidate;
+		}
+	}
+
+	private static bool IsBetter(PreviewContainerJpegScannerCandidate left,
+		PreviewContainerJpegScannerCandidate right)
+	{
+		if ( left.HasIptc != right.HasIptc )
+		{
+			return left.HasIptc && !right.HasIptc;
+		}
+
+		return left.Length > right.Length;
 	}
 
 	internal static PreviewContainerJpegScannerCandidate? SelectBest(
