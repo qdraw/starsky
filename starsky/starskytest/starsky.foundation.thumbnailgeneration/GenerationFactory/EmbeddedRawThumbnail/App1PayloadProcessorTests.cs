@@ -303,13 +303,6 @@ public class TryExtractBestPreviewTests
 	{
 		var total = ( int ) ( offset + length + 8 );
 		var buf = new byte[total];
-		// fill with deterministic data so we can assert later
-		for ( var i = 0; i < buf.Length; i++ )
-		{
-			buf[i] = ( byte ) ( i % 251 );
-		}
-
-		// now insert JPEG markers/EOI so they are not overwritten by the filler
 		if ( offset + 2 < buf.Length )
 		{
 			buf[offset] = 0xFF;
@@ -324,6 +317,11 @@ public class TryExtractBestPreviewTests
 			buf[eoi + 1] = 0xD9;
 		}
 
+		// fill with deterministic data so we can assert later
+		for ( var i = 0; i < buf.Length; i++ )
+		{
+			buf[i] = ( byte ) ( i % 251 );
+		}
 
 		return new MemoryStream(buf);
 	}
@@ -394,24 +392,17 @@ public class TryExtractBestPreviewTests
 		// build originalStream with NO JPEG at mappedBest but WITH JPEG at absolute bestOffset
 		var total = ( int ) ( mappedBest + length + 16 );
 		var buf = new byte[total];
-		// fill with deterministic data so we can assert later
+		// put JPEG at absolute offset
+		var abs = ( int ) bestOffset;
+		buf[abs] = 0xFF;
+		buf[abs + 1] = 0xD8;
+		buf[abs + 2] = 0xFF;
+		var eoi = abs + ( int ) length - 2;
+		buf[eoi] = 0xFF;
+		buf[eoi + 1] = 0xD9;
 		for ( var i = 0; i < buf.Length; i++ )
 		{
 			buf[i] = ( byte ) ( ( i + 7 ) % 251 );
-		}
-		// put JPEG at absolute offset (after filler so markers are preserved)
-		var abs = ( int ) bestOffset;
-		if ( abs + 2 < buf.Length )
-		{
-			buf[abs] = 0xFF;
-			buf[abs + 1] = 0xD8;
-			buf[abs + 2] = 0xFF;
-		}
-		var eoi = abs + ( int ) length - 2;
-		if ( eoi + 1 < buf.Length )
-		{
-			buf[eoi] = 0xFF;
-			buf[eoi + 1] = 0xD9;
 		}
 
 		using var originalStream = new MemoryStream(buf);
