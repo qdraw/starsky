@@ -97,6 +97,16 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
+	///     Process model for mount watcher-triggered imports
+	/// </summary>
+	public enum MountWatcherImportProcessModel
+	{
+		Auto = 0,
+		Cli = 1,
+		InProcess = 2
+	}
+
+	/// <summary>
 	///     Used for CloneToDisplay
 	/// </summary>
 	public const string CloneToDisplaySecurityWarning =
@@ -425,6 +435,44 @@ public sealed class AppSettings
 	/// </summary>
 	[PackageTelemetry]
 	public bool? AddSwagger { get; set; } = false;
+
+	/// <summary>
+	///     Enable API-controlled camera mount watcher (macOS DiskArbitration)
+	/// </summary>
+	[PackageTelemetry]
+	public bool MountWatcherEnabled { get; set; }
+
+	/// <summary>
+	///     Debounce in seconds between auto-triggered imports from mount events
+	/// </summary>
+	[PackageTelemetry]
+	public int MountWatcherDebounceSeconds { get; set; } = 15;
+
+	/// <summary>
+	///     Optional path for watcher JSONL logs
+	/// </summary>
+	[PackageTelemetry]
+	public string MountWatcherLogPath { get; set; } = string.Empty;
+
+	/// <summary>
+	///     Which process model to use for mount watcher imports
+	/// </summary>
+	[PackageTelemetry]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public MountWatcherImportProcessModel MountWatcherProcessModel { get; set; } =
+		MountWatcherImportProcessModel.Auto;
+
+	/// <summary>
+	///     Optional absolute path override for starskyimportercli
+	/// </summary>
+	[PackageTelemetry]
+	public string MountWatcherImporterPath { get; set; } = string.Empty;
+
+	/// <summary>
+	///     Optional CLI argument override for mount watcher importer (validated against allowlist)
+	/// </summary>
+	[PackageTelemetry]
+	public string MountWatcherImporterArguments { get; set; } = "--camera -r --move";
 
 	/// <summary>
 	///     Export swagger pages (use AddSwagger and AddSwaggerExport to export)
