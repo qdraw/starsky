@@ -1130,8 +1130,8 @@ public sealed class RenameServiceTest
 		var fileIndexItem = new FileIndexItem { FileHash = "test-hash", FilePath = "/test.jpg" };
 		await query.AddItemAsync(fileIndexItem);
 
-		var setCacheResult = await query.GetSubPathByHashAsync(fileIndexItem.FileHash);
-		Assert.AreEqual("/test.jpg", setCacheResult,
+		var setCacheResult = await query.GetSubPathsByHashAsync(fileIndexItem.FileHash);
+		Assert.AreEqual("/test.jpg", setCacheResult.FirstOrDefault(),
 			"Cache should contain the item before rename.");
 
 		var fakeStorage = new FakeIStorage(["/"], ["/test.jpg"]);
@@ -1141,8 +1141,8 @@ public sealed class RenameServiceTest
 		await renameService.Rename("/test.jpg", "/new-test.jpg");
 
 		// Assert
-		var cacheResult = await query.GetSubPathByHashAsync(fileIndexItem.FileHash);
-		Assert.AreEqual("/new-test.jpg", cacheResult,
+		var cacheResult = await query.GetSubPathsByHashAsync(fileIndexItem.FileHash);
+		Assert.AreEqual("/new-test.jpg", cacheResult.FirstOrDefault(),
 			"Cache should be reset after rename");
 	}
 }

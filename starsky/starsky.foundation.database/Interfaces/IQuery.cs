@@ -148,9 +148,6 @@ public interface IQuery
 	/// <param name="directoryName">the path of the directory (there is no parent generation)</param>
 	bool RemoveCacheParentItem(string directoryName);
 
-	[Obsolete("use GetSubPathsByHashAsync instead")]
-	Task<string?> GetSubPathByHashAsync(string fileHash);
-
 	Task<List<string>> GetSubPathsByHashAsync(string fileHash);
 
 

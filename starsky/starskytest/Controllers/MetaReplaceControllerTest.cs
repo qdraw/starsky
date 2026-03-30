@@ -118,7 +118,8 @@ public sealed class MetaReplaceControllerTest
 			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(_createAnImage
 				.DbPath, ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
+		var fileSubPath = ( await _query.GetSubPathsByHashAsync(fileHashCode) ).FirstOrDefault();
+		if ( string.IsNullOrEmpty(fileSubPath) )
 		{
 			var isDelete = string.Empty;
 			if ( delete )
@@ -365,11 +366,7 @@ public sealed class MetaReplaceControllerTest
 		var fakeQueue = new FakeIUpdateBackgroundTaskQueue();
 		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
 		{
-			new("/test09.jpg")
-			{
-				Status = FileIndexItem.ExifStatus.Ok,
-				Tags = "replaced"
-			}
+			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.Ok, Tags = "replaced" }
 		});
 		var controller = new MetaReplaceController(metaReplaceService,
 			fakeQueue,
@@ -386,7 +383,6 @@ public sealed class MetaReplaceControllerTest
 		Assert.AreEqual("tags", payload.ChangedFileIndexItemName["/test09.jpg"][0]);
 		Assert.HasCount(1, payload.FileIndexResultsList);
 		Assert.AreEqual("/test09.jpg", payload.FileIndexResultsList[0].FilePath);
-
 	}
 }
 

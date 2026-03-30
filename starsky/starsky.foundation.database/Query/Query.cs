@@ -136,36 +136,6 @@ public partial class Query : IQuery
 	/// </summary>
 	/// <param name="fileHash">the file hash</param>
 	/// <returns>file path can be cached</returns>
-	[Obsolete("Use GetSubPathsByHashAsync instead, this is not used anymore")]
-	public async Task<string?> GetSubPathByHashAsync(string fileHash)
-	{
-		// The CLI programs uses no cache
-		if ( !IsCacheEnabled() || _cache == null )
-		{
-			return ( await QueryGetItemsByHashAsync(fileHash) ).FirstOrDefault();
-		}
-
-		// Return values from IMemoryCache
-		var queryHashListCacheName = CachingDbName("hashList", fileHash);
-
-		// if result is not null return cached value
-		if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath)
-		     && !string.IsNullOrEmpty(( string? ) cachedSubPath) )
-		{
-			return ( string ) cachedSubPath;
-		}
-
-		cachedSubPath = ( await QueryGetItemsByHashAsync(fileHash) ).FirstOrDefault();
-
-		_cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48, 0, 0));
-		return ( string? ) cachedSubPath;
-	}
-
-	/// <summary>
-	///     Uses CachingDbName hashList
-	/// </summary>
-	/// <param name="fileHash">the file hash</param>
-	/// <returns>file path can be cached</returns>
 	public async Task<List<string>> GetSubPathsByHashAsync(string fileHash)
 	{
 		// The CLI programs uses no cache
@@ -201,14 +171,6 @@ public partial class Query : IQuery
 		{
 			return;
 		}
-
-		// TODO: remove when hashList is removed
-		var queryCacheName = CachingDbName("hashList", fileHash);
-		if ( _cache.TryGetValue(queryCacheName, out _) )
-		{
-			_cache.Remove(queryCacheName);
-		}
-		// END TODO
 
 		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
 		if ( _cache.TryGetValue(queryHashListCacheName, out _) )
