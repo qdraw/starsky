@@ -477,12 +477,12 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	{
 		return IsExtensionForce(filename.ToLowerInvariant(), ExtensionJpg);
 	}
-	
+
 	public static bool IsExtensionImageHeic(string? filename)
 	{
 		return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionHeic);
 	}
-	
+
 	/// <summary>
 	///     is this filename with extension a filetype that imageSharp can read/write
 	/// </summary>
@@ -496,7 +496,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	public static bool IsExtensionNativeSupported(string? filename)
 	{
-		List<string> nativeSupportList = [..ExtensionImageSharpThumbnailSupportedList, ..ExtensionHeic];
+		List<string> nativeSupportList =
+			[..ExtensionImageSharpThumbnailSupportedList, ..ExtensionHeic];
 		return IsExtensionForce(filename?.ToLowerInvariant(),
 			nativeSupportList);
 	}
@@ -862,36 +863,36 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	}
 
 
-	private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
+	internal static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
 	{
 		if ( bytes.Length < 8 )
 		{
 			return null;
 		}
 
-		// ISOBMFF: [size:4][ftyp:4][majorBrand:4]
-		// Canon CR3 uses brand "crx "
-		var fTypCr3 = "ftypcrx "u8.ToArray(); // ftypcrx 
-		if ( bytes.Length >= 12 && fTypCr3.SequenceEqual(bytes.Skip(4).Take(fTypCr3.Length)) )
+		// added here to avoid false positives on mp4 videos with cr3 headers,
+		// as cr3 is based on mp4 container
+		if ( ExtensionRaw.HasCr3Header(bytes) )
 		{
 			return ImageFormat.cr3;
 		}
 
-		// Check for HEIC/HEIF using the ExtensionRaw helper (minimal 'ftyp' check)
+		// added here to avoid false positives on mp4 videos with heic headers
 		if ( ExtensionRaw.HasHeicHeader(bytes) )
 		{
 			return ImageFormat.heic;
 		}
 
-		var fTypMp4 = new byte[] { 102, 116, 121, 112 }; //  00  00  00  [skip this byte]
-		// 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
+		var fTypMp4 = "ftyp"u8.ToArray(); //  00 00 00 [skip this byte]
+		// 66 74 79 70 QuickTime Container 3GG, 3GP, 3G2 	FLV
 
 		if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
 		{
 			return ImageFormat.mp4;
 		}
 
-		var fTypIsoM = new byte[] { 102, 116, 121, 112, 105, 115, 111, 109 };
+		var fTypIsoM = "ftypisom"u8.ToArray();
+		// 00 00 00 [skip this byte] 66 74 79 70 69 73 6F 6D ISO Base Media file format
 		if ( fTypIsoM.SequenceEqual(bytes.Take(fTypIsoM.Length)) )
 		{
 			return ImageFormat.mp4;

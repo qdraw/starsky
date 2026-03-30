@@ -57,6 +57,8 @@ public sealed class ExtensionRolesHelperTest
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(null));
 		// equal or less then three chars
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("nul"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionNativeSupported(null));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionVideoSupported(null));
 	}
 
 	[TestMethod]
@@ -176,6 +178,16 @@ public sealed class ExtensionRolesHelperTest
 	{
 		// [size:4][ftyp][crx ]
 		var fileType = ExtensionRolesHelper.GetImageFormat(
+			ExtensionRolesHelper.HexStringToByteArray(
+				"00 00 00 18 66 74 79 70 63 72 78 20".Replace(" ", "")));
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr3, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormatMpeg4_Cr3_IsobmffFtypCrxBrand_ReturnsCr3()
+	{
+		// [size:4][ftyp][crx ]
+		var fileType = ExtensionRolesHelper.GetImageFormatMpeg4(
 			ExtensionRolesHelper.HexStringToByteArray(
 				"00 00 00 18 66 74 79 70 63 72 78 20".Replace(" ", "")));
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr3, fileType);
@@ -330,6 +342,25 @@ public sealed class ExtensionRolesHelperTest
 		bytes[11] = ( byte ) 'c';
 
 		var result = ExtensionRolesHelper.GetImageFormat(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void GetImageFormatMpeg4_Heic_FtypHeic_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		// size (big-endian) not important for detection here
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		// major brand = "heic"
+		bytes[8] = ( byte ) 'h';
+		bytes[9] = ( byte ) 'e';
+		bytes[10] = ( byte ) 'i';
+		bytes[11] = ( byte ) 'c';
+
+		var result = ExtensionRolesHelper.GetImageFormatMpeg4(bytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
 	}
 

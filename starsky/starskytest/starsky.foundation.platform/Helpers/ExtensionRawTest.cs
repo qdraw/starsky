@@ -412,6 +412,16 @@ public sealed class ExtensionRawTest
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
 	}
 
+	[TestMethod]
+	public void Files_GetImageFormat_Cr3_IsobmffFtypCrxBrand_ReturnsCr3()
+	{
+		// [size:4][ftyp][crx ]
+		var fileType = ExtensionRaw.Detect(
+			ExtensionRolesHelper.HexStringToByteArray(
+				"00 00 00 18 66 74 79 70 63 72 78 20".Replace(" ", "")));
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr3, fileType);
+	}
+
 
 	private static byte[] CreateTiff(bool littleEndian, int totalLength, uint firstIfdOffset,
 		params (ushort tag, ushort type, uint count, byte[] value, int? offsetOverride)[] entries)

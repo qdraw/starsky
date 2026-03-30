@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 
 namespace starsky.foundation.platform.Helpers;
@@ -60,6 +61,11 @@ public static class ExtensionRaw
 			return ExtensionRolesHelper.ImageFormat.cr2;
 		}
 
+		if ( HasCr3Header(bytes) )
+		{
+			return ExtensionRolesHelper.ImageFormat.cr3;
+		}
+
 		// HEIC / HEIF files use the ISO BMFF container with an 'ftyp' box and
 		// well-known brands like 'heic', 'heix', 'hevc', 'hevx', 'mif1' and 'msf1'.
 		if ( HasHeicHeader(bytes) )
@@ -101,6 +107,19 @@ public static class ExtensionRaw
 		}
 
 		return DetectByMarker(probe);
+	}
+
+	/// <summary>
+	/// Determines whether the given byte array has a Canon CR3 header.
+	/// </summary>
+	/// <param name="bytes">The byte array to examine.</param>
+	/// <returns>True if the byte array contains a Canon CR3 header; otherwise, false.</returns>
+	internal static bool HasCr3Header(byte[] bytes)
+	{
+		// ISOBMFF: [size:4][ftyp:4][majorBrand:4]
+		// Canon CR3 uses brand "crx "
+		var fTypCr3 = "ftypcrx "u8.ToArray(); // ftypcrx 
+		return bytes.Length >= 12 && fTypCr3.SequenceEqual(bytes.Skip(4).Take(fTypCr3.Length));
 	}
 
 	private static bool HasX3FHeader(ReadOnlySpan<byte> bytes)
@@ -347,6 +366,7 @@ public static class ExtensionRaw
 			return false;
 		}
 
+		// Check for HEIC/HEIF using the ExtensionRaw helper (minimal 'ftyp' check)
 		// 'ftyp' box should start at offset 4: [size (4)] 'ftyp' (4)
 		if ( bytes[4] != ( byte ) 'f' || bytes[5] != ( byte ) 't' ||
 		     bytes[6] != ( byte ) 'y' || bytes[7] != ( byte ) 'p' )

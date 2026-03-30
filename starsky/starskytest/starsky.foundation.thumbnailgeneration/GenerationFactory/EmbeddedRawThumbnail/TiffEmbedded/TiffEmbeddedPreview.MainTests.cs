@@ -175,6 +175,28 @@ public class TiffEmbeddedPreviewCoverageTests
 	}
 
 	[TestMethod]
+	public void TryResolveMakerNoteOffset_NoJpegAtOffsets_ReturnsFalse()
+	{
+		// Arrange: stream length large enough but no JPEG markers at the offsets
+		var data = new byte[200];
+		for ( var i = 0; i < data.Length; i++ )
+		{
+			data[i] = 0x00; // ensure no 0xFF 0xD8 0xFF sequences
+		}
+
+		using var ms = new MemoryStream(data);
+
+		// Act: rawOffset is within length but not a JPEG, relative (makerNoteBase + rawOffset) also not a JPEG
+		var result =
+			TiffEmbeddedPreviewExtractor.TryResolveMakerNoteOffset(ms, 10, 50,
+				out var resolvedOffset);
+
+		// Assert
+		Assert.IsFalse(result);
+		Assert.AreEqual(0u, resolvedOffset);
+	}
+
+	[TestMethod]
 	public void ParseCanonMakerNote_WithNoExplicitCandidate_FallsBackToScan()
 	{
 		// When no explicit JPEG found in IFD, falls back to scan (line 507-520)
