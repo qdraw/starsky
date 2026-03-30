@@ -44,8 +44,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.7.15 - _(Unreleased)_ - 2026-?-? {#v0.7.15}
 
 - [x] (Added) _Back-end_ Add Title and Tags overview razor template (PR #2891)
-- [x] (Added) _Back-end_ Create Job to generate thumbnails when missing in Thumbnail and Zoom API (
-  PR #2891)
+- [x] (Added) _Back-end_ Create Job to generate thumbnails when missing in Thumbnail and Zoom API
+  (PR #2891)
 - [x] (Added) _Front-end_ Updates UI when a file has a thumbnail generated in detail view (PR #2891)
 - [x] (Added) _Back-end_ Extracts embedded JPEG previews from lightweight RAW containers (FFF/X3F).
   `LightweightContainerPreviewExtractor` (PR #2891)
