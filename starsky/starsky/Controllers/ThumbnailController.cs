@@ -406,7 +406,7 @@ public sealed class ThumbnailController : Controller
 
 			if ( ExtensionRolesHelper.IsExtensionRawThumbnailSupported(sourcePath) )
 			{
-				await _manualThumbnailGenerationService.CreateJob(sourcePath);
+				await _manualThumbnailGenerationService.CreateJob(sourcePath!);
 				SetExpiresResponseHeadersToZero();
 			}
 
