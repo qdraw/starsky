@@ -36,6 +36,6 @@ public interface IMountWatcher
 	///     Get currently mounted volumes
 	/// </summary>
 	/// <returns>List of mount paths</returns>
-	IEnumerable<string> GetMountedVolumes();
+	List<string> GetMountedVolumes();
 }
 

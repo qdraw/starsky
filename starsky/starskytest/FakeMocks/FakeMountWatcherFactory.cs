@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.Services;
 
@@ -13,7 +12,7 @@ public class FakeMountWatcherFactory : IMountWatcherFactory
 		return new FakeMountWatcher();
 	}
 
-	private class FakeMountWatcher : IMountWatcher
+	private sealed class FakeMountWatcher : IMountWatcher
 	{
 		public event EventHandler<MountDetectedEventArgs>? MountDetected;
 
@@ -25,9 +24,9 @@ public class FakeMountWatcherFactory : IMountWatcherFactory
 		{
 		}
 
-		public IEnumerable<string> GetMountedVolumes()
+		public List<string> GetMountedVolumes()
 		{
-			return Enumerable.Empty<string>();
+			return [];
 		}
 	}
 }

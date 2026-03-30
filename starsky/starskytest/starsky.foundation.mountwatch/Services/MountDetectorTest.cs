@@ -121,8 +121,8 @@ public sealed class MountDetectorTest
 			var result = detector.GetCameraStoragePaths(tempDir).ToList();
 
 			// Assert
-			Assert.AreEqual(1, result.Count);
-			Assert.IsTrue(result[0].EndsWith("DCIM"));
+			Assert.HasCount(1, result);
+			Assert.EndsWith("DCIM", result[0]);
 		}
 		finally
 		{
@@ -146,7 +146,7 @@ public sealed class MountDetectorTest
 			var result = detector.GetCameraStoragePaths(tempDir).ToList();
 
 			// Assert
-			Assert.AreEqual(2, result.Count);
+			Assert.HasCount(2, result);
 		}
 		finally
 		{
@@ -169,7 +169,7 @@ public sealed class MountDetectorTest
 			var result = detector.GetCameraStoragePaths(tempDir).ToList();
 
 			// Assert
-			Assert.AreEqual(0, result.Count);
+			Assert.IsEmpty(result);
 		}
 		finally
 		{
@@ -188,6 +188,6 @@ public sealed class MountDetectorTest
 		var result = detector.GetCameraStoragePaths(null!).ToList();
 
 		// Assert
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 }

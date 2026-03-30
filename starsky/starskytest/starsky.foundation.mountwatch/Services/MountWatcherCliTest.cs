@@ -10,96 +10,120 @@ namespace starskytest.starsky.foundation.mountwatch.Services;
 [TestClass]
 public sealed class MountWatcherCliTest
 {
-	[TestMethod]
-	public async Task MountWatcherCli_StartWatcher_ReturnsTrue()
+	private static MountWatcherCli CreateSut(
+		FakeConsoleWrapper? console = null,
+		FakeIWebLogger? logger = null,
+		FakeExifToolDownload? exifTool = null,
+		FakeIGeoFileDownload? geo = null,
+		FakeMountDetector? mountDetector = null,
+		FakeMountWatcherFactory? factory = null,
+		FakeServiceInstaller? installer = null)
 	{
-		// Arrange
-		var fakeImport = new FakeIImport(new FakeSelectorStorage());
-		var fakeConsole = new FakeConsoleWrapper(new List<string>());
-		var fakeLogger = new FakeIWebLogger();
-		var fakeExifToolDownload = new FakeExifToolDownload();
-		var fakeGeoFileDownload = new FakeIGeoFileDownload();
-		var fakeMountDetector = new FakeMountDetector();
-		var fakeMountWatcherFactory = new FakeMountWatcherFactory();
-		var fakeCameraStorageDetector = new FakeCameraStorageDetector(new List<string>());
-
-		var sut = new MountWatcherCli(
-			fakeImport,
+		return new MountWatcherCli(
+			new FakeIImport(new FakeSelectorStorage()),
 			new AppSettings { TempFolder = "/temp" },
-			fakeConsole,
-			fakeLogger,
-			fakeExifToolDownload,
-			fakeGeoFileDownload,
-			fakeMountDetector,
-			fakeMountWatcherFactory,
-			fakeCameraStorageDetector);
+			console ?? new FakeConsoleWrapper(new List<string>()),
+			logger ?? new FakeIWebLogger(),
+			exifTool ?? new FakeExifToolDownload(),
+			geo ?? new FakeIGeoFileDownload(),
+			mountDetector ?? new FakeMountDetector(),
+			factory ?? new FakeMountWatcherFactory(),
+			new FakeCameraStorageDetector(new List<string>()),
+			installer ?? new FakeServiceInstaller());
+	}
 
-		// Act
+	[TestMethod]
+	public async Task StartWatcher_NoArgs_ReturnsTrue()
+	{
+		var sut = CreateSut();
 		var result = await sut.StartWatcher([]);
-
-		// Assert
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
-	public async Task MountWatcherCli_StartWatcher_CallsExifToolDownload()
+	public async Task StartWatcher_CallsExifToolDownload()
 	{
-		// Arrange
-		var fakeExifToolDownload = new FakeExifToolDownload();
-		var fakeImport = new FakeIImport(new FakeSelectorStorage());
-		var fakeConsole = new FakeConsoleWrapper(new List<string>());
-		var fakeLogger = new FakeIWebLogger();
-		var fakeGeoFileDownload = new FakeIGeoFileDownload();
-		var fakeMountDetector = new FakeMountDetector();
-		var fakeMountWatcherFactory = new FakeMountWatcherFactory();
-		var fakeCameraStorageDetector = new FakeCameraStorageDetector(new List<string>());
-
-		var sut = new MountWatcherCli(
-			fakeImport,
-			new AppSettings { TempFolder = "/temp" },
-			fakeConsole,
-			fakeLogger,
-			fakeExifToolDownload,
-			fakeGeoFileDownload,
-			fakeMountDetector,
-			fakeMountWatcherFactory,
-			fakeCameraStorageDetector);
-
-		// Act
-		_ = await sut.StartWatcher([]);
-
-		// Assert
-		Assert.AreEqual(1, fakeExifToolDownload.Called.Count);
+		var fakeExifTool = new FakeExifToolDownload();
+		var sut = CreateSut(exifTool: fakeExifTool);
+		await sut.StartWatcher([]);
+		Assert.HasCount(1, fakeExifTool.Called);
 	}
 
 	[TestMethod]
-	public async Task MountWatcherCli_StartWatcher_CallsGeoFileDownload()
+	public async Task StartWatcher_CallsGeoFileDownload()
 	{
-		// Arrange
-		var fakeGeoFileDownload = new FakeIGeoFileDownload();
-		var fakeImport = new FakeIImport(new FakeSelectorStorage());
-		var fakeConsole = new FakeConsoleWrapper(new List<string>());
-		var fakeLogger = new FakeIWebLogger();
-		var fakeExifToolDownload = new FakeExifToolDownload();
-		var fakeMountDetector = new FakeMountDetector();
-		var fakeMountWatcherFactory = new FakeMountWatcherFactory();
-		var fakeCameraStorageDetector = new FakeCameraStorageDetector(new List<string>());
+		var fakeGeo = new FakeIGeoFileDownload();
+		var sut = CreateSut(geo: fakeGeo);
+		await sut.StartWatcher([]);
+		Assert.AreEqual(1, fakeGeo.Count);
+	}
 
-		var sut = new MountWatcherCli(
-			fakeImport,
-			new AppSettings { TempFolder = "/temp" },
-			fakeConsole,
-			fakeLogger,
-			fakeExifToolDownload,
-			fakeGeoFileDownload,
-			fakeMountDetector,
-			fakeMountWatcherFactory,
-			fakeCameraStorageDetector);
+	[TestMethod]
+	public async Task StartWatcher_HelpArg_ShowsHelp_ReturnsTrue()
+	{
+		var console = new FakeConsoleWrapper(new List<string>());
+		var sut = CreateSut(console);
+		var result = await sut.StartWatcher(["--help"]);
+		Assert.IsTrue(result);
+		Assert.IsNotEmpty(console.WrittenLines);
+	}
 
-		// Act
-		_ = await sut.StartWatcher([]);
+	[TestMethod]
+	public async Task StartWatcher_InstallArg_CallsInstaller()
+	{
+		var installer = new FakeServiceInstaller();
+		var sut = CreateSut(installer: installer);
+		var result = await sut.StartWatcher(["--install"]);
+		Assert.IsTrue(result);
+		Assert.HasCount(1, installer.InstalledPaths);
+	}
 
-		// Assert
-		Assert.AreEqual(1, fakeGeoFileDownload.Count);
+	[TestMethod]
+	public async Task StartWatcher_UninstallArg_CallsUninstaller()
+	{
+		var installer = new FakeServiceInstaller();
+		var sut = CreateSut(installer: installer);
+		var result = await sut.StartWatcher(["--uninstall"]);
+		Assert.IsTrue(result);
+		Assert.AreEqual(1, installer.UninstallCount);
+	}
+
+	[TestMethod]
+	public async Task StartWatcher_InstallReturnsFalse_ReturnsFalse()
+	{
+		var installer = new FakeServiceInstaller { ReturnValue = false };
+		var sut = CreateSut(installer: installer);
+		var result = await sut.StartWatcher(["--install"]);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void NeedInstall_WithInstallArg_ReturnsTrue()
+	{
+		Assert.IsTrue(MountWatcherCli.NeedInstall(["--install"]));
+	}
+
+	[TestMethod]
+	public void NeedInstall_WithoutInstallArg_ReturnsFalse()
+	{
+		Assert.IsFalse(MountWatcherCli.NeedInstall(["--verbose"]));
+	}
+
+	[TestMethod]
+	public void NeedInstall_CaseInsensitive_ReturnsTrue()
+	{
+		Assert.IsTrue(MountWatcherCli.NeedInstall(["--INSTALL"]));
+	}
+
+	[TestMethod]
+	public void NeedUninstall_WithUninstallArg_ReturnsTrue()
+	{
+		Assert.IsTrue(MountWatcherCli.NeedUninstall(["--uninstall"]));
+	}
+
+	[TestMethod]
+	public void NeedUninstall_WithoutUninstallArg_ReturnsFalse()
+	{
+		Assert.IsFalse(MountWatcherCli.NeedUninstall(["--verbose"]));
 	}
 }

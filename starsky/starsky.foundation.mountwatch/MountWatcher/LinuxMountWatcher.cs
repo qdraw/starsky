@@ -4,48 +4,42 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using starsky.foundation.mountwatch.Interfaces;
 
-namespace starsky.foundation.mountwatch.Services;
+namespace starsky.foundation.mountwatch.MountWatcher;
 
 /// <summary>
 ///     Linux mount watcher using udev for event-driven notifications (with polling fallback)
 /// </summary>
-public class LinuxMountWatcher : IMountWatcher
+internal class LinuxMountWatcher : BaseMountWatcher
 {
-	private bool _isRunning;
-	private Thread? _watchThread;
-
-	public event EventHandler<MountDetectedEventArgs>? MountDetected;
-
 	/// <summary>
 	///     Start watching for mount events using udev or polling fallback
 	/// </summary>
-	public void Start()
+	public override void Start()
 	{
-		if ( _isRunning )
+		if ( IsRunning )
 		{
 			return;
 		}
 
-		_isRunning = true;
-		_watchThread = new Thread(RunWatcher) { IsBackground = true };
-		_watchThread.Start();
+		IsRunning = true;
+		WatchThread = new Thread(RunWatcher) { IsBackground = true };
+		WatchThread.Start();
 	}
 
 	/// <summary>
 	///     Stop watching for mount events
 	/// </summary>
-	public void Stop()
+	public override void Stop()
 	{
-		_isRunning = false;
-		_watchThread?.Join(TimeSpan.FromSeconds(5));
+		IsRunning = false;
+		WatchThread?.Join(TimeSpan.FromSeconds(5));
 	}
 
 	/// <summary>
 	///     Get currently mounted volumes
 	/// </summary>
-	public IEnumerable<string> GetMountedVolumes()
+	public override List<string> GetMountedVolumes()
 	{
 		return GetCurrentMounts();
 	}
@@ -145,7 +139,7 @@ public class LinuxMountWatcher : IMountWatcher
 			}
 
 			// Monitor for events
-			while ( _isRunning )
+			while ( IsRunning )
 			{
 				var device = udev_monitor_receive_device(monitor);
 				if ( device != IntPtr.Zero )
@@ -178,50 +172,11 @@ public class LinuxMountWatcher : IMountWatcher
 		}
 	}
 
-	/// <summary>
-	///     Fallback polling implementation if udev is unavailable
-	/// </summary>
-	private void RunPollingFallback()
-	{
-		var previousMounts = new HashSet<string>(GetCurrentMounts());
-		const int pollInterval = 2000;
-
-		while ( _isRunning )
-		{
-			try
-			{
-				Thread.Sleep(pollInterval);
-
-				var currentMounts = GetCurrentMounts();
-				var newMounts = currentMounts.Except(previousMounts).ToList();
-
-				if ( newMounts.Count > 0 )
-				{
-					foreach ( var mount in newMounts )
-					{
-						previousMounts.Add(mount);
-						OnMountDetected(mount);
-					}
-				}
-
-				// Check for unmounted filesystems
-				var removedMounts = previousMounts.Except(currentMounts).ToList();
-				foreach ( var mount in removedMounts )
-				{
-					previousMounts.Remove(mount);
-				}
-			}
-			catch
-			{
-				Thread.Sleep(pollInterval);
-			}
-		}
-	}
 
 	/// <summary>
 	///     Get list of current mount points from /proc/mounts
 	/// </summary>
-	private static IEnumerable<string> GetCurrentMounts()
+	private static List<string> GetCurrentMounts()
 	{
 		var mounts = new List<string>();
 
@@ -235,16 +190,18 @@ public class LinuxMountWatcher : IMountWatcher
 			var lines = File.ReadAllLines("/proc/mounts");
 			foreach ( var line in lines )
 			{
-				var parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-				if ( parts.Length >= 2 )
+				var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+				if ( parts.Length < 2 )
 				{
-					var mountPath = parts[1];
+					continue;
+				}
 
-					// Skip system mounts
-					if ( ShouldIncludeMount(mountPath) )
-					{
-						mounts.Add(mountPath);
-					}
+				var mountPath = parts[1];
+
+				// Skip system mounts
+				if ( ShouldIncludeMount(mountPath) )
+				{
+					mounts.Add(mountPath);
 				}
 			}
 		}
@@ -273,14 +230,5 @@ public class LinuxMountWatcher : IMountWatcher
 		return mountPath.StartsWith("/media", StringComparison.OrdinalIgnoreCase) ||
 		       mountPath.StartsWith("/mnt", StringComparison.OrdinalIgnoreCase) ||
 		       mountPath.StartsWith("/home", StringComparison.OrdinalIgnoreCase);
-	}
-
-	/// <summary>
-	///     Raise MountDetected event
-	/// </summary>
-	private void OnMountDetected(string mountPath)
-	{
-		MountDetected?.Invoke(this,
-			new MountDetectedEventArgs { MountPath = mountPath, DetectedAt = DateTime.UtcNow });
 	}
 }

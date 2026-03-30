@@ -6,42 +6,38 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using starsky.foundation.mountwatch.Interfaces;
 
-namespace starsky.foundation.mountwatch.Services;
+namespace starsky.foundation.mountwatch.MountWatcher;
 
 /// <summary>
 ///     macOS mount watcher using DiskArbitration framework for event-driven notifications
 /// </summary>
-public class MacMountWatcher : IMountWatcher
+internal class MacMountWatcher : BaseMountWatcher
 {
-	private bool _isRunning;
 	private IntPtr _runLoop;
 
 	private IntPtr _session;
-	private Thread? _watchThread;
-
-	public event EventHandler<MountDetectedEventArgs>? MountDetected;
 
 	/// <summary>
 	///     Start watching for mount events using DiskArbitration
 	/// </summary>
-	public void Start()
+	public override void Start()
 	{
-		if ( _isRunning )
+		if ( IsRunning )
 		{
 			return;
 		}
 
-		_isRunning = true;
-		_watchThread = new Thread(RunWatcher) { IsBackground = true };
-		_watchThread.Start();
+		IsRunning = true;
+		WatchThread = new Thread(RunWatcher) { IsBackground = true };
+		WatchThread.Start();
 	}
 
 	/// <summary>
 	///     Stop watching for mount events
 	/// </summary>
-	public void Stop()
+	public override void Stop()
 	{
-		_isRunning = false;
+		IsRunning = false;
 
 		try
 		{
@@ -55,13 +51,13 @@ public class MacMountWatcher : IMountWatcher
 			// Ignore cleanup errors
 		}
 
-		_watchThread?.Join(TimeSpan.FromSeconds(5));
+		WatchThread?.Join(TimeSpan.FromSeconds(5));
 	}
 
 	/// <summary>
-	///     Get currently mounted volumes
+	///     Get the list of currently mounted volumes
 	/// </summary>
-	public IEnumerable<string> GetMountedVolumes()
+	public override List<string> GetMountedVolumes()
 	{
 		var mounts = new List<string>();
 
@@ -156,42 +152,6 @@ public class MacMountWatcher : IMountWatcher
 	}
 
 	/// <summary>
-	///     Fallback polling implementation if DiskArbitration fails
-	/// </summary>
-	private void RunPollingFallback()
-	{
-		var previousMounts = new HashSet<string>(GetMountedVolumes());
-		const int pollInterval = 2000;
-
-		while ( _isRunning )
-		{
-			try
-			{
-				Thread.Sleep(pollInterval);
-
-				var currentMounts = GetMountedVolumes();
-				var newMounts = currentMounts.Except(previousMounts).ToList();
-
-				foreach ( var mount in newMounts )
-				{
-					previousMounts.Add(mount);
-					OnMountDetected(mount);
-				}
-
-				var removedMounts = previousMounts.Except(currentMounts).ToList();
-				foreach ( var mount in removedMounts )
-				{
-					previousMounts.Remove(mount);
-				}
-			}
-			catch
-			{
-				Thread.Sleep(pollInterval);
-			}
-		}
-	}
-
-	/// <summary>
 	///     Called when a disk appears
 	/// </summary>
 	private void OnDiskAppeared(IntPtr diskRef, IntPtr context)
@@ -218,14 +178,6 @@ public class MacMountWatcher : IMountWatcher
 		// Disk disappeared - could trigger cleanup logic if needed
 	}
 
-	/// <summary>
-	///     Raise MountDetected event
-	/// </summary>
-	private void OnMountDetected(string mountPath)
-	{
-		MountDetected?.Invoke(this,
-			new MountDetectedEventArgs { MountPath = mountPath, DetectedAt = DateTime.UtcNow });
-	}
 
 	// DiskArbitration framework P/Invoke declarations
 	private delegate void DiskAppearedCallback(IntPtr diskRef, IntPtr context);

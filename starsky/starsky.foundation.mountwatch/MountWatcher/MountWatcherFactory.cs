@@ -1,8 +1,9 @@
 using System;
 using starsky.foundation.injection;
 using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.mountwatch.Services;
 
-namespace starsky.foundation.mountwatch.Services;
+namespace starsky.foundation.mountwatch.MountWatcher;
 
 /// <summary>
 ///     Factory for creating OS-specific mount watchers

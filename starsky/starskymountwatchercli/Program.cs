@@ -6,6 +6,7 @@ using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.mountwatch.ServiceInstaller;
 using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Helpers;
@@ -48,6 +49,7 @@ public static class Program
 		var mountDetector = serviceProvider.GetRequiredService<IMountDetector>();
 		var mountWatcherFactory = serviceProvider.GetRequiredService<IMountWatcherFactory>();
 		var cameraStorageDetector = serviceProvider.GetRequiredService<ICameraStorageDetector>();
+		var serviceInstaller = new ServiceInstaller(console, webLogger);
 
 		// Migrations before starting
 		await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
@@ -63,7 +65,8 @@ public static class Program
 			geoFileDownload,
 			mountDetector,
 			mountWatcherFactory,
-			cameraStorageDetector);
+			cameraStorageDetector,
+			serviceInstaller);
 
 		if ( !await service.StartWatcher(args) )
 		{
@@ -71,4 +74,3 @@ public static class Program
 		}
 	}
 }
-

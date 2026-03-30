@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Services;
 using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.mountwatch.ServiceInstaller;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -19,6 +21,9 @@ namespace starsky.foundation.mountwatch.Services;
 public class MountWatcherCli
 {
 	private const int DuplicateCheckWindowSeconds = 60;
+	private const string InstallArg = "--install";
+	private const string UninstallArg = "--uninstall";
+
 	private readonly AppSettings _appSettings;
 	private readonly ICameraStorageDetector _cameraStorageDetector;
 	private readonly IConsole _console;
@@ -29,6 +34,7 @@ public class MountWatcherCli
 	private readonly IMountDetector _mountDetector;
 	private readonly IMountWatcherFactory _mountWatcherFactory;
 	private readonly HashSet<string> _processedPaths = new();
+	private readonly IServiceInstaller _serviceInstaller;
 
 	public MountWatcherCli(
 		IImport importService,
@@ -39,7 +45,8 @@ public class MountWatcherCli
 		IGeoFileDownload geoFileDownload,
 		IMountDetector mountDetector,
 		IMountWatcherFactory mountWatcherFactory,
-		ICameraStorageDetector cameraStorageDetector)
+		ICameraStorageDetector cameraStorageDetector,
+		IServiceInstaller serviceInstaller)
 	{
 		_importService = importService;
 		_appSettings = appSettings;
@@ -50,10 +57,12 @@ public class MountWatcherCli
 		_mountDetector = mountDetector;
 		_mountWatcherFactory = mountWatcherFactory;
 		_cameraStorageDetector = cameraStorageDetector;
+		_serviceInstaller = serviceInstaller;
 	}
 
 	/// <summary>
-	///     Start the mount watcher and listen for camera mounts
+	///     Start the mount watcher and listen for camera mounts.
+	///     Handles --install / --uninstall before starting the watcher loop.
 	/// </summary>
 	public async Task<bool> StartWatcher(string[] args)
 	{
@@ -62,6 +71,93 @@ public class MountWatcherCli
 		_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 		_appSettings.ApplicationType = AppSettings.StarskyAppType.MountWatcher;
 
+		if ( ArgsHelper.NeedHelp(args) )
+		{
+			ShowHelp();
+			return true;
+		}
+
+		if ( NeedInstall(args) )
+		{
+			var execPath = GetCurrentExecutablePath();
+			return await _serviceInstaller.InstallAsync(execPath);
+		}
+
+		if ( NeedUninstall(args) )
+		{
+			return await _serviceInstaller.UninstallAsync();
+		}
+
+		return await RunWatcherAsync();
+	}
+
+	/// <summary>
+	///     Returns true if --install is present in args
+	/// </summary>
+	internal static bool NeedInstall(string[] args)
+	{
+		return args.Any(a => a.Equals(InstallArg, StringComparison.OrdinalIgnoreCase));
+	}
+
+	/// <summary>
+	///     Returns true if --uninstall is present in args
+	/// </summary>
+	internal static bool NeedUninstall(string[] args)
+	{
+		return args.Any(a => a.Equals(UninstallArg, StringComparison.OrdinalIgnoreCase));
+	}
+
+	/// <summary>
+	///     Get the full path to the running executable
+	/// </summary>
+	private static string GetCurrentExecutablePath()
+	{
+		return Environment.ProcessPath
+		       ?? Assembly.GetExecutingAssembly().Location;
+	}
+
+	/// <summary>
+	///     Display CLI help
+	/// </summary>
+	private void ShowHelp()
+	{
+		_console.WriteLine("Starsky Mount Watcher - automatically imports from camera storage");
+		_console.WriteLine("");
+		_console.WriteLine("Usage:");
+		_console.WriteLine("  starskymountwatchercli [options]");
+		_console.WriteLine("");
+		_console.WriteLine("Options:");
+		_console.WriteLine(
+			"  --install       Install as OS service (launchd/systemd/Windows Service)");
+		_console.WriteLine("  --uninstall     Remove the OS service");
+		_console.WriteLine("  --verbose, -v   Enable verbose logging");
+		_console.WriteLine("  --help, -h      Show this help");
+		_console.WriteLine("");
+		_console.WriteLine("Service setup:");
+		if ( OperatingSystem.IsMacOS() )
+		{
+			_console.WriteLine($"  macOS plist: {MacOsServiceInstaller.GetMacOsPlistPath()}");
+			_console.WriteLine("  Load: launchctl load <plist>");
+			_console.WriteLine("  Requires: Full Disk Access in System Preferences");
+		}
+		else if ( OperatingSystem.IsLinux() )
+		{
+			_console.WriteLine("  systemd: /etc/systemd/system/starsky-mountwatcher.service");
+			_console.WriteLine("  Enable: sudo systemctl enable starsky-mountwatcher");
+			_console.WriteLine("  Start:  sudo systemctl start starsky-mountwatcher");
+		}
+		else if ( OperatingSystem.IsWindows() )
+		{
+			_console.WriteLine("  Windows Service: sc create \"com.starsky.mountwatcher\" ...");
+			_console.WriteLine("  Start: sc start com.starsky.mountwatcher");
+		}
+	}
+
+	/// <summary>
+	///     Core watcher loop: download dependencies, then listen for mounts
+	/// </summary>
+	private async Task<bool> RunWatcherAsync()
+	{
 		try
 		{
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
