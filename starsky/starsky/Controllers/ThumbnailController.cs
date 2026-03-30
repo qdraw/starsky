@@ -12,6 +12,7 @@ using Microsoft.Extensions.Primitives;
 using starsky.feature.thumbnail.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -178,8 +179,8 @@ public sealed class ThumbnailController : Controller
 			return Json(data);
 		}
 
-		var sourcePath = (await _query.GetSubPathsByHashAsync(f)).FirstOrDefault(p => p == f);
-		
+		var sourcePath = ( await _query.GetSubPathsByHashAsync(f) ).FirstOrDefaultWithFallback(f);
+
 		var isThumbnailSupported =
 			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath);
 		switch ( isThumbnailSupported )
@@ -306,8 +307,7 @@ public sealed class ThumbnailController : Controller
 
 		// Cached view of item
 		// Need to check again for recently moved files
-		var sourcePath = (await _query.GetSubPathsByHashAsync(f))
-			.FirstOrDefault(p => p == f);
+		var sourcePath = ( await _query.GetSubPathsByHashAsync(f) ).FirstOrDefaultWithFallback(f);
 		if ( sourcePath == null )
 		{
 			// remove from cache
@@ -331,7 +331,7 @@ public sealed class ThumbnailController : Controller
 
 		if ( !isSingleItem )
 		{
-			// "Photo exist in database but " + "isSingleItem flag is Missing"
+			// "Photo exist in database but" + "isSingleItem flag is Missing"
 			SetExpiresResponseHeadersToZero();
 			Response.StatusCode = 202; // A conflict, that the thumb is not generated yet
 			return Json("Thumbnail is not ready yet");
@@ -397,7 +397,7 @@ public sealed class ThumbnailController : Controller
 		}
 
 		// Cached view of item
-		var sourcePath = (await _query.GetSubPathsByHashAsync(f)).FirstOrDefault(p => p == f);
+		var sourcePath = ( await _query.GetSubPathsByHashAsync(f) ).FirstOrDefaultWithFallback(f);
 		if ( sourcePath == null )
 		{
 			if ( await _query.GetObjectByFilePathAsync(filePath) == null )

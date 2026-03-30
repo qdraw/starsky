@@ -115,6 +115,11 @@ public class FakeIQueryException : IQuery
 		return Task.FromResult(GetSubPathByHash(fileHash));
 	}
 
+	public Task<List<string>> GetSubPathsByHashAsync(string fileHash)
+	{
+		return Task.FromResult(new List<string> { GetSubPathByHash(fileHash)! });
+	}
+
 	public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList,
 		int retryCount = 2)
 	{
