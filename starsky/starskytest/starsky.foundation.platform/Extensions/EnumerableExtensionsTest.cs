@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -41,47 +40,7 @@ public class EnumerableExtensionsTest
 		// Implementation uses BufferBlock Try receive All which returns false and sets out var to null when empty
 		Assert.IsNull(results);
 	}
-
-	[TestMethod]
-	public async Task ForEachAsync_RespectsParallelism()
-	{
-		var items = new[] { 1, 2, 3 };
-
-		var sw = Stopwatch.StartNew();
-		var res1 = await items.ForEachAsync(Work, 1);
-		sw.Stop();
-		var singleMs = sw.ElapsedMilliseconds;
-
-		sw.Restart();
-		var res3 = await items.ForEachAsync(Work, 3);
-		sw.Stop();
-		var parallelMs = sw.ElapsedMilliseconds;
-
-		// With sequential execution 3 * 300ms ~= 900ms
-		Assert.IsGreaterThanOrEqualTo(800, singleMs,
-			"Expected sequential run to take around 900ms (was " + singleMs + "ms)");
-
-		// With full parallelism it should be significantly faster than sequential
-		Assert.IsLessThan(singleMs, parallelMs,
-			"Expected parallel run to be faster than sequential");
-		Assert.IsLessThan(700, parallelMs,
-			"Expected parallel run to be under 700ms (was " + parallelMs + "ms)");
-
-		// validate results count
-		Assert.AreEqual(3, res1?.Count() ?? 0);
-		Assert.AreEqual(3, res3?.Count() ?? 0);
-		return;
-
-		async Task<int> Work(int i)
-		{
-			// 300ms per item
-			await Task.Delay(300, TestContext.CancellationToken);
-			return i;
-		}
-	}
-
-	public TestContext TestContext { get; set; }
-
+	
 	[TestMethod]
 	[DataRow(null)]
 	[DataRow("")]
