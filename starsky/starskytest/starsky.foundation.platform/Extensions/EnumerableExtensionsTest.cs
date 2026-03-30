@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
-using AggregateException = System.AggregateException;
 
 namespace starskytest.starsky.foundation.platform.Extensions;
 
@@ -120,7 +119,7 @@ public class EnumerableExtensionsTest
 		}
 	}
 
-	private class Person(string name)
+	private sealed class Person(string name)
 	{
 		public readonly string Name = name;
 	}
