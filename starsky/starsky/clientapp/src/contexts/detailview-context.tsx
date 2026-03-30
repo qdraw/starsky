@@ -119,7 +119,6 @@ function updateReducer(
   if (lastChanged !== undefined) {
     // Create a new array reference to ensure lastChanged change is detected
     updatedFileIndexItem.lastChanged = [...lastChanged];
-    console.log("[Reducer] Updated lastChanged:", updatedFileIndexItem.lastChanged);
   }
   if (orientation) updatedFileIndexItem.orientation = orientation;
   if (lastEdited) updatedFileIndexItem.lastEdited = lastEdited;

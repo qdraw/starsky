@@ -205,10 +205,6 @@ const DetailView: FC<IDetailView> = () => {
       ["LastEdited", "FileHash", "Src"].includes(item)
     );
     if (isThumbnailRefresh) {
-      console.log(
-        "[DetailView] Thumbnail regenerated, resetting error state for fileHash:",
-        state.fileIndexItem?.fileHash
-      );
       setIsError(false);
     }
   }, [state.fileIndexItem?.lastChanged, state.fileIndexItem?.fileHash]);
@@ -260,18 +256,10 @@ const DetailView: FC<IDetailView> = () => {
     state.fileIndexItem.lastChanged?.some((item) =>
       ["LastEdited", "FileHash", "Src"].includes(item)
     ) ?? false;
-  const thumbnailRefreshToken = shouldRefreshThumbnail
-    ? `${state.fileIndexItem.lastEdited ?? ""}-${state.lastUpdated?.toISOString() ?? ""}`
-    : undefined;
-
-  if (shouldRefreshThumbnail || thumbnailRefreshToken) {
-    console.log("[DetailView] Thumbnail refresh token calculated:", {
-      shouldRefreshThumbnail,
-      thumbnailRefreshToken,
-      lastChanged: state.fileIndexItem.lastChanged,
-      fileHash: state.fileIndexItem.fileHash
-    });
-  }
+  const thumbnailRefreshToken =
+    shouldRefreshThumbnail && state.lastUpdated && state.fileIndexItem?.lastEdited
+      ? `${state.fileIndexItem.lastEdited}-${state.lastUpdated}`
+      : undefined;
 
   return (
     <>
@@ -317,12 +305,6 @@ const DetailView: FC<IDetailView> = () => {
               : "main main--" + state.fileIndexItem.imageFormat
           }
         >
-          {/* {console.log("[DetailView] Render condition check:", { 
-            isError, 
-            fileHash: state.fileIndexItem.fileHash,
-            shouldRenderFileHashImage: !(isError && state.fileIndexItem.fileHash),
-            thumbnailRefreshToken
-          })} */}
           {isError && state.fileIndexItem.fileHash ? null : (
             <FileHashImage
               setError={setIsError}

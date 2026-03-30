@@ -62,12 +62,6 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
 
   useEffect(() => {
     const newUrl = buildImageUrl(props.fileHash, props.id, props.refreshToken);
-    console.log("[FileHashImage] imageUrl updating:", {
-      fileHash: props.fileHash,
-      oldUrl: imageUrl,
-      newUrl,
-      refreshToken: props.refreshToken
-    });
     setImageUrl(newUrl);
   }, [props.fileHash, props.id, props.refreshToken]);
 
