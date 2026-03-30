@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -177,7 +178,8 @@ public sealed class ThumbnailController : Controller
 			return Json(data);
 		}
 
-		var sourcePath = await _query.GetSubPathByHashAsync(f);
+		var sourcePath = (await _query.GetSubPathsByHashAsync(f)).FirstOrDefault(p => p == f);
+		
 		var isThumbnailSupported =
 			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath);
 		switch ( isThumbnailSupported )
@@ -304,7 +306,8 @@ public sealed class ThumbnailController : Controller
 
 		// Cached view of item
 		// Need to check again for recently moved files
-		var sourcePath = await _query.GetSubPathByHashAsync(f);
+		var sourcePath = (await _query.GetSubPathsByHashAsync(f))
+			.FirstOrDefault(p => p == f);
 		if ( sourcePath == null )
 		{
 			// remove from cache
@@ -342,6 +345,12 @@ public sealed class ThumbnailController : Controller
 			var fileName = HttpUtility.UrlEncode(FilenamesHelper.GetFileName(sourcePath));
 			Response.Headers.TryAdd("x-filename", new StringValues(fileName));
 			return File(fs1, MimeHelper.GetMimeType(fileExt));
+		}
+
+		if ( ExtensionRolesHelper.IsExtensionRawThumbnailSupported(sourcePath) )
+		{
+			await _manualThumbnailGenerationService.CreateJob(sourcePath);
+			SetExpiresResponseHeadersToZero();
 		}
 
 		Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
@@ -388,7 +397,7 @@ public sealed class ThumbnailController : Controller
 		}
 
 		// Cached view of item
-		var sourcePath = await _query.GetSubPathByHashAsync(f);
+		var sourcePath = (await _query.GetSubPathsByHashAsync(f)).FirstOrDefault(p => p == f);
 		if ( sourcePath == null )
 		{
 			if ( await _query.GetObjectByFilePathAsync(filePath) == null )
@@ -398,7 +407,7 @@ public sealed class ThumbnailController : Controller
 
 			if ( ExtensionRolesHelper.IsExtensionRawThumbnailSupported(sourcePath) )
 			{
-				await _manualThumbnailGenerationService.CreateJob(f);
+				await _manualThumbnailGenerationService.CreateJob(sourcePath);
 				SetExpiresResponseHeadersToZero();
 			}
 

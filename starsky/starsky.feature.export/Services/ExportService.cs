@@ -262,8 +262,8 @@ public class ExportService : IExport
 				// the file with the original name
 
 				var thumbFilename = Path.GetFileNameWithoutExtension(filePath);
-				var subPath = await _query.GetSubPathByHashAsync(thumbFilename);
-				var filename = subPath?.Split('/').LastOrDefault()!; // first a string
+				var subPath = (await _query.GetSubPathsByHashAsync(thumbFilename)).FirstOrDefault();
+				var filename = FilenamesHelper.GetFileName(subPath ?? string.Empty);
 				fileNames.Add(filename);
 				continue;
 			}

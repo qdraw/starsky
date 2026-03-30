@@ -146,6 +146,7 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
               src={src}
               onLoad={new OnLoadMouseAction(setImage, props.setError, props.setIsLoading).onLoad}
               onError={() => {
+                console.log("[PanAndZoomImage] Image load failed for src:", src);
                 if (!props.setError || !props.setIsLoading) {
                   return;
                 }
