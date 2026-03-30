@@ -115,9 +115,12 @@ This document is auto generated
 | __/api/publish-remote/status__                    | GET   | Missing summary                                                                 |
 | __/redirect/sub-path-relative__                   | GET   | Redirect or view path to relative paths using the structure-config (see /api/...|
 | __/api/search__                                   | GET   | Gets the list of search results (cached)                                        |
+| _Parameters: t (search query), p (page number), collections (to combine files with the same name before the extension)                    _ |
 | __/api/search/relative-objects__                  | GET   | Get relative paths in a search queryDoes not cover multiple pages (so it ends...|
+| _Parameters: f (subPath), t (search query), p (pageNumber (search query)), collections (to combine files with the                         _ |
+| _ same name before the extension)                                                                                                         _ |
 | __/api/search/trash__                             | GET   | List of files with the tag: !delete! (TrashKeyword.TrashKeywordString)Caching...|
-| __/api/search/remove-cache__                      | POST  | Clear search cache to show the correct results                                  |
+| __/api/search/remove-cache__                      | POST  | Clear the search cache to show the correct results                              |
 | __/api/suggest__                                  | GET   | Gets the list of search results (cached)                                        |
 | __/api/suggest/all__                              | GET   | Show all items in the search suggest cache                                      |
 | __/api/suggest/inflate__                          | GET   | To fill the cache with the data (only if cache is not already filled)           |
