@@ -3,7 +3,7 @@ slug: new-feature-raw-preview-extraction
 title: "New feature: RAW Preview Extraction"
 authors: dion
 tags: [photo management, software update]
-date: 2026-03-25
+date: 2026-03-30
 image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/1000/02_starsky_v052_kl1k.jpg
 ---
 
