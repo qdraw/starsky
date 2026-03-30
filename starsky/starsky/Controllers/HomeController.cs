@@ -92,9 +92,9 @@ public sealed class HomeController : Controller
 	/// <param name="t">search query</param>
 	/// <param name="p">page number</param>
 	/// <returns>client app html</returns>
-	/// <response code="200">client app html</response>
+	/// <response code="200">client app HTML</response>
 	/// <response code="301">Is Case Sensitive Redirect</response>
-	/// <response code="400">input not allowed</response>
+	/// <response code="400">input is not allowed</response>
 	/// <response code="401">Login first</response>
 	[Produces("text/html")]
 	[ProducesResponseType(200)]
@@ -116,7 +116,7 @@ public sealed class HomeController : Controller
 			return PhysicalFile(_clientApp, TextHtmlMimeType);
 		}
 
-		// if not case sensitive is already served
+		// if not case-sensitive, it is already served
 		if ( string.IsNullOrEmpty(t) )
 		{
 			return Redirect(AppendPathBasePrefix(Request.PathBase.Value, "/search"));
@@ -138,7 +138,7 @@ public sealed class HomeController : Controller
 	/// </summary>
 	/// <param name="p">page number</param>
 	/// <returns>client app html</returns>
-	/// <response code="200">client app html</response>
+	/// <response code="200">client app HTML</response>
 	/// <response code="301">Is Case Sensitive Redirect</response>
 	/// <response code="401">Login first</response>
 	[Produces("text/html")]
