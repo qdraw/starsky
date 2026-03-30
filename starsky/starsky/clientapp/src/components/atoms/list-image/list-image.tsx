@@ -95,7 +95,8 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     props.imageFormat !== ImageFormat.rw2 &&
     props.imageFormat !== ImageFormat.pef &&
     props.imageFormat !== ImageFormat.fff &&
-    props.imageFormat !== ImageFormat.x3f
+    props.imageFormat !== ImageFormat.x3f &&
+    props.imageFormat !== ImageFormat.heic
   ) {
     return (
       <div

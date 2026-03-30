@@ -17,6 +17,7 @@ export class OnLoadMouseAction {
 
   public onLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;
+    console.log("[OnLoadMouseAction] Image loaded successfully from src:", target.src);
     this.setImage({
       width: target.naturalWidth,
       height: target.naturalHeight

@@ -24,6 +24,7 @@ namespace starsky.foundation.database.Query;
 // ReSharper disable once RedundantExtendsListEntry
 public partial class Query : IQuery
 {
+	private const string GetSubPathsByHashAsyncCacheKey = "GetSubPathsByHashAsync";
 	private readonly AppSettings _appSettings;
 	private readonly IMemoryCache? _cache;
 	private readonly IWebLogger _logger;
@@ -135,12 +136,13 @@ public partial class Query : IQuery
 	/// </summary>
 	/// <param name="fileHash">the file hash</param>
 	/// <returns>file path can be cached</returns>
+	[Obsolete("Use GetSubPathsByHashAsync instead, this is not used anymore")]
 	public async Task<string?> GetSubPathByHashAsync(string fileHash)
 	{
 		// The CLI programs uses no cache
 		if ( !IsCacheEnabled() || _cache == null )
 		{
-			return await QueryGetItemByHashAsync(fileHash);
+			return ( await QueryGetItemsByHashAsync(fileHash) ).FirstOrDefault();
 		}
 
 		// Return values from IMemoryCache
@@ -153,10 +155,39 @@ public partial class Query : IQuery
 			return ( string ) cachedSubPath;
 		}
 
-		cachedSubPath = await QueryGetItemByHashAsync(fileHash);
+		cachedSubPath = ( await QueryGetItemsByHashAsync(fileHash) ).FirstOrDefault();
 
 		_cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48, 0, 0));
 		return ( string? ) cachedSubPath;
+	}
+
+	/// <summary>
+	///     Uses CachingDbName hashList
+	/// </summary>
+	/// <param name="fileHash">the file hash</param>
+	/// <returns>file path can be cached</returns>
+	public async Task<List<string>> GetSubPathsByHashAsync(string fileHash)
+	{
+		// The CLI programs uses no cache
+		if ( !IsCacheEnabled() || _cache == null )
+		{
+			return await QueryGetItemsByHashAsync(fileHash);
+		}
+
+		// Return values from IMemoryCache
+		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
+
+		// if result is not null return cached value
+		if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPaths)
+		     && !string.IsNullOrEmpty(( string? ) cachedSubPaths) )
+		{
+			return ( List<string> ) cachedSubPaths;
+		}
+
+		cachedSubPaths = await QueryGetItemsByHashAsync(fileHash);
+
+		_cache.Set(queryHashListCacheName, cachedSubPaths, new TimeSpan(48, 0, 0));
+		return ( List<string> ) cachedSubPaths;
 	}
 
 	/// <summary>
@@ -170,11 +201,18 @@ public partial class Query : IQuery
 			return;
 		}
 
+		// TODO: remove when hashList is removed
 		var queryCacheName = CachingDbName("hashList", fileHash);
-
 		if ( _cache.TryGetValue(queryCacheName, out _) )
 		{
 			_cache.Remove(queryCacheName);
+		}
+		// END TODO
+
+		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
+		if ( _cache.TryGetValue(queryHashListCacheName, out _) )
+		{
+			_cache.Remove(queryHashListCacheName);
 		}
 	}
 
@@ -589,24 +627,24 @@ public partial class Query : IQuery
 			.FirstOrDefault();
 	}
 
-	private async Task<string?> QueryGetItemByHashAsync(string fileHash)
+	private async Task<List<string>> QueryGetItemsByHashAsync(string fileHash)
 	{
-		async Task<string?> LocalQueryGetItemByHashAsync(ApplicationDbContext context)
+		async Task<List<string>> LocalQueryGetItemsByHashAsync(ApplicationDbContext context)
 		{
-			return ( await context.FileIndex.TagWith("QueryGetItemByHashAsync")
-				.FirstOrDefaultAsync(p => p.FileHash == fileHash
-				                          && p.IsDirectory != true
-				) )?.FilePath;
+			return await context.FileIndex.TagWith("QueryGetItemByHashAsync")
+				.Where(p => p.FileHash == fileHash
+				            && p.IsDirectory != true
+				).Select(p => p.FilePath).Cast<string>().ToListAsync();
 		}
 
 		try
 		{
-			return await LocalQueryGetItemByHashAsync(_context);
+			return await LocalQueryGetItemsByHashAsync(_context);
 		}
 		catch ( ObjectDisposedException )
 		{
 			var context = new InjectServiceScope(_scopeFactory).Context();
-			return await LocalQueryGetItemByHashAsync(context);
+			return await LocalQueryGetItemsByHashAsync(context);
 		}
 	}
 

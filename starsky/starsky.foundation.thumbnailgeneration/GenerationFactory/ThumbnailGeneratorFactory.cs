@@ -11,7 +11,7 @@ using starsky.foundation.video.Process.Interfaces;
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory;
 
 /// <summary>
-/// Please use IThumbnailService
+///     Please use IThumbnailService
 /// </summary>
 /// <param name="selectorStorage">storage</param>
 /// <param name="logger">logger</param>
@@ -35,6 +35,14 @@ public class ThumbnailGeneratorFactory(
 				embeddedRawThumbnailGenerator,
 				nativePreviewThumbnailGenerator,
 				new ImageSharpThumbnailGenerator(selectorStorage, logger)
+			], logger);
+		}
+
+		if ( ExtensionRolesHelper.IsExtensionImageHeic(filePath) )
+		{
+			return new CompositeThumbnailGenerator(
+			[
+				nativePreviewThumbnailGenerator
 			], logger);
 		}
 

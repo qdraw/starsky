@@ -152,7 +152,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		"x3f"
 	];
 
-	private static readonly List<string> ExtensionRawHeic =
+	private static readonly List<string> ExtensionHeic =
 	[
 		"heic"
 	];
@@ -218,7 +218,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 				{ ImageFormat.rw2, ExtensionRawRw2 },
 				{ ImageFormat.pef, ExtensionRawPef },
 				{ ImageFormat.x3f, ExtensionRawX3F },
-				{ ImageFormat.heic, ExtensionRawHeic },
+				{ ImageFormat.heic, ExtensionHeic },
 				{ ImageFormat.bmp, ExtensionBmp },
 				{ ImageFormat.gif, ExtensionGif },
 				{ ImageFormat.png, ExtensionPng },
@@ -252,7 +252,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawPef);
 			extensionList.AddRange(ExtensionRawFff);
 			extensionList.AddRange(ExtensionRawX3F);
-			extensionList.AddRange(ExtensionRawHeic);
+			extensionList.AddRange(ExtensionHeic);
 			extensionList.AddRange(ExtensionBmp);
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
@@ -297,7 +297,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawPef);
 			extensionList.AddRange(ExtensionRawFff);
 			extensionList.AddRange(ExtensionRawX3F);
-			extensionList.AddRange(ExtensionRawHeic);
+			extensionList.AddRange(ExtensionHeic);
 			return extensionList;
 		}
 	}
@@ -341,7 +341,6 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawPef);
 			extensionList.AddRange(ExtensionRawFff);
 			extensionList.AddRange(ExtensionRawX3F);
-			extensionList.AddRange(ExtensionRawHeic);
 			return extensionList;
 		}
 	}
@@ -391,7 +390,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionRawRaf);
 			extensionList.AddRange(ExtensionRawFff);
 			extensionList.AddRange(ExtensionRawX3F);
-			extensionList.AddRange(ExtensionRawHeic);
+			extensionList.AddRange(ExtensionHeic);
 			// reading does not allow xmp
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);
@@ -478,8 +477,12 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	{
 		return IsExtensionForce(filename.ToLowerInvariant(), ExtensionJpg);
 	}
-
-
+	
+	public static bool IsExtensionImageHeic(string? filename)
+	{
+		return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionHeic);
+	}
+	
 	/// <summary>
 	///     is this filename with extension a filetype that imageSharp can read/write
 	/// </summary>
@@ -489,6 +492,13 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	{
 		return IsExtensionForce(filename?.ToLowerInvariant(),
 			ExtensionImageSharpThumbnailSupportedList);
+	}
+
+	public static bool IsExtensionNativeSupported(string? filename)
+	{
+		List<string> nativeSupportList = [..ExtensionImageSharpThumbnailSupportedList, ..ExtensionHeic];
+		return IsExtensionForce(filename?.ToLowerInvariant(),
+			nativeSupportList);
 	}
 
 	public static bool IsExtensionVideoSupported(string? fileName)

@@ -36,7 +36,8 @@ public class ThumbnailService(
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
 		ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(e) ||
 		ExtensionRolesHelper.IsExtensionVideoSupported(e) ||
-		ExtensionRolesHelper.IsExtensionRawThumbnailSupported(e);
+		ExtensionRolesHelper.IsExtensionRawThumbnailSupported(e) || 
+		ExtensionRolesHelper.IsExtensionNativeSupported(e);
 
 	private readonly FolderToFileList _folderToFileList = new(selectorStorage);
 

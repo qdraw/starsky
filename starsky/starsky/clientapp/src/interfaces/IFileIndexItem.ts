@@ -66,6 +66,7 @@ export enum ImageFormat {
   pef = "pef",
   fff = "fff",
   x3f = "x3f",
+  heic = "heic",
 
   bmp = "bmp",
   gif = "gif",

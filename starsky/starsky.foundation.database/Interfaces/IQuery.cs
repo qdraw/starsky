@@ -28,14 +28,14 @@ public interface IQuery
 	Task<List<FileIndexItem>> GetAllFilesAsync(string subPath);
 
 	/// <summary>
-	///    Get all files and folders inside a folder (recursive), but this uses a database as source
+	///     Get all files and folders inside a folder (recursive), but this uses a database as source
 	/// </summary>
 	/// <param name="subPath">sub path style</param>
 	/// <returns>list of items</returns>
 	Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/");
 
 	/// <summary>
-	///    Get all files and folders inside a folder (recursive), but this uses a database as source
+	///     Get all files and folders inside a folder (recursive), but this uses a database as source
 	/// </summary>
 	/// <param name="filePathList">sub path style</param>
 	/// <returns>list of items</returns>
@@ -112,7 +112,7 @@ public interface IQuery
 	Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null);
 
 	/// <summary>
-	/// Cached result that contain values
+	///     Cached result that contain values
 	/// </summary>
 	/// <param name="inputFilePath"></param>
 	/// <param name="collections"></param>
@@ -148,7 +148,11 @@ public interface IQuery
 	/// <param name="directoryName">the path of the directory (there is no parent generation)</param>
 	bool RemoveCacheParentItem(string directoryName);
 
+	[Obsolete("use GetSubPathsByHashAsync instead")]
 	Task<string?> GetSubPathByHashAsync(string fileHash);
+
+	Task<List<string>> GetSubPathsByHashAsync(string fileHash);
+
 
 	Task<List<FileIndexItem>> GetObjectsByFileHashAsync(
 		List<string> fileHashesList, int retryCount = 2);
@@ -160,14 +164,14 @@ public interface IQuery
 	void ResetItemByHash(string fileHash);
 
 	/// <summary>
-	/// Get folders non-recursive, but this uses a database as source
+	///     Get folders non-recursive, but this uses a database as source
 	/// </summary>
 	/// <param name="subPath">which path (subpath style)</param>
 	/// <returns>items</returns>
 	Task<List<FileIndexItem>> GetFoldersAsync(string subPath);
 
 	/// <summary>
-	/// Get folders non-recursive, but this uses a database as source
+	///     Get folders non-recursive, but this uses a database as source
 	/// </summary>
 	/// <param name="filePaths">which paths (subpath style)</param>
 	/// <returns>items</returns>
