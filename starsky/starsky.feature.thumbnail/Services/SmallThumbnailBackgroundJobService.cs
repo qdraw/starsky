@@ -55,7 +55,7 @@ public class SmallThumbnailBackgroundJobService(
 		return true;
 	}
 
-	internal async Task WorkThumbnailGenerationLoop(string path)
+	public async Task WorkThumbnailGenerationLoop(string path)
 	{
 		await Task.Yield();
 		var result =

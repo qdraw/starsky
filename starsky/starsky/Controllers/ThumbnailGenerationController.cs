@@ -45,7 +45,7 @@ public sealed class ThumbnailGenerationController : Controller
 		}
 
 		// When the CPU is too high its gives an Error 500
-		await _thumbnailGenerationService.ManualBackgroundQueue(subPath);
+		await _thumbnailGenerationService.CreateJob(subPath);
 
 		return Json("Job started");
 	}

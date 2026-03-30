@@ -1,0 +1,50 @@
+﻿[
+  {
+    FileHash: 2QOYZWMPACZAJ2MABGMOZ6CCPY,
+    SubPath: /test/test.dng,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: false,
+    ErrorLog: true,
+    ErrorMessage: No embedded preview found in RAW file,
+    Size: ExtraLarge,
+    ImageFormat: webp,
+    SizeInPixels: 2000
+  },
+  {
+    FileHash: 2QOYZWMPACZAJ2MABGMOZ6CCPY,
+    SubPath: /test/test.dng,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: false,
+    ErrorLog: true,
+    ErrorMessage: No embedded preview found in RAW file,
+    Size: Large,
+    ImageFormat: webp,
+    SizeInPixels: 1000
+  },
+  {
+    FileHash: 2QOYZWMPACZAJ2MABGMOZ6CCPY,
+    SubPath: /test/test.dng,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: false,
+    ErrorLog: true,
+    ErrorMessage: No embedded preview found in RAW file,
+    Size: Small,
+    ImageFormat: webp,
+    SizeInPixels: 300
+  },
+  {
+    FileHash: 2QOYZWMPACZAJ2MABGMOZ6CCPY,
+    SubPath: /test/test.dng,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: false,
+    ErrorLog: true,
+    ErrorMessage: No embedded preview found in RAW file,
+    Size: TinyMeta,
+    ImageFormat: webp,
+    SizeInPixels: 150
+  }
+]

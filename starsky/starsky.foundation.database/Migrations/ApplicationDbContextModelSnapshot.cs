@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "8.0.23");
+                .HasAnnotation("ProductVersion", "8.0.25");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {

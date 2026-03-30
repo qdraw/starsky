@@ -57,17 +57,6 @@ public sealed class SmallThumbnailBackgroundJobHandlerTest
 	}
 
 	[TestMethod]
-	public async Task ExecuteAsync_InterfaceMismatch_ThrowsInvalidOperationException()
-	{
-		var handler = new SmallThumbnailBackgroundJobHandler(
-			new FakeISmallThumbnailBackgroundJobService());
-		var payload = new SmallThumbnailBackgroundPayload { Path = "test" };
-		var json = JsonSerializer.Serialize(payload);
-		await Assert.ThrowsExactlyAsync<InvalidOperationException>(() =>
-			handler.ExecuteAsync(json, CancellationToken.None));
-	}
-
-	[TestMethod]
 	public async Task ExecuteAsync_ValidPayload_CallsService()
 	{
 		var fakeQueue = new FakeThumbnailBackgroundTaskQueue();
@@ -99,6 +88,11 @@ public sealed class SmallThumbnailBackgroundJobHandlerTest
 		public Task<bool> CreateJob(bool? isAuthenticated, string? filePath)
 		{
 			return Task.FromResult(true);
+		}
+
+		public Task WorkThumbnailGenerationLoop(string path)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

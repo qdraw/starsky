@@ -36,7 +36,7 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 		_bgTaskQueue = bgTaskQueue;
 	}
 
-	public async Task ManualBackgroundQueue(string subPath)
+	public async Task CreateJob(string subPath)
 	{
 		// When the CPU is too high its gives an Error 500
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
@@ -52,7 +52,7 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 		});
 	}
 
-	internal async Task WorkThumbnailGeneration(string subPath)
+	public async Task WorkThumbnailGeneration(string subPath)
 	{
 		try
 		{

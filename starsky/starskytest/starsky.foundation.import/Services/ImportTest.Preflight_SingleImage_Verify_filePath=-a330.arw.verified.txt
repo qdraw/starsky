@@ -24,7 +24,7 @@
       Orientation: Horizontal,
       ImageWidth: 3880,
       ImageHeight: 2600,
-      ImageFormat: tiff,
+      ImageFormat: arw,
       SidecarExtensions: ,
       ShutterSpeed: ,
       Software: DSLR-A330 v1.10,
@@ -44,7 +44,7 @@
     MakeModel: Sony|DSLR-A330|Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II|,
     Artist: ,
     DateTimeFromFileName: false,
-    ImageFormat: tiff,
+    ImageFormat: arw,
     Size: 50000,
     Origin: 
   }

@@ -74,7 +74,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     return <div ref={target} data-test="list-image-img-error" className="img-box--error" />;
   }
 
-  // for example show gpx, raw and mp4 as icon
+  // for example show gpx as icon
   if (
     props.imageFormat !== ImageFormat.bmp &&
     props.imageFormat !== ImageFormat.gif &&
@@ -83,7 +83,20 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     props.imageFormat !== ImageFormat.png &&
     props.imageFormat !== ImageFormat.mp4 &&
     props.imageFormat !== ImageFormat.mjpeg &&
-    props.imageFormat !== ImageFormat.mts
+    props.imageFormat !== ImageFormat.mts &&
+    props.imageFormat !== ImageFormat.tiff &&
+    props.imageFormat !== ImageFormat.arw &&
+    props.imageFormat !== ImageFormat.dng &&
+    props.imageFormat !== ImageFormat.nef &&
+    props.imageFormat !== ImageFormat.raf &&
+    props.imageFormat !== ImageFormat.cr2 &&
+    props.imageFormat !== ImageFormat.cr3 &&
+    props.imageFormat !== ImageFormat.orf &&
+    props.imageFormat !== ImageFormat.rw2 &&
+    props.imageFormat !== ImageFormat.pef &&
+    props.imageFormat !== ImageFormat.fff &&
+    props.imageFormat !== ImageFormat.x3f &&
+    props.imageFormat !== ImageFormat.heic
   ) {
     return (
       <div

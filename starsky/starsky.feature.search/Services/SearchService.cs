@@ -24,7 +24,7 @@ namespace starsky.feature.search.Services;
 public class SearchService : ISearch
 {
 	/// <summary>
-	///     The amount of search results on one single page
+	///     The results of search on one single page
 	///     Including the trash page
 	/// </summary>
 	private const int NumberOfResultsInView = 120;
@@ -40,9 +40,9 @@ public class SearchService : ISearch
 	private string _defaultQuery = string.Empty;
 
 	/// <summary>
-	///     The orginal user search query
+	///     The original user search query
 	/// </summary>
-	private string _orginalSearchQuery = string.Empty;
+	private string _originalSearchQuery = string.Empty;
 
 	public SearchService(
 		ApplicationDbContext context,
@@ -57,14 +57,15 @@ public class SearchService : ISearch
 	}
 
 	/// <summary>
-	///     Search in database
+	///     Search in the database
 	/// </summary>
 	/// <param name="query">where to search in</param>
 	/// <param name="pageNumber">current page (0 = page 1)</param>
-	/// <param name="enableCache">enable searchcache (in trash this is disabled) </param>
+	/// <param name="enableCache">enable searchCache (in trash this is disabled) </param>
+	/// <param name="collections">to combine files with the same name before the extension</param>
 	/// <returns></returns>
 	public async Task<SearchViewModel> Search(string query = "",
-		int pageNumber = 0, bool enableCache = true)
+		int pageNumber = 0, bool enableCache = true, bool collections = true)
 	{
 		if ( !string.IsNullOrEmpty(query) && query.Length >= 500 )
 		{
@@ -80,13 +81,13 @@ public class SearchService : ISearch
 		if ( !enableCache ||
 		     _cache == null || _appSettings?.AddMemoryCache == false )
 		{
-			return SkipSearchItems(await SearchDirect(query), pageNumber);
+			return SkipSearchItems(await SearchDirect(query, collections), pageNumber);
 		}
 
 		// Return values from IMemoryCache
-		var querySearchCacheName = "search-" + query;
+		var querySearchCacheName = GetCacheKey(query, collections);
 
-		// Return Cached object if it exist
+		// Return Cached object if the cache exists
 		if ( _cache.TryGetValue(querySearchCacheName,
 			    out var objectSearchModel) )
 		{
@@ -94,7 +95,7 @@ public class SearchService : ISearch
 		}
 
 		// Try to catch a new object
-		objectSearchModel = await SearchDirect(query);
+		objectSearchModel = await SearchDirect(query, collections);
 		_cache.Set(querySearchCacheName, objectSearchModel, new TimeSpan(0, 10, 0));
 		return SkipSearchItems(objectSearchModel, pageNumber);
 	}
@@ -107,14 +108,26 @@ public class SearchService : ISearch
 			return null;
 		}
 
-		var queryCacheName = "search-" + query;
-		if ( !_cache.TryGetValue(queryCacheName, out _) )
+		var queryCacheName = GetCacheKey(query, true);
+		var queryCacheNameNoCollections = GetCacheKey(query, false);
+
+		var hasCollectionsCache = _cache.TryGetValue(queryCacheName, out _);
+		var hasNoCollectionsCache = _cache.TryGetValue(queryCacheNameNoCollections, out _);
+		if ( !hasCollectionsCache && !hasNoCollectionsCache )
 		{
 			return false;
 		}
 
 		_cache.Remove(queryCacheName);
+		_cache.Remove(queryCacheNameNoCollections);
 		return true;
+	}
+
+	private static string GetCacheKey(string query, bool collections)
+	{
+		return collections
+			? "search-" + query
+			: $"search-{query}-collections-false";
 	}
 
 	/// <summary>
@@ -130,7 +143,7 @@ public class SearchService : ISearch
 			return new SearchViewModel();
 		}
 
-		// Clone the item to avoid removing items from cache
+		// Clone the item to avoid removing items from the cache
 		searchModel = searchModel.Clone();
 		if ( searchModel.FileIndexItems == null )
 		{
@@ -160,11 +173,12 @@ public class SearchService : ISearch
 	/// </summary>
 	/// <param name="query">where to search on</param>
 	/// <returns></returns>
-	private async Task<SearchViewModel> SearchDirect(string? query = "")
+	private async Task<SearchViewModel> SearchDirect(string? query = "",
+		bool collections = true)
 	{
 		var stopWatch = Stopwatch.StartNew();
 
-		// Create an view model
+		// Create a view model
 		var model = new SearchViewModel
 		{
 			SearchQuery = query ?? string.Empty, Breadcrumb = ["/", query ?? string.Empty]
@@ -176,7 +190,7 @@ public class SearchService : ISearch
 			return model;
 		}
 
-		_orginalSearchQuery = model.SearchQuery;
+		_originalSearchQuery = model.SearchQuery;
 
 		model.SearchQuery = QuerySafe(model.SearchQuery);
 		model.SearchQuery = QueryShortcuts(model.SearchQuery);
@@ -186,13 +200,18 @@ public class SearchService : ISearch
 
 		model = SearchViewModel.NarrowSearch(model);
 
-		// Remove duplicates from list
+		// Remove duplicates from the list
 		model.FileIndexItems = model.FileIndexItems!
 			.Where(p => p.FilePath != null)
 			.GroupBy(s => s.FilePath)
 			.Select(grp => grp.FirstOrDefault())
 			.OrderBy(s => s!.FilePath)
 			.ToList()!;
+
+		if ( collections )
+		{
+			model.FileIndexItems = StackCollectionsForSearch(model.FileIndexItems);
+		}
 
 		model.SearchCount = model.FileIndexItems.Count;
 
@@ -211,8 +230,32 @@ public class SearchService : ISearch
 		return model;
 	}
 
+	private static List<FileIndexItem> StackCollectionsForSearch(
+		IReadOnlyCollection<FileIndexItem> fileIndexItems)
+	{
+		var grouped = fileIndexItems
+			.Where(p => p.FileCollectionName != null)
+			.GroupBy(p =>
+				$"{p.ParentDirectory ?? string.Empty}/{p.FileCollectionName}").ToList();
+
+		var result = new List<FileIndexItem>();
+
+		// Match Index-like duplicate stacking per collection key:
+		// for duplicate groups keep renderable image variants, which hides sidecars like xmp.
+		foreach ( var group in grouped.Where(group => group.Count() > 1) )
+		{
+			result.AddRange(group.Where(item =>
+				ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(item.FileName)));
+		}
+
+		result.AddRange(grouped.Where(group
+			=> group.Count() == 1).Select(group => group.First()));
+
+		return [.. result.OrderByDescending(p => p.DateTime)];
+	}
+
 	/// <summary>
-	///     Main method to query the database, in other function there is sorting needed
+	///     Main method to query the database, somewhere else is sorting needed
 	/// </summary>
 	/// <param name="sourceList">IQueryable database</param>
 	/// <param name="model">temp output model</param>
@@ -381,7 +424,7 @@ public class SearchService : ISearch
 	///     Parse search query for -Tags and default search queries e.g. "test"
 	/// </summary>
 	/// <param name="model">Search model</param>
-	/// <returns>filled fields in model</returns>
+	/// <returns>filled fields in the model</returns>
 	public SearchViewModel MatchSearch(SearchViewModel model)
 	{
 		// return nulls to avoid errors
@@ -399,18 +442,18 @@ public class SearchService : ISearch
 			SearchItemName(model, itemName);
 		}
 
-		// handle keywords without for example -Tags, or -DateTime prefix
+		// handle keywords without, for example -Tags, or -DateTime prefix
 		model.ParseDefaultOption(_defaultQuery);
 
-		model.SearchQuery = _orginalSearchQuery;
+		model.SearchQuery = _originalSearchQuery;
 		return model;
 	}
 
 	/// <summary>
-	///     Search for e.g. -Tags:"test"
+	///     Search for e.g. '-Tags:"test"'
 	/// </summary>
 	/// <param name="model">Model</param>
-	/// <param name="itemName">e.g. Tags or Description</param>
+	/// <param name="itemName">e.g., Tags or Description</param>
 	private void SearchItemName(SearchViewModel model, string itemName)
 	{
 		if ( model.SearchQuery == null )
@@ -427,15 +470,15 @@ public class SearchService : ISearch
 
 		// new: unescaped
 		// (:|=|;|>|<|-)((["'])(\\?.)*?\3|[\w\!\~\-_\.\/:,;]+)( \|\|| \&\&)?
-		var inurlRegex = new Regex(
+		var inUrlRegex = new Regex(
 			"-" + itemName +
 			"(:|=|;|>|<|-)(([\"\'])(\\\\?.)*?\\3|[\\w\\!\\~\\-_\\.\\/:,;]+)( \\|\\|| \\&\\&)?",
 			RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
-		_defaultQuery = inurlRegex.Replace(_defaultQuery, "");
+		_defaultQuery = inUrlRegex.Replace(_defaultQuery, "");
 		// the current query is removed from the list, so the next item will not search on it
 
-		var regexInUrlMatches = inurlRegex.Matches(model.SearchQuery);
+		var regexInUrlMatches = inUrlRegex.Matches(model.SearchQuery);
 		if ( regexInUrlMatches.Count == 0 )
 		{
 			return;
@@ -519,7 +562,7 @@ public class SearchService : ISearch
 	/// <returns>replaced Url</returns>
 	public static string QueryShortcuts(string query)
 	{
-		// should be ignoring case
+		// should be ignoring Case
 		query = Regex.Replace(query, "-inurl", "-FilePath",
 			RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 		return query;
@@ -546,7 +589,7 @@ public class SearchService : ISearch
 	/// <summary>
 	///     Roundup
 	/// </summary>
-	/// <param name="toRound">to round e.g. 10</param>
+	/// <param name="toRound">to round e.g., 10</param>
 	/// <returns>roundup value</returns>
 	public static int RoundUp(int toRound)
 	{

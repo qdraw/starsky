@@ -49,7 +49,10 @@ public sealed class SearchServiceTest
 
 	public async Task InsertSearchData()
 	{
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("schipholairplane")) )
+		var getSubPathsByHash =
+			( await _query.GetSubPathsByHashAsync("schipholairplane") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(getSubPathsByHash) )
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{
@@ -71,7 +74,10 @@ public sealed class SearchServiceTest
 			});
 		}
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("lelystadcentrum")) )
+		var getSubPathsByHash1 =
+			( await _query.GetSubPathsByHashAsync("lelystadcentrum") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(getSubPathsByHash1) )
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{
@@ -96,7 +102,10 @@ public sealed class SearchServiceTest
 			});
 		}
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("lelystadcentrum2")) )
+		var lelystadcentrum2 =
+			( await _query.GetSubPathsByHashAsync("lelystadcentrum2") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(lelystadcentrum2) )
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{
@@ -115,9 +124,12 @@ public sealed class SearchServiceTest
 			});
 		}
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("stationdeletedfile")) )
+		var stationdeletedfile =
+			( await _query.GetSubPathsByHashAsync("stationdeletedfile") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(stationdeletedfile) )
 		{
-			// add directory to search for
+			// add Directory to search for
 			await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "stations",
@@ -141,7 +153,10 @@ public sealed class SearchServiceTest
 			});
 		}
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("cityloop9")) )
+		var cityloop9 =
+			( await _query.GetSubPathsByHashAsync("cityloop9") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(cityloop9) )
 		{
 			for ( var i = 0; i < NumberOfFakeResults; i++ )
 			{
@@ -200,6 +215,83 @@ public sealed class SearchServiceTest
 	}
 
 	[TestMethod]
+	public async Task SearchService_CollectionsEnabled_StacksRawAndJpeg()
+	{
+		var itemJpg = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "collections_search_item.jpg",
+			ParentDirectory = "/collections_search",
+			FileHash = "collections-search-jpg",
+			Tags = "collectionssearch",
+			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
+			DateTime = DateTime.UtcNow,
+			IsDirectory = false
+		});
+
+		var itemRaw = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "collections_search_item.dng",
+			ParentDirectory = "/collections_search",
+			FileHash = "collections-search-dng",
+			Tags = "collectionssearch",
+			ImageFormat = ExtensionRolesHelper.ImageFormat.dng,
+			DateTime = DateTime.UtcNow.AddSeconds(-1),
+			IsDirectory = false
+		});
+
+		try
+		{
+			var result = await _search.Search("collectionssearch");
+
+			Assert.AreEqual(1, result.SearchCount);
+			Assert.AreEqual("collections_search_item.jpg", result.FileIndexItems?[0].FileName);
+		}
+		finally
+		{
+			await _query.RemoveItemAsync(itemJpg);
+			await _query.RemoveItemAsync(itemRaw);
+		}
+	}
+
+	[TestMethod]
+	public async Task SearchService_CollectionsDisabled_KeepsRawAndJpeg()
+	{
+		var itemJpg = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "collections_search_item2.jpg",
+			ParentDirectory = "/collections_search",
+			FileHash = "collections-search2-jpg",
+			Tags = "collectionssearch2",
+			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
+			DateTime = DateTime.UtcNow,
+			IsDirectory = false
+		});
+
+		var itemRaw = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "collections_search_item2.dng",
+			ParentDirectory = "/collections_search",
+			FileHash = "collections-search2-dng",
+			Tags = "collectionssearch2",
+			ImageFormat = ExtensionRolesHelper.ImageFormat.dng,
+			DateTime = DateTime.UtcNow.AddSeconds(-1),
+			IsDirectory = false
+		});
+
+		try
+		{
+			var result = await _search.Search("collectionssearch2", 0, true, false);
+
+			Assert.AreEqual(2, result.SearchCount);
+		}
+		finally
+		{
+			await _query.RemoveItemAsync(itemJpg);
+			await _query.RemoveItemAsync(itemRaw);
+		}
+	}
+
+	[TestMethod]
 	public void SearchService_RemoveCache_Disabled_Test()
 	{
 		var search = new SearchService(_dbContext, new FakeIWebLogger()); // cache is null!
@@ -250,7 +342,7 @@ public sealed class SearchServiceTest
 	public async Task SearchService_ShouldShowXmpORJpegFile()
 	{
 		await InsertSearchData();
-		Assert.AreEqual(4, ( await _search.Search("-imageformat:xmp,jpg") ).SearchCount);
+		Assert.AreEqual(3, ( await _search.Search("-imageformat:xmp,jpg") ).SearchCount);
 	}
 
 	[TestMethod]
@@ -258,7 +350,7 @@ public sealed class SearchServiceTest
 	{
 		await InsertSearchData();
 
-		Assert.AreEqual(2,
+		Assert.AreEqual(1,
 			( await _search.Search("-filename:lelystadcentrum -imageformat:xmp,jpg") )
 			.SearchCount);
 	}
@@ -272,7 +364,7 @@ public sealed class SearchServiceTest
 			await _search.Search(
 				"-filePath:/stations/lelystadcentrum -imageformat:\"xmp,jpg\"");
 
-		Assert.AreEqual(2, result.SearchCount);
+		Assert.AreEqual(1, result.SearchCount);
 	}
 
 	[TestMethod]

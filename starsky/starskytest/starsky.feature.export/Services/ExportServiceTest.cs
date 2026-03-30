@@ -161,7 +161,7 @@ public class ExportServiceTest
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
 		var fileName =
 			await exportService.FilePathToFileNameAsync(
-				new List<string> { "/test/not_found.jpg" }.ToArray(), true);
+				["/test/not_found.jpg"], true);
 		Assert.IsNull(fileName.FirstOrDefault());
 	}
 }

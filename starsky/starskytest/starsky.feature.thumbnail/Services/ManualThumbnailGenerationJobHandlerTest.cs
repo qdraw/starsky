@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.thumbnail.Interfaces;
 using starsky.feature.thumbnail.Services;
 using starskytest.FakeMocks;
 
@@ -74,13 +73,5 @@ public sealed class ManualThumbnailGenerationJobHandlerTest
 		await handler.ExecuteAsync(payload, CancellationToken.None);
 
 		Assert.AreEqual("/test", thumbnailService.Inputs[0].Item1);
-	}
-
-	private sealed class FakeIManualThumbnailGenerationService : IManualThumbnailGenerationService
-	{
-		public Task ManualBackgroundQueue(string subPath)
-		{
-			return Task.CompletedTask;
-		}
 	}
 }

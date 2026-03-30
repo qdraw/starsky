@@ -11,6 +11,7 @@ using Microsoft.Extensions.Primitives;
 using starsky.feature.thumbnail.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -29,20 +30,24 @@ public sealed class ThumbnailController : Controller
 	private readonly ThumbnailImageFormat _imageFormat;
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
+	private readonly IManualThumbnailGenerationService _manualThumbnailGenerationService;
 	private readonly IQuery _query;
-	private readonly ISmallThumbnailBackgroundJobService _thumbnailBgService;
+	private readonly ISmallThumbnailBackgroundJobService _smallThumbnailBgService;
+
 	private readonly IStorage _thumbnailStorage;
 
 	public ThumbnailController(IQuery query, ISelectorStorage selectorStorage,
 		AppSettings appSettings, IWebLogger logger,
-		ISmallThumbnailBackgroundJobService thumbnailBgService)
+		ISmallThumbnailBackgroundJobService smallThumbnailBgService,
+		IManualThumbnailGenerationService manualThumbnailGenerationService)
 	{
 		_query = query;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		_imageFormat = appSettings.ThumbnailImageFormat;
 		_logger = logger;
-		_thumbnailBgService = thumbnailBgService;
+		_smallThumbnailBgService = smallThumbnailBgService;
+		_manualThumbnailGenerationService = manualThumbnailGenerationService;
 	}
 
 	/// <summary>
@@ -104,7 +109,7 @@ public sealed class ThumbnailController : Controller
 		if ( !_thumbnailStorage.ExistFile(
 			    ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Large, _imageFormat)) )
 		{
-			_thumbnailBgService.CreateJob(HttpContext.User.Identity?.IsAuthenticated, f);
+			_smallThumbnailBgService.CreateJob(HttpContext.User.Identity?.IsAuthenticated, f);
 			SetExpiresResponseHeadersToZero();
 			return NotFound("hash not found");
 		}
@@ -173,7 +178,8 @@ public sealed class ThumbnailController : Controller
 			return Json(data);
 		}
 
-		var sourcePath = await _query.GetSubPathByHashAsync(f);
+		var sourcePath = ( await _query.GetSubPathsByHashAsync(f) ).FirstOrDefaultWithFallback(f);
+
 		var isThumbnailSupported =
 			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath);
 		switch ( isThumbnailSupported )
@@ -300,7 +306,7 @@ public sealed class ThumbnailController : Controller
 
 		// Cached view of item
 		// Need to check again for recently moved files
-		var sourcePath = await _query.GetSubPathByHashAsync(f);
+		var sourcePath = ( await _query.GetSubPathsByHashAsync(f) ).FirstOrDefaultWithFallback(f);
 		if ( sourcePath == null )
 		{
 			// remove from cache
@@ -324,7 +330,7 @@ public sealed class ThumbnailController : Controller
 
 		if ( !isSingleItem )
 		{
-			// "Photo exist in database but " + "isSingleItem flag is Missing"
+			// "Photo exist in database but" + "isSingleItem flag is Missing"
 			SetExpiresResponseHeadersToZero();
 			Response.StatusCode = 202; // A conflict, that the thumb is not generated yet
 			return Json("Thumbnail is not ready yet");
@@ -339,6 +345,9 @@ public sealed class ThumbnailController : Controller
 			Response.Headers.TryAdd("x-filename", new StringValues(fileName));
 			return File(fs1, MimeHelper.GetMimeType(fileExt));
 		}
+
+		await _manualThumbnailGenerationService.CreateJob(sourcePath);
+		SetExpiresResponseHeadersToZero();
 
 		Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
 		return Json("Thumbnail is not supported; for example you try to view a raw file");
@@ -384,7 +393,7 @@ public sealed class ThumbnailController : Controller
 		}
 
 		// Cached view of item
-		var sourcePath = await _query.GetSubPathByHashAsync(f);
+		var sourcePath = ( await _query.GetSubPathsByHashAsync(f) ).FirstOrDefaultWithFallback(f);
 		if ( sourcePath == null )
 		{
 			if ( await _query.GetObjectByFilePathAsync(filePath) == null )
@@ -404,8 +413,26 @@ public sealed class ThumbnailController : Controller
 			return File(fs1, MimeHelper.GetMimeType(fileExt));
 		}
 
+		const ThumbnailSize preferredSize = ThumbnailSize.ExtraLarge;
+		const ThumbnailSize altSize = ThumbnailSize.Large;
+
+		if ( _thumbnailStorage.ExistFile(
+			    ThumbnailNameHelper.Combine(f, preferredSize, _imageFormat)) )
+		{
+			return ReturnThumbnailResult(f, false, preferredSize);
+		}
+
+		if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, altSize, _imageFormat)) )
+		{
+			return ReturnThumbnailResult(f, false, altSize);
+		}
+
+		// When non web format, make a thumbnail image
+		await _manualThumbnailGenerationService.CreateJob(filePath);
+		SetExpiresResponseHeadersToZero();
+
 		Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
-		return Json("Thumbnail is not supported; for example you try to view a raw file");
+		return Json("Thumbnail is not supported or ready");
 	}
 
 	/// <summary>

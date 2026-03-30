@@ -2,7 +2,7 @@
 slug: project-starsky-2022-a-year-in-review
 title: Project Starsky 2022 a year in review
 authors: dion
-tags: [photo mangement, year in review]
+tags: [photo management, year in review]
 date: 2022-12-31
 image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/embeded/01_video_search_cloud_starsky_v050.gif
 ---

@@ -112,7 +112,8 @@ public sealed class MetaUpdateControllerTest
 			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(_createAnImage
 				.DbPath, ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
+		var fileSubPath = ( await _query.GetSubPathsByHashAsync(fileHashCode) ).FirstOrDefault();
+		if ( string.IsNullOrEmpty(fileSubPath) )
 		{
 			var isDelete = string.Empty;
 			if ( delete )

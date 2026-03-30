@@ -40,7 +40,7 @@ public sealed class QueryGetAllFilesTest
 
 	public TestContext TestContext { get; set; }
 
-	private IServiceScopeFactory CreateNewScope()
+	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
 		services.AddDbContext<ApplicationDbContext>(options =>
@@ -51,8 +51,9 @@ public sealed class QueryGetAllFilesTest
 
 	private async Task InsertSearchData()
 	{
-		if ( !string.IsNullOrEmpty(
-			    await _query.GetSubPathByHashAsync("09876543456789")) )
+		var item = (
+			await _query.GetSubPathsByHashAsync("09876543456789") ).FirstOrDefault();
+		if ( !string.IsNullOrEmpty(item) )
 		{
 			return;
 		}

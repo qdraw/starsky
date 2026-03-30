@@ -24,6 +24,7 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA330Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6700;
+using starskytest.FakeCreateAn.CreateAnImageEOS7DRawCr2;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 using VerifyMSTest;
@@ -102,17 +103,19 @@ public sealed class ImportTest : VerifyBase
 	[DataRow("/test.mp4")]
 	[DataRow("/a330.arw")]
 	[DataRow("/a6700.arw")]
+	[DataRow("/eos7d.cr2")]
 	public async Task Preflight_SingleImage_Verify(string filePath)
 	{
 		var appSettings = new AppSettings();
 		var fakeIStorage = new FakeIStorage(["/"],
-			["/a6660.arw", "/test.mp4", "/a330.arw", "/a6700.arw"],
+			["/a6660.arw", "/test.mp4", "/a330.arw", "/a6700.arw", "/eos7d.cr2"],
 			new List<byte[]>
 			{
 				new CreateAnImageA6600Raw().Bytes.ToArray(),
 				CreateAnQuickTimeMp4.Bytes.ToArray(),
 				new CreateAnImageA330Raw().Bytes.ToArray(),
-				new CreateAnImageA6700().Bytes.ToArray()
+				new CreateAnImageA6700().Bytes.ToArray(),
+				new CreateAnImageEOS7DRawCr2().Bytes.ToArray()
 			});
 
 		var importService = new Import(new FakeSelectorStorage(fakeIStorage), appSettings,

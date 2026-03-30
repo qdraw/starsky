@@ -14,4 +14,9 @@ public class FakeISmallThumbnailBackgroundJobService : ISmallThumbnailBackground
 		FilePaths.Add(filePath ?? string.Empty);
 		return Task.FromResult(true);
 	}
+
+	public Task WorkThumbnailGenerationLoop(string path)
+	{
+		throw new System.NotImplementedException();
+	}
 }

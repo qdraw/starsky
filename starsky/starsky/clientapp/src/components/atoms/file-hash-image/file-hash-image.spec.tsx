@@ -287,4 +287,62 @@ describe("FileHashImage", () => {
 
     component.unmount();
   });
+
+  it("should append refreshToken to thumbnail url", () => {
+    const panZoomObject = createPanZoomObjectResetCallback();
+    jest.spyOn(PanAndZoomImage, "default").mockImplementationOnce(panZoomObject);
+
+    const component = render(
+      <FileHashImage
+        fileHash="hash"
+        id="/test.jpg"
+        orientation={Orientation.Horizontal}
+        refreshToken="token value"
+      />
+    );
+
+    const img = screen.queryByRole("img") as HTMLImageElement;
+    expect(img.src).toBe(
+      "http://localhost" +
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true) +
+        "&v=token%20value"
+    );
+
+    component.unmount();
+  });
+
+  it("should update image url when refreshToken changes", () => {
+    const panZoomObject = createPanZoomObjectResetCallback();
+    jest
+      .spyOn(PanAndZoomImage, "default")
+      .mockImplementationOnce(panZoomObject)
+      .mockImplementationOnce(panZoomObject);
+
+    const component = render(
+      <FileHashImage
+        fileHash="hash"
+        id="/test.jpg"
+        orientation={Orientation.Horizontal}
+        refreshToken="token-1"
+      />
+    );
+
+    component.rerender(
+      <FileHashImage
+        fileHash="hash"
+        id="/test.jpg"
+        orientation={Orientation.Horizontal}
+        refreshToken="token-2"
+      />
+    );
+
+    const img = screen.queryByRole("img") as HTMLImageElement;
+    expect(img.src).toBe(
+      "http://localhost" +
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true) +
+        "&v=token-2"
+    );
+
+    component.unmount();
+  });
 });

@@ -82,6 +82,78 @@ public sealed class SearchControllerTest
 	}
 
 	[TestMethod]
+	public async Task SearchController_Index_Collections_DefaultTrue_StacksRawAndJpeg()
+	{
+		var itemJpg = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "search_collections_item.jpg",
+			ParentDirectory = "/search_collections",
+			FileHash = "search-collections-jpg",
+			Tags = "search, collections",
+			IsDirectory = false
+		});
+
+		var itemRaw = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "search_collections_item.dng",
+			ParentDirectory = "/search_collections",
+			FileHash = "search-collections-dng",
+			Tags = "search,collections",
+			IsDirectory = false
+		});
+
+		try
+		{
+			var controller = new SearchController(_search);
+			var jsonResult = await controller.Index("search collections") as JsonResult;
+			var searchViewResult = jsonResult?.Value as SearchViewModel;
+
+			Assert.AreEqual(1, searchViewResult?.SearchCount);
+		}
+		finally
+		{
+			await _query.RemoveItemAsync(itemJpg);
+			await _query.RemoveItemAsync(itemRaw);
+		}
+	}
+
+	[TestMethod]
+	public async Task SearchController_Index_Collections_False_KeepsRawAndJpeg()
+	{
+		var itemJpg = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "search_collections_item2.jpg",
+			ParentDirectory = "/search_collections",
+			FileHash = "search-collections2-jpg",
+			Tags = "search, collections2",
+			IsDirectory = false
+		});
+
+		var itemRaw = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "search_collections_item2.dng",
+			ParentDirectory = "/search_collections",
+			FileHash = "search-collections2-dng",
+			Tags = "search, collections2",
+			IsDirectory = false
+		});
+
+		try
+		{
+			var controller = new SearchController(_search);
+			var jsonResult = await controller.Index("search collections2", 0, false) as JsonResult;
+			var searchViewResult = jsonResult?.Value as SearchViewModel;
+
+			Assert.AreEqual(2, searchViewResult?.SearchCount);
+		}
+		finally
+		{
+			await _query.RemoveItemAsync(itemJpg);
+			await _query.RemoveItemAsync(itemRaw);
+		}
+	}
+
+	[TestMethod]
 	public async Task SearchControllerTest_TrashZeroItems()
 	{
 		var controller = new SearchController(_search);
@@ -154,6 +226,39 @@ public sealed class SearchControllerTest
 
 		await _query.RemoveItemAsync(item0);
 		await _query.RemoveItemAsync(item1);
+	}
+
+	[TestMethod]
+	public async Task SearchControllerTest_RelativeApi_CollectionsFalseInArgs()
+	{
+		var item0 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "test_collections.jpg", ParentDirectory = "/", Tags = "testcollections",
+			FileHash = "FileHashCollections1"
+		});
+		var item1 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "test_collections1.jpg", ParentDirectory = "/", Tags = "testcollections",
+			FileHash = "FileHashCollections2"
+		});
+
+		try
+		{
+			var controller = new SearchController(_search);
+			var jsonResult =
+				await controller.SearchRelative("/test_collections.jpg", "testcollections", 0,
+					false)
+					as JsonResult;
+			var relativeObjects = jsonResult?.Value as RelativeObjects;
+
+			Assert.IsNotNull(relativeObjects);
+			Assert.AreEqual("false", relativeObjects?.Args?["collections"]);
+		}
+		finally
+		{
+			await _query.RemoveItemAsync(item0);
+			await _query.RemoveItemAsync(item1);
+		}
 	}
 
 	[TestMethod]

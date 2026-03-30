@@ -42,8 +42,10 @@ public sealed class SearchSuggestionsServiceTest
 	[TestInitialize]
 	public async Task TestInitialize()
 	{
-		if ( string.IsNullOrEmpty(
-			    await _query.GetSubPathByHashAsync("schipholairplane2--suggestions")) )
+		var fileSubPath = ( await _query.GetSubPathsByHashAsync("schipholairplane2--suggestions") )
+			.FirstOrDefault();
+
+		if ( string.IsNullOrEmpty(fileSubPath) )
 		{
 			for ( var i = 0; i < 9; i++ )
 			{
@@ -57,7 +59,9 @@ public sealed class SearchSuggestionsServiceTest
 			}
 		}
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("schipholairplane1")) )
+		var schipholairplane1 = ( await _query.GetSubPathsByHashAsync("schipholairplane1") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(schipholairplane1) )
 		{
 			for ( var i = 0; i < 9; i++ )
 			{

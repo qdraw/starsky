@@ -16,9 +16,11 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -55,7 +57,8 @@ public sealed class DownloadPhotoControllerTest
 			ColorClass = ColorClassParser.Color.Winner // 1
 		};
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("home0012304590")) )
+		var fileHash = ( await _query.GetSubPathsByHashAsync("home0012304590") ).FirstOrDefault();
+		if ( string.IsNullOrEmpty(fileHash) )
 		{
 			await _query.AddItemAsync(item);
 		}
@@ -150,17 +153,29 @@ public sealed class DownloadPhotoControllerTest
 		Assert.AreEqual(404, actionResult.StatusCode);
 	}
 
+	private static ThumbnailService SetThumbnailService(IStorage storage)
+	{
+		var selectorStorage = new FakeSelectorStorage(storage);
+		return new ThumbnailService(selectorStorage,
+			new FakeIWebLogger(), new AppSettings(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
+			new ThumbnailGeneratorFactory(selectorStorage, new FakeIWebLogger(),
+				new FakeIVideoProcess(selectorStorage),
+				new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(selectorStorage,
+					new FakeEmbeddedRawThumbnailService(selectorStorage),
+					new FakeIWebLogger())));
+	}
+
 	[TestMethod]
 	public async Task DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test()
 	{
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
-		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var storage = ArrangeStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var thumbnailService = SetThumbnailService(storage);
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
@@ -177,12 +192,9 @@ public sealed class DownloadPhotoControllerTest
 	public async Task DownloadPhoto_WrongInputNotFound()
 	{
 		// Arrange
-		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var storage = ArrangeStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var thumbnailService = SetThumbnailService(storage);
 
 		// Act
 		var controller =
@@ -285,12 +297,9 @@ public sealed class DownloadPhotoControllerTest
 	{
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
-		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var storage = ArrangeStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var thumbnailService = SetThumbnailService(storage);
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
@@ -368,8 +377,11 @@ public sealed class DownloadPhotoControllerTest
 			ColorClass = ColorClassParser.Color.Winner
 		};
 
-		if ( string.IsNullOrEmpty(
-			    await _query.GetSubPathByHashAsync("home0012304590_nomissinghash")) )
+		var getSubPathsByHash =
+			( await _query.GetSubPathsByHashAsync("home0012304590_nomissinghash") )
+			.FirstOrDefault();
+
+		if ( string.IsNullOrEmpty(getSubPathsByHash) )
 		{
 			await _query.AddItemAsync(fileIndexItem);
 		}

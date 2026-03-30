@@ -93,7 +93,8 @@ public sealed class DeleteControllerTest
 		var fileHashCode = ( await new FileHash(_iStorage, new FakeIWebLogger())
 			.GetHashCodeAsync(_createAnImage.DbPath, ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 
-		if ( !string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
+		var item = ( await _query.GetSubPathsByHashAsync(fileHashCode) ).FirstOrDefault();
+		if ( !string.IsNullOrEmpty(item) )
 		{
 			return await _query.GetObjectByFilePathAsync(_createAnImage.DbPath);
 		}

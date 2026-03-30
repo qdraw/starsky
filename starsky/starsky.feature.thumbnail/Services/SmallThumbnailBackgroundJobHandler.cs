@@ -21,18 +21,9 @@ public sealed class SmallThumbnailBackgroundJobHandler(
 			throw new ArgumentException("Missing payload", nameof(payloadJson));
 		}
 
-		var payload = JsonSerializer.Deserialize<SmallThumbnailBackgroundPayload>(payloadJson);
-		if ( payload == null )
-		{
-			throw new ArgumentException("Invalid payload", nameof(payloadJson));
-		}
+		var payload = JsonSerializer.Deserialize<SmallThumbnailBackgroundPayload>(payloadJson) ??
+		              throw new ArgumentException("Invalid payload", nameof(payloadJson));
 
-		if ( service is not SmallThumbnailBackgroundJobService concrete )
-		{
-			throw new InvalidOperationException(
-				"SmallThumbnailBackgroundJobService implementation mismatch");
-		}
-
-		await concrete.WorkThumbnailGenerationLoop(payload.Path);
+		await service.WorkThumbnailGenerationLoop(payload.Path);
 	}
 }

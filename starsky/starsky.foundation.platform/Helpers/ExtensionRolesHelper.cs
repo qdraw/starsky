@@ -28,13 +28,20 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		webp = 16,
 		psd = 17,
 
-		// Sidecar files
-		xmp = 30,
+		// raw formats
+		dng = 20, // adobe
+		arw = 21, // sony
+		nef = 22, // nikon
+		cr2 = 23, // canon
+		cr3 = 24, // canon 
+		raf = 25, // Fuji
+		orf = 26, // olympus 
+		rw2 = 27, // Panasonic
+		pef = 28, // pentax
+		x3f = 29, // sigma
+		// fff hasselblad has tiff previews
 
-		/// <summary>
-		///     Extension: .meta.json
-		/// </summary>
-		meta_json = 31,
+		heic = 32,
 
 		// documents
 		gpx = 40,
@@ -48,90 +55,152 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		// archives
 		zip = 60,
 
+		// Sidecar files
+		xmp = 70,
+
+		/// <summary>
+		///     Extension: .meta.json
+		/// </summary>
+		meta_json = 71,
+
 		// folder
 		directory = 1000
 	}
 
+	public const int ImageFormatByteSize = 400;
+
 	/// <summary>
 	///     Xmp sidecar file
 	/// </summary>
-	private static readonly List<string> ExtensionXmp = new() { "xmp" };
+	private static readonly List<string> ExtensionXmp = ["xmp"];
 
 	/// <summary>
 	///     Meta.json sidecar files
 	/// </summary>
 	private static readonly List<string>
-		ExtensionJsonSidecar = new() { "meta.json" };
+		ExtensionJsonSidecar = ["meta.json"];
 
 
 	/// <summary>
 	///     List of .jpg,.jpeg extensions
 	/// </summary>
-	private static readonly List<string> ExtensionJpg = new() { "jpg", "jpeg" };
+	private static readonly List<string> ExtensionJpg = ["jpg", "jpeg"];
 
 	/// <summary>
-	///     Tiff based, tiff, including raws
-	///     tiff, arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon,  orf:olympus, rw2:panasonic,
-	///     pef:pentax,
-	///     Not supported due Image Processing Error x3f:sigma, crw:canon
+	///     Tiff
 	/// </summary>
-	private static readonly List<string> ExtensionTiff = new()
-	{
-		"tiff",
-		"arw",
-		"dng",
-		"nef",
-		"raf",
-		"cr2",
-		"orf",
-		"rw2",
+	private static readonly List<string> ExtensionTiff = ["tiff"];
+
+	/// <summary>
+	///     Raws
+	///     arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon,  orf:olympus, rw2:panasonic,
+	///     pef:pentax, fff:hasselblad, x3f:sigma,
+	///     Not supported: crw:canon
+	/// </summary>
+	private static readonly List<string> ExtensionRawSony =
+	[
+		"arw"
+	];
+
+	private static readonly List<string> ExtensionRawAdobe =
+	[
+		"dng"
+	];
+
+	private static readonly List<string> ExtensionRawNef =
+	[
+		"nef"
+	];
+
+	private static readonly List<string> ExtensionRawRaf =
+	[
+		"raf"
+	];
+
+	private static readonly List<string> ExtensionRawCr2 =
+	[
+		"cr2"
+	];
+
+	private static readonly List<string> ExtensionRawCr3 =
+	[
+		"cr3"
+	];
+
+	private static readonly List<string> ExtensionRawOrf =
+	[
+		"orf"
+	];
+
+	private static readonly List<string> ExtensionRawRw2 =
+	[
+		"rw2"
+	];
+
+	private static readonly List<string> ExtensionRawPef =
+	[
 		"pef"
-	};
+	];
+
+	private static readonly List<string> ExtensionRawFff =
+	[
+		"fff"
+	];
+
+	private static readonly List<string> ExtensionRawX3F =
+	[
+		"x3f"
+	];
+
+	private static readonly List<string> ExtensionHeic =
+	[
+		"heic"
+	];
 
 	/// <summary>
 	///     Bitmaps
 	/// </summary>
-	private static readonly List<string> ExtensionBmp = new() { "bmp" };
+	private static readonly List<string> ExtensionBmp = ["bmp"];
 
 	/// <summary>
-	///     Gif based images
+	///     GIF based images
 	/// </summary>
-	private static readonly List<string> ExtensionGif = new() { "gif" };
+	private static readonly List<string> ExtensionGif = ["gif"];
 
 	/// <summary>
 	///     PNG
 	/// </summary>
-	private static readonly List<string> ExtensionPng = new() { "png" };
+	private static readonly List<string> ExtensionPng = ["png"];
 
 	/// <summary>
 	///     GPX, list of geolocations
 	/// </summary>
-	private static readonly List<string> ExtensionGpx = new() { "gpx" };
+	private static readonly List<string> ExtensionGpx = ["gpx"];
 
 	/// <summary>
 	///     Mp4 Videos in h264 codex / And Quicktime
 	/// </summary>
-	private static readonly List<string> ExtensionMp4 = new() { "mp4", "mov" };
+	private static readonly List<string> ExtensionMp4 = ["mp4", "mov"];
 
 	/// <summary>
 	///     Video with MTS stream
 	/// </summary>
-	private static readonly List<string> ExtensionMts = new() { "mts" };
+	private static readonly List<string> ExtensionMts = ["mts"];
 
 	/// <summary>
 	///     MJPEG video stream
 	/// </summary>
-	private static readonly List<string> ExtensionMjpeg = new() { "mjpeg", "mov" };
+	private static readonly List<string> ExtensionMjpeg = ["mjpeg", "mov"];
 
 	/// <summary>
 	///     WebP imageFormat
 	/// </summary>
-	private static readonly List<string> ExtensionWebp = new() { "webp" };
+	private static readonly List<string> ExtensionWebp = ["webp"];
 
 	/// <summary>
 	///     Psd imageFormat
 	/// </summary>
-	private static readonly List<string> ExtensionPsd = new() { "psd" };
+	private static readonly List<string> ExtensionPsd = ["psd"];
 
 	private static readonly Dictionary<ImageFormat, List<string>>
 		MapFileTypesToExtensionDictionary =
@@ -139,6 +208,17 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			{
 				{ ImageFormat.jpg, ExtensionJpg },
 				{ ImageFormat.tiff, ExtensionTiff },
+				{ ImageFormat.arw, ExtensionRawSony },
+				{ ImageFormat.dng, ExtensionRawAdobe },
+				{ ImageFormat.nef, ExtensionRawNef },
+				{ ImageFormat.raf, ExtensionRawRaf },
+				{ ImageFormat.cr2, ExtensionRawCr2 },
+				{ ImageFormat.cr3, ExtensionRawCr3 },
+				{ ImageFormat.orf, ExtensionRawOrf },
+				{ ImageFormat.rw2, ExtensionRawRw2 },
+				{ ImageFormat.pef, ExtensionRawPef },
+				{ ImageFormat.x3f, ExtensionRawX3F },
+				{ ImageFormat.heic, ExtensionHeic },
 				{ ImageFormat.bmp, ExtensionBmp },
 				{ ImageFormat.gif, ExtensionGif },
 				{ ImageFormat.png, ExtensionPng },
@@ -161,6 +241,18 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionJpg);
 			extensionList.AddRange(ExtensionTiff);
+			extensionList.AddRange(ExtensionRawSony);
+			extensionList.AddRange(ExtensionRawAdobe);
+			extensionList.AddRange(ExtensionRawNef);
+			extensionList.AddRange(ExtensionRawRaf);
+			extensionList.AddRange(ExtensionRawCr2);
+			extensionList.AddRange(ExtensionRawCr3);
+			extensionList.AddRange(ExtensionRawOrf);
+			extensionList.AddRange(ExtensionRawRw2);
+			extensionList.AddRange(ExtensionRawPef);
+			extensionList.AddRange(ExtensionRawFff);
+			extensionList.AddRange(ExtensionRawX3F);
+			extensionList.AddRange(ExtensionHeic);
 			extensionList.AddRange(ExtensionBmp);
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
@@ -194,6 +286,18 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionMjpeg);
 			extensionList.AddRange(ExtensionWebp);
 			extensionList.AddRange(ExtensionPsd);
+			extensionList.AddRange(ExtensionRawSony);
+			extensionList.AddRange(ExtensionRawAdobe);
+			extensionList.AddRange(ExtensionRawNef);
+			extensionList.AddRange(ExtensionRawRaf);
+			extensionList.AddRange(ExtensionRawCr2);
+			extensionList.AddRange(ExtensionRawCr3);
+			extensionList.AddRange(ExtensionRawOrf);
+			extensionList.AddRange(ExtensionRawRw2);
+			extensionList.AddRange(ExtensionRawPef);
+			extensionList.AddRange(ExtensionRawFff);
+			extensionList.AddRange(ExtensionRawX3F);
+			extensionList.AddRange(ExtensionHeic);
 			return extensionList;
 		}
 	}
@@ -216,6 +320,27 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionWebp);
+			return extensionList;
+		}
+	}
+
+	public static List<string> ExtensionRawThumbnailSupportedList
+	{
+		get
+		{
+			var extensionList = new List<string>();
+			extensionList.AddRange(ExtensionTiff);
+			extensionList.AddRange(ExtensionRawSony);
+			extensionList.AddRange(ExtensionRawAdobe);
+			extensionList.AddRange(ExtensionRawNef);
+			extensionList.AddRange(ExtensionRawRaf);
+			extensionList.AddRange(ExtensionRawCr2);
+			extensionList.AddRange(ExtensionRawCr3);
+			extensionList.AddRange(ExtensionRawOrf);
+			extensionList.AddRange(ExtensionRawRw2);
+			extensionList.AddRange(ExtensionRawPef);
+			extensionList.AddRange(ExtensionRawFff);
+			extensionList.AddRange(ExtensionRawX3F);
 			return extensionList;
 		}
 	}
@@ -253,6 +378,19 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionGif);
 			// Used for raw files =>
 			extensionList.AddRange(ExtensionTiff);
+			// Raw formats need external XMP
+			extensionList.AddRange(ExtensionRawSony);
+			extensionList.AddRange(ExtensionRawAdobe);
+			extensionList.AddRange(ExtensionRawNef);
+			extensionList.AddRange(ExtensionRawCr2);
+			extensionList.AddRange(ExtensionRawCr3);
+			extensionList.AddRange(ExtensionRawOrf);
+			extensionList.AddRange(ExtensionRawRw2);
+			extensionList.AddRange(ExtensionRawPef);
+			extensionList.AddRange(ExtensionRawRaf);
+			extensionList.AddRange(ExtensionRawFff);
+			extensionList.AddRange(ExtensionRawX3F);
+			extensionList.AddRange(ExtensionHeic);
 			// reading does not allow xmp
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);
@@ -330,6 +468,22 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	}
 
 	/// <summary>
+	///     List of non-raw files supported by the raw preview extractor,
+	/// which only supports jpg previews
+	/// </summary>
+	/// <param name="filename">the name of the file with extenstion</param>
+	/// <returns>true, </returns>
+	public static bool IsExtensionJpeg(string filename)
+	{
+		return IsExtensionForce(filename.ToLowerInvariant(), ExtensionJpg);
+	}
+
+	public static bool IsExtensionImageHeic(string? filename)
+	{
+		return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionHeic);
+	}
+
+	/// <summary>
 	///     is this filename with extension a filetype that imageSharp can read/write
 	/// </summary>
 	/// <param name="filename">the name of the file with extenstion</param>
@@ -340,10 +494,23 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			ExtensionImageSharpThumbnailSupportedList);
 	}
 
+	public static bool IsExtensionNativeSupported(string? filename)
+	{
+		List<string> nativeSupportList =
+			[..ExtensionImageSharpThumbnailSupportedList, ..ExtensionHeic];
+		return IsExtensionForce(filename?.ToLowerInvariant(),
+			nativeSupportList);
+	}
 
 	public static bool IsExtensionVideoSupported(string? fileName)
 	{
 		return IsExtensionForce(fileName?.ToLowerInvariant(), ExtensionVideoSupportedList);
+	}
+
+	public static bool IsExtensionRawThumbnailSupported(string? filename)
+	{
+		return IsExtensionForce(filename?.ToLowerInvariant(),
+			ExtensionRawThumbnailSupportedList);
 	}
 
 	/// <summary>
@@ -497,7 +664,6 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		return buffer;
 	}
 
-
 	/// <summary>
 	///     Get the format of the image by looking the first bytes
 	///     Stream is Flushed / Disposed afterward
@@ -511,7 +677,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return ImageFormat.notfound;
 		}
 
-		var format = GetImageFormat(ReadBuffer(stream, 68));
+		var format = GetImageFormat(ReadBuffer(stream, ImageFormatByteSize));
 		return format;
 	}
 
@@ -527,7 +693,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		var bmp = "BM"u8.ToArray(); // BMP
 		var gif = "GIF"u8.ToArray(); // GIF
 		var png = new byte[] { 137, 80, 78, 71 }; // PNG
-		var pdf = new byte[] { 37, 80, 68, 70, 45 }; // pdf
+		var pdf = "%PDF-"u8.ToArray(); // pdf
 
 		if ( bmp.SequenceEqual(bytes.Take(bmp.Length)) )
 		{
@@ -544,9 +710,10 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return ImageFormat.png;
 		}
 
-		if ( GetImageFormatTiff(bytes) != null )
+		var tiff = GetImageFormatRawTiff(bytes);
+		if ( tiff != null )
 		{
-			return ImageFormat.tiff;
+			return ( ImageFormat ) tiff;
 		}
 
 		if ( GetImageFormatJpeg(bytes) != null )
@@ -564,9 +731,10 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return ImageFormat.gpx;
 		}
 
-		if ( GetImageFormatMpeg4(bytes) != null )
+		var mpeg4 = GetImageFormatMpeg4(bytes);
+		if ( mpeg4 != null )
 		{
-			return ImageFormat.mp4;
+			return ( ImageFormat ) mpeg4;
 		}
 
 		if ( GetImageFormatMJpegFormat(bytes) != null )
@@ -668,62 +836,66 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		return null;
 	}
 
-	private static ImageFormat? GetImageFormatTiff(byte[] bytes)
+	private static ImageFormat? GetImageFormatRawTiff(byte[] bytes)
 	{
-		var tiff = new byte[] { 73, 73, 42 }; // TIFF
-		var tiff2 = new byte[] { 77, 77, 42 }; // TIFF
-		var dng = new byte[] { 77, 77, 0 }; // DNG? //0
-		var olympusRaw = new byte[] { 73, 73, 82 };
-		var fujiFilmRaw = new byte[] { 70, 85, 74 };
-		var panasonicRaw = new byte[] { 73, 73, 85, 0 };
-
-		if ( tiff.SequenceEqual(bytes.Take(tiff.Length)) )
+		if ( bytes.Length < 4 )
 		{
-			return ImageFormat.tiff;
+			return null;
 		}
 
-		if ( tiff2.SequenceEqual(bytes.Take(tiff2.Length)) )
+		var value = ExtensionRaw.Detect(bytes);
+		if ( value != ImageFormat.unknown )
 		{
-			return ImageFormat.tiff;
+			return value;
 		}
 
-		if ( dng.SequenceEqual(bytes.Take(dng.Length)) )
+		var hasLittleEndianTiffHeader =
+			bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x2A && bytes[3] == 0x00;
+		var hasBigEndianTiffHeader =
+			bytes[0] == 0x4D && bytes[1] == 0x4D && bytes[2] == 0x00 && bytes[3] == 0x2A;
+		if ( !hasLittleEndianTiffHeader && !hasBigEndianTiffHeader )
 		{
-			return ImageFormat.tiff;
+			return null;
 		}
 
-		if ( olympusRaw.SequenceEqual(bytes.Take(olympusRaw.Length)) )
-		{
-			return ImageFormat.tiff;
-		}
-
-		if ( fujiFilmRaw.SequenceEqual(bytes.Take(fujiFilmRaw.Length)) )
-		{
-			return ImageFormat.tiff;
-		}
-
-		if ( panasonicRaw.SequenceEqual(bytes.Take(panasonicRaw.Length)) )
-		{
-			return ImageFormat.tiff;
-		}
-
-		return null;
+		// Default TIFF
+		return ImageFormat.tiff;
 	}
 
-	private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
+
+	internal static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
 	{
-		var fTypMp4 = new byte[] { 102, 116, 121, 112 }; //  00  00  00  [skip this byte]
-		// 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
+		if ( bytes.Length < 8 )
+		{
+			return null;
+		}
+
+		// added here to avoid false positives on mp4 videos with cr3 headers,
+		// as cr3 is based on mp4 container
+		if ( ExtensionRaw.HasCr3Header(bytes) )
+		{
+			return ImageFormat.cr3;
+		}
+
+		// added here to avoid false positives on mp4 videos with heic headers
+		if ( ExtensionRaw.HasHeicHeader(bytes) )
+		{
+			return ImageFormat.heic;
+		}
+
+		var fTypMp4 = "ftyp"u8.ToArray(); //  00 00 00 [skip this byte]
+		// 66 74 79 70 QuickTime Container 3GG, 3GP, 3G2 	FLV
 
 		if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
 		{
 			return ImageFormat.mp4;
 		}
 
-		var fTypIsoM = new byte[] { 102, 116, 121, 112, 105, 115, 111, 109 };
+		var fTypIsoM = "ftypisom"u8.ToArray();
+		// 00 00 00 [skip this byte] 66 74 79 70 69 73 6F 6D ISO Base Media file format
 		if ( fTypIsoM.SequenceEqual(bytes.Take(fTypIsoM.Length)) )
 		{
-			return ImageFormat.xmp;
+			return ImageFormat.mp4;
 		}
 
 		return null;
@@ -747,7 +919,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return null;
 		}
 
-		int[] possibleOffsets = { 0, 4 };
+		int[] possibleOffsets = [0, 4];
 
 		foreach ( var offset in possibleOffsets )
 		{
