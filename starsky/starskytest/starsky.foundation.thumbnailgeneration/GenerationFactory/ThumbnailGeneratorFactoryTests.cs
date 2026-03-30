@@ -29,6 +29,8 @@ public class ThumbnailGeneratorFactoryTests
 	[DataRow("test.mp4", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.txt", typeof(NotSupportedFallbackThumbnailGenerator))]
 	[DataRow("test.arw", typeof(CompositeThumbnailGenerator))]
+	[DataRow("test.gif", typeof(CompositeThumbnailGenerator))]
+	[DataRow("test.heic", typeof(CompositeThumbnailGenerator))]
 	public void GetGenerator_ReturnsCorrectGenerator(string filePath, Type expectedType)
 	{
 		// Act

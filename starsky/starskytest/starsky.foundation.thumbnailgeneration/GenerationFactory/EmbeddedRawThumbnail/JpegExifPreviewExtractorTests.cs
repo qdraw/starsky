@@ -98,10 +98,13 @@ public class JpegExifPreviewExtractorTests
 	public async Task TryExtract_Exception()
 	{
 		var logger = new FakeIWebLogger();
-		var storage = new FakeIStorage(new Exception("EXCEPTION"));
+		var storage = new FakeIStorage(["/"], ["/test.jpg"], [],
+			null, null, new Exception("EXCEPTION"));
 		var extractor = new JpegExifPreviewExtractor(logger, new FakeSelectorStorage(storage));
 
-		var res = await extractor.TryExtract("missing.jpg", null);
+		var res = await extractor.TryExtract("/test.jpg", null);
+		Assert.Contains(p => p.Item2 != null && p.Item2.Contains("EXCEPTION"),
+			logger.TrackedExceptions);
 		Assert.IsFalse(res);
 	}
 

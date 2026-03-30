@@ -139,7 +139,7 @@ public partial class Query : IQuery
 	public async Task<List<string>> GetSubPathsByHashAsync(string fileHash)
 	{
 		// The CLI programs uses no cache
-		if ( !IsCacheEnabled() || _cache == null )
+		if ( !IsCacheEnabled() )
 		{
 			return await QueryGetItemsByHashAsync(fileHash);
 		}
@@ -147,8 +147,8 @@ public partial class Query : IQuery
 		// Return values from IMemoryCache
 		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
 
-		// if result is not null return cached value
-		if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPaths)
+		// if the result is not null return cached value
+		if ( _cache!.TryGetValue(queryHashListCacheName, out var cachedSubPaths)
 		     && ( List<string>? ) cachedSubPaths != null &&
 		     ( ( List<string?> ) cachedSubPaths ).Any(p => p != null) )
 		{

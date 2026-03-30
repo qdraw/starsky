@@ -6,8 +6,13 @@ namespace starskytest.FakeMocks;
 
 public class FakeIManualThumbnailGenerationService : IManualThumbnailGenerationService
 {
+	public bool WasCreateJobCalled;
+	public string? LastSubPath;
+
 	public Task CreateJob(string subPath)
 	{
+		WasCreateJobCalled = true;
+		LastSubPath = subPath;
 		return Task.CompletedTask;
 	}
 
@@ -17,6 +22,7 @@ public class FakeIManualThumbnailGenerationService : IManualThumbnailGenerationS
 		{
 			throw new InvalidOperationException();
 		}
+
 		return Task.CompletedTask;
 	}
 }

@@ -209,6 +209,31 @@ public sealed class QueryTest
 	}
 
 	[TestMethod]
+	public async Task GetSubPathsByHashAsync_CacheDisabled_UsesDirectQuery()
+	{
+		var serviceScope = CreateNewScope();
+		var scope = serviceScope.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		// Arrange: add an item with a file hash
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/path1") { FileHash = "myhash" },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		// Create Query with cache disabled by passing null for IMemoryCache
+		var queryNoCache = new Query(dbContext, new AppSettings { Verbose = true }, serviceScope,
+			_logger, null);
+
+		// Act
+		var result = await queryNoCache.GetSubPathsByHashAsync("myhash");
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.HasCount(1, result);
+		Assert.AreEqual("/path1", result.FirstOrDefault());
+	}
+
+	[TestMethod]
 	public async Task GetAllRecursiveAsync_GetResult()
 	{
 		var appSettings = new AppSettings
