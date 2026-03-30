@@ -348,7 +348,7 @@ public sealed class ThumbnailController : Controller
 
 		await _manualThumbnailGenerationService.CreateJob(sourcePath);
 		SetExpiresResponseHeadersToZero();
-		
+
 		Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
 		return Json("Thumbnail is not supported; for example you try to view a raw file");
 	}
@@ -401,12 +401,6 @@ public sealed class ThumbnailController : Controller
 				return NotFound("not in index");
 			}
 
-			if ( ExtensionRolesHelper.IsExtensionRawThumbnailSupported(sourcePath) )
-			{
-				await _manualThumbnailGenerationService.CreateJob(sourcePath!);
-				SetExpiresResponseHeadersToZero();
-			}
-
 			sourcePath = filePath;
 		}
 
@@ -433,8 +427,12 @@ public sealed class ThumbnailController : Controller
 			return ReturnThumbnailResult(f, false, altSize);
 		}
 
+		// When non web format, make a thumbnail image
+		await _manualThumbnailGenerationService.CreateJob(filePath);
+		SetExpiresResponseHeadersToZero();
+
 		Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
-		return Json("Thumbnail is not supported; for example you try to view a raw file");
+		return Json("Thumbnail is not supported or ready");
 	}
 
 	/// <summary>

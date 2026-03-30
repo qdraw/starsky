@@ -545,6 +545,43 @@ public sealed class ThumbnailControllerTest
 	}
 
 	[TestMethod]
+	public async Task ByZoomFactor_FilePathRaw_TriggersManualCreateJobAndSetsNoCacheHeaders()
+	{
+		// Arrange: query has no mapping for hash, but filePath exists and is raw
+		var storage = ArrangeStorage();
+		var query = new FakeIQuery();
+
+		await query.AddItemAsync(new FileIndexItem("/test.dng") { FileHash = "test_dng" });
+
+		var manual = new FakeIManualThumbnailGenerationService();
+		var controller = new ThumbnailController(query, new FakeSelectorStorage(storage),
+			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			manual);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		// Act: call with a filePath that is raw (.dng exists in ArrangeStorage)
+		var result = await controller.ByZoomFactorAsync("test_dng", 1, "/test.dng");
+
+		// Assert the manual job called with filePath
+		Assert.IsTrue(manual.WasCreateJobCalled,
+			"Expected CreateJob to be invoked for RAW file path");
+		Assert.AreEqual("/test.dng", manual.LastSubPath);
+
+		// Assert response headers set to no-cache
+		controller.Response.Headers.TryGetValue("Cache-Control", out var cc);
+		Assert.Contains("no-cache", cc.ToString());
+
+		controller.Response.Headers.TryGetValue("Pragma", out var pragma);
+		Assert.AreEqual("no-cache", pragma.ToString());
+
+		controller.Response.Headers.TryGetValue("Expires", out var expires);
+		Assert.AreEqual("0", expires.ToString());
+
+		// And the status code is set to 210 (thumbnail not supported / conflict)
+		Assert.AreEqual(210, controller.Response.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task ByZoomFactor_ShowOriginalImage_API_Test()
 	{
 		var createAnImage = await InsertSearchData();
