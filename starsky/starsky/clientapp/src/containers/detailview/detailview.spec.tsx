@@ -798,11 +798,19 @@ describe("DetailView", () => {
 
       const initialState: IDetailView = {
         ...defaultState,
-        fileIndexItem: { ...defaultState.fileIndexItem, fileHash: "before-thumbnail", lastChanged: ["Src"] }
+        fileIndexItem: {
+          ...defaultState.fileIndexItem,
+          fileHash: "before-thumbnail",
+          lastChanged: ["Src"]
+        }
       };
       const updatedState: IDetailView = {
         ...defaultState,
-        fileIndexItem: { ...defaultState.fileIndexItem, fileHash: "after-thumbnail", lastChanged: ["Src"] }
+        fileIndexItem: {
+          ...defaultState.fileIndexItem,
+          fileHash: "after-thumbnail",
+          lastChanged: ["Src"]
+        }
       };
 
       // Use a simple wrapper that receives contextValue as prop so rerender works cleanly
