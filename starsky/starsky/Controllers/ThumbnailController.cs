@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -421,6 +420,20 @@ public sealed class ThumbnailController : Controller
 			var fileExt = FilenamesHelper.GetFileExtensionWithoutDot(sourcePath);
 			Response.Headers.Append("x-filename", FilenamesHelper.GetFileName(sourcePath));
 			return File(fs1, MimeHelper.GetMimeType(fileExt));
+		}
+
+		const ThumbnailSize preferredSize = ThumbnailSize.ExtraLarge;
+		const ThumbnailSize altSize = ThumbnailSize.Large;
+
+		if ( _thumbnailStorage.ExistFile(
+			    ThumbnailNameHelper.Combine(f, preferredSize, _imageFormat)) )
+		{
+			return ReturnThumbnailResult(f, false, preferredSize);
+		}
+
+		if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, altSize, _imageFormat)) )
+		{
+			return ReturnThumbnailResult(f, false, altSize);
 		}
 
 		Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
