@@ -62,9 +62,10 @@ public class SearchService : ISearch
 	/// <param name="query">where to search in</param>
 	/// <param name="pageNumber">current page (0 = page 1)</param>
 	/// <param name="enableCache">enable searchcache (in trash this is disabled) </param>
+	/// <param name="collections">to combine files with the same name before the extension</param>
 	/// <returns></returns>
 	public async Task<SearchViewModel> Search(string query = "",
-		int pageNumber = 0, bool enableCache = true)
+		int pageNumber = 0, bool enableCache = true, bool collections = true)
 	{
 		if ( !string.IsNullOrEmpty(query) && query.Length >= 500 )
 		{
@@ -80,11 +81,11 @@ public class SearchService : ISearch
 		if ( !enableCache ||
 		     _cache == null || _appSettings?.AddMemoryCache == false )
 		{
-			return SkipSearchItems(await SearchDirect(query), pageNumber);
+			return SkipSearchItems(await SearchDirect(query, collections), pageNumber);
 		}
 
 		// Return values from IMemoryCache
-		var querySearchCacheName = "search-" + query;
+		var querySearchCacheName = GetCacheKey(query, collections);
 
 		// Return Cached object if it exist
 		if ( _cache.TryGetValue(querySearchCacheName,
@@ -94,7 +95,7 @@ public class SearchService : ISearch
 		}
 
 		// Try to catch a new object
-		objectSearchModel = await SearchDirect(query);
+		objectSearchModel = await SearchDirect(query, collections);
 		_cache.Set(querySearchCacheName, objectSearchModel, new TimeSpan(0, 10, 0));
 		return SkipSearchItems(objectSearchModel, pageNumber);
 	}
@@ -107,14 +108,32 @@ public class SearchService : ISearch
 			return null;
 		}
 
-		var queryCacheName = "search-" + query;
-		if ( !_cache.TryGetValue(queryCacheName, out _) )
+		var queryCacheName = GetCacheKey(query, true);
+		var queryCacheNameNoCollections = GetCacheKey(query, false);
+		var queryCacheNameLegacyTrue = $"search-{query}-collections-True";
+		var queryCacheNameLegacyFalse = $"search-{query}-collections-False";
+
+		var hasCollectionsCache = _cache.TryGetValue(queryCacheName, out _) ||
+		                          _cache.TryGetValue(queryCacheNameLegacyTrue, out _);
+		var hasNoCollectionsCache = _cache.TryGetValue(queryCacheNameNoCollections, out _) ||
+		                            _cache.TryGetValue(queryCacheNameLegacyFalse, out _);
+		if ( !hasCollectionsCache && !hasNoCollectionsCache )
 		{
 			return false;
 		}
 
 		_cache.Remove(queryCacheName);
+		_cache.Remove(queryCacheNameNoCollections);
+		_cache.Remove(queryCacheNameLegacyTrue);
+		_cache.Remove(queryCacheNameLegacyFalse);
 		return true;
+	}
+
+	private static string GetCacheKey(string query, bool collections)
+	{
+		return collections
+			? "search-" + query
+			: $"search-{query}-collections-false";
 	}
 
 	/// <summary>
@@ -160,7 +179,8 @@ public class SearchService : ISearch
 	/// </summary>
 	/// <param name="query">where to search on</param>
 	/// <returns></returns>
-	private async Task<SearchViewModel> SearchDirect(string? query = "")
+	private async Task<SearchViewModel> SearchDirect(string? query = "",
+		bool collections = true)
 	{
 		var stopWatch = Stopwatch.StartNew();
 
@@ -194,6 +214,11 @@ public class SearchService : ISearch
 			.OrderBy(s => s!.FilePath)
 			.ToList()!;
 
+		if ( collections )
+		{
+			model.FileIndexItems = StackCollectionsForSearch(model.FileIndexItems);
+		}
+
 		model.SearchCount = model.FileIndexItems.Count;
 
 		model.FileIndexItems = model.FileIndexItems
@@ -209,6 +234,30 @@ public class SearchService : ISearch
 		                       $"Last Page: {model.LastPageNumber} ");
 
 		return model;
+	}
+
+	private static List<FileIndexItem> StackCollectionsForSearch(
+		IReadOnlyCollection<FileIndexItem> fileIndexItems)
+	{
+		var grouped = fileIndexItems
+			.Where(p => p.FileCollectionName != null)
+			.GroupBy(p =>
+				$"{p.ParentDirectory ?? string.Empty}/{p.FileCollectionName}").ToList();
+
+		var result = new List<FileIndexItem>();
+
+		// Match Index-like duplicate stacking per collection key:
+		// for duplicate groups keep renderable image variants, which hides sidecars like xmp.
+		foreach ( var group in grouped.Where(group => group.Count() > 1) )
+		{
+			result.AddRange(group.Where(item =>
+				ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(item.FileName)));
+		}
+
+		result.AddRange(grouped.Where(group
+			=> group.Count() == 1).Select(group => group.First()));
+
+		return [.. result.OrderByDescending(p => p.DateTime)];
 	}
 
 	/// <summary>
