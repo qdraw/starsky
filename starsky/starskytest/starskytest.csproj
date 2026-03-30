@@ -61,6 +61,8 @@
         <ProjectReference Include="..\starskydependenciesdownloadcli\starskydependenciesdownloadcli.csproj"/>
         <ProjectReference Include="..\starskygeocli\starskygeocli.csproj"/>
         <ProjectReference Include="..\starskyimportercli\starskyimportercli.csproj"/>
+        <ProjectReference Include="..\starskymountwatchercli\starskymountwatchercli.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.mountwatch\starsky.foundation.mountwatch.csproj"/>
         <ProjectReference Include="..\starskysynchronizecli\starskysynchronizecli.csproj"/>
         <ProjectReference Include="..\starskythumbnailcli\starskythumbnailcli.csproj"/>
         <ProjectReference Include="..\starskythumbnailmetacli\starskythumbnailmetacli.csproj"/>
