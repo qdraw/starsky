@@ -73,7 +73,8 @@ describe("DetailView", () => {
       fileName: "test.jpg",
       filePath: "/parentDirectory/test.jpg",
       parentDirectory: "/parentDirectory",
-      status: IExifStatus.Ok
+      status: IExifStatus.Ok,
+      lastChanged: ["Src"]
     } as IFileIndexItem,
     relativeObjects: {
       nextFilePath: "next",
@@ -797,11 +798,11 @@ describe("DetailView", () => {
 
       const initialState: IDetailView = {
         ...defaultState,
-        fileIndexItem: { ...defaultState.fileIndexItem, fileHash: "before-thumbnail" }
+        fileIndexItem: { ...defaultState.fileIndexItem, fileHash: "before-thumbnail", lastChanged: ["Src"] }
       };
       const updatedState: IDetailView = {
         ...defaultState,
-        fileIndexItem: { ...defaultState.fileIndexItem, fileHash: "after-thumbnail" }
+        fileIndexItem: { ...defaultState.fileIndexItem, fileHash: "after-thumbnail", lastChanged: ["Src"] }
       };
 
       // Use a simple wrapper that receives contextValue as prop so rerender works cleanly

@@ -201,7 +201,7 @@ const DetailView: FC<IDetailView> = () => {
   // Use lastChanged or lastUpdated as trigger, not fileHash, because fileHash (content hash)
   // doesn't change when thumbnail is regenerated - only lastChanged timestamp changes
   useEffect(() => {
-    const isThumbnailRefresh = state.fileIndexItem.lastChanged?.some((item) =>
+    const isThumbnailRefresh = state.fileIndexItem?.lastChanged?.some((item) =>
       ["LastEdited", "FileHash", "Src"].includes(item)
     );
     if (isThumbnailRefresh) {
@@ -253,7 +253,7 @@ const DetailView: FC<IDetailView> = () => {
   }
 
   const shouldRefreshThumbnail =
-    state.fileIndexItem.lastChanged?.some((item) =>
+    state.fileIndexItem?.lastChanged?.some((item) =>
       ["LastEdited", "FileHash", "Src"].includes(item)
     ) ?? false;
   const thumbnailRefreshToken =
