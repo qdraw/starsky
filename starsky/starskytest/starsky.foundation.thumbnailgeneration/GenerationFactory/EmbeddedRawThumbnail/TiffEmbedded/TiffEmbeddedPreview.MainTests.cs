@@ -328,6 +328,22 @@ public class TiffEmbeddedPreviewCoverageTests
 	}
 
 	[TestMethod]
+	public void ReadIfdTagPair_WhenTryReadFullFails_ReturnsFalse()
+	{
+		// Arrange: Stream has an entry count of 2 (24 bytes expected) but no entry bytes follow
+		using var ms = new MemoryStream([0x02, 0x00]); // entryCount = 2
+		var query = new IfdTagPairQuery(0x2010, 0x2011, 0, true);
+
+		// Act
+		var result = TiffEmbeddedPreviewExtractor.ReadIfdTagPair(ms, 0, 1000, query);
+
+		// Assert: reading the full entries should fail and method should return false,0,0
+		Assert.IsFalse(result.HasPair);
+		Assert.AreEqual(0u, result.CandidateOffset);
+		Assert.AreEqual(0u, result.CandidateLength);
+	}
+
+	[TestMethod]
 	public void IsJpegAtOffset_WithReadFailure_ReturnsFalse()
 	{
 		// Arrange

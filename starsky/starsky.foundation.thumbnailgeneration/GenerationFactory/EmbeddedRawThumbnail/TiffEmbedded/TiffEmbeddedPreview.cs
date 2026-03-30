@@ -549,7 +549,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		}
 	}
 
-	private static (bool HasPair, uint CandidateOffset, uint CandidateLength) ReadIfdTagPair(
+	internal static (bool HasPair, uint CandidateOffset, uint CandidateLength) ReadIfdTagPair(
 		Stream input,
 		uint ifdOffset,
 		uint blockLength,
