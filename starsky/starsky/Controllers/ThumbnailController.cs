@@ -346,12 +346,9 @@ public sealed class ThumbnailController : Controller
 			return File(fs1, MimeHelper.GetMimeType(fileExt));
 		}
 
-		if ( ExtensionRolesHelper.IsExtensionRawThumbnailSupported(sourcePath) )
-		{
-			await _manualThumbnailGenerationService.CreateJob(sourcePath);
-			SetExpiresResponseHeadersToZero();
-		}
-
+		await _manualThumbnailGenerationService.CreateJob(sourcePath);
+		SetExpiresResponseHeadersToZero();
+		
 		Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
 		return Json("Thumbnail is not supported; for example you try to view a raw file");
 	}
