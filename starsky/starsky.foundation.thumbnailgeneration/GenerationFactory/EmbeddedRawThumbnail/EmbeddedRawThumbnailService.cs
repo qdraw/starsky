@@ -57,9 +57,6 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 				ExtensionRolesHelper.ImageFormat.cr3 =>
 					await containerExtractor.TryExtract(rawFilePath,
 						outputLargePath),
-				ExtensionRolesHelper.ImageFormat.heic =>
-					await containerExtractor.TryExtract(rawFilePath,
-						outputLargePath),
 				ExtensionRolesHelper.ImageFormat.x3f =>
 					await lightweightContainerExtractor.TryExtract(rawFilePath,
 						outputLargePath),

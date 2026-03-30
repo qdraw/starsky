@@ -11,35 +11,6 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.E
 [TestClass]
 public class EmbeddedRawThumbnailServiceTests
 {
-	private static byte[] CreateMinimalHeicWithJpeg()
-	{
-		using var ms = new MemoryStream();
-
-		// ftyp box (32 bytes), major brand heic
-		ms.Write(
-		[
-			0x00, 0x00, 0x00, 0x20,
-			(byte)'f', (byte)'t', (byte)'y', (byte)'p',
-			(byte)'h', (byte)'e', (byte)'i', (byte)'c',
-			0x00, 0x00, 0x01, 0x00,
-			(byte)'i', (byte)'s', (byte)'o', (byte)'m',
-			0x00, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00
-		]);
-
-		// minimal JPEG-like payload (scanner requires >= 4096 bytes)
-		var jpeg = new byte[5000];
-		jpeg[0] = 0xFF;
-		jpeg[1] = 0xD8;
-		jpeg[2] = 0xFF;
-		jpeg[4998] = 0xFF;
-		jpeg[4999] = 0xD9;
-		ms.Write(jpeg, 0, jpeg.Length);
-
-		return ms.ToArray();
-	}
-
 	[TestMethod]
 	public async Task TryExtractPreview_FileDoesNotExist_ReturnsFalse()
 	{
@@ -173,22 +144,5 @@ public class EmbeddedRawThumbnailServiceTests
 
 		var result = await service.TryExtractPreview("test.jpg", "output.jpg");
 		Assert.IsFalse(result);
-	}
-
-	[TestMethod]
-	public async Task TryExtractPreview_Heic_UsesContainerExtractorAndReturnsTrue()
-	{
-		var logger = new FakeIWebLogger();
-		var subPathStorage = new FakeIStorage(outputSubPathFiles: ["test.heic"],
-			byteListSource: new List<byte[]?> { CreateMinimalHeicWithJpeg() });
-		var tempStorage = new FakeIStorage(["/"]);
-		var selector = new FakeSelectorStorageByType(subPathStorage, new FakeIStorage(),
-			new FakeIStorage(), tempStorage);
-		var service = new EmbeddedRawThumbnailService(logger, selector);
-
-		var result = await service.TryExtractPreview("test.heic", "output.jpg");
-
-		Assert.IsTrue(result);
-		Assert.IsTrue(tempStorage.ExistFile("output.jpg"));
 	}
 }

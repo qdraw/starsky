@@ -1,0 +1,9 @@
+diff a/starsky/starsky.foundation.thumbnailgeneration/GenerationFactory/EmbeddedRawThumbnail/ContainerFormatPreviewExtractor.cs b/starsky/starsky.foundation.thumbnailgeneration/GenerationFactory/EmbeddedRawThumbnail/ContainerFormatPreviewExtractor.cs	(rejected hunks)
+@@ -78,7 +78,6 @@
+ 		logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
+ 		                $"Detected {containerType} container");
+ 
+-		var ok = TryExtractBestJpegByStrictScan(input, output);
+ 		var ok = containerType.StartsWith("CR3", StringComparison.Ordinal)
+ 			? TryExtractBestJpegByStrictScan(input, output)
+ 			: await TryExtractBestValidatedScannerCandidate(input, output,
