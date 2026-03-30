@@ -49,7 +49,10 @@ public sealed class SearchServiceTest
 
 	public async Task InsertSearchData()
 	{
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("schipholairplane")) )
+		var getSubPathsByHash =
+			( await _query.GetSubPathsByHashAsync("schipholairplane") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(getSubPathsByHash) )
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{
@@ -71,7 +74,10 @@ public sealed class SearchServiceTest
 			});
 		}
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("lelystadcentrum")) )
+		var getSubPathsByHash1 =
+			( await _query.GetSubPathsByHashAsync("lelystadcentrum") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(getSubPathsByHash1) )
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{
@@ -96,7 +102,10 @@ public sealed class SearchServiceTest
 			});
 		}
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("lelystadcentrum2")) )
+		var lelystadcentrum2 =
+			( await _query.GetSubPathsByHashAsync("lelystadcentrum2") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(lelystadcentrum2) )
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{
@@ -115,9 +124,12 @@ public sealed class SearchServiceTest
 			});
 		}
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("stationdeletedfile")) )
+		var stationdeletedfile =
+			( await _query.GetSubPathsByHashAsync("stationdeletedfile") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(stationdeletedfile) )
 		{
-			// add directory to search for
+			// add Directory to search for
 			await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "stations",
@@ -141,7 +153,10 @@ public sealed class SearchServiceTest
 			});
 		}
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("cityloop9")) )
+		var cityloop9 =
+			( await _query.GetSubPathsByHashAsync("cityloop9") )
+			.FirstOrDefault();
+		if ( string.IsNullOrEmpty(cityloop9) )
 		{
 			for ( var i = 0; i < NumberOfFakeResults; i++ )
 			{

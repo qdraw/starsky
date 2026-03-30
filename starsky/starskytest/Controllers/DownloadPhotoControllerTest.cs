@@ -57,7 +57,8 @@ public sealed class DownloadPhotoControllerTest
 			ColorClass = ColorClassParser.Color.Winner // 1
 		};
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("home0012304590")) )
+		var fileHash = ( await _query.GetSubPathsByHashAsync("home0012304590") ).FirstOrDefault();
+		if ( string.IsNullOrEmpty(fileHash) )
 		{
 			await _query.AddItemAsync(item);
 		}
@@ -376,8 +377,11 @@ public sealed class DownloadPhotoControllerTest
 			ColorClass = ColorClassParser.Color.Winner
 		};
 
-		if ( string.IsNullOrEmpty(
-			    await _query.GetSubPathByHashAsync("home0012304590_nomissinghash")) )
+		var getSubPathsByHash =
+			( await _query.GetSubPathsByHashAsync("home0012304590_nomissinghash") )
+			.FirstOrDefault();
+
+		if ( string.IsNullOrEmpty(getSubPathsByHash) )
 		{
 			await _query.AddItemAsync(fileIndexItem);
 		}

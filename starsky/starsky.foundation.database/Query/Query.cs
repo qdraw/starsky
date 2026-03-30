@@ -179,7 +179,8 @@ public partial class Query : IQuery
 
 		// if result is not null return cached value
 		if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPaths)
-		     && !string.IsNullOrEmpty(( string? ) cachedSubPaths) )
+		     && ( List<string>? ) cachedSubPaths != null &&
+		     ( ( List<string?> ) cachedSubPaths ).Any(p => p != null) )
 		{
 			return ( List<string> ) cachedSubPaths;
 		}

@@ -80,7 +80,8 @@ public sealed class ThumbnailControllerTest
 			ColorClass = ColorClassParser.Color.Winner // 1
 		};
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHash)) )
+		var getSubPathsByHash = ( await _query.GetSubPathsByHashAsync(fileHash) ).FirstOrDefault();
+		if ( string.IsNullOrEmpty(getSubPathsByHash) )
 		{
 			await _query.AddItemAsync(item);
 		}
