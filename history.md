@@ -43,6 +43,23 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.15 - _(Unreleased)_ - 2026-?-? {#v0.7.15}
 
+- [x] (Added) _Back-end_ Add Title and Tags overview razor template (PR #2891)
+- [x] (Added) _Back-end_ Create Job to generate thumbnails when missing in Thumbnail and Zoom API (
+  PR #2891)
+- [x] (Added) _Front-end_ Updates UI when a file has a thumbnail generated in detail view (PR #2891)
+- [x] (Added) _Back-end_ Extracts embedded JPEG previews from lightweight RAW containers (FFF/X3F).
+  `LightweightContainerPreviewExtractor` (PR #2891)
+- [x] (Added) _Back-end_ Service for extracting embedded JPEG previews from RAW image files.
+  Supports: CR2 (Canon), NEF (Nikon), ARW (Sony), DNG (Adobe), RAF (Fujifilm), X3F (Sigma)
+  `EmbeddedRawThumbnailService` (PR #2891)
+- [x] (Added) _Back-end_ Add CR3 (Canon EOS RAW 3) `ContainerFormatPreviewExtractor` (PR #2891)
+- [x] (Added) _Back-end_ Add Tiff Raw preview extraction `TiffEmbeddedPreviewExtractor`(PR #2891)
+- [x] (Added) _Back-end_ Add Preview out of JPEG files `JpegExtractPreviewHelper` (PR #2891)
+- [x] (Added) _Back-end_ ImageFormat detection for raw files (PR #2891)
+- [x] (Fixed) _Back-end_ Fixed issues where duplicate files give updates  (PR #2891)
+- [x] (Fixed) _Back-end_ Skip when WebHtml has an invalid razor cshtml file (PR #2891)
+- [x] (Added) _Back-end_ Added specific ImageFormats for raw files (PR #2891)
+- [x] (Added) _Back-end_ Search collections as default option (PR #2891)
 - [x] (Changed) _Back-end_ Refactor background job export, geolookup, sync background, and thumbnail
   generation features (PR #2844)
 - [x] (Changed) _Back-end_ new background job handling infrastructure (PR #2844)
