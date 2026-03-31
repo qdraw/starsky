@@ -5,7 +5,7 @@ public static class WatchServiceName
 #if DEBUG
 	private const string ReverseDnsServiceName = "nl.qdraw.mountwatcher.debug";
 #else
-	private const string ServiceName = "nl.qdraw.mountwatcher";
+	private const string ReverseDnsServiceName = "nl.qdraw.mountwatcher";
 #endif
 	public static string GetReverseDnsName()
 	{
