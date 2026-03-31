@@ -41,6 +41,7 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 	{
 		if ( string.IsNullOrWhiteSpace(driveRoot) )
 		{
+			logger.LogError($"Drive root is null or whitespace: '{driveRoot}'");
 			return false;
 		}
 
@@ -49,8 +50,9 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 			var drive = new DriveInfo(driveRoot);
 			return IsCameraStorage(drive);
 		}
-		catch
+		catch ( Exception ex )
 		{
+			logger.LogError($"Drive root failed: '{driveRoot}'", ex);
 			return false;
 		}
 	}
@@ -70,17 +72,20 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 		// 2. Filter writable, ready volumes
 		if ( !drive.IsReady )
 		{
+			logger.LogError($"Drive {drive.DriveFormat} is not ready");
 			return false;
 		}
 
 		if ( !drive.RootDirectory.Exists )
 		{
+			logger.LogError($"Drive RootDirectory does not Exists: {drive.RootDirectory.FullName}");
 			return false;
 		}
 
 		// 3. File system heuristic (portable, but soft)
 		if ( !IsCameraFriendlyFileSystem(drive.DriveFormat) )
 		{
+			logger.LogError($"No IsCameraFriendlyFileSystem: {drive.RootDirectory.FullName} {drive.DriveFormat}");
 			return false;
 		}
 
@@ -89,8 +94,12 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 		var dcimPath = Path.Combine(drive.RootDirectory.FullName, "DCIM");
 		var dcimLowerCasePath = Path.Combine(drive.RootDirectory.FullName, "dcim");
 
-		return _hostStorage.ExistFolder(dcimPath) || _hostStorage.ExistFolder(dcimLowerCasePath) ||
-		       HasCameraDirectoryStructure(drive.RootDirectory.FullName);
+		var hasDcim = _hostStorage.ExistFolder(dcimPath) ||
+		              _hostStorage.ExistFolder(dcimLowerCasePath) ||
+		              HasCameraDirectoryStructure(drive.RootDirectory.FullName);
+		
+		logger.LogInformation($"hasDcim: {hasDcim}");
+		return hasDcim;
 	}
 
 	private static bool IsCameraFriendlyFileSystem(string driveFormat)
