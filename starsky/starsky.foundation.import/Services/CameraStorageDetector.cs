@@ -6,13 +6,15 @@ using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.import.Services;
 
 [Service(typeof(ICameraStorageDetector), InjectionLifetime = InjectionLifetime.Scoped)]
-public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraStorageDetector
+public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger logger)
+	: ICameraStorageDetector
 {
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
@@ -28,9 +30,9 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraSt
 			var drives = DriveInfo.GetDrives().Where(IsCameraStorage);
 			return drives.Select(drive => drive.RootDirectory.FullName);
 		}
-		catch
+		catch ( Exception ex )
 		{
-			Console.WriteLine("Failed to enumerate drives, returning empty list.");
+			logger.LogError(ex, "Failed to enumerate drives during camera storage detection");
 			return [];
 		}
 	}
