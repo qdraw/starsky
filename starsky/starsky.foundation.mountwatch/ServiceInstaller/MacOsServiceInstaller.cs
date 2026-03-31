@@ -12,7 +12,7 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// </summary>
 internal class MacOsServiceInstaller : IOsServiceInstaller
 {
-	private const string ServiceName = "com.starsky.mountwatcher";
+	private const string ServiceName = "nl.qdraw.mountwatcher";
 	private readonly IConsole _console;
 	private readonly IWebLogger _logger;
 
@@ -28,7 +28,7 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 	public async Task<bool> InstallAsync(string executablePath)
 	{
 		var plistPath = GetMacOsPlistPath();
-		var plistContent = ServiceInstallerHelper.GenerateMacOsPlist(executablePath);
+		var plistContent = ServiceInstallerHelper.GenerateMacOsPlist(executablePath, ServiceName);
 
 		try
 		{

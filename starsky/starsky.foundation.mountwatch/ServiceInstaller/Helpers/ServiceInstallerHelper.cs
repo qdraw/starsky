@@ -11,7 +11,7 @@ internal static class ServiceInstallerHelper
 	/// <summary>
 	///     Generate macOS launchd plist XML
 	/// </summary>
-	internal static string GenerateMacOsPlist(string executablePath)
+	internal static string GenerateMacOsPlist(string executablePath, string serviceName)
 	{
 		return $"""
 		        <?xml version="1.0" encoding="UTF-8"?>
@@ -19,7 +19,7 @@ internal static class ServiceInstallerHelper
 		        <plist version="1.0">
 		        <dict>
 		            <key>Label</key>
-		            <string>com.starsky.mountwatcher</string>
+		            <string>{serviceName}</string>
 		            <key>ProgramArguments</key>
 		            <array>
 		                <string>{executablePath}</string>

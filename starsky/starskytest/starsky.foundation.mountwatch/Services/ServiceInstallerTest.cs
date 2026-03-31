@@ -42,32 +42,37 @@ public sealed class ServiceInstallerTest
 	public void GenerateMacOsPlist_ContainsLabel()
 	{
 		Assert.Contains("com.starsky.mountwatcher",
-			ServiceInstallerHelper.GenerateMacOsPlist("/usr/local/bin/starskymountwatchercli"));
+			ServiceInstallerHelper.GenerateMacOsPlist(
+				"/usr/local/bin/starskymountwatchercli", "com.starsky.mountwatcher"));
 	}
 
 	[TestMethod]
 	public void GenerateMacOsPlist_ContainsExecutablePath()
 	{
 		const string execPath = "/usr/local/bin/starskymountwatchercli";
-		Assert.Contains(execPath, ServiceInstallerHelper.GenerateMacOsPlist(execPath));
+		Assert.Contains(execPath, ServiceInstallerHelper.GenerateMacOsPlist(execPath,
+			"com.starsky.mountwatcher"));
 	}
 
 	[TestMethod]
 	public void GenerateMacOsPlist_ContainsRunAtLoad()
 	{
-		Assert.Contains("RunAtLoad", ServiceInstallerHelper.GenerateMacOsPlist("/any/path"));
+		Assert.Contains("RunAtLoad", 
+			ServiceInstallerHelper.GenerateMacOsPlist("/any/path", "com.starsky.mountwatcher"));
 	}
 
 	[TestMethod]
 	public void GenerateMacOsPlist_ContainsKeepAlive()
 	{
-		Assert.Contains("KeepAlive", ServiceInstallerHelper.GenerateMacOsPlist("/any/path"));
+		Assert.Contains("KeepAlive", 
+			ServiceInstallerHelper.GenerateMacOsPlist("/any/path", "com.starsky.mountwatcher"));
 	}
 
 	[TestMethod]
 	public void GenerateMacOsPlist_IsValidXml()
 	{
-		var plist = ServiceInstallerHelper.GenerateMacOsPlist("/any/path");
+		var plist = ServiceInstallerHelper.GenerateMacOsPlist(
+			"/any/path", "com.starsky.mountwatcher");
 		Assert.Contains("<?xml", plist);
 		Assert.Contains("</plist>", plist);
 	}
@@ -76,7 +81,7 @@ public sealed class ServiceInstallerTest
 	public void GenerateMacOsPlist_DifferentExecPath_ContainsCorrectPath()
 	{
 		const string path = "/opt/starsky/starskymountwatchercli";
-		Assert.Contains(path, ServiceInstallerHelper.GenerateMacOsPlist(path));
+		Assert.Contains(path, ServiceInstallerHelper.GenerateMacOsPlist(path, "com.starsky.mountwatcher"));
 	}
 
 	[TestMethod]
