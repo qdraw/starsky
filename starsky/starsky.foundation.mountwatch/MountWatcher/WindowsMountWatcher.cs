@@ -87,12 +87,12 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		try
 		{
 			var query = new WqlEventQuery(
-				"SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2");
+				"SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2 OR EventType = 3");
 			var mgmtWatcher = new ManagementEventWatcher(query);
 			mgmtWatcher.EventArrived += OnVolumeChanged;
 			mgmtWatcher.Start();
 			_watcher = mgmtWatcher;
-			logger.LogInformation("Windows WMI watcher started for Win32_VolumeChangeEvent EventType=2");
+			logger.LogInformation("Windows WMI watcher started for Win32_VolumeChangeEvent EventType=2 OR EventType=3");
 		}
 		catch ( Exception ex )
 		{
@@ -129,10 +129,16 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	{
 		try
 		{
-			var eventType = e.NewEvent?.Properties?["EventType"]?.Value?.ToString() ?? "<null>";
+			var eventTypeStr = e.NewEvent?.Properties?["EventType"]?.Value?.ToString() ?? "<null>";
 			var rawDriveName = e.NewEvent?.Properties?["DriveName"]?.Value?.ToString() ?? "<null>";
 			logger.LogInformation(
-				$"Windows volume event received: EventType={eventType}, DriveName={rawDriveName}");
+				$"Windows volume event received: EventType={eventTypeStr}, DriveName={rawDriveName}");
+
+			if ( int.TryParse(eventTypeStr, out var eventType) && eventType == 3 )
+			{
+				HandleVolumeRemoval(rawDriveName);
+				return;
+			}
 
 			var eventTracked = TryTrackEventDrive(e, out var eventDrive);
 
@@ -170,6 +176,25 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		{
 			logger.LogError(ex, $"Windows volume event handling failed: {ex.Message}");
 		}
+	}
+
+	/// <summary>
+	///     Remove an ejected drive from the known-mounts baseline so that
+	///     re-inserting the same drive is recognised as a new mount.
+	/// </summary>
+	internal void HandleVolumeRemoval(string? rawDriveName)
+	{
+		if ( string.IsNullOrWhiteSpace(rawDriveName) )
+		{
+			logger.LogInformation("Windows volume removal event: drive name was empty, baseline unchanged");
+			return;
+		}
+
+		var normalized = NormalizeDrive(rawDriveName);
+		var removed = _knownMountedVolumes.Remove(normalized);
+		logger.LogInformation(removed
+			? $"Windows volume removal event: removed '{normalized}' from baseline"
+			: $"Windows volume removal event: '{normalized}' was not in baseline");
 	}
 
 	internal void SeedKnownMounts(IEnumerable<string> mountedVolumes)
