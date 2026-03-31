@@ -823,7 +823,7 @@ public sealed class AccountControllerTest
 	}
 
 	[TestMethod]
-	public void Logout_ModelStateIsInvalid_ReturnsBadRequest()
+	public async Task Logout_ModelStateIsInvalid_ReturnsBadRequest()
 	{
 		// Arrange
 		var controller =
@@ -834,7 +834,7 @@ public sealed class AccountControllerTest
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act
-		var result = controller.Logout();
+		var result = await controller.Logout();
 
 		// Assert
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
