@@ -160,7 +160,7 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		{
 			if ( !_system.FileExists("/proc/mounts") )
 			{
-				return mounts;
+				return [];
 			}
 
 			var lines = _system.ReadAllLines("/proc/mounts");
@@ -201,14 +201,6 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	/// </summary>
 	internal static bool ShouldIncludeMount(string mountPath)
 	{
-		// Skip system mounts
-		var excludePrefixes = new[] { "/sys", "/proc", "/dev", "/run", "/boot", "/var", "/tmp" };
-		if ( excludePrefixes.Any(prefix =>
-			    mountPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) )
-		{
-			return false;
-		}
-
 		// Include user-mounted filesystems
 		return mountPath.StartsWith("/media", StringComparison.OrdinalIgnoreCase) ||
 		       mountPath.StartsWith("/mnt", StringComparison.OrdinalIgnoreCase) ||
