@@ -167,7 +167,9 @@ public sealed class LinuxMountWatcherTest
 			MonitorHandle = new IntPtr(22),
 			MonitorFd = 3,
 			DevicesToReturn = new Queue<IntPtr>([new IntPtr(99)]),
-			DeviceNodesToReturn = new Queue<string>(["/media/usb"])
+			DeviceNodesToReturn = new Queue<string>(["/dev/sdb1"]),
+			FileExistsResult = true,
+			LinesToReturn = ["/dev/sdb1 /media/usb ext4 rw 0 0"]
 		};
 		var watcher = CreateSut(system);
 		watcher.MountDetected += (_, args) => mountEvents.Add(args.MountPath);
