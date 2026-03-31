@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
 using starskytest.FakeMocks;
+using System.Threading.Tasks;
 
 namespace starskytest.starsky.foundation.mountwatch.Services;
 
@@ -45,17 +46,23 @@ public sealed class WindowsMountWatcherTest
 
 	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
-	public void WindowsMountWatcher_Start_DoesNotThrow_WhenPlatformIsUnsupported()
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
+	public async Task WindowsMountWatcher_Start_DoesNotThrow_WhenPlatformIsUnsupported()
 	{
-		// This test is to ensure that even if WMI or other platform-specifics fail,
-		// the Start() method handles it and potentially falls back to polling.
-		// Since we cannot easily mock the platform check or WMI, we just ensure it doesn't throw.
-
 		// Arrange
 		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
 
-		// Act & Assert (Should not throw)
-		watcher.Start();
+		// Act: run Start on a worker thread because polling fallback is a blocking loop.
+		var startTask = Task.Run(watcher.Start, TestContext.CancellationToken);
+		await Task.Delay(100, TestContext.CancellationToken);
+
+		// Assert: Stop should cause Start to return promptly and without exceptions.
 		watcher.Stop();
+		var completedTask = await Task.WhenAny(startTask, Task.Delay(3000, TestContext.CancellationToken));
+		Assert.AreSame(startTask, completedTask, "Start() did not complete after Stop() was called.");
+
+		await startTask;
 	}
+
+	public TestContext TestContext { get; set; }
 }
