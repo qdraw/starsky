@@ -122,7 +122,13 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 					var devNode = _system.UdevDeviceGetDevnode(device);
 					if ( !string.IsNullOrEmpty(devNode) )
 					{
-						OnMountDetected(devNode);
+						// Resolve the device node to its mount point.
+						// udev reports /dev/sda1, but we need /mnt/usb or /media/camera
+						var mountPoint = ResolveMountPoint(devNode);
+						if ( !string.IsNullOrEmpty(mountPoint) )
+						{
+							OnMountDetected(mountPoint);
+						}
 					}
 
 					_system.UdevDeviceUnref(device);
@@ -193,6 +199,47 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		}
 
 		return mounts;
+	}
+
+	/// <summary>
+	///     Resolve a device node (e.g., /dev/sda1) to its mount point (e.g., /mnt/usb)
+	///     by searching /proc/mounts
+	/// </summary>
+	internal string? ResolveMountPoint(string deviceNode)
+	{
+		try
+		{
+			if ( !_system.FileExists("/proc/mounts") )
+			{
+				return null;
+			}
+
+			var lines = _system.ReadAllLines("/proc/mounts");
+			foreach ( var line in lines )
+			{
+				var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+				if ( parts.Length < 2 )
+				{
+					continue;
+				}
+
+				var device = parts[0];
+				var mountPath = parts[1];
+
+				// Match the device node (exact match or with partition number variations)
+				if ( device.Equals(deviceNode, StringComparison.OrdinalIgnoreCase) &&
+				     ShouldIncludeMount(mountPath) )
+				{
+					return mountPath;
+				}
+			}
+		}
+		catch
+		{
+			// Fallback: return null if we can't read /proc/mounts
+		}
+
+		return null;
 	}
 
 	/// <summary>

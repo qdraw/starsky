@@ -20,9 +20,12 @@ public static class CameraDriveInfoHelper
 		{
 			driveFormat = driveInfo?.DriveFormat ?? string.Empty;
 		}
-		catch ( UnauthorizedAccessException )
+		catch ( Exception )
 		{
-			// do nothing – access to the drive is denied (e.g. on Linux)
+			// Catch all exceptions: UnauthorizedAccessException (access denied),
+			// IOException (I/O error), or any other exception from native interop
+			// when querying invalid device files like /dev/sda, /dev/sdb
+			driveFormat = string.Empty;
 		}
 
 		return new CameraDriveInfo
