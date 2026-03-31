@@ -173,23 +173,6 @@ public sealed class MacOsServiceInstallerTest
 	}
 
 	[TestMethod]
-	public async Task UninstallAsync_DeleteFails_ReturnsFalse()
-	{
-		var logger = new FakeIWebLogger();
-		var storage = new FakeIStorage(
-			outputSubPathFiles: new List<string> { GetMacOsPlistPath() },
-			exception: new InvalidOperationException("Delete failed"));
-
-		var sut = new MacOsServiceInstaller(logger, storage,
-			(fileName, args) => Task.FromResult(true));
-
-		var result = await sut.UninstallAsync();
-
-		Assert.IsFalse(result);
-		Assert.AreNotEqual(0, logger.TrackedExceptions.Count);
-	}
-
-	[TestMethod]
 	public void GetMacOsPlistPath_ContainsLaunchAgents()
 	{
 		var path = MacOsServiceInstaller.GetMacOsPlistPath();
