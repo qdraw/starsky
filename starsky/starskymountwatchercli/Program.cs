@@ -64,11 +64,14 @@ public static class Program
 		var serviceProvider = host.Services;
 		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
-		var import = serviceProvider.GetRequiredService<IImport>();
-		var console = serviceProvider.GetRequiredService<IConsole>();
-		var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
-		var cameraStorageDetector = serviceProvider.GetRequiredService<ICameraStorageDetector>();
-		var mountWatcherFactory = serviceProvider.GetRequiredService<IMountWatcherFactory>();
+		using var scope = serviceProvider.CreateScope();
+		var scopedServiceProvider = scope.ServiceProvider;
+
+		var import = scopedServiceProvider.GetRequiredService<IImport>();
+		var console = scopedServiceProvider.GetRequiredService<IConsole>();
+		var webLogger = scopedServiceProvider.GetRequiredService<IWebLogger>();
+		var cameraStorageDetector = scopedServiceProvider.GetRequiredService<ICameraStorageDetector>();
+		var mountWatcherFactory = scopedServiceProvider.GetRequiredService<IMountWatcherFactory>();
 		var serviceInstaller = new ServiceInstaller(webLogger);
 
 		// Migrations before starting
