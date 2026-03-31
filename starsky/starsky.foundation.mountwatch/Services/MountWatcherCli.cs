@@ -70,6 +70,7 @@ public class MountWatcherCli
 		if ( NeedInstall(args) )
 		{
 			var execPath = GetCurrentExecutablePath();
+			_logger.LogInformation($"Detected executable path: {execPath}");
 			var installResult = await _serviceInstaller.InstallAsync(execPath);
 			if ( installResult )
 			{
@@ -90,7 +91,7 @@ public class MountWatcherCli
 	/// <summary>
 	///     Returns true if --install is present in args
 	/// </summary>
-	internal static bool NeedInstall(string[] args)
+	public static bool NeedInstall(string[] args)
 	{
 		return args.Any(a => a.Equals(InstallArg, StringComparison.OrdinalIgnoreCase));
 	}
@@ -98,7 +99,7 @@ public class MountWatcherCli
 	/// <summary>
 	///     Returns true if --uninstall is present in args
 	/// </summary>
-	internal static bool NeedUninstall(string[] args)
+	public static bool NeedUninstall(string[] args)
 	{
 		return args.Any(a => a.Equals(UninstallArg, StringComparison.OrdinalIgnoreCase));
 	}

@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 using starsky.foundation.platform.Interfaces;
 
@@ -9,17 +8,8 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// <summary>
 ///     Factory for OS-specific service installers
 /// </summary>
-public class ServiceInstaller : IServiceInstaller
+public class ServiceInstaller(IWebLogger logger) : IServiceInstaller
 {
-	private readonly IConsole _console;
-	private readonly IWebLogger _logger;
-
-	public ServiceInstaller(IConsole console, IWebLogger logger)
-	{
-		_console = console;
-		_logger = logger;
-	}
-
 	/// <summary>
 	///     Install service for the current OS
 	/// </summary>
@@ -63,17 +53,17 @@ public class ServiceInstaller : IServiceInstaller
 	{
 		if ( OperatingSystem.IsMacOS() )
 		{
-			return new MacOsServiceInstaller(_console, _logger);
+			return new MacOsServiceInstaller(logger);
 		}
 
 		if ( OperatingSystem.IsWindows() )
 		{
-			return new WindowsServiceInstaller(_console, _logger);
+			return new WindowsServiceInstaller(logger);
 		}
 
 		if ( OperatingSystem.IsLinux() )
 		{
-			return new LinuxServiceInstaller(_console, _logger);
+			return new LinuxServiceInstaller(logger);
 		}
 
 		throw new PlatformNotSupportedException("OS not supported for service installation");

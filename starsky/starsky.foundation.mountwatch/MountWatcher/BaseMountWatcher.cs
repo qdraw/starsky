@@ -14,6 +14,12 @@ internal abstract class BaseMountWatcher : IMountWatcher
 	private const int PollIntervalMs = 2000;
 	protected bool IsRunning;
 	protected Thread? WatchThread;
+	protected readonly starsky.foundation.platform.Interfaces.IWebLogger? _logger;
+
+	protected BaseMountWatcher(starsky.foundation.platform.Interfaces.IWebLogger? logger = null)
+	{
+		_logger = logger;
+	}
 
 	public event EventHandler<MountDetectedEventArgs>? MountDetected;
 
@@ -76,11 +82,7 @@ internal abstract class BaseMountWatcher : IMountWatcher
 	/// </summary>
 	protected void OnMountDetected(string mountPath)
 	{
-		MountDetected?.Invoke(this, new MountDetectedEventArgs
-		{
-			MountPath = mountPath,
-			DetectedAt = DateTime.UtcNow
-		});
+		MountDetected?.Invoke(this,
+			new MountDetectedEventArgs { MountPath = mountPath, DetectedAt = DateTime.UtcNow });
 	}
 }
-

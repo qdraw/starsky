@@ -1,6 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
-using starsky.foundation.mountwatch.Services;
 
 namespace starskytest.starsky.foundation.mountwatch.Services;
 
@@ -11,7 +10,7 @@ public sealed class MacMountWatcherTest
 	public void MacMountWatcher_OnConstruction_IsNotRunning()
 	{
 		// Arrange & Act
-		var watcher = new MacMountWatcher();
+		var watcher = new MacMountWatcher(new FakeMocks.FakeIWebLogger());
 
 		// Assert
 		Assert.IsNotNull(watcher);
@@ -21,7 +20,7 @@ public sealed class MacMountWatcherTest
 	public void MacMountWatcher_GetMountedVolumes_ReturnsEnumerable()
 	{
 		// Arrange
-		var watcher = new MacMountWatcher();
+		var watcher = new MacMountWatcher(new FakeMocks.FakeIWebLogger());
 
 		// Act
 		var volumes = watcher.GetMountedVolumes();
@@ -34,7 +33,7 @@ public sealed class MacMountWatcherTest
 	public void MacMountWatcher_Stop_CanbeCalled()
 	{
 		// Arrange
-		var watcher = new MacMountWatcher();
+		var watcher = new MacMountWatcher(new FakeMocks.FakeIWebLogger());
 
 		// Act
 		watcher.Stop();

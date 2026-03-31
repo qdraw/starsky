@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
-using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.mountwatch.ServiceInstaller;
@@ -11,18 +10,9 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// <summary>
 ///     Linux-specific service installer using systemd
 /// </summary>
-internal class LinuxServiceInstaller : IOsServiceInstaller
+internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
 	private const string SystemdServiceName = "starsky-mountwatcher";
-
-	private readonly IConsole _console;
-	private readonly IWebLogger _logger;
-
-	public LinuxServiceInstaller(IConsole console, IWebLogger logger)
-	{
-		_console = console;
-		_logger = logger;
-	}
 
 	/// <summary>
 	///     Install systemd service on Linux
@@ -36,13 +26,13 @@ internal class LinuxServiceInstaller : IOsServiceInstaller
 		{
 			await File.WriteAllTextAsync(servicePath, serviceContent);
 
-			_console.WriteLine($"systemd unit installed: {servicePath}");
-			_console.WriteLine("To enable and start:");
-			_console.WriteLine("  sudo systemctl daemon-reload");
-			_console.WriteLine($"  sudo systemctl enable {SystemdServiceName}");
-			_console.WriteLine($"  sudo systemctl start {SystemdServiceName}");
+			logger.LogInformation($"systemd unit installed: {servicePath}");
+			logger.LogInformation("To enable and start:");
+			logger.LogInformation("  sudo systemctl daemon-reload");
+			logger.LogInformation($"  sudo systemctl enable {SystemdServiceName}");
+			logger.LogInformation($"  sudo systemctl start {SystemdServiceName}");
 
-			_logger.LogInformation($"Linux systemd unit written to {servicePath}");
+			logger.LogInformation($"Linux systemd unit written to {servicePath}");
 			return true;
 		}
 		catch ( UnauthorizedAccessException )
@@ -52,7 +42,7 @@ internal class LinuxServiceInstaller : IOsServiceInstaller
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to install Linux service: {ex.Message}");
+			logger.LogError(ex, $"Failed to install Linux service: {ex.Message}");
 			return false;
 		}
 	}
@@ -73,24 +63,24 @@ internal class LinuxServiceInstaller : IOsServiceInstaller
 		if ( File.Exists(systemPath) )
 		{
 			File.Delete(systemPath);
-			_console.WriteLine($"systemd unit removed: {systemPath}");
-			_console.WriteLine("Run: sudo systemctl daemon-reload");
-			_logger.LogInformation($"Linux systemd unit removed: {systemPath}");
+			logger.LogInformation($"systemd unit removed: {systemPath}");
+			logger.LogInformation("Run: sudo systemctl daemon-reload");
+			logger.LogInformation($"Linux systemd unit removed: {systemPath}");
 			deleted = true;
 		}
 
 		if ( File.Exists(userPath) )
 		{
 			File.Delete(userPath);
-			_console.WriteLine($"systemd user unit removed: {userPath}");
-			_console.WriteLine("Run: systemctl --user daemon-reload");
-			_logger.LogInformation($"Linux systemd user unit removed: {userPath}");
+			logger.LogInformation($"systemd user unit removed: {userPath}");
+			logger.LogInformation("Run: systemctl --user daemon-reload");
+			logger.LogInformation($"Linux systemd user unit removed: {userPath}");
 			deleted = true;
 		}
 
 		if ( !deleted )
 		{
-			_console.WriteLine($"No systemd service found for {SystemdServiceName}");
+			logger.LogInformation($"No systemd service found for {SystemdServiceName}");
 		}
 
 		return await Task.FromResult(true);
@@ -113,15 +103,14 @@ internal class LinuxServiceInstaller : IOsServiceInstaller
 
 			if ( result )
 			{
-				_console.WriteLine($"Linux service started: {SystemdServiceName}");
-				_logger.LogInformation($"Linux service started: {SystemdServiceName}");
+				logger.LogInformation($"Linux service started: {SystemdServiceName}");
 			}
 
 			return result;
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to start Linux service: {ex.Message}");
+			logger.LogError(ex, $"Failed to start Linux service: {ex.Message}");
 			return false;
 		}
 	}
@@ -143,15 +132,14 @@ internal class LinuxServiceInstaller : IOsServiceInstaller
 
 			if ( result )
 			{
-				_console.WriteLine($"Linux service stopped: {SystemdServiceName}");
-				_logger.LogInformation($"Linux service stopped: {SystemdServiceName}");
+				logger.LogInformation($"Linux service stopped: {SystemdServiceName}");
 			}
 
 			return result;
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to stop Linux service: {ex.Message}");
+			logger.LogError(ex, $"Failed to stop Linux service: {ex.Message}");
 			return false;
 		}
 	}
@@ -197,18 +185,18 @@ internal class LinuxServiceInstaller : IOsServiceInstaller
 			Directory.CreateDirectory(userSystemdDir);
 			await File.WriteAllTextAsync(servicePath, serviceContent);
 
-			_console.WriteLine($"systemd user unit installed: {servicePath}");
-			_console.WriteLine("To enable and start:");
-			_console.WriteLine("  systemctl --user daemon-reload");
-			_console.WriteLine($"  systemctl --user enable {SystemdServiceName}");
-			_console.WriteLine($"  systemctl --user start {SystemdServiceName}");
+			logger.LogInformation($"systemd user unit installed: {servicePath}");
+			logger.LogInformation("To enable and start:");
+			logger.LogInformation("  systemctl --user daemon-reload");
+			logger.LogInformation($"  systemctl --user enable {SystemdServiceName}");
+			logger.LogInformation($"  systemctl --user start {SystemdServiceName}");
 
-			_logger.LogInformation($"Linux systemd user unit written to {servicePath}");
+			logger.LogInformation($"Linux systemd user unit written to {servicePath}");
 			return true;
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to install Linux user service: {ex.Message}");
+			logger.LogError(ex, $"Failed to install Linux user service: {ex.Message}");
 			return false;
 		}
 	}

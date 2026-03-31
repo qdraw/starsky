@@ -13,7 +13,7 @@ namespace starsky.foundation.mountwatch.Services;
 [Service(typeof(IMountDetector), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MountDetector : IMountDetector
 {
-	private static readonly string[] CameraStorageFolders = { "DCIM", "dcim", "DCIM/", "dcim/" };
+	private static readonly string[] CameraStorageFolders = ["DCIM", "dcim", "DCIM/", "dcim/"];
 
 	/// <summary>
 	///     Check if a mount path contains camera storage (e.g., DCIM)
@@ -53,7 +53,7 @@ public class MountDetector : IMountDetector
 	{
 		if ( string.IsNullOrWhiteSpace(mountPath) )
 		{
-			return Enumerable.Empty<string>();
+			return [];
 		}
 
 		try
@@ -61,7 +61,7 @@ public class MountDetector : IMountDetector
 			var directoryInfo = new DirectoryInfo(mountPath);
 			if ( !directoryInfo.Exists )
 			{
-				return Enumerable.Empty<string>();
+				return [];
 			}
 
 			var cameraPaths = new List<string>();
@@ -69,7 +69,7 @@ public class MountDetector : IMountDetector
 
 			foreach ( var dir in directories )
 			{
-				if ( CameraStorageFolders.Contains(dir.Name) )
+				if ( CameraStorageFolders.Contains(dir.Name, StringComparer.OrdinalIgnoreCase) )
 				{
 					cameraPaths.Add(dir.FullName);
 				}
@@ -79,12 +79,11 @@ public class MountDetector : IMountDetector
 		}
 		catch ( UnauthorizedAccessException )
 		{
-			return Enumerable.Empty<string>();
+			return [];
 		}
 		catch ( IOException )
 		{
-			return Enumerable.Empty<string>();
+			return [];
 		}
 	}
 }
-

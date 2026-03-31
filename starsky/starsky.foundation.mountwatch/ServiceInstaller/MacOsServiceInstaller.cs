@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
-using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.mountwatch.ServiceInstaller;
@@ -14,12 +13,10 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 internal class MacOsServiceInstaller : IOsServiceInstaller
 {
 	private const string ServiceName = "nl.qdraw.mountwatcher";
-	private readonly IConsole _console;
 	private readonly IWebLogger _logger;
 
-	public MacOsServiceInstaller(IConsole console, IWebLogger logger)
+	public MacOsServiceInstaller(IWebLogger logger)
 	{
-		_console = console;
 		_logger = logger;
 	}
 
@@ -37,9 +34,7 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 			Directory.CreateDirectory(directory);
 			await File.WriteAllTextAsync(plistPath, plistContent);
 
-			_console.WriteLine($"LaunchAgent installed: {plistPath}");
-			_console.WriteLine($"To load now: launchctl load {plistPath}");
-			_console.WriteLine(
+			_logger.LogInformation(
 				"Note: Grant Full Disk Access to the executable in System Preferences.");
 
 			_logger.LogInformation($"macOS launchd plist written to {plistPath}");
@@ -65,12 +60,11 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 			{
 				await StopAsync();
 				File.Delete(plistPath);
-				_console.WriteLine($"LaunchAgent removed: {plistPath}");
 				_logger.LogInformation($"macOS launchd plist removed from {plistPath}");
 			}
 			else
 			{
-				_console.WriteLine($"LaunchAgent not found: {plistPath}");
+				_logger.LogInformation($"LaunchAgent not found: {plistPath}");
 			}
 
 			return await Task.FromResult(true);
@@ -93,7 +87,6 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 			var result = await RunProcessAsync("launchctl", $"load {plistPath}");
 			if ( result )
 			{
-				_console.WriteLine($"macOS service started: {ServiceName}");
 				_logger.LogInformation($"macOS service started: {ServiceName}");
 			}
 
@@ -117,7 +110,6 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 			var result = await RunProcessAsync("launchctl", $"unload {plistPath}");
 			if ( result )
 			{
-				_console.WriteLine($"macOS service stopped: {ServiceName}");
 				_logger.LogInformation($"macOS service stopped: {ServiceName}");
 			}
 

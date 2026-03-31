@@ -9,19 +9,10 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// <summary>
 ///     Windows-specific service installer using sc.exe
 /// </summary>
-internal class WindowsServiceInstaller : IOsServiceInstaller
+internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
 	private const string ServiceName = "nl.qdraw.mountwatcher";
 	private const string ServiceDisplayName = "Starsky Mount Watcher";
-
-	private readonly IConsole _console;
-	private readonly IWebLogger _logger;
-
-	public WindowsServiceInstaller(IConsole console, IWebLogger logger)
-	{
-		_console = console;
-		_logger = logger;
-	}
 
 	/// <summary>
 	///     Install Windows Service using sc.exe
@@ -30,27 +21,38 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 	{
 		try
 		{
-			// Add quotes for the binPath as well
-			var result = await RunProcessAsync("sc.exe",
-				$"create \"{ServiceName}\" binPath= \"\\\"{executablePath}\\\"\" " +
-				$"DisplayName= \"{ServiceDisplayName}\" start= auto");
-
-			if ( result )
+			string binPath;
+			if ( executablePath.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) )
 			{
-				_console.WriteLine($"Windows Service installed: {ServiceName}");
-				_console.WriteLine($"To start: sc start {ServiceName}");
-				_logger.LogInformation($"Windows Service installed: {ServiceName}");
+				const string dotnetPath = "dotnet.exe";
+				binPath = $"\\\"{dotnetPath}\\\" \\\"{executablePath}\\\"";
 			}
 			else
 			{
-				_logger.LogError($"Failed to install Windows Service: {ServiceName}");
+				binPath = $"\\\"{executablePath}\\\"";
+			}
+
+			// sc.exe create "service" binPath= "path"
+			// Note the space after "binPath=" is mandatory for sc.exe
+			var result = await RunProcessAsync("sc.exe",
+				$"create \"{ServiceName}\" binPath= \"{binPath}\" " +
+				$"DisplayName= \"{ServiceDisplayName}\" start= auto obj= \"LocalSystem\"");
+
+			if ( result )
+			{
+				logger.LogInformation($"Windows Service installed: {ServiceName}");
+				logger.LogInformation($"To start: sc start \"{ServiceName}\"");
+			}
+			else
+			{
+				logger.LogError($"Failed to install Windows Service: {ServiceName}");
 			}
 
 			return result;
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to install Windows service: {ex.Message}");
+			logger.LogError(ex, $"Failed to install Windows service: {ex.Message}");
 			return false;
 		}
 	}
@@ -67,19 +69,18 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 
 			if ( result )
 			{
-				_console.WriteLine($"Windows Service removed: {ServiceName}");
-				_logger.LogInformation($"Windows Service removed: {ServiceName}");
+				logger.LogInformation($"Windows Service removed: {ServiceName}");
 			}
 			else
 			{
-				_logger.LogError($"Failed to remove Windows Service: {ServiceName}");
+				logger.LogError($"Failed to remove Windows Service: {ServiceName}");
 			}
 
 			return result;
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to uninstall Windows service: {ex.Message}");
+			logger.LogError(ex, $"Failed to uninstall Windows service: {ex.Message}");
 			return false;
 		}
 	}
@@ -94,26 +95,26 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 			var result = await RunProcessAsync("sc.exe", $"start \"{ServiceName}\"");
 			if ( !result )
 			{
-				_logger.LogInformation($"Retrying to start Windows Service: {ServiceName} after 2 seconds...");
+				logger.LogInformation(
+					$"Retrying to start Windows Service: {ServiceName} after 2 seconds...");
 				await Task.Delay(2000);
 				result = await RunProcessAsync("sc.exe", $"start \"{ServiceName}\"");
 			}
 
 			if ( result )
 			{
-				_console.WriteLine($"Windows Service started: {ServiceName}");
-				_logger.LogInformation($"Windows Service started: {ServiceName}");
+				logger.LogInformation($"Windows Service started: {ServiceName}");
 			}
 			else
 			{
-				_logger.LogError($"Failed to start Windows Service: {ServiceName}");
+				logger.LogError($"Failed to start Windows Service: {ServiceName}");
 			}
 
 			return result;
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to start Windows service: {ex.Message}");
+			logger.LogError(ex, $"Failed to start Windows service: {ex.Message}");
 			return false;
 		}
 	}
@@ -128,15 +129,14 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 			var result = await RunProcessAsync("sc.exe", $"stop \"{ServiceName}\"");
 			if ( result )
 			{
-				_console.WriteLine($"Windows Service stopped: {ServiceName}");
-				_logger.LogInformation($"Windows Service stopped: {ServiceName}");
+				logger.LogInformation($"Windows Service stopped: {ServiceName}");
 			}
 
 			return result;
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to stop Windows service: {ex.Message}");
+			logger.LogError(ex, $"Failed to stop Windows service: {ex.Message}");
 			return false;
 		}
 	}
@@ -169,7 +169,7 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 
 		if ( process.ExitCode != 0 )
 		{
-			_logger.LogError(
+			logger.LogError(
 				$"Process {fileName} {arguments} failed with exit code {process.ExitCode}\nOutput: {output}\nError: {error}");
 		}
 

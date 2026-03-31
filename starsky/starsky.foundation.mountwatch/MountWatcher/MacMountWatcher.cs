@@ -16,6 +16,11 @@ internal class MacMountWatcher : BaseMountWatcher
 
 	private IntPtr _session;
 
+	public MacMountWatcher(starsky.foundation.platform.Interfaces.IWebLogger? logger = null) :
+		base(logger)
+	{
+	}
+
 	/// <summary>
 	///     Start watching for mount events using DiskArbitration
 	/// </summary>

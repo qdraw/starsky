@@ -1,5 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.http.Interfaces;
@@ -9,7 +13,7 @@ using starsky.foundation.injection;
 using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.ServiceInstaller;
 using starsky.foundation.mountwatch.Services;
-using starsky.foundation.platform.Exceptions;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -20,35 +24,50 @@ namespace starskymountwatchercli;
 
 public static class Program
 {
+	[SuppressMessage("Design",
+		"ASP0000:Do not call \'IServiceCollection.BuildServiceProvider\' in \'ConfigureServices\'")]
 	public static async Task Main(string[] args)
 	{
-		// Use args in application
+		// Use args in the application
 		new ArgsHelper().SetEnvironmentByArgs(args);
 
-		var services = new ServiceCollection();
+		var hostBuilder = Host.CreateDefaultBuilder(args);
 
-		// Setup AppSettings
-		services = await SetupAppSettings.FirstStepToAddSingleton(services);
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+		{
+			hostBuilder.UseWindowsService();
+		}
 
-		// Inject services
-		RegisterDependencies.Configure(services);
-		services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
+		hostBuilder.ConfigureServices((_, services) =>
+		{
+			// Setup AppSettings
+			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+			var configurationRoot = SetupAppSettings.AppSettingsToBuilder(args).Result;
+			services.ConfigurePoCo<AppSettings>(configurationRoot.GetSection("App"));
 
-		var serviceProvider = services.BuildServiceProvider();
+			// Inject services
+			RegisterDependencies.Configure(services);
+			services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
+
+			var tempServiceProvider = services.BuildServiceProvider();
+			var appSettings = tempServiceProvider.GetRequiredService<AppSettings>();
+
+			services.AddOpenTelemetryMonitoring(appSettings);
+			services.AddTelemetryLogging(appSettings);
+
+			new SetupDatabaseTypes(appSettings, services).BuilderDb();
+		});
+
+		var host = hostBuilder.Build();
+		var serviceProvider = host.Services;
 		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-
-		services.AddOpenTelemetryMonitoring(appSettings);
-		services.AddTelemetryLogging(appSettings);
-
-		new SetupDatabaseTypes(appSettings, services).BuilderDb();
-		serviceProvider = services.BuildServiceProvider();
 
 		var import = serviceProvider.GetRequiredService<IImport>();
 		var console = serviceProvider.GetRequiredService<IConsole>();
 		var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 		var mountDetector = serviceProvider.GetRequiredService<IMountDetector>();
 		var mountWatcherFactory = serviceProvider.GetRequiredService<IMountWatcherFactory>();
-		var serviceInstaller = new ServiceInstaller(console, webLogger);
+		var serviceInstaller = new ServiceInstaller(webLogger);
 
 		// Migrations before starting
 		await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
@@ -66,7 +85,15 @@ public static class Program
 
 		if ( !await service.StartWatcher(args) )
 		{
-			throw new WebApplicationException("Mount watcher failed to start");
+			// StartWatcher returns false when it fails, but not when it's an install/uninstall
+			// Unless the install/uninstall operation itself failed.
+			webLogger.LogError("Mount watcher failed to start or install. See logs for details.");
+		}
+
+		if ( !MountWatcherCli.NeedInstall(args) && !MountWatcherCli.NeedUninstall(args) &&
+		     !ArgsHelper.NeedHelp(args) )
+		{
+			await host.RunAsync();
 		}
 	}
 }

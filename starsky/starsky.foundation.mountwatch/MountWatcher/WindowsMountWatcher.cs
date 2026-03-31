@@ -19,6 +19,11 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	// CA1416 on the field itself when the containing class is cross-platform.
 	private object? _watcher;
 
+	public WindowsMountWatcher(starsky.foundation.platform.Interfaces.IWebLogger? logger = null) :
+		base(logger)
+	{
+	}
+
 	/// <summary>
 	///     Start watching for mount events using WMI
 	/// </summary>
@@ -86,8 +91,9 @@ internal class WindowsMountWatcher : BaseMountWatcher
 			mgmtWatcher.Start();
 			_watcher = mgmtWatcher;
 		}
-		catch
+		catch ( Exception ex )
 		{
+			_logger?.LogError(ex, "Failed to start WMI watcher, falling back to polling");
 			RunPollingFallback();
 		}
 	}

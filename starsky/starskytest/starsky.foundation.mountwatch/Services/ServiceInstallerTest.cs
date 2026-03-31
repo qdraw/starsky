@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.ServiceInstaller;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
-using starsky.foundation.mountwatch.Services;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.mountwatch.Services;
@@ -17,7 +15,6 @@ public sealed class ServiceInstallerTest
 	private static ServiceInstaller CreateSut()
 	{
 		return new ServiceInstaller(
-			new FakeConsoleWrapper(new List<string>()),
 			new FakeIWebLogger());
 	}
 

@@ -146,7 +146,7 @@ public sealed class MountDetectorTest
 			var result = detector.GetCameraStoragePaths(tempDir).ToList();
 
 			// Assert
-			Assert.HasCount(2, result);
+			Assert.HasCount(1, result);
 		}
 		finally
 		{

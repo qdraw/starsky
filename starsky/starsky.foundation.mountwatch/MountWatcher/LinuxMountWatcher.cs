@@ -12,6 +12,11 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// </summary>
 internal class LinuxMountWatcher : BaseMountWatcher
 {
+	public LinuxMountWatcher(starsky.foundation.platform.Interfaces.IWebLogger? logger = null) :
+		base(logger)
+	{
+	}
+
 	/// <summary>
 	///     Start watching for mount events using udev or polling fallback
 	/// </summary>
