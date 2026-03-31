@@ -275,8 +275,14 @@ public sealed class UserManagerTest
 				TestContext.CancellationTokenSource.Token);
 
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual("jCCNdJCtH6h1UBhEHkHawc+zt9PqQaEEubc8yc5CGTw=", credAfterTransform?.Secret);
-		Assert.AreEqual(IterationCountType.Iterate100KSha256, credAfterTransform?.IterationCount);
+		// The secret is re-hashed with a newly generated salt, so the value is
+		// non-deterministic – verify the credential was rewritten rather than
+		// asserting a specific base64 string.
+		Assert.AreNotEqual("t5cJrj735BKTx6bNw2snWzkKb5lsXDSreT9Fpz5YLJw=",
+			credAfterTransform?.Secret, "Secret should have been rehashed");
+		Assert.AreNotEqual("0kp9rQX22yeGPl3FSyZFlg==",
+			credAfterTransform?.Extra, "Salt (Extra) should have been regenerated to 32 bytes");
+		Assert.AreEqual(IterationCountType.Iterate600KSha256, credAfterTransform?.IterationCount);
 	}
 
 	[TestMethod]

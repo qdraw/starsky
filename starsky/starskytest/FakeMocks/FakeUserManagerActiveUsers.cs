@@ -51,7 +51,7 @@ public class FakeUserManagerActiveUsers : IUserManager
 					CredentialType = new CredentialType { Code = "email" },
 					Identifier = identifier,
 					Secret = secret,
-					IterationCount = IterationCountType.Iterate100KSha256
+					IterationCount = IterationCountType.Iterate600KSha256
 				}
 			}
 		});
@@ -110,9 +110,9 @@ public class FakeUserManagerActiveUsers : IUserManager
 		return Task.FromResult(true);
 	}
 
-	public void SignOut(HttpContext httpContext)
+	public Task SignOut(HttpContext httpContext)
 	{
-		throw new NotImplementedException();
+		return Task.CompletedTask;
 	}
 
 	public int GetCurrentUserId(HttpContext httpContext)

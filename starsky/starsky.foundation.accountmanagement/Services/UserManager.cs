@@ -66,7 +66,7 @@ public sealed class UserManager : IUserManager
 	public async Task<UserOverviewModel> AllUsersAsync()
 	{
 		if ( IsCacheEnabled() &&
-			 _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true )
+		     _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true )
 		{
 			return new UserOverviewModel(( List<User>? ) objectAllUsersResult);
 		}
@@ -184,7 +184,7 @@ public sealed class UserManager : IUserManager
 			UserId = user.Id,
 			CredentialTypeId = credentialType.Id,
 			Identifier = identifier,
-			IterationCount = IterationCountType.Iterate100KSha256
+			IterationCount = IterationCountType.Iterate600KSha256
 		};
 		var salt = Pbkdf2Hasher.GenerateRandomSalt();
 		var hash = Pbkdf2Hasher.ComputeHash(secret, salt);
@@ -237,8 +237,8 @@ public sealed class UserManager : IUserManager
 
 	public void RemoveFromRole(User user, string roleCode)
 	{
-		var role = _dbContext.Roles.TagWith("RemoveFromRole").FirstOrDefault(
-			r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+		var role = _dbContext.Roles.TagWith("RemoveFromRole").FirstOrDefault(r =>
+			string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
 
 		if ( role == null )
 		{
@@ -264,16 +264,16 @@ public sealed class UserManager : IUserManager
 	public ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier,
 		string secret)
 	{
-		var credentialType = _dbContext.CredentialTypes.FirstOrDefault(
-			ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
+		var credentialType = _dbContext.CredentialTypes.FirstOrDefault(ct =>
+			ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
 
 		if ( credentialType == null )
 		{
 			return new ChangeSecretResult(false, ChangeSecretResultError.CredentialTypeNotFound);
 		}
 
-		var credential = _dbContext.Credentials.TagWith("ChangeSecret").FirstOrDefault(
-			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+		var credential = _dbContext.Credentials.TagWith("ChangeSecret").FirstOrDefault(c =>
+			c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
 		if ( credential == null || identifier == null )
 		{
@@ -283,7 +283,7 @@ public sealed class UserManager : IUserManager
 		var salt = Pbkdf2Hasher.GenerateRandomSalt();
 		var hash = Pbkdf2Hasher.ComputeHash(secret, salt);
 
-		credential.IterationCount = IterationCountType.Iterate100KSha256;
+		credential.IterationCount = IterationCountType.Iterate600KSha256;
 		credential.Secret = hash;
 		credential.Extra = Convert.ToBase64String(salt);
 		_dbContext.Credentials.Update(credential);
@@ -309,14 +309,14 @@ public sealed class UserManager : IUserManager
 		var cacheKey = "credentialTypeCode_" + credentialTypeCode;
 		// Add caching for credentialType
 		if ( IsCacheEnabled() && _cache?.TryGetValue(cacheKey,
-				out var objectCredentialTypeCode) == true )
+			    out var objectCredentialTypeCode) == true )
 		{
 			return ( CredentialType? ) objectCredentialTypeCode;
 		}
 
 		var credentialTypeSelect = _dbContext.CredentialTypes.AsNoTracking()
-			.TagWith("CredentialType").Where(
-				ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()))
+			.TagWith("CredentialType").Where(ct =>
+				ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()))
 			.Select(x => new { x.Id, x.Code, x.Name, x.Position }).FirstOrDefault();
 
 		if ( credentialTypeSelect == null )
@@ -345,9 +345,7 @@ public sealed class UserManager : IUserManager
 	{
 		var model = new RegisterViewModel
 		{
-			Email = userName,
-			Password = password,
-			ConfirmPassword = confirmPassword
+			Email = userName, Password = password, ConfirmPassword = confirmPassword
 		};
 
 		var context = new ValidationContext(model, null, null);
@@ -403,15 +401,13 @@ public sealed class UserManager : IUserManager
 
 		// To compare the secret
 		var salt = Convert.FromBase64String(credential.Extra);
-		var iterationSecure = credential.IterationCount == IterationCountType.Iterate100KSha256;
 
-		var hashedPassword =
-			Pbkdf2Hasher.ComputeHash(secret, salt, iterationSecure, iterationSecure);
+		var hashedPassword = Pbkdf2Hasher.ComputeHash(secret, salt, credential.IterationCount);
 
 		if ( credential.Secret == hashedPassword )
 		{
 			// to be removed in future releases
-			await TransformToNewIterationAsync(credential, salt, secret, credentialType);
+			await TransformToNewIterationAsync(credential, secret, credentialType);
 
 			return await ResetAndSuccess(userData.AccessFailedCount, credential.UserId, userData);
 		}
@@ -461,20 +457,18 @@ public sealed class UserManager : IUserManager
 		{
 			return new ValidateResult
 			{
-				Success = false,
-				Error = ValidateResultError.CredentialTypeNotFound
+				Success = false, Error = ValidateResultError.CredentialTypeNotFound
 			};
 		}
 
-		var credential = await _dbContext.Credentials.FirstOrDefaultAsync(
-			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+		var credential = await _dbContext.Credentials.FirstOrDefaultAsync(c =>
+			c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
 		if ( credential == null )
 		{
 			return new ValidateResult
 			{
-				Success = false,
-				Error = ValidateResultError.CredentialNotFound
+				Success = false, Error = ValidateResultError.CredentialNotFound
 			};
 		}
 
@@ -487,8 +481,7 @@ public sealed class UserManager : IUserManager
 		{
 			return new ValidateResult
 			{
-				Success = false,
-				Error = ValidateResultError.CredentialNotFound
+				Success = false, Error = ValidateResultError.CredentialNotFound
 			};
 		}
 
@@ -502,7 +495,7 @@ public sealed class UserManager : IUserManager
 		return new ValidateResult { Success = true };
 	}
 
-	public async void SignOut(HttpContext httpContext)
+	public async Task SignOut(HttpContext httpContext)
 	{
 		await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 	}
@@ -545,8 +538,8 @@ public sealed class UserManager : IUserManager
 			return null;
 		}
 
-		var credential = _dbContext.Credentials.FirstOrDefault(
-			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+		var credential = _dbContext.Credentials.FirstOrDefault(c =>
+			c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 		if ( credential == null )
 		{
 			return null;
@@ -653,14 +646,11 @@ public sealed class UserManager : IUserManager
 
 		// When not exist add it
 		if ( credentialType == null &&
-			 credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
+		     credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
 		{
 			credentialType = new CredentialType
 			{
-				Code = "email",
-				Name = "email",
-				Position = 1,
-				Id = 1
+				Code = "email", Name = "email", Position = 1, Id = 1
 			};
 			await _dbContext.CredentialTypes.AddAsync(credentialType);
 			await _dbContext.SaveChangesAsync();
@@ -724,15 +714,15 @@ public sealed class UserManager : IUserManager
 		var roleToAddToUser = _appSettings.AccountRegisterDefaultRole.ToString();
 
 		if ( _appSettings.AccountRegisterFirstRoleAdmin == true &&
-			 !_dbContext.Users.Any(p => p != user) )
+		     !_dbContext.Users.Any(p => p != user) )
 		{
 			return AccountRoles.AppAccountRoles.Administrator.ToString();
 		}
 
 		if ( _appSettings.AccountRolesByEmailRegisterOverwrite != null
-			 && _appSettings.AccountRolesByEmailRegisterOverwrite
-				 .TryGetValue(identifier, out var emailsForConfig) &&
-			 AccountRoles.GetAllRoles().Contains(emailsForConfig) )
+		     && _appSettings.AccountRolesByEmailRegisterOverwrite
+			     .TryGetValue(identifier, out var emailsForConfig) &&
+		     AccountRoles.GetAllRoles().Contains(emailsForConfig) )
 		{
 			return emailsForConfig;
 		}
@@ -762,23 +752,24 @@ public sealed class UserManager : IUserManager
 
 		// Add caching for credentialType
 		if ( IsCacheEnabled() && _cache?.TryGetValue(key,
-				out var objectCredentialTypeCode) == true )
+			    out var objectCredentialTypeCode) == true )
 		{
 			return ( Credential? ) objectCredentialTypeCode;
 		}
 
-		var credentialSelect = _dbContext.Credentials.AsNoTracking().TagWith("Credential").Where(
-			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier).Select(x =>
-			new
-			{
-				x.Id,
-				x.UserId,
-				x.CredentialTypeId,
-				x.Secret,
-				x.Extra,
-				x.IterationCount,
-				x.Identifier
-			}).FirstOrDefault();
+		var credentialSelect = _dbContext.Credentials.AsNoTracking().TagWith("Credential")
+			.Where(c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier)
+			.Select(x =>
+				new
+				{
+					x.Id,
+					x.UserId,
+					x.CredentialTypeId,
+					x.Secret,
+					x.Extra,
+					x.IterationCount,
+					x.Identifier
+				}).FirstOrDefault();
 
 		if ( credentialSelect == null )
 		{
@@ -804,17 +795,22 @@ public sealed class UserManager : IUserManager
 		return credential;
 	}
 
-	public async Task TransformToNewIterationAsync(Credential credential, byte[] salt,
+	public async Task TransformToNewIterationAsync(Credential credential,
 		string secret,
 		CredentialType credentialType)
 	{
-		if ( credential.IterationCount == IterationCountType.Iterate100KSha256 )
+		if ( credential.IterationCount == IterationCountType.Iterate600KSha256 )
 		{
 			return;
 		}
 
-		credential.IterationCount = IterationCountType.Iterate100KSha256;
-		credential.Secret = Pbkdf2Hasher.ComputeHash(secret, salt);
+		// Upgrade both the iteration count AND the salt in one step so that
+		// existing 16-byte (128-bit) salts are replaced with the current 32-byte
+		// (256-bit) standard at the same time as the PBKDF2 cost is increased.
+		var newSalt = Pbkdf2Hasher.GenerateRandomSalt();
+		credential.IterationCount = IterationCountType.Iterate600KSha256;
+		credential.Secret = Pbkdf2Hasher.ComputeHash(secret, newSalt);
+		credential.Extra = Convert.ToBase64String(newSalt);
 		_dbContext.Credentials.Update(credential);
 		await _dbContext.SaveChangesAsync();
 		_cache?.Remove(CredentialCacheKey(credentialType, credential.Identifier));
@@ -893,8 +889,8 @@ public sealed class UserManager : IUserManager
 	private List<Claim> GetUserRoleClaims(User user)
 	{
 		var claims = new List<Claim>();
-		IEnumerable<int> roleIds = _dbContext.UserRoles.TagWith("GetUserRoleClaims").Where(
-			ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
+		IEnumerable<int> roleIds = _dbContext.UserRoles.TagWith("GetUserRoleClaims")
+			.Where(ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
 
 		foreach ( var roleId in roleIds )
 		{
@@ -914,8 +910,7 @@ public sealed class UserManager : IUserManager
 	internal IEnumerable<Claim> GetUserPermissionClaims(Role role)
 	{
 		var claims = new List<Claim>();
-		var rolePermissions = _dbContext.RolePermissions.Where(
-			rp => rp.RoleId == role.Id);
+		var rolePermissions = _dbContext.RolePermissions.Where(rp => rp.RoleId == role.Id);
 		IEnumerable<int> permissionIds = rolePermissions.Select(rp => rp.PermissionId).ToList();
 
 		foreach ( var permissionId in permissionIds )

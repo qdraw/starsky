@@ -166,7 +166,7 @@ public sealed class AccountControllerTest
 		Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
 
 		// The logout is mocked so this will not actual log it out and controller.Logout() not crashing is good enough
-		controller.Logout();
+		await controller.Logout();
 
 		// And clean afterward
 		var itemWithId = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == newAccount.Name,
@@ -630,7 +630,7 @@ public sealed class AccountControllerTest
 
 		// The logout is mocked so this will not actual log it out
 		// controller.Logout() not crashing is good enough
-		controller.LogoutJson();
+		await controller.LogoutJson();
 
 		var newAccountDuplicate = new RegisterViewModel
 		{
@@ -649,7 +649,7 @@ public sealed class AccountControllerTest
 		Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
 
 		// The logout is mocked so this will not actual log it out and controller.Logout() not crashing is good enough
-		controller.LogoutJson();
+		await controller.LogoutJson();
 
 		// Clean afterwards            
 		var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == userId,

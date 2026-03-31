@@ -4,43 +4,65 @@
 using System;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using starsky.foundation.database.Models.Account;
 
 namespace starsky.foundation.accountmanagement.Helpers;
 
 public static class Pbkdf2Hasher
 {
 	/// <summary>
-	/// Get secured hash passwords based on a salt
+	///     Compute a PBKDF2 hash whose algorithm and iteration count are driven by
+	///     <paramref name="iterationType" />.  Default is 600 K iterations / SHA-256
+	///     (OWASP 2023 recommendation).
 	/// </summary>
-	/// <param name="password">password</param>
-	/// <param name="salt">to decrypt</param>
-	/// <param name="iteration100K">more secure password</param>
-	/// <param name="useSha256">more secure password</param>
-	/// <returns>hashed password</returns>
-	public static string ComputeHash(string password, byte[] salt, bool iteration100K = true, bool useSha256 = true)
+	public static string ComputeHash(string password, byte[] salt,
+		IterationCountType iterationType = IterationCountType.Iterate600KSha256)
 	{
-		// Use 100K iterations for new passwords, and 10K iterations for older stored hashes
-		var iterationCount = iteration100K ? 100_000 : 10000;
-		var hashType = useSha256 ? KeyDerivationPrf.HMACSHA256 : KeyDerivationPrf.HMACSHA1;
+		var iterationCount = ( int ) iterationType;
+		if ( iterationCount <= 0 )
+		{
+			iterationCount = 600_000;
+		}
+
+		var prf = iterationType == IterationCountType.IterateLegacySha1
+			? KeyDerivationPrf.HMACSHA1
+			: KeyDerivationPrf.HMACSHA256;
 
 		return Convert.ToBase64String(
 			KeyDerivation.Pbkdf2(
-				password: password,
-				salt: salt,
-				prf: hashType,
-				iterationCount: iterationCount,
-				numBytesRequested: 256 / 8
+				password,
+				salt,
+				prf,
+				iterationCount,
+				256 / 8
 			)
 		);
 	}
 
 	/// <summary>
-	/// Generate a random salt
+	///     Legacy overload kept for verifying hashes stored before the
+	///     <see cref="IterationCountType" />-based API existed.
+	///     <c>iteration100K=false</c> → 10 000 iterations / SHA-1 (legacy).
+	///     <c>iteration100K=true</c>  → 100 000 iterations / SHA-256.
+	///     New code should call the <see cref="IterationCountType" /> overload instead.
 	/// </summary>
-	/// <returns>random salt</returns>
+	[Obsolete("Use ComputeHash(password, salt, IterationCountType) instead.")]
+	public static string ComputeHash(string password, byte[] salt,
+		bool iteration100K, bool useSha256 = true)
+	{
+		var type = !iteration100K || !useSha256
+			? IterationCountType.IterateLegacySha1
+			: IterationCountType.Iterate100KSha256;
+
+		return ComputeHash(password, salt, type);
+	}
+
+	/// <summary>
+	///     Generate a cryptographically random 32-byte (256-bit) salt.
+	/// </summary>
 	public static byte[] GenerateRandomSalt()
 	{
-		var salt = new byte[128 / 8];
+		var salt = new byte[256 / 8]; // 32 bytes – recommended minimum
 
 		using var rng = RandomNumberGenerator.Create();
 		rng.GetBytes(salt);

@@ -75,7 +75,7 @@ public class FakeIUserManger : IUserManager
 			return new ChangeSecretResult(false, ChangeSecretResultError.CredentialNotFound);
 		}
 
-		result.Credentials!.FirstOrDefault()!.IterationCount = IterationCountType.Iterate100KSha256;
+		result.Credentials!.FirstOrDefault()!.IterationCount = IterationCountType.Iterate600KSha256;
 		result.Credentials!.FirstOrDefault()!.Secret = secret;
 
 		return new ChangeSecretResult(true);
@@ -106,9 +106,9 @@ public class FakeIUserManger : IUserManager
 		return Task.FromResult(!string.IsNullOrEmpty(user?.Credentials?.FirstOrDefault()?.Extra));
 	}
 
-	public void SignOut(HttpContext httpContext)
+	public Task SignOut(HttpContext httpContext)
 	{
-		throw new NotImplementedException();
+		return Task.CompletedTask;
 	}
 
 	public int GetCurrentUserId(HttpContext httpContext)

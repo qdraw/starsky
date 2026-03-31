@@ -83,7 +83,7 @@ public interface IUserManager
 	Task<bool> SignIn(HttpContext httpContext, User? user,
 		bool isPersistent = false);
 
-	void SignOut(HttpContext httpContext);
+	Task SignOut(HttpContext httpContext);
 	int GetCurrentUserId(HttpContext httpContext);
 	User? GetCurrentUser(HttpContext httpContext);
 	User? GetUser(string credentialTypeCode, string identifier);
