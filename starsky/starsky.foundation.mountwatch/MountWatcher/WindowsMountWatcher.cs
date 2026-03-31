@@ -5,7 +5,6 @@ using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
-using System.Threading;
 using starsky.foundation.platform.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
