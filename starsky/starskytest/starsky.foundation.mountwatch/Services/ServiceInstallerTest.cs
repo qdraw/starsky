@@ -1,4 +1,7 @@
+using System;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.ServiceInstaller;
@@ -149,7 +152,7 @@ public sealed class ServiceInstallerTest
 	[OSCondition(OperatingSystems.OSX)]
 	public async Task UninstallAsync_MacOs_RemovesPlistFile()
 	{
-		var ct = TestContext?.CancellationTokenSource.Token ?? default;
+		var ct = TestContext?.CancellationTokenSource.Token ?? CancellationToken.None;
 		var plistPath = MacOsServiceInstaller.GetMacOsPlistPath();
 		Directory.CreateDirectory(Path.GetDirectoryName(plistPath)!);
 		await File.WriteAllTextAsync(plistPath, "<plist/>", ct);
@@ -177,5 +180,137 @@ public sealed class ServiceInstallerTest
 	{
 		Assert.IsTrue(
 			await CreateSut().InstallAsync("/usr/local/bin/starskymountwatchercli"));
+	}
+
+	[TestMethod]
+	public void GetLinuxLogHint_ReturnsJournalctlCommand()
+	{
+		Assert.Contains("journalctl", ServiceInstallerHelper.GetLinuxLogHint());
+	}
+
+	[TestMethod]
+	public void WatchServiceName_GetReverseDnsName_IsNotEmpty()
+	{
+		Assert.IsFalse(string.IsNullOrWhiteSpace(WatchServiceName.GetReverseDnsName()));
+	}
+
+	[TestMethod]
+	public void WatchServiceName_GetSystemDName_IsNotEmpty()
+	{
+		Assert.IsFalse(string.IsNullOrWhiteSpace(WatchServiceName.GetSystemDName()));
+	}
+
+	[TestMethod]
+	public void WatchServiceName_GetDisplayName_IsNotEmpty()
+	{
+		Assert.IsFalse(string.IsNullOrWhiteSpace(WatchServiceName.GetDisplayName()));
+	}
+
+	[TestMethod]
+	public void ServiceInstaller_InstallAsync_MacOs_CallsMacInstaller()
+	{
+		if ( !OperatingSystem.IsMacOS() )
+		{
+			Assert.Inconclusive();
+		}
+
+		var logger = new FakeIWebLogger();
+		var installer = new ServiceInstaller(logger,
+			() => OSPlatform.OSX);
+
+		// TODO: this breaks
+		var result = installer.InstallAsync("/path/to/exe").Result;
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void ServiceInstaller_InstallAsync_Windows_CallsWindowsInstaller()
+	{
+		if ( !OperatingSystem.IsWindows() )
+		{
+			Assert.Inconclusive();
+		}
+
+		var logger = new FakeIWebLogger();
+		var installer = new ServiceInstaller(logger,
+			() => OSPlatform.Windows);
+
+		var result = installer.InstallAsync("/path/to/exe").Result;
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void ServiceInstaller_InstallAsync_Linux_CallsLinuxInstaller()
+	{
+		if ( !OperatingSystem.IsLinux() )
+		{
+			Assert.Inconclusive();
+		}
+
+		var logger = new FakeIWebLogger();
+		var installer = new ServiceInstaller(logger,
+			() => OSPlatform.Linux);
+
+		var result = installer.InstallAsync("/path/to/exe").Result;
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void ServiceInstaller_StartAsync_MacOs_CallsMacStarter()
+	{
+		if ( !OperatingSystem.IsMacOS() )
+		{
+			Assert.Inconclusive();
+		}
+
+		var logger = new FakeIWebLogger();
+		var installer = new ServiceInstaller(logger,
+			() => OSPlatform.OSX);
+
+		var result = installer.StartAsync().Result;
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void ServiceInstaller_StopAsync_Windows_CallsWindowsStopper()
+	{
+		if ( !OperatingSystem.IsWindows() )
+		{
+			Assert.Inconclusive();
+		}
+
+		var logger = new FakeIWebLogger();
+		var installer = new ServiceInstaller(logger,
+			() => OSPlatform.Windows);
+
+		var result = installer.StopAsync().Result;
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void ServiceInstaller_CreateInstaller_UnsupportedOs_Throws()
+	{
+		var logger = new FakeIWebLogger();
+		var installer = new ServiceInstaller(logger, () => OSPlatform.Create("Unknown"));
+
+		AggregateException? exception = null;
+		try
+		{
+			_ = installer.InstallAsync("/any").Result;
+			Assert.Fail("Should have thrown PlatformNotSupportedException");
+		}
+		catch ( AggregateException ex )
+		{
+			exception = ex;
+		}
+
+		Assert.IsNotNull(exception);
+		Assert.IsTrue(exception.InnerException is PlatformNotSupportedException,
+			$"Expected PlatformNotSupportedException but got {exception.InnerException?.GetType().Name}");
 	}
 }

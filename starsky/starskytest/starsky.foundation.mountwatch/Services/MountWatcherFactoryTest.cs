@@ -1,3 +1,5 @@
+using System;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.MountWatcher;
@@ -36,5 +38,48 @@ public sealed class MountWatcherFactoryTest
 		Assert.IsNotNull(watcher1);
 		Assert.IsNotNull(watcher2);
 		Assert.AreNotSame(watcher1, watcher2);
+	}
+
+	[TestMethod]
+	public void MountWatcherFactory_CreateMountWatcher_ReturnsMacWatcher()
+	{
+		var factory = new MountWatcherFactory(new FakeIWebLogger(),
+			() => OSPlatform.OSX);
+
+		var watcher = factory.CreateMountWatcher();
+
+		Assert.IsInstanceOfType(watcher, typeof(MacMountWatcher));
+	}
+
+	[TestMethod]
+	public void MountWatcherFactory_CreateMountWatcher_ReturnsWindowsWatcher()
+	{
+		var factory = new MountWatcherFactory(new FakeIWebLogger(),
+			() => OSPlatform.Windows);
+
+		var watcher = factory.CreateMountWatcher();
+
+		Assert.IsInstanceOfType(watcher, typeof(WindowsMountWatcher));
+	}
+
+	[TestMethod]
+	public void MountWatcherFactory_CreateMountWatcher_ReturnsLinuxWatcher()
+	{
+		var factory = new MountWatcherFactory(new FakeIWebLogger(),
+			() => OSPlatform.Linux);
+
+		var watcher = factory.CreateMountWatcher();
+
+		Assert.IsInstanceOfType(watcher, typeof(LinuxMountWatcher));
+		Assert.IsInstanceOfType(watcher, typeof(IMountWatcher));
+	}
+
+	[TestMethod]
+	public void MountWatcherFactory_CreateMountWatcher_UnsupportedOs_Throws()
+	{
+		var factory = new MountWatcherFactory(new FakeIWebLogger(),
+			() => OSPlatform.Create("Unknown"));
+
+		Assert.ThrowsExactly<NotSupportedException>(() => factory.CreateMountWatcher());
 	}
 }

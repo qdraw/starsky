@@ -1,6 +1,8 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
+using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.mountwatch.ServiceInstaller;
@@ -10,6 +12,14 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// </summary>
 public class ServiceInstaller(IWebLogger logger) : IServiceInstaller
 {
+	private readonly Func<OSPlatform> _platformResolver = OperatingSystemHelper.GetPlatform;
+
+	internal ServiceInstaller(IWebLogger logger, Func<OSPlatform> platformResolver) :
+		this(logger)
+	{
+		_platformResolver = platformResolver;
+	}
+
 	/// <summary>
 	///     Install service for the current OS
 	/// </summary>
@@ -51,17 +61,19 @@ public class ServiceInstaller(IWebLogger logger) : IServiceInstaller
 	/// </summary>
 	private IOsServiceInstaller CreateInstaller()
 	{
-		if ( OperatingSystem.IsMacOS() )
+		var platform = _platformResolver();
+
+		if ( platform == OSPlatform.OSX )
 		{
 			return new MacOsServiceInstaller(logger);
 		}
 
-		if ( OperatingSystem.IsWindows() )
+		if ( platform == OSPlatform.Windows )
 		{
 			return new WindowsServiceInstaller(logger);
 		}
 
-		if ( OperatingSystem.IsLinux() )
+		if ( platform == OSPlatform.Linux )
 		{
 			return new LinuxServiceInstaller(logger);
 		}

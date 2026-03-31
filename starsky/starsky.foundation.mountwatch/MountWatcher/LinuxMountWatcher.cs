@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using starsky.foundation.mountwatch.MountWatcher.Helpers.Interfaces;
 using starsky.foundation.mountwatch.MountWatcher.Linux;

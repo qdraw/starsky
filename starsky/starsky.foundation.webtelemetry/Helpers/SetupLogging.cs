@@ -31,13 +31,7 @@ public static class SetupLogging
 			logging.ClearProviders();
 			logging.AddConsole();
 
-			if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
-			{
-				logging.AddEventLog(options =>
-				{
-					options.SourceName = "nl.qdraw.mountwatcher";
-				});
-			}
+			AddEventLog(logging, appSettings.ApplicationType);
 
 			if ( string.IsNullOrEmpty(appSettings.OpenTelemetry?.LogsEndpoint) )
 			{
@@ -63,6 +57,22 @@ public static class SetupLogging
 		services.AddScoped<IWebLogger, WebLogger>();
 	}
 
+	[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+	internal static string AddEventLog(ILoggingBuilder logging,
+		AppSettings.StarskyAppType type)
+	{
+		var sourceName = $"nl.qdraw.{type.ToString().ToLowerInvariant()}";
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+		{
+			logging.AddEventLog(options =>
+			{
+				options.SourceName = sourceName;
+			});
+		}
+
+		return sourceName;
+	}
+
 	internal static List<KeyValuePair<string, object>> GetTelemetryAttributes(
 		AppSettings appSettings)
 	{
@@ -77,7 +87,7 @@ public static class SetupLogging
 				appSettings.AppVersionBuildDateTime.ToString(
 					new CultureInfo("nl-NL"))),
 			new KeyValuePair<string, object>(FrameworkDescriptionName,
-				RuntimeInformation.FrameworkDescription),
+				RuntimeInformation.FrameworkDescription)
 		];
 	}
 }

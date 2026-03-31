@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -6,6 +7,11 @@ using starsky.foundation.mountwatch.MountWatcher.Helpers.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher.Linux;
 
+// Thin native wrapper over libudev and filesystem APIs.
+[ExcludeFromCodeCoverage]
+[SuppressMessage("Usage",
+	"S4200: Make this wrapper for native method less trivial")]
+[SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments")]
 internal sealed class LinuxMountWatcherSystem : ILinuxMountWatcherSystem
 {
 	public IntPtr UdevNew()

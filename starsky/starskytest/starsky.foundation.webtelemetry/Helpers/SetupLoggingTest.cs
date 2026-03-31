@@ -61,4 +61,22 @@ public class SetupLoggingTest
 			kvp.Key == SetupLogging.FrameworkDescriptionName &&
 			kvp.Value.Equals(RuntimeInformation.FrameworkDescription), result);
 	}
+
+	[TestMethod]
+	public void AddEventLog_NonWindows_ReturnsExpectedSourceName_AndDoesNotThrow()
+	{
+		// Arrange
+		IServiceCollection services = new ServiceCollection();
+		var sourceName = string.Empty;
+
+		// Act
+		services.AddLogging(logging =>
+		{
+			sourceName = SetupLogging.AddEventLog(logging,
+				AppSettings.StarskyAppType.WebController);
+		});
+
+		// Assert
+		Assert.AreEqual("nl.qdraw.webcontroller", sourceName);
+	}
 }
