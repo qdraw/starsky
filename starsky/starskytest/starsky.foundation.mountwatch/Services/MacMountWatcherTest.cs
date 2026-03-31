@@ -94,4 +94,26 @@ public sealed class MacMountWatcherTest
 
 		CollectionAssert.AreEqual(new List<string> { "/Volumes/CAMERA" }, detectedAgain);
 	}
+
+	[TestMethod]
+	public void DetectNewExternalMounts_EjectAndReinsertSamePath_DetectedAgainWithoutDisappearCallback()
+	{
+		var watcher = CreateSut();
+
+		var first = watcher.DetectNewExternalMounts([
+			"/Volumes/SD_CARD"
+		]);
+
+		var afterEject = watcher.DetectNewExternalMounts([
+			"/"
+		]);
+
+		var reinsert = watcher.DetectNewExternalMounts([
+			"/Volumes/SD_CARD"
+		]);
+
+		CollectionAssert.AreEqual(new List<string> { "/Volumes/SD_CARD" }, first);
+		CollectionAssert.AreEqual(new List<string>(), afterEject);
+		CollectionAssert.AreEqual(new List<string> { "/Volumes/SD_CARD" }, reinsert);
+	}
 }

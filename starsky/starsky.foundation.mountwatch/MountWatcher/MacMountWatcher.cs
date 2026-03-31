@@ -41,15 +41,6 @@ internal class MacMountWatcher : BaseMountWatcher
 			return;
 		}
 
-		lock ( _knownVolumesLock )
-		{
-			_knownVolumes.Clear();
-			foreach ( var mountPath in GetMountedVolumes().Where(IsExternalVolumePath) )
-			{
-				_knownVolumes.Add(mountPath);
-			}
-		}
-
 		IsRunning = true;
 		WatchThread = new Thread(RunWatcher) { IsBackground = true };
 		WatchThread.Start();
@@ -274,10 +265,15 @@ internal class MacMountWatcher : BaseMountWatcher
 		var currentExternalMounts = mountedVolumes
 			.Where(IsExternalVolumePath)
 			.ToList();
+		var currentExternalMountSet = currentExternalMounts
+			.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
 		List<string> newMounts;
 		lock ( _knownVolumesLock )
 		{
+			// Reconcile stale entries in case eject events were missed.
+			_knownVolumes.RemoveWhere(path => !currentExternalMountSet.Contains(path));
+
 			newMounts = currentExternalMounts
 				.Where(m => !_knownVolumes.Contains(m))
 				.ToList();
