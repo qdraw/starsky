@@ -60,6 +60,14 @@ internal static class ServiceInstallerHelper
 	}
 
 	/// <summary>
+	///     Get the Linux log path hint
+	/// </summary>
+	internal static string GetLinuxLogHint()
+	{
+		return "journalctl -u starsky-mountwatcher.service";
+	}
+
+	/// <summary>
 	///     Get the macOS log file path
 	/// </summary>
 	private static string GetMacOsLogPath(string suffix)

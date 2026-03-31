@@ -41,8 +41,8 @@ public static class Program
 		hostBuilder.ConfigureServices((_, services) =>
 		{
 			// Setup AppSettings
-			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			var configurationRoot = SetupAppSettings.AppSettingsToBuilder(args).Result;
+			services.AddSingleton<IConfiguration>(configurationRoot);
 			services.ConfigurePoCo<AppSettings>(configurationRoot.GetSection("App"));
 
 			// Inject services

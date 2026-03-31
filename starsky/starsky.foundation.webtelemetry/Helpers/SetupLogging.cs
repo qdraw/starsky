@@ -31,6 +31,14 @@ public static class SetupLogging
 			logging.ClearProviders();
 			logging.AddConsole();
 
+			if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+			{
+				logging.AddEventLog(options =>
+				{
+					options.SourceName = "nl.qdraw.mountwatcher";
+				});
+			}
+
 			if ( string.IsNullOrEmpty(appSettings.OpenTelemetry?.LogsEndpoint) )
 			{
 				return;

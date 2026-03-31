@@ -7,6 +7,7 @@ using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
 using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.ServiceInstaller;
+using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -136,17 +137,21 @@ public class MountWatcherCli
 			_console.WriteLine($"  macOS plist: {MacOsServiceInstaller.GetMacOsPlistPath()}");
 			_console.WriteLine("  Load: launchctl load <plist>");
 			_console.WriteLine("  Requires: Full Disk Access in System Preferences");
+			_console.WriteLine("  Logs: ~/Library/Logs/starsky/mountwatcher.log");
 		}
 		else if ( OperatingSystem.IsLinux() )
 		{
 			_console.WriteLine("  systemd: /etc/systemd/system/starsky-mountwatcher.service");
 			_console.WriteLine("  Enable: sudo systemctl enable starsky-mountwatcher");
 			_console.WriteLine("  Start:  sudo systemctl start starsky-mountwatcher");
+			_console.WriteLine($"  Logs: {ServiceInstallerHelper.GetLinuxLogHint()}");
 		}
 		else if ( OperatingSystem.IsWindows() )
 		{
 			_console.WriteLine("  Windows Service: sc create \"nl.qdraw.mountwatcher\" ...");
 			_console.WriteLine("  Start: sc start nl.qdraw.mountwatcher");
+			_console.WriteLine("  Logs: Windows Event Viewer -> Windows Logs -> Application");
+			_console.WriteLine("        Source: nl.qdraw.mountwatcher");
 		}
 	}
 
