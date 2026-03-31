@@ -19,6 +19,12 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	private readonly Func<string, string, Task<bool>> _runProcessAsync =
 		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args);
 
+	// sc.exe stop returns 1060 (service does not exist) or 1062 (service not active);
+	// both mean the service is already in the desired stopped state → treat as success.
+	private readonly Func<string, string, Task<bool>> _stopProcessAsync =
+		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args,
+			new[] { 1060, 1062 });
+
 	private readonly string _serviceDisplayName = WatchServiceName.GetDisplayName();
 	private readonly string _serviceName = WatchServiceName.GetReverseDnsName();
 
@@ -28,6 +34,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		_runProcessAsync = runProcessAsync;
 		_delayAsync = delayAsync;
+		_stopProcessAsync = runProcessAsync;
 	}
 
 	/// <summary>
@@ -142,7 +149,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		try
 		{
-			var result = await _runProcessAsync("sc.exe", $"stop \"{_serviceName}\"");
+			var result = await _stopProcessAsync("sc.exe", $"stop \"{_serviceName}\"");
 			if ( result )
 			{
 				logger.LogInformation($"Windows Service stopped: {_serviceName}");

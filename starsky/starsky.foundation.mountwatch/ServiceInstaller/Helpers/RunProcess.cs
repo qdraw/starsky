@@ -7,9 +7,12 @@ namespace starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 internal class RunProcess(IWebLogger logger)
 {
 	/// <summary>
-	///     Run an external process and return whether it succeeded
+	///     Run an external process and return whether it succeeded.
+	///     Exit code 0 is always treated as success; any codes in
+	///     <paramref name="allowedExitCodes" /> are also treated as success.
 	/// </summary>
-	internal async Task<bool> RunProcessAsync(string fileName, string arguments)
+	internal async Task<bool> RunProcessAsync(string fileName, string arguments,
+		int[]? allowedExitCodes = null)
 	{
 		var processInfo = new ProcessStartInfo
 		{
@@ -38,6 +41,10 @@ internal class RunProcess(IWebLogger logger)
 				$"Process {fileName} {arguments} failed with exit code {process.ExitCode}\nOutput: {output}\nError: {error}");
 		}
 
-		return process.ExitCode == 0;
+		var succeeded = process.ExitCode == 0 ||
+		                ( allowedExitCodes != null &&
+		                  Array.IndexOf(allowedExitCodes, process.ExitCode) >= 0 );
+
+		return succeeded;
 	}
 }

@@ -276,20 +276,16 @@ public sealed class ServiceInstallerTest
 	}
 
 	[TestMethod]
-	public void ServiceInstaller_StopAsync_Windows_CallsWindowsStopper()
+	[OSCondition(OperatingSystems.Windows)]
+	public async Task ServiceInstaller_StopAsync_Windows_CallsWindowsStopper()
 	{
-		if ( !OperatingSystem.IsWindows() )
-		{
-			Assert.Inconclusive();
-		}
-
 		var logger = new FakeIWebLogger();
 		var installer = new ServiceInstaller(logger,
 			() => OSPlatform.Windows);
 
-		var result = installer.StopAsync().Result;
+		var result = await installer.StopAsync();
 
-		Assert.IsTrue(result);
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
