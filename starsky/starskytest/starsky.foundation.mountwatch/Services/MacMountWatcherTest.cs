@@ -1,44 +1,97 @@
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.mountwatch.Services;
 
 [TestClass]
 public sealed class MacMountWatcherTest
 {
+	private static MacMountWatcher CreateSut()
+	{
+		return new MacMountWatcher(new FakeIWebLogger());
+	}
+
 	[TestMethod]
 	public void MacMountWatcher_OnConstruction_IsNotRunning()
 	{
-		// Arrange & Act
-		var watcher = new MacMountWatcher(new FakeMocks.FakeIWebLogger());
-
-		// Assert
+		var watcher = CreateSut();
 		Assert.IsNotNull(watcher);
 	}
 
 	[TestMethod]
 	public void MacMountWatcher_GetMountedVolumes_ReturnsEnumerable()
 	{
-		// Arrange
-		var watcher = new MacMountWatcher(new FakeMocks.FakeIWebLogger());
-
-		// Act
+		var watcher = CreateSut();
 		var volumes = watcher.GetMountedVolumes();
-
-		// Assert
 		Assert.IsNotNull(volumes);
 	}
 
 	[TestMethod]
 	public void MacMountWatcher_Stop_CanbeCalled()
 	{
-		// Arrange
-		var watcher = new MacMountWatcher(new FakeMocks.FakeIWebLogger());
-
-		// Act
+		var watcher = CreateSut();
 		watcher.Stop();
-
-		// Assert
 		Assert.IsNotNull(watcher);
+	}
+
+	[TestMethod]
+	public void DetectNewExternalMounts_NewExternalVolume_ReturnsPath()
+	{
+		var watcher = CreateSut();
+		var detected = watcher.DetectNewExternalMounts([
+			"/",
+			"/Volumes/SD_CARD"
+		]);
+
+		CollectionAssert.AreEqual(new List<string> { "/Volumes/SD_CARD" }, detected);
+	}
+
+	[TestMethod]
+	public void DetectNewExternalMounts_IgnoresRootAndNonExternal()
+	{
+		var watcher = CreateSut();
+		var detected = watcher.DetectNewExternalMounts([
+			"/",
+			"/tmp/some-dir",
+			"/Volumes/CAMERA"
+		]);
+
+		CollectionAssert.AreEqual(new List<string> { "/Volumes/CAMERA" }, detected);
+	}
+
+	[TestMethod]
+	public void DetectNewExternalMounts_RepeatedSnapshot_DoesNotDuplicate()
+	{
+		var watcher = CreateSut();
+		var first = watcher.DetectNewExternalMounts([
+			"/Volumes/CAMERA"
+		]);
+		var second = watcher.DetectNewExternalMounts([
+			"/Volumes/CAMERA"
+		]);
+
+		CollectionAssert.AreEqual(new List<string> { "/Volumes/CAMERA" }, first);
+		CollectionAssert.AreEqual(new List<string>(), second);
+	}
+
+	[TestMethod]
+	public void UpdateKnownExternalMounts_RemovedMount_CanBeDetectedAgain()
+	{
+		var watcher = CreateSut();
+		_ = watcher.DetectNewExternalMounts([
+			"/Volumes/CAMERA"
+		]);
+
+		watcher.UpdateKnownExternalMounts([
+			"/"
+		]);
+
+		var detectedAgain = watcher.DetectNewExternalMounts([
+			"/Volumes/CAMERA"
+		]);
+
+		CollectionAssert.AreEqual(new List<string> { "/Volumes/CAMERA" }, detectedAgain);
 	}
 }

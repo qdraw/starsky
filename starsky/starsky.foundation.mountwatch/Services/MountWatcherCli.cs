@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -24,21 +26,24 @@ public class MountWatcherCli
 	private const string InstallArg = "--install";
 	private const string UninstallArg = "--uninstall";
 
+	private const string MacOsPrivacySettingsUri =
+		"x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles";
+
 	private readonly AppSettings _appSettings;
 	private readonly IConsole _console;
 	private readonly IImport _importService;
 	private readonly IWebLogger _logger;
-	private readonly IMountDetector _mountDetector;
 	private readonly IMountWatcherFactory _mountWatcherFactory;
 	private readonly HashSet<string> _processedPaths = new();
 	private readonly IServiceInstaller _serviceInstaller;
+	private readonly ICameraStorageDetector _storageDetector;
 
 	public MountWatcherCli(
 		IImport importService,
 		AppSettings appSettings,
 		IConsole console,
 		IWebLogger logger,
-		IMountDetector mountDetector,
+		ICameraStorageDetector storageDetector,
 		IMountWatcherFactory mountWatcherFactory,
 		IServiceInstaller serviceInstaller)
 	{
@@ -46,7 +51,7 @@ public class MountWatcherCli
 		_appSettings = appSettings;
 		_console = console;
 		_logger = logger;
-		_mountDetector = mountDetector;
+		_storageDetector = storageDetector;
 		_mountWatcherFactory = mountWatcherFactory;
 		_serviceInstaller = serviceInstaller;
 	}
@@ -86,6 +91,7 @@ public class MountWatcherCli
 			return await _serviceInstaller.UninstallAsync();
 		}
 
+		CheckMacOsFullDiskAccessOnStartup();
 		return RunWatcher();
 	}
 
@@ -132,14 +138,16 @@ public class MountWatcherCli
 		_console.WriteLine("  --help, -h      Show this help");
 		_console.WriteLine("");
 		_console.WriteLine("Service setup:");
+
+		_console.WriteLine($" Storage: {_appSettings.StorageFolder}");
+
 		if ( OperatingSystem.IsMacOS() )
 		{
 			_console.WriteLine($"  macOS plist: {MacOsServiceInstaller.GetMacOsPlistPath()}");
 			_console.WriteLine("  Load: launchctl load <plist>");
 			_console.WriteLine("  Requires: Full Disk Access in System Preferences");
 			_console.WriteLine("  To grant Full Disk Access:");
-			_console.WriteLine(
-				"    open x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles");
+			_console.WriteLine($"    open {MacOsPrivacySettingsUri}");
 			_console.WriteLine("  Logs: ~/Library/Logs/starsky/mountwatcher.log");
 		}
 		else if ( OperatingSystem.IsLinux() )
@@ -155,6 +163,69 @@ public class MountWatcherCli
 			_console.WriteLine("  Start: sc start nl.qdraw.mountwatcher");
 			_console.WriteLine("  Logs: Windows Event Viewer -> Windows Logs -> Application");
 			_console.WriteLine("        Source: nl.qdraw.mountwatcher");
+		}
+	}
+
+	private void CheckMacOsFullDiskAccessOnStartup()
+	{
+		if ( !OperatingSystem.IsMacOS() )
+		{
+			return;
+		}
+
+		if ( CanReadVolumesDirectory(out var probeException) )
+		{
+			_logger.LogInformation("macOS /Volumes access check passed");
+			return;
+		}
+
+		var message =
+			"Unable to read /Volumes. Mount events may not be visible until Full Disk Access is granted.";
+		_logger.LogError($"{message} Error: {probeException?.Message}");
+		_console.WriteLine($"Warning: {message}");
+		_console.WriteLine("Opening macOS Full Disk Access settings...");
+
+		if ( !OpenFullDiskAccessSettings() )
+		{
+			_console.WriteLine($"Run manually: open {MacOsPrivacySettingsUri}");
+		}
+	}
+
+	private static bool CanReadVolumesDirectory(out Exception? exception)
+	{
+		exception = null;
+
+		try
+		{
+			const string volumesPath = "/Volumes";
+			if ( !Directory.Exists(volumesPath) )
+			{
+				return true;
+			}
+
+			_ = Directory.EnumerateFileSystemEntries(volumesPath).Take(1).ToList();
+			return true;
+		}
+		catch ( Exception ex )
+		{
+			exception = ex;
+			return false;
+		}
+	}
+
+	private static bool OpenFullDiskAccessSettings()
+	{
+		try
+		{
+			Process.Start(new ProcessStartInfo
+			{
+				FileName = "open", Arguments = MacOsPrivacySettingsUri, UseShellExecute = false
+			});
+			return true;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -195,42 +266,15 @@ public class MountWatcherCli
 
 		try
 		{
-			// Check for camera storage
-			if ( !_mountDetector.HasCameraStorage(e.MountPath) )
+			if ( !_storageDetector.IsCameraStorage(e.MountPath) )
 			{
-				if ( _appSettings.IsVerbose() )
-				{
-					_logger.LogInformation($"No camera storage found on {e.MountPath}");
-				}
-
+				_logger.LogInformation($"No camera storage found on {e.MountPath}");
 				return;
 			}
 
-			_logger.LogInformation($"Camera storage detected on {e.MountPath}");
+			_logger.LogInformation($"Run import on {e.MountPath}");
 
-			// Get camera storage paths
-			var cameraPaths = _mountDetector.GetCameraStoragePaths(e.MountPath).ToList();
-			if ( cameraPaths.Count == 0 )
-			{
-				_logger.LogInformation($"No camera paths found on {e.MountPath}");
-				return;
-			}
-
-			// Prevent duplicate processing
-			foreach ( var cameraPath in cameraPaths )
-			{
-				if ( !_processedPaths.Add(cameraPath) )
-				{
-					if ( _appSettings.IsVerbose() )
-					{
-						_logger.LogInformation($"Camera path already processed: {cameraPath}");
-					}
-
-					continue;
-				}
-
-				_ = Task.Run(async () => await RunImporter(cameraPath));
-			}
+			_ = Task.Run(async () => await RunImporter(e.MountPath));
 		}
 		catch ( Exception ex )
 		{

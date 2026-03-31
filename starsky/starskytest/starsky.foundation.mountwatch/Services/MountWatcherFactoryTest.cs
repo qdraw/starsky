@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.MountWatcher;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.mountwatch.Services;
 
@@ -11,7 +12,7 @@ public sealed class MountWatcherFactoryTest
 	public void MountWatcherFactory_CreateMountWatcher_ReturnsValidWatcher()
 	{
 		// Arrange
-		var factory = new MountWatcherFactory();
+		var factory = new MountWatcherFactory(new FakeIWebLogger());
 
 		// Act
 		var watcher = factory.CreateMountWatcher();
@@ -25,7 +26,7 @@ public sealed class MountWatcherFactoryTest
 	public void MountWatcherFactory_CreateMountWatcher_ReturnsDifferentInstance()
 	{
 		// Arrange
-		var factory = new MountWatcherFactory();
+		var factory = new MountWatcherFactory(new FakeIWebLogger());
 
 		// Act
 		var watcher1 = factory.CreateMountWatcher();

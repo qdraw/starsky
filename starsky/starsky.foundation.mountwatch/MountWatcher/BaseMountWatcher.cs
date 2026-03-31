@@ -3,23 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher;
 
 /// <summary>
 ///     Base class for mount watchers with shared polling fallback logic
 /// </summary>
-internal abstract class BaseMountWatcher : IMountWatcher
+internal abstract class BaseMountWatcher(IWebLogger logger) : IMountWatcher
 {
 	private const int PollIntervalMs = 2000;
+	protected readonly IWebLogger logger = logger;
 	protected bool IsRunning;
 	protected Thread? WatchThread;
-	protected readonly starsky.foundation.platform.Interfaces.IWebLogger? _logger;
-
-	protected BaseMountWatcher(starsky.foundation.platform.Interfaces.IWebLogger? logger = null)
-	{
-		_logger = logger;
-	}
 
 	public event EventHandler<MountDetectedEventArgs>? MountDetected;
 

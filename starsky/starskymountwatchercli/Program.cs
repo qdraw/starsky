@@ -65,7 +65,7 @@ public static class Program
 		var import = serviceProvider.GetRequiredService<IImport>();
 		var console = serviceProvider.GetRequiredService<IConsole>();
 		var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
-		var mountDetector = serviceProvider.GetRequiredService<IMountDetector>();
+		var cameraStorageDetector = serviceProvider.GetRequiredService<ICameraStorageDetector>();
 		var mountWatcherFactory = serviceProvider.GetRequiredService<IMountWatcherFactory>();
 		var serviceInstaller = new ServiceInstaller(webLogger);
 
@@ -79,7 +79,7 @@ public static class Program
 			appSettings,
 			console,
 			webLogger,
-			mountDetector,
+			cameraStorageDetector,
 			mountWatcherFactory,
 			serviceInstaller);
 

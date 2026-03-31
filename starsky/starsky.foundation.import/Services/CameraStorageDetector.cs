@@ -26,6 +26,24 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraSt
 		return drives.Select(drive => drive.RootDirectory.FullName);
 	}
 
+	public bool IsCameraStorage(string driveRoot)
+	{
+		if ( string.IsNullOrWhiteSpace(driveRoot) )
+		{
+			return false;
+		}
+
+		try
+		{
+			var drive = new DriveInfo(driveRoot);
+			return IsCameraStorage(drive);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public bool IsCameraStorage(DriveInfo? drive)
 	{
 		return IsCameraStorage(drive.ToCameraDriveInfo());
@@ -58,7 +76,9 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraSt
 		// 4. DCIM folder (gold standard)
 		//  5. Camera-like directory structure (optional but strong)
 		var dcimPath = Path.Combine(drive.RootDirectory.FullName, "DCIM");
-		return _hostStorage.ExistFolder(dcimPath) ||
+		var dcimLowerCasePath = Path.Combine(drive.RootDirectory.FullName, "dcim");
+
+		return _hostStorage.ExistFolder(dcimPath) || _hostStorage.ExistFolder(dcimLowerCasePath) ||
 		       HasCameraDirectoryStructure(drive.RootDirectory.FullName);
 	}
 

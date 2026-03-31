@@ -5,6 +5,7 @@ using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
+using starsky.foundation.platform.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -13,16 +14,11 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// <summary>
 ///     Windows mount watcher using WMI for event-driven drive detection
 /// </summary>
-internal class WindowsMountWatcher : BaseMountWatcher
+internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 {
 	// ManagementEventWatcher is Windows-only – held as object to avoid
 	// CA1416 on the field itself when the containing class is cross-platform.
 	private object? _watcher;
-
-	public WindowsMountWatcher(starsky.foundation.platform.Interfaces.IWebLogger? logger = null) :
-		base(logger)
-	{
-	}
 
 	/// <summary>
 	///     Start watching for mount events using WMI
@@ -93,7 +89,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 		}
 		catch ( Exception ex )
 		{
-			_logger?.LogError(ex, "Failed to start WMI watcher, falling back to polling");
+			logger?.LogError(ex, "Failed to start WMI watcher, falling back to polling");
 			RunPollingFallback();
 		}
 	}

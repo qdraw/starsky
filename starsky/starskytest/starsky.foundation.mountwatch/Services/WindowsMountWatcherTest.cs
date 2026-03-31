@@ -44,6 +44,7 @@ public sealed class WindowsMountWatcherTest
 	}
 
 	[TestMethod]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public void WindowsMountWatcher_Start_DoesNotThrow_WhenPlatformIsUnsupported()
 	{
 		// This test is to ensure that even if WMI or other platform-specifics fail,

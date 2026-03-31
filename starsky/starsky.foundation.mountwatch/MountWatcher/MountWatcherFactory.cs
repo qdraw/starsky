@@ -10,15 +10,8 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 ///     Factory for creating OS-specific mount watchers
 /// </summary>
 [Service(typeof(IMountWatcherFactory), InjectionLifetime = InjectionLifetime.Singleton)]
-public class MountWatcherFactory : IMountWatcherFactory
+public class MountWatcherFactory(IWebLogger logger) : IMountWatcherFactory
 {
-	private readonly IWebLogger? _logger;
-
-	public MountWatcherFactory(IWebLogger? logger = null)
-	{
-		_logger = logger;
-	}
-
 	/// <summary>
 	///     Create appropriate mount watcher for current OS
 	/// </summary>
@@ -26,17 +19,17 @@ public class MountWatcherFactory : IMountWatcherFactory
 	{
 		if ( OperatingSystem.IsMacOS() )
 		{
-			return new MacMountWatcher(_logger);
+			return new MacMountWatcher(logger);
 		}
 
 		if ( OperatingSystem.IsWindows() )
 		{
-			return new WindowsMountWatcher(_logger);
+			return new WindowsMountWatcher(logger);
 		}
 
 		if ( OperatingSystem.IsLinux() )
 		{
-			return new LinuxMountWatcher(_logger);
+			return new LinuxMountWatcher(logger);
 		}
 
 		throw new NotSupportedException("Operating system is not supported");

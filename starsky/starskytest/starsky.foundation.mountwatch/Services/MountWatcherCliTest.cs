@@ -13,7 +13,7 @@ public sealed class MountWatcherCliTest
 	private static MountWatcherCli CreateSut(
 		FakeConsoleWrapper? console = null,
 		FakeIWebLogger? logger = null,
-		FakeMountDetector? mountDetector = null,
+		FakeCameraStorageDetector? mountDetector = null,
 		FakeMountWatcherFactory? factory = null,
 		FakeServiceInstaller? installer = null)
 	{
@@ -22,7 +22,7 @@ public sealed class MountWatcherCliTest
 			new AppSettings { TempFolder = "/temp" },
 			console ?? new FakeConsoleWrapper(new List<string>()),
 			logger ?? new FakeIWebLogger(),
-			mountDetector ?? new FakeMountDetector(),
+			mountDetector ?? new FakeCameraStorageDetector([]),
 			factory ?? new FakeMountWatcherFactory(),
 			installer ?? new FakeServiceInstaller());
 	}

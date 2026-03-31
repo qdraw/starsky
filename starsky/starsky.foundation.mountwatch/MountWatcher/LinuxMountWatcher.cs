@@ -4,19 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher;
 
 /// <summary>
 ///     Linux mount watcher using udev for event-driven notifications (with polling fallback)
 /// </summary>
-internal class LinuxMountWatcher : BaseMountWatcher
+internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 {
-	public LinuxMountWatcher(starsky.foundation.platform.Interfaces.IWebLogger? logger = null) :
-		base(logger)
-	{
-	}
-
 	/// <summary>
 	///     Start watching for mount events using udev or polling fallback
 	/// </summary>

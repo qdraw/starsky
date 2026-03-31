@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher;
 
@@ -12,13 +13,22 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// </summary>
 internal class MacMountWatcher : BaseMountWatcher
 {
+	private const int BackupPollIntervalMs = 2000;
+	private const uint CfStringEncodingUtf8 = 0x08000100;
+	private const string CfRunLoopDefaultMode = "kCFRunLoopDefaultMode";
+	private readonly DiskAppearedCallback _diskAppearedCallback;
+	private readonly DiskDisappearedCallback _diskDisappearedCallback;
+	private readonly HashSet<string> _knownVolumes = new(StringComparer.OrdinalIgnoreCase);
+	private readonly object _knownVolumesLock = new();
+	private Thread? _backupPollThread;
 	private IntPtr _runLoop;
-
+	private IntPtr _runLoopMode;
 	private IntPtr _session;
 
-	public MacMountWatcher(starsky.foundation.platform.Interfaces.IWebLogger? logger = null) :
-		base(logger)
+	public MacMountWatcher(IWebLogger logger) : base(logger)
 	{
+		_diskAppearedCallback = OnDiskAppeared;
+		_diskDisappearedCallback = OnDiskDisappeared;
 	}
 
 	/// <summary>
@@ -31,9 +41,22 @@ internal class MacMountWatcher : BaseMountWatcher
 			return;
 		}
 
+		lock ( _knownVolumesLock )
+		{
+			_knownVolumes.Clear();
+			foreach ( var mountPath in GetMountedVolumes().Where(IsExternalVolumePath) )
+			{
+				_knownVolumes.Add(mountPath);
+			}
+		}
+
 		IsRunning = true;
 		WatchThread = new Thread(RunWatcher) { IsBackground = true };
 		WatchThread.Start();
+
+		// Safety-net for environments where DiskArbitration callbacks are delayed or absent.
+		_backupPollThread = new Thread(RunBackupPollingLoop) { IsBackground = true };
+		_backupPollThread.Start();
 	}
 
 	/// <summary>
@@ -45,6 +68,11 @@ internal class MacMountWatcher : BaseMountWatcher
 
 		try
 		{
+			if ( _session != IntPtr.Zero && _runLoop != IntPtr.Zero && _runLoopMode != IntPtr.Zero )
+			{
+				DASessionUnscheduleWithRunLoop(_session, _runLoop, _runLoopMode);
+			}
+
 			if ( _runLoop != IntPtr.Zero )
 			{
 				CFRunLoopStop(_runLoop);
@@ -56,6 +84,7 @@ internal class MacMountWatcher : BaseMountWatcher
 		}
 
 		WatchThread?.Join(TimeSpan.FromSeconds(5));
+		_backupPollThread?.Join(TimeSpan.FromSeconds(5));
 	}
 
 	/// <summary>
@@ -98,6 +127,10 @@ internal class MacMountWatcher : BaseMountWatcher
 		IntPtr session, IntPtr runLoop, IntPtr runLoopMode);
 
 	[DllImport("/System/Library/Frameworks/DiskArbitration.framework/DiskArbitration")]
+	private static extern void DASessionUnscheduleWithRunLoop(
+		IntPtr session, IntPtr runLoop, IntPtr runLoopMode);
+
+	[DllImport("/System/Library/Frameworks/DiskArbitration.framework/DiskArbitration")]
 	private static extern void DARegisterDiskAppearedCallback(
 		IntPtr session, IntPtr match, DiskAppearedCallback callback, IntPtr context);
 
@@ -114,6 +147,13 @@ internal class MacMountWatcher : BaseMountWatcher
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
 	private static extern void CFRunLoopStop(IntPtr runLoop);
 
+	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+	private static extern IntPtr CFStringCreateWithCString(
+		IntPtr allocator, string cStr, uint encoding);
+
+	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+	private static extern void CFRelease(IntPtr cf);
+
 	/// <summary>
 	///     Run the DiskArbitration event watcher
 	/// </summary>
@@ -124,34 +164,65 @@ internal class MacMountWatcher : BaseMountWatcher
 			_session = DASessionCreate(IntPtr.Zero);
 			if ( _session == IntPtr.Zero )
 			{
-				// Fallback to polling if DiskArbitration is unavailable
+				logger.LogError(
+					"DiskArbitration session unavailable, switching to polling fallback");
 				RunPollingFallback();
 				return;
 			}
 
 			_runLoop = CFRunLoopGetCurrent();
-			DASessionScheduleWithRunLoop(_session, _runLoop, IntPtr.Zero);
+			_runLoopMode = CFStringCreateWithCString(IntPtr.Zero, CfRunLoopDefaultMode,
+				CfStringEncodingUtf8);
 
-			// Register callbacks
-			var diskAppearedCallback = new DiskAppearedCallback(OnDiskAppeared);
-			var diskDisappearedCallback = new DiskDisappearedCallback(OnDiskDisappeared);
+			if ( _runLoopMode == IntPtr.Zero )
+			{
+				logger.LogError(
+					"Unable to create CFRunLoop default mode, switching to polling fallback");
+				RunPollingFallback();
+				return;
+			}
 
-			DARegisterDiskAppearedCallback(_session, IntPtr.Zero, diskAppearedCallback,
+			DASessionScheduleWithRunLoop(_session, _runLoop, _runLoopMode);
+			DARegisterDiskAppearedCallback(_session, IntPtr.Zero, _diskAppearedCallback,
 				IntPtr.Zero);
-			DARegisterDiskDisappearedCallback(_session, IntPtr.Zero, diskDisappearedCallback,
+			DARegisterDiskDisappearedCallback(_session, IntPtr.Zero, _diskDisappearedCallback,
 				IntPtr.Zero);
 
-			// Keep the callback delegates alive
-			GC.KeepAlive(diskAppearedCallback);
-			GC.KeepAlive(diskDisappearedCallback);
-
-			// Run the event loop
+			logger.LogInformation("DiskArbitration watcher active");
 			CFRunLoopRun();
 		}
-		catch
+		catch ( Exception ex )
 		{
-			// Fallback to polling on error
+			logger.LogError(
+				$"DiskArbitration watcher failed, switching to polling fallback: {ex.Message}");
 			RunPollingFallback();
+		}
+		finally
+		{
+			try
+			{
+				if ( _session != IntPtr.Zero && _runLoop != IntPtr.Zero &&
+				     _runLoopMode != IntPtr.Zero )
+				{
+					DASessionUnscheduleWithRunLoop(_session, _runLoop, _runLoopMode);
+				}
+			}
+			catch
+			{
+				// Ignore cleanup errors
+			}
+
+			if ( _runLoopMode != IntPtr.Zero )
+			{
+				CFRelease(_runLoopMode);
+				_runLoopMode = IntPtr.Zero;
+			}
+
+			if ( _session != IntPtr.Zero )
+			{
+				CFRelease(_session);
+				_session = IntPtr.Zero;
+			}
 		}
 	}
 
@@ -162,15 +233,73 @@ internal class MacMountWatcher : BaseMountWatcher
 	{
 		try
 		{
-			var mounts = GetMountedVolumes();
-			if ( mounts.Any() )
+			EmitNewExternalMounts("DiskArbitration");
+		}
+		catch ( Exception ex )
+		{
+			logger.LogError($"Error handling macOS disk appeared callback: {ex.Message}");
+		}
+	}
+
+	private void RunBackupPollingLoop()
+	{
+		while ( IsRunning )
+		{
+			try
 			{
-				OnMountDetected(mounts.First());
+				EmitNewExternalMounts("polling backup");
+			}
+			catch
+			{
+				// Backup polling should never crash the watcher loop.
+			}
+
+			Thread.Sleep(BackupPollIntervalMs);
+		}
+	}
+
+	private void EmitNewExternalMounts(string source)
+	{
+		var newMounts = DetectNewExternalMounts(GetMountedVolumes());
+
+		foreach ( var mountPath in newMounts )
+		{
+			logger.LogInformation($"macOS volume appeared ({source}): {mountPath}");
+			OnMountDetected(mountPath);
+		}
+	}
+
+	internal List<string> DetectNewExternalMounts(IEnumerable<string> mountedVolumes)
+	{
+		var currentExternalMounts = mountedVolumes
+			.Where(IsExternalVolumePath)
+			.ToList();
+
+		List<string> newMounts;
+		lock ( _knownVolumesLock )
+		{
+			newMounts = currentExternalMounts
+				.Where(m => !_knownVolumes.Contains(m))
+				.ToList();
+
+			foreach ( var mountPath in currentExternalMounts )
+			{
+				_knownVolumes.Add(mountPath);
 			}
 		}
-		catch
+
+		return newMounts;
+	}
+
+	internal void UpdateKnownExternalMounts(IEnumerable<string> mountedVolumes)
+	{
+		var currentExternalMounts = mountedVolumes
+			.Where(IsExternalVolumePath)
+			.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+		lock ( _knownVolumesLock )
 		{
-			// Ignore errors
+			_knownVolumes.RemoveWhere(path => !currentExternalMounts.Contains(path));
 		}
 	}
 
@@ -179,9 +308,20 @@ internal class MacMountWatcher : BaseMountWatcher
 	/// </summary>
 	private void OnDiskDisappeared(IntPtr diskRef, IntPtr context)
 	{
-		// Disk disappeared - could trigger cleanup logic if needed
+		try
+		{
+			UpdateKnownExternalMounts(GetMountedVolumes());
+		}
+		catch ( Exception ex )
+		{
+			logger.LogError($"Error handling macOS disk disappeared callback: {ex.Message}");
+		}
 	}
 
+	private static bool IsExternalVolumePath(string mountPath)
+	{
+		return mountPath.StartsWith("/Volumes/", StringComparison.OrdinalIgnoreCase);
+	}
 
 	// DiskArbitration framework P/Invoke declarations
 	private delegate void DiskAppearedCallback(IntPtr diskRef, IntPtr context);
