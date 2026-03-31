@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
@@ -10,23 +11,17 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// <summary>
 ///     macOS-specific service installer using launchd
 /// </summary>
-internal class MacOsServiceInstaller : IOsServiceInstaller
+internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
-	private const string ServiceName = "nl.qdraw.mountwatcher";
-	private readonly IWebLogger _logger;
-
-	public MacOsServiceInstaller(IWebLogger logger)
-	{
-		_logger = logger;
-	}
-
 	/// <summary>
 	///     Install launchd plist on macOS
 	/// </summary>
 	public async Task<bool> InstallAsync(string executablePath)
 	{
 		var plistPath = GetMacOsPlistPath();
-		var plistContent = ServiceInstallerHelper.GenerateMacOsPlist(executablePath, ServiceName);
+		var plistContent =
+			ServiceInstallerHelper.GenerateMacOsPlist(executablePath,
+				WatchServiceName.GetReverseDnsName());
 
 		try
 		{
@@ -34,15 +29,15 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 			Directory.CreateDirectory(directory);
 			await File.WriteAllTextAsync(plistPath, plistContent);
 
-			_logger.LogInformation(
+			logger.LogInformation(
 				"Note: Grant Full Disk Access to the executable in System Preferences.");
 
-			_logger.LogInformation($"macOS launchd plist written to {plistPath}");
+			logger.LogInformation($"macOS launchd plist written to {plistPath}");
 			return true;
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to install macOS service: {ex.Message}");
+			logger.LogError(ex, $"Failed to install macOS service: {ex.Message}");
 			return false;
 		}
 	}
@@ -60,18 +55,18 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 			{
 				await StopAsync();
 				File.Delete(plistPath);
-				_logger.LogInformation($"macOS launchd plist removed from {plistPath}");
+				logger.LogInformation($"macOS launchd plist removed from {plistPath}");
 			}
 			else
 			{
-				_logger.LogInformation($"LaunchAgent not found: {plistPath}");
+				logger.LogInformation($"LaunchAgent not found: {plistPath}");
 			}
 
 			return await Task.FromResult(true);
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to uninstall macOS service: {ex.Message}");
+			logger.LogError(ex, $"Failed to uninstall macOS service: {ex.Message}");
 			return false;
 		}
 	}
@@ -87,14 +82,15 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 			var result = await RunProcessAsync("launchctl", $"load {plistPath}");
 			if ( result )
 			{
-				_logger.LogInformation($"macOS service started: {ServiceName}");
+				logger.LogInformation(
+					$"macOS service started: {WatchServiceName.GetReverseDnsName()}");
 			}
 
 			return result;
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to start macOS service: {ex.Message}");
+			logger.LogError(ex, $"Failed to start macOS service: {ex.Message}");
 			return false;
 		}
 	}
@@ -110,14 +106,15 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 			var result = await RunProcessAsync("launchctl", $"unload {plistPath}");
 			if ( result )
 			{
-				_logger.LogInformation($"macOS service stopped: {ServiceName}");
+				logger.LogInformation(
+					$"macOS service stopped: {WatchServiceName.GetReverseDnsName()}");
 			}
 
 			return result;
 		}
 		catch ( Exception ex )
 		{
-			_logger.LogError(ex, $"Failed to stop macOS service: {ex.Message}");
+			logger.LogError(ex, $"Failed to stop macOS service: {ex.Message}");
 			return false;
 		}
 	}
@@ -127,7 +124,7 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 	/// </summary>
 	private static async Task<bool> RunProcessAsync(string fileName, string arguments)
 	{
-		var processInfo = new System.Diagnostics.ProcessStartInfo
+		var processInfo = new ProcessStartInfo
 		{
 			FileName = fileName,
 			Arguments = arguments,
@@ -137,7 +134,7 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 			CreateNoWindow = true
 		};
 
-		using var process = System.Diagnostics.Process.Start(processInfo);
+		using var process = Process.Start(processInfo);
 		if ( process == null )
 		{
 			return false;
@@ -153,6 +150,7 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 	internal static string GetMacOsPlistPath()
 	{
 		var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-		return Path.Combine(home, "Library", "LaunchAgents", $"{ServiceName}.plist");
+		return Path.Combine(home, "Library", "LaunchAgents",
+			$"{WatchServiceName.GetReverseDnsName()}.plist");
 	}
 }
