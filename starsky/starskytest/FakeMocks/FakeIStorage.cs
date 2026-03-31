@@ -190,6 +190,11 @@ public class FakeIStorage : IStorage
 
 	public bool FileDelete(string path)
 	{
+		if ( _exception != null )
+		{
+			throw _exception;
+		}
+
 		if ( !ExistFile(path) )
 		{
 			return false;
