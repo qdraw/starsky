@@ -54,7 +54,7 @@ public static class SetupLogging
 			);
 		});
 
-		services.AddScoped<IWebLogger, WebLogger>();
+		services.AddSingleton<IWebLogger, WebLogger>();
 	}
 
 	[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]

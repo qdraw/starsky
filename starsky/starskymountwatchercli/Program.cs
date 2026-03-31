@@ -48,6 +48,9 @@ public static class Program
 			RegisterDependencies.Configure(services);
 			services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
 
+			services.AddMemoryCache();
+			services.AddHealthChecks();
+
 			var tempServiceProvider = services.BuildServiceProvider();
 			var appSettings = tempServiceProvider.GetRequiredService<AppSettings>();
 
