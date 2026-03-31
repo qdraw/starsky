@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
@@ -94,12 +93,12 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		try
 		{
 			// Try system-level first
-			var result = await RunProcessAsync("sudo",
+			var result = await new RunProcess(logger).RunProcessAsync("sudo",
 				$"systemctl start {WatchServiceName.GetSystemDName()}");
 			if ( !result )
 			{
 				// Fallback to user-level
-				result = await RunProcessAsync("systemctl",
+				result = await new RunProcess(logger).RunProcessAsync("systemctl",
 					$"--user start {WatchServiceName.GetSystemDName()}");
 			}
 
@@ -126,12 +125,12 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		try
 		{
 			// Try system-level first
-			var result = await RunProcessAsync("sudo",
+			var result = await new RunProcess(logger).RunProcessAsync("sudo",
 				$"systemctl stop {WatchServiceName.GetSystemDName()}");
 			if ( !result )
 			{
 				// Fallback to user-level
-				result = await RunProcessAsync("systemctl",
+				result = await new RunProcess(logger).RunProcessAsync("systemctl",
 					$"--user stop {WatchServiceName.GetSystemDName()}");
 			}
 
@@ -148,31 +147,6 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			logger.LogError(ex, $"Failed to stop Linux service: {ex.Message}");
 			return false;
 		}
-	}
-
-	/// <summary>
-	///     Run an external process and return whether it succeeded
-	/// </summary>
-	private static async Task<bool> RunProcessAsync(string fileName, string arguments)
-	{
-		var processInfo = new ProcessStartInfo
-		{
-			FileName = fileName,
-			Arguments = arguments,
-			RedirectStandardOutput = true,
-			RedirectStandardError = true,
-			UseShellExecute = false,
-			CreateNoWindow = true
-		};
-
-		using var process = Process.Start(processInfo);
-		if ( process == null )
-		{
-			return false;
-		}
-
-		await process.WaitForExitAsync();
-		return process.ExitCode == 0;
 	}
 
 	/// <summary>

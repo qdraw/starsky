@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
@@ -35,7 +34,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 
 			// sc.exe create "service" binPath= "path"
 			// Note the space after "binPath=" is mandatory for sc.exe
-			var result = await RunProcessAsync("sc.exe",
+			var result = await new RunProcess(logger).RunProcessAsync("sc.exe",
 				$"create \"{_serviceName}\" binPath= \"{binPath}\" " +
 				$"DisplayName= \"{_serviceDisplayName}\" start= auto obj= \"LocalSystem\"");
 
@@ -66,7 +65,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		try
 		{
 			await StopAsync();
-			var result = await RunProcessAsync("sc.exe", $"delete \"{_serviceName}\"");
+			var result = await new RunProcess(logger).RunProcessAsync("sc.exe", $"delete \"{_serviceName}\"");
 
 			if ( result )
 			{
@@ -93,13 +92,13 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		try
 		{
-			var result = await RunProcessAsync("sc.exe", $"start \"{_serviceName}\"");
+			var result = await new RunProcess(logger).RunProcessAsync("sc.exe", $"start \"{_serviceName}\"");
 			if ( !result )
 			{
 				logger.LogInformation(
 					$"Retrying to start Windows Service: {_serviceName} after 2 seconds...");
 				await Task.Delay(2000);
-				result = await RunProcessAsync("sc.exe", $"start \"{_serviceName}\"");
+				result = await new RunProcess(logger).RunProcessAsync("sc.exe", $"start \"{_serviceName}\"");
 			}
 
 			if ( result )
@@ -127,7 +126,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		try
 		{
-			var result = await RunProcessAsync("sc.exe", $"stop \"{_serviceName}\"");
+			var result = await new RunProcess(logger).RunProcessAsync("sc.exe", $"stop \"{_serviceName}\"");
 			if ( result )
 			{
 				logger.LogInformation($"Windows Service stopped: {_serviceName}");
@@ -142,38 +141,5 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		}
 	}
 
-	/// <summary>
-	///     Run an external process and return whether it succeeded
-	/// </summary>
-	private async Task<bool> RunProcessAsync(string fileName, string arguments)
-	{
-		var processInfo = new ProcessStartInfo
-		{
-			FileName = fileName,
-			Arguments = arguments,
-			RedirectStandardOutput = true,
-			RedirectStandardError = true,
-			UseShellExecute = false,
-			CreateNoWindow = true
-		};
 
-		using var process = Process.Start(processInfo);
-		if ( process == null )
-		{
-			return false;
-		}
-
-		var output = await process.StandardOutput.ReadToEndAsync();
-		var error = await process.StandardError.ReadToEndAsync();
-
-		await process.WaitForExitAsync();
-
-		if ( process.ExitCode != 0 )
-		{
-			logger.LogError(
-				$"Process {fileName} {arguments} failed with exit code {process.ExitCode}\nOutput: {output}\nError: {error}");
-		}
-
-		return process.ExitCode == 0;
-	}
 }

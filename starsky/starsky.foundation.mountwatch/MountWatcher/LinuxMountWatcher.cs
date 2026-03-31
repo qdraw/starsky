@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
+using starsky.foundation.mountwatch.MountWatcher.Helpers.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Linux;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher;
@@ -13,6 +13,13 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// </summary>
 internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 {
+	private readonly ILinuxMountWatcherSystem _system = new LinuxMountWatcherSystem();
+
+	internal LinuxMountWatcher(IWebLogger logger, ILinuxMountWatcherSystem system) : this(logger)
+	{
+		_system = system;
+	}
+
 	/// <summary>
 	///     Start watching for mount events using udev or polling fallback
 	/// </summary>
@@ -45,42 +52,10 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		return GetCurrentMounts();
 	}
 
-	// udev library P/Invoke declarations
-	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern IntPtr udev_new();
-
-	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern void udev_unref(IntPtr udev);
-
-	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern IntPtr udev_monitor_new_from_netlink(IntPtr udev, string name);
-
-	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern int udev_monitor_filter_add_match_subsystem_devtype(
-		IntPtr monitor, string subsystem, IntPtr devtype);
-
-	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern int udev_monitor_enable_receiving(IntPtr monitor);
-
-	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern int udev_monitor_get_fd(IntPtr monitor);
-
-	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern IntPtr udev_monitor_receive_device(IntPtr monitor);
-
-	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern void udev_device_unref(IntPtr device);
-
-	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern string udev_device_get_devnode(IntPtr device);
-
-	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern void udev_monitor_unref(IntPtr monitor);
-
 	/// <summary>
 	///     Run the udev event watcher
 	/// </summary>
-	private void RunWatcher()
+	internal void RunWatcher()
 	{
 		try
 		{
@@ -102,38 +77,38 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	/// <summary>
 	///     Attempt to use udev for event-driven mount detection
 	/// </summary>
-	private bool TryRunUdevWatcher()
+	internal bool TryRunUdevWatcher()
 	{
 		var udev = IntPtr.Zero;
 		var monitor = IntPtr.Zero;
 
 		try
 		{
-			udev = udev_new();
+			udev = _system.UdevNew();
 			if ( udev == IntPtr.Zero )
 			{
 				return false;
 			}
 
-			monitor = udev_monitor_new_from_netlink(udev, "udev");
+			monitor = _system.UdevMonitorNewFromNetlink(udev, "udev");
 			if ( monitor == IntPtr.Zero )
 			{
 				return false;
 			}
 
 			// Monitor block device changes
-			if ( udev_monitor_filter_add_match_subsystem_devtype(monitor, "block", IntPtr.Zero) <
+			if ( _system.UdevMonitorFilterAddMatchSubsystemDevtype(monitor, "block", IntPtr.Zero) <
 			     0 )
 			{
 				return false;
 			}
 
-			if ( udev_monitor_enable_receiving(monitor) < 0 )
+			if ( _system.UdevMonitorEnableReceiving(monitor) < 0 )
 			{
 				return false;
 			}
 
-			var fd = udev_monitor_get_fd(monitor);
+			var fd = _system.UdevMonitorGetFd(monitor);
 			if ( fd < 0 )
 			{
 				return false;
@@ -142,19 +117,19 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 			// Monitor for events
 			while ( IsRunning )
 			{
-				var device = udev_monitor_receive_device(monitor);
+				var device = _system.UdevMonitorReceiveDevice(monitor);
 				if ( device != IntPtr.Zero )
 				{
-					var devNode = udev_device_get_devnode(device);
+					var devNode = _system.UdevDeviceGetDevnode(device);
 					if ( !string.IsNullOrEmpty(devNode) )
 					{
 						OnMountDetected(devNode);
 					}
 
-					udev_device_unref(device);
+					_system.UdevDeviceUnref(device);
 				}
 
-				Thread.Sleep(100);
+				_system.Sleep(100);
 			}
 
 			return true;
@@ -163,12 +138,12 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		{
 			if ( monitor != IntPtr.Zero )
 			{
-				udev_monitor_unref(monitor);
+				_system.UdevMonitorUnref(monitor);
 			}
 
 			if ( udev != IntPtr.Zero )
 			{
-				udev_unref(udev);
+				_system.UdevUnref(udev);
 			}
 		}
 	}
@@ -177,34 +152,19 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	/// <summary>
 	///     Get list of current mount points from /proc/mounts
 	/// </summary>
-	private static List<string> GetCurrentMounts()
+	internal List<string> GetCurrentMounts()
 	{
 		var mounts = new List<string>();
 
 		try
 		{
-			if ( !File.Exists("/proc/mounts") )
+			if ( !_system.FileExists("/proc/mounts") )
 			{
 				return mounts;
 			}
 
-			var lines = File.ReadAllLines("/proc/mounts");
-			foreach ( var line in lines )
-			{
-				var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
-				if ( parts.Length < 2 )
-				{
-					continue;
-				}
-
-				var mountPath = parts[1];
-
-				// Skip system mounts
-				if ( ShouldIncludeMount(mountPath) )
-				{
-					mounts.Add(mountPath);
-				}
-			}
+			var lines = _system.ReadAllLines("/proc/mounts");
+			mounts.AddRange(ParseMountLines(lines));
 		}
 		catch
 		{
@@ -214,10 +174,32 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		return mounts;
 	}
 
+	internal static List<string> ParseMountLines(IEnumerable<string> lines)
+	{
+		var mounts = new List<string>();
+
+		foreach ( var line in lines )
+		{
+			var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+			if ( parts.Length < 2 )
+			{
+				continue;
+			}
+
+			var mountPath = parts[1];
+			if ( ShouldIncludeMount(mountPath) )
+			{
+				mounts.Add(mountPath);
+			}
+		}
+
+		return mounts;
+	}
+
 	/// <summary>
 	///     Determine if a mount path should be monitored
 	/// </summary>
-	private static bool ShouldIncludeMount(string mountPath)
+	internal static bool ShouldIncludeMount(string mountPath)
 	{
 		// Skip system mounts
 		var excludePrefixes = new[] { "/sys", "/proc", "/dev", "/run", "/boot", "/var", "/tmp" };

@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
@@ -79,7 +78,8 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		try
 		{
 			var plistPath = GetMacOsPlistPath();
-			var result = await RunProcessAsync("launchctl", $"load {plistPath}");
+			var result =
+				await new RunProcess(logger).RunProcessAsync("launchctl", $"load {plistPath}");
 			if ( result )
 			{
 				logger.LogInformation(
@@ -103,7 +103,8 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		try
 		{
 			var plistPath = GetMacOsPlistPath();
-			var result = await RunProcessAsync("launchctl", $"unload {plistPath}");
+			var result =
+				await new RunProcess(logger).RunProcessAsync("launchctl", $"unload {plistPath}");
 			if ( result )
 			{
 				logger.LogInformation(
@@ -117,31 +118,6 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			logger.LogError(ex, $"Failed to stop macOS service: {ex.Message}");
 			return false;
 		}
-	}
-
-	/// <summary>
-	///     Run an external process and return whether it succeeded
-	/// </summary>
-	private static async Task<bool> RunProcessAsync(string fileName, string arguments)
-	{
-		var processInfo = new ProcessStartInfo
-		{
-			FileName = fileName,
-			Arguments = arguments,
-			RedirectStandardOutput = true,
-			RedirectStandardError = true,
-			UseShellExecute = false,
-			CreateNoWindow = true
-		};
-
-		using var process = Process.Start(processInfo);
-		if ( process == null )
-		{
-			return false;
-		}
-
-		await process.WaitForExitAsync();
-		return process.ExitCode == 0;
 	}
 
 	/// <summary>
