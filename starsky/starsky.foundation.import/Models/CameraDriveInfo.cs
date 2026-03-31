@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace starsky.foundation.import.Models;
@@ -19,9 +20,9 @@ public static class CameraDriveInfoHelper
 		{
 			driveFormat = driveInfo?.DriveFormat ?? string.Empty;
 		}
-		catch ( IOException )
+		catch ( UnauthorizedAccessException )
 		{
-			// no nothing
+			// do nothing – access to the drive is denied (e.g. on Linux)
 		}
 
 		return new CameraDriveInfo
