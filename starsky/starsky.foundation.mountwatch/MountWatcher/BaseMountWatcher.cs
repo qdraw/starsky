@@ -15,7 +15,7 @@ internal abstract class BaseMountWatcher(IWebLogger logger) : IMountWatcher
 	private const int PollIntervalMs = 2000;
 	protected readonly IWebLogger logger = logger;
 	protected bool IsRunning;
-	protected Thread? WatchThread;
+	protected internal Thread? WatchThread;
 
 	public event EventHandler<MountDetectedEventArgs>? MountDetected;
 

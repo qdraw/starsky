@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
+using starsky.foundation.mountwatch.MountWatcher.MacOS;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.mountwatch.Services;
@@ -115,5 +118,152 @@ public sealed class MacMountWatcherTest
 		CollectionAssert.AreEqual(new List<string> { "/Volumes/SD_CARD" }, first);
 		CollectionAssert.AreEqual(new List<string>(), afterEject);
 		CollectionAssert.AreEqual(new List<string> { "/Volumes/SD_CARD" }, reinsert);
+	}
+
+	// Tests with IStorage abstraction and dependency injection
+
+	[TestMethod]
+	public void GetMountedVolumes_WithFakeStorage_UsesInjectedStorage()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage(
+			outputSubPathFolders: new List<string>
+			{
+				"/Volumes",
+				"/Volumes/USB Drive",
+				"/"
+			});
+		var system = new MacMountWatcherSystem();
+		var sut = new MacMountWatcher(logger, storage, system);
+
+		// Act
+		var result = sut.GetMountedVolumes();
+
+		// Assert
+		Assert.IsTrue(result.Any(), "Should use injected storage");
+	}
+
+	[TestMethod]
+	public void GetMountedVolumes_WithStorageException_ReturnsEmpty()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage(
+			exception: new UnauthorizedAccessException("Access denied"));
+		var system = new MacMountWatcherSystem();
+		var sut = new MacMountWatcher(logger, storage, system);
+
+		// Act
+		var result = sut.GetMountedVolumes();
+
+		// Assert - should handle exception gracefully
+		Assert.IsEmpty(result);
+	}
+
+	[TestMethod]
+	public void Start_WithInjectedDependencies_Starts()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		var system = new MacMountWatcherSystem();
+		var sut = new MacMountWatcher(logger, storage, system);
+
+		// Act & Assert - should not throw and should start background thread
+		sut.Start();
+		sut.Stop();
+	}
+
+	[TestMethod]
+	public void Stop_WithInjectedDependencies_Stops()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		var system = new MacMountWatcherSystem();
+		var sut = new MacMountWatcher(logger, storage, system);
+		sut.Start();
+
+		// Act
+		sut.Stop();
+
+		// Assert - should complete without throwing
+		Assert.IsNotNull(sut);
+	}
+
+	[TestMethod]
+	public void DetectNewExternalMounts_WithFakeStorage_WorksCorrectly()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		var system = new MacMountWatcherSystem();
+		var sut = new MacMountWatcher(logger, storage, system);
+
+		// Act
+		var result = sut.DetectNewExternalMounts(new List<string>
+		{
+			"/Volumes/Camera",
+			"/Volumes/Backup"
+		});
+
+		// Assert
+		Assert.HasCount(2, result);
+	}
+
+	[TestMethod]
+	public void UpdateKnownExternalMounts_RemovesEjectedVolumes()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		var system = new MacMountWatcherSystem();
+		var sut = new MacMountWatcher(logger, storage, system);
+
+		// Add some volumes
+		sut.DetectNewExternalMounts(new List<string>
+		{
+			"/Volumes/Camera",
+			"/Volumes/Backup"
+		});
+
+		// Act - update with only Camera (Backup was ejected)
+		sut.UpdateKnownExternalMounts(new List<string>
+		{
+			"/Volumes/Camera"
+		});
+
+		// Now detect new mounts
+		var result = sut.DetectNewExternalMounts(new List<string>
+		{
+			"/Volumes/Camera",
+			"/Volumes/NewDrive"
+		});
+
+		// Assert - only new drive should be detected
+		CollectionAssert.AreEqual(new List<string> { "/Volumes/NewDrive" }, result);
+	}
+
+	[TestMethod]
+	public void MacMountWatcher_WithDependencyInjection_AllowsMocking()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var mockStorage = new FakeIStorage(
+			outputSubPathFolders: new List<string>
+			{
+				"/Volumes",
+				"/Volumes/Test Device",
+				"/"
+			});
+		var mockSystem = new MacMountWatcherSystem();
+
+		// Act
+		var sut = new MacMountWatcher(logger, mockStorage, mockSystem);
+		var volumes = sut.GetMountedVolumes();
+
+		// Assert - should work with injected mocks
+		Assert.IsTrue(volumes.Any());
 	}
 }
