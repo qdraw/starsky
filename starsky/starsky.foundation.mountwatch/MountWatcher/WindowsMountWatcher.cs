@@ -5,6 +5,7 @@ using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
+using System.Threading;
 using starsky.foundation.platform.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -125,14 +126,23 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	{
 		try
 		{
-			if ( TryTrackEventDrive(e, out var eventDrive) )
+			var eventTracked = TryTrackEventDrive(e, out var eventDrive);
+
+			if ( eventTracked )
 			{
 				OnMountDetected(eventDrive);
 			}
 
-			var newDrives = DetectNewMounts(GetMountedVolumes());
+			var newDrives = DetectNewMountsWithRetry(
+				GetMountedVolumes, 3, 250);
 			foreach ( var drive in newDrives )
 			{
+				if ( eventTracked &&
+				     drive.Equals(eventDrive, StringComparison.OrdinalIgnoreCase) )
+				{
+					continue;
+				}
+
 				OnMountDetected(drive);
 			}
 		}
@@ -173,6 +183,31 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		return newMounts;
 	}
 
+	internal List<string> DetectNewMountsWithRetry(
+		Func<List<string>> getMountedVolumes,
+		int attempts,
+		int delayMilliseconds,
+		Action<int>? sleepAction = null)
+	{
+		sleepAction ??= Thread.Sleep;
+
+		for ( var attempt = 0; attempt < attempts; attempt++ )
+		{
+			var newMounts = DetectNewMounts(getMountedVolumes());
+			if ( newMounts.Count > 0 )
+			{
+				return newMounts;
+			}
+
+			if ( attempt < attempts - 1 )
+			{
+				sleepAction(delayMilliseconds);
+			}
+		}
+
+		return [];
+	}
+
 	internal bool TryTrackEventDrive(string? driveName, out string normalizedDrive)
 	{
 		normalizedDrive = string.Empty;
@@ -191,7 +226,7 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		normalizedDrive = string.Empty;
 		try
 		{
-			var driveName = e.NewEvent?.Properties?["DriveName"]?.Value as string;
+			var driveName = e.NewEvent?.Properties?["DriveName"]?.Value?.ToString();
 			return TryTrackEventDrive(driveName, out normalizedDrive);
 		}
 		catch
