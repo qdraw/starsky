@@ -35,6 +35,8 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 
 		IsRunning = true;
 		SeedKnownMounts(GetMountedVolumes());
+		logger.LogInformation(
+			$"Windows mount watcher baseline seeded: {string.Join(", ", _knownMountedVolumes)}");
 
 		if ( OperatingSystem.IsWindows() )
 		{
@@ -90,6 +92,7 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 			mgmtWatcher.EventArrived += OnVolumeChanged;
 			mgmtWatcher.Start();
 			_watcher = mgmtWatcher;
+			logger.LogInformation("Windows WMI watcher started for Win32_VolumeChangeEvent EventType=2");
 		}
 		catch ( Exception ex )
 		{
@@ -126,29 +129,46 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	{
 		try
 		{
+			var eventType = e.NewEvent?.Properties?["EventType"]?.Value?.ToString() ?? "<null>";
+			var rawDriveName = e.NewEvent?.Properties?["DriveName"]?.Value?.ToString() ?? "<null>";
+			logger.LogInformation(
+				$"Windows volume event received: EventType={eventType}, DriveName={rawDriveName}");
+
 			var eventTracked = TryTrackEventDrive(e, out var eventDrive);
 
 			if ( eventTracked )
 			{
+				logger.LogInformation($"Windows volume event tracked as new mount: {eventDrive}");
 				OnMountDetected(eventDrive);
+			}
+			else
+			{
+				logger.LogInformation("Windows volume event drive was empty or already known");
 			}
 
 			var newDrives = DetectNewMountsWithRetry(
 				GetMountedVolumes, 3, 250);
+			if ( newDrives.Count == 0 )
+			{
+				logger.LogInformation("Windows retry mount scan found no new drives");
+			}
+
 			foreach ( var drive in newDrives )
 			{
 				if ( eventTracked &&
 				     drive.Equals(eventDrive, StringComparison.OrdinalIgnoreCase) )
 				{
+					logger.LogInformation($"Windows retry mount scan duplicate ignored: {drive}");
 					continue;
 				}
 
+				logger.LogInformation($"Windows retry mount scan detected new drive: {drive}");
 				OnMountDetected(drive);
 			}
 		}
-		catch
+		catch ( Exception ex )
 		{
-			// Ignore errors
+			logger.LogError(ex, $"Windows volume event handling failed: {ex.Message}");
 		}
 	}
 
@@ -193,14 +213,22 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 
 		for ( var attempt = 0; attempt < attempts; attempt++ )
 		{
-			var newMounts = DetectNewMounts(getMountedVolumes());
+			var snapshot = getMountedVolumes();
+			logger.LogInformation(
+				$"Windows retry mount scan attempt {attempt + 1}/{attempts}: [{string.Join(", ", snapshot)}]");
+
+			var newMounts = DetectNewMounts(snapshot);
 			if ( newMounts.Count > 0 )
 			{
+				logger.LogInformation(
+					$"Windows retry mount scan success on attempt {attempt + 1}: [{string.Join(", ", newMounts)}]");
 				return newMounts;
 			}
 
 			if ( attempt < attempts - 1 )
 			{
+				logger.LogInformation(
+					$"Windows retry mount scan sleeping {delayMilliseconds}ms before next attempt");
 				sleepAction(delayMilliseconds);
 			}
 		}
