@@ -61,6 +61,7 @@ internal class LinuxServiceInstaller : IOsServiceInstaller
 	/// </summary>
 	public async Task<bool> UninstallAsync()
 	{
+		await StopAsync();
 		var systemPath = $"/etc/systemd/system/{SystemdServiceName}.service";
 		var userPath = Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
@@ -92,6 +93,91 @@ internal class LinuxServiceInstaller : IOsServiceInstaller
 		}
 
 		return await Task.FromResult(true);
+	}
+
+	/// <summary>
+	///     Start systemd service on Linux
+	/// </summary>
+	public async Task<bool> StartAsync()
+	{
+		try
+		{
+			// Try system-level first
+			var result = await RunProcessAsync("sudo", $"systemctl start {SystemdServiceName}");
+			if ( !result )
+			{
+				// Fallback to user-level
+				result = await RunProcessAsync("systemctl", $"--user start {SystemdServiceName}");
+			}
+
+			if ( result )
+			{
+				_console.WriteLine($"Linux service started: {SystemdServiceName}");
+				_logger.LogInformation($"Linux service started: {SystemdServiceName}");
+			}
+
+			return result;
+		}
+		catch ( Exception ex )
+		{
+			_logger.LogError(ex, $"Failed to start Linux service: {ex.Message}");
+			return false;
+		}
+	}
+
+	/// <summary>
+	///     Stop systemd service on Linux
+	/// </summary>
+	public async Task<bool> StopAsync()
+	{
+		try
+		{
+			// Try system-level first
+			var result = await RunProcessAsync("sudo", $"systemctl stop {SystemdServiceName}");
+			if ( !result )
+			{
+				// Fallback to user-level
+				result = await RunProcessAsync("systemctl", $"--user stop {SystemdServiceName}");
+			}
+
+			if ( result )
+			{
+				_console.WriteLine($"Linux service stopped: {SystemdServiceName}");
+				_logger.LogInformation($"Linux service stopped: {SystemdServiceName}");
+			}
+
+			return result;
+		}
+		catch ( Exception ex )
+		{
+			_logger.LogError(ex, $"Failed to stop Linux service: {ex.Message}");
+			return false;
+		}
+	}
+
+	/// <summary>
+	///     Run an external process and return whether it succeeded
+	/// </summary>
+	private static async Task<bool> RunProcessAsync(string fileName, string arguments)
+	{
+		var processInfo = new System.Diagnostics.ProcessStartInfo
+		{
+			FileName = fileName,
+			Arguments = arguments,
+			RedirectStandardOutput = true,
+			RedirectStandardError = true,
+			UseShellExecute = false,
+			CreateNoWindow = true
+		};
+
+		using var process = System.Diagnostics.Process.Start(processInfo);
+		if ( process == null )
+		{
+			return false;
+		}
+
+		await process.WaitForExitAsync();
+		return process.ExitCode == 0;
 	}
 
 	/// <summary>

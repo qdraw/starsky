@@ -80,7 +80,13 @@ public class MountWatcherCli
 		if ( NeedInstall(args) )
 		{
 			var execPath = GetCurrentExecutablePath();
-			return await _serviceInstaller.InstallAsync(execPath);
+			var installResult = await _serviceInstaller.InstallAsync(execPath);
+			if ( installResult )
+			{
+				await _serviceInstaller.StartAsync();
+			}
+
+			return installResult;
 		}
 
 		if ( NeedUninstall(args) )

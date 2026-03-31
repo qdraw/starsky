@@ -62,7 +62,7 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 		{
 			if ( File.Exists(plistPath) )
 			{
-				_console.WriteLine($"Stopping service: launchctl unload {plistPath}");
+				await StopAsync();
 				File.Delete(plistPath);
 				_console.WriteLine($"LaunchAgent removed: {plistPath}");
 				_logger.LogInformation($"macOS launchd plist removed from {plistPath}");
@@ -79,6 +79,79 @@ internal class MacOsServiceInstaller : IOsServiceInstaller
 			_logger.LogError(ex, $"Failed to uninstall macOS service: {ex.Message}");
 			return false;
 		}
+	}
+
+	/// <summary>
+	///     Start launchd service on macOS
+	/// </summary>
+	public async Task<bool> StartAsync()
+	{
+		try
+		{
+			var plistPath = GetMacOsPlistPath();
+			var result = await RunProcessAsync("launchctl", $"load {plistPath}");
+			if ( result )
+			{
+				_console.WriteLine($"macOS service started: {ServiceName}");
+				_logger.LogInformation($"macOS service started: {ServiceName}");
+			}
+
+			return result;
+		}
+		catch ( Exception ex )
+		{
+			_logger.LogError(ex, $"Failed to start macOS service: {ex.Message}");
+			return false;
+		}
+	}
+
+	/// <summary>
+	///     Stop launchd service on macOS
+	/// </summary>
+	public async Task<bool> StopAsync()
+	{
+		try
+		{
+			var plistPath = GetMacOsPlistPath();
+			var result = await RunProcessAsync("launchctl", $"unload {plistPath}");
+			if ( result )
+			{
+				_console.WriteLine($"macOS service stopped: {ServiceName}");
+				_logger.LogInformation($"macOS service stopped: {ServiceName}");
+			}
+
+			return result;
+		}
+		catch ( Exception ex )
+		{
+			_logger.LogError(ex, $"Failed to stop macOS service: {ex.Message}");
+			return false;
+		}
+	}
+
+	/// <summary>
+	///     Run an external process and return whether it succeeded
+	/// </summary>
+	private static async Task<bool> RunProcessAsync(string fileName, string arguments)
+	{
+		var processInfo = new System.Diagnostics.ProcessStartInfo
+		{
+			FileName = fileName,
+			Arguments = arguments,
+			RedirectStandardOutput = true,
+			RedirectStandardError = true,
+			UseShellExecute = false,
+			CreateNoWindow = true
+		};
+
+		using var process = System.Diagnostics.Process.Start(processInfo);
+		if ( process == null )
+		{
+			return false;
+		}
+
+		await process.WaitForExitAsync();
+		return process.ExitCode == 0;
 	}
 
 	/// <summary>

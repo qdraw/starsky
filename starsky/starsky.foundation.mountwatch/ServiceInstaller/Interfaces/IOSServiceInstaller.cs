@@ -16,4 +16,14 @@ internal interface IOsServiceInstaller
 	///     Uninstall the service for this OS
 	/// </summary>
 	Task<bool> UninstallAsync();
+
+	/// <summary>
+	///     Start the service for this OS
+	/// </summary>
+	Task<bool> StartAsync();
+
+	/// <summary>
+	///     Stop the service for this OS
+	/// </summary>
+	Task<bool> StopAsync();
 }

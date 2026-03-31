@@ -19,5 +19,17 @@ public interface IServiceInstaller
 	/// </summary>
 	/// <returns>True on success</returns>
 	Task<bool> UninstallAsync();
+
+	/// <summary>
+	///     Start the OS service
+	/// </summary>
+	/// <returns>True on success</returns>
+	Task<bool> StartAsync();
+
+	/// <summary>
+	///     Stop the OS service
+	/// </summary>
+	/// <returns>True on success</returns>
+	Task<bool> StopAsync();
 }
 

@@ -61,7 +61,7 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 	{
 		try
 		{
-			await RunProcessAsync("sc.exe", $"stop \"{ServiceName}\"");
+			await StopAsync();
 			var result = await RunProcessAsync("sc.exe", $"delete \"{ServiceName}\"");
 
 			if ( result )
@@ -79,6 +79,56 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 		catch ( Exception ex )
 		{
 			_logger.LogError(ex, $"Failed to uninstall Windows service: {ex.Message}");
+			return false;
+		}
+	}
+
+	/// <summary>
+	///     Start Windows Service
+	/// </summary>
+	public async Task<bool> StartAsync()
+	{
+		try
+		{
+			var result = await RunProcessAsync("sc.exe", $"start \"{ServiceName}\"");
+			if ( result )
+			{
+				_console.WriteLine($"Windows Service started: {ServiceName}");
+				_logger.LogInformation($"Windows Service started: {ServiceName}");
+			}
+			else
+			{
+				_logger.LogError($"Failed to start Windows Service: {ServiceName}");
+			}
+
+			return result;
+		}
+		catch ( Exception ex )
+		{
+			_logger.LogError(ex, $"Failed to start Windows service: {ex.Message}");
+			return false;
+		}
+	}
+
+	/// <summary>
+	///     Stop Windows Service
+	/// </summary>
+	public async Task<bool> StopAsync()
+	{
+		try
+		{
+			var result = await RunProcessAsync("sc.exe", $"stop \"{ServiceName}\"");
+			if ( result )
+			{
+				_console.WriteLine($"Windows Service stopped: {ServiceName}");
+				_logger.LogInformation($"Windows Service stopped: {ServiceName}");
+			}
+
+			return result;
+		}
+		catch ( Exception ex )
+		{
+			_logger.LogError(ex, $"Failed to stop Windows service: {ex.Message}");
 			return false;
 		}
 	}

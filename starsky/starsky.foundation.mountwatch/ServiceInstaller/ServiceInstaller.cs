@@ -40,6 +40,24 @@ public class ServiceInstaller : IServiceInstaller
 	}
 
 	/// <summary>
+	///     Start service for the current OS
+	/// </summary>
+	public async Task<bool> StartAsync()
+	{
+		var installer = CreateInstaller();
+		return await installer.StartAsync();
+	}
+
+	/// <summary>
+	///     Stop service for the current OS
+	/// </summary>
+	public async Task<bool> StopAsync()
+	{
+		var installer = CreateInstaller();
+		return await installer.StopAsync();
+	}
+
+	/// <summary>
 	///     Create the OS-specific installer
 	/// </summary>
 	private IOsServiceInstaller CreateInstaller()
