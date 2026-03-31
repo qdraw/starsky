@@ -55,9 +55,10 @@ internal sealed class LinuxMountWatcherSystem : ILinuxMountWatcherSystem
 		udev_device_unref(device);
 	}
 
-	public string UdevDeviceGetDevnode(IntPtr device)
+	public string? UdevDeviceGetDevnode(IntPtr device)
 	{
-		return udev_device_get_devnode(device);
+		var ptr = udev_device_get_devnode(device);
+		return ptr != IntPtr.Zero ? Marshal.PtrToStringAnsi(ptr) : null;
 	}
 
 	public void UdevMonitorUnref(IntPtr monitor)
@@ -106,7 +107,7 @@ internal sealed class LinuxMountWatcherSystem : ILinuxMountWatcherSystem
 	private static extern void udev_device_unref(IntPtr device);
 
 	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
-	private static extern string udev_device_get_devnode(IntPtr device);
+	private static extern IntPtr udev_device_get_devnode(IntPtr device);
 
 	[DllImport("libudev.so.1", CallingConvention = CallingConvention.Cdecl)]
 	private static extern void udev_monitor_unref(IntPtr monitor);

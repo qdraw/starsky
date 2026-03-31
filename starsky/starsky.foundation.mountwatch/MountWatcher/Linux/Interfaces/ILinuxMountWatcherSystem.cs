@@ -15,7 +15,7 @@ internal interface ILinuxMountWatcherSystem
 	int UdevMonitorGetFd(IntPtr monitor);
 	IntPtr UdevMonitorReceiveDevice(IntPtr monitor);
 	void UdevDeviceUnref(IntPtr device);
-	string UdevDeviceGetDevnode(IntPtr device);
+	string? UdevDeviceGetDevnode(IntPtr device);
 	void UdevMonitorUnref(IntPtr monitor);
 	bool FileExists(string path);
 	string[] ReadAllLines(string path);

@@ -350,9 +350,9 @@ public sealed class LinuxMountWatcherTest
 			DeviceUnrefCalls++;
 		}
 
-		public string UdevDeviceGetDevnode(IntPtr device)
+		public string? UdevDeviceGetDevnode(IntPtr device)
 		{
-			return DeviceNodesToReturn.Count > 0 ? DeviceNodesToReturn.Dequeue() : string.Empty;
+			return DeviceNodesToReturn.Count > 0 ? DeviceNodesToReturn.Dequeue() : null;
 		}
 
 		public void UdevMonitorUnref(IntPtr monitor)
