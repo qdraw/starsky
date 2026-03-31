@@ -75,7 +75,7 @@ public static class Program
 		var serviceInstaller = new ServiceInstaller(webLogger);
 
 		// Migrations before starting
-		await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
+		await RunMigrations.Run(scopedServiceProvider.GetRequiredService<ApplicationDbContext>(),
 			webLogger,
 			appSettings);
 

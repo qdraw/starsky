@@ -119,7 +119,12 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 				var device = _system.UdevMonitorReceiveDevice(monitor);
 				if ( device != IntPtr.Zero )
 				{
+					// IMPORTANT: Get devnode BEFORE unreffing the device, since udev owns the string pointer
 					var devNode = _system.UdevDeviceGetDevnode(device);
+					
+					// Now safe to unref the device
+					_system.UdevDeviceUnref(device);
+					
 					if ( !string.IsNullOrEmpty(devNode) )
 					{
 						// Resolve the device node to its mount point.
@@ -130,8 +135,6 @@ internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 							OnMountDetected(mountPoint);
 						}
 					}
-
-					_system.UdevDeviceUnref(device);
 				}
 
 				_system.Sleep(100);
