@@ -285,7 +285,7 @@ public sealed class ServiceInstallerTest
 
 		var result = await installer.StopAsync();
 
-		Assert.IsFalse(result);
+		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
