@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using starsky.foundation.import.Interfaces;
@@ -22,8 +23,16 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraSt
 	/// <returns>Full FilePaths</returns>
 	public IEnumerable<string> FindCameraStorages()
 	{
-		var drives = DriveInfo.GetDrives().Where(IsCameraStorage);
-		return drives.Select(drive => drive.RootDirectory.FullName);
+		try
+		{
+			var drives = DriveInfo.GetDrives().Where(IsCameraStorage);
+			return drives.Select(drive => drive.RootDirectory.FullName);
+		}
+		catch
+		{
+			Console.WriteLine("Failed to enumerate drives, returning empty list.");
+			return [];
+		}
 	}
 
 	public bool IsCameraStorage(string driveRoot)
