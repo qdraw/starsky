@@ -59,7 +59,7 @@ The foundation library provides core abstractions and platform-specific implemen
     - Creates a new instance for each call (no caching)
 
 - **`ServiceInstaller`**: Installs the watcher as an OS service
-    - macOS: writes `~/Library/LaunchAgents/com.starsky.mountwatcher.plist`
+    - macOS: writes `~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist`
     - Windows: calls `sc.exe create` to register a Windows Service
     - Linux: writes `/etc/systemd/system/starsky-mountwatcher.service`
         - Falls back to `~/.config/systemd/user/` when root is unavailable
@@ -110,10 +110,10 @@ starskymountwatchercli --help
 
 ### macOS (launchd) — via `--install`
 
-`--install` writes `~/Library/LaunchAgents/com.starsky.mountwatcher.plist` and prints:
+`--install` writes `~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist` and prints:
 
 ```
-LaunchAgent installed: /Users/<you>/Library/LaunchAgents/com.starsky.mountwatcher.plist
+LaunchAgent installed: /Users/<you>/Library/LaunchAgents/nl.qdraw.mountwatcher.plist
 To load now: launchctl load <path>
 Note: Grant Full Disk Access to the executable in System Preferences.
 ```
@@ -126,7 +126,7 @@ Generated plist content:
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.starsky.mountwatcher</string>
+    <string>nl.qdraw.mountwatcher</string>
     <key>ProgramArguments</key>
     <array>
         <string>/path/to/starskymountwatchercli</string>
@@ -147,7 +147,7 @@ Generated plist content:
 **Load the service after install:**
 
 ```bash
-launchctl load ~/Library/LaunchAgents/com.starsky.mountwatcher.plist
+launchctl load ~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist
 ```
 
 Permissions required: **Full Disk Access** (System Preferences → Privacy & Security)
@@ -159,15 +159,15 @@ Permissions required: **Full Disk Access** (System Preferences → Privacy & Sec
 `--install` calls `sc.exe create` and prints:
 
 ```
-Windows Service installed: com.starsky.mountwatcher
-To start: sc start com.starsky.mountwatcher
+Windows Service installed: nl.qdraw.mountwatcher
+To start: sc start nl.qdraw.mountwatcher
 ```
 
 Start/stop manually:
 
 ```cmd
-sc start com.starsky.mountwatcher
-sc stop com.starsky.mountwatcher
+sc start nl.qdraw.mountwatcher
+sc stop nl.qdraw.mountwatcher
 ```
 
 ---
@@ -215,8 +215,8 @@ Or manually:
 
 ```bash
 # macOS
-launchctl unload ~/Library/LaunchAgents/com.starsky.mountwatcher.plist
-rm ~/Library/LaunchAgents/com.starsky.mountwatcher.plist
+launchctl unload ~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist
+rm ~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist
 
 # Linux
 sudo systemctl stop starsky-mountwatcher

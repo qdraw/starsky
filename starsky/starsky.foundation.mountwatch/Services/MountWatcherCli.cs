@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.import.Interfaces;
-using starsky.foundation.import.Services;
+using starsky.foundation.import.Models;
 using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.ServiceInstaller;
+using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.writemeta.Interfaces;
 
 namespace starsky.foundation.mountwatch.Services;
 
@@ -25,10 +24,7 @@ public class MountWatcherCli
 	private const string UninstallArg = "--uninstall";
 
 	private readonly AppSettings _appSettings;
-	private readonly ICameraStorageDetector _cameraStorageDetector;
 	private readonly IConsole _console;
-	private readonly IExifToolDownload _exifToolDownload;
-	private readonly IGeoFileDownload _geoFileDownload;
 	private readonly IImport _importService;
 	private readonly IWebLogger _logger;
 	private readonly IMountDetector _mountDetector;
@@ -41,22 +37,16 @@ public class MountWatcherCli
 		AppSettings appSettings,
 		IConsole console,
 		IWebLogger logger,
-		IExifToolDownload exifToolDownload,
-		IGeoFileDownload geoFileDownload,
 		IMountDetector mountDetector,
 		IMountWatcherFactory mountWatcherFactory,
-		ICameraStorageDetector cameraStorageDetector,
 		IServiceInstaller serviceInstaller)
 	{
 		_importService = importService;
 		_appSettings = appSettings;
 		_console = console;
 		_logger = logger;
-		_exifToolDownload = exifToolDownload;
-		_geoFileDownload = geoFileDownload;
 		_mountDetector = mountDetector;
 		_mountWatcherFactory = mountWatcherFactory;
-		_cameraStorageDetector = cameraStorageDetector;
 		_serviceInstaller = serviceInstaller;
 	}
 
@@ -94,7 +84,7 @@ public class MountWatcherCli
 			return await _serviceInstaller.UninstallAsync();
 		}
 
-		return await RunWatcherAsync();
+		return RunWatcher();
 	}
 
 	/// <summary>
@@ -154,27 +144,16 @@ public class MountWatcherCli
 		}
 		else if ( OperatingSystem.IsWindows() )
 		{
-			_console.WriteLine("  Windows Service: sc create \"com.starsky.mountwatcher\" ...");
-			_console.WriteLine("  Start: sc start com.starsky.mountwatcher");
+			_console.WriteLine("  Windows Service: sc create \"nl.qdraw.mountwatcher\" ...");
+			_console.WriteLine("  Start: sc start nl.qdraw.mountwatcher");
 		}
 	}
 
 	/// <summary>
-	///     Core watcher loop: download dependencies, then listen for mounts
+	///     Core watcher loop: listen for mounts
 	/// </summary>
-	private async Task<bool> RunWatcherAsync()
+	private bool RunWatcher()
 	{
-		try
-		{
-			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
-			await _geoFileDownload.DownloadAsync();
-		}
-		catch ( Exception ex )
-		{
-			_logger.LogError($"Failed to download dependencies: {ex.Message}");
-			return false;
-		}
-
 		var watcher = _mountWatcherFactory.CreateMountWatcher();
 		watcher.MountDetected += OnMountDetected;
 
@@ -260,19 +239,16 @@ public class MountWatcherCli
 			_logger.LogInformation($"Starting import from {cameraPath}");
 			_console.WriteLine($"Importing from {cameraPath}");
 
-			var importArgs = new[] { cameraPath, "--recursive", "--verbose" };
+			var importSettings = new ImportSettingsModel
+			{
+				RecursiveDirectory = true, IndexMode = true, DeleteAfter = false
+			};
 
-			var importCli = new ImportCli(
-				_importService,
-				_appSettings,
-				_console,
-				_logger,
-				_exifToolDownload,
-				_geoFileDownload,
-				_cameraStorageDetector);
-
-			var result = await importCli.Importer(importArgs);
-			_logger.LogInformation($"Import completed for {cameraPath}: {result}");
+			var result = await _importService.Importer(
+				new List<string> { cameraPath },
+				importSettings);
+			_logger.LogInformation($"Import completed for {cameraPath}: " +
+			                       $"{result.Count} items processed");
 		}
 		catch ( Exception ex )
 		{

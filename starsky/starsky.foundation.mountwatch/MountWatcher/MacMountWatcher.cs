@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using starsky.foundation.mountwatch.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher;
 

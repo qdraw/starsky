@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
-using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.mountwatch.ServiceInstaller;

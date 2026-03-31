@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 
 namespace starskytest.FakeMocks;
 

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace starsky.foundation.mountwatch.Services;
+namespace starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 
 /// <summary>
 ///     Shared helper methods for service installation
@@ -68,4 +68,3 @@ internal static class ServiceInstallerHelper
 		return Path.Combine(home, "Library", "Logs", "starsky", $"mountwatcher.{suffix}");
 	}
 }
-

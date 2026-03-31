@@ -2,7 +2,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.geo.GeoDownload.Interfaces;
+using starsky.foundation.http.Interfaces;
+using starsky.foundation.http.Services;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.mountwatch.Interfaces;
@@ -14,7 +15,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
-using starsky.foundation.writemeta.Interfaces;
 
 namespace starskymountwatchercli;
 
@@ -32,6 +32,8 @@ public static class Program
 
 		// Inject services
 		RegisterDependencies.Configure(services);
+		services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
+
 		var serviceProvider = services.BuildServiceProvider();
 		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
@@ -43,12 +45,9 @@ public static class Program
 
 		var import = serviceProvider.GetRequiredService<IImport>();
 		var console = serviceProvider.GetRequiredService<IConsole>();
-		var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
 		var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
-		var geoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>();
 		var mountDetector = serviceProvider.GetRequiredService<IMountDetector>();
 		var mountWatcherFactory = serviceProvider.GetRequiredService<IMountWatcherFactory>();
-		var cameraStorageDetector = serviceProvider.GetRequiredService<ICameraStorageDetector>();
 		var serviceInstaller = new ServiceInstaller(console, webLogger);
 
 		// Migrations before starting
@@ -61,11 +60,8 @@ public static class Program
 			appSettings,
 			console,
 			webLogger,
-			exifToolDownload,
-			geoFileDownload,
 			mountDetector,
 			mountWatcherFactory,
-			cameraStorageDetector,
 			serviceInstaller);
 
 		if ( !await service.StartWatcher(args) )

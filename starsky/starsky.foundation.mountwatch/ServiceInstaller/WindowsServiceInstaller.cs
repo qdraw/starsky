@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 using starsky.foundation.platform.Interfaces;
 
-namespace starsky.foundation.mountwatch.Services;
+namespace starsky.foundation.mountwatch.ServiceInstaller;
 
 /// <summary>
 ///     Windows-specific service installer using sc.exe
 /// </summary>
 internal class WindowsServiceInstaller : IOsServiceInstaller
 {
-	private const string ServiceName = "com.starsky.mountwatcher";
+	private const string ServiceName = "nl.qdraw.mountwatcher";
 	private const string ServiceDisplayName = "Starsky Mount Watcher";
 
 	private readonly IConsole _console;
@@ -30,8 +30,9 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 	{
 		try
 		{
+			// Add quotes for the binPath as well
 			var result = await RunProcessAsync("sc.exe",
-				$"create \"{ServiceName}\" binPath= \"{executablePath}\" " +
+				$"create \"{ServiceName}\" binPath= \"\\\"{executablePath}\\\"\" " +
 				$"DisplayName= \"{ServiceDisplayName}\" start= auto");
 
 			if ( result )
@@ -91,6 +92,13 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 		try
 		{
 			var result = await RunProcessAsync("sc.exe", $"start \"{ServiceName}\"");
+			if ( !result )
+			{
+				_logger.LogInformation($"Retrying to start Windows Service: {ServiceName} after 2 seconds...");
+				await Task.Delay(2000);
+				result = await RunProcessAsync("sc.exe", $"start \"{ServiceName}\"");
+			}
+
 			if ( result )
 			{
 				_console.WriteLine($"Windows Service started: {ServiceName}");
@@ -136,7 +144,7 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 	/// <summary>
 	///     Run an external process and return whether it succeeded
 	/// </summary>
-	private static async Task<bool> RunProcessAsync(string fileName, string arguments)
+	private async Task<bool> RunProcessAsync(string fileName, string arguments)
 	{
 		var processInfo = new ProcessStartInfo
 		{
@@ -154,7 +162,17 @@ internal class WindowsServiceInstaller : IOsServiceInstaller
 			return false;
 		}
 
+		var output = await process.StandardOutput.ReadToEndAsync();
+		var error = await process.StandardError.ReadToEndAsync();
+
 		await process.WaitForExitAsync();
+
+		if ( process.ExitCode != 0 )
+		{
+			_logger.LogError(
+				$"Process {fileName} {arguments} failed with exit code {process.ExitCode}\nOutput: {output}\nError: {error}");
+		}
+
 		return process.ExitCode == 0;
 	}
 }

@@ -13,8 +13,6 @@ public sealed class MountWatcherCliTest
 	private static MountWatcherCli CreateSut(
 		FakeConsoleWrapper? console = null,
 		FakeIWebLogger? logger = null,
-		FakeExifToolDownload? exifTool = null,
-		FakeIGeoFileDownload? geo = null,
 		FakeMountDetector? mountDetector = null,
 		FakeMountWatcherFactory? factory = null,
 		FakeServiceInstaller? installer = null)
@@ -24,11 +22,8 @@ public sealed class MountWatcherCliTest
 			new AppSettings { TempFolder = "/temp" },
 			console ?? new FakeConsoleWrapper(new List<string>()),
 			logger ?? new FakeIWebLogger(),
-			exifTool ?? new FakeExifToolDownload(),
-			geo ?? new FakeIGeoFileDownload(),
 			mountDetector ?? new FakeMountDetector(),
 			factory ?? new FakeMountWatcherFactory(),
-			new FakeCameraStorageDetector(new List<string>()),
 			installer ?? new FakeServiceInstaller());
 	}
 
@@ -40,23 +35,6 @@ public sealed class MountWatcherCliTest
 		Assert.IsTrue(result);
 	}
 
-	[TestMethod]
-	public async Task StartWatcher_CallsExifToolDownload()
-	{
-		var fakeExifTool = new FakeExifToolDownload();
-		var sut = CreateSut(exifTool: fakeExifTool);
-		await sut.StartWatcher([]);
-		Assert.HasCount(1, fakeExifTool.Called);
-	}
-
-	[TestMethod]
-	public async Task StartWatcher_CallsGeoFileDownload()
-	{
-		var fakeGeo = new FakeIGeoFileDownload();
-		var sut = CreateSut(geo: fakeGeo);
-		await sut.StartWatcher([]);
-		Assert.AreEqual(1, fakeGeo.Count);
-	}
 
 	[TestMethod]
 	public async Task StartWatcher_HelpArg_ShowsHelp_ReturnsTrue()

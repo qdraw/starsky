@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace starsky.foundation.mountwatch.Interfaces;
+namespace starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 
 /// <summary>
 ///     Abstraction for installing/uninstalling the mount watcher as an OS service
@@ -32,4 +32,3 @@ public interface IServiceInstaller
 	/// <returns>True on success</returns>
 	Task<bool> StopAsync();
 }
-
