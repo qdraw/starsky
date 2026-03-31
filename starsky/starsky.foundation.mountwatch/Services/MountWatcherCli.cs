@@ -22,7 +22,6 @@ namespace starsky.foundation.mountwatch.Services;
 /// </summary>
 public class MountWatcherCli
 {
-	private const int DuplicateCheckWindowSeconds = 60;
 	private const string InstallArg = "--install";
 	private const string UninstallArg = "--uninstall";
 
@@ -34,7 +33,6 @@ public class MountWatcherCli
 	private readonly IImport _importService;
 	private readonly IWebLogger _logger;
 	private readonly IMountWatcherFactory _mountWatcherFactory;
-	private readonly HashSet<string> _processedPaths = new();
 	private readonly IServiceInstaller _serviceInstaller;
 	private readonly ICameraStorageDetector _storageDetector;
 
@@ -262,19 +260,35 @@ public class MountWatcherCli
 			return;
 		}
 
-		_logger.LogInformation($"Mount detected: {e.MountPath}");
+		var mountPath = NormalizeMountPath(e.MountPath);
+		_logger.LogInformation($"Mount detected: {mountPath}");
 
+		_ = Task.Run(async () => await HandleMountDetectedAsync(mountPath));
+	}
+
+	internal static string NormalizeMountPath(string mountPath)
+	{
+		var normalized = mountPath.Trim();
+		if ( normalized.Length <= 1 )
+		{
+			return normalized;
+		}
+
+		return normalized.TrimEnd('/');
+	}
+
+	private async Task HandleMountDetectedAsync(string mountPath)
+	{
 		try
 		{
-			if ( !_storageDetector.IsCameraStorage(e.MountPath) )
+			if ( !_storageDetector.IsCameraStorage(mountPath) )
 			{
-				_logger.LogInformation($"No camera storage found on {e.MountPath}");
+				_logger.LogInformation($"No camera storage found on {mountPath}");
 				return;
 			}
 
-			_logger.LogInformation($"Run import on {e.MountPath}");
-
-			_ = Task.Run(async () => await RunImporter(e.MountPath));
+			_logger.LogInformation($"Run import on {mountPath}");
+			await RunImporter(mountPath);
 		}
 		catch ( Exception ex )
 		{
@@ -306,12 +320,6 @@ public class MountWatcherCli
 		catch ( Exception ex )
 		{
 			_logger.LogError($"Import failed for {cameraPath}: {ex.Message}");
-		}
-		finally
-		{
-			// Remove from processed paths after delay to allow re-import if needed
-			_ = Task.Delay(TimeSpan.FromSeconds(DuplicateCheckWindowSeconds))
-				.ContinueWith(_ => _processedPaths.Remove(cameraPath));
 		}
 	}
 }

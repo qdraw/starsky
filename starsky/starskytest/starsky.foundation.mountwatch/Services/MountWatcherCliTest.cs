@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.import.Interfaces;
 using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
@@ -13,7 +15,7 @@ public sealed class MountWatcherCliTest
 	private static MountWatcherCli CreateSut(
 		FakeConsoleWrapper? console = null,
 		FakeIWebLogger? logger = null,
-		FakeCameraStorageDetector? mountDetector = null,
+		ICameraStorageDetector? mountDetector = null,
 		FakeMountWatcherFactory? factory = null,
 		FakeServiceInstaller? installer = null)
 	{
@@ -103,5 +105,13 @@ public sealed class MountWatcherCliTest
 	public void NeedUninstall_WithoutUninstallArg_ReturnsFalse()
 	{
 		Assert.IsFalse(MountWatcherCli.NeedUninstall(["--verbose"]));
+	}
+
+	[TestMethod]
+	public void NormalizeMountPath_StripsTrailingSlash_ButKeepsRoot()
+	{
+		Assert.AreEqual("/Volumes/extreme2111",
+			MountWatcherCli.NormalizeMountPath(" /Volumes/extreme2111/ "));
+		Assert.AreEqual("/", MountWatcherCli.NormalizeMountPath("/"));
 	}
 }

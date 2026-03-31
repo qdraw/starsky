@@ -10,7 +10,6 @@ using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Services;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.injection;
-using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.ServiceInstaller;
 using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Extensions;
