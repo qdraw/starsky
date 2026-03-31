@@ -22,9 +22,6 @@ public static class CameraDriveInfoHelper
 		}
 		catch ( Exception )
 		{
-			// Catch all exceptions: UnauthorizedAccessException (access denied),
-			// IOException (I/O error), or any other exception from native interop
-			// when querying invalid device files like /dev/sda, /dev/sdb
 			driveFormat = string.Empty;
 		}
 
@@ -38,6 +35,53 @@ public static class CameraDriveInfoHelper
 			},
 			DriveFormat = driveFormat
 		};
+	}
+
+	/// <summary>
+	///     Create CameraDriveInfo from a path (useful for Linux where DriveInfo doesn't work well)
+	/// </summary>
+	public static CameraDriveInfo ToCameraDriveInfo(string mountPath)
+	{
+		var directoryInfo = new DirectoryInfo(mountPath);
+
+		return new CameraDriveInfo
+		{
+			IsReady = true, // If we can access it, assume it's ready
+			RootDirectory = new CameraDirectoryInfo
+			{
+				Exists = directoryInfo.Exists, FullName = mountPath
+			},
+			DriveFormat = DetectFileSystem(mountPath)
+		};
+	}
+
+	/// <summary>
+	///     Attempt to detect the filesystem type (for Linux)
+	/// </summary>
+	private static string DetectFileSystem(string mountPath)
+	{
+		try
+		{
+			// Try to read from /proc/mounts if on Linux
+			if ( File.Exists("/proc/mounts") )
+			{
+				var lines = File.ReadAllLines("/proc/mounts");
+				foreach ( var line in lines )
+				{
+					var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+					if ( parts.Length >= 3 && parts[1] == mountPath )
+					{
+						return parts[2]; // Third field is filesystem type
+					}
+				}
+			}
+		}
+		catch
+		{
+			// Ignore errors
+		}
+
+		return string.Empty;
 	}
 }
 

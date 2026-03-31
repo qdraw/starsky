@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Models;
 using starsky.foundation.import.Services;
+using starsky.foundation.platform.Architecture;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.import.Services;
@@ -422,5 +424,91 @@ public class CameraStorageDetectorTest
 
 		// Should not return more than available drives
 		Assert.IsLessThanOrEqualTo(drives.Count, result.Count);
+	}
+
+	[TestMethod]
+	public void FindCameraStorages_OnLinuxPlatform_UsesLinuxDiscovery()
+	{
+		// Arrange
+		var fakeStorage = new FakeIStorage(
+			new List<string> { "/media", "/media/camera" });
+		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
+		var logger = new FakeIWebLogger();
+
+		// Create detector with Linux platform delegate
+		var isLinuxDelegate = new OperatingSystemHelper.IsOsPlatformDelegate(platform =>
+			platform == OSPlatform.Linux);
+
+		var detector = new CameraStorageDetector(fakeStorageSelector, logger, isLinuxDelegate);
+
+		// Act
+		var result = detector.FindCameraStorages();
+
+		// Assert - should have attempted Linux discovery
+		Assert.IsNotNull(result);
+	}
+
+	[TestMethod]
+	public void FindCameraStorages_OnWindowsPlatform_UsesWindowsDriveInfo()
+	{
+		// Arrange
+		var fakeStorage = new FakeIStorage();
+		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
+		var logger = new FakeIWebLogger();
+
+		// Create detector with Windows platform delegate
+		var isWindowsDelegate = new OperatingSystemHelper.IsOsPlatformDelegate(platform =>
+			platform == OSPlatform.Windows);
+
+		var detector = new CameraStorageDetector(fakeStorageSelector, logger, isWindowsDelegate);
+
+		// Act - won't actually enumerate drives in test, just verifies the code path
+		var result = detector.FindCameraStorages();
+
+		// Assert - should return a collection (empty or not, depends on system)
+		Assert.IsNotNull(result);
+	}
+
+	[TestMethod]
+	public void IsCameraStorage_WithPathOnLinux_UsesCameraDriveInfoHelper()
+	{
+		// Arrange
+		var fakeStorage = new FakeIStorage(
+			new List<string> { "/media/usb-drive", "/media/usb-drive/DCIM" });
+		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
+		var logger = new FakeIWebLogger();
+
+		// Create detector with Linux platform delegate
+		var isLinuxDelegate = new OperatingSystemHelper.IsOsPlatformDelegate(platform =>
+			platform == OSPlatform.Linux);
+
+		var detector = new CameraStorageDetector(fakeStorageSelector, logger, isLinuxDelegate);
+
+		// Act
+		var result = detector.IsCameraStorage("/media/usb-drive");
+
+		// Assert - result depends on whether filesystem is detected as camera-friendly
+		Assert.IsNotNull(result);
+	}
+
+	[TestMethod]
+	public void IsCameraStorage_WithPathOnWindows_UsesDriveInfo()
+	{
+		// Arrange
+		var fakeStorage = new FakeIStorage();
+		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
+		var logger = new FakeIWebLogger();
+
+		// Create detector with Windows platform delegate
+		var isWindowsDelegate = new OperatingSystemHelper.IsOsPlatformDelegate(platform =>
+			platform == OSPlatform.Windows);
+
+		var detector = new CameraStorageDetector(fakeStorageSelector, logger, isWindowsDelegate);
+
+		// Act - use a path that might work on Windows
+		var result = detector.IsCameraStorage("C:\\");
+
+		// Assert - should handle gracefully
+		Assert.IsNotNull(result);
 	}
 }

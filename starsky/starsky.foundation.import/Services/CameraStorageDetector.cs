@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -19,6 +21,16 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
+	private readonly OperatingSystemHelper.IsOsPlatformDelegate _isOsPlatformDelegate =
+		RuntimeInformation.IsOSPlatform;
+
+	internal CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger logger,
+		OperatingSystemHelper.IsOsPlatformDelegate isOsPlatformDelegate) : this(selectorStorage,
+		logger)
+	{
+		_isOsPlatformDelegate = isOsPlatformDelegate;
+	}
+
 	/// <summary>
 	///     Get all camera storage root paths
 	/// </summary>
@@ -27,6 +39,14 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 	{
 		try
 		{
+			if ( _isOsPlatformDelegate(OSPlatform.Linux) )
+			{
+				var linuxDiscovery = new LinuxCameraStorageDiscovery(_hostStorage, logger);
+				return linuxDiscovery.FindCameraStorages()
+					.Where(IsCameraStorage)
+					.ToList();
+			}
+
 			var drives = DriveInfo.GetDrives().Where(IsCameraStorage);
 			return drives.Select(drive => drive.RootDirectory.FullName);
 		}
@@ -47,6 +67,14 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 
 		try
 		{
+			// On Linux, create CameraDriveInfo from path directly
+			if ( _isOsPlatformDelegate(OSPlatform.Linux) )
+			{
+				var cameraDriveInfo = CameraDriveInfoHelper.ToCameraDriveInfo(driveRoot);
+				return IsCameraStorage(cameraDriveInfo);
+			}
+
+			// On Windows, use DriveInfo
 			var drive = new DriveInfo(driveRoot);
 			return IsCameraStorage(drive);
 		}
@@ -72,20 +100,22 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 		// 2. Filter writable, ready volumes
 		if ( !drive.IsReady )
 		{
-			logger.LogError($"Drive {drive.DriveFormat} is not ready");
+			logger.LogDebug($"[IsCameraStorage] Drive {drive.DriveFormat} is not ready");
 			return false;
 		}
 
 		if ( !drive.RootDirectory.Exists )
 		{
-			logger.LogError($"Drive RootDirectory does not Exists: {drive.RootDirectory.FullName}");
+			logger.LogDebug(
+				$"[IsCameraStorage] Drive RootDirectory does not Exists: {drive.RootDirectory.FullName}");
 			return false;
 		}
 
 		// 3. File system heuristic (portable, but soft)
 		if ( !IsCameraFriendlyFileSystem(drive.DriveFormat) )
 		{
-			logger.LogError($"No IsCameraFriendlyFileSystem: {drive.RootDirectory.FullName} {drive.DriveFormat}");
+			logger.LogError(
+				$"No IsCameraFriendlyFileSystem: {drive.RootDirectory.FullName} {drive.DriveFormat}");
 			return false;
 		}
 
@@ -97,8 +127,8 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 		var hasDcim = _hostStorage.ExistFolder(dcimPath) ||
 		              _hostStorage.ExistFolder(dcimLowerCasePath) ||
 		              HasCameraDirectoryStructure(drive.RootDirectory.FullName);
-		
-		logger.LogInformation($"hasDcim: {hasDcim}");
+
+		logger.LogDebug($"[IsCameraStorage] HasDcim: {hasDcim}");
 		return hasDcim;
 	}
 
