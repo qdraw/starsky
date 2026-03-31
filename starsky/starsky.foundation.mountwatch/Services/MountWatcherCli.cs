@@ -138,7 +138,8 @@ public class MountWatcherCli
 			_console.WriteLine("  Load: launchctl load <plist>");
 			_console.WriteLine("  Requires: Full Disk Access in System Preferences");
 			_console.WriteLine("  To grant Full Disk Access:");
-			_console.WriteLine("    open x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles");
+			_console.WriteLine(
+				"    open x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles");
 			_console.WriteLine("  Logs: ~/Library/Logs/starsky/mountwatcher.log");
 		}
 		else if ( OperatingSystem.IsLinux() )
@@ -162,25 +163,6 @@ public class MountWatcherCli
 	/// </summary>
 	private bool RunWatcher()
 	{
-		// // Check for Full Disk Access on macOS at startup
-		// if ( OperatingSystem.IsMacOS() )
-		// {
-		// 	var permissionTask = ServiceInstallerHelper.CheckMacOsFullDiskAccessAsync();
-		// 	permissionTask.Wait();
-		// 	var hasAccess = permissionTask.Result;
-		// 	
-		// 	if ( hasAccess == false )
-		// 	{
-		// 		_logger.LogError("Full Disk Access not granted - mount watching may not work properly");
-		// 		_console.WriteLine(ServiceInstallerHelper.GetFullDiskAccessSetupInstructions());
-		// 		_console.WriteLine("");
-		// 	}
-		// 	else if ( hasAccess == true )
-		// 	{
-		// 		_logger.LogInformation("Full Disk Access verified");
-		// 	}
-		// }
-
 		var watcher = _mountWatcherFactory.CreateMountWatcher();
 		watcher.MountDetected += OnMountDetected;
 
