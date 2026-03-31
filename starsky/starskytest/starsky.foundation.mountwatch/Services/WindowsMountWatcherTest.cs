@@ -81,6 +81,36 @@ public sealed class WindowsMountWatcherTest
 	}
 
 	[TestMethod]
+	public void WindowsMountWatcher_TryTrackEventDrive_NewDrive_TracksAndReturnsTrue()
+	{
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		watcher.SeedKnownMounts(["C:\\"]);
+
+		var tracked = watcher.TryTrackEventDrive("E:", out var normalized);
+
+		Assert.IsTrue(tracked);
+		Assert.AreEqual("E:\\", normalized);
+	}
+
+	[TestMethod]
+	public void WindowsMountWatcher_TryTrackEventDrive_ExistingDrive_ReturnsFalse()
+	{
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		watcher.SeedKnownMounts(["C:\\", "E:\\"]);
+
+		var tracked = watcher.TryTrackEventDrive("E:", out _);
+
+		Assert.IsFalse(tracked);
+	}
+
+	[TestMethod]
+	public void WindowsMountWatcher_NormalizeDrive_E_ConvertsToRootPath()
+	{
+		Assert.AreEqual("E:\\", WindowsMountWatcher.NormalizeDrive("E:"));
+		Assert.AreEqual("E:\\", WindowsMountWatcher.NormalizeDrive("E:\\"));
+	}
+
+	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
 	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
 	public async Task WindowsMountWatcher_Start_DoesNotThrow_WhenPlatformIsUnsupported()

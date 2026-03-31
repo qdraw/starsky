@@ -92,7 +92,8 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		}
 		catch ( Exception ex )
 		{
-			logger?.LogError(ex, "Failed to start WMI watcher, falling back to polling");
+			logger.LogError(ex, 
+				"Failed to start WMI watcher, falling back to polling");
 			RunPollingFallback();
 		}
 	}
@@ -124,6 +125,11 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	{
 		try
 		{
+			if ( TryTrackEventDrive(e, out var eventDrive) )
+			{
+				OnMountDetected(eventDrive);
+			}
+
 			var newDrives = DetectNewMounts(GetMountedVolumes());
 			foreach ( var drive in newDrives )
 			{
@@ -141,7 +147,7 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		_knownMountedVolumes.Clear();
 		foreach ( var volume in mountedVolumes.Where(v => !string.IsNullOrWhiteSpace(v)) )
 		{
-			_knownMountedVolumes.Add(volume);
+			_knownMountedVolumes.Add(NormalizeDrive(volume));
 		}
 	}
 
@@ -149,6 +155,7 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	{
 		var currentMounts = mountedVolumes
 			.Where(v => !string.IsNullOrWhiteSpace(v))
+			.Select(NormalizeDrive)
 			.Distinct(StringComparer.OrdinalIgnoreCase)
 			.ToList();
 
@@ -164,5 +171,43 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		}
 
 		return newMounts;
+	}
+
+	internal bool TryTrackEventDrive(string? driveName, out string normalizedDrive)
+	{
+		normalizedDrive = string.Empty;
+		if ( string.IsNullOrWhiteSpace(driveName) )
+		{
+			return false;
+		}
+
+		normalizedDrive = NormalizeDrive(driveName);
+		return _knownMountedVolumes.Add(normalizedDrive);
+	}
+
+	[SupportedOSPlatform("windows")]
+	private bool TryTrackEventDrive(EventArrivedEventArgs e, out string normalizedDrive)
+	{
+		normalizedDrive = string.Empty;
+		try
+		{
+			var driveName = e.NewEvent?.Properties?["DriveName"]?.Value as string;
+			return TryTrackEventDrive(driveName, out normalizedDrive);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static string NormalizeDrive(string driveName)
+	{
+		var normalized = driveName.Trim();
+		if ( normalized is [_, ':'] )
+		{
+			return normalized + "\\";
+		}
+
+		return normalized;
 	}
 }
