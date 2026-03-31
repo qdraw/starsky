@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 
-namespace starsky.foundation.import.Services;
+namespace starsky.foundation.import.Helpers;
 
 /// <summary>
 ///     Linux-specific camera storage discovery using mount point scanning
@@ -31,11 +30,19 @@ internal class LinuxCameraStorageDiscovery(IStorage hostStorage, IWebLogger logg
 					continue;
 				}
 
-				// Recursively scan subdirectories (usually mounted devices are 1-2 levels deep)
-				var devices = GetMountedDevicesInDirectory(mountPoint, 2);
-				foreach ( var device in devices )
+				// Get direct subdirectories using the storage interface
+				var directoryListing = hostStorage.GetDirectoryRecursive(mountPoint);
+				foreach ( var dirEntry in directoryListing )
 				{
-					cameraStorages.Add(device);
+					var dirPath = dirEntry.Key;
+					// Only take direct children of the mount point (depth 1-2)
+					if ( dirPath != mountPoint && IsDirectChild(mountPoint, dirPath, 2) )
+					{
+						if ( IsLikelyMountPoint(dirPath) )
+						{
+							cameraStorages.Add(dirPath);
+						}
+					}
 				}
 			}
 		}
@@ -48,45 +55,24 @@ internal class LinuxCameraStorageDiscovery(IStorage hostStorage, IWebLogger logg
 	}
 
 	/// <summary>
-	///     Recursively get potentially mounted device directories
+	///     Check if a path is a direct child of base path (within maxDepth levels)
 	/// </summary>
-	private IEnumerable<string> GetMountedDevicesInDirectory(string basePath, int maxDepth)
+	private bool IsDirectChild(string basePath, string path, int maxDepth)
 	{
-		var devices = new List<string>();
+		// Remove trailing slashes
+		var normalizedBase = basePath.TrimEnd('/');
+		var normalizedPath = path.TrimEnd('/');
 
-		if ( maxDepth <= 0 )
+		if ( !normalizedPath.StartsWith(normalizedBase) )
 		{
-			return devices;
+			return false;
 		}
 
-		try
-		{
-			var subDirectories = Directory.GetDirectories(basePath);
-			foreach ( var dir in subDirectories )
-			{
-				try
-				{
-					// Check if this directory looks like a mounted device
-					if ( IsLikelyMountPoint(dir) )
-					{
-						devices.Add(dir);
-					}
+		var relativePath = normalizedPath.Substring(normalizedBase.Length).TrimStart('/');
+		var depth = relativePath.Count(c => c == '/') +
+		            ( string.IsNullOrEmpty(relativePath) ? 0 : 1 );
 
-					// Recurse deeper
-					devices.AddRange(GetMountedDevicesInDirectory(dir, maxDepth - 1));
-				}
-				catch ( UnauthorizedAccessException )
-				{
-					// Skip directories we can't access
-				}
-			}
-		}
-		catch ( Exception ex )
-		{
-			logger.LogDebug($"Error scanning directory {basePath}: {ex.Message}");
-		}
-
-		return devices;
+		return depth > 0 && depth <= maxDepth;
 	}
 
 	/// <summary>
@@ -102,8 +88,6 @@ internal class LinuxCameraStorageDiscovery(IStorage hostStorage, IWebLogger logg
 				return false;
 			}
 
-			// Check if we can read its contents
-			_ = Directory.EnumerateFileSystemEntries(path).FirstOrDefault();
 
 			return true;
 		}

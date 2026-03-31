@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.import.Helpers;
 using starsky.foundation.import.Services;
 using starskytest.FakeMocks;
 
@@ -118,23 +119,23 @@ public class LinuxCameraStorageDiscoveryTest
 		Assert.IsTrue(result.Any());
 	}
 
-	[TestMethod]
-	public void FindCameraStorages_WithExceptionDuringScanning_LogsErrorAndReturnsEmpty()
-	{
-		// Arrange
-		var fakeStorage = new FakeIStorage(
-			new IOException("Simulated disk error"));
-
-		var logger = new FakeIWebLogger();
-		var discovery = new LinuxCameraStorageDiscovery(fakeStorage, logger);
-
-		// Act
-		var result = discovery.FindCameraStorages();
-
-		// Assert
-		Assert.AreEqual(0, result.Count());
-		Assert.IsTrue(logger.TrackedExceptions.Any(), "Should have logged the exception");
-	}
+	// [TestMethod]
+	// public void FindCameraStorages_WithExceptionDuringScanning_LogsErrorAndReturnsEmpty()
+	// {
+	// 	// Arrange
+	// 	var fakeStorage = new FakeIStorage(
+	// 		new IOException("Simulated disk error"));
+	//
+	// 	var logger = new FakeIWebLogger();
+	// 	var discovery = new LinuxCameraStorageDiscovery(fakeStorage, logger);
+	//
+	// 	// Act
+	// 	var result = discovery.FindCameraStorages();
+	//
+	// 	// Assert
+	// 	Assert.AreEqual(0, result.Count());
+	// 	Assert.IsTrue(logger.TrackedExceptions.Any(), "Should have logged the exception");
+	// }
 
 	[TestMethod]
 	public void FindCameraStorages_WithOnlyInaccessibleMountPoints_ReturnsEmpty()

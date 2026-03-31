@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.mountwatch.ServiceInstaller;
 
@@ -12,6 +14,12 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// </summary>
 internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
+	private readonly IStorage _storage = new StorageHostFullPathFilesystem(logger);
+
+	internal LinuxServiceInstaller(IWebLogger logger, IStorage storage) : this(logger)
+	{
+		_storage = storage;
+	}
 	/// <summary>
 	///     Install systemd service on Linux
 	/// </summary>
@@ -22,7 +30,13 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 
 		try
 		{
-			await File.WriteAllTextAsync(servicePath, serviceContent);
+			using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(serviceContent));
+			var success = await _storage.WriteStreamAsync(stream, servicePath);
+			if ( !success )
+			{
+				// Try user-level systemd if system-level fails
+				return await InstallUserAsync(executablePath);
+			}
 
 			logger.LogInformation($"systemd unit installed: {servicePath}");
 			logger.LogInformation("To enable and start:");
@@ -57,19 +71,18 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			".config", "systemd", "user", $"{WatchServiceName.GetSystemDName()}.service");
 
 		var deleted = false;
-
-		if ( File.Exists(systemPath) )
+		if ( _storage.ExistFile(systemPath) )
 		{
-			File.Delete(systemPath);
+			_storage.FileDelete(systemPath);
 			logger.LogInformation($"systemd unit removed: {systemPath}");
 			logger.LogInformation("Run: sudo systemctl daemon-reload");
 			logger.LogInformation($"Linux systemd unit removed: {systemPath}");
 			deleted = true;
 		}
-
-		if ( File.Exists(userPath) )
+		
+		if ( _storage.ExistFile(userPath) )
 		{
-			File.Delete(userPath);
+			_storage.FileDelete(userPath);
 			logger.LogInformation($"systemd user unit removed: {userPath}");
 			logger.LogInformation("Run: systemctl --user daemon-reload");
 			logger.LogInformation($"Linux systemd user unit removed: {userPath}");
@@ -82,7 +95,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 				$"No systemd service found for {WatchServiceName.GetSystemDName()}");
 		}
 
-		return await Task.FromResult(true);
+		return true;
 	}
 
 	/// <summary>
@@ -163,8 +176,15 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 
 		try
 		{
-			Directory.CreateDirectory(userSystemdDir);
-			await File.WriteAllTextAsync(servicePath, serviceContent);
+			_storage.CreateDirectory(userSystemdDir);
+			using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(serviceContent));
+			var success = await _storage.WriteStreamAsync(stream, servicePath);
+			
+			if ( !success )
+			{
+				logger.LogError($"Failed to write service file to {servicePath}");
+				return false;
+			}
 
 			logger.LogInformation($"systemd user unit installed: {servicePath}");
 			logger.LogInformation("To enable and start:");
