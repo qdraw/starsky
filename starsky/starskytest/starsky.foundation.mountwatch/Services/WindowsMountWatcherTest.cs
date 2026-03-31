@@ -111,46 +111,6 @@ public sealed class WindowsMountWatcherTest
 	}
 
 	[TestMethod]
-	public void WindowsMountWatcher_DetectNewMountsWithRetry_FindsDelayedDrive()
-	{
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
-		watcher.SeedKnownMounts(["C:\\"]);
-
-		var snapshots = new Queue<List<string>>([
-			["C:\\"],
-			["C:\\"],
-			["C:\\", "E:\\"]
-		]);
-		var sleeps = 0;
-
-		var newMounts = watcher.DetectNewMountsWithRetry(
-			() => snapshots.Count > 0 ? snapshots.Dequeue() : ["C:\\", "E:\\"],
-			6,
-			1,
-			_ => sleeps++);
-
-		CollectionAssert.AreEqual(new List<string> { "E:\\" }, newMounts);
-		Assert.AreEqual(2, sleeps);
-	}
-
-	[TestMethod]
-	public void WindowsMountWatcher_DetectNewMountsWithRetry_NoNewDrive_ReturnsEmpty()
-	{
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
-		watcher.SeedKnownMounts(["C:\\"]);
-
-		var sleeps = 0;
-		var newMounts = watcher.DetectNewMountsWithRetry(
-			() => ["C:\\"],
-			3,
-			1,
-			_ => sleeps++);
-
-		Assert.IsEmpty(newMounts);
-		Assert.AreEqual(2, sleeps);
-	}
-
-	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
 	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
 	public async Task WindowsMountWatcher_Start_DoesNotThrow_WhenPlatformIsUnsupported()

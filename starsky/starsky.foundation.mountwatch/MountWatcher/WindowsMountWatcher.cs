@@ -152,8 +152,7 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 				logger.LogInformation("Windows volume event drive was empty or already known");
 			}
 
-			var newDrives = DetectNewMountsWithRetry(
-				GetMountedVolumes, 3, 250);
+			var newDrives = DetectNewMounts(GetMountedVolumes());
 			if ( newDrives.Count == 0 )
 			{
 				logger.LogInformation("Windows retry mount scan found no new drives");
@@ -226,39 +225,6 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		}
 
 		return newMounts;
-	}
-
-	internal List<string> DetectNewMountsWithRetry(
-		Func<List<string>> getMountedVolumes,
-		int attempts,
-		int delayMilliseconds,
-		Action<int>? sleepAction = null)
-	{
-		sleepAction ??= Thread.Sleep;
-
-		for ( var attempt = 0; attempt < attempts; attempt++ )
-		{
-			var snapshot = getMountedVolumes();
-			logger.LogInformation(
-				$"Windows retry mount scan attempt {attempt + 1}/{attempts}: [{string.Join(", ", snapshot)}]");
-
-			var newMounts = DetectNewMounts(snapshot);
-			if ( newMounts.Count > 0 )
-			{
-				logger.LogInformation(
-					$"Windows retry mount scan success on attempt {attempt + 1}: [{string.Join(", ", newMounts)}]");
-				return newMounts;
-			}
-
-			if ( attempt < attempts - 1 )
-			{
-				logger.LogInformation(
-					$"Windows retry mount scan sleeping {delayMilliseconds}ms before next attempt");
-				sleepAction(delayMilliseconds);
-			}
-		}
-
-		return [];
 	}
 
 	internal bool TryTrackEventDrive(string? driveName, out string normalizedDrive)
