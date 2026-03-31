@@ -14,6 +14,16 @@ public static class CameraDriveInfoHelper
 {
 	public static CameraDriveInfo ToCameraDriveInfo(this DriveInfo? driveInfo)
 	{
+		var driveFormat = string.Empty;
+		try
+		{
+			driveFormat = driveInfo?.DriveFormat ?? string.Empty;
+		}
+		catch ( IOException )
+		{
+			// no nothing
+		}
+
 		return new CameraDriveInfo
 		{
 			IsReady = driveInfo?.IsReady ?? false,
@@ -22,7 +32,7 @@ public static class CameraDriveInfoHelper
 				Exists = driveInfo?.RootDirectory.Exists ?? false,
 				FullName = driveInfo?.RootDirectory.FullName ?? string.Empty
 			},
-			DriveFormat = driveInfo?.DriveFormat ?? string.Empty
+			DriveFormat = driveFormat
 		};
 	}
 }

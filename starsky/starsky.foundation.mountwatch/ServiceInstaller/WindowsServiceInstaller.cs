@@ -1,8 +1,11 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 using starsky.foundation.platform.Interfaces;
+
+[assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.foundation.mountwatch.ServiceInstaller;
 
@@ -11,8 +14,21 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// </summary>
 internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
+	private readonly Func<int, Task> _delayAsync = Task.Delay;
+
+	private readonly Func<string, string, Task<bool>> _runProcessAsync =
+		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args);
+
 	private readonly string _serviceDisplayName = WatchServiceName.GetDisplayName();
 	private readonly string _serviceName = WatchServiceName.GetReverseDnsName();
+
+	internal WindowsServiceInstaller(IWebLogger logger,
+		Func<string, string, Task<bool>> runProcessAsync,
+		Func<int, Task> delayAsync) : this(logger)
+	{
+		_runProcessAsync = runProcessAsync;
+		_delayAsync = delayAsync;
+	}
 
 	/// <summary>
 	///     Install Windows Service using sc.exe
@@ -34,7 +50,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 
 			// sc.exe create "service" binPath= "path"
 			// Note the space after "binPath=" is mandatory for sc.exe
-			var result = await new RunProcess(logger).RunProcessAsync("sc.exe",
+			var result = await _runProcessAsync("sc.exe",
 				$"create \"{_serviceName}\" binPath= \"{binPath}\" " +
 				$"DisplayName= \"{_serviceDisplayName}\" start= auto obj= \"LocalSystem\"");
 
@@ -65,7 +81,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		try
 		{
 			await StopAsync();
-			var result = await new RunProcess(logger).RunProcessAsync("sc.exe", $"delete \"{_serviceName}\"");
+			var result = await _runProcessAsync("sc.exe", $"delete \"{_serviceName}\"");
 
 			if ( result )
 			{
@@ -92,13 +108,13 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		try
 		{
-			var result = await new RunProcess(logger).RunProcessAsync("sc.exe", $"start \"{_serviceName}\"");
+			var result = await _runProcessAsync("sc.exe", $"start \"{_serviceName}\"");
 			if ( !result )
 			{
 				logger.LogInformation(
 					$"Retrying to start Windows Service: {_serviceName} after 2 seconds...");
-				await Task.Delay(2000);
-				result = await new RunProcess(logger).RunProcessAsync("sc.exe", $"start \"{_serviceName}\"");
+				await _delayAsync(2000);
+				result = await _runProcessAsync("sc.exe", $"start \"{_serviceName}\"");
 			}
 
 			if ( result )
@@ -126,7 +142,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		try
 		{
-			var result = await new RunProcess(logger).RunProcessAsync("sc.exe", $"stop \"{_serviceName}\"");
+			var result = await _runProcessAsync("sc.exe", $"stop \"{_serviceName}\"");
 			if ( result )
 			{
 				logger.LogInformation($"Windows Service stopped: {_serviceName}");
@@ -140,6 +156,4 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			return false;
 		}
 	}
-
-
 }
