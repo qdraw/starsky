@@ -19,6 +19,8 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	// ManagementEventWatcher is Windows-only – held as object to avoid
 	// CA1416 on the field itself when the containing class is cross-platform.
 	private object? _watcher;
+	private readonly HashSet<string> _knownMountedVolumes =
+		new(StringComparer.OrdinalIgnoreCase);
 
 	/// <summary>
 	///     Start watching for mount events using WMI
@@ -31,6 +33,7 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		}
 
 		IsRunning = true;
+		SeedKnownMounts(GetMountedVolumes());
 
 		if ( OperatingSystem.IsWindows() )
 		{
@@ -121,15 +124,45 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	{
 		try
 		{
-			var newDrives = GetMountedVolumes();
-			if ( newDrives.Count > 0 )
+			var newDrives = DetectNewMounts(GetMountedVolumes());
+			foreach ( var drive in newDrives )
 			{
-				OnMountDetected(newDrives.First());
+				OnMountDetected(drive);
 			}
 		}
 		catch
 		{
 			// Ignore errors
 		}
+	}
+
+	internal void SeedKnownMounts(IEnumerable<string> mountedVolumes)
+	{
+		_knownMountedVolumes.Clear();
+		foreach ( var volume in mountedVolumes.Where(v => !string.IsNullOrWhiteSpace(v)) )
+		{
+			_knownMountedVolumes.Add(volume);
+		}
+	}
+
+	internal List<string> DetectNewMounts(IEnumerable<string> mountedVolumes)
+	{
+		var currentMounts = mountedVolumes
+			.Where(v => !string.IsNullOrWhiteSpace(v))
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.ToList();
+
+		var currentSet = new HashSet<string>(currentMounts, StringComparer.OrdinalIgnoreCase);
+		var newMounts = currentMounts
+			.Where(m => !_knownMountedVolumes.Contains(m))
+			.ToList();
+
+		_knownMountedVolumes.Clear();
+		foreach ( var mount in currentSet )
+		{
+			_knownMountedVolumes.Add(mount);
+		}
+
+		return newMounts;
 	}
 }

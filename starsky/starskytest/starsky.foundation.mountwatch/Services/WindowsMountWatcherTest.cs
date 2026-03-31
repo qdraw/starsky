@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
 using starskytest.FakeMocks;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace starskytest.starsky.foundation.mountwatch.Services;
@@ -42,6 +43,41 @@ public sealed class WindowsMountWatcherTest
 
 		// Assert
 		Assert.IsNotNull(watcher);
+	}
+
+	[TestMethod]
+	public void WindowsMountWatcher_DetectNewMounts_ReturnsOnlyNewDrive()
+	{
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		watcher.SeedKnownMounts(["C:\\"]);
+
+		var newMounts = watcher.DetectNewMounts(["C:\\", "E:\\"]);
+
+		CollectionAssert.AreEqual(new List<string> { "E:\\" }, newMounts);
+	}
+
+	[TestMethod]
+	public void WindowsMountWatcher_DetectNewMounts_AfterRemoveAndReinsert_DetectsAgain()
+	{
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		watcher.SeedKnownMounts(["C:\\", "E:\\"]);
+
+		var removedSnapshot = watcher.DetectNewMounts(["C:\\"]);
+		var reinsertedSnapshot = watcher.DetectNewMounts(["C:\\", "E:\\"]);
+
+		Assert.IsEmpty(removedSnapshot);
+		CollectionAssert.AreEqual(new List<string> { "E:\\" }, reinsertedSnapshot);
+	}
+
+	[TestMethod]
+	public void WindowsMountWatcher_DetectNewMounts_IsCaseInsensitive()
+	{
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		watcher.SeedKnownMounts(["E:\\"]);
+
+		var newMounts = watcher.DetectNewMounts(["e:\\"]);
+
+		Assert.IsEmpty(newMounts);
 	}
 
 	[TestMethod]
