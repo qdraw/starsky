@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.mountwatch.Services;
+namespace starskytest.starsky.foundation.mountwatch.Services.Helpers;
 
 [TestClass]
 public sealed class RunProcessTest

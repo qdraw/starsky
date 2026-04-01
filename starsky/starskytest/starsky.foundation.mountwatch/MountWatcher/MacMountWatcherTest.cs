@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
 using starsky.foundation.mountwatch.MountWatcher.MacOS;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.mountwatch.Services;
+namespace starskytest.starsky.foundation.mountwatch.MountWatcher;
 
 [TestClass]
 public sealed class MacMountWatcherTest

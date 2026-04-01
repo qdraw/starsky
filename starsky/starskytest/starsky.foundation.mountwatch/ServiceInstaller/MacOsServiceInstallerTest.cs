@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.ServiceInstaller;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.mountwatch.Services;
+namespace starskytest.starsky.foundation.mountwatch.ServiceInstaller;
 
 [TestClass]
 public sealed class MacOsServiceInstallerTest
@@ -77,7 +77,7 @@ public sealed class MacOsServiceInstallerTest
 
 		// Assert
 		Assert.IsTrue(result);
-		Assert.AreEqual(1, calls.Count);
+		Assert.HasCount(1, calls);
 		Assert.AreEqual("launchctl", calls[0].fileName);
 		StringAssert.Contains(calls[0].args, "load");
 		StringAssert.Contains(calls[0].args, ".plist");
@@ -115,7 +115,7 @@ public sealed class MacOsServiceInstallerTest
 
 		// Assert
 		Assert.IsTrue(result);
-		Assert.AreEqual(1, calls.Count);
+		Assert.HasCount(1, calls);
 		Assert.AreEqual("launchctl", calls[0].fileName);
 		StringAssert.Contains(calls[0].args, "unload");
 		StringAssert.Contains(calls[0].args, ".plist");

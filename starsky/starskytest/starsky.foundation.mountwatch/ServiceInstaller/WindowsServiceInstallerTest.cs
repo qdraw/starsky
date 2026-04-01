@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.ServiceInstaller;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.mountwatch.Services;
+namespace starskytest.starsky.foundation.mountwatch.ServiceInstaller;
 
 [TestClass]
 public sealed class WindowsServiceInstallerTest
@@ -26,7 +26,7 @@ public sealed class WindowsServiceInstallerTest
 		var result = await sut.InstallAsync("C:/apps/starskymountwatchercli.dll");
 
 		Assert.IsTrue(result);
-		Assert.AreEqual(1, calls.Count);
+		Assert.HasCount(1, calls);
 		Assert.AreEqual("sc.exe", calls[0].fileName);
 		StringAssert.Contains(calls[0].args, "create \"");
 		StringAssert.Contains(calls[0].args, "dotnet.exe");
@@ -48,7 +48,7 @@ public sealed class WindowsServiceInstallerTest
 		var result = await sut.InstallAsync("C:/apps/starskymountwatchercli.exe");
 
 		Assert.IsTrue(result);
-		Assert.AreEqual(1, calls.Count);
+		Assert.HasCount(1, calls);
 		StringAssert.Contains(calls[0].args, "starskymountwatchercli.exe");
 		Assert.IsFalse(calls[0].args.Contains("dotnet.exe", StringComparison.OrdinalIgnoreCase));
 	}
@@ -75,8 +75,8 @@ public sealed class WindowsServiceInstallerTest
 		var result = await sut.StartAsync();
 
 		Assert.IsTrue(result);
-		Assert.AreEqual(2, calls.Count);
-		Assert.AreEqual(1, delays.Count);
+		Assert.HasCount(2, calls);
+		Assert.HasCount(1, delays);
 		Assert.AreEqual(2000, delays[0]);
 		StringAssert.Contains(calls[0].args, "start");
 		StringAssert.Contains(calls[1].args, "start");
@@ -97,7 +97,7 @@ public sealed class WindowsServiceInstallerTest
 		var result = await sut.UninstallAsync();
 
 		Assert.IsTrue(result);
-		Assert.AreEqual(2, calls.Count);
+		Assert.HasCount(2, calls);
 		StringAssert.Contains(calls[0].args, "stop");
 		StringAssert.Contains(calls[1].args, "delete");
 	}

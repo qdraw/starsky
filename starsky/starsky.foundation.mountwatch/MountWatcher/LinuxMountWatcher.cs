@@ -10,11 +10,13 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// <summary>
 ///     Linux mount watcher using udev for event-driven notifications (with polling fallback)
 /// </summary>
-internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs) : BaseMountWatcher(logger,pollIntervalMs)
+internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs)
+	: BaseMountWatcher(logger, pollIntervalMs)
 {
 	private readonly ILinuxMountWatcherSystem _system = new LinuxMountWatcherSystem();
 
-	internal LinuxMountWatcher(IWebLogger logger, ILinuxMountWatcherSystem system, int pollIntervalMs) : this(logger,pollIntervalMs)
+	internal LinuxMountWatcher(IWebLogger logger, ILinuxMountWatcherSystem system,
+		int pollIntervalMs) : this(logger, pollIntervalMs)
 	{
 		_system = system;
 	}
@@ -58,7 +60,6 @@ internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs) : BaseMo
 	{
 		try
 		{
-			// Try to use udev
 			if ( TryRunUdevWatcher() )
 			{
 				return;
@@ -73,87 +74,14 @@ internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs) : BaseMo
 		RunPollingFallback();
 	}
 
-	/// <summary>
-	///     Attempt to use udev for event-driven mount detection
-	/// </summary>
 	internal bool TryRunUdevWatcher()
 	{
-		var udev = IntPtr.Zero;
-		var monitor = IntPtr.Zero;
+		var watcher = new UdevWatcher(_system,
+			ResolveMountPoint,
+			OnMountDetected,
+			() => IsRunning);
 
-		try
-		{
-			udev = _system.UdevNew();
-			if ( udev == IntPtr.Zero )
-			{
-				return false;
-			}
-
-			monitor = _system.UdevMonitorNewFromNetlink(udev, "udev");
-			if ( monitor == IntPtr.Zero )
-			{
-				return false;
-			}
-
-			// Monitor block device changes
-			if ( _system.UdevMonitorFilterAddMatchSubsystemDevtype(monitor, "block", IntPtr.Zero) <
-			     0 )
-			{
-				return false;
-			}
-
-			if ( _system.UdevMonitorEnableReceiving(monitor) < 0 )
-			{
-				return false;
-			}
-
-			var fd = _system.UdevMonitorGetFd(monitor);
-			if ( fd < 0 )
-			{
-				return false;
-			}
-
-			// Monitor for events
-			while ( IsRunning )
-			{
-				var device = _system.UdevMonitorReceiveDevice(monitor);
-				if ( device != IntPtr.Zero )
-				{
-					// IMPORTANT: Get devnode BEFORE unreffing the device, since udev owns the string pointer
-					var devNode = _system.UdevDeviceGetDevnode(device);
-					
-					// Now safe to unref the device
-					_system.UdevDeviceUnref(device);
-					
-					if ( !string.IsNullOrEmpty(devNode) )
-					{
-						// Resolve the device node to its mount point.
-						// udev reports /dev/sda1, but we need /mnt/usb or /media/camera
-						var mountPoint = ResolveMountPoint(devNode);
-						if ( !string.IsNullOrEmpty(mountPoint) )
-						{
-							OnMountDetected(mountPoint);
-						}
-					}
-				}
-
-				_system.Sleep(100);
-			}
-
-			return true;
-		}
-		finally
-		{
-			if ( monitor != IntPtr.Zero )
-			{
-				_system.UdevMonitorUnref(monitor);
-			}
-
-			if ( udev != IntPtr.Zero )
-			{
-				_system.UdevUnref(udev);
-			}
-		}
+		return watcher.TryRunUdevWatcher();
 	}
 
 
@@ -168,7 +96,7 @@ internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs) : BaseMo
 		{
 			if ( !_system.FileExists("/proc/mounts") )
 			{
-				return [];
+				return new List<string>();
 			}
 
 			var lines = _system.ReadAllLines("/proc/mounts");
@@ -188,7 +116,7 @@ internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs) : BaseMo
 
 		foreach ( var line in lines )
 		{
-			var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+			var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 			if ( parts.Length < 2 )
 			{
 				continue;
@@ -220,7 +148,7 @@ internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs) : BaseMo
 			var lines = _system.ReadAllLines("/proc/mounts");
 			foreach ( var line in lines )
 			{
-				var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+				var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 				if ( parts.Length < 2 )
 				{
 					continue;

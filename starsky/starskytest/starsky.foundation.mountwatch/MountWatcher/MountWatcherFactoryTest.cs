@@ -5,7 +5,7 @@ using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.MountWatcher;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.mountwatch.Services;
+namespace starskytest.starsky.foundation.mountwatch.MountWatcher;
 
 [TestClass]
 public sealed class MountWatcherFactoryTest

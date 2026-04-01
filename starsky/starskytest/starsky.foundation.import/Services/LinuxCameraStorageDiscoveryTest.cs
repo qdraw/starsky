@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Helpers;
-using starsky.foundation.import.Services;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.import.Services;

@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.ServiceInstaller;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.mountwatch.Services;
+namespace starskytest.starsky.foundation.mountwatch.ServiceInstaller;
 
 [TestClass]
 public sealed class LinuxServiceInstallerTest

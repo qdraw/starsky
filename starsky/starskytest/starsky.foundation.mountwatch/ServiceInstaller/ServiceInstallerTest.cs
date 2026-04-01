@@ -8,16 +8,16 @@ using starsky.foundation.mountwatch.ServiceInstaller;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.mountwatch.Services;
+namespace starskytest.starsky.foundation.mountwatch.ServiceInstaller;
 
 [TestClass]
 public sealed class ServiceInstallerTest
 {
 	public TestContext? TestContext { get; set; }
 
-	private static ServiceInstaller CreateSut()
+	private static global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller CreateSut()
 	{
-		return new ServiceInstaller(
+		return new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
 			new FakeIWebLogger());
 	}
 
@@ -198,81 +198,12 @@ public sealed class ServiceInstallerTest
 		Assert.IsFalse(string.IsNullOrWhiteSpace(WatchServiceName.GetDisplayName()));
 	}
 
-	// //[TestMethod]
-	// public void ServiceInstaller_InstallAsync_MacOs_CallsMacInstaller()
-	// {
-	// 	if ( !OperatingSystem.IsMacOS() )
-	// 	{
-	// 		Assert.Inconclusive();
-	// 	}
-	//
-	// 	var logger = new FakeIWebLogger();
-	// 	var installer = new ServiceInstaller(logger,
-	// 		() => OSPlatform.OSX);
-	//
-	// 	// TODO: this breaks
-	// 	var result = installer.InstallAsync("/path/to/exe").Result;
-	//
-	// 	Assert.IsTrue(result);
-	// }
-	//
-	// [TestMethod]
-	// public void ServiceInstaller_InstallAsync_Windows_CallsWindowsInstaller()
-	// {
-	// 	if ( !OperatingSystem.IsWindows() )
-	// 	{
-	// 		Assert.Inconclusive();
-	// 	}
-	//
-	// 	var logger = new FakeIWebLogger();
-	// 	var installer = new ServiceInstaller(logger,
-	// 		() => OSPlatform.Windows);
-	//
-	// 	var result = installer.InstallAsync("/path/to/exe").Result;
-	//
-	// 	Assert.IsTrue(result);
-	// }
-
-	// [TestMethod]
-	// public void ServiceInstaller_InstallAsync_Linux_CallsLinuxInstaller()
-	// {
-	// 	if ( !OperatingSystem.IsLinux() )
-	// 	{
-	// 		Assert.Inconclusive();
-	// 	}
-	//
-	// 	var logger = new FakeIWebLogger();
-	// 	var installer = new ServiceInstaller(logger,
-	// 		() => OSPlatform.Linux);
-	//
-	// 	var result = installer.InstallAsync("/path/to/exe").Result;
-	//
-	// 	Assert.IsTrue(result);
-	// }
-
-	[TestMethod]
-	public void ServiceInstaller_StartAsync_MacOs_CallsMacStarter()
-	{
-		if ( !OperatingSystem.IsMacOS() )
-		{
-			Assert.Inconclusive();
-		}
-
-		var logger = new FakeIWebLogger();
-		var installer = new ServiceInstaller(logger,
-			() => OSPlatform.OSX);
-
-		var result = installer.StartAsync().Result;
-
-		Assert.IsTrue(result);
-	}
-
 	[TestMethod]
 	[OSCondition(OperatingSystems.Windows)]
 	public async Task ServiceInstaller_StopAsync_Windows_CallsWindowsStopper()
 	{
 		var logger = new FakeIWebLogger();
-		var installer = new ServiceInstaller(logger,
+		var installer = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(logger,
 			() => OSPlatform.Windows);
 
 		var result = await installer.StopAsync();
@@ -284,7 +215,7 @@ public sealed class ServiceInstallerTest
 	public void ServiceInstaller_CreateInstaller_UnsupportedOs_Throws()
 	{
 		var logger = new FakeIWebLogger();
-		var installer = new ServiceInstaller(logger, () => OSPlatform.Create("Unknown"));
+		var installer = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(logger, () => OSPlatform.Create("Unknown"));
 
 		AggregateException? exception = null;
 		try

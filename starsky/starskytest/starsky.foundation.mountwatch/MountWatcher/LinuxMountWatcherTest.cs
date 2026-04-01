@@ -7,7 +7,7 @@ using starsky.foundation.mountwatch.MountWatcher;
 using starsky.foundation.mountwatch.MountWatcher.Helpers.Interfaces;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.mountwatch.Services;
+namespace starskytest.starsky.foundation.mountwatch.MountWatcher;
 
 [TestClass]
 public sealed class LinuxMountWatcherTest
