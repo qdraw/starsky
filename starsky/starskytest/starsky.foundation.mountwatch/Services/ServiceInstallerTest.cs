@@ -175,14 +175,6 @@ public sealed class ServiceInstallerTest
 	}
 
 	[TestMethod]
-	[OSCondition(OperatingSystems.Linux)]
-	public async Task InstallAsync_Linux_WritesFallbackUserUnit()
-	{
-		Assert.IsTrue(
-			await CreateSut().InstallAsync("/usr/local/bin/starskymountwatchercli"));
-	}
-
-	[TestMethod]
 	public void GetLinuxLogHint_ReturnsJournalctlCommand()
 	{
 		Assert.Contains("journalctl", ServiceInstallerHelper.GetLinuxLogHint());

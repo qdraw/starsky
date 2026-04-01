@@ -129,7 +129,7 @@ public sealed class MacMountWatcherTest
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage(
-			new List<string> { "/Volumes", "/Volumes/USB Drive", "/" });
+			["/Volumes", "/Volumes/USB Drive", "/"]);
 		var system = new MacMountWatcherSystem();
 		var sut = new MacMountWatcher(logger, storage, system);
 
@@ -137,7 +137,7 @@ public sealed class MacMountWatcherTest
 		var result = sut.GetMountedVolumes();
 
 		// Assert
-		Assert.IsTrue(result.Any(), "Should use injected storage");
+		Assert.IsNotEmpty(result, "Should use injected storage");
 	}
 
 	[TestMethod]
@@ -250,6 +250,6 @@ public sealed class MacMountWatcherTest
 		var volumes = sut.GetMountedVolumes();
 
 		// Assert - should work with injected mocks
-		Assert.IsTrue(volumes.Any());
+		Assert.IsNotEmpty(volumes);
 	}
 }
