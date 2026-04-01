@@ -73,7 +73,8 @@ public partial class Query : IQuery
 		catch ( ObjectDisposedException e )
 		{
 			_logger.LogInformation("[GetObjectByFilePath] catch-ed ObjectDisposedException", e);
-			return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return scope.Execute(LocalQuery);
 		}
 	}
 
@@ -684,8 +685,10 @@ public partial class Query : IQuery
 			{
 				_logger.LogInformation(
 					"[RetrySaveChangesAsync] SolveConcurrencyExceptionLoop disposed item");
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				await context.SaveChangesAsync();
+				var scope = new InjectServiceScope(_scopeFactory);
+				await scope.ExecuteAsync(async context1 =>
+					await context1.SaveChangesAsync()
+				);
 			}
 			catch ( DbUpdateConcurrencyException retry2Exception )
 			{

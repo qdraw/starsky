@@ -1,9 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
+using System;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
-
-#pragma warning disable CS8618
 
 [assembly: InternalsVisibleTo("starskytest"),
            InternalsVisibleTo("starsky.foundation.settings")]
@@ -12,9 +11,8 @@ namespace starsky.foundation.database.Query;
 
 public class InjectServiceScope
 {
-	private readonly ApplicationDbContext _dbContext;
+	private readonly IServiceScopeFactory? _scopeFactory;
 
-	[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 	public InjectServiceScope(IServiceScopeFactory? scopeFactory)
 	{
 		if ( scopeFactory == null )
@@ -22,15 +20,49 @@ public class InjectServiceScope
 			return;
 		}
 
-		var scope = scopeFactory.CreateScope();
-		_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		_scopeFactory = scopeFactory;
 	}
 
 	/// <summary>
 	///     Dependency injection, used in background tasks
 	/// </summary>
+	[Obsolete("Use ExecuteAsync instead to ensure proper disposal of the scope and DbContext.")]
 	internal ApplicationDbContext Context()
 	{
-		return _dbContext;
+		if ( _scopeFactory == null )
+		{
+			return null!;
+		}
+
+		using var scope = _scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		return dbContext;
+	}
+
+	internal TResult Execute<TResult>(Func<ApplicationDbContext, TResult> action)
+	{
+		if ( _scopeFactory == null )
+		{
+			throw new InvalidOperationException("ScopeFactory is null");
+		}
+
+		using var scope = _scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		return action(dbContext);
+	}
+
+	internal async Task<TResult> ExecuteAsync<TResult>(
+		Func<ApplicationDbContext, Task<TResult>> action)
+	{
+		if ( _scopeFactory == null )
+		{
+			throw new InvalidOperationException("ScopeFactory is null");
+		}
+
+		using var scope = _scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		return await action(dbContext);
 	}
 }

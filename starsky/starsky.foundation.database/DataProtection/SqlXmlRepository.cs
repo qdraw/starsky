@@ -93,12 +93,6 @@ public class SqlXmlRepository : IXmlRepository
 			return true;
 		}
 
-		bool LocalDefaultQuery()
-		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return LocalDefault(context);
-		}
-
 		try
 		{
 			LocalDefault(_dbContext);
@@ -127,6 +121,13 @@ public class SqlXmlRepository : IXmlRepository
 				_logger.LogError(aggregateException,
 					"[SqlXmlRepository] catch-ed AggregateException");
 			}
+		}
+
+		return;
+
+		bool LocalDefaultQuery()
+		{
+			return new InjectServiceScope(_scopeFactory).Execute(LocalDefault);
 		}
 	}
 }
