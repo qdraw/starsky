@@ -47,7 +47,7 @@ jobs:
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
       if: steps.files_changed.outputs.CHANGED == 'true' && github.event_name != 'pull_request'
-      uses: peter-evans/create-pull-request@a45d1fb447fcaf601166e405fd4f335cde1a8aa8
+      uses: peter-evans/create-pull-request@8170bccad11c0df62542c04dcaefe36d342dfd39
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: '[NugetPackagesListUpdate] Auto commited nugetPackages list'
