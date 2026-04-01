@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
+using starsky.foundation.platform.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.mountwatch.MountWatcher;
@@ -53,9 +56,9 @@ public sealed class WindowsMountWatcherTest
 	public void WindowsMountWatcher_DetectNewMounts_ReturnsOnlyNewDrive()
 	{
 		var watcher = new WindowsMountWatcher(new FakeIWebLogger(), 10);
-		watcher.SeedKnownMounts(["C:\\"]);
+		watcher.SeedKnownMounts(new List<string> { "C:\\" });
 
-		var newMounts = watcher.DetectNewMounts(["C:\\", "E:\\"]);
+		var newMounts = watcher.DetectNewMounts(new List<string> { "C:\\", "E:\\" });
 
 		CollectionAssert.AreEqual(new List<string> { "E:\\" }, newMounts);
 	}
@@ -64,10 +67,10 @@ public sealed class WindowsMountWatcherTest
 	public void WindowsMountWatcher_DetectNewMounts_AfterRemoveAndReinsert_DetectsAgain()
 	{
 		var watcher = new WindowsMountWatcher(new FakeIWebLogger(), 10);
-		watcher.SeedKnownMounts(["C:\\", "E:\\"]);
+		watcher.SeedKnownMounts(new List<string> { "C:\\", "E:\\" });
 
-		var removedSnapshot = watcher.DetectNewMounts(["C:\\"]);
-		var reinsertedSnapshot = watcher.DetectNewMounts(["C:\\", "E:\\"]);
+		var removedSnapshot = watcher.DetectNewMounts(new List<string> { "C:\\" });
+		var reinsertedSnapshot = watcher.DetectNewMounts(new List<string> { "C:\\", "E:\\" });
 
 		Assert.IsEmpty(removedSnapshot);
 		CollectionAssert.AreEqual(new List<string> { "E:\\" }, reinsertedSnapshot);
@@ -77,9 +80,9 @@ public sealed class WindowsMountWatcherTest
 	public void WindowsMountWatcher_DetectNewMounts_IsCaseInsensitive()
 	{
 		var watcher = new WindowsMountWatcher(new FakeIWebLogger(), 10);
-		watcher.SeedKnownMounts(["E:\\"]);
+		watcher.SeedKnownMounts(new List<string> { "E:\\" });
 
-		var newMounts = watcher.DetectNewMounts(["e:\\"]);
+		var newMounts = watcher.DetectNewMounts(new List<string> { "e:\\" });
 
 		Assert.IsEmpty(newMounts);
 	}
@@ -88,7 +91,7 @@ public sealed class WindowsMountWatcherTest
 	public void WindowsMountWatcher_TryTrackEventDrive_NewDrive_TracksAndReturnsTrue()
 	{
 		var watcher = new WindowsMountWatcher(new FakeIWebLogger(), 10);
-		watcher.SeedKnownMounts(["C:\\"]);
+		watcher.SeedKnownMounts(new List<string> { "C:\\" });
 
 		var tracked = watcher.TryTrackEventDrive("E:", out var normalized);
 
@@ -100,7 +103,7 @@ public sealed class WindowsMountWatcherTest
 	public void WindowsMountWatcher_TryTrackEventDrive_ExistingDrive_ReturnsFalse()
 	{
 		var watcher = new WindowsMountWatcher(new FakeIWebLogger(), 10);
-		watcher.SeedKnownMounts(["C:\\", "E:\\"]);
+		watcher.SeedKnownMounts(new List<string> { "C:\\", "E:\\" });
 
 		var tracked = watcher.TryTrackEventDrive("E:", out _);
 
@@ -193,5 +196,96 @@ public sealed class WindowsMountWatcherTest
 
 		var completed = t.Wait(100, TestContext.CancellationToken);
 		Assert.IsTrue(completed, "Start did not return after Stop");
+	}
+
+	[TestMethod]
+	[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+	public void StartWmiWatcherTst()
+	{
+		var logger = new FakeIWebLogger();
+		var watcher = new WindowsMountWatcher(logger,
+			() => OSPlatform.Windows, 50);
+		watcher.StartWmiWatcher();
+
+		watcher.Stop();
+
+		if ( OperatingSystem.IsWindows() )
+		{
+			Assert.Contains(p => p.Item2 == "Windows WMI watcher started",
+				logger.TrackedInformation);
+		}
+		else
+		{
+			Assert.Contains(p => p.Item2 == "Failed to start WMI watcher, falling back to polling",
+				logger.TrackedExceptions);
+		}
+	}
+
+	[TestMethod]
+	[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+	public void OnVolumeChanged()
+	{
+		var logger = new FakeIWebLogger();
+
+		// 1) Removal event (EventType=3) should remove from baseline and not raise MountDetected
+		var watcher = new TestWindowsMountWatcher(logger, () => OSPlatform.Windows, 50,
+			["C:\\"]);
+		var detected = new List<string>();
+		var detected1 = detected;
+		watcher.MountDetected += (s, e) => detected1.Add(e.MountPath);
+		watcher.SeedKnownMounts(new List<string> { "D:\\" });
+		watcher.OnVolumeChanged("3", "D:");
+		Assert.IsEmpty(detected);
+		Assert.IsNotEmpty(logger.TrackedInformation);
+
+		// 2) New drive event should track and raise MountDetected for the event drive only once
+		watcher = new TestWindowsMountWatcher(logger, () => OSPlatform.Windows, 50,
+			["C:\\"]);
+		detected = [];
+		watcher.MountDetected += (s, e) => detected.Add(e.MountPath);
+		// baseline contains C:\ so retry-scan will not report it as new
+		watcher.SeedKnownMounts(new List<string> { "C:\\" });
+		// make GetMountedVolumes report the same drive too (retry scan)
+		watcher.SetMountedVolumes(["C:\\", "E:\\"]);
+		watcher.OnVolumeChanged("2", "E:");
+		// Should have been detected once for the event drive, retry-scan should ignore duplicate
+		Assert.HasCount(1, detected);
+		Assert.AreEqual("E:\\", detected[0]);
+
+		// 3) If retry-scan contains other new drives they should trigger MountDetected
+		watcher = new TestWindowsMountWatcher(logger, () => OSPlatform.Windows, 50,
+			["C:\\"]);
+		detected.Clear();
+		watcher.MountDetected += (s, e) => detected.Add(e.MountPath);
+		watcher.SeedKnownMounts(new List<string> { "C:\\" });
+		// event drive empty but mounted volumes contain a new drive G:\
+		watcher.SetMountedVolumes(["C:\\", "G:\\"]);
+		watcher.OnVolumeChanged("2", "");
+		Assert.Contains("G:\\", detected);
+		Assert.IsEmpty(logger.TrackedExceptions);
+	}
+}
+
+// Test helper: subclass WindowsMountWatcher to return controllable mounted volumes
+internal sealed class TestWindowsMountWatcher : WindowsMountWatcher
+{
+	private List<string> _mountedVolumes;
+
+	public TestWindowsMountWatcher(IWebLogger logger, Func<OSPlatform> platformResolver,
+		int pollIntervalMs,
+		List<string> initialMountedVolumes) : base(logger, platformResolver, pollIntervalMs)
+	{
+		_mountedVolumes = new List<string>(initialMountedVolumes);
+	}
+
+	public void SetMountedVolumes(List<string> volumes)
+	{
+		_mountedVolumes = new List<string>(volumes);
+	}
+
+	public override List<string> GetMountedVolumes()
+	{
+		// return a copy to avoid external mutation
+		return [.._mountedVolumes];
 	}
 }

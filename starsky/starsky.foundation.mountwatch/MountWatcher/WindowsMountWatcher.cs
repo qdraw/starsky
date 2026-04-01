@@ -105,7 +105,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	}
 
 	[SupportedOSPlatform("windows")]
-	private void StartWmiWatcher()
+	internal void StartWmiWatcher()
 	{
 		try
 		{
@@ -148,55 +148,63 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	///     Handle WMI volume change events (Windows only)
 	/// </summary>
 	[SupportedOSPlatform("windows")]
-	internal void OnVolumeChanged(object? sender, EventArrivedEventArgs e)
+	internal void OnVolumeChanged(object? sender, EventArrivedEventArgs arrivedEvent)
 	{
 		try
 		{
-			var eventTypeStr = e.NewEvent?.Properties?["EventType"]?.Value?.ToString() ?? "<null>";
-			var rawDriveName = e.NewEvent?.Properties?["DriveName"]?.Value?.ToString() ?? "<null>";
-			logger.LogInformation(
-				$"Windows volume event received: EventType={eventTypeStr}, DriveName={rawDriveName}");
+			var eventTypeStr = arrivedEvent.NewEvent?.Properties?["EventType"]?.Value?.ToString() ??
+			                   "<null>";
+			var rawDriveName = arrivedEvent.NewEvent?.Properties?["DriveName"]?.Value?.ToString() ??
+			                   "<null>";
 
-			if ( int.TryParse(eventTypeStr, out var eventType) && eventType == 3 )
-			{
-				HandleVolumeRemoval(rawDriveName);
-				return;
-			}
-
-			var eventTracked = TryTrackEventDrive(e, out var eventDrive);
-
-			if ( eventTracked )
-			{
-				logger.LogInformation($"Windows volume event tracked as new mount: {eventDrive}");
-				OnMountDetected(eventDrive);
-			}
-			else
-			{
-				logger.LogInformation("Windows volume event drive was empty or already known");
-			}
-
-			var newDrives = DetectNewMounts(GetMountedVolumes());
-			if ( newDrives.Count == 0 )
-			{
-				logger.LogInformation("Windows retry mount scan found no new drives");
-			}
-
-			foreach ( var drive in newDrives )
-			{
-				if ( eventTracked &&
-				     drive.Equals(eventDrive, StringComparison.OrdinalIgnoreCase) )
-				{
-					logger.LogInformation($"Windows retry mount scan duplicate ignored: {drive}");
-					continue;
-				}
-
-				logger.LogInformation($"Windows retry mount scan detected new drive: {drive}");
-				OnMountDetected(drive);
-			}
+			OnVolumeChanged(eventTypeStr, rawDriveName);
 		}
 		catch ( Exception ex )
 		{
 			logger.LogError(ex, $"Windows volume event handling failed: {ex.Message}");
+		}
+	}
+
+	internal void OnVolumeChanged(string eventTypeStr, string rawDriveName)
+	{
+		logger.LogInformation(
+			$"Windows volume event received: EventType={eventTypeStr}, DriveName={rawDriveName}");
+
+		if ( int.TryParse(eventTypeStr, out var eventType) && eventType == 3 )
+		{
+			HandleVolumeRemoval(rawDriveName);
+			return;
+		}
+
+		var eventTracked = TryTrackEventDrive(rawDriveName, out var eventDrive);
+
+		if ( eventTracked )
+		{
+			logger.LogInformation($"Windows volume event tracked as new mount: {eventDrive}");
+			OnMountDetected(eventDrive);
+		}
+		else
+		{
+			logger.LogInformation("Windows volume event drive was empty or already known");
+		}
+
+		var newDrives = DetectNewMounts(GetMountedVolumes());
+		if ( newDrives.Count == 0 )
+		{
+			logger.LogInformation("Windows retry mount scan found no new drives");
+		}
+
+		foreach ( var drive in newDrives )
+		{
+			if ( eventTracked &&
+			     drive.Equals(eventDrive, StringComparison.OrdinalIgnoreCase) )
+			{
+				logger.LogInformation($"Windows retry mount scan duplicate ignored: {drive}");
+				continue;
+			}
+
+			logger.LogInformation($"Windows retry mount scan detected new drive: {drive}");
+			OnMountDetected(drive);
 		}
 	}
 
@@ -261,21 +269,6 @@ internal class WindowsMountWatcher : BaseMountWatcher
 
 		normalizedDrive = NormalizeDrive(driveName);
 		return _knownMountedVolumes.Add(normalizedDrive);
-	}
-
-	[SupportedOSPlatform("windows")]
-	private bool TryTrackEventDrive(EventArrivedEventArgs e, out string normalizedDrive)
-	{
-		normalizedDrive = string.Empty;
-		try
-		{
-			var driveName = e.NewEvent?.Properties?["DriveName"]?.Value?.ToString();
-			return TryTrackEventDrive(driveName, out normalizedDrive);
-		}
-		catch
-		{
-			return false;
-		}
 	}
 
 	internal static string NormalizeDrive(string driveName)
