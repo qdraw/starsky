@@ -19,7 +19,7 @@ internal class MacMountWatcher : BaseMountWatcher
 	private readonly MacMountWatcherDelegate.DiskDisappearedCallback _diskDisappearedCallback;
 	private readonly HashSet<string> _knownVolumes = new(StringComparer.OrdinalIgnoreCase);
 	private readonly object _knownVolumesLock = new();
-	private IStorage _storage;
+	private readonly IStorage _storage;
 	private readonly MacMountWatcherSystem _system = new();
 	private Thread? _backupPollThread;
 	private IntPtr _runLoop;
@@ -70,7 +70,8 @@ internal class MacMountWatcher : BaseMountWatcher
 		{
 			if ( _session != IntPtr.Zero && _runLoop != IntPtr.Zero && _runLoopMode != IntPtr.Zero )
 			{
-				MacMountWatcherSystem.DASessionUnscheduleWithRunLoop(_session, _runLoop, _runLoopMode);
+				MacMountWatcherSystem.DASessionUnscheduleWithRunLoop(_session, _runLoop,
+					_runLoopMode);
 			}
 
 			if ( _runLoop != IntPtr.Zero )
@@ -99,11 +100,9 @@ internal class MacMountWatcher : BaseMountWatcher
 			const string volumesPath = "/Volumes";
 			if ( _storage.ExistFolder(volumesPath) )
 			{
-				var volumeInfo = new System.IO.DirectoryInfo(volumesPath);
-				mounts.AddRange(volumeInfo
-					.GetDirectories()
-					.Where(d => !d.Name.StartsWith("."))
-					.Select(d => d.FullName));
+				var children =
+					_storage.GetDirectories(volumesPath).Where(d => !d.StartsWith('.'));
+				mounts.AddRange(children);
 			}
 
 			if ( _storage.ExistFolder("/") )
@@ -136,7 +135,8 @@ internal class MacMountWatcher : BaseMountWatcher
 			}
 
 			_runLoop = MacMountWatcherSystem.CFRunLoopGetCurrent();
-			_runLoopMode = MacMountWatcherSystem.CFStringCreateWithCString(IntPtr.Zero, _system.GetCfRunLoopDefaultMode(),
+			_runLoopMode = MacMountWatcherSystem.CFStringCreateWithCString(IntPtr.Zero,
+				_system.GetCfRunLoopDefaultMode(),
 				_system.GetCfStringEncodingUtf8());
 
 			if ( _runLoopMode == IntPtr.Zero )
@@ -148,9 +148,11 @@ internal class MacMountWatcher : BaseMountWatcher
 			}
 
 			MacMountWatcherSystem.DASessionScheduleWithRunLoop(_session, _runLoop, _runLoopMode);
-			MacMountWatcherSystem.DARegisterDiskAppearedCallback(_session, IntPtr.Zero, _diskAppearedCallback,
+			MacMountWatcherSystem.DARegisterDiskAppearedCallback(_session, IntPtr.Zero,
+				_diskAppearedCallback,
 				IntPtr.Zero);
-			MacMountWatcherSystem.DARegisterDiskDisappearedCallback(_session, IntPtr.Zero, _diskDisappearedCallback,
+			MacMountWatcherSystem.DARegisterDiskDisappearedCallback(_session, IntPtr.Zero,
+				_diskDisappearedCallback,
 				IntPtr.Zero);
 
 			logger.LogInformation("DiskArbitration watcher active");
@@ -169,7 +171,8 @@ internal class MacMountWatcher : BaseMountWatcher
 				if ( _session != IntPtr.Zero && _runLoop != IntPtr.Zero &&
 				     _runLoopMode != IntPtr.Zero )
 				{
-					MacMountWatcherSystem.DASessionUnscheduleWithRunLoop(_session, _runLoop, _runLoopMode);
+					MacMountWatcherSystem.DASessionUnscheduleWithRunLoop(_session, _runLoop,
+						_runLoopMode);
 				}
 			}
 			catch

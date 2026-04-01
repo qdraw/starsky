@@ -99,7 +99,8 @@ public sealed class MacMountWatcherTest
 	}
 
 	[TestMethod]
-	public void DetectNewExternalMounts_EjectAndReinsertSamePath_DetectedAgainWithoutDisappearCallback()
+	public void
+		DetectNewExternalMounts_EjectAndReinsertSamePath_DetectedAgainWithoutDisappearCallback()
 	{
 		var watcher = CreateSut();
 
@@ -128,12 +129,7 @@ public sealed class MacMountWatcherTest
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage(
-			outputSubPathFolders: new List<string>
-			{
-				"/Volumes",
-				"/Volumes/USB Drive",
-				"/"
-			});
+			new List<string> { "/Volumes", "/Volumes/USB Drive", "/" });
 		var system = new MacMountWatcherSystem();
 		var sut = new MacMountWatcher(logger, storage, system);
 
@@ -150,7 +146,7 @@ public sealed class MacMountWatcherTest
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage(
-			exception: new UnauthorizedAccessException("Access denied"));
+			new UnauthorizedAccessException("Access denied"));
 		var system = new MacMountWatcherSystem();
 		var sut = new MacMountWatcher(logger, storage, system);
 
@@ -204,8 +200,7 @@ public sealed class MacMountWatcherTest
 		// Act
 		var result = sut.DetectNewExternalMounts(new List<string>
 		{
-			"/Volumes/Camera",
-			"/Volumes/Backup"
+			"/Volumes/Camera", "/Volumes/Backup"
 		});
 
 		// Assert
@@ -222,23 +217,15 @@ public sealed class MacMountWatcherTest
 		var sut = new MacMountWatcher(logger, storage, system);
 
 		// Add some volumes
-		sut.DetectNewExternalMounts(new List<string>
-		{
-			"/Volumes/Camera",
-			"/Volumes/Backup"
-		});
+		sut.DetectNewExternalMounts(new List<string> { "/Volumes/Camera", "/Volumes/Backup" });
 
 		// Act - update with only Camera (Backup was ejected)
-		sut.UpdateKnownExternalMounts(new List<string>
-		{
-			"/Volumes/Camera"
-		});
+		sut.UpdateKnownExternalMounts(new List<string> { "/Volumes/Camera" });
 
 		// Now detect new mounts
 		var result = sut.DetectNewExternalMounts(new List<string>
 		{
-			"/Volumes/Camera",
-			"/Volumes/NewDrive"
+			"/Volumes/Camera", "/Volumes/NewDrive"
 		});
 
 		// Assert - only new drive should be detected
@@ -251,12 +238,11 @@ public sealed class MacMountWatcherTest
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var mockStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string>
-			{
-				"/Volumes",
-				"/Volumes/Test Device",
-				"/"
-			});
+		[
+			"/Volumes",
+			"/Volumes/Test Device",
+			"/"
+		]);
 		var mockSystem = new MacMountWatcherSystem();
 
 		// Act
