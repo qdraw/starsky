@@ -75,7 +75,7 @@ public class CameraStorageDetectorTest
 		{
 			// Create fake storage with PRIVATE folder (Sony/Panasonic style)
 			var fakeStorage = new FakeIStorage(
-				new List<string> { "/", "/PRIVATE" });
+				["/", "/PRIVATE"]);
 			var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 			var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
@@ -110,7 +110,7 @@ public class CameraStorageDetectorTest
 		try
 		{
 			var fakeStorage = new FakeIStorage(
-				new List<string> { "/", "/100CANON", "/101DCIM" });
+				["/", "/100CANON", "/101DCIM"]);
 			var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 			var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
@@ -137,7 +137,7 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithMultipleNumericDirectories_ReturnsTrue()
 	{
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/", "/100", "/101", "/102ABC" });
+			["/", "/100", "/101", "/102ABC"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
@@ -161,7 +161,7 @@ public class CameraStorageDetectorTest
 	{
 		// Directories with only 2 digits don't match the 3+ digit pattern
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/", "/10", "/A" });
+			["/", "/10", "/A"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
@@ -181,7 +181,7 @@ public class CameraStorageDetectorTest
 	{
 		// Empty directory with no camera markers
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/" });
+			["/"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
@@ -201,7 +201,7 @@ public class CameraStorageDetectorTest
 	{
 		// Non-camera related folder
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/", "/SomeFolder" });
+			["/", "/SomeFolder"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
@@ -220,7 +220,7 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithNonFATFileSystem_ReturnsFalse()
 	{
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/", "/DCIM" });
+			["/", "/DCIM"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
@@ -243,7 +243,7 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithCameraDriveInfo_TrueCases()
 	{
 		var fakeStorageSelector =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/", "/DCIM" }));
+			new FakeSelectorStorage(new FakeIStorage(["/", "/DCIM"]));
 		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		// DCIM present, FAT format
@@ -257,7 +257,7 @@ public class CameraStorageDetectorTest
 
 		// PRIVATE present, exFAT format
 		fakeStorageSelector =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/", "/PRIVATE" }));
+			new FakeSelectorStorage(new FakeIStorage(["/", "/PRIVATE"]));
 		detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 		cameraDrive = new CameraDriveInfo
 		{
@@ -272,7 +272,7 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithCameraDriveInfo_FalseCases()
 	{
 		var fakeStorageSelector =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
+			new FakeSelectorStorage(new FakeIStorage(["/"]));
 		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		// Not ready
@@ -333,7 +333,7 @@ public class CameraStorageDetectorTest
 	[TestMethod]
 	public void HasCameraDirectoryStructure_NumericDirectories_OnlyDigits()
 	{
-		var fakeStorage = new FakeIStorage(new List<string> { "/", "/123", "/456", "/789" });
+		var fakeStorage = new FakeIStorage(["/", "/123", "/456", "/789"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 		var result = detector.HasCameraDirectoryStructure("/");
@@ -431,7 +431,7 @@ public class CameraStorageDetectorTest
 	{
 		// Arrange
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/media", "/media/camera" });
+			["/media", "/media/camera"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var logger = new FakeIWebLogger();
 
@@ -474,7 +474,7 @@ public class CameraStorageDetectorTest
 	{
 		// Arrange
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/media/usb-drive", "/media/usb-drive/DCIM" });
+			["/media/usb-drive", "/media/usb-drive/DCIM"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var logger = new FakeIWebLogger();
 
