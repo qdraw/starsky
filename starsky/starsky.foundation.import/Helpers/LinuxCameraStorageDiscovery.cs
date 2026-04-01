@@ -32,16 +32,17 @@ internal class LinuxCameraStorageDiscovery(IStorage hostStorage, IWebLogger logg
 
 				// Get direct subdirectories using the storage interface
 				var directoryListing = hostStorage.GetDirectoryRecursive(mountPoint);
-				foreach ( var dirEntry in directoryListing )
+				foreach ( var dirPath in directoryListing.Select(p => p.Key) )
 				{
-					var dirPath = dirEntry.Key;
 					// Only take direct children of the mount point (depth 1-2)
-					if ( dirPath != mountPoint && IsDirectChild(mountPoint, dirPath, 2) )
+					if ( dirPath == mountPoint || !IsDirectChild(mountPoint, dirPath, 2) )
 					{
-						if ( IsLikelyMountPoint(dirPath) )
-						{
-							cameraStorages.Add(dirPath);
-						}
+						continue;
+					}
+
+					if ( hostStorage.ExistFolder(dirPath) )
+					{
+						cameraStorages.Add(dirPath);
 					}
 				}
 			}
@@ -57,7 +58,7 @@ internal class LinuxCameraStorageDiscovery(IStorage hostStorage, IWebLogger logg
 	/// <summary>
 	///     Check if a path is a direct child of base path (within maxDepth levels)
 	/// </summary>
-	private bool IsDirectChild(string basePath, string path, int maxDepth)
+	private static bool IsDirectChild(string basePath, string path, int maxDepth)
 	{
 		// Remove trailing slashes
 		var normalizedBase = basePath.TrimEnd('/');
@@ -68,32 +69,10 @@ internal class LinuxCameraStorageDiscovery(IStorage hostStorage, IWebLogger logg
 			return false;
 		}
 
-		var relativePath = normalizedPath.Substring(normalizedBase.Length).TrimStart('/');
+		var relativePath = normalizedPath[normalizedBase.Length..].TrimStart('/');
 		var depth = relativePath.Count(c => c == '/') +
 		            ( string.IsNullOrEmpty(relativePath) ? 0 : 1 );
 
 		return depth > 0 && depth <= maxDepth;
-	}
-
-	/// <summary>
-	///     Check if a directory is likely a mounted device
-	/// </summary>
-	private bool IsLikelyMountPoint(string path)
-	{
-		try
-		{
-			// Check if directory exists and is accessible
-			if ( !hostStorage.ExistFolder(path) )
-			{
-				return false;
-			}
-
-
-			return true;
-		}
-		catch
-		{
-			return false;
-		}
 	}
 }
