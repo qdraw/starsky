@@ -62,7 +62,7 @@ public sealed class BaseMountWatcherTest
 		sut.SetRunning(true);
 
 		var pollingTask = Task.Run(sut.RunPollingFallbackForTest, TestContext.CancellationToken);
-		await Task.Delay(2200, TestContext.CancellationToken);
+		await Task.Delay(20, TestContext.CancellationToken);
 		sut.SetRunning(false);
 		await pollingTask;
 
@@ -71,7 +71,7 @@ public sealed class BaseMountWatcherTest
 
 	private sealed class TestBaseMountWatcher : BaseMountWatcher
 	{
-		public TestBaseMountWatcher() : base(new FakeIWebLogger())
+		public TestBaseMountWatcher() : base(new FakeIWebLogger(),10)
 		{
 		}
 

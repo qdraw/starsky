@@ -10,10 +10,10 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// <summary>
 ///     Base class for mount watchers with shared polling fallback logic
 /// </summary>
-internal abstract class BaseMountWatcher(IWebLogger logger) : IMountWatcher
+internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) : IMountWatcher
 {
-	private const int PollIntervalMs = 2000;
 	protected readonly IWebLogger logger = logger;
+	protected readonly int PollIntervalMs = pollIntervalMs;
 	protected bool IsRunning;
 	protected internal Thread? WatchThread;
 

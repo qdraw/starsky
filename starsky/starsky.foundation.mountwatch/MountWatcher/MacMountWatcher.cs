@@ -14,7 +14,6 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// </summary>
 internal class MacMountWatcher : BaseMountWatcher
 {
-	private const int BackupPollIntervalMs = 2000;
 	private readonly MacMountWatcherDelegate.DiskAppearedCallback _diskAppearedCallback;
 	private readonly MacMountWatcherDelegate.DiskDisappearedCallback _diskDisappearedCallback;
 	private readonly HashSet<string> _knownVolumes = new(StringComparer.OrdinalIgnoreCase);
@@ -26,15 +25,17 @@ internal class MacMountWatcher : BaseMountWatcher
 	private IntPtr _runLoopMode;
 	private IntPtr _session;
 
-	public MacMountWatcher(IWebLogger logger) : base(logger)
+	public MacMountWatcher(IWebLogger logger, int pollIntervalMs) :
+		base(logger, pollIntervalMs)
 	{
 		_storage = new StorageHostFullPathFilesystem(logger);
 		_diskAppearedCallback = OnDiskAppeared;
 		_diskDisappearedCallback = OnDiskDisappeared;
 	}
 
-	internal MacMountWatcher(IWebLogger logger, IStorage storage, MacMountWatcherSystem system)
-		: this(logger)
+	internal MacMountWatcher(IWebLogger logger, IStorage storage,
+		MacMountWatcherSystem system, int pollIntervalMs)
+		: this(logger, pollIntervalMs)
 	{
 		_storage = storage;
 		_system = system;
@@ -222,7 +223,7 @@ internal class MacMountWatcher : BaseMountWatcher
 				// Backup polling should never crash the watcher loop.
 			}
 
-			Thread.Sleep(BackupPollIntervalMs);
+			Thread.Sleep(PollIntervalMs);
 		}
 	}
 

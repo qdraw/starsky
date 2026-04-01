@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -14,13 +17,29 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// <summary>
 ///     Windows mount watcher using WMI for event-driven drive detection
 /// </summary>
-internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
+[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+internal class WindowsMountWatcher : BaseMountWatcher
 {
+	private readonly HashSet<string> _knownMountedVolumes =
+		new(StringComparer.OrdinalIgnoreCase);
+
+	private readonly Func<OSPlatform> _platformResolver;
+
 	// ManagementEventWatcher is Windows-only – held as object to avoid
 	// CA1416 on the field itself when the containing class is cross-platform.
 	private object? _watcher;
-	private readonly HashSet<string> _knownMountedVolumes =
-		new(StringComparer.OrdinalIgnoreCase);
+
+	public WindowsMountWatcher(IWebLogger logger, int pollIntervalMs) :
+		this(logger, OperatingSystemHelper.GetPlatform, pollIntervalMs)
+	{
+	}
+
+	internal WindowsMountWatcher(IWebLogger logger,
+		Func<OSPlatform>? platformResolver, int pollIntervalMs) :
+		base(logger, pollIntervalMs)
+	{
+		_platformResolver = platformResolver ?? OperatingSystemHelper.GetPlatform;
+	}
 
 	/// <summary>
 	///     Start watching for mount events using WMI
@@ -37,7 +56,7 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		logger.LogInformation(
 			$"Windows mount watcher baseline seeded: {string.Join(", ", _knownMountedVolumes)}");
 
-		if ( OperatingSystem.IsWindows() )
+		if ( IsWindows() )
 		{
 			StartWmiWatcher();
 		}
@@ -54,7 +73,7 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	{
 		IsRunning = false;
 
-		if ( OperatingSystem.IsWindows() )
+		if ( IsWindows() )
 		{
 			StopWmiWatcher();
 		}
@@ -80,6 +99,11 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 		}
 	}
 
+	private bool IsWindows()
+	{
+		return _platformResolver().Equals(OSPlatform.Windows);
+	}
+
 	[SupportedOSPlatform("windows")]
 	private void StartWmiWatcher()
 	{
@@ -91,17 +115,17 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 			mgmtWatcher.EventArrived += OnVolumeChanged;
 			mgmtWatcher.Start();
 			_watcher = mgmtWatcher;
-			logger.LogInformation("Windows WMI watcher started for Win32_VolumeChangeEvent EventType=2 OR EventType=3");
+			logger.LogInformation(
+				"Windows WMI watcher started for Win32_VolumeChangeEvent EventType=2 OR EventType=3");
 		}
 		catch ( Exception ex )
 		{
-			logger.LogError(ex, 
+			logger.LogError(ex,
 				"Failed to start WMI watcher, falling back to polling");
 			RunPollingFallback();
 		}
 	}
 
-	[SupportedOSPlatform("windows")]
 	private void StopWmiWatcher()
 	{
 		try
@@ -124,7 +148,7 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	///     Handle WMI volume change events (Windows only)
 	/// </summary>
 	[SupportedOSPlatform("windows")]
-	private void OnVolumeChanged(object? sender, EventArrivedEventArgs e)
+	internal void OnVolumeChanged(object? sender, EventArrivedEventArgs e)
 	{
 		try
 		{
@@ -184,7 +208,8 @@ internal class WindowsMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
 	{
 		if ( string.IsNullOrWhiteSpace(rawDriveName) )
 		{
-			logger.LogInformation("Windows volume removal event: drive name was empty, baseline unchanged");
+			logger.LogInformation(
+				"Windows volume removal event: drive name was empty, baseline unchanged");
 			return;
 		}
 

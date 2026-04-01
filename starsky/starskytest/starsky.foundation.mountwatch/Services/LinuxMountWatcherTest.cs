@@ -15,7 +15,7 @@ public sealed class LinuxMountWatcherTest
 	private static LinuxMountWatcher CreateSut(FakeLinuxMountWatcherSystem? system = null)
 	{
 		return new LinuxMountWatcher(new FakeIWebLogger(),
-			system ?? new FakeLinuxMountWatcherSystem());
+			system ?? new FakeLinuxMountWatcherSystem(),10);
 	}
 
 	private static void SetIsRunning(LinuxMountWatcher watcher, bool value)

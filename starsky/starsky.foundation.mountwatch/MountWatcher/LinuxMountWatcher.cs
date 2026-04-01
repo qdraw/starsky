@@ -10,11 +10,11 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// <summary>
 ///     Linux mount watcher using udev for event-driven notifications (with polling fallback)
 /// </summary>
-internal class LinuxMountWatcher(IWebLogger logger) : BaseMountWatcher(logger)
+internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs) : BaseMountWatcher(logger,pollIntervalMs)
 {
 	private readonly ILinuxMountWatcherSystem _system = new LinuxMountWatcherSystem();
 
-	internal LinuxMountWatcher(IWebLogger logger, ILinuxMountWatcherSystem system) : this(logger)
+	internal LinuxMountWatcher(IWebLogger logger, ILinuxMountWatcherSystem system, int pollIntervalMs) : this(logger,pollIntervalMs)
 	{
 		_system = system;
 	}

@@ -13,7 +13,7 @@ public sealed class MacMountWatcherTest
 {
 	private static MacMountWatcher CreateSut()
 	{
-		return new MacMountWatcher(new FakeIWebLogger());
+		return new MacMountWatcher(new FakeIWebLogger(),10);
 	}
 
 	[TestMethod]
@@ -131,7 +131,7 @@ public sealed class MacMountWatcherTest
 		var storage = new FakeIStorage(
 			["/Volumes", "/Volumes/USB Drive", "/"]);
 		var system = new MacMountWatcherSystem();
-		var sut = new MacMountWatcher(logger, storage, system);
+		var sut = new MacMountWatcher(logger, storage, system,10);
 
 		// Act
 		var result = sut.GetMountedVolumes();
@@ -148,7 +148,7 @@ public sealed class MacMountWatcherTest
 		var storage = new FakeIStorage(
 			new UnauthorizedAccessException("Access denied"));
 		var system = new MacMountWatcherSystem();
-		var sut = new MacMountWatcher(logger, storage, system);
+		var sut = new MacMountWatcher(logger, storage, system,10);
 
 		// Act
 		var result = sut.GetMountedVolumes();
@@ -164,7 +164,7 @@ public sealed class MacMountWatcherTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 		var system = new MacMountWatcherSystem();
-		var sut = new MacMountWatcher(logger, storage, system);
+		var sut = new MacMountWatcher(logger, storage, system,10);
 
 		// Act & Assert - should not throw and should start background thread
 		sut.Start();
@@ -178,7 +178,7 @@ public sealed class MacMountWatcherTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 		var system = new MacMountWatcherSystem();
-		var sut = new MacMountWatcher(logger, storage, system);
+		var sut = new MacMountWatcher(logger, storage, system,10);
 		sut.Start();
 
 		// Act
@@ -195,7 +195,7 @@ public sealed class MacMountWatcherTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 		var system = new MacMountWatcherSystem();
-		var sut = new MacMountWatcher(logger, storage, system);
+		var sut = new MacMountWatcher(logger, storage, system,10);
 
 		// Act
 		var result = sut.DetectNewExternalMounts(new List<string>
@@ -214,7 +214,7 @@ public sealed class MacMountWatcherTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 		var system = new MacMountWatcherSystem();
-		var sut = new MacMountWatcher(logger, storage, system);
+		var sut = new MacMountWatcher(logger, storage, system,10);
 
 		// Add some volumes
 		sut.DetectNewExternalMounts(new List<string> { "/Volumes/Camera", "/Volumes/Backup" });
@@ -246,7 +246,7 @@ public sealed class MacMountWatcherTest
 		var mockSystem = new MacMountWatcherSystem();
 
 		// Act
-		var sut = new MacMountWatcher(logger, mockStorage, mockSystem);
+		var sut = new MacMountWatcher(logger, mockStorage, mockSystem,10);
 		var volumes = sut.GetMountedVolumes();
 
 		// Assert - should work with injected mocks

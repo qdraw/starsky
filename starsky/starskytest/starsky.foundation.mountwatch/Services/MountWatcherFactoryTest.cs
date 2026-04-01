@@ -44,7 +44,7 @@ public sealed class MountWatcherFactoryTest
 	public void MountWatcherFactory_CreateMountWatcher_ReturnsMacWatcher()
 	{
 		var factory = new MountWatcherFactory(new FakeIWebLogger(),
-			() => OSPlatform.OSX);
+			() => OSPlatform.OSX,10);
 
 		var watcher = factory.CreateMountWatcher();
 
@@ -55,7 +55,7 @@ public sealed class MountWatcherFactoryTest
 	public void MountWatcherFactory_CreateMountWatcher_ReturnsWindowsWatcher()
 	{
 		var factory = new MountWatcherFactory(new FakeIWebLogger(),
-			() => OSPlatform.Windows);
+			() => OSPlatform.Windows,10);
 
 		var watcher = factory.CreateMountWatcher();
 
@@ -66,7 +66,7 @@ public sealed class MountWatcherFactoryTest
 	public void MountWatcherFactory_CreateMountWatcher_ReturnsLinuxWatcher()
 	{
 		var factory = new MountWatcherFactory(new FakeIWebLogger(),
-			() => OSPlatform.Linux);
+			() => OSPlatform.Linux,10);
 
 		var watcher = factory.CreateMountWatcher();
 
@@ -78,8 +78,8 @@ public sealed class MountWatcherFactoryTest
 	public void MountWatcherFactory_CreateMountWatcher_UnsupportedOs_Throws()
 	{
 		var factory = new MountWatcherFactory(new FakeIWebLogger(),
-			() => OSPlatform.Create("Unknown"));
+			() => OSPlatform.Create("Unknown"),10);
 
-		Assert.ThrowsExactly<NotSupportedException>(() => factory.CreateMountWatcher());
+		Assert.ThrowsExactly<NotSupportedException>(factory.CreateMountWatcher);
 	}
 }

@@ -13,7 +13,7 @@ public sealed class WindowsMountWatcherTest
 	public void WindowsMountWatcher_OnConstruction_IsNotRunning()
 	{
 		// Arrange & Act
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),10);
 
 		// Assert
 		Assert.IsNotNull(watcher);
@@ -23,7 +23,7 @@ public sealed class WindowsMountWatcherTest
 	public void WindowsMountWatcher_GetMountedVolumes_ReturnsEnumerable()
 	{
 		// Arrange
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),10);
 
 		// Act
 		var volumes = watcher.GetMountedVolumes();
@@ -36,7 +36,7 @@ public sealed class WindowsMountWatcherTest
 	public void WindowsMountWatcher_Stop_CanBeCalled()
 	{
 		// Arrange
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),10);
 
 		// Act
 		watcher.Stop();
@@ -48,7 +48,7 @@ public sealed class WindowsMountWatcherTest
 	[TestMethod]
 	public void WindowsMountWatcher_DetectNewMounts_ReturnsOnlyNewDrive()
 	{
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),10);
 		watcher.SeedKnownMounts(["C:\\"]);
 
 		var newMounts = watcher.DetectNewMounts(["C:\\", "E:\\"]);
@@ -59,7 +59,7 @@ public sealed class WindowsMountWatcherTest
 	[TestMethod]
 	public void WindowsMountWatcher_DetectNewMounts_AfterRemoveAndReinsert_DetectsAgain()
 	{
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),10);
 		watcher.SeedKnownMounts(["C:\\", "E:\\"]);
 
 		var removedSnapshot = watcher.DetectNewMounts(["C:\\"]);
@@ -72,7 +72,7 @@ public sealed class WindowsMountWatcherTest
 	[TestMethod]
 	public void WindowsMountWatcher_DetectNewMounts_IsCaseInsensitive()
 	{
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),10);
 		watcher.SeedKnownMounts(["E:\\"]);
 
 		var newMounts = watcher.DetectNewMounts(["e:\\"]);
@@ -83,7 +83,7 @@ public sealed class WindowsMountWatcherTest
 	[TestMethod]
 	public void WindowsMountWatcher_TryTrackEventDrive_NewDrive_TracksAndReturnsTrue()
 	{
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),10);
 		watcher.SeedKnownMounts(["C:\\"]);
 
 		var tracked = watcher.TryTrackEventDrive("E:", out var normalized);
@@ -95,7 +95,7 @@ public sealed class WindowsMountWatcherTest
 	[TestMethod]
 	public void WindowsMountWatcher_TryTrackEventDrive_ExistingDrive_ReturnsFalse()
 	{
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),10);
 		watcher.SeedKnownMounts(["C:\\", "E:\\"]);
 
 		var tracked = watcher.TryTrackEventDrive("E:", out _);
@@ -116,7 +116,7 @@ public sealed class WindowsMountWatcherTest
 	public async Task WindowsMountWatcher_Start_DoesNotThrow_WhenPlatformIsUnsupported()
 	{
 		// Arrange
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger());
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),10);
 
 		// Act: run Start on a worker thread because polling fallback is a blocking loop.
 		var startTask = Task.Run(watcher.Start, TestContext.CancellationToken);
