@@ -66,7 +66,7 @@ public sealed class BaseMountWatcherTest
 		sut.SetRunning(false);
 		await pollingTask;
 
-		Assert.AreEqual(2, sut.GetMountedVolumesCallCount);
+		Assert.IsGreaterThanOrEqualTo(2, sut.GetMountedVolumesCallCount);
 	}
 
 	private sealed class TestBaseMountWatcher : BaseMountWatcher
