@@ -28,12 +28,12 @@ public partial class Query : IQuery
 	private readonly AppSettings _appSettings;
 	private readonly IMemoryCache? _cache;
 	private readonly IWebLogger _logger;
-	private readonly IServiceScopeFactory? _scopeFactory;
+	private readonly IServiceScopeFactory _scopeFactory;
 	private ApplicationDbContext _context;
 
 	public Query(ApplicationDbContext context,
 		AppSettings appSettings,
-		IServiceScopeFactory? scopeFactory,
+		IServiceScopeFactory scopeFactory,
 		IWebLogger logger, IMemoryCache? memoryCache = null)
 	{
 		_context = context;
@@ -297,16 +297,19 @@ public partial class Query : IQuery
 		}
 		catch ( ObjectDisposedException )
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			try
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(async context =>
 			{
-				return await LocalQuery(context, updateStatusContentList);
-			}
-			catch ( DbUpdateConcurrencyException concurrencyException )
-			{
-				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-				return await LocalQuery(context, updateStatusContentList);
-			}
+				try
+				{
+					return await LocalQuery(context, updateStatusContentList);
+				}
+				catch ( DbUpdateConcurrencyException concurrencyException )
+				{
+					SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+					return await LocalQuery(context, updateStatusContentList);
+				}
+			});
 		}
 		catch ( DbUpdateConcurrencyException concurrencyException )
 		{
