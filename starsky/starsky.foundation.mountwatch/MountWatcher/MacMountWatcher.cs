@@ -123,7 +123,7 @@ internal class MacMountWatcher : BaseMountWatcher
 	/// <summary>
 	///     Run the DiskArbitration event watcher
 	/// </summary>
-	private void RunWatcher()
+	internal void RunWatcher()
 	{
 		try
 		{
