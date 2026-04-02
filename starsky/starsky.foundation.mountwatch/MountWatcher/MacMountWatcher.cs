@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using starsky.foundation.mountwatch.MountWatcher.MacOS;
+using starsky.foundation.mountwatch.MountWatcher.MacOS.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -19,7 +20,7 @@ internal class MacMountWatcher : BaseMountWatcher
 	private readonly HashSet<string> _knownVolumes = new(StringComparer.OrdinalIgnoreCase);
 	private readonly object _knownVolumesLock = new();
 	private readonly IStorage _storage;
-	private readonly MacMountWatcherSystem _system = new();
+	private readonly IMacMountWatcherSystem _system = new MacMountWatcherSystem();
 	private Thread? _backupPollThread;
 	private IntPtr _runLoop;
 	private IntPtr _runLoopMode;
@@ -34,7 +35,7 @@ internal class MacMountWatcher : BaseMountWatcher
 	}
 
 	internal MacMountWatcher(IWebLogger logger, IStorage storage,
-		MacMountWatcherSystem system, int pollIntervalMs)
+		IMacMountWatcherSystem system, int pollIntervalMs)
 		: this(logger, pollIntervalMs)
 	{
 		_storage = storage;
@@ -71,13 +72,13 @@ internal class MacMountWatcher : BaseMountWatcher
 		{
 			if ( _session != IntPtr.Zero && _runLoop != IntPtr.Zero && _runLoopMode != IntPtr.Zero )
 			{
-				MacMountWatcherSystem.DASessionUnscheduleWithRunLoop(_session, _runLoop,
+				_system.DASessionUnscheduleWithRunLoop(_session, _runLoop,
 					_runLoopMode);
 			}
 
 			if ( _runLoop != IntPtr.Zero )
 			{
-				MacMountWatcherSystem.CFRunLoopStop(_runLoop);
+				_system.CFRunLoopStop(_runLoop);
 			}
 		}
 		catch
@@ -126,7 +127,7 @@ internal class MacMountWatcher : BaseMountWatcher
 	{
 		try
 		{
-			_session = MacMountWatcherSystem.DASessionCreate(IntPtr.Zero);
+			_session = _system.DASessionCreate(IntPtr.Zero);
 			if ( _session == IntPtr.Zero )
 			{
 				logger.LogError(
@@ -135,8 +136,8 @@ internal class MacMountWatcher : BaseMountWatcher
 				return;
 			}
 
-			_runLoop = MacMountWatcherSystem.CFRunLoopGetCurrent();
-			_runLoopMode = MacMountWatcherSystem.CFStringCreateWithCString(IntPtr.Zero,
+			_runLoop = _system.CFRunLoopGetCurrent();
+			_runLoopMode = _system.CFStringCreateWithCString(IntPtr.Zero,
 				_system.GetCfRunLoopDefaultMode(),
 				_system.GetCfStringEncodingUtf8());
 
@@ -148,16 +149,16 @@ internal class MacMountWatcher : BaseMountWatcher
 				return;
 			}
 
-			MacMountWatcherSystem.DASessionScheduleWithRunLoop(_session, _runLoop, _runLoopMode);
-			MacMountWatcherSystem.DARegisterDiskAppearedCallback(_session, IntPtr.Zero,
+			_system.DASessionScheduleWithRunLoop(_session, _runLoop, _runLoopMode);
+			_system.DARegisterDiskAppearedCallback(_session, IntPtr.Zero,
 				_diskAppearedCallback,
 				IntPtr.Zero);
-			MacMountWatcherSystem.DARegisterDiskDisappearedCallback(_session, IntPtr.Zero,
+			_system.DARegisterDiskDisappearedCallback(_session, IntPtr.Zero,
 				_diskDisappearedCallback,
 				IntPtr.Zero);
 
 			logger.LogInformation("DiskArbitration watcher active");
-			MacMountWatcherSystem.CFRunLoopRun();
+			_system.CFRunLoopRun();
 		}
 		catch ( Exception ex )
 		{
@@ -172,7 +173,7 @@ internal class MacMountWatcher : BaseMountWatcher
 				if ( _session != IntPtr.Zero && _runLoop != IntPtr.Zero &&
 				     _runLoopMode != IntPtr.Zero )
 				{
-					MacMountWatcherSystem.DASessionUnscheduleWithRunLoop(_session, _runLoop,
+					_system.DASessionUnscheduleWithRunLoop(_session, _runLoop,
 						_runLoopMode);
 				}
 			}
@@ -183,13 +184,13 @@ internal class MacMountWatcher : BaseMountWatcher
 
 			if ( _runLoopMode != IntPtr.Zero )
 			{
-				MacMountWatcherSystem.CFRelease(_runLoopMode);
+				_system.CFRelease(_runLoopMode);
 				_runLoopMode = IntPtr.Zero;
 			}
 
 			if ( _session != IntPtr.Zero )
 			{
-				MacMountWatcherSystem.CFRelease(_session);
+				_system.CFRelease(_session);
 				_session = IntPtr.Zero;
 			}
 		}

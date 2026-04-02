@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using starsky.foundation.mountwatch.MountWatcher.MacOS.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher.MacOS;
 
@@ -8,49 +9,114 @@ namespace starsky.foundation.mountwatch.MountWatcher.MacOS;
 ///     macOS DiskArbitration and CoreFoundation P/Invoke wrapper
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal sealed class MacMountWatcherSystem
+[SuppressMessage("Interoperability",
+	"SYSLIB1054:Use \'LibraryImportAttribute\' " +
+	"instead of \'DllImportAttribute\' to " +
+	"generate P/Invoke marshalling code at compile time")]
+[SuppressMessage("Globalization", "CA2101:Specify marshaling " +
+                                  "for P/Invoke string arguments")]
+internal sealed class MacMountWatcherSystem : IMacMountWatcherSystem
 {
 	private const uint CfStringEncodingUtf8 = 0x08000100;
 	private const string CfRunLoopDefaultMode = "kCFRunLoopDefaultMode";
 
-	internal uint GetCfStringEncodingUtf8() => CfStringEncodingUtf8;
+	public uint GetCfStringEncodingUtf8()
+	{
+		return CfStringEncodingUtf8;
+	}
 
-	internal string GetCfRunLoopDefaultMode() => CfRunLoopDefaultMode;
+	public string GetCfRunLoopDefaultMode()
+	{
+		return CfRunLoopDefaultMode;
+	}
+
+	// Instance wrappers that forward to static P/Invoke methods
+	public IntPtr DASessionCreate(IntPtr allocator)
+	{
+		return DASessionCreateNative(allocator);
+	}
+
+	public void DASessionScheduleWithRunLoop(IntPtr session, IntPtr runLoop, IntPtr runLoopMode)
+	{
+		DASessionScheduleWithRunLoopNative(session, runLoop, runLoopMode);
+	}
+
+	public void DASessionUnscheduleWithRunLoop(IntPtr session, IntPtr runLoop, IntPtr runLoopMode)
+	{
+		DASessionUnscheduleWithRunLoopNative(session, runLoop, runLoopMode);
+	}
+
+	public void DARegisterDiskAppearedCallback(IntPtr session, IntPtr match,
+		MacMountWatcherDelegate.DiskAppearedCallback callback, IntPtr context)
+	{
+		DARegisterDiskAppearedCallbackNative(session, match, callback, context);
+	}
+
+	public void DARegisterDiskDisappearedCallback(IntPtr session, IntPtr match,
+		MacMountWatcherDelegate.DiskDisappearedCallback callback, IntPtr context)
+	{
+		DARegisterDiskDisappearedCallbackNative(session, match, callback, context);
+	}
+
+	public IntPtr CFRunLoopGetCurrent()
+	{
+		return CFRunLoopGetCurrentNative();
+	}
+
+	public void CFRunLoopRun()
+	{
+		CFRunLoopRunNative();
+	}
+
+	public void CFRunLoopStop(IntPtr runLoop)
+	{
+		CFRunLoopStopNative(runLoop);
+	}
+
+	public IntPtr CFStringCreateWithCString(IntPtr allocator, string cStr, uint encoding)
+	{
+		return CFStringCreateWithCStringNative(allocator, cStr, encoding);
+	}
+
+	public void CFRelease(IntPtr cf)
+	{
+		CFReleaseNative(cf);
+	}
 
 	[DllImport("/System/Library/Frameworks/DiskArbitration.framework/DiskArbitration")]
-	internal static extern IntPtr DASessionCreate(IntPtr allocator);
+	private static extern IntPtr DASessionCreateNative(IntPtr allocator);
 
 	[DllImport("/System/Library/Frameworks/DiskArbitration.framework/DiskArbitration")]
-	internal static extern void DASessionScheduleWithRunLoop(
-		IntPtr session, IntPtr runLoop, IntPtr runLoopMode);
+	private static extern void DASessionScheduleWithRunLoopNative(IntPtr session, IntPtr runLoop,
+		IntPtr runLoopMode);
 
 	[DllImport("/System/Library/Frameworks/DiskArbitration.framework/DiskArbitration")]
-	internal static extern void DASessionUnscheduleWithRunLoop(
-		IntPtr session, IntPtr runLoop, IntPtr runLoopMode);
+	private static extern void DASessionUnscheduleWithRunLoopNative(IntPtr session, IntPtr runLoop,
+		IntPtr runLoopMode);
 
 	[DllImport("/System/Library/Frameworks/DiskArbitration.framework/DiskArbitration")]
-	internal static extern void DARegisterDiskAppearedCallback(
-		IntPtr session, IntPtr match, MacMountWatcherDelegate.DiskAppearedCallback callback, IntPtr context);
+	private static extern void DARegisterDiskAppearedCallbackNative(IntPtr session, IntPtr match,
+		MacMountWatcherDelegate.DiskAppearedCallback callback, IntPtr context);
 
 	[DllImport("/System/Library/Frameworks/DiskArbitration.framework/DiskArbitration")]
-	internal static extern void DARegisterDiskDisappearedCallback(
-		IntPtr session, IntPtr match, MacMountWatcherDelegate.DiskDisappearedCallback callback, IntPtr context);
+	private static extern void DARegisterDiskDisappearedCallbackNative(IntPtr session, IntPtr match,
+		MacMountWatcherDelegate.DiskDisappearedCallback callback, IntPtr context);
 
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
-	internal static extern IntPtr CFRunLoopGetCurrent();
+	private static extern IntPtr CFRunLoopGetCurrentNative();
 
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
-	internal static extern void CFRunLoopRun();
+	private static extern void CFRunLoopRunNative();
 
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
-	internal static extern void CFRunLoopStop(IntPtr runLoop);
+	private static extern void CFRunLoopStopNative(IntPtr runLoop);
 
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
-	internal static extern IntPtr CFStringCreateWithCString(
-		IntPtr allocator, string cStr, uint encoding);
+	private static extern IntPtr CFStringCreateWithCStringNative(IntPtr allocator, string cStr,
+		uint encoding);
 
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
-	internal static extern void CFRelease(IntPtr cf);
+	private static extern void CFReleaseNative(IntPtr cf);
 }
 
 /// <summary>
@@ -59,6 +125,6 @@ internal sealed class MacMountWatcherSystem
 internal static class MacMountWatcherDelegate
 {
 	internal delegate void DiskAppearedCallback(IntPtr diskRef, IntPtr context);
+
 	internal delegate void DiskDisappearedCallback(IntPtr diskRef, IntPtr context);
 }
-

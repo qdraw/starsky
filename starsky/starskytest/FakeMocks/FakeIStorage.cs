@@ -115,7 +115,27 @@ public class FakeIStorage : IStorage
 
 	public string[] ReadAllLines(string path)
 	{
-		throw new NotImplementedException();
+		if ( _exception != null )
+		{
+			ExceptionCount++;
+			throw _exception;
+		}
+
+		if ( !ExistFile(path) )
+		{
+			return [];
+		}
+
+		if ( !_byteList.TryGetValue(path, out var data) || data == null )
+		{
+			// follow ReadStream behaviour: return a default test line when no explicit data set
+			return ["test"];
+		}
+
+		var text = Encoding.UTF8.GetString(data);
+		// keep all lines, even empty ones
+		var lines = text.Split(["\r\n", "\n"], StringSplitOptions.None);
+		return lines;
 	}
 
 	public virtual bool ExistFile(string path)

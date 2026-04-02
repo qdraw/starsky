@@ -12,7 +12,7 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// <summary>
 ///     Factory for creating OS-specific mount watchers
 /// </summary>
-[Service(typeof(IMountWatcherFactory), InjectionLifetime = InjectionLifetime.Singleton)]
+[Service(typeof(IMountWatcherFactory), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MountWatcherFactory(ISelectorStorage selectorStorage, IWebLogger logger)
 	: IMountWatcherFactory
 {
