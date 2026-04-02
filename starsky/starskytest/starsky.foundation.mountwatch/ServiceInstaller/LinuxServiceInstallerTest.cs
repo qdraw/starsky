@@ -145,14 +145,25 @@ public sealed class LinuxServiceInstallerTest
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
-		var sut = new LinuxServiceInstaller(logger, storage);
 
-		// Act - StartAsync uses RunProcess internally which we can't fully mock here
-		// This test verifies the code compiles and basic flow works
-		var result = await sut.StartAsync();
+		// Act - StartAsync uses RunProcess internally. Inject fake runProcess that simulates success for user-level
+		var called = new List<string>();
+
+		var sutWithFake = new LinuxServiceInstaller(logger, storage, FakeRun);
+		var result = await sutWithFake.StartAsync();
 
 		// Assert
-		Assert.IsFalse(result);
+		Assert.IsTrue(result);
+		Assert.Contains("systemctl start", called[0]);
+		Assert.Contains("systemctl --user", called[1]);
+		return;
+
+		Task<bool> FakeRun(string file, string args)
+		{
+			called.Add(file + " " + args);
+			// simulate system-level systemctl failing and user-level succeeding
+			return Task.FromResult(file != "systemctl" || !args.Contains("start ") || args.Contains("--user"));
+		}
 	}
 
 	[TestMethod]
@@ -161,13 +172,25 @@ public sealed class LinuxServiceInstallerTest
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
-		var sut = new LinuxServiceInstaller(logger, storage);
 
-		// Act
-		var result = await sut.StopAsync();
+		// Act - inject fake runProcess to simulate sudo failure then user success
+		var called = new List<string>();
 
-		// Assert - result depends on whether systemctl is available
-		Assert.IsFalse(result);
+		var sutWithFake = new LinuxServiceInstaller(logger, storage, FakeRun);
+		var result = await sutWithFake.StopAsync();
+
+		// Assert - should succeed as user-level fallback succeeds
+		Assert.IsTrue(result);
+		Assert.Contains("systemctl stop", called[0]);
+		Assert.Contains("systemctl --user", called[1]);
+		return;
+
+		Task<bool> FakeRun(string file, string args)
+		{
+			called.Add(file + " " + args);
+			// simulate system-level systemctl failing and user-level succeeding
+			return Task.FromResult(file != "systemctl" || !args.Contains("stop ") || args.Contains("--user"));
+		}
 	}
 
 	[TestMethod]

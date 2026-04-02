@@ -15,10 +15,19 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
 	private readonly IStorage _storage = new StorageHostFullPathFilesystem(logger);
+	private readonly Func<string, string, Task<bool>> _runProcessAsync =
+		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args);
 
 	internal LinuxServiceInstaller(IWebLogger logger, IStorage storage) : this(logger)
 	{
 		_storage = storage;
+	}
+
+	// Internal constructor for tests to inject a custom runProcess delegate
+	internal LinuxServiceInstaller(IWebLogger logger, IStorage storage,
+		Func<string, string, Task<bool>> runProcessAsync) : this(logger, storage)
+	{
+		_runProcessAsync = runProcessAsync;
 	}
 	/// <summary>
 	///     Install systemd service on Linux
@@ -105,13 +114,13 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		try
 		{
-			// Try system-level first
-			var result = await new RunProcess(logger).RunProcessAsync("sudo",
-				$"systemctl start {WatchServiceName.GetSystemDName()}");
+			// Try system-level first (without sudo to avoid privilege prompts in tests)
+			var result = await _runProcessAsync("systemctl",
+				$"start {WatchServiceName.GetSystemDName()}");
 			if ( !result )
 			{
 				// Fallback to user-level
-				result = await new RunProcess(logger).RunProcessAsync("systemctl",
+				result = await _runProcessAsync("systemctl",
 					$"--user start {WatchServiceName.GetSystemDName()}");
 			}
 
@@ -137,13 +146,13 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		try
 		{
-			// Try system-level first
-			var result = await new RunProcess(logger).RunProcessAsync("sudo",
-				$"systemctl stop {WatchServiceName.GetSystemDName()}");
+			// Try system-level first (without sudo to avoid privilege prompts in tests)
+			var result = await _runProcessAsync("systemctl",
+				$"stop {WatchServiceName.GetSystemDName()}");
 			if ( !result )
 			{
 				// Fallback to user-level
-				result = await new RunProcess(logger).RunProcessAsync("systemctl",
+				result = await _runProcessAsync("systemctl",
 					$"--user stop {WatchServiceName.GetSystemDName()}");
 			}
 
