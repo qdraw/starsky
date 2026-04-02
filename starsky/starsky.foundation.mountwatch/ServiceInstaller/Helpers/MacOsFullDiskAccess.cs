@@ -9,16 +9,22 @@ using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 
-public class MacOsFullDiskAccess(ISelectorStorage selectorStorage, IWebLogger logger)
+public class MacOsFullDiskAccess
 {
 	public const string MacOsPrivacySettingsUri =
 		"x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles";
 
-	private readonly Func<OSPlatform> _platformResolver =
-		OperatingSystemHelper.GetPlatform;
+	private readonly IStorage _hostStorage;
+	private readonly IWebLogger _logger;
+	private readonly Func<OSPlatform> _platformResolver;
 
-	private readonly IStorage hostStorage =
-		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+	public MacOsFullDiskAccess(ISelectorStorage selectorStorage, IWebLogger logger,
+		Func<OSPlatform>? platformResolver = null)
+	{
+		_logger = logger;
+		_platformResolver = platformResolver ?? OperatingSystemHelper.GetPlatform;
+		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+	}
 
 	public bool? CheckMacOsFullDiskAccessOnStartup()
 	{
@@ -29,25 +35,25 @@ public class MacOsFullDiskAccess(ISelectorStorage selectorStorage, IWebLogger lo
 
 		if ( CanReadVolumesDirectory(out var probeException) )
 		{
-			logger.LogInformation("macOS /Volumes access check passed");
+			_logger.LogInformation("macOS /Volumes access check passed");
 			return true;
 		}
 
 		const string message = "Unable to read /Volumes. " +
 		                       "Mount events may not be visible until Full Disk Access is granted.";
-		logger.LogError($"{message} Error: {probeException?.Message}");
+		_logger.LogError($"{message} Error: {probeException?.Message}");
 
 		if ( OpenFullDiskAccessSettings() )
 		{
 			return false;
 		}
 
-		logger.LogInformation($"Run manually: open {MacOsPrivacySettingsUri}");
+		_logger.LogInformation($"Run manually: open {MacOsPrivacySettingsUri}");
 		return false;
 	}
 
 
-	private static bool OpenFullDiskAccessSettings()
+	protected virtual bool OpenFullDiskAccessSettings()
 	{
 		try
 		{
@@ -70,12 +76,12 @@ public class MacOsFullDiskAccess(ISelectorStorage selectorStorage, IWebLogger lo
 		try
 		{
 			const string volumesPath = "/Volumes";
-			if ( !hostStorage.ExistFolder(volumesPath) )
+			if ( !_hostStorage.ExistFolder(volumesPath) )
 			{
 				return true;
 			}
 
-			_ = hostStorage.GetDirectories(volumesPath).Take(1).ToList();
+			_ = _hostStorage.GetDirectories(volumesPath).Take(1).ToList();
 			return true;
 		}
 		catch ( Exception ex )
