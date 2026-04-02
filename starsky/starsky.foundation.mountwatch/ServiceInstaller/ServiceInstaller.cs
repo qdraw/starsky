@@ -17,6 +17,7 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 public class ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logger)
 	: IServiceInstaller
 {
+	private readonly Func<IOsServiceInstaller>? _installerFactory;
 	private readonly Func<OSPlatform> _platformResolver = OperatingSystemHelper.GetPlatform;
 
 	internal ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logger,
@@ -24,6 +25,14 @@ public class ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logge
 		this(selectorStorage, logger)
 	{
 		_platformResolver = platformResolver;
+	}
+
+	// Internal constructor for tests to inject a custom installer factory
+	internal ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logger,
+		Func<OSPlatform> platformResolver, Func<IOsServiceInstaller> installerFactory) :
+		this(selectorStorage, logger, platformResolver)
+	{
+		_installerFactory = installerFactory;
 	}
 
 	/// <summary>
@@ -72,6 +81,11 @@ public class ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logge
 	/// </summary>
 	private IOsServiceInstaller CreateInstaller()
 	{
+		if ( _installerFactory != null )
+		{
+			return _installerFactory();
+		}
+
 		var platform = _platformResolver();
 
 		if ( platform == OSPlatform.OSX )

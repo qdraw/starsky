@@ -14,7 +14,7 @@ public class CameraDriveInfoHelperTest
 	[TestMethod]
 	public void ToCameraDriveInfo_WithProcMounts_ReturnsFilesystem()
 	{
-		var tempDir = Path.Combine(Path.GetTempPath(), 
+		var tempDir = Path.Combine(Path.GetTempPath(),
 			"camera_drive_test1" + Guid.NewGuid());
 
 		// Create a fake /proc/mounts containing an entry that maps to tempDir
@@ -22,9 +22,9 @@ public class CameraDriveInfoHelperTest
 		var bytes = Encoding.UTF8.GetBytes(mountLine + "\n");
 
 		var fakeStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string> { tempDir },
-			outputSubPathFiles: new List<string> { "/proc/mounts" },
-			byteListSource: new List<byte[]> { bytes }
+			new List<string> { tempDir },
+			new List<string> { "/proc/mounts" },
+			new List<byte[]> { bytes }
 		);
 
 		var info = CameraDriveInfoHelper.ToCameraDriveInfo(fakeStorage, tempDir);
@@ -38,12 +38,11 @@ public class CameraDriveInfoHelperTest
 	[TestMethod]
 	public void ToCameraDriveInfo_NoProcMounts_ReturnsEmptyFilesystem()
 	{
-		var tempDir = Path.Combine(Path.GetTempPath(), 
+		var tempDir = Path.Combine(Path.GetTempPath(),
 			"camera_drive_test2" + Guid.NewGuid());
 
 		var fakeStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string> { tempDir },
-			outputSubPathFiles: null
+			new List<string> { tempDir }
 		);
 
 		var info = CameraDriveInfoHelper.ToCameraDriveInfo(fakeStorage, tempDir);
@@ -56,11 +55,11 @@ public class CameraDriveInfoHelperTest
 	[TestMethod]
 	public void ToCameraDriveInfo_ReadAllLinesThrows_ReturnsEmptyFilesystem()
 	{
-		var tempDir = Path.Combine(Path.GetTempPath(), 
+		var tempDir = Path.Combine(Path.GetTempPath(),
 			"camera_drive_test3" + Guid.NewGuid());
 
 		var fakeStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string> { tempDir },
+			new List<string> { tempDir },
 			exception: new InvalidOperationException("io")
 		);
 
@@ -75,7 +74,7 @@ public class CameraDriveInfoHelperTest
 	[TestMethod]
 	public void ToCameraDriveInfo_DirectoryDoesNotExist_ReflectsExistsFalse()
 	{
-		var tempDir = Path.Combine(Path.GetTempPath(), 
+		var tempDir = Path.Combine(Path.GetTempPath(),
 			"camera_drive_test4" + Guid.NewGuid());
 
 		// Ensure the directory does not exist
@@ -107,7 +106,7 @@ public class CameraDriveInfoHelperTest
 	[TestMethod]
 	public void DetectFileSystem_CatchException()
 	{
-		const string mountLine = $"/dev/sdb1 /test vfat rw 0 0";
+		const string mountLine = "/dev/sdb1 /test vfat rw 0 0";
 		var bytes = Encoding.UTF8.GetBytes(mountLine + "\n");
 
 		var fakeStorage = new FakeIStorage(
@@ -118,10 +117,10 @@ public class CameraDriveInfoHelperTest
 			null,
 			new Exception()
 		);
-		
-		var info = CameraDriveInfoHelper.DetectFileSystem(fakeStorage, 
+
+		var info = CameraDriveInfoHelper.DetectFileSystem(fakeStorage,
 			"/test");
-		
+
 		// When ReadAllLines throws, DetectFileSystem swallows exceptions -> empty string
 		Assert.AreEqual(string.Empty, info);
 	}

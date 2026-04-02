@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.ServiceInstaller;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
+using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starskytest.FakeMocks;
 
@@ -238,5 +239,76 @@ public sealed class ServiceInstallerTest
 		Assert.IsNotNull(exception);
 		Assert.IsTrue(exception.InnerException is PlatformNotSupportedException,
 			$"Expected PlatformNotSupportedException but got {exception.InnerException?.GetType().Name}");
+	}
+
+	[TestMethod]
+	public async Task ServiceInstaller_StartAsync_CallsUnderlyingInstaller_ForAllOs()
+	{
+		var logger = new FakeIWebLogger();
+
+		// Fake installer factory that records calls
+		var called = false;
+
+		// Mac OS
+		var mac = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
+			new FakeSelectorStorage(), logger, () => OSPlatform.OSX, Factory);
+		called = false;
+		Assert.IsTrue(await mac.StartAsync());
+		Assert.IsTrue(called);
+
+		// Windows
+		var win = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
+			new FakeSelectorStorage(), logger, () => OSPlatform.Windows, Factory);
+		called = false;
+		Assert.IsTrue(await win.StartAsync());
+		Assert.IsTrue(called);
+
+		// Linux
+		var linux = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
+			new FakeSelectorStorage(), logger, () => OSPlatform.Linux, Factory);
+		called = false;
+		Assert.IsTrue(await linux.StartAsync());
+		Assert.IsTrue(called);
+		return;
+
+		IOsServiceInstaller Factory()
+		{
+			return new TestOsInstaller(() =>
+			{
+				called = true;
+				return Task.FromResult(true);
+			});
+		}
+	}
+
+	// Simple fake IOsServiceInstaller for tests
+	private sealed class TestOsInstaller : IOsServiceInstaller
+	{
+		private readonly Func<Task<bool>> _start;
+
+		public TestOsInstaller(Func<Task<bool>> start)
+		{
+			_start = start;
+		}
+
+		public Task<bool> InstallAsync(string executablePath)
+		{
+			return Task.FromResult(true);
+		}
+
+		public Task<bool> UninstallAsync()
+		{
+			return Task.FromResult(true);
+		}
+
+		public Task<bool> StartAsync()
+		{
+			return _start();
+		}
+
+		public Task<bool> StopAsync()
+		{
+			return Task.FromResult(true);
+		}
 	}
 }
