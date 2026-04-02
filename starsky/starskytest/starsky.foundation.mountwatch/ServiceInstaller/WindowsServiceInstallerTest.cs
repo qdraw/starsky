@@ -28,9 +28,9 @@ public sealed class WindowsServiceInstallerTest
 		Assert.IsTrue(result);
 		Assert.HasCount(1, calls);
 		Assert.AreEqual("sc.exe", calls[0].fileName);
-		StringAssert.Contains(calls[0].args, "create \"");
-		StringAssert.Contains(calls[0].args, "dotnet.exe");
-		StringAssert.Contains(calls[0].args, "starskymountwatchercli.dll");
+		Assert.Contains("create \"", calls[0].args);
+		Assert.Contains("dotnet.exe", calls[0].args);
+		Assert.Contains("starskymountwatchercli.dll", calls[0].args);
 	}
 
 	[TestMethod]
@@ -49,7 +49,7 @@ public sealed class WindowsServiceInstallerTest
 
 		Assert.IsTrue(result);
 		Assert.HasCount(1, calls);
-		StringAssert.Contains(calls[0].args, "starskymountwatchercli.exe");
+		Assert.Contains("starskymountwatchercli.exe", calls[0].args);
 		Assert.IsFalse(calls[0].args.Contains("dotnet.exe", StringComparison.OrdinalIgnoreCase));
 	}
 
@@ -78,8 +78,8 @@ public sealed class WindowsServiceInstallerTest
 		Assert.HasCount(2, calls);
 		Assert.HasCount(1, delays);
 		Assert.AreEqual(2000, delays[0]);
-		StringAssert.Contains(calls[0].args, "start");
-		StringAssert.Contains(calls[1].args, "start");
+		Assert.Contains("start", calls[0].args);
+		Assert.Contains("start", calls[1].args);
 	}
 
 	[TestMethod]
@@ -98,8 +98,8 @@ public sealed class WindowsServiceInstallerTest
 
 		Assert.IsTrue(result);
 		Assert.HasCount(2, calls);
-		StringAssert.Contains(calls[0].args, "stop");
-		StringAssert.Contains(calls[1].args, "delete");
+		Assert.Contains("stop", calls[0].args);
+		Assert.Contains("delete", calls[1].args);
 	}
 
 	[TestMethod]

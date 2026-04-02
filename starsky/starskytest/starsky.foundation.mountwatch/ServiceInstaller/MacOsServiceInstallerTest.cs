@@ -79,8 +79,8 @@ public sealed class MacOsServiceInstallerTest
 		Assert.IsTrue(result);
 		Assert.HasCount(1, calls);
 		Assert.AreEqual("launchctl", calls[0].fileName);
-		StringAssert.Contains(calls[0].args, "load");
-		StringAssert.Contains(calls[0].args, ".plist");
+		Assert.Contains("load", calls[0].args);
+		Assert.Contains(".plist", calls[0].args);
 	}
 
 	[TestMethod]
@@ -117,8 +117,8 @@ public sealed class MacOsServiceInstallerTest
 		Assert.IsTrue(result);
 		Assert.HasCount(1, calls);
 		Assert.AreEqual("launchctl", calls[0].fileName);
-		StringAssert.Contains(calls[0].args, "unload");
-		StringAssert.Contains(calls[0].args, ".plist");
+		Assert.Contains("unload", calls[0].args);
+		Assert.Contains(".plist", calls[0].args);
 	}
 
 	[TestMethod]
@@ -156,7 +156,7 @@ public sealed class MacOsServiceInstallerTest
 		// Assert
 		Assert.IsTrue(result);
 		Assert.AreNotEqual(0, launchctlCalls.Count);
-		StringAssert.Contains(launchctlCalls[0], "unload");
+		Assert.Contains("unload", launchctlCalls[0]);
 	}
 
 	[TestMethod]
@@ -177,7 +177,7 @@ public sealed class MacOsServiceInstallerTest
 	{
 		var path = MacOsServiceInstaller.GetMacOsPlistPath();
 
-		StringAssert.Contains(path, "LaunchAgents");
+		Assert.Contains("LaunchAgents", path);
 	}
 
 	[TestMethod]
@@ -185,7 +185,7 @@ public sealed class MacOsServiceInstallerTest
 	{
 		var path = MacOsServiceInstaller.GetMacOsPlistPath();
 
-		StringAssert.Contains(path, "nl.qdraw.mountwatcher");
+		Assert.Contains("nl.qdraw.mountwatcher", path);
 	}
 
 	[TestMethod]
