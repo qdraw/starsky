@@ -520,6 +520,22 @@ public class CameraStorageDetectorTest
 		Assert.IsFalse(result);
 		Assert.Contains("Drive root failed", logger.TrackedExceptions.LastOrDefault().Item2!);
 	}
+	
+	[TestMethod]
+	public void IFindCameraStorages_CatchException()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var detector = new CameraStorageDetector(new FakeSelectorStorage(), 
+			logger, null!);
+
+		// Act
+		var result = detector.FindCameraStorages();
+
+		// Assert
+		Assert.IsEmpty(result);
+		Assert.Contains("Failed to enumerate drives during camera storage detection", logger.TrackedExceptions.LastOrDefault().Item2!);
+	}
 
 	[TestMethod]
 	public void IsCameraStorage_WithPathOnWindows_UsesDriveInfo()
