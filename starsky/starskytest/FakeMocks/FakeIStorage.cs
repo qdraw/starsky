@@ -213,7 +213,7 @@ public class FakeIStorage : IStorage
 		_byteList.TryAdd(toPath, _byteList[fromPath]);
 	}
 
-	public bool FileDelete(string path)
+	public virtual bool FileDelete(string path)
 	{
 		if ( !ExistFile(path) )
 		{

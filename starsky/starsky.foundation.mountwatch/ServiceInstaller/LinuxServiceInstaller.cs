@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
@@ -14,9 +15,10 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// </summary>
 internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
-	private readonly IStorage _storage = new StorageHostFullPathFilesystem(logger);
 	private readonly Func<string, string, Task<bool>> _runProcessAsync =
 		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args);
+
+	private readonly IStorage _storage = new StorageHostFullPathFilesystem(logger);
 
 	internal LinuxServiceInstaller(IWebLogger logger, IStorage storage) : this(logger)
 	{
@@ -29,6 +31,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		_runProcessAsync = runProcessAsync;
 	}
+
 	/// <summary>
 	///     Install systemd service on Linux
 	/// </summary>
@@ -39,7 +42,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 
 		try
 		{
-			using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(serviceContent));
+			using var stream = new MemoryStream(Encoding.UTF8.GetBytes(serviceContent));
 			var success = await _storage.WriteStreamAsync(stream, servicePath);
 			if ( !success )
 			{
@@ -88,7 +91,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			logger.LogInformation($"Linux systemd unit removed: {systemPath}");
 			deleted = true;
 		}
-		
+
 		if ( _storage.ExistFile(userPath) )
 		{
 			_storage.FileDelete(userPath);
@@ -112,31 +115,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	/// </summary>
 	public async Task<bool> StartAsync()
 	{
-		try
-		{
-			// Try system-level first (without sudo to avoid privilege prompts in tests)
-			var result = await _runProcessAsync("systemctl",
-				$"start {WatchServiceName.GetSystemDName()}");
-			if ( !result )
-			{
-				// Fallback to user-level
-				result = await _runProcessAsync("systemctl",
-					$"--user start {WatchServiceName.GetSystemDName()}");
-			}
-
-			if ( result )
-			{
-				logger.LogInformation(
-					$"Linux service started: {WatchServiceName.GetSystemDName()}");
-			}
-
-			return result;
-		}
-		catch ( Exception ex )
-		{
-			logger.LogError(ex, $"Failed to start Linux service: {ex.Message}");
-			return false;
-		}
+		return await StartStopAsync(true);
 	}
 
 	/// <summary>
@@ -144,29 +123,35 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	/// </summary>
 	public async Task<bool> StopAsync()
 	{
+		return await StartStopAsync(false);
+	}
+
+	private async Task<bool> StartStopAsync(bool isStart)
+	{
+		var command = isStart ? "start" : "stop";
 		try
 		{
 			// Try system-level first (without sudo to avoid privilege prompts in tests)
 			var result = await _runProcessAsync("systemctl",
-				$"stop {WatchServiceName.GetSystemDName()}");
+				$"{command} {WatchServiceName.GetSystemDName()}");
 			if ( !result )
 			{
 				// Fallback to user-level
 				result = await _runProcessAsync("systemctl",
-					$"--user stop {WatchServiceName.GetSystemDName()}");
+					$"--user {command} {WatchServiceName.GetSystemDName()}");
 			}
 
 			if ( result )
 			{
 				logger.LogInformation(
-					$"Linux service stopped: {WatchServiceName.GetSystemDName()}");
+					$"Linux service {command}: {WatchServiceName.GetSystemDName()}");
 			}
 
 			return result;
 		}
 		catch ( Exception ex )
 		{
-			logger.LogError(ex, $"Failed to stop Linux service: {ex.Message}");
+			logger.LogError(ex, $"Failed to {command} Linux service: {ex.Message}");
 			return false;
 		}
 	}
@@ -186,9 +171,9 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		try
 		{
 			_storage.CreateDirectory(userSystemdDir);
-			using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(serviceContent));
+			using var stream = new MemoryStream(Encoding.UTF8.GetBytes(serviceContent));
 			var success = await _storage.WriteStreamAsync(stream, servicePath);
-			
+
 			if ( !success )
 			{
 				logger.LogError($"Failed to write service file to {servicePath}");

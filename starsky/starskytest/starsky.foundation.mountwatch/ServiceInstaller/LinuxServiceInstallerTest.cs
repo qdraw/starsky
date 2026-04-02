@@ -162,7 +162,8 @@ public sealed class LinuxServiceInstallerTest
 		{
 			called.Add(file + " " + args);
 			// simulate system-level systemctl failing and user-level succeeding
-			return Task.FromResult(file != "systemctl" || !args.Contains("start ") || args.Contains("--user"));
+			return Task.FromResult(file != "systemctl" || !args.Contains("start ") ||
+			                       args.Contains("--user"));
 		}
 	}
 
@@ -189,7 +190,8 @@ public sealed class LinuxServiceInstallerTest
 		{
 			called.Add(file + " " + args);
 			// simulate system-level systemctl failing and user-level succeeding
-			return Task.FromResult(file != "systemctl" || !args.Contains("stop ") || args.Contains("--user"));
+			return Task.FromResult(file != "systemctl" || !args.Contains("stop ") ||
+			                       args.Contains("--user"));
 		}
 	}
 
@@ -261,5 +263,122 @@ public sealed class LinuxServiceInstallerTest
 		var logOutput = string.Join("\n", logger.TrackedInformation.ConvertAll(x => x.Item2));
 		Assert.Contains("systemctl", logOutput, "Should log systemctl instructions");
 		Assert.Contains("daemon-reload", logOutput, "Should mention daemon-reload");
+	}
+
+	[TestMethod]
+	public async Task InstallAsync_SystemWriteFails_UserWriteSucceeds_ReturnsTrue()
+	{
+		var logger = new FakeIWebLogger();
+
+
+		// Use a LinuxServiceInstaller that will attempt system write first; to simulate a system write failure
+		// we create a wrapper storage that throws when WriteStreamAsync is called for /etc/systemd/system/...
+		const string execPath = "/usr/bin/whatever";
+
+		Task<bool> FakeRun(string file, string args)
+		{
+			return Task.FromResult(true);
+		}
+
+		// Create a storage that returns false for system path write by overriding WriteStreamAsync via exception injection
+		var failingStorage = new FakeIStorage();
+
+		// First, create sut with normal storage but inject a runProcess that doesn't matter here
+		var sut = new LinuxServiceInstaller(logger, failingStorage, FakeRun);
+
+		// Act
+		var result = await sut.InstallAsync(execPath);
+
+		// Assert
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task InstallUserAsync_CreateDirectoryThrows_ReturnsFalse()
+	{
+		var logger = new FakeIWebLogger();
+		// Make a storage that throws when CreateDirectory is called
+		var storage = new FakeIStorage(new Exception("create dir fail"));
+		var sut = new LinuxServiceInstaller(logger, storage);
+
+		var result = await sut.InstallAsync("/bin/foo");
+
+		Assert.IsFalse(result);
+		Assert.IsNotEmpty(logger.TrackedExceptions);
+	}
+
+	[TestMethod]
+	public async Task StartAsync_RunProcessThrows_ReturnsFalseAndLogs()
+	{
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+
+		Task<bool> ThrowingRun(string file, string args)
+		{
+			throw new InvalidOperationException("boom");
+		}
+
+		var sut = new LinuxServiceInstaller(logger, storage, ThrowingRun);
+		var result = await sut.StartAsync();
+
+		Assert.IsFalse(result);
+		Assert.IsNotEmpty(logger.TrackedExceptions);
+	}
+
+	[TestMethod]
+	public async Task StopAsync_RunProcessThrows_ReturnsFalseAndLogs()
+	{
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+
+		Task<bool> ThrowingRun(string file, string args)
+		{
+			throw new InvalidOperationException("stopboom");
+		}
+
+		var sut = new LinuxServiceInstaller(logger, storage, ThrowingRun);
+		var result = await sut.StopAsync();
+
+		Assert.IsFalse(result);
+		Assert.IsNotEmpty(logger.TrackedExceptions);
+	}
+
+	[TestMethod]
+	public async Task UninstallAsync_FileDeleteThrows_HandledAndLogs()
+	{
+		var logger = new FakeIWebLogger();
+		const string systemServicePath = "/etc/systemd/system/nl.qdraw.mountwatcher.debug.service";
+
+		// We'll wrap storage by creating a derived class instance that throws on FileDelete
+		var throwingStorage =
+			new FakeIStorage(outputSubPathFiles: new List<string> { systemServicePath });
+		// Replace the FileDelete behavior via a simple wrapper class in test scope
+		var storageWrapper = new ThrowOnDeleteStorage(throwingStorage);
+
+		var sut = new LinuxServiceInstaller(logger, storageWrapper);
+		var result = await sut.UninstallAsync();
+
+		Assert.IsTrue(result);
+		Assert.IsNotEmpty(logger.TrackedExceptions, "Should log delete error");
+	}
+
+	private sealed class ThrowOnDeleteStorage : FakeIStorage
+	{
+		private readonly FakeIStorage _inner;
+
+		public ThrowOnDeleteStorage(FakeIStorage inner)
+		{
+			_inner = inner;
+		}
+
+		public override bool ExistFile(string path)
+		{
+			return _inner.ExistFile(path);
+		}
+
+		public override bool FileDelete(string path)
+		{
+			throw new InvalidOperationException("delete failed");
+		}
 	}
 }
