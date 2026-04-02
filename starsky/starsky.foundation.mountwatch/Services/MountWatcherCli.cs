@@ -121,7 +121,7 @@ public class MountWatcherCli
 	/// <summary>
 	///     Display CLI help
 	/// </summary>
-	private void ShowHelp()
+	internal void ShowHelp()
 	{
 		_console.WriteLine("Starsky Mount Watcher - automatically imports from camera storage");
 		_console.WriteLine("");
