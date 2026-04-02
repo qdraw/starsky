@@ -88,7 +88,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	{
 		try
 		{
-			var drives = DriveInfo.GetDrives()
+			var drives = _system.GetDrives()
 				.Where(d => d.IsReady)
 				.Select(d => d.RootDirectory.FullName)
 				.ToList();
@@ -97,7 +97,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 		}
 		catch
 		{
-			return [];
+			return new List<string>();
 		}
 	}
 
@@ -281,7 +281,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	internal static string NormalizeDrive(string driveName)
 	{
 		var normalized = driveName.Trim();
-		if ( normalized is [_, ':'] )
+		if (normalized.Length >= 2 && normalized[1] == ':')
 		{
 			return normalized + "\\";
 		}
