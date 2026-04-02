@@ -199,7 +199,7 @@ internal class MacMountWatcher : BaseMountWatcher
 	/// <summary>
 	///     Called when a disk appears
 	/// </summary>
-	private void OnDiskAppeared(IntPtr diskRef, IntPtr context)
+	internal void OnDiskAppeared(IntPtr diskRef, IntPtr context)
 	{
 		try
 		{
