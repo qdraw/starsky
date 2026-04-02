@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
 using starsky.foundation.mountwatch.MountWatcher.MacOS;
@@ -28,7 +29,7 @@ public sealed class MacMountWatcher_RunWatcherTest
 
 		// No releases or unschedule should be called when session was never created
 		Assert.IsFalse(fakeSystem.DASessionUnscheduleCalled);
-		Assert.AreEqual(0, fakeSystem.CfReleased.Count);
+		Assert.IsEmpty(fakeSystem.CfReleased);
 	}
 
 	[TestMethod]
@@ -51,7 +52,7 @@ public sealed class MacMountWatcher_RunWatcherTest
 			t.Item2 != null && t.Item2.Contains("Unable to create CFRunLoop default mode")));
 
 		// Session was created and should be released in finally
-		Assert.IsTrue(fakeSystem.CfReleased.Contains(new IntPtr(1)));
+		Assert.Contains(new IntPtr(1), fakeSystem.CfReleased);
 	}
 
 	[TestMethod]
@@ -76,8 +77,8 @@ public sealed class MacMountWatcher_RunWatcherTest
 		Assert.IsTrue(fakeSystem.CFRunLoopRunCalled);
 		Assert.IsTrue(fakeSystem.DASessionUnscheduleCalled);
 		// both runLoopMode and session should be released
-		Assert.IsTrue(fakeSystem.CfReleased.Contains(new IntPtr(30)));
-		Assert.IsTrue(fakeSystem.CfReleased.Contains(new IntPtr(10)));
+		Assert.Contains(new IntPtr(30), fakeSystem.CfReleased);
+		Assert.Contains(new IntPtr(10), fakeSystem.CfReleased);
 	}
 
 	[TestMethod]
@@ -100,10 +101,11 @@ public sealed class MacMountWatcher_RunWatcherTest
 		Assert.IsTrue(logger.TrackedExceptions.Exists(t =>
 			t.Item2 != null && t.Item2.Contains("DiskArbitration watcher failed")));
 		Assert.IsTrue(fakeSystem.DASessionUnscheduleCalled);
-		Assert.IsTrue(fakeSystem.CfReleased.Contains(new IntPtr(300)));
-		Assert.IsTrue(fakeSystem.CfReleased.Contains(new IntPtr(100)));
+		Assert.Contains(new IntPtr(300), fakeSystem.CfReleased);
+		Assert.Contains(new IntPtr(100), fakeSystem.CfReleased);
 	}
 
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	private sealed class FakeMacSystem : IMacMountWatcherSystem
 	{
 		public IntPtr SessionToReturn { get; set; } = IntPtr.Zero;
