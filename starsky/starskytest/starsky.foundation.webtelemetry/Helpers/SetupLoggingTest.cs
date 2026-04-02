@@ -72,7 +72,7 @@ public class SetupLoggingTest
 		// Act
 		services.AddLogging(logging =>
 		{
-			sourceName = SetupLogging.AddEventLog(logging,
+			sourceName = new AddEventLogger().AddEventLog(logging,
 				AppSettings.StarskyAppType.WebController);
 		});
 

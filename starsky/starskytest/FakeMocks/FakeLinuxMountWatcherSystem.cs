@@ -78,19 +78,9 @@ public sealed class FakeLinuxMountWatcherSystem : ILinuxMountWatcherSystem
 		MonitorUnrefCalls++;
 	}
 
-	public bool FileExists(string path)
+	public bool FileExists(string _)
 	{
 		return FileExistsResult;
-	}
-
-	public string[] ReadAllLines(string path)
-	{
-		if ( ThrowOnReadAllLines )
-		{
-			throw new InvalidOperationException("io");
-		}
-
-		return LinesToReturn;
 	}
 
 	public void Sleep(int milliseconds)
