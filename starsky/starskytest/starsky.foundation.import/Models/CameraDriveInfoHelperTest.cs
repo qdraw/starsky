@@ -103,4 +103,26 @@ public class CameraDriveInfoHelperTest
 		Assert.IsFalse(info.RootDirectory.Exists);
 		Assert.AreEqual("vfat", info.DriveFormat);
 	}
+
+	[TestMethod]
+	public void DetectFileSystem_CatchException()
+	{
+		const string mountLine = $"/dev/sdb1 /test vfat rw 0 0";
+		var bytes = Encoding.UTF8.GetBytes(mountLine + "\n");
+
+		var fakeStorage = new FakeIStorage(
+			null,
+			["/proc/mounts"],
+			new List<byte[]> { bytes },
+			null,
+			null,
+			new Exception()
+		);
+		
+		var info = CameraDriveInfoHelper.DetectFileSystem(fakeStorage, 
+			"/test");
+		
+		// When ReadAllLines throws, DetectFileSystem swallows exceptions -> empty string
+		Assert.AreEqual(string.Empty, info);
+	}
 }

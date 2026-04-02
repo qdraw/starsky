@@ -45,17 +45,7 @@ public static class CameraDriveInfoHelper
 	/// </summary>
 	public static CameraDriveInfo ToCameraDriveInfo(IStorage hostStorage, string mountPath)
 	{
-		// Use IStorage to determine existence so tests can inject FakeIStorage
-		var exists = false;
-		try
-		{
-			exists = hostStorage.ExistFolder(mountPath);
-		}
-		catch
-		{
-			exists = false;
-		}
-
+		var exists = hostStorage.ExistFolder(mountPath);
 		return new CameraDriveInfo
 		{
 			IsReady = true, // Assume ready when constructing from a mount path
@@ -67,7 +57,7 @@ public static class CameraDriveInfoHelper
 	/// <summary>
 	///     Attempt to detect the filesystem type (for Linux)
 	/// </summary>
-	private static string DetectFileSystem(IStorage hostStorage, string mountPath)
+	internal static string DetectFileSystem(IStorage hostStorage, string mountPath)
 	{
 		try
 		{
