@@ -27,7 +27,6 @@ public class ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logge
 		_platformResolver = platformResolver;
 	}
 
-	// Internal constructor for tests to inject a custom installer factory
 	internal ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logger,
 		Func<OSPlatform> platformResolver, Func<IOsServiceInstaller> installerFactory) :
 		this(selectorStorage, logger, platformResolver)

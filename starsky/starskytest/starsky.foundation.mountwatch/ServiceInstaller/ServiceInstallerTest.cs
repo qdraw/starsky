@@ -242,32 +242,36 @@ public sealed class ServiceInstallerTest
 	}
 
 	[TestMethod]
-	public async Task ServiceInstaller_StartAsync_CallsUnderlyingInstaller_ForAllOs()
+	[DataRow(OperatingSystems.OSX)]
+	[DataRow(OperatingSystems.Windows)]
+	[DataRow(OperatingSystems.Linux)]
+	public async Task ServiceInstaller_StartAsync_CallsUnderlyingInstaller_ForAllOs(
+		OperatingSystems operatingSystems)
 	{
+		var platform = new OSPlatform();
+		switch ( operatingSystems )
+		{
+			case OperatingSystems.Linux:
+				platform = OSPlatform.Linux;
+				break;
+			case OperatingSystems.OSX:
+				platform = OSPlatform.OSX;
+				break;
+			case OperatingSystems.Windows:
+				platform = OSPlatform.Windows;
+				break;
+		}
+
 		var logger = new FakeIWebLogger();
 
 		// Fake installer factory that records calls
 		var called = false;
 
-		// Mac OS
-		var mac = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
-			new FakeSelectorStorage(), logger, () => OSPlatform.OSX, Factory);
+		// OS
+		var service = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
+			new FakeSelectorStorage(), logger, () => platform, Factory);
 		called = false;
-		Assert.IsTrue(await mac.StartAsync());
-		Assert.IsTrue(called);
-
-		// Windows
-		var win = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
-			new FakeSelectorStorage(), logger, () => OSPlatform.Windows, Factory);
-		called = false;
-		Assert.IsTrue(await win.StartAsync());
-		Assert.IsTrue(called);
-
-		// Linux
-		var linux = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
-			new FakeSelectorStorage(), logger, () => OSPlatform.Linux, Factory);
-		called = false;
-		Assert.IsTrue(await linux.StartAsync());
+		Assert.IsTrue(await service.StartAsync());
 		Assert.IsTrue(called);
 		return;
 
@@ -278,6 +282,41 @@ public sealed class ServiceInstallerTest
 				called = true;
 				return Task.FromResult(true);
 			});
+		}
+	}
+	
+	[TestMethod]
+	[DataRow(OperatingSystems.OSX)]
+	[DataRow(OperatingSystems.Windows)]
+	[DataRow(OperatingSystems.Linux)]
+	public async Task ServiceInstaller_StopAsync_CallsUnderlyingInstaller_ForAllOs(
+		OperatingSystems operatingSystems)
+	{
+		var platform = new OSPlatform();
+		switch ( operatingSystems )
+		{
+			case OperatingSystems.Linux:
+				platform = OSPlatform.Linux;
+				break;
+			case OperatingSystems.OSX:
+				platform = OSPlatform.OSX;
+				break;
+			case OperatingSystems.Windows:
+				platform = OSPlatform.Windows;
+				break;
+		}
+
+		var logger = new FakeIWebLogger();
+
+		// OS
+		var service = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
+			new FakeSelectorStorage(), logger, () => platform, Factory);
+		Assert.IsTrue(await service.StopAsync());
+		return;
+
+		static IOsServiceInstaller Factory()
+		{
+			return new TestOsInstaller(() => Task.FromResult(true));
 		}
 	}
 
