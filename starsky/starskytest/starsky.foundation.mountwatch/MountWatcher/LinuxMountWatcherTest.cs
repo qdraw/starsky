@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
 using starsky.foundation.mountwatch.MountWatcher.Linux.Interfaces;
+using starsky.foundation.storage.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.mountwatch.MountWatcher;
@@ -12,9 +14,11 @@ namespace starskytest.starsky.foundation.mountwatch.MountWatcher;
 [TestClass]
 public sealed class LinuxMountWatcherTest
 {
-	private static LinuxMountWatcher CreateSut(FakeLinuxMountWatcherSystem? system = null)
+	private static LinuxMountWatcher CreateSut(IStorage? storage = null,
+		FakeLinuxMountWatcherSystem? system = null)
 	{
-		return new LinuxMountWatcher(new FakeSelectorStorage(), new FakeIWebLogger(),
+		storage ??= new FakeIStorage();
+		return new LinuxMountWatcher(new FakeSelectorStorage(storage), new FakeIWebLogger(),
 			system ?? new FakeLinuxMountWatcherSystem(), 10);
 	}
 
@@ -54,7 +58,7 @@ public sealed class LinuxMountWatcherTest
 	[TestMethod]
 	public void LinuxMountWatcher_GetMountedVolumes_ReturnsEmpty_WhenProcMountsMissing()
 	{
-		var watcher = CreateSut(new FakeLinuxMountWatcherSystem { FileExistsResult = false });
+		var watcher = CreateSut(null, new FakeLinuxMountWatcherSystem { FileExistsResult = false });
 		var volumes = watcher.GetMountedVolumes();
 		Assert.IsEmpty(volumes);
 	}
@@ -62,10 +66,11 @@ public sealed class LinuxMountWatcherTest
 	[TestMethod]
 	public void LinuxMountWatcher_GetMountedVolumes_ReturnsEmpty_WhenReadThrows()
 	{
-		var watcher = CreateSut(new FakeLinuxMountWatcherSystem
-		{
-			FileExistsResult = true, ThrowOnReadAllLines = true
-		});
+		var watcher = CreateSut(null,
+			new FakeLinuxMountWatcherSystem
+			{
+				FileExistsResult = true, ThrowOnReadAllLines = true
+			});
 		var volumes = watcher.GetMountedVolumes();
 		Assert.IsEmpty(volumes);
 	}
@@ -73,19 +78,19 @@ public sealed class LinuxMountWatcherTest
 	[TestMethod]
 	public void LinuxMountWatcher_GetMountedVolumes_FiltersExpectedMounts()
 	{
-		var watcher = CreateSut(new FakeLinuxMountWatcherSystem
-		{
-			FileExistsResult = true,
-			LinesToReturn =
-			[
-				"rootfs / rootfs rw 0 0",
-				"sdb1 /media/usb ext4 rw 0 0",
-				"tmpfs /tmp tmpfs rw 0 0",
-				"sdc1 /mnt/share ext4 rw 0 0",
-				"sdd1 /home/dion/drive ext4 rw 0 0",
-				"invalid-line"
-			]
-		});
+		// Use FakeIStorage to provide /proc/mounts content instead of the legacy LinesToReturn
+		var mounts = string.Join('\n', "rootfs / rootfs rw 0 0", "sdb1 /media/usb ext4 rw 0 0",
+			"tmpfs /tmp tmpfs rw 0 0", "sdc1 /mnt/share ext4 rw 0 0",
+			"sdd1 /home/dion/drive ext4 rw 0 0", "invalid-line");
+
+		var storage = new FakeIStorage(
+			null,
+			["/proc/mounts"],
+			new List<byte[]?> { Encoding.UTF8.GetBytes(mounts) }
+		);
+
+		var watcher = CreateSut(storage,
+			new FakeLinuxMountWatcherSystem { FileExistsResult = true });
 
 		var volumes = watcher.GetMountedVolumes();
 
@@ -96,7 +101,7 @@ public sealed class LinuxMountWatcherTest
 	[TestMethod]
 	public void LinuxMountWatcher_TryRunUdevWatcher_ReturnsFalse_WhenUdevUnavailable()
 	{
-		var watcher = CreateSut(new FakeLinuxMountWatcherSystem { UdevHandle = IntPtr.Zero });
+		var watcher = CreateSut(null, new FakeLinuxMountWatcherSystem { UdevHandle = IntPtr.Zero });
 		Assert.IsFalse(watcher.TryRunUdevWatcher());
 	}
 
@@ -108,7 +113,7 @@ public sealed class LinuxMountWatcherTest
 		{
 			UdevHandle = new IntPtr(11), MonitorHandle = IntPtr.Zero
 		};
-		var watcher = CreateSut(system);
+		var watcher = CreateSut(null, system);
 
 		var result = watcher.TryRunUdevWatcher();
 
@@ -124,7 +129,7 @@ public sealed class LinuxMountWatcherTest
 		{
 			UdevHandle = new IntPtr(11), MonitorHandle = new IntPtr(22), FilterResult = -1
 		};
-		var watcher = CreateSut(system);
+		var watcher = CreateSut(null, system);
 
 		var result = watcher.TryRunUdevWatcher();
 
@@ -136,12 +141,13 @@ public sealed class LinuxMountWatcherTest
 	[TestMethod]
 	public void LinuxMountWatcher_TryRunUdevWatcher_ReturnsFalse_WhenEnableReceivingFails()
 	{
-		var watcher = CreateSut(new FakeLinuxMountWatcherSystem
-		{
-			UdevHandle = new IntPtr(11),
-			MonitorHandle = new IntPtr(22),
-			EnableReceivingResult = -1
-		});
+		var watcher = CreateSut(null,
+			new FakeLinuxMountWatcherSystem
+			{
+				UdevHandle = new IntPtr(11),
+				MonitorHandle = new IntPtr(22),
+				EnableReceivingResult = -1
+			});
 
 		Assert.IsFalse(watcher.TryRunUdevWatcher());
 	}
@@ -149,10 +155,11 @@ public sealed class LinuxMountWatcherTest
 	[TestMethod]
 	public void LinuxMountWatcher_TryRunUdevWatcher_ReturnsFalse_WhenFdInvalid()
 	{
-		var watcher = CreateSut(new FakeLinuxMountWatcherSystem
-		{
-			UdevHandle = new IntPtr(11), MonitorHandle = new IntPtr(22), MonitorFd = -1
-		});
+		var watcher = CreateSut(null,
+			new FakeLinuxMountWatcherSystem
+			{
+				UdevHandle = new IntPtr(11), MonitorHandle = new IntPtr(22), MonitorFd = -1
+			});
 
 		Assert.IsFalse(watcher.TryRunUdevWatcher());
 	}
@@ -168,10 +175,17 @@ public sealed class LinuxMountWatcherTest
 			MonitorFd = 3,
 			DevicesToReturn = new Queue<IntPtr>([new IntPtr(99)]),
 			DeviceNodesToReturn = new Queue<string>(["/dev/sdb1"]),
-			FileExistsResult = true,
-			LinesToReturn = ["/dev/sdb1 /media/usb ext4 rw 0 0"]
+			FileExistsResult = true
 		};
-		var watcher = CreateSut(system);
+		// provide /proc/mounts via storage
+		var mounts = "/dev/sdb1 /media/usb ext4 rw 0 0";
+		var storage = new FakeIStorage(
+			null,
+			new List<string> { "/proc/mounts" },
+			new List<byte[]?> { Encoding.UTF8.GetBytes(mounts) }
+		);
+
+		var watcher = CreateSut(storage, system);
 		watcher.MountDetected += (_, args) => mountEvents.Add(args.MountPath);
 
 		SetIsRunning(watcher, true);
@@ -196,7 +210,7 @@ public sealed class LinuxMountWatcherTest
 			DevicesToReturn = new Queue<IntPtr>([new IntPtr(44)]),
 			DeviceNodesToReturn = new Queue<string>([string.Empty])
 		};
-		var watcher = CreateSut(system);
+		var watcher = CreateSut(null, system);
 		watcher.MountDetected += (_, args) => mountEvents.Add(args.MountPath);
 
 		SetIsRunning(watcher, true);
@@ -219,11 +233,17 @@ public sealed class LinuxMountWatcherTest
 			MonitorFd = 3,
 			DevicesToReturn = new Queue<IntPtr>([new IntPtr(99)]),
 			DeviceNodesToReturn = new Queue<string>(["/dev/sdb1"]),
-			FileExistsResult = true,
-			// Lines do not include a matching device node, so ResolveMountPoint should return null
-			LinesToReturn = ["/dev/sdb2 /media/other ext4 rw 0 0"]
+			FileExistsResult = true
 		};
-		var watcher = CreateSut(system);
+		// provide /proc/mounts that does not include /dev/sdb1
+		var mounts = "/dev/sdb2 /media/other ext4 rw 0 0";
+		var storage = new FakeIStorage(
+			null,
+			new List<string> { "/proc/mounts" },
+			new List<byte[]?> { Encoding.UTF8.GetBytes(mounts) }
+		);
+
+		var watcher = CreateSut(storage, system);
 		watcher.MountDetected += (_, args) => mountEvents.Add(args.MountPath);
 
 		SetIsRunning(watcher, true);
@@ -238,7 +258,7 @@ public sealed class LinuxMountWatcherTest
 	[TestMethod]
 	public void LinuxMountWatcher_RunWatcher_FallsBack_WhenUdevReturnsFalse()
 	{
-		var watcher = CreateSut(new FakeLinuxMountWatcherSystem { UdevHandle = IntPtr.Zero });
+		var watcher = CreateSut(null, new FakeLinuxMountWatcherSystem { UdevHandle = IntPtr.Zero });
 		SetIsRunning(watcher, false);
 
 		watcher.RunWatcher();
@@ -249,7 +269,7 @@ public sealed class LinuxMountWatcherTest
 	[TestMethod]
 	public void LinuxMountWatcher_RunWatcher_FallsBack_WhenUdevThrows()
 	{
-		var watcher = CreateSut(new FakeLinuxMountWatcherSystem { ThrowOnUdevNew = true });
+		var watcher = CreateSut(null, new FakeLinuxMountWatcherSystem { ThrowOnUdevNew = true });
 		SetIsRunning(watcher, false);
 
 		watcher.RunWatcher();
@@ -264,7 +284,7 @@ public sealed class LinuxMountWatcherTest
 		{
 			UdevHandle = new IntPtr(11), MonitorHandle = new IntPtr(22), MonitorFd = 3
 		};
-		var watcher = CreateSut(system);
+		var watcher = CreateSut(null, system);
 		system.SleepCallback = () => SetIsRunning(watcher, false);
 
 		watcher.Start();
@@ -281,7 +301,7 @@ public sealed class LinuxMountWatcherTest
 		{
 			UdevHandle = new IntPtr(11), MonitorHandle = new IntPtr(22), MonitorFd = 3
 		};
-		var watcher = CreateSut(system);
+		var watcher = CreateSut(null, system);
 		SetIsRunning(watcher, true);
 		system.SleepCallback = () => SetIsRunning(watcher, false);
 
@@ -385,21 +405,6 @@ public sealed class LinuxMountWatcherTest
 		public void UdevMonitorUnref(IntPtr monitor)
 		{
 			MonitorUnrefCalls++;
-		}
-
-		public bool FileExists(string path)
-		{
-			return FileExistsResult;
-		}
-
-		public string[] ReadAllLines(string path)
-		{
-			if ( ThrowOnReadAllLines )
-			{
-				throw new InvalidOperationException("io");
-			}
-
-			return LinesToReturn;
 		}
 
 		public void Sleep(int milliseconds)
