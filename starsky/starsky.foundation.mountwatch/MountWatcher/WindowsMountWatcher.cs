@@ -6,7 +6,8 @@ using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
+using starsky.foundation.mountwatch.MountWatcher.Windows;
+using starsky.foundation.mountwatch.MountWatcher.Windows.Interfaces;
 using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Interfaces;
 
@@ -17,13 +18,14 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// <summary>
 ///     Windows mount watcher using WMI for event-driven drive detection
 /// </summary>
-[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
 internal class WindowsMountWatcher : BaseMountWatcher
 {
 	private readonly HashSet<string> _knownMountedVolumes =
 		new(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Func<OSPlatform> _platformResolver;
+
+	private readonly IWindowsMountWatcherSystem _system = new WindowsMountWatcherSystem();
 
 	// ManagementEventWatcher is Windows-only – held as object to avoid
 	// CA1416 on the field itself when the containing class is cross-platform.
@@ -104,16 +106,21 @@ internal class WindowsMountWatcher : BaseMountWatcher
 		return _platformResolver().Equals(OSPlatform.Windows);
 	}
 
-	[SupportedOSPlatform("windows")]
 	internal void StartWmiWatcher()
 	{
 		try
 		{
-			var query = new WqlEventQuery(
+			var mgmtWatcher = _system.CreateManagementWatcher(
 				"SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2 OR EventType = 3");
-			var mgmtWatcher = new ManagementEventWatcher(query);
-			mgmtWatcher.EventArrived += OnVolumeChanged;
-			mgmtWatcher.Start();
+
+			if ( mgmtWatcher == null )
+			{
+				return;
+			}
+
+			_system.AddEventArrivedHandler(mgmtWatcher, OnVolumeChanged);
+			_system.StartWatcher(mgmtWatcher);
+
 			_watcher = mgmtWatcher;
 			logger.LogInformation(
 				"Windows WMI watcher started for Win32_VolumeChangeEvent EventType=2 OR EventType=3");
@@ -130,13 +137,13 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	{
 		try
 		{
-			if ( _watcher is not ManagementEventWatcher mgmt )
+			if ( _watcher == null )
 			{
 				return;
 			}
 
-			mgmt.Stop();
-			mgmt.Dispose();
+			_system.StopWatcher(_watcher);
+			_system.DisposeWatcher(_watcher);
 		}
 		catch
 		{
@@ -147,7 +154,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	/// <summary>
 	///     Handle WMI volume change events (Windows only)
 	/// </summary>
-	[SupportedOSPlatform("windows")]
+	[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
 	internal void OnVolumeChanged(object? sender, EventArrivedEventArgs arrivedEvent)
 	{
 		try
