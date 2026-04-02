@@ -25,11 +25,7 @@ internal class RunProcess(IWebLogger logger)
 			CreateNoWindow = true
 		};
 
-		using var process = Process.Start(processInfo);
-		if ( process == null )
-		{
-			return false;
-		}
+		using var process = Process.Start(processInfo)!;
 
 		var output = await process.StandardOutput.ReadToEndAsync();
 		var error = await process.StandardError.ReadToEndAsync();
