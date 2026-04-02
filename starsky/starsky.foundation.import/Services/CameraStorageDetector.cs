@@ -60,14 +60,14 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 
 	public bool IsCameraStorage(string driveRoot)
 	{
-		if ( string.IsNullOrWhiteSpace(driveRoot) )
-		{
-			logger.LogError($"Drive root is null or whitespace: '{driveRoot}'");
-			return false;
-		}
-
 		try
 		{
+			if ( string.IsNullOrWhiteSpace(driveRoot) )
+			{
+				logger.LogError($"Drive root is null or whitespace: '{driveRoot}'");
+				return false;
+			}
+
 			// On Linux, create CameraDriveInfo from path directly
 			if ( _isOsPlatformDelegate(OSPlatform.Linux) )
 			{

@@ -487,7 +487,38 @@ public class CameraStorageDetectorTest
 		var result = detector.IsCameraStorage("/media/usb-drive");
 
 		// Assert - result depends on whether filesystem is detected as camera-friendly
-		Assert.IsNotNull(result);
+		Assert.IsTrue(result);
+	}
+	
+	[TestMethod]
+	public void IsCameraStorage_NoDriveRoot()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var detector = new CameraStorageDetector(new FakeSelectorStorage(), logger);
+
+		// Act
+		var result = detector.IsCameraStorage(string.Empty);
+
+		// Assert
+		Assert.Contains("Drive root is null or whitespace", logger.TrackedExceptions.LastOrDefault().Item2!);
+		Assert.IsFalse(result);
+	}
+	
+	[TestMethod]
+	public void IsCameraStorage_CatchException()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var detector = new CameraStorageDetector(new FakeSelectorStorage(), 
+			logger, null!);
+
+		// Act
+		var result = detector.IsCameraStorage("/test");
+
+		// Assert
+		Assert.IsFalse(result);
+		Assert.Contains("Drive root failed", logger.TrackedExceptions.LastOrDefault().Item2!);
 	}
 
 	[TestMethod]
