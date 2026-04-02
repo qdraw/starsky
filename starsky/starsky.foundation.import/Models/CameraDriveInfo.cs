@@ -14,9 +14,11 @@ public class CameraDriveInfo
 
 public static class CameraDriveInfoHelper
 {
+	private const string ProcMountsPath = "/proc/mounts";
+
 	public static CameraDriveInfo ToCameraDriveInfo(this DriveInfo? driveInfo)
 	{
-		var driveFormat = string.Empty;
+		string driveFormat;
 		try
 		{
 			driveFormat = driveInfo?.DriveFormat ?? string.Empty;
@@ -43,13 +45,21 @@ public static class CameraDriveInfoHelper
 	/// </summary>
 	public static CameraDriveInfo ToCameraDriveInfo(IStorage hostStorage, string mountPath)
 	{
-		var directoryInfo = new DirectoryInfo(mountPath);
+		// Use IStorage to determine existence so tests can inject FakeIStorage
+		var exists = false;
+		try
+		{
+			exists = hostStorage.ExistFolder(mountPath);
+		}
+		catch
+		{
+			exists = false;
+		}
 
 		return new CameraDriveInfo
 		{
-			IsReady = true, // If we can access it, assume it's ready
-			RootDirectory =
-				new CameraDirectoryInfo { Exists = directoryInfo.Exists, FullName = mountPath },
+			IsReady = true, // Assume ready when constructing from a mount path
+			RootDirectory = new CameraDirectoryInfo { Exists = exists, FullName = mountPath },
 			DriveFormat = DetectFileSystem(hostStorage, mountPath)
 		};
 	}
@@ -62,9 +72,9 @@ public static class CameraDriveInfoHelper
 		try
 		{
 			// Try to read from /proc/mounts if on Linux
-			if ( hostStorage.ExistFile("/proc/mounts") )
+			if ( hostStorage.ExistFile(ProcMountsPath) )
 			{
-				var lines = File.ReadAllLines("/proc/mounts");
+				var lines = hostStorage.ReadAllLines(ProcMountsPath);
 				foreach ( var line in lines )
 				{
 					var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);

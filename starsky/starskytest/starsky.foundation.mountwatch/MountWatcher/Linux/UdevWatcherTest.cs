@@ -13,7 +13,7 @@ public sealed class UdevWatcherTest
 	public void TryRunUdevWatcher_ReturnsFalse_WhenUdevUnavailable()
 	{
 		var system = new FakeLinuxMountWatcherSystem { UdevHandle = IntPtr.Zero };
-		var running = false;
+		const bool running = false;
 
 		var watcher = new UdevWatcher(system, _ => null, _ => { }, () => running);
 
