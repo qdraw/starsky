@@ -504,9 +504,9 @@ public sealed class StorageHostFullPathFilesystemTest
 		try
 		{
 			storage.ReadAllLines("/path/does/not/exist-readalllines-12345.txt");
-			Assert.Fail("Expected FileNotFoundException");
+			Assert.Fail("Expected DirectoryNotFoundException");
 		}
-		catch ( FileNotFoundException )
+		catch ( DirectoryNotFoundException )
 		{
 			// expected
 		}
