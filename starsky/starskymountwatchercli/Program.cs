@@ -10,7 +10,7 @@ using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Services;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.injection;
-using starsky.foundation.mountwatch.ServiceInstaller;
+using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -73,9 +73,10 @@ public static class Program
 		var import = scopedServiceProvider.GetRequiredService<IImport>();
 		var console = scopedServiceProvider.GetRequiredService<IConsole>();
 		var webLogger = scopedServiceProvider.GetRequiredService<IWebLogger>();
-		var cameraStorageDetector = scopedServiceProvider.GetRequiredService<ICameraStorageDetector>();
+		var cameraStorageDetector =
+			scopedServiceProvider.GetRequiredService<ICameraStorageDetector>();
 		var mountWatcherFactory = scopedServiceProvider.GetRequiredService<IMountWatcherFactory>();
-		var serviceInstaller = new ServiceInstaller(webLogger);
+		var serviceInstaller = scopedServiceProvider.GetRequiredService<IServiceInstaller>();
 
 		// Migrations before starting
 		await RunMigrations.Run(scopedServiceProvider.GetRequiredService<ApplicationDbContext>(),

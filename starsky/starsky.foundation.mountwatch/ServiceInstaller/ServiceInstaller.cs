@@ -1,21 +1,27 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using starsky.foundation.injection;
+using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
 using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.mountwatch.ServiceInstaller;
 
 /// <summary>
 ///     Factory for OS-specific service installers
 /// </summary>
-public class ServiceInstaller(IWebLogger logger) : IServiceInstaller
+[Service(typeof(IServiceInstaller), InjectionLifetime = InjectionLifetime.Scoped)]
+public class ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logger)
+	: IServiceInstaller
 {
 	private readonly Func<OSPlatform> _platformResolver = OperatingSystemHelper.GetPlatform;
 
-	internal ServiceInstaller(IWebLogger logger, Func<OSPlatform> platformResolver) :
-		this(logger)
+	internal ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logger,
+		Func<OSPlatform> platformResolver) :
+		this(selectorStorage, logger)
 	{
 		_platformResolver = platformResolver;
 	}
@@ -54,6 +60,11 @@ public class ServiceInstaller(IWebLogger logger) : IServiceInstaller
 	{
 		var installer = CreateInstaller();
 		return await installer.StopAsync();
+	}
+
+	public bool? PreflightChecks()
+	{
+		return new MacOsFullDiskAccess(selectorStorage, logger).CheckMacOsFullDiskAccessOnStartup();
 	}
 
 	/// <summary>

@@ -31,4 +31,6 @@ public interface IServiceInstaller
 	/// </summary>
 	/// <returns>True on success</returns>
 	Task<bool> StopAsync();
+
+	bool? PreflightChecks();
 }

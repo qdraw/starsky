@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.ServiceInstaller;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
+using starsky.foundation.storage.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.mountwatch.ServiceInstaller;
@@ -15,10 +16,22 @@ public sealed class ServiceInstallerTest
 {
 	public TestContext? TestContext { get; set; }
 
-	private static global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller CreateSut()
+	private static global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller
+		CreateSut()
 	{
 		return new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
+			new FakeSelectorStorage(),
 			new FakeIWebLogger());
+	}
+
+	private static global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller
+		CreateSut(ISelectorStorage storage, FakeIWebLogger logger,
+			Func<OSPlatform> func)
+	{
+		return new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
+			storage,
+			logger,
+			func);
 	}
 
 	[TestMethod]
@@ -197,7 +210,7 @@ public sealed class ServiceInstallerTest
 	public async Task ServiceInstaller_StopAsync_Windows_CallsWindowsStopper()
 	{
 		var logger = new FakeIWebLogger();
-		var installer = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(logger,
+		var installer = CreateSut(new FakeSelectorStorage(), logger,
 			() => OSPlatform.Windows);
 
 		var result = await installer.StopAsync();
@@ -209,8 +222,8 @@ public sealed class ServiceInstallerTest
 	public void ServiceInstaller_CreateInstaller_UnsupportedOs_Throws()
 	{
 		var logger = new FakeIWebLogger();
-		var installer = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(logger, () => OSPlatform.Create("Unknown"));
-
+		var installer = CreateSut(new FakeSelectorStorage(), logger,
+			() => OSPlatform.Create("Unknown"));
 		AggregateException? exception = null;
 		try
 		{

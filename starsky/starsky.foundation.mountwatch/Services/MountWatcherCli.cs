@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
@@ -11,6 +10,7 @@ using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.ServiceInstaller;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
+using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -25,14 +25,16 @@ public class MountWatcherCli
 	private const string InstallArg = "--install";
 	private const string UninstallArg = "--uninstall";
 
-	private const string MacOsPrivacySettingsUri =
-		"x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles";
 
 	private readonly AppSettings _appSettings;
 	private readonly IConsole _console;
 	private readonly IImport _importService;
 	private readonly IWebLogger _logger;
 	private readonly IMountWatcherFactory _mountWatcherFactory;
+
+	private readonly Func<OSPlatform> _platformResolver =
+		OperatingSystemHelper.GetPlatform;
+
 	private readonly IServiceInstaller _serviceInstaller;
 	private readonly ICameraStorageDetector _storageDetector;
 
@@ -52,6 +54,25 @@ public class MountWatcherCli
 		_storageDetector = storageDetector;
 		_mountWatcherFactory = mountWatcherFactory;
 		_serviceInstaller = serviceInstaller;
+	}
+
+	// Constructor with platform resolver for testing
+	public MountWatcherCli(
+		IImport importService,
+		AppSettings appSettings,
+		IConsole console,
+		IWebLogger logger,
+		ICameraStorageDetector storageDetector,
+		IMountWatcherFactory mountWatcherFactory,
+		IServiceInstaller serviceInstaller,
+		Func<OSPlatform>? platformResolver)
+		: this(importService, appSettings, console, logger, storageDetector, mountWatcherFactory,
+			serviceInstaller)
+	{
+		if ( platformResolver != null )
+		{
+			_platformResolver = platformResolver;
+		}
 	}
 
 	/// <summary>
@@ -89,7 +110,8 @@ public class MountWatcherCli
 			return await _serviceInstaller.UninstallAsync();
 		}
 
-		CheckMacOsFullDiskAccessOnStartup();
+		_serviceInstaller.PreflightChecks();
+
 		return RunWatcher();
 	}
 
@@ -121,7 +143,7 @@ public class MountWatcherCli
 	/// <summary>
 	///     Display CLI help
 	/// </summary>
-	internal void ShowHelp()
+	private void ShowHelp()
 	{
 		_console.WriteLine("Starsky Mount Watcher - automatically imports from camera storage");
 		_console.WriteLine("");
@@ -139,16 +161,16 @@ public class MountWatcherCli
 
 		_console.WriteLine($" Storage: {_appSettings.StorageFolder}");
 
-		if ( OperatingSystem.IsMacOS() )
+		if ( _platformResolver() == OSPlatform.OSX )
 		{
 			_console.WriteLine($"  macOS plist: {MacOsServiceInstaller.GetMacOsPlistPath()}");
 			_console.WriteLine("  Load: launchctl load <plist>");
 			_console.WriteLine("  Requires: Full Disk Access in System Preferences");
 			_console.WriteLine("  To grant Full Disk Access:");
-			_console.WriteLine($"    open {MacOsPrivacySettingsUri}");
+			_console.WriteLine($"    open {MacOsFullDiskAccess.MacOsPrivacySettingsUri}");
 			_console.WriteLine("  Logs: ~/Library/Logs/starsky/mountwatcher.log");
 		}
-		else if ( OperatingSystem.IsLinux() )
+		else if ( _platformResolver() == OSPlatform.Linux )
 		{
 			_console.WriteLine(
 				$"  systemd: /etc/systemd/system/{WatchServiceName.GetSystemDName()}.service");
@@ -158,7 +180,7 @@ public class MountWatcherCli
 				$"  Start:  sudo systemctl start {WatchServiceName.GetSystemDName()}");
 			_console.WriteLine($"  Logs: {WatchServiceName.GetLinuxLogHint()}");
 		}
-		else if ( OperatingSystem.IsWindows() )
+		else if ( _platformResolver() == OSPlatform.Windows )
 		{
 			_console.WriteLine(
 				$"  Windows Service: sc create \"{WatchServiceName.GetReverseDnsName()}\" ...");
@@ -168,68 +190,6 @@ public class MountWatcherCli
 		}
 	}
 
-	private void CheckMacOsFullDiskAccessOnStartup()
-	{
-		if ( !OperatingSystem.IsMacOS() )
-		{
-			return;
-		}
-
-		if ( CanReadVolumesDirectory(out var probeException) )
-		{
-			_logger.LogInformation("macOS /Volumes access check passed");
-			return;
-		}
-
-		const string message = "Unable to read /Volumes. " +
-		                       "Mount events may not be visible until Full Disk Access is granted.";
-		_logger.LogError($"{message} Error: {probeException?.Message}");
-		_console.WriteLine($"Warning: {message}");
-		_console.WriteLine("Opening macOS Full Disk Access settings...");
-
-		if ( !OpenFullDiskAccessSettings() )
-		{
-			_console.WriteLine($"Run manually: open {MacOsPrivacySettingsUri}");
-		}
-	}
-
-	private static bool CanReadVolumesDirectory(out Exception? exception)
-	{
-		exception = null;
-
-		try
-		{
-			const string volumesPath = "/Volumes";
-			if ( !Directory.Exists(volumesPath) )
-			{
-				return true;
-			}
-
-			_ = Directory.EnumerateFileSystemEntries(volumesPath).Take(1).ToList();
-			return true;
-		}
-		catch ( Exception ex )
-		{
-			exception = ex;
-			return false;
-		}
-	}
-
-	private static bool OpenFullDiskAccessSettings()
-	{
-		try
-		{
-			Process.Start(new ProcessStartInfo
-			{
-				FileName = "open", Arguments = MacOsPrivacySettingsUri, UseShellExecute = false
-			});
-			return true;
-		}
-		catch
-		{
-			return false;
-		}
-	}
 
 	/// <summary>
 	///     Core watcher loop: listen for mounts

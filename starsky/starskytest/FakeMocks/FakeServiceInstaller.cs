@@ -35,4 +35,9 @@ public class FakeServiceInstaller : IServiceInstaller
 		StopCount++;
 		return Task.FromResult(ReturnValue);
 	}
+
+	public bool? PreflightChecks()
+	{
+		return true;
+	}
 }
