@@ -472,6 +472,47 @@ public sealed class StorageHostFullPathFilesystemTest
 	}
 
 	[TestMethod]
+	public void ReadAllLines_ReturnsAllLines()
+	{
+		// Arrange
+		var tempFile = Path.GetTempFileName();
+		try
+		{
+			var lines = new[] { "lineA", "lineB", "lineC" };
+			File.WriteAllLines(tempFile, lines);
+			var storage = new StorageHostFullPathFilesystem(null!);
+
+			// Act
+			var result = storage.ReadAllLines(tempFile);
+
+			// Assert
+			CollectionAssert.AreEqual(lines, result);
+		}
+		finally
+		{
+			if ( File.Exists(tempFile) )
+			{
+				File.Delete(tempFile);
+			}
+		}
+	}
+
+	[TestMethod]
+	public void ReadAllLines_FileDoesNotExist_Throws()
+	{
+		var storage = new StorageHostFullPathFilesystem(null!);
+		try
+		{
+			storage.ReadAllLines("/path/does/not/exist-readalllines-12345.txt");
+			Assert.Fail("Expected FileNotFoundException");
+		}
+		catch ( FileNotFoundException )
+		{
+			// expected
+		}
+	}
+
+	[TestMethod]
 	public void IsFolderEmpty_EmptyFolder_ReturnsTrue()
 	{
 		var dir = Path.Combine(Path.GetTempPath(), "IsFolderEmpty_EmptyFolder_" + Guid.NewGuid());
