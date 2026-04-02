@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
@@ -183,7 +182,7 @@ public sealed class WindowsMountWatcherTest
 	}
 
 	[TestMethod]
-	public void Start_OnNonWindows_UsesPollingFallback_AndStopReturns()
+	public async Task Start_OnNonWindows_UsesPollingFallback_AndStopReturns()
 	{
 		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),
 			() => OSPlatform.Linux, 50);
@@ -191,7 +190,7 @@ public sealed class WindowsMountWatcherTest
 		// Start will use polling fallback on non-windows; run in background so test can stop it.
 		var t = Task.Run(watcher.Start, TestContext.CancellationToken);
 
-		Thread.Sleep(120);
+		await Task.Delay(120, TestContext.CancellationToken);
 		watcher.Stop();
 
 		var completed = t.Wait(100, TestContext.CancellationToken);

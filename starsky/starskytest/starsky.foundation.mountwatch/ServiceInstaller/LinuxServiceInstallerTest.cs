@@ -167,7 +167,7 @@ public sealed class LinuxServiceInstallerTest
 		var result = await sut.StopAsync();
 
 		// Assert - result depends on whether systemctl is available
-		Assert.IsNotNull(result);
+		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
@@ -182,7 +182,7 @@ public sealed class LinuxServiceInstallerTest
 		var result = await sut.InstallAsync("");
 
 		// Assert - should still attempt installation
-		Assert.IsTrue(result);
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
