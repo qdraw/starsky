@@ -15,6 +15,8 @@ namespace starsky.foundation.mountwatch.MountWatcher.MacOS;
 	"generate P/Invoke marshalling code at compile time")]
 [SuppressMessage("Globalization", "CA2101:Specify marshaling " +
                                   "for P/Invoke string arguments")]
+[SuppressMessage("Usage",
+	"S4200: Make this wrapper for native method less trivial")]
 internal sealed class MacMountWatcherSystem : IMacMountWatcherSystem
 {
 	private const uint CfStringEncodingUtf8 = 0x08000100;
