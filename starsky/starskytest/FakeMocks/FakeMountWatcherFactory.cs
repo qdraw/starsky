@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.Services;
 
@@ -10,13 +9,16 @@ public class FakeMountWatcherFactory : IMountWatcherFactory
 {
 	public IMountWatcher CreateMountWatcher()
 	{
-		return new FakeMountWatcher();
+		var watcher = new FakeMountWatcher();
+		watcher.MountDetected += (_, _) =>
+		{
+			// This event handler is intentionally left empty to suppress "event is never used" warnings
+		};
+		return watcher;
 	}
 
 	private sealed class FakeMountWatcher : IMountWatcher
 	{
-		[SuppressMessage("Sonar", "CS0067:The event 'FakeMountWatcherFactory." +
-		                          "FakeMountWatcher.MountDetected' is never used")]
 		public event EventHandler<MountDetectedEventArgs>? MountDetected;
 
 		public void Start()
