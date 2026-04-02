@@ -42,13 +42,13 @@ public sealed class LinuxServiceInstallerTest
 			new UnauthorizedAccessException("Access denied"));
 		var sut = new LinuxServiceInstaller(logger, storage);
 
-		var execPath = "/usr/local/bin/starskymountwatchercli";
+		const string execPath = "/usr/local/bin/starskymountwatchercli";
 
 		// Act
 		var result = await sut.InstallAsync(execPath);
 
-		// Assert - should catch the exception and attempt user install
-		Assert.IsNotNull(result); // Will return false due to test environment
+		// Assert
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
@@ -152,7 +152,7 @@ public sealed class LinuxServiceInstallerTest
 		var result = await sut.StartAsync();
 
 		// Assert
-		Assert.IsNotNull(result);
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]

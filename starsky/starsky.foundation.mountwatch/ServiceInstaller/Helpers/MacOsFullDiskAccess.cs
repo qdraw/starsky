@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using starsky.foundation.platform.Architecture;
@@ -52,7 +53,8 @@ public class MacOsFullDiskAccess
 		return false;
 	}
 
-
+	[SuppressMessage("Usage", "S4036: Make sure the \"PATH\" " +
+	                          "variable only contains fixed, unwriteable directories.")]
 	protected virtual bool OpenFullDiskAccessSettings()
 	{
 		try

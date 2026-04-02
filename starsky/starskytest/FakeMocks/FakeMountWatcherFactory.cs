@@ -15,7 +15,7 @@ public class FakeMountWatcherFactory : IMountWatcherFactory
 
 	private sealed class FakeMountWatcher : IMountWatcher
 	{
-		[SuppressMessage("Sonar", "CS0067: The event 'FakeMountWatcherFactory." +
+		[SuppressMessage("Sonar", "CS0067:The event 'FakeMountWatcherFactory." +
 		                          "FakeMountWatcher.MountDetected' is never used")]
 		public event EventHandler<MountDetectedEventArgs>? MountDetected;
 

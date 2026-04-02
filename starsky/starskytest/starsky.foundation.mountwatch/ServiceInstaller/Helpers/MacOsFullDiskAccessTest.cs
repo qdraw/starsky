@@ -78,7 +78,7 @@ public sealed class MacOsFullDiskAccessTest
 		Assert.IsFalse(result);
 	}
 
-	private class ThrowingGetDirectoriesStorage : IStorage
+	private sealed class ThrowingGetDirectoriesStorage : IStorage
 	{
 		private readonly FakeIStorage _inner = new FakeIStorage(
 			outputSubPathFolders: new List<string> { "/Volumes" },
@@ -113,7 +113,7 @@ public sealed class MacOsFullDiskAccessTest
 		}
 	}
 
-	private class TestMacOsFullDiskAccess(
+	private sealed class TestMacOsFullDiskAccess(
 		ISelectorStorage selector,
 		IWebLogger logger,
 		bool openReturns,

@@ -94,17 +94,16 @@ public sealed class UdevWatcherTest
 			UdevHandle = new IntPtr(11),
 			MonitorHandle = new IntPtr(22),
 			MonitorFd = 3,
-			DevicesToReturn = new Queue<IntPtr>(new[] { new IntPtr(99) }),
-			DeviceNodesToReturn = new Queue<string>(new[] { "/dev/sdb1" }),
-			FileExistsResult = true,
-			LinesToReturn = new[] { "/dev/sdb1 /media/usb ext4 rw 0 0" }
+			DevicesToReturn = new Queue<IntPtr>([new IntPtr(99)]),
+			DeviceNodesToReturn = new Queue<string>(["/dev/sdb1"]),
+			LinesToReturn = ["/dev/sdb1 /media/usb ext4 rw 0 0"]
 		};
 
 		var running = true;
 		system.SleepCallback = () => running = false;
 
-		var watcher = new UdevWatcher(system, dn => system.MapDeviceToMount(dn),
-			m => mountEvents.Add(m), () => running);
+		var watcher = new UdevWatcher(system, system.MapDeviceToMount,
+			mountEvents.Add, () => running);
 
 		var result = watcher.TryRunUdevWatcher();
 

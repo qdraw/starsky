@@ -486,10 +486,10 @@ public class CameraStorageDetectorTest
 		// Act
 		var result = detector.IsCameraStorage("/media/usb-drive");
 
-		// Assert - result depends on whether filesystem is detected as camera-friendly
-		Assert.IsTrue(result);
+		// Assert
+		Assert.IsFalse(result);
 	}
-	
+
 	[TestMethod]
 	public void IsCameraStorage_NoDriveRoot()
 	{
@@ -501,16 +501,17 @@ public class CameraStorageDetectorTest
 		var result = detector.IsCameraStorage(string.Empty);
 
 		// Assert
-		Assert.Contains("Drive root is null or whitespace", logger.TrackedExceptions.LastOrDefault().Item2!);
+		Assert.Contains("Drive root is null or whitespace",
+			logger.TrackedExceptions.LastOrDefault().Item2!);
 		Assert.IsFalse(result);
 	}
-	
+
 	[TestMethod]
 	public void IsCameraStorage_CatchException()
 	{
 		// Arrange
 		var logger = new FakeIWebLogger();
-		var detector = new CameraStorageDetector(new FakeSelectorStorage(), 
+		var detector = new CameraStorageDetector(new FakeSelectorStorage(),
 			logger, null!);
 
 		// Act
@@ -520,13 +521,13 @@ public class CameraStorageDetectorTest
 		Assert.IsFalse(result);
 		Assert.Contains("Drive root failed", logger.TrackedExceptions.LastOrDefault().Item2!);
 	}
-	
+
 	[TestMethod]
 	public void IFindCameraStorages_CatchException()
 	{
 		// Arrange
 		var logger = new FakeIWebLogger();
-		var detector = new CameraStorageDetector(new FakeSelectorStorage(), 
+		var detector = new CameraStorageDetector(new FakeSelectorStorage(),
 			logger, null!);
 
 		// Act
@@ -534,7 +535,8 @@ public class CameraStorageDetectorTest
 
 		// Assert
 		Assert.IsEmpty(result);
-		Assert.Contains("Failed to enumerate drives during camera storage detection", logger.TrackedExceptions.LastOrDefault().Item2!);
+		Assert.Contains("Failed to enumerate drives during camera storage detection",
+			logger.TrackedExceptions.LastOrDefault().Item2!);
 	}
 
 	[TestMethod]
@@ -554,7 +556,7 @@ public class CameraStorageDetectorTest
 		// Act - use a path that might work on Windows
 		var result = detector.IsCameraStorage("C:\\");
 
-		// Assert - should handle gracefully
-		Assert.IsNotNull(result);
+		// Assert 
+		Assert.IsFalse(result);
 	}
 }

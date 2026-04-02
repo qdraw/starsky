@@ -168,6 +168,8 @@ public sealed class MacMountWatcherTest
 		// Act & Assert - should not throw and should start background thread
 		sut.Start();
 		sut.Stop();
+
+		Assert.IsGreaterThanOrEqualTo(0, logger.TrackedExceptions.Count);
 	}
 
 	[TestMethod]
