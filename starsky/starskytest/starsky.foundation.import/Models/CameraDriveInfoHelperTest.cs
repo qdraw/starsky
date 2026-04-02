@@ -124,4 +124,22 @@ public class CameraDriveInfoHelperTest
 		// When ReadAllLines throws, DetectFileSystem swallows exceptions -> empty string
 		Assert.AreEqual(string.Empty, info);
 	}
+	
+	[TestMethod]
+	public void DetectFileSystem_InvalidMountLine()
+	{
+		const string mountLine = "/dev/sdb1 /test"; // invalid
+		var bytes = Encoding.UTF8.GetBytes(mountLine + "\n");
+
+		var fakeStorage = new FakeIStorage(
+			null,
+			["/proc/mounts"],
+			new List<byte[]> { bytes }
+		);
+
+		var info = CameraDriveInfoHelper.DetectFileSystem(fakeStorage,
+			"/test");
+
+		Assert.AreEqual(string.Empty, info);
+	}
 }
