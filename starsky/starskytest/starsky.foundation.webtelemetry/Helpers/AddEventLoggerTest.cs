@@ -13,14 +13,6 @@ public sealed class AddEventLoggerTest
     private sealed class FakeLoggingBuilder : ILoggingBuilder
     {
         public IServiceCollection Services { get; } = new ServiceCollection();
-        public bool AddProviderCalled { get; private set; }
-        public ILoggerProvider? LastProvider { get; private set; }
-
-        public void AddProvider(ILoggerProvider provider)
-        {
-            AddProviderCalled = true;
-            LastProvider = provider;
-        }
     }
 
     [TestMethod]
@@ -45,7 +37,7 @@ public sealed class AddEventLoggerTest
         var source = addEventLogger.AddEventLog(builder, AppSettings.StarskyAppType.WebController);
 
         Assert.AreEqual("nl.qdraw.webcontroller", source);
-        Assert.AreEqual(0, builder.Services.Count);
+        Assert.IsEmpty(builder.Services);
     }
 
     [TestMethod]
@@ -57,7 +49,7 @@ public sealed class AddEventLoggerTest
         var source = addEventLogger.AddEventLog(builder, AppSettings.StarskyAppType.WebController);
 
         Assert.AreEqual("nl.qdraw.webcontroller", source);
-        Assert.AreEqual(0, builder.Services.Count);
+        Assert.IsEmpty(builder.Services);
     }
 }
 
