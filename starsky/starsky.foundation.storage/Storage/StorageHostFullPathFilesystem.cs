@@ -126,7 +126,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			{
 				throw;
 			}
-			
+
 			// Does not throw when UnauthorizedAccessException or DirectoryNotFoundException
 			return [];
 		}
@@ -240,6 +240,11 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		}
 
 		return File.ReadLinesAsync(path, cancellationToken);
+	}
+
+	public string[] ReadAllLines(string path)
+	{
+		return File.ReadAllLines(path);
 	}
 
 	/// <summary>

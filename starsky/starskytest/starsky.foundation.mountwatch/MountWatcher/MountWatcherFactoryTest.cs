@@ -14,7 +14,7 @@ public sealed class MountWatcherFactoryTest
 	public void MountWatcherFactory_CreateMountWatcher_ReturnsValidWatcher()
 	{
 		// Arrange
-		var factory = new MountWatcherFactory(new FakeIWebLogger());
+		var factory = new MountWatcherFactory(new FakeSelectorStorage(), new FakeIWebLogger());
 
 		// Act
 		var watcher = factory.CreateMountWatcher();
@@ -28,7 +28,7 @@ public sealed class MountWatcherFactoryTest
 	public void MountWatcherFactory_CreateMountWatcher_ReturnsDifferentInstance()
 	{
 		// Arrange
-		var factory = new MountWatcherFactory(new FakeIWebLogger());
+		var factory = new MountWatcherFactory(new FakeSelectorStorage(), new FakeIWebLogger());
 
 		// Act
 		var watcher1 = factory.CreateMountWatcher();
@@ -43,8 +43,8 @@ public sealed class MountWatcherFactoryTest
 	[TestMethod]
 	public void MountWatcherFactory_CreateMountWatcher_ReturnsMacWatcher()
 	{
-		var factory = new MountWatcherFactory(new FakeIWebLogger(),
-			() => OSPlatform.OSX,10);
+		var factory = new MountWatcherFactory(new FakeSelectorStorage(), new FakeIWebLogger(),
+			() => OSPlatform.OSX, 10);
 
 		var watcher = factory.CreateMountWatcher();
 
@@ -54,8 +54,8 @@ public sealed class MountWatcherFactoryTest
 	[TestMethod]
 	public void MountWatcherFactory_CreateMountWatcher_ReturnsWindowsWatcher()
 	{
-		var factory = new MountWatcherFactory(new FakeIWebLogger(),
-			() => OSPlatform.Windows,10);
+		var factory = new MountWatcherFactory(new FakeSelectorStorage(), new FakeIWebLogger(),
+			() => OSPlatform.Windows, 10);
 
 		var watcher = factory.CreateMountWatcher();
 
@@ -65,8 +65,8 @@ public sealed class MountWatcherFactoryTest
 	[TestMethod]
 	public void MountWatcherFactory_CreateMountWatcher_ReturnsLinuxWatcher()
 	{
-		var factory = new MountWatcherFactory(new FakeIWebLogger(),
-			() => OSPlatform.Linux,10);
+		var factory = new MountWatcherFactory(new FakeSelectorStorage(), new FakeIWebLogger(),
+			() => OSPlatform.Linux, 10);
 
 		var watcher = factory.CreateMountWatcher();
 
@@ -77,8 +77,8 @@ public sealed class MountWatcherFactoryTest
 	[TestMethod]
 	public void MountWatcherFactory_CreateMountWatcher_UnsupportedOs_Throws()
 	{
-		var factory = new MountWatcherFactory(new FakeIWebLogger(),
-			() => OSPlatform.Create("Unknown"),10);
+		var factory = new MountWatcherFactory(new FakeSelectorStorage(), new FakeIWebLogger(),
+			() => OSPlatform.Create("Unknown"), 10);
 
 		Assert.ThrowsExactly<NotSupportedException>(factory.CreateMountWatcher);
 	}

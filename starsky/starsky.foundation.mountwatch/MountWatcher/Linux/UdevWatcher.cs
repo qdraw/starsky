@@ -1,5 +1,5 @@
 using System;
-using starsky.foundation.mountwatch.MountWatcher.Helpers.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Linux.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher.Linux;
 

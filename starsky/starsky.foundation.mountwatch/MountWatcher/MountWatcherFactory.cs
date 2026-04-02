@@ -5,6 +5,7 @@ using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher;
 
@@ -12,15 +13,16 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 ///     Factory for creating OS-specific mount watchers
 /// </summary>
 [Service(typeof(IMountWatcherFactory), InjectionLifetime = InjectionLifetime.Singleton)]
-public class MountWatcherFactory(IWebLogger logger) : IMountWatcherFactory
+public class MountWatcherFactory(ISelectorStorage selectorStorage, IWebLogger logger)
+	: IMountWatcherFactory
 {
 	private readonly Func<OSPlatform> _platformResolver =
 		OperatingSystemHelper.GetPlatform;
 
 	private readonly int _pollIntervalMs;
 
-	internal MountWatcherFactory(IWebLogger logger,
-		Func<OSPlatform> platformResolver, int pollIntervalMs) : this(logger)
+	internal MountWatcherFactory(ISelectorStorage selectorStorage, IWebLogger logger,
+		Func<OSPlatform> platformResolver, int pollIntervalMs) : this(selectorStorage, logger)
 	{
 		_platformResolver = platformResolver;
 		_pollIntervalMs = pollIntervalMs;
@@ -45,7 +47,7 @@ public class MountWatcherFactory(IWebLogger logger) : IMountWatcherFactory
 
 		if ( platform == OSPlatform.Linux )
 		{
-			return new LinuxMountWatcher(logger, _pollIntervalMs);
+			return new LinuxMountWatcher(selectorStorage, logger, _pollIntervalMs);
 		}
 
 		throw new NotSupportedException("Operating system is not supported");

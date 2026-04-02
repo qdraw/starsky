@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.import.Models;
 
@@ -40,30 +41,28 @@ public static class CameraDriveInfoHelper
 	/// <summary>
 	///     Create CameraDriveInfo from a path (useful for Linux where DriveInfo doesn't work well)
 	/// </summary>
-	public static CameraDriveInfo ToCameraDriveInfo(string mountPath)
+	public static CameraDriveInfo ToCameraDriveInfo(IStorage hostStorage, string mountPath)
 	{
 		var directoryInfo = new DirectoryInfo(mountPath);
 
 		return new CameraDriveInfo
 		{
 			IsReady = true, // If we can access it, assume it's ready
-			RootDirectory = new CameraDirectoryInfo
-			{
-				Exists = directoryInfo.Exists, FullName = mountPath
-			},
-			DriveFormat = DetectFileSystem(mountPath)
+			RootDirectory =
+				new CameraDirectoryInfo { Exists = directoryInfo.Exists, FullName = mountPath },
+			DriveFormat = DetectFileSystem(hostStorage, mountPath)
 		};
 	}
 
 	/// <summary>
 	///     Attempt to detect the filesystem type (for Linux)
 	/// </summary>
-	private static string DetectFileSystem(string mountPath)
+	private static string DetectFileSystem(IStorage hostStorage, string mountPath)
 	{
 		try
 		{
 			// Try to read from /proc/mounts if on Linux
-			if ( File.Exists("/proc/mounts") )
+			if ( hostStorage.ExistFile("/proc/mounts") )
 			{
 				var lines = File.ReadAllLines("/proc/mounts");
 				foreach ( var line in lines )

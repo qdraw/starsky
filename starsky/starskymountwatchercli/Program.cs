@@ -16,6 +16,8 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
 
@@ -50,6 +52,7 @@ public static class Program
 
 			services.AddMemoryCache();
 			services.AddHealthChecks();
+			services.AddScoped<ISelectorStorage, SelectorStorage>();
 
 			var tempServiceProvider = services.BuildServiceProvider();
 			var appSettings = tempServiceProvider.GetRequiredService<AppSettings>();

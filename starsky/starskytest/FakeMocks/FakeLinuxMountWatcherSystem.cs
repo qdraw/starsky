@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using starsky.foundation.mountwatch.MountWatcher.Helpers.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Linux.Interfaces;
 
 namespace starskytest.FakeMocks;
 

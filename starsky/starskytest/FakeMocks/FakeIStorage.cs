@@ -113,6 +113,11 @@ public class FakeIStorage : IStorage
 		throw new NotSupportedException();
 	}
 
+	public string[] ReadAllLines(string path)
+	{
+		throw new NotImplementedException();
+	}
+
 	public virtual bool ExistFile(string path)
 	{
 		return _outputSubPathFiles.Contains(path);

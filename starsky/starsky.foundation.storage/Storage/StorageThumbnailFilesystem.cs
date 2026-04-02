@@ -37,6 +37,12 @@ public sealed class StorageThumbnailFilesystem : IStorage
 		throw new NotSupportedException();
 	}
 
+	public string[] ReadAllLines(string path)
+	{
+		var fullPath = CombinePath(path);
+		return new StorageHostFullPathFilesystem(_logger).ReadAllLines(fullPath);
+	}
+
 	/// <summary>
 	/// </summary>
 	/// <param name="path">FileHash not path</param>

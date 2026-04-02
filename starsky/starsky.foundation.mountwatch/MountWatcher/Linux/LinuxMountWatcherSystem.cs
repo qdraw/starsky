@@ -1,9 +1,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using starsky.foundation.mountwatch.MountWatcher.Helpers.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Linux.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher.Linux;
 
@@ -64,16 +63,6 @@ internal sealed class LinuxMountWatcherSystem : ILinuxMountWatcherSystem
 	public void UdevMonitorUnref(IntPtr monitor)
 	{
 		udev_monitor_unref(monitor);
-	}
-
-	public bool FileExists(string path)
-	{
-		return File.Exists(path);
-	}
-
-	public string[] ReadAllLines(string path)
-	{
-		return File.ReadAllLines(path);
 	}
 
 	public void Sleep(int milliseconds)

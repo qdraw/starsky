@@ -1320,9 +1320,9 @@ public sealed class Mp4FileHasherTest
 			Array.Reverse(size8);
 		}
 
-		await ms.WriteAsync(size8.AsMemory(0, 4), 
+		await ms.WriteAsync(size8.AsMemory(0, 4),
 			TestContext.CancellationToken);
-		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4), 
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4),
 			TestContext.CancellationToken);
 		var mp4Data = ms.ToArray();
 
@@ -1586,6 +1586,11 @@ public sealed class Mp4FileHasherTest
 
 		public IAsyncEnumerable<string> ReadLinesAsync(string path,
 			CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException();
+		}
+
+		public string[] ReadAllLines(string path)
 		{
 			throw new NotImplementedException();
 		}

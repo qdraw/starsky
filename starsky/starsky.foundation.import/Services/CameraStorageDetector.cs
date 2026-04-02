@@ -71,7 +71,8 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 			// On Linux, create CameraDriveInfo from path directly
 			if ( _isOsPlatformDelegate(OSPlatform.Linux) )
 			{
-				var cameraDriveInfo = CameraDriveInfoHelper.ToCameraDriveInfo(driveRoot);
+				var cameraDriveInfo =
+					CameraDriveInfoHelper.ToCameraDriveInfo(_hostStorage, driveRoot);
 				return IsCameraStorage(cameraDriveInfo);
 			}
 

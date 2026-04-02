@@ -1,22 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using starsky.foundation.mountwatch.MountWatcher.Helpers.Interfaces;
 using starsky.foundation.mountwatch.MountWatcher.Linux;
+using starsky.foundation.mountwatch.MountWatcher.Linux.Interfaces;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.mountwatch.MountWatcher;
 
 /// <summary>
 ///     Linux mount watcher using udev for event-driven notifications (with polling fallback)
 /// </summary>
-internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs)
+internal class LinuxMountWatcher(
+	ISelectorStorage selectorStorage,
+	IWebLogger logger,
+	int pollIntervalMs)
 	: BaseMountWatcher(logger, pollIntervalMs)
 {
 	private readonly ILinuxMountWatcherSystem _system = new LinuxMountWatcherSystem();
 
-	internal LinuxMountWatcher(IWebLogger logger, ILinuxMountWatcherSystem system,
-		int pollIntervalMs) : this(logger, pollIntervalMs)
+	private readonly IStorage _hostStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+
+	private const string ProcMountsPath = "/proc/mounts";
+
+	internal LinuxMountWatcher(ISelectorStorage selectorStorage, IWebLogger logger,
+		ILinuxMountWatcherSystem system,
+		int pollIntervalMs) : this(selectorStorage, logger, pollIntervalMs)
 	{
 		_system = system;
 	}
@@ -94,13 +105,12 @@ internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs)
 
 		try
 		{
-			if ( !_system.FileExists("/proc/mounts") )
+			if ( !_hostStorage.ExistFile(ProcMountsPath) )
 			{
-				return new List<string>();
+				return [];
 			}
 
-			var lines = _system.ReadAllLines("/proc/mounts");
-			mounts.AddRange(ParseMountLines(lines));
+			mounts.AddRange(ParseMountLines(_hostStorage.ReadAllLines(ProcMountsPath)));
 		}
 		catch
 		{
@@ -140,12 +150,12 @@ internal class LinuxMountWatcher(IWebLogger logger, int pollIntervalMs)
 	{
 		try
 		{
-			if ( !_system.FileExists("/proc/mounts") )
+			if ( !_hostStorage.ExistFile(ProcMountsPath) )
 			{
 				return null;
 			}
 
-			var lines = _system.ReadAllLines("/proc/mounts");
+			var lines = _hostStorage.ReadAllLines(ProcMountsPath);
 			foreach ( var line in lines )
 			{
 				var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);

@@ -1,6 +1,6 @@
 using System;
 
-namespace starsky.foundation.mountwatch.MountWatcher.Helpers.Interfaces;
+namespace starsky.foundation.mountwatch.MountWatcher.Linux.Interfaces;
 
 internal interface ILinuxMountWatcherSystem
 {
@@ -17,8 +17,5 @@ internal interface ILinuxMountWatcherSystem
 	void UdevDeviceUnref(IntPtr device);
 	string? UdevDeviceGetDevnode(IntPtr device);
 	void UdevMonitorUnref(IntPtr monitor);
-	bool FileExists(string path);
-	string[] ReadAllLines(string path);
 	void Sleep(int milliseconds);
 }
-

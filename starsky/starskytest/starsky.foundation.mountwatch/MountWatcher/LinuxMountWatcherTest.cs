@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
-using starsky.foundation.mountwatch.MountWatcher.Helpers.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Linux.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.mountwatch.MountWatcher;
@@ -14,8 +14,8 @@ public sealed class LinuxMountWatcherTest
 {
 	private static LinuxMountWatcher CreateSut(FakeLinuxMountWatcherSystem? system = null)
 	{
-		return new LinuxMountWatcher(new FakeIWebLogger(),
-			system ?? new FakeLinuxMountWatcherSystem(),10);
+		return new LinuxMountWatcher(new FakeSelectorStorage(), new FakeIWebLogger(),
+			system ?? new FakeLinuxMountWatcherSystem(), 10);
 	}
 
 	private static void SetIsRunning(LinuxMountWatcher watcher, bool value)
@@ -195,6 +195,33 @@ public sealed class LinuxMountWatcherTest
 			MonitorFd = 3,
 			DevicesToReturn = new Queue<IntPtr>([new IntPtr(44)]),
 			DeviceNodesToReturn = new Queue<string>([string.Empty])
+		};
+		var watcher = CreateSut(system);
+		watcher.MountDetected += (_, args) => mountEvents.Add(args.MountPath);
+
+		SetIsRunning(watcher, true);
+		system.SleepCallback = () => SetIsRunning(watcher, false);
+
+		_ = watcher.TryRunUdevWatcher();
+
+		Assert.IsEmpty(mountEvents);
+		Assert.AreEqual(1, system.DeviceUnrefCalls);
+	}
+
+	[TestMethod]
+	public void LinuxMountWatcher_TryRunUdevWatcher_IgnoresWhenResolveMountPointReturnsNull()
+	{
+		var mountEvents = new List<string>();
+		var system = new FakeLinuxMountWatcherSystem
+		{
+			UdevHandle = new IntPtr(11),
+			MonitorHandle = new IntPtr(22),
+			MonitorFd = 3,
+			DevicesToReturn = new Queue<IntPtr>([new IntPtr(99)]),
+			DeviceNodesToReturn = new Queue<string>(["/dev/sdb1"]),
+			FileExistsResult = true,
+			// Lines do not include a matching device node, so ResolveMountPoint should return null
+			LinesToReturn = ["/dev/sdb2 /media/other ext4 rw 0 0"]
 		};
 		var watcher = CreateSut(system);
 		watcher.MountDetected += (_, args) => mountEvents.Add(args.MountPath);
