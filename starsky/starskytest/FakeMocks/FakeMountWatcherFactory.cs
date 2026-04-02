@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.Services;
 
@@ -14,6 +15,8 @@ public class FakeMountWatcherFactory : IMountWatcherFactory
 
 	private sealed class FakeMountWatcher : IMountWatcher
 	{
+		[SuppressMessage("Sonar", "CS0067: The event 'FakeMountWatcherFactory." +
+		                          "FakeMountWatcher.MountDetected' is never used")]
 		public event EventHandler<MountDetectedEventArgs>? MountDetected;
 
 		public void Start()

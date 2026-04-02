@@ -14,19 +14,20 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// </summary>
 internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
+	private const string ScExe = "sc.exe";
 	private readonly Func<int, Task> _delayAsync = Task.Delay;
 
 	private readonly Func<string, string, Task<bool>> _runProcessAsync =
 		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args);
 
-	// sc.exe stop returns 1060 (service does not exist) or 1062 (service not active);
+	private readonly string _serviceDisplayName = WatchServiceName.GetDisplayName();
+	private readonly string _serviceName = WatchServiceName.GetReverseDnsName();
+
+	// sc.exe stop returns 1060 (service does not exist) or 1062 (service not active)
 	// both mean the service is already in the desired stopped state → treat as success.
 	private readonly Func<string, string, Task<bool>> _stopProcessAsync =
 		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args,
-			new[] { 1060, 1062 });
-
-	private readonly string _serviceDisplayName = WatchServiceName.GetDisplayName();
-	private readonly string _serviceName = WatchServiceName.GetReverseDnsName();
+			[1060, 1062]);
 
 	internal WindowsServiceInstaller(IWebLogger logger,
 		Func<string, string, Task<bool>> runProcessAsync,
@@ -57,7 +58,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 
 			// sc.exe create "service" binPath= "path"
 			// Note the space after "binPath=" is mandatory for sc.exe
-			var result = await _runProcessAsync("sc.exe",
+			var result = await _runProcessAsync(ScExe,
 				$"create \"{_serviceName}\" binPath= \"{binPath}\" " +
 				$"DisplayName= \"{_serviceDisplayName}\" start= auto obj= \"LocalSystem\"");
 
@@ -88,7 +89,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		try
 		{
 			await StopAsync();
-			var result = await _runProcessAsync("sc.exe", $"delete \"{_serviceName}\"");
+			var result = await _runProcessAsync(ScExe, $"delete \"{_serviceName}\"");
 
 			if ( result )
 			{
@@ -115,13 +116,13 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		try
 		{
-			var result = await _runProcessAsync("sc.exe", $"start \"{_serviceName}\"");
+			var result = await _runProcessAsync(ScExe, $"start \"{_serviceName}\"");
 			if ( !result )
 			{
 				logger.LogInformation(
 					$"Retrying to start Windows Service: {_serviceName} after 2 seconds...");
 				await _delayAsync(2000);
-				result = await _runProcessAsync("sc.exe", $"start \"{_serviceName}\"");
+				result = await _runProcessAsync(ScExe, $"start \"{_serviceName}\"");
 			}
 
 			if ( result )
@@ -149,7 +150,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		try
 		{
-			var result = await _stopProcessAsync("sc.exe", $"stop \"{_serviceName}\"");
+			var result = await _stopProcessAsync(ScExe, $"stop \"{_serviceName}\"");
 			if ( result )
 			{
 				logger.LogInformation($"Windows Service stopped: {_serviceName}");

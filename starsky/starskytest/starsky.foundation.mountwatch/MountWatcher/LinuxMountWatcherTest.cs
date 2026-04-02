@@ -288,7 +288,6 @@ public sealed class LinuxMountWatcherTest
 		system.SleepCallback = () => SetIsRunning(watcher, false);
 
 		watcher.Start();
-		Thread.Sleep(20);
 		watcher.Stop();
 
 		Assert.AreEqual(1, system.UdevUnrefCalls);

@@ -11,7 +11,7 @@ public static class WatchServiceName
 	{
 		return ReverseDnsServiceName;
 	}
-	
+
 #if DEBUG
 	private const string SystemdServiceName = "starsky-mountwatcher-debug";
 #else
@@ -32,5 +32,13 @@ public static class WatchServiceName
 	public static string GetDisplayName()
 	{
 		return ServiceDisplayName;
+	}
+
+	/// <summary>
+	///     Get the Linux log path hint
+	/// </summary>
+	internal static string GetLinuxLogHint()
+	{
+		return $"journalctl -u {SystemdServiceName}";
 	}
 }

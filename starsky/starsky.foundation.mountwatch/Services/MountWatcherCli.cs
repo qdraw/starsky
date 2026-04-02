@@ -150,17 +150,21 @@ public class MountWatcherCli
 		}
 		else if ( OperatingSystem.IsLinux() )
 		{
-			_console.WriteLine("  systemd: /etc/systemd/system/starsky-mountwatcher.service");
-			_console.WriteLine("  Enable: sudo systemctl enable starsky-mountwatcher");
-			_console.WriteLine("  Start:  sudo systemctl start starsky-mountwatcher");
-			_console.WriteLine($"  Logs: {ServiceInstallerHelper.GetLinuxLogHint()}");
+			_console.WriteLine(
+				$"  systemd: /etc/systemd/system/{WatchServiceName.GetSystemDName()}.service");
+			_console.WriteLine(
+				$"  Enable: sudo systemctl enable {WatchServiceName.GetSystemDName()}");
+			_console.WriteLine(
+				$"  Start:  sudo systemctl start {WatchServiceName.GetSystemDName()}");
+			_console.WriteLine($"  Logs: {WatchServiceName.GetLinuxLogHint()}");
 		}
 		else if ( OperatingSystem.IsWindows() )
 		{
-			_console.WriteLine("  Windows Service: sc create \"nl.qdraw.mountwatcher\" ...");
-			_console.WriteLine("  Start: sc start nl.qdraw.mountwatcher");
+			_console.WriteLine(
+				$"  Windows Service: sc create \"{WatchServiceName.GetReverseDnsName()}\" ...");
+			_console.WriteLine($"  Start: sc start {WatchServiceName.GetReverseDnsName()}");
 			_console.WriteLine("  Logs: Windows Event Viewer -> Windows Logs -> Application");
-			_console.WriteLine("        Source: nl.qdraw.mountwatcher");
+			_console.WriteLine($"        Source: {WatchServiceName.GetReverseDnsName()}");
 		}
 	}
 
@@ -177,8 +181,8 @@ public class MountWatcherCli
 			return;
 		}
 
-		var message =
-			"Unable to read /Volumes. Mount events may not be visible until Full Disk Access is granted.";
+		const string message = "Unable to read /Volumes. " +
+		                       "Mount events may not be visible until Full Disk Access is granted.";
 		_logger.LogError($"{message} Error: {probeException?.Message}");
 		_console.WriteLine($"Warning: {message}");
 		_console.WriteLine("Opening macOS Full Disk Access settings...");

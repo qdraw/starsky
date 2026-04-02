@@ -122,8 +122,8 @@ public sealed class UdevWatcherTest
 			UdevHandle = new IntPtr(11),
 			MonitorHandle = new IntPtr(22),
 			MonitorFd = 3,
-			DevicesToReturn = new Queue<IntPtr>(new[] { new IntPtr(44) }),
-			DeviceNodesToReturn = new Queue<string>(new[] { string.Empty })
+			DevicesToReturn = new Queue<IntPtr>([new IntPtr(44)]),
+			DeviceNodesToReturn = new Queue<string>([string.Empty])
 		};
 
 		var running = true;

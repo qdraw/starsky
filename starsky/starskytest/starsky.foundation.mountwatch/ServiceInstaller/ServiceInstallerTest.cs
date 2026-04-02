@@ -175,12 +175,6 @@ public sealed class ServiceInstallerTest
 	}
 
 	[TestMethod]
-	public void GetLinuxLogHint_ReturnsJournalctlCommand()
-	{
-		Assert.Contains("journalctl", ServiceInstallerHelper.GetLinuxLogHint());
-	}
-
-	[TestMethod]
 	public void WatchServiceName_GetReverseDnsName_IsNotEmpty()
 	{
 		Assert.IsFalse(string.IsNullOrWhiteSpace(WatchServiceName.GetReverseDnsName()));
