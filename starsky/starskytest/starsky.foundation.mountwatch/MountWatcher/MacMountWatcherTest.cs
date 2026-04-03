@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -298,65 +299,85 @@ public sealed class MacMountWatcherBackupLoopTests
 	public TestContext TestContext { get; set; }
 
 	[TestMethod]
-	public void RunBackupPollingLoop_RaisesMountDetected_WhenNewMountsAppear()
+	public async Task RunBackupPollingLoop_RaisesMountDetected_WhenNewMountsAppear()
 	{
 		var logger = new FakeIWebLogger();
 
 		// Sequence: no mounts, then SD_CARD appears, then root only (eject), then NEW_DRIVE appears
-		var seq = new Queue<List<string>>();
+		var seq = new ConcurrentQueue<List<string>>();
 		seq.Enqueue([]);
 		seq.Enqueue(["/Volumes/SD_CARD"]);
 		seq.Enqueue([]);
 		seq.Enqueue(["/Volumes/NEW_DRIVE"]);
 
-		var sut = new TestableMacMountWatcher(logger, () => seq.Count > 0 ? seq.Dequeue() : [], 20);
+		var sut = new TestableMacMountWatcher(logger,
+			() => { return seq.TryDequeue(out var v) ? v : []; }, 50);
 
 		var detected = new List<string>();
-		sut.MountDetected += (_, e) => detected.Add(e.MountPath);
+		var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+		sut.MountDetected += (_, e) =>
+		{
+			lock ( detected )
+			{
+				detected.Add(e.MountPath);
+				if ( detected.Count >= 2 )
+				{
+					tcs.TrySetResult(true);
+				}
+			}
+		};
 
 		sut.SetRunning(true);
 		var task = Task.Run(sut.RunBackupPollingLoopPublic, TestContext.CancellationToken);
-		task.Wait(100, TestContext.CancellationToken);
-		sut.SetRunning(false);
-		task.Wait(50, TestContext.CancellationToken);
 
-		CollectionAssert.AreEquivalent(
-			new List<string> { "/Volumes/SD_CARD", "/Volumes/NEW_DRIVE" }, detected);
+		var completed = await Task.WhenAny(tcs.Task, Task.Delay(5000, TestContext.CancellationToken));
+
+		sut.SetRunning(false);
+		await Task.WhenAny(task, Task.Delay(500, TestContext.CancellationToken));
+
+		Assert.AreEqual(tcs.Task, completed, "Timed out waiting for mounts to be detected");
+		CollectionAssert.AreEquivalent(new List<string> { "/Volumes/SD_CARD", "/Volumes/NEW_DRIVE" }, detected);
 	}
 
 	[TestMethod]
-	public void RunBackupPollingLoop_ContinuesAfterGetMountedVolumesThrows()
+	public async Task RunBackupPollingLoop_ContinuesAfterGetMountedVolumesThrows()
 	{
 		var logger = new FakeIWebLogger();
 
 		var call = 0;
 
-		var sut = new TestableMacMountWatcher(logger, GetMountedVolumes, 20);
+		var sut = new TestableMacMountWatcher(logger, GetMountedVolumes, 50);
 		var detected = new List<string>();
-		sut.MountDetected += (_, e) => detected.Add(e.MountPath);
+		var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+		sut.MountDetected += (_, e) =>
+		{
+			lock ( detected )
+			{
+				detected.Add(e.MountPath);
+				tcs.TrySetResult(true);
+			}
+		};
 
 		sut.SetRunning(true);
 		var task = Task.Run(sut.RunBackupPollingLoopPublic, TestContext.CancellationToken);
-		task.Wait(100, TestContext.CancellationToken);
 
-		if ( detected.Count == 0 )
-		{
-			task.Wait(100, TestContext.CancellationToken);
-		}
+		var completed = await Task.WhenAny(tcs.Task, Task.Delay(5000, TestContext.CancellationToken));
 
 		sut.SetRunning(false);
+		await Task.WhenAny(task, Task.Delay(500, TestContext.CancellationToken));
 
+		Assert.AreEqual(tcs.Task, completed, "Timed out waiting for recovered mount");
 		Assert.HasCount(1, detected);
 		Assert.AreEqual("/Volumes/RECOVER", detected[0]);
 		return;
 
-		// First call throws, then returns a single mount
 		List<string> GetMountedVolumes()
 		{
 			call++;
-			return call == 1
-				? throw new InvalidOperationException("simulated failure")
-				: ["/Volumes/RECOVER"];
+			return call == 1 ? throw new InvalidOperationException("simulated failure") :
+			[
+				"/Volumes/RECOVER"
+			];
 		}
 	}
 }
