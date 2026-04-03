@@ -202,27 +202,23 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	///     Remove an ejected drive from the known-mounts baseline so that
 	///     re-inserting the same drive is recognised as a new mount.
 	/// </summary>
-	internal void HandleVolumeRemoval(string rawDriveName)
+	internal bool HandleVolumeRemoval(string rawDriveName)
 	{
 		if ( string.IsNullOrWhiteSpace(rawDriveName) )
 		{
 			logger.LogInformation(
 				"Windows volume removal event: drive name was empty, baseline unchanged");
-			return;
+			return false;
 		}
 
 		var normalized = NormalizeDrive(rawDriveName);
 		var removed = _knownMountedVolumes.Remove(normalized);
-		if ( removed )
-		{
-			logger.LogInformation(
-				$"Windows volume removal event: removed '{normalized}' from baseline");
-		}
-		else
-		{
-			logger.LogInformation(
-				$"Windows volume removal event: '{normalized}' was not in baseline");
-		}
+		logger.LogInformation(
+			removed
+				? $"Windows volume removal event: removed '{normalized}' from baseline"
+				: $"Windows volume removal event: '{normalized}' was not in baseline");
+
+		return removed;
 	}
 
 	internal void SeedKnownMounts(IEnumerable<string> mountedVolumes)

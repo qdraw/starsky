@@ -178,11 +178,36 @@ public sealed class WindowsMountWatcherTest
 		var watcher = new WindowsMountWatcher(new FakeIWebLogger(), () => OSPlatform.Windows, 10);
 		watcher.SeedKnownMounts(new List<string> { "C:\\", "E:\\" });
 
-		watcher.HandleVolumeRemoval("E:");
+		var result = watcher.HandleVolumeRemoval("E:");
 
 		var mounts = watcher.DetectNewMounts(new List<string> { "C:\\", "E:\\" });
 		// since we removed and then detect with same mounts, E:\ should be reported as new
 		CollectionAssert.AreEqual(new List<string> { "E:\\" }, mounts.ToList());
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void HandleVolumeRemoval_Empty()
+	{
+		var logger = new FakeIWebLogger();
+		var watcher = new WindowsMountWatcher(logger, () => OSPlatform.Windows, 10);
+		var result = watcher.HandleVolumeRemoval(string.Empty);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void HandleVolumeRemoval_NotInBaseline()
+	{
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(), () => OSPlatform.Windows, 10);
+		watcher.SeedKnownMounts(new List<string> { "C:\\" });
+
+		var result = watcher.HandleVolumeRemoval("E:");
+
+		var mounts = watcher.DetectNewMounts(
+			new List<string> { "C:\\", "E:\\" });
+		// since we removed and then detect with same mounts, E:\ should be reported as new
+		CollectionAssert.AreEqual(new List<string> { "C:\\" }, mounts.ToList());
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
