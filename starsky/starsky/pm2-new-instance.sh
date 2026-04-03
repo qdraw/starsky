@@ -221,8 +221,8 @@ else
 fi
 
 echo "reset rights if those are wrong"
-/usr/bin/find . -type d -exec chmod 755 {} \;
-/usr/bin/find . -type f -exec chmod 644 {} \;
+/usr/bin/find $CURRENT_DIR -type d -exec chmod 755 {} \;
+/usr/bin/find $CURRENT_DIR -type f -exec chmod 644 {} \;
 
 # to restore the content UserViews
 if [[ -d "$USER_VIEWS_DIR" ]]; then

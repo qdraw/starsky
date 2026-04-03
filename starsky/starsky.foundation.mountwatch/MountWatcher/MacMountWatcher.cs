@@ -72,13 +72,13 @@ internal class MacMountWatcher : BaseMountWatcher
 		{
 			if ( _session != IntPtr.Zero && _runLoop != IntPtr.Zero && _runLoopMode != IntPtr.Zero )
 			{
-				_system.DASessionUnscheduleWithRunLoop(_session, _runLoop,
+				_system.DASessionUnscheduleWithRunLoopApi(_session, _runLoop,
 					_runLoopMode);
 			}
 
 			if ( _runLoop != IntPtr.Zero )
 			{
-				_system.CFRunLoopStop(_runLoop);
+				_system.CFRunLoopStopApi(_runLoop);
 			}
 		}
 		catch
@@ -127,7 +127,7 @@ internal class MacMountWatcher : BaseMountWatcher
 	{
 		try
 		{
-			_session = _system.DASessionCreate(IntPtr.Zero);
+			_session = _system.DASessionCreateApi(IntPtr.Zero);
 			if ( _session == IntPtr.Zero )
 			{
 				logger.LogError(
@@ -136,8 +136,8 @@ internal class MacMountWatcher : BaseMountWatcher
 				return;
 			}
 
-			_runLoop = _system.CFRunLoopGetCurrent();
-			_runLoopMode = _system.CFStringCreateWithCString(IntPtr.Zero,
+			_runLoop = _system.CFRunLoopGetCurrentApi();
+			_runLoopMode = _system.CFStringCreateWithCStringApi(IntPtr.Zero,
 				_system.GetCfRunLoopDefaultMode(),
 				_system.GetCfStringEncodingUtf8());
 
@@ -149,16 +149,16 @@ internal class MacMountWatcher : BaseMountWatcher
 				return;
 			}
 
-			_system.DASessionScheduleWithRunLoop(_session, _runLoop, _runLoopMode);
-			_system.DARegisterDiskAppearedCallback(_session, IntPtr.Zero,
+			_system.DASessionScheduleWithRunLoopApi(_session, _runLoop, _runLoopMode);
+			_system.DARegisterDiskAppearedCallbackApi(_session, IntPtr.Zero,
 				_diskAppearedCallback,
 				IntPtr.Zero);
-			_system.DARegisterDiskDisappearedCallback(_session, IntPtr.Zero,
+			_system.DARegisterDiskDisappearedCallbackApi(_session, IntPtr.Zero,
 				_diskDisappearedCallback,
 				IntPtr.Zero);
 
 			logger.LogInformation("DiskArbitration watcher active");
-			_system.CFRunLoopRun();
+			_system.CFRunLoopRunApi();
 		}
 		catch ( Exception ex )
 		{
@@ -173,7 +173,7 @@ internal class MacMountWatcher : BaseMountWatcher
 				if ( _session != IntPtr.Zero && _runLoop != IntPtr.Zero &&
 				     _runLoopMode != IntPtr.Zero )
 				{
-					_system.DASessionUnscheduleWithRunLoop(_session, _runLoop,
+					_system.DASessionUnscheduleWithRunLoopApi(_session, _runLoop,
 						_runLoopMode);
 				}
 			}
@@ -184,13 +184,13 @@ internal class MacMountWatcher : BaseMountWatcher
 
 			if ( _runLoopMode != IntPtr.Zero )
 			{
-				_system.CFRelease(_runLoopMode);
+				_system.CFReleaseApi(_runLoopMode);
 				_runLoopMode = IntPtr.Zero;
 			}
 
 			if ( _session != IntPtr.Zero )
 			{
-				_system.CFRelease(_session);
+				_system.CFReleaseApi(_session);
 				_session = IntPtr.Zero;
 			}
 		}

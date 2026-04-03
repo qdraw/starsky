@@ -1,288 +1,176 @@
-# Starsky Mount Watcher Implementation
+# starsky.foundation.mountwatch
 
-## Overview
+Introduction
+------------
+`starsky.foundation.mountwatch` detects external storage mounts (USB drives, cameras, card readers,
+network mounts depending on platform) and exposes mount detection events to the Starsky system (
+importer, background services, and tooling). It supports macOS Disk Arbitration integration and
+provides platform-specific service installers for macOS (launch agents / plist), Linux (systemd
+unit), and Windows (service wrappers).
 
-The Mount Watcher is a cross-platform CLI tool that monitors external drive and camera mount events,
-automatically detecting camera storage (DCIM folders) and triggering the Starsky importer service.
+Goals
 
-## Architecture
+- Detect new external mounts and notify downstream consumers reliably.
+- Provide a resilient fallback when platform APIs are not available (polling loop).
+- Be testable via dependency injection and fakes to avoid touching host system APIs in unit tests.
+- Offer installers/uninstallers for each OS to register the watcher as a background service/daemon.
 
-### Foundation Library: `starsky.foundation.mountwatch`
+Table of contents
 
-The foundation library provides core abstractions and platform-specific implementations:
+- Architecture & components
+- Events & public API
+- Threading and polling
+- Platform specifics (macOS / Linux / Windows)
+- Service installation
+- CLI usage
+- Configuration & conventions
+- Testing & CI guidance
+- Troubleshooting
+- Building & running
+- Contributing
 
-#### Interfaces
+Architecture & components
+-------------------------
+The library is centered around a platform-appropriate `BaseMountWatcher` implementation and several
+supporting components:
 
-- **`IMountWatcher`**: Abstraction for OS-specific mount detection
-    - `Start()`: Begin listening for mount events
-    - `Stop()`: Stop listening for mount events
-    - `GetMountedVolumes()`: Get currently mounted volumes
-    - `event MountDetected`: Fired when a new mount is detected
+- `BaseMountWatcher` (abstract): shared logic - known volumes tracking, normalization helpers,
+  lifecycle (Start/Stop), and `MountDetected` event.
+- `MacMountWatcher`: macOS implementation that integrates Disk Arbitration via
+  `IMacMountWatcherSystem` and provides a polling safety net (`RunBackupPollingLoop`).
+- `WindowsMountWatcher`: Windows implementation that uses WMI (`ManagementEventWatcher`) with a
+  polling fallback.
+- `LinuxMountWatcher`: Linux implementation that uses udev (libudev) with a polling fallback.
+- `MountWatcherCli`: CLI orchestrator; subscribes to `MountDetected` and delegates import work to
+  `IImport`/`ImportCli` using background tasks.
+- `MountDetector`: Detects camera storage (DCIM folders) on a mount.
+- Service installers: `MacOsServiceInstaller`, `LinuxServiceInstaller`, `WindowsServiceInstaller` —
+  generate and manage OS-specific service artifacts.
+- Helpers: `ServiceInstallerHelper`, `WatchServiceName` (canonical service names such as
+  `GetSystemDName()`).
 
-- **`IMountDetector`**: Detects camera storage on mounted volumes
-    - `HasCameraStorage(string mountPath)`: Check if mount has DCIM folder
-    - `GetCameraStoragePaths(string mountPath)`: Get camera storage paths
+Events & public API
+-------------------
 
-- **`IMountWatcherFactory`**: Creates OS-specific mount watchers
-    - `CreateMountWatcher()`: Return appropriate watcher for OS
+- Event: `event EventHandler<MountDetectedEventArgs> MountDetected` —
+  `MountDetectedEventArgs.MountPath` contains the normalized mount path.
+- Lifecycle methods: `StartAsync()`, `Stop()` / `StopAsync()`.
+- Scanning: `EmitNewExternalMounts(string reason)`, `GetMountedVolumes()` (platform-specific).
+- Service installer API: `InstallAsync(string executablePath)`, `UninstallAsync()`, `StartAsync()`,
+  `StopAsync()`.
 
-- **`IServiceInstaller`**: Installs / uninstalls the watcher as an OS service
-    - `InstallAsync(string executablePath)`: Write launchd plist / systemd unit / Windows Service
-    - `UninstallAsync()`: Remove the OS service definition
+Threading and polling behavior
+-----------------------------
 
-#### Platform-Specific Implementations
+- Event callbacks and the polling loop may run on background threads.
+- `RunBackupPollingLoop()` (macOS example): loops while `IsRunning`, calls
+  `EmitNewExternalMounts("polling backup")` inside try/catch and sleeps `PollIntervalMs` between
+  iterations. This loop must never crash the watcher.
+- Consumers should expect `MountDetected` handlers to be invoked concurrently and should offload
+  long work using `Task.Run` or other background mechanisms.
 
-1. **MacMountWatcher** (`MacMountWatcher.cs`)
-    - Uses **DiskArbitration** framework via P/Invoke
-    - `DARegisterDiskAppearedCallback` for instant event-driven notifications
-    - `CFRunLoop` keeps the event loop alive on a background thread
-    - Falls back to polling `/Volumes` if DiskArbitration is unavailable
+Platform specifics
+------------------
 
-2. **WindowsMountWatcher** (`WindowsMountWatcher.cs`)
-    - Uses **WMI** (`ManagementEventWatcher`) for event-driven drive detection
-    - Subscribes to `Win32_VolumeChangeEvent WHERE EventType = 2`
-    - Falls back to polling `DriveInfo.GetDrives()` if WMI is unavailable
-    - WMI calls are guarded with `[SupportedOSPlatform("windows")]`
+- macOS
+    - Uses Disk Arbitration when available via P/Invoke. `IMacMountWatcherSystem` abstracts system
+      calls for testing.
+    - `OnDiskAppeared` and `OnDiskDisappeared` update known mounts and call
+      `EmitNewExternalMounts()`.
+    - `Stop()` must unschedule the DASession and stop the CFRunLoop (
+      `DASessionUnscheduleWithRunLoop`, `CFRunLoopStop`).
 
-3. **LinuxMountWatcher** (`LinuxMountWatcher.cs`)
-    - Uses **udev** (libudev.so.1) P/Invoke for event-driven block device notifications
-    - Monitors `block` subsystem via `udev_monitor`
-    - Falls back to polling `/proc/mounts` if libudev is unavailable
+- Linux
+    - Uses systemd unit templates for service installation. The canonical name for systemd units is
+      provided by `WatchServiceName.GetSystemDName()`.
+    - Installer writes to `/etc/systemd/system/` and the user's `~/.config/systemd/user/` when
+      appropriate.
 
-#### Core Services
+- Windows
+    - Installer wraps service manager calls (sc.exe) or platform wrappers. Error branches are logged
+      via `IWebLogger.LogError` for both non-exception returns and thrown exceptions.
 
-- **`MountDetector`**: Detects camera storage by looking for DCIM folders
-    - Handles both uppercase and lowercase folder names
-    - Returns empty list on errors (permissions, IO exceptions)
+Service installation
+--------------------
+Each platform includes an installer that generates the appropriate unit/plist/service:
 
-- **`MountWatcherFactory`**: Uses `OperatingSystem` to select appropriate watcher
-    - Creates a new instance for each call (no caching)
+- macOS: LaunchAgent plist in `~/Library/LaunchAgents/` (or system equivalents) with notes about
+  Full Disk Access and `launchctl load` to enable.
+- Linux: systemd unit file at `/etc/systemd/system/{GetSystemDName()}.service` with recommended
+  `systemctl daemon-reload` and enable/start instructions.
+- Windows: `sc.exe` service creation and standard start/stop instructions.
 
-- **`ServiceInstaller`**: Installs the watcher as an OS service
-    - macOS: writes `~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist`
-    - Windows: calls `sc.exe create` to register a Windows Service
-    - Linux: writes `/etc/systemd/system/starsky-mountwatcher.service`
-        - Falls back to `~/.config/systemd/user/` when root is unavailable
-
-- **`MountWatcherCli`**: Orchestrates mount watching and importing
-    - Handles `--install`, `--uninstall`, `--help` args before starting the watcher
-    - Listens for mount detected events
-    - Checks for camera storage using `IMountDetector`
-    - Prevents duplicate imports using path-based HashSet
-    - Delegates import work to existing `ImportCli` service
-
-### CLI Project: `starskymountwatchercli`
-
-```csharp
-public static async Task Main(string[] args)
-{
-    // Setup DI, AppSettings, database…
-    var serviceInstaller = new ServiceInstaller(console, webLogger);
-
-    var service = new MountWatcherCli(
-        import, appSettings, console, webLogger,
-        exifToolDownload, geoFileDownload,
-        mountDetector, mountWatcherFactory,
-        cameraStorageDetector, serviceInstaller);
-
-    if (!await service.StartWatcher(args))
-        throw new WebApplicationException("Mount watcher failed to start");
-}
-```
-
-## CLI Usage
+CLI usage
+---------
+Typical CLI usage (from `starskymountwatchercli`):
 
 ```bash
 # Run the watcher
-starskymountwatchercli --verbose
+starskymountwatchercli
 
-# Install as OS service (writes launchd/systemd/Windows Service config)
+# Install as OS service
 starskymountwatchercli --install
 
-# Remove the OS service
+# Uninstall
 starskymountwatchercli --uninstall
 
-# Show help
+# Help
 starskymountwatchercli --help
 ```
 
-## OS-Specific Setup
+Configuration & conventions
+-------------------------
 
-### macOS (launchd) — via `--install`
+- Use `WatchServiceName.GetSystemDName()` when forming or asserting systemd unit filenames in code
+  and tests.
+- `PollIntervalMs` controls polling frequency for the backup loop; tests may adjust this value.
+- Log via `IWebLogger` and in tests use `FakeIWebLogger` to capture `TrackedInformation` and
+  `TrackedExceptions`.
 
-`--install` writes `~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist` and prints:
+Testing & CI guidance
+---------------------
 
-```
-LaunchAgent installed: /Users/<you>/Library/LaunchAgents/nl.qdraw.mountwatcher.plist
-To load now: launchctl load <path>
-Note: Grant Full Disk Access to the executable in System Preferences.
-```
+- Inject side-effecting dependencies (`IStorage`, `IWebLogger`, `IMacMountWatcherSystem`, importers)
+  so unit tests don't touch system resources.
+- Replace brittle sleep-based waits with deterministic synchronization:
+    - Use `TaskCompletionSource` to wait for a specific number of `MountDetected` events.
+    - Use thread-safe collections (`ConcurrentQueue`) to collect events.
+    - Example pattern: subscribe to `MountDetected`, push to queue, call `tcs.TrySetResult(true)`
+      when expected events arrive, await `Task.WhenAny(tcs.Task, Task.Delay(timeout))`.
+- To avoid CI flakiness, prefer adding an internal synchronous test hook such as
+  `RunBackupIterationForTests()` that runs one iteration of the polling logic; tests call it
+  directly to eliminate background scheduling races.
+- Ensure `FakeIStorage.ExistFile` normalizes paths (remove trailing slashes) to match production
+  `UninstallAsync` checks.
 
-Generated plist content:
+Troubleshooting
+---------------
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>nl.qdraw.mountwatcher</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/path/to/starskymountwatchercli</string>
-        <string>--verbose</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <true/>
-    <key>StandardOutPath</key>
-    <string>~/Library/Logs/starsky/mountwatcher.log</string>
-    <key>StandardErrorPath</key>
-    <string>~/Library/Logs/starsky/mountwatcher.error.log</string>
-</dict>
-</plist>
-```
+- Missing systemd unit removals in tests: ensure the fake storage uses the exact path created by
+  `WatchServiceName.GetSystemDName()`.
+- Mount events not observed in tests: use `TaskCompletionSource` + `ConcurrentQueue` rather than
+  fixed delays.
+- macOS cleanup not invoked: tests may need to set non-zero `IntPtr` placeholders for `_session`/_
+  runLoop/_runLoopMode` when using reflection to emulate a DASession; better is to inject `
+  IMacMountWatcherSystem` fakes that track `DASessionUnscheduleWithRunLoop` and `CFRunLoopStop`
+  calls.
 
-**Load the service after install:**
-
-```bash
-launchctl load ~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist
-```
-
-Permissions required: **Full Disk Access** (System Preferences → Privacy & Security)
-
----
-
-### Windows Service — via `--install`
-
-`--install` calls `sc.exe create` and prints:
-
-```
-Windows Service installed: nl.qdraw.mountwatcher
-To start: sc start nl.qdraw.mountwatcher
-```
-
-Start/stop manually:
-
-```cmd
-sc start nl.qdraw.mountwatcher
-sc stop nl.qdraw.mountwatcher
-```
-
----
-
-### Linux (systemd) — via `--install`
-
-`--install` writes `/etc/systemd/system/starsky-mountwatcher.service`
-(or `~/.config/systemd/user/starsky-mountwatcher.service` if run without root) and prints:
-
-```
-systemd unit installed: /etc/systemd/system/starsky-mountwatcher.service
-To enable and start:
-  sudo systemctl daemon-reload
-  sudo systemctl enable starsky-mountwatcher
-  sudo systemctl start starsky-mountwatcher
-```
-
-Generated unit file:
-
-```ini
-[Unit]
-Description=Starsky Mount Watcher
-After=network.target
-
-[Service]
-Type=simple
-ExecStart=/usr/local/bin/starskymountwatchercli --verbose
-Restart=on-failure
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
-```
-
----
-
-### Uninstalling
+How to run tests
+----------------
+Run tests from the repository root:
 
 ```bash
-# All platforms
-starskymountwatchercli --uninstall
+dotnet test starsky.sln
 ```
 
-Or manually:
+To diagnose flaky tests:
 
-```bash
-# macOS
-launchctl unload ~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist
-rm ~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist
+- Re-run with `dotnet test --filter FullyQualifiedName~YourTestName`.
+- Increase timeouts or use a test-only synchronous hook as described above.
 
-# Linux
-sudo systemctl stop starsky-mountwatcher
-sudo systemctl disable starsky-mountwatcher
-sudo rm /etc/systemd/system/starsky-mountwatcher.service
-sudo systemctl daemon-reload
-```
-
-## Complexity Metrics
-
-All methods maintain low cyclomatic and cognitive complexity (SonarQube standards):
-
-- **MountDetector methods**: Complexity ≤ 5
-- **OS-specific watchers**: Complexity ≤ 10
-- **ServiceInstaller methods**: Complexity ≤ 5
-- **MountWatcherCli**: Event handlers complexity ≤ 10
-
-## Duplicate Prevention
-
-The `MountWatcherCli` prevents duplicate imports using:
-
-```csharp
-private readonly HashSet<string> _processedPaths = new();
-private const int DuplicateCheckWindowSeconds = 60;
-```
-
-## Integration with ImportCli
-
-The mount watcher delegates actual import work to the existing `ImportCli` service:
-
-```csharp
-var importCli = new ImportCli(
-    _importService, _appSettings, _console, _logger,
-    _exifToolDownload, _geoFileDownload, _cameraStorageDetector);
-
-var result = await importCli.Importer(new[] { cameraPath, "--recursive" });
-```
-
-## Testing
-
-Comprehensive unit tests in `starskytest`:
-
-- **MountDetectorTest**: Camera storage detection (filesystem)
-- **MacMountWatcherTest**: macOS-specific watcher
-- **WindowsMountWatcherTest**: Windows-specific watcher
-- **LinuxMountWatcherTest**: Linux-specific watcher
-- **MountWatcherFactoryTest**: Factory creates correct watcher per OS
-- **MountWatcherCliTest**: `--install`, `--uninstall`, `--help`, watcher startup
-- **ServiceInstallerTest**: plist / unit file generation; install/uninstall on real OS
-
-Mock implementations:
-
-- **FakeMountDetector**: Returns no camera storage
-- **FakeMountWatcherFactory**: Returns a no-op fake watcher
-- **FakeServiceInstaller**: Captures install/uninstall calls
-
-## Logging
-
-```csharp
-_logger.LogInformation($"Mount detected: {e.MountPath}");
-_logger.LogInformation($"Camera storage detected on {e.MountPath}");
-_logger.LogInformation($"Starting import from {cameraPath}");
-_logger.LogError($"Import failed for {cameraPath}: {ex.Message}");
-```
-
-## Project Files
+Project layout
+--------------
+Key files and folders:
 
 ```
 starsky.foundation.mountwatch/
@@ -292,53 +180,57 @@ starsky.foundation.mountwatch/
 │   └── IServiceInstaller.cs
 ├── Services/
 │   ├── MountDetector.cs
-│   ├── MacMountWatcher.cs        ← DiskArbitration (P/Invoke) + polling fallback
-│   ├── WindowsMountWatcher.cs    ← WMI events + polling fallback
-│   ├── LinuxMountWatcher.cs      ← udev (P/Invoke) + polling fallback
+│   ├── MacMountWatcher.cs
+│   ├── WindowsMountWatcher.cs
+│   ├── LinuxMountWatcher.cs
 │   ├── MountWatcherFactory.cs
-│   ├── IMountWatcherFactory.cs
-│   ├── MountWatcherCli.cs        ← --install / --uninstall / --help
-│   └── ServiceInstaller.cs       ← launchd / systemd / Windows Service
+│   ├── MountWatcherCli.cs
+│   └── ServiceInstaller.cs
 └── starsky.foundation.mountwatch.csproj
 
 starskymountwatchercli/
 ├── Program.cs
-├── Properties/
-│   └── default-init-launchSettings.json
 └── starskymountwatchercli.csproj
 
 starskytest/
 ├── starsky.foundation.mountwatch/
 │   └── Services/
-│       ├── MountDetectorTest.cs
-│       ├── MacMountWatcherTest.cs
-│       ├── WindowsMountWatcherTest.cs
-│       ├── LinuxMountWatcherTest.cs
-│       ├── MountWatcherFactoryTest.cs
-│       ├── MountWatcherCliTest.cs
-│       └── ServiceInstallerTest.cs
 └── FakeMocks/
-    ├── FakeMountDetector.cs
-    ├── FakeMountWatcherFactory.cs
-    └── FakeServiceInstaller.cs
 ```
 
-## Building and Running
+Building and running
+--------------------
+Build the projects:
 
 ```bash
-# Build
 dotnet build starsky.foundation.mountwatch/starsky.foundation.mountwatch.csproj
 dotnet build starskymountwatchercli/starskymountwatchercli.csproj
-
-# Test
-dotnet test starskytest/starskytest.csproj --filter "FullyQualifiedName~MountWatch"
-
-# Run (foreground watcher)
-dotnet run --project starskymountwatchercli -- --verbose
-
-# Install as OS service
-dotnet run --project starskymountwatchercli -- --install
-
-# Uninstall
-dotnet run --project starskymountwatchercli -- --uninstall
 ```
+
+Run tests:
+
+```bash
+dotnet test starskytest/starskytest.csproj --filter "FullyQualifiedName~MountWatch"
+```
+
+Run the watcher (foreground):
+
+```bash
+dotnet run --project starskymountwatchercli
+```
+
+Contributing and recommended improvements
+----------------------------------------
+
+- Add an internal test-only API on `MacMountWatcher`: `internal void RunBackupIterationForTests()`
+  to run a single iteration deterministically.
+- Use `InternalsVisibleTo` for the test assembly to avoid reflection in tests.
+- Consider an `IPollingTimer`/`ISleeper` abstraction so tests can control or stub sleeps.
+- Improve logging by including the `reason` parameter when emitting mounts to make CI debugging
+  easier.
+
+License & support
+-----------------
+See the top-level repository `README.md` for licensing and CI build details.
+
+

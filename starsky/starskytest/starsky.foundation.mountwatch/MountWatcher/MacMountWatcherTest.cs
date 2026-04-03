@@ -280,16 +280,17 @@ internal sealed class FakeMacSystemForUnschedule : IMacMountWatcherSystem
 		return "kCFRunLoopDefaultMode";
 	}
 
-	public IntPtr DASessionCreate(IntPtr allocator)
+	public IntPtr DASessionCreateApi(IntPtr allocator)
 	{
 		return new IntPtr(123);
 	}
 
-	public void DASessionScheduleWithRunLoop(IntPtr session, IntPtr runLoop, IntPtr runLoopMode)
+	public void DASessionScheduleWithRunLoopApi(IntPtr session, IntPtr runLoop, IntPtr runLoopMode)
 	{
 	}
 
-	public void DASessionUnscheduleWithRunLoop(IntPtr session, IntPtr runLoop, IntPtr runLoopMode)
+	public void DASessionUnscheduleWithRunLoopApi(IntPtr session, IntPtr runLoop,
+		IntPtr runLoopMode)
 	{
 		UnscheduleCalled = true;
 		UnscheduleSession = session;
@@ -297,40 +298,40 @@ internal sealed class FakeMacSystemForUnschedule : IMacMountWatcherSystem
 		UnscheduleRunLoopMode = runLoopMode;
 	}
 
-	public void DARegisterDiskAppearedCallback(IntPtr session, IntPtr match,
+	public void DARegisterDiskAppearedCallbackApi(IntPtr session, IntPtr match,
 		MacMountWatcherDelegate.DiskAppearedCallback callback,
 		IntPtr context)
 	{
 		throw new NotImplementedException();
 	}
 
-	public void DARegisterDiskDisappearedCallback(IntPtr session, IntPtr match,
+	public void DARegisterDiskDisappearedCallbackApi(IntPtr session, IntPtr match,
 		MacMountWatcherDelegate.DiskDisappearedCallback callback, IntPtr context)
 	{
 		throw new NotImplementedException();
 	}
 
-	public IntPtr CFRunLoopGetCurrent()
+	public IntPtr CFRunLoopGetCurrentApi()
 	{
 		return new IntPtr(456);
 	}
 
-	public void CFRunLoopRun()
+	public void CFRunLoopRunApi()
 	{
 	}
 
-	public void CFRunLoopStop(IntPtr runLoop)
+	public void CFRunLoopStopApi(IntPtr runLoop)
 	{
 		RunLoopStopCalled = true;
 		RunLoopStopped = runLoop;
 	}
 
-	public IntPtr CFStringCreateWithCString(IntPtr allocator, string cStr, uint encoding)
+	public IntPtr CFStringCreateWithCStringApi(IntPtr allocator, string cStr, uint encoding)
 	{
 		return new IntPtr(789);
 	}
 
-	public void CFRelease(IntPtr cf)
+	public void CFReleaseApi(IntPtr cf)
 	{
 	}
 }
@@ -384,11 +385,12 @@ public sealed class MacMountWatcherDiskDisappearedTests
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 		// GetMountedVolumes returns only root (no external volumes)
-		var sut = new TestableMacMountWatcher(logger, () => ["/"], 10);
+		var sut = new TestableMacMountWatcher(logger, () => ["/"]);
 
 		// Prepopulate private _knownVolumes with a mount that should be removed
-		var knownField = typeof(MacMountWatcher).GetField("_knownVolumes", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-		var knownSet = (HashSet<string>)knownField!.GetValue(sut)!;
+		var knownField = typeof(MacMountWatcher).GetField("_knownVolumes",
+			BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+		var knownSet = ( HashSet<string> ) knownField!.GetValue(sut)!;
 		knownSet.Add("/Volumes/CAMERA");
 
 		// Act
@@ -403,17 +405,21 @@ public sealed class MacMountWatcherDiskDisappearedTests
 	{
 		var logger = new FakeIWebLogger();
 
-		var sut = new TestableMacMountWatcher(logger, Throwing, 10);
+		var sut = new TestableMacMountWatcher(logger, Throwing);
 
 		// Act
 		sut.OnDiskDisappeared(IntPtr.Zero, IntPtr.Zero);
 
 		// Assert: logger captured the error message
-		Assert.IsTrue(logger.TrackedExceptions.Exists(t => t.Item2 != null && t.Item2.Contains("Error handling macOS disk disappeared callback")));
+		Assert.IsTrue(logger.TrackedExceptions.Exists(t =>
+			t.Item2 != null && t.Item2.Contains("Error handling macOS disk disappeared callback")));
 		return;
 
 		// Make GetMountedVolumes throw
-		List<string> Throwing() => throw new InvalidOperationException("boom");
+		List<string> Throwing()
+		{
+			throw new InvalidOperationException("boom");
+		}
 	}
 }
 

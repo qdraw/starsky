@@ -121,7 +121,7 @@ public sealed class MacMountWatcher_RunWatcherTest
 			new StorageHostFullPathFilesystem(logger), fakeSystem, 10);
 
 		sut.OnDiskAppeared(IntPtr.Zero, IntPtr.Zero);
-		
+
 		if ( OperatingSystem.IsMacOS() )
 		{
 			Assert.IsTrue(logger.TrackedInformation.Exists(t
@@ -132,7 +132,6 @@ public sealed class MacMountWatcher_RunWatcherTest
 			Assert.IsEmpty(logger.TrackedInformation);
 			Assert.IsEmpty(logger.TrackedExceptions);
 		}
-
 	}
 
 	[SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -159,40 +158,41 @@ public sealed class MacMountWatcher_RunWatcherTest
 			return "kCFRunLoopDefaultMode";
 		}
 
-		public IntPtr DASessionCreate(IntPtr allocator)
+		public IntPtr DASessionCreateApi(IntPtr allocator)
 		{
 			return SessionToReturn;
 		}
 
-		public void DASessionScheduleWithRunLoop(IntPtr session, IntPtr runLoop, IntPtr runLoopMode)
+		public void DASessionScheduleWithRunLoopApi(IntPtr session, IntPtr runLoop,
+			IntPtr runLoopMode)
 		{
 			// no-op
 		}
 
-		public void DASessionUnscheduleWithRunLoop(IntPtr session, IntPtr runLoop,
+		public void DASessionUnscheduleWithRunLoopApi(IntPtr session, IntPtr runLoop,
 			IntPtr runLoopMode)
 		{
 			DASessionUnscheduleCalled = true;
 		}
 
-		public void DARegisterDiskAppearedCallback(IntPtr session, IntPtr match,
+		public void DARegisterDiskAppearedCallbackApi(IntPtr session, IntPtr match,
 			MacMountWatcherDelegate.DiskAppearedCallback callback, IntPtr context)
 		{
 			DARegisterDiskAppearedCalled = true;
 		}
 
-		public void DARegisterDiskDisappearedCallback(IntPtr session, IntPtr match,
+		public void DARegisterDiskDisappearedCallbackApi(IntPtr session, IntPtr match,
 			MacMountWatcherDelegate.DiskDisappearedCallback callback, IntPtr context)
 		{
 			DARegisterDiskDisappearedCalled = true;
 		}
 
-		public IntPtr CFRunLoopGetCurrent()
+		public IntPtr CFRunLoopGetCurrentApi()
 		{
 			return RunLoopToReturn;
 		}
 
-		public void CFRunLoopRun()
+		public void CFRunLoopRunApi()
 		{
 			CFRunLoopRunCalled = true;
 			if ( CfRunLoopRunShouldThrow )
@@ -202,17 +202,17 @@ public sealed class MacMountWatcher_RunWatcherTest
 			// otherwise return immediately to avoid blocking tests
 		}
 
-		public void CFRunLoopStop(IntPtr runLoop)
+		public void CFRunLoopStopApi(IntPtr runLoop)
 		{
 			// no-op
 		}
 
-		public IntPtr CFStringCreateWithCString(IntPtr allocator, string cStr, uint encoding)
+		public IntPtr CFStringCreateWithCStringApi(IntPtr allocator, string cStr, uint encoding)
 		{
 			return RunLoopModeToReturn;
 		}
 
-		public void CFRelease(IntPtr cf)
+		public void CFReleaseApi(IntPtr cf)
 		{
 			CfReleased.Add(cf);
 		}
