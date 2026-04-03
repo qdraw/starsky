@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.ServiceInstaller;
@@ -105,9 +106,11 @@ public sealed class LinuxServiceInstallerTest
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-		var userServicePath = $"{userHome}/.config/systemd/user/{GetServiceName()}.service";
-		var storage = new FakeIStorage(
-			outputSubPathFiles: new List<string> { userServicePath });
+		var userServicePath = Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+			".config", "systemd", "user", $"{WatchServiceName.GetSystemDName()}.service");
+
+		var storage = new FakeIStorage([], [ userServicePath ]);
 		var sut = new LinuxServiceInstaller(logger, storage);
 
 		// Act
