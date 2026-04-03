@@ -17,6 +17,7 @@ public sealed class LinuxCameraStorageDiscoveryTest
 	[DataRow("/", "/etc", 1, true)]
 	[DataRow("/media", "/media/user/device", 1, false)]
 	[DataRow("/media", "/media/user/device", 2, true)]
+	[DataRow("/x_media", "/media", 1, false)]
 	public void IsDirectChild_DataDriven(string basePath, string path, int maxDepth, bool expected)
 	{
 		var result = LinuxCameraStorageDiscovery.IsDirectChild(basePath, path, maxDepth);

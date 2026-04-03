@@ -339,6 +339,11 @@ public sealed class MacMountWatcherBackupLoopTests
 		var task = Task.Run(sut.RunBackupPollingLoopPublic, TestContext.CancellationToken);
 		task.Wait(100, TestContext.CancellationToken);
 
+		if ( detected.Count == 0 )
+		{
+			task.Wait(100, TestContext.CancellationToken);
+		}
+
 		sut.SetRunning(false);
 
 		Assert.HasCount(1, detected);

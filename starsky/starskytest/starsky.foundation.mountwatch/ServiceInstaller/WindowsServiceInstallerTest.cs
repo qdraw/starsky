@@ -115,4 +115,45 @@ public sealed class WindowsServiceInstallerTest
 		Assert.IsFalse(result);
 		Assert.IsNotEmpty(logger.TrackedExceptions);
 	}
+
+	[TestMethod]
+	public async Task InstallAsync_ProcessReturnsFalse_LogsErrorAndReturnsFalse()
+	{
+		// Arrange: runner returns false to simulate sc.exe failing to create the service
+		var logger = new FakeIWebLogger();
+		var sut = new WindowsServiceInstaller(logger,
+			(_, _) => Task.FromResult(false),
+			_ => Task.CompletedTask);
+
+		// Act
+		var result = await sut.InstallAsync("C:/apps/starskymountwatchercli.exe");
+
+		// Assert
+		Assert.IsFalse(result);
+		Assert.IsNotEmpty(logger.TrackedExceptions);
+		// The non-exception overload logs an error message in TrackedExceptions
+		var found = logger.TrackedExceptions.Exists(t =>
+			t.Item2 != null && t.Item2.Contains("Failed to install Windows Service"));
+		Assert.IsTrue(found, "Expected LogError message for failed install");
+	}
+
+	[TestMethod]
+	public async Task InstallAsync_ProcessThrowsException_LogsExceptionAndReturnsFalse()
+	{
+		// Arrange: runner throws to trigger the catch block
+		var logger = new FakeIWebLogger();
+		var sut = new WindowsServiceInstaller(logger,
+			(_, _) => throw new InvalidOperationException("sc crash"),
+			_ => Task.CompletedTask);
+
+		// Act
+		var result = await sut.InstallAsync("C:/apps/starskymountwatchercli.exe");
+
+		// Assert
+		Assert.IsFalse(result);
+		Assert.IsNotEmpty(logger.TrackedExceptions);
+		var found = logger.TrackedExceptions.Exists(t =>
+			t.Item2 != null && t.Item2.Contains("Failed to install Windows service"));
+		Assert.IsTrue(found, "Expected LogError(Exception, ...) for exception during install");
+	}
 }
