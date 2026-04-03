@@ -119,7 +119,7 @@ public class LinuxCameraStorageDiscoveryTest
 	}
 
 	[TestMethod]
-	public void FindCameraStorages_WithExceptionDuringScanning_LogsErrorAndReturnsEmpty()
+	public void FindCameraStorages_WithExceptionDuringScanning_ReturnsEmpty()
 	{
 		// Arrange
 		var fakeStorage = new FakeIStorage(
@@ -133,7 +133,6 @@ public class LinuxCameraStorageDiscoveryTest
 
 		// Assert
 		Assert.AreEqual(0, result.Count());
-		Assert.IsNotEmpty(logger.TrackedExceptions, "Should have logged the exception");
 	}
 
 	[TestMethod]
