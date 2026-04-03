@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -62,7 +63,7 @@ public sealed class WindowsMountWatcherTest
 
 		var newMounts = watcher.DetectNewMounts(new List<string> { "C:\\", "E:\\" });
 
-		CollectionAssert.AreEqual(new List<string> { "E:\\" }, newMounts);
+		CollectionAssert.AreEqual(new List<string> { "E:\\" }, newMounts.ToList());
 	}
 
 	[TestMethod]
@@ -75,7 +76,7 @@ public sealed class WindowsMountWatcherTest
 		var reinsertedSnapshot = watcher.DetectNewMounts(new List<string> { "C:\\", "E:\\" });
 
 		Assert.IsEmpty(removedSnapshot);
-		CollectionAssert.AreEqual(new List<string> { "E:\\" }, reinsertedSnapshot);
+		CollectionAssert.AreEqual(new List<string> { "E:\\" }, reinsertedSnapshot.ToList());
 	}
 
 	[TestMethod]
@@ -156,7 +157,7 @@ public sealed class WindowsMountWatcherTest
 
 		var newMounts = watcher.DetectNewMounts(new List<string> { "C:\\", "e:\\" });
 
-		CollectionAssert.AreEqual(new List<string> { "e:\\" }, newMounts);
+		CollectionAssert.AreEqual(new List<string> { "e:\\" }, newMounts.ToList());
 	}
 
 	[TestMethod]
@@ -181,7 +182,7 @@ public sealed class WindowsMountWatcherTest
 
 		var mounts = watcher.DetectNewMounts(new List<string> { "C:\\", "E:\\" });
 		// since we removed and then detect with same mounts, E:\ should be reported as new
-		CollectionAssert.AreEqual(new List<string> { "E:\\" }, mounts);
+		CollectionAssert.AreEqual(new List<string> { "E:\\" }, mounts.ToList());
 	}
 
 	[TestMethod]
@@ -313,21 +314,36 @@ public sealed class WindowsMountWatcherTest
 	}
 
 	[TestMethod]
+	public void StartWmiWatcher_CreateWatcherReturnsNull_LogsInformation()
+	{
+		var logger = new FakeIWebLogger();
+		var system = new FakeWindowsMountWatcherSystem { WatcherToCreate = null };
+		var watcher = new WindowsMountWatcher(logger,
+			() => OSPlatform.Windows, 50,
+			system);
+
+		watcher.StartWmiWatcher();
+
+		Assert.IsTrue(logger.TrackedInformation.Exists(t =>
+			t.Item2 != null && t.Item2.Contains("CreateManagementWatcher returned null")));
+	}
+
+	[TestMethod]
 	public void OnVolumeChanged_ObjectNull_LogsError()
 	{
 		var logger = new FakeIWebLogger();
 		var system = new FakeWindowsMountWatcherSystem();
-		var watcher = new WindowsMountWatcher(logger, 
+		var watcher = new WindowsMountWatcher(logger,
 			() => OSPlatform.Windows, 10,
 			system);
 
 		// Call object overload with null to trigger exception handling and logging
-		watcher.OnVolumeChanged(null, (EventArrivedEventArgs?)null!);
+		watcher.OnVolumeChanged(null, ( EventArrivedEventArgs? ) null!);
 
 		// The logger should have recorded the exception with the expected message
-		Assert.IsTrue(logger.TrackedExceptions.Exists(
-			t => t.Item2 != null 
-			     && t.Item2.Contains("Windows volume event handling failed:")));
+		Assert.IsTrue(logger.TrackedExceptions.Exists(t => t.Item2 != null
+		                                                   && t.Item2.Contains(
+			                                                   "Windows volume event handling failed:")));
 	}
 
 	private sealed class FakeWindowsMountWatcherSystem : IWindowsMountWatcherSystem
@@ -372,6 +388,12 @@ public sealed class WindowsMountWatcherTest
 			}
 
 			return Array.Empty<DriveInfo>();
+		}
+
+		public (string eventTypeStr, string rawDriveName) MapEvent(
+			EventArrivedEventArgs arrivedEvent)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

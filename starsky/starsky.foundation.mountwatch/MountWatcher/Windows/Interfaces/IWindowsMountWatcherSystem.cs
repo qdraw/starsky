@@ -19,4 +19,5 @@ internal interface IWindowsMountWatcherSystem
 	void DisposeWatcher(object watcher);
 
 	IEnumerable<DriveInfo> GetDrives();
+	(string eventTypeStr, string rawDriveName) MapEvent(EventArrivedEventArgs arrivedEvent);
 }

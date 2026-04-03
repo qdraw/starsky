@@ -154,11 +154,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	{
 		try
 		{
-			var eventTypeStr = arrivedEvent.NewEvent?.Properties?["EventType"]?.Value?.ToString() ??
-			                   "<null>";
-			var rawDriveName = arrivedEvent.NewEvent?.Properties?["DriveName"]?.Value?.ToString() ??
-			                   "<null>";
-
+			var (eventTypeStr, rawDriveName) = _system.MapEvent(arrivedEvent);
 			OnVolumeChanged(eventTypeStr, rawDriveName);
 		}
 		catch ( Exception ex )
@@ -198,14 +194,6 @@ internal class WindowsMountWatcher : BaseMountWatcher
 
 		foreach ( var drive in newDrives )
 		{
-			if ( eventTracked &&
-			     drive.Equals(eventDrive, StringComparison.OrdinalIgnoreCase) )
-			{
-				logger.LogInformation($"Windows retry mount scan duplicate ignored: {drive}");
-				continue;
-			}
-
-			logger.LogInformation($"Windows retry mount scan detected new drive: {drive}");
 			OnMountDetected(drive);
 		}
 	}
@@ -246,7 +234,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 		}
 	}
 
-	internal List<string> DetectNewMounts(IEnumerable<string> mountedVolumes)
+	internal HashSet<string> DetectNewMounts(IEnumerable<string> mountedVolumes)
 	{
 		var currentMounts = mountedVolumes
 			.Where(v => !string.IsNullOrWhiteSpace(v))
@@ -265,7 +253,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 			_knownMountedVolumes.Add(mount);
 		}
 
-		return newMounts;
+		return [.. newMounts];
 	}
 
 	internal bool TryTrackEventDrive(string? driveName, out string normalizedDrive)
