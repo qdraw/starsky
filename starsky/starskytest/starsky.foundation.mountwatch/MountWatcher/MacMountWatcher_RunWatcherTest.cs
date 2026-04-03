@@ -121,8 +121,18 @@ public sealed class MacMountWatcher_RunWatcherTest
 			new StorageHostFullPathFilesystem(logger), fakeSystem, 10);
 
 		sut.OnDiskAppeared(IntPtr.Zero, IntPtr.Zero);
-		Assert.IsTrue(logger.TrackedInformation.Exists(t
-			=> t.Item2 != null && t.Item2.Contains("macOS volume appeared")));
+		
+		if ( OperatingSystem.IsMacOS() )
+		{
+			Assert.IsTrue(logger.TrackedInformation.Exists(t
+				=> t.Item2 != null && t.Item2.Contains("macOS volume appeared")));
+		}
+		else
+		{
+			Assert.IsEmpty(logger.TrackedInformation);
+			Assert.IsEmpty(logger.TrackedExceptions);
+		}
+
 	}
 
 	[SuppressMessage("ReSharper", "InconsistentNaming")]
