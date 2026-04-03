@@ -217,7 +217,7 @@ public class MountWatcherCli
 	/// <summary>
 	///     Handle mount detected event
 	/// </summary>
-	private void OnMountDetected(object? sender, MountDetectedEventArgs eventArgs)
+	internal void OnMountDetected(object? sender, MountDetectedEventArgs eventArgs)
 	{
 		if ( string.IsNullOrWhiteSpace(eventArgs.MountPath) )
 		{

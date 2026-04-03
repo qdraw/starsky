@@ -141,12 +141,22 @@ public sealed class WindowsMountWatcherTest
 
 		await startTask;
 	}
-
+	
 	[TestMethod]
-	public void NormalizeDrive_AddsBackslash_WhenColonOnly()
+	[DataRow("E:", "E:\\")]
+	[DataRow("E:\\", "E:\\")]
+	[DataRow(@"E:\\", "E:\\")]
+	[DataRow("e:", "e:\\")]
+	[DataRow(" e: ", "e:\\")]
+	[DataRow("E:/", "E:\\")]
+	[DataRow("path/with/slash", "path\\with\\slash")]
+	[DataRow("", "")]
+	[DataRow("X:folder", "X:folder\\")]
+	[DataRow("C:/Windows/System32", "C:\\")]
+	public void NormalizeDrive_DataDriven(string input, string expected)
 	{
-		Assert.AreEqual("E:\\", WindowsMountWatcher.NormalizeDrive("E:"));
-		Assert.AreEqual("E:\\", WindowsMountWatcher.NormalizeDrive("E:\\"));
+		var result = WindowsMountWatcher.NormalizeDrive(input);
+		Assert.AreEqual(expected, result);
 	}
 
 	[TestMethod]
