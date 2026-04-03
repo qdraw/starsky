@@ -307,6 +307,8 @@ public sealed class ServiceInstallerTest
 		// OS
 		var service = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
 			new FakeSelectorStorage(), logger, () => platform);
+		await service.StopAsync();
+		
 		var isStopped = await service.StopAsync();
 
 		if ( RuntimeInformation.IsOSPlatform(platform) &&
