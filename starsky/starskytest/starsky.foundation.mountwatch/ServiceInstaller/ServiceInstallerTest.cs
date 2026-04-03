@@ -264,27 +264,22 @@ public sealed class ServiceInstallerTest
 
 		var logger = new FakeIWebLogger();
 
-		// Fake installer factory that records calls
-		var called = false;
-
 		// OS
 		var service = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
-			new FakeSelectorStorage(), logger, () => platform, Factory);
-		called = false;
-		Assert.IsTrue(await service.StartAsync());
-		Assert.IsTrue(called);
-		return;
+			new FakeSelectorStorage(), logger, () => platform);
+		var isStarted = await service.StartAsync();
+		await service.StopAsync();
 
-		IOsServiceInstaller Factory()
+		if ( RuntimeInformation.IsOSPlatform(platform) )
 		{
-			return new TestOsInstaller(() =>
-			{
-				called = true;
-				return Task.FromResult(true);
-			});
+			Assert.IsTrue(isStarted);
+		}
+		else
+		{
+			Assert.IsFalse(isStarted, $"Expected StartAsync to return false on non-{platform} OS");
 		}
 	}
-	
+
 	[TestMethod]
 	[DataRow(OperatingSystems.OSX)]
 	[DataRow(OperatingSystems.Windows)]
@@ -310,13 +305,16 @@ public sealed class ServiceInstallerTest
 
 		// OS
 		var service = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
-			new FakeSelectorStorage(), logger, () => platform, Factory);
-		Assert.IsTrue(await service.StopAsync());
-		return;
+			new FakeSelectorStorage(), logger, () => platform);
+		var isStopped = await service.StopAsync();
 
-		static IOsServiceInstaller Factory()
+		if ( RuntimeInformation.IsOSPlatform(platform) )
 		{
-			return new TestOsInstaller(() => Task.FromResult(true));
+			Assert.IsTrue(isStopped);
+		}
+		else
+		{
+			Assert.IsFalse(isStopped, $"Expected StartAsync to return false on non-{platform} OS");
 		}
 	}
 

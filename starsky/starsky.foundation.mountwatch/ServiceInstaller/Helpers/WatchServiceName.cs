@@ -1,3 +1,5 @@
+using System;
+
 namespace starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 
 public static class WatchServiceName
@@ -9,6 +11,11 @@ public static class WatchServiceName
 #endif
 	public static string GetReverseDnsName()
 	{
+		if ( IsRunningTest() )
+		{
+			return ServiceDisplayName + "-test";
+		}
+
 		return ReverseDnsServiceName;
 	}
 
@@ -20,6 +27,11 @@ public static class WatchServiceName
 
 	public static string GetSystemDName()
 	{
+		if ( IsRunningTest() )
+		{
+			return ServiceDisplayName + "-test";
+		}
+
 		return SystemdServiceName;
 	}
 
@@ -40,5 +52,11 @@ public static class WatchServiceName
 	internal static string GetLinuxLogHint()
 	{
 		return $"journalctl -u {SystemdServiceName}";
+	}
+
+	private static bool IsRunningTest()
+	{
+		return AppDomain.CurrentDomain.FriendlyName.Contains("test",
+			StringComparison.OrdinalIgnoreCase);
 	}
 }

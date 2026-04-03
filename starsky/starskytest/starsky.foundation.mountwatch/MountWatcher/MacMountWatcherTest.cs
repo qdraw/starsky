@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
 using starsky.foundation.mountwatch.MountWatcher.MacOS;
+using starsky.foundation.mountwatch.MountWatcher.MacOS.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starskytest.FakeMocks;
 
@@ -259,6 +260,121 @@ public sealed class MacMountWatcherTest
 	}
 }
 
+internal class FakeMacSystemForUnschedule : IMacMountWatcherSystem
+{
+	public bool UnscheduleCalled { get; private set; }
+	public IntPtr UnscheduleSession { get; private set; }
+	public IntPtr UnscheduleRunLoop { get; private set; }
+	public IntPtr UnscheduleRunLoopMode { get; private set; }
+
+	public bool RunLoopStopCalled { get; private set; }
+	public IntPtr RunLoopStopped { get; private set; }
+
+	public uint GetCfStringEncodingUtf8()
+	{
+		return 0x08000100;
+	}
+
+	public string GetCfRunLoopDefaultMode()
+	{
+		return "kCFRunLoopDefaultMode";
+	}
+
+	public IntPtr DASessionCreate(IntPtr allocator)
+	{
+		return new IntPtr(123);
+	}
+
+	public void DASessionScheduleWithRunLoop(IntPtr session, IntPtr runLoop, IntPtr runLoopMode)
+	{
+	}
+
+	public void DASessionUnscheduleWithRunLoop(IntPtr session, IntPtr runLoop, IntPtr runLoopMode)
+	{
+		UnscheduleCalled = true;
+		UnscheduleSession = session;
+		UnscheduleRunLoop = runLoop;
+		UnscheduleRunLoopMode = runLoopMode;
+	}
+
+	public void DARegisterDiskAppearedCallback(IntPtr session, IntPtr match,
+		MacMountWatcherDelegate.DiskAppearedCallback callback,
+		IntPtr context)
+	{
+		throw new NotImplementedException();
+	}
+
+	public void DARegisterDiskDisappearedCallback(IntPtr session, IntPtr match,
+		MacMountWatcherDelegate.DiskDisappearedCallback callback, IntPtr context)
+	{
+		throw new NotImplementedException();
+	}
+
+	public IntPtr CFRunLoopGetCurrent()
+	{
+		return new IntPtr(456);
+	}
+
+	public void CFRunLoopRun()
+	{
+	}
+
+	public void CFRunLoopStop(IntPtr runLoop)
+	{
+		RunLoopStopCalled = true;
+		RunLoopStopped = runLoop;
+	}
+
+	public IntPtr CFStringCreateWithCString(IntPtr allocator, string cStr, uint encoding)
+	{
+		return new IntPtr(789);
+	}
+
+	public void CFRelease(IntPtr cf)
+	{
+	}
+}
+
+[TestClass]
+public sealed class MacMountWatcherUnscheduleTests
+{
+	[TestMethod]
+	public void Stop_WhenSessionAndRunLoopPresent_CallsUnscheduleAndRunLoopStop()
+	{
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		var fakeSystem = new FakeMacSystemForUnschedule();
+
+		// Create SUT with injected fake system
+		var sut = new MacMountWatcher(logger, storage, fakeSystem, 10);
+
+		// Use reflection to set private fields: _session, _runLoop, _runLoopMode to non-zero
+		var type = typeof(MacMountWatcher);
+		var sessionField =
+			type.GetField("_session", BindingFlags.NonPublic | BindingFlags.Instance);
+		var runLoopField =
+			type.GetField("_runLoop", BindingFlags.NonPublic | BindingFlags.Instance);
+		var runLoopModeField =
+			type.GetField("_runLoopMode", BindingFlags.NonPublic | BindingFlags.Instance);
+
+		sessionField?.SetValue(sut, new IntPtr(101));
+		runLoopField?.SetValue(sut, new IntPtr(202));
+		runLoopModeField?.SetValue(sut, new IntPtr(303));
+
+		// Act
+		sut.Stop();
+
+		// Assert
+		Assert.IsTrue(fakeSystem.UnscheduleCalled,
+			"Expected DASessionUnscheduleWithRunLoop to be called");
+		Assert.AreEqual(new IntPtr(101), fakeSystem.UnscheduleSession);
+		Assert.AreEqual(new IntPtr(202), fakeSystem.UnscheduleRunLoop);
+		Assert.AreEqual(new IntPtr(303), fakeSystem.UnscheduleRunLoopMode);
+		Assert.IsTrue(fakeSystem.RunLoopStopCalled, "Expected CFRunLoopStop to be called");
+		Assert.AreEqual(new IntPtr(202), fakeSystem.RunLoopStopped);
+	}
+}
+
 // Helper test subclass to control GetMountedVolumes behavior and expose RunBackupPollingLoop
 internal sealed class TestableMacMountWatcher : MacMountWatcher
 {
@@ -305,16 +421,17 @@ public sealed class MacMountWatcherBackupLoopTests
 
 		// Sequence: no mounts, then SD_CARD appears, then root only (eject), then NEW_DRIVE appears
 		var seq = new ConcurrentQueue<List<string>>();
-		seq.Enqueue([]);
-		seq.Enqueue(["/Volumes/SD_CARD"]);
-		seq.Enqueue([]);
-		seq.Enqueue(["/Volumes/NEW_DRIVE"]);
+		seq.Enqueue(new List<string>());
+		seq.Enqueue(new List<string> { "/Volumes/SD_CARD" });
+		seq.Enqueue(new List<string>());
+		seq.Enqueue(new List<string> { "/Volumes/NEW_DRIVE" });
 
 		var sut = new TestableMacMountWatcher(logger,
-			() => { return seq.TryDequeue(out var v) ? v : []; }, 50);
+			() => { return seq.TryDequeue(out var v) ? v : new List<string>(); }, 50);
 
 		var detected = new List<string>();
-		var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+		var tcs = new TaskCompletionSource<bool>(TaskCreationOptions
+			.RunContinuationsAsynchronously);
 		sut.MountDetected += (_, e) =>
 		{
 			lock ( detected )
@@ -330,13 +447,15 @@ public sealed class MacMountWatcherBackupLoopTests
 		sut.SetRunning(true);
 		var task = Task.Run(sut.RunBackupPollingLoopPublic, TestContext.CancellationToken);
 
-		var completed = await Task.WhenAny(tcs.Task, Task.Delay(5000, TestContext.CancellationToken));
+		var completed =
+			await Task.WhenAny(tcs.Task, Task.Delay(5000, TestContext.CancellationToken));
 
 		sut.SetRunning(false);
 		await Task.WhenAny(task, Task.Delay(500, TestContext.CancellationToken));
 
 		Assert.AreEqual(tcs.Task, completed, "Timed out waiting for mounts to be detected");
-		CollectionAssert.AreEquivalent(new List<string> { "/Volumes/SD_CARD", "/Volumes/NEW_DRIVE" }, detected);
+		CollectionAssert.AreEquivalent(
+			new List<string> { "/Volumes/SD_CARD", "/Volumes/NEW_DRIVE" }, detected);
 	}
 
 	[TestMethod]
@@ -348,7 +467,8 @@ public sealed class MacMountWatcherBackupLoopTests
 
 		var sut = new TestableMacMountWatcher(logger, GetMountedVolumes, 50);
 		var detected = new List<string>();
-		var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+		var tcs = new TaskCompletionSource<bool>(TaskCreationOptions
+			.RunContinuationsAsynchronously);
 		sut.MountDetected += (_, e) =>
 		{
 			lock ( detected )
@@ -361,7 +481,8 @@ public sealed class MacMountWatcherBackupLoopTests
 		sut.SetRunning(true);
 		var task = Task.Run(sut.RunBackupPollingLoopPublic, TestContext.CancellationToken);
 
-		var completed = await Task.WhenAny(tcs.Task, Task.Delay(5000, TestContext.CancellationToken));
+		var completed =
+			await Task.WhenAny(tcs.Task, Task.Delay(5000, TestContext.CancellationToken));
 
 		sut.SetRunning(false);
 		await Task.WhenAny(task, Task.Delay(500, TestContext.CancellationToken));
@@ -374,10 +495,12 @@ public sealed class MacMountWatcherBackupLoopTests
 		List<string> GetMountedVolumes()
 		{
 			call++;
-			return call == 1 ? throw new InvalidOperationException("simulated failure") :
-			[
-				"/Volumes/RECOVER"
-			];
+			return call == 1
+				? throw new InvalidOperationException("simulated failure")
+				:
+				[
+					"/Volumes/RECOVER"
+				];
 		}
 	}
 }
