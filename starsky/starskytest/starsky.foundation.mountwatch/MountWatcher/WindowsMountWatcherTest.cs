@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
+using starsky.foundation.mountwatch.MountWatcher.Windows.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starskytest.FakeMocks;
 
@@ -231,7 +234,7 @@ public sealed class WindowsMountWatcherTest
 			["C:\\"]);
 		var detected = new List<string>();
 		var detected1 = detected;
-		watcher.MountDetected += (s, e) => detected1.Add(e.MountPath);
+		watcher.MountDetected += (_, e) => detected1.Add(e.MountPath);
 		watcher.SeedKnownMounts(new List<string> { "D:\\" });
 		watcher.OnVolumeChanged("3", "D:");
 		Assert.IsEmpty(detected);
@@ -241,7 +244,7 @@ public sealed class WindowsMountWatcherTest
 		watcher = new TestWindowsMountWatcher(logger, () => OSPlatform.Windows, 50,
 			["C:\\"]);
 		detected = [];
-		watcher.MountDetected += (s, e) => detected.Add(e.MountPath);
+		watcher.MountDetected += (_, e) => detected.Add(e.MountPath);
 		// baseline contains C:\ so retry-scan will not report it as new
 		watcher.SeedKnownMounts(new List<string> { "C:\\" });
 		// make GetMountedVolumes report the same drive too (retry scan)
@@ -255,13 +258,117 @@ public sealed class WindowsMountWatcherTest
 		watcher = new TestWindowsMountWatcher(logger, () => OSPlatform.Windows, 50,
 			["C:\\"]);
 		detected.Clear();
-		watcher.MountDetected += (s, e) => detected.Add(e.MountPath);
+		watcher.MountDetected += (_, e) => detected.Add(e.MountPath);
 		watcher.SeedKnownMounts(new List<string> { "C:\\" });
 		// event drive empty but mounted volumes contain a new drive G:\
 		watcher.SetMountedVolumes(["C:\\", "G:\\"]);
 		watcher.OnVolumeChanged("2", "");
 		Assert.Contains("G:\\", detected);
 		Assert.IsEmpty(logger.TrackedExceptions);
+	}
+
+	[TestMethod]
+	public void GetMountedVolumes_SystemThrows_ReturnsEmpty()
+	{
+		var system = new FakeWindowsMountWatcherSystem { ThrowOnGetDrives = true };
+		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),
+			( Func<OSPlatform>? ) ( () => OSPlatform.Windows ), 10,
+			system);
+
+		var volumes = watcher.GetMountedVolumes();
+		Assert.IsEmpty(volumes);
+	}
+
+	[TestMethod]
+	public void StartWmiWatcher_WithFakeSystem_StartsAndStopInvokes()
+	{
+		var logger = new FakeIWebLogger();
+		var system = new FakeWindowsMountWatcherSystem { WatcherToCreate = new object() };
+		var watcher = new WindowsMountWatcher(logger,
+			() => OSPlatform.Windows, 50,
+			system);
+
+		watcher.StartWmiWatcher();
+
+		Assert.IsTrue(system.StartWatcherCalled);
+
+		// Stop via public Stop should call Stop and Dispose through abstraction
+		watcher.Stop();
+		Assert.IsTrue(system.StopWatcherCalled);
+		Assert.IsTrue(system.DisposeWatcherCalled);
+	}
+
+	[TestMethod]
+	public void StartWmiWatcher_CreateWatcherThrows_LogsAndDoesNotThrow()
+	{
+		var logger = new FakeIWebLogger();
+		var system = new FakeWindowsMountWatcherSystem { ThrowOnCreateManagementWatcher = true };
+		var watcher = new WindowsMountWatcher(logger,
+			() => OSPlatform.Windows, 50,
+			system);
+
+		watcher.StartWmiWatcher();
+
+		Assert.IsNotEmpty(logger.TrackedExceptions);
+	}
+
+	[TestMethod]
+	public void OnVolumeChanged_ObjectNull_LogsError()
+	{
+		var logger = new FakeIWebLogger();
+		var system = new FakeWindowsMountWatcherSystem();
+		var watcher = new WindowsMountWatcher(logger, () => OSPlatform.Windows, 10,
+			system);
+
+		// Call object overload with null to trigger exception handling and logging
+		watcher.OnVolumeChanged(null!, null!);
+
+		Assert.IsNotEmpty(logger.TrackedInformation);
+	}
+
+	private sealed class FakeWindowsMountWatcherSystem : IWindowsMountWatcherSystem
+	{
+		public bool ThrowOnGetDrives { get; set; }
+		public bool ThrowOnCreateManagementWatcher { get; set; }
+		public object? WatcherToCreate { get; set; } = new();
+		public bool StartWatcherCalled { get; private set; }
+		public bool StopWatcherCalled { get; private set; }
+		public bool DisposeWatcherCalled { get; private set; }
+
+		public object? CreateManagementWatcher(string wqlQuery)
+		{
+			return ThrowOnCreateManagementWatcher ? throw new Exception("boom") : WatcherToCreate;
+		}
+
+		public void AddEventArrivedHandler(object watcher, EventArrivedEventHandler handler)
+		{
+			// no-op fake for tests
+		}
+
+		public void StartWatcher(object watcher)
+		{
+			StartWatcherCalled = true;
+		}
+
+		public void StopWatcher(object watcher)
+		{
+			StopWatcherCalled = true;
+		}
+
+		public void DisposeWatcher(object watcher)
+		{
+			DisposeWatcherCalled = true;
+		}
+
+		public IEnumerable<DriveInfo> GetDrives()
+		{
+			if ( ThrowOnGetDrives )
+			{
+				throw new Exception("fail drives");
+			}
+
+			return Array.Empty<DriveInfo>();
+		}
 	}
 }
 

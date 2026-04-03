@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
@@ -25,7 +24,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 
 	private readonly Func<OSPlatform> _platformResolver;
 
-	private readonly IWindowsMountWatcherSystem _system = new WindowsMountWatcherSystem();
+	private readonly IWindowsMountWatcherSystem _system;
 
 	// ManagementEventWatcher is Windows-only – held as object to avoid
 	// CA1416 on the field itself when the containing class is cross-platform.
@@ -37,10 +36,12 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	}
 
 	internal WindowsMountWatcher(IWebLogger logger,
-		Func<OSPlatform>? platformResolver, int pollIntervalMs) :
+		Func<OSPlatform>? platformResolver, int pollIntervalMs,
+		IWindowsMountWatcherSystem? system = null) :
 		base(logger, pollIntervalMs)
 	{
 		_platformResolver = platformResolver ?? OperatingSystemHelper.GetPlatform;
+		_system = system ?? new WindowsMountWatcherSystem();
 	}
 
 	/// <summary>
@@ -92,11 +93,11 @@ internal class WindowsMountWatcher : BaseMountWatcher
 				.Where(d => d.IsReady)
 				.Select(d => d.RootDirectory.FullName)
 				.ToList();
-
 			return drives;
 		}
-		catch
+		catch ( Exception ex )
 		{
+			logger.LogError(ex, "Failed to get mounted volumes");
 			return new List<string>();
 		}
 	}
@@ -115,6 +116,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 
 			if ( mgmtWatcher == null )
 			{
+				logger.LogInformation("CreateManagementWatcher returned null");
 				return;
 			}
 
@@ -142,12 +144,20 @@ internal class WindowsMountWatcher : BaseMountWatcher
 				return;
 			}
 
-			_system.StopWatcher(_watcher);
-			_system.DisposeWatcher(_watcher);
+			// Cleanup watcher through system abstraction
+			try
+			{
+				_system.StopWatcher(_watcher);
+				_system.DisposeWatcher(_watcher);
+			}
+			catch ( Exception ex )
+			{
+				logger.LogWarning(ex, "System watcher cleanup threw exception");
+			}
 		}
-		catch
+		catch ( Exception ex )
 		{
-			// Ignore cleanup errors
+			logger.LogWarning(ex, "StopWmiWatcher cleanup failed");
 		}
 	}
 
@@ -219,7 +229,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	///     Remove an ejected drive from the known-mounts baseline so that
 	///     re-inserting the same drive is recognised as a new mount.
 	/// </summary>
-	internal void HandleVolumeRemoval(string? rawDriveName)
+	internal void HandleVolumeRemoval(string rawDriveName)
 	{
 		if ( string.IsNullOrWhiteSpace(rawDriveName) )
 		{
@@ -230,9 +240,16 @@ internal class WindowsMountWatcher : BaseMountWatcher
 
 		var normalized = NormalizeDrive(rawDriveName);
 		var removed = _knownMountedVolumes.Remove(normalized);
-		logger.LogInformation(removed
-			? $"Windows volume removal event: removed '{normalized}' from baseline"
-			: $"Windows volume removal event: '{normalized}' was not in baseline");
+		if ( removed )
+		{
+			logger.LogInformation(
+				$"Windows volume removal event: removed '{normalized}' from baseline");
+		}
+		else
+		{
+			logger.LogInformation(
+				$"Windows volume removal event: '{normalized}' was not in baseline");
+		}
 	}
 
 	internal void SeedKnownMounts(IEnumerable<string> mountedVolumes)
@@ -280,12 +297,22 @@ internal class WindowsMountWatcher : BaseMountWatcher
 
 	internal static string NormalizeDrive(string driveName)
 	{
-		var normalized = driveName.Trim();
-		if (normalized.Length >= 2 && normalized[1] == ':')
+		var normalized = driveName.Trim() ?? string.Empty;
+		if ( normalized.Length < 2 || normalized[1] != ':' )
 		{
-			return normalized + "\\";
+			return normalized.Replace('/', '\\');
 		}
 
-		return normalized;
+		// Ensure single trailing backslash and use backslash separator
+		// Keep the drive letter case as provided.
+		// If input is just "E:" add a backslash. If it already has a backslash
+		// (e.g. "E:\\" or "E:\") ensure it's reduced to a single trailing backslash.
+		normalized = normalized.Replace('/', '\\');
+		return normalized.Length switch
+		{
+			2 => normalized + "\\",
+			>= 3 when normalized[2] == '\\' => normalized[..3],
+			_ => normalized + "\\"
+		};
 	}
 }
