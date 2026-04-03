@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using starsky.foundation.import.Helpers;
 using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.import.Models;
@@ -14,7 +15,11 @@ public class CameraDriveInfo
 
 public static class CameraDriveInfoHelper
 {
-	private const string ProcMountsPath = "/proc/mounts";
+	// Compatibility wrapper for tests and callers that expect DetectFileSystem on this class
+	public static string DetectFileSystem(IStorage hostStorage, string mountPath)
+	{
+		return LinuxFileSystemHelper.DetectFileSystem(hostStorage, mountPath);
+	}
 
 	public static CameraDriveInfo ToCameraDriveInfo(this DriveInfo? driveInfo)
 	{
@@ -43,44 +48,16 @@ public static class CameraDriveInfoHelper
 	/// <summary>
 	///     Create CameraDriveInfo from a path (useful for Linux where DriveInfo doesn't work well)
 	/// </summary>
-	public static CameraDriveInfo ToCameraDriveInfo(IStorage hostStorage, string mountPath)
+	public static CameraDriveInfo ToCameraDriveInfo(IStorage hostStorage,
+		string mountPath)
 	{
 		var exists = hostStorage.ExistFolder(mountPath);
 		return new CameraDriveInfo
 		{
-			IsReady = true, // Assume ready when constructing from a mount path
+			IsReady = true,
 			RootDirectory = new CameraDirectoryInfo { Exists = exists, FullName = mountPath },
-			DriveFormat = DetectFileSystem(hostStorage, mountPath)
+			DriveFormat = LinuxFileSystemHelper.DetectFileSystem(hostStorage, mountPath)
 		};
-	}
-
-	/// <summary>
-	///     Attempt to detect the filesystem type (for Linux)
-	/// </summary>
-	internal static string DetectFileSystem(IStorage hostStorage, string mountPath)
-	{
-		try
-		{
-			// Try to read from /proc/mounts if on Linux
-			if ( hostStorage.ExistFile(ProcMountsPath) )
-			{
-				var lines = hostStorage.ReadAllLines(ProcMountsPath);
-				foreach ( var line in lines )
-				{
-					var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
-					if ( parts.Length >= 3 && parts[1] == mountPath )
-					{
-						return parts[2]; // Third field is filesystem type
-					}
-				}
-			}
-		}
-		catch
-		{
-			// Ignore errors
-		}
-
-		return string.Empty;
 	}
 }
 

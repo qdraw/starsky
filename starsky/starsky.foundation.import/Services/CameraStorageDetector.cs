@@ -76,6 +76,13 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 				return IsCameraStorage(cameraDriveInfo);
 			}
 
+			if ( _isOsPlatformDelegate(OSPlatform.OSX) )
+			{
+				var macDrive = new DriveInfo(driveRoot).ToCameraDriveInfo();
+				macDrive.DriveFormat = MacOsFileSystemHelper.GetFileSystem(driveRoot);
+				return IsCameraStorage(macDrive);
+			}
+
 			// On Windows, use DriveInfo
 			var drive = new DriveInfo(driveRoot);
 			return IsCameraStorage(drive);
