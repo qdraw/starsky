@@ -248,8 +248,8 @@ public sealed class WindowsMountWatcherTest
 
 		if ( OperatingSystem.IsWindows() )
 		{
-			Assert.Contains(p => p.Item2 == "Windows WMI watcher started",
-				logger.TrackedInformation);
+			var log = logger.TrackedInformation[0].Item2;
+			Assert.Contains("Windows WMI watcher start",log!);
 		}
 		else
 		{
