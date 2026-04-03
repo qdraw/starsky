@@ -188,7 +188,7 @@ public sealed class MountWatcherCliTest
 	}
 }
 
-internal class ThrowingMountWatcherFactory : IMountWatcherFactory
+internal sealed class ThrowingMountWatcherFactory : IMountWatcherFactory
 {
 	public IMountWatcher CreateMountWatcher()
 	{
