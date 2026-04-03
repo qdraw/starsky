@@ -19,12 +19,22 @@ public class FakeMountWatcherFactory : IMountWatcherFactory
 		return watcher;
 	}
 
-	private sealed class FakeMountWatcher : IMountWatcher
+	public sealed class FakeMountWatcher : IMountWatcher
 	{
+		private readonly Exception? _exceptionToThrow;
+
+		public FakeMountWatcher(Exception? exceptionToThrow = null)
+		{
+			_exceptionToThrow = exceptionToThrow;
+		}
 		public event EventHandler<MountDetectedEventArgs>? MountDetected;
 
 		public void Start()
 		{
+			if ( _exceptionToThrow != null )
+			{
+				throw _exceptionToThrow;
+			}
 		}
 
 		public void Stop()

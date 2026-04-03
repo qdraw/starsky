@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -138,8 +137,8 @@ public sealed class MountWatcherCliTest
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var factory = new ThrowingMountWatcherFactory();
-		var sut = CreateSut(console: new FakeConsoleWrapper([]), logger: logger,
-			mountDetector: new FakeCameraStorageDetector([]), factory: factory);
+		var sut = CreateSut(new FakeConsoleWrapper([]), logger,
+			new FakeCameraStorageDetector([]), factory);
 
 		// Act
 		var result = await sut.StartWatcher([]);
@@ -189,30 +188,10 @@ public sealed class MountWatcherCliTest
 	}
 }
 
-// Helper fake factory to simulate Start() throwing an exception
 internal class ThrowingMountWatcherFactory : IMountWatcherFactory
 {
 	public IMountWatcher CreateMountWatcher()
 	{
-		return new ThrowingMountWatcher();
-	}
-
-	private class ThrowingMountWatcher : IMountWatcher
-	{
-		public event EventHandler<MountDetectedEventArgs>? MountDetected;
-
-		public void Start()
-		{
-			throw new Exception("start failed");
-		}
-
-		public void Stop()
-		{
-		}
-
-		public List<string> GetMountedVolumes()
-		{
-			return new List<string>();
-		}
+		return new FakeMountWatcherFactory.FakeMountWatcher(new Exception("start failed"));
 	}
 }
