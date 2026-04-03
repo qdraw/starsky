@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.ServiceInstaller;
+using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.mountwatch.ServiceInstaller;
@@ -12,7 +13,8 @@ public sealed class LinuxServiceInstallerTest
 {
 	private static string GetServiceName()
 	{
-		return "nl.qdraw.mountwatcher.debug";
+		// Use the same systemd service name the installer expects
+		return WatchServiceName.GetSystemDName();
 	}
 
 	[TestMethod]
@@ -84,6 +86,17 @@ public sealed class LinuxServiceInstallerTest
 		// Assert
 		Assert.IsTrue(result);
 		Assert.IsNotEmpty(logger.TrackedInformation, "Should log uninstall messages");
+		// Verify that the expected sudo daemon-reload instruction was logged
+		Assert.IsTrue(logger.TrackedInformation.Exists(t => t.Item2 != null &&
+		                                                    t.Item2.Contains(
+			                                                    "Run: sudo systemctl daemon-reload")),
+			"Expected sudo daemon-reload instruction in logs");
+		// Verify the systemd unit removed message
+		Assert.IsTrue(logger.TrackedInformation.Exists(t => t.Item2 != null &&
+		                                                    t.Item2.Contains(
+			                                                    "systemd unit removed: " +
+			                                                    systemServicePath)),
+			"Expected systemd unit removed message in logs");
 	}
 
 	[TestMethod]
@@ -102,6 +115,17 @@ public sealed class LinuxServiceInstallerTest
 
 		// Assert
 		Assert.IsTrue(result);
+		// Verify that the expected user-level daemon-reload instruction was logged
+		Assert.IsTrue(logger.TrackedInformation.Exists(t => t.Item2 != null &&
+		                                                    t.Item2.Contains(
+			                                                    "Run: systemctl --user daemon-reload")),
+			"Expected user daemon-reload instruction in logs");
+		// Verify the systemd user unit removed message
+		Assert.IsTrue(logger.TrackedInformation.Exists(t => t.Item2 != null &&
+		                                                    t.Item2.Contains(
+			                                                    "systemd user unit removed: " +
+			                                                    userServicePath)),
+			"Expected systemd user unit removed message in logs");
 	}
 
 	[TestMethod]

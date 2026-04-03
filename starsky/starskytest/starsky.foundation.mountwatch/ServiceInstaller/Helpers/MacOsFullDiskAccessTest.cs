@@ -74,7 +74,20 @@ public sealed class MacOsFullDiskAccessTest
 	{
 		var selector = CreateSelectorWithFiles(true, true);
 		var logger = new FakeIWebLogger();
-		var sut = new TestMacOsFullDiskAccess(selector, logger, true, () => OSPlatform.OSX);
+		var sut = new TestMacOsFullDiskAccess(selector, logger, 
+			true, () => OSPlatform.OSX);
+		var result = sut.CheckMacOsFullDiskAccessOnStartup();
+		Assert.IsFalse(result);
+	}
+	
+	[TestMethod]
+	public void
+		CheckMacOsFullDiskAccessOnStartup_Mac_VolumesNotReadable_OpenReturnsFalse2_ReturnsFalse()
+	{
+		var selector = CreateSelectorWithFiles(true, true);
+		var logger = new FakeIWebLogger();
+		var sut = new MacOsFullDiskAccess(selector, logger, 
+			 () => OSPlatform.OSX) { OpenCmd = "invalid_command_to_simulate_failure" };
 		var result = sut.CheckMacOsFullDiskAccessOnStartup();
 		Assert.IsFalse(result);
 	}
@@ -92,7 +105,7 @@ public sealed class MacOsFullDiskAccessTest
 
 	private sealed class ThrowingGetDirectoriesStorage : IStorage
 	{
-		private readonly FakeIStorage _inner = new FakeIStorage(
+		private readonly FakeIStorage _inner = new(
 			outputSubPathFolders: new List<string> { "/Volumes" },
 			outputSubPathFiles: new List<string>());
 

@@ -27,6 +27,8 @@ public class MacOsFullDiskAccess
 		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 	}
 
+	internal string OpenCmd { get; set; } = "open";
+
 	public bool? CheckMacOsFullDiskAccessOnStartup()
 	{
 		if ( _platformResolver() != OSPlatform.OSX )
@@ -61,7 +63,7 @@ public class MacOsFullDiskAccess
 		{
 			Process.Start(new ProcessStartInfo
 			{
-				FileName = "open", Arguments = MacOsPrivacySettingsUri, UseShellExecute = false
+				FileName = OpenCmd, Arguments = MacOsPrivacySettingsUri, UseShellExecute = false
 			});
 			return true;
 		}
