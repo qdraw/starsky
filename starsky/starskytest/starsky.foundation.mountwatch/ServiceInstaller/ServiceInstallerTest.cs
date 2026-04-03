@@ -309,8 +309,9 @@ public sealed class ServiceInstallerTest
 			new FakeSelectorStorage(), logger, () => platform);
 		var isStopped = await service.StopAsync();
 
-		if ( RuntimeInformation.IsOSPlatform(platform) &&
-		     RuntimeInformation.IsOSPlatform(OSPlatform.Linux) )
+		if ( RuntimeInformation.IsOSPlatform(platform) && (
+			    RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
+			    RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ) )
 		{
 			Assert.IsTrue(isStopped);
 		}
