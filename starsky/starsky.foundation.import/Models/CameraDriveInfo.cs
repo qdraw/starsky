@@ -15,12 +15,6 @@ public class CameraDriveInfo
 
 public static class CameraDriveInfoHelper
 {
-	// Compatibility wrapper for tests and callers that expect DetectFileSystem on this class
-	public static string DetectFileSystem(IStorage hostStorage, string mountPath)
-	{
-		return LinuxFileSystemHelper.DetectFileSystem(hostStorage, mountPath);
-	}
-
 	public static CameraDriveInfo ToCameraDriveInfo(this DriveInfo? driveInfo)
 	{
 		string driveFormat;
