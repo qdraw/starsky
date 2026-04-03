@@ -1,4 +1,4 @@
-using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Interfaces;
 
 namespace starsky.foundation.mountwatch.Services;
 

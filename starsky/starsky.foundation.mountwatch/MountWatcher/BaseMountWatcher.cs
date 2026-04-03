@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Interfaces;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.mountwatch.MountWatcher;

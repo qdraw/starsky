@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Interfaces;
 using starsky.foundation.mountwatch.Services;
 
 #pragma warning disable 0067

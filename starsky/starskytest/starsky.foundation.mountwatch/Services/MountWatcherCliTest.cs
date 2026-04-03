@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Interfaces;
-using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Interfaces;
 using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;

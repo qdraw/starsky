@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using starsky.foundation.injection;
-using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Interfaces;
 using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Interfaces;

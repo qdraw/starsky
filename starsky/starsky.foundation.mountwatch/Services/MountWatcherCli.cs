@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
-using starsky.foundation.mountwatch.Interfaces;
+using starsky.foundation.mountwatch.MountWatcher.Interfaces;
 using starsky.foundation.mountwatch.ServiceInstaller;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 using starsky.foundation.mountwatch.ServiceInstaller.Interfaces;
@@ -217,14 +217,14 @@ public class MountWatcherCli
 	/// <summary>
 	///     Handle mount detected event
 	/// </summary>
-	private void OnMountDetected(object? sender, MountDetectedEventArgs e)
+	private void OnMountDetected(object? sender, MountDetectedEventArgs eventArgs)
 	{
-		if ( string.IsNullOrWhiteSpace(e.MountPath) )
+		if ( string.IsNullOrWhiteSpace(eventArgs.MountPath) )
 		{
 			return;
 		}
 
-		var mountPath = NormalizeMountPath(e.MountPath);
+		var mountPath = NormalizeMountPath(eventArgs.MountPath);
 		_logger.LogInformation($"Mount detected: {mountPath}");
 
 		_ = Task.Run(async () => await HandleMountDetectedAsync(mountPath));

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace starsky.foundation.mountwatch.Interfaces;
+namespace starsky.foundation.mountwatch.MountWatcher.Interfaces;
 
 /// <summary>
 ///     Event arguments for mount detection

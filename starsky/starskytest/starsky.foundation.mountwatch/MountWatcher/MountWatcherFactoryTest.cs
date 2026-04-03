@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.MountWatcher;
+using starsky.foundation.mountwatch.MountWatcher.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.mountwatch.MountWatcher;
