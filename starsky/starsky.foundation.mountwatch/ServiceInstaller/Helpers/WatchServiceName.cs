@@ -13,7 +13,7 @@ public static class WatchServiceName
 	{
 		if ( IsRunningTest() )
 		{
-			return ServiceDisplayName + "-test";
+			return ReverseDnsServiceName + "-test";
 		}
 
 		return ReverseDnsServiceName;
