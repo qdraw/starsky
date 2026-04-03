@@ -375,6 +375,48 @@ public sealed class MacMountWatcherUnscheduleTests
 	}
 }
 
+[TestClass]
+public sealed class MacMountWatcherDiskDisappearedTests
+{
+	[TestMethod]
+	public void OnDiskDisappeared_RemovesStaleKnownVolume()
+	{
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		// GetMountedVolumes returns only root (no external volumes)
+		var sut = new TestableMacMountWatcher(logger, () => ["/"], 10);
+
+		// Prepopulate private _knownVolumes with a mount that should be removed
+		var knownField = typeof(MacMountWatcher).GetField("_knownVolumes", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+		var knownSet = (HashSet<string>)knownField!.GetValue(sut)!;
+		knownSet.Add("/Volumes/CAMERA");
+
+		// Act
+		sut.OnDiskDisappeared(IntPtr.Zero, IntPtr.Zero);
+
+		// Assert - stale mount removed
+		Assert.DoesNotContain("/Volumes/CAMERA", knownSet);
+	}
+
+	[TestMethod]
+	public void OnDiskDisappeared_WhenGetMountedVolumesThrows_LogsError()
+	{
+		var logger = new FakeIWebLogger();
+
+		var sut = new TestableMacMountWatcher(logger, Throwing, 10);
+
+		// Act
+		sut.OnDiskDisappeared(IntPtr.Zero, IntPtr.Zero);
+
+		// Assert: logger captured the error message
+		Assert.IsTrue(logger.TrackedExceptions.Exists(t => t.Item2 != null && t.Item2.Contains("Error handling macOS disk disappeared callback")));
+		return;
+
+		// Make GetMountedVolumes throw
+		List<string> Throwing() => throw new InvalidOperationException("boom");
+	}
+}
+
 // Helper test subclass to control GetMountedVolumes behavior and expose RunBackupPollingLoop
 internal sealed class TestableMacMountWatcher : MacMountWatcher
 {
@@ -421,13 +463,13 @@ public sealed class MacMountWatcherBackupLoopTests
 
 		// Sequence: no mounts, then SD_CARD appears, then root only (eject), then NEW_DRIVE appears
 		var seq = new ConcurrentQueue<List<string>>();
-		seq.Enqueue(new List<string>());
-		seq.Enqueue(new List<string> { "/Volumes/SD_CARD" });
-		seq.Enqueue(new List<string>());
-		seq.Enqueue(new List<string> { "/Volumes/NEW_DRIVE" });
+		seq.Enqueue([]);
+		seq.Enqueue(["/Volumes/SD_CARD"]);
+		seq.Enqueue([]);
+		seq.Enqueue(["/Volumes/NEW_DRIVE"]);
 
 		var sut = new TestableMacMountWatcher(logger,
-			() => { return seq.TryDequeue(out var v) ? v : new List<string>(); }, 50);
+			() => { return seq.TryDequeue(out var v) ? v : []; }, 50);
 
 		var detected = new List<string>();
 		var tcs = new TaskCompletionSource<bool>(TaskCreationOptions

@@ -281,7 +281,7 @@ internal class MacMountWatcher : BaseMountWatcher
 	/// <summary>
 	///     Called when a disk disappears
 	/// </summary>
-	private void OnDiskDisappeared(IntPtr diskRef, IntPtr context)
+	internal void OnDiskDisappeared(IntPtr diskRef, IntPtr context)
 	{
 		try
 		{
