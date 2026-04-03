@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Interfaces;
+using starsky.foundation.mountwatch.Interfaces;
 using starsky.foundation.mountwatch.Services;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
@@ -16,7 +18,7 @@ public sealed class MountWatcherCliTest
 		FakeConsoleWrapper? console = null,
 		FakeIWebLogger? logger = null,
 		ICameraStorageDetector? mountDetector = null,
-		FakeMountWatcherFactory? factory = null,
+		IMountWatcherFactory? factory = null,
 		FakeServiceInstaller? installer = null)
 	{
 		return new MountWatcherCli(
@@ -131,6 +133,24 @@ public sealed class MountWatcherCliTest
 	}
 
 	[TestMethod]
+	public async Task StartWatcher_RunWatcherStartThrows_LogsErrorAndReturnsFalse()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var factory = new ThrowingMountWatcherFactory();
+		var sut = CreateSut(console: new FakeConsoleWrapper([]), logger: logger,
+			mountDetector: new FakeCameraStorageDetector([]), factory: factory);
+
+		// Act
+		var result = await sut.StartWatcher([]);
+
+		// Assert
+		Assert.IsFalse(result);
+		Assert.IsTrue(logger.TrackedExceptions.Exists(t =>
+			t.Item2 != null && t.Item2.Contains("Mount watcher failed:")));
+	}
+
+	[TestMethod]
 	public void NeedInstall_WithInstallArg_ReturnsTrue()
 	{
 		Assert.IsTrue(MountWatcherCli.NeedInstall(["--install"]));
@@ -166,5 +186,33 @@ public sealed class MountWatcherCliTest
 		Assert.AreEqual("/Volumes/extreme2111",
 			MountWatcherCli.NormalizeMountPath(" /Volumes/extreme2111/ "));
 		Assert.AreEqual("/", MountWatcherCli.NormalizeMountPath("/"));
+	}
+}
+
+// Helper fake factory to simulate Start() throwing an exception
+internal class ThrowingMountWatcherFactory : IMountWatcherFactory
+{
+	public IMountWatcher CreateMountWatcher()
+	{
+		return new ThrowingMountWatcher();
+	}
+
+	private class ThrowingMountWatcher : IMountWatcher
+	{
+		public event EventHandler<MountDetectedEventArgs>? MountDetected;
+
+		public void Start()
+		{
+			throw new Exception("start failed");
+		}
+
+		public void Stop()
+		{
+		}
+
+		public List<string> GetMountedVolumes()
+		{
+			return new List<string>();
+		}
 	}
 }
