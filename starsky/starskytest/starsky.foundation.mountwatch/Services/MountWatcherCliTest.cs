@@ -186,6 +186,34 @@ public sealed class MountWatcherCliTest
 			MountWatcherCli.NormalizeMountPath(" /Volumes/extreme2111/ "));
 		Assert.AreEqual("/", MountWatcherCli.NormalizeMountPath("/"));
 	}
+
+	[TestMethod]
+	public async Task OnMountDetected_WhenCameraStorage_InvokesImporter()
+	{
+		// Arrange: fake import that records calls
+		var fakeImport = new FakeIImportForImportTest();
+		const string mountPath = "/mnt/cam1";
+		var sut = new MountWatcherCli(
+			fakeImport,
+			new AppSettings { TempFolder = "/temp" },
+			new FakeConsoleWrapper([]),
+			new FakeIWebLogger(),
+			new FakeCameraStorageDetector([mountPath]),
+			new FakeMountWatcherFactory(),
+			new FakeServiceInstaller());
+
+		// Act: trigger mount detected event
+		sut.OnMountDetected(null,
+			new MountDetectedEventArgs { MountPath = mountPath, DetectedAt = DateTime.Now });
+		await Task.Delay(50, TestContext.CancellationToken);
+
+		// Assert
+		Assert.IsNotEmpty(fakeImport.Calls, "Importer was not called");
+		var first = fakeImport.Calls[0];
+		Assert.Contains(p => p == mountPath, first.paths);
+	}
+
+	public TestContext TestContext { get; set; }
 }
 
 internal sealed class ThrowingMountWatcherFactory : IMountWatcherFactory
