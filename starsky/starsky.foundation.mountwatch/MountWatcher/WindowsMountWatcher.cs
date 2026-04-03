@@ -282,7 +282,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 
 	internal static string NormalizeDrive(string driveName)
 	{
-		var normalized = driveName.Trim() ?? string.Empty;
+		var normalized = driveName.Trim();
 		if ( normalized.Length < 2 || normalized[1] != ':' )
 		{
 			return normalized.Replace('/', '\\');

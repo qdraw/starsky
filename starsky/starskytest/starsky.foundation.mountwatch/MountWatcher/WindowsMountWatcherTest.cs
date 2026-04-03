@@ -317,13 +317,17 @@ public sealed class WindowsMountWatcherTest
 	{
 		var logger = new FakeIWebLogger();
 		var system = new FakeWindowsMountWatcherSystem();
-		var watcher = new WindowsMountWatcher(logger, () => OSPlatform.Windows, 10,
+		var watcher = new WindowsMountWatcher(logger, 
+			() => OSPlatform.Windows, 10,
 			system);
 
 		// Call object overload with null to trigger exception handling and logging
-		watcher.OnVolumeChanged(null!, null!);
+		watcher.OnVolumeChanged(null, (EventArrivedEventArgs?)null!);
 
-		Assert.IsNotEmpty(logger.TrackedInformation);
+		// The logger should have recorded the exception with the expected message
+		Assert.IsTrue(logger.TrackedExceptions.Exists(
+			t => t.Item2 != null 
+			     && t.Item2.Contains("Windows volume event handling failed:")));
 	}
 
 	private sealed class FakeWindowsMountWatcherSystem : IWindowsMountWatcherSystem
