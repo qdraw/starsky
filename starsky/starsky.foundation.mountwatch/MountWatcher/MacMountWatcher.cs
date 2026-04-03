@@ -211,7 +211,7 @@ internal class MacMountWatcher : BaseMountWatcher
 		}
 	}
 
-	private void RunBackupPollingLoop()
+	internal void RunBackupPollingLoop()
 	{
 		while ( IsRunning )
 		{
