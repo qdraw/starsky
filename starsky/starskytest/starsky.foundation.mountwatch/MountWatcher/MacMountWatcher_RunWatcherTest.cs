@@ -105,6 +105,26 @@ public sealed class MacMountWatcher_RunWatcherTest
 		Assert.Contains(new IntPtr(100), fakeSystem.CfReleased);
 	}
 
+	[TestMethod]
+	public void OnDiskAppeared_Appeared()
+	{
+		var logger = new FakeIWebLogger();
+		var fakeSystem = new FakeMacSystem
+		{
+			SessionToReturn = new IntPtr(100),
+			RunLoopToReturn = new IntPtr(200),
+			RunLoopModeToReturn = new IntPtr(300),
+			CfRunLoopRunShouldThrow = true
+		};
+
+		var sut = new MacMountWatcher(logger,
+			new StorageHostFullPathFilesystem(logger), fakeSystem, 10);
+
+		sut.OnDiskAppeared(IntPtr.Zero, IntPtr.Zero);
+		Assert.IsTrue(logger.TrackedInformation.Exists(t
+			=> t.Item2 != null && t.Item2.Contains("macOS volume appeared")));
+	}
+
 	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	private sealed class FakeMacSystem : IMacMountWatcherSystem
 	{
