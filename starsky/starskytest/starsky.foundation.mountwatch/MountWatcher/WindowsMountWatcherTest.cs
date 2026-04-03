@@ -205,8 +205,7 @@ public sealed class WindowsMountWatcherTest
 
 		var mounts = watcher.DetectNewMounts(
 			new List<string> { "C:\\", "E:\\" });
-		// since we removed and then detect with same mounts, E:\ should be reported as new
-		CollectionAssert.AreEqual(new List<string> { "C:\\" }, mounts.ToList());
+		CollectionAssert.AreEqual(new List<string> { "E:\\" }, mounts.ToList());
 		Assert.IsFalse(result);
 	}
 
