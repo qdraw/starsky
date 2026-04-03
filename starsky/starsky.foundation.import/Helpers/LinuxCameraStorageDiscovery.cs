@@ -58,7 +58,7 @@ internal class LinuxCameraStorageDiscovery(IStorage hostStorage, IWebLogger logg
 	/// <summary>
 	///     Check if a path is a direct child of base path (within maxDepth levels)
 	/// </summary>
-	private static bool IsDirectChild(string basePath, string path, int maxDepth)
+	internal static bool IsDirectChild(string basePath, string path, int maxDepth)
 	{
 		// Remove trailing slashes
 		var normalizedBase = basePath.TrimEnd('/');
