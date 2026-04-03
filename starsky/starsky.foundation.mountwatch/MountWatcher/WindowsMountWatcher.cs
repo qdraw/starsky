@@ -137,28 +137,13 @@ internal class WindowsMountWatcher : BaseMountWatcher
 
 	private void StopWmiWatcher()
 	{
-		try
+		if ( _watcher == null )
 		{
-			if ( _watcher == null )
-			{
-				return;
-			}
+			return;
+		}
 
-			// Cleanup watcher through system abstraction
-			try
-			{
-				_system.StopWatcher(_watcher);
-				_system.DisposeWatcher(_watcher);
-			}
-			catch ( Exception ex )
-			{
-				logger.LogWarning(ex, "System watcher cleanup threw exception");
-			}
-		}
-		catch ( Exception ex )
-		{
-			logger.LogWarning(ex, "StopWmiWatcher cleanup failed");
-		}
+		_system.StopWatcher(_watcher);
+		_system.DisposeWatcher(_watcher);
 	}
 
 	/// <summary>
