@@ -260,7 +260,7 @@ public sealed class MacMountWatcherTest
 	}
 }
 
-internal class FakeMacSystemForUnschedule : IMacMountWatcherSystem
+internal sealed class FakeMacSystemForUnschedule : IMacMountWatcherSystem
 {
 	public bool UnscheduleCalled { get; private set; }
 	public IntPtr UnscheduleSession { get; private set; }
