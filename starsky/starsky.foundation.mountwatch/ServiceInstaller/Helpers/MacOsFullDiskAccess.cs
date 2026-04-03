@@ -80,7 +80,7 @@ public class MacOsFullDiskAccess
 			const string volumesPath = "/Volumes";
 			if ( !_hostStorage.ExistFolder(volumesPath) )
 			{
-				return true;
+				return false;
 			}
 
 			_ = _hostStorage.GetDirectories(volumesPath).Take(1).ToList();

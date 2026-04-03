@@ -21,8 +21,8 @@ public sealed class MacOsFullDiskAccessTest
 	{
 		// fake storage: /Volumes exists or not, GetDirectories may throw to simulate permission error
 		var fake = new FakeIStorage(
-			volumesExists ? new List<string> { "/Volumes" } : new List<string>(),
-			new List<string>());
+			volumesExists ? ["/Volumes"] : [],
+			[]);
 
 		if ( !getDirectoriesThrows )
 		{
@@ -51,9 +51,21 @@ public sealed class MacOsFullDiskAccessTest
 	{
 		var selector = CreateSelectorWithFiles(true);
 		var logger = new FakeIWebLogger();
-		var sut = new TestMacOsFullDiskAccess(selector, logger, false, () => OSPlatform.OSX);
+		var sut = new TestMacOsFullDiskAccess(selector, logger, 
+			false, () => OSPlatform.OSX);
 		var result = sut.CheckMacOsFullDiskAccessOnStartup();
 		Assert.IsTrue(result);
+	}
+	
+	[TestMethod]
+	public void CheckMacOsFullDiskAccessOnStartup_Mac_VolumesNotFound_ReturnsFalse()
+	{
+		var selector = CreateSelectorWithFiles(false);
+		var logger = new FakeIWebLogger();
+		var sut = new TestMacOsFullDiskAccess(selector, logger, 
+			false, () => OSPlatform.OSX);
+		var result = sut.CheckMacOsFullDiskAccessOnStartup();
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
