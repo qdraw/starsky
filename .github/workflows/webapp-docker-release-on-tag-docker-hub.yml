@@ -26,13 +26,13 @@ jobs:
         run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
-        uses: docker/login-action@de05a6d3a24346d4659bce540fac29c04a309bad
+        uses: docker/login-action@ba754150c9dbbaa912ae0ac3cfba43f84195cef2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Log in to Github Container registry
-        uses: docker/login-action@de05a6d3a24346d4659bce540fac29c04a309bad
+        uses: docker/login-action@ba754150c9dbbaa912ae0ac3cfba43f84195cef2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
