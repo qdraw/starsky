@@ -101,7 +101,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 		catch ( Exception ex )
 		{
 			logger.LogError(ex, "Failed to get mounted volumes");
-			return new List<string>();
+			return [];
 		}
 	}
 
