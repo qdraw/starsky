@@ -141,7 +141,7 @@ public sealed class WindowsMountWatcherTest
 
 		await startTask;
 	}
-	
+
 	[TestMethod]
 	[DataRow("E:", "E:\\")]
 	[DataRow("E:\\", "E:\\")]
@@ -222,17 +222,19 @@ public sealed class WindowsMountWatcherTest
 	[TestMethod]
 	public async Task Start_OnNonWindows_UsesPollingFallback_AndStopReturns()
 	{
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger(),
-			() => OSPlatform.Linux, 50);
+		var watcher = new WindowsMountWatcher(
+			new FakeIWebLogger(),
+			() => OSPlatform.Linux,
+			50);
 
-		// Start will use polling fallback on non-windows; run in background so test can stop it.
 		var t = Task.Run(watcher.Start, TestContext.CancellationToken);
 
-		await Task.Delay(120, TestContext.CancellationToken);
+		// Wait until Start() actually began
+		await watcher.Started.Task.WaitAsync(TestContext.CancellationToken);
+
 		watcher.Stop();
 
-		var completed = t.Wait(100, TestContext.CancellationToken);
-		Assert.IsTrue(completed, "Start did not return after Stop");
+		await t.WaitAsync(TimeSpan.FromSeconds(1), TestContext.CancellationToken);
 	}
 
 	[TestMethod]
@@ -249,7 +251,7 @@ public sealed class WindowsMountWatcherTest
 		if ( OperatingSystem.IsWindows() )
 		{
 			var log = logger.TrackedInformation[0].Item2;
-			Assert.Contains("Windows WMI watcher start",log!);
+			Assert.Contains("Windows WMI watcher start", log!);
 		}
 		else
 		{

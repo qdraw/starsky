@@ -5,6 +5,7 @@ using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using starsky.foundation.mountwatch.MountWatcher.Windows;
 using starsky.foundation.mountwatch.MountWatcher.Windows.Interfaces;
 using starsky.foundation.platform.Architecture;
@@ -23,7 +24,6 @@ internal class WindowsMountWatcher : BaseMountWatcher
 		new(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Func<OSPlatform> _platformResolver;
-
 	private readonly IWindowsMountWatcherSystem _system;
 
 	// ManagementEventWatcher is Windows-only – held as object to avoid
@@ -43,6 +43,8 @@ internal class WindowsMountWatcher : BaseMountWatcher
 		_platformResolver = platformResolver ?? OperatingSystemHelper.GetPlatform;
 		_system = system ?? new WindowsMountWatcherSystem();
 	}
+
+	internal TaskCompletionSource Started { get; } = new();
 
 	/// <summary>
 	///     Start watching for mount events using WMI
@@ -65,6 +67,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 		}
 		else
 		{
+			Started.TrySetResult();
 			RunPollingFallback();
 		}
 	}
@@ -122,6 +125,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 
 			_system.AddEventArrivedHandler(mgmtWatcher, OnVolumeChanged);
 			_system.StartWatcher(mgmtWatcher);
+			Started.TrySetResult();
 
 			_watcher = mgmtWatcher;
 			logger.LogInformation(
