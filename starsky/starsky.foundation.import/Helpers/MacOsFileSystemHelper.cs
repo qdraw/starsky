@@ -27,14 +27,17 @@ public class MacOsFileSystemHelper
 	}
 
 	[DllImport("libc", SetLastError = true)]
-	[SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments")]
+	[SuppressMessage("Globalization", "CA2101:Specify marshaling " +
+	                                  "for P/Invoke string arguments")]
 	[SuppressMessage("Interoperability",
-		"SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
+		"SYSLIB1054:Use \'LibraryImportAttribute\' instead of " +
+		"\'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
 	private static extern int statfs(string path, out StatFs buf);
 
 	[DllImport("libc", SetLastError = true)]
 	[SuppressMessage("Interoperability",
-		"SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
+		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
+		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
 	private static extern int getmntinfo(out IntPtr mntbufp, int flags);
 
 	public string GetFileSystem(string path)
@@ -48,13 +51,12 @@ public class MacOsFileSystemHelper
 			try
 			{
 				var fs = GetFileSystemViaMountTable(path);
-				if ( ShouldRetryForTransientRootAlias(path, fs, attempt) )
+				if ( !ShouldRetryForTransientRootAlias(path, fs, attempt) )
 				{
-					Thread.Sleep(MountTableRetryDelayMs);
-					continue;
+					return fs;
 				}
 
-				return fs;
+				Thread.Sleep(MountTableRetryDelayMs);
 			}
 			catch ( Exception ex )
 			{
@@ -170,7 +172,6 @@ public class MacOsFileSystemHelper
 
 		return entries;
 	}
-
 
 	internal static string NormalizeForPrefix(string path)
 	{
