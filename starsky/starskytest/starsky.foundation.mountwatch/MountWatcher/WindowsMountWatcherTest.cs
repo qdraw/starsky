@@ -234,7 +234,8 @@ public sealed class WindowsMountWatcherTest
 
 		watcher.Stop();
 
-		await t.WaitAsync(TimeSpan.FromSeconds(1), TestContext.CancellationToken);
+		var completed = t.Wait(TimeSpan.FromSeconds(1), TestContext.CancellationToken);
+		Assert.IsFalse(completed, "Start did not return after Stop");
 	}
 
 	[TestMethod]

@@ -170,6 +170,15 @@ public class MacOsFileSystemHelperTest
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.Windows | OperatingSystems.Linux)]
+	public void GetFileSystem_WindowsLinux()
+	{
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
+			new MacOsFileSystemHelper(() => OSPlatform.OSX).GetFileSystem("/")
+		);
+	}
+
+	[TestMethod]
 	[DataRow("/Volumes/Camera/", "/Volumes/Camera/")]
 	[DataRow("//", "/")] // Multiple leading slashes collapse to root
 	[DataRow("tmp/path", "/tmp/path/")]
