@@ -191,13 +191,13 @@ public sealed class ServiceInstallerTest
 	[TestMethod]
 	public void WatchServiceName_GetReverseDnsName_IsNotEmpty()
 	{
-		Assert.IsFalse(string.IsNullOrWhiteSpace(WatchServiceName.GetReverseDnsName()));
+		Assert.IsFalse(string.IsNullOrWhiteSpace(new WatchServiceName().GetReverseDnsName()));
 	}
 
 	[TestMethod]
 	public void WatchServiceName_GetSystemDName_IsNotEmpty()
 	{
-		Assert.IsFalse(string.IsNullOrWhiteSpace(WatchServiceName.GetSystemDName()));
+		Assert.IsFalse(string.IsNullOrWhiteSpace(new WatchServiceName().GetSystemDName()));
 	}
 
 	[TestMethod]

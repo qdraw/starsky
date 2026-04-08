@@ -37,7 +37,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	/// </summary>
 	public async Task<bool> InstallAsync(string executablePath)
 	{
-		var servicePath = $"/etc/systemd/system/{WatchServiceName.GetSystemDName()}.service";
+		var servicePath = $"/etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service";
 		var serviceContent = ServiceInstallerHelper.GenerateLinuxSystemdUnit(executablePath);
 
 		try
@@ -53,8 +53,10 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			logger.LogInformation($"systemd unit installed: {servicePath}");
 			logger.LogInformation("To enable and start:");
 			logger.LogInformation("  sudo systemctl daemon-reload");
-			logger.LogInformation($"  sudo systemctl enable {WatchServiceName.GetSystemDName()}");
-			logger.LogInformation($"  sudo systemctl start {WatchServiceName.GetSystemDName()}");
+			logger.LogInformation(
+				$"  sudo systemctl enable {new WatchServiceName().GetSystemDName()}");
+			logger.LogInformation(
+				$"  sudo systemctl start {new WatchServiceName().GetSystemDName()}");
 
 			logger.LogInformation($"Linux systemd unit written to {servicePath}");
 			return true;
@@ -77,10 +79,10 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	public async Task<bool> UninstallAsync()
 	{
 		await StopAsync();
-		var systemPath = $"/etc/systemd/system/{WatchServiceName.GetSystemDName()}.service";
+		var systemPath = $"/etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service";
 		var userPath = Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-			".config", "systemd", "user", $"{WatchServiceName.GetSystemDName()}.service");
+			".config", "systemd", "user", $"{new WatchServiceName().GetSystemDName()}.service");
 
 		var deleted = false;
 		if ( _storage.ExistFile(systemPath) )
@@ -104,7 +106,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		if ( !deleted )
 		{
 			logger.LogInformation(
-				$"No systemd service found for {WatchServiceName.GetSystemDName()}");
+				$"No systemd service found for {new WatchServiceName().GetSystemDName()}");
 		}
 
 		return true;
@@ -133,18 +135,18 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		{
 			// Try system-level first (without sudo to avoid privilege prompts in tests)
 			var result = await _runProcessAsync("systemctl",
-				$"{command} {WatchServiceName.GetSystemDName()}");
+				$"{command} {new WatchServiceName().GetSystemDName()}");
 			if ( !result )
 			{
 				// Fallback to user-level
 				result = await _runProcessAsync("systemctl",
-					$"--user {command} {WatchServiceName.GetSystemDName()}");
+					$"--user {command} {new WatchServiceName().GetSystemDName()}");
 			}
 
 			if ( result )
 			{
 				logger.LogInformation(
-					$"Linux service {command}: {WatchServiceName.GetSystemDName()}");
+					$"Linux service {command}: {new WatchServiceName().GetSystemDName()}");
 			}
 
 			return result;
@@ -165,7 +167,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
 			".config", "systemd", "user");
 		var servicePath =
-			Path.Combine(userSystemdDir, $"{WatchServiceName.GetSystemDName()}.service");
+			Path.Combine(userSystemdDir, $"{new WatchServiceName().GetSystemDName()}.service");
 		var serviceContent = ServiceInstallerHelper.GenerateLinuxSystemdUnit(executablePath);
 
 		try
@@ -183,8 +185,10 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			logger.LogInformation($"systemd user unit installed: {servicePath}");
 			logger.LogInformation("To enable and start:");
 			logger.LogInformation("  systemctl --user daemon-reload");
-			logger.LogInformation($"  systemctl --user enable {WatchServiceName.GetSystemDName()}");
-			logger.LogInformation($"  systemctl --user start {WatchServiceName.GetSystemDName()}");
+			logger.LogInformation(
+				$"  systemctl --user enable {new WatchServiceName().GetSystemDName()}");
+			logger.LogInformation(
+				$"  systemctl --user start {new WatchServiceName().GetSystemDName()}");
 
 			logger.LogInformation($"Linux systemd user unit written to {servicePath}");
 			return true;

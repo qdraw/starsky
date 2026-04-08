@@ -39,7 +39,7 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		var plistPath = GetMacOsPlistPath();
 		var plistContent =
 			ServiceInstallerHelper.GenerateMacOsPlist(executablePath,
-				WatchServiceName.GetReverseDnsName());
+				new WatchServiceName().GetReverseDnsName());
 
 		try
 		{
@@ -104,7 +104,7 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			if ( result )
 			{
 				logger.LogInformation(
-					$"macOS service started: {WatchServiceName.GetReverseDnsName()}");
+					$"macOS service started: {new WatchServiceName().GetReverseDnsName()}");
 			}
 
 			return result;
@@ -129,7 +129,7 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			if ( result )
 			{
 				logger.LogInformation(
-					$"macOS service stopped: {WatchServiceName.GetReverseDnsName()}");
+					$"macOS service stopped: {new WatchServiceName().GetReverseDnsName()}");
 			}
 
 			return result;
@@ -148,6 +148,6 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 		return Path.Combine(home, "Library", "LaunchAgents",
-			$"{WatchServiceName.GetReverseDnsName()}.plist");
+			$"{new WatchServiceName().GetReverseDnsName()}.plist");
 	}
 }

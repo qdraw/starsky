@@ -15,7 +15,7 @@ public sealed class LinuxServiceInstallerTest
 	private static string GetServiceName()
 	{
 		// Use the same systemd service name the installer expects
-		return WatchServiceName.GetSystemDName();
+		return new WatchServiceName().GetSystemDName();
 	}
 
 	[TestMethod]
@@ -108,9 +108,9 @@ public sealed class LinuxServiceInstallerTest
 		var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 		var userServicePath = Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-			".config", "systemd", "user", $"{WatchServiceName.GetSystemDName()}.service");
+			".config", "systemd", "user", $"{new WatchServiceName().GetSystemDName()}.service");
 
-		var storage = new FakeIStorage([], [ userServicePath ]);
+		var storage = new FakeIStorage([], [userServicePath]);
 		var sut = new LinuxServiceInstaller(logger, storage);
 
 		// Act

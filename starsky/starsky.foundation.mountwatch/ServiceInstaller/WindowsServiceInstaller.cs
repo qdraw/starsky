@@ -21,7 +21,7 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args);
 
 	private readonly string _serviceDisplayName = WatchServiceName.GetDisplayName();
-	private readonly string _serviceName = WatchServiceName.GetReverseDnsName();
+	private readonly string _serviceName = new WatchServiceName().GetReverseDnsName();
 
 	// sc.exe stop returns 1060 (service does not exist) or 1062 (service not active)
 	// both mean the service is already in the desired stopped state → treat as success.

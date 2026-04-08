@@ -173,20 +173,20 @@ public class MountWatcherCli
 		else if ( _platformResolver() == OSPlatform.Linux )
 		{
 			_console.WriteLine(
-				$"  systemd: /etc/systemd/system/{WatchServiceName.GetSystemDName()}.service");
+				$"  systemd: /etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service");
 			_console.WriteLine(
-				$"  Enable: sudo systemctl enable {WatchServiceName.GetSystemDName()}");
+				$"  Enable: sudo systemctl enable {new WatchServiceName().GetSystemDName()}");
 			_console.WriteLine(
-				$"  Start:  sudo systemctl start {WatchServiceName.GetSystemDName()}");
+				$"  Start:  sudo systemctl start {new WatchServiceName().GetSystemDName()}");
 			_console.WriteLine($"  Logs: {WatchServiceName.GetLinuxLogHint()}");
 		}
 		else if ( _platformResolver() == OSPlatform.Windows )
 		{
 			_console.WriteLine(
-				$"  Windows Service: sc create \"{WatchServiceName.GetReverseDnsName()}\" ...");
-			_console.WriteLine($"  Start: sc start {WatchServiceName.GetReverseDnsName()}");
+				$"  Windows Service: sc create \"{new WatchServiceName().GetReverseDnsName()}\" ...");
+			_console.WriteLine($"  Start: sc start {new WatchServiceName().GetReverseDnsName()}");
 			_console.WriteLine("  Logs: Windows Event Viewer -> Windows Logs -> Application");
-			_console.WriteLine($"        Source: {WatchServiceName.GetReverseDnsName()}");
+			_console.WriteLine($"        Source: {new WatchServiceName().GetReverseDnsName()}");
 		}
 	}
 

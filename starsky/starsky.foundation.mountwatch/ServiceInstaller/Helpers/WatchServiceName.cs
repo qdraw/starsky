@@ -2,14 +2,14 @@ using System;
 
 namespace starsky.foundation.mountwatch.ServiceInstaller.Helpers;
 
-public static class WatchServiceName
+public class WatchServiceName
 {
 #if DEBUG
 	private const string ReverseDnsServiceName = "nl.qdraw.mountwatcher.debug";
 #else
 	private const string ReverseDnsServiceName = "nl.qdraw.mountwatcher";
 #endif
-	public static string GetReverseDnsName()
+	public string GetReverseDnsName()
 	{
 		if ( IsRunningTest() )
 		{
@@ -25,7 +25,7 @@ public static class WatchServiceName
 	private const string SystemdServiceName = "starsky-mountwatcher";
 #endif
 
-	public static string GetSystemDName()
+	public string GetSystemDName()
 	{
 		if ( IsRunningTest() )
 		{
@@ -54,7 +54,7 @@ public static class WatchServiceName
 		return $"journalctl -u {SystemdServiceName}";
 	}
 
-	private static bool IsRunningTest()
+	protected virtual bool IsRunningTest()
 	{
 		return AppDomain.CurrentDomain.FriendlyName.Contains("test",
 			StringComparison.OrdinalIgnoreCase);
