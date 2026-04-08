@@ -10,13 +10,19 @@ namespace starskytest.starsky.foundation.import.Helpers;
 public class RealPathHelperTest
 {
 	[TestMethod]
+	public void GetRealPath_stringEmpty()
+	{
+		var resolved = RealPathHelper.GetRealPath(string.Empty);
+		Assert.AreEqual(string.Empty, resolved);
+	}
+
+	[TestMethod]
 	public void GetRealPath_WithNonExisting_ReturnsInput()
 	{
 		var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 		var resolved = RealPathHelper.GetRealPath(tmp);
 		Assert.AreEqual(tmp, resolved);
 	}
-
 
 	[TestMethod]
 	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
