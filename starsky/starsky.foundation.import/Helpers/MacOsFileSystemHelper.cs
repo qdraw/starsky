@@ -155,19 +155,23 @@ public class MacOsFileSystemHelper
 	internal static List<MountTableEntry> GetMountTableEntries()
 	{
 		var count = getmntinfo(out var ptr, 0);
-		if ( count <= 0 )
-		{
-			throw new Win32Exception(Marshal.GetLastWin32Error());
-		}
+		return count <= 0
+			? throw new Win32Exception(Marshal.GetLastWin32Error())
+			: ParseEntries(ptr, count);
+	}
 
+	internal static List<MountTableEntry> ParseEntries(IntPtr mntbufp, int count)
+	{
 		var entries = new List<MountTableEntry>(count);
 		var structSize = Marshal.SizeOf<StatFs>();
 
 		for ( var i = 0; i < count; i++ )
 		{
-			var current = IntPtr.Add(ptr, i * structSize);
+			var current = IntPtr.Add(mntbufp, i * structSize);
 			var stat = Marshal.PtrToStructure<StatFs>(current);
-			entries.Add(new MountTableEntry(stat.f_mntonname, stat.f_fstypename));
+			entries.Add(new MountTableEntry(
+				stat.f_mntonname,
+				stat.f_fstypename));
 		}
 
 		return entries;
