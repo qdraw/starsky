@@ -25,18 +25,11 @@ public class WatchServiceNameTest
 	}
 
 	// Small testable subclass to override IsRunningTest for unit tests
-	private sealed class TestableWatchServiceName : WatchServiceName
+	private sealed class TestableWatchServiceName(bool isRunningTest) : WatchServiceName
 	{
-		private readonly bool _isRunningTest;
-
-		public TestableWatchServiceName(bool isRunningTest)
-		{
-			_isRunningTest = isRunningTest;
-		}
-
 		protected override bool IsRunningTest()
 		{
-			return _isRunningTest;
+			return isRunningTest;
 		}
 	}
 }
