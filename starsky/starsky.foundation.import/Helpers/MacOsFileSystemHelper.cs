@@ -185,7 +185,7 @@ public class MacOsFileSystemHelper
 			normalized = normalized.TrimEnd('/');
 		}
 
-		if ( !normalized.StartsWith("/", StringComparison.Ordinal) )
+		if ( !normalized.StartsWith('/') )
 		{
 			normalized = "/" + normalized;
 		}
