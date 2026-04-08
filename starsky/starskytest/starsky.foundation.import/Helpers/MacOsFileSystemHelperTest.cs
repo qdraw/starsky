@@ -298,7 +298,6 @@ public class MacOsFileSystemHelperTest
 	[TestMethod]
 	public void NativeMethods_Throw_WhenNativeSymbolsUnavailable()
 	{
-		// Construct helper that reports OSX so code paths requiring platform succeed the guard.
 		var helper = new MacOsFileSystemHelper(() => OSPlatform.OSX);
 
 		// GetFileSystemViaMountTable will attempt native getmntinfo; on Linux this may throw EntryPointNotFoundException
@@ -315,8 +314,17 @@ public class MacOsFileSystemHelperTest
 
 		if ( mountEx != null )
 		{
-			Assert.IsInstanceOfType(mountEx, typeof(EntryPointNotFoundException));
+			Assert.IsInstanceOfType(mountEx,
+				RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+					? typeof(DllNotFoundException)
+					: typeof(EntryPointNotFoundException));
 		}
+	}
+
+	[TestMethod]
+	public void NativeMethods_Throw_WhenNativeSymbolsUnavailable2()
+	{
+		var helper = new MacOsFileSystemHelper(() => OSPlatform.OSX);
 
 		// GetFileSystemViaStatFs also P/Invokes statfs; ensure it either returns or throws a platform-related exception
 		Exception? statEx = null;
@@ -331,7 +339,10 @@ public class MacOsFileSystemHelperTest
 
 		if ( statEx != null )
 		{
-			Assert.IsInstanceOfType(statEx, typeof(EntryPointNotFoundException));
+			Assert.IsInstanceOfType(statEx,
+				RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+					? typeof(DllNotFoundException)
+					: typeof(EntryPointNotFoundException));
 		}
 	}
 }
