@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Helpers;
 
@@ -221,5 +222,116 @@ public class MacOsFileSystemHelperTest
 		}
 
 		Assert.IsTrue(didThrow);
+	}
+
+
+	[TestMethod]
+	public void ResolveFileSystemForPath_LongestPrefixWins()
+	{
+		// Arrange
+		var entries = new List<MacOsFileSystemHelper.MountTableEntry>
+		{
+			new("/", "apfs"),
+			new("/Volumes/Camera", "exfat"),
+			new("/Volumes/Camera/inner", "ntfs")
+		};
+
+		// Act / Assert
+		var res1 =
+			MacOsFileSystemHelper.ResolveFileSystemForPath("/Volumes/Camera/inner/sub/file.jpg",
+				entries, v => v);
+		Assert.AreEqual("ntfs", res1);
+
+		var res2 =
+			MacOsFileSystemHelper.ResolveFileSystemForPath("/Volumes/Camera/sub/file.jpg", entries,
+				v => v);
+		Assert.AreEqual("exfat", res2);
+
+		var res3 = MacOsFileSystemHelper.ResolveFileSystemForPath("/other/path", entries, v => v);
+		Assert.AreEqual("apfs", res3);
+	}
+
+	[TestMethod]
+	public void ResolveFileSystemForPath_IgnoresEmptyEntries_AndThrowsWhenNoMatch()
+	{
+		var entries = new List<MacOsFileSystemHelper.MountTableEntry>
+		{
+			new(string.Empty, string.Empty)
+		};
+
+		// No valid mount points -> should throw
+		Exception? caughtEx = null;
+		try
+		{
+			MacOsFileSystemHelper.ResolveFileSystemForPath("/some/path", entries, v => v);
+			Assert.Fail("Expected InvalidOperationException was not thrown");
+		}
+		catch ( Exception ex )
+		{
+			caughtEx = ex;
+		}
+
+		Assert.IsNotNull(caughtEx);
+		Assert.IsInstanceOfType(caughtEx, typeof(InvalidOperationException));
+	}
+
+	[TestMethod]
+	public void ShouldRetryForTransientRootAlias_BehavesAsExpected()
+	{
+		// true when path under /Volumes/ and fs == apfs and attempt is less than retry-1
+		var should =
+			MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/Volumes/X", "apfs", 0);
+		Assert.IsTrue(should);
+
+		// false when not under /Volumes/
+		Assert.IsFalse(MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/tmp/X", "apfs", 0));
+
+		// false when fs not apfs
+		Assert.IsFalse(
+			MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/Volumes/X", "exfat", 0));
+
+		// false when attempt is the last one
+		Assert.IsFalse(
+			MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/Volumes/X", "apfs", 4));
+	}
+
+	[TestMethod]
+	public void NativeMethods_Throw_WhenNativeSymbolsUnavailable()
+	{
+		// Construct helper that reports OSX so code paths requiring platform succeed the guard.
+		var helper = new MacOsFileSystemHelper(() => OSPlatform.OSX);
+
+		// GetFileSystemViaMountTable will attempt native getmntinfo; on Linux this may throw EntryPointNotFoundException
+		Exception? mountEx = null;
+		try
+		{
+			_ = helper.GetFileSystemViaMountTable("/");
+			// If it did not throw, we at least exercised the method.
+		}
+		catch ( Exception ex )
+		{
+			mountEx = ex;
+		}
+
+		if ( mountEx != null )
+		{
+			Assert.IsInstanceOfType(mountEx, typeof(EntryPointNotFoundException));
+		}
+
+		// GetFileSystemViaStatFs also P/Invokes statfs; ensure it either returns or throws a platform-related exception
+		Exception? statEx = null;
+		try
+		{
+			_ = helper.GetFileSystemViaStatFs("/");
+		}
+		catch ( Exception ex )
+		{
+			statEx = ex;
+		}
+
+		if ( statEx != null )
+		{
+			Assert.IsInstanceOfType(statEx, typeof(EntryPointNotFoundException));
+		}
 	}
 }

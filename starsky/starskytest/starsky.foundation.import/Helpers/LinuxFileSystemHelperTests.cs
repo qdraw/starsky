@@ -31,8 +31,8 @@ public class LinuxFileSystemHelperTests
 		// When ReadAllLines throws, DetectFileSystem swallows exceptions -> empty string
 		Assert.AreEqual(string.Empty, info);
 	}
-	
-		
+
+
 	[TestMethod]
 	public void DetectFileSystem_InvalidMountLine()
 	{
