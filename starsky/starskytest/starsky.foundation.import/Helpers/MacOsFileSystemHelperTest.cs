@@ -13,8 +13,7 @@ public class MacOsFileSystemHelperTest
 	{
 		var entries = new List<MacOsFileSystemHelper.MountTableEntry>
 		{
-			new("/", "apfs"),
-			new("/Volumes/MyCard", "exfat")
+			new("/", "apfs"), new("/Volumes/MyCard", "exfat")
 		};
 
 		var fs = MacOsFileSystemHelper.ResolveFileSystemForPath(
@@ -26,14 +25,13 @@ public class MacOsFileSystemHelperTest
 	}
 
 	[TestMethod]
-	public void ResolveFileSystemForPath_SystemVolumeAliasUnderVolumes_ResolvesToRootWithoutHardcoding()
+	public void
+		ResolveFileSystemForPath_SystemVolumeAliasUnderVolumes_ResolvesToRootWithoutHardcoding()
 	{
 		var aliasPath = "/Volumes/AnyUserChosenSystemName";
 		var entries = new List<MacOsFileSystemHelper.MountTableEntry>
 		{
-			new("/", "apfs"),
-			new(aliasPath, "apfs"),
-			new("/Volumes/CameraCard", "exfat")
+			new("/", "apfs"), new(aliasPath, "apfs"), new("/Volumes/CameraCard", "exfat")
 		};
 
 		string Resolver(string value)
@@ -46,7 +44,8 @@ public class MacOsFileSystemHelperTest
 			return value;
 		}
 
-		var fsOnAlias = MacOsFileSystemHelper.ResolveFileSystemForPath(aliasPath, entries, Resolver);
+		var fsOnAlias =
+			MacOsFileSystemHelper.ResolveFileSystemForPath(aliasPath, entries, Resolver);
 		var fsOnCard =
 			MacOsFileSystemHelper.ResolveFileSystemForPath("/Volumes/CameraCard/DCIM", entries,
 				Resolver);
@@ -60,9 +59,7 @@ public class MacOsFileSystemHelperTest
 	{
 		var entries = new List<MacOsFileSystemHelper.MountTableEntry>
 		{
-			new("", ""),
-			new("/", "apfs"),
-			new("/Volumes/Card", "fat32")
+			new("", ""), new("/", "apfs"), new("/Volumes/Card", "fat32")
 		};
 
 		var fs = MacOsFileSystemHelper.ResolveFileSystemForPath(
@@ -132,7 +129,7 @@ public class MacOsFileSystemHelperTest
 	[OSCondition(OperatingSystems.OSX)]
 	public void GetFileSystem_OnRoot_ReturnsNonEmpty_OnMacOnly()
 	{
-		var fs = MacOsFileSystemHelper.GetFileSystem("/");
+		var fs = new MacOsFileSystemHelper().GetFileSystem("/");
 		Assert.IsFalse(string.IsNullOrWhiteSpace(fs), "Filesystem for / should not be empty");
 		Console.WriteLine($"Root filesystem: {fs}");
 	}
@@ -144,7 +141,7 @@ public class MacOsFileSystemHelperTest
 		var didThrow = false;
 		try
 		{
-			_ = MacOsFileSystemHelper.GetFileSystem("/");
+			_ = new MacOsFileSystemHelper().GetFileSystem("/");
 		}
 		catch ( PlatformNotSupportedException )
 		{
@@ -161,7 +158,62 @@ public class MacOsFileSystemHelperTest
 		var didThrow = false;
 		try
 		{
-			_ = MacOsFileSystemHelper.GetFileSystem("/");
+			_ = new MacOsFileSystemHelper().GetFileSystem("/");
+		}
+		catch ( PlatformNotSupportedException )
+		{
+			didThrow = true;
+		}
+
+		Assert.IsTrue(didThrow);
+	}
+
+	[TestMethod]
+	[DataRow("/Volumes/Camera/", "/Volumes/Camera/")]
+	[DataRow("//", "/")] // Multiple leading slashes collapse to root
+	[DataRow("tmp/path", "/tmp/path/")]
+	[DataRow("/", "/")]
+	public void NormalizeForPrefix_FormatsPaths_Correctly(string input, string expected)
+	{
+		var actual = MacOsFileSystemHelper.NormalizeForPrefix(input);
+		Assert.AreEqual(expected, actual);
+	}
+
+	[TestMethod]
+	public void ResolveFileSystemForPath_LongestPrefixEdgeCases()
+	{
+		var entries = new[]
+		{
+			new MacOsFileSystemHelper.MountTableEntry("/", "apfs"),
+			new MacOsFileSystemHelper.MountTableEntry("/Volumes/USB", "exfat"),
+			new MacOsFileSystemHelper.MountTableEntry("/Volumes/USB/Inner", "fat32")
+		};
+
+		var fs = MacOsFileSystemHelper.ResolveFileSystemForPath("/Volumes/USB/Inner/DCIM", entries,
+			p => p);
+		Assert.AreEqual("fat32", fs);
+
+		fs = MacOsFileSystemHelper.ResolveFileSystemForPath("/Volumes/USB/DCIM", entries, p => p);
+		Assert.AreEqual("exfat", fs);
+	}
+
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
+	public void GetFileSystemViaStatFs_OnMac_ReturnsNonEmpty()
+	{
+		var fs = new MacOsFileSystemHelper().GetFileSystemViaStatFs("/");
+		Assert.IsFalse(string.IsNullOrWhiteSpace(fs));
+	}
+
+	[TestMethod]
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.OSX)]
+	public void GetFileSystem_OnNonMac_ThrowsPlatformNotSupported()
+	{
+		var didThrow = false;
+		try
+		{
+			_ = new MacOsFileSystemHelper().GetFileSystem("/");
 		}
 		catch ( PlatformNotSupportedException )
 		{

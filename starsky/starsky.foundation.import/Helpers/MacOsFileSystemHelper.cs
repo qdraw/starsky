@@ -4,16 +4,27 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
+using starsky.foundation.platform.Architecture;
 
 namespace starsky.foundation.import.Helpers;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public static class MacOsFileSystemHelper
+public class MacOsFileSystemHelper
 {
 	private const int MFSNAMELEN = 16;
 	private const int MNAMELEN = 1024;
 	private const int MountTableRetryCount = 5;
 	private const int MountTableRetryDelayMs = 75;
+	private readonly Func<OSPlatform> _platformResolver = OperatingSystemHelper.GetPlatform;
+
+	public MacOsFileSystemHelper()
+	{
+	}
+
+	internal MacOsFileSystemHelper(Func<OSPlatform> platformResolver)
+	{
+		_platformResolver = platformResolver;
+	}
 
 	[DllImport("libc", SetLastError = true)]
 	[SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments")]
@@ -26,18 +37,7 @@ public static class MacOsFileSystemHelper
 		"SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
 	private static extern int getmntinfo(out IntPtr mntbufp, int flags);
 
-	[DllImport("libc", SetLastError = true)]
-	[SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments")]
-	[SuppressMessage("Interoperability",
-		"SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
-	private static extern IntPtr realpath(string path, IntPtr resolvedPath);
-
-	[DllImport("libc")]
-	[SuppressMessage("Interoperability",
-		"SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
-	private static extern void free(IntPtr ptr);
-
-	public static string GetFileSystem(string path)
+	public string GetFileSystem(string path)
 	{
 		EnsureMacOs();
 
@@ -89,15 +89,15 @@ public static class MacOsFileSystemHelper
 		       fileSystem.Equals("apfs", StringComparison.OrdinalIgnoreCase);
 	}
 
-	public static string GetFileSystemViaMountTable(string path)
+	public string GetFileSystemViaMountTable(string path)
 	{
 		EnsureMacOs();
 
 		var mountEntries = GetMountTableEntries();
-		return ResolveFileSystemForPath(path, mountEntries, GetRealPath);
+		return ResolveFileSystemForPath(path, mountEntries, RealPathHelper.GetRealPath);
 	}
 
-	internal static string GetFileSystemViaStatFs(string path)
+	internal string GetFileSystemViaStatFs(string path)
 	{
 		EnsureMacOs();
 
@@ -106,9 +106,9 @@ public static class MacOsFileSystemHelper
 			: stat.f_fstypename;
 	}
 
-	private static void EnsureMacOs()
+	private void EnsureMacOs()
 	{
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
+		if ( _platformResolver() == OSPlatform.OSX )
 		{
 			return;
 		}
@@ -171,30 +171,8 @@ public static class MacOsFileSystemHelper
 		return entries;
 	}
 
-	internal static string GetRealPath(string path)
-	{
-		if ( string.IsNullOrWhiteSpace(path) )
-		{
-			return path;
-		}
 
-		var result = realpath(path, IntPtr.Zero);
-		if ( result == IntPtr.Zero )
-		{
-			return path;
-		}
-
-		try
-		{
-			return Marshal.PtrToStringAnsi(result) ?? path;
-		}
-		finally
-		{
-			free(result);
-		}
-	}
-
-	private static string NormalizeForPrefix(string path)
+	internal static string NormalizeForPrefix(string path)
 	{
 		if ( string.IsNullOrWhiteSpace(path) )
 		{
@@ -210,6 +188,12 @@ public static class MacOsFileSystemHelper
 		if ( !normalized.StartsWith("/", StringComparison.Ordinal) )
 		{
 			normalized = "/" + normalized;
+		}
+
+		// If the normalized path is the root, return a single '/'
+		if ( normalized == "/" )
+		{
+			return "/";
 		}
 
 		return normalized + "/";
