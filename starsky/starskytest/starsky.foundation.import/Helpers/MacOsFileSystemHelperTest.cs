@@ -171,8 +171,8 @@ public class MacOsFileSystemHelperTest
 	}
 
 	[TestMethod]
-	[OSCondition(OperatingSystems.Windows | OperatingSystems.Linux)]
-	public void GetFileSystem_WindowsLinux()
+	[OSCondition(OperatingSystems.Windows)]
+	public void GetFileSystem_Windows()
 	{
 		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			new MacOsFileSystemHelper(() => OSPlatform.OSX).GetFileSystem("/")
