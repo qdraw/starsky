@@ -47,6 +47,16 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			return await InstallUserAsync(executablePath);
 		}
 
+		logger.LogInformation($"systemd unit installed: {executablePath}");
+		logger.LogInformation("To enable and start:");
+		logger.LogInformation("  sudo systemctl daemon-reload");
+		logger.LogInformation(
+			$"  sudo systemctl enable {new WatchServiceName().GetSystemDName()}");
+		logger.LogInformation(
+			$"  sudo systemctl start {new WatchServiceName().GetSystemDName()}");
+
+		logger.LogInformation($"Linux systemd unit written to {executablePath}");
+
 		var servicePath = $"/etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service";
 		using var stream = new MemoryStream(Encoding.UTF8.GetBytes(serviceContent));
 		return await _storage.WriteStreamAsync(stream, servicePath);
