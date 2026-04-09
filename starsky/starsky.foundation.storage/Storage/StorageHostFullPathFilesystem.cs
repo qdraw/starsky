@@ -494,6 +494,12 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 				                       "Auto-created directory: " + dir, exception);
 				await LocalCopy();
 			}
+			catch ( UnauthorizedAccessException )
+			{
+				_logger.LogError($"[WriteStreamAsync] UnauthorizedAccessException " +
+				                 $"for path: {path}");
+				return false;
+			}
 			finally
 			{
 				try
