@@ -17,7 +17,6 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 public class ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logger)
 	: IServiceInstaller
 {
-	private readonly Func<IOsServiceInstaller>? _installerFactory;
 	private readonly Func<OSPlatform> _platformResolver = OperatingSystemHelper.GetPlatform;
 
 	internal ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logger,
