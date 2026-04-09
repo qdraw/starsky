@@ -132,6 +132,11 @@ copyFileSync(
 );
 
 copyFileSync(
+	"starsky/starskydependenciesdownloadcli/readme.md",
+	"advanced-options/starsky/starskydependenciesdownloadcli/readme.md"
+);
+
+copyFileSync(
 	"starsky/starskydemoseedcli/readme.md",
 	"advanced-options/starsky/starskydemoseedcli/readme.md"
 );
