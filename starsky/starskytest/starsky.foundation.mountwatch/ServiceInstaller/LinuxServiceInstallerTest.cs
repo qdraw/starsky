@@ -37,7 +37,8 @@ public sealed class LinuxServiceInstallerTest
 	}
 
 	[TestMethod]
-	public async Task InstallAsync_WriteFails_FallsBackToUserInstall()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task InstallAsync_WriteFails_FallsBackToUserInstall__UnixOnly()
 	{
 		// Arrange - simulate write failure at system level
 		var logger = new FakeIWebLogger();
@@ -62,7 +63,7 @@ public sealed class LinuxServiceInstallerTest
 		var storage = new FakeIStorage();
 		var sut = new LinuxServiceInstaller(logger, storage);
 
-		var execPath = "/opt/starsky/bin/cli";
+		const string execPath = "/opt/starsky/bin/cli";
 
 		// Act
 		var result = await sut.InstallAsync(execPath);
