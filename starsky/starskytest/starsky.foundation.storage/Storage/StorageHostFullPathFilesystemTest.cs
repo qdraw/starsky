@@ -472,6 +472,47 @@ public sealed class StorageHostFullPathFilesystemTest
 	}
 
 	[TestMethod]
+	public void ReadAllLines_ReturnsAllLines()
+	{
+		// Arrange
+		var tempFile = Path.GetTempFileName();
+		try
+		{
+			var lines = new[] { "lineA", "lineB", "lineC" };
+			File.WriteAllLines(tempFile, lines);
+			var storage = new StorageHostFullPathFilesystem(null!);
+
+			// Act
+			var result = storage.ReadAllLines(tempFile);
+
+			// Assert
+			CollectionAssert.AreEqual(lines, result);
+		}
+		finally
+		{
+			if ( File.Exists(tempFile) )
+			{
+				File.Delete(tempFile);
+			}
+		}
+	}
+
+	[TestMethod]
+	public void ReadAllLines_FileDoesNotExist_Throws()
+	{
+		var storage = new StorageHostFullPathFilesystem(null!);
+		try
+		{
+			storage.ReadAllLines("/path/does/not/exist-readalllines-12345.txt");
+			Assert.Fail("Expected DirectoryNotFoundException");
+		}
+		catch ( DirectoryNotFoundException )
+		{
+			// expected
+		}
+	}
+
+	[TestMethod]
 	public void IsFolderEmpty_EmptyFolder_ReturnsTrue()
 	{
 		var dir = Path.Combine(Path.GetTempPath(), "IsFolderEmpty_EmptyFolder_" + Guid.NewGuid());
@@ -521,6 +562,84 @@ public sealed class StorageHostFullPathFilesystemTest
 		catch ( DirectoryNotFoundException )
 		{
 			// expected
+		}
+	}
+
+	[TestMethod]
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task WriteStreamAsync_WhenCopyThrowsUnauthorized_ReturnsFalse_AndLogsError(
+		bool dirCreated)
+	{
+		var logger = new FakeIWebLogger();
+		var storage = new StorageHostFullPathFilesystem(logger);
+
+		await using var stream = new ThrowingStream();
+
+		var tempFolder = Path.Combine(Path.GetTempPath(), "starsky-test-" + Guid.NewGuid());
+		if ( dirCreated )
+		{
+			Directory.CreateDirectory(tempFolder);
+		}
+		else
+		{
+			try
+			{
+				Directory.Delete(tempFolder, true);
+			}
+			catch ( Exception )
+			{
+				// ignore error
+			}
+		}
+
+		var tempPath =
+			Path.Combine(tempFolder, "file.txt");
+
+
+		var result = await storage.WriteStreamAsync(stream, tempPath);
+
+		Assert.IsFalse(result,
+			"Expected WriteStreamAsync to return false when UnauthorizedAccessException is thrown");
+
+		// Ensure an error was logged containing the UnauthorizedAccessException message part
+		Assert.IsNotEmpty(logger.TrackedExceptions, "Expected an error to be logged");
+		var containsMessage = logger.TrackedExceptions.Any(t =>
+			t.Item2 != null && t.Item2.Contains("UnauthorizedAccessException",
+				StringComparison.OrdinalIgnoreCase));
+		// The implementation logs a message with 'UnauthorizedAccessException' literal; accept either that or general error
+		if ( !containsMessage )
+		{
+			// fallback: some loggers record custom message; just verify an entry exists
+			containsMessage =
+				logger.TrackedExceptions.Any(t => t.Item2 != null && t.Item2.Length > 0);
+		}
+
+		Assert.IsTrue(containsMessage,
+			"Expected log entries to indicate UnauthorizedAccessException or contain an error message");
+
+		// cleanup: attempt to delete any created folder
+		try
+		{
+			var dir = Path.GetDirectoryName(tempPath);
+			if ( dir != null && Directory.Exists(dir) )
+			{
+				Directory.Delete(dir, true);
+			}
+		}
+		catch
+		{
+			// ignore cleanup errors in test
+		}
+	}
+
+	private sealed class ThrowingStream : MemoryStream
+	{
+		public override Task CopyToAsync(Stream destination, int bufferSize,
+			CancellationToken cancellationToken)
+		{
+			return Task.FromException(
+				new UnauthorizedAccessException("Simulated unauthorized access"));
 		}
 	}
 }

@@ -435,4 +435,48 @@ public sealed class StorageTemporaryFilesystemTests
 			}
 		}
 	}
+
+	[TestMethod]
+	public void ReadAllLines_FromTempFolder_ReturnsLines()
+	{
+		// Arrange
+		var baseTemp = Path.Combine(Path.GetTempPath(),
+			"StorageTemporaryFilesystemTest_" + Guid.NewGuid());
+		Directory.CreateDirectory(baseTemp);
+
+		var appSettings = new AppSettings { TempFolder = baseTemp };
+
+		var logger = new FakeIWebLogger();
+		var sut = new StorageTemporaryFilesystem(appSettings, logger);
+
+		var dbPath = "/temp_testfile.txt"; // database-style path
+		var fullPath = appSettings.DatabasePathToTempFolderFilePath(dbPath);
+
+		var expected = new[] { "alpha", "beta", "gamma" };
+		Directory.CreateDirectory(Path.GetDirectoryName(fullPath) ?? baseTemp);
+		File.WriteAllLines(fullPath, expected);
+
+		try
+		{
+			// Act
+			var result = sut.ReadAllLines(dbPath);
+
+			// Assert
+			CollectionAssert.AreEqual(expected, result);
+		}
+		finally
+		{
+			try
+			{
+				if ( Directory.Exists(baseTemp) )
+				{
+					Directory.Delete(baseTemp, true);
+				}
+			}
+			catch
+			{
+				// ignore cleanup failures
+			}
+		}
+	}
 }

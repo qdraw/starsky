@@ -15,6 +15,8 @@ executables=(
   "starskysynchronizecli"
   "starskythumbnailcli"
   "starskywebftpcli"
+  "starskydependenciesdownloadcli"
+  "starskymountwatchercli"
 )
 
 # Remove quarantine extended attributes

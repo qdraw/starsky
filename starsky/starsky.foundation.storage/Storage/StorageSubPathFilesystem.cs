@@ -44,6 +44,12 @@ public sealed class StorageSubPathFilesystem : IStorage
 			cancellationToken);
 	}
 
+	public string[] ReadAllLines(string path)
+	{
+		var fullPath = _appSettings.DatabasePathToFilePath(path);
+		return new StorageHostFullPathFilesystem(_logger).ReadAllLines(fullPath);
+	}
+
 	/// <summary>
 	///     Get the storage info
 	/// </summary>

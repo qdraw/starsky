@@ -1,9 +1,14 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+[assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.foundation.platform.Architecture;
 
 public static class OperatingSystemHelper
 {
+	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
+
 	public static OSPlatform GetPlatform()
 	{
 		return GetPlatformInternal(RuntimeInformation.IsOSPlatform);
@@ -35,6 +40,4 @@ public static class OperatingSystemHelper
 			? OSPlatform.FreeBSD
 			: OSPlatform.Create("Unknown");
 	}
-
-	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
 }

@@ -94,4 +94,6 @@ public interface IStorage
 
 	IAsyncEnumerable<string> ReadLinesAsync(string path,
 		CancellationToken cancellationToken);
+
+	string[] ReadAllLines(string path);
 }

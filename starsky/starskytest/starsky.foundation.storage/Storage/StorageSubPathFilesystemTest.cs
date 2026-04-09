@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -324,6 +325,37 @@ public sealed class StorageSubPathFilesystemTest
 	}
 
 	[TestMethod]
+	public void ReadAllLines_SubPath_ReturnsLines()
+	{
+		// Arrange: create a file under the storage folder used by _storage
+		const string dbPath = "/test_readall.txt";
+		var fullPath = Path.Combine(new CreateAnImage().BasePath, "test_readall.txt");
+		var lines = new[] { "one", "two", "three" };
+		File.WriteAllLines(fullPath, lines);
+
+		try
+		{
+			// The storage instance in this test class uses CreateAnImage.BasePath as StorageFolder
+			var result = _storage.ReadAllLines(dbPath);
+			CollectionAssert.AreEqual(lines, result);
+		}
+		finally
+		{
+			try
+			{
+				if ( File.Exists(fullPath) )
+				{
+					File.Delete(fullPath);
+				}
+			}
+			catch
+			{
+				// best effort cleanup
+			}
+		}
+	}
+
+	[TestMethod]
 	public void IsFolderEmpty_EmptyFolder_ReturnsTrue()
 	{
 		var baseStorage = Path.Combine(Path.GetTempPath(),
@@ -424,7 +456,8 @@ public sealed class StorageSubPathFilesystemTest
 	[TestMethod]
 	public void IsFolderEmpty_FileAppearsBetweenChecks_Reliable()
 	{
-		var baseStorage = Path.Combine(Path.GetTempPath(), "StorageSubPathFilesystemTest_" + Guid.NewGuid());
+		var baseStorage = Path.Combine(Path.GetTempPath(),
+			"StorageSubPathFilesystemTest_" + Guid.NewGuid());
 		try
 		{
 			var appSettings = new AppSettings { StorageFolder = baseStorage };
@@ -444,7 +477,7 @@ public sealed class StorageSubPathFilesystemTest
 			}, CancellationToken.None);
 
 			// Poll until IsFolderEmpty returns false or timeout
-			var sw = System.Diagnostics.Stopwatch.StartNew();
+			var sw = Stopwatch.StartNew();
 			var success = false;
 			while ( sw.Elapsed < TimeSpan.FromSeconds(2) )
 			{

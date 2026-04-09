@@ -40,6 +40,12 @@ public sealed class StorageTemporaryFilesystem : IStorage
 		throw new NotSupportedException();
 	}
 
+	public string[] ReadAllLines(string path)
+	{
+		var fullPath = _appSettings.DatabasePathToTempFolderFilePath(path);
+		return new StorageHostFullPathFilesystem(_logger).ReadAllLines(fullPath);
+	}
+
 	/// <summary>
 	///     Get the storage info
 	/// </summary>

@@ -12,7 +12,14 @@ of the process independently.
 If your photo library has more structure, for example by organizing the photos by date, you can also
 configure this in the settings.
 
-![Import](../assets/import_v052.gif)
+## Types of import
+- [Mount Watcher CLI to Auto Import](mountwatchercli.md)
+- [Cloud Import](cloudimport.md)
+- Manual import (this page)
+
+## Run the importer
+
+![Import](../../assets/import_v052.gif)
 
 Import is by default done by the metadata field that contains the datetime the picture is made
 If that field is not available, the file creation date is used.
@@ -184,22 +191,9 @@ The following checks are performed to identify camera storage devices:
 These 4 checks help ensure that only valid camera storage devices are scanned and imported.
 
 ## Troubleshooting: Access to Path is denied on macOS
+See [Troubleshooting: Access to Path is denied on macOS](troubleshooting-access-to-path-macos.md)
 
-When you see the error: **Access to Path is denied** on an external memory card, you need to give Starsky Full Disk Access.
+## Related
 
-![Access to Path is denied](../assets/import-access-to-path-is-denied-v070-1.jpg)
-
-### How to grant Full Disk Access on macOS
-
-1. Open **System Settings** (or **System Preferences** on older macOS versions).
-2. Go to **Privacy & Security**.
-3. Scroll down and select **Full Disk Access**.
-4. Click the **+** button and add the Starsky application (or the terminal if you use the CLI).
-5. Make sure Starsky and StarskyImporterCli is enabled in the list.
-6. Restart Starsky (or your terminal) for the changes to take effect.
-
-![Image of How to grant Full Disk Access, written out in text](../assets/import-access-to-path-is-denied-v070-2.jpg)
-
-This permission is required by macOS to allow applications to access files on external drives and memory cards.
-
-- [Reference](../getting-started/troubleshooting/macos.md).
+- [Mount Watcher CLI to Auto Import](mountwatchercli.md)
+- [Cloud Import](cloudimport.md)
