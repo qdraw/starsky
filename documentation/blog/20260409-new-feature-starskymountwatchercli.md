@@ -1,6 +1,6 @@
 ---
 slug: new-feature-starskymountwatchercli
-title: "New feature: starskymountwatchercli"
+title: "New feature: starsky mount watcher cli"
 authors: dion
 tags: [photo management, automation, cli]
 date: 2026-04-09

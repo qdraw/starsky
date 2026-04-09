@@ -173,3 +173,8 @@ You can also configure which file extensions to include or exclude during the im
   }
 }
 ```
+
+## Related
+
+- [Import options](import.md)
+- [Mount Watcher CLI to Auto Import](mountwatchercli.md)
