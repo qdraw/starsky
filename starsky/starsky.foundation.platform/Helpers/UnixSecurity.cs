@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-namespace starsky.foundation.mountwatch.ServiceInstaller.Helpers;
+namespace starsky.foundation.platform.Helpers;
 
 public class UnixSecurity
 {

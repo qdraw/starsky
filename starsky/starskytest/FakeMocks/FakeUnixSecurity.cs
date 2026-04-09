@@ -1,4 +1,4 @@
-using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
+using starsky.foundation.platform.Helpers;
 
 namespace starskytest.FakeMocks;
 

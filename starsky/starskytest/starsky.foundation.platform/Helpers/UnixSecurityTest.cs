@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
+using starsky.foundation.platform.Helpers;
 
-namespace starskytest.starsky.foundation.mountwatch.ServiceInstaller;
+namespace starskytest.starsky.foundation.platform.Helpers;
 
 [TestClass]
 public class UnixSecurityTest
