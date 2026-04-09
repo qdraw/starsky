@@ -202,6 +202,10 @@ public sealed class ImportQuery : IImportQuery
 
 		async Task<bool> LocalRemoveDefaultQuery()
 		{
+			if ( _scopeFactory == null )
+			{
+				return false;
+			}
 			var scope = new InjectServiceScope(_scopeFactory);
 			return await scope.ExecuteAsync(async context1 =>
 				await LocalRemoveQuery(context1)
