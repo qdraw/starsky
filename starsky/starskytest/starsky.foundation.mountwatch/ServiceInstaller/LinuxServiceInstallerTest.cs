@@ -109,7 +109,6 @@ public sealed class LinuxServiceInstallerTest
 	{
 		// Arrange
 		var logger = new FakeIWebLogger();
-		var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 		var userServicePath = Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
 			".config", "systemd", "user", $"{new WatchServiceName().GetSystemDName()}.service");
@@ -289,7 +288,7 @@ public sealed class LinuxServiceInstallerTest
 		var storage = new FakeIStorage();
 		var sut = new LinuxServiceInstaller(logger, storage);
 
-		var execPath = "/usr/local/bin/starskymountwatchercli";
+		const string execPath = "/usr/local/bin/starskymountwatchercli";
 
 		// Act
 		var result = await sut.InstallAsync(execPath);
@@ -311,11 +310,6 @@ public sealed class LinuxServiceInstallerTest
 		// we create a wrapper storage that throws when WriteStreamAsync is called for /etc/systemd/system/...
 		const string execPath = "/usr/bin/whatever";
 
-		Task<bool> FakeRun(string file, string args)
-		{
-			return Task.FromResult(true);
-		}
-
 		// Create a storage that returns false for system path write by overriding WriteStreamAsync via exception injection
 		var failingStorage = new FakeIStorage();
 
@@ -328,6 +322,12 @@ public sealed class LinuxServiceInstallerTest
 
 		// Assert
 		Assert.IsTrue(result);
+		return;
+
+		static Task<bool> FakeRun(string _, string _1)
+		{
+			return Task.FromResult(true);
+		}
 	}
 
 	[TestMethod]
@@ -351,17 +351,18 @@ public sealed class LinuxServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 
-		Task<bool> ThrowingRun(string file, string args)
-		{
-			throw new InvalidOperationException("boom");
-		}
-
 		var sut = new LinuxServiceInstaller(logger, storage, ThrowingRun,
 			new FakeUnixSecurity(false));
 		var result = await sut.StartAsync();
 
 		Assert.IsFalse(result);
 		Assert.IsNotEmpty(logger.TrackedExceptions);
+		return;
+
+		static Task<bool> ThrowingRun(string _, string _1)
+		{
+			throw new InvalidOperationException("boom");
+		}
 	}
 
 	[TestMethod]
@@ -370,17 +371,18 @@ public sealed class LinuxServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 
-		Task<bool> ThrowingRun(string file, string args)
-		{
-			throw new InvalidOperationException("stopboom");
-		}
-
 		var sut = new LinuxServiceInstaller(logger, storage, ThrowingRun,
 			new FakeUnixSecurity(false));
 		var result = await sut.StopAsync();
 
 		Assert.IsFalse(result);
 		Assert.IsNotEmpty(logger.TrackedExceptions);
+		return;
+
+		static Task<bool> ThrowingRun(string _, string _1)
+		{
+			throw new InvalidOperationException("stopboom");
+		}
 	}
 
 	[TestMethod]
