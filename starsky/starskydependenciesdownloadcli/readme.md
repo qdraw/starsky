@@ -1,4 +1,4 @@
-# Thumbnail Cli
+# starskyDependenciesDownloadCli
 
 ## List of [Starsky](../../readme.md) Projects
 
@@ -9,18 +9,18 @@
       interface_
     * [starskyMountWatcherCli](../../starsky/starskymountwatchercli/readme.md)  _watch sd cards_
     * [starskyDemoSeedCli](../../starsky/starskydemoseedcli/readme.md) _demo seed data_
-    * [starskyDependenciesDownloadCli](../../starsky/starskydependenciesdownloadcli/readme.md) _make
-      sure external dependencies are installed_
+    * __[starskyDependenciesDownloadCli](../../starsky/starskydependenciesdownloadcli/readme.md)
+      make sure external dependencies are installed__
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a
       content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp
       service_
-    * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  manage user accounts
     * [starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes
       are updated in the database_
-    * __[starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  speed web performance by
-      generating smaller images__
+    * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by
+      generating smaller images_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic
       libraries (.NET)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
@@ -28,10 +28,3 @@
 * [Starsky Desktop](../../starskydesktop/readme.md) _Desktop Application_
     * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
 * [Changelog](../../history.md) _Release notes and history_
-
-## starskyThumbnailCli docs
-
-Run a cron task to speed web performance by generating smaller images.
-
-Use the following argument: `-t true` and specify the path. This can be done by providing `-p`, then
-you enter an absolute path or by `-s`, after which you indicate a relative path
