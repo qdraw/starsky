@@ -485,6 +485,13 @@ public class MacOsFileSystemHelperTest
 			mountEx = ex;
 		}
 
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
+		{
+			Assert.IsNull(mountEx, "Expected GetFileSystemViaMountTable " +
+			                       "to succeed on macOS, but it threw: " + mountEx);
+			return;
+		}
+
 		Assert.IsInstanceOfType(mountEx!,
 			RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
 				? typeof(DllNotFoundException)
