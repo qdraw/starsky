@@ -57,7 +57,7 @@ So a picture that has been taken at `Saturday, 3 February 2024 10:10:29` will be
 in `2024/02/2024_02_03` and will be named: `20240203_101029_DSC07624.jpg` the base name of the file
 is `DSC07624` and the extension is `jpg`.
 
-Read more about [Import here](../features/import.md)
+Read more about [Import here](../features/import/import.md)
 
 ## Search
 
