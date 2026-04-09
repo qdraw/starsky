@@ -95,7 +95,9 @@ public class MacOsFileSystemHelperTest
 	}
 
 	[TestMethod]
-	public void ShouldRetryForTransientRootAlias_OnVolumesApfsAndNotFinalAttempt_ReturnsTrue()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void
+		ShouldRetryForTransientRootAlias_OnVolumesApfsAndNotFinalAttempt_ReturnsTrue__UnixOnly()
 	{
 		var shouldRetry = MacOsFileSystemHelper.ShouldRetryForTransientRootAlias(
 			"/Volumes/CameraCard",
@@ -294,7 +296,8 @@ public class MacOsFileSystemHelperTest
 	}
 
 	[TestMethod]
-	public void ShouldRetryForTransientRootAlias_BehavesAsExpected()
+	[OSCondition( OperatingSystems.OSX | OperatingSystems.Linux)]
+	public void ShouldRetryForTransientRootAlias_BehavesAsExpected__UnixOnly()
 	{
 		// true when under /Volumes and matched mountpoint is parent (race case)
 		var should =

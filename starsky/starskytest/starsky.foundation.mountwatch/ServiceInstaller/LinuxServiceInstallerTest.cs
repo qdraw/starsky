@@ -34,7 +34,7 @@ public sealed class LinuxServiceInstallerTest
 
 		// Assert
 		Assert.IsTrue(result);
-		Assert.IsNotEmpty(logger.TrackedInformation, 
+		Assert.IsNotEmpty(logger.TrackedInformation,
 			"Should log installation messages");
 	}
 
@@ -58,7 +58,8 @@ public sealed class LinuxServiceInstallerTest
 	}
 
 	[TestMethod]
-	public async Task InstallAsync_CreatesCorrectServicePath()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task InstallAsync_CreatesCorrectServicePath__UnixOnly()
 	{
 		// Arrange
 		var logger = new FakeIWebLogger();
@@ -228,7 +229,8 @@ public sealed class LinuxServiceInstallerTest
 	}
 
 	[TestMethod]
-	public async Task InstallAsync_WithEmptyExecutablePath_StillInstalls()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task InstallAsync_WithEmptyExecutablePath_StillInstalls__UnixOnly()
 	{
 		// Arrange
 		var logger = new FakeIWebLogger();
@@ -279,7 +281,8 @@ public sealed class LinuxServiceInstallerTest
 	}
 
 	[TestMethod]
-	public async Task InstallAsync_LogsDetailedInstructions()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task InstallAsync_LogsDetailedInstructions__UnixOnly()
 	{
 		// Arrange
 		var logger = new FakeIWebLogger();
@@ -328,7 +331,8 @@ public sealed class LinuxServiceInstallerTest
 	}
 
 	[TestMethod]
-	public async Task InstallUserAsync_CreateDirectoryThrows_ReturnsFalse()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task InstallUserAsync_CreateDirectoryThrows_ReturnsFalse__UnixOnly()
 	{
 		var logger = new FakeIWebLogger();
 		// Make a storage that throws when CreateDirectory is called
