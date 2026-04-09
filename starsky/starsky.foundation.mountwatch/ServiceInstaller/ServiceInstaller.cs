@@ -27,13 +27,6 @@ public class ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logge
 		_platformResolver = platformResolver;
 	}
 
-	internal ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logger,
-		Func<OSPlatform> platformResolver, Func<IOsServiceInstaller> installerFactory) :
-		this(selectorStorage, logger, platformResolver)
-	{
-		_installerFactory = installerFactory;
-	}
-
 	/// <summary>
 	///     Install service for the current OS
 	/// </summary>
@@ -80,11 +73,6 @@ public class ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logge
 	/// </summary>
 	private IOsServiceInstaller CreateInstaller()
 	{
-		if ( _installerFactory != null )
-		{
-			return _installerFactory();
-		}
-
 		var platform = _platformResolver();
 
 		if ( platform == OSPlatform.OSX )
