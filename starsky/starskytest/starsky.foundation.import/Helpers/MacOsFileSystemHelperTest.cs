@@ -180,6 +180,14 @@ public class MacOsFileSystemHelperTest
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void GetFileSystem_LinuxMacOs()
+	{
+		var result = new MacOsFileSystemHelper(() => OSPlatform.OSX).GetFileSystem("/");
+		Assert.IsNotEmpty(result);
+	}
+
+	[TestMethod]
 	[DataRow("/Volumes/Camera/", "/Volumes/Camera/")]
 	[DataRow("//", "/")] // Multiple leading slashes collapse to root
 	[DataRow("tmp/path", "/tmp/path/")]
