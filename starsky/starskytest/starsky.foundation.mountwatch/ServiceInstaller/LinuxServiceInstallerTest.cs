@@ -261,7 +261,8 @@ public sealed class LinuxServiceInstallerTest
 	}
 
 	[TestMethod]
-	public async Task InstallAsync_UserLevelFallback_CreatesDirectory()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task InstallAsync_UserLevelFallback_CreatesDirectory__UnixOnly()
 	{
 		// Arrange
 		var logger = new FakeIWebLogger();
