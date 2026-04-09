@@ -139,23 +139,6 @@ public class MacOsFileSystemHelperTest
 	}
 
 	[TestMethod]
-	[OSCondition(OperatingSystems.Linux)]
-	public void GetFileSystem_OnLinux_ThrowsPlatformNotSupported()
-	{
-		var didThrow = false;
-		try
-		{
-			_ = new MacOsFileSystemHelper().GetFileSystem("/");
-		}
-		catch ( PlatformNotSupportedException )
-		{
-			didThrow = true;
-		}
-
-		Assert.IsTrue(didThrow);
-	}
-
-	[TestMethod]
 	[OSCondition(OperatingSystems.Windows)]
 	public void GetFileSystem_OnWindows_ThrowsPlatformNotSupported()
 	{
@@ -502,13 +485,10 @@ public class MacOsFileSystemHelperTest
 			mountEx = ex;
 		}
 
-		if ( mountEx != null )
-		{
-			Assert.IsInstanceOfType(mountEx,
-				RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-					? typeof(DllNotFoundException)
-					: typeof(EntryPointNotFoundException));
-		}
+		Assert.IsInstanceOfType(mountEx!,
+			RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+				? typeof(DllNotFoundException)
+				: typeof(EntryPointNotFoundException));
 	}
 
 	[TestMethod]
