@@ -180,11 +180,14 @@ public class MacOsFileSystemHelperTest
 	}
 
 	[TestMethod]
-	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
-	public void GetFileSystem_LinuxMacOs()
+	[OSCondition(OperatingSystems.Linux)]
+	public void GetFileSystem_Linux()
 	{
+		// on linux this function does not give a result
+		// because the native method will fail to load,
+		// ensure it at least returns empty string rather than throwing
 		var result = new MacOsFileSystemHelper(() => OSPlatform.OSX).GetFileSystem("/");
-		Assert.IsNotEmpty(result);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]

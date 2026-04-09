@@ -18,6 +18,14 @@ public class RealPathHelperTest
 
 	[TestMethod]
 	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
+	public void GetRealPath_RootPath()
+	{
+		var resolved = RealPathHelper.GetRealPath("/");
+		Assert.AreEqual("/", resolved);
+	}
+
+	[TestMethod]
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
 	public void GetRealPath_WithNonExisting_ReturnsInput()
 	{
 		var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
