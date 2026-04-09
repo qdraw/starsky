@@ -537,6 +537,16 @@ public class MacOsFileSystemHelperTest
 	}
 
 	[TestMethod]
+	public void IsExactMountPointMatch_Empty()
+	{
+		var result = MacOsFileSystemHelper.IsExactMountPointMatch(
+			string.Empty,
+			string.Empty);
+		Assert.IsFalse(result,
+			"IsExactMountPointMatch for / should not be empty");
+	}
+
+	[TestMethod]
 	public void ParseEntries_ReadsMultipleEntries_FromUnmanagedBuffer()
 	{
 		// Arrange

@@ -152,33 +152,19 @@ public class MacOsFileSystemHelper
 		}
 
 		realPathResolver ??= value => value;
-		try
-		{
-			var target = NormalizeForPrefix(realPathResolver(path));
-			var matched = NormalizeForPrefix(realPathResolver(matchedMountPoint));
-			return string.Equals(target, matched, StringComparison.Ordinal);
-		}
-		catch
-		{
-			return false;
-		}
+		var target = NormalizeForPrefix(realPathResolver(path));
+		var matched = NormalizeForPrefix(realPathResolver(matchedMountPoint));
+		return string.Equals(target, matched, StringComparison.Ordinal);
 	}
 
-	internal static bool IsSystemVolumeAlias(string path,
+	private static bool IsSystemVolumeAlias(string path,
 		Func<string, string>? realPathResolver = null)
 	{
 		realPathResolver ??= RealPathHelper.GetRealPath;
-		try
-		{
-			return NormalizeForPrefix(realPathResolver(path)) == "/";
-		}
-		catch
-		{
-			return false;
-		}
+		return NormalizeForPrefix(realPathResolver(path)) == "/";
 	}
 
-	public string GetFileSystemViaMountTable(string path)
+	private string GetFileSystemViaMountTable(string path)
 	{
 		EnsureMacOs();
 
@@ -246,7 +232,7 @@ public class MacOsFileSystemHelper
 			$"No matching mount point found for path '{path}'");
 	}
 
-	internal static List<MountTableEntry> GetMountTableEntries()
+	private static List<MountTableEntry> GetMountTableEntries()
 	{
 		var count = getmntinfo(out var ptr, 0);
 		return count <= 0
