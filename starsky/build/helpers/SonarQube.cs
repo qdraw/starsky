@@ -226,7 +226,8 @@ public static class SonarQube
 			.Append("/d:sonar.exclusions=**/build/*,**/build/helpers/*," +
 			        "**/documentation/*," +
 			        "**/Interfaces/IQuery.cs," +
-			        "*.mp4,*.zip,*.psd,*.webp,*.CR3,*.tiff,*.dmg,*.CR2,*.arw," +
+			        "*.mp4,*.zip,*.psd,*.webp,*.CR3,*.tiff,*.dmg,*.CR2," +
+			        "*.arw,*.woff2,*.png,*.ico,*.gif," +
 			        "**/LinuxMountWatcherSystem.cs," +
 			        "**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 			        "*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
@@ -237,7 +238,8 @@ public static class SonarQube
 			        "**/build/Constants/*," +
 			        "**/documentation/*," +
 			        "**/Interfaces/IQuery.cs," +
-			        "*.mp4,*.zip,*.psd,*.webp,*.CR3,*.tiff,*.dmg,*.CR2,*.arw," +
+			        "*.mp4,*.zip,*.psd,*.webp,*.CR3,*.tiff,*.dmg,*.CR2," +
+			        "*.arw,*.woff2,*.png,*.ico,*.gif," +
 			        "**/LinuxMountWatcherSystem.cs," +
 			        "**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 			        "*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
