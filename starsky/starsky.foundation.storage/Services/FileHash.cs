@@ -192,15 +192,15 @@ public sealed class FileHash
 		{
 			_logger.LogDebug($"[FileHash] Using MP4 hasher for: {fullFilePath}");
 			var mp4Hash = await _mp4Hasher.HashMp4VideoContentAsync(fullFilePath);
-			if ( !string.IsNullOrEmpty(mp4Hash) )
+			if ( !string.IsNullOrEmpty(mp4Hash.FileHash) )
 			{
 				_logger.LogDebug($"[FileHash] MP4 hash result: {mp4Hash}");
-				return mp4Hash;
+				return mp4Hash.FileHash;
 			}
 
 			_logger.LogError(
 				$"[FileHash] MP4 hasher returned empty for: {fullFilePath}, " +
-				$"falling back to standard hash.");
+				$"falling back to standard hash. {mp4Hash.Message}");
 		}
 
 		// Standard file hashing for non-MP4 files or if MP4 hashing fails
