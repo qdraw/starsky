@@ -19,21 +19,23 @@ public sealed class LinuxServiceInstallerTest
 	}
 
 	[TestMethod]
-	public async Task InstallAsync_WritesServiceFile()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task InstallAsync_WritesServiceFile__UnixOnly()
 	{
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 		var sut = new LinuxServiceInstaller(logger, storage);
 
-		var execPath = "/usr/local/bin/starskymountwatchercli";
+		const string execPath = "/usr/local/bin/starskymountwatchercli";
 
 		// Act
 		var result = await sut.InstallAsync(execPath);
 
 		// Assert
 		Assert.IsTrue(result);
-		Assert.IsNotEmpty(logger.TrackedInformation, "Should log installation messages");
+		Assert.IsNotEmpty(logger.TrackedInformation, 
+			"Should log installation messages");
 	}
 
 	[TestMethod]
