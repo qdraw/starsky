@@ -13,9 +13,13 @@ public class MacOsFileSystemHelper
 {
 	private const int MFSNAMELEN = 16;
 	private const int MNAMELEN = 1024;
-	private const int MountTableRetryCount = 5;
-	private const int MountTableRetryDelayMs = 75;
+	private const int MountTableRetryCount = 30;
+	private const int MountTableRetryDelayMs = 100;
+	private readonly Func<string, string>? _mountTableResolver;
 	private readonly Func<OSPlatform> _platformResolver = OperatingSystemHelper.GetPlatform;
+	private readonly Func<string, string> _realPathResolver = RealPathHelper.GetRealPath;
+	private readonly Action<int> _sleep = Thread.Sleep;
+	private readonly Func<string, string>? _statFsResolver;
 
 	public MacOsFileSystemHelper()
 	{
@@ -24,6 +28,26 @@ public class MacOsFileSystemHelper
 	internal MacOsFileSystemHelper(Func<OSPlatform> platformResolver)
 	{
 		_platformResolver = platformResolver;
+	}
+
+	internal MacOsFileSystemHelper(Func<OSPlatform> platformResolver,
+		Func<string, string>? mountTableResolver,
+		Func<string, string>? statFsResolver,
+		Action<int>? sleep,
+		Func<string, string>? realPathResolver)
+	{
+		_platformResolver = platformResolver;
+		_mountTableResolver = mountTableResolver;
+		_statFsResolver = statFsResolver;
+		if ( sleep != null )
+		{
+			_sleep = sleep;
+		}
+
+		if ( realPathResolver != null )
+		{
+			_realPathResolver = realPathResolver;
+		}
 	}
 
 	[DllImport("libc", SetLastError = true)]
@@ -50,27 +74,46 @@ public class MacOsFileSystemHelper
 		{
 			try
 			{
-				var fs = GetFileSystemViaMountTable(path);
-				if ( !ShouldRetryForTransientRootAlias(path, fs, attempt) )
+				string fs;
+				string? matchedMountPoint;
+				if ( _mountTableResolver != null )
+				{
+					fs = _mountTableResolver(path);
+					matchedMountPoint = path;
+				}
+				else
+				{
+					var mountEntries = GetMountTableEntries();
+					var resolved = ResolveMountEntryForPath(path, mountEntries, _realPathResolver);
+					fs = resolved.FileSystemType;
+					matchedMountPoint = resolved.MountPoint;
+				}
+
+				var shouldRetry = ShouldRetryForTransientRootAlias(path, fs, attempt,
+					matchedMountPoint,
+					_realPathResolver);
+
+				if ( !shouldRetry )
 				{
 					return fs;
 				}
 
-				Thread.Sleep(MountTableRetryDelayMs);
+				_sleep(MountTableRetryDelayMs);
 			}
 			catch ( Exception ex )
 			{
 				mountTableException = ex;
 				if ( attempt < MountTableRetryCount - 1 )
 				{
-					Thread.Sleep(MountTableRetryDelayMs);
+					_sleep(MountTableRetryDelayMs);
 				}
 			}
 		}
 
 		try
 		{
-			return GetFileSystemViaStatFs(path);
+			var fallbackFs = _statFsResolver?.Invoke(path) ?? GetFileSystemViaStatFs(path);
+			return fallbackFs;
 		}
 		catch
 		{
@@ -84,11 +127,55 @@ public class MacOsFileSystemHelper
 	}
 
 	internal static bool ShouldRetryForTransientRootAlias(string path, string fileSystem,
-		int attempt)
+		int attempt, string? matchedMountPoint = null,
+		Func<string, string>? realPathResolver = null)
 	{
-		return attempt < MountTableRetryCount - 1 &&
-		       path.StartsWith("/Volumes/", StringComparison.OrdinalIgnoreCase) &&
+		if ( attempt >= MountTableRetryCount - 1 ||
+		     !path.StartsWith("/Volumes/", StringComparison.OrdinalIgnoreCase) ||
+		     IsSystemVolumeAlias(path, realPathResolver) )
+		{
+			return false;
+		}
+
+		// During mount races we often resolve to a parent APFS mount (e.g. / or /Volumes)
+		// before the target mount appears. Retry until target mountpoint is visible.
+		return !IsExactMountPointMatch(path, matchedMountPoint, realPathResolver) ||
 		       fileSystem.Equals("apfs", StringComparison.OrdinalIgnoreCase);
+	}
+
+	internal static bool IsExactMountPointMatch(string path, string? matchedMountPoint,
+		Func<string, string>? realPathResolver = null)
+	{
+		if ( string.IsNullOrWhiteSpace(matchedMountPoint) )
+		{
+			return false;
+		}
+
+		realPathResolver ??= value => value;
+		try
+		{
+			var target = NormalizeForPrefix(realPathResolver(path));
+			var matched = NormalizeForPrefix(realPathResolver(matchedMountPoint));
+			return string.Equals(target, matched, StringComparison.Ordinal);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool IsSystemVolumeAlias(string path,
+		Func<string, string>? realPathResolver = null)
+	{
+		realPathResolver ??= RealPathHelper.GetRealPath;
+		try
+		{
+			return NormalizeForPrefix(realPathResolver(path)) == "/";
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	public string GetFileSystemViaMountTable(string path)
@@ -96,7 +183,7 @@ public class MacOsFileSystemHelper
 		EnsureMacOs();
 
 		var mountEntries = GetMountTableEntries();
-		return ResolveFileSystemForPath(path, mountEntries, RealPathHelper.GetRealPath);
+		return ResolveMountEntryForPath(path, mountEntries, _realPathResolver).FileSystemType;
 	}
 
 	internal string GetFileSystemViaStatFs(string path)
@@ -123,10 +210,17 @@ public class MacOsFileSystemHelper
 		IEnumerable<MountTableEntry> mountEntries,
 		Func<string, string>? realPathResolver = null)
 	{
+		return ResolveMountEntryForPath(path, mountEntries, realPathResolver).FileSystemType;
+	}
+
+	internal static MountTableEntry ResolveMountEntryForPath(string path,
+		IEnumerable<MountTableEntry> mountEntries,
+		Func<string, string>? realPathResolver = null)
+	{
 		realPathResolver ??= value => value;
 		var targetPath = NormalizeForPrefix(realPathResolver(path));
 
-		string? bestMatchFs = null;
+		MountTableEntry? bestMatch = null;
 		var bestMatchLength = -1;
 
 		foreach ( var entry in mountEntries )
@@ -145,10 +239,10 @@ public class MacOsFileSystemHelper
 			}
 
 			bestMatchLength = mountPoint.Length;
-			bestMatchFs = entry.FileSystemType;
+			bestMatch = entry;
 		}
 
-		return bestMatchFs ?? throw new InvalidOperationException(
+		return bestMatch ?? throw new InvalidOperationException(
 			$"No matching mount point found for path '{path}'");
 	}
 

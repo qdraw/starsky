@@ -471,8 +471,8 @@ public class CameraStorageDetectorTest
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var logger = new FakeIWebLogger();
 
-		var detector = new CameraStorageDetector(fakeStorageSelector, 
-			logger, 
+		var detector = new CameraStorageDetector(fakeStorageSelector,
+			logger,
 			() => OSPlatform.Linux);
 
 		// Act
@@ -540,7 +540,7 @@ public class CameraStorageDetectorTest
 		var logger = new FakeIWebLogger();
 
 		var detector = new CameraStorageDetector(fakeStorageSelector,
-			logger, 
+			logger,
 			() => OSPlatform.Windows);
 
 		// Act - use a path that might work on Windows

@@ -100,7 +100,8 @@ public class MacOsFileSystemHelperTest
 		var shouldRetry = MacOsFileSystemHelper.ShouldRetryForTransientRootAlias(
 			"/Volumes/CameraCard",
 			"apfs",
-			0);
+			0,
+			"/");
 
 		Assert.IsTrue(shouldRetry);
 	}
@@ -122,7 +123,8 @@ public class MacOsFileSystemHelperTest
 		var shouldRetry = MacOsFileSystemHelper.ShouldRetryForTransientRootAlias(
 			"/Volumes/CameraCard",
 			"apfs",
-			4);
+			29,
+			"/");
 
 		Assert.IsFalse(shouldRetry);
 	}
@@ -311,21 +313,176 @@ public class MacOsFileSystemHelperTest
 	[TestMethod]
 	public void ShouldRetryForTransientRootAlias_BehavesAsExpected()
 	{
-		// true when path under /Volumes/ and fs == apfs and attempt is less than retry-1
+		// true when under /Volumes and matched mountpoint is parent (race case)
 		var should =
-			MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/Volumes/X", "apfs", 0);
+			MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/Volumes/X", "apfs", 0,
+				"/");
 		Assert.IsTrue(should);
 
 		// false when not under /Volumes/
 		Assert.IsFalse(MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/tmp/X", "apfs", 0));
 
-		// false when fs not apfs
+		// false when fs is non-apfs and exact mountpoint already matches target
 		Assert.IsFalse(
-			MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/Volumes/X", "exfat", 0));
+			MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/Volumes/X", "exfat", 0,
+				"/Volumes/X"));
 
 		// false when attempt is the last one
 		Assert.IsFalse(
-			MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/Volumes/X", "apfs", 4));
+			MacOsFileSystemHelper.ShouldRetryForTransientRootAlias("/Volumes/X", "apfs", 29,
+				"/"));
+	}
+
+	[TestMethod]
+	public void ShouldRetryForTransientRootAlias_SystemVolumeAlias_ReturnsFalse()
+	{
+		var shouldRetry = MacOsFileSystemHelper.ShouldRetryForTransientRootAlias(
+			"/Volumes/Macintosh HD",
+			"apfs",
+			0,
+			null,
+			_ => "/");
+
+		Assert.IsFalse(shouldRetry);
+	}
+
+	[TestMethod]
+	public void GetFileSystem_TransientApfsThenMsdos_RetriesAndReturnsMsdos()
+	{
+		var callCount = 0;
+		var sleepCount = 0;
+		var helper = new MacOsFileSystemHelper(
+			() => OSPlatform.OSX,
+			_ =>
+			{
+				callCount++;
+				return callCount < 3 ? "apfs" : "msdos";
+			},
+			null,
+			_ => { sleepCount++; },
+			_ => "/Volumes/ULTRAPLU130");
+
+		var fs = helper.GetFileSystem("/Volumes/ULTRAPLU130");
+
+		Assert.AreEqual("msdos", fs);
+		Assert.AreEqual(3, callCount);
+		Assert.AreEqual(2, sleepCount);
+	}
+
+	[TestMethod]
+	public void GetFileSystem_SystemVolumeAliasApfs_DoesNotRetry()
+	{
+		var callCount = 0;
+		var sleepCount = 0;
+		var helper = new MacOsFileSystemHelper(
+			() => OSPlatform.OSX,
+			_ =>
+			{
+				callCount++;
+				return "apfs";
+			},
+			null,
+			_ => { sleepCount++; },
+			_ => "/");
+
+		var fs = helper.GetFileSystem("/Volumes/Macintosh HD");
+
+		Assert.AreEqual("apfs", fs);
+		Assert.AreEqual(1, callCount);
+		Assert.AreEqual(0, sleepCount);
+	}
+
+	[TestMethod]
+	public void ShouldRetryForTransientRootAlias_MountPointNotExact_RetriesEvenWhenNotApfs()
+	{
+		var shouldRetry = MacOsFileSystemHelper.ShouldRetryForTransientRootAlias(
+			"/Volumes/ULTRAPLU130",
+			"msdos",
+			0,
+			"/",
+			value => value);
+
+		Assert.IsTrue(shouldRetry);
+	}
+
+	[TestMethod]
+	public void MountRace_PMHOME_ParentApfsThenExactMsdos_MatchesExpectedRetryFlow()
+	{
+		const string path = "/Volumes/PMHOME";
+
+		// attempt 1: only root mount visible => parent APFS match
+		var attempt1Entries = new List<MacOsFileSystemHelper.MountTableEntry> { new("/", "apfs") };
+		var attempt1Resolved = MacOsFileSystemHelper.ResolveMountEntryForPath(path,
+			attempt1Entries,
+			value => value);
+		var attempt1Retry = MacOsFileSystemHelper.ShouldRetryForTransientRootAlias(path,
+			attempt1Resolved.FileSystemType,
+			0,
+			attempt1Resolved.MountPoint,
+			value => value);
+
+		Assert.AreEqual("/", attempt1Resolved.MountPoint);
+		Assert.AreEqual("apfs", attempt1Resolved.FileSystemType);
+		Assert.IsTrue(attempt1Retry);
+
+		// attempt 2: target mount appears as MSDOS => no retry
+		var attempt2Entries = new List<MacOsFileSystemHelper.MountTableEntry>
+		{
+			new("/", "apfs"), new(path, "msdos")
+		};
+		var attempt2Resolved = MacOsFileSystemHelper.ResolveMountEntryForPath(path,
+			attempt2Entries,
+			value => value);
+		var attempt2Retry = MacOsFileSystemHelper.ShouldRetryForTransientRootAlias(path,
+			attempt2Resolved.FileSystemType,
+			1,
+			attempt2Resolved.MountPoint,
+			value => value);
+
+		Assert.AreEqual(path, attempt2Resolved.MountPoint);
+		Assert.AreEqual("msdos", attempt2Resolved.FileSystemType);
+		Assert.IsFalse(attempt2Retry);
+	}
+
+	[TestMethod]
+	public void MountRace_ULTRAPLU130_ParentApfsForSeveralAttempts_ThenExactMsdos()
+	{
+		const string path = "/Volumes/ULTRAPLU130";
+		var parentOnlyEntries =
+			new List<MacOsFileSystemHelper.MountTableEntry> { new("/", "apfs") };
+
+		for ( var attempt = 1; attempt <= 4; attempt++ )
+		{
+			var resolved = MacOsFileSystemHelper.ResolveMountEntryForPath(path,
+				parentOnlyEntries,
+				value => value);
+			var shouldRetry = MacOsFileSystemHelper.ShouldRetryForTransientRootAlias(path,
+				resolved.FileSystemType,
+				attempt,
+				resolved.MountPoint,
+				value => value);
+
+			Assert.AreEqual("/", resolved.MountPoint);
+			Assert.AreEqual("apfs", resolved.FileSystemType);
+			Assert.IsTrue(shouldRetry);
+		}
+
+		var exactEntries = new List<MacOsFileSystemHelper.MountTableEntry>
+		{
+			new("/", "apfs"), new(path, "msdos")
+		};
+		var finalResolved = MacOsFileSystemHelper.ResolveMountEntryForPath(path,
+			exactEntries,
+			value => value);
+		var finalRetry = MacOsFileSystemHelper.ShouldRetryForTransientRootAlias(path,
+			finalResolved.FileSystemType,
+			5,
+			finalResolved.MountPoint,
+			value => value);
+
+		Assert.AreEqual(path, finalResolved.MountPoint);
+		Assert.AreEqual("msdos", finalResolved.FileSystemType);
+		Assert.IsFalse(finalRetry);
 	}
 
 	[TestMethod]
