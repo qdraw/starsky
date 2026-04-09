@@ -22,14 +22,14 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
-	private readonly OperatingSystemHelper.IsOsPlatformDelegate _isOsPlatformDelegate =
-		RuntimeInformation.IsOSPlatform;
+	private readonly Func<OSPlatform> _platformResolver = OperatingSystemHelper.GetPlatform;
+
 
 	internal CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger logger,
-		OperatingSystemHelper.IsOsPlatformDelegate isOsPlatformDelegate) : this(selectorStorage,
+		Func<OSPlatform> platformResolver) : this(selectorStorage,
 		logger)
 	{
-		_isOsPlatformDelegate = isOsPlatformDelegate;
+		_platformResolver = platformResolver;
 	}
 
 	/// <summary>
@@ -40,7 +40,7 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 	{
 		try
 		{
-			if ( _isOsPlatformDelegate(OSPlatform.Linux) )
+			if ( _platformResolver() == OSPlatform.Linux )
 			{
 				var linuxDiscovery = new LinuxCameraStorageDiscovery(_hostStorage, logger);
 				return linuxDiscovery.FindCameraStorages()
@@ -69,14 +69,14 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 			}
 
 			// On Linux, create CameraDriveInfo from path directly
-			if ( _isOsPlatformDelegate(OSPlatform.Linux) )
+			if ( _platformResolver() == OSPlatform.Linux )
 			{
 				var cameraDriveInfo =
 					CameraDriveInfoHelper.ToCameraDriveInfo(_hostStorage, driveRoot);
 				return IsCameraStorage(cameraDriveInfo);
 			}
 
-			if ( _isOsPlatformDelegate(OSPlatform.OSX) )
+			if ( _platformResolver() == OSPlatform.OSX )
 			{
 				var macDrive = new DriveInfo(driveRoot).ToCameraDriveInfo();
 				macDrive.DriveFormat = new MacOsFileSystemHelper().GetFileSystem(driveRoot);

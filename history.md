@@ -43,6 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.15 - _(Unreleased)_ - 2026-?-? {#v0.7.15}
 
+- [x] (Added) _Back-end_ Fix disk Detect File System for macOS and Linux (PR #2905)
+- [x] (Added) _Back-end_ Add starskyMountWatcherCli to auto import (PR #2905)
 - [x] (Added) _Back-end_ Add Title and Tags overview razor template (PR #2891)
 - [x] (Added) _Back-end_ Create Job to generate thumbnails when missing in Thumbnail and Zoom API
   (PR #2891)

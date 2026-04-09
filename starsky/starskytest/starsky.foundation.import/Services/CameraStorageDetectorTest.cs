@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Models;
 using starsky.foundation.import.Services;
-using starsky.foundation.platform.Architecture;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.import.Services;
@@ -434,11 +433,9 @@ public class CameraStorageDetectorTest
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var logger = new FakeIWebLogger();
 
-		// Create detector with Linux platform delegate
-		var isLinuxDelegate = new OperatingSystemHelper.IsOsPlatformDelegate(platform =>
-			platform == OSPlatform.Linux);
-
-		var detector = new CameraStorageDetector(fakeStorageSelector, logger, isLinuxDelegate);
+		var detector = new CameraStorageDetector(fakeStorageSelector,
+			logger,
+			() => OSPlatform.Linux);
 
 		// Act
 		var result = detector.FindCameraStorages();
@@ -455,11 +452,8 @@ public class CameraStorageDetectorTest
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var logger = new FakeIWebLogger();
 
-		// Create detector with Windows platform delegate
-		var isWindowsDelegate = new OperatingSystemHelper.IsOsPlatformDelegate(platform =>
-			platform == OSPlatform.Windows);
-
-		var detector = new CameraStorageDetector(fakeStorageSelector, logger, isWindowsDelegate);
+		var detector = new CameraStorageDetector(fakeStorageSelector,
+			logger, () => OSPlatform.Windows);
 
 		// Act - won't actually enumerate drives in test, just verifies the code path
 		var result = detector.FindCameraStorages();
@@ -477,11 +471,9 @@ public class CameraStorageDetectorTest
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var logger = new FakeIWebLogger();
 
-		// Create detector with Linux platform delegate
-		var isLinuxDelegate = new OperatingSystemHelper.IsOsPlatformDelegate(platform =>
-			platform == OSPlatform.Linux);
-
-		var detector = new CameraStorageDetector(fakeStorageSelector, logger, isLinuxDelegate);
+		var detector = new CameraStorageDetector(fakeStorageSelector, 
+			logger, 
+			() => OSPlatform.Linux);
 
 		// Act
 		var result = detector.IsCameraStorage("/media/usb-drive");
@@ -547,11 +539,9 @@ public class CameraStorageDetectorTest
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var logger = new FakeIWebLogger();
 
-		// Create detector with Windows platform delegate
-		var isWindowsDelegate = new OperatingSystemHelper.IsOsPlatformDelegate(platform =>
-			platform == OSPlatform.Windows);
-
-		var detector = new CameraStorageDetector(fakeStorageSelector, logger, isWindowsDelegate);
+		var detector = new CameraStorageDetector(fakeStorageSelector,
+			logger, 
+			() => OSPlatform.Windows);
 
 		// Act - use a path that might work on Windows
 		var result = detector.IsCameraStorage("C:\\");
