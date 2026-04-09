@@ -20,7 +20,7 @@ Here below there is a list of key features:
 - [Bulk editing](bulk-editing.md)
 - [Export and Download - Create zip archives and download photos](export.md)
 - [Geo Features - GPS, GPX sync, and location data](geo.md)
-- [Import options](import.md)
+- [Import options](import/import.md)
     - [Mount Watcher CLI - Auto import on camera mount](import/mountwatchercli.md)
     - [Cloud Import](import/cloudimport.md)
 - [Meta Data and super compatible photo management](metadata.md)

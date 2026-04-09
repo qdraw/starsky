@@ -83,7 +83,7 @@ Videos integrate seamlessly with your photo library:
 
 ## 🗂️ Related Features
 
-- **[Import](import.md)** - Import videos from cameras and devices
+- **[Import](import/import.md)** - Import videos from cameras and devices
 - **[Metadata](metadata.md)** - Manage video metadata
 - **[Search](search.md)** - Search for videos by metadata
 - **[Export](export.md)** - Download and share videos

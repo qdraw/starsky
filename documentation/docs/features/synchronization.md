@@ -161,7 +161,7 @@ Restore from backup without losing metadata:
 
 - **[Realtime](realtime.md)** - See sync updates in real-time
 - **[Metadata](metadata.md)** - Understanding metadata storage
-- **[Import](import.md)** - Import automatically syncs new files
+- **[Import](import/import.md)** - Import automatically import new files
 - **[Search](search.md)** - Search synced metadata
 
 ---
