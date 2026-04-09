@@ -148,7 +148,7 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 		// Windows: FAT32, exFAT
 		// Linux: vfat, exfat
 		// macOS: msdos, exfat
-		return fs.Contains("fat");
+		return fs.Contains("fat") || fs == "msdos";
 	}
 
 	internal bool HasCameraDirectoryStructure(string rootPath)
