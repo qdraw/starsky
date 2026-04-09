@@ -193,14 +193,11 @@ public class MacOsFileSystemHelperTest
 
 	[TestMethod]
 	[OSCondition(OperatingSystems.Linux)]
-	public void GetFileSystem_InvalidPath_Linux()
+	public void GetFileSystem_InvalidPath_EntryPointNotFoundException_Linux()
 	{
-		// on linux this function does not give a result
-		// because the native method will fail to load,
-		// ensure it at least returns empty string rather than throwing
-		var result = new MacOsFileSystemHelper(() => OSPlatform.OSX
-		).GetFileSystem("--invalid--this-should-never-succeed-path--");
-		Assert.IsEmpty(result);
+		Assert.ThrowsExactly<EntryPointNotFoundException>(() =>
+			new MacOsFileSystemHelper(() => OSPlatform.OSX
+			).GetFileSystem("--invalid--this-should-never-succeed-path--"));
 	}
 
 	[TestMethod]
