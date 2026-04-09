@@ -176,7 +176,8 @@ public sealed class LinuxServiceInstallerTest
 		// Act - StartAsync uses RunProcess internally. Inject fake runProcess that simulates success for user-level
 		var called = new List<string>();
 
-		var sutWithFake = new LinuxServiceInstaller(logger, storage, FakeRun);
+		var sutWithFake = new LinuxServiceInstaller(logger, storage, FakeRun,
+			new FakeUnixSecurity(false));
 		var result = await sutWithFake.StartAsync();
 
 		// Assert
@@ -204,7 +205,8 @@ public sealed class LinuxServiceInstallerTest
 		// Act - inject fake runProcess to simulate sudo failure then user success
 		var called = new List<string>();
 
-		var sutWithFake = new LinuxServiceInstaller(logger, storage, FakeRun);
+		var sutWithFake = new LinuxServiceInstaller(logger, storage, FakeRun,
+			new FakeUnixSecurity(false));
 		var result = await sutWithFake.StopAsync();
 
 		// Assert - should succeed as user-level fallback succeeds
@@ -311,7 +313,8 @@ public sealed class LinuxServiceInstallerTest
 		var failingStorage = new FakeIStorage();
 
 		// First, create sut with normal storage but inject a runProcess that doesn't matter here
-		var sut = new LinuxServiceInstaller(logger, failingStorage, FakeRun);
+		var sut = new LinuxServiceInstaller(logger, failingStorage, FakeRun,
+			new FakeUnixSecurity(false));
 
 		// Act
 		var result = await sut.InstallAsync(execPath);
@@ -345,7 +348,8 @@ public sealed class LinuxServiceInstallerTest
 			throw new InvalidOperationException("boom");
 		}
 
-		var sut = new LinuxServiceInstaller(logger, storage, ThrowingRun);
+		var sut = new LinuxServiceInstaller(logger, storage, ThrowingRun,
+			new FakeUnixSecurity(false));
 		var result = await sut.StartAsync();
 
 		Assert.IsFalse(result);
@@ -363,7 +367,8 @@ public sealed class LinuxServiceInstallerTest
 			throw new InvalidOperationException("stopboom");
 		}
 
-		var sut = new LinuxServiceInstaller(logger, storage, ThrowingRun);
+		var sut = new LinuxServiceInstaller(logger, storage, ThrowingRun,
+			new FakeUnixSecurity(false));
 		var result = await sut.StopAsync();
 
 		Assert.IsFalse(result);

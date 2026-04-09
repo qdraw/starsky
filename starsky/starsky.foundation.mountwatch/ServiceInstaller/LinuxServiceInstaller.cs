@@ -19,6 +19,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args);
 
 	private readonly IStorage _storage = new StorageHostFullPathFilesystem(logger);
+	private readonly UnixSecurity _unixSecurity = new();
 
 	internal LinuxServiceInstaller(IWebLogger logger, IStorage storage) : this(logger)
 	{
@@ -27,9 +28,11 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 
 	// Internal constructor for tests to inject a custom runProcess delegate
 	internal LinuxServiceInstaller(IWebLogger logger, IStorage storage,
-		Func<string, string, Task<bool>> runProcessAsync) : this(logger, storage)
+		Func<string, string, Task<bool>> runProcessAsync, UnixSecurity unixSecurity) : this(logger,
+		storage)
 	{
 		_runProcessAsync = runProcessAsync;
+		_unixSecurity = unixSecurity;
 	}
 
 	/// <summary>
@@ -37,40 +40,16 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	/// </summary>
 	public async Task<bool> InstallAsync(string executablePath)
 	{
-		var servicePath = $"/etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service";
 		var serviceContent = ServiceInstallerHelper.GenerateLinuxSystemdUnit(executablePath);
 
-		try
+		if ( !_unixSecurity.IsRunningAsRoot() )
 		{
-			using var stream = new MemoryStream(Encoding.UTF8.GetBytes(serviceContent));
-			var success = await _storage.WriteStreamAsync(stream, servicePath);
-			if ( !success )
-			{
-				// Try user-level systemd if system-level fails
-				return await InstallUserAsync(executablePath);
-			}
-
-			logger.LogInformation($"systemd unit installed: {servicePath}");
-			logger.LogInformation("To enable and start:");
-			logger.LogInformation("  sudo systemctl daemon-reload");
-			logger.LogInformation(
-				$"  sudo systemctl enable {new WatchServiceName().GetSystemDName()}");
-			logger.LogInformation(
-				$"  sudo systemctl start {new WatchServiceName().GetSystemDName()}");
-
-			logger.LogInformation($"Linux systemd unit written to {servicePath}");
-			return true;
-		}
-		catch ( UnauthorizedAccessException )
-		{
-			// Try user-level systemd
 			return await InstallUserAsync(executablePath);
 		}
-		catch ( Exception ex )
-		{
-			logger.LogError(ex, $"Failed to install Linux service: {ex.Message}");
-			return false;
-		}
+
+		var servicePath = $"/etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service";
+		using var stream = new MemoryStream(Encoding.UTF8.GetBytes(serviceContent));
+		return await _storage.WriteStreamAsync(stream, servicePath);
 	}
 
 	/// <summary>
