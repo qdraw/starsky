@@ -164,7 +164,7 @@ public class MacOsFileSystemHelper
 		return NormalizeForPrefix(realPathResolver(path)) == "/";
 	}
 
-	private string GetFileSystemViaMountTable(string path)
+	internal string GetFileSystemViaMountTable(string path)
 	{
 		EnsureMacOs();
 
