@@ -11,9 +11,9 @@ import {
   useTimezoneState
 } from "./hooks";
 import { FileRenameMode } from "./internal/render-file-rename-mode";
-import { renderModeSelection } from "./internal/render-mode-selection";
-import { renderOffsetMode } from "./internal/render-offset-mode";
-import { renderTimezoneMode } from "./internal/render-timezone-mode";
+import { ModeSelection } from "./internal/render-mode-selection";
+import { OffsetMode } from "./internal/render-offset-mode";
+import { TimezoneMode } from "./internal/render-timezone-mode";
 
 export interface IModalTimezoneShiftProps {
   isOpen: boolean;
@@ -71,38 +71,45 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
   return (
     <Modal isOpen={isOpen} handleExit={handleExit} dataTest="modal-timezone-shift">
       <div className="modal content scroll modal-timezone-shift">
-        {currentStep === "mode-selection" &&
-          renderModeSelection(select, handleModeSelectWrapped, handleExit)}
-        {currentStep === "offset" &&
-          renderOffsetMode({
-            offsetState,
-            previewState,
-            select,
-            state,
-            handleBack,
-            handleExit,
-            dispatch,
-            historyLocationSearch,
-            undoSelection,
-            collections,
-            setCurrentStep,
-            fileRenameState
-          })}
-        {currentStep === "timezone" &&
-          renderTimezoneMode({
-            select,
-            state,
-            timezoneState,
-            previewState,
-            handleBack,
-            handleExit,
-            dispatch,
-            historyLocationSearch,
-            undoSelection,
-            collections,
-            setCurrentStep,
-            fileRenameState
-          })}
+        {currentStep === "mode-selection" && (
+          <ModeSelection
+            select={select}
+            handleModeSelect={handleModeSelectWrapped}
+            handleExit={handleExit}
+          />
+        )}
+        {currentStep === "offset" && (
+          <OffsetMode
+            offsetState={offsetState}
+            previewState={previewState}
+            select={select}
+            state={state}
+            handleBack={handleBack}
+            handleExit={handleExit}
+            dispatch={dispatch}
+            historyLocationSearch={historyLocationSearch}
+            undoSelection={undoSelection}
+            collections={collections}
+            setCurrentStep={setCurrentStep}
+            fileRenameState={fileRenameState}
+          />
+        )}
+        {currentStep === "timezone" && (
+          <TimezoneMode
+            select={select}
+            state={state}
+            timezoneState={timezoneState}
+            previewState={previewState}
+            handleBack={handleBack}
+            handleExit={handleExit}
+            dispatch={dispatch}
+            historyLocationSearch={historyLocationSearch}
+            undoSelection={undoSelection}
+            collections={collections}
+            setCurrentStep={setCurrentStep}
+            fileRenameState={fileRenameState}
+          />
+        )}
         {currentStep === "file-rename-offset" && (
           <FileRenameMode
             select={select}

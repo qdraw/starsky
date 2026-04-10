@@ -2,11 +2,17 @@ import useGlobalSettings from "../../../../hooks/use-global-settings";
 import localization from "../../../../localization/localization.json";
 import { Language } from "../../../../shared/language";
 
-export function renderModeSelection(
-  select: string[],
-  handleModeSelect: (mode: "offset" | "timezone") => void,
-  handleExit: () => void
-) {
+export interface IModeSelectionProps {
+  select: string[];
+  handleModeSelect: (mode: "offset" | "timezone") => void;
+  handleExit: () => void;
+}
+
+export function ModeSelection({
+  handleModeSelect,
+  select,
+  handleExit
+}: Readonly<IModeSelectionProps>) {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 
