@@ -8,7 +8,11 @@ export interface IModeSelectionProps {
   handleExit: () => void;
 }
 
-export function ModeSelection({ handleModeSelect, select, handleExit }: IModeSelectionProps) {
+export function ModeSelection({
+  handleModeSelect,
+  select,
+  handleExit
+}: Readonly<IModeSelectionProps>) {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 
