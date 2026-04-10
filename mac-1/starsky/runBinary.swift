@@ -2,9 +2,9 @@ import Foundation
 
 func runBinary() {
     #if arch(arm64)
-    let binaryName = "resources/osx-arm64/starsky"
+    let binaryName = "osx-arm64/starsky"
     #elseif arch(x86_64)
-    let binaryName = "resources/osx-x64/starsky"
+    let binaryName = "osx-x64/starsky"
     #else
     print("Unsupported architecture")
     return
