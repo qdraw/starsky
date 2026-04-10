@@ -172,4 +172,52 @@ public sealed class SetupAppSettingsTest
 
 		Environment.SetEnvironmentVariable("app__appsettingspath", null);
 	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_StorageProviders_DefaultFile()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test_storage_providers");
+		if ( _hostStorage.ExistFolder(testDir) )
+		{
+			_hostStorage.FolderDelete(testDir);
+		}
+
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"StorageProviders\": [ { \"Type\": \"FileSystem\", \"Path\": \"/data/p1\" } ]\n  }\n}\n"),
+			Path.Combine(testDir, "appsettings.json"));
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.HasCount(1, result.StorageProviders);
+		Assert.AreEqual(PathHelper.AddBackslash("/data/p1"), result.StorageProviders[0].Path);
+		Assert.AreEqual(result.StorageProviders[0].Path, result.StorageFolder);
+	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_StorageProviders_PatchOverridesBase()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject,
+			"_test_storage_providers_patch");
+		if ( _hostStorage.ExistFolder(testDir) )
+		{
+			_hostStorage.FolderDelete(testDir);
+		}
+
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"StorageProviders\": [ { \"Type\": \"FileSystem\", \"Path\": \"/data/base\" } ]\n  }\n}\n"),
+			Path.Combine(testDir, "appsettings.json"));
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"StorageProviders\": [ { \"Type\": \"FileSystem\", \"Path\": \"/data/patch\" } ]\n  }\n}\n"),
+			Path.Combine(testDir, "appsettings.patch.json"));
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.AreEqual(PathHelper.AddBackslash("/data/patch"), result.StorageProviders[0].Path);
+		Assert.AreEqual(result.StorageProviders[0].Path, result.StorageFolder);
+	}
 }

@@ -411,6 +411,16 @@ public static class AppSettingsCompareHelper
 		PropertyInfo propertyInfoFromA,
 		AppSettings sourceIndexItem, object updateObject, List<string> differenceList)
 	{
+		if ( propertyB.PropertyType == typeof(List<StorageProvider>) )
+		{
+			var oldStorageProviders =
+				( List<StorageProvider>? ) propertyInfoFromA.GetValue(sourceIndexItem, null);
+			var newStorageProviders =
+				( List<StorageProvider>? ) propertyB.GetValue(updateObject, null);
+			CompareStorageProviders(propertyB.Name, sourceIndexItem, oldStorageProviders,
+				newStorageProviders, differenceList);
+		}
+
 		if ( propertyB.PropertyType == typeof(List<string>) )
 		{
 			var oldListStringValue =
@@ -454,6 +464,35 @@ public static class AppSettingsCompareHelper
 			CompareStringDictionary(propertyB.Name, sourceIndexItem, oldDictionaryValue,
 				newDictionaryValue, differenceList);
 		}
+	}
+
+	private static void CompareStorageProviders(string propertyName,
+		AppSettings sourceIndexItem,
+		List<StorageProvider>? oldStorageProviders,
+		List<StorageProvider>? newStorageProviders,
+		List<string> differenceList)
+	{
+		if ( oldStorageProviders == null || newStorageProviders == null ||
+		     newStorageProviders.Count == 0 )
+		{
+			return;
+		}
+
+		var oldJson = JsonSerializer.Serialize(oldStorageProviders,
+			DefaultJsonSerializer.CamelCase);
+		var newJson = JsonSerializer.Serialize(newStorageProviders,
+			DefaultJsonSerializer.CamelCase);
+		var defaultJson = JsonSerializer.Serialize(new AppSettings().StorageProviders,
+			DefaultJsonSerializer.CamelCase);
+
+		if ( oldJson == newJson || newJson == defaultJson )
+		{
+			return;
+		}
+
+		sourceIndexItem.GetType().GetProperty(propertyName)
+			?.SetValue(sourceIndexItem, newStorageProviders, null);
+		differenceList.Add(propertyName.ToLowerInvariant());
 	}
 
 	private static void CompareStringDictionary(string propertyName,

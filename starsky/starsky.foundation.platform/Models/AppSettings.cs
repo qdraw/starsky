@@ -20,6 +20,8 @@ namespace starsky.foundation.platform.Models;
 [SuppressMessage("ReSharper", "S2325: Static property")]
 public sealed class AppSettings
 {
+	private const string FileSystemStorageType = "FileSystem";
+
 	/// <summary>
 	///     The available database types
 	/// </summary>
@@ -134,6 +136,8 @@ public sealed class AppSettings
 	/// </summary>
 	private string _storageFolder = string.Empty;
 
+	private List<StorageProvider> _storageProviders = [];
+
 	/// <summary>
 	///     Private: Location of temp folder
 	/// </summary>
@@ -215,16 +219,33 @@ public sealed class AppSettings
 	{
 		get
 		{
-			// ReSharper disable once ArrangeAccessorOwnerBody
-			return string.IsNullOrEmpty(_storageFolder)
-				? Path.Combine(BaseDirectoryProject, "storageFolder")
-				: _storageFolder;
+			_storageFolder = GetPrimaryStorageFolder();
+			return _storageFolder;
 		}
 		set
 		{
-			var storageFolder = ReplaceEnvironmentVariable(value);
-			// ReSharper disable once ArrangeAccessorOwnerBody
-			_storageFolder = PathHelper.AddBackslash(storageFolder);
+			_storageFolder = NormalizeStoragePath(value);
+			SyncPrimaryStorageProvider(_storageFolder);
+		}
+	}
+
+	/// <summary>
+	///     Multiple storage providers. First item is used as primary StorageFolder.
+	/// </summary>
+	public List<StorageProvider> StorageProviders
+	{
+		get
+		{
+			EnsureStorageProvidersInitialized();
+			return _storageProviders;
+		}
+		set
+		{
+			_storageProviders = NormalizeStorageProviders(value);
+			if ( _storageProviders.Count > 0 )
+			{
+				_storageFolder = _storageProviders[0].Path;
+			}
 		}
 	}
 
@@ -815,9 +836,15 @@ public sealed class AppSettings
 		}
 
 		// default location to store source images. you should change this
-		if ( !Directory.Exists(StorageFolder) )
+		foreach ( var provider in StorageProviders.Where(p =>
+			         string.Equals(p.Type, FileSystemStorageType,
+				         StringComparison.OrdinalIgnoreCase) &&
+			         !string.IsNullOrWhiteSpace(p.Path)) )
 		{
-			Directory.CreateDirectory(StorageFolder);
+			if ( !Directory.Exists(provider.Path) )
+			{
+				Directory.CreateDirectory(provider.Path);
+			}
 		}
 
 		// may be cleaned after restart (not implemented)
@@ -1232,5 +1259,76 @@ public sealed class AppSettings
 			var value = sourceProperty.GetValue(source);
 			destinationProperty.SetValue(destination, value);
 		}
+	}
+
+	private string GetPrimaryStorageFolder()
+	{
+		EnsureStorageProvidersInitialized();
+		return _storageProviders.FirstOrDefault()?.Path ?? GetDefaultStorageFolder();
+	}
+
+	private void EnsureStorageProvidersInitialized()
+	{
+		if ( _storageProviders.Count > 0 )
+		{
+			return;
+		}
+
+		var fallbackPath = string.IsNullOrWhiteSpace(_storageFolder)
+			? GetDefaultStorageFolder()
+			: NormalizeStoragePath(_storageFolder);
+
+		_storageProviders =
+		[
+			new StorageProvider { Type = FileSystemStorageType, Path = fallbackPath }
+		];
+		_storageFolder = fallbackPath;
+	}
+
+	private void SyncPrimaryStorageProvider(string path)
+	{
+		if ( _storageProviders.Count == 0 )
+		{
+			_storageProviders =
+			[
+				new StorageProvider { Type = FileSystemStorageType, Path = path }
+			];
+			return;
+		}
+
+		_storageProviders[0].Path = path;
+		if ( string.IsNullOrWhiteSpace(_storageProviders[0].Type) )
+		{
+			_storageProviders[0].Type = FileSystemStorageType;
+		}
+	}
+
+	private string NormalizeStoragePath(string input)
+	{
+		var replaced = ReplaceEnvironmentVariable(input);
+		return PathHelper.AddBackslash(replaced);
+	}
+
+	private string GetDefaultStorageFolder()
+	{
+		return PathHelper.AddBackslash(Path.Combine(BaseDirectoryProject, "storageFolder"));
+	}
+
+	private List<StorageProvider> NormalizeStorageProviders(List<StorageProvider>? providers)
+	{
+		if ( providers == null || providers.Count == 0 )
+		{
+			return [];
+		}
+
+		return providers
+			.Where(p => !string.IsNullOrWhiteSpace(p.Path))
+			.Select(p => new StorageProvider
+			{
+				Type = string.IsNullOrWhiteSpace(p.Type) ? FileSystemStorageType : p.Type,
+				Path = NormalizeStoragePath(p.Path),
+				Token = p.Token
+			})
+			.ToList();
 	}
 }

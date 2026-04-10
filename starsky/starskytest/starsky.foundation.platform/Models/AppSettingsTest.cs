@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Models.PublishProfileRemote;
 using starskytest.FakeCreateAn;
@@ -524,6 +525,64 @@ public sealed class AppSettingsTest
 		var result = appSettings.DatabasePathToFilePath("\\test");
 
 		Assert.IsNotNull(result);
+	}
+
+	[TestMethod]
+	public void StorageProviders_DefaultsFromStorageFolder_WhenUnset()
+	{
+		var appSettings = new AppSettings();
+		appSettings.StorageFolder = "/data/old-config";
+
+		Assert.HasCount(1, appSettings.StorageProviders);
+		Assert.AreEqual("FileSystem", appSettings.StorageProviders[0].Type);
+		Assert.AreEqual(appSettings.StorageFolder, appSettings.StorageProviders[0].Path);
+	}
+
+	[TestMethod]
+	public void StorageFolder_UsesPrimaryStorageProvider_WhenProvidersSet()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageProviders =
+			[
+				new StorageProvider { Type = "FileSystem", Path = "/mnt/a" },
+				new StorageProvider { Type = "FileSystem", Path = "/mnt/b" }
+			]
+		};
+
+		Assert.AreEqual(appSettings.StorageProviders[0].Path, appSettings.StorageFolder);
+	}
+
+	[TestMethod]
+	public void StorageProviders_NormalizesPath_AndDefaultsType()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageProviders =
+			[
+				new StorageProvider { Type = string.Empty, Path = "/mnt/camera" }
+			]
+		};
+
+		Assert.AreEqual("FileSystem", appSettings.StorageProviders[0].Type);
+		Assert.AreEqual(PathHelper.AddBackslash("/mnt/camera"),
+			appSettings.StorageProviders[0].Path);
+	}
+
+	[TestMethod]
+	public void StorageFolderSetter_SyncsPrimaryStorageProvider()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageProviders =
+			[
+				new StorageProvider { Type = "FileSystem", Path = "/mnt/original" }
+			]
+		};
+
+		appSettings.StorageFolder = "/mnt/updated";
+
+		Assert.AreEqual(appSettings.StorageFolder, appSettings.StorageProviders[0].Path);
 	}
 
 	[TestMethod]
