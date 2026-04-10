@@ -754,11 +754,9 @@ public sealed class WebHtmlPublishServiceTest
 			DependenciesFolder = tempBase, StorageFolder = new CreateAnImage().BasePath
 		};
 
-		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg",
-			$"_temp1{optimizerFailsBashScript}.jpg"));
+		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp1.jpg"));
 		File.Copy(new CreateAnImage().FullFilePath,
-			new CreateAnImage().FullFilePath.Replace(".jpg",
-				$"_temp1{optimizerFailsBashScript}.jpg"));
+			new CreateAnImage().FullFilePath.Replace(".jpg", "_temp1.jpg"));
 
 		// Create a dummy mozjpeg file without +x permissions (Unix) to trigger permission denied
 		var exePath = new ImageOptimisationExePath(appSettings).GetExePath("mozjpeg",
@@ -852,8 +850,7 @@ public sealed class WebHtmlPublishServiceTest
 			}
 		];
 
-		var photoPath =
-			new CreateAnImage().FileName.Replace(".jpg", $"_temp1{optimizerFailsBashScript}.jpg");
+		var photoPath = new CreateAnImage().FileName.Replace(".jpg", "_temp1.jpg");
 		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
 				new ConsoleWrapper(), fakeSelectorStorage
 				, new FakeIWebLogger()),
@@ -903,8 +900,7 @@ public sealed class WebHtmlPublishServiceTest
 		}
 
 
-		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg",
-			$"_temp1{optimizerFailsBashScript}.jpg"));
+		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp1.jpg"));
 		Directory.Delete(tempBase, true);
 	}
 }
