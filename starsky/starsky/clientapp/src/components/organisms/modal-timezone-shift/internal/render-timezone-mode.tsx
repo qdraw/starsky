@@ -31,7 +31,7 @@ export interface IRenderTimezoneModeProps {
   fileRenameState?: IFileRenameState;
 }
 
-export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
+export function TimezoneMode({ ...props }: IRenderTimezoneModeProps) {
   const {
     select,
     state,

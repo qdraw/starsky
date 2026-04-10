@@ -29,7 +29,7 @@ export interface IRenderOffsetModeProps {
   fileRenameState: IFileRenameState;
 }
 
-export function renderOffsetMode(props: IRenderOffsetModeProps) {
+export function OffsetMode({ ...props }: IRenderOffsetModeProps) {
   const {
     offsetState,
     previewState,
