@@ -1,10 +1,3 @@
-//
-//  starskyUITests.swift
-//  starskyUITests
-//
-//  Created by Dion on 09/01/2026.
-//
-
 import XCTest
 
 final class starskyUITests: XCTestCase {

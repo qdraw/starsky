@@ -1,5 +1,32 @@
 import Foundation
 
+func electronCacheLocation() -> String {
+    // macOS default app data location used by the Electron app
+    let home = NSHomeDirectory()
+    return "\(home)/Library/Application Support/starsky"
+}
+
+func createTempThumbnailFolders() -> (thumbnailTempFolder: String, tempFolder: String) {
+    let cache = electronCacheLocation() as NSString
+    let thumbnailTempFolder = cache.appendingPathComponent("thumbnailTempFolder")
+    let tempFolder = cache.appendingPathComponent("tempFolder")
+
+    let fm = FileManager.default
+    if !fm.fileExists(atPath: thumbnailTempFolder) {
+        try? fm.createDirectory(atPath: thumbnailTempFolder, withIntermediateDirectories: true, attributes: nil)
+    }
+    if !fm.fileExists(atPath: tempFolder) {
+        try? fm.createDirectory(atPath: tempFolder, withIntermediateDirectories: true, attributes: nil)
+    }
+
+    return (thumbnailTempFolder, tempFolder)
+}
+
+func isPackaged() -> Bool {
+    // Heuristic: packaged when running inside a .app bundle
+    return Bundle.main.bundlePath.hasSuffix(".app")
+}
+
 func runBinary() {
     #if arch(arm64)
     let binaryName = "osx-arm64/starsky"
@@ -20,11 +47,32 @@ func runBinary() {
         return
     }
 
+    // Prepare default folders and paths (matches Electron app defaults)
+    let createTempThumbnailFolderResult = createTempThumbnailFolders()
+    let appSettingsPath = (electronCacheLocation() as NSString).appendingPathComponent("appsettings.json")
+    let appSettingsLocalPath = (electronCacheLocation() as NSString).appendingPathComponent("appsettings.local.json")
+    let databaseConnection = "Data Source=\((electronCacheLocation() as NSString).appendingPathComponent("starsky.db"))"
+
+    // Build environment variables
+    var env = ProcessInfo.processInfo.environment // inherit current environment
+    env["ASPNETCORE_URLS"] = "http://localhost:\(port)"
+    env["app__thumbnailTempFolder"] = createTempThumbnailFolderResult.thumbnailTempFolder
+    env["app__tempFolder"] = createTempThumbnailFolderResult.tempFolder
+    env["app__appsettingspath"] = appSettingsPath
+    env["app__appsettingslocalpath"] = appSettingsLocalPath
+    env["app__NoAccountLocalhost"] = "true"
+    env["app__UseLocalDesktop"] = "true"
+    env["app__databaseConnection"] = databaseConnection
+    env["app__ThumbnailGenerationIntervalInMinutes"] = isPackaged() ? "300" : "-1"
+    env["app__AccountRegisterDefaultRole"] = "Administrator"
+
     let process = Process()
     process.executableURL = URL(fileURLWithPath: binaryPath)
     process.arguments = ["--port", "\(port)"]
+    process.environment = env
 
     print("free port ", port)
+    print("env -> \(env)")
     
     do {
         try process.run()

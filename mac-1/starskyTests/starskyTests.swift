@@ -1,10 +1,3 @@
-//
-//  starskyTests.swift
-//  starskyTests
-//
-//  Created by Dion on 09/01/2026.
-//
-
 import XCTest
 @testable import starsky
 
