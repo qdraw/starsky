@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +9,6 @@ using starsky.foundation.settings.Enums;
 using starsky.foundation.settings.Formats;
 using starsky.foundation.settings.Interfaces;
 using starsky.foundation.thumbnailgeneration.Interfaces;
-using starskytest.ExtensionMethods;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.thumbnail.Services;
@@ -19,7 +16,11 @@ namespace starskytest.starsky.feature.thumbnail.Services;
 [TestClass]
 public class CleanThumbnailHostedServiceTest
 {
-	private static CleanThumbnailHostedService CreateServiceScope(
+	public TestContext TestContext { get; set; }
+
+	private static (CleanThumbnailHostedService HostedService,
+		FakeIThumbnailCleaner ThumbnailCleaner,
+		FakeTriggerableIHostApplicationLifetime HostApplicationLifetime) CreateServiceScope(
 		bool thumbnailCleanupSkipOnStartup, DateTime? lastRun = null)
 	{
 		var serviceProvider = new ServiceCollection()
@@ -27,6 +28,8 @@ public class CleanThumbnailHostedServiceTest
 			.AddSingleton<AppSettings>()
 			.AddSingleton<ISettingsService, FakeISettingsService>()
 			.BuildServiceProvider();
+
+		var hostApplicationLifetime = new FakeTriggerableIHostApplicationLifetime();
 
 		var service =
 			serviceProvider.GetRequiredService<IThumbnailCleaner>() as FakeIThumbnailCleaner;
@@ -45,32 +48,36 @@ public class CleanThumbnailHostedServiceTest
 			serviceProvider.GetRequiredService<AppSettings>();
 		appSettings.ThumbnailCleanupSkipOnStartup = thumbnailCleanupSkipOnStartup;
 
-		var serviceScopeFactory = new FakeServiceScopeFactory(serviceProvider);
-		var hostedService = new CleanThumbnailHostedService(serviceScopeFactory);
-		return hostedService;
+		var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var hostedService = new CleanThumbnailHostedService(serviceScopeFactory,
+			hostApplicationLifetime);
+		return (hostedService, service, hostApplicationLifetime);
 	}
 
 	[TestMethod]
-	[Timeout(10000, CooperativeCancellation = true)]
-	public async Task ExecuteAsync_ShouldInvokeCleanAllUnusedFilesAsync()
+	[Timeout(5000, CooperativeCancellation = true)]
+	public async Task StartAsync_ShouldNotBlock_AndShouldRunAfterApplicationStarted()
 	{
-		// Arrange
-		var hostedService = CreateServiceScope(false);
-		using var cancellationTokenSource = new CancellationTokenSource();
-		var stoppingToken = cancellationTokenSource.Token;
+		var (hostedService, thumbnailCleaner, hostApplicationLifetime) =
+			CreateServiceScope(false);
+		hostedService.StartupDelay = TimeSpan.Zero;
 
-		// Act
-		var dynMethod = hostedService.GetType().GetMethod("ExecuteAsync",
-			                BindingFlags.NonPublic | BindingFlags.Instance) ??
-		                throw new Exception("missing ExecuteAsync");
+		// StartAsync should return immediately and not run cleanup yet.
+		await hostedService.StartAsync(CancellationToken.None)
+			.WaitAsync(TimeSpan.FromMilliseconds(250), TestContext.CancellationToken);
+		Assert.IsEmpty(thumbnailCleaner.Inputs);
 
-		// Assert
-		// The method should throw a TimeoutException if it takes longer than 1 second to execute
-		await Assert.ThrowsExactlyAsync<TimeoutException>(async () =>
+		// Trigger app started callback so the background cleanup task can begin.
+		hostApplicationLifetime.TriggerApplicationStarted();
+
+		var sw = System.Diagnostics.Stopwatch.StartNew();
+		while ( thumbnailCleaner.Inputs.Count == 0 && sw.ElapsedMilliseconds < 2000 )
 		{
-			await dynMethod.InvokeAsync(hostedService, stoppingToken)
-				.WaitAsync(TimeSpan.FromSeconds(1), new CancellationToken());
-		});
+			await Task.Delay(25, TestContext.CancellationToken);
+		}
+
+		Assert.HasCount(1, thumbnailCleaner.Inputs);
+		await hostedService.StopAsync(CancellationToken.None);
 	}
 
 	[TestMethod]
@@ -80,7 +87,7 @@ public class CleanThumbnailHostedServiceTest
 	public async Task StartBackgroundAsync_RelativeDays(int relativeDays, int expectCount)
 	{
 		// Arrange
-		var hostedService = CreateServiceScope(false,
+		var (hostedService, _, _) = CreateServiceScope(false,
 			DateTime.UtcNow.AddDays(relativeDays));
 		using var cancellationTokenSource = new CancellationTokenSource();
 		var stoppingToken = cancellationTokenSource.Token;
@@ -100,7 +107,7 @@ public class CleanThumbnailHostedServiceTest
 		int expectCount)
 	{
 		// Arrange
-		var hostedService = CreateServiceScope(thumbnailCleanupSkipOnStartup);
+		var (hostedService, _, _) = CreateServiceScope(thumbnailCleanupSkipOnStartup);
 		using var cancellationTokenSource = new CancellationTokenSource();
 		var stoppingToken = cancellationTokenSource.Token;
 
@@ -140,43 +147,5 @@ public class CleanThumbnailHostedServiceTest
 
 		// Assert
 		Assert.AreEqual(expectedResult, result);
-	}
-
-	[SuppressMessage("Performance",
-		"CA1852: Type can be sealed because it has no subtypes in its containing assembly")]
-	private class FakeServiceScope : IServiceScope
-	{
-		public FakeServiceScope(IServiceProvider serviceProvider)
-		{
-			ServiceProvider = serviceProvider;
-		}
-
-		public IServiceProvider ServiceProvider { get; }
-
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		protected virtual void Dispose(bool disposing)
-		{
-			// Cleanup
-		}
-	}
-
-	private sealed class FakeServiceScopeFactory : IServiceScopeFactory
-	{
-		private readonly IServiceProvider _serviceProvider;
-
-		public FakeServiceScopeFactory(IServiceProvider serviceProvider)
-		{
-			_serviceProvider = serviceProvider;
-		}
-
-		public IServiceScope CreateScope()
-		{
-			return new FakeServiceScope(_serviceProvider);
-		}
 	}
 }

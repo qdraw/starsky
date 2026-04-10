@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Services;
 using starsky.foundation.sync.Helpers;
 using starskytest.FakeCreateAn;
@@ -21,11 +22,12 @@ public class SizeFileHashIsTheSameTest
 		var lastEdited = new DateTime(2020, 03, 07, 18,
 			25, 02, DateTimeKind.Local);
 
-		var storage = new FakeIStorage(new List<string> { "/" },
+		var storage = new FakeIStorage(["/"],
 			new List<string> { "/test.jpg" }, new List<byte[]> { CreateAnImage.Bytes.ToArray() },
 			new List<DateTime> { lastEdited });
 		var (fileHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 		var dbItems = new List<FileIndexItem>
 		{
 			new("/test.jpg") { FileHash = fileHash, LastEdited = lastEdited }
@@ -77,7 +79,9 @@ public class SizeFileHashIsTheSameTest
 			new List<string> { "/test.jpg" }, new List<byte[]> { CreateAnImage.Bytes.ToArray() },
 			new List<DateTime> { lastEdited });
 		var (fileHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 		var dbItems = new List<FileIndexItem> { new("/test.jpg") { FileHash = fileHash } };
 
 		var result = await new SizeFileHashIsTheSameHelper(storage, new FakeIWebLogger())
@@ -127,7 +131,8 @@ public class SizeFileHashIsTheSameTest
 		dbItems[0].LastEdited = lastEdited;
 		var (fileHash, _) =
 			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
-				"/101NZ_50/DSC_0045.NEF");
+				"/101NZ_50/DSC_0045.NEF",
+				ExtensionRolesHelper.ImageFormat.jpg);
 		dbItems[1].FileHash = fileHash;
 		dbItems[1].LastEdited = lastEdited;
 

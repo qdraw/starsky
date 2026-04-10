@@ -94,6 +94,7 @@ public class StructureService : IStructureService
 	/// </summary>
 	/// <param name="inputModel">
 	///     DateTime to parse, include fileName if requested in structure, fileExtension without dot
+	///     For sequence use import:AppendIndexerToFilePath
 	/// </param>
 	/// <returns>filename without starting slash</returns>
 	public string ParseFileName(StructureInputModel inputModel)
@@ -106,6 +107,7 @@ public class StructureService : IStructureService
 			inputModel.FileNameBase,
 			inputModel.ExtensionWithoutDot);
 
+		// no sequence handling here, not scope here
 		return PathHelper.RemovePrefixDbSlash(
 			ApplyStructureRangeToStorage(parsedStructuredList));
 	}

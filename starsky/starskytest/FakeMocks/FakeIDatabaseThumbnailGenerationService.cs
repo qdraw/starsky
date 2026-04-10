@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Threading;
 using starsky.feature.thumbnail.Interfaces;
 
 namespace starskytest.FakeMocks;
@@ -11,5 +12,10 @@ public class FakeIDatabaseThumbnailGenerationService : IDatabaseThumbnailGenerat
 	{
 		Count++;
 		return Task.CompletedTask;
+	}
+
+	public Task ExecuteQueuedJobAsync(CancellationToken cancellationToken)
+	{
+		throw new System.NotImplementedException();
 	}
 }

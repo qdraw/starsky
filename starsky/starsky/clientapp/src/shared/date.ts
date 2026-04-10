@@ -81,7 +81,11 @@ const IsIncludeTimezone = (dateTime: string): boolean => {
  * @param dateTime 2018-09-11T11:23:19, 2018-09-11T11:23:19Z or 2020-04-28T10:44:43.123456+01:00
  * @param locate Language
  */
-const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
+const parseDate = (
+  dateTime: string | undefined,
+  locate: SupportedLanguages,
+  weekday: boolean = true
+): string => {
   if (!dateTime) return "";
 
   // UTC DateTime already ends with Z
@@ -92,7 +96,7 @@ const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): st
   const locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString();
   if (dateTime.endsWith("Z")) {
     return dateTimeObject.toLocaleDateString(locateString, {
-      weekday: "long",
+      weekday: weekday ? "long" : undefined,
       year: "numeric",
       month: "long",
       day: "numeric"
@@ -101,7 +105,7 @@ const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): st
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   return dateTimeObject.toLocaleDateString(locateString, {
     timeZone: "UTC",
-    weekday: "long",
+    weekday: weekday ? "long" : undefined,
     year: "numeric",
     month: "long",
     day: "numeric"

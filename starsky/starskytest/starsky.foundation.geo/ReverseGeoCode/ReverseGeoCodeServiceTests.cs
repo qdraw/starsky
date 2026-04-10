@@ -223,8 +223,8 @@ public class ReverseGeoCodeServiceTests
 			new FakeIWebLogger()).GetLocation(35.47587, 24.03995);
 
 		Assert.IsFalse(result.IsSuccess);
-		Assert.IsNull(result.LocationCountry);
-		Assert.IsNull(result.LocationCountryCode);
+		Assert.AreEqual(string.Empty, result.LocationCountry);
+		Assert.AreEqual(string.Empty, result.LocationCountryCode);
 		Assert.IsNull(result.LocationState);
 		Assert.AreEqual("Nerokouros", result.LocationCity);
 	}

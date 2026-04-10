@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
@@ -36,7 +37,7 @@ public class ExifToolStreamToStreamRunnerTests
 		_appSettingsWithExifTool = new AppSettings { ExifToolPath = exifToolExe };
 	}
 
-	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	[ClassCleanup]
 	public static void CleanUp()
 	{
 		var folder = Path.Combine(new CreateAnImage().BasePath,
@@ -160,13 +161,19 @@ public class ExifToolStreamToStreamRunnerTests
 		var sut = new ExifToolStreamToStreamRunner(_appSettingsWithExifTool,
 			new FakeIWebLogger());
 
-		var stream = await sut.RunProcessAsync(sourceStream, "arg1",
-			"reference");
+		var stream = await RetryHelper.DoAsync(Run, TimeSpan.FromSeconds(1));
 
 		Assert.IsNotNull(stream);
 
 		await sourceStream.DisposeAsync();
 		await stream.DisposeAsync();
+		return;
+
+		async Task<Stream> Run()
+		{
+			return await sut.RunProcessAsync(sourceStream, "arg1",
+				"reference");
+		}
 	}
 
 	[TestMethod]

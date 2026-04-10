@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
@@ -58,7 +59,8 @@ public class VideoProcessTests
 		// Arrange
 		const string subPath = "/test.mp4";
 		var fileHashService = new FileHash(_storage, new FakeIWebLogger());
-		var beforeFileHash = ( await fileHashService.GetHashCodeAsync(subPath) ).Key;
+		var beforeFileHash = ( await fileHashService.GetHashCodeAsync(subPath, 
+			ExtensionRolesHelper.ImageFormat.mp4) ).Key;
 		var expectedPath = $"{beforeFileHash}.jpg";
 
 		const VideoProcessTypes type = VideoProcessTypes.Thumbnail;

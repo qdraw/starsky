@@ -8,12 +8,15 @@ xattr -d com.apple.quarantine libSystem.Native.dylib
 
 # Array of executable files
 executables=(
+  "starsky"
   "starskyadmincli"
   "starskygeocli"
   "starskyimportercli"
   "starskysynchronizecli"
   "starskythumbnailcli"
   "starskywebftpcli"
+  "starskydependenciesdownloadcli"
+  "starskymountwatchercli"
 )
 
 # Remove quarantine extended attributes
@@ -27,3 +30,5 @@ for exec in "${executables[@]}"
 do
   codesign --force --deep -s - "$exec"
 done
+
+echo "mac-self-codesign.sh completed."

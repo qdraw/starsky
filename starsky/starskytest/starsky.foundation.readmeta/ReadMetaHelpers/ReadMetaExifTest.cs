@@ -129,7 +129,7 @@ public class ReadMetaExifTest
 	}
 
 	[TestMethod]
-	public void GetIsoSpeedValue_FromXmp_ReturnsIsoSpeed()
+	public void GetIsoSpeedValue_CreateAnImageA6600_FromXmp_ReturnsIsoSpeed()
 	{
 		// Arrange
 		var xmpStream = new MemoryStream(CreateAnImageA6600.Bytes.ToArray());

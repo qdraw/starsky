@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -8,39 +9,67 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.feature.search.Services
-{
-	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class SearchSuggestionsInflateHostedService : IHostedService
-	{
-		private readonly AppSettings _appSettings;
-		private readonly IMemoryCache _memoryCache;
-		private readonly IServiceScopeFactory _scopeFactory;
-		private readonly IWebLogger _logger;
+namespace starsky.feature.search.Services;
 
-		public SearchSuggestionsInflateHostedService(IServiceScopeFactory scopeFactory,
-			IMemoryCache memoryCache, IWebLogger logger, AppSettings appSettings)
+[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
+public class SearchSuggestionsInflateHostedService(
+	IServiceScopeFactory scopeFactory,
+	IMemoryCache memoryCache,
+	IWebLogger logger,
+	AppSettings appSettings)
+	: IHostedService
+{
+	private readonly CancellationTokenSource _stopCts = new();
+	private Task? _runTask;
+
+	internal TimeSpan Interval { get; init; } = new(0, 120, 10);
+
+	public Task StartAsync(CancellationToken cancellationToken)
+	{
+		_runTask = RunAsync(_stopCts.Token);
+		return Task.CompletedTask;
+	}
+
+	public async Task StopAsync(CancellationToken cancellationToken)
+	{
+		await _stopCts.CancelAsync();
+		if ( _runTask != null )
 		{
-			_scopeFactory = scopeFactory;
-			_memoryCache = memoryCache;
-			_logger = logger;
-			_appSettings = appSettings;
+			await _runTask.ConfigureAwait(false);
 		}
 
-		public async Task StartAsync(CancellationToken cancellationToken)
+		_stopCts.Dispose();
+	}
+
+	private async Task RunAsync(CancellationToken cancellationToken)
+	{
+		try
 		{
-			using ( var scope = _scopeFactory.CreateScope() )
+			await InflateOnceAsync().ConfigureAwait(false);
+
+			using var timer = new PeriodicTimer(Interval);
+			while ( await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false) )
 			{
-				var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-				await new SearchSuggestionsService(dbContext, _memoryCache, _logger, _appSettings).Inflate();
+				await InflateOnceAsync().ConfigureAwait(false);
 			}
 		}
-
-		public Task StopAsync(CancellationToken cancellationToken)
+		catch ( OperationCanceledException ) when ( cancellationToken.IsCancellationRequested )
 		{
-			// nope
-			return Task.CompletedTask;
+			// Graceful shutdown
+		}
+		catch ( Exception exception )
+		{
+			logger.LogError("SearchSuggestionsInflateHostedService failed: " + exception.Message,
+				exception);
 		}
 	}
-}
 
+	private async Task InflateOnceAsync()
+	{
+		using var scope = scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		await new SearchSuggestionsService(dbContext, memoryCache, logger, appSettings)
+			.Inflate().ConfigureAwait(false);
+		logger.LogDebug("SearchSuggestionsInflateHostedService: Cache inflated successfully.");
+	}
+}

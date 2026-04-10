@@ -23,6 +23,11 @@ public class FakeIWebSocketConnectionsService : IWebSocketConnectionsService
 
 	public List<string> FakeSendToAllAsync { get; set; } = new();
 
+	/// <summary>
+	///     Add a connection to the service. This is used to simulate clients connecting to the WebSocket
+	///     service.
+	/// </summary>
+	/// <param name="connection"></param>
 	public void AddConnection(WebSocketConnection connection)
 	{
 		_connections.TryAdd(connection.Id, connection);

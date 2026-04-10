@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Structure;
@@ -36,7 +37,7 @@ public sealed class GeoCliTest
 				.ParseSubfolders(0)!);
 
 		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var appSettings = new AppSettings();
@@ -46,7 +47,7 @@ public sealed class GeoCliTest
 		var geoCli = new GeoCli(geoLookup, geoWrite,
 			new FakeSelectorStorage(storage), appSettings,
 			console, new FakeIGeoFileDownload(), new FakeExifToolDownload(), new FakeIWebLogger());
-		await geoCli.CommandLineAsync(new List<string> { "-g", "0" }.ToArray());
+		await geoCli.CommandLineAsync(["-g", "0"]);
 
 		Assert.AreEqual(appSettings.StorageFolder,
 			relativeParentFolder + Path.DirectorySeparatorChar);
@@ -82,7 +83,8 @@ public sealed class GeoCliTest
 			new List<string> { "/test.jpg" },
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var hash =
-			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg") ).Key;
+			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();
@@ -105,7 +107,9 @@ public sealed class GeoCliTest
 			new List<string> { "/test.jpg", "1" },
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
 		var hash =
-			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg") ).Key;
+			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();
@@ -131,7 +135,9 @@ public sealed class GeoCliTest
 			new List<string> { "/test.jpg", "1" },
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
 		var hash =
-			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg") ).Key;
+			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();

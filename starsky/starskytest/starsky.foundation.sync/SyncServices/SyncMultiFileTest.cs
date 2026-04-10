@@ -23,8 +23,8 @@ public sealed class SyncMultiFileTest
 	{
 		_lastEditedDateTime = new DateTime(2020, 02, 02,
 			01, 01, 01, DateTimeKind.Local);
-		_iStorageFake = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg", "/color_class_test.jpg", "/status_deleted.jpg" },
+		_iStorageFake = new FakeIStorage(["/"],
+			["/test.jpg", "/color_class_test.jpg", "/status_deleted.jpg"],
 			new List<byte[]>
 			{
 				CreateAnImageNoExif.Bytes.ToArray(),
@@ -40,7 +40,7 @@ public sealed class SyncMultiFileTest
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
-		var result = await sync.MultiFile(new List<string> { "/non_exist.ext" });
+		var result = await sync.MultiFile(["/non_exist.ext"]);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result[0].Status);
 	}
@@ -51,7 +51,7 @@ public sealed class SyncMultiFileTest
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 
 		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/corrupt.jpg" },
+			["/corrupt.jpg"],
 			new List<byte[]> { new byte[5] });
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
@@ -140,7 +140,9 @@ public sealed class SyncMultiFileTest
 	public async Task MultiFile_FileAlreadyExist_WithSameFileHash()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 		{
@@ -167,7 +169,9 @@ public sealed class SyncMultiFileTest
 	public async Task MultiFile_FileAlreadyExist_WithSameFileHash_ShouldNotTrigger()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 		{
@@ -195,7 +199,9 @@ public sealed class SyncMultiFileTest
 	public async Task MultiFile_FileAlreadyExist_WithSameFileHash_ParentDirNotExistSoTrigger()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 		{
@@ -227,7 +233,9 @@ public sealed class SyncMultiFileTest
 	public async Task MultiFile_FileAlreadyExist_With_Same_LastEditedTime()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 		{
@@ -262,16 +270,16 @@ public sealed class SyncMultiFileTest
 
 		var (fileHash, _) =
 			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
-				currentFilePath);
+				currentFilePath,
+				ExtensionRolesHelper.ImageFormat.jpg);
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
-			new(currentFilePath)
+		var fakeQuery = new FakeIQuery([
+			new FileIndexItem(currentFilePath)
 			{
 				FileHash = "THIS_IS_THE_OLD_HASH",
 				Size = 99999999 // % % % that's not the right size % % %
 			}
-		});
+		]);
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
@@ -327,7 +335,9 @@ public sealed class SyncMultiFileTest
 	public async Task MultiFile_DbItem_Updated()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 		var item = new FileIndexItem("/test.jpg")
 		{
 			FileHash = "THIS_IS_THE_OLD_HASH",
@@ -428,7 +438,9 @@ public sealed class SyncMultiFileTest
 	public async Task MultiFile_DbItem_FileAlreadyExist_With_Same_ByteSize()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem("/test.jpg")
 		{
@@ -462,7 +474,9 @@ public sealed class SyncMultiFileTest
 			new List<DateTime> { lastEdited, lastEdited });
 
 		var (fileHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.dng");
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.dng",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem("/test.dng")
 		{
@@ -496,7 +510,9 @@ public sealed class SyncMultiFileTest
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 
 		var (fileHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.dng");
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.dng",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem("/test.dng")
 		{
@@ -537,7 +553,9 @@ public sealed class SyncMultiFileTest
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray(), Array.Empty<byte>() });
 
 		var (fileHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem("/test.jpg")
 		{
@@ -561,7 +579,8 @@ public sealed class SyncMultiFileTest
 	public async Task MultiFile_FileAlreadyExist_With_Changed_FileHash_MetaDataCheck()
 	{
 		var (fileHash, _) = await new FileHash(_iStorageFake, new FakeIWebLogger())
-			.GetHashCodeAsync("/color_class_test.jpg");
+			.GetHashCodeAsync("/color_class_test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 		{

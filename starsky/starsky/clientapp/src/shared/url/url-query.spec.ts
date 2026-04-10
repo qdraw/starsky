@@ -102,6 +102,16 @@ describe("url-query", () => {
     expect(result).toContain("itemName=name");
   });
 
+  it("UrlPublishRemoteCreate", () => {
+    const result = urlQuery.UrlPublishRemoteCreate();
+    expect(result).toContain("publish-remote/create");
+  });
+
+  it("UrlPublishRemoteStatus", () => {
+    const result = urlQuery.UrlPublishRemoteStatus("_default");
+    expect(result).toContain("publish-remote/status?publishProfileName=_default");
+  });
+
   it("UrlHomePage", () => {
     const result = new UrlQuery().UrlHomePage();
     expect(result).toBe("/");
@@ -134,6 +144,16 @@ describe("url-query", () => {
   it("UrlLogoutApi", () => {
     const result = urlQuery.UrlLogoutApi();
     expect(result).toContain("logout");
+  });
+
+  it("UrlCloudImportStatus", () => {
+    const result = urlQuery.UrlCloudImportStatus();
+    expect(result).toContain("/api/cloud-import/status");
+  });
+
+  it("UrlCloudImportSync", () => {
+    const result = urlQuery.UrlCloudImportSync("dropbox-camera-uploads");
+    expect(result).toContain("/api/cloud-import/sync/dropbox-camera-uploads");
   });
 
   it("UrlLogoutPage ", () => {
@@ -247,6 +267,11 @@ describe("url-query", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("hash_test", "filePath", true);
       expect(test).toContain("hash_test");
     });
+
+    it("when filehash is empty return empty string", () => {
+      const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("", "filePath", true);
+      expect(test).toBe("");
+    });
   });
 
   it("DocsGettingStartedFirstSteps", () => {
@@ -289,6 +314,18 @@ describe("url-query", () => {
       const url = new UrlQuery().UrlRealtime();
       expect(url).toBe("ws://localhost:7382/starsky/realtime");
       expect(url).toContain("realtime");
+    });
+  });
+
+  describe("UrlBatchRenamePreview & Execute", () => {
+    it("should contain /api/batch-rename/preview", () => {
+      const test = urlQuery.UrlBatchRenamePreview();
+      expect(test).toContain("/api/batch-rename/preview");
+    });
+
+    it("should contain /api/batch-rename/execute", () => {
+      const test = urlQuery.UrlBatchRenameExecute();
+      expect(test).toContain("/api/batch-rename/execute");
     });
   });
 });

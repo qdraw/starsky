@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace starsky.feature.search.Interfaces
-{
+namespace starsky.feature.search.Interfaces;
 
-	public interface ISearchSuggest
-	{
-		Task<IEnumerable<string>> SearchSuggest(string query);
-		Task<IEnumerable<KeyValuePair<string, int>>> GetAllSuggestions();
-		Task<List<KeyValuePair<string, int>>> Inflate();
-	}
+public interface ISearchSuggest
+{
+	Task<IEnumerable<string>> SearchSuggest(string query, bool system);
+	Task<List<KeyValuePair<string, int>>> GetAllSuggestions();
+	Task<List<KeyValuePair<string, int>>> Inflate();
 }

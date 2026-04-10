@@ -30,9 +30,9 @@ public sealed class HealthControllerTest
 		Assert.IsTrue(castedResult?.IsHealthy);
 		Assert.IsTrue(castedResult?.Entries.FirstOrDefault()?.IsHealthy);
 		Assert.AreEqual("test", castedResult?.Entries.FirstOrDefault()?.Name);
-		Assert.IsTrue(castedResult?.Entries.FirstOrDefault()?.Duration == TimeSpan.Zero);
-		Assert.AreNotEqual(0, castedResult.Entries.Count);
-		Assert.IsTrue(castedResult.TotalDuration == TimeSpan.Zero);
+		Assert.AreEqual(TimeSpan.Zero, castedResult?.Entries.FirstOrDefault()?.Duration);
+		Assert.AreNotEqual(0, castedResult!.Entries.Count);
+		Assert.AreEqual(TimeSpan.Zero, castedResult.TotalDuration);
 	}
 
 	[TestMethod]
@@ -52,9 +52,9 @@ public sealed class HealthControllerTest
 		Assert.IsFalse(castedResult?.IsHealthy);
 		Assert.IsFalse(castedResult?.Entries.FirstOrDefault()?.IsHealthy);
 		Assert.AreEqual("test", castedResult?.Entries.FirstOrDefault()?.Name);
-		Assert.IsTrue(castedResult?.Entries.FirstOrDefault()?.Duration == TimeSpan.Zero);
-		Assert.AreNotEqual(0, castedResult.Entries.Count);
-		Assert.IsTrue(castedResult.TotalDuration == TimeSpan.Zero);
+		Assert.AreEqual(TimeSpan.Zero, castedResult?.Entries.FirstOrDefault()?.Duration);
+		Assert.AreNotEqual(0, castedResult!.Entries.Count);
+		Assert.AreEqual(TimeSpan.Zero, castedResult.TotalDuration);
 	}
 
 	[TestMethod]

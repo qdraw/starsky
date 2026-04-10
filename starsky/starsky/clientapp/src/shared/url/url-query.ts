@@ -118,8 +118,8 @@ export class UrlQuery {
     return `${this.prefix}/api/search?json=true&t=${query}&p=${pageNumber}`;
   };
 
-  public UrlSearchSuggestApi(query: string): string {
-    return `${this.prefix}/api/suggest/?t=${query}`;
+  public UrlSearchSuggestApi(query: string, system = true): string {
+    return `${this.prefix}/api/suggest/?t=${query}&system=${system}`;
   }
 
   public UrlSearchRemoveCacheApi(): string {
@@ -140,6 +140,14 @@ export class UrlQuery {
 
   public UrlAccountChangeSecret = (): string => {
     return `${this.prefix}/api/account/change-secret`;
+  };
+
+  public UrlCloudImportStatus = (): string => {
+    return `${this.prefix}/api/cloud-import/status`;
+  };
+
+  public UrlCloudImportSync = (providerId: string): string => {
+    return `${this.prefix}/api/cloud-import/sync/${encodeURIComponent(providerId)}`;
   };
 
   public UrlAccountPermissions = (): string => {
@@ -279,6 +287,9 @@ export class UrlQuery {
     filePath?: string,
     extraLarge = true
   ): string => {
+    if (!fileHash) {
+      return "";
+    }
     if (!extraLarge) {
       return (
         this.prefix +
@@ -441,18 +452,108 @@ export class UrlQuery {
     return this.prefix + `/api/publish/exist?itemName=${itemName}`;
   }
 
+  public UrlPublishRemoteCreate(): string {
+    return this.prefix + "/api/publish-remote/create";
+  }
+
+  public UrlPublishRemoteStatus(publishProfileName: string): string {
+    return this.prefix + `/api/publish-remote/status?publishProfileName=${publishProfileName}`;
+  }
+
   public UrlRealtime(): string {
     let url = globalThis.location.protocol === "https:" ? "wss:" : "ws:";
     url += "//" + globalThis.location.host + this.prefix + "/realtime";
     return url;
   }
 
+  /**
+   * Batch rename photos preview
+   */
+  public UrlBatchRenamePreview(): string {
+    return this.prefix + "/api/batch-rename/preview";
+  }
+
+  /**
+   * Batch rename photos execute
+   */
+  public UrlBatchRenameExecute(): string {
+    return this.prefix + "/api/batch-rename/execute";
+  }
+
   public DocsGettingStartedFirstSteps(): string {
     return "https://docs.qdraw.nl/docs/getting-started/first-steps";
+  }
+
+  /**
+   * Preview timezone shift
+   */
+  public UrlTimezonePreview(): string {
+    return this.prefix + "/api/meta-time-correct/timezone-preview";
+  }
+
+  /**
+   * Execute timezone shift
+   */
+  public UrlTimezoneExecute(): string {
+    return this.prefix + "/api/meta-time-correct/timezone-execute";
+  }
+
+  /**
+   * Preview offset shift
+   */
+  public UrlOffsetPreview(): string {
+    return this.prefix + "/api/meta-time-correct/offset-preview";
+  }
+
+  /**
+   * Execute offset shift
+   */
+  public UrlOffsetExecute(): string {
+    return this.prefix + "/api/meta-time-correct/offset-execute";
+  }
+
+  /**
+   * Preview batch rename for offset shift
+   */
+  public UrlBatchRenameOffsetPreview(): string {
+    return this.prefix + "/api/batch-rename-datetime/offset-preview";
+  }
+
+  /**
+   * Execute batch rename for offset shift
+   */
+  public UrlBatchRenameOffsetExecute(): string {
+    return this.prefix + "/api/batch-rename-datetime/offset-execute";
+  }
+
+  /**
+   * Preview batch rename for timezone shift
+   */
+  public UrlBatchRenameTimezonePreview(): string {
+    return this.prefix + "/api/batch-rename-datetime/timezone-preview";
+  }
+
+  /**
+   * Execute batch rename for timezone shift
+   */
+  public UrlBatchRenameTimezoneExecute(): string {
+    return this.prefix + "/api/batch-rename-datetime/timezone-execute";
+  }
+
+  public UrlGeoLocationNameCityTimezone(dateTime: string, city: string): string {
+    return `${this.prefix}/api/geo-location-name/city-timezone?dateTime=${encodeURIComponent(dateTime)}&city=${encodeURIComponent(city)}`;
+  }
+
+  public UrlGeoLocationNameCity(city: string): string {
+    return `${this.prefix}/api/geo-location-name/city?city=${encodeURIComponent(city)}`;
   }
 
   private urlReplacePath(input: string): string {
     const output = input.replaceAll("#", "");
     return output.replaceAll("+", "%2B");
+  }
+
+  public UrlGeoReverseNominatim(latitude: number, longitude: number): string {
+    return `${this.prefix}/api/geo-reverse-nominatim?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`;
   }
 }

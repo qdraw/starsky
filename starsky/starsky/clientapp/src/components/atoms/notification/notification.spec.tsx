@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { PortalId } from "../portal/portal";
 import Notification, { NotificationType } from "./notification";
 
@@ -71,5 +71,49 @@ describe("ItemListView", () => {
       const portalElement2 = document.getElementById(PortalId);
       expect(portalElement2).toBeNull();
     });
+  });
+});
+
+describe("Notification autoRemoveTimeout", () => {
+  it("should auto-remove after the specified timeout", () => {
+    jest.useFakeTimers();
+
+    const callback = jest.fn();
+    render(
+      <Notification type={NotificationType.default} callback={callback} autoRemoveTimeout={1000}>
+        Test notification
+      </Notification>
+    );
+    // Notification should be in the document initially
+    expect(screen.getByText("Test notification")).toBeInTheDocument();
+    // Fast-forward time
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    // Callback should be called after timeout
+    expect(callback).toHaveBeenCalled();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  it("should NOT auto-remove if autoRemoveTimeout is -1", () => {
+    jest.useFakeTimers();
+
+    const callback = jest.fn();
+    render(
+      <Notification type={NotificationType.default} callback={callback} autoRemoveTimeout={-1}>
+        Persistent notification
+      </Notification>
+    );
+    // Notification should be in the document
+    expect(screen.getByText("Persistent notification")).toBeInTheDocument();
+    // Fast-forward time
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+    // Callback should NOT be called
+    expect(callback).not.toHaveBeenCalled();
   });
 });

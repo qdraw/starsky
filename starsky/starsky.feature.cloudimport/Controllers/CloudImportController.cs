@@ -17,6 +17,7 @@ public class CloudImportController(ICloudImportService cloudImportService, AppSe
 	/// <summary>
 	///     Get current Cloud Import status for all providers
 	/// </summary>
+	/// <returns>get status</returns>
 	[HttpGet("status")]
 	public IActionResult GetStatus()
 	{
@@ -37,9 +38,12 @@ public class CloudImportController(ICloudImportService cloudImportService, AppSe
 		});
 	}
 
+
 	/// <summary>
 	///     Get status for a specific provider
 	/// </summary>
+	/// <param name="providerId">id of provider</param>
+	/// <returns>status</returns>
 	[HttpGet("status/{providerId}")]
 	public IActionResult GetProviderStatus(string providerId)
 	{
@@ -66,9 +70,11 @@ public class CloudImportController(ICloudImportService cloudImportService, AppSe
 		});
 	}
 
+
 	/// <summary>
 	///     Trigger a manual sync for all enabled providers
 	/// </summary>
+	/// <returns>result of sync</returns>
 	[HttpPost("sync")]
 	public async Task<IActionResult> TriggerSyncAll()
 	{
@@ -89,6 +95,8 @@ public class CloudImportController(ICloudImportService cloudImportService, AppSe
 	/// <summary>
 	///     Trigger a manual sync for a specific provider
 	/// </summary>
+	/// <param name="providerId">which provider</param>
+	/// <returns>status</returns>
 	[HttpPost("sync/{providerId}")]
 	public async Task<IActionResult> TriggerSync(string providerId)
 	{
@@ -110,6 +118,7 @@ public class CloudImportController(ICloudImportService cloudImportService, AppSe
 	/// <summary>
 	///     Get the last sync results for all providers
 	/// </summary>
+	/// <returns>status</returns>
 	[HttpGet("last-results")]
 	public IActionResult GetLastResults()
 	{
@@ -125,6 +134,8 @@ public class CloudImportController(ICloudImportService cloudImportService, AppSe
 	/// <summary>
 	///     Get the last sync result for a specific provider
 	/// </summary>
+	/// <param name="providerId">which provider</param>
+	/// <returns>status</returns>
 	[HttpGet("last-result/{providerId}")]
 	public IActionResult GetLastResult(string providerId)
 	{

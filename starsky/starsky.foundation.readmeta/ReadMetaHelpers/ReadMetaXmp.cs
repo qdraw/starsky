@@ -67,7 +67,8 @@ public sealed class ReadMetaXmp
 			// ContentNameSpace is for example : Namespace=http://...
 			databaseItem = GetDataContentNameSpaceTypes(xmp, databaseItem);
 			// NullNameSpace is for example : string.Empty
-			databaseItem = GetDataNullNameSpaceTypes(xmp, databaseItem);
+			databaseItem = GetDataNullNameSpaceTypes1(xmp, databaseItem);
+			databaseItem = GetDataNullNameSpaceTypes2(xmp, databaseItem);
 		}
 		catch ( XmpException e )
 		{
@@ -126,7 +127,7 @@ public sealed class ReadMetaXmp
 	}
 
 	[SuppressMessage("Usage", "S125:Remove this commented out code")]
-	private static FileIndexItem GetDataNullNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
+	private static FileIndexItem GetDataNullNameSpaceTypes1(IXmpMeta xmp, FileIndexItem item)
 	{
 		foreach ( var property in xmp.Properties )
 		{
@@ -184,6 +185,20 @@ public sealed class ReadMetaXmp
 
 			// don't show in production 
 			// Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
+		}
+
+		return item;
+	}
+
+	private static FileIndexItem GetDataNullNameSpaceTypes2(IXmpMeta xmp, FileIndexItem item)
+	{
+		foreach ( var property in xmp.Properties )
+		{
+			var artist = GetNullNameSpace(property, "dc:creator[1]");
+			if ( artist != null )
+			{
+				item.Artist = artist;
+			}
 		}
 
 		return item;

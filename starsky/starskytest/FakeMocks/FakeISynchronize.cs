@@ -8,7 +8,10 @@ namespace starskytest.FakeMocks
 {
 	public class FakeISynchronize : ISynchronize
 	{
-		private readonly List<FileIndexItem> _data = new List<FileIndexItem>();
+		private readonly List<FileIndexItem> _data = new();
+
+		public TaskCompletionSource<bool> Completed { get; } =
+			new(TaskCreationOptions.RunContinuationsAsynchronously);
 
 		public FakeISynchronize(List<FileIndexItem>? data = null)
 		{
@@ -29,6 +32,8 @@ namespace starskytest.FakeMocks
 			Console.WriteLine($"[FakeISync] sync => {subPath}");
 			Inputs.Add(new Tuple<string, bool>(subPath, true));
 			Receive?.Invoke(this, subPath);
+			// Signal that sync was called
+			Completed.TrySetResult(true);
 			return Task.FromResult(_data);
 		}
 
@@ -40,6 +45,8 @@ namespace starskytest.FakeMocks
 			{
 				results.AddRange(await Sync(subPath));
 			}
+			// Signal that the list-sync completed
+			Completed.TrySetResult(true);
 			return results;
 		}
 	}

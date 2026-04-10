@@ -83,7 +83,7 @@ export class FileListCache {
       ...urlObject,
       f: detailview.fileIndexItem.parentDirectory
     }) as IArchive;
-    if (!parentItem || parentItem.pageType !== PageType.Archive) {
+    if (parentItem?.pageType !== PageType.Archive) {
       return;
     }
 

@@ -87,14 +87,18 @@ public class MetaUpdateService : IMetaUpdateService
 
 		var updatedItems = new List<FileIndexItem>();
 		var fileIndexItemList = fileIndexResultsList
-			.Where(p => p.Status is FileIndexItem.ExifStatus.Ok
-				or FileIndexItem.ExifStatus.Deleted).ToList();
+			.Where(p =>
+				p.Status is FileIndexItem.ExifStatus.Ok
+					or FileIndexItem.ExifStatus.Deleted or
+					FileIndexItem.ExifStatus.OkAndSame or
+					FileIndexItem.ExifStatus.Default or
+					FileIndexItem.ExifStatus.DeletedAndSame).ToList();
 
 		foreach ( var fileIndexItem in fileIndexItemList )
 		{
 			if ( changedFileIndexItemName.TryGetValue(fileIndexItem.FilePath!, out var value) )
 			{
-				// used for tracking differences, in the database/ExifTool compared to the inputModel
+				// used for tracking differences in the database/ExifTool compared to the inputModel
 
 				await UpdateWriteDiskDatabase(fileIndexItem, value, rotateClock);
 				updatedItems.Add(fileIndexItem);
@@ -117,7 +121,7 @@ public class MetaUpdateService : IMetaUpdateService
 	}
 
 	/// <summary>
-	///     Update ExifTool, Thumbnail, Database and if needed rotateClock
+	///     Update ExifTool, Thumbnail, Database, and if needed, rotateClock
 	/// </summary>
 	/// <param name="fileIndexItem">output database object</param>
 	/// <param name="comparedNamesList">name of fields updated by exifTool</param>
@@ -189,9 +193,10 @@ public class MetaUpdateService : IMetaUpdateService
 
 		// when newFileHashes is null or string.empty
 		// when not is empty: rename is done in the exiftool helper
-		var newFileHash =
-			( await new FileHash(_iStorage, _logger).GetHashCodeAsync(fileIndexItem.FilePath!) )
-			.Key;
+		var fileHashService = new FileHash(_iStorage, _logger);
+		var newFileHash = ( await fileHashService.GetHashCodeAsync(
+			fileIndexItem.FilePath!,
+			fileIndexItem.ImageFormat) ).Key;
 		_thumbnailStorage.FileMove(fileIndexItem.FileHash!, newFileHash);
 		fileIndexItem.FileHash = newFileHash;
 	}

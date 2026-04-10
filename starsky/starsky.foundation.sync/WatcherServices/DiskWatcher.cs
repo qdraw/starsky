@@ -30,8 +30,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 		var serviceProvider = scopeFactory.CreateScope().ServiceProvider;
 		_webLogger = serviceProvider.GetRequiredService<IWebLogger>();
-		_queueProcessor =
-			new QueueProcessor(scopeFactory, new SyncWatcherConnector(scopeFactory).Sync);
+		_queueProcessor = new QueueProcessor(scopeFactory);
 	}
 
 	internal DiskWatcher(
@@ -191,7 +190,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		                    $"{e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
 		                    DateTimeDebug());
 
-		_queueProcessor.QueueInput(e.FullPath, null, e.ChangeType).ConfigureAwait(false);
+		_queueProcessor.QueueJob(e.FullPath, null, e.ChangeType).ConfigureAwait(false);
 		// Specify what is done when a file is changed, created, or deleted.
 	}
 
@@ -227,7 +226,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		                            || e.FullPath.EndsWith(".tmp");
 		if ( !isDirectory && isOldFullPathTempFile )
 		{
-			_queueProcessor.QueueInput(e.FullPath, null, WatcherChangeTypes.Created)
+			_queueProcessor.QueueJob(e.FullPath, null, WatcherChangeTypes.Created)
 				.ConfigureAwait(false);
 			return;
 		}
@@ -237,7 +236,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 			return;
 		}
 
-		_queueProcessor.QueueInput(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed)
+		_queueProcessor.QueueJob(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed)
 			.ConfigureAwait(false);
 	}
 }

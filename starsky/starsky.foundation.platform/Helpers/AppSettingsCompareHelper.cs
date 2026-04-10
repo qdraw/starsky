@@ -121,6 +121,36 @@ public static class AppSettingsCompareHelper
 				oldCloudImportSettingsValue,
 				newCloudImportSettingsValue, differenceList);
 		}
+
+		if ( propertyInfoFromA.PropertyType ==
+		     typeof(AppSettingsPublishProfilesDefaults) &&
+		     propertyB.PropertyType == typeof(AppSettingsPublishProfilesDefaults) )
+		{
+			var oldAppSettingsPublishProfilesDefaultsValue =
+				( AppSettingsPublishProfilesDefaults? ) propertyInfoFromA.GetValue(
+					sourceIndexItem, null);
+			var newAppSettingsPublishProfilesDefaultsValue =
+				( AppSettingsPublishProfilesDefaults? ) propertyB.GetValue(updateObject,
+					null);
+			CompareAppSettingsPublishProfilesDefaults(propertyB.Name, sourceIndexItem,
+				oldAppSettingsPublishProfilesDefaultsValue,
+				newAppSettingsPublishProfilesDefaultsValue, differenceList);
+		}
+
+		if ( propertyInfoFromA.PropertyType ==
+		     typeof(AppSettingsPublishProfilesRemote) &&
+		     propertyB.PropertyType == typeof(AppSettingsPublishProfilesRemote) )
+		{
+			var oldAppSettingsPublishProfilesRemoteValue =
+				( AppSettingsPublishProfilesRemote? ) propertyInfoFromA.GetValue(
+					sourceIndexItem, null);
+			var newAppSettingsPublishProfilesRemoteValue =
+				( AppSettingsPublishProfilesRemote? ) propertyB.GetValue(updateObject,
+					null);
+			CompareAppSettingsPublishProfilesRemote(propertyB.Name, sourceIndexItem,
+				oldAppSettingsPublishProfilesRemoteValue,
+				newAppSettingsPublishProfilesRemoteValue, differenceList);
+		}
 	}
 
 	private static void CompareAppSettingsCloudSettings(string propertyBName,
@@ -153,6 +183,86 @@ public static class AppSettingsCompareHelper
 		// Otherwise, update and record the change
 		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
 			newCloudImportSettingsValue, null);
+		differenceList.Add(propertyBName.ToLowerInvariant());
+	}
+
+	private static void CompareAppSettingsPublishProfilesDefaults(string propertyBName,
+		AppSettings sourceIndexItem,
+		AppSettingsPublishProfilesDefaults? oldAppSettingsPublishProfilesDefaultsValue,
+		AppSettingsPublishProfilesDefaults? newAppSettingsPublishProfilesDefaultsValue,
+		List<string> differenceList)
+	{
+		// If both are null, nothing to compare
+		if ( oldAppSettingsPublishProfilesDefaultsValue == null &&
+		     newAppSettingsPublishProfilesDefaultsValue == null )
+		{
+			return;
+		}
+
+		var newCloudImportSettingsJson =
+			JsonSerializer.Serialize(newAppSettingsPublishProfilesDefaultsValue);
+		var oldCloudImportSettingsJson =
+			JsonSerializer.Serialize(oldAppSettingsPublishProfilesDefaultsValue);
+
+		// If both are non-null and equal (deep compare via JSON), nothing to do
+		if ( oldAppSettingsPublishProfilesDefaultsValue != null &&
+		     newAppSettingsPublishProfilesDefaultsValue != null &&
+		     oldCloudImportSettingsJson == newCloudImportSettingsJson )
+		{
+			return;
+		}
+
+		// If new is default (empty), do nothing
+		if ( newAppSettingsPublishProfilesDefaultsValue != null &&
+		     newCloudImportSettingsJson ==
+		     JsonSerializer.Serialize(new AppSettingsPublishProfilesDefaults()) )
+		{
+			return;
+		}
+
+		// Otherwise, update and record the change
+		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
+			newAppSettingsPublishProfilesDefaultsValue, null);
+		differenceList.Add(propertyBName.ToLowerInvariant());
+	}
+
+	private static void CompareAppSettingsPublishProfilesRemote(string propertyBName,
+		AppSettings sourceIndexItem,
+		AppSettingsPublishProfilesRemote? oldAppSettingsPublishProfilesRemoteValue,
+		AppSettingsPublishProfilesRemote? newAppSettingsPublishProfilesRemoteValue,
+		List<string> differenceList)
+	{
+		// If both are null, nothing to compare
+		if ( oldAppSettingsPublishProfilesRemoteValue == null &&
+		     newAppSettingsPublishProfilesRemoteValue == null )
+		{
+			return;
+		}
+
+		var newCloudImportSettingsJson =
+			JsonSerializer.Serialize(newAppSettingsPublishProfilesRemoteValue);
+		var oldCloudImportSettingsJson =
+			JsonSerializer.Serialize(oldAppSettingsPublishProfilesRemoteValue);
+
+		// If both are non-null and equal (deep compare via JSON), nothing to do
+		if ( oldAppSettingsPublishProfilesRemoteValue != null &&
+		     newAppSettingsPublishProfilesRemoteValue != null &&
+		     oldCloudImportSettingsJson == newCloudImportSettingsJson )
+		{
+			return;
+		}
+
+		// If new is default (empty), do nothing
+		if ( newAppSettingsPublishProfilesRemoteValue != null &&
+		     newCloudImportSettingsJson ==
+		     JsonSerializer.Serialize(new AppSettingsPublishProfilesRemote()) )
+		{
+			return;
+		}
+
+		// Otherwise, update and record the change
+		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
+			newAppSettingsPublishProfilesRemoteValue, null);
 		differenceList.Add(propertyBName.ToLowerInvariant());
 	}
 

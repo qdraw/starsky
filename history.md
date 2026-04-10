@@ -21,7 +21,7 @@
     - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
 - [Starsky Desktop](starskydesktop/readme.md) _Desktop Application_
-    - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
+    - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 - **[Changelog](history.md) Release notes and history**
 
 ## Release notes of Starsky
@@ -41,9 +41,137 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.7 - _(Unreleased)_ - 2026-?-? {#v0.7.7}
+## version 0.7.15 - _(Unreleased)_ - 2026-?-? {#v0.7.15}
 
-- nothing yet
+- [x] (Fixed) _Back-end_ GetWindowsDriveInfo where Z:\\ was used to find an unused drive. (PR #2905)
+- [x] (Added) _Back-end_ Fix disk Detect File System for macOS and Linux (PR #2905)
+- [x] (Added) _Back-end_ Add starskyMountWatcherCli to auto import (PR #2905)
+- [x] (Added) _Back-end_ Add Title and Tags overview razor template (PR #2891)
+- [x] (Added) _Back-end_ Create Job to generate thumbnails when missing in Thumbnail and Zoom API
+  (PR #2891)
+- [x] (Added) _Front-end_ Updates UI when a file has a thumbnail generated in detail view (PR #2891)
+- [x] (Added) _Back-end_ Extracts embedded JPEG previews from lightweight RAW containers (FFF/X3F).
+  `LightweightContainerPreviewExtractor` (PR #2891)
+- [x] (Added) _Back-end_ Service for extracting embedded JPEG previews from RAW image files.
+  Supports: CR2 (Canon), NEF (Nikon), ARW (Sony), DNG (Adobe), RAF (Fujifilm), X3F (Sigma)
+  `EmbeddedRawThumbnailService` (PR #2891)
+- [x] (Added) _Back-end_ Add CR3 (Canon EOS RAW 3) `ContainerFormatPreviewExtractor` (PR #2891)
+- [x] (Added) _Back-end_ Add Tiff Raw preview extraction `TiffEmbeddedPreviewExtractor`(PR #2891)
+- [x] (Added) _Back-end_ Add Preview out of JPEG files `JpegExtractPreviewHelper` (PR #2891)
+- [x] (Added) _Back-end_ ImageFormat detection for raw files (PR #2891)
+- [x] (Fixed) _Back-end_ Fixed issues where duplicate files give updates  (PR #2891)
+- [x] (Fixed) _Back-end_ Skip when WebHtml has an invalid razor cshtml file (PR #2891)
+- [x] (Added) _Back-end_ Added specific ImageFormats for raw files (PR #2891)
+- [x] (Added) _Back-end_ Search collections as default option (PR #2891)
+- [x] (Changed) _Back-end_ Refactor background job export, geolookup, sync background, and thumbnail
+  generation features (PR #2844)
+- [x] (Changed) _Back-end_ new background job handling infrastructure (PR #2844)
+- [x] (Added) _Back-end_ Overwrite CopyContent in PublishProfile false Copy flag (PR #2866)
+- [x] (Fixed) _Back-end_ Fix when MozJPEG for unix permission errors (PR #2863)
+
+## version 0.7.14 - 2026-03-14 {#v0.7.14}
+
+- [x] (Fixed) _Back-end_ Enhanced the MP4 atom parsing logic in Mp4FileHasher to correctly handle
+  atoms with variable header sizes, zero-size atoms, and large-size atoms (PR #2860)
+- [x] (Fixed) _Back-end_ GPX now works with an offset of 38 bytes (PR #2858)
+
+## version 0.7.13 - 2026-03-11 {#v0.7.13}
+
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.419 (Runtime: 8.0.25) (PR #2849)
+- [x] (Fixed) _Back-end_ Retry mechanism for database operations in the ThumbnailQuery (PR #2843)
+- [x] (Fixed) _Back-end_ Notification Item Cannot Open when State is Connecting (PR #2842)
+- [x] (Fixed) _Back-end_ If a directory is empty to delete, improving resilience against transient
+  filesystem states (PR #2841)
+- [x] (Fixed) _Back-end_ Increasing the hashing buffer size for MP4 files (PR #2836)
+- [x] (Breaking change) _Back-end_ Change WebFtp field to PublishProfilesRemote (PR #2804)
+- [x] (Added) _Back-end_ New publish step to upload the generated ZIP to an FTP server (PR #2804)
+- [x] (Added) _Front-end_ Create ZIP Publish succeeds, trigger FTP upload (needs enabled) (PR #2804)
+- [x] (Added) _Back-end_ Per-publish-profile config to enable FTP publishing (PR #2804)
+- [x] (Added) _Front-end_ Add search for city in modal geo pan and zooms the map location (PR #2817)
+- [x] (Fixed) _Front-end_ minimum height for breadcrumb (PR #2803)
+- [x] (Added) _Back-end_ Image optimization setting in publish profiles (PR #2788)
+- [x] (Added) _Back-end_ Add `MozJPEG` as Image optimization (PR #2788)
+- [x] (Added) _Back-end_ Add Image optimization to publish pipeline (PR #2788)
+
+## version 0.7.12 - 2026-02-25 {#v0.7.12}
+
+- [x] (Fixed) _Front-end_ code style improvements (PR #2785)
+- [x] (Fixed) _Back-end_ PowerShell github-artifacts-download TLS 1.2 (PR #2784)
+- [x] (Changed) _Front-end_ Breadcrumb more visible (PR #2782)
+- [x] (Added) _Front-end_ Add section for cloud sync in preferences (PR #2772)
+- [x] (Added) _Front-end_ Add tabs in preferences for different sections (PR #2772)
+- [x] (Added) _Back-end_ Allow zip with settings manifest as input for web-ftp-cli (PR #2770)
+- [x] (Fixed) _Back-end_ Add extra check for deleting folders to avoid race conditions (PR #2769)
+- [x] (Fixed) _Back-end_ On non-Windows platforms, DriveInfo.GetDrives() may give issues (PR #2764)
+- [x] (Added) _Back-end_ Expose NominatimProxyService (PR #2761)
+- [x] (Added) _Front-end_ Add right click menu in detail view map to copy street names (PR #2735)
+- [x] (Added) _Back-end_ Make sure the inflate search cache keeps cache (PR #2754)
+- [x] (Changed) _Back-end_ Unit testing update to MSTest v4 (PR #2750)
+- [x] (Added) _Back-end_ Search for Artist `-artist` (PR #2731)
+
+## version 0.7.11 - 2026-02-11 {#v0.7.11}
+
+- [x] (Fixed) _Back-end_ Create Directory when WriteStreamAsync fails to avoid issues (PR #2729)
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.418 (Runtime: 8.0.24) (PR #2724)
+- [x] (Fixed) _Front-end_ Set caret to end when navigate via Command/Ctrl `[` or `]` (PR #2721)
+- [x] (Added) _Front-end_ Add tag auto complete to detail view (PR #2714)
+- [x] (Fixed) _Front-end_ Dark-mode fixes for dropdowns, autocomplete suggestions modal (PR #2719)
+- [x] (Added) _Front-end_ Tag complete in Archive sidebar (PR #2711)
+- [x] (Fixed) _Front-end_ When updating video files in archive mode those are not hidden (PR #2709)
+- [x] (Fixed) _Back-end_ Replace works now with Default status (PR #2706)
+- [x] (Fixed) _Back-end_ IsValidZipFile handles IO Exceptions (PR #2705)
+- [x] (Fixed) _Back-end_ Add notification handling for duplicate keys (PR #2704)
+- [x] (Fixed) _Back-end_ Issue where cache is disposed (PR #2703)
+- [x] (Added) _Back-end_ Add IPTC Artist field for Import and FileIndex (PR #2698)
+
+## version 0.7.10 - 2026-02-03 {#v0.7.10}
+
+- [x] (Added) _Front-end_ UI to repair filenames after offset/timezone change (Issue #76 PR #2682)
+- [x] (Added) _Back-end_ Repairing filenames after offset/timezone change (Issue #76 PR #2682)
+- [x] (Added) _Front-end_ Use Execute API for offsetData and timezoneData  (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Use Preview API for offsetData and timezoneData (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Display preview of timezone correction  (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Added UI Timezone Shift for Custom offset shift (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Added UI Timezone Shift for Exif Timezone Correction (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Added Searchable Dropdown (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Timezone detection for daylight saving time (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Add seed service for Geo Names Cities (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Store Geo Names Cities in the database (Issue #76 PR #2670)
+- [x] (Fixed) _Front-end_ Pressing `[` or `]` when focussed on an input it should save (PR #2678)
+- [x] (Fixed) _Front-end_ prevent rendering errors when an image source is missing (PR #2677)
+- [x] (Changed) _Back-end_ Timezone display functionality in the meta update module (PR #2671)
+
+## version 0.7.9 - 2026-01-26 {#v0.7.9}
+
+- [x] (Added) _Back-end_ Added auto code sign for macOS in `pm2-new-instance.sh` (PR #2640)
+- [x] (Fixed) _Back-end_ Fix for issues with database index sizes in MariaDB (PR #2653)
+- [x] (Fixed) _Back-end _ IX_Thumbnails_Missing_And_FileHash, IX_FileIndex_ParentDirectory_Tags
+  should be removed when running SqLite, when running MariaDB this not needed (PR #2653)
+- [x] (Added) _Back-end _ Added `-lensmodel` and `-makecameraserial` fields to search (PR #2655)
+
+## version 0.7.8 - 2026-01-23 {#v0.7.8}
+
+**Skip v0.7.8 due index size issues see #2653**
+
+- [x] (Changed) _Back-end_ Update Meta Correct Timezone names to be shorter (PR #2632)
+- [x] (Added) _Back-end_ Add API for List of timezones for moved to different place (PR #2596)
+- [x] (Added) _Back-end_ Add API for List of timezones for incorrect camera timezones (PR #2596)
+- [x] (Added) _Back-end_ Add API endpoint for Exif Timezone Correction Preview (PR #2596)
+- [x] (Added) _Back-end_ Add API endpoint for Exif Timezone Correction Execute (PR #2596)
+- [x] (Fixed) _Back-end_ Added new database indexes to the FileIndex and Thumbnails (PR #2627)
+- [x] (Fixed) _Back-end_ Increase timeout for regex used in tags (PR #2627)
+- [x] (Fixed) _Back-end_ Add database indexes for faster search (PR #2627)
+- [x] (Added) _Back-end_ In Import cli find camera storage flag (PR #2614)
+- [x] (Breaking change) _Back-end_ Hashes for mp4 changed to avoid video duplicates (PR #2617 #2604)
+
+## version 0.7.7 - 2026-01-17 {#v0.7.7}
+
+- [x] (Fixed) _Back-end_ Dropbox client wrapper test when running offline (PR #2603)
+- [x] (Fixed) _Back-end_ Add support for macOS and external drive in tests (PR #2602)
+- [x] (Fixed) _Back-end_ Sync Race Condition Fix (PR #2550)
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.417 (Runtime: 8.0.23) (PR #2588)
+- [x] (Added) _Front-end_ Batch rename feature (PR #2585) (Issue #72)
+- [x] (Added) _Back-end_ Batch rename feature (PR #2577) (Issue #72)
 
 ## version 0.7.6 - 2026-01-08 {#v0.7.6}
 
@@ -55,7 +183,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Back-end_ Hide in api/env for cloud-import keys (PR #2569)
 - [x] (Fixed) _Back-end_ Selecting structure patterns based on image format and origin (PR #2571)
 - [x] (Fixed) _Front-end Previous with Ctrl/Cmd + \[ and to the next with Ctrl/Cmd + ] (PR #2572)
-- [x] (Removed) _Back-end_ Legacy starsky-tools/dropbox-import (PR  #2576)
+- [x] (Removed) _Back-end_ Legacy starsky-tools/dropbox-import (PR #2576)
 - [x] (Added) _Back-end_ Setup for Dropbox in starskyAdminCli (PR #2576)
 - [x] (Removed) _Back-end_ Removed Tools Dropbox Import Docker Buildx pipeline (PR #2576)
 
@@ -292,7 +420,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Update ImageSharp (PR #1434, #1435, #1436)
 - [x] (Changed) _Back-end_ Change unit tests retry OpenDefault windows (PR #1433)
 - [x] (Changed) _Back-end_ Update Pomelo.EntityFrameworkCore.MySql, ImageSharp.Drawing,
-  ReportGenerator, OpenTelemetry.*.AspNetCore, System.Text.Json, MSTest and Coverlet (PR #1438)
+  ReportGenerator, OpenTelemetry, System.Text.Json, MSTest and Coverlet (PR #1438)
 - [x] (Changed) _Back-end_ Fix for Code Smells and Sonarcloud bugs (PR #1440)
 - [x] (Fixed) _Back-end_ Longer regex timeout for GetFileName (PR #1444)
 - [x] (Fixed) _Back-end_ Warnings for Sonarcloud (PR #1445)
@@ -305,8 +433,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.6.0-beta.2 - 2024-03-05 {#v0.6.0-beta.2}
 
 - [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.201 (Runtime: 8.0.2) (PR #1402)
-- [x] (Added) _Back-end_ Native Open File on Windows & Mac OS (PR #1381)
-- [x] (Added) _Back-end_ Native Open File with specific editor on Windows & Mac OS (PR #1381)
+- [x] (Added) _Back-end_ Native Open File on Windows & macOS (PR #1381)
+- [x] (Added) _Back-end_ Native Open File with specific editor on Windows & macOS (PR #1381)
 - [x] (Added) _Back-end_ AppSettings for Collections / Stacks and Open File (PR #1381)
 - [x] (Breaking Change) _Back-end_ Rename UseLocalDesktopUi to UseLocalDesktop (PR #1381)
 - [x] (Added) _Back-end_ ImageFormat = ExtensionRolesHelper.ImageFormat.directory (PR #1381)
@@ -321,10 +449,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Removed) _App_ Removed overwrite of open app in desktop (replaced with native open file)
   (PR #1381)
 - [x] (Added) _App_ Add 'App Settings' to the menu (PR #1381)
-- [x] (Added) _Front-end_ Add warning when opening a lot pictures at one: "Do you really want to
-  edit all of the selected photos?" (PR #1381)
+- [x] (Added) _Front-end_ Add warning when opening a great quantity at one: "Do you really want to
+  edit all the selected photos?" (PR #1381)
 - [x] (Changed) _Front-end_ isRelativeUrl check for redirect (PR #1419)
-- [x] (Breaking changes) _App_ System requirements for Windows and Mac OS are changed see release
+- [x] (Breaking changes) _App_ System requirements for Windows and macOS are changed see release
   notes (PR #1422)
 - [x] (Fixed) _Front-end_ Add Tooltip to explain that tags are comma separated (PR #1422) (Issue
   #1405)
@@ -332,7 +460,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Front-end_ Add link to docs page for storage folder (PR #1422) (Issue #1404)
 - [x] (Security) _Front-end_ spellcheck false on email and password fields (PR #1430)
 - [x] (Fixed) _Front-end_ Tooltip is partly not shown (PR #1430)
-- [x] (Changed) _Front-end_ View user friendly name for Default Desktop user (PR #1430)
+- [x] (Changed) _Front-end_ View user-friendly name for Default Desktop user (PR #1430)
 - [x] (Changed) _Docs_ Use Google Consent Mode, only for docs, other apps have no Google (PR #1424)
 
 ## version 0.6.0-beta.1 - 2024-02-18 {#v0.6.0-beta.1}
@@ -378,9 +506,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Changed) _Front-end_ Accessibility focus for prev next in detailView (PR #1291)
 - [x] (Changed) _Front-end_ Move from div to button Accessibility (PR #1294)
-- [x] (Changed) _Front-end_ Front-end version updates (PR #1295, #1296, #1297, #1298, #1299, #1300,
+- [x] (Changed) _Front-end_ Version updates (PR #1295, #1296, #1297, #1298, #1299, #1300,
   #1301, #1303)
-- [x] (Changed) _Front-end_ Code style style issues (PR #1304, #1307)
+- [x] (Changed) _Front-end_ Code style issues (PR #1304, #1307)
 - [x] (Fixed) _Front-end_ long file names in multi select (Issue #1305 PR #1307)
 - [x] (Fixed) _Back-end_ Replace tags / info etc. with OkAndSame status (Issue #1175 PR #1308)
 - [x] (Changed) _Front-end_ Menu option change to button (PR #1310)
@@ -409,7 +537,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR #1219, 1220, 1228, 1230, 1237, 1240)
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR 1241, 1239, 1252, 1244, 1246, 1247, 1250, 1251)
 - [x] (Changed) _Back-end_ Upgrade github yaml's (PR 1232, 1233, 1234, 1235)
-- [x] (Changed) _Desktop_ Upgrade Electron to 26.x (27.0 has removed support for Mac OS 10.13 and
+- [x] (Changed) _Desktop_ Upgrade Electron to 26.x (27.0 has removed support for macOS 10.13 and
   10.14) (PR #1255)
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.415 (Runtime: 6.0.23) (PR #1256)
 
@@ -418,7 +546,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.410 (Runtime: 6.0.16 (PR #1178)
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.412 (Runtime: 6.0.20) (PR #1193)
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR #1198)
-- [x] (Changed) _Back-end_ Sonarqube settings from sonar.login to sonar.token (PR #1198)
+- [x] (Changed) _Back-end_ Sonarqube settings from sonar login to sonar token (PR #1198)
 - [x] (Fixed) _Back-end_ Various code smells (PR #1199)
 
 ## version 0.5.9 - 2023-05-18 {#v0.5.9}
@@ -445,7 +573,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Fixed) _Back-end_ Add fallback for detailView image Issue #1106 (PR #1113)
 - [x] (Fixed) _Back-end_ Don't write meta.json files for xmp files Issue #1108 (PR #1115)
-- [x] (Fixed) _Back-end_ Change spec of meta.json files and make json schema (PR #1115)
+- [x] (Fixed) _Back-end_ Change spec of meta.json files and make JSON schema (PR #1115)
 - [x] (Fixed) _Back-end_ Code smells, improving readability (PR #1115, #1116, #1121)
 - [x] (Changed) _Back-end_ Add help info screen and test for demo CLI (PR #1117)
 - [x] (Changed) _Desktop_ Upgrade Electron packages (PR #1118, #1119)
@@ -459,7 +587,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Front-end_ Remove skip next item (Issue #1105) (PR #1135)
 - [x] (Removed) _Back-end_ Remove deprecated internal query api GetAllRecursive (PR #1135)
 - [x] (Fixed) _Back-end_ GetFileName longer timeout for slow devices  (PR #1135)
-- [x] (Fixed) _Front-end_ Add preloader state for update geo location (PR #1135)
+- [x] (Fixed) _Front-end_ Add preloader state for update geolocation (PR #1135)
 - [x] (Fixed) _Back-end_ Change tests for MySqlDatabaseFixes (PR #1135)
 - [x] (Fixed) _Back-end_ `api/info` gives xmp (Issue #1127) (PR #1136)
 - [x] (Changed)
@@ -468,15 +596,15 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.5.7-beta.0 - 2023-03-20 {#v0.5.7-beta.0}
 
-- [x] (Added)  _Devops_ Add stable release to github container registry
+- [x] (Added)  _Devops_ Add stable release to GitHub container registry
 
 ## version 0.5.6 - 2023-03-19 {#v0.5.6}
 
 _Known issues #1106, #1107 and #1108_
 
-- [x] (Added)  _Back-end_ Internal service for system trash (windows and mac os) (PR #1071)
-- [x] (Changed) _Back-end_ Unit test to multi threaded (PR #1071)
-- [x] (Added) _Back-end_ Add API for System Trash or Meta data trash (PR #1078)
+- [x] (Added)  _Back-end_ Internal service for system trash (windows and macOS) (PR #1071)
+- [x] (Changed) _Back-end_ Unit test to multithreaded (PR #1071)
+- [x] (Added) _Back-end_ Add API for System Trash or Metadata trash (PR #1078)
 - [x] (Added) _Back-end_ Add feature toggle `useSystemTrash` (PR #1078)
 - [x] (Removed) _Back-end_ Remove `RemoveItem` sync query (use async instead) (PR #1078)
 - [x] (Changed) _Front-end_ Removal of Directories (PR #1085)
@@ -519,7 +647,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed)  _Back-end_ Add auto install `./build.ps1` for Windows package manager (winGet) for
   .NET and node (PR #1047)
 - [x] (Fixed)  _Desktop_ Upgrade Electron to 22.1.0 and fix tests (PR #1047)
-- [x] (Updated)  _CI_ Update Github Actions (20230206, PR #1063, #1062, #1061, #1060, #1059)
+- [x] (Updated)  _CI_ Update GitHub Actions (20230206, PR #1063, #1062, #1061, #1060, #1059)
 - [x] (Updated)  _Docs_ Update Docusaurus (PR #1055, #1049)
 - [x] (Added)  _Back-end_ Add option for cmd line args for web app (PR #1054)
 - [x] (Added)  _Back-end_ Service deploy script for Windows (PR #1053)
@@ -531,8 +659,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/disk/rename` (PR
   #1030)
 - [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/update` (PR #1030)
-- [x] (Changed)  _Tests_ Update create directory end2end tests (PR #1030)
-- [x] (Changed)  _Tests_ retry end2end test: Create Rename Dir > delete it afterwards (PR #1032)
+- [x] (Changed)  _Tests_ Update create directory `end2end` tests (PR #1030)
+- [x] (Changed)  _Tests_ retry `end2end` test: Create Rename Dir > delete it afterward (PR #1032)
 - [x] (Changed)  _Back-end_ Add thumbnail query delete for not found items (PR #1032)
 - [x] (Fixed)  _Back-end_ starskyWebHtmlCli missing db context and crashed (PR #1032)
 - [x] (Fixed)  _Back-end_ fixing import disposed exception (issue #1033 / PR #1034)
@@ -575,7 +703,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Changed)
   _Back-end_ [Upgrade to .NET 6 - SDK 6.0.404 (Runtime: 6.0.12)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.12/6.0.12.md) (
   PR #997)
-- [x] (Changed) _Front-end_ Upgrade Create React App / Typescript / storybook  (PR #998)
+- [x] (Changed) _Front-end_ Upgrade Create React App / TypeScript / storybook  (PR #998)
 - [x] (Changed) _Front-end_ Geo location edit in detail view (PR #996)
 - [x] (Changed) _Front-end_ Dark-mode UI tweaks (PR #999)
 - [x] (Fixed) _Back-end_ Avoid duplicate input when replace (Issue #995 / PR #1000)
@@ -1625,7 +1753,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (feature) _Front-end_ Upload to directory (+ backend)
 - [x] (bugfix) add filter for backslashes in structure: `\\\\d`
 - [x] (breaking change) removal of GetColor in razor views
-- [x] (breaking change) rename of field colorClassFilterList={[]} ==> colorClassActiveList={[]}
+- [x] (breaking change) rename of field colorClassFilterList={[]} to colorClassActiveList={[]}
 - [x] (bugfix) colorClass filter are selecting
 - [x] (bugfix) export poll after 206 'not ready'
 - [x] (feature) _Front-end_ make folder layout smooth responsive
@@ -1679,7 +1807,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 
 ## version 0.1.10 - 2019-12-15
 
-- [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
+- [x] (bugfix) Archive to After pressing 'Apply' the updates are not shown
 - [x] (version) _Front-end_ Upgrade ClientApp from React 16.9.0 to 16.9.15 _(Create React App 3.3.0,
   5 Dec 2019)_
 - [x] (bugfix) _Front-end_ Front-end for Rename files (in detailview)
@@ -1825,7 +1953,7 @@ _Version number does not match SemVer_
 - change '/api/info' to support readonly meta display
 - add /suggest/all to show all suggestions
 - upgrade dependencies to support Debian 10 (to fix: No usable version of the libssl was found)
-- fix localisation issue with starskyWebHtmlCli
+- fix localization issue with starskyWebHtmlCli
 - add copy of content folder in bin with starskyWebHtmlCli
 
 ## version 0.1.5.5 - 2019-05-17

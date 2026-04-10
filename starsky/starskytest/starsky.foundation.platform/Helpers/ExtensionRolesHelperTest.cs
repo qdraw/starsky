@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starskytest.FakeCreateAn;
+using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeCreateAn.CreateAnImageCorrupt;
 using starskytest.FakeCreateAn.CreateAnImagePsd;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
@@ -56,6 +57,8 @@ public sealed class ExtensionRolesHelperTest
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(null));
 		// equal or less then three chars
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("nul"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionNativeSupported(null));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionVideoSupported(null));
 	}
 
 	[TestMethod]
@@ -171,6 +174,36 @@ public sealed class ExtensionRolesHelperTest
 	}
 
 	[TestMethod]
+	public void Files_GetImageFormat_Cr3_IsobmffFtypCrxBrand_ReturnsCr3()
+	{
+		// [size:4][ftyp][crx ]
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			ExtensionRolesHelper.HexStringToByteArray(
+				"00 00 00 18 66 74 79 70 63 72 78 20".Replace(" ", "")));
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr3, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormatMpeg4_Cr3_IsobmffFtypCrxBrand_ReturnsCr3()
+	{
+		// [size:4][ftyp][crx ]
+		var fileType = ExtensionRolesHelper.GetImageFormatMpeg4(
+			ExtensionRolesHelper.HexStringToByteArray(
+				"00 00 00 18 66 74 79 70 63 72 78 20".Replace(" ", "")));
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr3, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_Mp4_IsobmffFtypIsomAtOffset4_ReturnsMp4()
+	{
+		// [size:4][ftyp][isom]
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			ExtensionRolesHelper.HexStringToByteArray(
+				"00 00 00 18 66 74 79 70 69 73 6F 6D".Replace(" ", "")));
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, fileType);
+	}
+
+	[TestMethod]
 	[DataRow("47 40 11 10 00 42 F0 25 00 01 C1 00 00 FF 01 FF 00 01 FC 80 14 " +
 	         "48 12 01 06 46 46 6D 70 65 67 09 53 65 72 76 69 63 65 30 31 77 7C 43 CA",
 		ExtensionRolesHelper.ImageFormat.mts,
@@ -216,22 +249,30 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_Tiff_olympusRaw()
 	{
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 73, 73, 82 });
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
+		// Provide proper little-endian TIFF header with Olympus marker
+		var bytes = "II*\0"u8.ToArray();
+		var fullBytes = bytes.Concat("OLYMP"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.orf, fileType);
 	}
 
 	[TestMethod]
 	public void Files_GetImageFormat_Tiff_fujiFilmRaw()
 	{
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 70, 85, 74 });
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
+		// Fuji RAF files start with FUJI marker (not standard TIFF header at start)
+		var fileType =
+			ExtensionRolesHelper.GetImageFormat("FUJI"u8.ToArray()); // FUJI
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.raf, fileType);
 	}
 
 	[TestMethod]
 	public void Files_GetImageFormat_Tiff_panasonicRaw()
 	{
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 73, 73, 85, 0 });
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
+		// Provide proper little-endian TIFF header with Panasonic marker
+		var bytes = "II*\0"u8.ToArray();
+		var fullBytes = bytes.Concat("Panasonic"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.rw2, fileType);
 	}
 
 	[TestMethod]
@@ -241,6 +282,174 @@ public sealed class ExtensionRolesHelperTest
 			ExtensionRolesHelper.HexStringToByteArray("4D 4D 00 2A".Replace(" ", "")));
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
 	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_Rw2_IiuHeader_ReturnsRw2()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			new byte[] { 0x49, 0x49, 0x55, 0x00, 0x18, 0x00, 0x00, 0x00 });
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.rw2, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_X3f_FovbHeader_ReturnsX3f()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			new byte[] { 0x46, 0x4F, 0x56, 0x62, 0x03, 0x00, 0x02, 0x00 });
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.x3f, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_Cr2_NativeHeader_ReturnsCr2()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			new byte[] { 0x49, 0x49, 0x2A, 0x00, 0x10, 0x00, 0x00, 0x00, 0x43, 0x52, 0x02, 0x00 });
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.cr2, fileType);
+	}
+
+
+	[TestMethod]
+	public void Files_GetImageFormat_SonyArw_WithTiffHeader()
+	{
+		// Sony ARW files have little-endian TIFF header + SONY marker
+		var bytes = "II*\0"u8.ToArray();
+		var fullBytes = bytes.Concat("SONY"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_SonyArw1_WithTiffHeader()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			[.. new CreateAnImageA6600Raw().Bytes]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, fileType);
+	}
+
+	[TestMethod]
+	public void GetImageFormat_Heic_FtypHeic_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		// size (big-endian) not important for detection here
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		// major brand = "heic"
+		bytes[8] = ( byte ) 'h';
+		bytes[9] = ( byte ) 'e';
+		bytes[10] = ( byte ) 'i';
+		bytes[11] = ( byte ) 'c';
+
+		var result = ExtensionRolesHelper.GetImageFormat(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void GetImageFormatMpeg4_Heic_FtypHeic_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		// size (big-endian) not important for detection here
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		// major brand = "heic"
+		bytes[8] = ( byte ) 'h';
+		bytes[9] = ( byte ) 'e';
+		bytes[10] = ( byte ) 'i';
+		bytes[11] = ( byte ) 'c';
+
+		var result = ExtensionRolesHelper.GetImageFormatMpeg4(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void GetImageFormat_Heic_FtypHevc_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		bytes[8] = ( byte ) 'h';
+		bytes[9] = ( byte ) 'e';
+		bytes[10] = ( byte ) 'v';
+		bytes[11] = ( byte ) 'c';
+
+		var result = ExtensionRolesHelper.GetImageFormat(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void GetImageFormat_Heic_FtypMif1_ReturnsHeic()
+	{
+		var bytes = new byte[16];
+		bytes[4] = ( byte ) 'f';
+		bytes[5] = ( byte ) 't';
+		bytes[6] = ( byte ) 'y';
+		bytes[7] = ( byte ) 'p';
+		bytes[8] = ( byte ) 'm';
+		bytes[9] = ( byte ) 'i';
+		bytes[10] = ( byte ) 'f';
+		bytes[11] = ( byte ) '1';
+
+		var result = ExtensionRolesHelper.GetImageFormat(bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void Files_CreateAnQuickTimeMp4A6700()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			[.. new CreateAnQuickTimeMp4A6700().Bytes]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_NikonNef_WithTiffHeader()
+	{
+		// Nikon NEF files have TIFF header + NIKON marker
+		var bytes = "MM\0*"u8.ToArray(); // Big-endian TIFF
+		var fullBytes = bytes.Concat("NIKON"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.nef, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_PentaxPef_WithTiffHeader()
+	{
+		// Pentax PEF files have TIFF header + PENTAX marker
+		var bytes = "MM\0*"u8.ToArray(); // Big-endian TIFF
+		var fullBytes = bytes.Concat("PENTAX"u8.ToArray()).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.pef, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_RawMarkerAtDifferentOffsets()
+	{
+		// Test that raw markers are found even when at different offsets
+		var bytes = "II*\0"u8.ToArray();
+		// SONY marker at offset 20
+		var fullBytes = bytes
+			.Concat(new byte[16])
+			.Concat("SONY"u8.ToArray())
+			.ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_DefaultTiffWhenNoRawMarker()
+	{
+		// TIFF header without any raw format marker should return TIFF
+		var bytes = "II*\0"u8.ToArray();
+		var fullBytes = bytes.Concat(new byte[100]).ToArray(); // Add padding without raw markers
+		var fileType = ExtensionRolesHelper.GetImageFormat(fullBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
+	}
+
 
 	[TestMethod]
 	public void Files_GetImageFormat_zip_50_4B_03_04()
@@ -261,13 +470,8 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_MetaJson_1()
 	{
-		var metaJson = new byte[]
-		{
-			123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116, 116, 112, 115, 58, 47,
-			47, 100, 111, 99, 115, 46, 113, 100, 114, 97, 119, 46, 110, 108, 47, 115, 99, 104,
-			101, 109, 97, 47, 109, 101, 116, 97, 45, 100, 97, 116, 97, 45, 99, 111, 110, 116,
-			97, 105, 110, 101, 114, 46, 106, 115, 111, 110, 34, 44
-		};
+		var metaJson = "{\n  \"$id\": \"https://docs.qdraw.nl/schema/meta-data-container.json\","u8
+			.ToArray();
 
 		var fileType = ExtensionRolesHelper.GetImageFormat(metaJson);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.meta_json, fileType);
@@ -309,21 +513,23 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_tiff2_Test()
 	{
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 77, 77, 42 });
+		// Valid little-endian TIFF header: II* (0x49 0x49 0x2A 0x00)
+		var fileType = ExtensionRolesHelper.GetImageFormat("II*\0"u8.ToArray());
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
 	}
 
 	[TestMethod]
 	public void Files_GetImageFormat_tiff3_Test()
 	{
-		var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 77, 77, 0 });
+		// Valid big-endian TIFF header: MM\0* (0x4D 0x4D 0x00 0x2A)
+		var fileType = ExtensionRolesHelper.GetImageFormat("MM\0*"u8.ToArray());
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, fileType);
 	}
 
 	[TestMethod]
 	public void Files_GetImageFormat_bmp_Test()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes("BM");
+		var bmBytes = "BM"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.bmp, fileType);
 	}
@@ -331,7 +537,7 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_gif_Test()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes("GIF");
+		var bmBytes = "GIF"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gif, fileType);
 	}
@@ -339,7 +545,7 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_xmp_Test()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes("<x:xmpmeta");
+		var bmBytes = "<x:xmpmeta"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp, fileType);
 	}
@@ -347,7 +553,7 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_xmp2_Test()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes("<?xpacket");
+		var bmBytes = "<?xpacket"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp, fileType);
 	}
@@ -355,8 +561,9 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_gpx_Test_57()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes(
-			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n<gpx creator");
+		var bmBytes =
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n<gpx creator"u8
+				.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -364,8 +571,9 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_GetImageFormat_gpx_Test_56()
 	{
-		var bmBytes = Encoding.ASCII.GetBytes(
-			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<gpx creator");
+		var bmBytes =
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<gpx creator"u8
+				.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -402,7 +610,7 @@ public sealed class ExtensionRolesHelperTest
 	public void Files_GetImageFormat_gpx_Test_1()
 	{
 		// there is one space offset
-		var bmBytes = Encoding.ASCII.GetBytes(" <gpx creator");
+		var bmBytes = " <gpx creator"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -412,8 +620,7 @@ public sealed class ExtensionRolesHelperTest
 	{
 		// there is 21 offset
 		var bmBytes =
-			Encoding.ASCII.GetBytes(
-				"<?xml version=\"1.0\"?><gpx version=\"1.0\" creator=\"Trails 1.05");
+			"<?xml version=\"1.0\"?><gpx version=\"1.0\" creator=\"Trails 1.05"u8.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -442,7 +649,27 @@ public sealed class ExtensionRolesHelperTest
 	{
 		// the number of spaces is 39 before <gpx creator
 		var bmBytes =
-			Encoding.ASCII.GetBytes("                                       <gpx creator");
+			"                                       <gpx creator"u8.ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+	}
+
+
+	[TestMethod]
+	public void Files_GetImageFormat_gpx_Test_38()
+	{
+		// the offset is 38
+		var calcOffsetBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"u8.ToArray();
+		Assert.HasCount(38, calcOffsetBytes);
+
+		var bmBytes = Encoding.ASCII.GetBytes(
+			"<?xml version=\"1.0\" encoding=\"UTF-8\"?><gpx creator=\"" +
+			"Wikiloc - https://www.wikiloc.com\" " +
+			"version=\"1.1\" xmlns=\"http://www.topografix.com/GPX/1/1\" " +
+			"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+			"xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 " +
+			"http://www.topografix.com/GPX/1/1/gpx.xsd\"><metadata>" +
+			"<name>Wikiloc - PR-CV 78 Els Paratges de Xàtiva.</name><author><name>");
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
@@ -532,6 +759,36 @@ public sealed class ExtensionRolesHelperTest
 	}
 
 	[TestMethod]
+	[DataRow("/test/sample.fff")]
+	[DataRow("/test/sample.x3f")]
+	public void ExtensionRolesHelperTest_IsExtensionRawThumbnailSupported_Phase3Formats(
+		string filePath)
+	{
+		var result = ExtensionRolesHelper.IsExtensionRawThumbnailSupported(filePath);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	[DataRow("/test/sample.jpg")]
+	[DataRow("/test/sample.mp3")]
+	[DataRow(null)]
+	public void ExtensionRolesHelperTest_IsExtensionRawThumbnailSupported_NonRawFormats(
+		string? filePath)
+	{
+		var result = ExtensionRolesHelper.IsExtensionRawThumbnailSupported(filePath);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	[DataRow("/test/sample.fff")]
+	[DataRow("/test/sample.x3f")]
+	public void ExtensionRolesHelperTest_IsExtensionForceXmp_Phase3Formats(string filePath)
+	{
+		var result = ExtensionRolesHelper.IsExtensionForceXmp(filePath);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
 	public void Files_GetImageFormat_h264_Test()
 	{
 		var fileType = ExtensionRolesHelper.GetImageFormat(
@@ -561,8 +818,9 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Gpx_WithXmlPrefix()
 	{
-		var gpxExample = Encoding.ASCII.GetBytes(
-			"<?xml version=\"1.0\" encoding=\"UTF-8\" ?><gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\"");
+		var gpxExample =
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" ?><gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\""u8
+				.ToArray();
 
 		var result = ExtensionRolesHelper.GetImageFormat(gpxExample);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, result);
@@ -580,10 +838,29 @@ public sealed class ExtensionRolesHelperTest
 	}
 
 	[TestMethod]
+	public void GetImageFormat_Stream_Uses400ByteProbe_ForRawDetection()
+	{
+		var bytes = new byte[400];
+		bytes[0] = 0x49;
+		bytes[1] = 0x49;
+		bytes[2] = 0x2A;
+		bytes[3] = 0x00;
+		bytes[4] = 8;
+		bytes[5] = 0;
+		bytes[6] = 0;
+		bytes[7] = 0;
+		Encoding.ASCII.GetBytes("SONY", 0, 4, bytes, 350);
+
+		var ms = new MemoryStream(bytes);
+		var result = new ExtensionRolesHelper(new FakeIWebLogger()).GetImageFormat(ms);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.arw, result);
+	}
+
+	[TestMethod]
 	public void Gpx_WithXmlNoPrefix()
 	{
-		var gpxExample = Encoding.ASCII.GetBytes(
-			"<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:gpxx=\"h");
+		var gpxExample =
+			"<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:gpxx=\"h"u8.ToArray();
 
 		var result = ExtensionRolesHelper.GetImageFormat(gpxExample);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, result);

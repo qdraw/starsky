@@ -10,17 +10,14 @@ public class DbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext
 		var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
 #if ENABLE_MYSQL_DATABASE
-			// dirty hack
+		// dirty hack
+		var foundationDatabaseName = typeof(ApplicationDbContext)
+			.Assembly.FullName?.Split(",")[0];
 
-			_services.AddDbContext<ApplicationDbContext>(options =>
-				options.UseMySql(_appSettings.DatabaseConnection, GetServerVersionMySql(), 
-					b =>
-					{
-						if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
-						{
-							b.MigrationsAssembly(foundationDatabaseName);
-						}
-					}));
+		optionsBuilder.UseMySql("Server=localhost;Port=1234;database=test;uid=test;pwd=test;",
+			new MariaDbServerVersion("10.2"),
+			b => { b.MigrationsAssembly(foundationDatabaseName); });
+		return new ApplicationDbContext(optionsBuilder.Options);
 #endif
 
 		optionsBuilder.UseSqlite("Data Source=blog.db");

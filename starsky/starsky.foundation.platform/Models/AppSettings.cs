@@ -93,7 +93,12 @@ public sealed class AppSettings
 		/// <summary>
 		///     Download external dependencies
 		/// </summary>
-		DependenciesDownload = 11
+		DependenciesDownload = 11,
+
+		/// <summary>
+		///     Mount watcher
+		/// </summary>
+		MountWatcher = 12
 	}
 
 	/// <summary>
@@ -138,11 +143,6 @@ public sealed class AppSettings
 	///     Private: Location of storage of Thumbnails
 	/// </summary>
 	private string? _thumbnailTempFolder;
-
-	/// <summary>
-	///     Internal location for webFtp credentials
-	/// </summary>
-	private string? _webFtp;
 
 	public AppSettings()
 	{
@@ -462,38 +462,6 @@ public sealed class AppSettings
 	/// </summary>
 	public List<AppSettingsKeyValue> DemoData { get; set; } = new();
 
-	/// <summary>
-	///     Connection string for FTP
-	/// </summary>
-	public string WebFtp
-	{
-		get
-		{
-			if ( string.IsNullOrEmpty(_webFtp) )
-			{
-				return string.Empty;
-			}
-
-			return _webFtp;
-		}
-		set
-		{
-			// Anonymous FTP is not supported
-			// Make sure that '@' in username is '%40'
-			if ( string.IsNullOrEmpty(value) )
-			{
-				return;
-			}
-
-			var uriAddress = new Uri(value);
-			if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2
-			     && uriAddress.Scheme == "ftp"
-			     && uriAddress.LocalPath.Length >= 1 )
-			{
-				_webFtp = value;
-			}
-		}
-	}
 
 	/// <summary>
 	///     Private field: Publishing profiles
@@ -526,9 +494,23 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
+	///     Represents the default settings for publish profiles,
+	///     including configuration and feature specifications
+	///     used when no specific profile overrides are provided.
+	/// </summary>
+	[PackageTelemetry]
+	public AppSettingsPublishProfilesDefaults PublishProfilesDefaults { get; set; } =
+		new();
+
+	/// <summary>
+	///     Represents the remote publishing profiles configuration for the application.
+	/// </summary>
+	public AppSettingsPublishProfilesRemote PublishProfilesRemote { get; set; } = new();
+
+	/// <summary>
 	///     Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)
-	///     This setting is by default false. The only 2 build-in exceptions are when there are no accounts
-	///     or you already logged in
+	///     This setting is by default false. The only 2 build in exceptions are when there are no
+	///     accounts, or you already logged in
 	/// </summary>
 	[PackageTelemetry]
 	public bool? IsAccountRegisterOpen { get; set; }
@@ -656,7 +638,7 @@ public sealed class AppSettings
 	///     Quicktime timestamps are supposed to be set to UTC time as per the standard.
 	///     But it seems a lot of cameras don't do this
 	///     We assume that the standard is followed,
-	///		and for Camera brands that don't follow the specs use
+	///     and for Camera brands that don't follow the specs use
 	///     this setting.
 	/// </summary>
 	[PackageTelemetry]
@@ -796,6 +778,13 @@ public sealed class AppSettings
 	public bool FfmpegSkipPreflightCheck { get; set; }
 
 	/// <summary>
+	///     Skip download ImageOptimisation on startup
+	///     Recommended to keep false
+	/// </summary>
+	[PackageTelemetry]
+	public bool? ImageOptimisationDownloadOnStartup { get; set; } = false;
+
+	/// <summary>
 	///     Exe path to Ffmpeg
 	/// </summary>
 	[PackageTelemetry]
@@ -929,10 +918,8 @@ public sealed class AppSettings
 				appSettings.DatabaseConnection.Replace(userProfileFolder, "~");
 		}
 
-		if ( !string.IsNullOrEmpty(appSettings.WebFtp) )
-		{
-			appSettings._webFtp = CloneToDisplaySecurityWarning;
-		}
+		appSettings.PublishProfilesRemote =
+			appSettings.PublishProfilesRemote.DisplaySecurity(CloneToDisplaySecurityWarning);
 
 		if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) &&
 		     !string.IsNullOrEmpty(userProfileFolder) )

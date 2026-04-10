@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.storage.Models;
 
@@ -10,6 +11,7 @@ public interface IStorage
 {
 	bool ExistFile(string path);
 	bool ExistFolder(string path);
+	bool IsFolderEmpty(string path);
 	FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path);
 	void FolderMove(string fromPath, string toPath);
 	bool FileMove(string fromPath, string toPath);
@@ -89,4 +91,9 @@ public interface IStorage
 	StorageInfo Info(string path);
 
 	bool IsFileReady(string path);
+
+	IAsyncEnumerable<string> ReadLinesAsync(string path,
+		CancellationToken cancellationToken);
+
+	string[] ReadAllLines(string path);
 }

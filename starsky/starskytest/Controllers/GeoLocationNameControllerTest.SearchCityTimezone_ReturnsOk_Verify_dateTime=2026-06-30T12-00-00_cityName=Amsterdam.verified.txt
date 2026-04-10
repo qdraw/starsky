@@ -1,0 +1,7 @@
+﻿[
+  {
+    Id: Europe/Amsterdam,
+    DisplayName: Amsterdam,
+    AltText: UTC(02:00) Netherlands Noord-Holland, Summer time
+  }
+]

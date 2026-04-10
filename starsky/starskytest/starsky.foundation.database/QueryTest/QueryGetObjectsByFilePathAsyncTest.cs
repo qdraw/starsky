@@ -48,16 +48,15 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 
 		var dirName = "/cache_01";
 		query.AddCacheParentItem(dirName,
-			new List<FileIndexItem>
-			{
-				new($"{dirName}/test1.jpg"),
-				new($"{dirName}/test1.dng"),
-				new($"{dirName}/test2.jpg"),
-				new($"{dirName}/test2.dng")
-			});
+		[
+			new FileIndexItem($"{dirName}/test1.jpg"),
+			new FileIndexItem($"{dirName}/test1.dng"),
+			new FileIndexItem($"{dirName}/test2.jpg"),
+			new FileIndexItem($"{dirName}/test2.dng")
+		]);
 
 		var result =
-			await query.GetObjectsByFilePathAsync(new List<string> { $"{dirName}/test1.jpg" },
+			await query.GetObjectsByFilePathAsync([$"{dirName}/test1.jpg"],
 				false);
 		Assert.HasCount(1, result);
 
@@ -73,16 +72,15 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 
 		const string dirName = "/cache_02";
 		query.AddCacheParentItem(dirName,
-			new List<FileIndexItem>
-			{
-				new($"{dirName}/test1.jpg"),
-				new($"{dirName}/test1.dng"),
-				new($"{dirName}/test2.jpg"),
-				new($"{dirName}/test2.dng")
-			});
+		[
+			new FileIndexItem($"{dirName}/test1.jpg"),
+			new FileIndexItem($"{dirName}/test1.dng"),
+			new FileIndexItem($"{dirName}/test2.jpg"),
+			new FileIndexItem($"{dirName}/test2.dng")
+		]);
 
 		var result =
-			await query.GetObjectsByFilePathAsync(new List<string> { $"{dirName}/test1.jpg" },
+			await query.GetObjectsByFilePathAsync([$"{dirName}/test1.jpg"],
 				true);
 		Assert.HasCount(2, result);
 		Assert.AreEqual($"{dirName}/test1.jpg", result[0].FilePath);
@@ -99,7 +97,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		await _query.AddItemAsync(item);
 
 		var result =
-			await _query.GetObjectsByFilePathAsync(new List<string> { dirName },
+			await _query.GetObjectsByFilePathAsync([dirName],
 				isCollection);
 
 		Assert.HasCount(1, result);
@@ -116,16 +114,15 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 			new FakeIWebLogger(), _memoryCache);
 
 		const string dirName = "/implicit_item_02";
-		await query.AddRangeAsync(new List<FileIndexItem>
-		{
-			new($"{dirName}/test1.jpg"),
-			new($"{dirName}/test1.dng"),
-			new($"{dirName}/test2.jpg"),
-			new($"{dirName}/test2.dng")
-		});
+		await query.AddRangeAsync([
+			new FileIndexItem($"{dirName}/test1.jpg"),
+			new FileIndexItem($"{dirName}/test1.dng"),
+			new FileIndexItem($"{dirName}/test2.jpg"),
+			new FileIndexItem($"{dirName}/test2.dng")
+		]);
 
 		await query.GetObjectsByFilePathAsync(
-			new List<string> { $"{dirName}/test1.jpg" }, true);
+			[$"{dirName}/test1.jpg"], true);
 
 		var cacheResult = query.CacheGetParentFolder(dirName);
 
@@ -135,13 +132,12 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 	[TestMethod]
 	public async Task GetObjectsByFilePathAsync_SingleItem_1()
 	{
-		await _query.AddRangeAsync(new List<FileIndexItem>
-		{
-			new("/single_item1a.jpg"), new("/single_item2a.jpg")
-		});
+		await _query.AddRangeAsync([
+			new FileIndexItem("/single_item1a.jpg"), new FileIndexItem("/single_item2a.jpg")
+		]);
 
 		var result = await _query.GetObjectsByFilePathQueryAsync(
-			new List<string> { "/single_item1a.jpg" });
+			["/single_item1a.jpg"]);
 
 		Assert.HasCount(1, result);
 		Assert.AreEqual("/single_item1a.jpg", result[0].FilePath);
@@ -156,10 +152,9 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 	[TestMethod]
 	public async Task GetObjectsByFilePathAsync_singleItem_SingleItem()
 	{
-		await _query.AddRangeAsync(new List<FileIndexItem>
-		{
-			new("/single_item1a.jpg"), new("/single_item2a.jpg")
-		});
+		await _query.AddRangeAsync([
+			new FileIndexItem("/single_item1a.jpg"), new FileIndexItem("/single_item2a.jpg")
+		]);
 
 		var result = await _query.GetObjectsByFilePathAsync("/single_item1a.jpg", true);
 
@@ -177,13 +172,13 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 	[TestMethod]
 	public async Task GetObjectsByFilePathAsync_Single_ButDuplicate_Item()
 	{
-		await _query.AddRangeAsync(new List<FileIndexItem>
-		{
-			new("/single_duplicate_1.jpg"), new("/single_duplicate_1.jpg")
-		});
+		await _query.AddRangeAsync([
+			new FileIndexItem("/single_duplicate_1.jpg"),
+			new FileIndexItem("/single_duplicate_1.jpg")
+		]);
 
 		var result = await _query.GetObjectsByFilePathQueryAsync(
-			new List<string> { "/single_duplicate_1.jpg" });
+			["/single_duplicate_1.jpg"]);
 
 		Assert.HasCount(2, result);
 		Assert.AreEqual("/single_duplicate_1.jpg", result[0].FilePath);
@@ -199,26 +194,24 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		async Task AddItems()
 		{
 			Console.WriteLine("Retrying Add Items");
-			await _query.AddRangeAsync(new List<FileIndexItem>
-			{
-				new("/multiple_item_t"), // <= should never match this one
-				new("/multiple_item_t_0.jpg"),
-				new("/multiple_item_t_1.jpg"),
-				new("/multiple_item_t_2.jpg"),
-				new("/multiple_item_t_3.jpg")
-			});
+			await _query.AddRangeAsync([
+				new FileIndexItem("/multiple_item_t"), // <= should never match this one
+				new FileIndexItem("/multiple_item_t_0.jpg"),
+				new FileIndexItem("/multiple_item_t_1.jpg"),
+				new FileIndexItem("/multiple_item_t_2.jpg"),
+				new FileIndexItem("/multiple_item_t_3.jpg")
+			]);
 		}
 
 		async Task<List<FileIndexItem>> GetResult()
 		{
 			return await _query.GetObjectsByFilePathQueryAsync(
-				new List<string>
-				{
-					"/multiple_item_t_0.jpg",
-					"/multiple_item_t_1.jpg",
-					"/multiple_item_t_2.jpg",
-					"/multiple_item_t_3.jpg"
-				});
+			[
+				"/multiple_item_t_0.jpg",
+				"/multiple_item_t_1.jpg",
+				"/multiple_item_t_2.jpg",
+				"/multiple_item_t_3.jpg"
+			]);
 		}
 
 		await AddItems();
@@ -251,13 +244,12 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 	[TestMethod]
 	public async Task GetObjectsByFilePathAsync_TwoItems()
 	{
-		await _query.AddRangeAsync(new List<FileIndexItem>
-		{
-			new("/two_item_0.jpg"), new("/two_item_1.jpg")
-		});
+		await _query.AddRangeAsync([
+			new FileIndexItem("/two_item_0.jpg"), new FileIndexItem("/two_item_1.jpg")
+		]);
 
 		var result = await _query.GetObjectsByFilePathQueryAsync(
-			new List<string> { "/two_item_0.jpg", "/two_item_1.jpg" });
+			["/two_item_0.jpg", "/two_item_1.jpg"]);
 
 		Assert.HasCount(2, result);
 
@@ -272,10 +264,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 	[TestMethod]
 	public async Task GetObjectsByFilePathAsync_SingleItem_Disposed()
 	{
-		await _query.AddRangeAsync(new List<FileIndexItem>
-		{
-			new("/disposed/single_item_disposed_1_a.jpg")
-		});
+		await _query.AddRangeAsync([new FileIndexItem("/disposed/single_item_disposed_1_a.jpg")]);
 
 		// get context
 		var serviceScopeFactory = CreateNewScope();
@@ -288,10 +277,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		var result = await new Query(dbContextDisposed,
 				new AppSettings(), serviceScopeFactory, new FakeIWebLogger(),
 				new FakeMemoryCache(new Dictionary<string, object>()))
-			.GetObjectsByFilePathQueryAsync(new List<string>
-			{
-				"/disposed/single_item_disposed_1_a.jpg"
-			});
+			.GetObjectsByFilePathQueryAsync(["/disposed/single_item_disposed_1_a.jpg"]);
 
 		Assert.HasCount(1, result);
 		Assert.AreEqual("/disposed/single_item_disposed_1_a.jpg", result[0].FilePath);

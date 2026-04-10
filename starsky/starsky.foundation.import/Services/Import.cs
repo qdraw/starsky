@@ -400,7 +400,7 @@ public class Import : IImport
 
 		var imageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(
 			_filesystemStorage.ReadStream(inputFileFullPath.Key,
-				160));
+				ExtensionRolesHelper.ImageFormatByteSize));
 
 		// Check if extension is correct && Check if the file is correct
 		if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
@@ -415,8 +415,9 @@ public class Import : IImport
 			};
 		}
 
-		var hashList = await
-			new FileHash(_filesystemStorage, _logger).GetHashCodeAsync(inputFileFullPath.Key);
+		var fileHashService = new FileHash(_filesystemStorage, _logger);
+		var hashList = await fileHashService
+			.GetHashCodeAsync(inputFileFullPath.Key, imageFormat);
 		if ( !hashList.Value )
 		{
 			ConsoleIfVerbose($"❌ FileHash error {inputFileFullPath.Key}");
@@ -811,6 +812,7 @@ public class Import : IImport
 
 	/// <summary>
 	///     Append test_1.jpg to filepath (subPath style)
+	///     Sequencer starts at 1
 	/// </summary>
 	/// <param name="fileName">the fileName</param>
 	/// <param name="index">number</param>

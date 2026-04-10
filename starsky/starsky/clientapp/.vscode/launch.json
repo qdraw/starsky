@@ -23,6 +23,21 @@
       "windows": {
         "program": "${workspaceFolder}/node_modules/jest/bin/jest"
       }
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome (debug)",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/src"
+    },
+    {
+      "name": "Launch Firefox (debug)",
+      "type": "firefox",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/src",
+      "reAttach": true
     }
   ]
 }

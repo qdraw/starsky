@@ -45,7 +45,8 @@ public class FakeIImport : IImport
 				SourceFullFilePath = "~/temp/test",
 				FileHash = "FAKE",
 				MakeModel = "added if the item fails",
-				Status = ImportStatus.FileError
+				Status = ImportStatus.FileError,
+				Artist = "test artist"
 			};
 
 			// Check if extension is correct
@@ -57,24 +58,27 @@ public class FakeIImport : IImport
 			// Check if the file is correct
 			var imageFormat = new ExtensionRolesHelper(new FakeIWebLogger()).GetImageFormat(
 				_selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem)
-					.ReadStream(inputFileFullPath, 160));
+					.ReadStream(inputFileFullPath, ExtensionRolesHelper.ImageFormatByteSize));
 
 			if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains($"{imageFormat}") )
 			{
 				results.Add(importIndexFileError);
 			}
 
-			results.Add(new ImportIndexItem
+			if ( ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath) )
 			{
-				Id = 4,
-				SourceFullFilePath = inputFileFullPath,
-				FilePath = inputFileFullPath,
-				Status = ImportStatus.Ok,
-				FileHash = "FAKE",
-				MakeModel = "added okay",
-				FileIndexItem =
-					new FileIndexItem { FileHash = "FAKE_OK", FilePath = inputFileFullPath }
-			});
+				results.Add(new ImportIndexItem
+				{
+					Id = 4,
+					SourceFullFilePath = inputFileFullPath,
+					FilePath = inputFileFullPath,
+					Status = ImportStatus.Ok,
+					FileHash = "FAKE",
+					MakeModel = "added okay",
+					FileIndexItem =
+						new FileIndexItem { FileHash = "FAKE_OK", FilePath = inputFileFullPath }
+				});
+			}
 		}
 
 		PreflightList.AddRange(results);

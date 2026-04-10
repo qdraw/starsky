@@ -116,7 +116,8 @@ const MenuInlineSearch: FunctionComponent<IMenuSearchBarProps> = (props) => {
                     keyDownIndex,
                     setKeyDownIndex,
                     inputFormControlReference.current,
-                    suggest
+                    suggest,
+                    setQuery
                   );
                 }}
                 onChange={(e) => {

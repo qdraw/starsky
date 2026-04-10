@@ -5,4 +5,5 @@ namespace starsky.feature.thumbnail.Interfaces;
 public interface ISmallThumbnailBackgroundJobService
 {
 	Task<bool> CreateJob(bool? isAuthenticated, string? filePath);
+	Task WorkThumbnailGenerationLoop(string path);
 }

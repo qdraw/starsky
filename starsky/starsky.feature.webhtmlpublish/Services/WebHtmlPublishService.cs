@@ -12,6 +12,8 @@ using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.optimisation.Interfaces;
+using starsky.foundation.optimisation.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Interfaces;
@@ -39,6 +41,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	private readonly CopyPublishedContent _copyPublishedContent;
 	private readonly IExifTool _exifTool;
 	private readonly IStorage _hostFileSystemStorage;
+	private readonly IImageOptimisationService _imageOptimisationService;
 	private readonly IWebLogger _logger;
 	private readonly IOverlayImage _overlayImage;
 	private readonly PublishManifest _publishManifest;
@@ -53,7 +56,8 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage
 			selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool,
 		IOverlayImage overlayImage, IConsole console, IWebLogger logger,
-		IThumbnailService thumbnailService)
+		IThumbnailService thumbnailService,
+		IImageOptimisationService imageOptimisationService)
 	{
 		_publishPreflight = publishPreflight;
 		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -70,6 +74,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			selectorStorage);
 		_logger = logger;
 		_thumbnailService = thumbnailService;
+		_imageOptimisationService = imageOptimisationService;
 	}
 
 	public async Task<Dictionary<string, bool>?> RenderCopy(
@@ -125,7 +130,8 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		foreach ( var item in fileIndexItemsList.Where(item =>
 			         string.IsNullOrEmpty(item.FileHash)) )
 		{
-			item.FileHash = new FileHash(_subPathStorage, _logger).GetHashCode(item.FilePath!).Key;
+			var fileHashService = new FileHash(_subPathStorage, _logger);
+			item.FileHash = fileHashService.GetHashCode(item.FilePath!, item.ImageFormat).Key;
 		}
 
 		return fileIndexItemsList;
@@ -281,23 +287,32 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			                Path.GetExtension(item.FileName);
 		}
 
-		// has a direct dependency on the filesystem
-		var embeddedResult = await new ParseRazor(_hostFileSystemStorage, _logger)
-			.EmbeddedViews(currentProfile.Template, viewModel);
-
-		var stream = StringToStreamHelper.StringToStream(embeddedResult);
-		await _hostFileSystemStorage.WriteStreamAsync(stream,
-			Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
-
-		_console.Write(_appSettings.IsVerbose() ? embeddedResult + "\n" : "•");
-
-		return new Dictionary<string, bool>
+		try
 		{
+			// has a direct dependency on the filesystem
+			var embeddedResult = await new ParseRazor(_hostFileSystemStorage, _logger)
+				.EmbeddedViews(currentProfile.Template, viewModel);
+
+			var stream = StringToStreamHelper.StringToStream(embeddedResult);
+			await _hostFileSystemStorage.WriteStreamAsync(stream,
+				Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
+
+			_console.Write(_appSettings.IsVerbose() ? embeddedResult + "\n" : "•");
+
+			return new Dictionary<string, bool>
 			{
-				currentProfile.Path.Replace(outputParentFullFilePathFolder, string.Empty),
-				currentProfile.Copy
-			}
-		};
+				{
+					currentProfile.Path.Replace(outputParentFullFilePathFolder, string.Empty),
+					currentProfile.Copy
+				}
+			};
+		}
+		catch ( Exception e )
+		{
+			_logger.LogError(
+				$"[WebHtmlPublishService/GenerateWebHtml] Skip due errors: (catch-ed exception) {currentProfile.Template} - {e.Message} - {e.StackTrace}");
+			return new Dictionary<string, bool>();
+		}
 	}
 
 	/// <summary>
@@ -332,12 +347,18 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			}
 			catch ( AggregateException e )
 			{
+				// Flatten the aggregate exception and join inner exception messages into a single message
+				var flat = e.Flatten();
+				var details = string.Join(" | ", flat.InnerExceptions.Select(ex =>
+				{
+					var innerMsg = ex.InnerException?.Message;
+					return string.IsNullOrEmpty(innerMsg)
+						? $"{ex.Message} ({ex.GetType().Name})"
+						: $"{ex.Message} - {innerMsg} ({ex.GetType().Name})";
+				}));
+
 				var errorMessage =
-					$"[WebHtmlPublishService/ResizerLocal] Skip due errors: (catch-ed exception) {item.FilePath} {item.FileHash} - ";
-				errorMessage = e.InnerExceptions.Aggregate(errorMessage,
-					(current, exception) =>
-						current +
-						$" {exception.Message} {exception.InnerException?.Message} {exception.GetType().Name}");
+					$"[WebHtmlPublishService/ResizerLocal] Skip due errors: (catch-ed exception) {item.FilePath} {item.FileHash} - {details}";
 				_logger.LogError(errorMessage);
 			}
 		}
@@ -345,6 +366,13 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		return fileIndexItemsList.ToDictionary(item =>
 				_overlayImage.FilePathOverlayImage(item.FilePath!, profile),
 			_ => profile.Copy);
+	}
+
+	private List<Optimizer> ResolveOptimizers(AppSettingsPublishProfiles profile)
+	{
+		return profile.Optimizers.Count > 0
+			? profile.Optimizers
+			: _appSettings.PublishProfilesDefaults.Optimizers;
 	}
 
 	/// <summary>
@@ -383,6 +411,13 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			await _overlayImage.ResizeOverlayImageLarge(item.FilePath!, outputPath, profile);
 		}
 
+		await _imageOptimisationService.Optimize(
+			new ImageOptimisationItem
+			{
+				InputPath = outputPath, OutputPath = outputPath, ImageFormat = item.ImageFormat
+			},
+			ResolveOptimizers(profile));
+
 		if ( profile.MetaData )
 		{
 			await MetaData(item, outputPath);
@@ -390,7 +425,8 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 
 		var imageFormat =
 			new ExtensionRolesHelper(_logger).GetImageFormat(
-				_hostFileSystemStorage.ReadStream(outputPath, 160));
+				_hostFileSystemStorage.ReadStream(outputPath,
+					ExtensionRolesHelper.ImageFormatByteSize));
 		if ( imageFormat == ExtensionRolesHelper.ImageFormat.jpg )
 		{
 			return true;
@@ -426,7 +462,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		// Write it back
 		await new ExifToolCmdHelper(_exifTool, _hostFileSystemStorage,
 			_thumbnailStorage, null!, null!, _logger).UpdateAsync(item,
-			new List<string> { outputPath }, comparedNames,
+			[outputPath], comparedNames,
 			false, false);
 	}
 

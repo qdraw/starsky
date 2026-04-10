@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
       with:
         ref: master
 
@@ -45,7 +45,7 @@ jobs:
       
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
-      uses: peter-evans/create-pull-request@2271f1ddcf09437ed8f019733eb5cfba58ac76f0
+      uses: peter-evans/create-pull-request@d32e88dac789dcc7906e7d26f69f24116fa9c97d
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: 'Auto .NET SDK version Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'

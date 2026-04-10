@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.PublishProfileRemote;
 using starsky.project.web.Attributes;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -525,6 +526,32 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
+	public void ArgsHelper_NeedHelpShowDialog_WebFtp()
+	{
+		var console = new FakeConsoleWrapper();
+		new ArgsHelper(
+				new AppSettings
+				{
+					ApplicationType = AppSettings.StarskyAppType.WebFtp,
+					Verbose = true,
+					PublishProfilesRemote = new AppSettingsPublishProfilesRemote
+					{
+						Default =
+						[
+							new RemoteCredentialWrapper
+							{
+								Ftp = new FtpCredential { WebFtp = "ftp://user:pass@test.nl" }
+							}
+						]
+					}
+				}, console)
+			.NeedHelpShowDialog();
+		Assert.Contains("WebFtp", console.WrittenLines[0]);
+		var hasLogged = console.WrittenLines.Any(p => p.Contains("Ftp: ftp://user:pass@test.nl"));
+		Assert.IsTrue(hasLogged);
+	}
+
+	[TestMethod]
 	public void NeedHelpShowDialog_WebHtml_Verbose()
 	{
 		var consoleWrapper = new FakeConsoleWrapper();
@@ -536,8 +563,7 @@ public sealed class ArgsHelperTest
 				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
 					{
-						"_d",
-						[
+						"_d", [
 							new AppSettingsPublishProfiles
 							{
 								Append = "_append", Copy = true, Folder = "folder"

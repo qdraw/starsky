@@ -110,48 +110,50 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
         props.handleExit();
       }}
     >
-      {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
+      <div className="modal content scroll">
+        {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
 
-      <div className="modal content--subheader">{MessageSynchronizeManually}</div>
-      <div className="modal content--text">
-        <ForceSyncWaitButton
-          isShortLabel={false}
-          propsParentFolder={props.parentFolder}
-          historyLocationSearch={history.location.search}
-          callback={() => props.handleExit()}
-          dispatch={dispatch}
-        ></ForceSyncWaitButton>
-        <button
-          className="btn btn--default"
-          data-test="remove-cache"
-          onClick={() =>
-            RemoveCache(
-              setIsLoading,
-              props.parentFolder ?? "",
-              history.location.search,
-              dispatch,
-              props.handleExit
-            )
-          }
-        >
-          {MessageRemoveCache}
-        </button>
-        <button
-          className="btn btn--info btn--percentage"
-          data-test="geo-sync"
-          onClick={() => geoSync()}
-        >
-          {MessageGeoSync} {geoSyncPercentage}%
-        </button>
-        <p>{MessageGeoSyncExplainer}</p>
-        <button
-          className="btn btn--info"
-          data-test="thumbnail-generation"
-          onClick={() => manualThumbnailSync()}
-        >
-          {MessageManualThumbnailSync}
-        </button>
-        <p>{MessageManualThumbnailSyncExplainer}</p>
+        <div className="modal content--subheader">{MessageSynchronizeManually}</div>
+        <div className="modal content--text">
+          <ForceSyncWaitButton
+            isShortLabel={false}
+            propsParentFolder={props.parentFolder}
+            historyLocationSearch={history.location.search}
+            callback={() => props.handleExit()}
+            dispatch={dispatch}
+          ></ForceSyncWaitButton>
+          <button
+            className="btn btn--default"
+            data-test="remove-cache"
+            onClick={() =>
+              RemoveCache(
+                setIsLoading,
+                props.parentFolder ?? "",
+                history.location.search,
+                dispatch,
+                props.handleExit
+              )
+            }
+          >
+            {MessageRemoveCache}
+          </button>
+          <button
+            className="btn btn--info btn--percentage"
+            data-test="geo-sync"
+            onClick={() => geoSync()}
+          >
+            {MessageGeoSync} {geoSyncPercentage}%
+          </button>
+          <p>{MessageGeoSyncExplainer}</p>
+          <button
+            className="btn btn--info"
+            data-test="thumbnail-generation"
+            onClick={() => manualThumbnailSync()}
+          >
+            {MessageManualThumbnailSync}
+          </button>
+          <p>{MessageManualThumbnailSyncExplainer}</p>
+        </div>
       </div>
     </Modal>
   );

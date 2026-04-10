@@ -13,7 +13,7 @@ import useLocation from "../../hooks/use-location/use-location";
 import { IDetailView, newDetailView } from "../../interfaces/IDetailView";
 import { ImageFormat } from "../../interfaces/IFileIndexItem";
 import { DocumentTitle } from "../../shared/document-title";
-import { Keyboard } from "../../shared/keyboard";
+import { Keyboard } from "../../shared/keyboard/keyboard";
 import { UpdateRelativeObject } from "../../shared/update-relative-object";
 import { URLPath } from "../../shared/url/url-path";
 import MenuDetailViewContainer from "../menu-detailview-container/menu-detailview-container";
@@ -120,7 +120,8 @@ const DetailView: FC<IDetailView> = () => {
   // previous item
   useHotKeys(
     { key: "[", ctrlKeyOrMetaKey: true, skipIsInForm: false },
-    () => {
+    (event: KeyboardEvent) => {
+      new Keyboard().unBlur(event);
       new PrevNext(
         relativeObjects,
         state,
@@ -129,6 +130,8 @@ const DetailView: FC<IDetailView> = () => {
         setRelativeObjects,
         setIsLoading
       ).prev();
+      new Keyboard().focus(event);
+      new Keyboard().setCaretToEnd(event);
     },
     [relativeObjects]
   );
@@ -152,7 +155,8 @@ const DetailView: FC<IDetailView> = () => {
 
   useHotKeys(
     { key: "]", ctrlKeyOrMetaKey: true, skipIsInForm: false },
-    () => {
+    (event: KeyboardEvent) => {
+      new Keyboard().unBlur(event);
       new PrevNext(
         relativeObjects,
         state,
@@ -161,6 +165,8 @@ const DetailView: FC<IDetailView> = () => {
         setRelativeObjects,
         setIsLoading
       ).next();
+      new Keyboard().focus(event);
+      new Keyboard().setCaretToEnd(event);
     },
     [relativeObjects]
   );
@@ -189,6 +195,19 @@ const DetailView: FC<IDetailView> = () => {
     setIsError(false);
     setIsUseGestures(true);
   }, [state.subPath]);
+
+  // Reset error when thumbnail is regenerated so the image becomes visible again
+  // (fileHash changes via ThumbnailGeneration socket update)
+  // Use lastChanged or lastUpdated as trigger, not fileHash, because fileHash (content hash)
+  // doesn't change when thumbnail is regenerated - only lastChanged timestamp changes
+  useEffect(() => {
+    const isThumbnailRefresh = state.fileIndexItem?.lastChanged?.some((item) =>
+      ["LastEdited", "FileHash", "Src"].includes(item)
+    );
+    if (isThumbnailRefresh) {
+      setIsError(false);
+    }
+  }, [state.fileIndexItem?.lastChanged, state.fileIndexItem?.fileHash]);
 
   // // When item is removed
   useEffect(() => {
@@ -232,6 +251,15 @@ const DetailView: FC<IDetailView> = () => {
   if (!state.fileIndexItem || !relativeObjects) {
     return <Preloader parent={"/"} isWhite={true} isOverlay={true} />;
   }
+
+  const shouldRefreshThumbnail =
+    state.fileIndexItem?.lastChanged?.some((item) =>
+      ["LastEdited", "FileHash", "Src"].includes(item)
+    ) ?? false;
+  const thumbnailRefreshToken =
+    shouldRefreshThumbnail && state.lastUpdated && state.fileIndexItem?.lastEdited
+      ? `${state.fileIndexItem.lastEdited}-${state.lastUpdated}`
+      : undefined;
 
   return (
     <>
@@ -284,6 +312,7 @@ const DetailView: FC<IDetailView> = () => {
               id={state.fileIndexItem.filePath}
               setIsLoading={setIsLoading}
               fileHash={state.fileIndexItem.fileHash}
+              refreshToken={thumbnailRefreshToken}
               orientation={state.fileIndexItem.orientation}
               onWheelCallback={() => {
                 if (isUseGestures) setIsUseGestures(false);

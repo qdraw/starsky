@@ -24,6 +24,7 @@ namespace starsky.foundation.database.Query;
 // ReSharper disable once RedundantExtendsListEntry
 public partial class Query : IQuery
 {
+	private const string GetSubPathsByHashAsyncCacheKey = "GetSubPathsByHashAsync";
 	private readonly AppSettings _appSettings;
 	private readonly IMemoryCache? _cache;
 	private readonly IWebLogger _logger;
@@ -135,28 +136,29 @@ public partial class Query : IQuery
 	/// </summary>
 	/// <param name="fileHash">the file hash</param>
 	/// <returns>file path can be cached</returns>
-	public async Task<string?> GetSubPathByHashAsync(string fileHash)
+	public async Task<List<string>> GetSubPathsByHashAsync(string fileHash)
 	{
 		// The CLI programs uses no cache
-		if ( !IsCacheEnabled() || _cache == null )
+		if ( !IsCacheEnabled() )
 		{
-			return await QueryGetItemByHashAsync(fileHash);
+			return await QueryGetItemsByHashAsync(fileHash);
 		}
 
 		// Return values from IMemoryCache
-		var queryHashListCacheName = CachingDbName("hashList", fileHash);
+		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
 
-		// if result is not null return cached value
-		if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath)
-		     && !string.IsNullOrEmpty(( string? ) cachedSubPath) )
+		// if the result is not null return cached value
+		if ( _cache!.TryGetValue(queryHashListCacheName, out var cachedSubPaths)
+		     && ( List<string>? ) cachedSubPaths != null &&
+		     ( ( List<string?> ) cachedSubPaths ).Any(p => p != null) )
 		{
-			return ( string ) cachedSubPath;
+			return ( List<string> ) cachedSubPaths;
 		}
 
-		cachedSubPath = await QueryGetItemByHashAsync(fileHash);
+		cachedSubPaths = await QueryGetItemsByHashAsync(fileHash);
 
-		_cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48, 0, 0));
-		return ( string? ) cachedSubPath;
+		_cache.Set(queryHashListCacheName, cachedSubPaths, new TimeSpan(48, 0, 0));
+		return ( List<string> ) cachedSubPaths;
 	}
 
 	/// <summary>
@@ -170,11 +172,10 @@ public partial class Query : IQuery
 			return;
 		}
 
-		var queryCacheName = CachingDbName("hashList", fileHash);
-
-		if ( _cache.TryGetValue(queryCacheName, out _) )
+		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
+		if ( _cache.TryGetValue(queryHashListCacheName, out _) )
 		{
-			_cache.Remove(queryCacheName);
+			_cache.Remove(queryHashListCacheName);
 		}
 	}
 
@@ -589,24 +590,24 @@ public partial class Query : IQuery
 			.FirstOrDefault();
 	}
 
-	private async Task<string?> QueryGetItemByHashAsync(string fileHash)
+	private async Task<List<string>> QueryGetItemsByHashAsync(string fileHash)
 	{
-		async Task<string?> LocalQueryGetItemByHashAsync(ApplicationDbContext context)
+		async Task<List<string>> LocalQueryGetItemsByHashAsync(ApplicationDbContext context)
 		{
-			return ( await context.FileIndex.TagWith("QueryGetItemByHashAsync")
-				.FirstOrDefaultAsync(p => p.FileHash == fileHash
-				                          && p.IsDirectory != true
-				) )?.FilePath;
+			return await context.FileIndex.TagWith("QueryGetItemByHashAsync")
+				.Where(p => p.FileHash == fileHash
+				            && p.IsDirectory != true
+				).Select(p => p.FilePath).Cast<string>().ToListAsync();
 		}
 
 		try
 		{
-			return await LocalQueryGetItemByHashAsync(_context);
+			return await LocalQueryGetItemsByHashAsync(_context);
 		}
 		catch ( ObjectDisposedException )
 		{
 			var context = new InjectServiceScope(_scopeFactory).Context();
-			return await LocalQueryGetItemByHashAsync(context);
+			return await LocalQueryGetItemsByHashAsync(context);
 		}
 	}
 
@@ -721,34 +722,49 @@ public partial class Query : IQuery
 	/// <param name="updateStatusContent">the content to add</param>
 	internal void AddCacheItem(FileIndexItem updateStatusContent)
 	{
-		// If cache is turned of
-		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		try
 		{
-			return;
+			AddCacheItemInternal(_cache);
+		}
+		catch ( ObjectDisposedException exception )
+		{
+			// you can't recover a singleton cache when it is disposed,
+			// so we log this error and skip the cache update
+			_logger.LogError("[AddCacheItem] ObjectDisposedException cache is broken", exception);
 		}
 
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
-			updateStatusContent.ParentDirectory!);
+		return;
 
-		if ( !_cache.TryGetValue(queryCacheName, out var objectFileFolders) )
+		void AddCacheItemInternal(IMemoryCache? cache)
 		{
-			return;
+			// If cache is turned off
+			if ( cache == null || _appSettings.AddMemoryCache == false )
+			{
+				return;
+			}
+
+			var queryCacheName = CachingDbName(nameof(FileIndexItem),
+				updateStatusContent.ParentDirectory!);
+			if ( !cache.TryGetValue(queryCacheName, out var objectFileFolders) )
+			{
+				return;
+			}
+
+			objectFileFolders ??= new List<FileIndexItem>();
+			var displayFileFolders = ( List<FileIndexItem> ) objectFileFolders;
+
+			if ( updateStatusContent.FilePath == "/" )
+			{
+				return;
+			}
+
+			displayFileFolders.Add(updateStatusContent);
+			// Order by filename
+			displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
+
+			cache.Remove(queryCacheName);
+			cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1, 0, 0));
 		}
-
-		objectFileFolders ??= new List<FileIndexItem>();
-		var displayFileFolders = ( List<FileIndexItem> ) objectFileFolders;
-
-		if ( updateStatusContent.FilePath == "/" )
-		{
-			return;
-		}
-
-		displayFileFolders.Add(updateStatusContent);
-		// Order by filename
-		displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
-
-		_cache.Remove(queryCacheName);
-		_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1, 0, 0));
 	}
 
 	/// <summary>

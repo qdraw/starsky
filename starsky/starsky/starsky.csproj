@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <RuntimeFrameworkVersion>8.0.22</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.25</RuntimeFrameworkVersion>
         <Description>An attempt to create a database driven photo library</Description>
         <!-- use node script to update version -->
-        <Version>0.7.6</Version>
+        <Version>0.7.14</Version>
         <!-- SonarQube needs this -->
         <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
@@ -59,8 +59,8 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.22"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.25" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6"/>
     </ItemGroup>
     <!-- generate xml file for swagger -->
@@ -159,6 +159,7 @@
         <ProjectReference Include="..\starsky.feature.syncbackground\starsky.feature.syncbackground.csproj"/>
         <ProjectReference Include="..\starsky.feature.thumbnail\starsky.feature.thumbnail.csproj"/>
         <ProjectReference Include="..\starsky.feature.trash\starsky.feature.trash.csproj"/>
+        <ProjectReference Include="..\starsky.feature.webftppublish\starsky.feature.webftppublish.csproj"/>
         <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj"/>
         <ProjectReference Include="..\starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj"/>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>

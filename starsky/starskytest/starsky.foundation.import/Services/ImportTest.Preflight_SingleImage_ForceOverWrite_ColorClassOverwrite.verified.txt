@@ -40,13 +40,15 @@
       LensModel: E 18-200mm F3.5-6.3 OSS LE,
       MakeCameraSerial: ,
       FocalLength: 20.0,
-      Size: 4808
+      Size: 4808,
+      Artist: 
     },
     SourceFullFilePath: /color_class_winner.jpg,
     Structure: {
       DefaultPattern: /yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext
     },
     MakeModel: Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE|,
+    Artist: ,
     DateTimeFromFileName: false,
     ColorClass: Typical,
     ImageFormat: jpg,

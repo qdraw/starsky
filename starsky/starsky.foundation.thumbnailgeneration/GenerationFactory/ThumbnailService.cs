@@ -18,7 +18,6 @@ using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
-using starsky.foundation.video.Process.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -30,14 +29,15 @@ public class ThumbnailService(
 	IWebLogger logger,
 	AppSettings appSettings,
 	IUpdateStatusGeneratedThumbnailService updateStatusGeneratedThumbnailService,
-	IVideoProcess videoProcess,
 	IFileHashSubPathStorage fileHashSubPathStorage,
-	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator)
+	IThumbnailGeneratorFactory thumbnailGeneratorFactory)
 	: IThumbnailService
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
 		ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(e) ||
-		ExtensionRolesHelper.IsExtensionVideoSupported(e);
+		ExtensionRolesHelper.IsExtensionVideoSupported(e) ||
+		ExtensionRolesHelper.IsExtensionRawThumbnailSupported(e) || 
+		ExtensionRolesHelper.IsExtensionNativeSupported(e);
 
 	private readonly FolderToFileList _folderToFileList = new(selectorStorage);
 
@@ -66,7 +66,7 @@ public class ThumbnailService(
 			appSettings.MaxDegreesOfParallelismThumbnail);
 
 		var generationResults = new List<GenerationResultModel>();
-		foreach ( var resultChunk in resultChunkList! )
+		foreach ( var resultChunk in resultChunkList ?? [] )
 		{
 			generationResults.AddRange(resultChunk);
 		}
@@ -145,9 +145,7 @@ public class ThumbnailService(
 	private async Task<IEnumerable<GenerationResultModel>> GenerateThumbnailAsync(
 		string singleSubPath, string? fileHash, List<ThumbnailSize> sizes)
 	{
-		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
-			nativePreviewThumbnailGenerator);
-		var generator = factory.GetGenerator(singleSubPath);
+		var generator = thumbnailGeneratorFactory.GetGenerator(singleSubPath);
 		if ( !string.IsNullOrEmpty(fileHash) )
 		{
 			return await generator.GenerateThumbnail(singleSubPath, fileHash,
@@ -155,7 +153,7 @@ public class ThumbnailService(
 		}
 
 		var (fileHashLocal, success) =
-			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath);
+			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath, null);
 		if ( !success )
 		{
 			return [];
@@ -166,27 +164,26 @@ public class ThumbnailService(
 	}
 
 	private async Task<(Stream?, GenerationResultModel)> GenerateSingleThumbnailAsync(
-		string singleSubPath, ThumbnailImageFormat imageFormat, ThumbnailSize size)
+		string singleSubPath, ThumbnailImageFormat thumbnailImageFormat, ThumbnailSize size)
 	{
-		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
-			nativePreviewThumbnailGenerator);
-		var generator = factory.GetGenerator(singleSubPath);
+		var generator = thumbnailGeneratorFactory.GetGenerator(singleSubPath);
 
 		var (fileHash, success) =
-			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath);
+			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath, null);
 		if ( !success )
 		{
 			return ( null, ErrorGenerationResultModel
 				.FailedResult(size, singleSubPath, fileHash,
-					true, imageFormat, true, "Invalid fileHash") );
+					true, thumbnailImageFormat, true, "Invalid fileHash") );
 		}
 
 		var generationResult =
 			( await generator.GenerateThumbnail(singleSubPath, fileHash,
-				imageFormat, [size]) ).First();
+				thumbnailImageFormat, [size]) ).First();
 
 		var stream =
-			new GetThumbnailStream(selectorStorage).GetThumbnail(fileHash, size, imageFormat);
+			new GetThumbnailStream(selectorStorage).GetThumbnail(fileHash, size,
+				thumbnailImageFormat);
 		return ( stream, generationResult );
 	}
 }

@@ -6,7 +6,11 @@ import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
+import Notification from "../../atoms/notification/notification";
+import Portal from "../../atoms/portal/portal";
 import Preloader from "../../atoms/preloader/preloader";
+import SearchableDropdown from "../../atoms/searchable-dropdown";
+import { fetchCity } from "./internal/fetch-city";
 import { LatLongRound } from "./internal/lat-long-round";
 import { RealtimeMapUpdate } from "./internal/realtime-map-update";
 import { UpdateButtonWrapper } from "./internal/update-button-wrapper";
@@ -45,6 +49,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
 
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [notificationStatus, setNotificationStatus] = useState<string | null>(null);
 
   const [mapState, setMapState] = useState<L.Map | null>(null);
 
@@ -80,7 +85,17 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
   const mapReference = useCallback((node: HTMLDivElement | null) => {
     const leafletNode = node as LeafletDiv;
     if (node !== null && mapState === null && leafletNode._leaflet_id == null) {
-      UpdateMap(node, location, isFormEnabled, setLocation, setIsLocationUpdated, setMapState);
+      UpdateMap({
+        node,
+        location,
+        isFormEnabled,
+        setLocation,
+        setIsLocationUpdated,
+        setMapState,
+        language,
+        localization,
+        setNotificationStatus
+      });
     }
     // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, []);
@@ -110,6 +125,30 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
         {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : null}
 
         <div className="modal content--subheader">{subHeader()}</div>
+        <div className="modal content--header">
+          <SearchableDropdown
+            fetchResults={(city) => fetchCity(city)}
+            placeholder={language.key(localization.MessageSearchOrSelect)}
+            noResultsText={language.key(localization.MessageNoResultsFound)}
+            defaultValue={""}
+            onSelect={(id) => {
+              const [selectedLatitudeRaw, selectedLongitudeRaw] = id.split(",");
+              const selectedLatitude = Number(selectedLatitudeRaw);
+              const selectedLongitude = Number(selectedLongitudeRaw);
+
+              if (
+                Number.isNaN(selectedLatitude) ||
+                Number.isNaN(selectedLongitude) ||
+                mapState === null
+              ) {
+                return;
+              }
+
+              mapState.panTo({ lat: selectedLatitude, lng: selectedLongitude });
+              mapState.setZoom(14);
+            }}
+          />
+        </div>
         {error ? (
           <div className="modal modal-button-bar-error">
             <div data-test="login-error" className="content--error-true">
@@ -118,7 +157,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
           </div>
         ) : null}
         <div className="content-geo" data-test="content-geo" ref={mapReference}></div>
-        <div className="modal modal-button-bar">
+        <div className="modal modal-button-bar content-geo-button-bar">
           <button
             data-test="force-cancel"
             onClick={() => props.handleExit(null)}
@@ -160,6 +199,11 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
           </div>
         </div>
       </div>
+      {notificationStatus ? (
+        <Portal>
+          <Notification autoRemoveTimeout={5000}>{notificationStatus}</Notification>
+        </Portal>
+      ) : null}
     </Modal>
   );
 };

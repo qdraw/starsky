@@ -286,6 +286,10 @@ public sealed class ArgsHelper
 				_console.WriteLine(
 					"--profile: (string) ; name of profile to select (default to first)");
 				break;
+			case AppSettings.StarskyAppType.WebFtp:
+				_console.WriteLine(
+					"--profile: (string) ; name of profile to select (default to first)");
+				break;
 			case AppSettings.StarskyAppType.Importer:
 				// When this change please update ./readme.md
 				_console.WriteLine("--path or -p == parameter: (string) ; full path");
@@ -293,6 +297,9 @@ public sealed class ArgsHelper
 					"                can be an folder or file, use '-p' for current directory");
 				_console.WriteLine("                for multiple items use dot comma (;) " +
 				                   "to split and quotes (\") around the input string");
+				_console.WriteLine("--camera ; scan for camera storages (sd-cards)" +
+				                   "works only when --path is not specified, " +
+				                   "recommend to to specify --recursive ");
 				_console.WriteLine(
 					"--move or -m == delete file after importing (default false / copy file)");
 				_console.WriteLine("--recursive or -r == Import Directory recursive " +
@@ -311,6 +318,10 @@ public sealed class ArgsHelper
 				_console.WriteLine(
 					"--origin == overwrite origin, Don't use with --structure. " +
 					"Used to reference structure settings and select a setting from this");
+				_console.WriteLine(
+					"--provider place-here-id-from-config ; use cloud import and select a provider within " +
+					"CloudImport Providers, used for example with Dropbox, " +
+					"skips local import");
 				break;
 			case AppSettings.StarskyAppType.Sync:
 				// When this change please update ./readme.md
@@ -420,7 +431,10 @@ public sealed class ArgsHelper
 
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebFtp )
 		{
-			_console.WriteLine("WebFtp " + _appSettings.WebFtp);
+			foreach ( var (type, path) in _appSettings.PublishProfilesRemote.ListAll() )
+			{
+				_console.WriteLine($"{type}: {path}");
+			}
 		}
 
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Admin )
@@ -795,6 +809,21 @@ public sealed class ArgsHelper
 	public string SubPathOrPathValue(IReadOnlyList<string> args)
 	{
 		return IsSubPathOrPath(args) ? GetSubPathFormArgs(args) : GetPathFormArgs(args);
+	}
+
+	/// <summary>
+	///     Camera feature needed
+	/// </summary>
+	/// <param name="args">input args</param>
+	/// <returns>bool</returns>
+	public static bool NeedCamera(IReadOnlyList<string> args)
+	{
+		var filteredArgs = args.Where(arg =>
+			arg.Equals("--camera", StringComparison.CurrentCultureIgnoreCase));
+
+		var needRecursive = filteredArgs.Any();
+
+		return needRecursive;
 	}
 
 	/// <summary>

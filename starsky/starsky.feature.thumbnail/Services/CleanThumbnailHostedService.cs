@@ -15,26 +15,72 @@ namespace starsky.feature.thumbnail.Services;
 
 [Service(typeof(IHostedService),
 	InjectionLifetime = InjectionLifetime.Singleton)]
-public class CleanThumbnailHostedService : BackgroundService
+public class CleanThumbnailHostedService(
+	IServiceScopeFactory serviceScopeFactory,
+	IHostApplicationLifetime hostApplicationLifetime)
+	: IHostedService
 {
-	private readonly IServiceScopeFactory _serviceScopeFactory;
+	private CancellationTokenSource? _runCancellationTokenSource;
+	private IDisposable? _applicationStartedRegistration;
+	private Task? _runningTask;
+	internal TimeSpan StartupDelay { get; set; } = TimeSpan.FromMinutes(15);
 
-	public CleanThumbnailHostedService(IServiceScopeFactory serviceScopeFactory)
+	public Task StartAsync(CancellationToken cancellationToken)
 	{
-		_serviceScopeFactory = serviceScopeFactory;
+		_runCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
+			cancellationToken);
+
+		// Run cleanup only after app startup and do not block startup pipeline.
+		_applicationStartedRegistration = hostApplicationLifetime.ApplicationStarted.Register(() =>
+		{
+			var token = _runCancellationTokenSource.Token;
+			_runningTask = Task.Run(async () =>
+			{
+				try
+				{
+					await StartBackgroundAsync(StartupDelay, token);
+				}
+				catch ( OperationCanceledException ) when ( token.IsCancellationRequested )
+				{
+					// Expected when service is stopping.
+				}
+				catch
+				{
+					// Suppress background exceptions to keep host startup unaffected.
+				}
+			}, CancellationToken.None);
+		});
+
+		return Task.CompletedTask;
 	}
 
-	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+	public async Task StopAsync(CancellationToken cancellationToken)
 	{
-		// why Task.Yield -> https://medium.com/@thepen0411/how-to-resolve-the-net-background-service-blocking-issue-c96086de8acd
-		await Task.Yield();
-		await StartBackgroundAsync(TimeSpan.FromMinutes(15), stoppingToken);
+		_applicationStartedRegistration?.Dispose();
+		if ( _runCancellationTokenSource != null )
+		{
+			await _runCancellationTokenSource.CancelAsync();
+		}
+
+		if ( _runningTask != null )
+		{
+			try
+			{
+				await _runningTask.WaitAsync(cancellationToken);
+			}
+			catch ( OperationCanceledException )
+			{
+				// Stop cancellation requested.
+			}
+		}
+
+		_runCancellationTokenSource?.Dispose();
 	}
 
 	internal async Task<List<string>> StartBackgroundAsync(TimeSpan delay,
 		CancellationToken cancellationToken)
 	{
-		using var scope = _serviceScopeFactory.CreateScope();
+		using var scope = serviceScopeFactory.CreateScope();
 		var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 		var settingService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
 		if ( !await ContinueDueSettings(appSettings, settingService) )

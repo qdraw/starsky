@@ -89,6 +89,8 @@ public sealed class ImportIndexItem
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 	public string? MakeModel { get; set; } = string.Empty;
 
+	[MaxLength(200)] public string? Artist { get; set; } = string.Empty;
+
 	/// <summary>
 	///     Is the Exif DateTime parsed from the fileName
 	/// </summary>

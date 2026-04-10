@@ -392,4 +392,94 @@ public sealed class MetaUpdateServiceTest
 		                                                        ThumbnailNameHelper.GetSize(
 			                                                        ThumbnailSize.ExtraLarge)));
 	}
+
+	[TestMethod]
+	[DataRow(FileIndexItem.ExifStatus.Ok)]
+	[DataRow(FileIndexItem.ExifStatus.Deleted)]
+	[DataRow(FileIndexItem.ExifStatus.OkAndSame)]
+	[DataRow(FileIndexItem.ExifStatus.Default)]
+	[DataRow(FileIndexItem.ExifStatus.DeletedAndSame)]
+	[DataRow(FileIndexItem.ExifStatus.NotFoundNotInIndex)] // negative test
+	[DataRow(FileIndexItem.ExifStatus.NotFoundSourceMissing)] // negative test
+	[DataRow(FileIndexItem.ExifStatus.OperationNotSupported)] // negative test
+	[DataRow(FileIndexItem.ExifStatus.ReadOnly)] // negative test
+	[DataRow(FileIndexItem.ExifStatus.Unauthorized)] // negative test
+	public async Task UpdateAsync_StatusTheory(FileIndexItem.ExifStatus status)
+	{
+		var item0 = await _query.AddItemAsync(new FileIndexItem
+		{
+			Status = status,
+			Tags = "thisKeywordHasChanged",
+			FileName = "test_default.jpg",
+			Description = "noChanges",
+			ParentDirectory = "/"
+		});
+
+		var changedFileIndexItemName = new Dictionary<string, List<string>>
+		{
+			{ "/test_default.jpg", new List<string> { nameof(FileIndexItem.Tags) } }
+		};
+
+		var fileIndexResultsList = new List<FileIndexItem>
+		{
+			new()
+			{
+				Status = status,
+				Tags = "initial tags (from database)",
+				FileName = "test_default.jpg",
+				ParentDirectory = "/",
+				Description = "keep"
+			}
+		};
+
+		var updateItem = new FileIndexItem
+		{
+			Status = status,
+			Tags = "only used when Caching is disabled",
+			FileName = "test_default.jpg",
+			Description = "noChanges",
+			ParentDirectory = "/"
+		};
+
+		var readMeta = new ReadMetaSubPathStorage(
+			new FakeSelectorStorage(_iStorageFake), _appSettings, new FakeIWebLogger(),
+			_memoryCache);
+		var service = new MetaUpdateService(_query, _exifTool,
+			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+			new FakeIWebLogger(), readMeta,
+			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
+			new FakeIThumbnailQuery(), new AppSettings());
+
+		var result = await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList,
+			updateItem,
+			false, false, 0);
+
+		if ( status is FileIndexItem.ExifStatus.NotFoundNotInIndex
+		    or FileIndexItem.ExifStatus.NotFoundSourceMissing
+		    or FileIndexItem.ExifStatus.OperationNotSupported
+		    or FileIndexItem.ExifStatus.ReadOnly
+		    or FileIndexItem.ExifStatus.Unauthorized )
+		{
+			Assert.DoesNotContain(p
+				=> p.Status is FileIndexItem.ExifStatus.NotFoundNotInIndex or
+					FileIndexItem.ExifStatus.NotFoundSourceMissing or
+					FileIndexItem.ExifStatus.OperationNotSupported or
+					FileIndexItem.ExifStatus.ReadOnly or
+					FileIndexItem.ExifStatus.Unauthorized, result);
+		}
+		else
+		{
+			// check for item (Referenced)
+			Assert.AreEqual("thisKeywordHasChanged", item0.Tags);
+			// db
+			Assert.AreEqual("thisKeywordHasChanged",
+				_query.SingleItem("/test_default.jpg")!.FileIndexItem!.Tags);
+
+			Assert.AreEqual("noChanges",
+				_query.SingleItem("/test_default.jpg")!.FileIndexItem!.Description);
+			Assert.Contains(i => i.Status == status, result);
+		}
+
+		await _query.RemoveItemAsync(item0);
+	}
 }

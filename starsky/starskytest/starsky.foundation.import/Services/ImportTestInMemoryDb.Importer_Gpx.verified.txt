@@ -33,13 +33,15 @@
       Model: ,
       LensModel: ,
       MakeCameraSerial: ,
-      Size: 6193
+      Size: 6193,
+      Artist: 
     },
     SourceFullFilePath: /test.gpx,
     Structure: {
       DefaultPattern: /yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext
     },
     MakeModel: ,
+    Artist: ,
     DateTimeFromFileName: false,
     ImageFormat: gpx,
     Size: 6193,

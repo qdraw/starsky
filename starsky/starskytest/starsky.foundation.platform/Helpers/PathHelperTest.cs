@@ -423,4 +423,60 @@ public class PathHelperTests
 		Assert.AreEqual("/path/to/file1", result[0]);
 		Assert.AreEqual("/path/to/file2", result[1]);
 	}
+
+	[TestMethod]
+	[DataRow(null, null)]
+	[DataRow("", "\\")]
+	[DataRow("abc", "\\abc")]
+	[DataRow("\\abc", "\\abc")]
+	[DataRow("\\\\abc", "\\abc")]
+	[DataRow("abc\\", @"\abc\")]
+	[DataRow("\\", "\\")]
+	[DataRow("/abc", "\\/abc")]
+	public void PrefixBackSlash_Windows_Behavior(string? input, string expected)
+	{
+		// Simulate Windows
+		if ( input == null )
+		{
+			Assert.AreEqual("\\", input!.PrefixBackSlash('\\'));
+			return;
+		}
+
+		// Act
+		var result = input.PrefixBackSlash('\\');
+		// Assert
+		Assert.AreEqual(expected, result);
+	}
+
+	[TestMethod]
+	[DataRow(null, null)]
+	[DataRow("", "/")]
+	[DataRow("abc", "/abc")]
+	[DataRow("/abc", "/abc")]
+	[DataRow("//abc", "/abc")]
+	[DataRow("abc/", "/abc/")]
+	[DataRow("/", "/")]
+	[DataRow("\\abc", "/\\abc")]
+	public void PrefixBackSlash_Unix_Behavior(string? input, string expected)
+	{
+		// Arrange
+		// Simulate Unix
+		if ( input == null )
+		{
+			Assert.AreEqual("/", input!.PrefixBackSlash('/'));
+			return;
+		}
+
+		// Act
+		var result = input.PrefixBackSlash('/');
+		// Assert
+		Assert.AreEqual(expected, result);
+	}
+
+	[TestMethod]
+	public void PrefixBackSlash_DefaultOs_Behavior()
+	{
+		var result = "abc".PrefixBackSlash();
+		Assert.AreEqual($"{Path.DirectorySeparatorChar}abc", result);
+	}
 }

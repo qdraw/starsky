@@ -24,7 +24,7 @@ public partial class Query
 	/// <returns>results</returns>
 	public async Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/")
 	{
-		return await GetAllRecursiveAsync(new List<string> { subPath });
+		return await GetAllRecursiveAsync([subPath]);
 	}
 
 	/// <summary>

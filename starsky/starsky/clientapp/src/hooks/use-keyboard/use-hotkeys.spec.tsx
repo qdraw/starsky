@@ -1,4 +1,4 @@
-import { Keyboard } from "../../shared/keyboard";
+import { Keyboard } from "../../shared/keyboard/keyboard";
 import { mountReactHook } from "../___tests___/test-hook";
 import useHotKeys, { IHotkeysKeyboardEvent } from "./use-hotkeys";
 

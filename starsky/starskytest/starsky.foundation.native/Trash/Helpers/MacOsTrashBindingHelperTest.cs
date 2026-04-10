@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Trash.Helpers;
@@ -73,7 +74,20 @@ public class MacOsTrashBindingHelperTest
 					Environment.SpecialFolder.UserProfile),
 				".Trash", fileName);
 
-		Assert.IsTrue(File.Exists(trashPath));
+		// When running on macOS and external drive
+		if ( !File.Exists(trashPath) && createAnImage.BasePath.StartsWith("/Volumes") )
+		{
+			var volumeRegex = new Regex("^(/Volumes/[^/]+/)", RegexOptions.None,
+				TimeSpan.FromMilliseconds(200));
+			var volumeName = volumeRegex.Match(createAnImage.BasePath).Value;
+			Directory.Exists(Path.Combine(volumeName, ".Trashes"));
+			trashPath = Path.Combine(volumeName, ".Trashes", fileName);
+			File.Exists(trashPath);
+		}
+		else
+		{
+			File.Exists(trashPath);
+		}
 
 		File.Delete(trashPath);
 	}

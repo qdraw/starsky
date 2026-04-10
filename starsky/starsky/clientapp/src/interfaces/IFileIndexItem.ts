@@ -28,6 +28,7 @@ export interface IFileIndexItem {
   focalLength?: number;
   locationCountry?: string;
   locationCountryCode?: string;
+  locationAltitude?: number;
   locationCity?: string;
   locationState?: string;
   imageWidth?: number;
@@ -35,6 +36,18 @@ export interface IFileIndexItem {
   size?: number;
   sidecarExtensionsList?: string[];
   collectionPaths?: string[];
+  addToDatabase?: string;
+  artist?: string;
+  software?: string;
+  makeModel?: string;
+  makeCameraSerial?: string;
+  imageStabilisation?: ImageStabilisation;
+}
+
+export enum ImageStabilisation {
+  Unknown = "Unknown",
+  On = "On",
+  Off = "Off"
 }
 
 export enum ImageFormat {
@@ -42,17 +55,32 @@ export enum ImageFormat {
   unknown = "unknown",
   jpg = "jpg",
   tiff = "tiff",
+  arw = "arw",
+  dng = "dng",
+  nef = "nef",
+  raf = "raf",
+  cr2 = "cr2",
+  cr3 = "cr3",
+  orf = "orf",
+  rw2 = "rw2",
+  pef = "pef",
+  fff = "fff",
+  x3f = "x3f",
+  heic = "heic",
+
   bmp = "bmp",
   gif = "gif",
   png = "png",
   webp = "webp",
   psd = "psd",
-  xmp = "xmp",
-  meta_json = "meta_json",
   gpx = "gpx",
   mp4 = "mp4",
   mjpeg = "mjpeg",
-  mts = "mts"
+  mts = "mts",
+  // there is a sorting helper that filters out duplicates based on imageFormat
+  // xmp / meta_json are the least important files
+  xmp = "xmp",
+  meta_json = "meta_json"
 }
 
 export enum Orientation {

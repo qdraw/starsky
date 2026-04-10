@@ -2,7 +2,7 @@
 slug: the-7-things-i-missed-when-managing-my-photo-collection
 title: The 7 things I missed when managing my photo collection
 authors: dion
-tags: [photo mangement, welcome]
+tags: [photo management, welcome]
 date: 2022-12-20
 image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/embeded/01_video_search_cloud_starsky_v050.gif
 ---

@@ -53,7 +53,7 @@ public class MetaThumbnailCommandLineHelper
 		}
 
 		var statusResultsWithSubPaths =
-			await _metaExifThumbnailService.AddMetaThumbnail(subPath!);
+			await _metaExifThumbnailService.AddMetaThumbnail(subPath);
 		_console.WriteLine($"next: run update status ({DateTime.UtcNow:HH:mm:ss})");
 		await _statusThumbnailService.UpdateStatusThumbnail(statusResultsWithSubPaths);
 		_console.WriteLine($"Done! ({DateTime.UtcNow:HH:mm:ss})");

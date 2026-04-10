@@ -165,8 +165,9 @@ describe("sorter", () => {
     expect(resultList[5].imageFormat).toBe(ImageFormat.bmp);
     expect(resultList[6].imageFormat).toBe(ImageFormat.gif);
     expect(resultList[7].imageFormat).toBe(ImageFormat.png);
-    expect(resultList[8].imageFormat).toBe(ImageFormat.xmp);
-    expect(resultList[9].imageFormat).toBe(ImageFormat.gpx);
-    expect(resultList[10].imageFormat).toBe(ImageFormat.mp4);
+    expect(resultList[8].imageFormat).toBe(ImageFormat.gpx);
+    expect(resultList[9].imageFormat).toBe(ImageFormat.mp4);
+    // xmp is last due sorting out
+    expect(resultList[10].imageFormat).toBe(ImageFormat.xmp);
   });
 });

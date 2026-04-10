@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.import.Models;
-using starsky.foundation.import.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode;
+using starsky.foundation.import.Models;
+using starsky.foundation.import.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -23,6 +24,7 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA330Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6700;
+using starskytest.FakeCreateAn.CreateAnImageEOS7DRawCr2;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 using VerifyMSTest;
@@ -53,7 +55,9 @@ public sealed class ImportTest : VerifyBase
 				CreateAnImage.Bytes.ToArray(), CreateAnImageColorClass.Bytes.ToArray()
 			}
 		);
-		_exampleHash = new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCode("/test.jpg")
+		_exampleHash = new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCode(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg)
 			.Key;
 
 		_iStorageDirectoryRecursive = new FakeIStorage(
@@ -99,17 +103,19 @@ public sealed class ImportTest : VerifyBase
 	[DataRow("/test.mp4")]
 	[DataRow("/a330.arw")]
 	[DataRow("/a6700.arw")]
+	[DataRow("/eos7d.cr2")]
 	public async Task Preflight_SingleImage_Verify(string filePath)
 	{
 		var appSettings = new AppSettings();
 		var fakeIStorage = new FakeIStorage(["/"],
-			["/a6660.arw", "/test.mp4", "/a330.arw", "/a6700.arw"],
+			["/a6660.arw", "/test.mp4", "/a330.arw", "/a6700.arw", "/eos7d.cr2"],
 			new List<byte[]>
 			{
 				new CreateAnImageA6600Raw().Bytes.ToArray(),
 				CreateAnQuickTimeMp4.Bytes.ToArray(),
 				new CreateAnImageA330Raw().Bytes.ToArray(),
-				new CreateAnImageA6700().Bytes.ToArray()
+				new CreateAnImageA6700().Bytes.ToArray(),
+				new CreateAnImageEOS7DRawCr2().Bytes.ToArray()
 			});
 
 		var importService = new Import(new FakeSelectorStorage(fakeIStorage), appSettings,
@@ -593,6 +599,8 @@ public sealed class ImportTest : VerifyBase
 		Assert.AreEqual("NLD", fileIndexItem.LocationCountryCode);
 		Assert.AreEqual("Netherlands", fileIndexItem.LocationCountry);
 		Assert.AreEqual("Overijssel", fileIndexItem.LocationState);
+
+		Directory.Delete(appSettings.DependenciesFolder, true);
 	}
 
 	[TestMethod]
@@ -794,6 +802,7 @@ public sealed class ImportTest : VerifyBase
 	}
 
 	[TestMethod]
+	[SuppressMessage("Usage", "MSTEST0037:Use proper \'Assert\' methods")]
 	public async Task Importer_CheckIfAddToDatabaseTime()
 	{
 		var appSettings = new AppSettings();
@@ -1360,8 +1369,9 @@ public sealed class ImportTest : VerifyBase
 		await importService.AddToQueryAndImportDatabaseAsync(
 			new ImportIndexItem(), new ImportSettingsModel { IndexMode = false });
 
-		Assert.AreEqual(1, logger.TrackedInformation.Count(p =>
-			p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true));
+		Assert.ContainsSingle(p =>
+				p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true,
+			logger.TrackedInformation);
 	}
 
 	private static string DefaultPath()

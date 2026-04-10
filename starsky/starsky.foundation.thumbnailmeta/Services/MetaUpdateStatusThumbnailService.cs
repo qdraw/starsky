@@ -39,7 +39,7 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 				continue;
 			}
 
-			var fileHash = ( await _fileHashStorage.GetHashCodeAsync(subPath) ).Key;
+			var fileHash = ( await _fileHashStorage.GetHashCodeAsync(subPath, null) ).Key;
 			statusResultsWithFileHashes.Add(new ThumbnailResultDataTransferModel(fileHash, status)
 			{
 				Reasons = reason

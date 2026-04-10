@@ -6,9 +6,9 @@
         <Nullable>enable</Nullable>
         <!-- SonarQube needs this -->
         <ProjectGuid>{c5f59cd2-13dc-45e5-9cd0-a756feaffd86}</ProjectGuid>
-        <RuntimeFrameworkVersion>8.0.22</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.25</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
-        <Version>0.7.6</Version>
+        <Version>0.7.14</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
@@ -17,6 +17,7 @@
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj"/>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.optimisation\starsky.foundation.optimisation.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
         <ProjectReference Include="..\starsky.foundation.video\starsky.foundation.video.csproj"/>
         <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj"/>

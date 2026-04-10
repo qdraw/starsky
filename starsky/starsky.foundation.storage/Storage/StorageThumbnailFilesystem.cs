@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -31,6 +32,17 @@ public sealed class StorageThumbnailFilesystem : IStorage
 		return new StorageHostFullPathFilesystem(_logger).IsFileReady(CombinePath(path));
 	}
 
+	public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken)
+	{
+		throw new NotSupportedException();
+	}
+
+	public string[] ReadAllLines(string path)
+	{
+		var fullPath = CombinePath(path);
+		return new StorageHostFullPathFilesystem(_logger).ReadAllLines(fullPath);
+	}
+
 	/// <summary>
 	/// </summary>
 	/// <param name="path">FileHash not path</param>
@@ -45,6 +57,11 @@ public sealed class StorageThumbnailFilesystem : IStorage
 		// only for the root folder
 		return new StorageHostFullPathFilesystem(_logger).ExistFolder(_appSettings
 			.ThumbnailTempFolder);
+	}
+
+	public bool IsFolderEmpty(string path)
+	{
+		throw new NotSupportedException();
 	}
 
 	public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)

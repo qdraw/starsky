@@ -50,7 +50,7 @@ public class GeoBackgroundTask : IGeoBackgroundTask
 	{
 		if ( !_iStorage.ExistFolder(f) )
 		{
-			return new List<FileIndexItem>();
+			return [];
 		}
 
 		// use relative to StorageFolder
@@ -93,8 +93,10 @@ public class GeoBackgroundTask : IGeoBackgroundTask
 		foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
 			         .ToList() )
 		{
+			var fileHashService = new FileHash(_iStorage, _logger);
 			var newThumb =
-				( await new FileHash(_iStorage, _logger).GetHashCodeAsync(item.FilePath!) ).Key;
+				( await fileHashService.GetHashCodeAsync(item.FilePath!,
+					item.ImageFormat) ).Key;
 			if ( item.FileHash == newThumb )
 			{
 				continue;

@@ -3,6 +3,8 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.optimisation.Interfaces;
+using starsky.foundation.optimisation.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -42,6 +44,8 @@ public static class Program
 		var logger = serviceProvider.GetRequiredService<IWebLogger>();
 		var geoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>();
 		var ffMpegDownload = serviceProvider.GetRequiredService<IFfMpegDownload>();
+		var imageOptimisationToolDownload =
+			serviceProvider.GetRequiredService<IImageOptimisationToolDownload>();
 
 		// Migrations before geo-tools (not needed for this specific app, but helps the process)
 		await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
@@ -54,5 +58,9 @@ public static class Program
 
 		await ffMpegDownload.DownloadFfMpeg(runtimes);
 		await exifToolDownload.DownloadExifTool(runtimes);
+
+		await exifToolDownload.DownloadExifTool(runtimes);
+
+		await imageOptimisationToolDownload.Download(MozJpegDownload.Options, runtimes);
 	}
 }

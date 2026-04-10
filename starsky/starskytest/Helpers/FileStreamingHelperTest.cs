@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -91,12 +92,28 @@ public sealed class FileStreamingHelperTest
 		);
 	}
 
+	private static FileStream CreateStream()
+	{
+		try
+		{
+			var createAnImage = new CreateAnImage();
+			return new FileStream(createAnImage.FullFilePath, FileMode.Open);
+		}
+		catch ( Exception exception )
+		{
+			Console.WriteLine("Failed to create image stream, try to recreate the image" +
+			                  " for the test. " + exception.Message);
+			var createAnImage = new CreateAnImage();
+			return new FileStream(createAnImage.FullFilePath, FileMode.Open);
+		}
+	}
+
 	[TestMethod]
 	public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_imageJpeg()
 	{
 		var createAnImage = new CreateAnImage();
+		var requestBody = CreateStream();
 
-		var requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
 		_appSettings.TempFolder = createAnImage.BasePath;
 
 		var streamSelector =

@@ -16,12 +16,12 @@ dotnet tool update --global dotnet-ef
 
 ```bash
 # https://www.nuget.org/packages/dotnet-ef#versions-body-tab
-dotnet tool update --global dotnet-ef --version 8.0.17
+dotnet tool update --global dotnet-ef --version 8.0.23
 ```
 
 ## Set constance for EF Core (optional)
 
-Define constance in `starsky.foundation.database.csproj` (to remove it after the migration)
+Define constant in `starsky.foundation.database.csproj` (to remove it after the migration)
 
 only when used mysql:
 

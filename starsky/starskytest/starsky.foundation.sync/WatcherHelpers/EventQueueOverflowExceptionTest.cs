@@ -46,14 +46,10 @@ public sealed class EventQueueOverflowExceptionTest
 				.FirstOrDefault() ?? throw new NullReferenceException();
 
 		var instance =
-			( EventQueueOverflowException ) ctor.Invoke(new object[]
-			{
+			( EventQueueOverflowException ) ctor.Invoke([
 				info, new StreamingContext(StreamingContextStates.All)
-			});
-
-#pragma warning disable MSTEST0039
-		Assert.ThrowsException<EventQueueOverflowException>(() => throw instance);
-#pragma warning restore MSTEST0039
+			]);
+		Assert.ThrowsExactly<EventQueueOverflowException>(() => throw instance);
 
 #pragma warning restore SYSLIB0050
 	}

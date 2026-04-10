@@ -132,8 +132,8 @@ public sealed class SyncWatcherConnectorTest
 				Path.Combine(appSettings.StorageFolder, "test"), null,
 				WatcherChangeTypes.Changed));
 
-		Assert.AreEqual(1, websockets
-			.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
+		Assert.ContainsSingle(p => !p.StartsWith("[system]"), websockets
+			.FakeSendToAllAsync);
 
 		var value = websockets.FakeSendToAllAsync.Find(p =>
 			!p.StartsWith("[system]"));

@@ -27,8 +27,18 @@ public interface IQuery
 	/// <returns>list of FileIndex-objects</returns>
 	Task<List<FileIndexItem>> GetAllFilesAsync(string subPath);
 
+	/// <summary>
+	///     Get all files and folders inside a folder (recursive), but this uses a database as source
+	/// </summary>
+	/// <param name="subPath">sub path style</param>
+	/// <returns>list of items</returns>
 	Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/");
 
+	/// <summary>
+	///     Get all files and folders inside a folder (recursive), but this uses a database as source
+	/// </summary>
+	/// <param name="filePathList">sub path style</param>
+	/// <returns>list of items</returns>
 	Task<List<FileIndexItem>> GetAllRecursiveAsync(List<string> filePathList);
 
 	/// <summary>
@@ -102,6 +112,7 @@ public interface IQuery
 	Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null);
 
 	/// <summary>
+	///     Cached result that contain values
 	/// </summary>
 	/// <param name="inputFilePath"></param>
 	/// <param name="collections"></param>
@@ -137,7 +148,8 @@ public interface IQuery
 	/// <param name="directoryName">the path of the directory (there is no parent generation)</param>
 	bool RemoveCacheParentItem(string directoryName);
 
-	Task<string?> GetSubPathByHashAsync(string fileHash);
+	Task<List<string>> GetSubPathsByHashAsync(string fileHash);
+
 
 	Task<List<FileIndexItem>> GetObjectsByFileHashAsync(
 		List<string> fileHashesList, int retryCount = 2);
@@ -148,10 +160,33 @@ public interface IQuery
 	/// <param name="fileHash">where to look for</param>
 	void ResetItemByHash(string fileHash);
 
+	/// <summary>
+	///     Get folders non-recursive, but this uses a database as source
+	/// </summary>
+	/// <param name="subPath">which path (subpath style)</param>
+	/// <returns>items</returns>
 	Task<List<FileIndexItem>> GetFoldersAsync(string subPath);
 
+	/// <summary>
+	///     Get folders non-recursive, but this uses a database as source
+	/// </summary>
+	/// <param name="filePaths">which paths (subpath style)</param>
+	/// <returns>items</returns>
+	Task<List<FileIndexItem>> GetFoldersAsync(List<string> filePaths);
+
+	/// <summary>
+	///     Get all objects inside a folder (non-recursive), but this uses a database as source
+	/// </summary>
+	/// <param name="subPath">sub path style folder</param>
+	/// <returns>items</returns>
 	Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath);
 
+	/// <summary>
+	///     Get all objects inside a folder (non-recursive), but this uses a database as source
+	/// </summary>
+	/// <param name="filePaths">parent paths</param>
+	/// <param name="fallbackDelay">delay when fallback</param>
+	/// <returns>list of all objects inside the folder</returns>
 	Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths,
 		int fallbackDelay = 5000);
 
@@ -165,7 +200,6 @@ public interface IQuery
 	Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList);
 
 	RelativeObjects GetNextPrevInFolder(string currentFolder);
-
 
 	/// <summary>
 	///     Update parent item with all data from child items
@@ -191,14 +225,13 @@ public interface IQuery
 
 	Tuple<bool, List<FileIndexItem>> CacheGetParentFolder(string subPath);
 
-
 	/// <summary>
 	///     Add Sub Path Folder - Parent Folders
 	///     root(/)
 	///     /2017  *= index only this folder
 	///     /2018
 	///     If you use the cmd: $ starskycli -s "/2017"
-	///     the folder '2017' it self is not added
+	///     the folder '2017' itself is not added
 	///     and all parent paths are not included
 	///     this class does add those parent folders
 	/// </summary>

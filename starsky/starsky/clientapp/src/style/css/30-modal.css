@@ -37,6 +37,8 @@ div.modal-content {
     opacity 200ms ease-out;
   cursor: default;
   max-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 div.modal-content h4 {
@@ -127,4 +129,18 @@ div.modal-content.modal-content--show .preloader.preloader--inside {
   width: 50px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.modal.content.scroll {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.scroll .content--text {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
 }

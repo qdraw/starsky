@@ -6,6 +6,10 @@ namespace starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 
 public static class CreateAnQuickTimeMp4
 {
+	public const string FileHash = "BOZKZS6Y2IY5CLYVKGFYXUUTFI";
+
+	public const string FileHashWithLocation = "V2SU5JGBGEQUHVJJGVIF37YDRI";
+
 	[SuppressMessage("ReSharper", "StringLiteralTypo")]
 	private const string Base64QuickTimeMp4String =
 		"AAAAFGZ0eXBxdCAgAAAAAHF0ICAAAAAId2lkZQAAAdRtZGF0AAAAFQYFEQOH9E7NCkvcoZQ6w9SbFx8AgAAAABc" +

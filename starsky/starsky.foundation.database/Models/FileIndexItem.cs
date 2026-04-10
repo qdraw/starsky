@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -175,15 +174,15 @@ public sealed class FileIndexItem
 	/// <value>
 	///     The identifier.
 	/// </value>
-	[JsonIgnore]
 	[Key]
+	[JsonIgnore]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-	[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
 	public int Id { get; set; }
 
 	/// <summary>
 	///     Internal API for storing full file path's
 	/// </summary>
+	[MaxLength(380)]
 	private string FilePathPrivate { get; set; } = string.Empty;
 
 	/// <summary>
@@ -559,9 +558,10 @@ public sealed class FileIndexItem
 			}
 
 			return
-				new HashSet<string>(
-					SidecarExtensions.Split('|')
-						.Where(p => !string.IsNullOrWhiteSpace(p)));
+			[
+				..SidecarExtensions.Split('|')
+					.Where(p => !string.IsNullOrWhiteSpace(p))
+			];
 		}
 	}
 
@@ -757,6 +757,12 @@ public sealed class FileIndexItem
 	public List<string> LastChanged { get; set; } = new();
 
 	/// <summary>
+	///     IPTC field for artist/creator
+	/// </summary>
+	[MaxLength(200)]
+	public string? Artist { get; set; } = string.Empty;
+
+	/// <summary>
 	///     Sets the file path as Filename and ParentDirectory
 	/// </summary>
 	/// <param name="value">The value.</param>
@@ -828,7 +834,7 @@ public sealed class FileIndexItem
 
 
 	/// <summary>
-	///     Create an List of all String, bool, Datetime, ImageFormat based database fields
+	///     Create a List of all String, bool, Datetime, ImageFormat based database fields
 	/// </summary>
 	/// <returns> Files the index property list.</returns>
 	public static List<string> FileIndexPropList()

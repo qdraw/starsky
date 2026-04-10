@@ -31,15 +31,15 @@ jobs:
         node-version: [20.x, 22.x, 24.x]
 
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
 
     - name: Build ${{ matrix.node-version }}
-      uses: actions/setup-node@65d868f8d4d85d7d4abb7de0875cde3fcc8798f5
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
       with:
         node-version: ${{ matrix.node-version }}
 
     - name: Cache node modules docs
-      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
       with:
         # npm cache files are stored in `~/.npm` on Linux/macOS
         path: ~/.npm
@@ -62,14 +62,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
 
-      - uses: actions/setup-node@65d868f8d4d85d7d4abb7de0875cde3fcc8798f5
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
         with:
           node-version: '22.x'
 
       - name: Cache node modules docs
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm

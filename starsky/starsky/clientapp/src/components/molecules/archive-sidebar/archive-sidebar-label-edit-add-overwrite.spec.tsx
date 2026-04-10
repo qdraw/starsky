@@ -7,7 +7,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
-import { Keyboard } from "../../../shared/keyboard";
+import { Keyboard } from "../../../shared/keyboard/keyboard";
 import { UrlQuery } from "../../../shared/url/url-query";
 import * as Notification from "../../atoms/notification/notification";
 import ArchiveSidebarLabelEditAddOverwrite from "./archive-sidebar-label-edit-add-overwrite";

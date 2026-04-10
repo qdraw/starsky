@@ -73,7 +73,8 @@ describe("DetailView", () => {
       fileName: "test.jpg",
       filePath: "/parentDirectory/test.jpg",
       parentDirectory: "/parentDirectory",
-      status: IExifStatus.Ok
+      status: IExifStatus.Ok,
+      lastChanged: ["Src"]
     } as IFileIndexItem,
     relativeObjects: {
       nextFilePath: "next",
@@ -480,6 +481,77 @@ describe("DetailView", () => {
       component.unmount();
     });
 
+    it.each([
+      { key: "]", description: "] key press" },
+      { key: "[", description: "[ key press" }
+    ])("Tags input: blur and focus on %s", ({ key }) => {
+      jest.spyOn(MenuDetailView, "default").mockImplementationOnce(() => <></>);
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+
+      const navigateSpy = jest.fn().mockResolvedValueOnce("");
+      const locationObject = {
+        location: {
+          ...globalThis.location,
+          search: "?f=/test.jpg&details=true"
+        },
+        navigate: navigateSpy
+      };
+
+      jest
+        .spyOn(UpdateRelativeObject.prototype, "Update")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
+        });
+
+      jest
+        .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject);
+
+      const component = render(<TestComponent />);
+
+      const tagsInput = component.container.querySelector('[data-name="tags"]') as HTMLInputElement;
+
+      expect(tagsInput).toBeTruthy();
+
+      act(() => {
+        tagsInput.focus();
+      });
+
+      let blur = false;
+      let focused = false;
+
+      tagsInput.addEventListener("blur", () => {
+        blur = true;
+      });
+
+      tagsInput.addEventListener("focus", () => {
+        focused = true;
+      });
+
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key,
+        metaKey: true
+      });
+
+      act(() => {
+        tagsInput.dispatchEvent(event);
+      });
+
+      expect(focused).toBe(true);
+      expect(blur).toBe(true);
+
+      component.unmount();
+    });
+
     it("[SearchResult] Next", async () => {
       console.log("[SearchResult] Next");
       jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
@@ -698,6 +770,93 @@ describe("DetailView", () => {
       expect(updateRelativeObjectSpy).toHaveBeenCalled();
 
       component.unmount();
+    });
+  });
+
+  describe("isError reset on fileHash change (ThumbnailGeneration socket fix)", () => {
+    it("should clear error state and re-show image when fileHash changes", () => {
+      // A mock that exposes the setError prop so the test can trigger DetailView's isError
+      let capturedSetError: ((v: boolean) => void) | undefined;
+      const fileHashImageCapture = (props: IFileHashImageProps) => {
+        capturedSetError = props.setError;
+        return <div data-test="file-hash-image-test" />;
+      };
+
+      jest.spyOn(FileHashImage, "default").mockReset().mockImplementation(fileHashImageCapture);
+
+      // useLocation spy may be in a reset state from prior tests; provide a real-shaped return value
+      const locationStub = { location: globalThis.location, navigate: jest.fn() };
+      jest.spyOn(useLocation, "default").mockImplementation(() => locationStub);
+
+      // useGestures spy state from swipe tests may cause hooks-count mismatch; no-op it
+      jest.spyOn(useGestures, "useGestures").mockImplementation(() => {});
+
+      // UpdateRelativeObject spy from swipe tests may have no implementations left; ensure it returns a Promise
+      jest
+        .spyOn(UpdateRelativeObject.prototype, "Update")
+        .mockImplementation(() => Promise.resolve({} as IRelativeObjects));
+
+      const initialState: IDetailView = {
+        ...defaultState,
+        fileIndexItem: {
+          ...defaultState.fileIndexItem,
+          fileHash: "before-thumbnail",
+          lastChanged: ["Src"]
+        }
+      };
+      const updatedState: IDetailView = {
+        ...defaultState,
+        fileIndexItem: {
+          ...defaultState.fileIndexItem,
+          fileHash: "after-thumbnail",
+          lastChanged: ["Src"]
+        }
+      };
+
+      // Use a simple wrapper that receives contextValue as prop so rerender works cleanly
+      const ContextWrapper = ({
+        contextValue
+      }: {
+        contextValue: ContextDetailview.IDetailViewContext;
+      }) => (
+        <BrowserRouter>
+          <ContextDetailview.DetailViewContext.Provider value={contextValue}>
+            <DetailView {...newDetailView()} />
+          </ContextDetailview.DetailViewContext.Provider>
+        </BrowserRouter>
+      );
+
+      const component = render(
+        <ContextWrapper contextValue={{ state: initialState, dispatch: jest.fn() }} />
+      );
+
+      // Initially FileHashImage is rendered
+      expect(component.queryByTestId("file-hash-image-test")).toBeTruthy();
+
+      // Simulate failed image load: call DetailView's setError(true) via the captured prop
+      act(() => {
+        capturedSetError?.(true);
+      });
+
+      // isError=true + fileHash="before-thumbnail" → FileHashImage is hidden (null)
+      expect(component.queryByTestId("file-hash-image-test")).toBeNull();
+
+      // Simulate ThumbnailGeneration socket: rerender with new fileHash
+      // Reconciliation preserves DetailView's local isError state, then the
+      // useEffect([fileHash]) fires and resets isError → FileHashImage re-appears
+      component.rerender(
+        <ContextWrapper contextValue={{ state: updatedState, dispatch: jest.fn() }} />
+      );
+
+      // useEffect([state.fileIndexItem?.fileHash]) fires → setIsError(false)
+      // → FileHashImage should now be rendered again
+      expect(component.queryByTestId("file-hash-image-test")).toBeTruthy();
+
+      component.unmount();
+      jest.spyOn(FileHashImage, "default").mockReset();
+      jest.spyOn(useLocation, "default").mockRestore();
+      jest.spyOn(useGestures, "useGestures").mockRestore();
+      jest.spyOn(UpdateRelativeObject.prototype, "Update").mockRestore();
     });
   });
 });

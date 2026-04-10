@@ -9,7 +9,7 @@ import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { ClipboardHelper } from "../../../shared/clipboard-helper";
 import { parseDate, parseTime } from "../../../shared/date";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
-import { Keyboard } from "../../../shared/keyboard";
+import { Keyboard } from "../../../shared/keyboard/keyboard";
 import { SupportedLanguages } from "../../../shared/language";
 import * as ClearSearchCache from "../../../shared/search/clear-search-cache";
 import { UrlQuery } from "../../../shared/url/url-query";

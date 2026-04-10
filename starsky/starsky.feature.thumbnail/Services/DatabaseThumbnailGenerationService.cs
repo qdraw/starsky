@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.feature.thumbnail.Interfaces;
@@ -13,6 +16,8 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.Models;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 namespace starsky.feature.thumbnail.Services;
@@ -21,6 +26,9 @@ namespace starsky.feature.thumbnail.Services;
 	InjectionLifetime = InjectionLifetime.Scoped)]
 public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationService
 {
+	public const string DatabaseThumbnailGenerationJobType =
+		"Thumbnail.DatabaseGenerationLoop.v1";
+
 	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
 	private readonly IWebSocketConnectionsService _connectionsService;
 	private readonly IWebLogger _logger;
@@ -54,52 +62,64 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			return;
 		}
 
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
-			async _ => { await WorkThumbnailGenerationLoop(); },
-			"DatabaseThumbnailGenerationService");
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			MetaData = "DatabaseThumbnailGenerationService",
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
+			JobType = DatabaseThumbnailGenerationJobType,
+			PayloadJson = JsonSerializer.Serialize(new DatabaseThumbnailGenerationPayload())
+		});
 	}
 
-	private async Task WorkThumbnailGenerationLoop()
+	public async Task ExecuteQueuedJobAsync(CancellationToken cancellationToken)
 	{
 		_thumbnailQuery.SetRunningJob(true);
 
-		List<ThumbnailItem> missingThumbnails;
-		var totalProcessed = 0;
-		var currentPage = 0;
-		const int batchSize = 100;
-
-		do
+		try
 		{
-			missingThumbnails =
-				await _thumbnailQuery.GetMissingThumbnailsBatchAsync(currentPage,
-					batchSize);
+			List<ThumbnailItem> missingThumbnails;
+			var totalProcessed = 0;
+			var currentPage = 0;
+			const int batchSize = 100;
 
-			// Process each batch
-			var fileHashesList = missingThumbnails.Select(p => p.FileHash).ToList();
-			var queryItems = await _query.GetObjectsByFileHashAsync(fileHashesList);
-			if ( queryItems.Count == 0 )
+			do
 			{
-				break;
+				cancellationToken.ThrowIfCancellationRequested();
+
+				missingThumbnails =
+					await _thumbnailQuery.GetMissingThumbnailsBatchAsync(currentPage,
+						batchSize);
+
+				// Process each batch
+				var fileHashesList = missingThumbnails.Select(p => p.FileHash).ToList();
+				var queryItems = await _query.GetObjectsByFileHashAsync(fileHashesList);
+				if ( queryItems.Count == 0 )
+				{
+					break;
+				}
+
+				await WorkThumbnailGeneration(missingThumbnails, queryItems);
+
+				totalProcessed += missingThumbnails.Count;
+				currentPage++;
+
+				_logger.LogInformation(
+					$"[DatabaseThumbnailGenerationService] " +
+					$"Processed {totalProcessed} thumbnails so far... ({DateTime.UtcNow:HH:mm:ss})");
+			} while ( missingThumbnails.Count == batchSize );
+
+			if ( totalProcessed >= 1 )
+			{
+				_logger.LogInformation(
+					$"[DatabaseThumbnailGenerationService] Done" +
+					$"Processed {totalProcessed} thumbnails in total, next clear running job ({DateTime.UtcNow:HH:mm:ss})");
 			}
-
-			await WorkThumbnailGeneration(missingThumbnails, queryItems);
-
-			totalProcessed += missingThumbnails.Count;
-			currentPage++;
-
-			_logger.LogInformation(
-				$"[DatabaseThumbnailGenerationService] " +
-				$"Processed {totalProcessed} thumbnails so far... ({DateTime.UtcNow:HH:mm:ss})");
-		} while ( missingThumbnails.Count == batchSize );
-
-		if ( totalProcessed >= 1 )
-		{
-			_logger.LogInformation(
-				$"[DatabaseThumbnailGenerationService] Done" +
-				$"Processed {totalProcessed} thumbnails in total, next clear running job ({DateTime.UtcNow:HH:mm:ss})");
 		}
-
-		_thumbnailQuery.SetRunningJob(false);
+		finally
+		{
+			_thumbnailQuery.SetRunningJob(false);
+		}
 	}
 
 	internal async Task<IEnumerable<ThumbnailItem>> WorkThumbnailGeneration(
@@ -164,8 +184,14 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filteredData,
 				ApiNotificationType.ThumbnailGeneration);
 		await _connectionsService.SendToAllAsync(webSocketResponse,
-			new CancellationToken());
+			CancellationToken.None);
 
 		return chuckedItems;
 	}
+}
+
+[SuppressMessage("Usage", "S2094: Remove this empty class, write its code or make it an interface")]
+public sealed class DatabaseThumbnailGenerationPayload
+{
+	// left empty for now, but can be used in the future if needed
 }

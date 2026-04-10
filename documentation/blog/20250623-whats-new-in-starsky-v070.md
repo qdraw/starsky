@@ -2,7 +2,7 @@
 slug: whats-new-in-starsky-v070
 title: "What’s new in Starsky v0.7.0?"
 authors: dion
-tags: [photo mangement, software update]
+tags: [photo management, software update]
 date: 2025-06-23
 image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/1000/02_starsky_v052_kl1k.jpg
 ---

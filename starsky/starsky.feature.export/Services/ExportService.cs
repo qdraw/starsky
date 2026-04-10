@@ -11,6 +11,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -262,9 +263,15 @@ public class ExportService : IExport
 				// the file with the original name
 
 				var thumbFilename = Path.GetFileNameWithoutExtension(filePath);
-				var subPath = await _query.GetSubPathByHashAsync(thumbFilename);
-				var filename = subPath?.Split('/').LastOrDefault()!; // first a string
-				fileNames.Add(filename);
+				var subPath = ( await _query.GetSubPathsByHashAsync(thumbFilename) )
+					.FirstOrDefaultWithFallback(filePath);
+				
+				if ( !string.IsNullOrEmpty(subPath) )
+				{
+					var filename = FilenamesHelper.GetFileName(subPath);
+					fileNames.Add(filename);
+				}
+
 				continue;
 			}
 

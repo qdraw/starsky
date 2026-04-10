@@ -2,19 +2,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
-using starsky.foundation.platform.Enums;
+using starsky.foundation.metaupdate.Models;
+using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Models;
 
 namespace starsky.Controllers;
 
@@ -26,19 +26,19 @@ public sealed class MetaUpdateController : Controller
 	private readonly IWebLogger _logger;
 	private readonly IMetaPreflight _metaPreflight;
 	private readonly IMetaUpdateService _metaUpdateService;
-	private readonly IServiceScopeFactory _scopeFactory;
+	private readonly IMetaUpdateConnectionService _connectionService;
 
 	public MetaUpdateController(IMetaPreflight metaPreflight,
 		IMetaUpdateService metaUpdateService,
 		IUpdateBackgroundTaskQueue queue,
 		IWebLogger logger,
-		IServiceScopeFactory scopeFactory)
+		IMetaUpdateConnectionService connectionService)
 	{
 		_metaPreflight = metaPreflight;
-		_scopeFactory = scopeFactory;
 		_metaUpdateService = metaUpdateService;
 		_bgTaskQueue = queue;
 		_logger = logger;
+		_connectionService = connectionService;
 	}
 
 	/// <summary>
@@ -87,15 +87,21 @@ public sealed class MetaUpdateController : Controller
 				[.. inputFilePaths], append, collections, rotateClock);
 
 		// Update >
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
+		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			var metaUpdateService = _scopeFactory.CreateScope()
-				.ServiceProvider.GetRequiredService<IMetaUpdateService>();
-
-			await metaUpdateService.UpdateAsync(
-				changedFileIndexItemName, fileIndexResultsList, null,
-				collections, append, rotateClock);
-		}, "MetaUpdate", Activity.Current?.Id);
+			MetaData = "MetaUpdate",
+			TraceParentId = Activity.Current?.Id,
+			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+			JobType = MetaUpdateBackgroundJobHandler.MetaUpdate,
+			PayloadJson = JsonSerializer.Serialize(new MetaUpdateBackgroundPayload
+			{
+				ChangedFileIndexItemName = changedFileIndexItemName,
+				FileIndexResultsList = fileIndexResultsList,
+				Collections = collections,
+				Append = append,
+				RotateClock = rotateClock
+			})
+		});
 
 		// before sending not founds
 		new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f, collections,
@@ -119,19 +125,9 @@ public sealed class MetaUpdateController : Controller
 		_logger.LogInformation(
 			$"[UpdateController] send to socket {inputFilePaths[0]}");
 
-		await Task.Run(async () => await UpdateWebSocketTaskRun(fileIndexResultsList));
+		await Task.Run(async () =>
+			await _connectionService.UpdateWebSocketTaskRun(fileIndexResultsList));
 
 		return Json(returnNewResultList);
-	}
-
-	private async Task UpdateWebSocketTaskRun(List<FileIndexItem> fileIndexResultsList)
-	{
-		var webSocketResponse =
-			new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList,
-				ApiNotificationType.MetaUpdate);
-		var realtimeConnectionsService = _scopeFactory.CreateScope()
-			.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
-		await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse,
-			CancellationToken.None);
 	}
 }

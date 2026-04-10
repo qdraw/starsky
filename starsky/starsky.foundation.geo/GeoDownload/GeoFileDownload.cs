@@ -15,6 +15,8 @@ public sealed class GeoFileDownload : IGeoFileDownload
 {
 	public const string CountryName = "cities1000";
 
+	public const string Admin1CodesAscii = "admin1CodesASCII";
+
 	internal const string BaseUrl =
 		"download.geonames.org/export/dump/";
 
@@ -40,7 +42,7 @@ public sealed class GeoFileDownload : IGeoFileDownload
 		RemoveFailedDownload();
 		CreateDependenciesFolder();
 		const string https = "https://";
-		const string admin1CodesasciiTxt = "admin1CodesASCII.txt";
+		const string admin1CodesasciiTxt = $"{Admin1CodesAscii}.txt";
 
 		if ( !_hostStorage.ExistFile(
 			    Path.Combine(_appSettings.DependenciesFolder, CountryName + ".txt")) )

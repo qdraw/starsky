@@ -1,5 +1,5 @@
-import { IFileIndexItem } from "../../../../interfaces/IFileIndexItem";
 import { IExifStatus } from "../../../../interfaces/IExifStatus";
+import { IFileIndexItem } from "../../../../interfaces/IFileIndexItem";
 import { GetBoxClassName } from "./get-box-class-name";
 
 describe("GetBoxClassName function", () => {
@@ -28,6 +28,14 @@ describe("GetBoxClassName function", () => {
     const item: IFileIndexItem = {
       isDirectory: false,
       status: IExifStatus.OkAndSame
+    } as unknown as IFileIndexItem;
+    expect(GetBoxClassName(item)).toBe("box isDirectory-false");
+  });
+
+  it("should return correct class name for items with ExifWriteNotSupported status", () => {
+    const item: IFileIndexItem = {
+      isDirectory: false,
+      status: IExifStatus.ExifWriteNotSupported
     } as unknown as IFileIndexItem;
     expect(GetBoxClassName(item)).toBe("box isDirectory-false");
   });

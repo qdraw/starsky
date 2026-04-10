@@ -21,11 +21,11 @@ namespace starskytest.starsky.foundation.database.QueryTest;
 [TestClass]
 public sealed class QueryTest
 {
-	private static FileIndexItem _insertSearchDatahiJpgInput = new();
-	private static FileIndexItem _insertSearchDatahi2JpgInput = new();
-	private static FileIndexItem _insertSearchDatahi3JpgInput = new();
-	private static FileIndexItem _insertSearchDatahi4JpgInput = new();
-	private static FileIndexItem _insertSearchDatahi2SubfolderJpgInput = new();
+	private static FileIndexItem _insertSearchDataHiJpgInput = new();
+	private static FileIndexItem _insertSearchDataHi2JpgInput = new();
+	private static FileIndexItem _insertSearchDataHi3JpgInput = new();
+	private static FileIndexItem _insertSearchDataHi4JpgInput = new();
+	private static FileIndexItem _insertSearchDataHi2SubfolderJpgInput = new();
 	private readonly FakeIWebLogger _logger;
 	private readonly IMemoryCache _memoryCache;
 
@@ -48,6 +48,8 @@ public sealed class QueryTest
 			new AppSettings { Verbose = false }, serviceScope, _logger, _memoryCache);
 	}
 
+	public TestContext TestContext { get; set; }
+
 	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
@@ -59,9 +61,11 @@ public sealed class QueryTest
 
 	private async Task InsertSearchData()
 	{
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("09876543456789")) )
+		var fileSubPath =
+			( await _query.GetSubPathsByHashAsync("09876543456789") ).FirstOrDefault();
+		if ( string.IsNullOrEmpty(fileSubPath) )
 		{
-			_insertSearchDatahiJpgInput = await _query.AddItemAsync(new FileIndexItem
+			_insertSearchDataHiJpgInput = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi.jpg",
 				ParentDirectory = "/basic",
@@ -72,7 +76,7 @@ public sealed class QueryTest
 				IsDirectory = false
 			});
 
-			_insertSearchDatahi2JpgInput = await _query.AddItemAsync(new FileIndexItem
+			_insertSearchDataHi2JpgInput = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi2.jpg",
 				Tags = TrashKeyword.TrashKeywordString,
@@ -80,7 +84,7 @@ public sealed class QueryTest
 				IsDirectory = false
 			});
 
-			_insertSearchDatahi3JpgInput = await _query.AddItemAsync(new FileIndexItem
+			_insertSearchDataHi3JpgInput = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi3.jpg",
 				ParentDirectory = "/basic",
@@ -88,7 +92,7 @@ public sealed class QueryTest
 				IsDirectory = false
 			});
 
-			_insertSearchDatahi4JpgInput = await _query.AddItemAsync(new FileIndexItem
+			_insertSearchDataHi4JpgInput = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi4.jpg",
 				ParentDirectory = "/basic",
@@ -96,7 +100,7 @@ public sealed class QueryTest
 				IsDirectory = false
 			});
 
-			_insertSearchDatahi2SubfolderJpgInput = await _query.AddItemAsync(new FileIndexItem
+			_insertSearchDataHi2SubfolderJpgInput = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi2.jpg",
 				ParentDirectory = "/basic/subfolder",
@@ -109,7 +113,7 @@ public sealed class QueryTest
 	[TestMethod]
 	public async Task QueryForHomeDoesNotExist_Null()
 	{
-		// remove if item exist
+		// remove if the item exist
 		var homeItem = _query.SingleItem("/");
 		if ( homeItem?.FileIndexItem != null )
 		{
@@ -122,6 +126,7 @@ public sealed class QueryTest
 		// retry 2
 		if ( homeItem?.FileIndexItem != null )
 		{
+			await Task.Delay(50, TestContext.CancellationToken);
 			await _query.RemoveItemAsync(homeItem.FileIndexItem);
 
 			// Query again if needed
@@ -145,21 +150,21 @@ public sealed class QueryTest
 	public async Task QueryAddSingleItemHiJpgOutputTest()
 	{
 		await InsertSearchData();
-		var hiJpgOutput = _query.SingleItem(_insertSearchDatahiJpgInput.FilePath!)
+		var hiJpgOutput = _query.SingleItem(_insertSearchDataHiJpgInput.FilePath!)
 			?.FileIndexItem;
 
-		Console.WriteLine(_insertSearchDatahiJpgInput.FileHash);
+		Console.WriteLine(_insertSearchDataHiJpgInput.FileHash);
 		Console.WriteLine(hiJpgOutput?.FileHash);
 
-		Assert.AreEqual(_insertSearchDatahiJpgInput.FileHash, hiJpgOutput?.FileHash);
+		Assert.AreEqual(_insertSearchDataHiJpgInput.FileHash, hiJpgOutput?.FileHash);
 
 		// other api Get Object By FilePath
-		hiJpgOutput = await _query.GetObjectByFilePathAsync(_insertSearchDatahiJpgInput.FilePath!);
-		Assert.AreEqual(_insertSearchDatahiJpgInput.FilePath, hiJpgOutput?.FilePath);
+		hiJpgOutput = await _query.GetObjectByFilePathAsync(_insertSearchDataHiJpgInput.FilePath!);
+		Assert.AreEqual(_insertSearchDataHiJpgInput.FilePath, hiJpgOutput?.FilePath);
 	}
 
 	/// <summary>
-	///     Item exist but not in folder cache, it now adds this item to cache #228
+	///     If the item exist but not in folder cache, it now adds this item to cache #228
 	/// </summary>
 	[TestMethod]
 	public async Task SingleItem_ItemExistInDbButNotInFolderCache()
@@ -189,8 +194,10 @@ public sealed class QueryTest
 			new AppSettings { Verbose = true }, serviceScope,
 			new FakeIWebLogger(), _memoryCache);
 
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/") { IsDirectory = true }, TestContext.CancellationTokenSource.Token);
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test.jpg"), TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// And dispose
@@ -200,6 +207,31 @@ public sealed class QueryTest
 
 		Assert.AreEqual("/test.jpg", items[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[0].Status);
+	}
+
+	[TestMethod]
+	public async Task GetSubPathsByHashAsync_CacheDisabled_UsesDirectQuery()
+	{
+		var serviceScope = CreateNewScope();
+		var scope = serviceScope.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		// Arrange: add an item with a file hash
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/path1") { FileHash = "myhash" },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		// Create Query with cache disabled by passing null for IMemoryCache
+		var queryNoCache = new Query(dbContext, new AppSettings { Verbose = true }, serviceScope,
+			_logger, null);
+
+		// Act
+		var result = await queryNoCache.GetSubPathsByHashAsync("myhash");
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.HasCount(1, result);
+		Assert.AreEqual("/path1", result.FirstOrDefault());
 	}
 
 	[TestMethod]
@@ -213,12 +245,16 @@ public sealed class QueryTest
 		var query = new Query(dbContext, null!, null!, new FakeIWebLogger());
 
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetAllRecursiveAsync") { IsDirectory = true }, TestContext.CancellationTokenSource.Token);
+			new FileIndexItem("/GetAllRecursiveAsync") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetAllRecursiveAsync/test") { IsDirectory = true }, TestContext.CancellationTokenSource.Token);
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync/test.jpg"), TestContext.CancellationTokenSource.Token);
+			new FileIndexItem("/GetAllRecursiveAsync/test") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetAllRecursiveAsync/test/test.jpg"), TestContext.CancellationTokenSource.Token);
+			new FileIndexItem("/GetAllRecursiveAsync/test/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var items = await query.GetAllRecursiveAsync("/GetAllRecursiveAsync");
@@ -243,8 +279,10 @@ public sealed class QueryTest
 			new AppSettings { Verbose = true }, serviceScope,
 			new FakeIWebLogger(), _memoryCache);
 
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar") { IsDirectory = true }, TestContext.CancellationTokenSource.Token);
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar/test.jpg"), TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// And dispose
@@ -265,11 +303,11 @@ public sealed class QueryTest
 		// GetAllRecursive
 		var getAllRecursiveExpectedResult123 = new List<FileIndexItem>
 		{
-			_insertSearchDatahiJpgInput,
-			_insertSearchDatahi2JpgInput,
-			_insertSearchDatahi2SubfolderJpgInput,
-			_insertSearchDatahi3JpgInput,
-			_insertSearchDatahi4JpgInput
+			_insertSearchDataHiJpgInput,
+			_insertSearchDataHi2JpgInput,
+			_insertSearchDataHi2SubfolderJpgInput,
+			_insertSearchDataHi3JpgInput,
+			_insertSearchDataHi4JpgInput
 		}.OrderBy(p => p.FileName).ToList();
 
 		var getAllRecursive123 = ( await _query.GetAllRecursiveAsync() )
@@ -323,7 +361,8 @@ public sealed class QueryTest
 		await InsertSearchData();
 		// GetSubPathByHash
 		// See above for objects
-		Assert.AreEqual("/basic/hi.jpg", await _query.GetSubPathByHashAsync("09876543456789"));
+		var item = ( await _query.GetSubPathsByHashAsync("09876543456789") ).FirstOrDefault();
+		Assert.AreEqual("/basic/hi.jpg", item);
 	}
 
 	[TestMethod]
@@ -433,21 +472,21 @@ public sealed class QueryTest
 					p.FileHash == expectedResult.FileHash)?.FileHash);
 		}
 
-		// This feature is normal used for folders, for now it is done on files
+		// This feature is normally used for folders, for now it is done on files
 		// Hi3.jpg Previous -- all mode
-		var releative = _query.GetNextPrevInFolder("/display/hi3.jpg");
+		var relative = _query.GetNextPrevInFolder("/display/hi3.jpg");
 
 		// Folders ignore deleted items
-		Assert.AreEqual("/display/hi2.jpg", releative.PrevFilePath);
+		Assert.AreEqual("/display/hi2.jpg", relative.PrevFilePath);
 
-		// Next  Relative -- all mode
-		var releative2 = _query.GetNextPrevInFolder("/display/hi.jpg");
+		// Next Relative -- all mode
+		var relative2 = _query.GetNextPrevInFolder("/display/hi.jpg");
 
-		Assert.AreEqual("/display/hi2.jpg", releative2.NextFilePath);
-		Assert.IsNotNull(releative2);
-		if ( releative2.PrevFilePath != null )
+		Assert.AreEqual("/display/hi2.jpg", relative2.NextFilePath);
+		Assert.IsNotNull(relative2);
+		if ( relative2.PrevFilePath != null )
 		{
-			Assert.Fail(releative2.PrevFilePath);
+			Assert.Fail(relative2.PrevFilePath);
 		}
 	}
 
@@ -570,7 +609,7 @@ public sealed class QueryTest
 			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
 		});
 
-		var result = _query.DisplayFileFolders(new List<FileIndexItem> { image1, image1Jpg })
+		var result = _query.DisplayFileFolders([image1, image1Jpg])
 			.ToList();
 
 		Assert.HasCount(1, result);
@@ -626,9 +665,9 @@ public sealed class QueryTest
 			IsDirectory = false
 		});
 
-		var exptectedOutput = new List<string> { "/", "/bread" };
+		var expectedOutput = new List<string> { "/", "/bread" };
 		var output = _query.SingleItem("/bread/hi3.jpg")?.Breadcrumb;
-		CollectionAssert.AreEqual(exptectedOutput, output);
+		CollectionAssert.AreEqual(expectedOutput, output);
 	}
 
 	[TestMethod]
@@ -644,7 +683,7 @@ public sealed class QueryTest
 			IsDirectory = false
 		});
 
-		// Used for react to get the context
+		// Used for React / front-end to get the context
 		var pageTypeReact = _query.SingleItem("/bread/hi4.jpg")?.PageType;
 		Assert.AreEqual("DetailView", pageTypeReact);
 	}
@@ -684,7 +723,7 @@ public sealed class QueryTest
 		single002!.Tags = TrashKeyword.TrashKeywordString;
 		await _query.UpdateItemAsync(single002);
 
-		// Request new; and check if content is updated in memory cache
+		// Request new; and check if content is updated in the memory cache
 		single001 =
 			_query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_001.jpg");
 		Assert.IsNull(single001?.RelativeObjects.NextFilePath);
@@ -773,7 +812,7 @@ public sealed class QueryTest
 		_memoryCache.Set(Query.GetObjectByFilePathAsyncCacheName("/test135"),
 			new FileIndexItem("/test135"));
 
-		var item = await _query.GetObjectByFilePathAsync("/test135"); // <- -  no date added
+		var item = await _query.GetObjectByFilePathAsync("/test135"); // <- - no date added
 		Assert.IsNull(item); // <- no date is added so cache is ignored
 
 		_memoryCache.Remove(
@@ -824,7 +863,7 @@ public sealed class QueryTest
 		await dbContext.DisposeAsync();
 
 		item.Tags = "test";
-		await query.UpdateItemAsync(new List<FileIndexItem> { item });
+		await query.UpdateItemAsync([item]);
 
 		var getItem = await query.GetObjectByFilePathAsync("/test/010101.jpg");
 		Assert.IsNotNull(getItem);
@@ -908,7 +947,7 @@ public sealed class QueryTest
 		item1.Tags = "test";
 		item2.Tags = "test";
 
-		await _query.UpdateItemAsync(new List<FileIndexItem> { item1, item2 });
+		await _query.UpdateItemAsync([item1, item2]);
 
 		var getItem = await _query.GetObjectByFilePathAsync("/test24f1s54.jpg");
 		Assert.IsNotNull(getItem);
@@ -945,7 +984,7 @@ public sealed class QueryTest
 		item.Tags = "test";
 		item2.Tags = "test";
 
-		await query.UpdateItemAsync(new List<FileIndexItem> { item, item2 });
+		await query.UpdateItemAsync([item, item2]);
 
 		var getItem = await query.GetObjectByFilePathAsync("/test/8284574.jpg");
 		Assert.IsNotNull(getItem);
@@ -962,7 +1001,7 @@ public sealed class QueryTest
 	[TestMethod]
 	public async Task QueryTest_PrevFilePathCachingConflicts_Deleted()
 	{
-		// For previous item check if caching has no conflicts
+		// For the previous item check if caching has no conflicts
 
 		await _query.AddItemAsync(new FileIndexItem
 		{
@@ -998,7 +1037,7 @@ public sealed class QueryTest
 		single003!.Tags = TrashKeyword.TrashKeywordString;
 		await _query.UpdateItemAsync(single003);
 
-		// Request new; item must be updated in cache
+		// Request new; item must be updated in the cache
 		single004 =
 			_query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_004.jpg");
 		Assert.IsNull(single004?.RelativeObjects.PrevFilePath);
@@ -1012,7 +1051,7 @@ public sealed class QueryTest
 	[TestMethod]
 	public async Task QueryTest_TestPreviousFileHash()
 	{
-		// For previous item check if caching has no conflicts
+		// For the previous item check if caching has no conflicts
 
 		await _query.AddItemAsync(new FileIndexItem
 		{
@@ -1049,7 +1088,7 @@ public sealed class QueryTest
 	[TestMethod]
 	public async Task QueryTest_TestNextFileHash()
 	{
-		// For NEXT item check if caching has no conflicts
+		// For the NEXT item check if caching has no conflicts
 
 		await _query.AddItemAsync(new FileIndexItem
 		{
@@ -1106,7 +1145,7 @@ public sealed class QueryTest
 				.FileIndexItem;
 		Assert.AreEqual("#", cachingDeleted001Update!.Tags);
 		Assert.AreNotEqual(string.Empty, cachingDeleted001Update.Tags);
-		// AreNotEqual: When its item used cache  it will return string.empty
+		// AreNotEqual: When its item used cache it will return string.empty
 	}
 
 	[TestMethod]
@@ -1115,7 +1154,7 @@ public sealed class QueryTest
 		var name = Query.CachingDbName(nameof(FileIndexItem),
 			"/");
 
-		// Add folder to cache normally done by: CacheQueryDisplayFileFolders
+		// Add folder to the cache normally done by: CacheQueryDisplayFileFolders
 		_memoryCache.Set(name, new List<FileIndexItem>(),
 			new TimeSpan(1, 0, 0));
 		// "List`1_" is from CachingDbName
@@ -1124,7 +1163,7 @@ public sealed class QueryTest
 		_query.AddCacheItem(item);
 
 		var item1 = new FileIndexItem { Id = 400, Tags = "hi", FileName = "cache" };
-		_query.CacheUpdateItem(new List<FileIndexItem> { item1 });
+		_query.CacheUpdateItem([item1]);
 
 		_memoryCache.TryGetValue(name, out var objectFileFolders);
 		var displayFileFolders = ( List<FileIndexItem>? ) objectFileFolders;
@@ -1132,7 +1171,7 @@ public sealed class QueryTest
 
 		Assert.AreEqual("hi", displayFileFolders.Find(p => p.FileName == "cache")?.Tags);
 
-		Assert.AreEqual(1, displayFileFolders.Count(p => p.FileName == "cache"));
+		Assert.ContainsSingle(p => p.FileName == "cache", displayFileFolders);
 	}
 
 	[TestMethod]
@@ -1141,7 +1180,7 @@ public sealed class QueryTest
 		var item1 = new FileIndexItem { Id = 400, Tags = "hi", FileName = "cache" };
 
 		// already verbose
-		_query.CacheUpdateItem(new List<FileIndexItem> { item1 });
+		_query.CacheUpdateItem([item1]);
 
 		Assert.AreNotEqual(0, _logger.TrackedInformation.Count);
 		Assert.IsTrue(_logger.TrackedInformation.FirstOrDefault().Item2
@@ -1151,10 +1190,10 @@ public sealed class QueryTest
 	[TestMethod]
 	public void CacheUpdateItem_Skip_ShouldSetItem1()
 	{
-		_logger.TrackedInformation = new List<(Exception?, string?)>();
+		_logger.TrackedInformation = [];
 		var item1 = new FileIndexItem { Id = 400, Tags = "hi", FileName = "cache" };
 		// not verbose
-		_queryNoVerbose.CacheUpdateItem(new List<FileIndexItem> { item1 });
+		_queryNoVerbose.CacheUpdateItem([item1]);
 
 		Assert.IsEmpty(_logger.TrackedInformation);
 	}
@@ -1166,7 +1205,7 @@ public sealed class QueryTest
 		{
 			Id = 400, Tags = "hi", ParentDirectory = "/_fail_test1", FileName = "cache"
 		};
-		_query.CacheUpdateItem(new List<FileIndexItem> { item1 });
+		_query.CacheUpdateItem([item1]);
 
 		var name = Query.CachingDbName(nameof(FileIndexItem),
 			"/_fail_test1");
@@ -1177,13 +1216,13 @@ public sealed class QueryTest
 	[TestMethod]
 	public void CacheUpdateItem_ImplicitAdd()
 	{
-		_query.AddCacheParentItem("/456789", new List<FileIndexItem>());
+		_query.AddCacheParentItem("/456789", []);
 
 		var item1 = new FileIndexItem
 		{
 			Id = 400, Tags = "hi", ParentDirectory = "/456789", FileName = "cache"
 		};
-		_query.CacheUpdateItem(new List<FileIndexItem> { item1 });
+		_query.CacheUpdateItem([item1]);
 
 		var result = _query.DisplayFileFolders("/456789").ToList();
 
@@ -1195,22 +1234,21 @@ public sealed class QueryTest
 	public void CacheUpdateItem_UpdateByName()
 	{
 		_query.AddCacheParentItem("/3479824783",
-			new List<FileIndexItem>
+		[
+			new()
 			{
-				new()
-				{
-					Id = 401,
-					Tags = "___not___",
-					ParentDirectory = "/3479824783",
-					FileName = "cache"
-				}
-			});
+				Id = 401,
+				Tags = "___not___",
+				ParentDirectory = "/3479824783",
+				FileName = "cache"
+			}
+		]);
 
 		var item1 = new FileIndexItem
 		{
 			Id = 400, Tags = "hi", ParentDirectory = "/3479824783", FileName = "cache"
 		};
-		_query.CacheUpdateItem(new List<FileIndexItem> { item1 });
+		_query.CacheUpdateItem([item1]);
 
 		var result = _query.DisplayFileFolders("/3479824783").ToList();
 
@@ -1228,7 +1266,7 @@ public sealed class QueryTest
 		{
 			Id = 400, Tags = "hi", ParentDirectory = "/_fail_test2", FileName = "cache"
 		};
-		query.CacheUpdateItem(new List<FileIndexItem> { item1 });
+		query.CacheUpdateItem([item1]);
 
 		var success = _memoryCache.TryGetValue("List`1_/_fail_test2", out _);
 
@@ -1239,19 +1277,19 @@ public sealed class QueryTest
 	public void CacheUpdateItem_shouldHitParentCache()
 	{
 		var folderPath = "/_fail_test";
-		// Add folder to cache normally done by: CacheQueryDisplayFileFolders
+		// Add folder to the cache normally done by: CacheQueryDisplayFileFolders
 		_memoryCache.Set($"List`1_{folderPath}", new List<FileIndexItem>(),
 			new TimeSpan(1, 0, 0));
 		// "List`1_" is from CachingDbName
 
 		var item = new FileIndexItem { Id = 400, FileName = "cache", ParentDirectory = folderPath };
-		_query.AddCacheParentItem(folderPath, new List<FileIndexItem> { item });
+		_query.AddCacheParentItem(folderPath, [item]);
 
 		var item1 = new FileIndexItem
 		{
 			Id = 400, Tags = "hi", ParentDirectory = folderPath, FileName = "cache"
 		};
-		_query.CacheUpdateItem(new List<FileIndexItem> { item1 });
+		_query.CacheUpdateItem([item1]);
 
 		var success = _memoryCache.TryGetValue($"List`1_{folderPath}", out _);
 		Assert.IsTrue(success);
@@ -1288,7 +1326,7 @@ public sealed class QueryTest
 	[TestMethod]
 	public async Task Query_updateStatusContentList()
 	{
-		// for updateing multiple items
+		// for updating multiple items
 		var toUpdate = new List<FileIndexItem>
 		{
 			new()
@@ -1373,7 +1411,8 @@ public sealed class QueryTest
 
 		var dbContext2 = new InjectServiceScope(serviceScope).Context();
 		var itemItShouldContain =
-			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test982.jpg", TestContext.CancellationTokenSource.Token);
+			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test982.jpg",
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNotNull(itemItShouldContain);
 		Assert.AreEqual("test", itemItShouldContain.Tags);
 	}
@@ -1387,16 +1426,19 @@ public sealed class QueryTest
 		var query = new Query(dbContext, new AppSettings(), serviceScope, new FakeIWebLogger(),
 			_memoryCache);
 
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"), TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var item =
-			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg", TestContext.CancellationTokenSource.Token);
+			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNotNull(item);
 		await query.RemoveItemAsync(item);
 
 		var itemItShouldBeNull =
-			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg", TestContext.CancellationTokenSource.Token);
+			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(itemItShouldBeNull);
 	}
 
@@ -1409,11 +1451,13 @@ public sealed class QueryTest
 		var query = new Query(dbContext, new AppSettings(), serviceScope, new FakeIWebLogger(),
 			_memoryCache);
 
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"), TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"),
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var item =
-			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg", TestContext.CancellationTokenSource.Token);
+			await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
+				TestContext.CancellationTokenSource.Token);
 
 		await dbContext.DisposeAsync();
 
@@ -1422,7 +1466,8 @@ public sealed class QueryTest
 
 		var dbContext2 = new InjectServiceScope(serviceScope).Context();
 		var itemItShouldBeNull =
-			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg", TestContext.CancellationTokenSource.Token);
+			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
+				TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(itemItShouldBeNull);
 	}
 
@@ -1438,7 +1483,7 @@ public sealed class QueryTest
 
 		_query.AddCacheParentItem(dirPath, demoItems);
 
-		_query.RemoveCacheItem(new List<FileIndexItem> { demoItems[0], demoItems[1] });
+		_query.RemoveCacheItem([demoItems[0], demoItems[1]]);
 
 		var result = _query.DisplayFileFolders(dirPath).ToList();
 		Assert.HasCount(1, result);
@@ -1473,6 +1518,4 @@ public sealed class QueryTest
 
 		Assert.IsNull(result);
 	}
-
-	public TestContext TestContext { get; set; }
 }

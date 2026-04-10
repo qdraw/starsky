@@ -31,7 +31,7 @@ public static class SonarQube
 	/// <summary>
 	///     @see: https://www.nuget.org/packages/dotnet-sonarscanner
 	/// </summary>
-	private const string SonarQubePackageVersion = "11.0.0";
+	private const string SonarQubePackageVersion = "11.2.0";
 
 	private const string SonarQubeDotnetSonarScannerApi =
 		"https://api.nuget.org/v3-flatcontainer/dotnet-sonarscanner/index.json";
@@ -226,6 +226,9 @@ public static class SonarQube
 			.Append("/d:sonar.exclusions=**/build/*,**/build/helpers/*," +
 			        "**/documentation/*," +
 			        "**/Interfaces/IQuery.cs," +
+			        "*.mp4,*.zip,*.psd,*.webp,*.CR3,*.tiff,*.dmg,*.CR2," +
+			        "*.arw,*.woff2,*.png,*.ico,*.gif," +
+			        "**/LinuxMountWatcherSystem.cs," +
 			        "**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 			        "*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
 			        "**/*stories.tsx,**/*spec.ts,**/src/main.tsx,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
@@ -235,6 +238,9 @@ public static class SonarQube
 			        "**/build/Constants/*," +
 			        "**/documentation/*," +
 			        "**/Interfaces/IQuery.cs," +
+			        "*.mp4,*.zip,*.psd,*.webp,*.CR3,*.tiff,*.dmg,*.CR2," +
+			        "*.arw,*.woff2,*.png,*.ico,*.gif," +
+			        "**/LinuxMountWatcherSystem.cs," +
 			        "**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 			        "*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
 			        "**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/main.tsx,**/src/index.tsx,**/node_modules/*," +

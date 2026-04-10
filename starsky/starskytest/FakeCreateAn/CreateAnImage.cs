@@ -10,6 +10,13 @@ public class CreateAnImage
 {
 	private const string FileNamePrivate = "0000000000aaaaa__exifreadingtest00.jpg";
 
+	private const string TempUnitTestFolderName = "temp-unit-test";
+
+	/// <summary>
+	///     Size in bytes of the image
+	/// </summary>
+	public const int Size = 9998;
+
 	/// <summary>
 	///     Split line
 	///     @see: https://superuser.com/a/1467266 and 80 chars
@@ -228,29 +235,23 @@ public class CreateAnImage
 
 	public static readonly ImmutableArray<byte> Bytes =
 		[..Base64Helper.TryParse(Base64JpgString)];
-	
-	private const string TempUnitTestFolderName = "temp-unit-test";
 
 	/// <summary>
 	///     The FullFile Path of the Directory of the Assemblies
 	/// </summary>
-	public readonly string BasePath =  Path.Combine(AppContext.BaseDirectory, TempUnitTestFolderName);
+	public readonly string
+		BasePath = Path.Combine(AppContext.BaseDirectory, TempUnitTestFolderName);
 
-	/// <summary>
-	///     Full path of the image
-	/// </summary>
-	public readonly string FullFilePath =
-		Path.Combine(AppContext.BaseDirectory, TempUnitTestFolderName, FileNamePrivate);
-	
 	/// <summary>
 	///     Database Path/subpath of the iamge
 	/// </summary>
 	public readonly string DbPath = "/" + FileNamePrivate;
 
 	/// <summary>
-	/// Size in bytes of the image
+	///     Full path of the image
 	/// </summary>
-	public const int Size = 9998;
+	public readonly string FullFilePath =
+		Path.Combine(AppContext.BaseDirectory, TempUnitTestFolderName, FileNamePrivate);
 
 	/// <summary>
 	///     Use abstractions instead of a System.IO dependency
@@ -260,6 +261,11 @@ public class CreateAnImage
 		if ( File.Exists(FullFilePath) )
 		{
 			return;
+		}
+
+		if ( !Directory.Exists(BasePath) )
+		{
+			Directory.CreateDirectory(BasePath);
 		}
 
 		try

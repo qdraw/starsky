@@ -38,6 +38,7 @@ public class ObjectCreateIndexItemService(
 			ColorClass = fileIndexItem?.ColorClass ?? ColorClassParser.Color.DoNotChange,
 			ImageFormat = imageFormat,
 			MakeModel = fileIndexItem?.MakeModel ?? string.Empty,
+			Artist = fileIndexItem?.Artist ?? string.Empty,
 			Size = size,
 			Origin = origin
 		};

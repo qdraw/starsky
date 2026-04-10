@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -28,6 +32,8 @@ public sealed class StorageSubPathFilesystemTest
 		var appSettings = new AppSettings { StorageFolder = _newImage.BasePath };
 		_storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
 	}
+
+	public TestContext TestContext { get; set; }
 
 	[TestMethod]
 	public void StorageFilesystem_GetAllFilesDirectoryTest()
@@ -281,5 +287,222 @@ public sealed class StorageSubPathFilesystemTest
 	{
 		var result = _storage.IsFolderOrFile("not-found");
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, result);
+	}
+
+	[TestMethod]
+	public async Task ReadLinesAsync_ReadsAllLines()
+	{
+		// Arrange: create a temp file with sample lines
+		var tempFile = Path.GetTempFileName();
+		try
+		{
+			var lines = new[] { "line1", "line2", "line3" };
+			await File.WriteAllLinesAsync(tempFile, lines, TestContext.CancellationToken);
+			var storage = new StorageSubPathFilesystem(
+				new AppSettings { StorageFolder = Path.GetDirectoryName(tempFile) ?? string.Empty },
+				new FakeIWebLogger()
+			);
+
+			// Act
+			var result = new List<string>();
+			await foreach ( var line in storage.ReadLinesAsync(
+				               Path.GetFileName(tempFile), CancellationToken.None) )
+			{
+				result.Add(line);
+			}
+
+			// Assert
+			CollectionAssert.AreEqual(lines, result);
+		}
+		finally
+		{
+			// Cleanup
+			if ( File.Exists(tempFile) )
+			{
+				File.Delete(tempFile);
+			}
+		}
+	}
+
+	[TestMethod]
+	public void ReadAllLines_SubPath_ReturnsLines()
+	{
+		// Arrange: create a file under the storage folder used by _storage
+		const string dbPath = "/test_readall.txt";
+		var fullPath = Path.Combine(new CreateAnImage().BasePath, "test_readall.txt");
+		var lines = new[] { "one", "two", "three" };
+		File.WriteAllLines(fullPath, lines);
+
+		try
+		{
+			// The storage instance in this test class uses CreateAnImage.BasePath as StorageFolder
+			var result = _storage.ReadAllLines(dbPath);
+			CollectionAssert.AreEqual(lines, result);
+		}
+		finally
+		{
+			try
+			{
+				if ( File.Exists(fullPath) )
+				{
+					File.Delete(fullPath);
+				}
+			}
+			catch
+			{
+				// best effort cleanup
+			}
+		}
+	}
+
+	[TestMethod]
+	public void IsFolderEmpty_EmptyFolder_ReturnsTrue()
+	{
+		var baseStorage = Path.Combine(Path.GetTempPath(),
+			"StorageSubPathFilesystemTest_" + Guid.NewGuid());
+		try
+		{
+			var appSettings = new AppSettings { StorageFolder = baseStorage };
+			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+			// create a folder via storage (database style path)
+			const string dbPath = "/emptyfolder";
+			storage.CreateDirectory(dbPath);
+
+			var result = storage.IsFolderEmpty(dbPath);
+			Assert.IsTrue(result, "Newly created empty folder should be reported empty");
+		}
+		finally
+		{
+			try
+			{
+				Directory.Delete(baseStorage, true);
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+	}
+
+	[TestMethod]
+	public void IsFolderEmpty_FolderWithFile_ReturnsFalse()
+	{
+		var baseStorage = Path.Combine(Path.GetTempPath(),
+			"StorageSubPathFilesystemTest_" + Guid.NewGuid());
+		try
+		{
+			var appSettings = new AppSettings { StorageFolder = baseStorage };
+			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+			const string dbPath = "/folderwithfile";
+			storage.CreateDirectory(dbPath);
+
+			// write a file into the created folder using full path
+			var fullPath = appSettings.DatabasePathToFilePath(dbPath);
+			var filePath = Path.Combine(fullPath, "a.txt");
+			File.WriteAllText(filePath, "x");
+
+			var result = storage.IsFolderEmpty(dbPath);
+			Assert.IsFalse(result, "Folder with a file should be reported as not empty");
+		}
+		finally
+		{
+			try
+			{
+				Directory.Delete(baseStorage, true);
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+	}
+
+	[TestMethod]
+	public void IsFolderEmpty_NonExistent_Throws()
+	{
+		var baseStorage = Path.Combine(Path.GetTempPath(),
+			"StorageSubPathFilesystemTest_" + Guid.NewGuid());
+		try
+		{
+			var appSettings = new AppSettings { StorageFolder = baseStorage };
+			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+			const string dbPath = "/doesnotexist";
+			try
+			{
+				storage.IsFolderEmpty(dbPath);
+				Assert.Fail("Expected DirectoryNotFoundException");
+			}
+			catch ( DirectoryNotFoundException )
+			{
+				// expected
+			}
+		}
+		finally
+		{
+			try
+			{
+				Directory.Delete(baseStorage, true);
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+	}
+
+	[TestMethod]
+	public void IsFolderEmpty_FileAppearsBetweenChecks_Reliable()
+	{
+		var baseStorage = Path.Combine(Path.GetTempPath(),
+			"StorageSubPathFilesystemTest_" + Guid.NewGuid());
+		try
+		{
+			var appSettings = new AppSettings { StorageFolder = baseStorage };
+			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+			const string dbPath = "/transientfolder";
+			storage.CreateDirectory(dbPath);
+			var fullPath = appSettings.DatabasePathToFilePath(dbPath);
+			var filePath = Path.Combine(fullPath, "latefile.txt");
+
+			// Start background task that creates the file after a short delay
+			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+			Task.Run(async () =>
+			{
+				await Task.Delay(50, CancellationToken.None).ConfigureAwait(false);
+				await File.WriteAllTextAsync(filePath, "x", cts.Token);
+			}, CancellationToken.None);
+
+			// Poll until IsFolderEmpty returns false or timeout
+			var sw = Stopwatch.StartNew();
+			var success = false;
+			while ( sw.Elapsed < TimeSpan.FromSeconds(2) )
+			{
+				if ( !storage.IsFolderEmpty(dbPath) )
+				{
+					success = true;
+					break;
+				}
+
+				Task.Delay(20, CancellationToken.None).Wait(TestContext.CancellationToken);
+			}
+
+			cts.Dispose();
+			Assert.IsTrue(success, "Expected folder to become non-empty after the file is created");
+		}
+		finally
+		{
+			try
+			{
+				Directory.Delete(baseStorage, true);
+			}
+			catch
+			{
+				// ignored
+			}
+		}
 	}
 }

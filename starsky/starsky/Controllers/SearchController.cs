@@ -24,19 +24,20 @@ public sealed class SearchController : Controller
 	/// </summary>
 	/// <param name="t">search query</param>
 	/// <param name="p">page number</param>
+	/// <param name="collections">to combine files with the same name before the extension</param>
 	/// <returns>the search results</returns>
 	/// <response code="200">the search results (ActionResult Search)</response>
 	[HttpGet("/api/search")]
 	[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
 	[Produces("application/json")]
-	public async Task<IActionResult> Index(string t, int p = 0)
+	public async Task<IActionResult> Index(string t, int p = 0, bool collections = true)
 	{
 		if ( !ModelState.IsValid )
 		{
 			return BadRequest(ModelError);
 		}
 
-		var model = await _search.Search(t, p);
+		var model = await _search.Search(t, p, true, collections);
 		return Json(model);
 	}
 
@@ -47,12 +48,14 @@ public sealed class SearchController : Controller
 	/// <param name="f">subPath</param>
 	/// <param name="t">search query</param>
 	/// <param name="p">pageNumber (search query)</param>
+	/// <param name="collections">to combine files with the same name before the extension</param>
 	/// <returns>Relative object (only this)</returns>
 	/// <response code="200">the search results</response>
 	[HttpGet("/api/search/relative-objects")]
 	[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
 	[Produces("application/json")]
-	public async Task<IActionResult> SearchRelative(string f, string t, int p = 0)
+	public async Task<IActionResult> SearchRelative(string f, string t, int p = 0,
+		bool collections = true)
 	{
 		if ( !ModelState.IsValid )
 		{
@@ -60,7 +63,7 @@ public sealed class SearchController : Controller
 		}
 
 		// Json api && View()            
-		var searchViewModel = await _search.Search(t, p);
+		var searchViewModel = await _search.Search(t, p, true, collections);
 
 		var photoIndexOfQuery = GetIndexFilePathFromSearch(searchViewModel, f);
 		if ( photoIndexOfQuery == -1 )
@@ -68,7 +71,11 @@ public sealed class SearchController : Controller
 			return NotFound("image not found in search result");
 		}
 
-		var args = new Dictionary<string, string> { { "p", p.ToString() }, { "t", t } };
+		var args = new Dictionary<string, string>
+		{
+			{ "p", p.ToString() }, { "t", t },
+			{ "collections", collections.ToString().ToLowerInvariant() }
+		};
 
 		var relativeObject = new RelativeObjects { Args = args };
 
@@ -131,7 +138,7 @@ public sealed class SearchController : Controller
 	}
 
 	/// <summary>
-	///     Clear search cache to show the correct results
+	///     Clear the search cache to show the correct results
 	/// </summary>
 	/// <param name="t">search query</param>
 	/// <returns>status</returns>

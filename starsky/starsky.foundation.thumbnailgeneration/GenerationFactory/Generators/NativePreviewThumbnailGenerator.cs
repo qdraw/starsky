@@ -42,7 +42,7 @@ public class NativePreviewThumbnailGenerator(
 	{
 		return await new SharedGenerate(selectorStorage, logger).GenerateThumbnail(
 			ResizeThumbnailFromSourceImage,
-			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported,
+			ExtensionRolesHelper.IsExtensionNativeSupported,
 			singleSubPath, fileHash,
 			imageFormat, thumbnailSizes);
 	}

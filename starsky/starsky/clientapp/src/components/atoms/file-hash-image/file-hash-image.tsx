@@ -9,6 +9,7 @@ export interface IFileHashImageProps {
   setError?: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   fileHash: string;
+  refreshToken?: string;
   orientation?: Orientation;
   id?: string; // filepath to know when image is changed
   alt?: string;
@@ -18,6 +19,18 @@ export interface IFileHashImageProps {
   onResetCallback?(): void;
 
   onErrorCallback?(): void;
+}
+
+function buildImageUrl(fileHash: string, filePath?: string, refreshToken?: string) {
+  const imageUrl = new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
+    fileHash,
+    filePath,
+    globalThis.innerWidth > 1000
+  );
+  if (!refreshToken) {
+    return imageUrl;
+  }
+  return `${imageUrl}&v=${encodeURIComponent(refreshToken)}`;
 }
 
 const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
@@ -44,22 +57,13 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   }, [props.fileHash, props.orientation]);
 
   const [imageUrl, setImageUrl] = useState(
-    new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
-      props.fileHash,
-      props.id,
-      globalThis.innerWidth > 1000
-    )
+    buildImageUrl(props.fileHash, props.id, props.refreshToken)
   );
 
   useEffect(() => {
-    setImageUrl(
-      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
-        props.fileHash,
-        props.id,
-        globalThis.innerWidth > 1000
-      )
-    );
-  }, [props.fileHash, props.id]);
+    const newUrl = buildImageUrl(props.fileHash, props.id, props.refreshToken);
+    setImageUrl(newUrl);
+  }, [props.fileHash, props.id, props.refreshToken]);
 
   function onWheelCallback(z: number) {
     setImageUrl(new UrlQuery().UrlThumbnailZoom(props.fileHash, props.id, 1));
@@ -76,13 +80,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
       translateRotation={translateRotation}
       onWheelCallback={onWheelCallback}
       onResetCallback={() => {
-        setImageUrl(
-          new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
-            props.fileHash,
-            props.id,
-            globalThis.innerWidth > 1000
-          )
-        );
+        setImageUrl(buildImageUrl(props.fileHash, props.id, props.refreshToken));
         if (props.onResetCallback) props.onResetCallback();
       }}
       src={imageUrl}

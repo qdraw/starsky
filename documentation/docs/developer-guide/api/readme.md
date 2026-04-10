@@ -25,9 +25,21 @@ This document is auto generated
 | __/api/env__                                      | POST  | Show the runtime settings (dont allow AllowAnonymous)                           |
 | _Parameters: Verbose, StorageFolder, UseSystemTrash, UseLocalDesktop, DefaultDesktopEditor, DesktopCollectionsOpen                        _ |
 | __/api/env/features__                             | GET   | Show features that used in the frontend app / menu                              |
+| __/api/batch-rename/preview__                     | POST  | Preview batch rename mappings for a list of file paths and a rename pattern.    |
+| __/api/batch-rename/execute__                     | POST  | Execute batch rename for a list of mappings.                                    |
+| __/api/batch-rename-datetime/offset-preview__     | POST  | Preview filename datetime repair for files with datetime patterns in their na...|
+| __/api/batch-rename-datetime/offset-execute__     | POST  | Execute filename datetime repair to correct datetime patterns in filenames.Re...|
+| __/api/batch-rename-datetime/timezone-preview__   | POST  | Preview filename datetime repair for files with datetime patterns in their na...|
+| __/api/batch-rename-datetime/timezone-execute__   | POST  | Execute filename datetime repair to correct datetime patterns in filenames.Re...|
 | __/api/cache/list__                               | GET   | Get Database Cache (only the cache)                                             |
 | __/api/remove-cache__                             | GET   | Delete Database Cache (only the cache)                                          |
 | __/api/remove-cache__                             | POST  | Delete Database Cache (only the cache)                                          |
+| __/api/cloud-import/status__                      | GET   | Get current Cloud Import status for all providers                               |
+| __/api/cloud-import/status/\{providerId\}__       | GET   | Get status for a specific provider                                              |
+| __/api/cloud-import/sync__                        | POST  | Trigger a manual sync for all enabled providers                                 |
+| __/api/cloud-import/sync/\{providerId\}__         | POST  | Trigger a manual sync for a specific provider                                   |
+| __/api/cloud-import/last-results__                | GET   | Get the last sync results for all providers                                     |
+| __/api/cloud-import/last-result/\{providerId\}__  | GET   | Get the last sync result for a specific provider                                |
 | __/api/delete__                                   | DELETE| Remove files from the disk, but the file must contain the !delete!(TrashKeywo...|
 | _Parameters: f (subPaths, separated by dot comma), collections (true is to update files with the same name before                         _ |
 | _ the extenstion)                                                                                                                         _ |
@@ -49,7 +61,10 @@ This document is auto generated
 | __/api/export/zip/\{f\}.zip__                     | GET   | Get the exported zip, but first call 'createZip'use for example this url: /ex...|
 | __/api/geo/status__                               | GET   | Get Geo sync status                                                             |
 | __/api/geo/sync__                                 | POST  | Reverse lookup for Geo Information and/or add Geo location based on a GPX fil...|
+| __/api/geo-location-name/city__                   | GET   | Search for a city by name                                                       |
+| __/api/geo-location-name/city-timezone__          | GET   | Search for a city's timezone for a given date/time                              |
 | __/api/geo-reverse-lookup__                       | GET   | Reverse geo lookup                                                              |
+| __/api/geo-reverse-nominatim__                    | GET   | Reverse geo lookup with OpenStreetMap NominatimThis API does not allow BATCH ...|
 | __/api/health__                                   | GET   | Check if the service has any known errors and return only a stringPublic API    |
 | __/api/health/details__                           | GET   | Check if the service has any known errorsFor Authorized Users only              |
 | __/api/health/version__                           | POST  | Check if Client/App version has a match with the API-versionthe parameter 've...|
@@ -77,13 +92,17 @@ This document is auto generated
 | __/api/replace__                                  | POST  | Search and Replace text in meta information                                     |
 | _Parameters: f (subPath filepath to file, split by dot comma (;)), fieldName (name of fileIndexItem field e.g. Tags),                     _ |
 | _ search (text to search for), replace (replace [search] with this text), collections (enable collections)                                _ |
+| __/api/meta-time-correct/timezone-preview__       | POST  | Preview timezone correction for batch of images (dry-run)Uses timezone IDs to...|
+| __/api/meta-time-correct/timezone-execute__       | POST  | Execute timezone correction for batch of imagesUses timezone IDs to calculate...|
+| __/api/meta-time-correct/offset-preview__         | POST  | Preview custom offset correction for batch of images (dry-run)Uses custom tim...|
+| __/api/meta-time-correct/offset-execute__         | POST  | Execute custom offset correction for batch of imagesUses custom time/date off...|
 | __/api/update__                                   | POST  | Update Exif and Rotation API                                                    |
 | _Parameters: Id, FilePath, FileName, FileHash, FileCollectionName, ParentDirectory, IsDirectory, Tags, Status, Description,               _ |
 | _Title, DateTime, AddToDatabase, LastEdited, Latitude, Longitude, LocationAltitude, LocationCity, LocationState,                          _ |
 | _LocationCountry, LocationCountryCode, ColorClass, Orientation, ImageWidth, ImageHeight, ImageFormat, CollectionPaths,                    _ |
 | _SidecarExtensions, SidecarExtensionsList, Aperture, ShutterSpeed, IsoSpeed, Software, MakeModel, Make, Model, LensModel,                 _ |
-| _MakeCameraSerial, FocalLength, Size, ImageStabilisation, LastChanged, f (subPath filepath to file, split by dot                          _ |
-| _comma (;)), append (only for stings, add update to existing items), collections (StackCollections bool, default                          _ |
+| _MakeCameraSerial, FocalLength, Size, ImageStabilisation, LastChanged, Artist, f (subPath filepath to file, split                         _ |
+| _by dot comma (;)), append (only for stings, add update to existing items), collections (StackCollections bool, default                   _ |
 | _ true), rotateClock (relative orientation -1 or 1)                                                                                       _ |
 | __/api/notification/notification__                | GET   | Get recent notificationsUse dateTime 2022-04-16T17:33:10.323974Z to get the l...|
 | __/api/publish__                                  | GET   | Get all publish profilesTo see the entire config check appSettings              |
@@ -91,11 +110,17 @@ This document is auto generated
 | _Parameters: f (subPath filepath to file, split by dot comma (;)), itemName (itemName), publishProfileName (publishProfileName),          _ |
 | _ force                                                                                                                                   _ |
 | __/api/publish/exist__                            | GET   | To give the user UI feedback when submitting the itemNameTrue is not to conti...|
+| __/api/publish-remote/create__                    | POST  | Publish generated zip to remote destination (FTP or LocalFileSystem)            |
+| _Parameters: itemName (itemName used in /api/publish/create), publishProfileName (publishProfileName used in /api/publish/create)         _ |
+| __/api/publish-remote/status__                    | GET   | Missing summary                                                                 |
 | __/redirect/sub-path-relative__                   | GET   | Redirect or view path to relative paths using the structure-config (see /api/...|
 | __/api/search__                                   | GET   | Gets the list of search results (cached)                                        |
+| _Parameters: t (search query), p (page number), collections (to combine files with the same name before the extension)                    _ |
 | __/api/search/relative-objects__                  | GET   | Get relative paths in a search queryDoes not cover multiple pages (so it ends...|
+| _Parameters: f (subPath), t (search query), p (pageNumber (search query)), collections (to combine files with the                         _ |
+| _ same name before the extension)                                                                                                         _ |
 | __/api/search/trash__                             | GET   | List of files with the tag: !delete! (TrashKeyword.TrashKeywordString)Caching...|
-| __/api/search/remove-cache__                      | POST  | Clear search cache to show the correct results                                  |
+| __/api/search/remove-cache__                      | POST  | Clear the search cache to show the correct results                              |
 | __/api/suggest__                                  | GET   | Gets the list of search results (cached)                                        |
 | __/api/suggest/all__                              | GET   | Show all items in the search suggest cache                                      |
 | __/api/suggest/inflate__                          | GET   | To fill the cache with the data (only if cache is not already filled)           |

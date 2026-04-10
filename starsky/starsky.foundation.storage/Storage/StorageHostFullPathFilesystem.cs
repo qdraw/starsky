@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -126,9 +127,8 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 				throw;
 			}
 
-			_logger.LogError(exception, "[GetAllFilesInDirectory] " +
-			                            "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
-			return Array.Empty<string>();
+			// Does not throw when UnauthorizedAccessException or DirectoryNotFoundException
+			return [];
 		}
 
 		var imageFilesList = new List<string>();
@@ -201,7 +201,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 					throw;
 				}
 
-				_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed " +
+				_logger?.LogDebug("[StorageHostFullPathFilesystem] Catch-ed " +
 				                  "DirectoryNotFoundException/UnauthorizedAccessException => " +
 				                  exception.Message);
 			}
@@ -229,6 +229,22 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		{
 			return false;
 		}
+	}
+
+	public IAsyncEnumerable<string> ReadLinesAsync(string path,
+		CancellationToken cancellationToken)
+	{
+		if ( !ExistFile(path) )
+		{
+			throw new FileNotFoundException(path);
+		}
+
+		return File.ReadLinesAsync(path, cancellationToken);
+	}
+
+	public string[] ReadAllLines(string path)
+	{
+		return File.ReadAllLines(path);
 	}
 
 	/// <summary>
@@ -283,6 +299,23 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 	{
 		var isFolderOrFile = IsFolderOrFile(path);
 		return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Folder;
+	}
+
+	/// <summary>
+	///     Checks if a folder is empty
+	/// </summary>
+	/// <param name="path">path</param>
+	/// <returns>true if empty</returns>
+	public bool IsFolderEmpty(string path)
+	{
+		if ( Directory.EnumerateFileSystemEntries(path).Any() )
+		{
+			return false;
+		}
+
+		Thread.Sleep(10);
+
+		return !Directory.EnumerateFileSystemEntries(path).Any();
 	}
 
 	/// <summary>
@@ -412,7 +445,6 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		return true;
 	}
 
-
 	/// <summary>
 	///     Write async and disposed after
 	/// </summary>
@@ -426,6 +458,18 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			return false;
 		}
 
+		return await RetryHelper.DoAsync(LocalRun,
+			TimeSpan.FromSeconds(1), 6);
+
+		async Task LocalCopy()
+		{
+			await using var fileStream = new FileStream(path, FileMode.Create,
+				FileAccess.Write, FileShare.Read, 4096,
+				FileOptions.Asynchronous | FileOptions.SequentialScan);
+			await stream.CopyToAsync(fileStream);
+			await fileStream.FlushAsync();
+		}
+
 		async Task<bool> LocalRun()
 		{
 			try
@@ -437,31 +481,52 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 				// HttpConnection.ContentLengthReadStream does not support this
 			}
 
-			using ( var fileStream = new FileStream(path, FileMode.Create,
-				       FileAccess.Write, FileShare.Read, 4096,
-				       FileOptions.Asynchronous | FileOptions.SequentialScan) )
-			{
-				await stream.CopyToAsync(fileStream);
-				await fileStream.FlushAsync();
-			}
-
 			try
 			{
-				await stream.FlushAsync();
+				await LocalCopy();
 			}
-			catch ( NotSupportedException )
+			catch ( DirectoryNotFoundException exception )
 			{
-				// HttpConnection does not support this - Specified method is not supported.
+				var dir = Path.GetDirectoryName(path)!;
+				CreateDirectory(dir);
+				_logger.LogInformation("[WriteStreamAsync] " +
+				                       "DirectoryNotFoundException " +
+				                       "Auto-created directory: " + dir, exception);
+				try
+				{
+					await LocalCopy();
+				}
+				catch ( UnauthorizedAccessException )
+				{
+					_logger.LogError($"[WriteStreamAsync] UnauthorizedAccessException [dir] " +
+					                 $"for path: {path}");
+					return false;
+				}
 			}
+			catch ( UnauthorizedAccessException )
+			{
+				_logger.LogError($"[WriteStreamAsync] UnauthorizedAccessException " +
+				                 $"for path: {path}");
+				return false;
+			}
+			finally
+			{
+				try
+				{
+					await stream.FlushAsync();
+				}
+				catch ( NotSupportedException )
+				{
+					// HttpConnection does not support this - Specified method is not supported.
+				}
 
-			await stream.DisposeAsync(); // also flush
+				await stream.DisposeAsync(); // also flush
 
-			_logger.LogDebug($"[WriteStreamAsync] Done writing file: {path}");
+				_logger.LogDebug($"[WriteStreamAsync] Done writing file: {path}");
+			}
 
 			return true;
 		}
-
-		return await RetryHelper.DoAsync(LocalRun, TimeSpan.FromSeconds(1), 6);
 	}
 
 	/// <summary>

@@ -1,32 +1,47 @@
 # Web Html CLI
+
 ## List of [Starsky](../../readme.md) Projects
- * [By App documentation](../../starsky/readme.md) _database photo index & import index project_
+
+* [By App documentation](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md) _web api application / interface_
-      *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
-    * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
+        * [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
+    * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line
+      interface_
+    * [starskyMountWatcherCli](../../starsky/starskymountwatchercli/readme.md)  _watch sd cards_
+    * [starskyDemoSeedCli](../../starsky/starskydemoseedcli/readme.md) _demo seed data_
+    * [starskyDependenciesDownloadCli](../../starsky/starskydependenciesdownloadcli/readme.md) _make
+      sure
+      external dependencies are installed_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
-    * __[starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  publish web images to a content package__
-    * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
+    * __[starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  publish web images to a
+      content package__
+    * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp
+      service_
     * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
-    * [starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
-    * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
-    * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (.NET)_
+    * [starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes
+      are updated in the database_
+    * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by
+      generating smaller images_
+    * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic
+      libraries (.NET)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
- * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [Starsky Desktop](../../starskydesktop/readme.md) _Desktop Application_
+* [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
+* [Starsky Desktop](../../starskydesktop/readme.md) _Desktop Application_
     * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
- * [Changelog](../../history.md) _Release notes and history_
+* [Changelog](../../history.md) _Release notes and history_
 
 ## starskyWebHtmlCli docs
 
 ### Introduction:
 
-For example to generate content for a blog, the 'Web HTML Cli' can be used. This application is used to create thumbnail web images and 'pre render' html files.
-All actions are customizable in the `appsettings.json`. There is a section called `publishProfiles` in `appsettings.json`.
+For example to generate content for a blog, the 'Web HTML Cli' can be used. This application is used
+to create thumbnail web images and 'pre render' html files.
+All actions are customizable in the `appsettings.json`. There is a section called `publishProfiles`
+in `appsettings.json`.
 The `publishProfiles` are executed during runtime.
 
-
 ### To the help dialog:
+
 ```sh
 ./starskywebhtmlcli --help
 ```
@@ -41,11 +56,13 @@ Starksy WebHtml Cli ~ Help:
 --verbose or -v == verbose, more detailed info
   use -v -help to show settings:
 ```
+
 ### Configuration
 
 #### ContentType
 
 There are options to do predefined tasks
+
 - `html`, uses razor to generate html files
 - `jpeg`, resizes images to smaller files
 - `moveSourceFiles`, move action to child folder
@@ -67,7 +84,6 @@ This is used only for ContentType `jpeg`.
 When using ContentType `html` this is the filename of the rendered html file.
 With ContentType `jpeg`, this is the 'full file path' of the image used in `OverlayMaxWidth`
 
-
 __Replacer in Path__
 
 There is option to replace the `{AssemblyDirectory}` value with the path of the starsky assemblies.
@@ -81,11 +97,10 @@ Used with ContentType `html` to select the Razor template file
 
 In ContentType `html` this is used to add text before the urls used in the html output.
 
-
 __Replacer in 'Pre pend'__
 
-There is option to replace the `{Name}` value with the slug-name of the item. A slug name is the name in lowercase and the spaces are replaced with dashes.
-
+There is option to replace the `{Name}` value with the slug-name of the item. A slug name is the
+name in lowercase and the spaces are replaced with dashes.
 
 #### Append
 
@@ -98,12 +113,30 @@ In the example there are 'sub folders' created with names 1000 and 500.
 In ContentType `moveSourceFiles` this is the folder to move the file to.
 The only exception is when using it from the WebUI, then move means copy
 
-
 #### Example configuration
 
 ```json
 {
     "app" :{
+        "publishProfilesDefaults": {
+            "profileFeatures": {
+                "optimization": {
+                    "enabled": true
+                }
+            },
+            "optimizers": [
+                {
+                    "imageFormats": [
+                        "jpg"
+                    ],
+                    "id": "mozjpeg",
+                    "enabled": false,
+                    "options": {
+                        "quality": 80
+                    }
+                }
+            ]
+        },
         "publishProfiles": {
             "_default": [
                 {
@@ -143,7 +176,19 @@ The only exception is when using it from the WebUI, then move means copy
                     "Path": "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/qdrawlarge.png",
                     "Folder": "1000",
                     "Append": "_kl1k",
-                    "Copy": "true"
+                    "Copy": "true",
+                    "optimizers": [
+                        {
+                            "imageFormats": [
+                                "jpg"
+                            ],
+                            "id": "mozjpeg",
+                            "enabled": true,
+                            "options": {
+                                "quality": 80
+                            }
+                        }
+                    ]
                 },
                 {
                     "ContentType":  "jpeg",
@@ -153,11 +198,23 @@ The only exception is when using it from the WebUI, then move means copy
                     "Folder": "500",
                     "Append": "_kl",
                     "Copy": "true",
-                    "MetaData": "false"
+                    "MetaData": "false",
+                    "optimizers": [
+                        {
+                            "imageFormats": [
+                                "jpg"
+                            ],
+                            "id": "mozjpeg",
+                            "enabled": true,
+                            "options": {
+                                "quality": 80
+                            }
+                        }
+                    ]
                 },
                 {
                     "ContentType":  "moveSourceFiles",
-                    "Folder": "orgineel",
+                    "Folder": "origineel",
                     "Copy": "false"
                 },
                 {
@@ -193,3 +250,35 @@ The only exception is when using it from the WebUI, then move means copy
     }
 }
 ```
+
+#### publishProfilesDefaults
+
+Use `publishProfilesDefaults` to define reusable defaults for all publish profiles.
+
+- `profileFeatures.optimization.enabled` enables optimizer support for publish profiles.
+- `optimizers` defines default optimizer entries (for example `mozjpeg` with `quality`).
+
+```json
+"publishProfilesDefaults": {
+    "profileFeatures": {
+        "optimization": {
+            "enabled": true
+        }
+    },
+    "optimizers": [
+        {
+            "imageFormats": [
+                "jpg"
+            ],
+            "id": "mozjpeg",
+            "enabled": false,
+            "options": {
+                "quality": 80
+            }
+        }
+    ]
+}
+```
+
+You can still add an `optimizers` block per publish step inside `publishProfiles` to explicitly
+enable or tune optimizer behavior for that output.

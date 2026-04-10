@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SixLabors.ImageSharp;
 using starsky.foundation.native.PreviewImageNative.Helpers;
@@ -15,14 +14,9 @@ namespace starskytest.starsky.foundation.native.PreviewImageNative.Helpers;
 public class QuicklookMacOsTests
 {
 	[TestMethod]
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.OSX)]
 	public void GenerateThumbnail_False__WindowsLinuxOnly()
 	{
-		// Arrange
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
-		}
-
 		var (quicklook, _) = CreateSut();
 		// Act
 		Assert.IsFalse(quicklook.GenerateThumbnail("input.jpg", "output.webp", 100, 100));
@@ -36,14 +30,9 @@ public class QuicklookMacOsTests
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
 	public void GenerateThumbnail_ShouldReturnFalse_WhenFilePathIsInvalid__MacOnly()
 	{
-		// Arrange
-		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on macOS platforms.");
-		}
-
 		var (quicklook, logger) = CreateSut();
 
 		// Act
@@ -56,14 +45,9 @@ public class QuicklookMacOsTests
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
 	public void GenerateThumbnail_ShouldReturnFalse_WhenThumbnailCreationFails__MacOnly()
 	{
-		// Arrange
-		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on macOS platforms.");
-		}
-
 		var (quicklook, logger) = CreateSut();
 
 		var tempInput = Path.GetTempFileName();
@@ -92,14 +76,9 @@ public class QuicklookMacOsTests
 	[TestMethod]
 	[DataRow(0)]
 	[DataRow(100)]
+	[OSCondition(OperatingSystems.OSX)]
 	public void GenerateThumbnail_ShouldReturnTrue_WhenValidInput_Jpeg__MacOnly(int height)
 	{
-		// Arrange
-		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on macOS platforms.");
-		}
-
 		const string testName =
 			nameof(GenerateThumbnail_ShouldReturnTrue_WhenValidInput_Jpeg__MacOnly);
 		var (quicklook, _) = CreateSut();
@@ -138,14 +117,9 @@ public class QuicklookMacOsTests
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
 	public void SaveCGImageAsFile_InvalidType__MacOnly()
 	{
-		// Arrange
-		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on macOS platforms.");
-		}
-
 		var (quicklook, logger) = CreateSut();
 
 		// Act
@@ -156,14 +130,9 @@ public class QuicklookMacOsTests
 	}
 
 	[TestMethod]
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.OSX)]
 	public void SaveCGImageAsFile_DllNotFoundException__WindowsLinuxOnly()
 	{
-		// Arrange
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
-		}
-
 		var (quicklook, _) = CreateSut();
 
 		// Act
@@ -172,14 +141,9 @@ public class QuicklookMacOsTests
 	}
 
 	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
 	public void ImageDestinationAddImageFinalize_InvalidType__MacOnly()
 	{
-		// Arrange
-		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on macOS platforms.");
-		}
-
 		var (quicklook, logger) = CreateSut();
 
 		// Act
@@ -189,14 +153,9 @@ public class QuicklookMacOsTests
 	}
 
 	[TestMethod]
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.OSX)]
 	public void ImageDestinationAddImageFinalize_DllNotFoundException__WindowsLinuxOnly()
 	{
-		// Arrange
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
-		}
-
 		var (quicklook, _) = CreateSut();
 
 		// Act

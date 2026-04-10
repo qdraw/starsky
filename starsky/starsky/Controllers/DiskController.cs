@@ -10,6 +10,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -23,16 +24,19 @@ public sealed class DiskController : Controller
 {
 	private readonly IWebSocketConnectionsService _connectionsService;
 	private readonly IStorage _iStorage;
+	private readonly IWebLogger _logger;
 	private readonly INotificationQuery _notificationQuery;
 	private readonly IQuery _query;
 
 	public DiskController(IQuery query, ISelectorStorage selectorStorage,
-		IWebSocketConnectionsService connectionsService, INotificationQuery notificationQuery)
+		IWebSocketConnectionsService connectionsService,
+		INotificationQuery notificationQuery, IWebLogger logger)
 	{
 		_query = query;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_connectionsService = connectionsService;
 		_notificationQuery = notificationQuery;
+		_logger = logger;
 	}
 
 	/// <summary>
@@ -155,7 +159,8 @@ public sealed class DiskController : Controller
 			return BadRequest("No input files");
 		}
 
-		var rename = await new RenameService(_query, _iStorage).Rename(f, to, collections);
+		var service = new RenameService(_query, _iStorage, _logger);
+		var rename = await service.Rename(f, to, collections);
 
 		// When all items are not found
 		if ( rename.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok) )

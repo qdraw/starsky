@@ -55,7 +55,7 @@ namespace starsky.foundation.platform.Helpers
 		[GeneratedRegex(
 			"(,(?=\\S)|:)",
 			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase,
-			matchTimeoutMilliseconds: 200)]
+			matchTimeoutMilliseconds: 1000)]
 		private static partial Regex SingleCommaWithCommaWithSpaceRegex();
 
 		/// <summary>

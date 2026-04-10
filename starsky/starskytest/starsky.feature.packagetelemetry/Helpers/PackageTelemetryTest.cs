@@ -321,6 +321,7 @@ public sealed class PackageTelemetryTest
 		DisplayName = "Type is AppSettingsImportTransformationModel")]
 	[DataRow(typeof(AppSettingsStructureModel), true,
 		DisplayName = "Type is AppSettingsStructureModel")]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public void TestPropValueTypeCheck(Type type, bool expected)
 	{
 		// Arrange
@@ -367,7 +368,7 @@ public sealed class PackageTelemetryTest
 		             propValue.GetType() == typeof(AppSettingsStructureModel) ||
 		             propValue.GetType() == typeof(List<AppSettingsDefaultEditorApplication>);
 
-		// check for json
+		// check for Json
 		var isJsonSerializable = false;
 		if ( type != typeof(string) || type != typeof(int) || type != typeof(bool) )
 		{

@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.PreviewImageNative.Helpers;
 
@@ -8,14 +7,9 @@ namespace starskytest.starsky.foundation.native.PreviewImageNative.Helpers;
 public class CoreFoundationMacOsBindingsTests
 {
 	[TestMethod]
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.OSX)]
 	public void CreateCFStringCreateWithCString_Returns0__WindowsLinuxOnly()
 	{
-		// Arrange
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
-		}
-
 		// Act
 		var result = CoreFoundationMacOsBindings.CreateCFStringCreateWithCString("input.jpg");
 		Assert.AreEqual(0, result);

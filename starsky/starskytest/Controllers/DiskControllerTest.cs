@@ -94,9 +94,10 @@ public sealed class DiskControllerTest
 			new List<string> { _createAnImage.DbPath });
 		var fileHashCode =
 			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(_createAnImage
-				.DbPath) ).Key;
+				.DbPath, ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
+		var item = ( await _query.GetSubPathsByHashAsync(fileHashCode) ).FirstOrDefault();
+		if ( string.IsNullOrEmpty(item) )
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{
@@ -124,7 +125,8 @@ public sealed class DiskControllerTest
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 		var controller = new DiskController(_query, storageSelector,
-			new FakeIWebSocketConnectionsService(), new FakeINotificationQuery());
+			new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+			new FakeIWebLogger());
 		controller.ControllerContext = context;
 
 		var result =
@@ -141,7 +143,8 @@ public sealed class DiskControllerTest
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 		var controller = new DiskController(_query, storageSelector,
-			new FakeIWebSocketConnectionsService(), new FakeINotificationQuery());
+			new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+			new FakeIWebLogger());
 		controller.ControllerContext = context;
 
 		var result =
@@ -158,7 +161,8 @@ public sealed class DiskControllerTest
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 		var controller = new DiskController(_query, storageSelector,
-			new FakeIWebSocketConnectionsService(), new FakeINotificationQuery());
+			new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+			new FakeIWebLogger());
 		controller.ControllerContext = context;
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
@@ -182,10 +186,8 @@ public sealed class DiskControllerTest
 
 		var controller =
 			new DiskController(_query, storageSelector,
-				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery())
-			{
-				ControllerContext = context
-			};
+				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+				new FakeIWebLogger()) { ControllerContext = context };
 
 		var result = await controller.Rename(_createAnImage.DbPath, "/test.jpg") as JsonResult;
 		var list = result?.Value as List<FileIndexItem>;
@@ -208,10 +210,8 @@ public sealed class DiskControllerTest
 
 		var controller =
 			new DiskController(_query, storageSelector,
-				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery())
-			{
-				ControllerContext = context
-			};
+				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+				new FakeIWebLogger()) { ControllerContext = context };
 
 		var result =
 			await controller.Rename(_createAnImage.DbPath, "/test.jpg", true, false) as
@@ -238,11 +238,14 @@ public sealed class DiskControllerTest
 
 		var controller =
 			new DiskController(_query, storageSelector,
-				socket, new FakeINotificationQuery()) { ControllerContext = context };
+				socket, new FakeINotificationQuery(), new FakeIWebLogger())
+			{
+				ControllerContext = context
+			};
 
 		await controller.Rename(_createAnImage.DbPath, "/test.jpg");
 
-		Assert.AreEqual(1, socket.FakeSendToAllAsync.Count(p => !p.Contains("[system]")));
+		Assert.ContainsSingle(p => !p.Contains("[system]"), socket.FakeSendToAllAsync);
 		Assert.Contains("/test.jpg", socket.FakeSendToAllAsync[0]);
 
 		await _query.RemoveItemAsync(( await _query.GetObjectByFilePathAsync("/test.jpg") )!);
@@ -260,10 +263,8 @@ public sealed class DiskControllerTest
 
 		var controller =
 			new DiskController(_query, storageSelector,
-				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery())
-			{
-				ControllerContext = context
-			};
+				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+				new FakeIWebLogger()) { ControllerContext = context };
 
 		var result = await controller.Mkdir("/test_dir") as JsonResult;
 		var list = result?.Value as List<SyncViewModel>;
@@ -276,7 +277,8 @@ public sealed class DiskControllerTest
 		// Arrange
 		var controller =
 			new DiskController(_query, new FakeSelectorStorage(),
-				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery());
+				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+				new FakeIWebLogger());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
@@ -301,7 +303,10 @@ public sealed class DiskControllerTest
 
 		var controller =
 			new DiskController(_query, storageSelector,
-				socket, new FakeINotificationQuery()) { ControllerContext = context };
+				socket, new FakeINotificationQuery(), new FakeIWebLogger())
+			{
+				ControllerContext = context
+			};
 
 		await controller.Mkdir("/test_dir");
 
@@ -324,10 +329,8 @@ public sealed class DiskControllerTest
 
 		var controller =
 			new DiskController(_query, storageSelector,
-				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery())
-			{
-				ControllerContext = context
-			};
+				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+				new FakeIWebLogger()) { ControllerContext = context };
 
 		var result = await controller.Mkdir("/test_dir") as JsonResult;
 		var list = result?.Value as List<SyncViewModel>;
@@ -347,10 +350,8 @@ public sealed class DiskControllerTest
 
 		var controller =
 			new DiskController(_query, storageSelector,
-				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery())
-			{
-				ControllerContext = context
-			};
+				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+				new FakeIWebLogger()) { ControllerContext = context };
 
 		await controller.Mkdir(string.Empty);
 

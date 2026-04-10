@@ -6,7 +6,7 @@ GH_SCRIPT_DIR="https://raw.githubusercontent.com/qdraw/starsky/refs/heads/master
 LAST_CHAR_GH_SCRIPT_DIR=${GH_SCRIPT_DIR:length-1:1}
 [[ $LAST_CHAR_GH_SCRIPT_DIR != "/" ]] && GH_SCRIPT_DIR="$GH_SCRIPT_DIR/"; :
 
-SCRIPT_FILES=("download-mirror-exiftool.sh" "download-mirror-ffmpeg.sh" "download-mirror-geonames.sh")
+SCRIPT_FILES=("download-mirror-exiftool.sh" "download-mirror-ffmpeg.sh" "download-mirror-geonames.sh" "download-mirror-mozjpeg.sh")
 
 # Loop through the array
 for SCRIPT_FILE in "${SCRIPT_FILES[@]}"; do

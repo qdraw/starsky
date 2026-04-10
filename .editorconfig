@@ -111,6 +111,10 @@ dotnet_diagnostic.MSTEST0051.severity = warning
 # Seal internal types
 dotnet_diagnostic.CA1852.severity = warning
 
+# 'NonSeekableStream' overrides array-based 'ReadAsync' 
+# but does not override memory-based 'ReadAsync'
+dotnet_diagnostic.CA1844.severity = warning
+
 # Indentation preferences
 csharp_indent_block_contents = true
 csharp_indent_braces = false
@@ -144,3 +148,9 @@ dotnet_diagnostic.CS4014.severity = error
 
 # IDE0077: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0077
 dotnet_diagnostic.IDE0077.severity = error
+
+# Use '[OSCondition]' attribute instead of 'RuntimeInformation.IsOSPlatform' calls with early return or 'Assert.Inconclusive'
+dotnet_diagnostic.MSTEST0061.severity = warning
+
+# MSTEST0058: Do not use asserts in catch blocks because they may not fail the test if no exception is thrown
+dotnet_diagnostic.MSTEST0058.severity = warning

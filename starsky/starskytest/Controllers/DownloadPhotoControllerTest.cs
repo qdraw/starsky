@@ -12,10 +12,15 @@ using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -52,7 +57,8 @@ public sealed class DownloadPhotoControllerTest
 			ColorClass = ColorClassParser.Color.Winner // 1
 		};
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("home0012304590")) )
+		var fileHash = ( await _query.GetSubPathsByHashAsync("home0012304590") ).FirstOrDefault();
+		if ( string.IsNullOrEmpty(fileHash) )
 		{
 			await _query.AddItemAsync(item);
 		}
@@ -147,17 +153,29 @@ public sealed class DownloadPhotoControllerTest
 		Assert.AreEqual(404, actionResult.StatusCode);
 	}
 
+	private static ThumbnailService SetThumbnailService(IStorage storage)
+	{
+		var selectorStorage = new FakeSelectorStorage(storage);
+		return new ThumbnailService(selectorStorage,
+			new FakeIWebLogger(), new AppSettings(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
+			new ThumbnailGeneratorFactory(selectorStorage, new FakeIWebLogger(),
+				new FakeIVideoProcess(selectorStorage),
+				new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(selectorStorage,
+					new FakeEmbeddedRawThumbnailService(selectorStorage),
+					new FakeIWebLogger())));
+	}
+
 	[TestMethod]
 	public async Task DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test()
 	{
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
-		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var storage = ArrangeStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var thumbnailService = SetThumbnailService(storage);
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
@@ -174,12 +192,9 @@ public sealed class DownloadPhotoControllerTest
 	public async Task DownloadPhoto_WrongInputNotFound()
 	{
 		// Arrange
-		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var storage = ArrangeStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var thumbnailService = SetThumbnailService(storage);
 
 		// Act
 		var controller =
@@ -282,12 +297,9 @@ public sealed class DownloadPhotoControllerTest
 	{
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
-		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
-		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var storage = ArrangeStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var thumbnailService = SetThumbnailService(storage);
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
@@ -332,7 +344,8 @@ public sealed class DownloadPhotoControllerTest
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
 		var storage =
-			new FakeIStorage(null!, new List<string> { "/test.jpg" },
+			new FakeIStorage(null!,
+				["/test.jpg"],
 				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
@@ -348,5 +361,102 @@ public sealed class DownloadPhotoControllerTest
 		Assert.IsNotNull(actionResult);
 		Assert.AreEqual(404, actionResult.StatusCode);
 		Assert.AreEqual("ThumbnailTempFolder not found", actionResult.Value);
+	}
+
+	[TestMethod]
+	[DataRow("")]
+	[DataRow(null)]
+	public async Task DownloadPhoto_Thumbnail_MissingFileHash_Returns500(string? fileHash)
+	{
+		// Arrange
+		var fileIndexItem = new FileIndexItem
+		{
+			FileName = "test.jpg",
+			ParentDirectory = "/",
+			FileHash = fileHash, // Missing hash
+			ColorClass = ColorClassParser.Color.Winner
+		};
+
+		var getSubPathsByHash =
+			( await _query.GetSubPathsByHashAsync("home0012304590_nomissinghash") )
+			.FirstOrDefault();
+
+		if ( string.IsNullOrEmpty(getSubPathsByHash) )
+		{
+			await _query.AddItemAsync(fileIndexItem);
+		}
+
+		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+		var controller = new DownloadPhotoController(_query, selectorStorage,
+			new FakeIWebLogger(),
+			new FakeIThumbnailService(), new AppSettings());
+
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		// Act
+		var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath!)
+			as JsonResult;
+
+		// Assert
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(500, controller.Response.StatusCode);
+		Assert.IsTrue(actionResult.Value?.ToString()?
+			.Contains("Thumbnail generation failed"));
+	}
+
+	[TestMethod]
+	public async Task
+		DownloadPhoto_GenerationMarkedSuccess_ButLargeMissing_Returns500_AndLogsError()
+	{
+		// Arrange
+		var filePath = "/test-gen.jpg";
+		var fileHash = "FAKEHASH123";
+
+		// subpath storage has the source file
+		var subPathStorage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { filePath },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		// thumbnail storage only has small and meta but NOT large
+		var thumbFiles = new List<string>
+		{
+			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small,
+				ThumbnailImageFormat.webp),
+			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta, ThumbnailImageFormat.webp)
+		};
+		var thumbnailStorage = new FakeIStorage(["/"], thumbFiles,
+			new List<byte[]> { new byte[10], new byte[10] });
+
+		var selectorStorage = new FakeSelectorStorageByType(subPathStorage, thumbnailStorage,
+			new FakeIStorage(), new FakeIStorage());
+
+		// Query contains the FileIndexItem with a FileHash
+		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+		{
+			new(filePath) { FileHash = fileHash, IsDirectory = false }
+		});
+
+		var fakeLogger = new FakeIWebLogger();
+
+		// Fake thumbnail service that returns success results but does NOT write the large thumbnail
+		var fakeThumbnailService = new FakeIThumbnailServiceNoWrite();
+
+		var controller = new DownloadPhotoController(fakeQuery, selectorStorage, fakeLogger,
+			fakeThumbnailService, new AppSettings());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		// Act
+		var actionResult = await controller.DownloadPhoto(filePath) as JsonResult;
+
+		// Assert - controller should respond with 500 and the specific JSON message
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(500, controller.Response.StatusCode);
+		Assert.AreEqual("Thumbnail generation failed: file not persisted after generation",
+			actionResult.Value);
+
+		// Logger should have recorded the missing thumbnail error message
+		Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(t => t.Item2 != null &&
+		                                                       t.Item2.Contains(
+			                                                       "Thumbnail file not found after generation (marked success)")));
 	}
 }

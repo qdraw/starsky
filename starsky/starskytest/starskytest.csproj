@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <RuntimeFrameworkVersion>8.0.22</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.25</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <!-- SonarQube needs this -->
         <ProjectGuid>{b3342a3e-64e1-442f-b4f7-f7a718508aac}</ProjectGuid>
@@ -21,23 +21,18 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'"/>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'"/>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.22"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
-        <PackageReference Include="MSTest.TestAdapter" Version="3.11.1"/>
-        <PackageReference Include="MSTest.TestFramework" Version="3.11.1"/>
-        <PackageReference Include="Verify.MSTest" Version="30.19.1"/>
-        <PackageReference Include="coverlet.collector" Version="6.0.4">
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.25" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.25" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="4.1.0"/>
+        <PackageReference Include="MSTest.TestFramework" Version="4.1.0"/>
+        <PackageReference Include="Verify.MSTest" Version="31.13.0"/>
+        <PackageReference Include="coverlet.collector" Version="8.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-    </ItemGroup>
-
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.3.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -59,12 +54,15 @@
         <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj"/>
         <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj"/>
         <ProjectReference Include="..\starsky.foundation.video\starsky.foundation.video.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.optimisation\starsky.foundation.optimisation.csproj"/>
         <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj"/>
         <ProjectReference Include="..\starskyadmincli\starskyadmincli.csproj"/>
         <ProjectReference Include="..\starsky.project.web\starsky.project.web.csproj"/>
         <ProjectReference Include="..\starskydependenciesdownloadcli\starskydependenciesdownloadcli.csproj"/>
         <ProjectReference Include="..\starskygeocli\starskygeocli.csproj"/>
         <ProjectReference Include="..\starskyimportercli\starskyimportercli.csproj"/>
+        <ProjectReference Include="..\starskymountwatchercli\starskymountwatchercli.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.mountwatch\starsky.foundation.mountwatch.csproj"/>
         <ProjectReference Include="..\starskysynchronizecli\starskysynchronizecli.csproj"/>
         <ProjectReference Include="..\starskythumbnailcli\starskythumbnailcli.csproj"/>
         <ProjectReference Include="..\starskythumbnailmetacli\starskythumbnailmetacli.csproj"/>
@@ -117,6 +115,117 @@
         </None>
         <None Update="starsky.foundation.thumbnailgeneration\GenerationFactory\Shared\SharedGenerateTest.GenerateThumbnail_Verify.received.txt">
             <DependentUpon>SharedGenerateTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.sync\SyncServices\SyncFolderTest_summary.md">
+            <DependentUpon>SyncFolderTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_HappyFlow.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a330.arw.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a6660.arw.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a6700.arw.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-test.mp4.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTestInMemoryDb.Importer_Gpx.verified.txt">
+            <DependentUpon>ImportTest_InMemoryDb.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCity_ReturnsOk_Verify.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-01-30T12-00-00.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-01-30T12-00-00_cityName=Amsterdam.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-01-30T12-00-00_cityName=Amsterdam.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-06-30T12-00-00_cityName=Amsterdam.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-06-30T12-00-00_cityName=Willemstad.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-06-30T12-00-00_cityName=Willemstad.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCity_ReturnsOk_Verify.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.geo\GeoNameCitySeed\GeoNameCitySeedServiceTest.Seed_InsertsUniqueCities_Verify.verified.txt">
+            <DependentUpon>GeoNameCitySeedServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_InvalidLocation_Verify.received.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_InvalidLocation_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_InvalidRequest_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsExpectedJson_Amsterdam_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsExpectedJson_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsExpectedJson_Amsterdam_Verify.received.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.geolookup\Services\NominatimProxyServiceTest.ReverseAsync_ReturnsInvalidJson_Verify.verified.txt">
+            <DependentUpon>NominatimProxyServiceTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnImage_Test.received.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnImage_Test.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4A6700_Test_Verify.received.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4A6700_Test_Verify.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4Wapp_Test_Verify.received.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4Wapp_Test_Verify.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4_BytesWithLocation_Test_Verify.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_StringArray_CreateAnQuickTimeMp4_Test_Verify.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_CreateAnImage_Test_Verify.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.storage\Services\FileHashTest.FileHash_CreateAnImageWithThumbnail_Test_Verify.verified.txt">
+            <DependentUpon>FileHashTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.thumbnailgeneration\GenerationFactory\ThumbnailServiceTests.GenerateThumbnail__CorruptDng_Verify.verified.txt">
+            <DependentUpon>ThumbnailServiceTests.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.thumbnailgeneration\GenerationFactory\ThumbnailServiceTests.GenerateThumbnail__CorruptJpeg_Verify.verified.txt">
+            <DependentUpon>ThumbnailServiceTests.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.thumbnailgeneration\GenerationFactory\ThumbnailServiceTests.GenerateThumbnail_FileHash_WrongImageType_Verify.verified.txt">
+            <DependentUpon>ThumbnailServiceTests.cs</DependentUpon>
         </None>
     </ItemGroup>
     <ItemGroup>
@@ -185,6 +294,32 @@
         </Content>
         <None Remove="FakeCreateAn\CreateAnImageA6700\a6700.jpg"/>
         <Content Include="FakeCreateAn\CreateAnImageA6700\a6700.jpg">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnQuickTimeMp4\20260309_041447_head_part.mp4"/>
+        <Content Include="FakeCreateAn\CreateAnQuickTimeMp4\20260309_041447_wapp_head_part.mp4">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageA6700Raw\20260308_144118_DSC05172.arw"/>
+        <Content Include="FakeCreateAn\CreateAnImageA6700PreviewRawJpeg\20260308_144118_DSC05172.arw">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageEOSM50Raw\IMG_0483_Canon EOS M50.CR3"/>
+        <Content Include="FakeCreateAn\CreateAnImageEOSM50RawCr3\IMG_0483_Canon EOS M50.CR3">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageA6700Raw\20260308_144118_DSC05172.jpg"/>
+        <Content Include="FakeCreateAn\CreateAnImageA6700PreviewRawJpeg\20260308_144118_DSC05172.jpg">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageEOS7DRawCr2\Canon - EOS 7D - sRAW2 (sRAW) (3_2).CR2"/>
+        <Content Include="FakeCreateAn\CreateAnImageEOS7DRawCr2\Canon - EOS 7D - sRAW2 (sRAW) (3_2).CR2">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="FakeCreateAn\CreateAnQuickTimeMp4\C0008_head_part.mp4"/>
+        <Content Include="FakeCreateAn\CreateAnQuickTimeMp4\C0008_head_part.mp4">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

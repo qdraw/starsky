@@ -8,7 +8,9 @@ import { LimitLength } from "./limit-length";
 interface IFormControlProps {
   contentEditable: boolean;
   onBlur?(event: React.ChangeEvent<HTMLDivElement>): void;
+  onFocus?(event: React.ChangeEvent<HTMLDivElement>): void;
   onInput?(event: React.ChangeEvent<HTMLDivElement>): void;
+  onKeyDown?(event: React.KeyboardEvent<HTMLDivElement>): void;
   reference?: React.RefObject<HTMLDivElement>;
   name: string;
   className?: string;
@@ -19,7 +21,7 @@ interface IFormControlProps {
   "data-test"?: string;
 }
 
-const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, ...props }) => {
+const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, onFocus, ...props }) => {
   const maxlength = props.maxlength ?? 255;
   const [childLength, setChildLength] = useState(getTextLength(props.children));
 
@@ -54,8 +56,14 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, ...pr
       <div
         data-test={props["data-test"] ?? "form-control"}
         onBlur={new LimitLength(setChildLength, onBlur, maxlength).LimitLengthBlur}
+        onFocus={onFocus}
         data-name={props.name}
-        onKeyDown={new LimitLength(setChildLength, onBlur, maxlength).LimitLengthKey}
+        onKeyDown={(event) => {
+          if (props.onKeyDown) {
+            props.onKeyDown(event);
+          }
+          new LimitLength(setChildLength, onBlur, maxlength).LimitLengthKey(event);
+        }}
         onInput={props.onInput}
         onPaste={limitLengthPaste}
         spellCheck={props.spellcheck}

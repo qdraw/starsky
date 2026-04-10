@@ -1,30 +1,43 @@
 # Web FTP CLI
+
 ## List of [Starsky](../../readme.md) Projects
- * [By App documentation](../../starsky/readme.md) _database photo index & import index project_
+
+* [By App documentation](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md) _web api application / interface_
-      *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
-    * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
+        * [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
+    * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line
+      interface_
+    * [starskyMountWatcherCli](../../starsky/starskymountwatchercli/readme.md)  _watch sd cards_
+    * [starskyDemoSeedCli](../../starsky/starskydependenciesdownloadcli/readme.md) _make sure
+      external dependencies are installed_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
-    * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
-    * __[starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  copy a content package to a ftp service__
+    * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a
+      content package_
+    * __[starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  copy a content package to a
+      ftp service__
     * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
-    * [starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
-    * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
-    * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (.NET)_
+    * [starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes
+      are updated in the database_
+    * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by
+      generating smaller images_
+    * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic
+      libraries (.NET)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
- * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [Starsky Desktop](../../starskydesktop/readme.md) _Desktop Application_
+* [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
+* [Starsky Desktop](../../starskydesktop/readme.md) _Desktop Application_
     * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
- * [Changelog](../../history.md) _Release notes and history_
+* [Changelog](../../history.md) _Release notes and history_
 
 ## starskyWebFtpCli docs
 
-Copy a content package to a ftp server. Run the `starskyWebHtmlCli` first, to create a 'content package'
+Copy a content package to a ftp server. Run the `starskyWebHtmlCli` first, to create a 'content
+package'
 A 'content package' is a folder with static html files and resized images.
 
 ### AppSettings
 
 Use the `publishProfiles` by the `starskyWebHtmlCli` and add the `WebFtp` field.
+
 ```json
 {
     "app" :{
@@ -81,7 +94,7 @@ Use the `publishProfiles` by the `starskyWebHtmlCli` and add the `WebFtp` field.
                 },
                 {
                     "ContentType":  "moveSourceFiles",
-                    "Folder": "orgineel",
+                    "Folder": "origineel",
                     "Copy": "false"
                 },
                 {

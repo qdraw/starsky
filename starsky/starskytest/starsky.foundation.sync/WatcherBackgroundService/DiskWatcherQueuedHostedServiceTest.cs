@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starskytest.FakeMocks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace starskytest.starsky.foundation.sync.WatcherBackgroundService;
 
@@ -22,9 +23,11 @@ public sealed class DiskWatcherQueuedHostedServiceTest
 	public void DiskWatcherQueuedHostedServiceTest_ExecuteAsync_StartAsync_Test()
 	{
 		var logger = new FakeIWebLogger();
+		var scopeFactory = new ServiceCollection().BuildServiceProvider()
+			.GetRequiredService<IServiceScopeFactory>();
 		var service = new DiskWatcherQueuedHostedService(
 			new FakeDiskWatcherUpdateBackgroundTaskQueue(),
-			logger, new AppSettings());
+			logger, new AppSettings(), scopeFactory);
 
 		var source = new CancellationTokenSource();
 		var token = source.Token;
@@ -51,9 +54,11 @@ public sealed class DiskWatcherQueuedHostedServiceTest
 	public async Task DiskWatcherQueuedHostedService_End_StopAsync_Test()
 	{
 		var logger = new FakeIWebLogger();
+		var scopeFactory = new ServiceCollection().BuildServiceProvider()
+			.GetRequiredService<IServiceScopeFactory>();
 		var service = new DiskWatcherQueuedHostedService(
 			new FakeDiskWatcherUpdateBackgroundTaskQueue(),
-			logger, new AppSettings());
+			logger, new AppSettings(), scopeFactory);
 
 		var source = new CancellationTokenSource();
 		var token = source.Token;

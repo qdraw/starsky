@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +14,8 @@ namespace starskytest.starsky.feature.health.HealthCheck;
 [TestClass]
 public sealed class DiskStorageHealthCheckTest
 {
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	[SuppressMessage("Performance",
 		"CA1806:Do not ignore method results",
@@ -49,7 +53,8 @@ public sealed class DiskStorageHealthCheckTest
 
 		var healthCheck = new HealthCheckContext();
 		var sut = new DiskStorageHealthCheck(diskOptions, new FakeIWebLogger());
-		var result = await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
+		var result =
+			await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(HealthStatus.Healthy, result.Status);
 	}
 
@@ -68,7 +73,8 @@ public sealed class DiskStorageHealthCheckTest
 			Registration = new HealthCheckRegistration("te",
 				sut, null, null)
 		};
-		var result = await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
+		var result =
+			await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		Assert.IsTrue(result.Description?.Contains("Minimum configured megabytes for disk"));
 	}
@@ -86,7 +92,8 @@ public sealed class DiskStorageHealthCheckTest
 			Registration = new HealthCheckRegistration("te",
 				sut, null, null)
 		};
-		var result = await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
+		var result =
+			await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		Assert.IsTrue(result.Description?.Contains("is not present on system"));
 	}
@@ -105,5 +112,118 @@ public sealed class DiskStorageHealthCheckTest
 			await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token));
 	}
 
-	public TestContext TestContext { get; set; }
+	[TestMethod]
+	public void GetWindowsDriveInfo_ExistingDrive_ReturnsExists()
+	{
+		if ( !OperatingSystem.IsWindows() && !OperatingSystem.IsMacOS() )
+		{
+			Assert.Inconclusive("Test is only relevant on Windows and macOS platforms");
+			return;
+		}
+
+		var healthCheck =
+			new DiskStorageHealthCheck(new DiskStorageOptions(), new FakeIWebLogger());
+		// Use root drive for test (should exist on all systems)
+		var drive = Path.GetPathRoot(Environment.SystemDirectory);
+		Console.WriteLine("Testing drive: " + drive);
+		var (exists, actualFreeMegabytes) = healthCheck.GetWindowsDriveInfo(drive!);
+		Assert.IsTrue(exists);
+		Assert.IsGreaterThan(0, actualFreeMegabytes);
+	}
+
+	[TestMethod]
+	public void GetWindowsDriveInfo_ExistingDrive_Linux_macOS_ReturnsExists()
+	{
+		if ( !OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS() )
+		{
+			Assert.Inconclusive("Test is only relevant on Linux and macOS platforms");
+			return;
+		}
+
+		var healthCheck =
+			new DiskStorageHealthCheck(new DiskStorageOptions(), new FakeIWebLogger());
+		var (exists, actualFreeMegabytes) = healthCheck.GetWindowsDriveInfo("/");
+		Assert.IsTrue(exists);
+		Assert.IsGreaterThan(0, actualFreeMegabytes);
+	}
+
+	private static string GetUnusedDriveLetter()
+	{
+		var usedLetters = DriveInfo.GetDrives()
+			.Select(d => char.ToUpperInvariant(d.Name[0]))
+			.ToHashSet();
+
+		for ( char letter = 'Z'; letter >= 'A'; letter-- )
+		{
+			if ( !usedLetters.Contains(letter) )
+			{
+				return $"{letter}:\\";
+			}
+		}
+
+		throw new InvalidOperationException("No unused drive letters available.");
+	}
+
+	[TestMethod]
+	public void GetWindowsDriveInfo_NonExistingDrive_ReturnsNotExists()
+	{
+		var healthCheck =
+			new DiskStorageHealthCheck(new DiskStorageOptions(), new FakeIWebLogger());
+		var nonExistingDrive = GetUnusedDriveLetter();
+
+		var (exists, actualFreeMegabytes) = healthCheck.GetWindowsDriveInfo(nonExistingDrive);
+		Assert.IsFalse(exists);
+		Assert.AreEqual(0, actualFreeMegabytes);
+	}
+
+	[TestMethod]
+	public void GetWindowsDriveInfo_InvalidDrive_HandlesException()
+	{
+		var healthCheck =
+			new DiskStorageHealthCheck(new DiskStorageOptions(), new FakeIWebLogger());
+		// Illegal drive name
+		var (exists, actualFreeMegabytes) = healthCheck.GetWindowsDriveInfo("?*invalid*?");
+		Assert.IsFalse(exists);
+		Assert.AreEqual(0, actualFreeMegabytes);
+	}
+
+	[TestMethod]
+	public void GetUnixDriveInfo_ExistingDirectory_ReturnsExists()
+	{
+		var healthCheck =
+			new DiskStorageHealthCheck(new DiskStorageOptions(), new FakeIWebLogger());
+		var tempDir = Path.GetTempPath();
+		var (exists, actualFreeMegabytes) = healthCheck.GetUnixDriveInfo(tempDir);
+		Assert.IsTrue(exists);
+		Assert.IsGreaterThan(0, actualFreeMegabytes);
+	}
+
+	[TestMethod]
+	public void GetUnixDriveInfo_NonExistingDirectory_ReturnsNotExists()
+	{
+		var healthCheck =
+			new DiskStorageHealthCheck(new DiskStorageOptions(), new FakeIWebLogger());
+		var (exists, actualFreeMegabytes) = healthCheck.GetUnixDriveInfo("/notarealdir123456789");
+		Assert.IsFalse(exists);
+		Assert.AreEqual(0, actualFreeMegabytes);
+	}
+
+	[TestMethod]
+	public void GetUnixDriveInfo_InvalidPath_HandlesException()
+	{
+		var healthCheck =
+			new DiskStorageHealthCheck(new DiskStorageOptions(), new FakeIWebLogger());
+		// Use a file path instead of directory
+		var filePath = Path.GetTempFileName();
+		try
+		{
+			var (exists, actualFreeMegabytes) = healthCheck.GetUnixDriveInfo(filePath);
+			Assert.IsFalse(exists);
+			Assert.AreEqual(0, actualFreeMegabytes);
+		}
+		finally
+		{
+			File.Delete(filePath);
+		}
+	}
 }

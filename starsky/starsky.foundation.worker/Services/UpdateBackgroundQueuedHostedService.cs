@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -18,15 +19,18 @@ namespace starsky.foundation.worker.Services
 	{
 		private readonly IUpdateBackgroundTaskQueue _taskQueue;
 		private readonly IWebLogger _logger;
+		private readonly IServiceScopeFactory _scopeFactory;
 
 		public UpdateBackgroundQueuedHostedService(
 			IUpdateBackgroundTaskQueue taskQueue,
-			IWebLogger logger) =>
-			(_taskQueue, _logger) = (taskQueue, logger);
+			IWebLogger logger,
+			IServiceScopeFactory scopeFactory) =>
+			(_taskQueue, _logger, _scopeFactory) = (taskQueue, logger, scopeFactory);
 
 		protected override Task ExecuteAsync(CancellationToken cancellationToken)
 		{
-			return ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger, cancellationToken);
+			return ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger,
+				cancellationToken, _scopeFactory);
 		}
 
 		public override async Task StopAsync(CancellationToken stoppingToken)

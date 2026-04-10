@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -33,6 +34,20 @@ public sealed class StorageSubPathFilesystem : IStorage
 	{
 		var fullPath = _appSettings.DatabasePathToFilePath(path);
 		return new StorageHostFullPathFilesystem(_logger).IsFileReady(fullPath);
+	}
+
+	public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken)
+	{
+		var fullPath = _appSettings.DatabasePathToFilePath(path);
+
+		return new StorageHostFullPathFilesystem(_logger).ReadLinesAsync(fullPath,
+			cancellationToken);
+	}
+
+	public string[] ReadAllLines(string path)
+	{
+		var fullPath = _appSettings.DatabasePathToFilePath(path);
+		return new StorageHostFullPathFilesystem(_logger).ReadAllLines(fullPath);
 	}
 
 	/// <summary>
@@ -72,6 +87,12 @@ public sealed class StorageSubPathFilesystem : IStorage
 	{
 		var isFolderOrFile = IsFolderOrFile(path);
 		return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Folder;
+	}
+
+	public bool IsFolderEmpty(string path)
+	{
+		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		return new StorageHostFullPathFilesystem(_logger).IsFolderEmpty(fullFilePath);
 	}
 
 	/// <summary>
@@ -158,11 +179,6 @@ public sealed class StorageSubPathFilesystem : IStorage
 		var storage = new StorageHostFullPathFilesystem(_logger);
 		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 
-		if ( !storage.ExistFolder(fullFilePath) )
-		{
-			return Enumerable.Empty<string>();
-		}
-
 		var imageFilesList = storage.GetAllFilesInDirectory(fullFilePath);
 
 		// to filter use:
@@ -236,11 +252,6 @@ public sealed class StorageSubPathFilesystem : IStorage
 		var storage = new StorageHostFullPathFilesystem(_logger);
 
 		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
-		if ( !storage.ExistFolder(fullFilePath) )
-		{
-			return [];
-		}
-
 		var folders = storage.GetDirectoryRecursive(fullFilePath);
 
 		// Used For subfolders

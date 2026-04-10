@@ -176,7 +176,7 @@ function addArchiveReducer(state: IArchiveProps, initActionAdd: IFileIndexItem[]
       value.status === IExifStatus.Ok ||
       value.status === IExifStatus.OkAndSame ||
       value.status === IExifStatus.Default ||
-      value.status === IExifStatus.OperationNotSupported // pushed when trying to create a map that already exist
+      value.status === IExifStatus.OperationNotSupported // pushed when trying to create a folder that already exist
     );
   };
 
@@ -212,6 +212,7 @@ function addArchiveReducer(state: IArchiveProps, initActionAdd: IFileIndexItem[]
   fileIndexItems = filterSidecarItems(actionAdd, fileIndexItems, state);
 
   state = { ...state, fileIndexItems, lastUpdated: new Date() };
+
   // when you remove the last item of the directory
   if (state.fileIndexItems.length === 0) {
     state.colorClassUsage = [];

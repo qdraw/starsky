@@ -43,4 +43,9 @@ public class FakeIZipper : IZipper
 
 		return true;
 	}
+
+	public byte[]? ExtractZipEntry(string zipInputFullPath, string entryFullName)
+	{
+		throw new NotImplementedException();
+	}
 }

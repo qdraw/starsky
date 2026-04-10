@@ -142,7 +142,9 @@ public sealed class SyncSingleFileTest
 	public async Task SingleFile_FileAlreadyExist_WithSameFileHash()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 		{
@@ -169,7 +171,9 @@ public sealed class SyncSingleFileTest
 	public async Task SingleFile_FileAlreadyExist_WithSameFileHash_ShouldNotTrigger()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 		{
@@ -199,7 +203,9 @@ public sealed class SyncSingleFileTest
 	public async Task SingleFile_FileAlreadyExist_With_Same_LastEditedTime()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 		{
@@ -229,7 +235,9 @@ public sealed class SyncSingleFileTest
 	public async Task SingleFile_FileAlreadyExist_With_Different_LastEditedTime()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem("/test.jpg")
 		{
@@ -268,16 +276,16 @@ public sealed class SyncSingleFileTest
 
 		var (fileHash, _) =
 			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
-				currentFilePath);
+				currentFilePath,
+				ExtensionRolesHelper.ImageFormat.jpg);
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
-			new(currentFilePath)
+		var fakeQuery = new FakeIQuery([
+			new FileIndexItem(currentFilePath)
 			{
 				FileHash = "THIS_IS_THE_OLD_HASH",
 				Size = 99999999 // % % % that's not the right size % % %
 			}
-		});
+		]);
 
 		var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
@@ -337,7 +345,8 @@ public sealed class SyncSingleFileTest
 		SingleFile_FileAlreadyExist_With_Different_LastEditedTime_AppSettingsIgnore()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem("/test.jpg")
 		{
@@ -375,7 +384,8 @@ public sealed class SyncSingleFileTest
 	public async Task SingleItem_DbItem_Updated()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 		var item = new FileIndexItem("/test.jpg")
 		{
 			FileHash = "THIS_IS_THE_OLD_HASH",
@@ -410,13 +420,14 @@ public sealed class SyncSingleFileTest
 	public async Task SingleFile_DbItem_FileAlreadyExist_WithSameFileHash()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem("/test.jpg")
 		{
 			FileHash = fileHash, LastEdited = _lastEditedDateTime
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
@@ -427,7 +438,8 @@ public sealed class SyncSingleFileTest
 		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result?.Status);
 
 		var count =
-			( await fakeQuery.GetAllFilesAsync("/") ).Count(p => p.FileName == "test.jpg");
+			( await fakeQuery.GetAllFilesAsync("/") )
+			.Count(p => p.FileName == "test.jpg");
 		Assert.AreEqual(1, count);
 
 		var detailView = fakeQuery.SingleItem("/test.jpg");
@@ -440,7 +452,9 @@ public sealed class SyncSingleFileTest
 	public async Task SingleItem_DbItem_Null()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
+
 		var item = new FileIndexItem("/test.jpg") { FileHash = "THIS_IS_THE_OLD_HASH" };
 
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
@@ -455,7 +469,8 @@ public sealed class SyncSingleFileTest
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result?.Status);
 
 		var count =
-			( await fakeQuery.GetAllFilesAsync("/") ).Count(p => p.FileName == "test.jpg");
+			( await fakeQuery.GetAllFilesAsync("/") )
+			.Count(p => p.FileName == "test.jpg");
 		Assert.AreEqual(1, count);
 
 		var detailView = fakeQuery.SingleItem("/test.jpg");
@@ -476,7 +491,8 @@ public sealed class SyncSingleFileTest
 			_lastEditedDateTime);
 
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(filePath);
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem(filePath)
 		{
@@ -488,13 +504,13 @@ public sealed class SyncSingleFileTest
 			LastEdited = new DateTime(1999, 01, 02,
 				01, 01, 01, DateTimeKind.Local)
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null!, new FakeIWebLogger());
 
 		var result = ( await sync.SingleFile(filePath,
-			new List<FileIndexItem> { item }) ).FirstOrDefault();
+			[item]) ).FirstOrDefault();
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result?.Status);
 		Assert.AreEqual(1,
@@ -512,7 +528,8 @@ public sealed class SyncSingleFileTest
 		SingleFile_DbItem_FileAlreadyExist_With_Different_LastEditedTime_AndDeleted()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem("/test.jpg")
 		{
@@ -530,7 +547,7 @@ public sealed class SyncSingleFileTest
 			_iStorageFake, null, new FakeIWebLogger());
 
 		var result = ( await sync.SingleFile("/test.jpg",
-			new List<FileIndexItem> { item }) ).FirstOrDefault();
+			[item]) ).FirstOrDefault();
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result?.Status);
 		Assert.AreEqual(1,
@@ -551,7 +568,8 @@ public sealed class SyncSingleFileTest
 		const string filePath = "/fileAlreadyExist_With_Different_LastEditedTime.jpg";
 		_iStorageFake.FileCopy("/test.jpg", filePath);
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(filePath);
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem(filePath)
 		{
@@ -600,7 +618,8 @@ public sealed class SyncSingleFileTest
 			new List<DateTime> { lastEdited, lastEdited });
 
 		var (fileHashRaw, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(filePathRaw);
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(filePathRaw,
+				ExtensionRolesHelper.ImageFormat.tiff);
 
 		var item = new FileIndexItem(filePathRaw)
 		{
@@ -646,12 +665,14 @@ public sealed class SyncSingleFileTest
 
 		// It should update the Sidecar field when a sidecar file is add to the directory
 		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { filePathRaw, filePathXmp },
+			[filePathRaw, filePathXmp],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() },
 			new List<DateTime> { lastEdited, lastEdited });
 
 		var (fileHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(filePathRaw);
+			await new FileHash(storage, new FakeIWebLogger())
+				.GetHashCodeAsync(filePathRaw,
+					ExtensionRolesHelper.ImageFormat.tiff);
 
 		var item = new FileIndexItem(filePathRaw)
 		{
@@ -693,23 +714,24 @@ public sealed class SyncSingleFileTest
 			FileHash = "THIS_IS_THE_OLD_HASH",
 			Size = 99999999 // % % % that's not the right size % % %
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
 
 		var isCalled = false;
 
+		await sync.SingleFile("/test.jpg",
+			new List<FileIndexItem> { item }, TestTask);
+		// % % % % Enter item here % % % % % 
+		Assert.IsTrue(isCalled);
+		return;
+
 		Task TestTask(List<FileIndexItem> _)
 		{
 			isCalled = true;
 			return Task.CompletedTask;
 		}
-
-		await sync.SingleFile("/test.jpg",
-			new List<FileIndexItem> { item }, TestTask);
-		// % % % % Enter item here % % % % % 
-		Assert.IsTrue(isCalled);
 	}
 
 	[TestMethod]
@@ -720,14 +742,14 @@ public sealed class SyncSingleFileTest
 			FileHash = "THIS_IS_THE_OLD_HASH",
 			Size = 99999999 // % % % that's not the right size % % %
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
 
 		// % % % % Enter item here % % % % % 
 		var result =
-			( await sync.SingleFile("/status_deleted.jpg", new List<FileIndexItem> { item }) )
+			( await sync.SingleFile("/status_deleted.jpg", [item]) )
 			.FirstOrDefault();
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result?.Status);
@@ -737,7 +759,9 @@ public sealed class SyncSingleFileTest
 	public async Task SingleItem_DbItem_NoContent_NoItemInDb()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
+
 		var item = new FileIndexItem("/test.jpg")
 		{
 			FileHash = "THIS_IS_THE_OLD_HASH",
@@ -768,7 +792,8 @@ public sealed class SyncSingleFileTest
 	public async Task SingleFile_DbItem_FileAlreadyExist_With_Same_ByteSize()
 	{
 		var (fileHash, _) =
-			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem("/test.jpg")
 		{
@@ -793,12 +818,13 @@ public sealed class SyncSingleFileTest
 	public async Task SingleFile_ShouldAddToSidecarFieldWhenSidecarIsAdded()
 	{
 		// It should update the Sidecar field when a sidecar file is add to the directory
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+		var storage = new FakeIStorage(["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 
 		var (fileHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.dng");
+			await new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.dng", ExtensionRolesHelper.ImageFormat.tiff);
 
 		var item = new FileIndexItem("/test.dng")
 		{
@@ -817,7 +843,7 @@ public sealed class SyncSingleFileTest
 
 		//  Sync item here
 		await sync.SingleFile("/test.xmp",
-			new List<FileIndexItem> { item, item2 });
+			[item, item2]);
 
 		var fileIndexItem = fakeQuery.SingleItem("/test.dng")?.FileIndexItem;
 
@@ -829,12 +855,13 @@ public sealed class SyncSingleFileTest
 	public async Task SingleFile_ShouldIgnoreSidecarFieldWhenItAlreadyExist()
 	{
 		// It should ignore the Sidecar field when a sidecar file when it already is there
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+		var storage = new FakeIStorage(["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray(), Array.Empty<byte>() });
 
 		var (fileHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 
 		var item = new FileIndexItem("/test.jpg")
 		{
@@ -842,11 +869,11 @@ public sealed class SyncSingleFileTest
 			Size = _iStorageFake.Info("/test.jpg").Size, // < right byte size
 			SidecarExtensions = "xmp" // <- is already here
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncSingleFile(new AppSettings { Verbose = true }, fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
-		await sync.SingleFile("/test.xmp", new List<FileIndexItem> { item });
+		await sync.SingleFile("/test.xmp", [item]);
 
 		var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 
@@ -858,12 +885,15 @@ public sealed class SyncSingleFileTest
 	public async Task FileAlreadyExist_With_Changed_FileHash_MetaDataCheck()
 	{
 		var (fileHash, _) = await new FileHash(_iStorageFake, new FakeIWebLogger())
-			.GetHashCodeAsync("/color_class_test.jpg");
+			.GetHashCodeAsync("/color_class_test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg);
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/color_class_test.jpg") { FileHash = "THIS_IS_THE_OLD_HASH" }
-		});
+		var fakeQuery = new FakeIQuery([
+			new FileIndexItem("/color_class_test.jpg")
+			{
+				FileHash = "THIS_IS_THE_OLD_HASH"
+			}
+		]);
 
 		var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
@@ -885,14 +915,14 @@ public sealed class SyncSingleFileTest
 	public async Task UpdateSidecarFileTest_True()
 	{
 		var sync = new SyncSingleFile(new AppSettings(),
-			new FakeIQuery(new List<FileIndexItem>()),
-			new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" },
+			new FakeIQuery([]),
+			new FakeIStorage(["/"],
+				["/test.jpg"],
 				new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() }), null,
 			new FakeIWebLogger());
 		var result =
 			await sync.UpdateSidecarFile("test.xmp",
-				new List<FileIndexItem>());
+				[]);
 		Assert.IsTrue(result);
 	}
 
@@ -902,7 +932,7 @@ public sealed class SyncSingleFileTest
 		var sync = new SyncSingleFile(new AppSettings(),
 			new FakeIQuery(new List<FileIndexItem>()),
 			new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" },
+				["/test.jpg"],
 				new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() }), null,
 			new FakeIWebLogger());
 		var result =
