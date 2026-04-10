@@ -1,5 +1,7 @@
 import Foundation
 
+var launchedProcess: Process? // keep a strong reference so it doesn't get deallocated
+
 func electronCacheLocation() -> String {
     // macOS default app data location used by the Electron app
     let home = NSHomeDirectory()
@@ -27,24 +29,26 @@ func isPackaged() -> Bool {
     return Bundle.main.bundlePath.hasSuffix(".app")
 }
 
-func runBinary() {
+/// Launch the Starsky binary in the background and return the selected port if successful.
+/// Returns nil on failure.
+func runBinary() -> UInt16? {
     #if arch(arm64)
     let binaryName = "osx-arm64/starsky"
     #elseif arch(x86_64)
     let binaryName = "osx-x64/starsky"
     #else
     print("Unsupported architecture")
-    return
+    return nil
     #endif
 
     guard let binaryPath = Bundle.main.path(forResource: binaryName, ofType: nil) else {
         print("Binary not found: \(binaryName)")
-        return
+        return nil
     }
     
     guard let port = getFreePort() else {
         print("Failed to get free port")
-        return
+        return nil
     }
 
     // Prepare default folders and paths (matches Electron app defaults)
@@ -76,9 +80,12 @@ func runBinary() {
     
     do {
         try process.run()
-        process.waitUntilExit()
-        print("Binary finished with code \(process.terminationStatus)")
+        // keep a strong reference so the Process isn't deallocated
+        launchedProcess = process
+        // Do not wait here; return the port so the caller can poll for readiness
+        return port
     } catch {
         print("Failed to run binary: \(error)")
+        return nil
     }
 }
