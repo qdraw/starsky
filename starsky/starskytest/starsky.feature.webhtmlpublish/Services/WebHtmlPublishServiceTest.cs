@@ -126,9 +126,18 @@ public sealed class WebHtmlPublishServiceTest
 							Append = "__fi_kl"
 						},
 
-						new AppSettingsPublishProfiles { ContentType = TemplateContentType.MoveSourceFiles },
-						new AppSettingsPublishProfiles { ContentType = TemplateContentType.PublishContent },
-						new AppSettingsPublishProfiles { ContentType = TemplateContentType.PublishManifest }
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.MoveSourceFiles
+						},
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.PublishContent
+						},
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.PublishManifest
+						}
 					]
 				}
 			}
@@ -320,7 +329,8 @@ public sealed class WebHtmlPublishServiceTest
 			"EmbeddedViews");
 		Directory.CreateDirectory(viewFolder);
 		var badView = Path.Combine(viewFolder, "Bad.cshtml");
-		await File.WriteAllTextAsync(badView, "@{ var x = ; }", TestContext.CancellationToken); // invalid razor syntax
+		await File.WriteAllTextAsync(badView, "@{ var x = ; }",
+			TestContext.CancellationToken); // invalid razor syntax
 
 		var appSettings = new AppSettings
 		{
@@ -571,10 +581,11 @@ public sealed class WebHtmlPublishServiceTest
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings
 		{
-			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
-			{
-				{ "default", [profile] }
-			},
+			PublishProfiles =
+				new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{ "default", [profile] }
+				},
 			Verbose = true
 		};
 
@@ -611,10 +622,11 @@ public sealed class WebHtmlPublishServiceTest
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings
 		{
-			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
-			{
-				{ "default", [profile] }
-			},
+			PublishProfiles =
+				new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{ "default", [profile] }
+				},
 			Verbose = true
 		};
 
@@ -719,15 +731,10 @@ public sealed class WebHtmlPublishServiceTest
 	[Timeout(5000, CooperativeCancellation = true)]
 	[DataRow(true)]
 	[DataRow(false)]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
 	public async Task GenerateJpeg_ResizerLocal_ImageOptimisationThrows__UnixOnly(
 		bool optimizerFailsBashScript)
 	{
-		if ( new AppSettings().IsWindows )
-		{
-			Assert.Inconclusive("This test if for Unix Only");
-			return;
-		}
-
 		// Use real filesystem storage so we can create a non-executable mozjpeg file
 		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 		var selectorStorage = new FakeSelectorStorage(storage);
@@ -747,9 +754,9 @@ public sealed class WebHtmlPublishServiceTest
 			DependenciesFolder = tempBase, StorageFolder = new CreateAnImage().BasePath
 		};
 
-		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp.jpg"));
+		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp1.jpg"));
 		File.Copy(new CreateAnImage().FullFilePath,
-			new CreateAnImage().FullFilePath.Replace(".jpg", "_temp.jpg"));
+			new CreateAnImage().FullFilePath.Replace(".jpg", "_temp1.jpg"));
 
 		// Create a dummy mozjpeg file without +x permissions (Unix) to trigger permission denied
 		var exePath = new ImageOptimisationExePath(appSettings).GetExePath("mozjpeg",
@@ -843,7 +850,7 @@ public sealed class WebHtmlPublishServiceTest
 			}
 		];
 
-		var photoPath = new CreateAnImage().FileName.Replace(".jpg", "_temp.jpg");
+		var photoPath = new CreateAnImage().FileName.Replace(".jpg", "_temp1.jpg");
 		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
 				new ConsoleWrapper(), fakeSelectorStorage
 				, new FakeIWebLogger()),
@@ -893,7 +900,7 @@ public sealed class WebHtmlPublishServiceTest
 		}
 
 
-		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp.jpg"));
+		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp1.jpg"));
 		Directory.Delete(tempBase, true);
 	}
 }
