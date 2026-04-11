@@ -611,9 +611,7 @@ public class MacOsFileSystemHelperTest
 			Marshal.StructureToPtr(inst!, buffer, false);
 
 			var entries = MacOsFileSystemHelper.ParseEntries(buffer, count);
-			Assert.HasCount(1, entries);
-			Assert.AreEqual(string.Empty, entries[0].MountPoint);
-			Assert.AreEqual(string.Empty, entries[0].FileSystemType);
+			Assert.HasCount(0, entries);
 		}
 		finally
 		{

@@ -89,6 +89,13 @@ public class MacOsFileSystemHelper
 					matchedMountPoint = resolved.MountPoint;
 				}
 
+				// If filesystem is empty, skip this attempt and retry
+				if ( string.IsNullOrWhiteSpace(fs) )
+				{
+					_sleep(MountTableRetryDelayMs);
+					continue;
+				}
+
 				var shouldRetry = ShouldRetryForTransientRootAlias(path, fs, attempt,
 					matchedMountPoint,
 					_realPathResolver);
@@ -110,20 +117,7 @@ public class MacOsFileSystemHelper
 			}
 		}
 
-		try
-		{
-			var fallbackFs = _statFsResolver?.Invoke(path) ?? GetFileSystemViaStatFs(path);
-			return fallbackFs;
-		}
-		catch
-		{
-			if ( mountTableException != null )
-			{
-				throw mountTableException;
-			}
-
-			throw;
-		}
+		return TryGetFileSystemFallback(mountTableException, path);
 	}
 
 	internal static bool ShouldRetryForTransientRootAlias(string path, string fileSystem,
@@ -179,6 +173,44 @@ public class MacOsFileSystemHelper
 		return statfs(path, out var stat) != 0
 			? throw new Win32Exception(Marshal.GetLastWin32Error())
 			: stat.f_fstypename;
+	}
+
+	private string TryGetFileSystemFallback(Exception? mountTableException, string path)
+	{
+		const int fallbackRetries = 5;
+
+		for ( var attempt = 0; attempt < fallbackRetries; attempt++ )
+		{
+			try
+			{
+				var fs = _statFsResolver != null 
+					? _statFsResolver(path) 
+					: GetFileSystemViaStatFs(path);
+
+				// Return if non-empty
+				if ( !string.IsNullOrWhiteSpace(fs) )
+				{
+					return fs;
+				}
+
+				// Empty result, retry if not the last attempt
+				if ( attempt < fallbackRetries - 1 )
+				{
+					_sleep(MountTableRetryDelayMs);
+				}
+			}
+			catch
+			{
+				// Swallow exceptions and retry
+				if ( attempt < fallbackRetries - 1 )
+				{
+					_sleep(MountTableRetryDelayMs);
+				}
+			}
+		}
+
+		// All retries exhausted
+		return mountTableException != null ? throw mountTableException : string.Empty;
 	}
 
 	private void EnsureMacOs()
@@ -249,9 +281,15 @@ public class MacOsFileSystemHelper
 		{
 			var current = IntPtr.Add(mntbufp, i * structSize);
 			var stat = Marshal.PtrToStructure<StatFs>(current);
-			entries.Add(new MountTableEntry(
-				stat.f_mntonname,
-				stat.f_fstypename));
+			
+			// Skip entries with empty filesystem type or mount point
+			if ( !string.IsNullOrWhiteSpace(stat.f_fstypename) && 
+			     !string.IsNullOrWhiteSpace(stat.f_mntonname) )
+			{
+				entries.Add(new MountTableEntry(
+					stat.f_mntonname,
+					stat.f_fstypename));
+			}
 		}
 
 		return entries;
