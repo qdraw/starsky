@@ -173,10 +173,11 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			return await HandleNonMdatSkipAsync(stream, buffer, payloadSize, isSeekable);
 		}
 
-		logger.LogInformation(isSeekable
-			? "Mp4FileHasher.ProcessSeekableStreamAsync invalid zero-size non-mdat atom"
-			: "Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom");
-		return ( false, string.Empty );
+		// Zero-payload atoms such as 'wide', 'free', 'skip' are valid QuickTime/MP4 spacers.
+		// Continue scanning rather than aborting so that the mdat atom that follows is found.
+		logger.LogDebug(
+			$"Mp4FileHasher: zero-payload '{atom.Type}' spacer atom encountered — continuing");
+		return ( true, string.Empty );
 	}
 
 	private async Task<(bool shouldContinue, string immediateResult)> HandleMdatSeekableAsync(

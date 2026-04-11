@@ -47,6 +47,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.15 - 2026-04-? {#v0.7.15}
 
+- [x] (Fixed) _Back-end_ Zero-payload non-mdat atom (e.g. wide, free) gives hash back (PR #2955)
 - [x] (Fixed) _Back-end_ GetWindowsDriveInfo where Z:\\ was used to find an unused drive. (PR #2905)
 - [x] (Added) _Back-end_ Fix disk Detect File System for macOS and Linux (PR #2905)
 - [x] (Added) _Back-end_ Add starskyMountWatcherCli to auto import (PR #2905)
