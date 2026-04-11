@@ -22,7 +22,7 @@ declare global {
     } & Record<string, unknown>;
 
     // callback used by native host to send selected folder back to the page
-    onFolderSelected?: (folderPath: string | null) => void;
+    onFolderSelected?: (folderPath: string | null, bookmark: string | null) => void;
     // test helper: optional dom node used by some tests to attach elements
     domNode?: HTMLDivElement | null;
     // test/debug helpers used across the codebase

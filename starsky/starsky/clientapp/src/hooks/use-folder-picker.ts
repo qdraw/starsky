@@ -18,12 +18,12 @@ export function useFolderPicker() {
    * @param onFolderSelected Callback when folder is selected or when not in native app
    */
   const requestFolderSelection = useCallback(
-    (onFolderSelected: (folderPath: string | null) => void) => {
+    (onFolderSelected: (folderPath: string | null, bookmark: string | null) => void) => {
       // macOS WKWebView
       if (window.webkit?.messageHandlers?.filePicker) {
         // Register listener for folder selection
-        window.onFolderSelected = (folderPath: string | null) => {
-          onFolderSelected(folderPath);
+        window.onFolderSelected = (folderPath: string | null, bookmark: string | null) => {
+          onFolderSelected(folderPath, bookmark);
           window.onFolderSelected = undefined;
         };
 
@@ -37,7 +37,7 @@ export function useFolderPicker() {
       if (window.chrome?.webview) {
         // Register listener for folder selection
         window.onFolderSelected = (folderPath: string | null) => {
-          onFolderSelected(folderPath);
+          onFolderSelected(folderPath, null);
           window.onFolderSelected = undefined;
         };
 
@@ -49,7 +49,7 @@ export function useFolderPicker() {
 
       // Fallback: not running inside native app
       console.warn("Not running inside native app");
-      onFolderSelected(null);
+      onFolderSelected(null, null);
     },
     []
   );

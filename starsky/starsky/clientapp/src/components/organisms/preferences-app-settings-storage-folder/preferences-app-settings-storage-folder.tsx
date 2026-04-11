@@ -76,10 +76,15 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
         value={storageFolder ?? ""}
         isEnabled={isEnabled}
         allowEdit={appSettings?.storageFolderAllowEdit === true}
-        onChange={async (folderPath) => {
+        onChange={async (folderPath, bookmark) => {
           const resultStatusCode = await ChangeSetting(folderPath, "storageFolder");
           setStorageFolder(folderPath);
           setStorageFolderNotFound(resultStatusCode === 404);
+
+          // bookmark is for native macOS
+          if (bookmark) {
+            await ChangeSetting(bookmark, "storageFolderToken");
+          }
         }}
         data-test="storage-folder-picker"
       />

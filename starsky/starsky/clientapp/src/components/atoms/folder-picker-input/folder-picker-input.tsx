@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFolderPicker } from "../../../hooks/use-folder-picker";
 import FormControl from "../form-control/form-control";
 
 interface IFolderPickerInputProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string, bookmark: string | null) => void;
   onBlur?: (e: React.ChangeEvent<HTMLDivElement>) => void;
   isEnabled: boolean;
   allowEdit: boolean;
@@ -13,7 +13,7 @@ interface IFolderPickerInputProps {
 
 /**
  * FolderPickerInput Component
- * 
+ *
  * Provides a folder selection input that:
  * - Uses native folder picker on macOS WKWebView and Windows WebView2
  * - Falls back to contentEditable FormControl for browsers
@@ -34,10 +34,10 @@ const FolderPickerInput: React.FunctionComponent<IFolderPickerInputProps> = ({
   }, [value]);
 
   const handleOpenFolderPicker = () => {
-    requestFolderSelection((folderPath) => {
+    requestFolderSelection((folderPath, bookmark) => {
       if (folderPath) {
         setDisplayValue(folderPath);
-        onChange(folderPath);
+        onChange(folderPath, bookmark);
       }
     });
   };
@@ -65,7 +65,7 @@ const FolderPickerInput: React.FunctionComponent<IFolderPickerInputProps> = ({
       onBlur={async (e) => {
         const newValue = (e.target as HTMLDivElement).innerText;
         setDisplayValue(newValue);
-        onChange(newValue);
+        onChange(newValue, null);
         onBlur?.(e);
       }}
       contentEditable={isEnabled && allowEdit}

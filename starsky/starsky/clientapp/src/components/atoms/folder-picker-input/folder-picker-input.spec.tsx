@@ -1,5 +1,4 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import * as useFolderPicker from "../../../hooks/use-folder-picker";
 import FolderPickerInput from "./folder-picker-input";
 
@@ -10,7 +9,10 @@ describe("FolderPickerInput", () => {
     jest.spyOn(useFolderPicker, "useFolderPicker").mockReturnValue({
       isNativeApp: () => false,
       requestFolderSelection: jest.fn()
-    } as any);
+    } as unknown as {
+      isNativeApp: () => boolean;
+      requestFolderSelection: (cb: (p: string | null, b: string | null) => void) => void;
+    });
 
     const onChange = jest.fn();
     const onBlur = jest.fn();
@@ -34,16 +36,21 @@ describe("FolderPickerInput", () => {
     el.innerText = "/newpath";
     fireEvent.blur(el);
 
-    expect(onChange).toHaveBeenCalledWith("/newpath");
+    expect(onChange).toHaveBeenCalledWith("/newpath", null);
     expect(onBlur).toHaveBeenCalled();
   });
 
   it("uses native picker when available and triggers onChange", () => {
-    const requestMock = jest.fn((cb: (p: string | null) => void) => cb("/native/path"));
+    const requestMock = jest.fn((cb: (p: string | null, b: string | null) => void) =>
+      cb("/native/path", null)
+    );
     jest.spyOn(useFolderPicker, "useFolderPicker").mockReturnValue({
       isNativeApp: () => true,
       requestFolderSelection: requestMock
-    } as any);
+    } as unknown as {
+      isNativeApp: () => boolean;
+      requestFolderSelection: (cb: (p: string | null, b: string | null) => void) => void;
+    });
 
     const onChange = jest.fn();
 
@@ -66,14 +73,17 @@ describe("FolderPickerInput", () => {
     fireEvent.click(button as HTMLElement);
 
     expect(requestMock).toHaveBeenCalled();
-    expect(onChange).toHaveBeenCalledWith("/native/path");
+    expect(onChange).toHaveBeenCalledWith("/native/path", null);
   });
 
   it("renders disabled state when not enabled or not allowed to edit", () => {
     jest.spyOn(useFolderPicker, "useFolderPicker").mockReturnValue({
       isNativeApp: () => false,
       requestFolderSelection: jest.fn()
-    } as any);
+    } as unknown as {
+      isNativeApp: () => boolean;
+      requestFolderSelection: (cb: (p: string | null, b: string | null) => void) => void;
+    });
 
     const onChange = jest.fn();
 
