@@ -3,7 +3,7 @@ import WebKit
 
 // Protocol used to abstract evaluateJavaScript for testing
 protocol WebViewEvaluating: AnyObject {
-    func evaluateJavaScript(_ javaScriptString: String, completionHandler: (@Sendable (Any?, Error?) -> Void)?)
+    func evaluateJavaScript(_ javaScriptString: String, completionHandler: ((Any?, Error?) -> Void)?)
 }
 
 // Make WKWebView conform to WebViewEvaluating so production code can pass it directly
@@ -11,12 +11,13 @@ extension WKWebView: WebViewEvaluating {}
 
 // Protocol to abstract folder picking so we can unit test without NSOpenPanel
 protocol FilePicking {
-    func pickFolder(completion: @escaping (String?) -> Void)
+    // Return the selected folder URL or nil if cancelled
+    func pickFolder(completion: @escaping (URL?) -> Void)
 }
 
 // Default implementation that uses NSOpenPanel
 final class NSOpenPanelFilePicker: FilePicking {
-    func pickFolder(completion: @escaping (String?) -> Void) {
+    func pickFolder(completion: @escaping (URL?) -> Void) {
         DispatchQueue.main.async {
             let panel = NSOpenPanel()
             panel.canChooseFiles = false
@@ -26,7 +27,7 @@ final class NSOpenPanelFilePicker: FilePicking {
 
             let response = panel.runModal()
             if response == .OK, let url = panel.url {
-                completion(url.path)
+                completion(url)
             } else {
                 completion(nil)
             }
@@ -42,29 +43,40 @@ final class FilePickerController {
         self.picker = picker
     }
 
-    // Helper that formats the JavaScript call for a path (or null)
-    static func jsForPath(_ path: String?) -> String {
-        if let path = path {
-            // Use JSONEncoder to safely produce a JSON string literal for arbitrary characters
-            if let data = try? JSONEncoder().encode(path), let quoted = String(data: data, encoding: .utf8) {
-                return "window.onFolderSelected(\(quoted))"
+    // Helper that formats the JavaScript call for a URL (path + bookmark), or nulls
+    static func jsForURL(_ url: URL?) -> String {
+        if let url = url {
+            // Encode path as JSON string literal
+            var pathJson: String = "null"
+            if let data = try? JSONEncoder().encode(url.path), let quoted = String(data: data, encoding: .utf8) {
+                pathJson = quoted
             } else {
-                // Fallback: simple single-quote escaping for older runtimes
-                let escaped = path.replacingOccurrences(of: "'", with: "\\'")
-                return "window.onFolderSelected('\(escaped)')"
+                let escaped = url.path.replacingOccurrences(of: "'", with: "\\'")
+                pathJson = "'\(escaped)'"
             }
+
+            // Try to create a security-scoped bookmark and pass it as a base64 string
+            var bookmarkJson: String = "null"
+            if let bookmarkData = try? url.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil) {
+                let base64 = bookmarkData.base64EncodedString()
+                if let data = try? JSONEncoder().encode(base64), let quoted = String(data: data, encoding: .utf8) {
+                    bookmarkJson = quoted
+                }
+            }
+
+            return "window.onFolderSelected(\(pathJson), \(bookmarkJson))"
         } else {
-            return "window.onFolderSelected(null)"
+            return "window.onFolderSelected(null, null)"
         }
     }
 
     // Perform folder pick and notify the web view by evaluating JS
     // Accepts WebViewEvaluating to make unit testing possible
     func performPick(webView: WebViewEvaluating?) {
-        picker.pickFolder { path in
+        picker.pickFolder { url in
             DispatchQueue.main.async {
                 guard let webView = webView else { return }
-                let js = FilePickerController.jsForPath(path)
+                let js = FilePickerController.jsForURL(url)
                 webView.evaluateJavaScript(js, completionHandler: nil)
             }
         }
