@@ -21,6 +21,8 @@ namespace starsky.foundation.platform.Models;
 public sealed class AppSettings
 {
 	private const string FileSystemStorageType = "FileSystem";
+	private const string DefaultTenantId = "tenant-1";
+	private const string DefaultTenantName = "Default";
 
 	/// <summary>
 	///     The available database types
@@ -136,7 +138,7 @@ public sealed class AppSettings
 	/// </summary>
 	private string _storageFolder = string.Empty;
 
-	private List<StorageProvider> _storageProviders = [];
+	private List<Tenant> _tenants = [];
 
 	/// <summary>
 	///     Private: Location of temp folder
@@ -230,22 +232,59 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
-	///     Multiple storage providers. First item is used as primary StorageFolder.
+	///     Multi-tenant storage configuration. First tenant storage is primary StorageFolder.
 	/// </summary>
+	public List<Tenant> Tenants
+	{
+		get
+		{
+			EnsureTenantsInitialized();
+			return _tenants;
+		}
+		set
+		{
+			_tenants = NormalizeTenants(value);
+			if ( _tenants.Count > 0 )
+			{
+				_storageFolder = _tenants[0].Storage.Path;
+			}
+		}
+	}
+
+	/// <summary>
+	///     Backward compatibility for legacy StorageProviders config.
+	/// </summary>
+	[Obsolete("Use Tenants[].Storage instead")]
 	public List<StorageProvider> StorageProviders
 	{
 		get
 		{
-			EnsureStorageProvidersInitialized();
-			return _storageProviders;
+			EnsureTenantsInitialized();
+			return _tenants.Select(t => new StorageProvider
+			{
+				Type = t.Storage.Type,
+				Path = t.Storage.Path,
+				Token = t.Storage.Token
+			}).ToList();
 		}
 		set
 		{
-			_storageProviders = NormalizeStorageProviders(value);
-			if ( _storageProviders.Count > 0 )
+			if ( value == null || value.Count == 0 )
 			{
-				_storageFolder = _storageProviders[0].Path;
+				return;
 			}
+
+			Tenants = value.Select((provider, index) => new Tenant
+			{
+				Id = $"tenant-{index + 1}",
+				Name = $"Tenant {index + 1}",
+				Storage = new StorageProvider
+				{
+					Type = provider.Type,
+					Path = provider.Path,
+					Token = provider.Token
+				}
+			}).ToList();
 		}
 	}
 
@@ -836,14 +875,14 @@ public sealed class AppSettings
 		}
 
 		// default location to store source images. you should change this
-		foreach ( var provider in StorageProviders.Where(p =>
-			         string.Equals(p.Type, FileSystemStorageType,
+		foreach ( var provider in Tenants.Where(p =>
+			         string.Equals(p.Storage.Type, FileSystemStorageType,
 				         StringComparison.OrdinalIgnoreCase) &&
-			         !string.IsNullOrWhiteSpace(p.Path)) )
+			         !string.IsNullOrWhiteSpace(p.Storage.Path)) )
 		{
-			if ( !Directory.Exists(provider.Path) )
+			if ( !Directory.Exists(provider.Storage.Path) )
 			{
-				Directory.CreateDirectory(provider.Path);
+				Directory.CreateDirectory(provider.Storage.Path);
 			}
 		}
 
@@ -1263,13 +1302,13 @@ public sealed class AppSettings
 
 	private string GetPrimaryStorageFolder()
 	{
-		EnsureStorageProvidersInitialized();
-		return _storageProviders.FirstOrDefault()?.Path ?? GetDefaultStorageFolder();
+		EnsureTenantsInitialized();
+		return _tenants.FirstOrDefault()?.Storage.Path ?? GetDefaultStorageFolder();
 	}
 
-	private void EnsureStorageProvidersInitialized()
+	private void EnsureTenantsInitialized()
 	{
-		if ( _storageProviders.Count > 0 )
+		if ( _tenants.Count > 0 )
 		{
 			return;
 		}
@@ -1278,28 +1317,46 @@ public sealed class AppSettings
 			? GetDefaultStorageFolder()
 			: NormalizeStoragePath(_storageFolder);
 
-		_storageProviders =
+		_tenants =
 		[
-			new StorageProvider { Type = FileSystemStorageType, Path = fallbackPath }
+			new Tenant
+			{
+				Id = DefaultTenantId,
+				Name = DefaultTenantName,
+				Storage = new StorageProvider
+				{
+					Type = FileSystemStorageType,
+					Path = fallbackPath
+				}
+			}
 		];
 		_storageFolder = fallbackPath;
 	}
 
 	private void SyncPrimaryStorageProvider(string path)
 	{
-		if ( _storageProviders.Count == 0 )
+		if ( _tenants.Count == 0 )
 		{
-			_storageProviders =
+			_tenants =
 			[
-				new StorageProvider { Type = FileSystemStorageType, Path = path }
+				new Tenant
+				{
+					Id = DefaultTenantId,
+					Name = DefaultTenantName,
+					Storage = new StorageProvider
+					{
+						Type = FileSystemStorageType,
+						Path = path
+					}
+				}
 			];
 			return;
 		}
 
-		_storageProviders[0].Path = path;
-		if ( string.IsNullOrWhiteSpace(_storageProviders[0].Type) )
+		_tenants[0].Storage.Path = path;
+		if ( string.IsNullOrWhiteSpace(_tenants[0].Storage.Type) )
 		{
-			_storageProviders[0].Type = FileSystemStorageType;
+			_tenants[0].Storage.Type = FileSystemStorageType;
 		}
 	}
 
@@ -1314,20 +1371,31 @@ public sealed class AppSettings
 		return PathHelper.AddBackslash(Path.Combine(BaseDirectoryProject, "storageFolder"));
 	}
 
-	private List<StorageProvider> NormalizeStorageProviders(List<StorageProvider>? providers)
+	private List<Tenant> NormalizeTenants(List<Tenant>? tenants)
 	{
-		if ( providers == null || providers.Count == 0 )
+		if ( tenants == null || tenants.Count == 0 )
 		{
 			return [];
 		}
 
-		return providers
-			.Where(p => !string.IsNullOrWhiteSpace(p.Path))
-			.Select(p => new StorageProvider
+		return tenants
+			.Where(t => !string.IsNullOrWhiteSpace(t.Storage?.Path))
+			.Select((tenant, index) => new Tenant
 			{
-				Type = string.IsNullOrWhiteSpace(p.Type) ? FileSystemStorageType : p.Type,
-				Path = NormalizeStoragePath(p.Path),
-				Token = p.Token
+				Id = string.IsNullOrWhiteSpace(tenant.Id)
+					? $"tenant-{index + 1}"
+					: tenant.Id,
+				Name = string.IsNullOrWhiteSpace(tenant.Name)
+					? $"Tenant {index + 1}"
+					: tenant.Name,
+				Storage = new StorageProvider
+				{
+					Type = string.IsNullOrWhiteSpace(tenant.Storage.Type)
+						? FileSystemStorageType
+						: tenant.Storage.Type,
+					Path = NormalizeStoragePath(tenant.Storage.Path),
+					Token = tenant.Storage.Token
+				}
 			})
 			.ToList();
 	}

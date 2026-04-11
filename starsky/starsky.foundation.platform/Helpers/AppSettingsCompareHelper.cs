@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using starsky.foundation.platform.Enums;
@@ -411,6 +412,16 @@ public static class AppSettingsCompareHelper
 		PropertyInfo propertyInfoFromA,
 		AppSettings sourceIndexItem, object updateObject, List<string> differenceList)
 	{
+		if ( propertyB.PropertyType == typeof(List<Tenant>) )
+		{
+			var oldTenants =
+				( List<Tenant>? ) propertyInfoFromA.GetValue(sourceIndexItem, null);
+			var newTenants =
+				( List<Tenant>? ) propertyB.GetValue(updateObject, null);
+			CompareTenants(propertyB.Name, sourceIndexItem, oldTenants, newTenants,
+				differenceList);
+		}
+
 		if ( propertyB.PropertyType == typeof(List<StorageProvider>) )
 		{
 			var oldStorageProviders =
@@ -466,6 +477,32 @@ public static class AppSettingsCompareHelper
 		}
 	}
 
+	private static void CompareTenants(string propertyName,
+		AppSettings sourceIndexItem,
+		List<Tenant>? oldTenants,
+		List<Tenant>? newTenants,
+		List<string> differenceList)
+	{
+		if ( oldTenants == null || newTenants == null || newTenants.Count == 0 )
+		{
+			return;
+		}
+
+		var oldJson = JsonSerializer.Serialize(oldTenants, DefaultJsonSerializer.CamelCase);
+		var newJson = JsonSerializer.Serialize(newTenants, DefaultJsonSerializer.CamelCase);
+		var defaultJson = JsonSerializer.Serialize(new AppSettings().Tenants,
+			DefaultJsonSerializer.CamelCase);
+
+		if ( oldJson == newJson || newJson == defaultJson )
+		{
+			return;
+		}
+
+		sourceIndexItem.GetType().GetProperty(propertyName)
+			?.SetValue(sourceIndexItem, newTenants, null);
+		differenceList.Add(propertyName.ToLowerInvariant());
+	}
+
 	private static void CompareStorageProviders(string propertyName,
 		AppSettings sourceIndexItem,
 		List<StorageProvider>? oldStorageProviders,
@@ -482,7 +519,8 @@ public static class AppSettingsCompareHelper
 			DefaultJsonSerializer.CamelCase);
 		var newJson = JsonSerializer.Serialize(newStorageProviders,
 			DefaultJsonSerializer.CamelCase);
-		var defaultJson = JsonSerializer.Serialize(new AppSettings().StorageProviders,
+		var defaultJson = JsonSerializer.Serialize(
+			new AppSettings().Tenants.Select(t => t.Storage).ToList(),
 			DefaultJsonSerializer.CamelCase);
 
 		if ( oldJson == newJson || newJson == defaultJson )

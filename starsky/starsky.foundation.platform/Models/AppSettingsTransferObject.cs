@@ -11,7 +11,7 @@ namespace starsky.foundation.platform.Models
 		public bool? Verbose { get; set; }
 
 		public string? StorageFolder { get; set; }
-		public List<StorageProvider> StorageProviders { get; set; } = [];
+		public List<Tenant> Tenants { get; set; } = [];
 		public bool? UseSystemTrash { get; set; }
 
 		public bool? UseLocalDesktop { get; set; }

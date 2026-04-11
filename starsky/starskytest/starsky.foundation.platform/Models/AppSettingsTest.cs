@@ -528,61 +528,100 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	public void StorageProviders_DefaultsFromStorageFolder_WhenUnset()
+	public void Tenants_DefaultsFromStorageFolder_WhenUnset()
 	{
 		var appSettings = new AppSettings();
 		appSettings.StorageFolder = "/data/old-config";
 
-		Assert.HasCount(1, appSettings.StorageProviders);
-		Assert.AreEqual("FileSystem", appSettings.StorageProviders[0].Type);
-		Assert.AreEqual(appSettings.StorageFolder, appSettings.StorageProviders[0].Path);
+		Assert.HasCount(1, appSettings.Tenants);
+		Assert.AreEqual("FileSystem", appSettings.Tenants[0].Storage.Type);
+		Assert.AreEqual(appSettings.StorageFolder, appSettings.Tenants[0].Storage.Path);
 	}
 
 	[TestMethod]
-	public void StorageFolder_UsesPrimaryStorageProvider_WhenProvidersSet()
+	public void StorageFolder_UsesPrimaryTenantStorage_WhenTenantsSet()
 	{
 		var appSettings = new AppSettings
 		{
-			StorageProviders =
+			Tenants =
 			[
-				new StorageProvider { Type = "FileSystem", Path = "/mnt/a" },
-				new StorageProvider { Type = "FileSystem", Path = "/mnt/b" }
+				new Tenant
+				{
+					Id = "tenant-1",
+					Name = "Personal Photos",
+					Storage = new StorageProvider { Type = "FileSystem", Path = "/mnt/a" }
+				},
+				new Tenant
+				{
+					Id = "tenant-2",
+					Name = "Work Photos",
+					Storage = new StorageProvider { Type = "FileSystem", Path = "/mnt/b" }
+				}
 			]
 		};
 
-		Assert.AreEqual(appSettings.StorageProviders[0].Path, appSettings.StorageFolder);
+		Assert.AreEqual(appSettings.Tenants[0].Storage.Path, appSettings.StorageFolder);
 	}
 
 	[TestMethod]
-	public void StorageProviders_NormalizesPath_AndDefaultsType()
+	public void Tenants_NormalizesPath_AndDefaultsType()
 	{
 		var appSettings = new AppSettings
 		{
-			StorageProviders =
+			Tenants =
 			[
-				new StorageProvider { Type = string.Empty, Path = "/mnt/camera" }
+				new Tenant
+				{
+					Id = "tenant-1",
+					Name = "Personal",
+					Storage = new StorageProvider { Type = string.Empty, Path = "/mnt/camera" }
+				}
 			]
 		};
 
-		Assert.AreEqual("FileSystem", appSettings.StorageProviders[0].Type);
+		Assert.AreEqual("FileSystem", appSettings.Tenants[0].Storage.Type);
 		Assert.AreEqual(PathHelper.AddBackslash("/mnt/camera"),
-			appSettings.StorageProviders[0].Path);
+			appSettings.Tenants[0].Storage.Path);
 	}
 
 	[TestMethod]
-	public void StorageFolderSetter_SyncsPrimaryStorageProvider()
+	public void StorageFolderSetter_SyncsPrimaryTenantStorage()
 	{
 		var appSettings = new AppSettings
 		{
-			StorageProviders =
+			Tenants =
 			[
-				new StorageProvider { Type = "FileSystem", Path = "/mnt/original" }
+				new Tenant
+				{
+					Id = "tenant-1",
+					Name = "Personal",
+					Storage = new StorageProvider
+						{ Type = "FileSystem", Path = "/mnt/original" }
+				}
 			]
 		};
 
 		appSettings.StorageFolder = "/mnt/updated";
 
-		Assert.AreEqual(appSettings.StorageFolder, appSettings.StorageProviders[0].Path);
+		Assert.AreEqual(appSettings.StorageFolder, appSettings.Tenants[0].Storage.Path);
+	}
+
+	[TestMethod]
+	public void StorageProviders_LegacyCompatibility_MapsToTenants()
+	{
+		#pragma warning disable CS0618
+		var appSettings = new AppSettings
+		{
+			StorageProviders =
+			[
+				new StorageProvider { Type = "FileSystem", Path = "/legacy/path" }
+			]
+		};
+		#pragma warning restore CS0618
+
+		Assert.HasCount(1, appSettings.Tenants);
+		Assert.AreEqual(PathHelper.AddBackslash("/legacy/path"),
+			appSettings.Tenants[0].Storage.Path);
 	}
 
 	[TestMethod]
