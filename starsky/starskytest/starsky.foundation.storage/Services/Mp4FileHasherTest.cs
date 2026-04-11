@@ -1310,9 +1310,11 @@ public sealed class Mp4FileHasherTest
 	}
 
 	[TestMethod]
-	public async Task HashMp4VideoContentAsync_NonSeekable_ZeroSizeNonMdat_LogsAndReturnsEmpty()
+	public async Task HashMp4VideoContentAsync_NonSeekable_ZeroSizeNonMdat_ContinuesAndReturnsEmpty()
 	{
-		// Arrange - craft a non-mdat atom with size == header (8) and use a non-seekable stream
+		// Arrange - craft a non-mdat atom with size == header (8) and use a non-seekable stream.
+		// Zero-payload spacer atoms ('wide', 'free', 'skip') are valid; the parser should
+		// continue scanning and ultimately return empty because there is no mdat.
 		using var ms = new MemoryStream();
 		var size8 = BitConverter.GetBytes(( uint ) 8);
 		if ( BitConverter.IsLittleEndian )
@@ -1334,13 +1336,189 @@ public sealed class Mp4FileHasherTest
 		// Act
 		var result = await hasher.HashMp4VideoContentAsync("/bad-zero-nonseek.mp4");
 
-		// Assert
+		// Assert - no mdat present, so hash is empty; no "invalid" log should appear
 		Assert.AreEqual(string.Empty, result.FileHash);
-		Assert.Contains(
-			t => t.Item2?.Contains(
-				     "Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom") ==
-			     true,
-			logger.TrackedInformation);
+		var hasInvalidLog = logger.TrackedInformation.Any(
+			t => t.Item2?.Contains("invalid zero-size non-mdat atom") == true);
+		Assert.IsFalse(hasInvalidLog, "Zero-payload spacer atoms must not be logged as invalid");
+	}
+
+	/// <summary>
+	///     Regression test: QuickTime MOV files often contain a 'wide' spacer atom (size=8,
+	///     zero payload) immediately before the mdat atom.  The hasher must skip it and
+	///     successfully hash the mdat content.
+	/// </summary>
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_WideAtomBeforeMdat_Seekable_ReturnsHash()
+	{
+		// Arrange - build: ftyp(20) + wide(8) + mdat(8+payload)
+		var mdatContent = "QuickTime MOV content after wide spacer"u8.ToArray();
+		using var ms = new MemoryStream();
+
+		// ftyp
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// wide (size=8, no payload)
+		var wideSize = BitConverter.GetBytes(( uint ) 8);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(wideSize);
+		}
+
+		await ms.WriteAsync(wideSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("wide"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// mdat
+		var mdatSize = BitConverter.GetBytes(( uint ) ( 8 + mdatContent.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdatSize);
+		}
+
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(mdatContent, TestContext.CancellationToken);
+
+		var mp4Data = ms.ToArray();
+		var storage = CreateStorageWithMp4("/wide-before-mdat.mov", mp4Data);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var result = await hasher.HashMp4VideoContentAsync("/wide-before-mdat.mov");
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length,
+			$"Expected a 26-char Base32 hash but got: '{result.FileHash}'");
+	}
+
+	/// <summary>
+	///     Regression test: same as above but using a non-seekable stream.
+	/// </summary>
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_WideAtomBeforeMdat_NonSeekable_ReturnsHash()
+	{
+		// Arrange - build: ftyp(20) + wide(8) + mdat(8+payload)
+		var mdatContent = "QuickTime MOV content after wide spacer nonseek"u8.ToArray();
+		using var ms = new MemoryStream();
+
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		var wideSize = BitConverter.GetBytes(( uint ) 8);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(wideSize);
+		}
+
+		await ms.WriteAsync(wideSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("wide"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		var mdatSize = BitConverter.GetBytes(( uint ) ( 8 + mdatContent.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdatSize);
+		}
+
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(mdatContent, TestContext.CancellationToken);
+
+		var mp4Data = ms.ToArray();
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+		var storage = new StreamReturningStorage(nonSeek);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var result = await hasher.HashMp4VideoContentAsync("/wide-before-mdat-nonseek.mov");
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length,
+			$"Expected a 26-char Base32 hash but got: '{result.FileHash}'");
+	}
+
+	/// <summary>
+	///     Regression test: multiple consecutive zero-payload spacers ('wide', 'free', 'skip') before mdat.
+	/// </summary>
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_MultipleSpacersBeforeMdat_ReturnsHash()
+	{
+		var mdatContent = "Content after multiple spacers"u8.ToArray();
+		using var ms = new MemoryStream();
+
+		// ftyp(20)
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// wide(8)
+		var spacer8 = BitConverter.GetBytes(( uint ) 8);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(spacer8);
+		}
+
+		await ms.WriteAsync(spacer8.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("wide"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// free(8)
+		await ms.WriteAsync(spacer8.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// skip(8)
+		await ms.WriteAsync(spacer8.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("skip"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// mdat
+		var mdatSize = BitConverter.GetBytes(( uint ) ( 8 + mdatContent.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdatSize);
+		}
+
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(mdatContent, TestContext.CancellationToken);
+
+		var mp4Data = ms.ToArray();
+		var storage = CreateStorageWithMp4("/multi-spacers.mov", mp4Data);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		var result = await hasher.HashMp4VideoContentAsync("/multi-spacers.mov");
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
 	}
 
 	private sealed class NonSeekableStream(byte[] buffer) : MemoryStream(buffer)
