@@ -1,6 +1,7 @@
 import { createEvent, fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
+import * as useFolderPicker from "../../../hooks/use-folder-picker";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url/url-query";
@@ -9,6 +10,14 @@ import PreferencesAppSettingsStorageFolder, {
 } from "./preferences-app-settings-storage-folder";
 
 describe("PreferencesAppSettings", () => {
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    jest.spyOn(useFolderPicker, "useFolderPicker").mockReturnValue({
+      isNativeApp: () => false,
+      requestFolderSelection: jest.fn()
+    });
+  });
+
   it("renders", () => {
     render(<PreferencesAppSettingsStorageFolder />);
   });
@@ -37,11 +46,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettingsStorageFolder />);
 
-      const formControls = screen.queryAllByTestId("form-control");
-
-      const storageFolder = formControls.find(
-        (p) => p.getAttribute("data-name") === "storageFolder"
-      ) as HTMLElement;
+      const storageFolder = screen.getByTestId("storage-folder-picker") as HTMLElement;
       expect(storageFolder).not.toBeNull();
 
       expect(storageFolder.textContent).toBe("test");
@@ -83,10 +88,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettingsStorageFolder />);
 
-      const formControls = screen
-        .queryAllByTestId("form-control")
-        .find((p) => p.getAttribute("data-name") === "storageFolder");
-      const storageFolder = formControls as HTMLInputElement[][0];
+      const storageFolder = screen.getByTestId("storage-folder-picker") as HTMLElement;
 
       storageFolder.innerText = "12345";
       const blurEventYear = createEvent.focusOut(storageFolder, {
@@ -140,10 +142,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettingsStorageFolder />);
 
-      const formControls = screen
-        .queryAllByTestId("form-control")
-        .find((p) => p.getAttribute("data-name") === "storageFolder");
-      const storageFolder = formControls as HTMLInputElement[][0];
+      const storageFolder = screen.getByTestId("storage-folder-picker") as HTMLElement;
 
       storageFolder.innerText = "12345";
       const blurEventYear = createEvent.focusOut(storageFolder, {
@@ -173,12 +172,10 @@ describe("PreferencesAppSettings", () => {
     it("should set value with provided name when name is provided", async () => {
       const value = "test value";
       const name = "test name";
-      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
-        return Promise.resolve({
-          statusCode: 200,
-          data: null
-        });
-      });
+      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockResolvedValue({
+        statusCode: 200,
+        data: null
+      } as IConnectionDefault);
       const statusCode = await ChangeSetting(value, name);
       expect(statusCode).toBe(200);
       expect(fetchPostSpy).toHaveBeenCalled();

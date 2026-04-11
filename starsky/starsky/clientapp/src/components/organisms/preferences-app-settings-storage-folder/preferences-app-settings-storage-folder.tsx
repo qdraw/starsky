@@ -6,7 +6,7 @@ import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url/url-query";
-import FormControl from "../../atoms/form-control/form-control";
+import FolderPickerInput from "../../atoms/folder-picker-input/folder-picker-input";
 
 /**
  * Update Change Settings
@@ -72,17 +72,17 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
         {MessageAppSettingsEntireAppScope}
       </div>
       <h4>{MessageAppSettingsStorageFolder} </h4>
-      <FormControl
-        name="storageFolder"
-        onBlur={async (e) => {
-          const resultStatusCode = await ChangeSetting(e.target.innerText, "storageFolder");
-          setStorageFolder(e.target.innerText);
+      <FolderPickerInput
+        value={storageFolder ?? ""}
+        isEnabled={isEnabled}
+        allowEdit={appSettings?.storageFolderAllowEdit === true}
+        onChange={async (folderPath) => {
+          const resultStatusCode = await ChangeSetting(folderPath, "storageFolder");
+          setStorageFolder(folderPath);
           setStorageFolderNotFound(resultStatusCode === 404);
         }}
-        contentEditable={isEnabled && appSettings?.storageFolderAllowEdit === true}
-      >
-        {storageFolder}
-      </FormControl>
+        data-test="storage-folder-picker"
+      />
 
       {storageFolderNotFound ? (
         <div className="warning-box" data-test="storage-not-found">
