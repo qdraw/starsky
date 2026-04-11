@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.15 - _(Unreleased)_ - 2026-?-? {#v0.7.15}
+## version 0.7.16 - _(Unreleased)_ - 2026-?-? {#v0.7.16}
+
+- nothing yet
+
+## version 0.7.15 - 2026-04-? {#v0.7.15}
 
 - [x] (Fixed) _Back-end_ GetWindowsDriveInfo where Z:\\ was used to find an unused drive. (PR #2905)
 - [x] (Added) _Back-end_ Fix disk Detect File System for macOS and Linux (PR #2905)
