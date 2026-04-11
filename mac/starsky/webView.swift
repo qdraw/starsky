@@ -3,7 +3,7 @@ import WebKit
 
 // Protocol used to abstract evaluateJavaScript for testing
 protocol WebViewEvaluating: AnyObject {
-    func evaluateJavaScript(_ javaScriptString: String, completionHandler: ((Any?, Error?) -> Void)?)
+    func evaluateJavaScript(_ javaScriptString: String, completionHandler: (@Sendable (Any?, Error?) -> Void)?)
 }
 
 // Make WKWebView conform to WebViewEvaluating so production code can pass it directly
@@ -45,9 +45,11 @@ final class FilePickerController {
     // Helper that formats the JavaScript call for a path (or null)
     static func jsForPath(_ path: String?) -> String {
         if let path = path {
-            if let data = try? JSONSerialization.data(withJSONObject: path, options: []), let quoted = String(data: data, encoding: .utf8) {
+            // Use JSONEncoder to safely produce a JSON string literal for arbitrary characters
+            if let data = try? JSONEncoder().encode(path), let quoted = String(data: data, encoding: .utf8) {
                 return "window.onFolderSelected(\(quoted))"
             } else {
+                // Fallback: simple single-quote escaping for older runtimes
                 let escaped = path.replacingOccurrences(of: "'", with: "\\'")
                 return "window.onFolderSelected('\(escaped)')"
             }

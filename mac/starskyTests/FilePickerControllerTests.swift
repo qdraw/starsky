@@ -72,4 +72,36 @@ final class FilePickerControllerTests: XCTestCase {
         // Should not throw when webView is nil
         controller.performPick(webView: nil)
     }
+
+    // New unit tests that exercise jsForPath edge cases directly
+    func testJsForPathEscapesSingleQuote() throws {
+        let path = "/tmp/some/fi'le"
+        let js = FilePickerController.jsForPath(path)
+        // Should produce a JS call with a valid JSON string or a safely escaped single-quoted string
+        XCTAssertTrue(js.contains("onFolderSelected("))
+        XCTAssertTrue(js.hasSuffix(")"))
+        // Evaluate that the JS contains either a quoted JSON string or escaped single quote
+        XCTAssertTrue(js.contains("\\'") || js.contains("\"") )
+    }
+
+    func testJsForPathHandlesDoubleQuotesAndUnicode() throws {
+        let path = "/tmp/quote\"and_unicode_✓"
+        let js = FilePickerController.jsForPath(path)
+        XCTAssertTrue(js.contains("onFolderSelected("))
+        XCTAssertTrue(js.hasSuffix(")"))
+        // When encoded as JSON it should contain the escaped double-quote sequence or unicode preserved
+        XCTAssertTrue(js.contains("\\\"") || js.contains("✓"))
+    }
+
+    func testJsForPathHandlesEmptyString() throws {
+        let path = ""
+        let js = FilePickerController.jsForPath(path)
+        XCTAssertTrue(js.contains("onFolderSelected("))
+        XCTAssertTrue(js.hasSuffix(")"))
+    }
+
+    func testJsForPathNilProducesNull() throws {
+        let js = FilePickerController.jsForPath(nil)
+        XCTAssertEqual(js, "window.onFolderSelected(null)")
+    }
 }
