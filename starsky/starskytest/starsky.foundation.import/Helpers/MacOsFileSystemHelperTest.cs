@@ -566,6 +566,15 @@ public class MacOsFileSystemHelperTest
 			"IsExactMountPointMatch for / should not be empty");
 	}
 
+	private static byte[] ToNullTerminatedBytes(string value, int size)
+	{
+		var buf = new byte[size];
+		var encoded = System.Text.Encoding.UTF8.GetBytes(value);
+		var len = Math.Min(encoded.Length, size - 1);
+		Array.Copy(encoded, buf, len);
+		return buf;
+	}
+
 	[TestMethod]
 	public void ParseEntries_ReadsMultipleEntries_FromUnmanagedBuffer()
 	{
@@ -574,12 +583,12 @@ public class MacOsFileSystemHelperTest
 			BindingFlags.NonPublic | BindingFlags.Instance);
 		Assert.IsNotNull(statFsType, "StatFs nested type not found");
 
-		var mountField = statFsType.GetField("f_mntonname",
+		var mountField = statFsType.GetField("f_mntonname_raw",
 			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-		var fsField = statFsType.GetField("f_fstypename",
+		var fsField = statFsType.GetField("f_fstypename_raw",
 			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-		Assert.IsNotNull(mountField, "f_mntonname field not found");
-		Assert.IsNotNull(fsField, "f_fstypename field not found");
+		Assert.IsNotNull(mountField, "f_mntonname_raw field not found");
+		Assert.IsNotNull(fsField, "f_fstypename_raw field not found");
 
 		var structSize = Marshal.SizeOf(statFsType);
 		const int count = 2;
@@ -588,14 +597,14 @@ public class MacOsFileSystemHelperTest
 		{
 			// First entry
 			var inst1 = Activator.CreateInstance(statFsType);
-			mountField.SetValue(inst1, "/Volumes/DriveA");
-			fsField.SetValue(inst1, "exfat");
+			mountField.SetValue(inst1, ToNullTerminatedBytes("/Volumes/DriveA", 1024));
+			fsField.SetValue(inst1, ToNullTerminatedBytes("exfat", 16));
 			Marshal.StructureToPtr(inst1!, buffer, false);
 
 			// Second entry
 			var inst2 = Activator.CreateInstance(statFsType);
-			mountField.SetValue(inst2, "/Volumes/DriveB");
-			fsField.SetValue(inst2, "ntfs");
+			mountField.SetValue(inst2, ToNullTerminatedBytes("/Volumes/DriveB", 1024));
+			fsField.SetValue(inst2, ToNullTerminatedBytes("ntfs", 16));
 			var secondPtr = IntPtr.Add(buffer, structSize);
 			Marshal.StructureToPtr(inst2!, secondPtr, false);
 
@@ -622,9 +631,9 @@ public class MacOsFileSystemHelperTest
 			BindingFlags.NonPublic | BindingFlags.Instance);
 		Assert.IsNotNull(statFsType);
 
-		var mountField = statFsType.GetField("f_mntonname",
+		var mountField = statFsType.GetField("f_mntonname_raw",
 			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-		var fsField = statFsType.GetField("f_fstypename",
+		var fsField = statFsType.GetField("f_fstypename_raw",
 			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 		Assert.IsNotNull(mountField);
 		Assert.IsNotNull(fsField);
@@ -635,9 +644,9 @@ public class MacOsFileSystemHelperTest
 		try
 		{
 			var inst = Activator.CreateInstance(statFsType);
-			// set empty strings
-			mountField.SetValue(inst, string.Empty);
-			fsField.SetValue(inst, string.Empty);
+			// set all-zero byte arrays (empty strings)
+			mountField.SetValue(inst, new byte[1024]);
+			fsField.SetValue(inst, new byte[16]);
 			Marshal.StructureToPtr(inst!, buffer, false);
 
 			var entries = MacOsFileSystemHelper.ParseEntries(buffer, count);

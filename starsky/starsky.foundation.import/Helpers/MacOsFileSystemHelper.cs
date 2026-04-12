@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using starsky.foundation.platform.Architecture;
 
@@ -89,7 +90,6 @@ public class MacOsFileSystemHelper
 					matchedMountPoint = resolved.MountPoint;
 				}
 
-				// If filesystem is empty, skip this attempt and retry
 				if ( string.IsNullOrWhiteSpace(fs) )
 				{
 					_sleep(MountTableRetryDelayMs);
@@ -176,7 +176,7 @@ public class MacOsFileSystemHelper
 
 		return statfs(path, out var stat) != 0
 			? throw new Win32Exception(Marshal.GetLastWin32Error())
-			: stat.f_fstypename;
+			: PtrToString(stat.f_fstypename_raw);
 	}
 
 	private string TryGetFileSystemFallback(Exception? mountTableException, string path)
@@ -305,18 +305,35 @@ public class MacOsFileSystemHelper
 		{
 			var current = IntPtr.Add(mntbufp, i * structSize);
 			var stat = Marshal.PtrToStructure<StatFs>(current);
-			
+
+			var fsType = PtrToString(stat.f_fstypename_raw);
+			var mountPoint = PtrToString(stat.f_mntonname_raw);
+
 			// Skip entries with empty filesystem type or mount point
-			if ( !string.IsNullOrWhiteSpace(stat.f_fstypename) && 
-			     !string.IsNullOrWhiteSpace(stat.f_mntonname) )
+			if ( !string.IsNullOrWhiteSpace(fsType) &&
+			     !string.IsNullOrWhiteSpace(mountPoint) )
 			{
-				entries.Add(new MountTableEntry(
-					stat.f_mntonname,
-					stat.f_fstypename));
+				entries.Add(new MountTableEntry(mountPoint, fsType));
 			}
 		}
 
 		return entries;
+	}
+
+	private static string PtrToString(byte[]? bytes)
+	{
+		if ( bytes == null )
+		{
+			return string.Empty;
+		}
+
+		var length = Array.IndexOf<byte>(bytes, 0);
+		if ( length < 0 )
+		{
+			length = bytes.Length;
+		}
+
+		return Encoding.UTF8.GetString(bytes, 0, length);
 	}
 
 	internal static string NormalizeForPrefix(string path)
@@ -367,14 +384,14 @@ public class MacOsFileSystemHelper
 		public uint f_flags;
 		public uint f_fssubtype;
 
-		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = MFSNAMELEN)]
-		public string f_fstypename;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = MFSNAMELEN)]
+		public byte[] f_fstypename_raw;
 
-		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = MNAMELEN)]
-		public string f_mntonname;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = MNAMELEN)]
+		public byte[] f_mntonname_raw;
 
-		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = MNAMELEN)]
-		public string f_mntfromname;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = MNAMELEN)]
+		public byte[] f_mntfromname_raw;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
 		public uint[] f_reserved;
