@@ -13,6 +13,8 @@ namespace starskytest.starsky.foundation.mountwatch.Services;
 [TestClass]
 public sealed class MountWatcherCliTest
 {
+	public TestContext TestContext { get; set; }
+
 	private static MountWatcherCli CreateSut(
 		FakeConsoleWrapper? console = null,
 		FakeIWebLogger? logger = null,
@@ -213,7 +215,33 @@ public sealed class MountWatcherCliTest
 		Assert.Contains(p => p == mountPath, first.paths);
 	}
 
-	public TestContext TestContext { get; set; }
+	[TestMethod]
+	public async Task OnMountDetected_WhenNotCameraStorage_LogsDebugAndDoesNotImport()
+	{
+		// Arrange: fake import that records calls and logger that records debug
+		var fakeImport = new FakeIImportForImportTest();
+		const string mountPath = "/mnt/cam2";
+		var logger = new FakeIWebLogger();
+		var sut = new MountWatcherCli(
+			fakeImport,
+			new AppSettings { TempFolder = "/temp" },
+			new FakeConsoleWrapper([]),
+			logger,
+			new FakeCameraStorageDetector([]), // no paths => not a camera storage
+			new FakeMountWatcherFactory(),
+			new FakeServiceInstaller());
+
+		// Act: trigger mount detected event
+		sut.OnMountDetected(null,
+			new MountDetectedEventArgs { MountPath = mountPath, DetectedAt = DateTime.Now });
+		await Task.Delay(50, TestContext.CancellationToken);
+
+		// Assert: importer not called and debug logged
+		Assert.IsEmpty(fakeImport.Calls);
+		Assert.IsTrue(logger.TrackedDebug.Exists(d =>
+			d.Item2 != null &&
+			d.Item2.Contains($"No camera storage found on {mountPath}")));
+	}
 }
 
 internal sealed class ThrowingMountWatcherFactory : IMountWatcherFactory

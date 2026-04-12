@@ -19,7 +19,7 @@ public class MountWatcherFactory(ISelectorStorage selectorStorage, IWebLogger lo
 	private readonly Func<OSPlatform> _platformResolver =
 		OperatingSystemHelper.GetPlatform;
 
-	private readonly int _pollIntervalMs;
+	private readonly int _pollIntervalMs = 2000;
 
 	internal MountWatcherFactory(ISelectorStorage selectorStorage, IWebLogger logger,
 		Func<OSPlatform> platformResolver, int pollIntervalMs) : this(selectorStorage, logger)

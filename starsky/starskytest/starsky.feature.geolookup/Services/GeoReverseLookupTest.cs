@@ -144,6 +144,8 @@ public sealed class GeoFolderReverseLookupTest
 	[TestMethod]
 	public async Task GeoReverseLookup_CatchError_VaticanCity()
 	{
+		Setup();
+
 		// the Country code VA does not exist
 		var vaticanCity = new FileIndexItem
 		{
