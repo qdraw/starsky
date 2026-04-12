@@ -218,7 +218,7 @@ public class MacOsFileSystemHelper
 			$"No matching mount point found for path '{path}'");
 	}
 
-	private static List<MountTableEntry> GetMountTableEntries()
+	internal static List<MountTableEntry> GetMountTableEntries()
 	{
 		var count = MacOsNativeMethods.getmntinfo(out var ptr, 0);
 		return count <= 0
