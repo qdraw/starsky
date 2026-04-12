@@ -16,10 +16,11 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 public class MountWatcherFactory(ISelectorStorage selectorStorage, IWebLogger logger)
 	: IMountWatcherFactory
 {
+	private const int DefaultPollIntervalMs = 1000;
 	private readonly Func<OSPlatform> _platformResolver =
 		OperatingSystemHelper.GetPlatform;
 
-	private readonly int _pollIntervalMs;
+	private readonly int _pollIntervalMs = DefaultPollIntervalMs;
 
 	internal MountWatcherFactory(ISelectorStorage selectorStorage, IWebLogger logger,
 		Func<OSPlatform> platformResolver, int pollIntervalMs) : this(selectorStorage, logger)

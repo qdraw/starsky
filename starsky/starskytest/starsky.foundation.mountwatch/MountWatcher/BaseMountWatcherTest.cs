@@ -25,6 +25,20 @@ public sealed class BaseMountWatcherTest
 	}
 
 	[TestMethod]
+	public void BaseMountWatcher_WhenPollIntervalIsZero_UsesSafeDefault()
+	{
+		var sut = new TestBaseMountWatcher(0);
+		Assert.AreEqual(1000, sut.GetPollIntervalMs());
+	}
+
+	[TestMethod]
+	public void BaseMountWatcher_WhenPollIntervalIsNegative_UsesSafeDefault()
+	{
+		var sut = new TestBaseMountWatcher(-10);
+		Assert.AreEqual(1000, sut.GetPollIntervalMs());
+	}
+
+	[TestMethod]
 	[Timeout(8000, CooperativeCancellation = true)]
 	public async Task BaseMountWatcher_RunPollingFallback_DetectsAndRemovesMounts()
 	{
@@ -71,7 +85,8 @@ public sealed class BaseMountWatcherTest
 
 	private sealed class TestBaseMountWatcher : BaseMountWatcher
 	{
-		public TestBaseMountWatcher() : base(new FakeIWebLogger(),10)
+		public TestBaseMountWatcher(int pollIntervalMs = 10) : base(new FakeIWebLogger(),
+			pollIntervalMs)
 		{
 		}
 
@@ -116,6 +131,11 @@ public sealed class BaseMountWatcherTest
 		public void RaiseMount(string mountPath)
 		{
 			OnMountDetected(mountPath);
+		}
+
+		public int GetPollIntervalMs()
+		{
+			return PollIntervalMs;
 		}
 	}
 }

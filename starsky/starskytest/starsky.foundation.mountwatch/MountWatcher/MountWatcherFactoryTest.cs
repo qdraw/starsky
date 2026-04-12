@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
@@ -38,6 +39,21 @@ public sealed class MountWatcherFactoryTest
 		Assert.IsNotNull(watcher1);
 		Assert.IsNotNull(watcher2);
 		Assert.AreNotSame(watcher1, watcher2);
+	}
+
+	[TestMethod]
+	public void MountWatcherFactory_DefaultPollInterval_IsNonZero()
+	{
+		var factory = new MountWatcherFactory(new FakeSelectorStorage(), new FakeIWebLogger(),
+			() => OSPlatform.Windows, 0);
+
+		var watcher = factory.CreateMountWatcher();
+		var field = typeof(BaseMountWatcher).GetField("PollIntervalMs",
+			BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+		Assert.IsNotNull(field);
+
+		var value = (int)field!.GetValue(watcher)!;
+		Assert.IsGreaterThan(0, value);
 	}
 
 	[TestMethod]

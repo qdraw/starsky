@@ -12,10 +12,16 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// </summary>
 internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) : IMountWatcher
 {
+	private const int DefaultPollIntervalMs = 1000;
 	protected readonly IWebLogger logger = logger;
-	protected readonly int PollIntervalMs = pollIntervalMs;
+	protected readonly int PollIntervalMs = SanitizePollInterval(pollIntervalMs);
 	protected bool IsRunning;
 	protected internal Thread? WatchThread;
+
+	private static int SanitizePollInterval(int pollIntervalMs)
+	{
+		return pollIntervalMs > 0 ? pollIntervalMs : DefaultPollIntervalMs;
+	}
 
 	public event EventHandler<MountDetectedEventArgs>? MountDetected;
 
