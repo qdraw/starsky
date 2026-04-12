@@ -12,19 +12,48 @@ internal static class MacOsNativeMethods
 	internal const int MFSTYPENAMELEN = 16; // length of fs type name including null
 	internal const int MAXPATHLEN = 1024; // length of buffer for returned name
 
+	// On x64 macOS, statfs/getmntinfo are aliased to $INODE64 variants that expose
+	// the 64-bit inode struct. On ARM64 macOS the plain symbols already use this
+	// layout and the $INODE64 variants do not exist. We declare both and dispatch
+	// at runtime to avoid EntryPointNotFoundException on either architecture.
+
+	[DllImport("libc", EntryPoint = "statfs$INODE64", SetLastError = true)]
+	[SuppressMessage("Globalization", "CA2101:Specify marshaling " +
+	                                  "for P/Invoke string arguments")]
+	[SuppressMessage("Interoperability",
+		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
+		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
+	private static extern int statfs_inode64(string path, out StatFs buf);
+
 	[DllImport("libc", EntryPoint = "statfs", SetLastError = true)]
 	[SuppressMessage("Globalization", "CA2101:Specify marshaling " +
 	                                  "for P/Invoke string arguments")]
 	[SuppressMessage("Interoperability",
-		"SYSLIB1054:Use \'LibraryImportAttribute\' instead of " +
-		"\'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
-	internal static extern int statfs(string path, out StatFs buf);
+		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
+		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
+	private static extern int statfs_plain(string path, out StatFs buf);
+
+	[DllImport("libc", EntryPoint = "getmntinfo$INODE64", SetLastError = true)]
+	[SuppressMessage("Interoperability",
+		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
+		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
+	private static extern int getmntinfo_inode64(out IntPtr mntbufp, int flags);
 
 	[DllImport("libc", EntryPoint = "getmntinfo", SetLastError = true)]
 	[SuppressMessage("Interoperability",
 		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
 		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
-	internal static extern int getmntinfo(out IntPtr mntbufp, int flags);
+	private static extern int getmntinfo_plain(out IntPtr mntbufp, int flags);
+
+	// Cached once per process start — architecture does not change at runtime.
+	private static readonly bool IsArm64 =
+		RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
+
+	internal static int statfs(string path, out StatFs buf) =>
+		IsArm64 ? statfs_plain(path, out buf) : statfs_inode64(path, out buf);
+
+	internal static int getmntinfo(out IntPtr mntbufp, int flags) =>
+		IsArm64 ? getmntinfo_plain(out mntbufp, flags) : getmntinfo_inode64(out mntbufp, flags);
 
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct Fsid
