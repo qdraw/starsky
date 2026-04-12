@@ -124,7 +124,9 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 		if ( !IsCameraFriendlyFileSystem(drive.DriveFormat) )
 		{
 			logger.LogError(
-				$"No IsCameraFriendlyFileSystem: {drive.RootDirectory.FullName} {drive.DriveFormat}");
+				$"No IsCameraFriendlyFileSystem " +
+				$"Path: {drive.RootDirectory.FullName} " +
+				$"DriveFormat: {drive.DriveFormat}");
 			return false;
 		}
 

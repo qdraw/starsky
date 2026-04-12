@@ -247,11 +247,11 @@ public class MountWatcherCli
 		{
 			if ( !_storageDetector.IsCameraStorage(mountPath) )
 			{
-				_logger.LogInformation($"No camera storage found on {mountPath}");
+				_logger.LogDebug($"No camera storage found on {mountPath}");
 				return;
 			}
 
-			_logger.LogInformation($"Run import on {mountPath}");
+			_logger.LogDebug($"Run import on {mountPath}");
 			await RunImporter(mountPath);
 		}
 		catch ( Exception ex )
