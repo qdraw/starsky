@@ -27,16 +27,16 @@ public class MacOsNativeMethodsTests
 	public void ParseEntries_ReadsMultipleEntries_FromUnmanagedBuffer()
 	{
 		// Arrange
-		var statFsType = typeof(MacOsNativeMethods).GetNestedType("StatFs64",
+		var statFsType = typeof(MacOsNativeMethods).GetNestedType("StatFs",
 			BindingFlags.NonPublic | BindingFlags.Instance);
-		Assert.IsNotNull(statFsType, "StatFs64 nested type not found");
+		Assert.IsNotNull(statFsType, "StatFs nested type not found");
 
-		var mountField = statFsType.GetField("f_mntonname_raw",
+		var mountField = statFsType.GetField("f_mntonname",
 			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-		var fsField = statFsType.GetField("f_fstypename_raw",
+		var fsField = statFsType.GetField("f_fstypename",
 			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-		Assert.IsNotNull(mountField, "f_mntonname_raw field not found");
-		Assert.IsNotNull(fsField, "f_fstypename_raw field not found");
+		Assert.IsNotNull(mountField, "f_mntonname field not found");
+		Assert.IsNotNull(fsField, "f_fstypename field not found");
 
 		var structSize = Marshal.SizeOf(statFsType);
 		const int count = 2;
@@ -45,13 +45,15 @@ public class MacOsNativeMethodsTests
 		{
 			// First entry
 			var inst1 = Activator.CreateInstance(statFsType);
-			mountField.SetValue(inst1, StringToByteArray("/Volumes/DriveA", MacOsNativeMethods.MAXPATHLEN));
+			mountField.SetValue(inst1,
+				StringToByteArray("/Volumes/DriveA", MacOsNativeMethods.MAXPATHLEN));
 			fsField.SetValue(inst1, StringToByteArray("exfat", MacOsNativeMethods.MFSTYPENAMELEN));
 			Marshal.StructureToPtr(inst1!, buffer, false);
 
 			// Second entry
 			var inst2 = Activator.CreateInstance(statFsType);
-			mountField.SetValue(inst2, StringToByteArray("/Volumes/DriveB", MacOsNativeMethods.MAXPATHLEN));
+			mountField.SetValue(inst2,
+				StringToByteArray("/Volumes/DriveB", MacOsNativeMethods.MAXPATHLEN));
 			fsField.SetValue(inst2, StringToByteArray("ntfs", MacOsNativeMethods.MFSTYPENAMELEN));
 			var secondPtr = IntPtr.Add(buffer, structSize);
 			Marshal.StructureToPtr(inst2!, secondPtr, false);
@@ -75,13 +77,13 @@ public class MacOsNativeMethodsTests
 	[TestMethod]
 	public void ParseEntries_HandlesEmptyStrings_Correctly()
 	{
-		var statFsType = typeof(MacOsNativeMethods).GetNestedType("StatFs64",
+		var statFsType = typeof(MacOsNativeMethods).GetNestedType("StatFs",
 			BindingFlags.NonPublic | BindingFlags.Instance);
 		Assert.IsNotNull(statFsType);
 
-		var mountField = statFsType.GetField("f_mntonname_raw",
+		var mountField = statFsType.GetField("f_mntonname",
 			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-		var fsField = statFsType.GetField("f_fstypename_raw",
+		var fsField = statFsType.GetField("f_fstypename",
 			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 		Assert.IsNotNull(mountField);
 		Assert.IsNotNull(fsField);
@@ -93,8 +95,10 @@ public class MacOsNativeMethodsTests
 		{
 			var inst = Activator.CreateInstance(statFsType);
 			// set empty byte arrays
-			mountField.SetValue(inst, StringToByteArray(string.Empty, MacOsNativeMethods.MAXPATHLEN));
-			fsField.SetValue(inst, StringToByteArray(string.Empty, MacOsNativeMethods.MFSTYPENAMELEN));
+			mountField.SetValue(inst,
+				StringToByteArray(string.Empty, MacOsNativeMethods.MAXPATHLEN));
+			fsField.SetValue(inst,
+				StringToByteArray(string.Empty, MacOsNativeMethods.MFSTYPENAMELEN));
 			Marshal.StructureToPtr(inst!, buffer, false);
 
 			var entries = MacOsFileSystemHelper.ParseEntries(buffer, count);

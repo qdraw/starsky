@@ -10,9 +10,9 @@ internal static class MacOsNativeMethods
 {
 	// From macOS docs: statfs(2)
 	internal const int MFSTYPENAMELEN = 16; // length of fs type name including null
-	internal const int MAXPATHLEN = 1024;   // length of buffer for returned name
+	internal const int MAXPATHLEN = 1024; // length of buffer for returned name
 
-	[DllImport("libc", EntryPoint = "statfs$INODE64", SetLastError = true)]
+	[DllImport("libc", EntryPoint = "statfs", SetLastError = true)]
 	[SuppressMessage("Globalization", "CA2101:Specify marshaling " +
 	                                  "for P/Invoke string arguments")]
 	[SuppressMessage("Interoperability",
@@ -20,7 +20,7 @@ internal static class MacOsNativeMethods
 		"\'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
 	internal static extern int statfs(string path, out StatFs buf);
 
-	[DllImport("libc", EntryPoint = "getmntinfo$INODE64", SetLastError = true)]
+	[DllImport("libc", EntryPoint = "getmntinfo", SetLastError = true)]
 	[SuppressMessage("Interoperability",
 		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
 		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
@@ -34,33 +34,33 @@ internal static class MacOsNativeMethods
 	}
 
 	/// <summary>
-	/// statfs structure from macOS (10.5+)
-	/// See: man statfs(2)
-	/// https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fstatfs64.2.html
+	///     statfs structure from macOS (10.5+)
+	///     See: man statfs(2)
+	///     https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fstatfs64.2.html
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
 	internal unsafe struct StatFs
 	{
-		public uint f_bsize;        /* fundamental file system block size */
-		public int f_iosize;        /* optimal transfer block size */
-		public ulong f_blocks;      /* total data blocks in file system */
-		public ulong f_bfree;       /* free blocks in fs */
-		public ulong f_bavail;      /* free blocks avail to non-superuser */
-		public ulong f_files;       /* total file nodes in file system */
-		public ulong f_ffree;       /* free file nodes in fs */
+		public uint f_bsize; /* fundamental file system block size */
+		public int f_iosize; /* optimal transfer block size */
+		public ulong f_blocks; /* total data blocks in file system */
+		public ulong f_bfree; /* free blocks in fs */
+		public ulong f_bavail; /* free blocks avail to non-superuser */
+		public ulong f_files; /* total file nodes in file system */
+		public ulong f_ffree; /* free file nodes in fs */
 
-		public Fsid f_fsid;         /* file system id */
+		public Fsid f_fsid; /* file system id */
 
-		public uint f_owner;        /* user that mounted the filesystem */
-		public uint f_type;         /* type of filesystem */
-		public uint f_flags;        /* copy of mount exported flags */
-		public uint f_fssubtype;    /* fs sub-type (flavor) */
+		public uint f_owner; /* user that mounted the filesystem */
+		public uint f_type; /* type of filesystem */
+		public uint f_flags; /* copy of mount exported flags */
+		public uint f_fssubtype; /* fs sub-type (flavor) */
 
 		public fixed byte f_fstypename[MFSTYPENAMELEN]; /* fs type name */
 
-		public fixed byte f_mntonname[MAXPATHLEN];      /* directory on which mounted */
+		public fixed byte f_mntonname[MAXPATHLEN]; /* directory on which mounted */
 
-		public fixed byte f_mntfromname[MAXPATHLEN];    /* mounted filesystem */
+		public fixed byte f_mntfromname[MAXPATHLEN]; /* mounted filesystem */
 
 		public fixed uint f_reserved[8]; /* For future use */
 
@@ -85,21 +85,16 @@ internal static class MacOsNativeMethods
 				}
 			}
 		}
-	}
 
-	private static unsafe string DecodeNullTerminatedUtf8(byte* buffer, int capacity)
-	{
-		var length = 0;
-		while ( length < capacity && buffer[length] != 0 )
+		private static string DecodeNullTerminatedUtf8(byte* buffer, int capacity)
 		{
-			length++;
-		}
+			var length = 0;
+			while ( length < capacity && buffer[length] != 0 )
+			{
+				length++;
+			}
 
-		if ( length == 0 )
-		{
-			return string.Empty;
+			return length == 0 ? string.Empty : Encoding.UTF8.GetString(buffer, length).Trim();
 		}
-
-		return Encoding.UTF8.GetString(buffer, length).Trim();
 	}
 }
