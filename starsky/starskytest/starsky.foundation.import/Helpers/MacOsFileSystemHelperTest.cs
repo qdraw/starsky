@@ -379,6 +379,36 @@ public class MacOsFileSystemHelperTest
 	}
 
 	[TestMethod]
+	public void GetFileSystem_NoMatchingMountPointUnderVolumes_WithEmptyFallback_ReturnsEmpty()
+	{
+		var helper = new MacOsFileSystemHelper(
+			() => OSPlatform.OSX,
+			_ => throw new InvalidOperationException(
+				"No matching mount point found for path '/Volumes/Pecker'"),
+			_ => string.Empty,
+			_ => { },
+			value => value);
+
+		var fs = helper.GetFileSystem("/Volumes/Pecker");
+
+		Assert.AreEqual(string.Empty, fs);
+	}
+
+	[TestMethod]
+	public void GetFileSystem_NoMatchingMountPointOutsideVolumes_WithEmptyFallback_Throws()
+	{
+		var helper = new MacOsFileSystemHelper(
+			() => OSPlatform.OSX,
+			_ => throw new InvalidOperationException(
+				"No matching mount point found for path '/private/tmp'"),
+			_ => string.Empty,
+			_ => { },
+			value => value);
+
+		Assert.ThrowsExactly<InvalidOperationException>(() => helper.GetFileSystem("/private/tmp"));
+	}
+
+	[TestMethod]
 	public void ShouldRetryForTransientRootAlias_MountPointNotExact_RetriesEvenWhenNotApfs()
 	{
 		var shouldRetry = MacOsFileSystemHelper.ShouldRetryForTransientRootAlias(

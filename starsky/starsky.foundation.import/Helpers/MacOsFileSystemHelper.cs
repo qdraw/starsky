@@ -109,7 +109,11 @@ public class MacOsFileSystemHelper
 			}
 			catch ( Exception ex )
 			{
-				mountTableException = ex;
+				if ( !IsTransientNoMatchingMountPoint(ex, path) )
+				{
+					mountTableException = ex;
+				}
+
 				if ( attempt < MountTableRetryCount - 1 )
 				{
 					_sleep(MountTableRetryDelayMs);
@@ -209,8 +213,28 @@ public class MacOsFileSystemHelper
 			}
 		}
 
-		// All retries exhausted
+		// All retries exhausted. For transient /Volumes races, return empty and let callers decide.
+		if ( IsTransientNoMatchingMountPoint(mountTableException, path) )
+		{
+			return string.Empty;
+		}
+
 		return mountTableException != null ? throw mountTableException : string.Empty;
+	}
+
+	private static bool IsTransientNoMatchingMountPoint(Exception? ex, string path)
+	{
+		if ( ex is not InvalidOperationException )
+		{
+			return false;
+		}
+
+		if ( !path.StartsWith("/Volumes/", StringComparison.OrdinalIgnoreCase) )
+		{
+			return false;
+		}
+
+		return ex.Message.Contains("No matching mount point found", StringComparison.Ordinal);
 	}
 
 	private void EnsureMacOs()
