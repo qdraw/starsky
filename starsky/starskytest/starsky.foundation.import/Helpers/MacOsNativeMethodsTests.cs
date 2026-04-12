@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -66,6 +67,7 @@ public class MacOsNativeMethodsTests
 		}
 	}
 
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	private static void CreateTestStatFsInBuffer(string mountPoint, string fileSystemType, IntPtr buffer)
 	{
 		// Zero out the buffer first
