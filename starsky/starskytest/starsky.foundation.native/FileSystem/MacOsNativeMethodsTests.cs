@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Helpers;
 using starsky.foundation.native.FileSystem;
+using starsky.foundation.platform.Models;
 
 namespace starskytest.starsky.foundation.native.FileSystem;
 
@@ -148,10 +149,17 @@ public class MacOsNativeMethodsTests
 	[OSCondition(OperatingSystems.Linux | OperatingSystems.Windows)]
 	public void GetMountTableEntries_getmntinfo_EntryPointNotFoundException__WindowsLinux()
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.ThrowsExactly<DllNotFoundException>(
+				MacOsFileSystemHelper.GetMountTableEntries);
+			return;
+		}
+
 		Assert.ThrowsExactly<EntryPointNotFoundException>(
 			MacOsFileSystemHelper.GetMountTableEntries);
 	}
-	
+
 	[TestMethod]
 	[OSCondition(OperatingSystems.OSX)]
 	public void GetMountTableEntries_getmntinfo_Results__MacOnly()
