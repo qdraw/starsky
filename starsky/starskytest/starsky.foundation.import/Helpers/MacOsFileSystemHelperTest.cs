@@ -172,9 +172,9 @@ public class MacOsFileSystemHelperTest
 		// on linux this function does not give a result
 		// because the native method will fail to load,
 		// ensure it at least returns empty string rather than throwing
-		var result = new MacOsFileSystemHelper(() => OSPlatform.OSX
-		).GetFileSystem("/");
-		Assert.IsEmpty(result);
+		Assert.ThrowsExactly<EntryPointNotFoundException>(() =>
+			new MacOsFileSystemHelper(() => OSPlatform.OSX
+			).GetFileSystem("/"));
 	}
 
 	[TestMethod]
