@@ -220,10 +220,11 @@ public class MacOsFileSystemHelperTest
 
 	[TestMethod]
 	[OSCondition(OperatingSystems.OSX)]
-	public void GetFileSystemViaStatFs_OnMac_ReturnsNonEmpty()
+	public void GetFileSystemViaStatFs_OnMac_ReturnsApfs()
 	{
 		var fs = new MacOsFileSystemHelper().GetFileSystemViaStatFs("/");
-		Assert.IsFalse(string.IsNullOrWhiteSpace(fs));
+		Assert.AreEqual("apfs", fs, true,
+			$"Expected APFS for root on macOS but got '{fs}'");
 	}
 
 	[TestMethod]

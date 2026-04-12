@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace starsky.foundation.import.Helpers;
 
@@ -11,7 +12,7 @@ internal static class MacOsNativeMethods
 	internal const int MFSTYPENAMELEN = 16; // length of fs type name including null
 	internal const int MAXPATHLEN = 1024;   // length of buffer for returned name
 
-	[DllImport("libc", SetLastError = true)]
+	[DllImport("libc", EntryPoint = "statfs$INODE64", SetLastError = true)]
 	[SuppressMessage("Globalization", "CA2101:Specify marshaling " +
 	                                  "for P/Invoke string arguments")]
 	[SuppressMessage("Interoperability",
@@ -19,11 +20,18 @@ internal static class MacOsNativeMethods
 		"\'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
 	internal static extern int statfs(string path, out StatFs buf);
 
-	[DllImport("libc", SetLastError = true)]
+	[DllImport("libc", EntryPoint = "getmntinfo$INODE64", SetLastError = true)]
 	[SuppressMessage("Interoperability",
 		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
 		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
 	internal static extern int getmntinfo(out IntPtr mntbufp, int flags);
+
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct Fsid
+	{
+		public int val0;
+		public int val1;
+	}
 
 	/// <summary>
 	/// statfs structure from macOS (10.5+)
@@ -31,7 +39,7 @@ internal static class MacOsNativeMethods
 	/// https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fstatfs64.2.html
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct StatFs
+	internal unsafe struct StatFs
 	{
 		public uint f_bsize;        /* fundamental file system block size */
 		public int f_iosize;        /* optimal transfer block size */
@@ -41,24 +49,57 @@ internal static class MacOsNativeMethods
 		public ulong f_files;       /* total file nodes in file system */
 		public ulong f_ffree;       /* free file nodes in fs */
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-		public int[] f_fsid;        /* file system id */
+		public Fsid f_fsid;         /* file system id */
 
 		public uint f_owner;        /* user that mounted the filesystem */
 		public uint f_type;         /* type of filesystem */
 		public uint f_flags;        /* copy of mount exported flags */
 		public uint f_fssubtype;    /* fs sub-type (flavor) */
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = MFSTYPENAMELEN)]
-		public byte[] f_fstypename_raw;     /* fs type name */
+		public fixed byte f_fstypename[MFSTYPENAMELEN]; /* fs type name */
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXPATHLEN)]
-		public byte[] f_mntonname_raw;      /* directory on which mounted */
+		public fixed byte f_mntonname[MAXPATHLEN];      /* directory on which mounted */
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXPATHLEN)]
-		public byte[] f_mntfromname_raw;    /* mounted filesystem */
+		public fixed byte f_mntfromname[MAXPATHLEN];    /* mounted filesystem */
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-		public uint[] f_reserved;   /* For future use */
+		public fixed uint f_reserved[8]; /* For future use */
+
+		internal string FileSystemType
+		{
+			get
+			{
+				fixed ( byte* buffer = f_fstypename )
+				{
+					return DecodeNullTerminatedUtf8(buffer, MFSTYPENAMELEN);
+				}
+			}
+		}
+
+		internal string MountPoint
+		{
+			get
+			{
+				fixed ( byte* buffer = f_mntonname )
+				{
+					return DecodeNullTerminatedUtf8(buffer, MAXPATHLEN);
+				}
+			}
+		}
+	}
+
+	private static unsafe string DecodeNullTerminatedUtf8(byte* buffer, int capacity)
+	{
+		var length = 0;
+		while ( length < capacity && buffer[length] != 0 )
+		{
+			length++;
+		}
+
+		if ( length == 0 )
+		{
+			return string.Empty;
+		}
+
+		return Encoding.UTF8.GetString(buffer, length).Trim();
 	}
 }

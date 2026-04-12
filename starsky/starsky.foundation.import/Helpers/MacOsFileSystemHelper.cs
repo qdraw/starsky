@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using starsky.foundation.platform.Architecture;
 
@@ -164,7 +163,7 @@ public class MacOsFileSystemHelper
 
 		return MacOsNativeMethods.statfs(path, out var stat) != 0
 			? throw new Win32Exception(Marshal.GetLastWin32Error())
-			: PtrToString(stat.f_fstypename_raw);
+			: stat.FileSystemType;
 	}
 
 	private void EnsureMacOs()
@@ -236,8 +235,8 @@ public class MacOsFileSystemHelper
 			var current = IntPtr.Add(mntbufp, i * structSize);
 			var stat = Marshal.PtrToStructure<MacOsNativeMethods.StatFs>(current);
 			entries.Add(new MountTableEntry(
-				PtrToString(stat.f_mntonname_raw),
-				PtrToString(stat.f_fstypename_raw)));
+				stat.MountPoint,
+				stat.FileSystemType));
 		}
 
 		return entries;
@@ -270,16 +269,6 @@ public class MacOsFileSystemHelper
 		return normalized + "/";
 	}
 
-	private static string PtrToString(byte[] bytes)
-	{
-		var length = Array.IndexOf<byte>(bytes, 0);
-		if ( length < 0 )
-		{
-			length = bytes.Length;
-		}
-
-		return Encoding.UTF8.GetString(bytes, 0, length);
-	}
 
 	internal readonly record struct MountTableEntry(string MountPoint, string FileSystemType);
 }

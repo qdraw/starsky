@@ -8,6 +8,7 @@
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.foundation.import</RootNamespace>
         <ImplicitUsings>disable</ImplicitUsings>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
