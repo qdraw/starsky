@@ -143,4 +143,21 @@ public class MacOsNativeMethodsTests
 			  System.Runtime.InteropServices.Architecture.Arm64
 			: ( bool ) field.GetValue(null)!;
 	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.Windows)]
+	public void GetMountTableEntries_getmntinfo_EntryPointNotFoundException__WindowsLinux()
+	{
+		Assert.ThrowsExactly<EntryPointNotFoundException>(
+			MacOsFileSystemHelper.GetMountTableEntries);
+	}
+	
+	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
+	public void GetMountTableEntries_getmntinfo_Results__MacOnly()
+	{
+		var results = MacOsFileSystemHelper.GetMountTableEntries();
+		Assert.IsNotNull(results);
+		Assert.IsGreaterThan(1, results.Count);
+	}
 }
