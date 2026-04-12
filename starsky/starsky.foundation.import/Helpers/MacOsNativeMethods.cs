@@ -17,7 +17,7 @@ internal static class MacOsNativeMethods
 	[SuppressMessage("Interoperability",
 		"SYSLIB1054:Use \'LibraryImportAttribute\' instead of " +
 		"\'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
-	internal static extern int statfs(string path, out StatFs64 buf);
+	internal static extern int statfs(string path, out StatFs buf);
 
 	[DllImport("libc", SetLastError = true)]
 	[SuppressMessage("Interoperability",
@@ -26,11 +26,12 @@ internal static class MacOsNativeMethods
 	internal static extern int getmntinfo(out IntPtr mntbufp, int flags);
 
 	/// <summary>
-	/// statfs64 structure from macOS (10.5+)
+	/// statfs structure from macOS (10.5+)
 	/// See: man statfs(2)
+	/// https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fstatfs64.2.html
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct StatFs64
+	internal struct StatFs
 	{
 		public uint f_bsize;        /* fundamental file system block size */
 		public int f_iosize;        /* optimal transfer block size */

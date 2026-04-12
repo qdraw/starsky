@@ -229,12 +229,12 @@ public class MacOsFileSystemHelper
 	internal static List<MountTableEntry> ParseEntries(IntPtr mntbufp, int count)
 	{
 		var entries = new List<MountTableEntry>(count);
-		var structSize = Marshal.SizeOf<MacOsNativeMethods.StatFs64>();
+		var structSize = Marshal.SizeOf<MacOsNativeMethods.StatFs>();
 
 		for ( var i = 0; i < count; i++ )
 		{
 			var current = IntPtr.Add(mntbufp, i * structSize);
-			var stat = Marshal.PtrToStructure<MacOsNativeMethods.StatFs64>(current);
+			var stat = Marshal.PtrToStructure<MacOsNativeMethods.StatFs>(current);
 			entries.Add(new MountTableEntry(
 				PtrToString(stat.f_mntonname_raw),
 				PtrToString(stat.f_fstypename_raw)));
