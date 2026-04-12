@@ -87,9 +87,10 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 			var drive = new DriveInfo(driveRoot);
 			return IsCameraStorage(drive);
 		}
-		catch ( Exception ex )
+		catch ( Exception exception )
 		{
-			logger.LogError($"Drive root failed: '{driveRoot}'", ex);
+			logger.LogError($"Drive root failed: '{driveRoot}' " +
+			                $"{exception.Message} {exception.StackTrace}", exception);
 			return false;
 		}
 	}
