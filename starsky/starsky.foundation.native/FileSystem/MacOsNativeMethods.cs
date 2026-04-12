@@ -12,7 +12,7 @@ public static class MacOsNativeMethods
 	internal const int MAXPATHLEN = 1024; // length of buffer for returned name
 
 	// Cached once per process start — architecture does not change at runtime.
-	private static readonly bool IsArm64 =
+	private static bool IsArm64 =
 		RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
 
 	// On x64 macOS, statfs/getmntinfo are aliased to $INODE64 variants that expose
@@ -58,6 +58,13 @@ public static class MacOsNativeMethods
 		return IsArm64
 			? getmntinfo_plain(out mntbufp, flags)
 			: getmntinfo_inode64(out mntbufp, flags);
+	}
+
+	// Test helper to override detected architecture in unit tests.
+	// Marked internal so tests can call it without reflection.
+	internal static void SetIsArm64(bool value)
+	{
+		IsArm64 = value;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
