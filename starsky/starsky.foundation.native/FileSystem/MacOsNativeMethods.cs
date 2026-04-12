@@ -1,16 +1,19 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace starsky.foundation.import.Helpers;
+namespace starsky.foundation.native.FileSystem;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-internal static class MacOsNativeMethods
+public static class MacOsNativeMethods
 {
 	// From macOS docs: statfs(2)
 	internal const int MFSTYPENAMELEN = 16; // length of fs type name including null
 	internal const int MAXPATHLEN = 1024; // length of buffer for returned name
+
+	// Cached once per process start — architecture does not change at runtime.
+	private static readonly bool IsArm64 =
+		RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
 
 	// On x64 macOS, statfs/getmntinfo are aliased to $INODE64 variants that expose
 	// the 64-bit inode struct. On ARM64 macOS the plain symbols already use this
@@ -45,18 +48,20 @@ internal static class MacOsNativeMethods
 		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
 	private static extern int getmntinfo_plain(out IntPtr mntbufp, int flags);
 
-	// Cached once per process start — architecture does not change at runtime.
-	private static readonly bool IsArm64 =
-		RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
+	public static int statfs(string path, out StatFs buf)
+	{
+		return IsArm64 ? statfs_plain(path, out buf) : statfs_inode64(path, out buf);
+	}
 
-	internal static int statfs(string path, out StatFs buf) =>
-		IsArm64 ? statfs_plain(path, out buf) : statfs_inode64(path, out buf);
-
-	internal static int getmntinfo(out IntPtr mntbufp, int flags) =>
-		IsArm64 ? getmntinfo_plain(out mntbufp, flags) : getmntinfo_inode64(out mntbufp, flags);
+	public static int getmntinfo(out IntPtr mntbufp, int flags)
+	{
+		return IsArm64
+			? getmntinfo_plain(out mntbufp, flags)
+			: getmntinfo_inode64(out mntbufp, flags);
+	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct Fsid
+	public struct Fsid
 	{
 		public int val0;
 		public int val1;
@@ -68,7 +73,8 @@ internal static class MacOsNativeMethods
 	///     https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fstatfs64.2.html
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	internal unsafe struct StatFs
+	[SuppressMessage("Usage", "S6640: Make sure that using \"unsafe\" is safe here")]
+	public unsafe struct StatFs
 	{
 		public uint f_bsize; /* fundamental file system block size */
 		public int f_iosize; /* optimal transfer block size */
@@ -93,7 +99,7 @@ internal static class MacOsNativeMethods
 
 		public fixed uint f_reserved[8]; /* For future use */
 
-		internal string FileSystemType
+		public string FileSystemType
 		{
 			get
 			{
@@ -104,7 +110,7 @@ internal static class MacOsNativeMethods
 			}
 		}
 
-		internal string MountPoint
+		public string MountPoint
 		{
 			get
 			{

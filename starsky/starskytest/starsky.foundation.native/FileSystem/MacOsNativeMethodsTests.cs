@@ -4,8 +4,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Helpers;
+using starsky.foundation.native.FileSystem;
 
-namespace starskytest.starsky.foundation.import.Helpers;
+namespace starskytest.starsky.foundation.native.FileSystem;
 
 [TestClass]
 public class MacOsNativeMethodsTests
@@ -68,11 +69,12 @@ public class MacOsNativeMethodsTests
 	}
 
 	[SuppressMessage("ReSharper", "InconsistentNaming")]
-	private static void CreateTestStatFsInBuffer(string mountPoint, string fileSystemType, IntPtr buffer)
+	private static void CreateTestStatFsInBuffer(string mountPoint, string fileSystemType,
+		IntPtr buffer)
 	{
 		// Zero out the buffer first
 		var statFsSize = Marshal.SizeOf<MacOsNativeMethods.StatFs>();
-		for ( int i = 0; i < statFsSize; i++ )
+		for ( var i = 0; i < statFsSize; i++ )
 		{
 			Marshal.WriteByte(buffer, i, 0);
 		}
