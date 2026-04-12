@@ -23,7 +23,7 @@ internal static class ServiceInstallerHelper
 		            <key>ProgramArguments</key>
 		            <array>
 		                <string>{executablePath}</string>
-		                <string>--verbose</string>
+		                <string></string>
 		            </array>
 		            <key>RunAtLoad</key>
 		            <true/>
