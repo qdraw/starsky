@@ -125,11 +125,16 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 		if ( !IsCameraFriendlyFileSystem(drive.DriveFormat) )
 		{
 			logger.LogError(
-				$"No IsCameraFriendlyFileSystem " +
-				$"Path: {drive.RootDirectory.FullName} " +
-				$"DriveFormat: {drive.DriveFormat}");
+				$"[CameraStorageDetector] IS NOT IsCameraFriendlyFileSystem " +
+				$"Path: \"{drive.RootDirectory.FullName}\" " +
+				$"DriveFormat: \"{drive.DriveFormat}\"");
 			return false;
 		}
+
+		logger.LogInformation(
+			$"[CameraStorageDetector] YES IsCameraFriendlyFileSystem " +
+			$"Path: \"{drive.RootDirectory.FullName}\" " +
+			$"DriveFormat: \"{drive.DriveFormat}\"");
 
 		// 4. DCIM folder (gold standard)
 		//  5. Camera-like directory structure (optional but strong)
