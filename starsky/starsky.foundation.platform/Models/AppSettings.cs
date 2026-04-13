@@ -283,6 +283,8 @@ public sealed class AppSettings
 	[PackageTelemetry]
 	public AppSettingsImportTransformationModel ImportTransformation { get; set; } = new();
 
+	[PackageTelemetry] public AppSettingsImportBackupModel ImportBackup { get; set; } = new();
+
 	/// <summary>
 	///     Used for syncing gpx files
 	/// </summary>
@@ -689,7 +691,7 @@ public sealed class AppSettings
 			if ( EnablePackageTelemetryPrivate == null )
 			{
 #pragma warning disable CS0162
-#if ( DEBUG )
+#if DEBUG
 				return false;
 #endif
 				// ReSharper disable once HeuristicUnreachableCode

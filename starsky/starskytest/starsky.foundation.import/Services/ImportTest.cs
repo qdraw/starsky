@@ -867,7 +867,7 @@ public sealed class ImportTest : VerifyBase
 				Status = ImportStatus.Ok,
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			},
-			new ImportSettingsModel());
+			new ImportSettingsModel(), new AppSettingsImportBackupModel());
 
 		Assert.IsFalse(subPathStorage.ExistFile("/test.jpg"));
 		Assert.IsFalse(await fakeImportQuery.IsHashInImportDbAsync("hash73845934893459"));
@@ -1130,7 +1130,7 @@ public sealed class ImportTest : VerifyBase
 
 		var result = await importService.Importer(
 			new ImportIndexItem { Status = ImportStatus.FileError },
-			new ImportSettingsModel());
+			new ImportSettingsModel(), new AppSettingsImportBackupModel());
 		Assert.AreEqual(ImportStatus.FileError, result.Status);
 	}
 
