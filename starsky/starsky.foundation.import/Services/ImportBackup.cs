@@ -60,7 +60,7 @@ public class ImportBackup(ISelectorStorage selectorStorage, IWebLogger logger)
 	{
 		var inputModel = new StructureInputModel(
 			importIndexItem.FileIndexItem!.DateTime,
-			importIndexItem.FileIndexItem.FileCollectionName!,
+			Path.GetFileNameWithoutExtension(importIndexItem.SourceFullFilePath),
 			FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem
 				.FileName!),
 			importIndexItem.FileIndexItem.ImageFormat,
