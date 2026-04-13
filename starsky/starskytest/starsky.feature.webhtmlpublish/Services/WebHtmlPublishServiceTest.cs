@@ -740,8 +740,8 @@ public sealed class WebHtmlPublishServiceTest
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var logger = new FakeIWebLogger();
 
-		// Prepare appsettings with dependencies folder inside a temp folder
-		var tempBase = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test_deps_mozjpeg");
+		var tempBase = Path.Combine(Path.GetTempPath(),
+			"starsky_test_deps_mozjpeg_" + Guid.NewGuid().ToString("N"));
 		if ( Directory.Exists(tempBase) )
 		{
 			Directory.Delete(tempBase, true);
