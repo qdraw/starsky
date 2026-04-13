@@ -108,6 +108,16 @@ public sealed class ProgramTest
 		Assert.IsNotNull(args);
 	}
 
+	[TestMethod]
+	[Timeout(5000, CooperativeCancellation = true)]
+	public async Task Main_StatusFlag_CompletesWithoutHangingHost()
+	{
+		// --status gives a status and must NOT run host.RunAsync().
+		var args = new List<string> { "--status" }.ToArray();
+		await Program.Main(args);
+		Assert.IsNotNull(args);
+	}
+
 	[ClassCleanup]
 	public static void CleanEnvsAfterwards()
 	{
@@ -125,4 +135,3 @@ public sealed class ProgramTest
 			_ffmpegSkipDownloadOnStartup);
 	}
 }
-

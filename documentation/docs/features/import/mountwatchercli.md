@@ -28,6 +28,8 @@ Only when checks pass, import starts.
 starskymountwatchercli --help
 starskymountwatchercli --install
 starskymountwatchercli --uninstall
+starskymountwatchercli --status
+
 ```
 
 Additional flags:

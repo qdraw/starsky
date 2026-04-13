@@ -21,6 +21,7 @@ public sealed class WindowsServiceInstallerTest
 				calls.Add(( fileName, args ));
 				return Task.FromResult(true);
 			},
+			(_, _) => Task.FromResult(( true, string.Empty, 0 )),
 			_ => Task.CompletedTask);
 
 		var result = await sut.InstallAsync("C:/apps/starskymountwatchercli.dll");
@@ -43,6 +44,7 @@ public sealed class WindowsServiceInstallerTest
 				calls.Add(( fileName, args ));
 				return Task.FromResult(true);
 			},
+			(_, _) => Task.FromResult(( true, string.Empty, 0 )),
 			_ => Task.CompletedTask);
 
 		var result = await sut.InstallAsync("C:/apps/starskymountwatchercli.exe");
@@ -66,6 +68,7 @@ public sealed class WindowsServiceInstallerTest
 				invocation++;
 				return Task.FromResult(invocation > 1);
 			},
+			(_, _) => Task.FromResult(( true, string.Empty, 0 )),
 			ms =>
 			{
 				delays.Add(ms);
@@ -92,6 +95,7 @@ public sealed class WindowsServiceInstallerTest
 				calls.Add(( fileName, args ));
 				return Task.FromResult(true);
 			},
+			(_, _) => Task.FromResult(( true, string.Empty, 0 )),
 			_ => Task.CompletedTask);
 
 		var result = await sut.UninstallAsync();
@@ -108,6 +112,7 @@ public sealed class WindowsServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var sut = new WindowsServiceInstaller(logger,
 			(_, _) => throw new InvalidOperationException("boom"),
+			(_, _) => throw new InvalidOperationException("boom"),
 			_ => Task.CompletedTask);
 
 		var result = await sut.StopAsync();
@@ -123,6 +128,7 @@ public sealed class WindowsServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var sut = new WindowsServiceInstaller(logger,
 			(_, _) => Task.FromResult(false),
+			(_, _) => Task.FromResult(( false, string.Empty, 1 )),
 			_ => Task.CompletedTask);
 
 		// Act
@@ -144,6 +150,7 @@ public sealed class WindowsServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var sut = new WindowsServiceInstaller(logger,
 			(_, _) => throw new InvalidOperationException("sc crash"),
+			(_, _) => throw new InvalidOperationException("sc crash"),
 			_ => Task.CompletedTask);
 
 		// Act
@@ -155,5 +162,65 @@ public sealed class WindowsServiceInstallerTest
 		var found = logger.TrackedExceptions.Exists(t =>
 			t.Item2 != null && t.Item2.Contains("Failed to install Windows service"));
 		Assert.IsTrue(found, "Expected LogError(Exception, ...) for exception during install");
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_NotInstalled_ReturnsFalseFalse()
+	{
+		var logger = new FakeIWebLogger();
+		var sut = new WindowsServiceInstaller(logger,
+			(_, _) => Task.FromResult(true),
+			(_, _) => Task.FromResult((false, string.Empty, 1)),
+			_ => Task.CompletedTask);
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsFalse(installed);
+		Assert.IsFalse(running);
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_InstalledButNotRunning_ReturnsTrueFalse()
+	{
+		var logger = new FakeIWebLogger();
+		var sut = new WindowsServiceInstaller(logger,
+			(_, _) => Task.FromResult(true),
+			(_, _) => Task.FromResult((true, "STATE: STOPPED", 0)),
+			_ => Task.CompletedTask);
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsTrue(installed);
+		Assert.IsFalse(running);
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_InstalledAndRunning_ReturnsTrueTrue()
+	{
+		var logger = new FakeIWebLogger();
+		var sut = new WindowsServiceInstaller(logger,
+			(_, _) => Task.FromResult(true),
+			(_, _) => Task.FromResult((true, "   RUNNING   ", 0)),
+			_ => Task.CompletedTask);
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsTrue(installed);
+		Assert.IsTrue(running);
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_RunThrows_ReturnsFalseFalse()
+	{
+		var logger = new FakeIWebLogger();
+		var sut = new WindowsServiceInstaller(logger,
+			(_, _) => Task.FromResult(true),
+			(_, _) => throw new InvalidOperationException("boom"),
+			_ => Task.CompletedTask);
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsFalse(installed);
+		Assert.IsFalse(running);
 	}
 }

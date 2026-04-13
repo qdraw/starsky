@@ -20,6 +20,10 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	private readonly Func<string, string, Task<bool>> _runProcessAsync =
 		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args);
 
+	private readonly Func<string, string, Task<(bool success, string output, int exitCode)>>
+		_runProcessWithOutputAsync =
+			(fileName, args) => new RunProcess(logger).RunProcessWithOutputAsync(fileName, args);
+
 	private readonly string _serviceDisplayName = WatchServiceName.GetDisplayName();
 	private readonly string _serviceName = new WatchServiceName().GetReverseDnsName();
 
@@ -31,9 +35,12 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 
 	internal WindowsServiceInstaller(IWebLogger logger,
 		Func<string, string, Task<bool>> runProcessAsync,
+		Func<string, string, Task<(bool success, string output, int exitCode)>>
+			runProcessWithOutputAsync,
 		Func<int, Task> delayAsync) : this(logger)
 	{
 		_runProcessAsync = runProcessAsync;
+		_runProcessWithOutputAsync = runProcessWithOutputAsync;
 		_delayAsync = delayAsync;
 		_stopProcessAsync = runProcessAsync;
 	}
@@ -162,6 +169,23 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		{
 			logger.LogError(ex, $"Failed to stop Windows service: {ex.Message}");
 			return false;
+		}
+	}
+
+	public async Task<(bool installed, bool running)> StatusAsync()
+	{
+		try
+		{
+			var (_, output, exitCode) =
+				await _runProcessWithOutputAsync(ScExe, $"query \"{_serviceName}\"");
+			var installed = exitCode == 0;
+			var running = installed &&
+			              output.Contains("RUNNING", StringComparison.OrdinalIgnoreCase);
+			return ( installed, running );
+		}
+		catch
+		{
+			return ( false, false );
 		}
 	}
 }
