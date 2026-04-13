@@ -45,11 +45,14 @@ public sealed class ImportBackupTests
 		var result = await sut.CopyStreamFromHostToBackup(importIndexItem, importBackup);
 		Assert.IsNull(result);
 	}
-	
+
 	[TestMethod]
-	public async Task CopyStreamFromHostToBackup_ReturnsNull_WhenDisabled_DueNotFoundOutputDir()
+	[DataRow("/backup")]
+	[DataRow(null)]
+	public async Task CopyStreamFromHostToBackup_ReturnsNull_WhenDisabled_DueNotFoundOutputDir(
+		string? backupFolder)
 	{
-		var storage = new FakeIStorage(["/"],  // backup is not here
+		var storage = new FakeIStorage(["/"], // backup is not here
 			["/test.jpg"],
 			new List<byte[]> { new byte[] { 1, 2, 3 } });
 		var selector = new FakeSelectorStorage(storage);
@@ -71,7 +74,8 @@ public sealed class ImportBackupTests
 
 		var importBackup = new AppSettingsImportBackupModel
 		{
-			Enabled = true, StorageFolder = "/backup"
+			Enabled = true, 
+			StorageFolder = backupFolder
 		};
 
 		var result = await sut.CopyStreamFromHostToBackup(importIndexItem, importBackup);
@@ -144,8 +148,7 @@ public sealed class ImportBackupTests
 
 		var importBackup = new AppSettingsImportBackupModel
 		{
-			Enabled = true,
-			StorageFolder = "/backup"
+			Enabled = true, StorageFolder = "/backup"
 		};
 
 		// Act
