@@ -26,4 +26,9 @@ internal interface IOsServiceInstaller
 	///     Stop the service for this OS
 	/// </summary>
 	Task<bool> StopAsync();
+
+	/// <summary>
+	/// Returns installation and running status: (installed, running)
+	/// </summary>
+	Task<(bool installed, bool running)> StatusAsync();
 }

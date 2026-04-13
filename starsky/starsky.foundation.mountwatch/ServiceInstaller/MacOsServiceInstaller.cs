@@ -141,6 +141,23 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		}
 	}
 
+	public async Task<(bool installed, bool running)> StatusAsync()
+	{
+		var plistPath = GetMacOsPlistPath();
+		var installed = _storage.ExistFile(plistPath);
+		var running = false;
+		try
+		{
+			// launchctl list <label> returns 0 when loaded
+			running = await _runProcessAsync("launchctl", $"list {new WatchServiceName().GetReverseDnsName()}");
+		}
+		catch
+		{
+			running = false;
+		}
+		return (installed, running);
+	}
+
 	/// <summary>
 	///     Get the macOS LaunchAgents plist path
 	/// </summary>

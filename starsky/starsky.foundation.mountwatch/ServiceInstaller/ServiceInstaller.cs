@@ -67,6 +67,12 @@ public class ServiceInstaller(ISelectorStorage selectorStorage, IWebLogger logge
 		return new MacOsFullDiskAccess(selectorStorage, logger).CheckMacOsFullDiskAccessOnStartup();
 	}
 
+	public async Task<(bool installed, bool running)> StatusAsync()
+	{
+		var installer = CreateInstaller();
+		return await installer.StatusAsync();
+	}
+
 	/// <summary>
 	///     Create the OS-specific installer
 	/// </summary>

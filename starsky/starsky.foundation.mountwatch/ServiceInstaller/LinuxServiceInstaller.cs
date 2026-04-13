@@ -148,6 +148,33 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		}
 	}
 
+	public async Task<(bool installed, bool running)> StatusAsync()
+	{
+		var systemPath = $"/etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service";
+		var userPath = Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+			".config", "systemd", "user", $"{new WatchServiceName().GetSystemDName()}.service");
+
+		var installed = _storage.ExistFile(systemPath) || _storage.ExistFile(userPath);
+		var running = false;
+		try
+		{
+			// systemctl is-active --quiet returns 0 when active
+			running = await _runProcessAsync("systemctl", $"is-active --quiet {new WatchServiceName().GetSystemDName()}");
+			if ( !running )
+			{
+				// Try user-level
+				running = await _runProcessAsync("systemctl", $"--user is-active --quiet {new WatchServiceName().GetSystemDName()}");
+			}
+		}
+		catch
+		{
+			running = false;
+		}
+
+		return (installed, running);
+	}
+
 	/// <summary>
 	///     Install systemd user-level service (fallback without root)
 	/// </summary>

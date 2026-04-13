@@ -164,4 +164,30 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			return false;
 		}
 	}
+
+	public async Task<(bool installed, bool running)> StatusAsync()
+	{
+		try
+		{
+			var psi = new System.Diagnostics.ProcessStartInfo
+			{
+				FileName = ScExe,
+				Arguments = $"query \"{_serviceName}\"",
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				UseShellExecute = false,
+				CreateNoWindow = true
+			};
+			using var process = System.Diagnostics.Process.Start(psi)!;
+			var output = await process.StandardOutput.ReadToEndAsync();
+			await process.WaitForExitAsync();
+			var installed = process.ExitCode == 0;
+			var running = installed && output.Contains("RUNNING", StringComparison.OrdinalIgnoreCase);
+			return (installed, running);
+		}
+		catch
+		{
+			return (false, false);
+		}
+	}
 }

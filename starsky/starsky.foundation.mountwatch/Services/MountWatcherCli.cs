@@ -24,6 +24,7 @@ public class MountWatcherCli
 {
 	private const string InstallArg = "--install";
 	private const string UninstallArg = "--uninstall";
+    private const string StatusArg = "--status";
 
 
 	private readonly AppSettings _appSettings;
@@ -110,6 +111,15 @@ public class MountWatcherCli
 			return await _serviceInstaller.UninstallAsync();
 		}
 
+		if ( NeedStatus(args) )
+		{
+			var (installed, running) = await _serviceInstaller.StatusAsync();
+			_console.WriteLine($"Service installed: {installed}");
+			_console.WriteLine($"Service running: {running}");
+			_logger.LogInformation($"Service status - installed: {installed}, running: {running}");
+			return true;
+		}
+
 		_serviceInstaller.PreflightChecks();
 
 		return RunWatcher();
@@ -129,6 +139,14 @@ public class MountWatcherCli
 	public static bool NeedUninstall(string[] args)
 	{
 		return args.Any(a => a.Equals(UninstallArg, StringComparison.OrdinalIgnoreCase));
+	}
+
+	/// <summary>
+	/// Returns true if --status is present in args
+	/// </summary>
+	public static bool NeedStatus(string[] args)
+	{
+		return args.Any(a => a.Equals(StatusArg, StringComparison.OrdinalIgnoreCase));
 	}
 
 	/// <summary>

@@ -33,4 +33,9 @@ public interface IServiceInstaller
 	Task<bool> StopAsync();
 
 	bool? PreflightChecks();
+
+	/// <summary>
+	/// Returns installation and running status: (installed, running)
+	/// </summary>
+	Task<(bool installed, bool running)> StatusAsync();
 }

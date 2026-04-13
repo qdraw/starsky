@@ -352,5 +352,11 @@ public sealed class ServiceInstallerTest
 		{
 			return Task.FromResult(true);
 		}
+
+		public Task<(bool installed, bool running)> StatusAsync()
+		{
+			// For tests, assume installed but not running by default
+			return Task.FromResult((true, false));
+		}
 	}
 }
