@@ -52,12 +52,11 @@
   "OpenTelemetry.Instrumentation.Runtime 1.9.0",
   "System.Diagnostics.DiagnosticSource 9.0.9",
   "System.Text.Json 9.0.9",
-  "Microsoft.Extensions.Hosting.WindowsServices 8.0.0",
   "Microsoft.AspNetCore.Identity.EntityFrameworkCore 8.0.25",
   "Microsoft.Extensions.Hosting 8.0.1",
   "Microsoft.NET.Test.Sdk 18.0.1",
   "MSTest.TestAdapter 4.1.0",
   "MSTest.TestFramework 4.1.0",
   "Verify.MSTest 31.13.0",
-  "coverlet.collector 8.0.0"
+  "coverlet.collector 8.0.1"
 ]
