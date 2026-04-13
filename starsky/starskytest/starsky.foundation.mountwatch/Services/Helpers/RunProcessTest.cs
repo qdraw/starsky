@@ -45,7 +45,7 @@ public sealed class RunProcessTest
 		var logger = new FakeIWebLogger();
 		var sut = new RunProcess(logger);
 
-		var (success, output, exitCode) =
+		var (success, _, exitCode) =
 			await sut.RunProcessWithOutputAsync("/bin/sh", "-c \"echo err 1>&2; exit 9\"");
 
 		Assert.IsFalse(success);
@@ -61,8 +61,10 @@ public sealed class RunProcessTest
 		var logger = new FakeIWebLogger();
 		var sut = new RunProcess(logger);
 
-		var (success, output, exitCode) =
-			await sut.RunProcessWithOutputAsync("/bin/sh", "-c \"exit 9\"", new[] { 9 });
+		var (success, _, exitCode) =
+			await sut.RunProcessWithOutputAsync(
+				"/bin/sh", "-c \"exit 9\"",
+				[9]);
 
 		Assert.IsTrue(success);
 		Assert.AreEqual(9, exitCode);
