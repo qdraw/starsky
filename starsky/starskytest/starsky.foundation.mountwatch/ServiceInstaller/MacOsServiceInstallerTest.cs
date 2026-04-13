@@ -17,7 +17,7 @@ public sealed class MacOsServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 		var sut = new MacOsServiceInstaller(logger, storage,
-			(fileName, args) => Task.FromResult(true));
+			(_, _) => Task.FromResult(true));
 
 		var execPath = "/usr/local/bin/starskymountwatchercli";
 
@@ -35,7 +35,7 @@ public sealed class MacOsServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 		var sut = new MacOsServiceInstaller(logger, storage,
-			(fileName, args) => Task.FromResult(true));
+			(_, _) => Task.FromResult(true));
 
 		// Act
 		var result = await sut.InstallAsync("/opt/starsky/bin/cli");
@@ -50,7 +50,7 @@ public sealed class MacOsServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage(new InvalidOperationException("Write failed"));
 		var sut = new MacOsServiceInstaller(logger, storage,
-			(fileName, args) => Task.FromResult(true));
+			(_, _) => Task.FromResult(true));
 
 		var result = await sut.InstallAsync("/usr/local/bin/cli");
 
@@ -89,7 +89,7 @@ public sealed class MacOsServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 		var sut = new MacOsServiceInstaller(logger, storage,
-			(fileName, args) => Task.FromResult(false));
+			(_, _) => Task.FromResult(false));
 
 		var result = await sut.StartAsync();
 
@@ -127,7 +127,7 @@ public sealed class MacOsServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage();
 		var sut = new MacOsServiceInstaller(logger, storage,
-			(fileName, args) => Task.FromResult(false));
+			(_, _) => Task.FromResult(false));
 
 		var result = await sut.StopAsync();
 
@@ -144,7 +144,7 @@ public sealed class MacOsServiceInstallerTest
 		var launchctlCalls = new List<string>();
 
 		var sut = new MacOsServiceInstaller(logger, storage,
-			(fileName, args) =>
+			(_, args) =>
 			{
 				launchctlCalls.Add(args);
 				return Task.FromResult(true);
@@ -165,11 +165,55 @@ public sealed class MacOsServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage(); // Empty storage - file doesn't exist
 		var sut = new MacOsServiceInstaller(logger, storage,
-			(fileName, args) => Task.FromResult(true));
+			(_, _) => Task.FromResult(true));
 
 		var result = await sut.UninstallAsync();
 
 		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_NotInstalledAndLaunchctlReportsInactive_ReturnsFalseFalse()
+	{
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage(); // no plist -> not installed
+		var sut = new MacOsServiceInstaller(logger, storage,
+			(_, _) => Task.FromResult(false));
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsFalse(installed);
+		Assert.IsFalse(running);
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_PlistExistsAndLaunchctlReportsLoaded_ReturnsTrueTrue()
+	{
+		var logger = new FakeIWebLogger();
+		var plistPath = MacOsServiceInstaller.GetMacOsPlistPath();
+		var storage = new FakeIStorage(outputSubPathFiles: [plistPath]);
+		var sut = new MacOsServiceInstaller(logger, storage,
+			(_, args) => Task.FromResult(args.Contains("list")));
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsTrue(installed);
+		Assert.IsTrue(running);
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_LaunchctlThrows_ReturnsInstalledTrueRunningFalse()
+	{
+		var logger = new FakeIWebLogger();
+		var plistPath = MacOsServiceInstaller.GetMacOsPlistPath();
+		var storage = new FakeIStorage(outputSubPathFiles: [plistPath]);
+		var sut = new MacOsServiceInstaller(logger, storage,
+			(_, _) => throw new InvalidOperationException("boom"));
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsTrue(installed);
+		Assert.IsFalse(running);
 	}
 
 	[TestMethod]

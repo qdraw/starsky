@@ -145,17 +145,19 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		var plistPath = GetMacOsPlistPath();
 		var installed = _storage.ExistFile(plistPath);
-		var running = false;
+		bool running;
 		try
 		{
 			// launchctl list <label> returns 0 when loaded
-			running = await _runProcessAsync("launchctl", $"list {new WatchServiceName().GetReverseDnsName()}");
+			running = await _runProcessAsync("launchctl",
+				$"list {new WatchServiceName().GetReverseDnsName()}");
 		}
 		catch
 		{
 			running = false;
 		}
-		return (installed, running);
+
+		return ( installed, running );
 	}
 
 	/// <summary>
