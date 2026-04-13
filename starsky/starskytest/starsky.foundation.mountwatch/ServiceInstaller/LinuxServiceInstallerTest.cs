@@ -47,7 +47,7 @@ public sealed class LinuxServiceInstallerTest
 		var storage = new FakeIStorage();
 		const string execPath = "/usr/local/bin/starskymountwatchercli";
 
-		var sut = new LinuxServiceInstaller(logger, storage, (_f, _a) => Task.FromResult(true),
+		var sut = new LinuxServiceInstaller(logger, storage, (_, _) => Task.FromResult(true),
 			new FakeUnixSecurity(true));
 
 		// Act
@@ -59,9 +59,9 @@ public sealed class LinuxServiceInstallerTest
 		Assert.IsTrue(storage.ExistFile(servicePath), "Expected service file to be written to /etc/systemd/system");
 
 		// Read back the written service content
-		using var stream = storage.ReadStream(servicePath);
-		using var sr = new System.IO.StreamReader(stream);
-		var content = await sr.ReadToEndAsync();
+		await using var stream = storage.ReadStream(servicePath);
+		using var sr = new StreamReader(stream);
+		var content = await sr.ReadToEndAsync(TestContext.CancellationToken);
 		Assert.Contains("ExecStart=", content);
 		Assert.Contains(execPath, content, "Service unit should contain the executable path in ExecStart");
 
@@ -116,7 +116,7 @@ public sealed class LinuxServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var systemServicePath = $"/etc/systemd/system/{GetServiceName()}.service";
 		var storage = new FakeIStorage(
-			outputSubPathFiles: new List<string> { systemServicePath });
+			outputSubPathFiles: [systemServicePath]);
 		var sut = new LinuxServiceInstaller(logger, storage);
 
 		// Act
@@ -177,7 +177,7 @@ public sealed class LinuxServiceInstallerTest
 		var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 		var userServicePath = $"{userHome}/.config/systemd/user/{GetServiceName()}.service";
 		var storage = new FakeIStorage(
-			outputSubPathFiles: new List<string> { systemServicePath, userServicePath });
+			outputSubPathFiles: [systemServicePath, userServicePath]);
 		var sut = new LinuxServiceInstaller(logger, storage);
 
 		// Act
@@ -284,7 +284,7 @@ public sealed class LinuxServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var systemServicePath = $"/etc/systemd/system/{GetServiceName()}.service";
 		var storage = new FakeIStorage(
-			outputSubPathFiles: new List<string> { systemServicePath });
+			outputSubPathFiles: [systemServicePath]);
 		var sut = new LinuxServiceInstaller(logger, storage);
 
 		// Act
@@ -494,7 +494,7 @@ public sealed class LinuxServiceInstallerTest
 
 		// We'll wrap storage by creating a derived class instance that throws on FileDelete
 		var throwingStorage =
-			new FakeIStorage(outputSubPathFiles: new List<string> { systemServicePath });
+			new FakeIStorage(outputSubPathFiles: [systemServicePath]);
 		// Replace the FileDelete behavior via a simple wrapper class in test scope
 		var storageWrapper = new ThrowOnDeleteStorage(throwingStorage);
 
@@ -505,18 +505,11 @@ public sealed class LinuxServiceInstallerTest
 		Assert.IsNotEmpty(logger.TrackedExceptions, "Should log delete error");
 	}
 
-	private sealed class ThrowOnDeleteStorage : FakeIStorage
+	private sealed class ThrowOnDeleteStorage(FakeIStorage inner) : FakeIStorage
 	{
-		private readonly FakeIStorage _inner;
-
-		public ThrowOnDeleteStorage(FakeIStorage inner)
-		{
-			_inner = inner;
-		}
-
 		public override bool ExistFile(string path)
 		{
-			return _inner.ExistFile(path);
+			return inner.ExistFile(path);
 		}
 
 		public override bool FileDelete(string path)
@@ -524,4 +517,6 @@ public sealed class LinuxServiceInstallerTest
 			throw new InvalidOperationException("delete failed");
 		}
 	}
+
+	public TestContext TestContext { get; set; }
 }
