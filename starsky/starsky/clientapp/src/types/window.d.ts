@@ -2,32 +2,34 @@
 export {};
 
 declare global {
+  interface StarskyFolderSelectedDetail {
+    path: string | null;
+    bookmark: string | null;
+  }
+
   interface Window {
-    // macOS WKWebView message handlers
-    webkit?: {
-      messageHandlers?: {
-        filePicker?: {
-          postMessage: (message: Record<string, unknown> | unknown) => void;
-        } & Record<string, unknown>;
-      } & Record<string, unknown>;
+    // Promise-based injected bridge (added by the mac app at document-start)
+    __starskyNative?: {
+      // selectFolder(timeoutMs?) => Promise<{ path, bookmark }>
+      selectFolder?: (
+        timeoutMs?: number
+      ) => Promise<{ path: string | null; bookmark: string | null }>;
+      // low-level forwarders (optional)
+      filePicker?: (payload: unknown) => boolean;
+      consolePost?: (obj: unknown) => boolean;
     } & Record<string, unknown>;
 
-    // Windows WebView2
-    chrome?: {
-      webview?: {
-        postMessage: (message: Record<string, unknown> | unknown) => void;
-        // other runtime helpers optionally exposed
-        addEventListener?: (name: string, listener: (...args: unknown[]) => void) => void;
-      } & Record<string, unknown>;
-    } & Record<string, unknown>;
-
-    // callback used by native host to send selected folder back to the page
-    onFolderSelected?: (folderPath: string | null, bookmark: string | null) => void;
     // test helper: optional dom node used by some tests to attach elements
     domNode?: HTMLDivElement | null;
     // test/debug helpers used across the codebase
     debug?: boolean;
     // storybook / renderer flags
     isElectron?: boolean | null;
+
+    // event typing helper: addEventListener('starskyFolderSelected', (e: CustomEvent<StarskyFolderSelectedDetail>) => { ... })
+    addEventListener(
+      type: "starskyFolderSelected",
+      listener: (ev: CustomEvent<StarskyFolderSelectedDetail>) => void
+    ): void;
   }
 }

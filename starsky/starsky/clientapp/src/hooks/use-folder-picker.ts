@@ -2,60 +2,34 @@ import { useCallback } from "react";
 
 /**
  * Hook to handle folder selection using native app capabilities
- * Detects macOS WKWebView or Windows WebView2
- * Falls back to a callback if not in a native app
+ * Uses the injected Promise-based native bridge only
  */
 export function useFolderPicker() {
-  /**
-   * Check if running in a native app (macOS WKWebView or Windows WebView2)
-   */
   const isNativeApp = useCallback((): boolean => {
-    return !!(window.webkit?.messageHandlers?.filePicker || window.chrome?.webview);
+    return !!window.__starskyNative?.selectFolder;
   }, []);
 
   /**
    * Request folder selection from native app
-   * @param onFolderSelected Callback when folder is selected or when not in native app
+   * Returns a promise that resolves with { path, bookmark }
    */
   const requestFolderSelection = useCallback(
-    (onFolderSelected: (folderPath: string | null, bookmark: string | null) => void) => {
-      // macOS WKWebView
-      if (window.webkit?.messageHandlers?.filePicker) {
-        // Register listener for folder selection
-        window.onFolderSelected = (folderPath: string | null, bookmark: string | null) => {
-          onFolderSelected(folderPath, bookmark);
-          window.onFolderSelected = undefined;
-        };
-
-        window.webkit.messageHandlers.filePicker.postMessage({
-          action: "selectFolder"
-        });
-        return;
+    async (timeoutMs = 30000): Promise<{ path: string | null; bookmark: string | null }> => {
+      const nativeBridge = window.__starskyNative;
+      if (nativeBridge && typeof nativeBridge.selectFolder === "function") {
+        try {
+          const result = await nativeBridge.selectFolder(timeoutMs);
+          return { path: result?.path ?? null, bookmark: result?.bookmark ?? null };
+        } catch {
+          return { path: null, bookmark: null };
+        }
       }
 
-      // Windows WebView2
-      if (window.chrome?.webview) {
-        // Register listener for folder selection
-        window.onFolderSelected = (folderPath: string | null) => {
-          onFolderSelected(folderPath, null);
-          window.onFolderSelected = undefined;
-        };
-
-        window.chrome.webview.postMessage({
-          action: "selectFolder"
-        });
-        return;
-      }
-
-      // Fallback: not running inside native app
-      console.warn("Not running inside native app");
-      onFolderSelected(null, null);
+      // Not running inside native app
+      return { path: null, bookmark: null };
     },
     []
   );
 
-  return {
-    isNativeApp,
-    requestFolderSelection
-  };
+  return { isNativeApp, requestFolderSelection };
 }
