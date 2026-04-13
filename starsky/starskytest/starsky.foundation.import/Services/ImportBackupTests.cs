@@ -89,6 +89,44 @@ public sealed class ImportBackupTests
 	}
 
 	[TestMethod]
+	public async Task CopyStreamFromHostToBackup_WritesBackup_WithExpectedFileName()
+	{
+		// Arrange
+		var sourceBytes = new byte[] { 1, 2, 3, 4, 5 };
+		var storage = new FakeIStorage(["/", "/backup"],
+			["/test.jpg"], new List<byte[]> { sourceBytes });
+		var selector = new FakeSelectorStorage(storage);
+		var logger = new FakeIWebLogger();
+		var sut = new ImportBackup(selector, logger);
+
+		var importIndexItem = new ImportIndexItem
+		{
+			SourceFullFilePath = "/test.jpg",
+			FileIndexItem = new FileIndexItem
+			{
+				FileName = "test.jpg",
+				DateTime = new DateTime(2018, 4, 22, 16, 14, 54, DateTimeKind.Local),
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			}
+		};
+
+		var importBackup = new AppSettingsImportBackupModel
+		{
+			Enabled = true,
+			StorageFolder = "/backup"
+		};
+
+		// Act
+		var result = await sut.CopyStreamFromHostToBackup(importIndexItem, importBackup);
+
+		// Assert
+		Assert.IsTrue(result);
+		var files = storage.GetAllFilesInDirectory("/backup").ToList();
+		Assert.HasCount(1, files);
+		Assert.AreEqual("/backup/20180422_161454_test.jpg", files[0]);
+	}
+
+	[TestMethod]
 	public async Task CopyStreamFromHostToBackup_ReturnsFalse_WhenWriteFails()
 	{
 		var sourceBytes = "\t\t\t"u8.ToArray();
