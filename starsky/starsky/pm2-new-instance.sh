@@ -231,69 +231,35 @@ if [[ -d "$USER_VIEWS_DIR" ]]; then
 fi
 
 # execute rights for specific files
-if [[ -f starskygeocli ]]; then
-    chmod +x ./starskygeocli
-fi
+# excute right for specific files
+files=(
+  "starskygeocli"
+  "starskyimportercli"
+  "starskysynchronizecli"
+  "starskythumbnailcli"
+  "starskythumbnailmetacli"
+  "starskywebftpcli"
+  "starskywebhtmlcli"
+  "starskyadmincli"
+  "starskymountwatchercli"
+  "starskydependenciesdownloadcli"
+  "pm2-deploy-on-env.sh"
+  "pm2-install-latest-release.sh"
+  "pm2-new-instance.sh"
+  "pm2-download-azure-devops.sh"
+  "dependencies/exiftool-unix/exiftool"
+  "pm2-restore-x-rights.sh"
+  "pm2-warmup.sh"
+  "service-deploy-systemd.sh",
+  "github-artifacts-download.sh"
+  "starsky"
+)
 
-if [[ -f starskyimportercli ]]; then
-    chmod +x ./starskyimportercli
-fi
-
-if [[ -f starskysynchronizecli ]]; then
-    chmod +x ./starskysynchronizecli
-fi
-
-if [[ -f starskythumbnailcli ]]; then
-    chmod +x ./starskythumbnailcli
-fi
-
-if [[ -f starskythumbnailmetacli ]]; then
-    chmod +x ./starskythumbnailmetacli
-fi
-
-if [[ -f starskywebftpcli ]]; then
-    chmod +x ./starskywebftpcli
-fi
-
-if [[ -f starskywebhtmlcli ]]; then
-    chmod +x ./starskywebhtmlcli
-fi
-
-if [[ -f starskyadmincli ]]; then
-    chmod +x ./starskyadmincli
-fi
-
-if [[ -f pm2-deploy-on-env.sh ]]; then
-    chmod +x ./pm2-deploy-on-env.sh
-fi
-
-if [[ -f pm2-install-latest-release.sh ]]; then
-    chmod +x ./pm2-install-latest-release.sh
-fi
-
-if [[ -f pm2-restore-x-rights.sh ]]; then
-    chmod +x ./pm2-restore-x-rights.sh
-fi
-
-if [[ -f pm2-warmup.sh ]]; then
-    chmod +x ./pm2-warmup.sh
-fi
-
-if [[ -f pm2-new-instance.sh ]]; then
-    chmod +x ./pm2-new-instance.sh
-fi
-
-if [[ -f pm2-download-azure-devops.sh ]]; then
-    chmod +x ./pm2-download-azure-devops.sh
-fi
-
-if [[ -f github-artifacts-download.sh ]]; then
-    chmod +x ./github-artifacts-download.sh
-fi
-
-if [[ -f starsky ]]; then
-    chmod +x ./starsky
-fi
+for file in "${files[@]}"; do
+  if [[ -f "$file" ]]; then
+    chmod +x "$file"
+  fi
+done
 
 MAC_CODESIGN_SCRIPT="$CURRENT_DIR/mac-self-codesign.sh"
 if [[ $(uname) = "Darwin" ]] && [[ -f "$MAC_CODESIGN_SCRIPT" ]]; then
