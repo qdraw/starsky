@@ -47,6 +47,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.15 - 2026-04-? {#v0.7.15}
 
+- [x] (Added) _Back-end_ Import Backup timestamped copy of imported to a specified folder (PR #2965)
+- [x] (Added) _Back-end_ Delete After setting Import specific for MountCLI (PR #2965)
 - [x] (Fixed) _Back-end_ Native FileSystem interop on Intel macOS vs Apple Silicon (PR #2960)
 - [x] (Fixed) _Back-end_ Zero-payload non-mdat atom (e.g. wide, free) gives hash back (PR #2955)
 - [x] (Fixed) _Back-end_ GetWindowsDriveInfo where Z:\\ was used to find an unused drive. (PR #2905)

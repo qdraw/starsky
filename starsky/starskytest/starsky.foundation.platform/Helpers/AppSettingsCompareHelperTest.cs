@@ -193,6 +193,84 @@ public sealed class AppSettingsCompareHelperTest
 	}
 
 	[TestMethod]
+	public void AppSettingsImportBackupModel()
+	{
+		var source = new AppSettings
+		{
+			ImportBackup = new AppSettingsImportBackupModel
+			{
+				Enabled = false, StorageFolder = "/test-1"
+			}
+		};
+
+		var to = new AppSettings
+		{
+			ImportBackup = new AppSettingsImportBackupModel
+			{
+				Enabled = true, StorageFolder = "/test"
+			}
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.ImportBackup.Enabled);
+		Assert.AreEqual("/test", source.ImportBackup.StorageFolder);
+	}
+
+	[TestMethod]
+	public void AppSettingsImportBackupModel_Ignore_DefaultOption()
+	{
+		var source = new AppSettings
+		{
+			ImportBackup = new AppSettingsImportBackupModel
+			{
+				Enabled = true, StorageFolder = "/test"
+			}
+		};
+
+		var to = new AppSettings { ImportBackup = new AppSettingsImportBackupModel() };
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.ImportBackup.Enabled);
+		Assert.AreEqual("/test",
+			source.ImportBackup.StorageFolder);
+	}
+
+	[TestMethod]
+	public void AppSettingsMountWatcher()
+	{
+		var source = new AppSettings
+		{
+			ImportMountWatcher = new AppSettingsMountWatcherModel { DeleteAfter = false }
+		};
+
+		var to = new AppSettings
+		{
+			ImportMountWatcher = new AppSettingsMountWatcherModel { DeleteAfter = true }
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.ImportMountWatcher.DeleteAfter);
+	}
+
+	[TestMethod]
+	public void ImportMountWatcherModel_Ignore_DefaultOption()
+	{
+		var source = new AppSettings
+		{
+			ImportMountWatcher = new AppSettingsMountWatcherModel { DeleteAfter = true }
+		};
+
+		var to = new AppSettings { ImportMountWatcher = new AppSettingsMountWatcherModel() };
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.ImportMountWatcher.DeleteAfter);
+	}
+
+	[TestMethod]
 	public void StringCompare()
 	{
 		var source = new AppSettings

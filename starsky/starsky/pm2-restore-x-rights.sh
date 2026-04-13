@@ -24,7 +24,8 @@ files=(
   "dependencies/exiftool-unix/exiftool"
   "pm2-restore-x-rights.sh"
   "pm2-warmup.sh"
-  "service-deploy-systemd.sh"
+  "service-deploy-systemd.sh",
+  "github-artifacts-download.sh"
   "starsky"
 )
 
