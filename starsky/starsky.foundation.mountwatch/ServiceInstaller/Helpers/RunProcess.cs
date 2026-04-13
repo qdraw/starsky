@@ -44,4 +44,37 @@ internal class RunProcess(IWebLogger logger)
 
 		return succeeded;
 	}
+
+	internal async Task<(bool success, string output, int exitCode)> RunProcessWithOutputAsync(
+		string fileName, string arguments, int[]? allowedExitCodes = null)
+	{
+		var processInfo = new ProcessStartInfo
+		{
+			FileName = fileName,
+			Arguments = arguments,
+			RedirectStandardOutput = true,
+			RedirectStandardError = true,
+			UseShellExecute = false,
+			CreateNoWindow = true
+		};
+
+		using var process = Process.Start(processInfo)!;
+
+		var output = await process.StandardOutput.ReadToEndAsync();
+		var error = await process.StandardError.ReadToEndAsync();
+
+		await process.WaitForExitAsync();
+
+		if ( process.ExitCode != 0 )
+		{
+			logger.LogError(
+				$"Process {fileName} {arguments} failed with exit code {process.ExitCode}\nOutput: {output}\nError: {error}");
+		}
+
+		var succeeded = process.ExitCode == 0 ||
+		                ( allowedExitCodes != null &&
+		                  Array.IndexOf(allowedExitCodes, process.ExitCode) >= 0 );
+
+		return ( succeeded, output, process.ExitCode );
+	}
 }
