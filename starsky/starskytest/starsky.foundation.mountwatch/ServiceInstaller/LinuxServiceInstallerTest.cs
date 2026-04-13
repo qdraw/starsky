@@ -40,6 +40,40 @@ public sealed class LinuxServiceInstallerTest
 
 	[TestMethod]
 	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task InstallAsync_Root_WritesSystemdServiceFileAndLogs()
+	{
+		// Arrange - simulate running as root so installer writes to /etc/systemd
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		const string execPath = "/usr/local/bin/starskymountwatchercli";
+
+		var sut = new LinuxServiceInstaller(logger, storage, (_f, _a) => Task.FromResult(true),
+			new FakeUnixSecurity(true));
+
+		// Act
+		var result = await sut.InstallAsync(execPath);
+
+		// Assert
+		Assert.IsTrue(result);
+		var servicePath = $"/etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service";
+		Assert.IsTrue(storage.ExistFile(servicePath), "Expected service file to be written to /etc/systemd/system");
+
+		// Read back the written service content
+		using var stream = storage.ReadStream(servicePath);
+		using var sr = new System.IO.StreamReader(stream);
+		var content = await sr.ReadToEndAsync();
+		Assert.Contains("ExecStart=", content);
+		Assert.Contains(execPath, content, "Service unit should contain the executable path in ExecStart");
+
+		// Verify helpful logging instructions were written
+		Assert.IsTrue(logger.TrackedInformation.Exists(t => t.Item2 != null && t.Item2.Contains("daemon-reload")),
+			"Expected daemon-reload instruction in logs");
+		Assert.IsTrue(logger.TrackedInformation.Exists(t => t.Item2 != null && t.Item2.Contains("Linux systemd unit written to")),
+			"Expected confirmation log that systemd unit was written");
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
 	public async Task InstallAsync_WriteFails_FallsBackToUserInstall__UnixOnly()
 	{
 		// Arrange - simulate write failure at system level
