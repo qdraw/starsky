@@ -40,4 +40,11 @@ public class FakeServiceInstaller : IServiceInstaller
 	{
 		return true;
 	}
+
+	public Task<(bool installed, bool running)> StatusAsync()
+	{
+		var installed = InstalledPaths.Count > 0;
+		var running = StartCount > 0;
+		return Task.FromResult((installed, running));
+	}
 }

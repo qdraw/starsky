@@ -467,7 +467,7 @@ public class FakeIStorage : IStorage
 	/// <param name="stream">stream</param>
 	/// <param name="path">where to write to</param>
 	/// <returns>is Success</returns>
-	public Task<bool> WriteStreamAsync(Stream stream, string path)
+	public virtual Task<bool> WriteStreamAsync(Stream stream, string path)
 	{
 		return Task.FromResult(WriteStream(stream, path));
 	}

@@ -28,11 +28,12 @@ Only when checks pass, import starts.
 starskymountwatchercli --help
 starskymountwatchercli --install
 starskymountwatchercli --uninstall
+starskymountwatchercli --status
+
 ```
 
 Additional flags:
 
-- `--verbose` or `-v` for verbose logging.
 - `--help` or `-h` to print usage and platform-specific service notes.
 
 ## Platform support
@@ -54,6 +55,26 @@ Additional flags:
 - [macOS may require Full Disk Access for stable operation on external media.](troubleshooting-access-to-path-macos.md)
 - Linux logs are visible with `journalctl` for the mount watcher service.
 - Windows logs are available in Event Viewer.
+
+## Delete after import
+
+When importing from mounted camera storage (for example via the mount watcher), Starsky can optionally delete the original files after a successful import.
+
+Set the option in `appsettings.json`:
+
+```json
+"ImportMountWatcher" : {
+    "DeleteAfter": "false"
+}
+```
+
+Or override with an environment variable:
+
+```json
+"app__ImportMountWatcher__DeleteAfter": "true"
+```
+
+When `DeleteAfter` is `true`, successfully imported files on the mounted device will be removed. Use this with caution — enable only when you want files removed from the source device after import.
 
 ## Related
 

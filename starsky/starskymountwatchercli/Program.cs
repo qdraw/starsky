@@ -99,7 +99,9 @@ public static class Program
 			webLogger.LogError("Mount watcher failed to start or install. See logs for details.");
 		}
 
-		if ( !MountWatcherCli.NeedInstall(args) && !MountWatcherCli.NeedUninstall(args) &&
+		if ( !MountWatcherCli.NeedInstall(args) &&
+		     !MountWatcherCli.NeedUninstall(args) &&
+		     !MountWatcherCli.NeedStatus(args) &&
 		     !ArgsHelper.NeedHelp(args) )
 		{
 			await host.RunAsync();

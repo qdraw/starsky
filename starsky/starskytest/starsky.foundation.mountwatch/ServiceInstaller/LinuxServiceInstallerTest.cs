@@ -40,6 +40,40 @@ public sealed class LinuxServiceInstallerTest
 
 	[TestMethod]
 	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task InstallAsync_Root_WritesSystemdServiceFileAndLogs()
+	{
+		// Arrange - simulate running as root so installer writes to /etc/systemd
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		const string execPath = "/usr/local/bin/starskymountwatchercli";
+
+		var sut = new LinuxServiceInstaller(logger, storage, (_, _) => Task.FromResult(true),
+			new FakeUnixSecurity(true));
+
+		// Act
+		var result = await sut.InstallAsync(execPath);
+
+		// Assert
+		Assert.IsTrue(result);
+		var servicePath = $"/etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service";
+		Assert.IsTrue(storage.ExistFile(servicePath), "Expected service file to be written to /etc/systemd/system");
+
+		// Read back the written service content
+		await using var stream = storage.ReadStream(servicePath);
+		using var sr = new StreamReader(stream);
+		var content = await sr.ReadToEndAsync(TestContext.CancellationToken);
+		Assert.Contains("ExecStart=", content);
+		Assert.Contains(execPath, content, "Service unit should contain the executable path in ExecStart");
+
+		// Verify helpful logging instructions were written
+		Assert.IsTrue(logger.TrackedInformation.Exists(t => t.Item2 != null && t.Item2.Contains("daemon-reload")),
+			"Expected daemon-reload instruction in logs");
+		Assert.IsTrue(logger.TrackedInformation.Exists(t => t.Item2 != null && t.Item2.Contains("Linux systemd unit written to")),
+			"Expected confirmation log that systemd unit was written");
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
 	public async Task InstallAsync_WriteFails_FallsBackToUserInstall__UnixOnly()
 	{
 		// Arrange - simulate write failure at system level
@@ -82,7 +116,7 @@ public sealed class LinuxServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var systemServicePath = $"/etc/systemd/system/{GetServiceName()}.service";
 		var storage = new FakeIStorage(
-			outputSubPathFiles: new List<string> { systemServicePath });
+			outputSubPathFiles: [systemServicePath]);
 		var sut = new LinuxServiceInstaller(logger, storage);
 
 		// Act
@@ -143,7 +177,7 @@ public sealed class LinuxServiceInstallerTest
 		var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 		var userServicePath = $"{userHome}/.config/systemd/user/{GetServiceName()}.service";
 		var storage = new FakeIStorage(
-			outputSubPathFiles: new List<string> { systemServicePath, userServicePath });
+			outputSubPathFiles: [systemServicePath, userServicePath]);
 		var sut = new LinuxServiceInstaller(logger, storage);
 
 		// Act
@@ -250,7 +284,7 @@ public sealed class LinuxServiceInstallerTest
 		var logger = new FakeIWebLogger();
 		var systemServicePath = $"/etc/systemd/system/{GetServiceName()}.service";
 		var storage = new FakeIStorage(
-			outputSubPathFiles: new List<string> { systemServicePath });
+			outputSubPathFiles: [systemServicePath]);
 		var sut = new LinuxServiceInstaller(logger, storage);
 
 		// Act
@@ -386,6 +420,73 @@ public sealed class LinuxServiceInstallerTest
 	}
 
 	[TestMethod]
+	public async Task StatusAsync_NotInstalledAndProcessReportsInactive_ReturnsFalseFalse()
+	{
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage(); // no files -> not installed
+
+		var sut = new LinuxServiceInstaller(logger, storage, FakeRun, new FakeUnixSecurity(false));
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsFalse(installed);
+		Assert.IsFalse(running);
+		return;
+
+		static Task<bool> FakeRun(string s, string s1)
+		{
+			return Task.FromResult(false);
+		}
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_UserServiceInstalledAndActive_ReturnsTrueTrue()
+	{
+		var logger = new FakeIWebLogger();
+		var userServicePath = Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+			".config", "systemd", "user", $"{new WatchServiceName().GetSystemDName()}.service");
+
+		var storage = new FakeIStorage(outputSubPathFiles: [userServicePath]);
+
+		var sut = new LinuxServiceInstaller(logger, storage, FakeRun, new FakeUnixSecurity(false));
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsTrue(installed);
+		Assert.IsTrue(running);
+		return;
+
+		static Task<bool> FakeRun(string _, string a)
+		{
+			return Task.FromResult(a.Contains("is-active"));
+		}
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_ProcessThrows_ReturnsInstalledAndFalseRunning()
+	{
+		var logger = new FakeIWebLogger();
+		// simulate installed at system level
+		var systemServicePath = $"/etc/systemd/system/{GetServiceName()}.service";
+		var storage = new FakeIStorage(outputSubPathFiles: [systemServicePath]);
+
+		var sut = new LinuxServiceInstaller(logger,
+			storage, ThrowingRun,
+			new FakeUnixSecurity(false));
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsTrue(installed,
+			"Storage indicates installed so installed should be true");
+		Assert.IsFalse(running,
+			"When the process runner throws, running must be false (error case)");
+		return;
+
+		static Task<bool> ThrowingRun(string _, string _1)
+		{
+			throw new InvalidOperationException("status-boom");
+		}
+	}
+
+	[TestMethod]
 	public async Task UninstallAsync_FileDeleteThrows_HandledAndLogs()
 	{
 		var logger = new FakeIWebLogger();
@@ -393,7 +494,7 @@ public sealed class LinuxServiceInstallerTest
 
 		// We'll wrap storage by creating a derived class instance that throws on FileDelete
 		var throwingStorage =
-			new FakeIStorage(outputSubPathFiles: new List<string> { systemServicePath });
+			new FakeIStorage(outputSubPathFiles: [systemServicePath]);
 		// Replace the FileDelete behavior via a simple wrapper class in test scope
 		var storageWrapper = new ThrowOnDeleteStorage(throwingStorage);
 
@@ -404,18 +505,11 @@ public sealed class LinuxServiceInstallerTest
 		Assert.IsNotEmpty(logger.TrackedExceptions, "Should log delete error");
 	}
 
-	private sealed class ThrowOnDeleteStorage : FakeIStorage
+	private sealed class ThrowOnDeleteStorage(FakeIStorage inner) : FakeIStorage
 	{
-		private readonly FakeIStorage _inner;
-
-		public ThrowOnDeleteStorage(FakeIStorage inner)
-		{
-			_inner = inner;
-		}
-
 		public override bool ExistFile(string path)
 		{
-			return _inner.ExistFile(path);
+			return inner.ExistFile(path);
 		}
 
 		public override bool FileDelete(string path)
@@ -423,4 +517,6 @@ public sealed class LinuxServiceInstallerTest
 			throw new InvalidOperationException("delete failed");
 		}
 	}
+
+	public TestContext TestContext { get; set; }
 }

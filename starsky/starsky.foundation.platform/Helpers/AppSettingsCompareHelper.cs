@@ -92,6 +92,32 @@ public static class AppSettingsCompareHelper
 				newImportTransformation, differenceList);
 		}
 
+		if ( propertyB.PropertyType == typeof(AppSettingsImportBackupModel) )
+		{
+			var oldImportBackup =
+				( AppSettingsImportBackupModel? ) propertyInfoFromA.GetValue(
+					sourceIndexItem,
+					null);
+			var newImportBackup =
+				( AppSettingsImportBackupModel? ) propertyB.GetValue(updateObject, null);
+			CompareAppSettingsImportBackupModel(propertyB.Name, sourceIndexItem,
+				oldImportBackup,
+				newImportBackup, differenceList);
+		}
+
+		if ( propertyB.PropertyType == typeof(AppSettingsMountWatcherModel) )
+		{
+			var oldMountWatcherModel =
+				( AppSettingsMountWatcherModel? ) propertyInfoFromA.GetValue(
+					sourceIndexItem,
+					null);
+			var newMountWatcherModel =
+				( AppSettingsMountWatcherModel? ) propertyB.GetValue(updateObject, null);
+			CompareAppSettingsMountWatcherModel(propertyB.Name, sourceIndexItem,
+				oldMountWatcherModel,
+				newMountWatcherModel, differenceList);
+		}
+
 		if ( propertyInfoFromA.PropertyType ==
 		     typeof(List<AppSettingsDefaultEditorApplication>) &&
 		     propertyB.PropertyType == typeof(List<AppSettingsDefaultEditorApplication>) )
@@ -151,6 +177,50 @@ public static class AppSettingsCompareHelper
 				oldAppSettingsPublishProfilesRemoteValue,
 				newAppSettingsPublishProfilesRemoteValue, differenceList);
 		}
+	}
+
+	private static void CompareAppSettingsMountWatcherModel(string propertyBName,
+		AppSettings sourceIndexItem,
+		AppSettingsMountWatcherModel? oldMountWatcherModel,
+		AppSettingsMountWatcherModel? newMountWatcherModel,
+		List<string> differenceList)
+	{
+		if ( oldMountWatcherModel == null ||
+		     newMountWatcherModel == null ||
+		     // compare lists
+		     JsonSerializer.Serialize(oldMountWatcherModel) ==
+		     JsonSerializer.Serialize(newMountWatcherModel) ||
+		     // default options
+		     JsonSerializer.Serialize(newMountWatcherModel) ==
+		     JsonSerializer.Serialize(new AppSettingsMountWatcherModel()) )
+		{
+			return;
+		}
+
+		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
+			newMountWatcherModel, null);
+		differenceList.Add(propertyBName.ToLowerInvariant());
+	}
+
+	private static void CompareAppSettingsImportBackupModel(string propertyBName,
+		AppSettings sourceIndexItem, AppSettingsImportBackupModel? oldImportBackup,
+		AppSettingsImportBackupModel? newImportBackup, List<string> differenceList)
+	{
+		if ( oldImportBackup == null ||
+		     newImportBackup == null ||
+		     // compare lists
+		     JsonSerializer.Serialize(oldImportBackup) ==
+		     JsonSerializer.Serialize(newImportBackup) ||
+		     // default options
+		     JsonSerializer.Serialize(newImportBackup) ==
+		     JsonSerializer.Serialize(new AppSettingsImportBackupModel()) )
+		{
+			return;
+		}
+
+		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
+			newImportBackup, null);
+		differenceList.Add(propertyBName.ToLowerInvariant());
 	}
 
 	private static void CompareAppSettingsCloudSettings(string propertyBName,

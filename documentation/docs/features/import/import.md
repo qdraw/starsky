@@ -193,6 +193,34 @@ These 4 checks help ensure that only valid camera storage devices are scanned an
 ## Troubleshooting: Access to Path is denied on macOS
 See [Troubleshooting: Access to Path is denied on macOS](troubleshooting-access-to-path-macos.md)
 
+## Import Backup
+
+Starsky can optionally create a fixed-structure backup copy of imported files. The backup filename uses a deterministic timestamp + original name format; for example:
+
+20260326_082007_Schermafbeelding-2026-03-26-om-082007.png
+
+Enable the feature via environment variables:
+
+```json
+"app__ImportBackup__Enabled": "true",
+"app__ImportBackup__StorageFolder": "/data/backup_camera/1/"
+```
+
+Or set the same values in `appsettings.json` under the `ImportBackup` section:
+Patching appsettings with `appsettings.patch.json` can also be used in this feature
+
+```json
+"ImportBackup": {
+    "Enabled": "false",
+    "StorageFolder": "/data/backup_camera/1/"
+}
+```
+
+When enabled, imported files are copied to the configured storage folder using the fixed filename structure above. Use this to keep an immutable backup of original camera imports.
+
+## Mount watcher
+See [Mount Watcher CLI to Auto Import](mountwatchercli.md)
+
 ## Related
 
 - [Mount Watcher CLI to Auto Import](mountwatchercli.md)

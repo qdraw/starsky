@@ -24,6 +24,7 @@ public class MountWatcherCli
 {
 	private const string InstallArg = "--install";
 	private const string UninstallArg = "--uninstall";
+	private const string StatusArg = "--status";
 
 
 	private readonly AppSettings _appSettings;
@@ -110,6 +111,14 @@ public class MountWatcherCli
 			return await _serviceInstaller.UninstallAsync();
 		}
 
+		if ( NeedStatus(args) )
+		{
+			var (installed, running) = await _serviceInstaller.StatusAsync();
+			_logger.LogInformation($"Service installed: {installed}");
+			_logger.LogInformation($"Service running: {running}");
+			return true;
+		}
+
 		_serviceInstaller.PreflightChecks();
 
 		return RunWatcher();
@@ -129,6 +138,14 @@ public class MountWatcherCli
 	public static bool NeedUninstall(string[] args)
 	{
 		return args.Any(a => a.Equals(UninstallArg, StringComparison.OrdinalIgnoreCase));
+	}
+
+	/// <summary>
+	///     Returns true if --status is present in args
+	/// </summary>
+	public static bool NeedStatus(string[] args)
+	{
+		return args.Any(a => a.Equals(StatusArg, StringComparison.OrdinalIgnoreCase));
 	}
 
 	/// <summary>
@@ -272,7 +289,9 @@ public class MountWatcherCli
 
 			var importSettings = new ImportSettingsModel
 			{
-				RecursiveDirectory = true, IndexMode = true, DeleteAfter = false
+				RecursiveDirectory = true,
+				IndexMode = true,
+				DeleteAfter = _appSettings.ImportMountWatcher.DeleteAfter
 			};
 
 			var result = await _importService.Importer(

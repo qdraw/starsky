@@ -52,46 +52,64 @@ public class MozJpegService : IMozJpegService
 			return;
 		}
 
-		foreach ( var outputInputPath in targets.Select(item => item.OutputPath) )
+		var parent = Directory.GetParent(exePath);
+
+		foreach ( var item in targets )
 		{
-			if ( !IsJpegOutput(outputInputPath) )
-			{
-				continue;
-			}
+			await ProcessTargetAsync(exePath, item.OutputPath, optimizer, parent);
+		}
+	}
 
-			var tempFilePath = outputInputPath + ".optimizing";
+	private async Task ProcessTargetAsync(string exePath, string outputInputPath,
+		Optimizer optimizer, DirectoryInfo? parent)
+	{
+		if ( string.IsNullOrEmpty(outputInputPath) || !IsJpegOutput(outputInputPath) )
+		{
+			return;
+		}
 
-			var parent = Directory.GetParent(exePath);
+		var tempFilePath = outputInputPath + ".optimizing";
 
-			var (command, outputStream) =
-				await CommandRetry(exePath, outputInputPath, optimizer, parent);
-			if ( command == null || outputStream == null )
-			{
-				continue;
-			}
+		var (command, outputStream) =
+			await CommandRetry(exePath, outputInputPath, optimizer, parent);
+		if ( command == null || outputStream == null )
+		{
+			return;
+		}
 
-			await _hostFileSystemStorage.WriteStreamAsync(outputStream, tempFilePath);
+		await _hostFileSystemStorage.WriteStreamAsync(outputStream, tempFilePath);
+		await outputStream.DisposeAsync();
 
-			await outputStream.DisposeAsync();
+		if ( !command.Result.Success )
+		{
+			LogAndCleanup(command.Result.StandardError, tempFilePath, outputInputPath,
+				"MozJPEG failed");
+			return;
+		}
 
-			if ( !command.Result.Success )
-			{
-				_logger.LogError(
-					$"[ImageOptimisationService] MozJPEG failed for {outputInputPath}: " +
-					$"{command.Result.StandardError}");
-				if ( _hostFileSystemStorage.ExistFile(tempFilePath) )
-				{
-					_hostFileSystemStorage.FileDelete(tempFilePath);
-				}
+		var tempInfo = _hostFileSystemStorage.Info(tempFilePath);
+		if ( tempInfo.Size <= 0 || !IsJpegOutput(tempFilePath) )
+		{
+			LogAndCleanup("invalid output", tempFilePath,
+				outputInputPath, "MozJPEG failed to run");
+			return;
+		}
 
-				continue;
-			}
+		_hostFileSystemStorage.FileDelete(outputInputPath);
+		_hostFileSystemStorage.FileMove(tempFilePath, outputInputPath);
+		_logger.LogInformation("[ImageOptimisationService] " +
+		                       "MozJPEG optimized: " + outputInputPath);
+	}
 
-			_hostFileSystemStorage.FileDelete(outputInputPath);
-			_hostFileSystemStorage.FileMove(tempFilePath, outputInputPath);
-
-			_logger.LogInformation("[ImageOptimisationService] MozJPEG optimized: " +
-			                       outputInputPath);
+	private void LogAndCleanup(string message, string tempFilePath,
+		string outputInputPath,
+		string prefix)
+	{
+		_logger.LogError($"[ImageOptimisationService] {prefix} " +
+		                 $"for {outputInputPath}: {message}");
+		if ( _hostFileSystemStorage.ExistFile(tempFilePath) )
+		{
+			_hostFileSystemStorage.FileDelete(tempFilePath);
 		}
 	}
 
@@ -106,7 +124,15 @@ public class MozJpegService : IMozJpegService
 		}
 		catch ( Exception )
 		{
-			await _mozJpegDownload.FixPermissions(exePath);
+			if ( !await _mozJpegDownload.FixPermissions(exePath) )
+			{
+				_logger.LogError(
+					$"[ImageOptimisationService] " +
+					$"MozJPEG failed to run for {outputInputPath}: " +
+					$"unable to set execute permissions");
+				return ( null, null );
+			}
+
 			try
 			{
 				( command, outputStream ) =
@@ -125,8 +151,9 @@ public class MozJpegService : IMozJpegService
 		return ( command, outputStream );
 	}
 
-	private static async Task<(Command command, MemoryStream outputStream)> Command(string exePath,
-		string outputInputPath, Optimizer optimizer, DirectoryInfo? parent)
+	private static async Task<(Command command, MemoryStream outputStream)>
+		Command(string exePath,
+			string outputInputPath, Optimizer optimizer, DirectoryInfo? parent)
 	{
 		var outputStream = new MemoryStream();
 
@@ -147,7 +174,6 @@ public class MozJpegService : IMozJpegService
 		await command.Task.TimeoutAfter(TimeSpan.FromMinutes(5));
 		return ( command, outputStream );
 	}
-
 
 	private bool IsJpegOutput(string outputPath)
 	{

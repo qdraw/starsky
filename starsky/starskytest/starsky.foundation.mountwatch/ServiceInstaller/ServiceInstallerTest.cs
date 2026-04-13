@@ -282,6 +282,21 @@ public sealed class ServiceInstallerTest
 	}
 
 	[TestMethod]
+	public async Task ServiceInstaller_StatusAsync_UsesInjectedInstaller_ReturnsExpected()
+	{
+		var logger = new FakeIWebLogger();
+
+		var service = new global::starsky.foundation.mountwatch.ServiceInstaller.ServiceInstaller(
+			new FakeSelectorStorage(), logger,
+			() => OSPlatform.Linux);
+
+		var (installed, running) = await service.StatusAsync();
+
+		Assert.IsFalse(installed);
+		Assert.IsFalse(running);
+	}
+
+	[TestMethod]
 	[DataRow(OperatingSystems.OSX)]
 	[DataRow(OperatingSystems.Windows)]
 	[DataRow(OperatingSystems.Linux)]
@@ -351,6 +366,12 @@ public sealed class ServiceInstallerTest
 		public Task<bool> StopAsync()
 		{
 			return Task.FromResult(true);
+		}
+
+		public Task<(bool installed, bool running)> StatusAsync()
+		{
+			// For tests, assume installed but not running by default
+			return Task.FromResult(( true, false ));
 		}
 	}
 }
