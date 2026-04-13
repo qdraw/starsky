@@ -163,4 +163,64 @@ public sealed class WindowsServiceInstallerTest
 			t.Item2 != null && t.Item2.Contains("Failed to install Windows service"));
 		Assert.IsTrue(found, "Expected LogError(Exception, ...) for exception during install");
 	}
+
+	[TestMethod]
+	public async Task StatusAsync_NotInstalled_ReturnsFalseFalse()
+	{
+		var logger = new FakeIWebLogger();
+		var sut = new WindowsServiceInstaller(logger,
+			(_, _) => Task.FromResult(true),
+			(_, _) => Task.FromResult((false, string.Empty, 1)),
+			_ => Task.CompletedTask);
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsFalse(installed);
+		Assert.IsFalse(running);
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_InstalledButNotRunning_ReturnsTrueFalse()
+	{
+		var logger = new FakeIWebLogger();
+		var sut = new WindowsServiceInstaller(logger,
+			(_, _) => Task.FromResult(true),
+			(_, _) => Task.FromResult((true, "STATE: STOPPED", 0)),
+			_ => Task.CompletedTask);
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsTrue(installed);
+		Assert.IsFalse(running);
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_InstalledAndRunning_ReturnsTrueTrue()
+	{
+		var logger = new FakeIWebLogger();
+		var sut = new WindowsServiceInstaller(logger,
+			(_, _) => Task.FromResult(true),
+			(_, _) => Task.FromResult((true, "   RUNNING   ", 0)),
+			_ => Task.CompletedTask);
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsTrue(installed);
+		Assert.IsTrue(running);
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_RunThrows_ReturnsFalseFalse()
+	{
+		var logger = new FakeIWebLogger();
+		var sut = new WindowsServiceInstaller(logger,
+			(_, _) => Task.FromResult(true),
+			(_, _) => throw new InvalidOperationException("boom"),
+			_ => Task.CompletedTask);
+
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsFalse(installed);
+		Assert.IsFalse(running);
+	}
 }
