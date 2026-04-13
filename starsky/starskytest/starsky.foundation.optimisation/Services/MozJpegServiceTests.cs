@@ -170,6 +170,39 @@ public sealed class MozJpegServiceTests
 			entry.Item2?.Contains("MozJPEG failed") == true, fakeLogger.TrackedExceptions);
 	}
 
+	[TestMethod]
+	public async Task RunMozJpeg_JpegOutput_EmptyOutput_LogsInvalidOutput__UnixOnly()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("Requires a shell script stub on Unix-based systems.");
+			return;
+		}
+
+		var appSettings = CreateAppSettings();
+		// script that exits 0 but writes nothing to stdout
+		await CreateMozJpegFile(appSettings, "#!/bin/bash\nexit 0");
+
+		var outputPath = Path.Combine(_basePath, "photo-empty.jpg");
+		WriteBytes(outputPath, [.. CreateAnImage.Bytes]);
+
+		var fakeLogger = new FakeIWebLogger();
+		var download = new FakeMozJpegDownload(ImageOptimisationDownloadStatus.Ok);
+		var sut = CreateService(appSettings, fakeLogger, download);
+
+		await sut.RunMozJpeg(CreateOptimizer(),
+		[
+			new ImageOptimisationItem { InputPath = outputPath, OutputPath = outputPath }
+		]);
+
+		var tempFilePath = outputPath + ".optimizing";
+		// temp file should be removed and original preserved
+		Assert.IsFalse(_hostFileSystem.ExistFile(tempFilePath));
+		Assert.IsTrue(_hostFileSystem.ExistFile(outputPath));
+		Assert.Contains(entry =>
+			entry.Item2?.Contains("MozJPEG failed to run") == true, fakeLogger.TrackedExceptions);
+	}
+
 	private AppSettings CreateAppSettings()
 	{
 		return new AppSettings { DependenciesFolder = Path.Combine(_basePath, "deps-test-mozjpeg") };

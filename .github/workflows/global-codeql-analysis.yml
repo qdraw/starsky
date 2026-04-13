@@ -8,6 +8,10 @@ on:
   push:
     branches: [master]
     # all files because parent git hashes are used to compare in PR's
+  pull_request: 
+    branches: [master]
+    paths: 
+      - '.github/workflows/global-codeql-analysis.yml'
 
 permissions:
   contents: read
