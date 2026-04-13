@@ -776,19 +776,19 @@ public sealed class WebHtmlPublishServiceTest
 				TestContext.CancellationToken);
 		}
 
-		// Ensure it's not executable on unix systems
+		// Explicitly control executability per scenario to keep behavior deterministic
 		if ( !appSettings.IsWindows )
 		{
-			// remove all execute bits if any (best-effort)
+			var mode = optimizerFailsBashScript ? "644" : "755";
 			try
 			{
 				var fi = new FileInfo(exePath);
 				fi.Attributes &= ~FileAttributes.ReadOnly;
-				// chmod 0644
+				// chmod 0644 for the failing path, 0755 for the successful path
 				var proc = Process.Start(new ProcessStartInfo
 				{
 					FileName = "/bin/chmod",
-					Arguments = "644 " + exePath,
+					Arguments = mode + " " + exePath,
 					RedirectStandardOutput = true,
 					RedirectStandardError = true,
 					UseShellExecute = false,
@@ -807,13 +807,7 @@ public sealed class WebHtmlPublishServiceTest
 			new FakeIStorage());
 
 		// Use real MozJpegService but fake the download as already OK
-		var download = new FakeMozJpegDownload(ImageOptimisationDownloadStatus.Ok)
-		{
-			FixPermissionsDelegate =
-				new ImageOptimisationChmod(
-						new FakeSelectorStorage(new StorageHostFullPathFilesystem(logger)), logger)
-					.Chmod
-		};
+		var download = new FakeMozJpegDownload(ImageOptimisationDownloadStatus.Ok);
 
 		var mozService = new MozJpegService(appSettings, new FakeSelectorStorage(storage), logger,
 			download);

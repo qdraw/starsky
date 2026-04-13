@@ -87,6 +87,22 @@ public class MozJpegService : IMozJpegService
 				continue;
 			}
 
+			// A zero-length or non-JPEG output means the optimizer did not produce
+			// a usable file, even if the process returned success.
+			var tempInfo = _hostFileSystemStorage.Info(tempFilePath);
+			if ( tempInfo.Size <= 0 || !IsJpegOutput(tempFilePath) )
+			{
+				_logger.LogError(
+					$"[ImageOptimisationService] MozJPEG failed to run for " +
+					$"{outputInputPath}: invalid output");
+				if ( _hostFileSystemStorage.ExistFile(tempFilePath) )
+				{
+					_hostFileSystemStorage.FileDelete(tempFilePath);
+				}
+
+				continue;
+			}
+
 			_hostFileSystemStorage.FileDelete(outputInputPath);
 			_hostFileSystemStorage.FileMove(tempFilePath, outputInputPath);
 
@@ -106,7 +122,14 @@ public class MozJpegService : IMozJpegService
 		}
 		catch ( Exception )
 		{
-			await _mozJpegDownload.FixPermissions(exePath);
+			if ( !await _mozJpegDownload.FixPermissions(exePath) )
+			{
+				_logger.LogError(
+					$"[ImageOptimisationService] " +
+					$"MozJPEG failed to run for {outputInputPath}: unable to set execute permissions");
+				return ( null, null );
+			}
+
 			try
 			{
 				( command, outputStream ) =
@@ -147,7 +170,6 @@ public class MozJpegService : IMozJpegService
 		await command.Task.TimeoutAfter(TimeSpan.FromMinutes(5));
 		return ( command, outputStream );
 	}
-
 
 	private bool IsJpegOutput(string outputPath)
 	{
