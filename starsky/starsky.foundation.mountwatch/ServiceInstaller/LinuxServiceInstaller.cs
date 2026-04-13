@@ -16,6 +16,8 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// </summary>
 internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
+	private const string SystemctlCmd = "systemctl";
+
 	private readonly Func<string, string, Task<bool>> _runProcessAsync =
 		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args);
 
@@ -50,11 +52,11 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 
 		logger.LogInformation($"systemd unit installed: {executablePath}");
 		logger.LogInformation("To enable and start:");
-		logger.LogInformation("  sudo systemctl daemon-reload");
+		logger.LogInformation($"  sudo {SystemctlCmd} daemon-reload");
 		logger.LogInformation(
-			$"  sudo systemctl enable {new WatchServiceName().GetSystemDName()}");
+			$"  sudo {SystemctlCmd} enable {new WatchServiceName().GetSystemDName()}");
 		logger.LogInformation(
-			$"  sudo systemctl start {new WatchServiceName().GetSystemDName()}");
+			$"  sudo {SystemctlCmd} start {new WatchServiceName().GetSystemDName()}");
 
 		logger.LogInformation($"Linux systemd unit written to {executablePath}");
 
@@ -79,7 +81,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		{
 			_storage.FileDelete(systemPath);
 			logger.LogInformation($"systemd unit removed: {systemPath}");
-			logger.LogInformation("Run: sudo systemctl daemon-reload");
+			logger.LogInformation($"Run: sudo {SystemctlCmd} daemon-reload");
 			logger.LogInformation($"Linux systemd unit removed: {systemPath}");
 			deleted = true;
 		}
@@ -88,7 +90,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		{
 			_storage.FileDelete(userPath);
 			logger.LogInformation($"systemd user unit removed: {userPath}");
-			logger.LogInformation("Run: systemctl --user daemon-reload");
+			logger.LogInformation($"Run: {SystemctlCmd} --user daemon-reload");
 			logger.LogInformation($"Linux systemd user unit removed: {userPath}");
 			deleted = true;
 		}
@@ -118,18 +120,47 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		return await StartStopAsync(false);
 	}
 
+	public async Task<(bool installed, bool running)> StatusAsync()
+	{
+		var systemPath = $"/etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service";
+		var userPath = Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+			".config", "systemd", "user", $"{new WatchServiceName().GetSystemDName()}.service");
+
+		var installed = _storage.ExistFile(systemPath) || _storage.ExistFile(userPath);
+		bool running;
+		try
+		{
+			// systemctl is-active --quiet returns 0 when active
+			running = await _runProcessAsync(SystemctlCmd,
+				$"is-active --quiet {new WatchServiceName().GetSystemDName()}");
+			if ( !running )
+			{
+				// Try user-level
+				running = await _runProcessAsync(SystemctlCmd,
+					$"--user is-active --quiet {new WatchServiceName().GetSystemDName()}");
+			}
+		}
+		catch
+		{
+			running = false;
+		}
+
+		return ( installed, running );
+	}
+
 	private async Task<bool> StartStopAsync(bool isStart)
 	{
 		var command = isStart ? "start" : "stop";
 		try
 		{
 			// Try system-level first (without sudo to avoid privilege prompts in tests)
-			var result = await _runProcessAsync("systemctl",
+			var result = await _runProcessAsync(SystemctlCmd,
 				$"{command} {new WatchServiceName().GetSystemDName()}");
 			if ( !result )
 			{
 				// Fallback to user-level
-				result = await _runProcessAsync("systemctl",
+				result = await _runProcessAsync(SystemctlCmd,
 					$"--user {command} {new WatchServiceName().GetSystemDName()}");
 			}
 
@@ -146,33 +177,6 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			logger.LogError(ex, $"Failed to {command} Linux service: {ex.Message}");
 			return false;
 		}
-	}
-
-	public async Task<(bool installed, bool running)> StatusAsync()
-	{
-		var systemPath = $"/etc/systemd/system/{new WatchServiceName().GetSystemDName()}.service";
-		var userPath = Path.Combine(
-			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-			".config", "systemd", "user", $"{new WatchServiceName().GetSystemDName()}.service");
-
-		var installed = _storage.ExistFile(systemPath) || _storage.ExistFile(userPath);
-		bool running;
-		try
-		{
-			// systemctl is-active --quiet returns 0 when active
-			running = await _runProcessAsync("systemctl", $"is-active --quiet {new WatchServiceName().GetSystemDName()}");
-			if ( !running )
-			{
-				// Try user-level
-				running = await _runProcessAsync("systemctl", $"--user is-active --quiet {new WatchServiceName().GetSystemDName()}");
-			}
-		}
-		catch
-		{
-			running = false;
-		}
-
-		return (installed, running);
 	}
 
 	/// <summary>
@@ -201,11 +205,11 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 
 			logger.LogInformation($"systemd user unit installed: {servicePath}");
 			logger.LogInformation("To enable and start:");
-			logger.LogInformation("  systemctl --user daemon-reload");
+			logger.LogInformation($"  {SystemctlCmd} --user daemon-reload");
 			logger.LogInformation(
-				$"  systemctl --user enable {new WatchServiceName().GetSystemDName()}");
+				$"  {SystemctlCmd} --user enable {new WatchServiceName().GetSystemDName()}");
 			logger.LogInformation(
-				$"  systemctl --user start {new WatchServiceName().GetSystemDName()}");
+				$"  {SystemctlCmd} --user start {new WatchServiceName().GetSystemDName()}");
 
 			logger.LogInformation($"Linux systemd user unit written to {servicePath}");
 			return true;
