@@ -15,38 +15,40 @@ internal class RunProcess(IWebLogger logger)
 	internal async Task<bool> RunProcessAsync(string fileName, string arguments,
 		int[]? allowedExitCodes = null)
 	{
-		var processInfo = new ProcessStartInfo
-		{
-			FileName = fileName,
-			Arguments = arguments,
-			RedirectStandardOutput = true,
-			RedirectStandardError = true,
-			UseShellExecute = false,
-			CreateNoWindow = true
-		};
+		var (exitCode, output, error) = await StartAndReadAsync(fileName, arguments);
 
-		using var process = Process.Start(processInfo)!;
-
-		var output = await process.StandardOutput.ReadToEndAsync();
-		var error = await process.StandardError.ReadToEndAsync();
-
-		await process.WaitForExitAsync();
-
-		if ( process.ExitCode != 0 )
+		if ( exitCode != 0 )
 		{
 			logger.LogError(
-				$"Process {fileName} {arguments} failed with exit code {process.ExitCode}\nOutput: {output}\nError: {error}");
+				$"Process {fileName} {arguments} failed with exit code {exitCode}\nOutput: {output}\nError: {error}");
 		}
 
-		var succeeded = process.ExitCode == 0 ||
+		var succeeded = exitCode == 0 ||
 		                ( allowedExitCodes != null &&
-		                  Array.IndexOf(allowedExitCodes, process.ExitCode) >= 0 );
+		                  Array.IndexOf(allowedExitCodes, exitCode) >= 0 );
 
 		return succeeded;
 	}
 
 	internal async Task<(bool success, string output, int exitCode)> RunProcessWithOutputAsync(
 		string fileName, string arguments, int[]? allowedExitCodes = null)
+	{
+		var (exitCode, output, error) = await StartAndReadAsync(fileName, arguments);
+
+		if ( exitCode != 0 )
+		{
+			logger.LogError(
+				$"Process {fileName} {arguments} failed with exit code {exitCode}\nOutput: {output}\nError: {error}");
+		}
+
+		var succeeded = exitCode == 0 ||
+		                ( allowedExitCodes != null &&
+		                  Array.IndexOf(allowedExitCodes, exitCode) >= 0 );
+
+		return ( succeeded, output, exitCode );
+	}
+
+	private static async Task<(int exitCode, string output, string error)> StartAndReadAsync(string fileName, string arguments)
 	{
 		var processInfo = new ProcessStartInfo
 		{
@@ -65,16 +67,6 @@ internal class RunProcess(IWebLogger logger)
 
 		await process.WaitForExitAsync();
 
-		if ( process.ExitCode != 0 )
-		{
-			logger.LogError(
-				$"Process {fileName} {arguments} failed with exit code {process.ExitCode}\nOutput: {output}\nError: {error}");
-		}
-
-		var succeeded = process.ExitCode == 0 ||
-		                ( allowedExitCodes != null &&
-		                  Array.IndexOf(allowedExitCodes, process.ExitCode) >= 0 );
-
-		return ( succeeded, output, process.ExitCode );
+		return (process.ExitCode, output, error);
 	}
 }
