@@ -386,6 +386,48 @@ public sealed class LinuxServiceInstallerTest
 	}
 
 	[TestMethod]
+	public async Task StatusAsync_NotInstalledAndProcessReportsInactive_ReturnsFalseFalse()
+	{
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage(); // no files -> not installed
+
+		var sut = new LinuxServiceInstaller(logger, storage, FakeRun, new FakeUnixSecurity(false));
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsFalse(installed);
+		Assert.IsFalse(running);
+		return;
+
+		static Task<bool> FakeRun(string s, string s1)
+		{
+			return Task.FromResult(false);
+		}
+	}
+
+	[TestMethod]
+	public async Task StatusAsync_UserServiceInstalledAndActive_ReturnsTrueTrue()
+	{
+		var logger = new FakeIWebLogger();
+		var userServicePath = Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+			".config", "systemd", "user", $"{new WatchServiceName().GetSystemDName()}.service");
+
+		var storage = new FakeIStorage(outputSubPathFiles: [userServicePath]);
+
+		var sut = new LinuxServiceInstaller(logger, storage, FakeRun, new FakeUnixSecurity(false));
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsTrue(installed);
+		Assert.IsTrue(running);
+		return;
+
+		static Task<bool> FakeRun(string _, string a)
+		{
+			return Task.FromResult(a.Contains("is-active"));
+		}
+	}
+
+	[TestMethod]
 	public async Task UninstallAsync_FileDeleteThrows_HandledAndLogs()
 	{
 		var logger = new FakeIWebLogger();
