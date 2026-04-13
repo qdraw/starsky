@@ -20,9 +20,17 @@ public class ImportBackup(ISelectorStorage selectorStorage, IWebLogger logger)
 		ImportIndexItem importIndexItem,
 		AppSettingsImportBackupModel importBackup)
 	{
-		if ( !importBackup.Enabled || 
-		     !_filesystemStorage.ExistFolder(importBackup.StorageFolder ?? ""))
+		var backupFolderExists = !_filesystemStorage.ExistFolder(importBackup.StorageFolder ?? "");
+		if ( !importBackup.Enabled || backupFolderExists )
 		{
+			if ( backupFolderExists && importBackup.Enabled )
+			{
+				logger.LogError(
+					$"[ImportBackup] Skipped backup due backup folder " +
+					$"does not exist: " +
+					$"{importBackup.StorageFolder}");
+			}
+
 			return null;
 		}
 
