@@ -156,7 +156,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			".config", "systemd", "user", $"{new WatchServiceName().GetSystemDName()}.service");
 
 		var installed = _storage.ExistFile(systemPath) || _storage.ExistFile(userPath);
-		var running = false;
+		bool running;
 		try
 		{
 			// systemctl is-active --quiet returns 0 when active
