@@ -16,7 +16,7 @@ import FolderPickerInput from "../../atoms/folder-picker-input/folder-picker-inp
  * @returns status code from API
  */
 export async function ChangeSetting(
-  value: string | Record<string, string>,
+  value: string | Record<string, string | null>,
   name?: string
 ): Promise<number> {
   const bodyParams = new URLSearchParams();
@@ -25,7 +25,9 @@ export async function ChangeSetting(
     bodyParams.set(name ?? "", value);
   } else {
     Object.entries(value).forEach(([k, v]) => {
-      bodyParams.set(k, v);
+      if (v !== null) {
+        bodyParams.set(k, v);
+      }
     });
   }
 
@@ -89,14 +91,12 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
         isEnabled={isEnabled}
         allowEdit={appSettings?.storageFolderAllowEdit === true}
         onChange={async (folderPath, bookmark) => {
-          const resultStatusCode = await ChangeSetting(folderPath, "storageFolder");
+          const resultStatusCode = await ChangeSetting({
+            storageFolder: folderPath,
+            storageFolderToken: bookmark
+          });
           setStorageFolder(folderPath);
           setStorageFolderNotFound(resultStatusCode === 404);
-
-          // bookmark is for native macOS
-          if (bookmark) {
-            await ChangeSetting(bookmark, "storageFolderToken");
-          }
         }}
         data-test="storage-folder-picker"
       />
