@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using starsky.foundation.platform.Enums;
@@ -481,6 +482,26 @@ public static class AppSettingsCompareHelper
 		PropertyInfo propertyInfoFromA,
 		AppSettings sourceIndexItem, object updateObject, List<string> differenceList)
 	{
+		if ( propertyB.PropertyType == typeof(List<Tenant>) )
+		{
+			var oldTenants =
+				( List<Tenant>? ) propertyInfoFromA.GetValue(sourceIndexItem, null);
+			var newTenants =
+				( List<Tenant>? ) propertyB.GetValue(updateObject, null);
+			CompareTenants(propertyB.Name, sourceIndexItem, oldTenants, newTenants,
+				differenceList);
+		}
+
+		if ( propertyB.PropertyType == typeof(List<StorageProvider>) )
+		{
+			var oldStorageProviders =
+				( List<StorageProvider>? ) propertyInfoFromA.GetValue(sourceIndexItem, null);
+			var newStorageProviders =
+				( List<StorageProvider>? ) propertyB.GetValue(updateObject, null);
+			CompareStorageProviders(propertyB.Name, sourceIndexItem, oldStorageProviders,
+				newStorageProviders, differenceList);
+		}
+
 		if ( propertyB.PropertyType == typeof(List<string>) )
 		{
 			var oldListStringValue =
@@ -524,6 +545,62 @@ public static class AppSettingsCompareHelper
 			CompareStringDictionary(propertyB.Name, sourceIndexItem, oldDictionaryValue,
 				newDictionaryValue, differenceList);
 		}
+	}
+
+	private static void CompareTenants(string propertyName,
+		AppSettings sourceIndexItem,
+		List<Tenant>? oldTenants,
+		List<Tenant>? newTenants,
+		List<string> differenceList)
+	{
+		if ( oldTenants == null || newTenants == null || newTenants.Count == 0 )
+		{
+			return;
+		}
+
+		var oldJson = JsonSerializer.Serialize(oldTenants, DefaultJsonSerializer.CamelCase);
+		var newJson = JsonSerializer.Serialize(newTenants, DefaultJsonSerializer.CamelCase);
+		var defaultJson = JsonSerializer.Serialize(new AppSettings().Tenants,
+			DefaultJsonSerializer.CamelCase);
+
+		if ( oldJson == newJson || newJson == defaultJson )
+		{
+			return;
+		}
+
+		sourceIndexItem.GetType().GetProperty(propertyName)
+			?.SetValue(sourceIndexItem, newTenants, null);
+		differenceList.Add(propertyName.ToLowerInvariant());
+	}
+
+	private static void CompareStorageProviders(string propertyName,
+		AppSettings sourceIndexItem,
+		List<StorageProvider>? oldStorageProviders,
+		List<StorageProvider>? newStorageProviders,
+		List<string> differenceList)
+	{
+		if ( oldStorageProviders == null || newStorageProviders == null ||
+		     newStorageProviders.Count == 0 )
+		{
+			return;
+		}
+
+		var oldJson = JsonSerializer.Serialize(oldStorageProviders,
+			DefaultJsonSerializer.CamelCase);
+		var newJson = JsonSerializer.Serialize(newStorageProviders,
+			DefaultJsonSerializer.CamelCase);
+		var defaultJson = JsonSerializer.Serialize(
+			new AppSettings().Tenants.Select(t => t.Storage).ToList(),
+			DefaultJsonSerializer.CamelCase);
+
+		if ( oldJson == newJson || newJson == defaultJson )
+		{
+			return;
+		}
+
+		sourceIndexItem.GetType().GetProperty(propertyName)
+			?.SetValue(sourceIndexItem, newStorageProviders, null);
+		differenceList.Add(propertyName.ToLowerInvariant());
 	}
 
 	private static void CompareStringDictionary(string propertyName,

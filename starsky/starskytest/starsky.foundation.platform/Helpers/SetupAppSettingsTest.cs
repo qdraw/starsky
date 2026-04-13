@@ -172,4 +172,78 @@ public sealed class SetupAppSettingsTest
 
 		Environment.SetEnvironmentVariable("app__appsettingspath", null);
 	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_Tenants_DefaultFile()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test_tenants");
+		if ( _hostStorage.ExistFolder(testDir) )
+		{
+			_hostStorage.FolderDelete(testDir);
+		}
+
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"Tenants\": [ { \"Id\": \"tenant-1\", \"Name\": \"Personal Photos\", \"Storage\": { \"Type\": \"FileSystem\", \"Path\": \"/data/p1\", \"Token\": null } } ]\n  }\n}\n"),
+			Path.Combine(testDir, "appsettings.json"));
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.HasCount(1, result.Tenants);
+		Assert.AreEqual("tenant-1", result.Tenants[0].Id);
+		Assert.AreEqual("Personal Photos", result.Tenants[0].Name);
+		Assert.AreEqual(PathHelper.AddBackslash("/data/p1"), result.Tenants[0].Storage.Path);
+		Assert.AreEqual(result.Tenants[0].Storage.Path, result.StorageFolder);
+	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_Tenants_PatchOverridesBase()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject,
+			"_test_tenants_patch");
+		if ( _hostStorage.ExistFolder(testDir) )
+		{
+			_hostStorage.FolderDelete(testDir);
+		}
+
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"Tenants\": [ { \"Id\": \"tenant-1\", \"Name\": \"Personal Photos\", \"Storage\": { \"Type\": \"FileSystem\", \"Path\": \"/data/base\", \"Token\": null } } ]\n  }\n}\n"),
+			Path.Combine(testDir, "appsettings.json"));
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"Tenants\": [ { \"Id\": \"tenant-2\", \"Name\": \"Work Photos\", \"Storage\": { \"Type\": \"FileSystem\", \"Path\": \"/data/patch\", \"Token\": null } } ]\n  }\n}\n"),
+			Path.Combine(testDir, "appsettings.patch.json"));
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.AreEqual("tenant-2", result.Tenants[0].Id);
+		Assert.AreEqual("Work Photos", result.Tenants[0].Name);
+		Assert.AreEqual(PathHelper.AddBackslash("/data/patch"), result.Tenants[0].Storage.Path);
+		Assert.AreEqual(result.Tenants[0].Storage.Path, result.StorageFolder);
+	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_LegacyStorageProviders_StillWorks()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject,
+			"_test_storageproviders_legacy");
+		if ( _hostStorage.ExistFolder(testDir) )
+		{
+			_hostStorage.FolderDelete(testDir);
+		}
+
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"StorageProviders\": [ { \"Type\": \"FileSystem\", \"Path\": \"/data/legacy\" } ]\n  }\n}\n"),
+			Path.Combine(testDir, "appsettings.json"));
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.AreEqual(PathHelper.AddBackslash("/data/legacy"), result.StorageFolder);
+		Assert.HasCount(1, result.Tenants);
+	}
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Models.PublishProfileRemote;
 using starskytest.FakeCreateAn;
@@ -524,6 +525,103 @@ public sealed class AppSettingsTest
 		var result = appSettings.DatabasePathToFilePath("\\test");
 
 		Assert.IsNotNull(result);
+	}
+
+	[TestMethod]
+	public void Tenants_DefaultsFromStorageFolder_WhenUnset()
+	{
+		var appSettings = new AppSettings();
+		appSettings.StorageFolder = "/data/old-config";
+
+		Assert.HasCount(1, appSettings.Tenants);
+		Assert.AreEqual("FileSystem", appSettings.Tenants[0].Storage.Type);
+		Assert.AreEqual(appSettings.StorageFolder, appSettings.Tenants[0].Storage.Path);
+	}
+
+	[TestMethod]
+	public void StorageFolder_UsesPrimaryTenantStorage_WhenTenantsSet()
+	{
+		var appSettings = new AppSettings
+		{
+			Tenants =
+			[
+				new Tenant
+				{
+					Id = "tenant-1",
+					Name = "Personal Photos",
+					Storage = new StorageProvider { Type = "FileSystem", Path = "/mnt/a" }
+				},
+				new Tenant
+				{
+					Id = "tenant-2",
+					Name = "Work Photos",
+					Storage = new StorageProvider { Type = "FileSystem", Path = "/mnt/b" }
+				}
+			]
+		};
+
+		Assert.AreEqual(appSettings.Tenants[0].Storage.Path, appSettings.StorageFolder);
+	}
+
+	[TestMethod]
+	public void Tenants_NormalizesPath_AndDefaultsType()
+	{
+		var appSettings = new AppSettings
+		{
+			Tenants =
+			[
+				new Tenant
+				{
+					Id = "tenant-1",
+					Name = "Personal",
+					Storage = new StorageProvider { Type = string.Empty, Path = "/mnt/camera" }
+				}
+			]
+		};
+
+		Assert.AreEqual("FileSystem", appSettings.Tenants[0].Storage.Type);
+		Assert.AreEqual(PathHelper.AddBackslash("/mnt/camera"),
+			appSettings.Tenants[0].Storage.Path);
+	}
+
+	[TestMethod]
+	public void StorageFolderSetter_SyncsPrimaryTenantStorage()
+	{
+		var appSettings = new AppSettings
+		{
+			Tenants =
+			[
+				new Tenant
+				{
+					Id = "tenant-1",
+					Name = "Personal",
+					Storage = new StorageProvider
+						{ Type = "FileSystem", Path = "/mnt/original" }
+				}
+			]
+		};
+
+		appSettings.StorageFolder = "/mnt/updated";
+
+		Assert.AreEqual(appSettings.StorageFolder, appSettings.Tenants[0].Storage.Path);
+	}
+
+	[TestMethod]
+	public void StorageProviders_LegacyCompatibility_MapsToTenants()
+	{
+		#pragma warning disable CS0618
+		var appSettings = new AppSettings
+		{
+			StorageProviders =
+			[
+				new StorageProvider { Type = "FileSystem", Path = "/legacy/path" }
+			]
+		};
+		#pragma warning restore CS0618
+
+		Assert.HasCount(1, appSettings.Tenants);
+		Assert.AreEqual(PathHelper.AddBackslash("/legacy/path"),
+			appSettings.Tenants[0].Storage.Path);
 	}
 
 	[TestMethod]
