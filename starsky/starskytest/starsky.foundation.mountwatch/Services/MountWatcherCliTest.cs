@@ -125,6 +125,43 @@ public sealed class MountWatcherCliTest
 	}
 
 	[TestMethod]
+	public async Task StartWatcher_StatusArg_WritesFalseFalse_ReturnsTrue()
+	{
+		var logger = new FakeIWebLogger();
+		var installer = new FakeServiceInstaller(); // default: not installed, not running
+		var sut = CreateSut(logger: logger, installer: installer);
+		var result = await sut.StartWatcher(["--status"]);
+		Assert.IsTrue(result);
+		// Should print both installed and running states
+		Assert.IsTrue(
+			logger.TrackedInformation.Exists(l => l.Item2!.Contains("Service installed:")));
+		Assert.IsTrue(logger.TrackedInformation.Exists(l => l.Item2!.Contains("Service running:")));
+		// Default fake installer: no installed paths and no start calls -> both false
+		Assert.IsTrue(
+			logger.TrackedInformation.Exists(l => l.Item2!.Contains("Service installed: False")));
+		Assert.IsTrue(
+			logger.TrackedInformation.Exists(l => l.Item2!.Contains("Service running: False")));
+	}
+
+	[TestMethod]
+	public async Task StartWatcher_StatusArg_WritesTrueTrue_WhenInstalledAndRunning()
+	{
+		var logger = new FakeIWebLogger();
+		var installer = new FakeServiceInstaller();
+		// simulate installed and running
+		installer.InstalledPaths.Add("/usr/local/bin/starskymountwatchercli");
+		await installer.StartAsync(); // increments StartCount => running
+
+		var sut = CreateSut(logger: logger, installer: installer);
+		var result = await sut.StartWatcher(["--status"]);
+		Assert.IsTrue(result);
+		Assert.IsTrue(
+			logger.TrackedInformation.Exists(l => l.Item2!.Contains("Service installed: True")));
+		Assert.IsTrue(
+			logger.TrackedInformation.Exists(l => l.Item2!.Contains("Service running: True")));
+	}
+
+	[TestMethod]
 	public async Task StartWatcher_InstallReturnsFalse_ReturnsFalse()
 	{
 		var installer = new FakeServiceInstaller { ReturnValue = false };
