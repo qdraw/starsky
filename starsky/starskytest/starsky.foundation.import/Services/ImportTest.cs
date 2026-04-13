@@ -569,7 +569,7 @@ public sealed class ImportTest : VerifyBase
 		var backupFiles = storage.GetAllFilesInDirectory("/backup").ToList();
 		Assert.IsNotEmpty(backupFiles);
 		Assert.HasCount(1, backupFiles);
-		Assert.AreEqual("/backup/20180422_161454_test.jpg", backupFiles[0]);
+		Assert.AreEqual($"/backup{Path.DirectorySeparatorChar}20180422_161454_test.jpg", backupFiles[0]);
 
 		// import should have created a copy in subpath (not only the original /test.jpg)
 		var allFiles = storage.GetAllFilesInDirectoryRecursive("/").ToList();

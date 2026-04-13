@@ -158,7 +158,7 @@ public sealed class ImportBackupTests
 		Assert.IsTrue(result);
 		var files = storage.GetAllFilesInDirectory("/backup").ToList();
 		Assert.HasCount(1, files);
-		Assert.AreEqual("/backup/20180422_161454_test.jpg", files[0]);
+		Assert.AreEqual($"/backup{Path.DirectorySeparatorChar}20180422_161454_test.jpg", files[0]);
 	}
 
 	[TestMethod]
