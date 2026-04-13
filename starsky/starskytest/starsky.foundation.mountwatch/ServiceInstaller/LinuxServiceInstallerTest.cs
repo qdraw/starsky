@@ -428,6 +428,31 @@ public sealed class LinuxServiceInstallerTest
 	}
 
 	[TestMethod]
+	public async Task StatusAsync_ProcessThrows_ReturnsInstalledAndFalseRunning()
+	{
+		var logger = new FakeIWebLogger();
+		// simulate installed at system level
+		var systemServicePath = $"/etc/systemd/system/{GetServiceName()}.service";
+		var storage = new FakeIStorage(outputSubPathFiles: [systemServicePath]);
+
+		var sut = new LinuxServiceInstaller(logger,
+			storage, ThrowingRun,
+			new FakeUnixSecurity(false));
+		var (installed, running) = await sut.StatusAsync();
+
+		Assert.IsTrue(installed,
+			"Storage indicates installed so installed should be true");
+		Assert.IsFalse(running,
+			"When the process runner throws, running must be false (error case)");
+		return;
+
+		static Task<bool> ThrowingRun(string _, string _1)
+		{
+			throw new InvalidOperationException("status-boom");
+		}
+	}
+
+	[TestMethod]
 	public async Task UninstallAsync_FileDeleteThrows_HandledAndLogs()
 	{
 		var logger = new FakeIWebLogger();
