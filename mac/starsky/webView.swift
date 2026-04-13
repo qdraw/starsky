@@ -43,45 +43,58 @@ final class FilePickerController {
         self.picker = picker
     }
 
-    // Helper that formats the JavaScript call for a URL (path + bookmark), or nulls
-    static func jsForURL(_ url: URL?) -> String {
+    // Helper that formats the JavaScript call to resolve a Promise by id
+    static func jsForResult(requestId: String, url: URL?) -> String {
+        let pathJson: String
+        let bookmarkJson: String
+
         if let url = url {
             // Encode path as JSON string literal
-            var pathJson: String = "null"
             if let data = try? JSONEncoder().encode(url.path), let quoted = String(data: data, encoding: .utf8) {
                 pathJson = quoted
             } else {
-                let escaped = url.path.replacingOccurrences(of: "'", with: "\\'")
-                pathJson = "'\(escaped)'"
+                pathJson = "null"
             }
 
             // Try to create a security-scoped bookmark and pass it as a base64 string
-            var bookmarkJson: String = "null"
             if let bookmarkData = try? url.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil) {
                 let base64 = bookmarkData.base64EncodedString()
                 if let data = try? JSONEncoder().encode(base64), let quoted = String(data: data, encoding: .utf8) {
                     bookmarkJson = quoted
+                } else {
+                    bookmarkJson = "null"
                 }
+            } else {
+                bookmarkJson = "null"
             }
-
-            // Use an IIFE that prefers calling the global callback but falls back to dispatching an event
-            // Dispatch the event on both window and window.top to reach listeners in other frames.
-            return "(function(){try{var path=\(pathJson);var bookmark=\(bookmarkJson);if(typeof window.onFolderSelected==='function'){try{window.onFolderSelected(path,bookmark);}catch(e){}}var ev=null;try{ev=new CustomEvent('starskyFolderSelected',{detail:{path:path,bookmark:bookmark}});}catch(e){try{ev=document.createEvent('CustomEvent');ev.initCustomEvent('starskyFolderSelected',true,true,{path:path,bookmark:bookmark});}catch(e){}}try{if(ev){try{window.dispatchEvent(ev);}catch(e){}}}catch(e){}try{if(window.top&&window.top!==window){try{window.top.dispatchEvent(ev);}catch(e){}}}catch(e){} }catch(e){} })();"
         } else {
-            return "(function(){try{if(typeof window.onFolderSelected==='function'){try{window.onFolderSelected(null,null);}catch(e){}}var ev=null;try{ev=new CustomEvent('starskyFolderSelected',{detail:{path:null,bookmark:null}});}catch(e){try{ev=document.createEvent('CustomEvent');ev.initCustomEvent('starskyFolderSelected',true,true,{path:null,bookmark:null});}catch(e){}}try{if(ev){try{window.dispatchEvent(ev);}catch(e){}}}catch(e){}try{if(window.top&&window.top!==window){try{window.top.dispatchEvent(ev);}catch(e){}}}catch(e){} }catch(e){} })();"
+            pathJson = "null"
+            bookmarkJson = "null"
         }
+
+        let idJson: String
+        if let data = try? JSONEncoder().encode(requestId), let quoted = String(data: data, encoding: .utf8) {
+            idJson = quoted
+        } else {
+            idJson = "null"
+        }
+
+        // Simple, deterministic: call _resolveFolderPick(id, path, bookmark) in the bridge
+        return "window.__starskyNative._resolveFolderPick(\(idJson),\(pathJson),\(bookmarkJson));"
     }
 
     // Perform folder pick and notify the web view by evaluating JS
     // Accepts WebViewEvaluating to make unit testing possible
-    func performPick(webView: WebViewEvaluating?) {
+    func performPick(webView: WebViewEvaluating?, requestId: String) {
         picker.pickFolder { url in
             DispatchQueue.main.async {
                 guard let webView = webView else { return }
-                let js = FilePickerController.jsForURL(url)
+                let js = FilePickerController.jsForResult(requestId: requestId, url: url)
                 webView.evaluateJavaScript(js, completionHandler: { _, error in
                     if let error = error {
                         NSLog("[WebView][EvalError] %@", String(describing: error))
+                    } else {
+                        NSLog("[WebView][FolderPickResult] resolved requestId=\(requestId)")
                     }
                 })
             }
@@ -116,50 +129,66 @@ struct WebView: NSViewRepresentable {
         userContentController.add(context.coordinator, name: "console")
         #endif
 
-        // Inject a small native bridge at document start so pages can reliably call
-        // a single function to request native actions. This helps when pages check
-        // `window.webkit.messageHandlers` too early or replace it.
+        // Inject a clean id-based Promise bridge at document start.
+        // Page calls window.__starskyNative.selectFolder(timeoutMs) and gets a Promise.
+        // Native posts { action: 'selectFolder', id }.
+        // Native resolves by calling window.__starskyNative._resolveFolderPick(id, path, bookmark).
         let nativeBridgeJS = """
         (function() {
             try {
-                if (!window.__starskyNative) {
-                    window.__starskyNative = {
-                        // selectFolder(timeoutMs?) => Promise<{path,bookmark}>
-                        selectFolder: function(timeoutMs) {
-                            timeoutMs = typeof timeoutMs === 'number' ? timeoutMs : 30000;
-                            return new Promise(function(resolve) {
-                                var finished = false;
-                                function cleanup() {
-                                    finished = true;
-                                    try { window.removeEventListener('starskyFolderSelected', onEvent); } catch (e) {}
-                                }
-                                function onEvent(e) {
-                                    if (finished) return;
-                                    cleanup();
-                                    try { resolve({ path: e.detail.path, bookmark: e.detail.bookmark }); } catch (err) { resolve({ path: null, bookmark: null }); }
-                                }
-                                window.addEventListener('starskyFolderSelected', onEvent);
+                window.__starskyNative = window.__starskyNative || {};
+                window.__starskyNative._pending = window.__starskyNative._pending || {};
 
-                                try {
-                                    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.filePicker) {
-                                        window.webkit.messageHandlers.filePicker.postMessage({ action: 'selectFolder' });
-                                    } else {
-                                        // No native handler available; resolve immediately with nulls
-                                        cleanup();
-                                        resolve({ path: null, bookmark: null });
-                                    }
-                                } catch (e) {
-                                    cleanup();
-                                    resolve({ path: null, bookmark: null });
-                                }
-
-                                // Timeout fallback
-                                setTimeout(function() { if (finished) return; cleanup(); resolve({ path: null, bookmark: null }); }, timeoutMs);
-                            });
+                // Resolve a pending request by id
+                window.__starskyNative._resolveFolderPick = function(id, path, bookmark) {
+                    try {
+                        var resolver = window.__starskyNative._pending[id];
+                        if (typeof resolver === 'function') {
+                            resolver({ path: path ?? null, bookmark: bookmark ?? null });
+                            delete window.__starskyNative._pending[id];
+                            return true;
                         }
-                    };
-                }
-            } catch (e) { }
+                    } catch (e) {
+                        try { console.warn('[starskyBridge] _resolveFolderPick error', e); } catch (e) {}
+                    }
+                    return false;
+                };
+
+                // Promise-based folder picker
+                window.__starskyNative.selectFolder = function(timeoutMs) {
+                    timeoutMs = typeof timeoutMs === 'number' ? timeoutMs : 30000;
+                    var id = 'fp_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+
+                    return new Promise(function(resolve) {
+                        window.__starskyNative._pending[id] = resolve;
+
+                        try {
+                            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.filePicker) {
+                                window.webkit.messageHandlers.filePicker.postMessage({ action: 'selectFolder', id: id });
+                            } else {
+                                delete window.__starskyNative._pending[id];
+                                resolve({ path: null, bookmark: null });
+                                return;
+                            }
+                        } catch (e) {
+                            delete window.__starskyNative._pending[id];
+                            resolve({ path: null, bookmark: null });
+                            return;
+                        }
+
+                        // Timeout safety
+                        setTimeout(function() {
+                            if (window.__starskyNative._pending[id]) {
+                                var resolver = window.__starskyNative._pending[id];
+                                delete window.__starskyNative._pending[id];
+                                try { resolver({ path: null, bookmark: null }); } catch (e) {}
+                            }
+                        }, timeoutMs);
+                    });
+                };
+            } catch (e) {
+                try { console.error('[starskyBridge] init error', e); } catch (e) {}
+            }
         })();
         """
         let nativeBridgeUserScript = WKUserScript(source: nativeBridgeJS, injectionTime: .atDocumentStart, forMainFrameOnly: false)
@@ -244,7 +273,13 @@ struct WebView: NSViewRepresentable {
                     NSLog("[WebView][ScriptMessage][ping] received")
                     return
                 }
-                filePickerController.performPick(webView: webView)
+                // Read id from the incoming message body
+                if let body = message.body as? [String: Any], let requestId = body["id"] as? String {
+                    NSLog("[WebView][ScriptMessage] filePicker request; requestId=\(requestId)")
+                    filePickerController.performPick(webView: webView, requestId: requestId)
+                } else {
+                    NSLog("[WebView][ScriptMessage] filePicker request but no id found")
+                }
                 return
             }
 
