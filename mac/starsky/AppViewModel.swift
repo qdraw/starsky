@@ -2,7 +2,20 @@ import Foundation
 import Combine
 
 final class AppViewModel: ObservableObject {
+    #if DEBUG
+    /// Session-only override for the base web URL, settable in DEBUG builds.
+    /// This override is temporary and will reset on next launch.
+    @Published var sessionOverrideWebUrl: URL? = nil
+
+    /// Internal backing store for the web URL.
+    @Published private var internalWebUrl: URL? = nil
+    var webUrl: URL? {
+        sessionOverrideWebUrl ?? internalWebUrl
+    }
+    #else
     @Published var webUrl: URL? = nil
+    #endif
+
     @Published var isLoading: Bool = true
 
     private let launcher: BackendLaunching
@@ -29,7 +42,11 @@ final class AppViewModel: ObservableObject {
 
             DispatchQueue.main.async {
                 if ready {
+                    #if DEBUG
+                    self.internalWebUrl = localUrl
+                    #else
                     self.webUrl = localUrl
+                    #endif
                 }
                 // Finished attempting to start; loading should be false regardless of outcome
                 self.isLoading = false

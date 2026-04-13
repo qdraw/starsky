@@ -10,13 +10,25 @@ import FolderPickerInput from "../../atoms/folder-picker-input/folder-picker-inp
 
 /**
  * Update Change Settings
- * @param value - content
- * @param name - key name
- * @returns void
+ * Supports single setting (value + name) or multiple settings (object).
+ * @param value - content string or map of key->value
+ * @param name - key name (used when value is a string)
+ * @returns status code from API
  */
-export async function ChangeSetting(value: string, name?: string): Promise<number> {
+export async function ChangeSetting(
+  value: string | Record<string, string>,
+  name?: string
+): Promise<number> {
   const bodyParams = new URLSearchParams();
-  bodyParams.set(name ?? "", value);
+
+  if (typeof value === "string") {
+    bodyParams.set(name ?? "", value);
+  } else {
+    Object.entries(value).forEach(([k, v]) => {
+      bodyParams.set(k, v);
+    });
+  }
+
   const result = await FetchPost(new UrlQuery().UrlApiAppSettings(), bodyParams.toString());
   return result?.statusCode;
 }
