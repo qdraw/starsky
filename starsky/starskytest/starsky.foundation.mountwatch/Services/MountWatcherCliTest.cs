@@ -59,7 +59,6 @@ public sealed class MountWatcherCliTest
 		Assert.IsTrue(result);
 	}
 
-
 	[TestMethod]
 	public async Task StartWatcher_HelpArg_ShowsHelp_ReturnsTrue()
 	{
@@ -210,6 +209,12 @@ public sealed class MountWatcherCliTest
 	public void NeedUninstall_WithUninstallArg_ReturnsTrue()
 	{
 		Assert.IsTrue(MountWatcherCli.NeedUninstall(["--uninstall"]));
+	}
+
+	[TestMethod]
+	public void NeedStatus_WithUninstallArg_ReturnsTrue()
+	{
+		Assert.IsTrue(MountWatcherCli.NeedStatus(["--status"]));
 	}
 
 	[TestMethod]
