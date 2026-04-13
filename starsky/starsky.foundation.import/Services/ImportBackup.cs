@@ -20,7 +20,8 @@ public class ImportBackup(ISelectorStorage selectorStorage, IWebLogger logger)
 		ImportIndexItem importIndexItem,
 		AppSettingsImportBackupModel importBackup)
 	{
-		if ( !importBackup.Enabled )
+		if ( !importBackup.Enabled || 
+		     !_filesystemStorage.ExistFolder(importBackup.StorageFolder ?? ""))
 		{
 			return null;
 		}

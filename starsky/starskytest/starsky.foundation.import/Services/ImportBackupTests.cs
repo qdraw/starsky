@@ -45,6 +45,38 @@ public sealed class ImportBackupTests
 		var result = await sut.CopyStreamFromHostToBackup(importIndexItem, importBackup);
 		Assert.IsNull(result);
 	}
+	
+	[TestMethod]
+	public async Task CopyStreamFromHostToBackup_ReturnsNull_WhenDisabled_DueNotFoundOutputDir()
+	{
+		var storage = new FakeIStorage(["/"],  // backup is not here
+			["/test.jpg"],
+			new List<byte[]> { new byte[] { 1, 2, 3 } });
+		var selector = new FakeSelectorStorage(storage);
+		var logger = new FakeIWebLogger();
+
+		var sut = new ImportBackup(selector, logger);
+
+		var importIndexItem = new ImportIndexItem
+		{
+			SourceFullFilePath = "/test.jpg",
+			FileIndexItem = new FileIndexItem
+			{
+				FileName = "test.jpg",
+				DateTime = new DateTime(2020, 1, 2,
+					3, 4, 5, DateTimeKind.Local),
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			}
+		};
+
+		var importBackup = new AppSettingsImportBackupModel
+		{
+			Enabled = true, StorageFolder = "/backup"
+		};
+
+		var result = await sut.CopyStreamFromHostToBackup(importIndexItem, importBackup);
+		Assert.IsNull(result);
+	}
 
 	[TestMethod]
 	public async Task CopyStreamFromHostToBackup_WritesBackupAndReturnsTrue_WhenSizesMatch()
@@ -130,7 +162,7 @@ public sealed class ImportBackupTests
 	public async Task CopyStreamFromHostToBackup_ReturnsFalse_WhenWriteFails()
 	{
 		var sourceBytes = "\t\t\t"u8.ToArray();
-		var storageForSelector = new FakeIStorage(["/"], ["/test.jpg"],
+		var storageForSelector = new FakeIStorage(["/", "/backup"], ["/test.jpg"],
 			new List<byte[]> { sourceBytes }, null,
 			null, new AggregateException(new IOException("Simulated write failure")));
 		var selector = new FakeSelectorStorage(storageForSelector);

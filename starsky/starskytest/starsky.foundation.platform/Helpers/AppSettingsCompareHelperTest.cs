@@ -238,6 +238,39 @@ public sealed class AppSettingsCompareHelperTest
 	}
 
 	[TestMethod]
+	public void AppSettingsMountWatcher()
+	{
+		var source = new AppSettings
+		{
+			ImportMountWatcher = new AppSettingsMountWatcherModel { DeleteAfter = false }
+		};
+
+		var to = new AppSettings
+		{
+			ImportMountWatcher = new AppSettingsMountWatcherModel { DeleteAfter = true }
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.ImportMountWatcher.DeleteAfter);
+	}
+
+	[TestMethod]
+	public void ImportMountWatcherModel_Ignore_DefaultOption()
+	{
+		var source = new AppSettings
+		{
+			ImportMountWatcher = new AppSettingsMountWatcherModel { DeleteAfter = true }
+		};
+
+		var to = new AppSettings { ImportMountWatcher = new AppSettingsMountWatcherModel() };
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.ImportMountWatcher.DeleteAfter);
+	}
+
+	[TestMethod]
 	public void StringCompare()
 	{
 		var source = new AppSettings

@@ -285,6 +285,8 @@ public sealed class AppSettings
 
 	[PackageTelemetry] public AppSettingsImportBackupModel ImportBackup { get; set; } = new();
 
+	[PackageTelemetry] public AppSettingsMountWatcherModel ImportMountWatcher { get; set; } = new();
+
 	/// <summary>
 	///     Used for syncing gpx files
 	/// </summary>

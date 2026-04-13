@@ -272,7 +272,9 @@ public class MountWatcherCli
 
 			var importSettings = new ImportSettingsModel
 			{
-				RecursiveDirectory = true, IndexMode = true, DeleteAfter = false
+				RecursiveDirectory = true,
+				IndexMode = true, 
+				DeleteAfter = _appSettings.ImportMountWatcher.DeleteAfter
 			};
 
 			var result = await _importService.Importer(
