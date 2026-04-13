@@ -47,6 +47,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.15 - 2026-04-? {#v0.7.15}
 
+- [x] (Added) _Back-end_ Check installation running status mount watcher --status flag (PR #2973)
 - [x] (Added) _Back-end_ Import Backup timestamped copy of imported to a specified folder (PR #2965)
 - [x] (Added) _Back-end_ Delete After setting Import specific for MountCLI (PR #2965)
 - [x] (Fixed) _Back-end_ Native FileSystem interop on Intel macOS vs Apple Silicon (PR #2960)
