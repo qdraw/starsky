@@ -218,6 +218,9 @@ Patching appsettings with `appsettings.patch.json` can also be used in this feat
 
 When enabled, imported files are copied to the configured storage folder using the fixed filename structure above. Use this to keep an immutable backup of original camera imports.
 
+## Mount watcher
+See [Mount Watcher CLI to Auto Import](mountwatchercli.md)
+
 ## Related
 
 - [Mount Watcher CLI to Auto Import](mountwatchercli.md)
