@@ -15692,6 +15692,54 @@
               "referenceV2": "#/definitions/AppSettingsImportTransformationModel"
             }
           },
+          "importBackup": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "AppSettingsImportBackupModel",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/AppSettingsImportBackupModel",
+              "referenceV2": "#/definitions/AppSettingsImportBackupModel"
+            }
+          },
+          "importMountWatcher": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "AppSettingsMountWatcherModel",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/AppSettingsMountWatcherModel",
+              "referenceV2": "#/definitions/AppSettingsMountWatcherModel"
+            }
+          },
           "cameraTimeZone": {
             "type": "string",
             "readOnly": false,
@@ -16923,6 +16971,55 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "AppSettingsImportBackupModel": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "storageFolder": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "AppSettingsImportTransformationModel": {
         "type": "object",
         "readOnly": false,
@@ -17017,6 +17114,39 @@
             "additionalPropertiesAllowed": true,
             "enum": [],
             "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "AppSettingsMountWatcherModel": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "deleteAfter": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
             "deprecated": false,
             "extensions": {},
             "unresolvedReference": false
@@ -22910,5 +23040,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "82E98FD773FD7BC0BA8C3037EE111ABA725782B299219A9C6A7EF732BB51962DBCF0E35C1CD024B0FC7F555AF4EFF392F725F7D724F3A48D1DB0A20C2D467A76"
+  "hashCode": "BD0A5BA367D0CE3A5330BA70112A273B7E2DEA78210487E21847402BE4B06B1962D1F61DF2504A9D186E723E9801B559955FA372207EB980908A36725784BA5F"
 }
