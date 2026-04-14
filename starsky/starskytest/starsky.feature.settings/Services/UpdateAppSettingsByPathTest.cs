@@ -30,7 +30,7 @@ public class UpdateAppSettingsByPathTests
 		var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var updateAppSettingsByPath =
-			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage, new FakeIWebLogger());
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			StorageFolder = testFolderPath, Verbose = true
@@ -61,7 +61,8 @@ public class UpdateAppSettingsByPathTests
 		var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings();
-		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, selectorStorage, new FakeIWebLogger());
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			StorageFolder = testFolderPath, Verbose = true
@@ -98,7 +99,7 @@ public class UpdateAppSettingsByPathTests
 		// Arrange
 		var selectorStorage = new FakeSelectorStorage();
 		var updateAppSettingsByPath =
-			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage, new FakeIWebLogger());
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			StorageFolder = "NonExistentFolder"
@@ -126,7 +127,7 @@ public class UpdateAppSettingsByPathTests
 		var selectorStorage =
 			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
 		var updateAppSettingsByPath =
-			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage, new FakeIWebLogger());
 		var appSettingTransferObject = new AppSettingsTransferObject { StorageFolder = "/" };
 
 		// Act
@@ -156,7 +157,8 @@ public class UpdateAppSettingsByPathTests
 		var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
 		var appSettings = new AppSettings();
 		var selectorStorage = new FakeSelectorStorage(storage);
-		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, selectorStorage, new FakeIWebLogger());
 		var appSettingTransferObject1 = new AppSettingsTransferObject { Verbose = true };
 
 		// Act
@@ -201,7 +203,7 @@ public class UpdateAppSettingsByPathTests
 		var storage = new FakeIStorage();
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var updateAppSettingsByPath =
-			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage, new FakeIWebLogger());
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw,

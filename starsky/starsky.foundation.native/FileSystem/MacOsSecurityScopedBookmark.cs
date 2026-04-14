@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using starsky.foundation.native.FileSystem.Interfaces;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.native.FileSystem;
 
@@ -15,11 +16,14 @@ namespace starsky.foundation.native.FileSystem;
 /// </summary>
 public sealed class MacOsSecurityScopedBookmark
 {
+	private readonly IWebLogger _logger;
 	private readonly IMacOsSecurityScopedBookmarkNative _native;
 
 	/// <summary>Production constructor: uses the real macOS P/Invoke layer.</summary>
-	public MacOsSecurityScopedBookmark() : this(new MacOsSecurityScopedBookmarkNative())
+	public MacOsSecurityScopedBookmark(IWebLogger logger) : this(
+		new MacOsSecurityScopedBookmarkNative())
 	{
+		_logger = logger;
 	}
 
 	/// <summary>Test constructor: inject a fake or mock native layer.</summary>
@@ -48,6 +52,7 @@ public sealed class MacOsSecurityScopedBookmark
 
 			if ( nsData == IntPtr.Zero )
 			{
+				_logger.LogError("NsData could not be parsed");
 				return false;
 			}
 
@@ -59,13 +64,15 @@ public sealed class MacOsSecurityScopedBookmark
 
 			if ( nsUrl == IntPtr.Zero )
 			{
+				_logger.LogError("nsUrl could not be parsed");
 				return false;
 			}
 
 			// Start accessing security-scoped resource
 			if ( !_native.StartAccessingSecurityScopedResource(nsUrl) )
 			{
-				
+				_logger.LogError("StartAccessingSecurityScopedResource failed");
+
 				// Release NSURL — access was not granted
 				_native.CfRelease(nsUrl);
 				return false;

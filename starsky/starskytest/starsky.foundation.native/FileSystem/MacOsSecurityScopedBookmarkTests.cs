@@ -23,7 +23,7 @@ public class MacOsSecurityScopedBookmarkTests
 		var tempFile = Path.GetTempFileName();
 		try
 		{
-			var sut = new MacOsSecurityScopedBookmark();
+			var sut = new MacOsSecurityScopedBookmark(new FakeIWebLogger());
 			var result = sut.TryCreateBookmark(tempFile, out var bookmarkBase64);
 
 			Assert.IsTrue(result, "Bookmark creation should succeed");
@@ -42,7 +42,7 @@ public class MacOsSecurityScopedBookmarkTests
 	[OSCondition(OperatingSystems.OSX)]
 	public void TryCreateBookmark_NonExistentPath_ReturnsFalse()
 	{
-		var sut = new MacOsSecurityScopedBookmark();
+		var sut = new MacOsSecurityScopedBookmark(new FakeIWebLogger());
 		var result =
 			sut.TryCreateBookmark("/this/path/does/not/exist/file.txt", out var bookmarkBase64);
 
@@ -54,7 +54,7 @@ public class MacOsSecurityScopedBookmarkTests
 	[OSCondition(OperatingSystems.OSX)]
 	public void TryCreateBookmark_EmptyPath_ReturnsFalse()
 	{
-		var sut = new MacOsSecurityScopedBookmark();
+		var sut = new MacOsSecurityScopedBookmark(new FakeIWebLogger());
 		var result = sut.TryCreateBookmark("", out var bookmarkBase64);
 
 		Assert.IsFalse(result);
@@ -68,7 +68,7 @@ public class MacOsSecurityScopedBookmarkTests
 		var tempFile = Path.GetTempFileName();
 		try
 		{
-			var sut = new MacOsSecurityScopedBookmark();
+			var sut = new MacOsSecurityScopedBookmark(new FakeIWebLogger());
 			var createResult = sut.TryCreateBookmark(tempFile, out var bookmarkBase64);
 			Assert.IsTrue(createResult, "Setup: bookmark creation should succeed");
 
@@ -91,7 +91,7 @@ public class MacOsSecurityScopedBookmarkTests
 	[OSCondition(OperatingSystems.OSX)]
 	public void TryResolveAndStartAccess_InvalidBase64_ReturnsFalse()
 	{
-		var sut = new MacOsSecurityScopedBookmark();
+		var sut = new MacOsSecurityScopedBookmark(new FakeIWebLogger());
 		var result =
 			sut.TryResolveAndStartAccess("this is not valid base64!!!", out var resolvedPath);
 
@@ -103,7 +103,7 @@ public class MacOsSecurityScopedBookmarkTests
 	[OSCondition(OperatingSystems.OSX)]
 	public void TryResolveAndStartAccess_EmptyBookmarkData_ReturnsFalse()
 	{
-		var sut = new MacOsSecurityScopedBookmark();
+		var sut = new MacOsSecurityScopedBookmark(new FakeIWebLogger());
 		var result = sut.TryResolveAndStartAccess(
 			Convert.ToBase64String(Array.Empty<byte>()),
 			out var resolvedPath);
@@ -116,7 +116,7 @@ public class MacOsSecurityScopedBookmarkTests
 	[OSCondition(OperatingSystems.OSX)]
 	public void TryResolveAndStartAccess_CorruptedBookmarkData_ReturnsFalse()
 	{
-		var sut = new MacOsSecurityScopedBookmark();
+		var sut = new MacOsSecurityScopedBookmark(new FakeIWebLogger());
 		var corruptedBase64 = Convert.ToBase64String(new byte[] { 0xFF, 0xFE, 0xFD, 0xFC });
 		var result = sut.TryResolveAndStartAccess(corruptedBase64, out var resolvedPath);
 
@@ -128,7 +128,7 @@ public class MacOsSecurityScopedBookmarkTests
 	[OSCondition(OperatingSystems.OSX)]
 	public void StopAccess_InvalidPath_DoesNotThrow()
 	{
-		var sut = new MacOsSecurityScopedBookmark();
+		var sut = new MacOsSecurityScopedBookmark(new FakeIWebLogger());
 		sut.StopAccess("/this/does/not/exist");
 
 		Assert.IsNotNull(sut, "StopAccess completed without exception");
@@ -399,10 +399,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void TryStartAccessFromToken_WhenNativeResolutionFails_ReturnsFalse()
 	{
 		var rawBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
-		var fake = new FakeMacOsSecurityScopedBookmarkNative
-		{
-			ResolvedUrlToReturn = IntPtr.Zero
-		};
+		var fake = new FakeMacOsSecurityScopedBookmarkNative { ResolvedUrlToReturn = IntPtr.Zero };
 		var sut = new MacOsSecurityScopedBookmark(fake);
 
 		var result = sut.TryStartAccessFromToken("/some/path", rawBase64);
@@ -468,6 +465,9 @@ public class MacOsSecurityScopedBookmarkTests
 		Assert.AreEqual("\"", MacOsSecurityScopedBookmark.UnwrapJsonToken("\""));
 		Assert.AreEqual("ab", MacOsSecurityScopedBookmark.UnwrapJsonToken("ab"));
 	}
+
+	/// <summary>Stub that throws on CreateFileUrl — used to verify StopAccess swallows exceptions.</summary>
+	private sealed class ThrowingNative : FakeMacOsSecurityScopedBookmarkNative
 	{
 		public override IntPtr CreateFileUrl(string path)
 		{
