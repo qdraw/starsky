@@ -6,6 +6,7 @@ func electronCacheLocation() -> String {
     // macOS default app data location used by the Electron app
     let home = NSHomeDirectory()
     return "\(home)/Library/Application Support/starsky"
+    // "$HOME/Library/Containers/nl.qdraw.starsky/Data/Library/Application Support/starsky"
 }
 
 func createTempThumbnailFolders() -> (thumbnailTempFolder: String, tempFolder: String) {
