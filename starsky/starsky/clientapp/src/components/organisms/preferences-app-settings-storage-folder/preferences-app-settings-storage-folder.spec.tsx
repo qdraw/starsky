@@ -1,14 +1,25 @@
 import { createEvent, fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
+import * as useFolderPicker from "../../../hooks/use-folder-picker";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
+import * as FetchPostModule from "../../../shared/fetch/fetch-post";
+import * as UrlQueryModule from "../../../shared/url/url-query";
 import { UrlQuery } from "../../../shared/url/url-query";
 import PreferencesAppSettingsStorageFolder, {
   ChangeSetting
 } from "./preferences-app-settings-storage-folder";
 
 describe("PreferencesAppSettings", () => {
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    jest.spyOn(useFolderPicker, "useFolderPicker").mockReturnValue({
+      isNativeApp: () => false,
+      requestFolderSelection: jest.fn()
+    });
+  });
+
   it("renders", () => {
     render(<PreferencesAppSettingsStorageFolder />);
   });
@@ -37,11 +48,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettingsStorageFolder />);
 
-      const formControls = screen.queryAllByTestId("form-control");
-
-      const storageFolder = formControls.find(
-        (p) => p.getAttribute("data-name") === "storageFolder"
-      ) as HTMLElement;
+      const storageFolder = screen.getByTestId("storage-folder-picker") as HTMLElement;
       expect(storageFolder).not.toBeNull();
 
       expect(storageFolder.textContent).toBe("test");
@@ -83,10 +90,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettingsStorageFolder />);
 
-      const formControls = screen
-        .queryAllByTestId("form-control")
-        .find((p) => p.getAttribute("data-name") === "storageFolder");
-      const storageFolder = formControls as HTMLInputElement[][0];
+      const storageFolder = screen.getByTestId("storage-folder-picker") as HTMLElement;
 
       storageFolder.innerText = "12345";
       const blurEventYear = createEvent.focusOut(storageFolder, {
@@ -140,10 +144,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettingsStorageFolder />);
 
-      const formControls = screen
-        .queryAllByTestId("form-control")
-        .find((p) => p.getAttribute("data-name") === "storageFolder");
-      const storageFolder = formControls as HTMLInputElement[][0];
+      const storageFolder = screen.getByTestId("storage-folder-picker") as HTMLElement;
 
       storageFolder.innerText = "12345";
       const blurEventYear = createEvent.focusOut(storageFolder, {
@@ -173,15 +174,77 @@ describe("PreferencesAppSettings", () => {
     it("should set value with provided name when name is provided", async () => {
       const value = "test value";
       const name = "test name";
-      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
-        return Promise.resolve({
-          statusCode: 200,
-          data: null
-        });
-      });
+      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockResolvedValue({
+        statusCode: 200,
+        data: null
+      } as IConnectionDefault);
       const statusCode = await ChangeSetting(value, name);
       expect(statusCode).toBe(200);
       expect(fetchPostSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe("ChangeSetting", () => {
+    let fetchPostSpy: jest.SpyInstance;
+    let urlQuerySpy: jest.SpyInstance;
+
+    beforeAll(() => {
+      urlQuerySpy = jest
+        .spyOn(UrlQueryModule, "UrlQuery")
+        .mockReset()
+        .mockImplementation(
+          () => ({ UrlApiAppSettings: () => "/starsky/api/env/" }) as unknown as UrlQuery
+        );
+    });
+
+    afterAll(() => {
+      urlQuerySpy.mockRestore();
+    });
+
+    beforeEach(() => {
+      fetchPostSpy = jest.spyOn(FetchPostModule, "default");
+      fetchPostSpy.mockClear();
+    });
+
+    afterEach(() => {
+      fetchPostSpy.mockRestore();
+    });
+
+    it("sends a single string value with provided name and returns status code", async () => {
+      fetchPostSpy.mockResolvedValue({ statusCode: 200 });
+
+      const status = await ChangeSetting("val", "name");
+
+      expect(status).toBe(200);
+      expect(fetchPostSpy).toHaveBeenCalledWith("/starsky/api/env/", "name=val");
+    });
+
+    it("sends a single string value with empty name when name omitted", async () => {
+      fetchPostSpy.mockResolvedValue({ statusCode: 202 });
+
+      const status = await ChangeSetting("val");
+
+      expect(status).toBe(202);
+      expect(fetchPostSpy).toHaveBeenCalledWith("/starsky/api/env/", "=val");
+    });
+
+    it("sends object values and skips null entries", async () => {
+      fetchPostSpy.mockResolvedValue({ statusCode: 201 });
+
+      const payload = { a: "1", b: null, c: "3" } as Record<string, string | null>;
+      const status = await ChangeSetting(payload);
+
+      expect(status).toBe(201);
+      expect(fetchPostSpy).toHaveBeenCalledWith("/starsky/api/env/", "a=1&c=3");
+    });
+
+    it("returns undefined when FetchPost returns undefined", async () => {
+      fetchPostSpy.mockResolvedValue(undefined);
+
+      const status = await ChangeSetting({ foo: "bar" });
+
+      expect(status).toBeUndefined();
+      expect(fetchPostSpy).toHaveBeenCalledWith("/starsky/api/env/", "foo=bar");
     });
   });
 });
