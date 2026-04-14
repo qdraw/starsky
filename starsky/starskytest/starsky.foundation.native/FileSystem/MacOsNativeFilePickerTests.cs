@@ -111,5 +111,20 @@ public class MacOsNativeFilePickerTests
 
 		Assert.IsTrue(fake.LastIncludeFilesValue);
 	}
+
+	[TestMethod]
+	public void TryPickFolder_WhenModalReturnsFalse_ReturnsFailureWithError()
+	{
+		var fake = new FakeMacOsNativeFilePickerNative { RunModalResult = false };
+		var logger = new FakeIWebLogger();
+		var sut = new MacOsNativeFilePicker(fake, logger);
+
+		var result = sut.TryPickFolder();
+
+		Assert.IsFalse(result.Success);
+		Assert.IsNotNull(result.Error);
+		Assert.IsTrue(result.Error.Contains("main thread", StringComparison.OrdinalIgnoreCase) || 
+		              result.Error.Contains("cancel", StringComparison.OrdinalIgnoreCase));
+	}
 }
 

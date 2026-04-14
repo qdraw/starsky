@@ -42,6 +42,26 @@ public class MacOsNativeFilePickerControllerTest
 		Assert.IsTrue(picker.LastIncludeFiles);
 	}
 
+	[TestMethod]
+	public void PickFolder_WhenResultNotSuccess_StillReturns200()
+	{
+		var failResult = new MacOsFolderPickResult
+		{
+			Success = false,
+			Error = "No interactive session"
+		};
+		var picker = new FakeMacOsNativeFilePicker(failResult);
+		var sut = new MacOsNativeFilePickerController(picker);
+
+		var action = sut.PickFolder();
+		var ok = action.Result as OkObjectResult;
+		var result = ok?.Value as MacOsFolderPickResult;
+
+		Assert.AreEqual(200, ok?.StatusCode);
+		Assert.IsFalse(result?.Success);
+		Assert.AreEqual("No interactive session", result?.Error);
+	}
+
 	private sealed class FakeMacOsNativeFilePicker : IMacOsNativeFilePicker
 	{
 		private readonly MacOsFolderPickResult _result;

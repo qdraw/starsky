@@ -15,13 +15,35 @@ internal sealed class MacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 	private const string FoundationFramework =
 		"/System/Library/Frameworks/Foundation.framework/Foundation";
 	private const string ObjcFramework = "/usr/lib/libobjc.A.dylib";
+	private const string AppKitFramework =
+		"/System/Library/Frameworks/AppKit.framework/AppKit";
+
+	private static bool _appKitLoaded;
 
 	private const nint NsModalResponseOk = 1;
 	private const nuint NsUrlBookmarkCreationWithSecurityScope = 1u << 10;
 
 	public IntPtr CreateOpenPanel()
 	{
+		if ( !_appKitLoaded )
+		{
+			try
+			{
+				_ = NativeLibrary.Load(AppKitFramework);
+				_appKitLoaded = true;
+			}
+			catch
+			{
+				return IntPtr.Zero;
+			}
+		}
+
 		var panelClass = objc_getClass("NSOpenPanel");
+		if ( panelClass == IntPtr.Zero )
+		{
+			return IntPtr.Zero;
+		}
+
 		return objc_msgSend_retIntPtr(panelClass, GetSelectorInternal("openPanel"));
 	}
 
@@ -34,6 +56,11 @@ internal sealed class MacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 
 	public bool RunModal(IntPtr panel)
 	{
+		if ( pthread_main_np() == 0 )
+		{
+			return false;
+		}
+
 		var result = objc_msgSend_retNInt(panel, GetSelectorInternal("runModal"));
 		return result == NsModalResponseOk;
 	}
@@ -119,5 +146,8 @@ internal sealed class MacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 	private static extern IntPtr objc_msgSend_retIntPtr_NUInt_IntPtr_IntPtr_IntPtr(IntPtr target,
 		IntPtr selector,
 		nuint param1, IntPtr param2, IntPtr param3, IntPtr param4);
+
+	[DllImport("/usr/lib/libSystem.dylib")]
+	private static extern int pthread_main_np();
 }
 

@@ -32,7 +32,14 @@ public sealed class MacOsNativeFilePicker : IMacOsNativeFilePicker
 
 		if ( !OperatingSystem.IsMacOS() )
 		{
-			result.Error = "macOS only";
+			result.Error = "Not macOS";
+			return result;
+		}
+
+		if ( !Environment.UserInteractive )
+		{
+			result.Error = "No interactive session (running as service/headless)";
+			_logger.LogError($"[MacOsNativeFilePicker] {result.Error}");
 			return result;
 		}
 
@@ -41,7 +48,7 @@ public sealed class MacOsNativeFilePicker : IMacOsNativeFilePicker
 			var panel = _native.CreateOpenPanel();
 			if ( panel == IntPtr.Zero )
 			{
-				result.Error = "Could not create NSOpenPanel";
+				result.Error = "AppKit unavailable (NSOpenPanel not found; framework may not be loaded)";
 				_logger.LogError($"[MacOsNativeFilePicker] {result.Error}");
 				return result;
 			}
@@ -50,7 +57,8 @@ public sealed class MacOsNativeFilePicker : IMacOsNativeFilePicker
 
 			if ( !_native.RunModal(panel) )
 			{
-				result.Error = "cancelled";
+				result.Error = "User cancelled or not on main thread";
+				_logger.LogError($"[MacOsNativeFilePicker] {result.Error}");
 				return result;
 			}
 
