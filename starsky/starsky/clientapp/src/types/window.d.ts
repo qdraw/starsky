@@ -2,6 +2,22 @@
 export {};
 
 declare global {
+  interface GlobalStarskyBridge {
+    // selectFolder(timeoutMs?) => Promise<{ path, bookmark }>
+    selectFolder?: (
+      timeoutMs?: number
+    ) => Promise<{ path: string | null; bookmark: string | null }>;
+    filePicker?: (payload: unknown) => boolean;
+    consolePost?: (obj: unknown) => boolean;
+    [key: string]: unknown;
+  }
+
+  interface GlobalThis {
+    __starskyNative?: GlobalStarskyBridge;
+  }
+  // also expose as a top-level global variable so `globalThis.__starskyNative` is typed
+  var __starskyNative: GlobalStarskyBridge | undefined;
+
   interface StarskyFolderSelectedDetail {
     path: string | null;
     bookmark: string | null;
@@ -9,15 +25,7 @@ declare global {
 
   interface Window {
     // Promise-based injected bridge (added by the mac app at document-start)
-    __starskyNative?: {
-      // selectFolder(timeoutMs?) => Promise<{ path, bookmark }>
-      selectFolder?: (
-        timeoutMs?: number
-      ) => Promise<{ path: string | null; bookmark: string | null }>;
-      // low-level forwarders (optional)
-      filePicker?: (payload: unknown) => boolean;
-      consolePost?: (obj: unknown) => boolean;
-    } & Record<string, unknown>;
+    __starskyNative?: GlobalStarskyBridge;
 
     // test helper: optional dom node used by some tests to attach elements
     domNode?: HTMLDivElement | null;

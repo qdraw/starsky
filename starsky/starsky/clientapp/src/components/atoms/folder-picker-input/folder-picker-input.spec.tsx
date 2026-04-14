@@ -6,13 +6,18 @@ describe("FolderPickerInput", () => {
   beforeEach(() => jest.restoreAllMocks());
 
   it("renders fallback FormControl and handles blur updates", async () => {
-    jest.spyOn(useFolderPicker, "useFolderPicker").mockReturnValue({
+    const fallbackMock = {
       isNativeApp: () => false,
-      requestFolderSelection: jest.fn()
-    } as unknown as {
-      isNativeApp: () => boolean;
-      requestFolderSelection: (cb: (p: string | null, b: string | null) => void) => void;
-    });
+      requestFolderSelection: (arg?: number | ((p: string | null, b: string | null) => void)) => {
+        if (typeof arg === "function") {
+          arg(null, null);
+          return;
+        }
+        return Promise.resolve({ path: null, bookmark: null });
+      }
+    } as unknown as ReturnType<typeof useFolderPicker.useFolderPicker>;
+
+    jest.spyOn(useFolderPicker, "useFolderPicker").mockReturnValue(fallbackMock);
 
     const onChange = jest.fn();
     const onBlur = jest.fn();
@@ -41,16 +46,18 @@ describe("FolderPickerInput", () => {
   });
 
   it("uses native picker when available and triggers onChange", () => {
-    const requestMock = jest.fn((cb: (p: string | null, b: string | null) => void) =>
-      cb("/native/path", null)
-    );
+    const requestMock = (arg?: number | ((p: string | null, b: string | null) => void)) => {
+      if (typeof arg === "function") {
+        arg("/native/path", null);
+        return;
+      }
+      return Promise.resolve({ path: "/native/path", bookmark: null });
+    };
+
     jest.spyOn(useFolderPicker, "useFolderPicker").mockReturnValue({
       isNativeApp: () => true,
       requestFolderSelection: requestMock
-    } as unknown as {
-      isNativeApp: () => boolean;
-      requestFolderSelection: (cb: (p: string | null, b: string | null) => void) => void;
-    });
+    } as unknown as ReturnType<typeof useFolderPicker.useFolderPicker>);
 
     const onChange = jest.fn();
 
@@ -77,13 +84,18 @@ describe("FolderPickerInput", () => {
   });
 
   it("renders disabled state when not enabled or not allowed to edit", () => {
-    jest.spyOn(useFolderPicker, "useFolderPicker").mockReturnValue({
+    const disabledMock = {
       isNativeApp: () => false,
-      requestFolderSelection: jest.fn()
-    } as unknown as {
-      isNativeApp: () => boolean;
-      requestFolderSelection: (cb: (p: string | null, b: string | null) => void) => void;
-    });
+      requestFolderSelection: (arg?: number | ((p: string | null, b: string | null) => void)) => {
+        if (typeof arg === "function") {
+          arg(null, null);
+          return;
+        }
+        return Promise.resolve({ path: null, bookmark: null });
+      }
+    } as unknown as ReturnType<typeof useFolderPicker.useFolderPicker>;
+
+    jest.spyOn(useFolderPicker, "useFolderPicker").mockReturnValue(disabledMock);
 
     const onChange = jest.fn();
 

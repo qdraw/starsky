@@ -1,13 +1,9 @@
 import SwiftUI
 import WebKit
+import AppKit
 
-// Protocol used to abstract evaluateJavaScript for testing
-protocol WebViewEvaluating: AnyObject {
-    func evaluateJavaScript(_ javaScriptString: String, completionHandler: ((Any?, Error?) -> Void)?)
-}
-
-// Make WKWebView conform to WebViewEvaluating so production code can pass it directly
-extension WKWebView: WebViewEvaluating {}
+// Cookie persistence is now implemented in `CookiePersistence.swift`.
+// See that file for save/restore/clear helpers used by the WebView.
 
 // Protocol to abstract folder picking so we can unit test without NSOpenPanel
 protocol FilePicking {
@@ -85,7 +81,7 @@ final class FilePickerController {
 
     // Perform folder pick and notify the web view by evaluating JS
     // Accepts WebViewEvaluating to make unit testing possible
-    func performPick(webView: WebViewEvaluating?, requestId: String) {
+    func performPick(webView: WKWebView?, requestId: String) {
         picker.pickFolder { url in
             DispatchQueue.main.async {
                 guard let webView = webView else { return }
@@ -221,6 +217,9 @@ struct WebView: NSViewRepresentable {
         configuration.preferences = preferences
         configuration.userContentController = userContentController
 
+        // Use persistent website data store (default) so cookies are stored in WKWebsiteDataStore
+        configuration.websiteDataStore = WKWebsiteDataStore.default()
+
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.allowsBackForwardNavigationGestures = true
 
@@ -229,11 +228,22 @@ struct WebView: NSViewRepresentable {
         // Set navigation delegate so coordinator can run sanity JS checks on load
         webView.navigationDelegate = context.coordinator
 
+        // Observe app terminate / resign active to persist cookies
+        NotificationCenter.default.addObserver(forName: NSApplication.willTerminateNotification, object: nil, queue: .main) { _ in
+            CookiePersistence.persistCookies(from: webView.configuration.websiteDataStore.httpCookieStore, completion: nil)
+        }
+        NotificationCenter.default.addObserver(forName: NSApplication.willResignActiveNotification, object: nil, queue: .main) { _ in
+            CookiePersistence.persistCookies(from: webView.configuration.websiteDataStore.httpCookieStore, completion: nil)
+        }
+
         return webView
     }
 
     func updateNSView(_ nsView: WKWebView, context: Context) {
-        nsView.load(URLRequest(url: url))
+        // Restore persisted cookies first, then load URL to ensure cookies are present for requests
+        CookiePersistence.restoreCookies(into: nsView.configuration.websiteDataStore.httpCookieStore) {
+            nsView.load(URLRequest(url: url))
+        }
     }
 
     // Coordinator to receive console messages from the web content and handle native file picking

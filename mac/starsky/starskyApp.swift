@@ -1,4 +1,5 @@
 import SwiftUI
+import WebKit
 import AppKit
 
 @main
@@ -73,6 +74,30 @@ struct starskyApp: App {
                     showBaseUrlSheet = true
                 }
                 .keyboardShortcut(",", modifiers: [.command, .option])
+                
+                Divider()
+
+                Button("Clear persisted cookies") {
+                    // Remove persisted cookie file
+                    do {
+                        try CookiePersistence.clearStoredCookies()
+                    } catch {
+                        NSLog("[Starsky] Failed to clear persisted cookies: %@", String(describing: error))
+                    }
+
+                    // Also remove cookies from WKWebsiteDataStore
+                    let dataStore = WKWebsiteDataStore.default()
+                    let cookieTypes = Set([WKWebsiteDataTypeCookies])
+                    let since = Date(timeIntervalSince1970: 0)
+                    dataStore.fetchDataRecords(ofTypes: cookieTypes) { _ in
+                        dataStore.removeData(ofTypes: cookieTypes, modifiedSince: since) {
+                            NSLog("[Starsky] Cleared WKWebsiteDataStore cookies")
+                        }
+                    }
+                }
+                .keyboardShortcut("K", modifiers: [.command, .option])
+
+                Divider()
             }
             #endif
         }
