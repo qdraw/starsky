@@ -231,7 +231,8 @@ public class MacOsSecurityScopedBookmarkTests
 	{
 		var fake =
 			new FakeMacOsSecurityScopedBookmarkNative { ResolvedUrlToReturn = IntPtr.Zero };
-		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
+		var logger = new FakeIWebLogger();
+		var sut = new MacOsSecurityScopedBookmark(fake, logger);
 		var validBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
 
 		var result = sut.TryResolveAndStartAccess(validBase64, out var path);
@@ -239,6 +240,30 @@ public class MacOsSecurityScopedBookmarkTests
 		Assert.IsFalse(result);
 		Assert.IsNull(path);
 		Assert.AreEqual(0, fake.ObjcReleaseCalls);
+		Assert.Contains(
+			p => p.Item2!.Contains("nsUrl could not be parsed", StringComparison.Ordinal),
+			logger.TrackedExceptions);
+	}
+
+	[TestMethod]
+	public void TryResolveAndStartAccess_WhenResolveFails_LogsNativeErrorDescription()
+	{
+		var fake = new FakeMacOsSecurityScopedBookmarkNative
+		{
+			ResolvedUrlToReturn = IntPtr.Zero,
+			ResolveErrorToReturn = "Bookmark data is stale"
+		};
+		var logger = new FakeIWebLogger();
+		var sut = new MacOsSecurityScopedBookmark(fake, logger);
+		var validBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
+
+		var result = sut.TryResolveAndStartAccess(validBase64, out var path);
+
+		Assert.IsFalse(result);
+		Assert.IsNull(path);
+		Assert.Contains(
+			p => p.Item2!.Contains("Bookmark data is stale", StringComparison.Ordinal),
+			logger.TrackedExceptions);
 	}
 
 	[TestMethod]

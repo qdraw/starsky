@@ -58,16 +58,19 @@ public sealed class MacOsSecurityScopedBookmark
 
 			if ( nsData == IntPtr.Zero )
 			{
-				_logger?.LogError("NsData could not be parsed");
+				_logger.LogError("NsData could not be parsed");
 				return false;
 			}
 
 			// Resolve: NSURL(resolvingBookmarkData:options:relativeTo:bookmarkDataIsStale:error:)
-			var nsUrl = _native.ResolveBookmarkData(nsData);
+			var nsUrl = _native.ResolveBookmarkData(nsData, out var resolveError);
 
 			if ( nsUrl == IntPtr.Zero )
 			{
-				_logger?.LogError("nsUrl could not be parsed");
+				var message = string.IsNullOrWhiteSpace(resolveError)
+					? "nsUrl could not be parsed"
+					: $"nsUrl could not be parsed: {resolveError}";
+				_logger.LogError(message);
 				return false;
 			}
 

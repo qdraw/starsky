@@ -50,14 +50,17 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 			IntPtr.Zero);
 	}
 
-	public IntPtr ResolveBookmarkData(IntPtr nsData)
+	public IntPtr ResolveBookmarkData(IntPtr nsData, out string? errorDescription)
 	{
+		errorDescription = null;
 		var stale = Marshal.AllocHGlobal(sizeof(byte));
+		var errorPtr = Marshal.AllocHGlobal(IntPtr.Size);
 		Marshal.WriteByte(stale, 0);
+		Marshal.WriteIntPtr(errorPtr, IntPtr.Zero);
 		var nsUrlClass = objc_getClass("NSURL");
 		try
 		{
-			return objc_msgSend_retIntPtr_IntPtr_NUInt_IntPtr_IntPtr_IntPtr(
+			var result = objc_msgSend_retIntPtr_IntPtr_NUInt_IntPtr_IntPtr_IntPtr(
 				nsUrlClass,
 				GetSelectorInternal(
 					"URLByResolvingBookmarkData:options:relativeToURL:bookmarkDataIsStale:error:"),
@@ -65,11 +68,20 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 				NsUrlBookmarkResolutionWithSecurityScope,
 				IntPtr.Zero,
 				stale,
-				IntPtr.Zero);
+				errorPtr);
+
+			if ( result == IntPtr.Zero )
+			{
+				var nsError = Marshal.ReadIntPtr(errorPtr);
+				errorDescription = GetLocalizedDescription(nsError);
+			}
+
+			return result;
 		}
 		finally
 		{
 			Marshal.FreeHGlobal(stale);
+			Marshal.FreeHGlobal(errorPtr);
 		}
 	}
 
@@ -145,6 +157,18 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 		var buf = new StringBuilder(1024);
 		var ok = CFStringGetCString(cfStr, buf, buf.Capacity, 0x08000100); // kCFStringEncodingUTF8
 		return ok ? buf.ToString() : string.Empty;
+	}
+
+	private static string? GetLocalizedDescription(IntPtr nsError)
+	{
+		if ( nsError == IntPtr.Zero )
+		{
+			return null;
+		}
+
+		var description = objc_msgSend_retIntPtr(nsError, GetSelectorInternal("localizedDescription"));
+		var text = CfStringToStringInternal(description);
+		return string.IsNullOrWhiteSpace(text) ? null : text;
 	}
 
 	private static IntPtr GetSelectorInternal(string name)

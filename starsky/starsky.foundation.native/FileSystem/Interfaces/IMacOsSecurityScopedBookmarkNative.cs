@@ -22,8 +22,10 @@ internal interface IMacOsSecurityScopedBookmarkNative
 	///     Resolves bookmark NSData to an NSURL.
 	///     Equivalent to
 	///     <c>[NSURL URLByResolvingBookmarkData:options:NSURLBookmarkResolutionWithSecurityScope ...]</c>.
+	///     When resolution fails and macOS returns NSError, <paramref name="errorDescription" />
+	///     contains <c>localizedDescription</c>.
 	/// </summary>
-	IntPtr ResolveBookmarkData(IntPtr nsData);
+	IntPtr ResolveBookmarkData(IntPtr nsData, out string? errorDescription);
 
 	/// <summary>Calls <c>-startAccessingSecurityScopedResource</c> on the URL.</summary>
 	bool StartAccessingSecurityScopedResource(IntPtr url);

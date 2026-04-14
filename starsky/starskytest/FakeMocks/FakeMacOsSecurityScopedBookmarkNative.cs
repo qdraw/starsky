@@ -17,6 +17,7 @@ public class FakeMacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBookmar
 	public string PathToReturn { get; set; } = "/resolved/path";
 	public IntPtr NsDataToReturn { get; set; } = new(400);
 	public byte[] NsDataBytesToReturn { get; set; } = [1, 2, 3];
+	public string? ResolveErrorToReturn { get; set; }
 
 	// --- Call tracking ---
 
@@ -45,8 +46,9 @@ public class FakeMacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBookmar
 		return BookmarkDataToReturn;
 	}
 
-	public virtual IntPtr ResolveBookmarkData(IntPtr nsData)
+	public virtual IntPtr ResolveBookmarkData(IntPtr nsData, out string? errorDescription)
 	{
+		errorDescription = ResolveErrorToReturn;
 		return ResolvedUrlToReturn;
 	}
 
