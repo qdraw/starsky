@@ -50,7 +50,7 @@ jobs:
           dotnet-version: 8.0.419
         
       - name: Use Java 21   
-        uses: actions/setup-java@1d018f9b8b9b505bb578a83b230fabcce01af93b
+        uses: actions/setup-java@0756542bc5161cdc537890d1ab208ecce7acd8aa
         with:
           distribution: 'zulu'
           java-version: '21'
