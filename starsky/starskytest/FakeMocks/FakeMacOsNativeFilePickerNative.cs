@@ -10,7 +10,9 @@ public class FakeMacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 	public IntPtr SelectedUrlToReturn { get; set; } = new(200);
 	public string PathToReturn { get; set; } = "/tmp/selected-folder";
 	public IntPtr BookmarkDataToReturn { get; set; } = new(300);
-	public byte[] NsDataBytesToReturn { get; set; } = [1, 2, 3, 4];
+	public byte[] NsDataBytesToReturn { get; set; } = new byte[] { 1, 2, 3, 4 };
+
+	public string? LastNativeErrorToReturn { get; set; }
 
 	public bool ConfigureCalled { get; private set; }
 	public bool LastIncludeFilesValue { get; private set; }
@@ -49,6 +51,11 @@ public class FakeMacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 	public virtual byte[] NsDataGetBytes(IntPtr nsData)
 	{
 		return NsDataBytesToReturn;
+	}
+
+	public virtual string? GetLastNativeError()
+	{
+		return LastNativeErrorToReturn;
 	}
 }
 

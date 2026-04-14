@@ -13,6 +13,8 @@ namespace starsky.foundation.native.FileSystem;
 	"generate P/Invoke marshalling code at compile time")]
 internal sealed class MacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 {
+	private delegate void DispatchFunctionT(IntPtr context);
+
 	private const string FoundationFramework =
 		"/System/Library/Frameworks/Foundation.framework/Foundation";
 
@@ -25,6 +27,9 @@ internal sealed class MacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 	private const nuint NsUrlBookmarkCreationWithSecurityScope = 1u << 10;
 
 	private static bool _appKitLoaded;
+	private static IntPtr _lastPanelResult; // Thread-local storage for callback result
+	private static DispatchFunctionT? _dispatchCallback;
+	private static string? _lastErrorMessage;
 
 	public IntPtr CreateOpenPanel()
 	{
@@ -34,60 +39,153 @@ internal sealed class MacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 			{
 				_ = NativeLibrary.Load(AppKitFramework);
 				_appKitLoaded = true;
+				Debug.WriteLine("AppKit framework loaded successfully");
 			}
-			catch
+			catch ( Exception ex )
 			{
+				Debug.WriteLine($"Failed to load AppKit: {ex.Message}");
 				return IntPtr.Zero;
 			}
 		}
 
-		// Dispatch to main thread via GCD to ensure AppKit safety
-		IntPtr result = IntPtr.Zero;
+		_lastPanelResult = IntPtr.Zero;
+
 		try
 		{
+			Debug.WriteLine("Attempting to get main queue via dispatch_get_main_queue()");
 			var mainQueue = dispatch_get_main_queue();
 			if ( mainQueue == IntPtr.Zero )
 			{
+				_lastErrorMessage = "dispatch_get_main_queue returned null";
+				Debug.WriteLine(_lastErrorMessage);
 				return IntPtr.Zero;
 			}
+			Debug.WriteLine($"Got main queue: {mainQueue:X}");
 
-			// Run the panel creation on the main queue
-			dispatch_sync_f(mainQueue, IntPtr.Zero, _ =>
+			// Create a static callback that will be invoked on main thread
+			_dispatchCallback = CreatePanelCallback;
+			Debug.WriteLine("Dispatching NSOpenPanel creation to main queue");
+			dispatch_sync_f(mainQueue, IntPtr.Zero, _dispatchCallback);
+			Debug.WriteLine($"Dispatch completed. Panel result: {_lastPanelResult:X}");
+			if ( _lastPanelResult == IntPtr.Zero )
 			{
-				var pool = objc_autoreleasePoolPush();
-				try
-				{
-					var panelClass = objc_getClass("NSOpenPanel");
-					if ( panelClass != IntPtr.Zero )
-					{
-						result = objc_msgSend_retIntPtr(panelClass, GetSelectorInternal("openPanel"));
-					}
-				}
-				catch
-				{
-					result = IntPtr.Zero;
-				}
-				finally
-				{
-					if ( pool != IntPtr.Zero )
-					{
-						objc_autoreleasePoolPop(pool);
-					}
-				}
-			});
-
-			return result;
+				_lastErrorMessage ??= "NSOpenPanel creation returned null (unknown reason)";
+			}
+			else
+			{
+				_lastErrorMessage = null;
+			}
+			return _lastPanelResult;
 		}
 		catch ( SEHException ex )
 		{
 			// Catch unmanaged Objective-C exceptions
-			Debug.WriteLine($"NSOpenPanel failed: {ex.Message}");
+			Debug.WriteLine($"NSOpenPanel creation failed with SEH: {ex.Message}");
 			return IntPtr.Zero;
 		}
-		catch
+		catch ( Exception ex )
 		{
+			Debug.WriteLine($"NSOpenPanel creation failed: {ex.GetType().Name}: {ex.Message}");
 			return IntPtr.Zero;
 		}
+	}
+
+	private static void CreatePanelCallback(IntPtr context)
+	{
+		Debug.WriteLine("CreatePanelCallback invoked on main queue");
+		var pool = objc_autoreleasePoolPush();
+		try
+		{
+			Debug.WriteLine("Getting NSOpenPanel class");
+			// Ensure NSApplication is initialized - some contexts (services) need an explicit init
+			var appClass = objc_getClass("NSApplication");
+			if ( appClass != IntPtr.Zero )
+			{
+				try
+				{
+					var sharedSel = GetSelectorInternal("sharedApplication");
+					var sharedApp = objc_msgSend_retIntPtr(appClass, sharedSel);
+					if ( sharedApp == IntPtr.Zero )
+					{
+						Debug.WriteLine("NSApplication.sharedApplication returned null, attempting alloc/init");
+						var allocSel = GetSelectorInternal("alloc");
+						var initSel = GetSelectorInternal("init");
+						var appAlloc = objc_msgSend_retIntPtr(appClass, allocSel);
+						if ( appAlloc != IntPtr.Zero )
+						{
+							var appInit = objc_msgSend_retIntPtr(appAlloc, initSel);
+							if ( appInit != IntPtr.Zero )
+							{
+								Debug.WriteLine("Initialized NSApplication instance via alloc/init");
+							}
+							else
+							{
+								Debug.WriteLine("Failed to init NSApplication via alloc/init");
+							}
+						}
+					}
+					else
+					{
+						Debug.WriteLine("NSApplication.sharedApplication already exists");
+					}
+				}
+				catch ( Exception ex )
+				{
+					Debug.WriteLine($"NSApplication init attempt threw: {ex.Message}");
+				}
+			}
+
+			var panelClass = objc_getClass("NSOpenPanel");
+			if ( panelClass == IntPtr.Zero )
+			{
+				_lastErrorMessage = "objc_getClass(\"NSOpenPanel\") returned null";
+				Debug.WriteLine(_lastErrorMessage);
+				_lastPanelResult = IntPtr.Zero;
+				return;
+			}
+			Debug.WriteLine($"Got NSOpenPanel class: {panelClass:X}");
+
+			Debug.WriteLine("Registering openPanel selector");
+			var openPanelSelector = GetSelectorInternal("openPanel");
+			if ( openPanelSelector == IntPtr.Zero )
+			{
+				_lastErrorMessage = "sel_registerName(\"openPanel\") returned null";
+				Debug.WriteLine(_lastErrorMessage);
+				_lastPanelResult = IntPtr.Zero;
+				return;
+			}
+			Debug.WriteLine($"Got openPanel selector: {openPanelSelector:X}");
+
+			Debug.WriteLine("Calling objc_msgSend for openPanel");
+			_lastPanelResult = objc_msgSend_retIntPtr(panelClass, openPanelSelector);
+			if ( _lastPanelResult == IntPtr.Zero )
+			{
+				_lastErrorMessage = "objc_msgSend returned null for openPanel";
+				Debug.WriteLine(_lastErrorMessage);
+			}
+			else
+			{
+				_lastErrorMessage = null;
+				Debug.WriteLine($"Successfully created NSOpenPanel: {_lastPanelResult:X}");
+			}
+		}
+		catch ( Exception ex )
+		{
+			Debug.WriteLine($"CreatePanelCallback exception: {ex.GetType().Name}: {ex.Message}");
+			_lastPanelResult = IntPtr.Zero;
+		}
+		finally
+		{
+			if ( pool != IntPtr.Zero )
+			{
+				objc_autoreleasePoolPop(pool);
+			}
+		}
+	}
+
+	public string? GetLastNativeError()
+	{
+		return _lastErrorMessage;
 	}
 
 	public void ConfigureOpenPanel(IntPtr panel, bool includeFiles = false)
@@ -204,5 +302,5 @@ internal sealed class MacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 
 	[DllImport("/usr/lib/libSystem.dylib")]
 	private static extern void dispatch_sync_f(IntPtr queue, IntPtr context,
-		[MarshalAs(UnmanagedType.FunctionPtr)] Action<IntPtr> callback);
+		[MarshalAs(UnmanagedType.FunctionPtr)] DispatchFunctionT callback);
 }
