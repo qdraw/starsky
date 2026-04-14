@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using starsky.foundation.native.FileSystem.Interfaces;
 
 namespace starsky.foundation.native.FileSystem;
@@ -63,6 +65,7 @@ public sealed class MacOsSecurityScopedBookmark
 			// Start accessing security-scoped resource
 			if ( !_native.StartAccessingSecurityScopedResource(nsUrl) )
 			{
+				
 				// Release NSURL — access was not granted
 				_native.CfRelease(nsUrl);
 				return false;
@@ -146,5 +149,80 @@ public sealed class MacOsSecurityScopedBookmark
 		{
 			return false;
 		}
+	}
+
+	/// <summary>
+	///     Resolves a pre-existing security-scoped bookmark token that was created by a macOS
+	///     folder-picker dialog in an Electron/Swift desktop process, and starts file access
+	///     for the current .NET process.
+	///     <para>
+	///         Pattern:
+	///         <list type="number">
+	///             <item>Electron/Swift picks folder → creates bookmark → stores token in AppSettings</item>
+	///             <item>.NET reads AppSettings → calls TryStartAccessFromToken → gains file access</item>
+	///         </list>
+	///     </para>
+	///     <para>
+	///         The <paramref name="bookmarkToken" /> may be raw base64 <em>or</em> the
+	///         JSON-string-encoded form that Swift produces via
+	///         <c>JSONEncoder().encode(base64EncodedString())</c>. Both formats are handled
+	///         automatically.
+	///     </para>
+	///     <para>On non-macOS platforms the call is a safe no-op returning <c>false</c>.</para>
+	/// </summary>
+	/// <param name="storageFolder">
+	///     Expected storage folder path. Included for call-site clarity; the resolved path
+	///     comes from the bookmark itself.
+	/// </param>
+	/// <param name="bookmarkToken">
+	///     Base64 or JSON-quoted base64 bookmark token from Swift/Electron.
+	/// </param>
+	/// <returns>true if access was successfully started; false otherwise.</returns>
+	[SuppressMessage("ReSharper", "UnusedParameter.Global")]
+	[SuppressMessage("Usage", "CA1801:Review unused parameters")]
+	[SuppressMessage("Style", "IDE0060:Remove unused parameter")]
+	public bool TryStartAccessFromToken(string storageFolder, string? bookmarkToken)
+	{
+		if ( string.IsNullOrEmpty(bookmarkToken) )
+		{
+			return false;
+		}
+
+		var rawBase64 = UnwrapJsonToken(bookmarkToken);
+		return TryResolveAndStartAccess(rawBase64, out _);
+	}
+
+	/// <summary>
+	///     Handles both raw base64 and the JSON-string-encoded form produced by Swift:
+	///     <code>
+	///         let base64 = bookmarkData.base64EncodedString()
+	///         JSONEncoder().encode(base64) // produces bytes for: "base64..."
+	///         // After String(data:encoding:) the Swift string VALUE contains surrounding quotes
+	///     </code>
+	///     When that value is stored in JSON settings and read back by System.Text.Json the
+	///     outer JSON layer is stripped, leaving a .NET string whose value starts and ends
+	///     with a literal <c>"</c> character. This helper peels off that extra layer.
+	/// </summary>
+	internal static string UnwrapJsonToken(string token)
+	{
+		if ( token.Length > 2 && token[0] == '"' && token[^1] == '"' )
+		{
+			try
+			{
+				var decoded = JsonSerializer.Deserialize<string>(token);
+				if ( !string.IsNullOrEmpty(decoded) )
+				{
+					return decoded;
+				}
+			}
+			catch
+			{
+				// ignored — fall through to simple quote-strip
+			}
+
+			return token[1..^1];
+		}
+
+		return token;
 	}
 }

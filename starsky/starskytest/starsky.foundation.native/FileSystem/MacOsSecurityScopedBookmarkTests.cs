@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.FileSystem;
 using starskytest.FakeMocks;
@@ -337,8 +338,136 @@ public class MacOsSecurityScopedBookmarkTests
 		Assert.IsNotNull(sut, "StopAccess absorbed the exception");
 	}
 
-	/// <summary>Stub that throws on CreateFileUrl — used to verify StopAccess swallows exceptions.</summary>
-	private sealed class ThrowingNative : FakeMacOsSecurityScopedBookmarkNative
+	// =====================================================================
+	// TryStartAccessFromToken — fake-based, all platforms
+	// =====================================================================
+
+	[TestMethod]
+	public void TryStartAccessFromToken_WhenTokenIsNull_ReturnsFalse()
+	{
+		var fake = new FakeMacOsSecurityScopedBookmarkNative();
+		var sut = new MacOsSecurityScopedBookmark(fake);
+
+		var result = sut.TryStartAccessFromToken("/some/path", null);
+
+		Assert.IsFalse(result);
+		Assert.AreEqual(0, fake.ObjcReleaseCalls, "No native calls expected");
+	}
+
+	[TestMethod]
+	public void TryStartAccessFromToken_WhenTokenIsEmpty_ReturnsFalse()
+	{
+		var fake = new FakeMacOsSecurityScopedBookmarkNative();
+		var sut = new MacOsSecurityScopedBookmark(fake);
+
+		var result = sut.TryStartAccessFromToken("/some/path", string.Empty);
+
+		Assert.IsFalse(result);
+		Assert.AreEqual(0, fake.ObjcReleaseCalls, "No native calls expected");
+	}
+
+	[TestMethod]
+	public void TryStartAccessFromToken_WithRawBase64Token_ResolvesAccess()
+	{
+		const string expectedPath = "/resolved/path";
+		var rawBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3, 4 });
+		var fake = new FakeMacOsSecurityScopedBookmarkNative { PathToReturn = expectedPath };
+		var sut = new MacOsSecurityScopedBookmark(fake);
+
+		var result = sut.TryStartAccessFromToken("/some/path", rawBase64);
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void TryStartAccessFromToken_WithJsonWrappedToken_UnwrapsAndResolvesAccess()
+	{
+		// Swift encodes as: JSONEncoder().encode(base64) → the string value gets surrounding quotes
+		var rawBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3, 4 });
+		var jsonWrapped = JsonSerializer.Serialize(rawBase64); // produces: "\"AQIDBA==\""
+
+		const string expectedPath = "/resolved/path";
+		var fake = new FakeMacOsSecurityScopedBookmarkNative { PathToReturn = expectedPath };
+		var sut = new MacOsSecurityScopedBookmark(fake);
+
+		var result = sut.TryStartAccessFromToken("/some/path", jsonWrapped);
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void TryStartAccessFromToken_WhenNativeResolutionFails_ReturnsFalse()
+	{
+		var rawBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
+		var fake = new FakeMacOsSecurityScopedBookmarkNative
+		{
+			ResolvedUrlToReturn = IntPtr.Zero
+		};
+		var sut = new MacOsSecurityScopedBookmark(fake);
+
+		var result = sut.TryStartAccessFromToken("/some/path", rawBase64);
+
+		Assert.IsFalse(result);
+	}
+
+	// =====================================================================
+	// UnwrapJsonToken — pure .NET, all platforms
+	// =====================================================================
+
+	[TestMethod]
+	public void UnwrapJsonToken_WithRawBase64_ReturnsSameString()
+	{
+		var rawBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
+
+		var result = MacOsSecurityScopedBookmark.UnwrapJsonToken(rawBase64);
+
+		Assert.AreEqual(rawBase64, result);
+	}
+
+	[TestMethod]
+	public void UnwrapJsonToken_WithJsonQuotedBase64_UnwrapsCorrectly()
+	{
+		var rawBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
+		// Simulate what Swift's JSONEncoder produces: the value has literal surrounding quotes
+		var jsonWrapped = JsonSerializer.Serialize(rawBase64); // → "\"AQID\""
+
+		var result = MacOsSecurityScopedBookmark.UnwrapJsonToken(jsonWrapped);
+
+		Assert.AreEqual(rawBase64, result);
+	}
+
+	[TestMethod]
+	public void UnwrapJsonToken_WithMalformedJsonQuotes_FallsBackToTrimming()
+	{
+		// A string that starts/ends with " but is not valid JSON
+		const string malformed = "\"notValidJson";
+
+		// No surrounding end-quote → should return as-is (no trimming)
+		var result = MacOsSecurityScopedBookmark.UnwrapJsonToken(malformed);
+
+		Assert.AreEqual(malformed, result);
+	}
+
+	[TestMethod]
+	public void UnwrapJsonToken_WithSurroundingQuotesButInvalidInnerJson_StripsQuotes()
+	{
+		// e.g., "\"hello\"" is valid JSON string but here test something that has quotes but
+		// the inner content is not a valid JSON string for Deserialize<string>
+		const string token = "\"plainValue\"";
+
+		var result = MacOsSecurityScopedBookmark.UnwrapJsonToken(token);
+
+		// Valid JSON string → JsonSerializer.Deserialize<string> succeeds → "plainValue"
+		Assert.AreEqual("plainValue", result);
+	}
+
+	[TestMethod]
+	public void UnwrapJsonToken_WithShortString_ReturnsAsIs()
+	{
+		// Length <= 2 — not possible for a bookmark, but guard-test
+		Assert.AreEqual("\"", MacOsSecurityScopedBookmark.UnwrapJsonToken("\""));
+		Assert.AreEqual("ab", MacOsSecurityScopedBookmark.UnwrapJsonToken("ab"));
+	}
 	{
 		public override IntPtr CreateFileUrl(string path)
 		{

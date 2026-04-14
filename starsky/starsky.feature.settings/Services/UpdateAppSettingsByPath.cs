@@ -39,11 +39,10 @@ public class UpdateAppSettingsByPath : IUpdateAppSettingsByPath
 						"There is an Environment variable set so you can't update it here"
 				};
 			}
-
-			new MacOsSecurityScopedBookmark().TryCreateBookmark(
-				appSettingTransferObject.StorageFolder,
-				appSettingTransferObject.StorageFolderToken);
 			
+			_ = new MacOsSecurityScopedBookmark().TryStartAccessFromToken(
+				appSettingTransferObject.StorageFolder!,
+				appSettingTransferObject.StorageFolderToken);
 
 			if ( !_hostStorage.ExistFolder(appSettingTransferObject.StorageFolder) )
 			{
