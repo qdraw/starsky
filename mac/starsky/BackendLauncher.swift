@@ -5,6 +5,13 @@ protocol BackendLaunching {
     func terminate()
 }
 
+func electronCacheLocation() -> String {
+   // macOS default app data location used by the Electron app
+   let home = NSHomeDirectory()
+   return "\(home)/Library/Application Support/starsky"
+   // "$HOME/Library/Containers/nl.qdraw.starsky/Data/Library/Application Support/starsky"
+}
+
 /// Responsible for launching the Starsky backend binary and returning the chosen port.
 final class BackendLauncher: BackendLaunching {
     private(set) var launchedProcess: Process?
@@ -31,15 +38,16 @@ final class BackendLauncher: BackendLaunching {
             return nil
         }
 
-        let createTempThumbnailFolderResult = createTempThumbnailFolders()
+        let thumbnailTempFolder = (electronCacheLocation() as NSString).appendingPathComponent("thumbnailTempFolder")
+        let tempFolder = (electronCacheLocation() as NSString).appendingPathComponent("tempFolder")
         let appSettingsPath = (electronCacheLocation() as NSString).appendingPathComponent("appsettings.json")
         let appSettingsLocalPath = (electronCacheLocation() as NSString).appendingPathComponent("appsettings.local.json")
         let databaseConnection = "Data Source=\((electronCacheLocation() as NSString).appendingPathComponent("starsky.db"))"
 
         var env = ProcessInfo.processInfo.environment
         env["ASPNETCORE_URLS"] = "http://localhost:\(port)"
-        env["app__thumbnailTempFolder"] = createTempThumbnailFolderResult.thumbnailTempFolder
-        env["app__tempFolder"] = createTempThumbnailFolderResult.tempFolder
+        env["app__thumbnailTempFolder"] = thumbnailTempFolder
+        env["app__tempFolder"] = tempFolder
         env["app__appsettingspath"] = appSettingsPath
         env["app__appsettingslocalpath"] = appSettingsLocalPath
         env["app__NoAccountLocalhost"] = "true"
