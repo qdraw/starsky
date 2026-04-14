@@ -1,7 +1,7 @@
 # Folder Picker Bridge Specification
 
 ## Overview
-This document specifies the native macOS-to-web folder picker implementation in `webView.swift`. The implementation uses a deterministic, id-based Promise bridge that allows the React frontend (`useFolderPicker()` hook) to request folder selection from the native app and receive the selected path and security-scoped bookmark.
+This document specifies the native macOS-to-web folder picker implementation in `webView.swift`. The implementation uses a deterministic, id-based Promise bridge that allows the React frontend (`useFolderPicker()`) to request folder selection from the native app and receive the selected path and security-scoped bookmark.
 
 ## Architecture
 
@@ -205,6 +205,45 @@ window.__starskyNative._resolveFolderPick("<id>","<path-json>","<bookmark-base64
 - Native can later resolve bookmark via `URL(bookmarkData:options:)`
 - Enables app to re-access folder even after sandbox restrictions
 
+---
+
+## Re-opening bookmarks and token handling (backend behavior)
+
+The mac parent process (native app) is responsible for ensuring security-scoped access for a stored folder token before launching or delegating work to any child process (for example, a bundled .NET backend). The bridge supplies a base64-encoded bookmark to the frontend; the frontend may persist that string (for example in app settings) and later provide it back to the native app. The native app implements robust handling for the token in three modes:
+
+1. Existing bookmark file on disk
+   - The manager first checks for an existing bookmark file in Application Support/<bundle>/bookmarks.
+   - Supports both legacy raw token filenames (`bookmark_<token>`) and hashed filenames (`bookmark_<sha256(token)>`) for compatibility.
+   - If found, the manager resolves and starts access from that file.
+
+2. Token is actually base64 bookmark data
+   - If no bookmark file exists, the manager attempts to decode the token as base64 data.
+   - Several normalization strategies are tried (trim, strip newlines, URL-safe replacements, percent-decode) to be forgiving of encoding variants
+   - If decoding yields valid bookmark data, the manager attempts to resolve the bookmark data (no folder open is required) and, if successful, persists the binary into the canonical bookmark file (hashed filename) and starts access from the resolved URL.
+
+3. No bookmark available — attempt to create one from the folder path
+   - If the token is not decodable and no bookmark file exists, the manager will attempt to create a bookmark from the provided `StorageFolder` path via `URL.bookmarkData(...)`.
+   - Creating a bookmark requires that the calling process already has permission to open the folder (i.e. the parent must have been granted access). If the parent cannot open the folder, this step will fail with an error such as `NSCocoaErrorDomain Code=256 "Could not open() the item"`.
+
+Notes:
+- When a base64 token is provided (mode 2), the parent does not need prior access to the folder; it can resolve directly from the bookmark data and persist a usable bookmark file.
+- Persisted bookmark files are saved under a hashed filename to avoid invalid filesystem characters in tokens. Loading supports both legacy and hashed filenames.
+- The parent intentionally does not export the raw folder path or token to a child process via environment variables on macOS; the parent must hold the security-scoped access open while the child runs.
+
+### New log messages (diagnostics)
+- `[StorageBookmarkManager] token is not decodable base64 (len=<n>)`
+- `[StorageBookmarkManager] token decoded to <n> bytes; attempting to resolve bookmark data`
+- `[StorageBookmarkManager] Persisting decoded bookmark data to: <path>`
+- `[StorageBookmarkManager] Persisted bookmark file size: <n>`
+- `[StorageBookmarkManager] Loading bookmark from: <path>`
+- `[StorageBookmarkManager] Read bookmark file size: <n>`
+- `[StorageBookmarkManager] Resolved bookmark from token data to: <path>`
+- `[StorageBookmarkManager] Started access for URL (from token data): <path>`
+- `[StorageBookmarkManager] Attempting to create bookmark from folderPath: <path>`
+- `[StorageBookmarkManager] Found existing bookmark file: <path>`
+
+These logs help diagnose whether the token was decoded, which file path is being used, file sizes, and whether `startAccessingSecurityScopedResource()` succeeded.
+
 ## Timeout Behavior
 
 **Default Timeout:** 30 seconds (configurable via `selectFolder(timeoutMs)`)
@@ -229,6 +268,8 @@ window.__starskyNative._resolveFolderPick("<id>","<path-json>","<bookmark-base64
 | Timeout reached | Timeout handler fires | Resolves with `{path: null, bookmark: null}` |
 | Multiple requests | Each has unique ID | Each resolves independently |
 | Promise garbage collected | Timeout cleanup | After ~30s, resolver deleted |
+| Token is base64 but invalid bookmark data | Native attempts decode/resolve; if resolve fails, falls back to create-from-path and may throw if parent lacks access | Error logged; JS receives nulls if pick failed earlier or backend logs error on launch |
+| Parent lacks permission to open folder when creating a bookmark | `URL.bookmarkData(...)` will throw (e.g. `Could not open()`); native should log this and avoid exporting path to child | Parent logs error; recommendation is to re-create bookmark via UI or provide valid base64 bookmark token |
 
 ## Security Considerations
 
@@ -268,11 +309,16 @@ window.__starskyNative._resolveFolderPick("<id>","<path-json>","<bookmark-base64
 5. Promise resolves with `{ path, bookmark }`
 6. Frontend receives result correctly
 
+### Backend/Launch Verification
+- On app launch the native parent will attempt to ensure bookmark access for a stored token (if present) before starting child services.
+- Verify logs show either: resolved-from-token, loaded-from-file, or attempted-create-from-path. If create-from-path is attempted and fails, parent will log `Could not open()` and recommend re-creating bookmark via UI.
+
 ### Debug Logging
 - `[WebView][BridgeCheck]` → bridge presence on page load
 - `[WebView][ScriptMessage]` → incoming filePicker messages with request ID
 - `[WebView][FolderPickResult]` → successful JS execution
 - `[WebView][EvalError]` → JS evaluation failures
+- `[StorageBookmarkManager] *` → bookmark decode/load/save/resolve diagnostics
 - `[WebConsole][*]` → forwarded console logs from frontend (Debug only)
 
 ## Limitations & Future Work
@@ -300,4 +346,3 @@ This implementation provides a **reliable, deterministic, and secure** folder pi
 - ✅ Security-scoped bookmarks enable persistent folder access
 - ✅ Minimal frame/event complexity — just direct resolver invocation
 - ✅ Full debug visibility via NSLog and bridge logging
-
