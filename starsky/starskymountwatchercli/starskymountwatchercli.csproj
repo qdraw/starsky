@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{B2C3D4E5-F6A7-8901-BCDE-F12345678901}</ProjectGuid>
-        <RuntimeFrameworkVersion>8.0.25</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.26</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <Version>0.7.15</Version>
         <Nullable>enable</Nullable>
@@ -12,7 +12,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
     </ItemGroup>
 
     <ItemGroup>
