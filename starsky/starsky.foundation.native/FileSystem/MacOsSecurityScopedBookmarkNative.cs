@@ -57,7 +57,7 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 		return objc_msgSend_retIntPtr_Int_IntPtr_IntPtr_IntPtr_IntPtr(
 			nsUrlClass,
 			GetSelectorInternal(
-				"URLByResolvingBookmarkData:options:relativeTo:bookmarkDataIsStale:error:"),
+				"URLByResolvingBookmarkData:options:relativeToURL:bookmarkDataIsStale:error:"),
 			nsData,
 			NsUrlBookmarkResolutionWithSecurityScope,
 			IntPtr.Zero,

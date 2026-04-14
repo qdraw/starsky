@@ -21,15 +21,17 @@ public sealed class MacOsSecurityScopedBookmark
 
 	/// <summary>Production constructor: uses the real macOS P/Invoke layer.</summary>
 	public MacOsSecurityScopedBookmark(IWebLogger logger) : this(
-		new MacOsSecurityScopedBookmarkNative())
+		new MacOsSecurityScopedBookmarkNative(), logger)
 	{
 		_logger = logger;
 	}
 
 	/// <summary>Test constructor: inject a fake or mock native layer.</summary>
-	internal MacOsSecurityScopedBookmark(IMacOsSecurityScopedBookmarkNative native)
+	internal MacOsSecurityScopedBookmark(IMacOsSecurityScopedBookmarkNative native,
+		IWebLogger logger)
 	{
 		_native = native;
+		_logger = logger;
 	}
 
 	/// <summary>
@@ -52,7 +54,7 @@ public sealed class MacOsSecurityScopedBookmark
 
 			if ( nsData == IntPtr.Zero )
 			{
-				_logger.LogError("NsData could not be parsed");
+				_logger?.LogError("NsData could not be parsed");
 				return false;
 			}
 
@@ -64,14 +66,14 @@ public sealed class MacOsSecurityScopedBookmark
 
 			if ( nsUrl == IntPtr.Zero )
 			{
-				_logger.LogError("nsUrl could not be parsed");
+				_logger?.LogError("nsUrl could not be parsed");
 				return false;
 			}
 
 			// Start accessing security-scoped resource
 			if ( !_native.StartAccessingSecurityScopedResource(nsUrl) )
 			{
-				_logger.LogError("StartAccessingSecurityScopedResource failed");
+				_logger?.LogError("StartAccessingSecurityScopedResource failed");
 
 				// Release NSURL — access was not granted
 				_native.CfRelease(nsUrl);

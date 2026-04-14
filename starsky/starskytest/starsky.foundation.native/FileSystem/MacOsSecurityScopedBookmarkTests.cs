@@ -77,7 +77,10 @@ public class MacOsSecurityScopedBookmarkTests
 
 			Assert.IsTrue(resolveResult);
 			Assert.IsNotNull(resolvedPath);
-			Assert.AreEqual(tempFile, resolvedPath);
+			Assert.AreEqual(
+				NormalizeMacTempPath(tempFile),
+				NormalizeMacTempPath(resolvedPath!),
+				"Resolved path should match original path (allowing /var <-> /private/var canonicalization)");
 
 			sut.StopAccess(resolvedPath);
 		}
@@ -144,7 +147,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void TryCreateBookmark_WhenCreateFileUrlReturnsZero_ReturnsFalse()
 	{
 		var fake = new FakeMacOsSecurityScopedBookmarkNative { FileUrlToReturn = IntPtr.Zero };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		var result = sut.TryCreateBookmark("/some/path", out var bookmark);
 
@@ -157,7 +160,7 @@ public class MacOsSecurityScopedBookmarkTests
 	{
 		var fake =
 			new FakeMacOsSecurityScopedBookmarkNative { BookmarkDataToReturn = IntPtr.Zero };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		var result = sut.TryCreateBookmark("/some/path", out var bookmark);
 
@@ -175,7 +178,7 @@ public class MacOsSecurityScopedBookmarkTests
 		{
 			NsDataBytesToReturn = expectedBytes
 		};
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		var result = sut.TryCreateBookmark("/some/path", out var bookmark);
 
@@ -187,7 +190,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void TryCreateBookmark_WhenSuccessful_ReleasesFileUrlAndBookmarkNsData()
 	{
 		var fake = new FakeMacOsSecurityScopedBookmarkNative();
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		sut.TryCreateBookmark("/some/path", out _);
 
@@ -202,7 +205,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void TryResolveAndStartAccess_InvalidBase64_ReturnsFalse_NoNativeCallsMade()
 	{
 		var fake = new FakeMacOsSecurityScopedBookmarkNative();
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		var result = sut.TryResolveAndStartAccess("not-valid-base64!!!", out var path);
 
@@ -216,7 +219,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void TryResolveAndStartAccess_WhenNsDataFromBytesReturnsZero_ReturnsFalse()
 	{
 		var fake = new FakeMacOsSecurityScopedBookmarkNative { NsDataToReturn = IntPtr.Zero };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 		var validBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
 
 		var result = sut.TryResolveAndStartAccess(validBase64, out var path);
@@ -230,7 +233,7 @@ public class MacOsSecurityScopedBookmarkTests
 	{
 		var fake =
 			new FakeMacOsSecurityScopedBookmarkNative { ResolvedUrlToReturn = IntPtr.Zero };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 		var validBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
 
 		var result = sut.TryResolveAndStartAccess(validBase64, out var path);
@@ -245,7 +248,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void TryResolveAndStartAccess_WhenStartAccessReturnsFalse_ReturnsFalse()
 	{
 		var fake = new FakeMacOsSecurityScopedBookmarkNative { StartAccessResult = false };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 		var validBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
 
 		var result = sut.TryResolveAndStartAccess(validBase64, out var path);
@@ -260,7 +263,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void TryResolveAndStartAccess_WhenGetPathReturnsEmpty_ReturnsFalse()
 	{
 		var fake = new FakeMacOsSecurityScopedBookmarkNative { PathToReturn = string.Empty };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 		var validBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
 
 		var result = sut.TryResolveAndStartAccess(validBase64, out var path);
@@ -274,7 +277,7 @@ public class MacOsSecurityScopedBookmarkTests
 	{
 		const string expectedPath = "/resolved/path";
 		var fake = new FakeMacOsSecurityScopedBookmarkNative { PathToReturn = expectedPath };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 		var validBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
 
 		var result = sut.TryResolveAndStartAccess(validBase64, out var path);
@@ -287,7 +290,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void TryResolveAndStartAccess_WhenSuccessful_ReleasesNsDataButNotNsUrl()
 	{
 		var fake = new FakeMacOsSecurityScopedBookmarkNative();
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 		var validBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
 
 		sut.TryResolveAndStartAccess(validBase64, out _);
@@ -303,7 +306,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void StopAccess_WhenCreateFileUrlReturnsZero_DoesNotCallStopAccessing()
 	{
 		var fake = new FakeMacOsSecurityScopedBookmarkNative { FileUrlToReturn = IntPtr.Zero };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		sut.StopAccess("/some/path");
 
@@ -316,7 +319,7 @@ public class MacOsSecurityScopedBookmarkTests
 	{
 		var urlHandle = new IntPtr(999);
 		var fake = new FakeMacOsSecurityScopedBookmarkNative { FileUrlToReturn = urlHandle };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		sut.StopAccess("/some/path");
 
@@ -330,7 +333,7 @@ public class MacOsSecurityScopedBookmarkTests
 	{
 		// The fake can be replaced with a throwing implementation to verify the catch block
 		var fake = new ThrowingNative();
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		// Should not throw
 		sut.StopAccess("/some/path");
@@ -346,7 +349,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void TryStartAccessFromToken_WhenTokenIsNull_ReturnsFalse()
 	{
 		var fake = new FakeMacOsSecurityScopedBookmarkNative();
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		var result = sut.TryStartAccessFromToken("/some/path", null);
 
@@ -358,7 +361,7 @@ public class MacOsSecurityScopedBookmarkTests
 	public void TryStartAccessFromToken_WhenTokenIsEmpty_ReturnsFalse()
 	{
 		var fake = new FakeMacOsSecurityScopedBookmarkNative();
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		var result = sut.TryStartAccessFromToken("/some/path", string.Empty);
 
@@ -372,7 +375,7 @@ public class MacOsSecurityScopedBookmarkTests
 		const string expectedPath = "/resolved/path";
 		var rawBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3, 4 });
 		var fake = new FakeMacOsSecurityScopedBookmarkNative { PathToReturn = expectedPath };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		var result = sut.TryStartAccessFromToken("/some/path", rawBase64);
 
@@ -388,7 +391,7 @@ public class MacOsSecurityScopedBookmarkTests
 
 		const string expectedPath = "/resolved/path";
 		var fake = new FakeMacOsSecurityScopedBookmarkNative { PathToReturn = expectedPath };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		var result = sut.TryStartAccessFromToken("/some/path", jsonWrapped);
 
@@ -400,7 +403,7 @@ public class MacOsSecurityScopedBookmarkTests
 	{
 		var rawBase64 = Convert.ToBase64String(new byte[] { 1, 2, 3 });
 		var fake = new FakeMacOsSecurityScopedBookmarkNative { ResolvedUrlToReturn = IntPtr.Zero };
-		var sut = new MacOsSecurityScopedBookmark(fake);
+		var sut = new MacOsSecurityScopedBookmark(fake, new FakeIWebLogger());
 
 		var result = sut.TryStartAccessFromToken("/some/path", rawBase64);
 
@@ -464,6 +467,13 @@ public class MacOsSecurityScopedBookmarkTests
 		// Length <= 2 — not possible for a bookmark, but guard-test
 		Assert.AreEqual("\"", MacOsSecurityScopedBookmark.UnwrapJsonToken("\""));
 		Assert.AreEqual("ab", MacOsSecurityScopedBookmark.UnwrapJsonToken("ab"));
+	}
+
+	private static string NormalizeMacTempPath(string path)
+	{
+		return path.StartsWith("/private/var/", StringComparison.Ordinal)
+			? path["/private".Length..]
+			: path;
 	}
 
 	/// <summary>Stub that throws on CreateFileUrl — used to verify StopAccess swallows exceptions.</summary>
