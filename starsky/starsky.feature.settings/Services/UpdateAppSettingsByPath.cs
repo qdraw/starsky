@@ -2,6 +2,7 @@ using System.Text.Json;
 using starsky.feature.settings.Interfaces;
 using starsky.feature.settings.Models;
 using starsky.foundation.injection;
+using starsky.foundation.native.FileSystem;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
@@ -38,6 +39,11 @@ public class UpdateAppSettingsByPath : IUpdateAppSettingsByPath
 						"There is an Environment variable set so you can't update it here"
 				};
 			}
+
+			new MacOsSecurityScopedBookmark().TryCreateBookmark(
+				appSettingTransferObject.StorageFolder,
+				appSettingTransferObject.StorageFolderToken);
+			
 
 			if ( !_hostStorage.ExistFolder(appSettingTransferObject.StorageFolder) )
 			{

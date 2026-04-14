@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Helpers;
-using starsky.foundation.native.FileSystem;
+using starsky.foundation.native.DiskFileSystemType;
 using starsky.foundation.platform.Models;
 
-namespace starskytest.starsky.foundation.native.FileSystem;
+namespace starskytest.starsky.foundation.native.DiskFileSystemType;
 
 [TestClass]
 public class MacOsNativeMethodsTests
