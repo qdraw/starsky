@@ -21,11 +21,10 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 	private const string FoundationFramework =
 		"/System/Library/Frameworks/Foundation.framework/Foundation";
 
-	private const string AppKitFramework =
-		"/System/Library/Frameworks/AppKit.framework/AppKit";
+	private const string ObjcFramework = "/usr/lib/libobjc.A.dylib";
 
-	private const int NsUrlBookmarkCreationWithSecurityScope = 1 << 10;
-	private const int NsUrlBookmarkResolutionWithSecurityScope = 1 << 8;
+	private const nuint NsUrlBookmarkCreationWithSecurityScope = 1u << 10;
+	private const nuint NsUrlBookmarkResolutionWithSecurityScope = 1u << 8;
 
 	public IntPtr CreateFileUrl(string path)
 	{
@@ -41,7 +40,7 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 
 	public IntPtr CreateBookmarkData(IntPtr fileUrl)
 	{
-		return objc_msgSend_retIntPtr_Int(
+		return objc_msgSend_retIntPtr_NUInt_IntPtr_IntPtr_IntPtr(
 			fileUrl,
 			GetSelectorInternal(
 				"bookmarkDataWithOptions:includingResourceValuesForKeys:relativeToURL:error:"),
@@ -53,16 +52,25 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 
 	public IntPtr ResolveBookmarkData(IntPtr nsData)
 	{
+		var stale = Marshal.AllocHGlobal(sizeof(byte));
+		Marshal.WriteByte(stale, 0);
 		var nsUrlClass = objc_getClass("NSURL");
-		return objc_msgSend_retIntPtr_Int_IntPtr_IntPtr_IntPtr_IntPtr(
-			nsUrlClass,
-			GetSelectorInternal(
-				"URLByResolvingBookmarkData:options:relativeToURL:bookmarkDataIsStale:error:"),
-			nsData,
-			NsUrlBookmarkResolutionWithSecurityScope,
-			IntPtr.Zero,
-			IntPtr.Zero,
-			IntPtr.Zero);
+		try
+		{
+			return objc_msgSend_retIntPtr_IntPtr_NUInt_IntPtr_IntPtr_IntPtr(
+				nsUrlClass,
+				GetSelectorInternal(
+					"URLByResolvingBookmarkData:options:relativeToURL:bookmarkDataIsStale:error:"),
+				nsData,
+				NsUrlBookmarkResolutionWithSecurityScope,
+				IntPtr.Zero,
+				stale,
+				IntPtr.Zero);
+		}
+		finally
+		{
+			Marshal.FreeHGlobal(stale);
+		}
 	}
 
 	public bool StartAccessingSecurityScopedResource(IntPtr url)
@@ -79,9 +87,7 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 	public string GetPath(IntPtr url)
 	{
 		var pathCfStr = objc_msgSend_retIntPtr(url, GetSelectorInternal("path"));
-		var result = CfStringToStringInternal(pathCfStr);
-		CFRelease(pathCfStr);
-		return result;
+		return CfStringToStringInternal(pathCfStr);
 	}
 
 	public unsafe IntPtr NsDataFromBytes(byte[] bytes)
@@ -93,7 +99,7 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 				nsDataClass,
 				GetSelectorInternal("dataWithBytes:length:"),
 				( IntPtr ) ptr,
-				bytes.Length);
+				( nuint ) bytes.Length);
 		}
 	}
 
@@ -143,10 +149,7 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 
 	private static IntPtr GetSelectorInternal(string name)
 	{
-		var cfStr = CreateCfStringInternal(name);
-		var sel = NSSelectorFromString(cfStr);
-		CFRelease(cfStr);
-		return sel;
+		return sel_registerName(name);
 	}
 
 	// ========== P/Invoke declarations ==========
@@ -163,37 +166,40 @@ internal sealed class MacOsSecurityScopedBookmarkNative : IMacOsSecurityScopedBo
 	private static extern void CFRelease(IntPtr handle);
 
 	[SuppressMessage("Usage", "CA2101: Specify marshaling for P/Invoke string arguments")]
-	[DllImport(AppKitFramework, CharSet = CharSet.Ansi)]
+	[DllImport(ObjcFramework, CharSet = CharSet.Ansi)]
 	private static extern IntPtr objc_getClass(string name);
 
-	[DllImport(AppKitFramework)]
-	private static extern IntPtr NSSelectorFromString(IntPtr cfstr);
+	[SuppressMessage("Usage", "CA2101:Specify marshaling for P/Invoke string arguments")]
+	[DllImport(ObjcFramework, CharSet = CharSet.Ansi)]
+	private static extern IntPtr sel_registerName(string name);
 
-	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
+	[DllImport(ObjcFramework, EntryPoint = "objc_msgSend")]
 	private static extern IntPtr objc_msgSend_retIntPtr(IntPtr target, IntPtr selector);
 
-	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
+	[DllImport(ObjcFramework, EntryPoint = "objc_msgSend")]
 	private static extern void objc_msgSend_retVoid(IntPtr target, IntPtr selector);
 
-	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
+	[return: MarshalAs(UnmanagedType.I1)]
+	[DllImport(ObjcFramework, EntryPoint = "objc_msgSend")]
 	private static extern bool objc_msgSend_retBool(IntPtr target, IntPtr selector);
 
-	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
+	[DllImport(ObjcFramework, EntryPoint = "objc_msgSend")]
 	private static extern IntPtr objc_msgSend_retIntPtr_IntPtr(IntPtr target, IntPtr selector,
 		IntPtr param);
 
-	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
-	private static extern IntPtr objc_msgSend_retIntPtr_Int(IntPtr target, IntPtr selector,
-		int param1, IntPtr param2, IntPtr param3, IntPtr param4);
+	[DllImport(ObjcFramework, EntryPoint = "objc_msgSend")]
+	private static extern IntPtr objc_msgSend_retIntPtr_NUInt_IntPtr_IntPtr_IntPtr(IntPtr target,
+		IntPtr selector,
+		nuint param1, IntPtr param2, IntPtr param3, IntPtr param4);
 
-	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
+	[DllImport(ObjcFramework, EntryPoint = "objc_msgSend")]
 	private static extern IntPtr objc_msgSend_retIntPtr_IntPtr_Int(IntPtr target, IntPtr selector,
-		IntPtr param1, int param2);
+		IntPtr param1, nuint param2);
 
-	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
-	private static extern IntPtr objc_msgSend_retIntPtr_Int_IntPtr_IntPtr_IntPtr_IntPtr(
+	[DllImport(ObjcFramework, EntryPoint = "objc_msgSend")]
+	private static extern IntPtr objc_msgSend_retIntPtr_IntPtr_NUInt_IntPtr_IntPtr_IntPtr(
 		IntPtr target, IntPtr selector,
-		IntPtr param1, int param2, IntPtr param3, IntPtr param4, IntPtr param5);
+		IntPtr param1, nuint param2, IntPtr param3, IntPtr param4, IntPtr param5);
 
 	private enum CfStringEncoding : uint
 	{

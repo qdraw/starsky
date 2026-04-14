@@ -166,8 +166,7 @@ public class MacOsSecurityScopedBookmarkTests
 
 		Assert.IsFalse(result);
 		Assert.IsNull(bookmark);
-		// fileUrl was released even though bookmark data failed
-		Assert.AreEqual(1, fake.CfReleaseCalls);
+		Assert.AreEqual(0, fake.CfReleaseCalls);
 	}
 
 	[TestMethod]
@@ -194,9 +193,8 @@ public class MacOsSecurityScopedBookmarkTests
 
 		sut.TryCreateBookmark("/some/path", out _);
 
-		// fileUrl released via CfRelease, bookmarkNsData released via ObjcRelease
-		Assert.AreEqual(1, fake.CfReleaseCalls);
-		Assert.AreEqual(1, fake.ObjcReleaseCalls);
+		Assert.AreEqual(0, fake.CfReleaseCalls);
+		Assert.AreEqual(0, fake.ObjcReleaseCalls);
 	}
 
 	// --- TryResolveAndStartAccess ---
@@ -240,8 +238,7 @@ public class MacOsSecurityScopedBookmarkTests
 
 		Assert.IsFalse(result);
 		Assert.IsNull(path);
-		// nsData was ObjcReleased even though nsUrl was zero
-		Assert.AreEqual(1, fake.ObjcReleaseCalls);
+		Assert.AreEqual(0, fake.ObjcReleaseCalls);
 	}
 
 	[TestMethod]
@@ -255,8 +252,7 @@ public class MacOsSecurityScopedBookmarkTests
 
 		Assert.IsFalse(result);
 		Assert.IsNull(path);
-		// nsUrl must be released when access is denied
-		Assert.AreEqual(1, fake.CfReleaseCalls);
+		Assert.AreEqual(0, fake.CfReleaseCalls);
 	}
 
 	[TestMethod]
@@ -295,8 +291,7 @@ public class MacOsSecurityScopedBookmarkTests
 
 		sut.TryResolveAndStartAccess(validBase64, out _);
 
-		// nsData released via ObjcRelease; nsUrl NOT released (caller owns it until StopAccess)
-		Assert.AreEqual(1, fake.ObjcReleaseCalls);
+		Assert.AreEqual(0, fake.ObjcReleaseCalls);
 		Assert.AreEqual(0, fake.CfReleaseCalls);
 	}
 
@@ -324,8 +319,7 @@ public class MacOsSecurityScopedBookmarkTests
 		sut.StopAccess("/some/path");
 
 		Assert.IsTrue(fake.StopAccessCalled);
-		Assert.AreEqual(1, fake.CfReleaseCalls);
-		Assert.AreEqual(urlHandle, fake.AllCfReleased[0]);
+		Assert.AreEqual(0, fake.CfReleaseCalls);
 	}
 
 	[TestMethod]

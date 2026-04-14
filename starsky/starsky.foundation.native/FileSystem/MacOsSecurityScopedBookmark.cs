@@ -50,6 +50,10 @@ public sealed class MacOsSecurityScopedBookmark
 		{
 			// Convert base64-encoded bookmark back to NSData
 			var bookmarkBytes = Convert.FromBase64String(bookmarkData);
+			if ( bookmarkBytes.Length == 0 )
+			{
+				return false;
+			}
 			var nsData = _native.NsDataFromBytes(bookmarkBytes);
 
 			if ( nsData == IntPtr.Zero )
@@ -61,9 +65,6 @@ public sealed class MacOsSecurityScopedBookmark
 			// Resolve: NSURL(resolvingBookmarkData:options:relativeTo:bookmarkDataIsStale:error:)
 			var nsUrl = _native.ResolveBookmarkData(nsData);
 
-			// Release the NSData bookmark
-			_native.ObjcRelease(nsData);
-
 			if ( nsUrl == IntPtr.Zero )
 			{
 				_logger?.LogError("nsUrl could not be parsed");
@@ -73,10 +74,7 @@ public sealed class MacOsSecurityScopedBookmark
 			// Start accessing security-scoped resource
 			if ( !_native.StartAccessingSecurityScopedResource(nsUrl) )
 			{
-				_logger?.LogError("StartAccessingSecurityScopedResource failed");
-
-				// Release NSURL — access was not granted
-				_native.CfRelease(nsUrl);
+				_logger.LogError("StartAccessingSecurityScopedResource failed");
 				return false;
 			}
 
@@ -112,7 +110,6 @@ public sealed class MacOsSecurityScopedBookmark
 			}
 
 			_native.StopAccessingSecurityScopedResource(fileUrl);
-			_native.CfRelease(fileUrl);
 		}
 		catch
 		{
@@ -141,7 +138,6 @@ public sealed class MacOsSecurityScopedBookmark
 			}
 
 			var bookmarkNsData = _native.CreateBookmarkData(fileUrl);
-			_native.CfRelease(fileUrl);
 
 			if ( bookmarkNsData == IntPtr.Zero )
 			{
@@ -149,7 +145,6 @@ public sealed class MacOsSecurityScopedBookmark
 			}
 
 			var bytes = _native.NsDataGetBytes(bookmarkNsData);
-			_native.ObjcRelease(bookmarkNsData);
 
 			bookmarkBase64 = Convert.ToBase64String(bytes);
 			return true;
