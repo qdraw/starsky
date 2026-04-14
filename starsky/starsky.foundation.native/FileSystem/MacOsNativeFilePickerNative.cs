@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,14 +15,16 @@ internal sealed class MacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 {
 	private const string FoundationFramework =
 		"/System/Library/Frameworks/Foundation.framework/Foundation";
+
 	private const string ObjcFramework = "/usr/lib/libobjc.A.dylib";
+
 	private const string AppKitFramework =
 		"/System/Library/Frameworks/AppKit.framework/AppKit";
 
-	private static bool _appKitLoaded;
-
 	private const nint NsModalResponseOk = 1;
 	private const nuint NsUrlBookmarkCreationWithSecurityScope = 1u << 10;
+
+	private static bool _appKitLoaded;
 
 	public IntPtr CreateOpenPanel()
 	{
@@ -38,13 +41,53 @@ internal sealed class MacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 			}
 		}
 
-		var panelClass = objc_getClass("NSOpenPanel");
-		if ( panelClass == IntPtr.Zero )
+		// Dispatch to main thread via GCD to ensure AppKit safety
+		IntPtr result = IntPtr.Zero;
+		try
+		{
+			var mainQueue = dispatch_get_main_queue();
+			if ( mainQueue == IntPtr.Zero )
+			{
+				return IntPtr.Zero;
+			}
+
+			// Run the panel creation on the main queue
+			dispatch_sync_f(mainQueue, IntPtr.Zero, _ =>
+			{
+				var pool = objc_autoreleasePoolPush();
+				try
+				{
+					var panelClass = objc_getClass("NSOpenPanel");
+					if ( panelClass != IntPtr.Zero )
+					{
+						result = objc_msgSend_retIntPtr(panelClass, GetSelectorInternal("openPanel"));
+					}
+				}
+				catch
+				{
+					result = IntPtr.Zero;
+				}
+				finally
+				{
+					if ( pool != IntPtr.Zero )
+					{
+						objc_autoreleasePoolPop(pool);
+					}
+				}
+			});
+
+			return result;
+		}
+		catch ( SEHException ex )
+		{
+			// Catch unmanaged Objective-C exceptions
+			Debug.WriteLine($"NSOpenPanel failed: {ex.Message}");
+			return IntPtr.Zero;
+		}
+		catch
 		{
 			return IntPtr.Zero;
 		}
-
-		return objc_msgSend_retIntPtr(panelClass, GetSelectorInternal("openPanel"));
 	}
 
 	public void ConfigureOpenPanel(IntPtr panel, bool includeFiles = false)
@@ -149,5 +192,17 @@ internal sealed class MacOsNativeFilePickerNative : IMacOsNativeFilePickerNative
 
 	[DllImport("/usr/lib/libSystem.dylib")]
 	private static extern int pthread_main_np();
-}
 
+	[DllImport("/usr/lib/libobjc.A.dylib")]
+	private static extern IntPtr objc_autoreleasePoolPush();
+
+	[DllImport("/usr/lib/libobjc.A.dylib")]
+	private static extern void objc_autoreleasePoolPop(IntPtr pool);
+
+	[DllImport("/usr/lib/libSystem.dylib")]
+	private static extern IntPtr dispatch_get_main_queue();
+
+	[DllImport("/usr/lib/libSystem.dylib")]
+	private static extern void dispatch_sync_f(IntPtr queue, IntPtr context,
+		[MarshalAs(UnmanagedType.FunctionPtr)] Action<IntPtr> callback);
+}

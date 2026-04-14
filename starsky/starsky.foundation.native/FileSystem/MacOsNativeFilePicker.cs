@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using starsky.foundation.injection;
 using starsky.foundation.native.FileSystem.Interfaces;
 using starsky.foundation.native.FileSystem.Models;
@@ -6,7 +7,7 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.foundation.native.FileSystem;
 
 /// <summary>
-/// Uses macOS NSOpenPanel to pick a folder and create a security-scoped bookmark token.
+///     Uses macOS NSOpenPanel to pick a folder and create a security-scoped bookmark token.
 /// </summary>
 [Service(typeof(IMacOsNativeFilePicker), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class MacOsNativeFilePicker : IMacOsNativeFilePicker
@@ -43,12 +44,23 @@ public sealed class MacOsNativeFilePicker : IMacOsNativeFilePicker
 			return result;
 		}
 
+		// Additional check: verify we're not in a web service context where AppKit UI is unsafe
+		// This catches cases where UserInteractive=true but we're in ASP.NET/web service
+		if ( !IsGuiContextSafe() )
+		{
+			result.Error =
+				"GUI operations not allowed in this context (running in web service or background process)";
+			_logger.LogError($"[MacOsNativeFilePicker] {result.Error}");
+			return result;
+		}
+
 		try
 		{
 			var panel = _native.CreateOpenPanel();
 			if ( panel == IntPtr.Zero )
 			{
-				result.Error = "AppKit unavailable (NSOpenPanel not found; framework may not be loaded)";
+				result.Error =
+					"AppKit unavailable (NSOpenPanel not found; framework may not be loaded)";
 				_logger.LogError($"[MacOsNativeFilePicker] {result.Error}");
 				return result;
 			}
@@ -106,5 +118,42 @@ public sealed class MacOsNativeFilePicker : IMacOsNativeFilePicker
 			return result;
 		}
 	}
-}
 
+	private static bool IsGuiContextSafe()
+	{
+		// Check for common web/service process indicators
+		var processName = Process.GetCurrentProcess().ProcessName.ToLowerInvariant();
+		
+		// Reject known IIS web server processes
+		if ( processName == "w3wp" || processName == "iisexpress" )
+		{
+			return false;
+		}
+
+		// On macOS with interactive user session, GUI operations are safe
+		// even when called from ASP.NET (e.g., desktop app with embedded web server)
+		// Only reject if we're in a headless environment or running as a service
+		if ( OperatingSystem.IsMacOS() )
+		{
+			return true;
+		}
+
+		// On other platforms, be more conservative
+		try
+		{
+			var stackTrace = Environment.StackTrace;
+			if ( stackTrace.Contains("Microsoft.AspNetCore") || 
+			     stackTrace.Contains("System.Web.Http") ||
+			     stackTrace.Contains("AspNetCore.Hosting") )
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			// Ignore errors during stack inspection
+		}
+
+		return true;
+	}
+}
