@@ -54,7 +54,7 @@ final class FilePickerControllerTests: XCTestCase {
             expect.fulfill()
         }
 
-        controller.performPick(webView: fakeWeb)
+        controller.performPick(webView: fakeWeb, requestId: <#String#>)
 
         wait(for: [expect], timeout: 1.0)
 
