@@ -51,12 +51,9 @@ public class QueryDisplayFileFolders_NotSupportedException_Test
 	}
 
 	// Primary context that throws when FileIndex is accessed
-	internal class ThrowingFileIndexDbContext : ApplicationDbContext
+	internal sealed class ThrowingFileIndexDbContext(DbContextOptions options)
+		: ApplicationDbContext(options)
 	{
-		public ThrowingFileIndexDbContext(DbContextOptions options) : base(options)
-		{
-		}
-
 		[SuppressMessage("Usage", "S3237:S3237",
 			Justification = "Is checked")]
 		public override DbSet<FileIndexItem> FileIndex
@@ -71,26 +68,17 @@ public class QueryDisplayFileFolders_NotSupportedException_Test
 	}
 
 	// // Minimal fake service provider/scope factory to return our in-memory context
-	internal class FakeServiceProvider : IServiceProvider
+	private sealed class FakeServiceProvider(ApplicationDbContext ctx) : IServiceProvider
 	{
-		private readonly ApplicationDbContext _ctx;
-
-		public FakeServiceProvider(ApplicationDbContext ctx)
-		{
-			_ctx = ctx;
-		}
-
 		public object? GetService(Type serviceType)
 		{
-			return serviceType == typeof(ApplicationDbContext) ? _ctx : null;
+			return serviceType == typeof(ApplicationDbContext) ? ctx : null;
 		}
 	}
 
-	internal class FakeServiceScopeFactory(ApplicationDbContext ctx) : IServiceScopeFactory
+	private sealed class FakeServiceScopeFactory(ApplicationDbContext ctx) : IServiceScopeFactory
 	{
 		public int CreateCount { get; private set; }
-
-		public int CreateCountPublic => CreateCount;
 
 		public IServiceScope CreateScope()
 		{
