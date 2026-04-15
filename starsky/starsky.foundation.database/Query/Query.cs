@@ -686,7 +686,16 @@ public partial class Query : IQuery
 		}
 		catch ( DbUpdateConcurrencyException concurrencyException )
 		{
-			SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+			try
+			{
+				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+			}
+			catch ( ObjectDisposedException objectDisposedException )
+			{
+				_logger.LogInformation(objectDisposedException,
+					"[RetrySaveChangesAsync] SolveConcurrencyExceptionLoop skipped disposed entries");
+			}
+
 			try
 			{
 				_logger.LogInformation(
