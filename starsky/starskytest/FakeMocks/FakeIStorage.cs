@@ -113,6 +113,31 @@ public class FakeIStorage : IStorage
 		throw new NotSupportedException();
 	}
 
+	public string[] ReadAllLines(string path)
+	{
+		if ( _exception != null )
+		{
+			ExceptionCount++;
+			throw _exception;
+		}
+
+		if ( !ExistFile(path) )
+		{
+			return [];
+		}
+
+		if ( !_byteList.TryGetValue(path, out var data) || data == null )
+		{
+			// follow ReadStream behaviour: return a default test line when no explicit data set
+			return ["test"];
+		}
+
+		var text = Encoding.UTF8.GetString(data);
+		// keep all lines, even empty ones
+		var lines = text.Split(["\r\n", "\n"], StringSplitOptions.None);
+		return lines;
+	}
+
 	public virtual bool ExistFile(string path)
 	{
 		return _outputSubPathFiles.Contains(path);
@@ -188,7 +213,7 @@ public class FakeIStorage : IStorage
 		_byteList.TryAdd(toPath, _byteList[fromPath]);
 	}
 
-	public bool FileDelete(string path)
+	public virtual bool FileDelete(string path)
 	{
 		if ( !ExistFile(path) )
 		{
@@ -442,7 +467,7 @@ public class FakeIStorage : IStorage
 	/// <param name="stream">stream</param>
 	/// <param name="path">where to write to</param>
 	/// <returns>is Success</returns>
-	public Task<bool> WriteStreamAsync(Stream stream, string path)
+	public virtual Task<bool> WriteStreamAsync(Stream stream, string path)
 	{
 		return Task.FromResult(WriteStream(stream, path));
 	}

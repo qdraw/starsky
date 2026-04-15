@@ -141,11 +141,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/test.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/test.mp4");
 
 		// Assert
-		Assert.IsNotNull(hash);
-		Assert.AreEqual("OW3QBLZ7FNNCSVG4SDBHPYS5LM", hash);
+		Assert.IsNotNull(result);
+		Assert.AreEqual("OW3QBLZ7FNNCSVG4SDBHPYS5LM", result.FileHash);
 	}
 
 	[TestMethod]
@@ -164,11 +164,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/large.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/large.mp4");
 
 		// Assert
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
 	}
 
 	[TestMethod]
@@ -182,11 +182,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/extended.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/extended.mp4");
 
 		// Assert
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
 	}
 
 	[TestMethod]
@@ -200,11 +200,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/multi.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/multi.mp4");
 
 		// Assert
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
 	}
 
 	[TestMethod]
@@ -235,10 +235,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/no-mdat.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/no-mdat.mp4");
 
 		// Assert
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -250,10 +250,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/nonexistent.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/nonexistent.mp4");
 
 		// Assert
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -265,10 +265,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/empty.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/empty.mp4");
 
 		// Assert
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -281,11 +281,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync(
+		var result = await hasher.HashMp4VideoContentAsync(
 			"/corrupt.mp4");
 
 		// Assert
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -312,10 +312,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/incomplete-extended.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/incomplete-extended.mp4");
 
 		// Assert
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -329,11 +329,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/small.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/small.mp4");
 
 		// Assert
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
 	}
 
 	[TestMethod]
@@ -356,7 +356,7 @@ public sealed class Mp4FileHasherTest
 		var hash2 = await hasher2.HashMp4VideoContentAsync("/file2.mp4");
 
 		// Assert
-		Assert.AreEqual(hash1, hash2);
+		Assert.AreEqual(hash1.FileHash, hash2.FileHash);
 	}
 
 	[TestMethod]
@@ -393,11 +393,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/zero-mdat.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/zero-mdat.mp4");
 
 		// Assert
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(0, hash.Length);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(0, result.FileHash.Length);
 	}
 
 	[TestMethod]
@@ -411,11 +411,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/mdat-at-end.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/mdat-at-end.mp4");
 
 		// Assert
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
 	}
 
 	[TestMethod]
@@ -432,12 +432,12 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/binary.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/binary.mp4");
 
 		// Assert
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
-		Assert.IsTrue(hash.All(c => char.IsLetterOrDigit(c) || c == '='));
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
+		Assert.IsTrue(result.FileHash.All(c => char.IsLetterOrDigit(c) || c == '='));
 	}
 
 	[TestMethod]
@@ -456,11 +456,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/exact-256kb.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/exact-256kb.mp4");
 
 		// Assert
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
 	}
 
 	[TestMethod]
@@ -521,11 +521,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/unknown-atom.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/unknown-atom.mp4");
 
 		// Assert
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
 	}
 
 	[TestMethod]
@@ -569,10 +569,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/mdat-header-only.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/mdat-header-only.mp4");
 
 		// Assert - nothing hashed, should return empty to force fallback
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -619,11 +619,11 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/size-zero.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/size-zero.mp4");
 
 		// Assert - should hash payload and return a Base32 string
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(26, hash.Length);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
 	}
 
 	[TestMethod]
@@ -672,12 +672,12 @@ public sealed class Mp4FileHasherTest
 		var sut = new Mp4FileHasher(storage, logger);
 
 		// Act - call internal ProcessMp4AtomsAsync directly using non-seekable stream
-		var hash =
+		var result =
 			await sut.ProcessMp4AtomsAsync(nonSeek, md5, new byte[16],
 				CancellationToken.None);
 
 		// Assert - should return empty since ReadAtomAsync cannot determine atom size
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -702,9 +702,9 @@ public sealed class Mp4FileHasherTest
 		var hashNonSeek = await hasherNonSeek.HashMp4VideoContentAsync("/seek.mp4");
 
 		// Assert - non-seekable should hash the mdat immediately and match seekable hash
-		Assert.IsNotNull(hashSeek);
-		Assert.IsNotNull(hashNonSeek);
-		Assert.AreEqual(hashSeek, hashNonSeek);
+		Assert.IsNotNull(hashSeek.FileHash);
+		Assert.IsNotNull(hashNonSeek.FileHash);
+		Assert.AreEqual(hashSeek.FileHash, hashNonSeek.FileHash);
 	}
 
 	[TestMethod]
@@ -751,10 +751,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/no-payload.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/no-payload.mp4");
 
 		// Assert - HashMdatAtomAsync should read 0 bytes and return empty to indicate fallback
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -780,12 +780,12 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/seekref.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/seekref.mp4");
 
 		// Assert - fallback-to-read should allow scanning and produce same hash
-		Assert.IsNotNull(hashSeek);
-		Assert.IsNotNull(hash);
-		Assert.AreEqual(hashSeek, hash);
+		Assert.IsNotNull(hashSeek.FileHash);
+		Assert.IsNotNull(result.FileHash);
+		Assert.AreEqual(hashSeek.FileHash, result.FileHash);
 	}
 
 	[TestMethod]
@@ -831,10 +831,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/huge-declared.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/huge-declared.mp4");
 
 		// Assert - since nothing hashed, should return empty
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -868,11 +868,11 @@ public sealed class Mp4FileHasherTest
 		// Assert - since largest-first is used, both should produce same result
 		Assert.IsNotNull(hashA);
 		Assert.IsNotNull(hashB);
-		Assert.HasCount(26, hashA);
-		Assert.HasCount(26, hashB);
-		Assert.HasCount(26, hashC);
-		Assert.AreEqual(hashA, hashB);
-		Assert.AreNotEqual(hashB, hashC);
+		Assert.HasCount(26, hashA.FileHash);
+		Assert.HasCount(26, hashB.FileHash);
+		Assert.HasCount(26, hashC.FileHash);
+		Assert.AreEqual(hashA.FileHash, hashB.FileHash);
+		Assert.AreNotEqual(hashB.FileHash, hashC.FileHash);
 	}
 
 	/// <summary>
@@ -900,10 +900,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/throw.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/throw.mp4");
 
 		// Assert
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -1088,10 +1088,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storageWithException, logger);
 
 		// Act - Try to hash a file, but storage will throw an exception
-		var hash = await hasher.HashMp4VideoContentAsync("/failing.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/failing.mp4");
 
 		// Assert - Should return empty string when skip/stream operation fails
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 	}
 
 	[TestMethod]
@@ -1147,11 +1147,11 @@ public sealed class Mp4FileHasherTest
 		var sut = new Mp4FileHasher(storage, logger);
 
 		// Act - Call ProcessMp4AtomsAsync which will attempt to skip ftyp atom and fail
-		var hash = await sut.ProcessMp4AtomsAsync(throwingStream, md5,
+		var result = await sut.ProcessMp4AtomsAsync(throwingStream, md5,
 			new byte[16], CancellationToken.None);
 
 		// Assert - Should return empty string when skip fails
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 		Assert.IsTrue(logger.TrackedInformation[0].Item2
 			?.Contains("Mp4FileHasher.ProcessNonSeekableStreamAsync_non_mdat Failed to skip atom"));
 	}
@@ -1177,7 +1177,7 @@ public sealed class Mp4FileHasherTest
 				CancellationToken.None);
 
 		// Assert
-		Assert.AreEqual(string.Empty, result);
+		Assert.AreEqual(string.Empty, result.FileHash);
 		Assert.Contains(t => t.Item2?.Contains("Failed to skip") == true,
 			logger.TrackedInformation);
 	}
@@ -1215,7 +1215,7 @@ public sealed class Mp4FileHasherTest
 				CancellationToken.None);
 
 		// Assert - should return empty and log the mdat-specific skip failure
-		Assert.AreEqual(string.Empty, result);
+		Assert.AreEqual(string.Empty, result.FileHash);
 		Assert.Contains(
 			t => t.Item2?.Contains(
 				"Mp4FileHasher.ProcessSeekableStreamAsync_mdat Failed to skip atom") == true,
@@ -1237,10 +1237,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/nonseek-fail.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/nonseek-fail.mp4");
 
 		// Assert - when skipping fails on non-seekable stream we get empty result
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 		Assert.Contains(
 			t => t.Item2?.Contains("Failed to skip") == true, logger.TrackedInformation);
 	}
@@ -1266,10 +1266,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/bad-seekable.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/bad-seekable.mp4");
 
 		// Assert
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 		Assert.Contains(
 			t => t.Item2?.Contains(
 				"Mp4FileHasher.ProcessSeekableStreamAsync invalid payload size") == true,
@@ -1299,10 +1299,10 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/bad-nonseek.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/bad-nonseek.mp4");
 
 		// Assert
-		Assert.AreEqual(string.Empty, hash);
+		Assert.AreEqual(string.Empty, result.FileHash);
 		Assert.Contains(
 			t => t.Item2?.Contains(
 				"Mp4FileHasher.ProcessNonSeekableStreamAsync invalid payload size") == true,
@@ -1310,9 +1310,11 @@ public sealed class Mp4FileHasherTest
 	}
 
 	[TestMethod]
-	public async Task HashMp4VideoContentAsync_NonSeekable_ZeroSizeNonMdat_LogsAndReturnsEmpty()
+	public async Task HashMp4VideoContentAsync_NonSeekable_ZeroSizeNonMdat_ContinuesAndReturnsEmpty()
 	{
-		// Arrange - craft a non-mdat atom with size == header (8) and use a non-seekable stream
+		// Arrange - craft a non-mdat atom with size == header (8) and use a non-seekable stream.
+		// Zero-payload spacer atoms ('wide', 'free', 'skip') are valid; the parser should
+		// continue scanning and ultimately return empty because there is no mdat.
 		using var ms = new MemoryStream();
 		var size8 = BitConverter.GetBytes(( uint ) 8);
 		if ( BitConverter.IsLittleEndian )
@@ -1320,9 +1322,9 @@ public sealed class Mp4FileHasherTest
 			Array.Reverse(size8);
 		}
 
-		await ms.WriteAsync(size8.AsMemory(0, 4), 
+		await ms.WriteAsync(size8.AsMemory(0, 4),
 			TestContext.CancellationToken);
-		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4), 
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4),
 			TestContext.CancellationToken);
 		var mp4Data = ms.ToArray();
 
@@ -1332,15 +1334,191 @@ public sealed class Mp4FileHasherTest
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/bad-zero-nonseek.mp4");
+		var result = await hasher.HashMp4VideoContentAsync("/bad-zero-nonseek.mp4");
+
+		// Assert - no mdat present, so hash is empty; no "invalid" log should appear
+		Assert.AreEqual(string.Empty, result.FileHash);
+		var hasInvalidLog = logger.TrackedInformation.Any(
+			t => t.Item2?.Contains("invalid zero-size non-mdat atom") == true);
+		Assert.IsFalse(hasInvalidLog, "Zero-payload spacer atoms must not be logged as invalid");
+	}
+
+	/// <summary>
+	///     Regression test: QuickTime MOV files often contain a 'wide' spacer atom (size=8,
+	///     zero payload) immediately before the mdat atom.  The hasher must skip it and
+	///     successfully hash the mdat content.
+	/// </summary>
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_WideAtomBeforeMdat_Seekable_ReturnsHash()
+	{
+		// Arrange - build: ftyp(20) + wide(8) + mdat(8+payload)
+		var mdatContent = "QuickTime MOV content after wide spacer"u8.ToArray();
+		using var ms = new MemoryStream();
+
+		// ftyp
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// wide (size=8, no payload)
+		var wideSize = BitConverter.GetBytes(( uint ) 8);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(wideSize);
+		}
+
+		await ms.WriteAsync(wideSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("wide"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// mdat
+		var mdatSize = BitConverter.GetBytes(( uint ) ( 8 + mdatContent.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdatSize);
+		}
+
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(mdatContent, TestContext.CancellationToken);
+
+		var mp4Data = ms.ToArray();
+		var storage = CreateStorageWithMp4("/wide-before-mdat.mov", mp4Data);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var result = await hasher.HashMp4VideoContentAsync("/wide-before-mdat.mov");
 
 		// Assert
-		Assert.AreEqual(string.Empty, hash);
-		Assert.Contains(
-			t => t.Item2?.Contains(
-				     "Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom") ==
-			     true,
-			logger.TrackedInformation);
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length,
+			$"Expected a 26-char Base32 hash but got: '{result.FileHash}'");
+	}
+
+	/// <summary>
+	///     Regression test: same as above but using a non-seekable stream.
+	/// </summary>
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_WideAtomBeforeMdat_NonSeekable_ReturnsHash()
+	{
+		// Arrange - build: ftyp(20) + wide(8) + mdat(8+payload)
+		var mdatContent = "QuickTime MOV content after wide spacer nonseek"u8.ToArray();
+		using var ms = new MemoryStream();
+
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		var wideSize = BitConverter.GetBytes(( uint ) 8);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(wideSize);
+		}
+
+		await ms.WriteAsync(wideSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("wide"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		var mdatSize = BitConverter.GetBytes(( uint ) ( 8 + mdatContent.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdatSize);
+		}
+
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(mdatContent, TestContext.CancellationToken);
+
+		var mp4Data = ms.ToArray();
+		await using var nonSeek = new NonSeekableStream(mp4Data);
+		var storage = new StreamReturningStorage(nonSeek);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var result = await hasher.HashMp4VideoContentAsync("/wide-before-mdat-nonseek.mov");
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length,
+			$"Expected a 26-char Base32 hash but got: '{result.FileHash}'");
+	}
+
+	/// <summary>
+	///     Regression test: multiple consecutive zero-payload spacers ('wide', 'free', 'skip') before mdat.
+	/// </summary>
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_MultipleSpacersBeforeMdat_ReturnsHash()
+	{
+		var mdatContent = "Content after multiple spacers"u8.ToArray();
+		using var ms = new MemoryStream();
+
+		// ftyp(20)
+		var ftypSize = BitConverter.GetBytes(( uint ) 20);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(ftypSize);
+		}
+
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(new byte[4].AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("qt  "u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// wide(8)
+		var spacer8 = BitConverter.GetBytes(( uint ) 8);
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(spacer8);
+		}
+
+		await ms.WriteAsync(spacer8.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("wide"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// free(8)
+		await ms.WriteAsync(spacer8.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("free"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// skip(8)
+		await ms.WriteAsync(spacer8.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("skip"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+
+		// mdat
+		var mdatSize = BitConverter.GetBytes(( uint ) ( 8 + mdatContent.Length ));
+		if ( BitConverter.IsLittleEndian )
+		{
+			Array.Reverse(mdatSize);
+		}
+
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(mdatContent, TestContext.CancellationToken);
+
+		var mp4Data = ms.ToArray();
+		var storage = CreateStorageWithMp4("/multi-spacers.mov", mp4Data);
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		var result = await hasher.HashMp4VideoContentAsync("/multi-spacers.mov");
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual(26, result.FileHash.Length);
 	}
 
 	private sealed class NonSeekableStream(byte[] buffer) : MemoryStream(buffer)
@@ -1586,6 +1764,11 @@ public sealed class Mp4FileHasherTest
 
 		public IAsyncEnumerable<string> ReadLinesAsync(string path,
 			CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException();
+		}
+
+		public string[] ReadAllLines(string path)
 		{
 			throw new NotImplementedException();
 		}

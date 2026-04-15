@@ -41,8 +41,21 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.15 - _(Unreleased)_ - 2026-?-? {#v0.7.15}
+## version 0.7.16 - _(Unreleased)_ - 2026-?-? {#v0.7.16}
 
+- nothing yet
+
+## version 0.7.15 - 2026-04-15 {#v0.7.15}
+
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.420 (Runtime: 8.0.25) (PR #2979)
+- [x] (Added) _Back-end_ Check installation running status mount watcher --status flag (PR #2973)
+- [x] (Added) _Back-end_ Import Backup timestamped copy of imported to a specified folder (PR #2965)
+- [x] (Added) _Back-end_ Delete After setting Import specific for MountCLI (PR #2965)
+- [x] (Fixed) _Back-end_ Native FileSystem interop on Intel macOS vs Apple Silicon (PR #2960)
+- [x] (Fixed) _Back-end_ Zero-payload non-mdat atom (e.g. wide, free) gives hash back (PR #2955)
+- [x] (Fixed) _Back-end_ GetWindowsDriveInfo where Z:\\ was used to find an unused drive. (PR #2905)
+- [x] (Added) _Back-end_ Fix disk Detect File System for macOS and Linux (PR #2905)
+- [x] (Added) _Back-end_ Add starskyMountWatcherCli to auto import (PR #2905)
 - [x] (Added) _Back-end_ Add Title and Tags overview razor template (PR #2891)
 - [x] (Added) _Back-end_ Create Job to generate thumbnails when missing in Thumbnail and Zoom API
   (PR #2891)

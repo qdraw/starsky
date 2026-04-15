@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "starskymountwatchercli": {
+      "commandName": "Project",
+      "commandLineArgs": "-h",
+      "environmentVariables": {
+        "app__ImportMountWatcher__DeleteAfter": "false"
+      }
+    }
+  }
+}
+

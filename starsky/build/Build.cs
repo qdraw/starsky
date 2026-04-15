@@ -69,6 +69,7 @@ public sealed class Build : NukeBuild
 		"starskywebftpcli",
 		"starskywebhtmlcli",
 		"starskythumbnailmetacli",
+		"starskymountwatchercli",
 		"starsky"
 	};
 

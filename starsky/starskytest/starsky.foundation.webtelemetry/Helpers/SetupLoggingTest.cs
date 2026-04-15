@@ -47,12 +47,13 @@ public class SetupLoggingTest
 		// Assert
 		Assert.HasCount(5, result);
 		Assert.Contains(kvp =>
-			kvp.Key == SetupLogging.HostNameKey && kvp.Value.Equals(Environment.MachineName), result);
+				kvp.Key == SetupLogging.HostNameKey && kvp.Value.Equals(Environment.MachineName),
+			result);
 		Assert.Contains(kvp =>
 			kvp.Key == SetupLogging.DeploymentEnvironmentName
 			&& kvp.Value.Equals(testEnvironment), result);
 		Assert.Contains(kvp => kvp.Key == SetupLogging.AppVersionName
-		                                && kvp.Value.Equals(appSettings.AppVersion), result);
+		                       && kvp.Value.Equals(appSettings.AppVersion), result);
 		Assert.Contains(kvp =>
 			kvp.Key == SetupLogging.AppVersionBuildDateTimeName && kvp.Value.Equals(
 				appSettings.AppVersionBuildDateTime.ToString(
@@ -60,5 +61,42 @@ public class SetupLoggingTest
 		Assert.Contains(kvp =>
 			kvp.Key == SetupLogging.FrameworkDescriptionName &&
 			kvp.Value.Equals(RuntimeInformation.FrameworkDescription), result);
+	}
+
+	[TestMethod]
+	public void AddEventLog_NonWindows_ReturnsExpectedSourceName_AndDoesNotThrow()
+	{
+		// Arrange
+		IServiceCollection services = new ServiceCollection();
+		var sourceName = string.Empty;
+
+		// Act
+		services.AddLogging(logging =>
+		{
+			sourceName = new AddEventLogger().AddEventLog(logging,
+				AppSettings.StarskyAppType.WebController);
+		});
+
+		// Assert
+		Assert.AreEqual("nl.qdraw.webcontroller", sourceName);
+	}
+
+	[TestMethod]
+	public void AddEventLog_Windows_FakeWindows_ReturnsExpectedSourceName_AndDoesNotThrow()
+	{
+		// Arrange
+		IServiceCollection services = new ServiceCollection();
+		var sourceName = string.Empty;
+
+		// Act - fake Windows platform via constructor injection
+		var addEventLogger = new AddEventLogger(() => OSPlatform.Windows);
+		services.AddLogging(logging =>
+		{
+			sourceName = addEventLogger.AddEventLog(logging,
+				AppSettings.StarskyAppType.WebController);
+		});
+
+		// Assert - should return expected source name and not throw
+		Assert.AreEqual("nl.qdraw.webcontroller", sourceName);
 	}
 }

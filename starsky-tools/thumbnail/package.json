@@ -1,6 +1,6 @@
 {
   "name": "thumbnail",
-  "version": "0.7.14",
+  "version": "0.7.15",
   "description": "Client side thumbnail generation interacting with a Starsky WebApi ",
   "main": "thumbnail.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/jpeg-autorotate": "^5.0.4",
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "cwait": "^1.1.2",
     "dotenv": "^17.3.1",
     "jimp": "^1.6.0",

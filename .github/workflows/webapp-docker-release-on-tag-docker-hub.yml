@@ -26,13 +26,13 @@ jobs:
         run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
-        uses: docker/login-action@de05a6d3a24346d4659bce540fac29c04a309bad
+        uses: docker/login-action@d43e1c853e1fb3780e2a1187b33970c59f58c314
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Log in to Github Container registry
-        uses: docker/login-action@de05a6d3a24346d4659bce540fac29c04a309bad
+        uses: docker/login-action@d43e1c853e1fb3780e2a1187b33970c59f58c314
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -40,7 +40,7 @@ jobs:
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@8016837eba79c3b51bf2025379f48b6fc50f1236
+        uses: docker/setup-buildx-action@ffb3193908564d14b099e8f6bbacbaea94ee2ac4
 
       - name: Inspect Docker Buildx
         run: |
@@ -52,7 +52,7 @@ jobs:
 
       - name: Build and push ${{ steps.pushtags.outputs.tag }}
         id: docker_build
-        uses: docker/build-push-action@b66d8774c665b789105b440514f0c97e6f19b06f
+        uses: docker/build-push-action@e6ed27f63f1dfc978c8eba9ee1663c3d5e396880
         with:
           context: ./starsky
           platforms: linux/amd64,linux/arm64,linux/arm/v7

@@ -7,6 +7,10 @@
         * [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
     * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line
       interface_
+    * [starskyMountWatcherCli](../../starsky/starskymountwatchercli/readme.md)  _watch sd cards_
+    * [starskyDemoSeedCli](../../starsky/starskydemoseedcli/readme.md) _demo seed data_
+    * [starskyDependenciesDownloadCli](../../starsky/starskydependenciesdownloadcli/readme.md) _make
+      sure external dependencies are installed_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a
       content package_

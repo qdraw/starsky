@@ -168,6 +168,39 @@ public sealed class StorageThumbnailFilesystemTest
 	}
 
 	[TestMethod]
+	public void Thumbnail_ReadAllLines_ReturnsLines()
+	{
+		// Arrange
+		var fileName = "thumb_readall_test.txt";
+		var fullPath = _thumbnailStorage.CombinePath(fileName);
+		var expected = new[] { "r1", "r2", "r3" };
+		File.WriteAllLines(fullPath, expected);
+
+		try
+		{
+			// Act
+			var result = _thumbnailStorage.ReadAllLines(fileName);
+
+			// Assert
+			CollectionAssert.AreEqual(expected, result);
+		}
+		finally
+		{
+			try
+			{
+				if ( File.Exists(fullPath) )
+				{
+					File.Delete(fullPath);
+				}
+			}
+			catch
+			{
+				// ignore cleanup failure
+			}
+		}
+	}
+
+	[TestMethod]
 	public void Thumbnail_WriteStream()
 	{
 		const string filename = "StorageThumbnailFilesystemTest_WriteStream.jpg";

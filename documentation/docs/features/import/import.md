@@ -12,7 +12,14 @@ of the process independently.
 If your photo library has more structure, for example by organizing the photos by date, you can also
 configure this in the settings.
 
-![Import](../assets/import_v052.gif)
+## Types of import
+- [Mount Watcher CLI to Auto Import](mountwatchercli.md)
+- [Cloud Import](cloudimport.md)
+- Manual import (this page)
+
+## Run the importer
+
+![Import](../../assets/import_v052.gif)
 
 Import is by default done by the metadata field that contains the datetime the picture is made
 If that field is not available, the file creation date is used.
@@ -184,22 +191,37 @@ The following checks are performed to identify camera storage devices:
 These 4 checks help ensure that only valid camera storage devices are scanned and imported.
 
 ## Troubleshooting: Access to Path is denied on macOS
+See [Troubleshooting: Access to Path is denied on macOS](troubleshooting-access-to-path-macos.md)
 
-When you see the error: **Access to Path is denied** on an external memory card, you need to give Starsky Full Disk Access.
+## Import Backup
 
-![Access to Path is denied](../assets/import-access-to-path-is-denied-v070-1.jpg)
+Starsky can optionally create a fixed-structure backup copy of imported files. The backup filename uses a deterministic timestamp + original name format; for example:
 
-### How to grant Full Disk Access on macOS
+20260326_082007_Schermafbeelding-2026-03-26-om-082007.png
 
-1. Open **System Settings** (or **System Preferences** on older macOS versions).
-2. Go to **Privacy & Security**.
-3. Scroll down and select **Full Disk Access**.
-4. Click the **+** button and add the Starsky application (or the terminal if you use the CLI).
-5. Make sure Starsky and StarskyImporterCli is enabled in the list.
-6. Restart Starsky (or your terminal) for the changes to take effect.
+Enable the feature via environment variables:
 
-![Image of How to grant Full Disk Access, written out in text](../assets/import-access-to-path-is-denied-v070-2.jpg)
+```json
+"app__ImportBackup__Enabled": "true",
+"app__ImportBackup__StorageFolder": "/data/backup_camera/1/"
+```
 
-This permission is required by macOS to allow applications to access files on external drives and memory cards.
+Or set the same values in `appsettings.json` under the `ImportBackup` section:
+Patching appsettings with `appsettings.patch.json` can also be used in this feature
 
-- [Reference](../getting-started/troubleshooting/macos.md).
+```json
+"ImportBackup": {
+    "Enabled": "false",
+    "StorageFolder": "/data/backup_camera/1/"
+}
+```
+
+When enabled, imported files are copied to the configured storage folder using the fixed filename structure above. Use this to keep an immutable backup of original camera imports.
+
+## Mount watcher
+See [Mount Watcher CLI to Auto Import](mountwatchercli.md)
+
+## Related
+
+- [Mount Watcher CLI to Auto Import](mountwatchercli.md)
+- [Cloud Import](cloudimport.md)

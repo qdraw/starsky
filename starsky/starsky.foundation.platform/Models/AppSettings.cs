@@ -93,7 +93,12 @@ public sealed class AppSettings
 		/// <summary>
 		///     Download external dependencies
 		/// </summary>
-		DependenciesDownload = 11
+		DependenciesDownload = 11,
+
+		/// <summary>
+		///     Mount watcher
+		/// </summary>
+		MountWatcher = 12
 	}
 
 	/// <summary>
@@ -277,6 +282,10 @@ public sealed class AppSettings
 
 	[PackageTelemetry]
 	public AppSettingsImportTransformationModel ImportTransformation { get; set; } = new();
+
+	[PackageTelemetry] public AppSettingsImportBackupModel ImportBackup { get; set; } = new();
+
+	[PackageTelemetry] public AppSettingsMountWatcherModel ImportMountWatcher { get; set; } = new();
 
 	/// <summary>
 	///     Used for syncing gpx files
@@ -489,16 +498,16 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
-	/// Represents the default settings for publish profiles,
-	/// including configuration and feature specifications
-	/// used when no specific profile overrides are provided.
+	///     Represents the default settings for publish profiles,
+	///     including configuration and feature specifications
+	///     used when no specific profile overrides are provided.
 	/// </summary>
 	[PackageTelemetry]
 	public AppSettingsPublishProfilesDefaults PublishProfilesDefaults { get; set; } =
 		new();
 
 	/// <summary>
-	/// Represents the remote publishing profiles configuration for the application.
+	///     Represents the remote publishing profiles configuration for the application.
 	/// </summary>
 	public AppSettingsPublishProfilesRemote PublishProfilesRemote { get; set; } = new();
 
@@ -684,7 +693,7 @@ public sealed class AppSettings
 			if ( EnablePackageTelemetryPrivate == null )
 			{
 #pragma warning disable CS0162
-#if ( DEBUG )
+#if DEBUG
 				return false;
 #endif
 				// ReSharper disable once HeuristicUnreachableCode

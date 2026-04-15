@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode;
@@ -520,6 +521,64 @@ public sealed class ImportTest : VerifyBase
 		Assert.IsFalse(storage.ExistFile("/test.jpg"));
 	}
 
+	[TestMethod]
+	public async Task Importer_WithBackup_CreatesBackupAndImportsFile()
+	{
+		// Arrange: source file and backup folder
+		var storage = new FakeIStorage(["/", "/backup"],
+			["/test.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var selector = new FakeSelectorStorage(storage);
+
+		var appSettings = new AppSettings
+		{
+			ImportBackup =
+				new AppSettingsImportBackupModel { Enabled = true, StorageFolder = "/backup" },
+			Structure = new AppSettingsStructureModel
+			{
+				DefaultPattern = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss.ext"
+			}
+		};
+
+		var importService = new Import(
+			selector,
+			appSettings,
+			new FakeIImportQuery(),
+			new FakeExifTool(storage, appSettings),
+			new FakeIQuery(),
+			new FakeConsoleWrapper([]),
+			new FakeIMetaExifThumbnailService(),
+			new FakeIWebLogger(),
+			new FakeIThumbnailQuery(),
+			new FakeIReverseGeoCodeService(),
+			new MemoryCache(new MemoryCacheOptions())
+		);
+
+		var importSettings = new ImportSettingsModel { IndexMode = false };
+
+		// Act
+		var result = await importService.Importer(new List<string> { "/test.jpg" }, importSettings);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.IsNotEmpty(result);
+		var first = result[0];
+		Assert.AreEqual(ImportStatus.Ok, first.Status);
+
+		// backup file should be created under /backup
+		var backupFiles = storage.GetAllFilesInDirectory("/backup").ToList();
+		Assert.IsNotEmpty(backupFiles);
+		Assert.HasCount(1, backupFiles);
+		Assert.AreEqual($"/backup{Path.DirectorySeparatorChar}20180422_161454_test.jpg", backupFiles[0]);
+
+		// import should have created a copy in subpath (not only the original /test.jpg)
+		var allFiles = storage.GetAllFilesInDirectoryRecursive("/").ToList();
+		Assert.IsGreaterThanOrEqualTo(2, allFiles.Count);
+
+		var importDone = storage.ExistFile("/2018/04/2018_04_22/20180422_161454.jpg");
+		Assert.IsTrue(importDone);
+	}
+
 	private static AppSettings SetupReverseGeoCodeServiceData()
 	{
 		var appSettings = new AppSettings
@@ -867,7 +926,7 @@ public sealed class ImportTest : VerifyBase
 				Status = ImportStatus.Ok,
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			},
-			new ImportSettingsModel());
+			new ImportSettingsModel(), new AppSettingsImportBackupModel());
 
 		Assert.IsFalse(subPathStorage.ExistFile("/test.jpg"));
 		Assert.IsFalse(await fakeImportQuery.IsHashInImportDbAsync("hash73845934893459"));
@@ -1130,7 +1189,7 @@ public sealed class ImportTest : VerifyBase
 
 		var result = await importService.Importer(
 			new ImportIndexItem { Status = ImportStatus.FileError },
-			new ImportSettingsModel());
+			new ImportSettingsModel(), new AppSettingsImportBackupModel());
 		Assert.AreEqual(ImportStatus.FileError, result.Status);
 	}
 

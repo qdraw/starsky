@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -146,12 +147,31 @@ public sealed class DiskStorageHealthCheckTest
 		Assert.IsGreaterThan(0, actualFreeMegabytes);
 	}
 
+	private static string GetUnusedDriveLetter()
+	{
+		var usedLetters = DriveInfo.GetDrives()
+			.Select(d => char.ToUpperInvariant(d.Name[0]))
+			.ToHashSet();
+
+		for ( char letter = 'Z'; letter >= 'A'; letter-- )
+		{
+			if ( !usedLetters.Contains(letter) )
+			{
+				return $"{letter}:\\";
+			}
+		}
+
+		throw new InvalidOperationException("No unused drive letters available.");
+	}
+
 	[TestMethod]
 	public void GetWindowsDriveInfo_NonExistingDrive_ReturnsNotExists()
 	{
 		var healthCheck =
 			new DiskStorageHealthCheck(new DiskStorageOptions(), new FakeIWebLogger());
-		var (exists, actualFreeMegabytes) = healthCheck.GetWindowsDriveInfo("Z:\\");
+		var nonExistingDrive = GetUnusedDriveLetter();
+
+		var (exists, actualFreeMegabytes) = healthCheck.GetWindowsDriveInfo(nonExistingDrive);
 		Assert.IsFalse(exists);
 		Assert.AreEqual(0, actualFreeMegabytes);
 	}

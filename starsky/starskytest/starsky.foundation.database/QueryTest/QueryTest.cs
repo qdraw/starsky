@@ -126,6 +126,7 @@ public sealed class QueryTest
 		// retry 2
 		if ( homeItem?.FileIndexItem != null )
 		{
+			await Task.Delay(50, TestContext.CancellationToken);
 			await _query.RemoveItemAsync(homeItem.FileIndexItem);
 
 			// Query again if needed

@@ -65,6 +65,14 @@ public class PreviewImageNativeServiceTests
 	[OSCondition(OperatingSystems.Windows)]
 	public void GeneratePreviewImage_ShouldReturnFalse_WhenThumbnailGenerationFails__WindowsOnly()
 	{
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+		 RuntimeInformation.OSArchitecture ==
+		 System.Runtime.InteropServices.Architecture.Arm64 )
+		{
+			Assert.Inconclusive("This test is only valid on Windows x64.");
+		}
+
+
 		var (service, logger) = CreateSut();
 
 		// Act

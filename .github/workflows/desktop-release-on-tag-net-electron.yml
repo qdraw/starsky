@@ -30,7 +30,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
         with:
-          dotnet-version: 8.0.419
+          dotnet-version: 8.0.420
 
       - name: Build --no-unit-test linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
         shell: bash
@@ -38,43 +38,43 @@ jobs:
         run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test --ready-to-run
 
       - name: Upload linux-arm as build artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: linux-arm
           path: ./starsky/starsky-linux-arm.zip
 
       - name: Upload linux-arm64 as build artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: linux-arm64
           path: ./starsky/starsky-linux-arm64.zip
  
       - name: Upload win-x64 as build artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: win-x64
           path: ./starsky/starsky-win-x64.zip
   
       - name: Upload linux-x64 as build artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: linux-x64
           path: ./starsky/starsky-linux-x64.zip
 
       - name: Upload osx-x64 as build artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: osx-x64
           path: ./starsky/starsky-osx-x64.zip
  
       - name: Upload osx-arm64 as build artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: osx-arm64
           path: ./starsky/starsky-osx-arm64.zip
  
       - name: Upload slack-notification as build artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: starsky-tools-slack-notification
           path: ./starsky-tools/slack-notification
@@ -129,7 +129,7 @@ jobs:
         run: npm run macx64
    
       - name: Upload starsky-mac-x64-desktop as build artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: starsky-mac-x64-desktop
           path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg 
@@ -177,7 +177,7 @@ jobs:
         run: npm run macarm64
    
       - name: Upload starsky-mac-arm64-desktop as build artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: starsky-mac-arm64-desktop
           path: ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg 
@@ -227,7 +227,7 @@ jobs:
         run: npm run windows
      
       - name: Upload starsky-win-x64-desktop as build artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: starsky-win-x64-desktop
           path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
@@ -309,7 +309,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@e798e6a1ede8d07b74ac4cdac6bdfa4cc1653907
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

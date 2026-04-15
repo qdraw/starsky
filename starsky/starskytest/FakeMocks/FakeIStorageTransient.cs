@@ -148,4 +148,9 @@ public class FakeIStorageTransient : IStorage
 	{
 		throw new NotImplementedException();
 	}
+
+	public string[] ReadAllLines(string path)
+	{
+		throw new NotImplementedException();
+	}
 }

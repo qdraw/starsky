@@ -4,10 +4,12 @@ using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
+using starsky.foundation.native.PreviewImageNative.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.video.Process.Interfaces;
 using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
 
@@ -38,6 +40,8 @@ namespace starskywebhtmlcli
 			var storageSelector = serviceProvider.GetRequiredService<ISelectorStorage>();
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var logger = serviceProvider.GetRequiredService<IWebLogger>();
+			_ =  serviceProvider.GetRequiredService<IVideoProcess>();
+			_ =  serviceProvider.GetRequiredService<IPreviewImageNativeService>();
 
 			// Help and args selectors are defined in the PublishCli
 			await new PublishCli(storageSelector, publishPreflight, publishService, appSettings,

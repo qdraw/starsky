@@ -90,6 +90,13 @@ public class FakeIFfMpegDownload : IFfMpegDownload
 
 	public static void CleanUp()
 	{
-		File.Delete(new FakeIFfMpegDownload().GetSetFfMpegPath());
+		try
+		{
+			File.Delete(new FakeIFfMpegDownload().GetSetFfMpegPath());
+		}
+		catch
+		{
+			// ignore if failed
+		}
 	}
 }
