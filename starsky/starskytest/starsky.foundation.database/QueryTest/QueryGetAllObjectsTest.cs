@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -202,6 +201,52 @@ public sealed class QueryGetAllObjects_MySqlException_Test
 			set
 			{
 				// do nothing here
+			}
+		}
+	}
+}
+
+[TestClass]
+public sealed class QueryGetAllObjects_InvalidOperationException_Test
+{
+	[TestMethod]
+	public void GetAllObjectsAsync_WhenInvalidOperationExceptionOccurs_UsesScopedFallback()
+	{
+		// Arrange: primary context that throws InvalidOperationException when FileIndex accessed
+		var primaryOptions = new DbContextOptionsBuilder<ApplicationDbContext>().Options;
+		var primary = new ThrowingInvalidOperationDbContext(primaryOptions);
+
+		var scopeFactory =
+			new FakeIServiceScopeFactory(nameof(QueryGetAllObjects_InvalidOperationException_Test));
+		var scope = scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		var item =
+			new FileIndexItem("/col/item.jpg") { FileName = "item.jpg", ParentDirectory = "/col" };
+		dbContext.FileIndex.Add(item);
+		dbContext.SaveChanges();
+
+		var query = new Query(primary, new AppSettings { AddMemoryCache = false }, scopeFactory,
+			new FakeIWebLogger());
+
+		// Act
+		var result = query.GetAllObjectsAsync(["/col"]).Result;
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.HasCount(1, result);
+		Assert.AreEqual(item.FilePath, result[0].FilePath);
+	}
+
+	private sealed class ThrowingInvalidOperationDbContext(DbContextOptions options)
+		: ApplicationDbContext(options)
+	{
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get => throw new InvalidOperationException("Simulated ExecuteReader error");
+			set
+			{
+				// do nothing here  
 			}
 		}
 	}
