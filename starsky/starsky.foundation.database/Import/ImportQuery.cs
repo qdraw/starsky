@@ -72,7 +72,6 @@ public sealed class ImportQuery : IImportQuery
 		if ( !_isConnection )
 		{
 			// When there is no mysql connection continue
-			Console.WriteLine(">> _isConnection == false");
 			return false;
 		}
 
