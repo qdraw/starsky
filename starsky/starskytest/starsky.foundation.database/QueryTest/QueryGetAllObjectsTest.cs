@@ -32,7 +32,7 @@ public sealed class QueryGetAllObjectsTest
 
 	public TestContext TestContext { get; set; }
 
-	private IServiceScopeFactory CreateNewScope()
+	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
 		services.AddDbContext<ApplicationDbContext>(options =>
@@ -49,7 +49,7 @@ public sealed class QueryGetAllObjectsTest
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 		};
 		var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
-		var query = new Query(dbContext, new AppSettings(), null, new FakeIWebLogger(),
+		var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger(),
 			new FakeMemoryCache());
 
 		await dbContext.FileIndex.AddAsync(
@@ -83,7 +83,7 @@ public sealed class QueryGetAllObjectsTest
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 		};
 		var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
-		var query = new Query(dbContext, new AppSettings(), null, new FakeIWebLogger(),
+		var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger(),
 			new FakeMemoryCache());
 
 		await dbContext.FileIndex.AddAsync(
@@ -99,7 +99,7 @@ public sealed class QueryGetAllObjectsTest
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var items = ( await query.GetAllObjectsAsync(
-				new List<string> { "/GetAllObjects_multi_01", "/GetAllObjects_multi_02" }) )
+				["/GetAllObjects_multi_01", "/GetAllObjects_multi_02"]) )
 			.OrderBy(p => p.FileName).ToList();
 
 		Assert.HasCount(2, items);
@@ -113,10 +113,10 @@ public sealed class QueryGetAllObjectsTest
 	[TestMethod]
 	public async Task GetAllObjectsAsync_NoParameters()
 	{
-		var query = new Query(null!, new AppSettings(), null,
+		var query = new Query(null!, new AppSettings(), null!,
 			new FakeIWebLogger(), new FakeMemoryCache());
 
-		var result = await query.GetAllObjectsAsync(new List<string>());
+		var result = await query.GetAllObjectsAsync([]);
 		Assert.IsEmpty(result);
 	}
 
@@ -174,7 +174,7 @@ public sealed class QueryGetAllObjects_MySqlException_Test
 			new FakeIWebLogger());
 
 		// Act
-		var result = query.GetAllObjectsAsync(new List<string> { "/col" }).Result;
+		var result = query.GetAllObjectsAsync(["/col"]).Result;
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -193,13 +193,16 @@ public sealed class QueryGetAllObjects_MySqlException_Test
 				var ctor = exceptionType.GetConstructor(
 					BindingFlags.NonPublic | BindingFlags.Instance,
 					null,
-					new[] { typeof(string) },
+					[typeof(string)],
 					null) ?? throw new InvalidOperationException("Constructor not found.");
 
-				var ex = ( MySqlException ) ctor.Invoke(new object[] { "Test MySqlException" });
+				var ex = ( MySqlException ) ctor.Invoke(["Test MySqlException"]);
 				throw ex;
 			}
-			set { }
+			set
+			{
+				// do nothing here
+			}
 		}
 	}
 }
