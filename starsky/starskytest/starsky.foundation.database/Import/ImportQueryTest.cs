@@ -34,6 +34,8 @@ public sealed class ImportQueryTest
 			new FakeIWebLogger(), _dbContext);
 	}
 
+	public TestContext TestContext { get; set; }
+
 	private static IServiceScopeFactory CreateNewScope(string? name = null)
 	{
 		name ??= nameof(ImportQueryTest);
@@ -66,10 +68,13 @@ public sealed class ImportQueryTest
 		var injectServiceScope = new InjectServiceScope(_serviceScope);
 		await injectServiceScope.ExecuteAsync(async dbContext =>
 		{
-			await dbContext.ImportIndex.AddAsync(new ImportIndexItem
-			{
-				Status = ImportStatus.Ok, FileHash = "TEST2", AddToDatabase = DateTime.UtcNow
-			}, TestContext.CancellationTokenSource.Token);
+			await dbContext.ImportIndex.AddAsync(
+				new ImportIndexItem
+				{
+					Status = ImportStatus.Ok,
+					FileHash = "TEST2",
+					AddToDatabase = DateTime.UtcNow
+				}, TestContext.CancellationTokenSource.Token);
 			await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 			return true;
 		});
@@ -154,7 +159,8 @@ public sealed class ImportQueryTest
 			new FakeIWebLogger()).AddRangeAsync(expectedResult);
 
 		var queryFromDb = await dbContext.ImportIndex
-			.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToListAsync(TestContext.CancellationTokenSource.Token);
+			.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5")
+			.ToListAsync(TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash,
 			queryFromDb.FirstOrDefault()?.FileHash);
 		Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
@@ -220,7 +226,8 @@ public sealed class ImportQueryTest
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
 			// Ensure that the item is removed from the import index
-			Assert.IsFalse(await dbContext.ImportIndex.AnyAsync(x => x.Id == importIndexItem.Id, TestContext.CancellationTokenSource.Token));
+			Assert.IsFalse(await dbContext.ImportIndex.AnyAsync(x => x.Id == importIndexItem.Id,
+				TestContext.CancellationTokenSource.Token));
 		}
 	}
 
@@ -237,7 +244,8 @@ public sealed class ImportQueryTest
 		var scope = serviceScopeFactory.CreateScope();
 		var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-		await dbContextDisposed.ImportIndex.AddRangeAsync(addedItems, TestContext.CancellationTokenSource.Token);
+		await dbContextDisposed.ImportIndex.AddRangeAsync(addedItems,
+			TestContext.CancellationTokenSource.Token);
 		await dbContextDisposed.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// Dispose here
@@ -426,10 +434,7 @@ public sealed class ImportQueryTest
 			throw new SqliteException("Database is locked", 1);
 		}
 	}
-
-	public TestContext TestContext { get; set; }
 }
-
 
 [TestClass]
 public sealed class ImportQuery_ScopeFactoryNull_Tests
@@ -492,9 +497,10 @@ public sealed class ImportQuery_ScopeFactoryNull_Tests
 		var result = await sut.AddAsync(item);
 
 		Assert.IsTrue(result);
-		var saved = await ctx.ImportIndex.FirstOrDefaultAsync(p => p.FileHash == "h_add", TestContext.CancellationToken);
+		var saved = await ctx.ImportIndex.FirstOrDefaultAsync(p => p.FileHash == "h_add",
+			TestContext.CancellationToken);
 		Assert.IsNotNull(saved);
-		Assert.IsTrue(console.WrittenLines.Any());
+		Assert.IsNotEmpty(console.WrittenLines);
 	}
 
 	[TestMethod]
@@ -586,6 +592,6 @@ public sealed class ImportQuery_ScopeFactoryNull_Tests
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(2, ctx.ImportIndex.Count());
-		Assert.IsTrue(console.WrittenLines.Any());
+		Assert.IsNotEmpty(console.WrittenLines);
 	}
 }
