@@ -115,14 +115,14 @@ public partial class Query : IQuery
 			// at MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet()
 			try
 			{
-				return await LocalQuery(new InjectServiceScope(_scopeFactory)
-					.Context());
+				var scope = new InjectServiceScope(_scopeFactory);
+				return await scope.ExecuteAsync(LocalQuery);
 			}
 			catch ( MySqlProtocolException )
 			{
 				// Packet received out-of-order. Expected 1; got 2.
-				return await LocalQuery(
-					new InjectServiceScope(_scopeFactory).Context());
+				var scope = new InjectServiceScope(_scopeFactory);
+				return await scope.ExecuteAsync(LocalQuery);
 			}
 			// Rewrite in future to avoid using  catch NullReferenceException
 			catch ( NullReferenceException ex2 )
@@ -136,7 +136,8 @@ public partial class Query : IQuery
 		catch ( InvalidOperationException )
 		{
 			// System.InvalidOperationException or ObjectDisposedException: Cannot Open when State is Connecting.
-			return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(LocalQuery);
 		}
 	}
 

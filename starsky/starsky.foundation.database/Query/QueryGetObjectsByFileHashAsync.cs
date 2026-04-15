@@ -55,7 +55,8 @@ public partial class Query
 					throw;
 				}
 
-				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+				var scope = new InjectServiceScope(_scopeFactory);
+				return await scope.ExecuteAsync(LocalQuery);
 			}
 		}
 	}

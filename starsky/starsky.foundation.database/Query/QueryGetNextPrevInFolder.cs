@@ -47,13 +47,13 @@ public partial class Query
 		}
 		catch ( MySqlProtocolException )
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return LocalQuery(context);
+			var scope = new InjectServiceScope(_scopeFactory);
+			return scope.Execute(LocalQuery);
 		}
 		catch ( ObjectDisposedException )
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return LocalQuery(context);
+			var scope = new InjectServiceScope(_scopeFactory);
+			return scope.Execute(LocalQuery);
 		}
 	}
 }

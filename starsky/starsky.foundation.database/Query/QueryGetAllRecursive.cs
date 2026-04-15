@@ -56,13 +56,13 @@ public partial class Query
 		}
 		catch ( ObjectDisposedException )
 		{
-			return await LocalQuery(new InjectServiceScope(_scopeFactory)
-				.Context());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(LocalQuery);
 		}
 		catch ( InvalidOperationException )
 		{
-			return await LocalQuery(new InjectServiceScope(_scopeFactory)
-				.Context());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(LocalQuery);
 		}
 		catch ( MySqlException exception )
 		{
@@ -81,8 +81,8 @@ public partial class Query
 			                       $"{exception.ErrorCode} in GetAllRecursiveAsync");
 
 			await Task.Delay(1000);
-			return await LocalQuery(new InjectServiceScope(_scopeFactory)
-				.Context());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(LocalQuery);
 		}
 	}
 }
