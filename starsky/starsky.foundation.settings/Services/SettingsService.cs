@@ -39,8 +39,8 @@ public sealed class SettingsService : ISettingsService
 		}
 		catch ( ObjectDisposedException )
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return await GetSettingLocal(context);
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(GetSettingLocal);
 		}
 	}
 
@@ -74,8 +74,8 @@ public sealed class SettingsService : ISettingsService
 			}
 			catch ( ObjectDisposedException )
 			{
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				return await AddItem(context, item);
+				var scope = new InjectServiceScope(_scopeFactory);
+				return await scope.ExecuteAsync(context => AddItem(context, item));
 			}
 		}
 
@@ -85,8 +85,8 @@ public sealed class SettingsService : ISettingsService
 		}
 		catch ( ObjectDisposedException )
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return await UpdateItem(context, item);
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(context => UpdateItem(context, item));
 		}
 	}
 

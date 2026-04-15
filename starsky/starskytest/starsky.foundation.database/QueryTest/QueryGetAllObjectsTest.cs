@@ -1,10 +1,12 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -29,7 +31,7 @@ public sealed class QueryGetAllObjectsTest
 
 	public TestContext TestContext { get; set; }
 
-	private IServiceScopeFactory CreateNewScope()
+	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
 		services.AddDbContext<ApplicationDbContext>(options =>
@@ -46,7 +48,7 @@ public sealed class QueryGetAllObjectsTest
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 		};
 		var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
-		var query = new Query(dbContext, new AppSettings(), null, new FakeIWebLogger(),
+		var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger(),
 			new FakeMemoryCache());
 
 		await dbContext.FileIndex.AddAsync(
@@ -80,7 +82,7 @@ public sealed class QueryGetAllObjectsTest
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 		};
 		var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
-		var query = new Query(dbContext, new AppSettings(), null, new FakeIWebLogger(),
+		var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger(),
 			new FakeMemoryCache());
 
 		await dbContext.FileIndex.AddAsync(
@@ -96,7 +98,7 @@ public sealed class QueryGetAllObjectsTest
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var items = ( await query.GetAllObjectsAsync(
-				new List<string> { "/GetAllObjects_multi_01", "/GetAllObjects_multi_02" }) )
+				["/GetAllObjects_multi_01", "/GetAllObjects_multi_02"]) )
 			.OrderBy(p => p.FileName).ToList();
 
 		Assert.HasCount(2, items);
@@ -110,10 +112,10 @@ public sealed class QueryGetAllObjectsTest
 	[TestMethod]
 	public async Task GetAllObjectsAsync_NoParameters()
 	{
-		var query = new Query(null!, new AppSettings(), null,
+		var query = new Query(null!, new AppSettings(), null!,
 			new FakeIWebLogger(), new FakeMemoryCache());
 
-		var result = await query.GetAllObjectsAsync(new List<string>());
+		var result = await query.GetAllObjectsAsync([]);
 		Assert.IsEmpty(result);
 	}
 
@@ -144,5 +146,108 @@ public sealed class QueryGetAllObjectsTest
 		var cleanItem = getItem.FirstOrDefault();
 		Assert.IsNotNull(cleanItem);
 		await query.RemoveItemAsync(cleanItem);
+	}
+}
+
+[TestClass]
+public sealed class QueryGetAllObjects_MySqlException_Test
+{
+	[TestMethod]
+	public void GetAllObjectsAsync_WhenMySqlExceptionOccurs_UsesScopedFallback()
+	{
+		// Arrange
+		var primaryOptions = new DbContextOptionsBuilder<ApplicationDbContext>().Options;
+		var primary = new MySqlExceptionDbContext(primaryOptions);
+
+		var scopeFactory =
+			new FakeIServiceScopeFactory(nameof(QueryGetAllObjects_MySqlException_Test));
+		var scope = scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		var item =
+			new FileIndexItem("/col/item.jpg") { FileName = "item.jpg", ParentDirectory = "/col" };
+		dbContext.FileIndex.Add(item);
+		dbContext.SaveChanges();
+
+		var query = new Query(primary, new AppSettings { AddMemoryCache = false }, scopeFactory,
+			new FakeIWebLogger());
+
+		// Act
+		var result = query.GetAllObjectsAsync(["/col"]).Result;
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.HasCount(1, result);
+		Assert.AreEqual(item.FilePath, result[0].FilePath);
+	}
+
+	private sealed class MySqlExceptionDbContext(DbContextOptions options)
+		: ApplicationDbContext(options)
+	{
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get
+			{
+				var exceptionType = typeof(MySqlException);
+				var ctor = exceptionType.GetConstructor(
+					BindingFlags.NonPublic | BindingFlags.Instance,
+					null,
+					[typeof(string)],
+					null) ?? throw new InvalidOperationException("Constructor not found.");
+
+				var ex = ( MySqlException ) ctor.Invoke(["Test MySqlException"]);
+				throw ex;
+			}
+			set
+			{
+				// do nothing here
+			}
+		}
+	}
+}
+
+[TestClass]
+public sealed class QueryGetAllObjects_InvalidOperationException_Test
+{
+	[TestMethod]
+	public void GetAllObjectsAsync_WhenInvalidOperationExceptionOccurs_UsesScopedFallback()
+	{
+		// Arrange: primary context that throws InvalidOperationException when FileIndex accessed
+		var primaryOptions = new DbContextOptionsBuilder<ApplicationDbContext>().Options;
+		var primary = new ThrowingInvalidOperationDbContext(primaryOptions);
+
+		var scopeFactory =
+			new FakeIServiceScopeFactory(nameof(QueryGetAllObjects_InvalidOperationException_Test));
+		var scope = scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		var item =
+			new FileIndexItem("/col/item.jpg") { FileName = "item.jpg", ParentDirectory = "/col" };
+		dbContext.FileIndex.Add(item);
+		dbContext.SaveChanges();
+
+		var query = new Query(primary, new AppSettings { AddMemoryCache = false }, scopeFactory,
+			new FakeIWebLogger());
+
+		// Act
+		var result = query.GetAllObjectsAsync(["/col"]).Result;
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.HasCount(1, result);
+		Assert.AreEqual(item.FilePath, result[0].FilePath);
+	}
+
+	private sealed class ThrowingInvalidOperationDbContext(DbContextOptions options)
+		: ApplicationDbContext(options)
+	{
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get => throw new InvalidOperationException("Simulated ExecuteReader error");
+			set
+			{
+				// do nothing here  
+			}
+		}
 	}
 }

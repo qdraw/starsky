@@ -174,8 +174,13 @@ public class ThumbnailQuery : IThumbnailQuery
 				throw;
 			}
 
-			return await AddThumbnailRangeInternalAsync(
-				new InjectServiceScope(_scopeFactory).Context(), thumbnailItems);
+			return await new InjectServiceScope(_scopeFactory).ExecuteAsync(async ctx =>
+			{
+				_logger.LogInformation(
+					"[AddThumbnailRangeInternalRetryDisposedAsync]" +
+					" Retry with new scope after InvalidOperationException");
+				return await AddThumbnailRangeInternalAsync(ctx, thumbnailItems);
+			});
 		}
 	}
 

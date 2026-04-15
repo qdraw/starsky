@@ -34,11 +34,13 @@ public class GeoNamesCitiesQuery(
 		// InvalidOperationException can also be disposed (ObjectDisposedException)
 		catch ( InvalidOperationException )
 		{
-			var context = new InjectServiceScope(scopeFactory).Context();
-			return await GetItemLocal(context);
+			var scope = new InjectServiceScope(scopeFactory);
+			return await scope.ExecuteAsync(async context1 =>
+				await GetItemLocal(context1)
+			);
 		}
 	}
-	
+
 	public async Task<List<GeoNameCity>> Search(string search, int maxResults,
 		params string[] fields)
 	{
@@ -54,8 +56,10 @@ public class GeoNamesCitiesQuery(
 		// InvalidOperationException can also be disposed (ObjectDisposedException)
 		catch ( InvalidOperationException )
 		{
-			var context = new InjectServiceScope(scopeFactory).Context();
-			return await SearchGetPredicate(context, search, maxResults, fields);
+			var scope = new InjectServiceScope(scopeFactory);
+			return await scope.ExecuteAsync(async context1 =>
+				await SearchGetPredicate(context1, search, maxResults, fields)
+			);
 		}
 	}
 
@@ -67,8 +71,10 @@ public class GeoNamesCitiesQuery(
 		}
 		catch ( ObjectDisposedException )
 		{
-			var context = new InjectServiceScope(scopeFactory).Context();
-			return await AddRange(context, items);
+			var scope = new InjectServiceScope(scopeFactory);
+			return await scope.ExecuteAsync(async context1 =>
+				await AddRange(context1, items)
+			);
 		}
 	}
 

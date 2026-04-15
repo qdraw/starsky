@@ -92,10 +92,11 @@ public class QueryRemoveItemAsyncTest
 			new FakeMemoryCache());
 		await service.RemoveItemAsync(addedItems);
 
-		var context = new InjectServiceScope(serviceScopeFactory).Context();
-		var queryFromDb = await context.FileIndex.Where(p =>
-			p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
-		).ToListAsync(TestContext.CancellationTokenSource.Token);
+		var injectServiceScope = new InjectServiceScope(serviceScopeFactory);
+		var queryFromDb = await injectServiceScope.ExecuteAsync(async context =>
+			await context.FileIndex.Where(p =>
+				p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
+			).ToListAsync(TestContext.CancellationTokenSource.Token));
 
 		Assert.IsEmpty(queryFromDb);
 	}

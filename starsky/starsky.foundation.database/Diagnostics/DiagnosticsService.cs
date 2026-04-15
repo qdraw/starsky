@@ -29,8 +29,10 @@ public class DiagnosticsService(
 		}
 		catch ( ObjectDisposedException )
 		{
-			var context = new InjectServiceScope(scopeFactory).Context();
-			return await GetItemLocal(context);
+			var scope = new InjectServiceScope(scopeFactory);
+			return await scope.ExecuteAsync(async context1 =>
+				await GetItemLocal(context1)
+			);
 		}
 	}
 
@@ -58,8 +60,10 @@ public class DiagnosticsService(
 			}
 			catch ( ObjectDisposedException )
 			{
-				var context = new InjectServiceScope(scopeFactory).Context();
-				return await AddItem(context, item);
+				var scope = new InjectServiceScope(scopeFactory);
+				return await scope.ExecuteAsync(async context1 =>
+					await AddItem(context1, item)
+				);
 			}
 		}
 
@@ -69,8 +73,10 @@ public class DiagnosticsService(
 		}
 		catch ( ObjectDisposedException )
 		{
-			var context = new InjectServiceScope(scopeFactory).Context();
-			return await UpdateItem(context, item);
+			var scope = new InjectServiceScope(scopeFactory);
+			return await scope.ExecuteAsync(async context1 =>
+				await UpdateItem(context1, item)
+			);
 		}
 	}
 

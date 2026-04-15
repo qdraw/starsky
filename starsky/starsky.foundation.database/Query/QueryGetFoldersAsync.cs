@@ -40,9 +40,9 @@ public partial class Query : IQuery
 		}
 		catch ( ObjectDisposedException )
 		{
-			return FormatOk(
-				await GetAllFoldersQuery(new InjectServiceScope(_scopeFactory).Context(), filePaths)
-					.ToListAsync());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(async context =>
+				FormatOk(await GetAllFoldersQuery(context, filePaths).ToListAsync()));
 		}
 	}
 

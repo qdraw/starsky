@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
@@ -26,6 +28,8 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 				.GetRequiredService<ApplicationDbContext>(), new AppSettings(),
 			null!, new FakeIWebLogger(), new FakeMemoryCache());
 	}
+
+	public TestContext TestContext { get; set; }
 
 	private IServiceScopeFactory CreateNewScope()
 	{
@@ -304,6 +308,145 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		var result = await fakeQuery.GetObjectsByFilePathQuery(new List<string>().ToArray(), true);
 		Assert.IsEmpty(result);
 	}
+}
 
+[TestClass]
+public class QueryGetObjectsByFilePathAsync_MySqlProtocolException_Test
+{
 	public TestContext TestContext { get; set; }
+
+	[TestMethod]
+	public async Task
+		GetObjectsByFilePathAsync_WhenMySqlProtocolThrownInFirstScope_UsesFallbackScope()
+	{
+		// Arrange: primary context that throws NullReferenceException when queried
+		var primaryOptions = new DbContextOptionsBuilder<ApplicationDbContext>().Options;
+		var primary = new ThrowingNullRefDbContext(primaryOptions);
+
+		// First scoped context: throws MySqlProtocolException when accessed
+		var throwingBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		throwingBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
+		var throwingContext = new MySqlProtocolExceptionDbContext(throwingBuilder.Options);
+
+		// Second scoped context: real in-memory DB with seeded item
+		var realBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		realBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
+		var realContext = new ApplicationDbContext(realBuilder.Options);
+		var expected =
+			new FileIndexItem("/path/file.jpg")
+			{
+				FileName = "file.jpg", ParentDirectory = "/path"
+			};
+		realContext.FileIndex.Add(expected);
+		await realContext.SaveChangesAsync(TestContext.CancellationToken);
+
+		// Fake scope factory that returns throwingContext first, then realContext
+		var fakeFactory =
+			new SequentialFakeServiceScopeFactory(new[] { throwingContext, realContext });
+
+		var query = new Query(primary, new AppSettings(), fakeFactory, new FakeIWebLogger());
+
+		// Act
+		var result =
+			await query.GetObjectsByFilePathAsync(new List<string> { expected.FilePath! }, false);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.Contains(r => r.FilePath == expected.FilePath, result);
+		Assert.AreEqual(2, fakeFactory.CreateCount);
+	}
+
+	// Primary context that throws NullReferenceException when FileIndex accessed
+	private sealed class ThrowingNullRefDbContext(DbContextOptions options)
+		: ApplicationDbContext(options)
+	{
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get => throw new NullReferenceException("Simulated null ref while reading FileIndex");
+			set
+			{
+				// do nothing here
+			}
+		}
+	}
+
+	// Context that throws MySqlProtocolException when FileIndex accessed
+	private sealed class MySqlProtocolExceptionDbContext(DbContextOptions options)
+		: ApplicationDbContext(options)
+	{
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get
+			{
+				// MySqlProtocolException has non-public constructors; instantiate via reflection similar to other tests
+				var exceptionType = typeof(MySqlProtocolException);
+				var ctor = exceptionType.GetConstructor(
+					BindingFlags.NonPublic | BindingFlags.Instance,
+					null,
+					new[] { typeof(string) },
+					null) ?? throw new InvalidOperationException("Constructor not found.");
+
+				var ex = ( MySqlProtocolException ) ctor.Invoke(new object[]
+				{
+					"Test MySqlProtocolException"
+				});
+				throw ex;
+			}
+			set
+			{
+				// do nothing here
+			}
+		}
+	}
+
+	// Minimal sequential scope factory that returns contexts in order
+	private sealed class SequentialFakeServiceScopeFactory : IServiceScopeFactory
+	{
+		private readonly Queue<ApplicationDbContext> _queue;
+
+		public SequentialFakeServiceScopeFactory(IEnumerable<ApplicationDbContext> contexts)
+		{
+			_queue = new Queue<ApplicationDbContext>(contexts);
+		}
+
+		public int CreateCount { get; private set; }
+
+		public IServiceScope CreateScope()
+		{
+			CreateCount++;
+			var ctx = _queue.Count > 0
+				? _queue.Dequeue()
+				: throw new InvalidOperationException("No more contexts");
+			return new FakeServiceScope(new FakeServiceProvider(ctx));
+		}
+	}
+
+	private sealed class FakeServiceProvider : IServiceProvider
+	{
+		private readonly ApplicationDbContext _ctx;
+
+		public FakeServiceProvider(ApplicationDbContext ctx)
+		{
+			_ctx = ctx;
+		}
+
+		public object? GetService(Type serviceType)
+		{
+			return serviceType == typeof(ApplicationDbContext) ? _ctx : null;
+		}
+	}
+
+	private sealed class FakeServiceScope : IServiceScope
+	{
+		public FakeServiceScope(IServiceProvider provider)
+		{
+			ServiceProvider = provider;
+		}
+
+		public IServiceProvider ServiceProvider { get; }
+
+		public void Dispose()
+		{
+		}
+	}
 }

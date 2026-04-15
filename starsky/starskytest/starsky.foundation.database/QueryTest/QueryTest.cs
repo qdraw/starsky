@@ -1409,10 +1409,11 @@ public sealed class QueryTest
 		await dbContext.DisposeAsync();
 		await query.AddItemAsync(new FileIndexItem("/test982.jpg") { Tags = "test" });
 
-		var dbContext2 = new InjectServiceScope(serviceScope).Context();
+		var injectServiceScope = new InjectServiceScope(serviceScope);
 		var itemItShouldContain =
-			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test982.jpg",
-				TestContext.CancellationTokenSource.Token);
+			await injectServiceScope.ExecuteAsync(async dbContext2 =>
+				await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test982.jpg",
+					TestContext.CancellationTokenSource.Token));
 		Assert.IsNotNull(itemItShouldContain);
 		Assert.AreEqual("test", itemItShouldContain.Tags);
 	}
@@ -1464,10 +1465,11 @@ public sealed class QueryTest
 		Assert.IsNotNull(item);
 		await query.RemoveItemAsync(item);
 
-		var dbContext2 = new InjectServiceScope(serviceScope).Context();
+		var injectServiceScope = new InjectServiceScope(serviceScope);
 		var itemItShouldBeNull =
-			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
-				TestContext.CancellationTokenSource.Token);
+			await injectServiceScope.ExecuteAsync(async dbContext2 =>
+				await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
+					TestContext.CancellationTokenSource.Token));
 		Assert.IsNull(itemItShouldBeNull);
 	}
 

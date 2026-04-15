@@ -165,13 +165,13 @@ public partial class Query // For folder displays only
 		catch ( NotSupportedException )
 		{
 			// System.NotSupportedException:  The ReadAsync method cannot be called when another read operation is pending.
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return QueryItems(context);
+			var scope = new InjectServiceScope(_scopeFactory);
+			return scope.Execute(QueryItems);
 		}
 		catch ( InvalidOperationException ) // or ObjectDisposedException
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return QueryItems(context);
+			var scope = new InjectServiceScope(_scopeFactory);
+			return scope.Execute(QueryItems);
 		}
 	}
 

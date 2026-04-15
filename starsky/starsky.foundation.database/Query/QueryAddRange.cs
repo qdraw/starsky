@@ -37,8 +37,12 @@ namespace starsky.foundation.database.Query
 
 			async Task<bool> LocalRemoveDefaultQuery()
 			{
-				await LocalQuery(new InjectServiceScope(_scopeFactory).Context(),
-					fileIndexItemList);
+				var scope = new InjectServiceScope(_scopeFactory);
+				await scope.ExecuteAsync(async context =>
+				{
+					await LocalQuery(context, fileIndexItemList);
+					return true;
+				});
 				return true;
 			}
 
@@ -70,9 +74,12 @@ namespace starsky.foundation.database.Query
 			}
 			catch ( ObjectDisposedException )
 			{
-				await LocalQuery(
-					new InjectServiceScope(_scopeFactory).Context(),
-					fileIndexItemList);
+				var scope = new InjectServiceScope(_scopeFactory);
+				await scope.ExecuteAsync(async context =>
+				{
+					await LocalQuery(context, fileIndexItemList);
+					return true;
+				});
 			}
 			catch ( Microsoft.Data.Sqlite.SqliteException )
 			{
