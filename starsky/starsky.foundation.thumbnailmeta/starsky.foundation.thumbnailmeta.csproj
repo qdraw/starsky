@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MetadataExtractor" Version="2.9.0"/>
+        <PackageReference Include="MetadataExtractor" Version="2.9.3"/>
         <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
     </ItemGroup>
 
