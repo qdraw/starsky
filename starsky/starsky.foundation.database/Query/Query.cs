@@ -471,8 +471,8 @@ public partial class Query : IQuery
 	{
 		async Task<FileIndexItem> LocalDefaultQuery()
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return await LocalQuery(context);
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(LocalQuery);
 		}
 
 		async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
@@ -610,8 +610,8 @@ public partial class Query : IQuery
 		}
 		catch ( ObjectDisposedException )
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return await LocalQueryGetItemsByHashAsync(context);
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(LocalQueryGetItemsByHashAsync);
 		}
 	}
 
@@ -659,16 +659,19 @@ public partial class Query : IQuery
 			// InvalidOperationException: A second operation started on this context before a previous operation completed.
 			// https://go.microsoft.com/fwlink/?linkid=2097913
 			await Task.Delay(delay);
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			if ( context == null! )
+			if ( _scopeFactory == null )
 			{
 				throw new AggregateException("Query Context is null");
 			}
 
-			context.Attach(updateStatusContent).State = EntityState.Modified;
-			await context.SaveChangesAsync();
-			context.Attach(updateStatusContent).State = EntityState.Unchanged;
-			await context.DisposeAsync();
+			var scope = new InjectServiceScope(_scopeFactory);
+			await scope.ExecuteAsync(async context =>
+			{
+				context.Attach(updateStatusContent).State = EntityState.Modified;
+				await context.SaveChangesAsync();
+				context.Attach(updateStatusContent).State = EntityState.Unchanged;
+				return true;
+			});
 		}
 
 		try
@@ -822,7 +825,8 @@ public partial class Query : IQuery
 		// InvalidOperationException can also be disposed (ObjectDisposedException)
 		catch ( InvalidOperationException )
 		{
-			return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(LocalQuery);
 		}
 	}
 }

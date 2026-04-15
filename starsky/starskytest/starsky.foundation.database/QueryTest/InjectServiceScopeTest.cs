@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Query;
@@ -11,7 +12,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public void NoScope()
 		{
 			IServiceScopeFactory? scope = null;
-			new InjectServiceScope(scope).Context();
+			Assert.ThrowsExactly<NullReferenceException>(() =>
+				new InjectServiceScope(scope!).Execute(_ => true));
 			Assert.IsNull(scope);
 		}
 	}

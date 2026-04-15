@@ -63,13 +63,16 @@ public sealed class ImportQueryTest
 	[TestMethod]
 	public async Task IsHashInImportDbAsync_True()
 	{
-		var dbContext = new InjectServiceScope(_serviceScope).Context();
-
-		await dbContext.ImportIndex.AddAsync(new ImportIndexItem
+		var injectServiceScope = new InjectServiceScope(_serviceScope);
+		await injectServiceScope.ExecuteAsync(async dbContext =>
 		{
-			Status = ImportStatus.Ok, FileHash = "TEST2", AddToDatabase = DateTime.UtcNow
-		}, TestContext.CancellationTokenSource.Token);
-		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+			await dbContext.ImportIndex.AddAsync(new ImportIndexItem
+			{
+				Status = ImportStatus.Ok, FileHash = "TEST2", AddToDatabase = DateTime.UtcNow
+			}, TestContext.CancellationTokenSource.Token);
+			await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+			return true;
+		});
 
 		var result = await _importQuery.IsHashInImportDbAsync("TEST2");
 		Assert.IsTrue(result);
@@ -246,10 +249,11 @@ public sealed class ImportQueryTest
 		await importQuery.RemoveItemAsync(addedItems[0]);
 		await importQuery.RemoveItemAsync(addedItems[1]);
 
-		var context = new InjectServiceScope(serviceScopeFactory).Context();
-		var queryFromDb = await context.FileIndex.Where(p =>
-			p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
-		).ToListAsync(TestContext.CancellationTokenSource.Token);
+		var injectServiceScope = new InjectServiceScope(serviceScopeFactory);
+		var queryFromDb = await injectServiceScope.ExecuteAsync(async context =>
+			await context.FileIndex.Where(p =>
+				p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
+			).ToListAsync(TestContext.CancellationTokenSource.Token));
 
 		Assert.IsEmpty(queryFromDb);
 	}

@@ -11,21 +11,6 @@ namespace starsky.foundation.database.Query;
 
 public class InjectServiceScope(IServiceScopeFactory scopeFactory)
 {
-	/// <summary>
-	///     Dependency injection, used in background tasks
-	/// </summary>
-	[Obsolete("Use ExecuteAsync instead to ensure proper disposal of the scope and DbContext.")]
-	internal ApplicationDbContext Context()
-	{
-		if ( scopeFactory == null )
-		{
-			return null!;
-		}
-
-		using var scope = scopeFactory.CreateScope();
-		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-		return dbContext;
-	}
 
 	internal TResult Execute<TResult>(Func<ApplicationDbContext, TResult> action)
 	{
