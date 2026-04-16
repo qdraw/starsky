@@ -113,10 +113,10 @@ public class ExportService : IExport
 	public async Task CreateZip(List<FileIndexItem> fileIndexResultsList, bool thumbnail,
 		string zipOutputFileName)
 	{
-		var filePaths = await CreateListToExport(fileIndexResultsList, thumbnail);
-		var fileNames = await FilePathToFileNameAsync(filePaths, thumbnail);
+		var fullFilePaths = await CreateListToExport(fileIndexResultsList, thumbnail);
+		var fileNames = await FilePathToFileNameAsync(fullFilePaths, thumbnail);
 
-		new Zipper(_logger).CreateZip(_appSettings.TempFolder, filePaths, fileNames,
+		new Zipper(_logger).CreateZip(_appSettings.TempFolder, fullFilePaths, fileNames,
 			zipOutputFileName);
 
 		// Write a single file to be sure that writing is ready
@@ -195,7 +195,7 @@ public class ExportService : IExport
 		var filePaths = new List<string>();
 
 		foreach ( var item in fileIndexResultsList.Where(p =>
-			         p.Status == FileIndexItem.ExifStatus.Ok && p.FileHash != null).ToList() )
+			         p is { Status: FileIndexItem.ExifStatus.Ok, FileHash: not null }).ToList() )
 		{
 			if ( thumbnail )
 			{
@@ -221,7 +221,8 @@ public class ExportService : IExport
 			// the jpeg file for example
 			filePaths.Add(sourceFile);
 
-			// when there is .xmp sidecar file (but only when file is a RAW file, ignored when for example jpeg)
+			// when there is .xmp sidecar file
+			// (but only when file is a RAW file, ignored when for example jpeg)
 			if ( !ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) ||
 			     !_iStorage.ExistFile(
 				     ExtensionRolesHelper.ReplaceExtensionWithXmp(
@@ -248,14 +249,14 @@ public class ExportService : IExport
 	/// <summary>
 	///     Get the filename (in case of thumbnail the source image name)
 	/// </summary>
-	/// <param name="filePaths">the full file paths </param>
+	/// <param name="fullFilePaths">the full file paths </param>
 	/// <param name="thumbnail">copy the thumbnail (true) or the source image (false)</param>
 	/// <returns></returns>
-	internal async Task<List<string>> FilePathToFileNameAsync(IEnumerable<string> filePaths,
+	internal async Task<List<string>> FilePathToFileNameAsync(IEnumerable<string> fullFilePaths,
 		bool thumbnail)
 	{
 		var fileNames = new List<string>();
-		foreach ( var filePath in filePaths )
+		foreach ( var filePath in fullFilePaths )
 		{
 			if ( thumbnail )
 			{
