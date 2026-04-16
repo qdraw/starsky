@@ -248,15 +248,26 @@ public class ExportService : IExport
 
 	/// <summary>
 	///     Get the filename (in case of thumbnail the source image name)
+	///     Preserves directory structure by returning relative paths when subfolders exist
 	/// </summary>
 	/// <param name="fullFilePaths">the full file paths </param>
 	/// <param name="thumbnail">copy the thumbnail (true) or the source image (false)</param>
-	/// <returns></returns>
+	/// <returns>List of filenames or relative paths</returns>
 	internal async Task<List<string>> FilePathToFileNameAsync(IEnumerable<string> fullFilePaths,
 		bool thumbnail)
 	{
+		var filePathsList = fullFilePaths.ToList();
 		var fileNames = new List<string>();
-		foreach ( var filePath in fullFilePaths )
+
+		if ( filePathsList.Count == 0 )
+		{
+			return fileNames;
+		}
+
+		// Determine if we have subfolders - check if any file has more than just a filename
+		var hasSubFolders = DetectHasSubFolders(filePathsList, thumbnail);
+
+		foreach ( var filePath in filePathsList )
 		{
 			if ( thumbnail )
 			{
@@ -276,10 +287,90 @@ public class ExportService : IExport
 				continue;
 			}
 
-			fileNames.Add(Path.GetFileName(filePath));
+			// For non-thumbnail files, preserve directory structure if subfolders exist
+			if ( hasSubFolders )
+			{
+				var relativePath = GetRelativePath(filePath);
+				fileNames.Add(relativePath);
+			}
+			else
+			{
+				// No subfolders - just use the filename
+				fileNames.Add(Path.GetFileName(filePath));
+			}
 		}
 
 		return fileNames;
+	}
+
+	/// <summary>
+	///     Detect if there are any subdirectories in the file list
+	/// </summary>
+	private bool DetectHasSubFolders(List<string> fullFilePaths, bool thumbnail)
+	{
+		if ( thumbnail )
+		{
+			// For thumbnails, we don't currently preserve folder structure
+			return false;
+		}
+
+		// Check if any file path has a directory separator after the storage folder
+		var storageFolder = _appSettings.StorageFolder;
+		if ( string.IsNullOrEmpty(storageFolder) )
+		{
+			return false;
+		}
+
+		// Normalize storage folder path
+		storageFolder = PathHelper.AddBackslash(storageFolder);
+
+		foreach ( var filePath in fullFilePaths )
+		{
+			if ( string.IsNullOrEmpty(filePath) )
+			{
+				continue;
+			}
+
+			// Get the relative part after the storage folder
+			if ( filePath.StartsWith(storageFolder, StringComparison.OrdinalIgnoreCase) )
+			{
+				var relativePart = filePath.Substring(storageFolder.Length);
+				// If there's a directory separator in the relative part, we have subfolders
+				if ( relativePart.Contains(Path.DirectorySeparatorChar) || 
+				     relativePart.Contains(Path.AltDirectorySeparatorChar) )
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/// <summary>
+	///     Get the relative path from the storage folder
+	/// </summary>
+	private string GetRelativePath(string fullFilePath)
+	{
+		var storageFolder = _appSettings.StorageFolder;
+		if ( string.IsNullOrEmpty(storageFolder) || string.IsNullOrEmpty(fullFilePath) )
+		{
+			return Path.GetFileName(fullFilePath);
+		}
+
+		// Normalize storage folder path
+		storageFolder = PathHelper.AddBackslash(storageFolder);
+
+		// If the file path starts with storage folder, get the relative part
+		if ( fullFilePath.StartsWith(storageFolder, StringComparison.OrdinalIgnoreCase) )
+		{
+			var relativePath = fullFilePath.Substring(storageFolder.Length);
+			// Normalize path separators to forward slash for zip consistency across platforms
+			return relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+		}
+
+		// Fallback to just the filename if we can't determine relative path
+		return Path.GetFileName(fullFilePath);
 	}
 
 	/// <summary>
