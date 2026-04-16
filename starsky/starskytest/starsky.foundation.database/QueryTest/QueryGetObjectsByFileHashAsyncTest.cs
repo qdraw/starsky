@@ -100,3 +100,49 @@ public class GetObjectsByFileHashAsyncTest
 
 	public TestContext TestContext { get; set; }
 }
+
+[TestClass]
+public sealed class QueryGetItemsByHash_ObjectDisposedException_Test
+{
+	[TestMethod]
+	public async Task GetSubPathsByHashAsync_WhenPrimaryContextThrows_ObjectDisposed_UsesScopedContext()
+	{
+		// Arrange: primary context that throws ObjectDisposedException when FileIndex accessed
+		var primaryOptions = new DbContextOptionsBuilder<ApplicationDbContext>().Options;
+		var primary = new ThrowingObjectDisposedDbContext(primaryOptions);
+
+		// Create a fake scope factory that returns a real in-memory context
+		var scopeFactory = new FakeIServiceScopeFactory(nameof(QueryGetItemsByHash_ObjectDisposedException_Test));
+		var scope = scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		var expected = new FileIndexItem("/obj/file.jpg") { FileName = "file.jpg", ParentDirectory = "/obj", FileHash = "hash_obj" };
+		dbContext.FileIndex.Add(expected);
+		await dbContext.SaveChangesAsync(TestContext.CancellationToken);
+
+		var query = new Query(primary, new AppSettings { AddMemoryCache = false }, scopeFactory, new FakeIWebLogger());
+
+		// Act
+		var result = await query.GetSubPathsByHashAsync(expected.FileHash!);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.Contains(expected.FilePath, result);
+	}
+
+	private sealed class ThrowingObjectDisposedDbContext : ApplicationDbContext
+	{
+		public ThrowingObjectDisposedDbContext(DbContextOptions options) : base(options) { }
+
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get => throw new ObjectDisposedException("Simulated disposed context");
+			set
+			{
+				// do nothing here
+			}
+		}
+	}
+
+	public TestContext TestContext { get; set; }
+}

@@ -169,7 +169,7 @@ This workflow is especially useful for hiking, travel photography, or any situat
 ## 🗂️ Related Features
 
 - **[Metadata Management](metadata.md)** - Learn more about metadata storage in Starsky
-- **[Import Options](import.md)** - Configure automatic reverse geocoding during import
+- **[Import Options](import/import.md)** - Configure automatic reverse geocoding during import
 - **[Search](search.md)** - Search photos by location
 - **[Bulk Editing](bulk-editing.md)** - Update location data for multiple photos at once
 

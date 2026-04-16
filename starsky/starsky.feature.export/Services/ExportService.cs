@@ -11,6 +11,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -246,7 +247,6 @@ public class ExportService : IExport
 
 	/// <summary>
 	///     Get the filename (in case of thumbnail the source image name)
-	///     Preserves folder structure when there are subfolders, puts all files in a single folder otherwise
 	/// </summary>
 	/// <param name="filePaths">the full file paths </param>
 	/// <param name="thumbnail">copy the thumbnail (true) or the source image (false)</param>
@@ -255,46 +255,27 @@ public class ExportService : IExport
 		bool thumbnail)
 	{
 		var fileNames = new List<string>();
-		var filePathsList = filePaths.ToList();
-		
-		if ( thumbnail )
+		foreach ( var filePath in filePaths )
 		{
-			// For thumbnails, preserve folder structure
-			foreach ( var filePath in filePathsList )
+			if ( thumbnail )
 			{
+				// We use base32 fileHashes but export 
+				// the file with the original name
+
 				var thumbFilename = Path.GetFileNameWithoutExtension(filePath);
-				var subPath = await _query.GetSubPathByHashAsync(thumbFilename);
-				fileNames.Add(subPath ?? Path.GetFileName(filePath));
+				var subPath = ( await _query.GetSubPathsByHashAsync(thumbFilename) )
+					.FirstOrDefaultWithFallback(filePath);
+				
+				if ( !string.IsNullOrEmpty(subPath) )
+				{
+					var filename = FilenamesHelper.GetFileName(subPath);
+					fileNames.Add(filename);
+				}
+
+				continue;
 			}
 
-			return fileNames;
-		}
-
-		// For non-thumbnails, check if there are subfolders
-		var subPaths = new List<string>();
-		foreach ( var filePath in filePathsList )
-		{
-			// Convert full path to database subPath
-			var subPath = _appSettings.FullPathStorageFolderToDatabaseStyle(filePath);
-			subPaths.Add(subPath);
-		}
-
-		// Check if there are subfolders (paths with at least one separator)
-		var hasSubFolders = subPaths.Any(sp => sp.Contains("/") && sp.Count(c => c == '/') > 1);
-
-		foreach ( var filePath in filePathsList )
-		{
-			if ( hasSubFolders )
-			{
-				// Preserve folder structure
-				var subPath = _appSettings.FullPathStorageFolderToDatabaseStyle(filePath);
-				fileNames.Add(subPath);
-			}
-			else
-			{
-				// No subfolders, put all files in root folder of zip
-				fileNames.Add(Path.GetFileName(filePath));
-			}
+			fileNames.Add(Path.GetFileName(filePath));
 		}
 
 		return fileNames;

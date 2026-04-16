@@ -34,6 +34,8 @@ public sealed class ImportQueryTest
 			new FakeIWebLogger(), _dbContext);
 	}
 
+	public TestContext TestContext { get; set; }
+
 	private static IServiceScopeFactory CreateNewScope(string? name = null)
 	{
 		name ??= nameof(ImportQueryTest);
@@ -63,13 +65,19 @@ public sealed class ImportQueryTest
 	[TestMethod]
 	public async Task IsHashInImportDbAsync_True()
 	{
-		var dbContext = new InjectServiceScope(_serviceScope).Context();
-
-		await dbContext.ImportIndex.AddAsync(new ImportIndexItem
+		var injectServiceScope = new InjectServiceScope(_serviceScope);
+		await injectServiceScope.ExecuteAsync(async dbContext =>
 		{
-			Status = ImportStatus.Ok, FileHash = "TEST2", AddToDatabase = DateTime.UtcNow
-		}, TestContext.CancellationTokenSource.Token);
-		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+			await dbContext.ImportIndex.AddAsync(
+				new ImportIndexItem
+				{
+					Status = ImportStatus.Ok,
+					FileHash = "TEST2",
+					AddToDatabase = DateTime.UtcNow
+				}, TestContext.CancellationTokenSource.Token);
+			await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+			return true;
+		});
 
 		var result = await _importQuery.IsHashInImportDbAsync("TEST2");
 		Assert.IsTrue(result);
@@ -151,7 +159,8 @@ public sealed class ImportQueryTest
 			new FakeIWebLogger()).AddRangeAsync(expectedResult);
 
 		var queryFromDb = await dbContext.ImportIndex
-			.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToListAsync(TestContext.CancellationTokenSource.Token);
+			.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5")
+			.ToListAsync(TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash,
 			queryFromDb.FirstOrDefault()?.FileHash);
 		Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
@@ -217,7 +226,8 @@ public sealed class ImportQueryTest
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
 			// Ensure that the item is removed from the import index
-			Assert.IsFalse(await dbContext.ImportIndex.AnyAsync(x => x.Id == importIndexItem.Id, TestContext.CancellationTokenSource.Token));
+			Assert.IsFalse(await dbContext.ImportIndex.AnyAsync(x => x.Id == importIndexItem.Id,
+				TestContext.CancellationTokenSource.Token));
 		}
 	}
 
@@ -234,7 +244,8 @@ public sealed class ImportQueryTest
 		var scope = serviceScopeFactory.CreateScope();
 		var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-		await dbContextDisposed.ImportIndex.AddRangeAsync(addedItems, TestContext.CancellationTokenSource.Token);
+		await dbContextDisposed.ImportIndex.AddRangeAsync(addedItems,
+			TestContext.CancellationTokenSource.Token);
 		await dbContextDisposed.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// Dispose here
@@ -246,10 +257,11 @@ public sealed class ImportQueryTest
 		await importQuery.RemoveItemAsync(addedItems[0]);
 		await importQuery.RemoveItemAsync(addedItems[1]);
 
-		var context = new InjectServiceScope(serviceScopeFactory).Context();
-		var queryFromDb = await context.FileIndex.Where(p =>
-			p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
-		).ToListAsync(TestContext.CancellationTokenSource.Token);
+		var injectServiceScope = new InjectServiceScope(serviceScopeFactory);
+		var queryFromDb = await injectServiceScope.ExecuteAsync(async context =>
+			await context.FileIndex.Where(p =>
+				p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
+			).ToListAsync(TestContext.CancellationTokenSource.Token));
 
 		Assert.IsEmpty(queryFromDb);
 	}
@@ -422,6 +434,164 @@ public sealed class ImportQueryTest
 			throw new SqliteException("Database is locked", 1);
 		}
 	}
+}
 
+[TestClass]
+public sealed class ImportQuery_ScopeFactoryNull_Tests
+{
 	public TestContext TestContext { get; set; }
+
+	private static ApplicationDbContext CreateInMemoryContext(string name)
+	{
+		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builder.UseInMemoryDatabase(name);
+		return new ApplicationDbContext(builder.Options);
+	}
+
+
+	[TestMethod]
+	public void TestConnection_UsesProvidedDbContext_WhenScopeFactoryNull()
+	{
+		var ctx = CreateInMemoryContext(
+			nameof(TestConnection_UsesProvidedDbContext_WhenScopeFactoryNull));
+		var console = new FakeConsoleWrapper();
+		var logger = new FakeIWebLogger();
+
+		var sut = new ImportQuery(null, console, logger, ctx);
+
+		var result = sut.TestConnection();
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task IsHashInImportDbAsync_ReturnsTrue_WhenHashExists_WithScopeFactoryNull()
+	{
+		var ctx = CreateInMemoryContext(
+			nameof(IsHashInImportDbAsync_ReturnsTrue_WhenHashExists_WithScopeFactoryNull));
+		var console = new FakeConsoleWrapper();
+		var logger = new FakeIWebLogger();
+
+		var item = new ImportIndexItem { FileHash = "h1", AddToDatabase = DateTime.UtcNow };
+		await ctx.ImportIndex.AddAsync(item, TestContext.CancellationToken);
+		await ctx.SaveChangesAsync(TestContext.CancellationToken);
+
+		var sut = new ImportQuery(null, console, logger, ctx);
+
+		var result = await sut.IsHashInImportDbAsync("h1");
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task AddAsync_AddsItem_WhenScopeFactoryNull()
+	{
+		var ctx = CreateInMemoryContext(
+			nameof(AddAsync_AddsItem_WhenScopeFactoryNull));
+		var console = new FakeConsoleWrapper();
+		var logger = new FakeIWebLogger();
+
+		var sut = new ImportQuery(null, console, logger, ctx);
+
+		var item = new ImportIndexItem { FileHash = "h_add", AddToDatabase = DateTime.UtcNow };
+		var result = await sut.AddAsync(item);
+
+		Assert.IsTrue(result);
+		var saved = await ctx.ImportIndex.FirstOrDefaultAsync(p => p.FileHash == "h_add",
+			TestContext.CancellationToken);
+		Assert.IsNotNull(saved);
+		Assert.IsNotEmpty(console.WrittenLines);
+	}
+
+	[TestMethod]
+	public void History_ReturnsRecentItems_WhenScopeFactoryNull()
+	{
+		var ctx = CreateInMemoryContext(nameof(History_ReturnsRecentItems_WhenScopeFactoryNull));
+		var console = new FakeConsoleWrapper();
+		var logger = new FakeIWebLogger();
+
+		ctx.ImportIndex.Add(new ImportIndexItem
+		{
+			FileHash = "h_old", AddToDatabase = DateTime.UtcNow.AddDays(-3)
+		});
+		ctx.ImportIndex.Add(new ImportIndexItem
+		{
+			FileHash = "h_new", AddToDatabase = DateTime.UtcNow
+		});
+		ctx.SaveChanges();
+
+		var sut = new ImportQuery(null, console, logger, ctx);
+
+		var result = sut.History();
+
+		Assert.IsNotNull(result);
+		Assert.IsTrue(result.All(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)));
+		Assert.Contains(p => p.FileHash == "h_new", result);
+	}
+
+	[TestMethod]
+	public async Task AddRangeAsync_AddsItems_WhenScopeFactoryNull()
+	{
+		var ctx = CreateInMemoryContext(nameof(AddRangeAsync_AddsItems_WhenScopeFactoryNull));
+		var console = new FakeConsoleWrapper();
+		var logger = new FakeIWebLogger();
+
+		var sut = new ImportQuery(null, console, logger, ctx);
+
+		var list = new List<ImportIndexItem>
+		{
+			new() { FileHash = "r1", AddToDatabase = DateTime.UtcNow },
+			new() { FileHash = "r2", AddToDatabase = DateTime.UtcNow }
+		};
+
+		var result = await sut.AddRangeAsync(list);
+
+		Assert.IsNotNull(result);
+		Assert.HasCount(2, result);
+		Assert.AreEqual(2, await ctx.ImportIndex.CountAsync(TestContext.CancellationToken));
+		Assert.IsNotEmpty(console.WrittenLines);
+	}
+
+	[TestMethod]
+	public async Task RemoveItemAsync_RemovesItem_WhenScopeFactoryNull()
+	{
+		var ctx = CreateInMemoryContext(nameof(RemoveItemAsync_RemovesItem_WhenScopeFactoryNull));
+		var console = new FakeConsoleWrapper();
+		var logger = new FakeIWebLogger();
+
+		var item = new ImportIndexItem { FileHash = "to_remove", AddToDatabase = DateTime.UtcNow };
+		await ctx.ImportIndex.AddAsync(item, TestContext.CancellationToken);
+		await ctx.SaveChangesAsync(TestContext.CancellationToken);
+
+		var sut = new ImportQuery(null, console, logger, ctx);
+
+		var removed = await sut.RemoveItemAsync(item);
+
+		Assert.IsNotNull(removed);
+		Assert.IsNull(await ctx.ImportIndex.FirstOrDefaultAsync(
+			p => p.FileHash == "to_remove",
+			TestContext.CancellationToken));
+	}
+
+	[TestMethod]
+	public void AddRange_Sync_AddsItems_WhenScopeFactoryNull()
+	{
+		var ctx = CreateInMemoryContext(nameof(AddRange_Sync_AddsItems_WhenScopeFactoryNull));
+		var console = new FakeConsoleWrapper();
+		var logger = new FakeIWebLogger();
+
+		var sut = new ImportQuery(null, console, logger, ctx);
+
+		var list = new List<ImportIndexItem>
+		{
+			new() { FileHash = "s1", AddToDatabase = DateTime.UtcNow },
+			new() { FileHash = "s2", AddToDatabase = DateTime.UtcNow }
+		};
+
+		var result = sut.AddRange(list);
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual(2, ctx.ImportIndex.Count());
+		Assert.IsNotEmpty(console.WrittenLines);
+	}
 }

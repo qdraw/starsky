@@ -162,6 +162,13 @@ public class LocalFileSystemCredential
 		}
 	}
 
+	/// <summary>
+	///     Overwrite CopyContent in PublishProfile
+	///     true is to copy all files in the list
+	///     false is to respect the Copy flag in PublishProfile
+	/// </summary>
+	public bool CopyAllContent { get; set; }
+
 	public void SetWarning(string securityWarning)
 	{
 		_path = securityWarning;

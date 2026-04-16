@@ -37,6 +37,12 @@ public sealed class StorageThumbnailFilesystem : IStorage
 		throw new NotSupportedException();
 	}
 
+	public string[] ReadAllLines(string path)
+	{
+		var fullPath = CombinePath(path);
+		return new StorageHostFullPathFilesystem(_logger).ReadAllLines(fullPath);
+	}
+
 	/// <summary>
 	/// </summary>
 	/// <param name="path">FileHash not path</param>
@@ -51,6 +57,11 @@ public sealed class StorageThumbnailFilesystem : IStorage
 		// only for the root folder
 		return new StorageHostFullPathFilesystem(_logger).ExistFolder(_appSettings
 			.ThumbnailTempFolder);
+	}
+
+	public bool IsFolderEmpty(string path)
+	{
+		throw new NotSupportedException();
 	}
 
 	public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)

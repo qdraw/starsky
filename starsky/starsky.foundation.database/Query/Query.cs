@@ -24,15 +24,16 @@ namespace starsky.foundation.database.Query;
 // ReSharper disable once RedundantExtendsListEntry
 public partial class Query : IQuery
 {
+	private const string GetSubPathsByHashAsyncCacheKey = "GetSubPathsByHashAsync";
 	private readonly AppSettings _appSettings;
 	private readonly IMemoryCache? _cache;
 	private readonly IWebLogger _logger;
-	private readonly IServiceScopeFactory? _scopeFactory;
+	private readonly IServiceScopeFactory _scopeFactory;
 	private ApplicationDbContext _context;
 
 	public Query(ApplicationDbContext context,
 		AppSettings appSettings,
-		IServiceScopeFactory? scopeFactory,
+		IServiceScopeFactory scopeFactory,
 		IWebLogger logger, IMemoryCache? memoryCache = null)
 	{
 		_context = context;
@@ -72,7 +73,8 @@ public partial class Query : IQuery
 		catch ( ObjectDisposedException e )
 		{
 			_logger.LogInformation("[GetObjectByFilePath] catch-ed ObjectDisposedException", e);
-			return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return scope.Execute(LocalQuery);
 		}
 	}
 
@@ -135,28 +137,29 @@ public partial class Query : IQuery
 	/// </summary>
 	/// <param name="fileHash">the file hash</param>
 	/// <returns>file path can be cached</returns>
-	public async Task<string?> GetSubPathByHashAsync(string fileHash)
+	public async Task<List<string>> GetSubPathsByHashAsync(string fileHash)
 	{
 		// The CLI programs uses no cache
-		if ( !IsCacheEnabled() || _cache == null )
+		if ( !IsCacheEnabled() )
 		{
-			return await QueryGetItemByHashAsync(fileHash);
+			return await QueryGetItemsByHashAsync(fileHash);
 		}
 
 		// Return values from IMemoryCache
-		var queryHashListCacheName = CachingDbName("hashList", fileHash);
+		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
 
-		// if result is not null return cached value
-		if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath)
-		     && !string.IsNullOrEmpty(( string? ) cachedSubPath) )
+		// if the result is not null return cached value
+		if ( _cache!.TryGetValue(queryHashListCacheName, out var cachedSubPaths)
+		     && ( List<string>? ) cachedSubPaths != null &&
+		     ( ( List<string?> ) cachedSubPaths ).Any(p => p != null) )
 		{
-			return ( string ) cachedSubPath;
+			return ( List<string> ) cachedSubPaths;
 		}
 
-		cachedSubPath = await QueryGetItemByHashAsync(fileHash);
+		cachedSubPaths = await QueryGetItemsByHashAsync(fileHash);
 
-		_cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48, 0, 0));
-		return ( string? ) cachedSubPath;
+		_cache.Set(queryHashListCacheName, cachedSubPaths, new TimeSpan(48, 0, 0));
+		return ( List<string> ) cachedSubPaths;
 	}
 
 	/// <summary>
@@ -170,11 +173,10 @@ public partial class Query : IQuery
 			return;
 		}
 
-		var queryCacheName = CachingDbName("hashList", fileHash);
-
-		if ( _cache.TryGetValue(queryCacheName, out _) )
+		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
+		if ( _cache.TryGetValue(queryHashListCacheName, out _) )
 		{
-			_cache.Remove(queryCacheName);
+			_cache.Remove(queryHashListCacheName);
 		}
 	}
 
@@ -295,16 +297,19 @@ public partial class Query : IQuery
 		}
 		catch ( ObjectDisposedException )
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			try
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(async context =>
 			{
-				return await LocalQuery(context, updateStatusContentList);
-			}
-			catch ( DbUpdateConcurrencyException concurrencyException )
-			{
-				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-				return await LocalQuery(context, updateStatusContentList);
-			}
+				try
+				{
+					return await LocalQuery(context, updateStatusContentList);
+				}
+				catch ( DbUpdateConcurrencyException concurrencyException )
+				{
+					SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+					return await LocalQuery(context, updateStatusContentList);
+				}
+			});
 		}
 		catch ( DbUpdateConcurrencyException concurrencyException )
 		{
@@ -466,8 +471,8 @@ public partial class Query : IQuery
 	{
 		async Task<FileIndexItem> LocalDefaultQuery()
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return await LocalQuery(context);
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(LocalQuery);
 		}
 
 		async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
@@ -589,24 +594,24 @@ public partial class Query : IQuery
 			.FirstOrDefault();
 	}
 
-	private async Task<string?> QueryGetItemByHashAsync(string fileHash)
+	private async Task<List<string>> QueryGetItemsByHashAsync(string fileHash)
 	{
-		async Task<string?> LocalQueryGetItemByHashAsync(ApplicationDbContext context)
+		async Task<List<string>> LocalQueryGetItemsByHashAsync(ApplicationDbContext context)
 		{
-			return ( await context.FileIndex.TagWith("QueryGetItemByHashAsync")
-				.FirstOrDefaultAsync(p => p.FileHash == fileHash
-				                          && p.IsDirectory != true
-				) )?.FilePath;
+			return await context.FileIndex.TagWith("QueryGetItemByHashAsync")
+				.Where(p => p.FileHash == fileHash
+				            && p.IsDirectory != true
+				).Select(p => p.FilePath).Cast<string>().ToListAsync();
 		}
 
 		try
 		{
-			return await LocalQueryGetItemByHashAsync(_context);
+			return await LocalQueryGetItemsByHashAsync(_context);
 		}
 		catch ( ObjectDisposedException )
 		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return await LocalQueryGetItemByHashAsync(context);
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(LocalQueryGetItemsByHashAsync);
 		}
 	}
 
@@ -654,16 +659,19 @@ public partial class Query : IQuery
 			// InvalidOperationException: A second operation started on this context before a previous operation completed.
 			// https://go.microsoft.com/fwlink/?linkid=2097913
 			await Task.Delay(delay);
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			if ( context == null! )
+			if ( _scopeFactory == null )
 			{
 				throw new AggregateException("Query Context is null");
 			}
 
-			context.Attach(updateStatusContent).State = EntityState.Modified;
-			await context.SaveChangesAsync();
-			context.Attach(updateStatusContent).State = EntityState.Unchanged;
-			await context.DisposeAsync();
+			var scope = new InjectServiceScope(_scopeFactory);
+			await scope.ExecuteAsync(async context =>
+			{
+				context.Attach(updateStatusContent).State = EntityState.Modified;
+				await context.SaveChangesAsync();
+				context.Attach(updateStatusContent).State = EntityState.Unchanged;
+				return true;
+			});
 		}
 
 		try
@@ -678,13 +686,24 @@ public partial class Query : IQuery
 		}
 		catch ( DbUpdateConcurrencyException concurrencyException )
 		{
-			SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+			try
+			{
+				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+			}
+			catch ( ObjectDisposedException objectDisposedException )
+			{
+				_logger.LogInformation(objectDisposedException,
+					"[RetrySaveChangesAsync] SolveConcurrencyExceptionLoop skipped disposed entries");
+			}
+
 			try
 			{
 				_logger.LogInformation(
 					"[RetrySaveChangesAsync] SolveConcurrencyExceptionLoop disposed item");
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				await context.SaveChangesAsync();
+				var scope = new InjectServiceScope(_scopeFactory);
+				await scope.ExecuteAsync(async context1 =>
+					await context1.SaveChangesAsync()
+				);
 			}
 			catch ( DbUpdateConcurrencyException retry2Exception )
 			{
@@ -815,7 +834,8 @@ public partial class Query : IQuery
 		// InvalidOperationException can also be disposed (ObjectDisposedException)
 		catch ( InvalidOperationException )
 		{
-			return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(LocalQuery);
 		}
 	}
 }

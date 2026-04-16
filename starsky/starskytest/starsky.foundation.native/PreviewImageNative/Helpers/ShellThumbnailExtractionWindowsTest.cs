@@ -15,6 +15,8 @@ namespace starskytest.starsky.foundation.native.PreviewImageNative.Helpers;
 [TestClass]
 public class ShellThumbnailExtractionWindowsTest
 {
+	public TestContext TestContext { get; set; }
+
 	private static async Task<(string, string)> CreateTempImage(string testName,
 		bool corrupt = false, bool doubleSlash = false)
 	{
@@ -126,7 +128,8 @@ public class ShellThumbnailExtractionWindowsTest
 			Assert.IsTrue(File.Exists(output), "Output file was not created.");
 
 			// test with imageSharp if the image is valid
-			using var image = await Image.LoadAsync(output, TestContext.CancellationTokenSource.Token);
+			using var image =
+				await Image.LoadAsync(output, TestContext.CancellationTokenSource.Token);
 			Assert.IsNotNull(image, "Image should not be null.");
 			Assert.AreEqual(100, image.Width, "Image width is not as expected.");
 			Assert.AreEqual(67, image.Height, "Image height is not as expected.");
@@ -207,7 +210,15 @@ public class ShellThumbnailExtractionWindowsTest
 	{
 		if ( ShellThumbnailExtractionWindows.IsSupported() )
 		{
-			Assert.Inconclusive("This test is only valid on unsupported platforms.");
+			Assert.Inconclusive("This test is only valid on " +
+			                    "unsupported platforms (Linux, MacOS).");
+		}
+
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+		     RuntimeInformation.OSArchitecture ==
+		     System.Runtime.InteropServices.Architecture.Arm64 )
+		{
+			Assert.Inconclusive("This test is only valid on Windows x64.");
 		}
 
 		Assert.ThrowsExactly<DllNotFoundException>(() =>
@@ -267,6 +278,4 @@ public class ShellThumbnailExtractionWindowsTest
 		Assert.AreEqual("SIIGBF_INCACHEONLY",
 			$"{ShellThumbnailExtractionWindows.SIIGBF.SIIGBF_INCACHEONLY}");
 	}
-
-	public TestContext TestContext { get; set; }
 }

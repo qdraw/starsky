@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -146,15 +147,25 @@ public sealed class DownloadPhotoController : Controller
 		if ( !data.Small || !data.Large || !data.ExtraLarge )
 		{
 			_logger.LogDebug("Thumbnail generation started");
-			await _thumbnailService.GenerateThumbnail(fileIndexItem.FilePath!,
+			var generationResults = await _thumbnailService.GenerateThumbnail(
+				fileIndexItem.FilePath!,
 				fileIndexItem.FileHash!);
+
+			// Check if generation failed
+			if ( generationResults.Any(r => !r.Success) )
+			{
+				Response.StatusCode = 500;
+				return Json("Thumbnail generation failed");
+			}
 
 			var thumbnail = ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,
 				ThumbnailSize.Large, _appSettings.ThumbnailImageFormat);
 			if ( !_thumbnailStorage.ExistFile(thumbnail) )
 			{
+				_logger.LogError(
+					$"Thumbnail file not found after generation (marked success): {thumbnail}");
 				Response.StatusCode = 500;
-				return Json("Thumbnail generation failed");
+				return Json("Thumbnail generation failed: file not persisted after generation");
 			}
 		}
 

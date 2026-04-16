@@ -1,0 +1,53 @@
+﻿[
+  {
+    FileHash: D5JPXKGXQC353LBKZE3ZX5KU6A,
+    FilePath: /2016/12/2016_12_22/20161222_200204_eos7d.cr2,
+    DateTime: 2016-12-22 20:02:04,
+    Status: Ok,
+    FileIndexItem: {
+      Id: 1,
+      FilePath: /2016/12/2016_12_22/20161222_200204_eos7d.cr2,
+      FileName: 20161222_200204_eos7d.cr2,
+      FileHash: D5JPXKGXQC353LBKZE3ZX5KU6A,
+      FileCollectionName: 20161222_200204_eos7d,
+      ParentDirectory: /2016/12/2016_12_22,
+      IsDirectory: false,
+      Tags: ,
+      Status: Ok,
+      Description: ,
+      Title: ,
+      DateTime: 2016-12-22 20:02:04,
+      LocationCity: ,
+      LocationState: ,
+      LocationCountry: ,
+      LocationCountryCode: ,
+      Orientation: Horizontal,
+      ImageWidth: 5184,
+      ImageHeight: 3456,
+      ImageFormat: cr2,
+      SidecarExtensions: ,
+      Aperture: 3.5,
+      ShutterSpeed: 1/25,
+      IsoSpeed: 1250,
+      Software: ,
+      MakeModel: Canon|Canon EOS 7D|EF-S15-85mm f/3.5-5.6 IS USM|1130703009,
+      Make: Canon,
+      Model: Canon EOS 7D,
+      LensModel: EF-S15-85mm f/3.5-5.6 IS USM,
+      MakeCameraSerial: 1130703009,
+      FocalLength: 15.0,
+      Size: 11062629,
+      Artist: Kees Guequierre
+    },
+    SourceFullFilePath: /eos7d.cr2,
+    Structure: {
+      DefaultPattern: /yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext
+    },
+    MakeModel: Canon|Canon EOS 7D|EF-S15-85mm f/3.5-5.6 IS USM|1130703009,
+    Artist: Kees Guequierre,
+    DateTimeFromFileName: false,
+    ImageFormat: cr2,
+    Size: 11062629,
+    Origin: 
+  }
+]

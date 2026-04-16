@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
@@ -13,21 +14,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.foundation.import.Interfaces;
-using starsky.foundation.import.Models;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.geo.ReverseGeoCode.Interface;
 using starsky.foundation.http.Services;
-using starsky.foundation.platform.Interfaces;
+using starsky.foundation.import.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Services;
-using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -39,7 +34,6 @@ public sealed class ImportControllerTest
 	private readonly AppSettings _appSettings;
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly IImport _import;
-	private readonly IServiceScopeFactory _scopeFactory;
 
 	public ImportControllerTest()
 	{
@@ -62,7 +56,6 @@ public sealed class ImportControllerTest
 		// get the background helper
 		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 
-		_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		_import = new FakeIImport(new FakeSelectorStorage(new FakeIStorage()));
 	}
 
@@ -70,11 +63,12 @@ public sealed class ImportControllerTest
 	///     Add the file in the underlying request object.
 	/// </summary>
 	/// <returns>Controller Context with file</returns>
-	private static ControllerContext RequestWithFile()
+	private static ControllerContext RequestWithFile(ImmutableArray<byte>? fileBytes = null)
 	{
+		fileBytes ??= CreateAnImage.Bytes;
 		var httpContext = new DefaultHttpContext();
 		httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
-		httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes.ToArray());
+		httpContext.Request.Body = new MemoryStream([.. fileBytes.Value]);
 
 		var actionContext = new ActionContext(httpContext, new RouteData(),
 			new ControllerActionDescriptor());
@@ -88,7 +82,7 @@ public sealed class ImportControllerTest
 
 		var importController = new ImportController(new FakeIImport(fakeStorageSelector),
 			_appSettings,
-			_bgTaskQueue, null!, fakeStorageSelector, _scopeFactory, new FakeIWebLogger())
+			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
 		{
 			ControllerContext = RequestWithFile()
 		};
@@ -100,80 +94,81 @@ public sealed class ImportControllerTest
 	}
 
 	[TestMethod]
-	public async Task ImportPostBackgroundTask_NotFound()
+	public async Task IndexPost_WrongInput_Sets415AndLogs()
 	{
-		var services = new ServiceCollection();
-		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-		services.AddSingleton<IStorage, FakeIStorage>();
-		services.AddSingleton<AppSettings>();
-		services.AddSingleton<IImportQuery, FakeIImportQuery>();
-		services.AddSingleton<IExifTool, FakeExifTool>();
-		services.AddSingleton<IQuery, FakeIQuery>();
-		services.AddSingleton<IImport, FakeIImport>();
-		services.AddSingleton<IConsole, FakeConsoleWrapper>();
-		services.AddSingleton<IThumbnailQuery, FakeIThumbnailQuery>();
-		services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
-		services.AddSingleton<IReverseGeoCodeService, FakeIReverseGeoCodeService>();
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+		var fakeLogger = new FakeIWebLogger();
 
-		// metrics
-		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
-		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
-		services.AddMemoryCache();
+		// Use the FakeIImport which returns FileError items in Preflight
+		var importController = new ImportController(new FakeIImport(fakeStorageSelector),
+			_appSettings,
+			_bgTaskQueue, null!, fakeStorageSelector, fakeLogger)
+		{
+			ControllerContext = RequestWithFile(CreateAnExifToolTar.Bytes)
+		};
 
-		var serviceProvider = services.BuildServiceProvider();
-		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-
-		var importController = new ImportController(null!, new AppSettings(),
-			null!, null!, new FakeSelectorStorage(),
-			scopeFactory, new FakeIWebLogger());
-
-		var result = await importController.ImportPostBackgroundTask(
-			new List<string> { "/test" }, new ImportSettingsModel());
-
-		Assert.HasCount(1, result);
-		Assert.AreEqual(ImportStatus.NotFound, result[0].Status);
+		await importController.IndexPost();
+		
+		// Controller should set 415 and log a debug message
+		Assert.AreEqual(415, importController.Response.StatusCode);
+		Assert.Contains(t => (t.Item2 ?? string.Empty).Contains("Wrong input"), fakeLogger.TrackedDebug, "Logger should contain 'Wrong input' debug entry");
 	}
 
 	[TestMethod]
-	public async Task ImportPostBackgroundTask_NotFound_Logger_Contain1()
+	public async Task IndexPost_AllItemsAlreadyImported_Returns206()
 	{
-		var services = new ServiceCollection();
-		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-		services.AddSingleton<IStorage, FakeIStorage>();
-		services.AddSingleton<AppSettings>();
-		services.AddSingleton<IImportQuery, FakeIImportQuery>();
-		services.AddSingleton<IExifTool, FakeExifTool>();
-		services.AddSingleton<IQuery, FakeIQuery>();
-		services.AddSingleton<IImport, FakeIImport>();
-		services.AddSingleton<IConsole, FakeConsoleWrapper>();
-		services.AddSingleton<IThumbnailQuery, FakeIThumbnailQuery>();
-		services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
-		services.AddSingleton<IReverseGeoCodeService, FakeIReverseGeoCodeService>();
-		// metrics
-		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
-		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+		// Use a FakeIImport implementation that returns an empty Preflight list
+		var fakeImport = new FakeIImportForImportTest();
 
-		services.AddMemoryCache();
+		var importController = new ImportController(fakeImport,
+			_appSettings,
+			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
+		{
+			ControllerContext = RequestWithFile()
+		};
 
-		var serviceProvider = services.BuildServiceProvider();
-		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		// Call the action
+		var actionResult = await importController.IndexPost() as JsonResult;
+		var list = actionResult?.Value as List<ImportIndexItem>;
 
-		var logger = new FakeIWebLogger();
-		var importController = new ImportController(null!, new AppSettings(),
-			null!, null!, new FakeSelectorStorage(),
-			scopeFactory, logger);
+		// Preflight returns empty list => JSON result list should be empty
+		Assert.IsNotNull(list);
+		Assert.IsEmpty(list);
 
-		await importController.ImportPostBackgroundTask(
-			new List<string> { "/test" }, new ImportSettingsModel(), true);
+		// When Preflight returns an empty list (no Ok items) and IndexMode is true,
+		// the controller should set Response.StatusCode to 206
+		Assert.AreEqual(206, importController.Response.StatusCode);
+	}
 
-		Assert.HasCount(1, logger.TrackedInformation);
+	[TestMethod]
+	public async Task IndexPost_AllItemsAlreadyImported_Returns206_EmptyPreflight()
+	{
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+		var fakeImport = new FakeIImportForImportTest();
+
+		var importController = new ImportController(fakeImport,
+			_appSettings,
+			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
+		{
+			ControllerContext = RequestWithFile()
+		};
+
+		// Act
+		var actionResult = await importController.IndexPost() as JsonResult;
+		var list = actionResult?.Value as List<ImportIndexItem>;
+
+		// Assert
+		Assert.IsNotNull(list);
+		Assert.IsEmpty(list);
+		Assert.AreEqual(206, importController.Response.StatusCode);
 	}
 
 	[TestMethod]
 	public async Task FromUrl_PathInjection()
 	{
 		var importController = new ImportController(_import, _appSettings,
-			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory,
+			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()),
 			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
 		var actionResult =
 			await importController.FromUrl("", "../../path-injection.dll", null!) as
@@ -185,7 +180,7 @@ public sealed class ImportControllerTest
 	public async Task FromUrl_BadRequest()
 	{
 		var importController = new ImportController(_import, _appSettings,
-			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory,
+			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()),
 			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
 		importController.ModelState.AddModelError("Key", "ErrorMessage");
 
@@ -211,8 +206,7 @@ public sealed class ImportControllerTest
 			serviceProvider.GetRequiredService<IServiceScopeFactory>(), new FakeIWebLogger());
 
 		var importController = new ImportController(_import, _appSettings,
-			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()),
-			_scopeFactory, new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
 		// download.geoNames is in the FakeHttpMessageHandler always a 404
 		var actionResult =
 			await importController.FromUrl("https://download.geonames.org", "example.tiff",
@@ -238,8 +232,7 @@ public sealed class ImportControllerTest
 
 		var importController = new ImportController(
 			new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider),
-			_scopeFactory, new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider), new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
 
 		var actionResult =
 			await importController.FromUrl("https://qdraw.nl", "example_image.tiff", null!) as

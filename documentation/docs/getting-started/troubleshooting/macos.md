@@ -20,4 +20,4 @@ When you see the error: **Access to Path is denied** on an external memory card,
 
 This permission is required by macOS to allow applications to access files on external drives and memory cards.
 
-- [Reference](../../features/import.md).
+- [Reference](../../features/import/import.md).

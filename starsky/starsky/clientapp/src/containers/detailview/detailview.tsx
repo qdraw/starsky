@@ -196,6 +196,19 @@ const DetailView: FC<IDetailView> = () => {
     setIsUseGestures(true);
   }, [state.subPath]);
 
+  // Reset error when thumbnail is regenerated so the image becomes visible again
+  // (fileHash changes via ThumbnailGeneration socket update)
+  // Use lastChanged or lastUpdated as trigger, not fileHash, because fileHash (content hash)
+  // doesn't change when thumbnail is regenerated - only lastChanged timestamp changes
+  useEffect(() => {
+    const isThumbnailRefresh = state.fileIndexItem?.lastChanged?.some((item) =>
+      ["LastEdited", "FileHash", "Src"].includes(item)
+    );
+    if (isThumbnailRefresh) {
+      setIsError(false);
+    }
+  }, [state.fileIndexItem?.lastChanged, state.fileIndexItem?.fileHash]);
+
   // // When item is removed
   useEffect(() => {
     statusRemoved(state, relativeObjects, isSearchQuery, history, setRelativeObjects, setIsLoading);
@@ -238,6 +251,15 @@ const DetailView: FC<IDetailView> = () => {
   if (!state.fileIndexItem || !relativeObjects) {
     return <Preloader parent={"/"} isWhite={true} isOverlay={true} />;
   }
+
+  const shouldRefreshThumbnail =
+    state.fileIndexItem?.lastChanged?.some((item) =>
+      ["LastEdited", "FileHash", "Src"].includes(item)
+    ) ?? false;
+  const thumbnailRefreshToken =
+    shouldRefreshThumbnail && state.lastUpdated && state.fileIndexItem?.lastEdited
+      ? `${state.fileIndexItem.lastEdited}-${state.lastUpdated}`
+      : undefined;
 
   return (
     <>
@@ -290,6 +312,7 @@ const DetailView: FC<IDetailView> = () => {
               id={state.fileIndexItem.filePath}
               setIsLoading={setIsLoading}
               fileHash={state.fileIndexItem.fileHash}
+              refreshToken={thumbnailRefreshToken}
               orientation={state.fileIndexItem.orientation}
               onWheelCallback={() => {
                 if (isUseGestures) setIsUseGestures(false);

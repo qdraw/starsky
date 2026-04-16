@@ -5,14 +5,18 @@
 * [By App documentation](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md) _web api application / interface_
         * [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
-    * __[starskyImporterCli](../../starsky/starskyimportercli/readme.md)  import command line
+    * __[starskyImporterCli](../../starsky/starskyimportercli/readme.md) import command line
       interface__
-    * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
+    * [starskyMountWatcherCli](../../starsky/starskymountwatchercli/readme.md)  _watch sd cards_
+    * [starskyDemoSeedCli](../../starsky/starskydemoseedcli/readme.md) _demo seed data_
+    * [starskyDependenciesDownloadCli](../../starsky/starskydependenciesdownloadcli/readme.md) _make
+      sure external dependencies are installed_
+    * [starskyGeoCli](../../starsky/starskygeocli/readme.md) _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a
       content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp
       service_
-    * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  manage user accounts
     * [starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes
       are updated in the database_
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by

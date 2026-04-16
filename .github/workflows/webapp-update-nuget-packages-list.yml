@@ -21,7 +21,7 @@ jobs:
       uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
 
     - name: Set up Node.js
-      uses: actions/setup-node@774c1d62961e73038a114d59c8847023c003194d
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
       with:
         node-version: 22.x
       
@@ -47,7 +47,7 @@ jobs:
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
       if: steps.files_changed.outputs.CHANGED == 'true' && github.event_name != 'pull_request'
-      uses: peter-evans/create-pull-request@6699836a213cf8b28c4f0408a404a6ac79d4458a
+      uses: peter-evans/create-pull-request@eec7ab75b2f71ddc8a223341c83a67f6f774c39f
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: '[NugetPackagesListUpdate] Auto commited nugetPackages list'

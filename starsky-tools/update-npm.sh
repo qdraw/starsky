@@ -10,6 +10,6 @@ find . -maxdepth $MAX_DEPTH -name package.json | while read -r pkg; do
   dir=$(dirname "$pkg")
   if grep -q '"update:install"' "$pkg"; then
     echo "Running update:install in $dir"
-    (cd "$dir" && npm run update:install)
+    (cd "$dir" && npm run update:install) || true
   fi
 done

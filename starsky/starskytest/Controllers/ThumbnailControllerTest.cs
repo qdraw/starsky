@@ -23,6 +23,7 @@ using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -53,7 +54,8 @@ public sealed class ThumbnailControllerTest
 	{
 		bgService ??= new FakeISmallThumbnailBackgroundJobService();
 		var sut = new ThumbnailController(query, new FakeSelectorStorage(storage),
-			new AppSettings(), new FakeIWebLogger(), bgService);
+			new AppSettings(), new FakeIWebLogger(), bgService,
+			new FakeIManualThumbnailGenerationService());
 		sut.ControllerContext.HttpContext = new DefaultHttpContext();
 		return sut;
 	}
@@ -61,7 +63,8 @@ public sealed class ThumbnailControllerTest
 	private static ThumbnailController CreateSut(ISelectorStorage selectorStorage, IQuery query)
 	{
 		var sut = new ThumbnailController(query, selectorStorage,
-			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
 		sut.ControllerContext.HttpContext = new DefaultHttpContext();
 		return sut;
 	}
@@ -77,7 +80,8 @@ public sealed class ThumbnailControllerTest
 			ColorClass = ColorClassParser.Color.Winner // 1
 		};
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHash)) )
+		var getSubPathsByHash = ( await _query.GetSubPathsByHashAsync(fileHash) ).FirstOrDefault();
+		if ( string.IsNullOrEmpty(getSubPathsByHash) )
 		{
 			await _query.AddItemAsync(item);
 		}
@@ -106,7 +110,8 @@ public sealed class ThumbnailControllerTest
 		var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 
 		var controller = new ThumbnailController(_query, storageSelector, new AppSettings(),
-			new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+			new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
 		var actionResult = await controller.Thumbnail("../") as BadRequestResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 	}
@@ -126,7 +131,8 @@ public sealed class ThumbnailControllerTest
 
 		// Act
 		var controller = new ThumbnailController(_query, new FakeSelectorStorage(storage),
-			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		var actionResult = await controller.Thumbnail("hash-corrupt-image", "/test2.jpg",
@@ -148,13 +154,29 @@ public sealed class ThumbnailControllerTest
 	{
 		var controller =
 			new ThumbnailController(_query, new FakeSelectorStorage(), new AppSettings(),
-				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+				new FakeIManualThumbnailGenerationService());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var actionResult =
 			await controller.Thumbnail("404filehash", null, false,
 				true) as NotFoundObjectResult;
 		var thumbnailAnswer = actionResult?.StatusCode;
 		Assert.AreEqual(404, thumbnailAnswer);
+	}
+
+	private static ThumbnailService SetThumbnailService(IStorage storage)
+	{
+		var selectorStorage = new FakeSelectorStorage(storage);
+		return new ThumbnailService(selectorStorage,
+			new FakeIWebLogger(), new AppSettings(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
+			new ThumbnailGeneratorFactory(selectorStorage, new FakeIWebLogger(),
+				new FakeIVideoProcess(selectorStorage),
+				new FakeINativePreviewThumbnailGenerator(),
+				new EmbeddedRawThumbnailGenerator(selectorStorage,
+					new FakeEmbeddedRawThumbnailService(selectorStorage),
+					new FakeIWebLogger())));
 	}
 
 	[TestMethod]
@@ -166,26 +188,22 @@ public sealed class ThumbnailControllerTest
 
 		// Act
 		// Create thumbnail in fake storage
-		var service = new ThumbnailService(new FakeSelectorStorage(storage),
-			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(new FakeSelectorStorage(storage)),
-			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var service = SetThumbnailService(storage);
 
 		await service.GenerateThumbnail(createAnImage.FilePath!, createAnImage.FileHash!);
 
 		// Check if exist
 		var controller =
 			new ThumbnailController(_query, new FakeSelectorStorage(storage), new AppSettings(),
-				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+				new FakeIManualThumbnailGenerationService());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		var actionResult =
 			await controller.Thumbnail(createAnImage.FileHash!, null,
 				true, true) as JsonResult;
 
-		// Thumbnail exist
+		// Thumbnail does exist
 		Assert.IsNotNull(actionResult);
 		var thumbnailAnswer = actionResult.Value as string;
 		Assert.AreEqual("OK", thumbnailAnswer);
@@ -196,7 +214,8 @@ public sealed class ThumbnailControllerTest
 	{
 		var controller =
 			new ThumbnailController(_query, new FakeSelectorStorage(), new AppSettings(),
-				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+				new FakeIManualThumbnailGenerationService());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 		var result = await controller.Thumbnail("Invalid");
@@ -212,25 +231,22 @@ public sealed class ThumbnailControllerTest
 
 		// Act
 		// Create thumbnail in fake storage
-		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(storage),
-			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService(),
-			new FakeIVideoProcess(new FakeSelectorStorage(storage)),
-			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()),
-			new FakeINativePreviewThumbnailGenerator());
+		var thumbnailService = SetThumbnailService(storage);
 
 		await thumbnailService.GenerateThumbnail(createAnImage.FilePath!, createAnImage.FileHash!);
 
 		// Check if exist
 		var controller =
 			new ThumbnailController(_query, new FakeSelectorStorage(storage), new AppSettings(),
-				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+				new FakeIManualThumbnailGenerationService());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		var actionResult =
-			await controller.Thumbnail(createAnImage.FileHash!, null, true) as FileStreamResult;
+			await controller.Thumbnail(createAnImage.FileHash!,
+				null, true) as FileStreamResult;
 
-		// Thumbnail exist
+		// Thumbnail does exist
 		Assert.IsNotNull(actionResult);
 		var thumbnailAnswer = actionResult.ContentType;
 
@@ -272,7 +288,8 @@ public sealed class ThumbnailControllerTest
 		var sut = CreateSut(storage, _query);
 
 		var actionResult =
-			await sut.Thumbnail("any", "/not_found.jpg", true) as NotFoundObjectResult;
+			await sut.Thumbnail("any", "/not_found.jpg", true)
+				as NotFoundObjectResult;
 
 		Assert.AreEqual(404, actionResult?.StatusCode);
 	}
@@ -283,15 +300,16 @@ public sealed class ThumbnailControllerTest
 		await InsertSearchData();
 		var storage = ArrangeStorage();
 		var controller = new ThumbnailController(
-			new FakeIQuery(new List<FileIndexItem>
-			{
-				new("/not_on_disk.jpg") { FileHash = "not_on_disk_hash" }
-			}), new FakeSelectorStorage(storage), new AppSettings(), new FakeIWebLogger(),
-			new FakeISmallThumbnailBackgroundJobService());
+			new FakeIQuery(
+				[new FileIndexItem("/not_on_disk.jpg") { FileHash = "not_on_disk_hash" }]),
+			new FakeSelectorStorage(storage), new AppSettings(), new FakeIWebLogger(),
+			new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
 
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var actionResult =
-			await controller.Thumbnail("not_on_disk_hash", "/not_on_disk.jpg", true) as
+			await controller.Thumbnail("not_on_disk_hash",
+					"/not_on_disk.jpg", true) as
 				NotFoundObjectResult;
 
 		Assert.AreEqual(404, actionResult?.StatusCode);
@@ -303,11 +321,47 @@ public sealed class ThumbnailControllerTest
 		var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 
 		var query = new FakeIQuery(
-			new List<FileIndexItem> { new("/test.dng") { FileHash = "hash1" } });
+			[new FileIndexItem("/test.dng") { FileHash = "hash1" }]);
 		var sut = CreateSut(storageSelector, query);
 		await sut.Thumbnail("hash1", null, true);
 
 		Assert.AreEqual(210, sut.Response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task Thumbnail_RawFile_TriggersManualCreateJobAndSetsNoCacheHeaders()
+	{
+		// Arrange: storage contains /test.dng and query maps hash to that path
+		var storage = ArrangeStorage();
+		var query = new FakeIQuery(
+			[new FileIndexItem("/test.dng") { FileHash = "hash1" }]);
+
+		var manual = new FakeIManualThumbnailGenerationService();
+		var controller = new ThumbnailController(query, new FakeSelectorStorage(storage),
+			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			manual);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		// Act
+		var actionResult = await controller.Thumbnail("hash1", null, true) as JsonResult;
+
+		// Assert the manual job called with sourcePath
+		Assert.IsTrue(manual.WasCreateJobCalled, "Expected CreateJob to be invoked for RAW file");
+		Assert.AreEqual("/test.dng", manual.LastSubPath);
+
+		// Assert response headers set to no-cache
+		controller.Response.Headers.TryGetValue("Cache-Control", out var cc);
+		Assert.Contains("no-cache", cc.ToString());
+
+		controller.Response.Headers.TryGetValue("Pragma", out var pragma);
+		Assert.AreEqual("no-cache", pragma.ToString());
+
+		controller.Response.Headers.TryGetValue("Expires", out var expires);
+		Assert.AreEqual("0", expires.ToString());
+
+		// And the status code is set to 210 (thumbnail not supported / conflict)
+		Assert.AreEqual(210, controller.Response.StatusCode);
+		Assert.IsNotNull(actionResult);
 	}
 
 	[TestMethod]
@@ -320,7 +374,8 @@ public sealed class ThumbnailControllerTest
 		sut.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		var actionResult =
-			await sut.Thumbnail(createAnImage.FileHash!, null, true) as FileStreamResult;
+			await sut.Thumbnail(createAnImage.FileHash!,
+				null, true) as FileStreamResult;
 		Assert.IsNotNull(actionResult);
 
 		var thumbnailAnswer = actionResult.ContentType;
@@ -336,7 +391,7 @@ public sealed class ThumbnailControllerTest
 	[TestMethod]
 	public async Task Thumbnail_IsMissing_ButOriginalExist_butNoIsSingleItemFlag_API_Test()
 	{
-		// Photo exist in database but " + "isSingleItem flag is Missing
+		// The photo does exist in the database, but the "+ "isSingleItem flag is Missing
 		var createAnImage = await InsertSearchData();
 		var storage = ArrangeStorage();
 		var sut = CreateSut(storage, _query);
@@ -362,7 +417,8 @@ public sealed class ThumbnailControllerTest
 		var sut = CreateSut(storage, _query);
 
 		var actionResult =
-			await sut.Thumbnail(item.FileHash!, null, false, true) as
+			await sut.Thumbnail(item.FileHash!, null,
+					false, true) as
 				NotFoundObjectResult;
 		var thumbnailAnswer = actionResult?.StatusCode;
 		Assert.AreEqual(404, thumbnailAnswer);
@@ -384,16 +440,17 @@ public sealed class ThumbnailControllerTest
 	[TestMethod]
 	public async Task Thumbnail_GetLargeFirstChoiceResult()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 
 		var sut = CreateSut(storage, _query);
 
@@ -406,19 +463,21 @@ public sealed class ThumbnailControllerTest
 	[TestMethod]
 	public async Task Thumbnail_IgnoreAtInInF()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 
 		var sut = CreateSut(storage, _query);
-		await sut.Thumbnail("test@2000", null, true, false, false);
+		await sut.Thumbnail("test@2000", null, true,
+			false, false);
 
 		sut.Response.Headers.TryGetValue("x-image-size", out var value);
 		Assert.AreEqual(nameof(ThumbnailSize.Large), value.ToString());
@@ -477,12 +536,49 @@ public sealed class ThumbnailControllerTest
 		var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 
 		var query = new FakeIQuery(
-			new List<FileIndexItem> { new("/test.dng") { FileHash = "hash1" } });
+			[new FileIndexItem("/test.dng") { FileHash = "hash1" }]);
 		var sut = CreateSut(storageSelector, query);
 
 		await sut.ByZoomFactorAsync("hash1");
 
 		Assert.AreEqual(210, sut.Response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task ByZoomFactor_FilePathRaw_TriggersManualCreateJobAndSetsNoCacheHeaders()
+	{
+		// Arrange: query has no mapping for hash, but filePath exists and is raw
+		var storage = ArrangeStorage();
+		var query = new FakeIQuery();
+
+		await query.AddItemAsync(new FileIndexItem("/test.dng") { FileHash = "test_dng" });
+
+		var manual = new FakeIManualThumbnailGenerationService();
+		var controller = new ThumbnailController(query, new FakeSelectorStorage(storage),
+			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			manual);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		// Act: call with a filePath that is raw (.dng exists in ArrangeStorage)
+		var result = await controller.ByZoomFactorAsync("test_dng", 1, "/test.dng");
+
+		// Assert the manual job called with filePath
+		Assert.IsTrue(manual.WasCreateJobCalled,
+			"Expected CreateJob to be invoked for RAW file path");
+		Assert.AreEqual("/test.dng", manual.LastSubPath);
+
+		// Assert response headers set to no-cache
+		controller.Response.Headers.TryGetValue("Cache-Control", out var cc);
+		Assert.Contains("no-cache", cc.ToString());
+
+		controller.Response.Headers.TryGetValue("Pragma", out var pragma);
+		Assert.AreEqual("no-cache", pragma.ToString());
+
+		controller.Response.Headers.TryGetValue("Expires", out var expires);
+		Assert.AreEqual("0", expires.ToString());
+
+		// And the status code is set to 210 (thumbnail not supported / conflict)
+		Assert.AreEqual(210, controller.Response.StatusCode);
 	}
 
 	[TestMethod]
@@ -525,6 +621,60 @@ public sealed class ThumbnailControllerTest
 	}
 
 	[TestMethod]
+	public async Task ByZoomFactor_GetExtraLargePreferredResult()
+	{
+		// Arrange: storage contains only ExtraLarge thumbnail
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge,
+				new AppSettings().ThumbnailImageFormat)
+		]);
+
+		// Add a db entry so ByZoomFactorAsync can resolve a sourcePath
+		// (use RAW so the original image is not returned)
+		var item = await _query.AddItemAsync(new FileIndexItem("/test.dng") { FileHash = "test" });
+
+		var sut = CreateSut(storage, _query);
+
+		// Act
+		await sut.ByZoomFactorAsync("test", 1);
+
+		// Assert
+		sut.Response.Headers.TryGetValue("x-image-size", out var value);
+		Assert.AreEqual(nameof(ThumbnailSize.ExtraLarge), value.ToString());
+
+		// cleanup
+		await _query.RemoveItemAsync(item);
+	}
+
+	[TestMethod]
+	public async Task ByZoomFactor_GetLargeAlternativeResult()
+	{
+		// Arrange: storage contains only Large thumbnail (preferred ExtraLarge missing)
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
+
+		// Add a db entry so ByZoomFactorAsync can resolve a sourcePath (use RAW so the original
+		// image is not returned)
+		var item = await _query.AddItemAsync(new FileIndexItem("/test.dng") { FileHash = "test" });
+
+		var sut = CreateSut(storage, _query);
+
+		// Act
+		await sut.ByZoomFactorAsync("test", 1);
+
+		// Assert
+		sut.Response.Headers.TryGetValue("x-image-size", out var value);
+		Assert.AreEqual(nameof(ThumbnailSize.Large), value.ToString());
+
+		// cleanup
+		await _query.RemoveItemAsync(item);
+	}
+
+	[TestMethod]
 	public void ThumbnailSmallOrTinyMeta_InputBadRequest()
 	{
 		var storageSelector = new FakeSelectorStorage(ArrangeStorage());
@@ -543,7 +693,8 @@ public sealed class ThumbnailControllerTest
 		var sut = CreateSut(storage, _query, bgService);
 
 		var actionResult =
-			sut.ThumbnailSmallOrTinyMeta("404filehash", "/test.jpg") as NotFoundObjectResult;
+			sut.ThumbnailSmallOrTinyMeta("404filehash",
+				"/test.jpg") as NotFoundObjectResult;
 		var thumbnailAnswer = actionResult?.StatusCode;
 
 		Assert.AreEqual(404, thumbnailAnswer);
@@ -553,60 +704,60 @@ public sealed class ThumbnailControllerTest
 	[TestMethod]
 	public void ThumbnailSmallOrTinyMeta_GetTinyResult_WhenSmallDoesNotExist()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 
 		var sut = CreateSut(storage, _query);
 
 		sut.ThumbnailSmallOrTinyMeta("test");
 
 		sut.Response.Headers.TryGetValue("x-image-size", out var value);
-		Assert.AreEqual(ThumbnailSize.TinyMeta.ToString(), value.ToString());
+		Assert.AreEqual(nameof(ThumbnailSize.TinyMeta), value.ToString());
 	}
 
 	[TestMethod]
 	public void ThumbnailSmallOrTinyMeta_GetSmallResult()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Small,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 
 		var sut = CreateSut(storage, _query);
 
 		sut.ThumbnailSmallOrTinyMeta("test");
 
 		sut.Response.Headers.TryGetValue("x-image-size", out var value);
-		Assert.AreEqual(ThumbnailSize.Small.ToString(), value.ToString());
+		Assert.AreEqual(nameof(ThumbnailSize.Small), value.ToString());
 	}
 
 	[TestMethod]
 	public void ThumbnailSmallOrTinyMeta_GetLargeResultWhenAllAreMissing()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("test", ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 		var sut = CreateSut(storage, _query);
 
 		sut.ThumbnailSmallOrTinyMeta("test");
 
 		sut.Response.Headers.TryGetValue("x-image-size", out var value);
-		Assert.AreEqual(ThumbnailSize.Large.ToString(), value.ToString());
+		Assert.AreEqual(nameof(ThumbnailSize.Large), value.ToString());
 	}
 
 	[TestMethod]
@@ -624,8 +775,8 @@ public sealed class ThumbnailControllerTest
 	public async Task ListSizesByHash_NotFound()
 	{
 		// Arrange
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string> { "01234567890123456789123456" });
+		var storage = new FakeIStorage([],
+			["01234567890123456789123456"]);
 
 		// Check if exist
 		var sut = CreateSut(storage, _query);
@@ -647,11 +798,11 @@ public sealed class ThumbnailControllerTest
 		});
 
 		// Arrange
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string>
-			{
-				$"01234567890123456789123456.{new AppSettings().ThumbnailImageFormat}"
-			});
+		var storage = new FakeIStorage([],
+		[
+			$"01234567890123456789123456.{
+				new AppSettings().ThumbnailImageFormat}"
+		]);
 
 		// Check if exist
 		var sut = CreateSut(storage, _query);
@@ -659,7 +810,7 @@ public sealed class ThumbnailControllerTest
 		var actionResult =
 			await sut.ListSizesByHash("01234567890123456789123456") as JsonResult;
 
-		// Thumbnail exist
+		// Thumbnail does exist
 		Assert.IsNotNull(actionResult);
 		var thumbnailAnswer = actionResult.Value as ThumbnailSizesExistStatusModel;
 
@@ -676,25 +827,28 @@ public sealed class ThumbnailControllerTest
 	public async Task ListSizesByHash_AllExist_exceptTinyMeta()
 	{
 		const string hash = "01234567890123456789123456";
-		var item = await _query.AddItemAsync(new FileIndexItem("/test123.jpg") { FileHash = hash });
+		var item = await _query.AddItemAsync(
+			new FileIndexItem("/test123.jpg") { FileHash = hash }
+		);
 
 		// Arrange
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Large,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small,
-					new AppSettings().ThumbnailImageFormat),
-				ThumbnailNameHelper.Combine(hash, ThumbnailSize.ExtraLarge,
-					new AppSettings().ThumbnailImageFormat)
-			});
+		var storage = new FakeIStorage([],
+		[
+			ThumbnailNameHelper.Combine(hash, ThumbnailSize.Large,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small,
+				new AppSettings().ThumbnailImageFormat),
+
+			ThumbnailNameHelper.Combine(hash, ThumbnailSize.ExtraLarge,
+				new AppSettings().ThumbnailImageFormat)
+		]);
 
 		// Check if exist
 		var sut = CreateSut(storage, _query);
 		var actionResult = await sut.ListSizesByHash(hash) as JsonResult;
 
-		// Thumbnail exist
+		// Thumbnail does exist
 		Assert.IsNotNull(actionResult);
 		var thumbnailAnswer = actionResult.Value as ThumbnailSizesExistStatusModel;
 		Assert.IsNotNull(thumbnailAnswer);
@@ -738,8 +892,8 @@ public sealed class ThumbnailControllerTest
 		});
 
 		// Arrange
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string> { "91234567890123456789123451" });
+		var storage = new FakeIStorage([],
+			["91234567890123456789123451"]);
 
 		// Check if exist
 		var sut = CreateSut(storage, _query);
@@ -747,7 +901,7 @@ public sealed class ThumbnailControllerTest
 		var actionResult =
 			await sut.ListSizesByHash("91234567890123456789123451") as JsonResult;
 
-		// Thumbnail exist
+		// Thumbnail does exist
 		Assert.IsNotNull(actionResult);
 
 		Assert.AreEqual(210, sut.Response.StatusCode);

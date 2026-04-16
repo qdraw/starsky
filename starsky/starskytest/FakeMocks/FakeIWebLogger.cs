@@ -6,6 +6,8 @@ namespace starskytest.FakeMocks;
 
 public class FakeIWebLogger : IWebLogger
 {
+	private readonly object _lock = new();
+
 	public List<(Exception?, string?)> TrackedExceptions { get; set; } =
 		[];
 
@@ -15,7 +17,8 @@ public class FakeIWebLogger : IWebLogger
 	public List<(Exception?, string?)> TrackedDebug { get; set; } =
 		[];
 
-	private readonly object _lock = new();
+	public List<(Exception?, string?)> TrackedWarnings { get; set; } =
+		[];
 
 	public void LogDebug(string? message, params object[] args)
 	{
@@ -85,5 +88,24 @@ public class FakeIWebLogger : IWebLogger
 		}
 
 		Console.WriteLine(exception.Message + message, args);
+	}
+
+	public void LogWarning(Exception exception, string message, params object[] args)
+	{
+		lock ( _lock )
+		{
+			TrackedWarnings.Add(( exception, message ));
+		}
+
+		try
+		{
+			var safeMessage = message.Replace("{", "{{").Replace("}", "}}");
+			var exceptionMessage = exception.Message.Replace("{", "{{").Replace("}", "}}");
+			Console.WriteLine(exceptionMessage + safeMessage, args);
+		}
+		catch ( Exception e )
+		{
+			Console.WriteLine(e);
+		}
 	}
 }

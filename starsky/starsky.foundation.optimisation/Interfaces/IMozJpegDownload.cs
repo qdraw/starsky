@@ -4,5 +4,8 @@ namespace starsky.foundation.optimisation.Interfaces;
 
 public interface IMozJpegDownload
 {
-	Task<ImageOptimisationDownloadStatus> Download(string? architecture = null, int retryInSeconds = 15);
+	Task<ImageOptimisationDownloadStatus> Download(string? architecture = null,
+		int retryInSeconds = 15);
+
+	Task<bool> FixPermissions(string exePath);
 }

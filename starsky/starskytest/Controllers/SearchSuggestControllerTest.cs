@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +42,10 @@ public sealed class SearchSuggestControllerTest
 
 	private async Task InjectMockedData()
 	{
-		if ( !string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("hash_9")) )
+		var getSubPathsByHash =
+			( await _query.GetSubPathsByHashAsync("hash_9") )
+			.FirstOrDefault();
+		if ( !string.IsNullOrEmpty(getSubPathsByHash) )
 		{
 			return;
 		}

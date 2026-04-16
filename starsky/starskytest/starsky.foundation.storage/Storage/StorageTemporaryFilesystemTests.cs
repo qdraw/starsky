@@ -242,7 +242,7 @@ public sealed class StorageTemporaryFilesystemTests
 			await Task.Delay(100, TestContext.CancellationToken);
 			result2 = _tempStorage.IsFileReady(thumbnailId);
 		}
-		
+
 		Assert.IsTrue(result2);
 
 		File.Delete(Path.Combine(createNewImage.BasePath,
@@ -404,5 +404,79 @@ public sealed class StorageTemporaryFilesystemTests
 	{
 		Assert.ThrowsExactly<NotSupportedException>(() =>
 			_tempStorage.ReadLinesAsync("not-found", new CancellationToken(true)));
+	}
+
+	[TestMethod]
+	public void Temporary_IsFolderEmpty_EmptyFolder_ReturnsTrue()
+	{
+		var baseStorage = Path.Combine(Path.GetTempPath(),
+			"StorageTemporaryFilesystemTest" + Guid.NewGuid());
+		try
+		{
+			var appSettings = new AppSettings { TempFolder = baseStorage };
+			var storage = new StorageTemporaryFilesystem(appSettings, new FakeIWebLogger());
+
+			// create a folder via storage (database style path)
+			const string dbPath = "/emptyfolder";
+			storage.CreateDirectory(dbPath);
+
+			var result = storage.IsFolderEmpty(dbPath);
+			Assert.IsTrue(result, "Newly created empty folder should be reported empty");
+		}
+		finally
+		{
+			try
+			{
+				Directory.Delete(baseStorage, true);
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+	}
+
+	[TestMethod]
+	public void ReadAllLines_FromTempFolder_ReturnsLines()
+	{
+		// Arrange
+		var baseTemp = Path.Combine(Path.GetTempPath(),
+			"StorageTemporaryFilesystemTest_" + Guid.NewGuid());
+		Directory.CreateDirectory(baseTemp);
+
+		var appSettings = new AppSettings { TempFolder = baseTemp };
+
+		var logger = new FakeIWebLogger();
+		var sut = new StorageTemporaryFilesystem(appSettings, logger);
+
+		var dbPath = "/temp_testfile.txt"; // database-style path
+		var fullPath = appSettings.DatabasePathToTempFolderFilePath(dbPath);
+
+		var expected = new[] { "alpha", "beta", "gamma" };
+		Directory.CreateDirectory(Path.GetDirectoryName(fullPath) ?? baseTemp);
+		File.WriteAllLines(fullPath, expected);
+
+		try
+		{
+			// Act
+			var result = sut.ReadAllLines(dbPath);
+
+			// Assert
+			CollectionAssert.AreEqual(expected, result);
+		}
+		finally
+		{
+			try
+			{
+				if ( Directory.Exists(baseTemp) )
+				{
+					Directory.Delete(baseTemp, true);
+				}
+			}
+			catch
+			{
+				// ignore cleanup failures
+			}
+		}
 	}
 }

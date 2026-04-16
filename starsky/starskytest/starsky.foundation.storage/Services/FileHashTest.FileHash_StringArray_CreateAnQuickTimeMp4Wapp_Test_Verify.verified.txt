@@ -1,0 +1,5 @@
+﻿[
+  {
+    HXSZMHIAFLYXFYUPJVNIUB4QJQ: true
+  }
+]

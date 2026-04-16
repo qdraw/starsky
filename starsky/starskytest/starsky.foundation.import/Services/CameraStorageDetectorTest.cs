@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Models;
 using starsky.foundation.import.Services;
@@ -16,7 +16,7 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithNullDrive_ReturnsFalse()
 	{
 		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		// Explicitly call the DriveInfo? overload to avoid ambiguity
 		DriveInfo? nullDrive = null;
@@ -38,7 +38,7 @@ public class CameraStorageDetectorTest
 			var fakeStorage = new FakeIStorage(
 				["/", "/DCIM"]);
 			var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-			var detector = new CameraStorageDetector(fakeStorageSelector);
+			var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 			// Use real DriveInfo from temp location
 			var rootPath = Path.GetPathRoot(tempDir);
@@ -73,9 +73,9 @@ public class CameraStorageDetectorTest
 		{
 			// Create fake storage with PRIVATE folder (Sony/Panasonic style)
 			var fakeStorage = new FakeIStorage(
-				new List<string> { "/", "/PRIVATE" });
+				["/", "/PRIVATE"]);
 			var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-			var detector = new CameraStorageDetector(fakeStorageSelector);
+			var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 			var rootPath = Path.GetPathRoot(tempDir);
 			var drive = new DriveInfo(rootPath ?? "C:\\");
@@ -108,9 +108,9 @@ public class CameraStorageDetectorTest
 		try
 		{
 			var fakeStorage = new FakeIStorage(
-				new List<string> { "/", "/100CANON", "/101DCIM" });
+				["/", "/100CANON", "/101DCIM"]);
 			var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-			var detector = new CameraStorageDetector(fakeStorageSelector);
+			var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 			var rootPath = Path.GetPathRoot(tempDir);
 			var drive = new DriveInfo(rootPath ?? "C:\\");
@@ -135,9 +135,9 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithMultipleNumericDirectories_ReturnsTrue()
 	{
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/", "/100", "/101", "/102ABC" });
+			["/", "/100", "/101", "/102ABC"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		// Use real system drive
 		var drive = DriveInfo.GetDrives().FirstOrDefault();
@@ -159,9 +159,9 @@ public class CameraStorageDetectorTest
 	{
 		// Directories with only 2 digits don't match the 3+ digit pattern
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/", "/10", "/A" });
+			["/", "/10", "/A"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		var drive = DriveInfo.GetDrives().FirstOrDefault();
 		if ( drive == null )
@@ -179,9 +179,9 @@ public class CameraStorageDetectorTest
 	{
 		// Empty directory with no camera markers
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/" });
+			["/"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		var drive = DriveInfo.GetDrives().FirstOrDefault();
 		if ( drive == null )
@@ -199,9 +199,9 @@ public class CameraStorageDetectorTest
 	{
 		// Non-camera related folder
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/", "/SomeFolder" });
+			["/", "/SomeFolder"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		var drive = DriveInfo.GetDrives().FirstOrDefault();
 		if ( drive == null )
@@ -218,9 +218,9 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithNonFATFileSystem_ReturnsFalse()
 	{
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/", "/DCIM" });
+			["/", "/DCIM"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		// Find a non-FAT drive
 		var drive = DriveInfo.GetDrives()
@@ -241,8 +241,8 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithCameraDriveInfo_TrueCases()
 	{
 		var fakeStorageSelector =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/", "/DCIM" }));
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+			new FakeSelectorStorage(new FakeIStorage(["/", "/DCIM"]));
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		// DCIM present, FAT format
 		var cameraDrive = new CameraDriveInfo
@@ -255,8 +255,8 @@ public class CameraStorageDetectorTest
 
 		// PRIVATE present, exFAT format
 		fakeStorageSelector =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/", "/PRIVATE" }));
-		detector = new CameraStorageDetector(fakeStorageSelector);
+			new FakeSelectorStorage(new FakeIStorage(["/", "/PRIVATE"]));
+		detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 		cameraDrive = new CameraDriveInfo
 		{
 			IsReady = true,
@@ -270,8 +270,8 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithCameraDriveInfo_FalseCases()
 	{
 		var fakeStorageSelector =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+			new FakeSelectorStorage(new FakeIStorage(["/"]));
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		// Not ready
 		var cameraDrive = new CameraDriveInfo
@@ -308,7 +308,7 @@ public class CameraStorageDetectorTest
 			"/", "/100CANON", "/101DCIM", "/10", "/A", "/123", "/12A"
 		]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		var result = detector.HasCameraDirectoryStructure("/");
 		Assert.IsTrue(result);
@@ -322,7 +322,7 @@ public class CameraStorageDetectorTest
 		var fakeStorage = new FakeIStorage(
 			["/", "/10", "/A", "/12A"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		var result = detector.HasCameraDirectoryStructure("/");
 		Assert.IsFalse(result);
@@ -331,9 +331,9 @@ public class CameraStorageDetectorTest
 	[TestMethod]
 	public void HasCameraDirectoryStructure_NumericDirectories_OnlyDigits()
 	{
-		var fakeStorage = new FakeIStorage(new List<string> { "/", "/123", "/456", "/789" });
+		var fakeStorage = new FakeIStorage(["/", "/123", "/456", "/789"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 		var result = detector.HasCameraDirectoryStructure("/");
 
 		Assert.IsTrue(result);
@@ -350,7 +350,7 @@ public class CameraStorageDetectorTest
 			"/A12"
 		]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 		var result = detector.HasCameraDirectoryStructure("/");
 
 		Assert.IsTrue(result); // 123A should match, 12A should not, A123 should not, A12 should not
@@ -361,7 +361,7 @@ public class CameraStorageDetectorTest
 	{
 		var fakeStorage = new FakeIStorage(["/", "/12", "/1", "/A"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 		var result = detector.HasCameraDirectoryStructure("/");
 
 		Assert.IsFalse(result);
@@ -372,7 +372,7 @@ public class CameraStorageDetectorTest
 	{
 		var fakeStorage = new FakeIStorage(["/"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 		var result = detector.HasCameraDirectoryStructure("/");
 
 		Assert.IsFalse(result);
@@ -382,7 +382,7 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_RootDirectoryNotExists_ReturnsFalse()
 	{
 		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 		var cameraDrive = new CameraDriveInfo
 		{
 			IsReady = true,
@@ -401,7 +401,7 @@ public class CameraStorageDetectorTest
 	{
 		// Arrange: Setup a detector with a fake storage (the storage is not used in this test)
 		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
-		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var detector = new CameraStorageDetector(fakeStorageSelector, new FakeIWebLogger());
 
 		// Use a real system drive and a fake drive
 		var drives = DriveInfo.GetDrives().ToList();
@@ -422,5 +422,131 @@ public class CameraStorageDetectorTest
 
 		// Should not return more than available drives
 		Assert.IsLessThanOrEqualTo(drives.Count, result.Count);
+	}
+
+	[TestMethod]
+	public void FindCameraStorages_OnLinuxPlatform_UsesLinuxDiscovery()
+	{
+		// Arrange
+		var fakeStorage = new FakeIStorage(
+			["/media", "/media/camera"]);
+		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
+		var logger = new FakeIWebLogger();
+
+		var detector = new CameraStorageDetector(fakeStorageSelector,
+			logger,
+			() => OSPlatform.Linux);
+
+		// Act
+		var result = detector.FindCameraStorages();
+
+		// Assert - should have attempted Linux discovery
+		Assert.IsNotNull(result);
+	}
+
+	[TestMethod]
+	public void FindCameraStorages_OnWindowsPlatform_UsesWindowsDriveInfo()
+	{
+		// Arrange
+		var fakeStorage = new FakeIStorage();
+		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
+		var logger = new FakeIWebLogger();
+
+		var detector = new CameraStorageDetector(fakeStorageSelector,
+			logger, () => OSPlatform.Windows);
+
+		// Act - won't actually enumerate drives in test, just verifies the code path
+		var result = detector.FindCameraStorages();
+
+		// Assert - should return a collection (empty or not, depends on system)
+		Assert.IsNotNull(result);
+	}
+
+	[TestMethod]
+	public void IsCameraStorage_WithPathOnLinux_UsesCameraDriveInfoHelper()
+	{
+		// Arrange
+		var fakeStorage = new FakeIStorage(
+			["/media/usb-drive", "/media/usb-drive/DCIM"]);
+		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
+		var logger = new FakeIWebLogger();
+
+		var detector = new CameraStorageDetector(fakeStorageSelector,
+			logger,
+			() => OSPlatform.Linux);
+
+		// Act
+		var result = detector.IsCameraStorage("/media/usb-drive");
+
+		// Assert
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void IsCameraStorage_NoDriveRoot()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var detector = new CameraStorageDetector(new FakeSelectorStorage(), logger);
+
+		// Act
+		var result = detector.IsCameraStorage(string.Empty);
+
+		// Assert
+		Assert.Contains("Drive root is null or whitespace",
+			logger.TrackedExceptions.LastOrDefault().Item2!);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void IsCameraStorage_CatchException()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var detector = new CameraStorageDetector(new FakeSelectorStorage(),
+			logger, null!);
+
+		// Act
+		var result = detector.IsCameraStorage("/test");
+
+		// Assert
+		Assert.IsFalse(result);
+		Assert.Contains("Drive root failed", logger.TrackedExceptions.LastOrDefault().Item2!);
+	}
+
+	[TestMethod]
+	public void IFindCameraStorages_CatchException()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var detector = new CameraStorageDetector(new FakeSelectorStorage(),
+			logger, null!);
+
+		// Act
+		var result = detector.FindCameraStorages();
+
+		// Assert
+		Assert.IsEmpty(result);
+		Assert.Contains("Failed to enumerate drives during camera storage detection",
+			logger.TrackedExceptions.LastOrDefault().Item2!);
+	}
+
+	[TestMethod]
+	public void IsCameraStorage_WithPathOnWindows_UsesDriveInfo()
+	{
+		// Arrange
+		var fakeStorage = new FakeIStorage();
+		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
+		var logger = new FakeIWebLogger();
+
+		var detector = new CameraStorageDetector(fakeStorageSelector,
+			logger,
+			() => OSPlatform.Windows);
+
+		// Act - use a path that might work on Windows
+		var result = detector.IsCameraStorage("C:\\");
+
+		// Assert 
+		Assert.IsFalse(result);
 	}
 }

@@ -28,7 +28,7 @@ public class CompositeThumbnailGenerator(List<IThumbnailGenerator> generators, I
 						imageFormat,
 						thumbnailSizes) ).ToList();
 				compositeResults.AddOrUpdateRange(result);
-				if ( result.All(p => p.Success) )
+				if ( result.Count > 0 && result.All(p => p.Success) )
 				{
 					return compositeResults;
 				}

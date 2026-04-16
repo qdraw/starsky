@@ -40,6 +40,12 @@ public sealed class StorageTemporaryFilesystem : IStorage
 		throw new NotSupportedException();
 	}
 
+	public string[] ReadAllLines(string path)
+	{
+		var fullPath = _appSettings.DatabasePathToTempFolderFilePath(path);
+		return new StorageHostFullPathFilesystem(_logger).ReadAllLines(fullPath);
+	}
+
 	/// <summary>
 	///     Get the storage info
 	/// </summary>
@@ -76,6 +82,12 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	{
 		var isFolderOrFile = IsFolderOrFile(path);
 		return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Folder;
+	}
+
+	public bool IsFolderEmpty(string path)
+	{
+		var fullFilePath = _appSettings.DatabasePathToTempFolderFilePath(path);
+		return new StorageHostFullPathFilesystem(_logger).IsFolderEmpty(fullFilePath);
 	}
 
 	/// <summary>

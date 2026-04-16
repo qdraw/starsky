@@ -134,7 +134,7 @@ public sealed class WebFtpCliTest
 			.RunAsync(["-p", "/test"]);
 
 		Assert.IsTrue(logger.TrackedExceptions.FirstOrDefault()
-			.Item2?.Contains("PublishProfilesRemote settings"));
+			.Item2?.Contains("PublishProfilesRemote default section settings"));
 	}
 
 	[TestMethod]

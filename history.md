@@ -41,8 +41,58 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.13 - _(Unreleased)_ - 2026-?-? {#v0.7.13}
+## version 0.7.16 - _(Unreleased)_ - 2026-?-? {#v0.7.16}
 
+- [x] (Fixed) _Back-end_ InjectServiceScope utility provides Execute and ExecuteAsync (PR #2921)
+
+## version 0.7.15 - 2026-04-15 {#v0.7.15}
+
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.420 (Runtime: 8.0.25) (PR #2979)
+- [x] (Added) _Back-end_ Check installation running status mount watcher --status flag (PR #2973)
+- [x] (Added) _Back-end_ Import Backup timestamped copy of imported to a specified folder (PR #2965)
+- [x] (Added) _Back-end_ Delete After setting Import specific for MountCLI (PR #2965)
+- [x] (Fixed) _Back-end_ Native FileSystem interop on Intel macOS vs Apple Silicon (PR #2960)
+- [x] (Fixed) _Back-end_ Zero-payload non-mdat atom (e.g. wide, free) gives hash back (PR #2955)
+- [x] (Fixed) _Back-end_ GetWindowsDriveInfo where Z:\\ was used to find an unused drive. (PR #2905)
+- [x] (Added) _Back-end_ Fix disk Detect File System for macOS and Linux (PR #2905)
+- [x] (Added) _Back-end_ Add starskyMountWatcherCli to auto import (PR #2905)
+- [x] (Added) _Back-end_ Add Title and Tags overview razor template (PR #2891)
+- [x] (Added) _Back-end_ Create Job to generate thumbnails when missing in Thumbnail and Zoom API
+  (PR #2891)
+- [x] (Added) _Front-end_ Updates UI when a file has a thumbnail generated in detail view (PR #2891)
+- [x] (Added) _Back-end_ Extracts embedded JPEG previews from lightweight RAW containers (FFF/X3F).
+  `LightweightContainerPreviewExtractor` (PR #2891)
+- [x] (Added) _Back-end_ Service for extracting embedded JPEG previews from RAW image files.
+  Supports: CR2 (Canon), NEF (Nikon), ARW (Sony), DNG (Adobe), RAF (Fujifilm), X3F (Sigma)
+  `EmbeddedRawThumbnailService` (PR #2891)
+- [x] (Added) _Back-end_ Add CR3 (Canon EOS RAW 3) `ContainerFormatPreviewExtractor` (PR #2891)
+- [x] (Added) _Back-end_ Add Tiff Raw preview extraction `TiffEmbeddedPreviewExtractor`(PR #2891)
+- [x] (Added) _Back-end_ Add Preview out of JPEG files `JpegExtractPreviewHelper` (PR #2891)
+- [x] (Added) _Back-end_ ImageFormat detection for raw files (PR #2891)
+- [x] (Fixed) _Back-end_ Fixed issues where duplicate files give updates  (PR #2891)
+- [x] (Fixed) _Back-end_ Skip when WebHtml has an invalid razor cshtml file (PR #2891)
+- [x] (Added) _Back-end_ Added specific ImageFormats for raw files (PR #2891)
+- [x] (Added) _Back-end_ Search collections as default option (PR #2891)
+- [x] (Changed) _Back-end_ Refactor background job export, geolookup, sync background, and thumbnail
+  generation features (PR #2844)
+- [x] (Changed) _Back-end_ new background job handling infrastructure (PR #2844)
+- [x] (Added) _Back-end_ Overwrite CopyContent in PublishProfile false Copy flag (PR #2866)
+- [x] (Fixed) _Back-end_ Fix when MozJPEG for unix permission errors (PR #2863)
+
+## version 0.7.14 - 2026-03-14 {#v0.7.14}
+
+- [x] (Fixed) _Back-end_ Enhanced the MP4 atom parsing logic in Mp4FileHasher to correctly handle
+  atoms with variable header sizes, zero-size atoms, and large-size atoms (PR #2860)
+- [x] (Fixed) _Back-end_ GPX now works with an offset of 38 bytes (PR #2858)
+
+## version 0.7.13 - 2026-03-11 {#v0.7.13}
+
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.419 (Runtime: 8.0.25) (PR #2849)
+- [x] (Fixed) _Back-end_ Retry mechanism for database operations in the ThumbnailQuery (PR #2843)
+- [x] (Fixed) _Back-end_ Notification Item Cannot Open when State is Connecting (PR #2842)
+- [x] (Fixed) _Back-end_ If a directory is empty to delete, improving resilience against transient
+  filesystem states (PR #2841)
+- [x] (Fixed) _Back-end_ Increasing the hashing buffer size for MP4 files (PR #2836)
 - [x] (Breaking change) _Back-end_ Change WebFtp field to PublishProfilesRemote (PR #2804)
 - [x] (Added) _Back-end_ New publish step to upload the generated ZIP to an FTP server (PR #2804)
 - [x] (Added) _Front-end_ Create ZIP Publish succeeds, trigger FTP upload (needs enabled) (PR #2804)

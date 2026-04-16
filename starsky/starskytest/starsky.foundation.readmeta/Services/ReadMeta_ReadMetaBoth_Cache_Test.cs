@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
@@ -52,6 +53,47 @@ namespace starskytest.starsky.foundation.readmeta.Services
 					new FakeIWebLogger())
 				.ReadExifAndXmpFromFileAsync("test") )?.Tags;
 			Assert.AreEqual("test",result);
+		}
+
+		[TestMethod]
+		public void RemoveReadMetaCache_RemovesAllKeys_ForGivenItems()
+		{
+			var appSettings = new AppSettings();
+			var memoryCache = new MemoryCache(new MemoryCacheOptions());
+			var iStorage = new FakeIStorage();
+			var readMeta = new ReadMeta(iStorage, appSettings, memoryCache, new FakeIWebLogger());
+
+			const string path1 = "/test1.jpg";
+			const string path2 = "/test2.jpg";
+			memoryCache.Set("info_" + path1, new FileIndexItem { FilePath = path1 });
+			memoryCache.Set("info_" + path2, new FileIndexItem { FilePath = path2 });
+
+			var items = new List<FileIndexItem>
+			{
+				new(path1),
+				new(path2)
+			};
+
+			readMeta.RemoveReadMetaCache(items);
+
+			Assert.IsFalse(memoryCache.TryGetValue("info_" + path1, out _));
+			Assert.IsFalse(memoryCache.TryGetValue("info_" + path2, out _));
+		}
+
+		[TestMethod]
+		public void RemoveReadMetaCache_DoesNotRemove_WhenAddMemoryCacheDisabled()
+		{
+			var appSettings = new AppSettings { AddMemoryCache = false };
+			var memoryCache = new MemoryCache(new MemoryCacheOptions());
+			var iStorage = new FakeIStorage();
+			var readMeta = new ReadMeta(iStorage, appSettings, memoryCache, new FakeIWebLogger());
+
+			var path = "/test.jpg";
+			memoryCache.Set("info_" + path, new FileIndexItem { FilePath = path });
+
+			readMeta.RemoveReadMetaCache(new List<FileIndexItem> { new(path) });
+
+			Assert.IsTrue(memoryCache.TryGetValue("info_" + path, out _));
 		}
 	}
 }

@@ -30,7 +30,7 @@ public class ImageOptimisationService : IImageOptimisationService
 	public async Task Optimize(ImageOptimisationItem image,
 		List<Optimizer>? optimizers = null)
 	{
-		 await Optimize([image], optimizers);
+		await Optimize([image], optimizers);
 	}
 
 	public async Task Optimize(IReadOnlyCollection<ImageOptimisationItem> images,
@@ -41,7 +41,7 @@ public class ImageOptimisationService : IImageOptimisationService
 			return;
 		}
 
-		optimizers ??= _appSettings.PublishProfilesDefaults?.Optimizers ?? [];
+		optimizers ??= _appSettings.PublishProfilesDefaults.Optimizers;
 		if ( optimizers.Count == 0 )
 		{
 			return;

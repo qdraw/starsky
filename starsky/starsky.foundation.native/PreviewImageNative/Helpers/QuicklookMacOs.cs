@@ -49,7 +49,16 @@ public class QuicklookMacOs(IWebLogger logger)
 		if ( thumbnailRef != IntPtr.Zero )
 		{
 			// Handle the thumbnail (You could save or process the thumbnail here)
-			return SaveCGImageAsFile(thumbnailRef, outputPath);
+			// QLThumbnailImageCreate follows Create rule: caller owns the returned CFType and must release it.
+			// Ensure we always release the thumbnailRef to avoid leaking CoreFoundation memory.
+			try
+			{
+				return SaveCGImageAsFile(thumbnailRef, outputPath);
+			}
+			finally
+			{
+				CFRelease(thumbnailRef);
+			}
 		}
 
 		logger.LogInformation("[QuicklookMacOs] Failed to generate thumbnail" +

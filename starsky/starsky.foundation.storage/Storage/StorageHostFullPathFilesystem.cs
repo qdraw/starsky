@@ -127,9 +127,8 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 				throw;
 			}
 
-			_logger.LogError(exception, "[GetAllFilesInDirectory] " +
-			                            "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
-			return Array.Empty<string>();
+			// Does not throw when UnauthorizedAccessException or DirectoryNotFoundException
+			return [];
 		}
 
 		var imageFilesList = new List<string>();
@@ -202,7 +201,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 					throw;
 				}
 
-				_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed " +
+				_logger?.LogDebug("[StorageHostFullPathFilesystem] Catch-ed " +
 				                  "DirectoryNotFoundException/UnauthorizedAccessException => " +
 				                  exception.Message);
 			}
@@ -241,6 +240,11 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		}
 
 		return File.ReadLinesAsync(path, cancellationToken);
+	}
+
+	public string[] ReadAllLines(string path)
+	{
+		return File.ReadAllLines(path);
 	}
 
 	/// <summary>
@@ -295,6 +299,23 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 	{
 		var isFolderOrFile = IsFolderOrFile(path);
 		return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Folder;
+	}
+
+	/// <summary>
+	///     Checks if a folder is empty
+	/// </summary>
+	/// <param name="path">path</param>
+	/// <returns>true if empty</returns>
+	public bool IsFolderEmpty(string path)
+	{
+		if ( Directory.EnumerateFileSystemEntries(path).Any() )
+		{
+			return false;
+		}
+
+		Thread.Sleep(10);
+
+		return !Directory.EnumerateFileSystemEntries(path).Any();
 	}
 
 	/// <summary>
@@ -471,7 +492,22 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 				_logger.LogInformation("[WriteStreamAsync] " +
 				                       "DirectoryNotFoundException " +
 				                       "Auto-created directory: " + dir, exception);
-				await LocalCopy();
+				try
+				{
+					await LocalCopy();
+				}
+				catch ( UnauthorizedAccessException )
+				{
+					_logger.LogError($"[WriteStreamAsync] UnauthorizedAccessException [dir] " +
+					                 $"for path: {path}");
+					return false;
+				}
+			}
+			catch ( UnauthorizedAccessException )
+			{
+				_logger.LogError($"[WriteStreamAsync] UnauthorizedAccessException " +
+				                 $"for path: {path}");
+				return false;
 			}
 			finally
 			{

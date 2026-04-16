@@ -1,20 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using starsky.feature.realtime.Interface;
-using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
-using starsky.foundation.worker.Interfaces;
 
 namespace starsky.Controllers;
 
@@ -25,9 +15,7 @@ namespace starsky.Controllers;
 [Authorize]
 public class MetaTimeCorrectController(
 	IExifTimezoneCorrectionService exifTimezoneCorrectionService,
-	IUpdateBackgroundTaskQueue queue,
-	IWebLogger logger,
-	IServiceScopeFactory scopeFactory)
+	IWebLogger logger)
 	: Controller
 {
 	private const string ModelNotValidError = "Model is not valid";
@@ -56,6 +44,7 @@ public class MetaTimeCorrectController(
 		var validationResult = ValidateRequest(ModelState.IsValid, f, collections);
 		if ( validationResult != null )
 		{
+			logger.LogDebug("Validation Result: {0}", validationResult);
 			return validationResult;
 		}
 
@@ -98,7 +87,8 @@ public class MetaTimeCorrectController(
 				collections!.Value,
 				request);
 
-		await QueueCorrectionTask(validateResults, request, "timezone");
+		await exifTimezoneCorrectionService.QueueCorrectionTask(validateResults, request,
+			"timezone");
 
 		return new JsonResult(validateResults);
 	}
@@ -169,7 +159,8 @@ public class MetaTimeCorrectController(
 				collections!.Value,
 				request);
 
-		await QueueCorrectionTask(validateResults, request, "custom offset");
+		await exifTimezoneCorrectionService.QueueCorrectionTask(validateResults, request,
+			"custom offset");
 
 		return new JsonResult(validateResults);
 	}
@@ -187,53 +178,5 @@ public class MetaTimeCorrectController(
 
 		var subPaths = PathHelper.SplitInputFilePaths(f);
 		return subPaths.Length == 0 ? BadRequest(NoInputFilesError) : null;
-	}
-
-	/// <summary>
-	///     Queue background task for correction
-	/// </summary>
-	private async Task QueueCorrectionTask(
-		List<ExifTimezoneCorrectionResult> validateResults,
-		IExifTimeCorrectionRequest request,
-		string correctionType)
-	{
-		await queue.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			using var scope = scopeFactory.CreateScope();
-			var scopedService =
-				scope.ServiceProvider.GetRequiredService<IExifTimezoneCorrectionService>();
-
-			var fileIndexResultsList = validateResults
-				.Where(r => r.FileIndexItem != null)
-				.Select(r => r.FileIndexItem!)
-				.ToList();
-
-			logger.LogInformation(
-				$"[MetaTimeCorrectController] Starting {correctionType} correction for {fileIndexResultsList.Count} files");
-
-			var results = await scopedService.CorrectTimezoneAsync(
-				fileIndexResultsList,
-				request);
-
-			logger.LogInformation(
-				$"[MetaTimeCorrectController] Completed {correctionType} correction: " +
-				$"{results.Count(r => r.Success)} succeeded, {results.Count(r => !r.Success)} failed");
-
-			await UpdateWebSocketTaskRun(fileIndexResultsList);
-		});
-	}
-
-	private async Task UpdateWebSocketTaskRun(List<FileIndexItem> fileIndexResultsList)
-	{
-		// Update via websocket
-		var webSocketResponse =
-			new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList,
-				ApiNotificationType.MetaTimeCorrect);
-
-		var realtimeConnectionsService = scopeFactory.CreateScope()
-			.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
-
-		await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse,
-			CancellationToken.None);
 	}
 }

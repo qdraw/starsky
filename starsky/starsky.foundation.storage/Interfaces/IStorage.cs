@@ -11,6 +11,7 @@ public interface IStorage
 {
 	bool ExistFile(string path);
 	bool ExistFolder(string path);
+	bool IsFolderEmpty(string path);
 	FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path);
 	void FolderMove(string fromPath, string toPath);
 	bool FileMove(string fromPath, string toPath);
@@ -93,4 +94,6 @@ public interface IStorage
 
 	IAsyncEnumerable<string> ReadLinesAsync(string path,
 		CancellationToken cancellationToken);
+
+	string[] ReadAllLines(string path);
 }

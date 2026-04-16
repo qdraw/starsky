@@ -12,39 +12,44 @@ The `modal-timezone-shift` is a React component for the Starsky application that
 ## How to Use
 
 1. **Import the component:**
-  ```tsx
-  import ModalTimezoneShift from 'components/organisms/modal-timezone-shift/modal-timezone-shift';
-  ```
+
+```tsx
+import ModalTimezoneShift from "components/organisms/modal-timezone-shift/modal-timezone-shift";
+```
 
 2. **Provide the required props** (typically from a parent archive or detail view container):
-  - `isOpen: boolean` — Whether the modal is open
-  - `onClose: () => void` — Callback to close the modal
-  - `selectedFiles: string[]` — Array of selected file paths
-  - `archiveState: IArchiveProps` — The current archive state (file list, etc)
-  - `dispatch: React.Dispatch<ArchiveAction>` — Dispatch function for archive context updates
+
+- `isOpen: boolean` — Whether the modal is open
+- `onClose: () => void` — Callback to close the modal
+- `selectedFiles: string[]` — Array of selected file paths
+- `archiveState: IArchiveProps` — The current archive state (file list, etc)
+- `dispatch: React.Dispatch<ArchiveAction>` — Dispatch function for archive context updates
 
 3. **Render the component:**
-  ```tsx
-  <ModalTimezoneShift
-    isOpen={isModalOpen}
-    onClose={handleClose}
-    selectedFiles={selectedFilePaths}
-    archiveState={archiveState}
-    dispatch={archiveDispatch}
-  />
-  ```
+
+```tsx
+<ModalTimezoneShift
+  isOpen={isModalOpen}
+  onClose={handleClose}
+  selectedFiles={selectedFilePaths}
+  archiveState={archiveState}
+  dispatch={archiveDispatch}
+/>
+```
 
 4. **User interaction:**
-  - The user opens the modal and selects either a timezone correction or a manual offset.
-  - On submit, the component calls the `executeShift` function, which:
-    - Sends a POST request to the backend API with the selected files and correction data.
-    - Updates the archive state with the new file metadata.
-    - Cleans relevant caches and closes the modal on success.
-    - Displays any errors or warnings per file in the UI.
+
+- The user opens the modal and selects either a timezone correction or a manual offset.
+- On submit, the component calls the `executeShift` function, which:
+  - Sends a POST request to the backend API with the selected files and correction data.
+  - Updates the archive state with the new file metadata.
+  - Cleans relevant caches and closes the modal on success.
+  - Displays any errors or warnings per file in the UI.
 
 5. **Error handling:**
-  - If the API returns errors or warnings for specific files, these are displayed in the modal.
-  - If the operation fails, a general error message is shown.
+
+- If the API returns errors or warnings for specific files, these are displayed in the modal.
+- If the operation fails, a general error message is shown.
 
 ## Related Files
 
@@ -64,6 +69,7 @@ The `modal-timezone-shift` is a React component for the Starsky application that
 - API documentation for `/meta-time-correct/timezone-execute` and `/meta-time-correct/offset-execute` endpoints
 
 ## See Also
+
 - Archive context and file selection documentation.
 - API documentation for `/meta-time-correct/timezone-execute` and `/meta-time-correct/offset-execute` endpoints.
 

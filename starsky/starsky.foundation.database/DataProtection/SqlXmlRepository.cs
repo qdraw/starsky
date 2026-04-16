@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.DataProtection.Repositories;
@@ -82,23 +83,6 @@ public class SqlXmlRepository : IXmlRepository
 	/// <param name="friendlyName">name of item</param>
 	public void StoreElement(XElement element, string friendlyName)
 	{
-		bool LocalDefault(ApplicationDbContext ctx)
-		{
-			ctx.DataProtectionKeys.Add(new DataProtectionKey
-			{
-				Xml = element.ToString(SaveOptions.DisableFormatting),
-				FriendlyName = friendlyName
-			});
-			ctx.SaveChanges();
-			return true;
-		}
-
-		bool LocalDefaultQuery()
-		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return LocalDefault(context);
-		}
-
 		try
 		{
 			LocalDefault(_dbContext);
@@ -127,6 +111,26 @@ public class SqlXmlRepository : IXmlRepository
 				_logger.LogError(aggregateException,
 					"[SqlXmlRepository] catch-ed AggregateException");
 			}
+		}
+
+		return;
+
+		[SuppressMessage("Usage", "S3241:Return void",
+			Justification = "Safe")]
+		bool LocalDefault(ApplicationDbContext ctx)
+		{
+			ctx.DataProtectionKeys.Add(new DataProtectionKey
+			{
+				Xml = element.ToString(SaveOptions.DisableFormatting),
+				FriendlyName = friendlyName
+			});
+			ctx.SaveChanges();
+			return true;
+		}
+
+		bool LocalDefaultQuery()
+		{
+			return new InjectServiceScope(_scopeFactory).Execute(LocalDefault);
 		}
 	}
 }

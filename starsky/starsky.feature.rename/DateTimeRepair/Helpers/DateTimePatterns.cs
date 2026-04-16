@@ -38,21 +38,21 @@ public static partial class DateTimePatterns
 
 	[GeneratedRegex(@"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})",
 		RegexOptions.None,
-		100)]
+		500)]
 	private static partial Regex yyyyMMdd_HHmmssRegex();
 
 	[GeneratedRegex(@"(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})",
 		RegexOptions.None,
-		100)]
+		500)]
 	private static partial Regex YYYYdashMMdashDD_HHdashMMdashSSRegex();
 
 	[GeneratedRegex(@"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})",
 		RegexOptions.None,
-		100)]
+		500)]
 	private static partial Regex YYYYMMDD_HHMMRegex();
 
 	[GeneratedRegex(@"(\d{4})(\d{2})(\d{2})",
 		RegexOptions.None,
-		100)]
+		500)]
 	private static partial Regex YyyymmddRegex();
 }

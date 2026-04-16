@@ -45,6 +45,7 @@ namespace starsky.foundation.import.Services;
 public class Import : IImport
 {
 	private readonly AppSettings _appSettings;
+	private readonly ImportBackup _backup;
 
 	private readonly IConsole _console;
 	private readonly IExifTool _exifTool;
@@ -105,6 +106,7 @@ public class Import : IImport
 		_thumbnailQuery = thumbnailQuery;
 		_objectCreateIndexItemService =
 			new ObjectCreateIndexItemService(appSettings, reverseGeoCode);
+		_backup = new ImportBackup(selectorStorage, logger);
 	}
 
 	/// <summary>
@@ -179,7 +181,7 @@ public class Import : IImport
 		var importIndexItemsList = ( await preflightItemList.AsEnumerable()
 			.ForEachAsync(
 				async preflightItem
-					=> await Importer(preflightItem, importSettings),
+					=> await Importer(preflightItem, importSettings, _appSettings.ImportBackup),
 				_appSettings.MaxDegreesOfParallelism) )!.ToList();
 
 		return importIndexItemsList;
@@ -400,7 +402,7 @@ public class Import : IImport
 
 		var imageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(
 			_filesystemStorage.ReadStream(inputFileFullPath.Key,
-				160));
+				ExtensionRolesHelper.ImageFormatByteSize));
 
 		// Check if extension is correct && Check if the file is correct
 		if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
@@ -538,9 +540,11 @@ public class Import : IImport
 	/// </summary>
 	/// <param name="importIndexItem">config file</param>
 	/// <param name="importSettings">optional settings</param>
+	/// <param name="importBackup">backup before importing</param>
 	/// <returns>status</returns>
 	internal async Task<ImportIndexItem> Importer(ImportIndexItem? importIndexItem,
-		ImportSettingsModel importSettings)
+		ImportSettingsModel importSettings,
+		AppSettingsImportBackupModel importBackup)
 	{
 		if ( importIndexItem is not { Status: ImportStatus.Ok } )
 		{
@@ -562,6 +566,10 @@ public class Import : IImport
 		// Add item to database
 		await AddToQueryAndImportDatabaseAsync(importIndexItem, importSettings);
 
+		// Backup content
+		await _backup.CopyStreamFromHostToBackup(importIndexItem, importBackup);
+
+		// Actual copy
 		if ( !await CopyStreamFromHostToSubPathStorage(importIndexItem, importSettings) )
 		{
 			return importIndexItem;

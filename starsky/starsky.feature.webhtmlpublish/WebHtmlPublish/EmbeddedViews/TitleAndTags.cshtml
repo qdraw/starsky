@@ -1,0 +1,10 @@
+@using System.Linq
+@model starsky.feature.webhtmlpublish.ViewModels.WebHtmlViewModel
+
+@Raw($"# {Model.ItemName}\n\n")
+
+@foreach (var item in Model.FileIndexItems)
+{
+@Raw($"## {item.Title}\n\n")
+@Raw($"{item.Tags}\n\n")
+}

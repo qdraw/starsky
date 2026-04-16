@@ -82,9 +82,11 @@ public partial class WindowsSetFileAssociationsTests
 		var valueKey = GetRegistryValue();
 
 		// Retry a few times because registry propagation can be slow on CI
-		for ( var attempt = 0; attempt < 7 && valueKey == null; attempt++ )
+		const int maxAttempts = 7;
+
+		for ( var attempt = 0; attempt < maxAttempts; attempt++ )
 		{
-			if ( attempt % 3 == 3 )
+			if ( attempt == 0 || attempt % 3 == 0 )
 			{
 				Set();
 			}

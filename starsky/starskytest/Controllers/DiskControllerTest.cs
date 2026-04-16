@@ -96,7 +96,8 @@ public sealed class DiskControllerTest
 			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(_createAnImage
 				.DbPath, ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
+		var item = ( await _query.GetSubPathsByHashAsync(fileHashCode) ).FirstOrDefault();
+		if ( string.IsNullOrEmpty(item) )
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{

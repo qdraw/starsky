@@ -49,13 +49,28 @@ public class FfMpegPreflightRunCheckTests
 		if ( _hostFileSystemStorage.ExistFolder(
 			    _ffmpegExePath.GetExeParentFolder(_currentArchitecture)) )
 		{
-			_hostFileSystemStorage.FolderDelete(
-				_ffmpegExePath.GetExeParentFolder(_currentArchitecture));
+			try
+			{
+				_hostFileSystemStorage.FolderDelete(
+					_ffmpegExePath.GetExeParentFolder(_currentArchitecture));
+			}
+			catch ( System.Exception )
+			{
+				// do nothing
+			}
+
 		}
 
 		if ( _hostFileSystemStorage.ExistFolder(_parentFolder) )
 		{
-			_hostFileSystemStorage.FolderDelete(_parentFolder);
+			try
+			{
+				_hostFileSystemStorage.FolderDelete(_parentFolder);
+			}
+			catch ( System.Exception )
+			{
+				// do nothing
+			}
 		}
 	}
 

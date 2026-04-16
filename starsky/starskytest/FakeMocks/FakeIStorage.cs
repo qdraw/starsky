@@ -20,7 +20,8 @@ public class FakeIStorage : IStorage
 
 	private readonly Exception? _exception;
 
-	private readonly Dictionary<string, DateTime>? _lastEditDict = new();
+	private readonly Dictionary<string, DateTime>? _lastEditFilesDict = new();
+	private readonly Dictionary<string, DateTime>? _lastEditFoldersDict = new();
 
 	private readonly List<string?>
 		_outputSubPathFiles = new();
@@ -32,12 +33,19 @@ public class FakeIStorage : IStorage
 	/// <param name="outputSubPathFolders">/</param>
 	/// <param name="outputSubPathFiles">/test.jpg</param>
 	/// <param name="byteListSource"></param>
-	/// <param name="lastEdited"></param>
+	/// <param name="lastEditedFiles"></param>
 	public FakeIStorage(List<string>? outputSubPathFolders = null,
 		List<string>? outputSubPathFiles = null,
 		IReadOnlyList<byte[]?>? byteListSource = null,
-		IReadOnlyList<DateTime>? lastEdited = null)
+		IReadOnlyList<DateTime>? lastEditedFiles = null,
+		IReadOnlyList<DateTime>? lastEditedFolders = null,
+		Exception? exception = null)
 	{
+		if ( exception != null )
+		{
+			_exception = exception;
+		}
+
 		if ( outputSubPathFolders != null )
 		{
 			foreach ( var subPath in outputSubPathFolders )
@@ -63,13 +71,25 @@ public class FakeIStorage : IStorage
 			}
 		}
 
-		if ( lastEdited != null && lastEdited.Any() )
+		if ( lastEditedFiles != null && lastEditedFiles.Any() )
 		{
 			for ( var i = 0; i < _outputSubPathFiles.Count; i++ )
 			{
 				if ( _outputSubPathFiles[i] != null )
 				{
-					_lastEditDict?.Add(_outputSubPathFiles[i]!, lastEdited[i]);
+					_lastEditFilesDict?.Add(_outputSubPathFiles[i]!, lastEditedFiles[i]);
+				}
+			}
+		}
+
+		if ( lastEditedFolders != null && lastEditedFolders.Any() )
+		{
+			for ( var i = 0; i < _outputSubPathFolders.Count; i++ )
+			{
+				if ( _outputSubPathFolders[i] != null )
+				{
+					_lastEditFoldersDict?.Add(_outputSubPathFolders[i]!,
+						lastEditedFolders[i]);
 				}
 			}
 		}
@@ -93,6 +113,31 @@ public class FakeIStorage : IStorage
 		throw new NotSupportedException();
 	}
 
+	public string[] ReadAllLines(string path)
+	{
+		if ( _exception != null )
+		{
+			ExceptionCount++;
+			throw _exception;
+		}
+
+		if ( !ExistFile(path) )
+		{
+			return [];
+		}
+
+		if ( !_byteList.TryGetValue(path, out var data) || data == null )
+		{
+			// follow ReadStream behaviour: return a default test line when no explicit data set
+			return ["test"];
+		}
+
+		var text = Encoding.UTF8.GetString(data);
+		// keep all lines, even empty ones
+		var lines = text.Split(["\r\n", "\n"], StringSplitOptions.None);
+		return lines;
+	}
+
 	public virtual bool ExistFile(string path)
 	{
 		return _outputSubPathFiles.Contains(path);
@@ -101,6 +146,11 @@ public class FakeIStorage : IStorage
 	public bool ExistFolder(string path)
 	{
 		return _outputSubPathFolders.Contains(path);
+	}
+
+	public bool IsFolderEmpty(string path)
+	{
+		throw new NotImplementedException();
 	}
 
 	public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(
@@ -163,7 +213,7 @@ public class FakeIStorage : IStorage
 		_byteList.TryAdd(toPath, _byteList[fromPath]);
 	}
 
-	public bool FileDelete(string path)
+	public virtual bool FileDelete(string path)
 	{
 		if ( !ExistFile(path) )
 		{
@@ -294,7 +344,7 @@ public class FakeIStorage : IStorage
 	/// <param name="path">location</param>
 	/// <param name="maxRead">how many bytes are read (default all or -1)</param>
 	/// <returns>Stream with data (non-disposed)</returns>
-	public Stream ReadStream(string path, int maxRead = -1)
+	public virtual Stream ReadStream(string path, int maxRead = -1)
 	{
 		if ( _exception != null )
 		{
@@ -417,7 +467,7 @@ public class FakeIStorage : IStorage
 	/// <param name="stream">stream</param>
 	/// <param name="path">where to write to</param>
 	/// <returns>is Success</returns>
-	public Task<bool> WriteStreamAsync(Stream stream, string path)
+	public virtual Task<bool> WriteStreamAsync(Stream stream, string path)
 	{
 		return Task.FromResult(WriteStream(stream, path));
 	}
@@ -426,10 +476,19 @@ public class FakeIStorage : IStorage
 	{
 		if ( ExistFolder(path) )
 		{
+			var lastEditFolders =
+				new DateTime(1994, 7, 5, 16, 23, 42, DateTimeKind.Utc);
+			if ( _lastEditFoldersDict != null )
+			{
+				lastEditFolders = _lastEditFoldersDict.FirstOrDefault(p => p.Key == path)
+					.Value;
+			}
+
 			return new StorageInfo
 			{
 				IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList
-					.Folder
+					.Folder,
+				LastWriteTime = lastEditFolders
 			};
 		}
 
@@ -446,9 +505,9 @@ public class FakeIStorage : IStorage
 
 		var lastEdit =
 			new DateTime(1994, 7, 5, 16, 23, 42, DateTimeKind.Utc);
-		if ( _lastEditDict != null )
+		if ( _lastEditFilesDict != null )
 		{
-			lastEdit = _lastEditDict.FirstOrDefault(p => p.Key == path)
+			lastEdit = _lastEditFilesDict.FirstOrDefault(p => p.Key == path)
 				.Value;
 		}
 
@@ -504,17 +563,17 @@ public class FakeIStorage : IStorage
 
 	private void SetDateTime(string path, DateTime dateTime)
 	{
-		if ( _lastEditDict == null )
+		if ( _lastEditFilesDict == null )
 		{
 			return;
 		}
 
-		if ( _lastEditDict.Any(p => p.Key == path) )
+		if ( _lastEditFilesDict.Any(p => p.Key == path) )
 		{
-			_lastEditDict[path] = dateTime;
+			_lastEditFilesDict[path] = dateTime;
 			return;
 		}
 
-		_lastEditDict.Add(path, dateTime);
+		_lastEditFilesDict.Add(path, dateTime);
 	}
 }

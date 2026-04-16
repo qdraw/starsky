@@ -52,21 +52,38 @@ public sealed class ImportQuery : IImportQuery
 	/// <returns>successful database connection</returns>
 	public bool TestConnection()
 	{
-		return !_isConnection ? GetDbContext().TestConnection(_logger) : _isConnection;
+		if ( _isConnection )
+		{
+			return _isConnection;
+		}
+
+		if ( _scopeFactory == null )
+		{
+			// fallback to injected dbContext (if provided)
+			return _dbContext!.TestConnection(_logger);
+		}
+
+		var scope = new InjectServiceScope(_scopeFactory);
+		return scope.Execute(context => context.TestConnection(_logger));
 	}
 
 	public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 	{
-		if ( _isConnection )
+		if ( !_isConnection )
 		{
-			var value = await GetDbContext().ImportIndex.CountAsync(p =>
-				p.FileHash == fileHashCode) != 0; // there is no any in ef core
-			return value;
+			// When there is no mysql connection continue
+			return false;
 		}
 
-		// When there is no mysql connection continue
-		Console.WriteLine(">> _isConnection == false");
-		return false;
+		if ( _scopeFactory == null )
+		{
+			return await _dbContext!.ImportIndex.CountAsync(p => p.FileHash == fileHashCode) != 0;
+		}
+
+		var scope = new InjectServiceScope(_scopeFactory);
+		return await scope.ExecuteAsync(async context =>
+			await context.ImportIndex.CountAsync(p => p.FileHash == fileHashCode) != 0
+		);
 	}
 
 	/// <summary>
@@ -78,17 +95,32 @@ public sealed class ImportQuery : IImportQuery
 	public async Task<bool> AddAsync(ImportIndexItem updateStatusContent,
 		bool writeConsole = true)
 	{
-		var dbContext = GetDbContext();
 		updateStatusContent.AddToDatabase = DateTime.UtcNow;
-		await dbContext.ImportIndex.AddAsync(updateStatusContent);
-		await dbContext.SaveChangesAsync();
-		if ( writeConsole )
+
+		if ( _scopeFactory == null )
 		{
-			_console.Write("⬆️");
+			await _dbContext!.ImportIndex.AddAsync(updateStatusContent);
+			await _dbContext.SaveChangesAsync();
+			if ( writeConsole )
+			{
+				_console.Write("⬆️");
+			}
+
+			return true;
 		}
 
-		// removed MySqlException catch
-		return true;
+		var scope = new InjectServiceScope(_scopeFactory);
+		return await scope.ExecuteAsync(async context =>
+		{
+			await context.ImportIndex.AddAsync(updateStatusContent);
+			await context.SaveChangesAsync();
+			if ( writeConsole )
+			{
+				_console.Write("⬆️");
+			}
+
+			return true;
+		});
 	}
 
 	/// <summary>
@@ -97,19 +129,38 @@ public sealed class ImportQuery : IImportQuery
 	/// <returns>List of items</returns>
 	public List<ImportIndexItem> History()
 	{
-		return GetDbContext().ImportIndex
-			.Where(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)).ToList();
+		if ( _scopeFactory == null )
+		{
+			return _dbContext!.ImportIndex
+				.Where(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)).ToList();
+		}
+
+		var scope = new InjectServiceScope(_scopeFactory);
+		return scope.Execute(context =>
+			context.ImportIndex.Where(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)).ToList()
+		);
 		// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
 	}
 
 	public async Task<List<ImportIndexItem>> AddRangeAsync(
 		List<ImportIndexItem> importIndexItemList)
 	{
-		var dbContext = GetDbContext();
-		await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
-		await dbContext.SaveChangesAsync();
-		_console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
-		return importIndexItemList;
+		if ( _scopeFactory == null )
+		{
+			await _dbContext!.ImportIndex.AddRangeAsync(importIndexItemList);
+			await _dbContext.SaveChangesAsync();
+			_console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
+			return importIndexItemList;
+		}
+
+		var scope = new InjectServiceScope(_scopeFactory);
+		return await scope.ExecuteAsync(async context =>
+		{
+			await context.ImportIndex.AddRangeAsync(importIndexItemList);
+			await context.SaveChangesAsync();
+			_console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
+			return importIndexItemList;
+		});
 	}
 
 	public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem,
@@ -117,7 +168,14 @@ public sealed class ImportQuery : IImportQuery
 	{
 		try
 		{
-			await LocalRemoveQuery(_dbContext!);
+			if ( _dbContext != null )
+			{
+				await LocalRemoveQuery(_dbContext);
+			}
+			else
+			{
+				await LocalRemoveDefaultQuery();
+			}
 		}
 		catch ( SqliteException )
 		{
@@ -143,11 +201,17 @@ public sealed class ImportQuery : IImportQuery
 
 		async Task<bool> LocalRemoveDefaultQuery()
 		{
-			await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
-			return true;
+			if ( _scopeFactory == null )
+			{
+				return false;
+			}
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(async context1 =>
+				await LocalRemoveQuery(context1)
+			);
 		}
 
-		async Task LocalRemoveQuery(ApplicationDbContext context)
+		async Task<bool> LocalRemoveQuery(ApplicationDbContext context)
 		{
 			// Detach first https://stackoverflow.com/a/42475617
 			var local = context.Set<ImportIndexItem>()
@@ -161,6 +225,7 @@ public sealed class ImportQuery : IImportQuery
 			// keep conditional marker for test
 			context.ImportIndex?.Remove(importIndexItem);
 			await context.SaveChangesAsync();
+			return true;
 		}
 
 		async Task LocalRemoveQueryRetry()
@@ -179,24 +244,23 @@ public sealed class ImportQuery : IImportQuery
 	}
 
 
-	/// <summary>
-	///     Get the database context
-	/// </summary>
-	/// <returns>database context</returns>
-	private ApplicationDbContext GetDbContext()
-	{
-		return ( _scopeFactory != null
-			? new InjectServiceScope(_scopeFactory).Context()
-			: _dbContext )!;
-	}
-
-
 	public List<ImportIndexItem> AddRange(List<ImportIndexItem> importIndexItemList)
 	{
-		var dbContext = GetDbContext();
-		dbContext.ImportIndex.AddRange(importIndexItemList);
-		dbContext.SaveChanges();
-		_console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up
-		return importIndexItemList;
+		if ( _scopeFactory == null )
+		{
+			_dbContext?.ImportIndex.AddRange(importIndexItemList);
+			_dbContext?.SaveChanges();
+			_console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up
+			return importIndexItemList;
+		}
+
+		var scope = new InjectServiceScope(_scopeFactory);
+		return scope.Execute(context =>
+		{
+			context.ImportIndex.AddRange(importIndexItemList);
+			context.SaveChanges();
+			_console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up
+			return importIndexItemList;
+		});
 	}
 }

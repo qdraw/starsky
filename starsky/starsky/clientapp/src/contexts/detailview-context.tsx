@@ -37,6 +37,7 @@ export type DetailViewAction =
       description?: string;
       title?: string;
       fileHash?: string;
+      lastChanged?: string[];
       orientation?: Orientation;
       status?: IExifStatus;
       lastEdited?: string;
@@ -67,6 +68,7 @@ function updateReducer(
     description?: string;
     title?: string;
     fileHash?: string;
+    lastChanged?: string[];
     status?: IExifStatus;
     orientation?: Orientation;
     lastEdited?: string;
@@ -88,6 +90,7 @@ function updateReducer(
     status,
     colorclass,
     fileHash,
+    lastChanged,
     orientation,
     lastEdited,
     dateTime,
@@ -104,17 +107,25 @@ function updateReducer(
     return state;
   }
 
-  if (tags !== undefined) state.fileIndexItem.tags = tags;
-  if (description !== undefined) state.fileIndexItem.description = description;
-  if (title !== undefined) state.fileIndexItem.title = title;
-  if (colorclass !== undefined && colorclass !== -1) state.fileIndexItem.colorClass = colorclass;
-  if (status) state.fileIndexItem.status = status;
-  if (fileHash) state.fileIndexItem.fileHash = fileHash;
-  if (orientation) state.fileIndexItem.orientation = orientation;
-  if (lastEdited) state.fileIndexItem.lastEdited = lastEdited;
-  if (dateTime) state.fileIndexItem.dateTime = dateTime;
+  // Create a new fileIndexItem object to ensure React detects the change
+  const updatedFileIndexItem = { ...state.fileIndexItem };
+
+  if (tags !== undefined) updatedFileIndexItem.tags = tags;
+  if (description !== undefined) updatedFileIndexItem.description = description;
+  if (title !== undefined) updatedFileIndexItem.title = title;
+  if (colorclass !== undefined && colorclass !== -1) updatedFileIndexItem.colorClass = colorclass;
+  if (status) updatedFileIndexItem.status = status;
+  if (fileHash) updatedFileIndexItem.fileHash = fileHash;
+  if (lastChanged !== undefined) {
+    // Create a new array reference to ensure lastChanged change is detected
+    updatedFileIndexItem.lastChanged = [...lastChanged];
+  }
+  if (orientation) updatedFileIndexItem.orientation = orientation;
+  if (lastEdited) updatedFileIndexItem.lastEdited = lastEdited;
+  if (dateTime) updatedFileIndexItem.dateTime = dateTime;
+
   updateReducerSetLocationTypes(
-    state,
+    updatedFileIndexItem,
     latitude,
     longitude,
     locationCity,
@@ -124,11 +135,11 @@ function updateReducer(
   );
 
   // Need to update otherwise other events are not triggered
-  return updateCache({ ...state, lastUpdated: new Date() });
+  return updateCache({ ...state, fileIndexItem: updatedFileIndexItem, lastUpdated: new Date() });
 }
 
 function updateReducerSetLocationTypes(
-  state: IDetailView,
+  fileIndexItem: typeof initialState.fileIndexItem,
   latitude?: number,
   longitude?: number,
   locationCity?: string,
@@ -136,16 +147,16 @@ function updateReducerSetLocationTypes(
   locationCountry?: string,
   locationCountryCode?: string
 ) {
-  if (latitude) state.fileIndexItem.latitude = latitude;
-  if (longitude) state.fileIndexItem.longitude = longitude;
-  if (locationCity) state.fileIndexItem.locationCity = locationCity;
+  if (latitude) fileIndexItem.latitude = latitude;
+  if (longitude) fileIndexItem.longitude = longitude;
+  if (locationCity) fileIndexItem.locationCity = locationCity;
   if (locationCountry) {
-    state.fileIndexItem.locationCountry = locationCountry;
+    fileIndexItem.locationCountry = locationCountry;
   }
   if (locationCountryCode) {
-    state.fileIndexItem.locationCountryCode = locationCountryCode;
+    fileIndexItem.locationCountryCode = locationCountryCode;
   }
-  if (locationState) state.fileIndexItem.locationState = locationState;
+  if (locationState) fileIndexItem.locationState = locationState;
 }
 
 export function detailviewReducer(state: IDetailView, action: DetailViewAction): IDetailView {

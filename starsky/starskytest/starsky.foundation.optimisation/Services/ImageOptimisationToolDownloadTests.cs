@@ -86,7 +86,7 @@ public class ImageOptimisationToolDownloadTests
 			appSettings.AddSwaggerExport = true;
 			appSettings.AddSwaggerExportExitAfter = true;
 		}
-		
+
 		var storage = new FakeIStorage();
 		var sut = new ImageOptimisationToolDownload(new FakeSelectorStorage(storage),
 			new FakeIHttpClientHelper(storage,
@@ -99,7 +99,7 @@ public class ImageOptimisationToolDownloadTests
 			new ImageOptimisationChmod(new FakeSelectorStorage(storage), _logger));
 
 		var result = await sut.Download(OptionsNoChmod, "linux-x64");
-		
+
 		Assert.AreEqual(ImageOptimisationDownloadStatus.SettingsDisabled, result);
 	}
 
@@ -403,6 +403,67 @@ public class ImageOptimisationToolDownloadTests
 			x is ImageOptimisationDownloadStatus.DownloadBinariesFailed));
 	}
 
+	[TestMethod]
+	public async Task FixPermissions_ReturnsTrue_OnWindows_DoesNotCallChmod()
+	{
+		// Arrange
+		var storage = new FakeIStorage();
+		var fakeChmod = new FakeImageOptimisationChmod(false); // would be called on unix
+		var appSettings = new AppSettings();
+		var sut = new ImageOptimisationToolDownload(new FakeSelectorStorage(storage),
+			new FakeIHttpClientHelper(storage,
+				new Dictionary<string, KeyValuePair<bool, string>>()),
+			appSettings, _logger,
+			new FakeImageOptimisationToolDownloadIndex
+			{
+				Result = new ImageOptimisationBinariesContainer(string.Empty, null, [], false)
+			},
+			new Zipper(new FakeIWebLogger()),
+			fakeChmod);
+
+		// Act
+		var result = await sut.FixPermissions("/some/path/to/exe");
+
+		// Assert
+		if ( appSettings.IsWindows )
+		{
+			// On Windows the method should return true without calling chmod
+			Assert.IsTrue(result);
+		}
+		else
+		{
+			// On Unix, fakeChmod returns false so result must be false
+			Assert.IsFalse(result);
+		}
+	}
+
+	[TestMethod]
+	public async Task FixPermissions_CallsChmod_OnUnix_ReturnsTrueWhenChmodSucceeds()
+	{
+		// Arrange
+		var storage = new FakeIStorage();
+		var fakeChmod = new FakeImageOptimisationChmod(true);
+		var appSettings = new AppSettings();
+		var sut = new ImageOptimisationToolDownload(new FakeSelectorStorage(storage),
+			new FakeIHttpClientHelper(storage,
+				new Dictionary<string, KeyValuePair<bool, string>>()),
+			appSettings, _logger,
+			new FakeImageOptimisationToolDownloadIndex
+			{
+				Result = new ImageOptimisationBinariesContainer(string.Empty, null, [], false)
+			},
+			new Zipper(new FakeIWebLogger()),
+			fakeChmod);
+
+		// Act
+		var result = await sut.FixPermissions("/some/path/to/exe");
+
+		// Assert
+
+		// On Windows the method should return true without calling chmod
+		Assert.IsTrue(result);
+	}
+
 	private sealed class
 		FakeImageOptimisationToolDownloadIndex : IImageOptimisationToolDownloadIndex
 	{
@@ -412,6 +473,21 @@ public class ImageOptimisationToolDownloadTests
 			ImageOptimisationToolDownloadOptions options)
 		{
 			return Task.FromResult(Result);
+		}
+	}
+
+	private sealed class FakeImageOptimisationChmod : IImageOptimisationChmod
+	{
+		private readonly bool _result;
+
+		public FakeImageOptimisationChmod(bool result)
+		{
+			_result = result;
+		}
+
+		public Task<bool> Chmod(string exeFile)
+		{
+			return Task.FromResult(_result);
 		}
 	}
 }

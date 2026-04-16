@@ -40,6 +40,14 @@ public sealed class ReadMetaSubPathStorage : IReadMetaSubPathStorage
 		return _readMeta.RemoveReadMetaCache(fullFilePath);
 	}
 
+	public void RemoveReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+	{
+		foreach ( var item in objectExifToolModel )
+		{
+			RemoveReadMetaCache(item.FilePath!);
+		}
+	}
+
 	public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
 	{
 		_readMeta.UpdateReadMetaCache(objectExifToolModel);

@@ -34,6 +34,8 @@ public sealed class NotificationQueryTest
 			new NotificationQuery(_dbContext, new FakeIWebLogger(), serviceScopeFactory);
 	}
 
+	public TestContext TestContext { get; set; }
+
 	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
@@ -79,21 +81,23 @@ public sealed class NotificationQueryTest
 					Type = ApiNotificationType.Welcome
 				});
 
-		var context = new InjectServiceScope(serviceScopeFactory).Context();
-
-		var testNotification =
-			await context.Notifications.FirstOrDefaultAsync(p =>
-					p.Content!.Contains("test_disposed_notification"),
-				TestContext.CancellationTokenSource.Token);
-
-		// and remove it afterward
-		foreach ( var notificationsItem in await context.Notifications.ToListAsync(TestContext
-			         .CancellationTokenSource.Token) )
+		var injectServiceScope = new InjectServiceScope(serviceScopeFactory);
+		var testNotification = await injectServiceScope.ExecuteAsync(async context =>
 		{
-			context.Notifications.Remove(notificationsItem);
-		}
+			var notification = await context.Notifications.FirstOrDefaultAsync(p =>
+						p.Content!.Contains("test_disposed_notification"),
+					TestContext.CancellationTokenSource.Token);
 
-		await context.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+			// and remove it afterward
+			foreach ( var notificationsItem in await context.Notifications.ToListAsync(TestContext
+				         .CancellationTokenSource.Token) )
+			{
+				context.Notifications.Remove(notificationsItem);
+			}
+
+			await context.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+			return notification;
+		});
 
 		Assert.IsNotNull(testNotification?.Content);
 		Assert.IsGreaterThanOrEqualTo(1746613149, testNotification.DateTimeEpoch);
@@ -118,7 +122,7 @@ public sealed class NotificationQueryTest
 		{
 			var sut = new NotificationQuery(dbContextDisposed, new FakeIWebLogger(),
 				serviceScopeFactory);
-			result = await sut.AddNotification(dbContextDisposed,
+			result = await sut.AddNotification(
 				NotificationQuery.NewNotificationItem(content), content);
 
 			// Assert
@@ -127,10 +131,13 @@ public sealed class NotificationQueryTest
 		}
 		finally
 		{
-			var dbContext = new InjectServiceScope(serviceScopeFactory).Context();
-
-			dbContext.Notifications.Remove(result);
-			await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+			var injectServiceScope = new InjectServiceScope(serviceScopeFactory);
+			await injectServiceScope.ExecuteAsync(async dbContext =>
+			{
+				dbContext.Notifications.Remove(result);
+				await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+				return true;
+			});
 
 			scope.Dispose();
 		}
@@ -163,10 +170,13 @@ public sealed class NotificationQueryTest
 		}
 		finally
 		{
-			var dbContext = new InjectServiceScope(serviceScopeFactory).Context();
-
-			dbContext.Notifications.Remove(result);
-			await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+			var injectServiceScope = new InjectServiceScope(serviceScopeFactory);
+			await injectServiceScope.ExecuteAsync(async dbContext =>
+			{
+				dbContext.Notifications.Remove(result);
+				await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+				return true;
+			});
 
 			scope.Dispose();
 		}
@@ -240,6 +250,4 @@ public sealed class NotificationQueryTest
 			await _dbContext.Notifications.CountAsync(TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(0, countAsync);
 	}
-
-	public TestContext TestContext { get; set; }
 }

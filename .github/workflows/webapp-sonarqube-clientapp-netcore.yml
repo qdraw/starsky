@@ -45,12 +45,12 @@ jobs:
           git fetch --prune --unshallow
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@16c7b3c2fa55a0e394467d22512b84fda46adf63
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
         with:
-          dotnet-version: 8.0.418
+          dotnet-version: 8.0.420
         
       - name: Use Java 21   
-        uses: actions/setup-java@fe779bf55ef683c9413269276a7588bb9cedf07a
+        uses: actions/setup-java@0756542bc5161cdc537890d1ab208ecce7acd8aa
         with:
           distribution: 'zulu'
           java-version: '21'
@@ -59,7 +59,7 @@ jobs:
           architecture: x64 # (x64 or x86) - defaults to x64
 
       - name: Cache node modules clientapp (*nix)
-        uses: actions/cache@565629816435f6c0b50676926c9b05c254113c0c
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
@@ -68,7 +68,7 @@ jobs:
             ${{ runner.os }}-build-clientapp-
 
       - name: Cache nuget packages (*nix)
-        uses: actions/cache@565629816435f6c0b50676926c9b05c254113c0c
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
           path: ~/.nuget/packages
@@ -77,7 +77,7 @@ jobs:
             ${{ runner.os }}-build-netcore-
 
       - name: Cache sonarqube packages (*nix)
-        uses: actions/cache@565629816435f6c0b50676926c9b05c254113c0c
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           # nuget cache files are stored in `~/.sonar` on Linux/macOS
           path: ~/.sonar

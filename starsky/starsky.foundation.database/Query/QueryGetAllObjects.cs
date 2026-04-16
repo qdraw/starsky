@@ -43,12 +43,9 @@ public partial class Query
 
 		async Task<List<FileIndexItem>> LocalGetAllObjectsAsync()
 		{
-			var dbContext = new InjectServiceScope(_scopeFactory).Context();
-			var result =
-				FormatOk(
-					( await GetAllObjectsQuery(dbContext, filePaths)?.ToListAsync()! )!);
-			await dbContext.DisposeAsync();
-			return result;
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(async dbContext =>
+				FormatOk(( await GetAllObjectsQuery(dbContext, filePaths)?.ToListAsync()! )!));
 		}
 
 		try

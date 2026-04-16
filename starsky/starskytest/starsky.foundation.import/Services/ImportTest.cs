@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode;
@@ -24,6 +25,7 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA330Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6700;
+using starskytest.FakeCreateAn.CreateAnImageEOS7DRawCr2;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 using VerifyMSTest;
@@ -102,17 +104,19 @@ public sealed class ImportTest : VerifyBase
 	[DataRow("/test.mp4")]
 	[DataRow("/a330.arw")]
 	[DataRow("/a6700.arw")]
+	[DataRow("/eos7d.cr2")]
 	public async Task Preflight_SingleImage_Verify(string filePath)
 	{
 		var appSettings = new AppSettings();
 		var fakeIStorage = new FakeIStorage(["/"],
-			["/a6660.arw", "/test.mp4", "/a330.arw", "/a6700.arw"],
+			["/a6660.arw", "/test.mp4", "/a330.arw", "/a6700.arw", "/eos7d.cr2"],
 			new List<byte[]>
 			{
 				new CreateAnImageA6600Raw().Bytes.ToArray(),
 				CreateAnQuickTimeMp4.Bytes.ToArray(),
 				new CreateAnImageA330Raw().Bytes.ToArray(),
-				new CreateAnImageA6700().Bytes.ToArray()
+				new CreateAnImageA6700().Bytes.ToArray(),
+				new CreateAnImageEOS7DRawCr2().Bytes.ToArray()
 			});
 
 		var importService = new Import(new FakeSelectorStorage(fakeIStorage), appSettings,
@@ -517,6 +521,64 @@ public sealed class ImportTest : VerifyBase
 		Assert.IsFalse(storage.ExistFile("/test.jpg"));
 	}
 
+	[TestMethod]
+	public async Task Importer_WithBackup_CreatesBackupAndImportsFile()
+	{
+		// Arrange: source file and backup folder
+		var storage = new FakeIStorage(["/", "/backup"],
+			["/test.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var selector = new FakeSelectorStorage(storage);
+
+		var appSettings = new AppSettings
+		{
+			ImportBackup =
+				new AppSettingsImportBackupModel { Enabled = true, StorageFolder = "/backup" },
+			Structure = new AppSettingsStructureModel
+			{
+				DefaultPattern = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss.ext"
+			}
+		};
+
+		var importService = new Import(
+			selector,
+			appSettings,
+			new FakeIImportQuery(),
+			new FakeExifTool(storage, appSettings),
+			new FakeIQuery(),
+			new FakeConsoleWrapper([]),
+			new FakeIMetaExifThumbnailService(),
+			new FakeIWebLogger(),
+			new FakeIThumbnailQuery(),
+			new FakeIReverseGeoCodeService(),
+			new MemoryCache(new MemoryCacheOptions())
+		);
+
+		var importSettings = new ImportSettingsModel { IndexMode = false };
+
+		// Act
+		var result = await importService.Importer(new List<string> { "/test.jpg" }, importSettings);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.IsNotEmpty(result);
+		var first = result[0];
+		Assert.AreEqual(ImportStatus.Ok, first.Status);
+
+		// backup file should be created under /backup
+		var backupFiles = storage.GetAllFilesInDirectory("/backup").ToList();
+		Assert.IsNotEmpty(backupFiles);
+		Assert.HasCount(1, backupFiles);
+		Assert.AreEqual($"/backup{Path.DirectorySeparatorChar}20180422_161454_test.jpg", backupFiles[0]);
+
+		// import should have created a copy in subpath (not only the original /test.jpg)
+		var allFiles = storage.GetAllFilesInDirectoryRecursive("/").ToList();
+		Assert.IsGreaterThanOrEqualTo(2, allFiles.Count);
+
+		var importDone = storage.ExistFile("/2018/04/2018_04_22/20180422_161454.jpg");
+		Assert.IsTrue(importDone);
+	}
+
 	private static AppSettings SetupReverseGeoCodeServiceData()
 	{
 		var appSettings = new AppSettings
@@ -596,6 +658,8 @@ public sealed class ImportTest : VerifyBase
 		Assert.AreEqual("NLD", fileIndexItem.LocationCountryCode);
 		Assert.AreEqual("Netherlands", fileIndexItem.LocationCountry);
 		Assert.AreEqual("Overijssel", fileIndexItem.LocationState);
+
+		Directory.Delete(appSettings.DependenciesFolder, true);
 	}
 
 	[TestMethod]
@@ -862,7 +926,7 @@ public sealed class ImportTest : VerifyBase
 				Status = ImportStatus.Ok,
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			},
-			new ImportSettingsModel());
+			new ImportSettingsModel(), new AppSettingsImportBackupModel());
 
 		Assert.IsFalse(subPathStorage.ExistFile("/test.jpg"));
 		Assert.IsFalse(await fakeImportQuery.IsHashInImportDbAsync("hash73845934893459"));
@@ -1125,7 +1189,7 @@ public sealed class ImportTest : VerifyBase
 
 		var result = await importService.Importer(
 			new ImportIndexItem { Status = ImportStatus.FileError },
-			new ImportSettingsModel());
+			new ImportSettingsModel(), new AppSettingsImportBackupModel());
 		Assert.AreEqual(ImportStatus.FileError, result.Status);
 	}
 
@@ -1365,7 +1429,7 @@ public sealed class ImportTest : VerifyBase
 			new ImportIndexItem(), new ImportSettingsModel { IndexMode = false });
 
 		Assert.ContainsSingle(p =>
-			p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true, 
+				p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true,
 			logger.TrackedInformation);
 	}
 

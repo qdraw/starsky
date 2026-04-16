@@ -47,7 +47,7 @@ public class WebFtpCli
 		if ( _appSettings.PublishProfilesRemote.GetFtpById(ArgsHelper.GetProfile(args)).Count == 0 )
 		{
 			_logger.LogError(
-				"Please update the PublishProfilesRemote settings in appsettings.json");
+				"Please update the PublishProfilesRemote default section settings in appsettings.json");
 			return;
 		}
 

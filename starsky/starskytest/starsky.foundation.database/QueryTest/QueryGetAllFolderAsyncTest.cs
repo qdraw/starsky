@@ -29,7 +29,7 @@ public sealed class QueryGetAllFolderAsyncTest
 
 	public TestContext TestContext { get; set; }
 
-	private IServiceScopeFactory CreateNewScope()
+	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
 		services.AddDbContext<ApplicationDbContext>(options =>
@@ -47,7 +47,7 @@ public sealed class QueryGetAllFolderAsyncTest
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 		};
 		var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
-		var query = new Query(dbContext, new AppSettings(), null,
+		var query = new Query(dbContext, new AppSettings(), null!,
 			new FakeIWebLogger(), new FakeMemoryCache());
 
 		await dbContext.FileIndex.AddAsync(
@@ -79,7 +79,7 @@ public sealed class QueryGetAllFolderAsyncTest
 		};
 		var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
 		var query = new Query(dbContext, new AppSettings(),
-			null, new FakeIWebLogger(), new FakeMemoryCache());
+			null!, new FakeIWebLogger(), new FakeMemoryCache());
 
 		await dbContext.FileIndex.AddAsync(
 			new FileIndexItem("/GetFolders_multi_01") { IsDirectory = true },

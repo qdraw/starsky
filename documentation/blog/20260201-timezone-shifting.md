@@ -2,7 +2,7 @@
 slug: new-feature-timezone-shift-adjust-photo-timestamps-easily
 title: "New feature: Timezone Shift: Adjust Photo Timestamps Easily"
 authors: dion
-tags: [photo mangement, software update]
+tags: [photo management, software update]
 date: 2026-02-01
 image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/1000/02_starsky_v052_kl1k.jpg
 ---

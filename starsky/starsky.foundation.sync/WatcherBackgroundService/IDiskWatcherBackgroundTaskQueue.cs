@@ -1,9 +1,8 @@
 using starsky.foundation.worker.Interfaces;
 
-namespace starsky.foundation.sync.WatcherBackgroundService
+namespace starsky.foundation.sync.WatcherBackgroundService;
+
+public interface IDiskWatcherBackgroundTaskQueue : IBaseBackgroundTaskQueue
 {
-	public interface IDiskWatcherBackgroundTaskQueue : IBaseBackgroundTaskQueue
-	{
-		// nothing here
-	}
+	// nothing here
 }

@@ -37,8 +37,10 @@ public partial class Query : IQuery
 		catch ( InvalidOperationException )
 		{
 			// includes ObjectDisposedException
-			return FormatOk(await GetObjectsByFilePathCollectionQuery(
-				new InjectServiceScope(_scopeFactory).Context(), filePathList).ToListAsync());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(async context =>
+				FormatOk(await GetObjectsByFilePathCollectionQuery(context, filePathList)
+					.ToListAsync()));
 		}
 	}
 
