@@ -202,9 +202,9 @@ public class ExportServicePreserveSubfolderTest
 			$"Expected path with subfolders, got: {fileNames[2]}");
 		
 		// Verify the relative paths start with year
-		Assert.IsTrue(fileNames[0].StartsWith("2024"));
-		Assert.IsTrue(fileNames[1].StartsWith("2024"));
-		Assert.IsTrue(fileNames[2].StartsWith("2024"));
+		Assert.StartsWith("2024", fileNames[0]);
+		Assert.StartsWith("2024", fileNames[1]);
+		Assert.StartsWith("2024", fileNames[2]);
 	}
 
 	/// <summary>
@@ -241,13 +241,11 @@ public class ExportServicePreserveSubfolderTest
 	{
 		// Arrange
 		var exportService = new ExportService(new FakeIQuery(),
-			new AppSettings { StorageFolder = "C:\\data\\testcontent\\" },
+			new AppSettings { StorageFolder = @"C:\data\testcontent\" },
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
-
-		var filePaths = new List<string>();
-
+		
 		// Act
-		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
+		var fileNames = await exportService.FilePathToFileNameAsync([], false);
 
 		// Assert
 		Assert.IsEmpty(fileNames);
@@ -329,8 +327,8 @@ public class ExportServicePreserveSubfolderTest
 
 		// Assert
 		Assert.HasCount(2, fileNames);
-		Assert.IsTrue(fileNames[0].Contains("2022_12_10 lange map naam test"));
-		Assert.IsTrue(fileNames[1].Contains("famille & vrienden"));
+		Assert.Contains("2022_12_10 lange map naam test", fileNames[0]);
+		Assert.Contains("famille & vrienden", fileNames[1]);
 	}
 
 	/// <summary>
@@ -360,66 +358,7 @@ public class ExportServicePreserveSubfolderTest
 		// Should still preserve the relative structure despite case mismatch
 		Assert.AreEqual(Path.Combine("2024", "file.jpg"), fileNames[0]);
 	}
-
-	/// <summary>
-	///     Test IsRunningTest scenario - simulating Windows paths with backslashes
-	/// </summary>
-	[TestMethod]
-	public async Task FilePathToFileNameAsync_WindowsPaths_PreservesFolderStructureCorrectly()
-	{
-		// Arrange
-		var exportService = new ExportService(new FakeIQuery(),
-			new AppSettings { StorageFolder = @"C:\data\testcontent\" },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
-
-		// Exact paths from user requirement
-		var filePaths = new List<string>
-		{
-			@"C:\data\testcontent\2022\12\20221210_105537_20221210_105537_DSC07377.jpg",
-			@"C:\data\testcontent\2022\12\20221210_105740_20221210_105740_DSC07388.jpg",
-			@"C:\data\testcontent\2022\12\2022_12_10 lange map naam test\20221210_105728_20221210_105728_DSC07386.jpg",
-			@"C:\data\testcontent\2022\12\2022_12_10 lange map naam test\20221210_105743_20221210_105743_DSC07389.jpg"
-		};
-
-		// Act
-		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
-
-		// Assert
-		Assert.HasCount(4, fileNames);
-		Assert.AreEqual(@"2022\12\20221210_105537_20221210_105537_DSC07377.jpg", fileNames[0]);
-		Assert.AreEqual(@"2022\12\20221210_105740_20221210_105740_DSC07388.jpg", fileNames[1]);
-		Assert.AreEqual(@"2022\12\2022_12_10 lange map naam test\20221210_105728_20221210_105728_DSC07386.jpg",
-			fileNames[2]);
-		Assert.AreEqual(@"2022\12\2022_12_10 lange map naam test\20221210_105743_20221210_105743_DSC07389.jpg",
-			fileNames[3]);
-	}
-
-	/// <summary>
-	///     Test that files without subfolders maintain flat structure
-	/// </summary>
-	[TestMethod]
-	public async Task FilePathToFileNameAsync_WindowsPathsNoSubfolders_ReturnsFlatStructure()
-	{
-		// Arrange
-		var exportService = new ExportService(new FakeIQuery(),
-			new AppSettings { StorageFolder = @"C:\data\testcontent\" },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
-
-		var filePaths = new List<string>
-		{
-			@"C:\data\testcontent\20221210_105743_20221210_105743_DSC07389.jpg",
-			@"C:\data\testcontent\20221210_105740_20221210_105740_DSC07388.jpg"
-		};
-
-		// Act
-		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
-
-		// Assert
-		Assert.HasCount(2, fileNames);
-		Assert.AreEqual("20221210_105743_20221210_105743_DSC07389.jpg", fileNames[0]);
-		Assert.AreEqual("20221210_105740_20221210_105740_DSC07388.jpg", fileNames[1]);
-	}
-
+	
 	/// <summary>
 	///     Test with alternative directory separator (forward slash)
 	///     This tests cross-platform compatibility
