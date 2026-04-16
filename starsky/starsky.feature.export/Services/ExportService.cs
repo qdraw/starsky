@@ -311,7 +311,7 @@ public class ExportService : IExport
 				{
 					if ( f.StartsWith(commonAncestor + "/", StringComparison.OrdinalIgnoreCase) )
 					{
-						return f.Substring(commonAncestor.Length + 1);
+						return f[(commonAncestor.Length + 1)..];
 					}
 
 					return f;
@@ -368,7 +368,7 @@ public class ExportService : IExport
 	{
 		if ( string.IsNullOrEmpty(fullFilePath) )
 		{
-			return Path.GetFileName(fullFilePath);
+			return PathHelper.GetFileName(fullFilePath);
 		}
 
 		var storageFolder = PathHelper.AddBackslash(_appSettings.StorageFolder);
@@ -377,7 +377,7 @@ public class ExportService : IExport
 		if ( !fullFilePath.StartsWith(storageFolder, StringComparison.OrdinalIgnoreCase) )
 		{
 			// Fallback to just the filename if we can't determine relative path
-			return Path.GetFileName(fullFilePath);
+			return PathHelper.GetFileName(fullFilePath);
 		}
 
 		// Get relative path and convert to Unix style (forward slashes)
@@ -402,7 +402,7 @@ public class ExportService : IExport
 			case 1:
 			{
 				var lastSlash = unixStylePaths[0].LastIndexOf('/');
-				return lastSlash > 0 ? unixStylePaths[0].Substring(0, lastSlash) : string.Empty;
+				return lastSlash > 0 ? unixStylePaths[0][..lastSlash] : string.Empty;
 			}
 		}
 
