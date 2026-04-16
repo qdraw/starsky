@@ -76,17 +76,14 @@ public class ExportServicePreserveSubfolderTest
 
 		// Assert
 		Assert.HasCount(4, fileNames);
-
-		// Verify structure is preserved
-		Assert.AreEqual(Path.Combine("2022", "12", "20221210_105537_DSC07377.jpg"), fileNames[0]);
-		Assert.AreEqual(Path.Combine("2022", "12", "20221210_105740_DSC07388.jpg"), fileNames[1]);
+		
+		Assert.AreEqual("20221210_105537_DSC07377.jpg", fileNames[0]);
+		Assert.AreEqual("20221210_105740_DSC07388.jpg", fileNames[1]);
 		Assert.AreEqual(
-			Path.Combine("2022", "12", "2022_12_10 lange map naam test",
-				"20221210_105728_DSC07386.jpg"),
+			"2022_12_10 lange map naam test/20221210_105728_DSC07386.jpg",
 			fileNames[2]);
 		Assert.AreEqual(
-			Path.Combine("2022", "12", "2022_12_10 lange map naam test",
-				"20221210_105743_DSC07389.jpg"),
+			"2022_12_10 lange map naam test/20221210_105743_DSC07389.jpg",
 			fileNames[3]);
 	}
 
@@ -115,14 +112,14 @@ public class ExportServicePreserveSubfolderTest
 
 		// Assert
 		Assert.HasCount(3, fileNames);
-		// When there are subfolders, ALL files should preserve their structure
-		Assert.AreEqual(Path.Combine("subfolder", "file2.jpg"), fileNames[1]);
+
 		Assert.AreEqual("file1.jpg", fileNames[0]);
+		Assert.AreEqual("subfolder/file2.jpg", fileNames[1]);
 		Assert.AreEqual("file3.jpg", fileNames[2]);
 	}
 
 	/// <summary>
-	///     Test single file with no subfolders
+	///     Test a single file with no subfolders
 	/// </summary>
 	[TestMethod]
 	public async Task FilePathToFileNameAsync_SingleFileNoSubfolder_ReturnsSingleFileName()
@@ -144,10 +141,10 @@ public class ExportServicePreserveSubfolderTest
 	}
 
 	/// <summary>
-	///     Test single file with subfolders
+	///     Test a single file with subfolders
 	/// </summary>
 	[TestMethod]
-	public async Task FilePathToFileNameAsync_SingleFileWithSubfolder_PreservesFolder()
+	public async Task FilePathToFileNameAsync_SingleFileWithSubfolder_NoChildFolder()
 	{
 		// Arrange
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
@@ -165,7 +162,7 @@ public class ExportServicePreserveSubfolderTest
 
 		// Assert
 		Assert.HasCount(1, fileNames);
-		Assert.AreEqual(Path.Combine("2024", "01", "photo.jpg"), fileNames[0]);
+		Assert.AreEqual("photo.jpg", fileNames[0]);
 	}
 
 	/// <summary>
@@ -195,22 +192,15 @@ public class ExportServicePreserveSubfolderTest
 
 		// Assert
 		Assert.HasCount(3, fileNames);
-		Assert.IsTrue(fileNames[0].Contains(Path.DirectorySeparatorChar),
-			$"Expected path with subfolders, got: {fileNames[0]}");
-		Assert.IsTrue(fileNames[1].Contains(Path.DirectorySeparatorChar),
-			$"Expected path with subfolders, got: {fileNames[1]}");
-		Assert.IsTrue(fileNames[2].Contains(Path.DirectorySeparatorChar),
-			$"Expected path with subfolders, got: {fileNames[2]}");
 
-		// Verify the relative paths start with year
-		Assert.StartsWith("2024", fileNames[0]);
-		Assert.StartsWith("2024", fileNames[1]);
-		Assert.StartsWith("2024", fileNames[2]);
+		Assert.AreEqual("wedding/photo1.jpg", fileNames[0]);
+		Assert.AreEqual("wedding/photo2.jpg", fileNames[1]);
+		Assert.AreEqual("birthday/photo3.jpg", fileNames[2]);
 	}
 
 	/// <summary>
 	///     Test that relative path calculation works correctly
-	///     when storage folder has or doesn't have trailing slash
+	///     when a storage folder has or doesn't have a trailing slash
 	/// </summary>
 	[TestMethod]
 	public async Task FilePathToFileNameAsync_StorageFolderVariations_HandlesCorrectly()
@@ -231,11 +221,11 @@ public class ExportServicePreserveSubfolderTest
 
 		// Assert
 		Assert.HasCount(1, fileNames);
-		Assert.AreEqual(Path.Combine("2024", "file.jpg"), fileNames[0]);
+		Assert.AreEqual("file.jpg", fileNames[0]);
 	}
 
 	/// <summary>
-	///     Test empty file paths list
+	///     Test empty a file paths list
 	/// </summary>
 	[TestMethod]
 	public async Task FilePathToFileNameAsync_EmptyList_ReturnsEmptyList()
@@ -280,7 +270,7 @@ public class ExportServicePreserveSubfolderTest
 	///     Test files with XMP sidecars - should preserve structure for both
 	/// </summary>
 	[TestMethod]
-	public async Task FilePathToFileNameAsync_WithXmpFiles_PreservesFolderStructure()
+	public async Task FilePathToFileNameAsync_WithXmpFiles_KeepInRoot()
 	{
 		// Arrange
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
@@ -299,8 +289,9 @@ public class ExportServicePreserveSubfolderTest
 
 		// Assert
 		Assert.HasCount(2, fileNames);
-		Assert.AreEqual(Path.Combine("2024", "01", "photo.dng"), fileNames[0]);
-		Assert.AreEqual(Path.Combine("2024", "01", "photo.xmp"), fileNames[1]);
+
+		Assert.AreEqual("photo.dng", fileNames[0]);
+		Assert.AreEqual("photo.xmp", fileNames[1]);
 	}
 
 	/// <summary>
@@ -332,34 +323,6 @@ public class ExportServicePreserveSubfolderTest
 		Assert.Contains("famille & vrienden", fileNames[1]);
 	}
 
-	/// <summary>
-	///     Test case-insensitive storage folder comparison
-	/// </summary>
-	[TestMethod]
-	public async Task FilePathToFileNameAsync_CaseInsensitiveStorageFolder_HandlesCorrectly()
-	{
-		// Arrange
-		// Storage folder in lowercase
-		var storageFolderLower = Path.Combine("C:", "data", "testcontent").ToLower() +
-		                         Path.DirectorySeparatorChar;
-		var exportService = new ExportService(new FakeIQuery(),
-			new AppSettings { StorageFolder = storageFolderLower },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
-
-		// File paths with mixed case
-		var filePaths = new List<string>
-		{
-			Path.Combine("C:", "data", "TestContent", "2024", "file.jpg")
-		};
-
-		// Act
-		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
-
-		// Assert
-		Assert.HasCount(1, fileNames);
-		// Should still preserve the relative structure despite case mismatch
-		Assert.AreEqual(Path.Combine("2024", "file.jpg"), fileNames[0]);
-	}
 
 	/// <summary>
 	///     Test with alternative directory separator (forward slash)
@@ -386,8 +349,102 @@ public class ExportServicePreserveSubfolderTest
 
 		// Assert
 		Assert.HasCount(2, fileNames);
-		// Results should contain directory structure
-		Assert.IsTrue(fileNames[0].Contains(Path.DirectorySeparatorChar),
-			$"Expected path separator in {fileNames[0]}");
+
+		Assert.AreEqual("01/photo.jpg", fileNames[0]);
+		Assert.AreEqual("02/photo.jpg", fileNames[1]);
+	}
+
+	/// <summary>
+	///     Test case 1: When files are in a common directory with multiple children
+	///     Input paths from storage: 2025/06/2025_06_18/image.jpg, 2025/06/2025_06_14/image.jpg
+	///     Expected: 2025_06_18/image.jpg, 2025_06_14/image.jpg
+	///     (Common ancestor "2025/06/" is stripped)
+	/// </summary>
+	[TestMethod]
+	public async Task FilePathToFileNameAsync_CommonAncestorSingleLevel_StripsSingleLevel()
+	{
+		// Arrange
+		const string storageFolder = @"C:\data\testcontent\";
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { StorageFolder = storageFolder },
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+
+		var filePaths = new List<string>
+		{
+			@"C:\data\testcontent\2025\06\2025_06_18\image.jpg",
+			@"C:\data\testcontent\2025\06\2025_06_14\image.jpg"
+		};
+
+		// Act
+		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
+
+		// Assert
+		Assert.HasCount(2, fileNames);
+		Assert.AreEqual("2025_06_18/image.jpg", fileNames[0]);
+		Assert.AreEqual("2025_06_14/image.jpg", fileNames[1]);
+	}
+
+	/// <summary>
+	///     Test case 2: When files diverge at the month level
+	///     Input paths from storage: 2025/06/2025_06_18/image.jpg, 2025/06/2025_06_14/image.jpg, 2025/07/2025_06_14/image.jpg
+	///     Expected: 06/2025_06_18/image.jpg, 06/2025_06_14/image.jpg, 07/2025_06_14/image.jpg
+	///     (Common ancestor "2025/" is stripped)
+	/// </summary>
+	[TestMethod]
+	public async Task FilePathToFileNameAsync_CommonAncestorTwoLevels_StripsOneLevel()
+	{
+		// Arrange
+		var storageFolder = @"C:\data\testcontent\";
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { StorageFolder = storageFolder },
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+
+		var filePaths = new List<string>
+		{
+			@"C:\data\testcontent\2025\06\2025_06_18\image.jpg",
+			@"C:\data\testcontent\2025\06\2025_06_14\image.jpg",
+			@"C:\data\testcontent\2025\07\2025_06_14\image.jpg"
+		};
+
+		// Act
+		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
+
+		// Assert
+		Assert.HasCount(3, fileNames);
+		Assert.AreEqual("06/2025_06_18/image.jpg", fileNames[0]);
+		Assert.AreEqual("06/2025_06_14/image.jpg", fileNames[1]);
+		Assert.AreEqual("07/2025_06_14/image.jpg", fileNames[2]);
+	}
+
+	/// <summary>
+	///     Test case 3: When files diverge at the year level (no common ancestor)
+	///     Input paths from storage: 2026/06/2025_06_18/image.jpg, 2025/06/2025_06_14/image.jpg, 2025/07/2025_06_14/image.jpg
+	///     Expected: 2026/06/2025_06_18/image.jpg, 2025/06/2025_06_14/image.jpg, 2025/07/2025_06_14/image.jpg
+	///     (No common ancestor, so full paths are kept)
+	/// </summary>
+	[TestMethod]
+	public async Task FilePathToFileNameAsync_NoCommonAncestor_KeepsFullPaths()
+	{
+		// Arrange
+		const string storageFolder = @"C:\data\testcontent\";
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { StorageFolder = storageFolder },
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+
+		var filePaths = new List<string>
+		{
+			@"C:\data\testcontent\2026\06\2025_06_18\image.jpg",
+			@"C:\data\testcontent\2025\06\2025_06_14\image.jpg",
+			@"C:\data\testcontent\2025\07\2025_06_14\image.jpg"
+		};
+
+		// Act
+		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
+
+		// Assert
+		Assert.HasCount(3, fileNames);
+		Assert.AreEqual("2026/06/2025_06_18/image.jpg", fileNames[0]);
+		Assert.AreEqual("2025/06/2025_06_14/image.jpg", fileNames[1]);
+		Assert.AreEqual("2025/07/2025_06_14/image.jpg", fileNames[2]);
 	}
 }

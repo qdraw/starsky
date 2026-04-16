@@ -108,7 +108,7 @@ public class ExportService : IExport
 	/// </summary>
 	/// <param name="fileIndexResultsList">Result of Preflight</param>
 	/// <param name="thumbnail">isThumbnail?</param>
-	/// <param name="zipOutputFileName">filename of zip file (no extension)</param>
+	/// <param name="zipOutputFileName">filename of zip type file (no extension)</param>
 	/// <returns>nothing</returns>
 	public async Task CreateZip(List<FileIndexItem> fileIndexResultsList, bool thumbnail,
 		string zipOutputFileName)
@@ -252,7 +252,7 @@ public class ExportService : IExport
 	/// </summary>
 	/// <param name="fullFilePaths">the full file paths </param>
 	/// <param name="thumbnail">copy the thumbnail (true) or the source image (false)</param>
-	/// <returns>List of filenames or relative paths</returns>
+	/// <returns>List of filenames or relative paths in Unix style</returns>
 	internal async Task<List<string>> FilePathToFileNameAsync(IEnumerable<string> fullFilePaths,
 		bool thumbnail)
 	{
@@ -277,7 +277,7 @@ public class ExportService : IExport
 				var thumbFilename = Path.GetFileNameWithoutExtension(filePath);
 				var subPath = ( await _query.GetSubPathsByHashAsync(thumbFilename) )
 					.FirstOrDefaultWithFallback(filePath);
-				
+
 				if ( !string.IsNullOrEmpty(subPath) )
 				{
 					var filename = FilenamesHelper.GetFileName(subPath);
@@ -290,13 +290,32 @@ public class ExportService : IExport
 			// For non-thumbnail files, preserve directory structure if subfolders exist
 			if ( hasSubFolders )
 			{
-				var relativePath = GetRelativePath(filePath);
+				// Get the relative path from storage folder in Unix style
+				var relativePath = GetRelativePathFromStorage(filePath);
 				fileNames.Add(relativePath);
 			}
 			else
 			{
 				// No subfolders - just use the filename
 				fileNames.Add(Path.GetFileName(filePath));
+			}
+		}
+
+		// If subfolders exist, find common ancestor and strip it from all paths
+		if ( hasSubFolders && fileNames.Any(f => f.Contains('/')) )
+		{
+			var commonAncestor = FindCommonAncestorPath(fileNames);
+			if ( !string.IsNullOrEmpty(commonAncestor) )
+			{
+				fileNames = fileNames.Select(f =>
+				{
+					if ( f.StartsWith(commonAncestor + "/", StringComparison.OrdinalIgnoreCase) )
+					{
+						return f.Substring(commonAncestor.Length + 1);
+					}
+
+					return f;
+				}).ToList();
 			}
 		}
 
@@ -336,7 +355,7 @@ public class ExportService : IExport
 			{
 				var relativePart = filePath.Substring(storageFolder.Length);
 				// If there's a directory separator in the relative part, we have subfolders
-				if ( relativePart.Contains(Path.DirectorySeparatorChar) || 
+				if ( relativePart.Contains(Path.DirectorySeparatorChar) ||
 				     relativePart.Contains(Path.AltDirectorySeparatorChar) )
 				{
 					return true;
@@ -348,9 +367,9 @@ public class ExportService : IExport
 	}
 
 	/// <summary>
-	///     Get the relative path from the storage folder
+	///     Get the relative path from the storage folder in Unix style (forward slashes)
 	/// </summary>
-	private string GetRelativePath(string fullFilePath)
+	private string GetRelativePathFromStorage(string fullFilePath)
 	{
 		var storageFolder = _appSettings.StorageFolder;
 		if ( string.IsNullOrEmpty(storageFolder) || string.IsNullOrEmpty(fullFilePath) )
@@ -362,15 +381,64 @@ public class ExportService : IExport
 		storageFolder = PathHelper.AddBackslash(storageFolder);
 
 		// If the file path starts with storage folder, get the relative part
-		if ( fullFilePath.StartsWith(storageFolder, StringComparison.OrdinalIgnoreCase) )
+		if ( !fullFilePath.StartsWith(storageFolder, StringComparison.OrdinalIgnoreCase) )
 		{
-			var relativePath = fullFilePath.Substring(storageFolder.Length);
-			// Normalize path separators to forward slash for zip consistency across platforms
-			return relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+			// Fallback to just the filename if we can't determine relative path
+			return Path.GetFileName(fullFilePath);
 		}
 
-		// Fallback to just the filename if we can't determine relative path
-		return Path.GetFileName(fullFilePath);
+		// Get relative path and convert to Unix style (forward slashes)
+		var relativePath = fullFilePath.Substring(storageFolder.Length);
+		return relativePath.Replace(Path.DirectorySeparatorChar, '/')
+			.Replace(Path.AltDirectorySeparatorChar, '/');
+	}
+
+	/// <summary>
+	///     Find the common ancestor directory path for all files in Unix style paths
+	///     For example:
+	///     - ["2025/06/2025_06_18/image.jpg", "2025/06/2025_06_14/image.jpg"] -> "2025/06"
+	///     - ["2025/06/file1.jpg", "2025/07/file2.jpg"] -> "2025"
+	///     - ["2026/06/file1.jpg", "2025/06/file2.jpg"] -> ""
+	/// </summary>
+	private static string FindCommonAncestorPath(List<string> unixStylePaths)
+	{
+		if ( unixStylePaths.Count == 0 )
+		{
+			return string.Empty;
+		}
+
+		if ( unixStylePaths.Count == 1 )
+		{
+			var lastSlash = unixStylePaths[0].LastIndexOf('/');
+			return lastSlash > 0 ? unixStylePaths[0].Substring(0, lastSlash) : string.Empty;
+		}
+
+		// Split all paths into parts
+		var allParts = unixStylePaths.Select(p => p.Split('/')).ToList();
+
+		// Find the depth of the shallowest path (minimum number of directory levels)
+		var minDepth = allParts.Min(parts => parts.Length - 1); // -1 for filename
+
+		// Find common ancestor by comparing parts level by level
+		var commonParts = new List<string>();
+		for ( var i = 0; i < minDepth; i++ )
+		{
+			var part = allParts[0][i];
+
+			// Check if this part is the same across all paths at this level
+			if ( allParts.All(parts => parts.Length > i &&
+			                           parts[i].Equals(part, StringComparison.OrdinalIgnoreCase)) )
+			{
+				commonParts.Add(part);
+			}
+			else
+			{
+				// Stop at first mismatch
+				break;
+			}
+		}
+
+		return string.Join("/", commonParts);
 	}
 
 	/// <summary>
