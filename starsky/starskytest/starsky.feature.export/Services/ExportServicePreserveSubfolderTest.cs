@@ -63,9 +63,11 @@ public class ExportServicePreserveSubfolderTest
 		{
 			Path.Combine("C:", "data", "testcontent", "2022", "12", "20221210_105537_DSC07377.jpg"),
 			Path.Combine("C:", "data", "testcontent", "2022", "12", "20221210_105740_DSC07388.jpg"),
-			Path.Combine("C:", "data", "testcontent", "2022", "12", "2022_12_10 lange map naam test",
+			Path.Combine("C:", "data", "testcontent", "2022", "12",
+				"2022_12_10 lange map naam test",
 				"20221210_105728_DSC07386.jpg"),
-			Path.Combine("C:", "data", "testcontent", "2022", "12", "2022_12_10 lange map naam test",
+			Path.Combine("C:", "data", "testcontent", "2022", "12",
+				"2022_12_10 lange map naam test",
 				"20221210_105743_DSC07389.jpg")
 		};
 
@@ -74,15 +76,17 @@ public class ExportServicePreserveSubfolderTest
 
 		// Assert
 		Assert.HasCount(4, fileNames);
-		
+
 		// Verify structure is preserved
 		Assert.AreEqual(Path.Combine("2022", "12", "20221210_105537_DSC07377.jpg"), fileNames[0]);
 		Assert.AreEqual(Path.Combine("2022", "12", "20221210_105740_DSC07388.jpg"), fileNames[1]);
 		Assert.AreEqual(
-			Path.Combine("2022", "12", "2022_12_10 lange map naam test", "20221210_105728_DSC07386.jpg"),
+			Path.Combine("2022", "12", "2022_12_10 lange map naam test",
+				"20221210_105728_DSC07386.jpg"),
 			fileNames[2]);
 		Assert.AreEqual(
-			Path.Combine("2022", "12", "2022_12_10 lange map naam test", "20221210_105743_DSC07389.jpg"),
+			Path.Combine("2022", "12", "2022_12_10 lange map naam test",
+				"20221210_105743_DSC07389.jpg"),
 			fileNames[3]);
 	}
 
@@ -129,10 +133,7 @@ public class ExportServicePreserveSubfolderTest
 			new AppSettings { StorageFolder = storageFolder },
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
 
-		var filePaths = new List<string>
-		{
-			Path.Combine("C:", "data", "testcontent", "photo.jpg")
-		};
+		var filePaths = new List<string> { Path.Combine("C:", "data", "testcontent", "photo.jpg") };
 
 		// Act
 		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
@@ -200,7 +201,7 @@ public class ExportServicePreserveSubfolderTest
 			$"Expected path with subfolders, got: {fileNames[1]}");
 		Assert.IsTrue(fileNames[2].Contains(Path.DirectorySeparatorChar),
 			$"Expected path with subfolders, got: {fileNames[2]}");
-		
+
 		// Verify the relative paths start with year
 		Assert.StartsWith("2024", fileNames[0]);
 		Assert.StartsWith("2024", fileNames[1]);
@@ -243,7 +244,7 @@ public class ExportServicePreserveSubfolderTest
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = @"C:\data\testcontent\" },
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
-		
+
 		// Act
 		var fileNames = await exportService.FilePathToFileNameAsync([], false);
 
@@ -259,7 +260,7 @@ public class ExportServicePreserveSubfolderTest
 	{
 		// Arrange
 		var exportService = new ExportService(new FakeIQuery(),
-			new AppSettings { StorageFolder = null },
+			new AppSettings { StorageFolder = null! },
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
 
 		var filePaths = new List<string>
@@ -339,7 +340,8 @@ public class ExportServicePreserveSubfolderTest
 	{
 		// Arrange
 		// Storage folder in lowercase
-		var storageFolderLower = Path.Combine("C:", "data", "testcontent").ToLower() + Path.DirectorySeparatorChar;
+		var storageFolderLower = Path.Combine("C:", "data", "testcontent").ToLower() +
+		                         Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolderLower },
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
@@ -358,7 +360,7 @@ public class ExportServicePreserveSubfolderTest
 		// Should still preserve the relative structure despite case mismatch
 		Assert.AreEqual(Path.Combine("2024", "file.jpg"), fileNames[0]);
 	}
-	
+
 	/// <summary>
 	///     Test with alternative directory separator (forward slash)
 	///     This tests cross-platform compatibility
@@ -367,7 +369,8 @@ public class ExportServicePreserveSubfolderTest
 	public async Task FilePathToFileNameAsync_AlternativeDirectorySeparator_HandlesCorrectly()
 	{
 		// Arrange - on Windows, convert forward slashes to backslashes for consistency
-		var storageFolderNormalized = "C:/data/testcontent/".Replace('/', Path.DirectorySeparatorChar);
+		var storageFolderNormalized =
+			"C:/data/testcontent/".Replace('/', Path.DirectorySeparatorChar);
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolderNormalized },
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
@@ -384,8 +387,7 @@ public class ExportServicePreserveSubfolderTest
 		// Assert
 		Assert.HasCount(2, fileNames);
 		// Results should contain directory structure
-		Assert.IsTrue(fileNames[0].Contains(Path.DirectorySeparatorChar), 
+		Assert.IsTrue(fileNames[0].Contains(Path.DirectorySeparatorChar),
 			$"Expected path separator in {fileNames[0]}");
 	}
 }
-
