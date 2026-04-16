@@ -76,7 +76,7 @@ public class ExportServicePreserveSubfolderTest
 
 		// Assert
 		Assert.HasCount(4, fileNames);
-		
+
 		Assert.AreEqual("20221210_105537_DSC07377.jpg", fileNames[0]);
 		Assert.AreEqual("20221210_105740_DSC07388.jpg", fileNames[1]);
 		Assert.AreEqual(
@@ -371,8 +371,8 @@ public class ExportServicePreserveSubfolderTest
 
 		var filePaths = new List<string>
 		{
-			@"C:\data\testcontent\2025\06\2025_06_18\image.jpg",
-			@"C:\data\testcontent\2025\06\2025_06_14\image.jpg"
+			Path.Combine("C:", "data", "testcontent", "2025", "06", "2025_06_18", "image.jpg"),
+			Path.Combine("C:", "data", "testcontent", "2025", "06", "2025_06_14", "image.jpg")
 		};
 
 		// Act
@@ -394,16 +394,16 @@ public class ExportServicePreserveSubfolderTest
 	public async Task FilePathToFileNameAsync_CommonAncestorTwoLevels_StripsOneLevel()
 	{
 		// Arrange
-		var storageFolder = @"C:\data\testcontent\";
+		const string storageFolder = @"C:\data\testcontent\";
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
 
 		var filePaths = new List<string>
 		{
-			@"C:\data\testcontent\2025\06\2025_06_18\image.jpg",
-			@"C:\data\testcontent\2025\06\2025_06_14\image.jpg",
-			@"C:\data\testcontent\2025\07\2025_06_14\image.jpg"
+			Path.Combine("C:", "data", "testcontent", "2025", "06", "2025_06_18", "image.jpg"),
+			Path.Combine("C:", "data", "testcontent", "2025", "06", "2025_06_14", "image.jpg"),
+			Path.Combine("C:", "data", "testcontent", "2025", "07", "2025_06_14", "image.jpg")
 		};
 
 		// Act
@@ -433,9 +433,9 @@ public class ExportServicePreserveSubfolderTest
 
 		var filePaths = new List<string>
 		{
-			@"C:\data\testcontent\2026\06\2025_06_18\image.jpg",
-			@"C:\data\testcontent\2025\06\2025_06_14\image.jpg",
-			@"C:\data\testcontent\2025\07\2025_06_14\image.jpg"
+			Path.Combine("C:", "data", "testcontent", "2026", "06", "2025_06_18", "image.jpg"),
+			Path.Combine("C:", "data", "testcontent", "2025", "06", "2025_06_14", "image.jpg"),
+			Path.Combine("C:", "data", "testcontent", "2025", "07", "2025_06_14", "image.jpg")
 		};
 
 		// Act
