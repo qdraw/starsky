@@ -333,15 +333,7 @@ public class ExportService : IExport
 			return false;
 		}
 
-		// Check if any file path has a directory separator after the storage folder
-		var storageFolder = _appSettings.StorageFolder;
-		if ( string.IsNullOrEmpty(storageFolder) )
-		{
-			return false;
-		}
-
-		// Normalize storage folder path
-		storageFolder = PathHelper.AddBackslash(storageFolder);
+		var storageFolder = PathHelper.AddBackslash(_appSettings.StorageFolder);
 
 		foreach ( var filePath in fullFilePaths )
 		{
@@ -351,15 +343,18 @@ public class ExportService : IExport
 			}
 
 			// Get the relative part after the storage folder
-			if ( filePath.StartsWith(storageFolder, StringComparison.OrdinalIgnoreCase) )
+			if ( !filePath.StartsWith(storageFolder, StringComparison.OrdinalIgnoreCase) )
 			{
-				var relativePart = filePath.Substring(storageFolder.Length);
-				// If there's a directory separator in the relative part, we have subfolders
-				if ( relativePart.Contains(Path.DirectorySeparatorChar) ||
-				     relativePart.Contains(Path.AltDirectorySeparatorChar) )
-				{
-					return true;
-				}
+				continue;
+			}
+
+			var relativePart = filePath[storageFolder.Length..];
+
+			// If there's a directory separator in the relative part, we have subfolders
+			if ( relativePart.Contains(Path.DirectorySeparatorChar) ||
+			     relativePart.Contains(Path.AltDirectorySeparatorChar) )
+			{
+				return true;
 			}
 		}
 
@@ -371,14 +366,12 @@ public class ExportService : IExport
 	/// </summary>
 	private string GetRelativePathFromStorage(string fullFilePath)
 	{
-		var storageFolder = _appSettings.StorageFolder;
-		if ( string.IsNullOrEmpty(storageFolder) || string.IsNullOrEmpty(fullFilePath) )
+		if ( string.IsNullOrEmpty(fullFilePath) )
 		{
 			return Path.GetFileName(fullFilePath);
 		}
 
-		// Normalize storage folder path
-		storageFolder = PathHelper.AddBackslash(storageFolder);
+		var storageFolder = PathHelper.AddBackslash(_appSettings.StorageFolder);
 
 		// If the file path starts with storage folder, get the relative part
 		if ( !fullFilePath.StartsWith(storageFolder, StringComparison.OrdinalIgnoreCase) )
@@ -388,29 +381,29 @@ public class ExportService : IExport
 		}
 
 		// Get relative path and convert to Unix style (forward slashes)
-		var relativePath = fullFilePath.Substring(storageFolder.Length);
+		var relativePath = fullFilePath[storageFolder.Length..];
 		return relativePath.Replace(Path.DirectorySeparatorChar, '/')
 			.Replace(Path.AltDirectorySeparatorChar, '/');
 	}
 
 	/// <summary>
 	///     Find the common ancestor directory path for all files in Unix style paths
-	///     For example:
+	///     For example.
 	///     - ["2025/06/2025_06_18/image.jpg", "2025/06/2025_06_14/image.jpg"] -> "2025/06"
 	///     - ["2025/06/file1.jpg", "2025/07/file2.jpg"] -> "2025"
 	///     - ["2026/06/file1.jpg", "2025/06/file2.jpg"] -> ""
 	/// </summary>
 	private static string FindCommonAncestorPath(List<string> unixStylePaths)
 	{
-		if ( unixStylePaths.Count == 0 )
+		switch (unixStylePaths.Count)
 		{
-			return string.Empty;
-		}
-
-		if ( unixStylePaths.Count == 1 )
-		{
-			var lastSlash = unixStylePaths[0].LastIndexOf('/');
-			return lastSlash > 0 ? unixStylePaths[0].Substring(0, lastSlash) : string.Empty;
+			case 0:
+				return string.Empty;
+			case 1:
+			{
+				var lastSlash = unixStylePaths[0].LastIndexOf('/');
+				return lastSlash > 0 ? unixStylePaths[0].Substring(0, lastSlash) : string.Empty;
+			}
 		}
 
 		// Split all paths into parts
@@ -419,7 +412,7 @@ public class ExportService : IExport
 		// Find the depth of the shallowest path (minimum number of directory levels)
 		var minDepth = allParts.Min(parts => parts.Length - 1); // -1 for filename
 
-		// Find common ancestor by comparing parts level by level
+		// Find common ancestor by comparing parts a level by level
 		var commonParts = new List<string>();
 		for ( var i = 0; i < minDepth; i++ )
 		{
