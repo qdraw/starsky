@@ -49,7 +49,7 @@ public sealed class DeleteControllerTest
 		var options = builderDb.Options;
 		var context = new ApplicationDbContext(options);
 		_query = new Query(context,
-			new AppSettings(), null, new FakeIWebLogger(), memoryCache);
+			new AppSettings(), new FakeIServiceScopeFactory(), new FakeIWebLogger(), memoryCache);
 
 		// Inject Fake ExifTool; dependency injection
 		var services = new ServiceCollection();

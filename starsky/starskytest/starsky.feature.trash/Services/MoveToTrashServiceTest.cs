@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +23,6 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starskytest.FakeMocks;
-using System.Text.Json;
 
 namespace starskytest.starsky.feature.trash.Services;
 
@@ -96,7 +96,7 @@ public class MoveToTrashServiceTest
 			new FakeITrashConnectionService());
 
 		await moveToTrashService.CreateEvent([dirPath], true);
-		
+
 		var scope = scopeFactory.CreateScope();
 		var trashService2 = scope.ServiceProvider.GetService<ITrashService>() as FakeITrashService;
 		Assert.IsNotNull(trashService2);
@@ -227,7 +227,7 @@ public class MoveToTrashServiceTest
 		var serviceCollection =
 			new ServiceCollection().AddScoped(_ => new ApplicationDbContext(options));
 		var serviceScopeFactory =
-			serviceCollection.BuildServiceProvider().GetService<IServiceScopeFactory>();
+			serviceCollection.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
 
 		var storage = new FakeIStorage(
 			["/", "/test"],
@@ -284,7 +284,7 @@ public class MoveToTrashServiceTest
 		var serviceCollection =
 			new ServiceCollection().AddScoped(_ => new ApplicationDbContext(options));
 		var serviceScopeFactory =
-			serviceCollection.BuildServiceProvider().GetService<IServiceScopeFactory>();
+			serviceCollection.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
 
 		var storage = new FakeIStorage(
 			["/", "/test"],
@@ -339,7 +339,7 @@ public class MoveToTrashServiceTest
 			trashService, new FakeIMetaUpdateService(),
 			new FakeITrashConnectionService());
 
-		// used for end2end test to enable / disable the trash
+		// used for end-to-end test to enable / disable the trash
 		var result = moveToTrashService.DetectToUseSystemTrash();
 
 		Assert.IsFalse(result);
@@ -372,8 +372,7 @@ public class MoveToTrashServiceTest
 		const string path = "/trash/payload.jpg";
 		var appSettings = new AppSettings
 		{
-			UseSystemTrash = true,
-			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			UseSystemTrash = true, DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 		};
 
 		var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
@@ -384,7 +383,7 @@ public class MoveToTrashServiceTest
 		var serviceCollection =
 			new ServiceCollection().AddScoped(_ => new ApplicationDbContext(options));
 		var serviceScopeFactory =
-			serviceCollection.BuildServiceProvider().GetService<IServiceScopeFactory>();
+			serviceCollection.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
 
 		var query = new Query(dbContext, appSettings, serviceScopeFactory,
 			new FakeIWebLogger());
@@ -421,7 +420,9 @@ public class MoveToTrashServiceTest
 		if ( isSystem )
 		{
 			// prepare a fake DB row so SystemTrashInQueue will remove it
-			var fakeQuery = new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]);
+			var fakeQuery = new FakeIQuery([
+				new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }
+			]);
 			var trashService = new FakeITrashService();
 			var sut = new MoveToTrashService(appSettings, fakeQuery,
 				new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
@@ -429,10 +430,12 @@ public class MoveToTrashServiceTest
 
 			var payload = new MoveToTrashPayload
 			{
-				MoveToTrashList = [new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
+				MoveToTrashList =
+					[new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
 				IsSystemTrashEnabled = true,
 				ChangedFileIndexItemName = new Dictionary<string, List<string>>(),
-				FileIndexResultsList = [new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
+				FileIndexResultsList =
+					[new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
 				InputModel = new FileIndexItem(),
 				Collections = false
 			};
@@ -441,7 +444,8 @@ public class MoveToTrashServiceTest
 
 			// system trash should have been called and DB row removed
 			Assert.HasCount(1, trashService.InTrash);
-			var expected = appSettings.StorageFolder + path.Replace('/', Path.DirectorySeparatorChar);
+			var expected = appSettings.StorageFolder +
+			               path.Replace('/', Path.DirectorySeparatorChar);
 			Assert.AreEqual(expected, trashService.InTrash.FirstOrDefault());
 
 			var removed = await fakeQuery.GetObjectByFilePathAsync(path);
@@ -449,7 +453,9 @@ public class MoveToTrashServiceTest
 		}
 		else
 		{
-			var fakeQuery = new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]);
+			var fakeQuery = new FakeIQuery([
+				new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }
+			]);
 			var fakeMetaUpdate = new FakeIMetaUpdateService();
 			var trashService = new FakeITrashService();
 			var sut = new MoveToTrashService(appSettings, fakeQuery,
@@ -458,10 +464,12 @@ public class MoveToTrashServiceTest
 
 			var payload = new MoveToTrashPayload
 			{
-				MoveToTrashList = [new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
+				MoveToTrashList =
+					[new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
 				IsSystemTrashEnabled = false,
 				ChangedFileIndexItemName = new Dictionary<string, List<string>>(),
-				FileIndexResultsList = [new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
+				FileIndexResultsList =
+					[new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }],
 				InputModel = new FileIndexItem(),
 				Collections = false
 			};
