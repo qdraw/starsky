@@ -37,7 +37,8 @@ public sealed class ThumbnailCleanerTest
 		builder.UseInMemoryDatabase(nameof(ThumbnailCleanerTest));
 		var options = builder.Options;
 		var context = new ApplicationDbContext(options);
-		_query = new Query(context, new AppSettings(), null, null!, memoryCache);
+		_query = new Query(context, new AppSettings(),
+			null!, null!, memoryCache);
 		_imageFormat = new AppSettings().ThumbnailImageFormat;
 	}
 

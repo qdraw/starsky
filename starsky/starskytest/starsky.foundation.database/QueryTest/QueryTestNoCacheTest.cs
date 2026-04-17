@@ -26,7 +26,8 @@ public sealed class QueryTestNoCacheTest
 		var options = builder.Options;
 		var context = new ApplicationDbContext(options);
 		var logger = new FakeIWebLogger();
-		_query = new Query(context, new AppSettings(), null, logger);
+		_query = new Query(context, new AppSettings(),
+			null!, logger);
 	}
 
 	[TestMethod]

@@ -42,7 +42,7 @@ public sealed class DownloadPhotoControllerTest
 		builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
 		var options = builderDb.Options;
 		var context = new ApplicationDbContext(options);
-		var scopeFactory = provider.GetService<IServiceScopeFactory>();
+		var scopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
 		_query = new Query(context, new AppSettings(), scopeFactory, new FakeIWebLogger(),
 			memoryCache);
 	}

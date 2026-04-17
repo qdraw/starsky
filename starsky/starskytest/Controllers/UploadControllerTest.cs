@@ -14,10 +14,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.foundation.import.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.import.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
@@ -48,7 +48,7 @@ public sealed class UploadControllerTest
 		builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
 		var options = builderDb.Options;
 		var context = new ApplicationDbContext(options);
-		var scopeFactory = provider.GetService<IServiceScopeFactory>();
+		var scopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
 		var services = new ServiceCollection();
 
 		// Fake the readMeta output
