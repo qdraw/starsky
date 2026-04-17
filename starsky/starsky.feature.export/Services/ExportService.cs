@@ -391,8 +391,8 @@ public class ExportService : IExport
 		// If the file path starts with storage folder, get the relative part
 		if ( !fullFilePath.StartsWith(storageFolder, StringComparison.OrdinalIgnoreCase) )
 		{
-			// Fallback to just the filename if we can't determine relative path
-			return PathHelper.GetFileName(fullFilePath);
+			// this should handle both / and \ style paths
+			return Path.GetFileName(fullFilePath);
 		}
 
 		// Get relative path and convert to Unix style (forward slashes)
