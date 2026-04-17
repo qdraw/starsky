@@ -315,7 +315,7 @@ public class ExportService : IExport
 	[SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
 	private static List<string> FindCommonAncestor(bool hasSubFolders, List<string> fileNames)
 	{
-		if ( !hasSubFolders || !fileNames.Any(f => f.Contains('/')) )
+		if ( !hasSubFolders || !fileNames.Any(f => f.Contains('/') || f.Contains('\\')) )
 		{
 			return fileNames;
 		}
