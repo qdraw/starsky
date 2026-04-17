@@ -44,6 +44,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.7.16 - _(Unreleased)_ - 2026-?-? {#v0.7.16}
 
 - [x] (Fixed) _Back-end_ InjectServiceScope utility provides Execute and ExecuteAsync (PR #2921)
+- [x] (Added) _Back-end_ Export/Download Zipper export directory structure (PR #2833 Issue #81)
 
 ## version 0.7.15 - 2026-04-15 {#v0.7.15}
 
