@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -301,22 +302,36 @@ public class ExportService : IExport
 			}
 		}
 
-		// If subfolders exist, find common ancestor and strip it from all paths
-		if ( hasSubFolders && fileNames.Any(f => f.Contains('/')) )
-		{
-			var commonAncestor = FindCommonAncestorPath(fileNames);
-			if ( !string.IsNullOrEmpty(commonAncestor) )
-			{
-				fileNames = fileNames.Select(f =>
-				{
-					if ( f.StartsWith(commonAncestor + "/", StringComparison.OrdinalIgnoreCase) )
-					{
-						return f[(commonAncestor.Length + 1)..];
-					}
+		fileNames = FindCommonAncestor(hasSubFolders, fileNames);
+		return fileNames;
+	}
 
-					return f;
-				}).ToList();
-			}
+	/// <summary>
+	///     If subfolders exist, find common ancestor and strip it from all paths
+	/// </summary>
+	/// <param name="hasSubFolders">return direct if no subfolders</param>
+	/// <param name="fileNames">list of filenames</param>
+	/// <returns></returns>
+	[SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
+	private static List<string> FindCommonAncestor(bool hasSubFolders, List<string> fileNames)
+	{
+		if ( !hasSubFolders || !fileNames.Any(f => f.Contains('/')) )
+		{
+			return fileNames;
+		}
+
+		var commonAncestor = FindCommonAncestorPath(fileNames);
+		if ( !string.IsNullOrEmpty(commonAncestor) )
+		{
+			fileNames = fileNames.Select(f =>
+			{
+				if ( f.StartsWith(commonAncestor + "/", StringComparison.OrdinalIgnoreCase) )
+				{
+					return f[( commonAncestor.Length + 1 )..];
+				}
+
+				return f;
+			}).ToList();
 		}
 
 		return fileNames;
@@ -395,7 +410,7 @@ public class ExportService : IExport
 	/// </summary>
 	private static string FindCommonAncestorPath(List<string> unixStylePaths)
 	{
-		switch (unixStylePaths.Count)
+		switch ( unixStylePaths.Count )
 		{
 			case 0:
 				return string.Empty;
