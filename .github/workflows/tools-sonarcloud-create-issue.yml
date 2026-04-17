@@ -1,4 +1,4 @@
-name: SonarCloud Create Issue
+name: Tools SonarCloud Create Issue
 
 on:
   schedule:
