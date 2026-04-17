@@ -364,7 +364,7 @@ public class ExportServicePreserveSubfolderTest
 	public async Task FilePathToFileNameAsync_CommonAncestorSingleLevel_StripsSingleLevel()
 	{
 		// Arrange
-		const string storageFolder = @"C:\data\testcontent\";
+		var storageFolder = Path.Combine("C:", "data", "testcontent");
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
@@ -394,7 +394,7 @@ public class ExportServicePreserveSubfolderTest
 	public async Task FilePathToFileNameAsync_CommonAncestorTwoLevels_StripsOneLevel()
 	{
 		// Arrange
-		const string storageFolder = @"C:\data\testcontent\";
+		var storageFolder = Path.Combine("C:", "data", "testcontent");
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
@@ -426,7 +426,7 @@ public class ExportServicePreserveSubfolderTest
 	public async Task FilePathToFileNameAsync_NoCommonAncestor_KeepsFullPaths()
 	{
 		// Arrange
-		const string storageFolder = @"C:\data\testcontent\";
+		var storageFolder = Path.Combine("C:", "data", "testcontent");
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
