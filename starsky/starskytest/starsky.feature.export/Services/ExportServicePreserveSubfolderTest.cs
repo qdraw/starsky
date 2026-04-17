@@ -503,4 +503,20 @@ public class ExportServicePreserveSubfolderTest
 		Assert.AreEqual("2022/file.jpg", fileNames[0]);
 		Assert.AreEqual("file2.jpg", fileNames[1]);
 	}
+
+	[TestMethod]
+	public void FindCommonAncestorPath_NoContent()
+	{
+		Assert.IsEmpty(ExportService.FindCommonAncestorPath([]));
+	}
+	
+	[TestMethod]
+	public void GetRelativePathFromStorage_NoContent()
+	{
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { StorageFolder = string.Empty },
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+
+		Assert.IsEmpty(exportService.GetRelativePathFromStorage(null!));
+	}
 }

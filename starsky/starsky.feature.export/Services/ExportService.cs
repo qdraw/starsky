@@ -379,7 +379,7 @@ public class ExportService : IExport
 	/// <summary>
 	///     Get the relative path from the storage folder in Unix style (forward slashes)
 	/// </summary>
-	private string GetRelativePathFromStorage(string fullFilePath)
+	internal string GetRelativePathFromStorage(string fullFilePath)
 	{
 		if ( string.IsNullOrEmpty(fullFilePath) )
 		{
@@ -408,7 +408,7 @@ public class ExportService : IExport
 	///     - ["2025/06/file1.jpg", "2025/07/file2.jpg"] -> "2025"
 	///     - ["2026/06/file1.jpg", "2025/06/file2.jpg"] -> ""
 	/// </summary>
-	private static string FindCommonAncestorPath(List<string> unixStylePaths)
+	internal static string FindCommonAncestorPath(List<string> unixStylePaths)
 	{
 		switch ( unixStylePaths.Count )
 		{
