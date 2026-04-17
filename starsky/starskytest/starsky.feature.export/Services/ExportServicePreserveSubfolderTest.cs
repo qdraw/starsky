@@ -447,4 +447,37 @@ public class ExportServicePreserveSubfolderTest
 		Assert.AreEqual("2025/06/2025_06_14/image.jpg", fileNames[1]);
 		Assert.AreEqual("2025/07/2025_06_14/image.jpg", fileNames[2]);
 	}
+
+	/// <summary>
+	///     Test case: include a directory path (no filename) plus files inside that directory.
+	///     The directory entry itself should NOT be trimmed by the common ancestor logic
+	///     (it does not start with commonAncestor + "/"), while the child files should be trimmed.
+	/// </summary>
+	[TestMethod]
+	public async Task FilePathToFileNameAsync_DirectoryAndFiles_DirectoryRemainsUnchanged()
+	{
+		// Arrange
+		var storageFolder = Path.Combine("C:", "data", "testcontent");
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { StorageFolder = storageFolder },
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+
+		var filePaths = new List<string>
+		{
+			Path.Combine(storageFolder, "2025", "06", "2025_06_18"),
+			Path.Combine(storageFolder, "2025", "06", "2025_06_18", "image.jpg"),
+			Path.Combine(storageFolder, "2025", "06", "2025_06_18", "image2.jpg")
+		};
+
+		// Act
+		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
+
+		// Assert
+		Assert.HasCount(3, fileNames);
+		// The directory entry itself should remain unchanged (no trailing slash present)
+		Assert.AreEqual("2025/06/2025_06_18", fileNames[0]);
+		// Child files should be trimmed to filenames
+		Assert.AreEqual("image.jpg", fileNames[1]);
+		Assert.AreEqual("image2.jpg", fileNames[2]);
+	}
 }

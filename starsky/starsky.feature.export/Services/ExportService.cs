@@ -383,7 +383,7 @@ public class ExportService : IExport
 	{
 		if ( string.IsNullOrEmpty(fullFilePath) )
 		{
-			return PathHelper.GetFileName(fullFilePath);
+			return string.Empty;
 		}
 
 		var storageFolder = PathHelper.AddBackslash(_appSettings.StorageFolder);
