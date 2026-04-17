@@ -480,4 +480,60 @@ public class ExportServicePreserveSubfolderTest
 		Assert.AreEqual("image.jpg", fileNames[1]);
 		Assert.AreEqual("image2.jpg", fileNames[2]);
 	}
+
+	/// <summary>
+	///     Test GetRelativePathFromStorage when an input path is empty string.
+	///     The method should return an empty string for that entry.
+	/// </summary>
+	[TestMethod]
+	public async Task FilePathToFileNameAsync_EmptyFullFilePath_ReturnsEmptyStringEntry()
+	{
+		// Arrange
+		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { StorageFolder = storageFolder },
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+
+		var filePaths = new List<string>
+		{
+			Path.Combine("C:", "data", "testcontent", "2022", "file.jpg"),
+			""
+		};
+
+		// Act
+		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
+
+		// Assert
+		Assert.HasCount(2, fileNames);
+		Assert.AreEqual("2022/file.jpg", fileNames[0]);
+		Assert.AreEqual(string.Empty, fileNames[1]);
+	}
+
+	/// <summary>
+	///     Test GetRelativePathFromStorage when a path does not start with storageFolder.
+	///     The method should fall back to PathHelper.GetFileName(fullFilePath).
+	/// </summary>
+	[TestMethod]
+	public async Task FilePathToFileNameAsync_NonStoragePath_ReturnsFileNameOnly()
+	{
+		// Arrange
+		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { StorageFolder = storageFolder },
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+
+		var filePaths = new List<string>
+		{
+			Path.Combine(storageFolder, "2022", "file.jpg"),
+			Path.Combine("D:", "other", "file2.jpg")
+		};
+
+		// Act
+		var fileNames = await exportService.FilePathToFileNameAsync(filePaths, false);
+
+		// Assert
+		Assert.HasCount(2, fileNames);
+		Assert.AreEqual("2022/file.jpg", fileNames[0]);
+		Assert.AreEqual("file2.jpg", fileNames[1]);
+	}
 }
