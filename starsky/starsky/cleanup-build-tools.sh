@@ -178,7 +178,7 @@ then
         
         cd $ROOT_REPO_DIR"/starsky-tools/end2end"
         echo "next: re-install cypress"
-        npm ci
+        npm ci --ignore-scripts
     else
         echo "Skip: remove cypress cache. There is only 1 folder in the cypress cache, skip remove"
     fi
