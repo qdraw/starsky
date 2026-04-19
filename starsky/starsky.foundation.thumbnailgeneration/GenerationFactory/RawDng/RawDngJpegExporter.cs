@@ -19,10 +19,9 @@ internal static class RawDngJpegExporter
 			using var image = new Image<Rgb24>(w, h);
 			for ( var y = 0; y < h; y++ )
 			{
-				var row = image.GetPixelRowSpan(y);
 				for ( var x = 0; x < w; x++ )
 				{
-					row[x] = new Rgb24(
+					image[x, y] = new Rgb24(
 						ToByte(displayRgb[y, x, 0]),
 						ToByte(displayRgb[y, x, 1]),
 						ToByte(displayRgb[y, x, 2]));
@@ -46,4 +45,3 @@ internal static class RawDngJpegExporter
 		return ( byte ) ( v * 255f + 0.5f );
 	}
 }
-

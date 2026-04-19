@@ -27,18 +27,16 @@ internal static class RawDngPipelineRunner
 		Action<RawDngPipelineStep>? onStep = null, Action<byte[,]>? onRawDebug = null)
 	{
 		error = string.Empty;
-		if ( !TryRun(input, out var state, out error, onStep, onRawDebug) ||
-		     state?.DisplayRgb == null )
+		if ( TryRun(input, out var state, out error, onStep, onRawDebug) &&
+		     state?.DisplayRgb != null )
 		{
-			if ( string.IsNullOrEmpty(error) )
-			{
-				error = "No display RGB output available";
-			}
-
-			return false;
+			return RawDngJpegExporter.TryWriteDisplayRgbAsJpeg(state.DisplayRgb, output, out error);
 		}
 
-		return RawDngJpegExporter.TryWriteDisplayRgbAsJpeg(state.DisplayRgb, output, out error);
+		error = string.IsNullOrEmpty(error)
+			? "No display RGB output available"
+			: error;
+		return false;
 	}
 }
 

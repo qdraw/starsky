@@ -77,6 +77,33 @@ public class RawDngPipelineRunnerTests
 		Assert.AreEqual(( byte ) 0xD8, bytes[1]);
 	}
 
+	[TestMethod]
+	public void TryRunToJpeg_WhenSubsetReaderFails_FallsBackToContainerJpeg()
+	{
+		var data = new byte[6000];
+		for ( var i = 0; i < data.Length; i++ )
+		{
+			data[i] = 0x00;
+		}
+
+		// Minimal JPEG payload embedded in arbitrary bytes.
+		data[100] = 0xFF;
+		data[101] = 0xD8;
+		data[102] = 0xFF;
+		data[5800] = 0xFF;
+		data[5801] = 0xD9;
+
+		using var input = new MemoryStream(data);
+		using var output = new MemoryStream();
+		var ok = RawDngPipelineRunner.TryRunToJpeg(input, output, out var error);
+
+		Assert.IsTrue(ok, error);
+		Assert.IsGreaterThan(8, output.Length);
+		var bytes = output.ToArray();
+		Assert.AreEqual(( byte ) 0xFF, bytes[0]);
+		Assert.AreEqual(( byte ) 0xD8, bytes[1]);
+	}
+
 	private static MemoryStream BuildMinimalDng()
 	{
 		var data = new byte[384];
