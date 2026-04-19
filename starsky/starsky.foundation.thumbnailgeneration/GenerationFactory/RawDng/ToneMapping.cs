@@ -51,6 +51,7 @@ internal static class ToneMapping
 		}
 
 		// Step 2: gamma-encode the tone-mapped result
+		// The tone curve should have already compressed highlights naturally
 		var value = ( float ) Math.Pow(Math.Max(mapped, 0f), invGamma);
 		return Math.Clamp(value, 0f, 1f);
 	}
@@ -62,8 +63,9 @@ internal static class ToneMapping
 	private static float HableNormalized(float x)
 	{
 		// White point: scene-linear value that should map to display white.
-		// 4.0 works well for typical RAW input after +1.5 EV compensation.
-		const float w = 4.0f;
+		// After +1.5 EV boost, typical RAW values are in 0–4 range.
+		// We use 2.0 as white point for proper mid-tone expansion.
+		const float w = 2.0f;
 		var tw = HableF(w);
 		if ( tw <= 0f )
 		{

@@ -28,15 +28,13 @@ internal static class RawDngPhase3Pipeline
 {
 	internal static RawDngPipelineState Run(DngRawImage raw)
 	{
-		return Run(raw, null, null);
+		return Run(raw, null);
 	}
 
 	internal static RawDngPipelineState Run(DngRawImage raw,
-		Action<RawDngPipelineStep>? onStep,
-		Action<byte[,]>? onRawDebug)
+		Action<RawDngPipelineStep>? onStep)
 	{
 		onStep?.Invoke(RawDngPipelineStep.DumpRawGrayscaleImage);
-		onRawDebug?.Invoke(RawDebugView.CreateRawGrayscale(raw));
 
 		var initial = new RawDngPipelineState { Raw = raw };
 
@@ -46,13 +44,13 @@ internal static class RawDngPhase3Pipeline
 				ExecuteStep(state, Demosaic, onStep, RawDngPipelineStep.BilinearDemosaic))
 			.Add(state =>
 				ExecuteStep(state, ApplyWhiteBalance, onStep, RawDngPipelineStep.WhiteBalance))
-		.Add(state =>
-			ExecuteStep(state, ApplyColorMatrix, onStep, RawDngPipelineStep.ColorMatrix))
-		.Add(state =>
-			ExecuteStep(state, ApplyExposureCompensation, onStep,
-				RawDngPipelineStep.ExposureCompensation))
-		.Add(state =>
-			ExecuteStep(state, ApplyToneMapping, onStep, RawDngPipelineStep.ToneCurve));
+			.Add(state =>
+				ExecuteStep(state, ApplyColorMatrix, onStep, RawDngPipelineStep.ColorMatrix))
+			.Add(state =>
+				ExecuteStep(state, ApplyExposureCompensation, onStep,
+					RawDngPipelineStep.ExposureCompensation))
+			.Add(state =>
+				ExecuteStep(state, ApplyToneMapping, onStep, RawDngPipelineStep.ToneCurve));
 
 		return pipeline.Run(initial);
 	}
@@ -69,7 +67,7 @@ internal static class RawDngPhase3Pipeline
 	private static RawDngPipelineState Normalize(RawDngPipelineState state)
 	{
 		var normalized = RawNormalization.NormalizeBayerToLinear(state.Raw.Bayer,
-			state.Raw.BlackLevel, state.Raw.WhiteLevel);
+			state.Raw.BlackLevel, state.Raw.WhiteLevel, state.Raw.CfaPattern);
 		return new RawDngPipelineState
 		{
 			Raw = state.Raw,
@@ -149,10 +147,9 @@ internal static class RawDngPhase3Pipeline
 			return state;
 		}
 
-		// RAW images are intentionally underexposed. Apply +1.5 EV exposure boost
-		// so that the Hable tone curve has appropriately-bright input values.
-		const float exposureEv = 1.5f;
-		var gain = MathF.Pow(2f, exposureEv);
+		// dcraw/libraw style auto-bright: scale by a high luminance percentile so
+		// most images are neither too dark nor clipped, without camera-specific tuning.
+		var gain = ComputeAutoExposureGain(state.LinearRgb);
 		var h = state.LinearRgb.GetLength(0);
 		var w = state.LinearRgb.GetLength(1);
 		for ( var y = 0; y < h; y++ )
@@ -166,6 +163,38 @@ internal static class RawDngPhase3Pipeline
 		}
 
 		return state;
+	}
+
+	private static float ComputeAutoExposureGain(float[,,] linearRgb)
+	{
+		var h = linearRgb.GetLength(0);
+		var w = linearRgb.GetLength(1);
+		var luminance = new float[h * w];
+		var i = 0;
+		for ( var y = 0; y < h; y++ )
+		{
+			for ( var x = 0; x < w; x++ )
+			{
+				var r = linearRgb[y, x, 0];
+				var g = linearRgb[y, x, 1];
+				var b = linearRgb[y, x, 2];
+				luminance[i++] = 0.2126f * r + 0.7152f * g + 0.0722f * b;
+			}
+		}
+
+		Array.Sort(luminance);
+		if ( luminance.Length == 0 )
+		{
+			return 1f;
+		}
+
+		var p99Index = ( int ) ( ( luminance.Length - 1 ) * 0.99f );
+		var p99 = Math.Max(1e-6f, luminance[p99Index]);
+		const float target = 0.85f;
+		var gain = target / p99;
+
+		// Keep gain in a sane range to avoid extreme pumping on unusual frames.
+		return Math.Clamp(gain, 0.5f, 6.0f);
 	}
 
 	private static RawDngPipelineState ApplyToneMapping(RawDngPipelineState state)

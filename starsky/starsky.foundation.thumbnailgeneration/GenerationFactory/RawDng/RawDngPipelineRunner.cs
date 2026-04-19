@@ -18,8 +18,7 @@ internal static class RawDngPipelineRunner
 		}
 
 		state = RawDngPhase3Pipeline.Run(raw,
-			onStep != null ? step => onStep(step) : null,
-			onRawDebug != null ? debug => onRawDebug(debug) : null);
+			onStep != null ? step => onStep(step) : null);
 		return true;
 	}
 

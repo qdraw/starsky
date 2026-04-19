@@ -16,8 +16,8 @@ public class RawDngPipelineRunnerTests
 			Width = 2,
 			Height = 2,
 			BitsPerSample = 16,
-			BlackLevel = 0f,
-			WhiteLevel = 1024f,
+			BlackLevel = new[] { 0f, 0f, 0f, 0f },
+			WhiteLevel = new[] { 1024f, 1024f, 1024f, 1024f },
 			AsShotNeutral = [1f, 1f, 1f],
 			ColorMatrix1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
 			CfaPattern = [0, 1, 1, 2],
@@ -29,8 +29,7 @@ public class RawDngPipelineRunnerTests
 		};
 
 		var steps = new List<RawDngPipelineStep>();
-		byte[,]? debug = null;
-		var state = RawDngPhase3Pipeline.Run(raw, steps.Add, g => debug = g);
+		var state = RawDngPhase3Pipeline.Run(raw, steps.Add);
 
 		CollectionAssert.AreEqual(new[]
 		{
@@ -39,11 +38,9 @@ public class RawDngPipelineRunnerTests
 			RawDngPipelineStep.BilinearDemosaic,
 			RawDngPipelineStep.WhiteBalance,
 			RawDngPipelineStep.ColorMatrix,
+			RawDngPipelineStep.ExposureCompensation,
 			RawDngPipelineStep.ToneCurve
 		}, steps);
-		Assert.IsNotNull(debug);
-		Assert.AreEqual(2, debug.GetLength(0));
-		Assert.AreEqual(2, debug.GetLength(1));
 		Assert.IsNotNull(state.DisplayRgb);
 	}
 

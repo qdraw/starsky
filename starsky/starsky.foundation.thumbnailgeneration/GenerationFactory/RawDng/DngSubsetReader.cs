@@ -16,8 +16,8 @@ internal sealed class DngRawImage
 	public required int Width { get; init; }
 	public required int Height { get; init; }
 	public required int BitsPerSample { get; init; }
-	public required float BlackLevel { get; init; }
-	public required float WhiteLevel { get; init; }
+	public required float[] BlackLevel { get; init; } // Per-channel black levels (up to 4 values for CFA channels)
+	public required float[] WhiteLevel { get; init; } // Per-channel white levels (up to 4 values for CFA channels)
 	public required float[] AsShotNeutral { get; init; }
 	public required float[,] ColorMatrix1 { get; init; }
 	public required byte[] CfaPattern { get; init; }
@@ -87,7 +87,7 @@ internal static class DngSubsetReader
 		}
 
 		var rawIfd = ResolveRawIfd(input, littleEndian, ifd0) ?? ifd0;
-		if ( !TryBuildRawImage(input, littleEndian, rawIfd, out image, out error) )
+		if ( !TryBuildRawImage(input, littleEndian, rawIfd, ifd0, out image, out error) )
 		{
 			return false;
 		}
@@ -343,6 +343,7 @@ internal static class DngSubsetReader
 	}
 
 	private static bool TryBuildRawImage(Stream input, bool littleEndian, IfdDirectory ifd,
+		IfdDirectory ifd0,
 		out DngRawImage? image, out string error)
 	{
 		image = null;
@@ -474,20 +475,33 @@ internal static class DngSubsetReader
 			}
 		}
 
-		var blackLevel = TryGetFloat(input, littleEndian, ifd, TagBlackLevel, out var black)
-			? black
-			: 0f;
-		var whiteLevel = TryGetFloat(input, littleEndian, ifd, TagWhiteLevel, out var white)
-			? white
-			: ( ( 1 << Math.Min(16, bitsPerSample) ) - 1 );
+		// Per-channel black levels (DNG spec allows array for CFA channels)
+		var blackLevels = TryGetFloatArray(input, littleEndian, ifd, TagBlackLevel, out var blacks)
+			&& blacks.Length > 0
+			? blacks
+			: [0f, 0f, 0f, 0f];
+		
+		// Per-channel white levels (DNG spec allows array for CFA channels)
+		var defaultWhiteLevel = ( float ) ( ( 1 << Math.Min(16, bitsPerSample) ) - 1 );
+		var whiteLevels = TryGetFloatArray(input, littleEndian, ifd, TagWhiteLevel, out var whites)
+			&& whites.Length > 0
+			? whites
+			: [defaultWhiteLevel, defaultWhiteLevel, defaultWhiteLevel, defaultWhiteLevel];
+		
 		var asShotNeutral = TryGetFloatArray(input, littleEndian, ifd, TagAsShotNeutral,
-			out var neutral) && neutral.Length >= 3
-			? neutral.Take(3).ToArray()
-			: [1f, 1f, 1f];
+			out var neutralRaw) && neutralRaw.Length >= 3
+			? neutralRaw.Take(3).ToArray()
+			: TryGetFloatArray(input, littleEndian, ifd0, TagAsShotNeutral, out var neutral0) &&
+			  neutral0.Length >= 3
+				? neutral0.Take(3).ToArray()
+				: [1f, 1f, 1f];
 		var colorMatrix = TryGetFloatArray(input, littleEndian, ifd, TagColorMatrix1,
-			out var matrixValues) && matrixValues.Length >= 9
-			? To3x3(matrixValues)
-			: Identity3x3();
+			out var matrixValuesRaw) && matrixValuesRaw.Length >= 9
+			? To3x3(matrixValuesRaw)
+			: TryGetFloatArray(input, littleEndian, ifd0, TagColorMatrix1, out var matrixValues0) &&
+			  matrixValues0.Length >= 9
+				? To3x3(matrixValues0)
+				: Identity3x3();
 		var cfaPattern = TryGetByteArray(input, littleEndian, ifd, TagCfaPattern, out var cfa) &&
 		                 cfa.Length >= 4
 			? cfa.Take(4).ToArray()
@@ -499,8 +513,8 @@ internal static class DngSubsetReader
 			Width = width,
 			Height = height,
 			BitsPerSample = bitsPerSample,
-			BlackLevel = blackLevel,
-			WhiteLevel = whiteLevel,
+			BlackLevel = blackLevels,
+			WhiteLevel = whiteLevels,
 			AsShotNeutral = asShotNeutral,
 			ColorMatrix1 = colorMatrix,
 			CfaPattern = cfaPattern

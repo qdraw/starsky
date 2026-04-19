@@ -20,8 +20,11 @@ public class DngSubsetReaderTests
 		Assert.AreEqual(2, image.Width);
 		Assert.AreEqual(2, image.Height);
 		Assert.AreEqual(16, image.BitsPerSample);
-		Assert.AreEqual(64f, image.BlackLevel);
-		Assert.AreEqual(1023f, image.WhiteLevel);
+		// BlackLevel and WhiteLevel are now arrays
+		Assert.IsTrue(image.BlackLevel.Length >= 1);
+		Assert.AreEqual(64f, image.BlackLevel[0]);
+		Assert.IsTrue(image.WhiteLevel.Length >= 1);
+		Assert.AreEqual(1023f, image.WhiteLevel[0]);
 		CollectionAssert.AreEqual(new byte[] { 0, 1, 1, 2 }, image.CfaPattern);
 		Assert.AreEqual(( ushort ) 100, image.Bayer[0, 0]);
 		Assert.AreEqual(( ushort ) 200, image.Bayer[0, 1]);

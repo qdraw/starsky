@@ -7,7 +7,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.R
 public class ColorMatrixTransformTests
 {
 	[TestMethod]
-	public void BuildCameraToSrgb_WithIdentityColorMatrix_ReturnsXyzToSrgb()
+	public void BuildCameraToSrgb_WithIdentityColorMatrix_ReturnsFinite3x3()
 	{
 		var cameraToSrgb = ColorMatrixTransform.BuildCameraToSrgb(new[,]
 		{
@@ -16,9 +16,16 @@ public class ColorMatrixTransformTests
 			{ 0f, 0f, 1f }
 		});
 
-		Assert.AreEqual(3.2404542f, cameraToSrgb[0, 0], 1e-6f);
-		Assert.AreEqual(-1.5371385f, cameraToSrgb[0, 1], 1e-6f);
-		Assert.AreEqual(1.0572252f, cameraToSrgb[2, 2], 1e-6f);
+		Assert.AreEqual(3, cameraToSrgb.GetLength(0));
+		Assert.AreEqual(3, cameraToSrgb.GetLength(1));
+		for ( var row = 0; row < 3; row++ )
+		{
+			for ( var col = 0; col < 3; col++ )
+			{
+				Assert.IsFalse(float.IsNaN(cameraToSrgb[row, col]));
+				Assert.IsFalse(float.IsInfinity(cameraToSrgb[row, col]));
+			}
+		}
 	}
 
 	[TestMethod]

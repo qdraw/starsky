@@ -12,6 +12,15 @@ internal static class ColorMatrixTransform
 		{ 0.0556434f, -0.2040259f, 1.0572252f }
 	};
 
+	// Bradford adaptation matrix from XYZ D50 to XYZ D65.
+	// DNG ColorMatrix tags are specified against D50-referenced XYZ.
+	private static readonly float[,] XyzD50ToD65 =
+	{
+		{ 0.9555766f, -0.0230393f, 0.0631636f },
+		{ -0.0282895f, 1.0099416f, 0.0210077f },
+		{ 0.0122982f, -0.0204830f, 1.3299098f }
+	};
+
 	internal static float[,] BuildCameraToSrgb(float[,] colorMatrix1)
 	{
 		if ( !TryInvert3X3(colorMatrix1, out var cameraToXyz) )
@@ -19,89 +28,8 @@ internal static class ColorMatrixTransform
 			return Identity3X3();
 		}
 
-		var combined = Multiply3X3(XyzToSrgb, cameraToXyz);
-
-		// Normalize each row so that a neutral camera input [1,1,1] maps to [1,1,1]
-		// if the matrix structure permits (IsNormalizationSafe check).
-		if ( IsNormalizationSafe(combined) )
-		{
-			NormalizeRowsForNeutral(combined);
-		}
-
-		// Clamp any negative values that might have resulted from matrix math
-		ClampNegative(combined);
-
-		return combined;
-	}
-
-	/// <summary>
-	/// Check if normalizing the matrix rows would preserve the matrix structure
-	/// (avoid inverting signs or creating huge amplifications).
-	/// </summary>
-	private static bool IsNormalizationSafe(float[,] m)
-	{
-		for ( var row = 0; row < 3; row++ )
-		{
-			var rowSum = m[row, 0] + m[row, 1] + m[row, 2];
-			if ( Math.Abs(rowSum) < 1e-6f )
-			{
-				return false;
-			}
-
-			var inv = 1f / rowSum;
-			// Check if normalization would invert signs or create values > 2
-			for ( var col = 0; col < 3; col++ )
-			{
-				var normalized = m[row, col] * inv;
-				var original = m[row, col];
-				// If sign flips or amplification is extreme, skip normalization
-				if ( Math.Sign(original) != Math.Sign(normalized) || Math.Abs(normalized) > 2f )
-				{
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/// <summary>
-	/// Clamps negative values to 0 to avoid color artifacts from matrix ringing.
-	/// </summary>
-	private static void ClampNegative(float[,] m)
-	{
-		for ( var row = 0; row < 3; row++ )
-		{
-			for ( var col = 0; col < 3; col++ )
-			{
-				if ( m[row, col] < 0f )
-				{
-					m[row, col] = 0f;
-				}
-			}
-		}
-	}
-
-	/// <summary>
-	/// Scales each row of <paramref name="m"/> so that
-	/// <c>m * [1,1,1]^T == [1,1,1]^T</c>, i.e. a neutral (equal-channel)
-	/// camera input produces a neutral sRGB output.
-	/// </summary>
-	private static void NormalizeRowsForNeutral(float[,] m)
-	{
-		for ( var row = 0; row < 3; row++ )
-		{
-			var rowSum = m[row, 0] + m[row, 1] + m[row, 2];
-			if ( Math.Abs(rowSum) < 1e-6f )
-			{
-				continue;
-			}
-
-			var inv = 1f / rowSum;
-			m[row, 0] *= inv;
-			m[row, 1] *= inv;
-			m[row, 2] *= inv;
-		}
+		var cameraToXyzD65 = Multiply3X3(XyzD50ToD65, cameraToXyz);
+		return Multiply3X3(XyzToSrgb, cameraToXyzD65);
 	}
 
 	internal static void ApplyInPlace(float[,,] linearRgb, float[,] cameraToSrgb)
@@ -116,12 +44,12 @@ internal static class ColorMatrixTransform
 				var g = linearRgb[y, x, 1];
 				var b = linearRgb[y, x, 2];
 
-				linearRgb[y, x, 0] = cameraToSrgb[0, 0] * r + cameraToSrgb[0, 1] * g +
-				                    cameraToSrgb[0, 2] * b;
-				linearRgb[y, x, 1] = cameraToSrgb[1, 0] * r + cameraToSrgb[1, 1] * g +
-				                    cameraToSrgb[1, 2] * b;
-				linearRgb[y, x, 2] = cameraToSrgb[2, 0] * r + cameraToSrgb[2, 1] * g +
-				                    cameraToSrgb[2, 2] * b;
+				// Apply matrix. Clamp output to >= 0 to handle out-of-gamut pixels.
+				// DO NOT clamp the matrix itself — negative coefficients are essential
+				// for correct hue discrimination.
+				linearRgb[y, x, 0] = Math.Max(0f, cameraToSrgb[0, 0] * r + cameraToSrgb[0, 1] * g + cameraToSrgb[0, 2] * b);
+				linearRgb[y, x, 1] = Math.Max(0f, cameraToSrgb[1, 0] * r + cameraToSrgb[1, 1] * g + cameraToSrgb[1, 2] * b);
+				linearRgb[y, x, 2] = Math.Max(0f, cameraToSrgb[2, 0] * r + cameraToSrgb[2, 1] * g + cameraToSrgb[2, 2] * b);
 			}
 		}
 	}
