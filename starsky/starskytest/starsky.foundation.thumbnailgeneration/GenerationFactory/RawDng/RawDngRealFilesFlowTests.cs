@@ -46,7 +46,194 @@ public class RawDngRealFilesFlowTests
 		{
 			Directory.Delete(tempDir, true);
 		}
-		
+
+		Directory.CreateDirectory(tempDir);
+
+		foreach ( var file in files )
+		{
+			if ( !File.Exists(file) )
+			{
+				failed.Add($"MISSING|{file}");
+				continue;
+			}
+
+			// Inspect DNG metadata before processing
+			var dngInfo = InspectDngMetadata(file);
+			TestContext.WriteLine($"FILE_TYPE|{Path.GetFileName(file)}|{dngInfo}");
+
+			using var input = File.OpenRead(file);
+			using var captureInput = File.OpenRead(file);
+			// Create a unique output filename in the temp folder
+			var baseName = Path.GetFileNameWithoutExtension(file);
+			if ( string.IsNullOrEmpty(baseName) )
+			{
+				baseName = "output";
+			}
+
+			// sanitize baseName for file system just in case
+			foreach ( var c in Path.GetInvalidFileNameChars() )
+			{
+				baseName = baseName.Replace(c, '_');
+			}
+
+			var outputPath = Path.Combine(tempDir,
+				baseName + "_" + Guid.NewGuid().ToString("N") + ".jpg");
+			var rawCaptureBase = Path.Combine(tempDir,
+				baseName + "_" + Guid.NewGuid().ToString("N"));
+			if ( DngSubsetReader.TryExtractRawCapture(captureInput, out var capture,
+				    out var captureError) && capture != null )
+			{
+				WriteRawCaptureArtifacts(rawCaptureBase, capture);
+				TestContext.WriteLine(
+					$"RAW_CAPTURE|{file}|meta={rawCaptureBase}.rawmeta.txt|data={rawCaptureBase}.rawpayload.bin");
+			}
+			else
+			{
+				TestContext.WriteLine($"RAW_CAPTURE_FAIL|{file}|{captureError}");
+			}
+
+			using var output = File.Open(outputPath, FileMode.Create, FileAccess.Write);
+			var ok = RawDngPipelineRunner.TryRunToJpeg(input, output, out var error);
+			output.Flush();
+			long outLength = 0;
+			try
+			{
+				outLength = new FileInfo(outputPath).Length;
+			}
+			catch
+			{
+				// if for some reason getting file info fails, fall back to stream length
+				outLength = output.Length;
+			}
+
+			var result = $"{( ok ? "OK" : "FAIL" )}|{outLength}|{error}|{file}|{outputPath}";
+			TestContext.WriteLine(result);
+			if ( ok )
+			{
+				succeeded.Add(result);
+			}
+			else if ( IsExpectedUnsupported(error) )
+			{
+				unsupported.Add(result);
+			}
+			else
+			{
+				failed.Add(result);
+			}
+		}
+
+		TestContext.WriteLine(
+			$"SUMMARY|ok={succeeded.Count}|unsupported={unsupported.Count}|fail={failed.Count}");
+		Assert.IsGreaterThan(0, succeeded.Count,
+			"Expected at least one DNG file to pass current subset pipeline.");
+
+
+		if ( failed.Count > 0 )
+		{
+			Assert.Fail("DNG flow failures:\n" + string.Join("\n", failed));
+		}
+	}
+
+	[TestMethod]
+	public void TryRunToJpeg_WithProvidedRealDngFiles_ReportsPerFileResult2()
+	{
+		string[] files =
+		[
+			"/Users/dion/data/testcontent/raws-dng-converter/Xiaomi - Redmi Note 7 - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/2013-04-13_P1220787.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/2018-07-14_10-17-52_NIKON D90__DSC0595.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/20260308_210002_DSC05386-Verbeterd-NR.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Apple - iPhone SE - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Apple - iPhone XS - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Apple iPhone 13 Pro (ProRAW mode) IMG_3234.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Canon - EOS 5D Mark III - 16bit 16bit RAW.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Canon - EOS M200 - CRAW (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Canon - EOS R50 V - RAW (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Canon - PowerShot Pro1.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Canon EOS 5D Mark II.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/canon_eos_1d_x_mark_iii_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/canon_eos_5d_mark_iv_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/canon_eos_r3_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/CRW_4630.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/DJI - FC7303 - 16bit (16_9).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/DSC_7534.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/DSC03710 RAW, Uncompressed.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/DSC03711 RAW, Lossless compression L.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/DSC03720 RAW, Uncompressed.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/DSC03723 RAW, Lossless compression S.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/DSC03724 RAW, Compressed.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/DSCF0525.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Fujifilm - FinePix E900 - 4_3.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Fujifilm - X-A2 - 12bit 12bit uncompressed (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/fujifilm_x_s10_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/fujifilm_x_t3_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Google - Pixel 8 Pro - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/GoPro - HERO6 Black - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Hasselblad - CF132.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Hasselblad - CFV-50 - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/hasselblad_x1d_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/HUAWEI - EVA-AL00 - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/IMG_0310.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Leica - M (Typ 240) - 16bit 16bit compressed (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/leica_cl_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/leica_v_lux_5_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Nikon - 1 S2 - 12bit 12bit compressed (Lossy (type 2)) (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Nikon - 1 V1 - 12bit 12bit compressed (Lossy (type 2)) (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Nikon - Coolpix P340 - 12bit 12bit-compressed ((9)).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Nikon - D2Hs - 12bit 12bit uncompressed (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Nikon - Z6_3 - 8bit compressed (16_9).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/nikon_d850_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/nikon_z7_ii_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/nikon_z9_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Olympus - E-520 - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Olympus - E-P3 - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/OM System - OM-1 - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/OnePlus - ONEPLUS A6003 - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Panasonic - DC-TZ200D - 1_1.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Panasonic - DMC-GF1 - 4_3.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Panasonic - DMC-GF5 - 1_1.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Panasonic - DMC-GX7 - 1_1.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/panasonic_lumix_gh5_ii_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/panasonic_s1r_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Pentax - _ist DL - 12bit (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Pentax - K-3 - 14bit (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Pentax - K-3 II - 14bit (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Pentax - K-S1 - 12bit (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Pentax - K200D - 12bit uncompressed (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/pentax_k_1_mark_ii_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Phase One - P65+ - IIQ S (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Plustek - OpticFilm 8100 - 16bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/RaspberryPi - RP_imx477 - 12bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/RAW_CANON_EOS_1DX.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/RAW_LEICA_M8.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/RAW_NIKON_D50.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/RAW_OLYMPUS_E1.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/RAW_SONY_A100.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/RAW_SONY_A700.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/RAW_SONY_DSC_ILCE-6000.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/sample_canon_400d1.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Samsung - Galaxy S22 Ulra - 4_3.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Samsung - NX100 - 12bit (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Sony - DSLR-A300 - 12bit 12bit compressed (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Sony - ILCE-7RM5 - 14bit (4_3).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Sony - ILCE-7SM3 - 14bit 14bit uncompressed (3_2).dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/sony_a7r_iii_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/sony_a9_ii_01.dng",
+			"/Users/dion/data/testcontent/raws-dng-converter/Xiaomi - MI MAX - 10bit (4_3).dng"
+		];
+
+		var failed = new List<string>();
+		var succeeded = new List<string>();
+		var unsupported = new List<string>();
+
+		// Create a temp output directory for generated JPEG files
+		var tempDir = Path.Combine(Path.GetTempPath(), "starsky_rawdng_tests2");
+
+		if ( Directory.Exists(tempDir) )
+		{
+			Directory.Delete(tempDir, true);
+		}
+
 		Directory.CreateDirectory(tempDir);
 
 		foreach ( var file in files )
@@ -239,7 +426,7 @@ public class RawDngRealFilesFlowTests
 			var countBuf = new byte[2];
 			if ( fs.Read(countBuf, 0, 2) < 2 )
 			{
-				return (0, 0, 0, 0, 0);
+				return ( 0, 0, 0, 0, 0 );
 			}
 
 			var entryCount = ReadUInt16(countBuf, 0, littleEndian);
@@ -284,7 +471,7 @@ public class RawDngRealFilesFlowTests
 			// Ignore read errors
 		}
 
-		return (width, height, bits, compression, subIfd);
+		return ( width, height, bits, compression, subIfd );
 	}
 
 	private static ushort ReadUInt16(byte[] data, int offset, bool littleEndian)

@@ -48,20 +48,20 @@ internal static class RawDngPipelineRunner
 		}
 		
 
-		// Fall back to binary JPEG container scan
-		if ( JpegContainerFallback.TryExtractLargestJpeg(input, output, out var fallbackError) )
-		{
-			error = string.Empty;
-			return true;
-		}
-
-		error = string.IsNullOrEmpty(pipelineError)
-			? ( string.IsNullOrEmpty(fallbackError)
-				? "No display RGB output available"
-				: fallbackError )
-			: ( string.IsNullOrEmpty(fallbackError)
-				? pipelineError
-				: $"{pipelineError}; preview: {previewError}; fallback: {fallbackError}" );
+		// // Fall back to binary JPEG container scan
+		// if ( JpegContainerFallback.TryExtractLargestJpeg(input, output, out var fallbackError) )
+		// {
+		// 	error = string.Empty;
+		// 	return true;
+		// }
+		//
+		// error = string.IsNullOrEmpty(pipelineError)
+		// 	? ( string.IsNullOrEmpty(fallbackError)
+		// 		? "No display RGB output available"
+		// 		: fallbackError )
+		// 	: ( string.IsNullOrEmpty(fallbackError)
+		// 		? pipelineError
+		// 		: $"{pipelineError}; preview: {previewError}; fallback: {fallbackError}" );
 		return false;
 	}
 }
