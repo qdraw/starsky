@@ -21,6 +21,9 @@ internal sealed class DngRawImage
 	public required float[] AsShotNeutral { get; init; }
 	public required float[,] ColorMatrix1 { get; init; }
 	public required byte[] CfaPattern { get; init; }
+	public required float[,] ForwardMatrix1 { get; init; } // Optional: used if ColorMatrix1 absent
+	public required float[,] CameraCalibration1 { get; init; } // Optional: applies per-channel color correction
+	public required float[,] CameraCalibration2 { get; init; } // Optional: second calibration
 }
 
 internal sealed class DngRawCapture
@@ -60,6 +63,9 @@ internal static class DngSubsetReader
 	private const ushort TagWhiteLevel = 0xC61D;
 	private const ushort TagAsShotNeutral = 0xC628;
 	private const ushort TagColorMatrix1 = 0xC621;
+	private const ushort TagForwardMatrix1 = 0xC714;
+	private const ushort TagCameraCalibration1 = 0xC723;
+	private const ushort TagCameraCalibration2 = 0xC724;
 
 	private const ushort CompressionUncompressed = 1;
 	private const ushort CompressionJpegOldStyle = 6;
@@ -507,6 +513,28 @@ internal static class DngSubsetReader
 			? cfa.Take(4).ToArray()
 			: new byte[] { 0, 1, 1, 2 }; // fallback RGGB
 
+		var forwardMatrix = TryGetFloatArray(input, littleEndian, ifd, TagForwardMatrix1,
+			out var fwdRaw) && fwdRaw.Length >= 9
+			? To3x3(fwdRaw)
+			: TryGetFloatArray(input, littleEndian, ifd0, TagForwardMatrix1, out var fwd0) &&
+			  fwd0.Length >= 9
+				? To3x3(fwd0)
+				: Identity3x3();
+		var cameraCalibration1 = TryGetFloatArray(input, littleEndian, ifd, TagCameraCalibration1,
+			out var cal1Raw) && cal1Raw.Length >= 9
+			? To3x3(cal1Raw)
+			: TryGetFloatArray(input, littleEndian, ifd0, TagCameraCalibration1, out var cal10) &&
+			  cal10.Length >= 9
+				? To3x3(cal10)
+				: Identity3x3();
+		var cameraCalibration2 = TryGetFloatArray(input, littleEndian, ifd, TagCameraCalibration2,
+			out var cal2Raw) && cal2Raw.Length >= 9
+			? To3x3(cal2Raw)
+			: TryGetFloatArray(input, littleEndian, ifd0, TagCameraCalibration2, out var cal20) &&
+			  cal20.Length >= 9
+				? To3x3(cal20)
+				: Identity3x3();
+
 		image = new DngRawImage
 		{
 			Bayer = bayer,
@@ -517,7 +545,10 @@ internal static class DngSubsetReader
 			WhiteLevel = whiteLevels,
 			AsShotNeutral = asShotNeutral,
 			ColorMatrix1 = colorMatrix,
-			CfaPattern = cfaPattern
+			CfaPattern = cfaPattern,
+			ForwardMatrix1 = forwardMatrix,
+			CameraCalibration1 = cameraCalibration1,
+			CameraCalibration2 = cameraCalibration2
 		};
 
 		return true;

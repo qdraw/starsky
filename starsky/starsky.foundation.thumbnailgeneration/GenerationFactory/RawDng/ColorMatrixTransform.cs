@@ -12,24 +12,41 @@ internal static class ColorMatrixTransform
 		{ 0.0556434f, -0.2040259f, 1.0572252f }
 	};
 
-	// Bradford adaptation matrix from XYZ D50 to XYZ D65.
-	// DNG ColorMatrix tags are specified against D50-referenced XYZ.
-	private static readonly float[,] XyzD50ToD65 =
-	{
-		{ 0.9555766f, -0.0230393f, 0.0631636f },
-		{ -0.0282895f, 1.0099416f, 0.0210077f },
-		{ 0.0122982f, -0.0204830f, 1.3299098f }
-	};
-
-	internal static float[,] BuildCameraToSrgb(float[,] colorMatrix1)
+	internal static float[,] BuildCameraToSrgb(float[,] colorMatrix1, float[,]? cameraCalibration1 = null)
 	{
 		if ( !TryInvert3X3(colorMatrix1, out var cameraToXyz) )
 		{
 			return Identity3X3();
 		}
 
-		var cameraToXyzD65 = Multiply3X3(XyzD50ToD65, cameraToXyz);
-		return Multiply3X3(XyzToSrgb, cameraToXyzD65);
+		// If camera calibration is provided (phone cameras especially need this),
+		// apply it first to correct per-channel color bias before full matrix transform.
+		if ( cameraCalibration1 != null && !IsIdentity3X3(cameraCalibration1) )
+		{
+			cameraToXyz = Multiply3X3(cameraCalibration1, cameraToXyz);
+		}
+
+		// Transform from camera XYZ to sRGB. 
+		// Note: ColorMatrix1 in DNG is designed to work with XYZ D50 or D65 depending on 
+		// the camera/software. Most modern implementations use D65 directly without extra adaptation.
+		return Multiply3X3(XyzToSrgb, cameraToXyz);
+	}
+
+	private static bool IsIdentity3X3(float[,] m)
+	{
+		for ( var row = 0; row < 3; row++ )
+		{
+			for ( var col = 0; col < 3; col++ )
+			{
+				var expected = row == col ? 1f : 0f;
+				if ( Math.Abs(m[row, col] - expected) > 1e-6f )
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	internal static void ApplyInPlace(float[,,] linearRgb, float[,] cameraToSrgb)

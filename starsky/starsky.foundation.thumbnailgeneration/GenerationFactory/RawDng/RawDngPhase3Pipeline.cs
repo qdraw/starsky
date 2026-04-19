@@ -126,7 +126,8 @@ internal static class RawDngPhase3Pipeline
 			return state;
 		}
 
-		var cameraToSrgb = ColorMatrixTransform.BuildCameraToSrgb(state.Raw.ColorMatrix1);
+		var cameraToSrgb = ColorMatrixTransform.BuildCameraToSrgb(state.Raw.ColorMatrix1,
+			state.Raw.CameraCalibration1);
 		ColorMatrixTransform.ApplyInPlace(state.LinearRgb, cameraToSrgb);
 
 		return new RawDngPipelineState
@@ -167,34 +168,46 @@ internal static class RawDngPhase3Pipeline
 
 	private static float ComputeAutoExposureGain(float[,,] linearRgb)
 	{
+		// Fast histogram-free approach: sample center region only (avoid edge artifacts)
+		// and compute average luminance without sorting overhead.
 		var h = linearRgb.GetLength(0);
 		var w = linearRgb.GetLength(1);
-		var luminance = new float[h * w];
-		var i = 0;
-		for ( var y = 0; y < h; y++ )
+		
+		// Avoid extreme edges; sample center 80% of image
+		var y1 = h / 10;
+		var y2 = h * 9 / 10;
+		var x1 = w / 10;
+		var x2 = w * 9 / 10;
+		
+		float maxLum = 1e-6f;
+		var sampleCount = 0;
+		for ( var y = y1; y < y2; y += 4 )
 		{
-			for ( var x = 0; x < w; x++ )
+			for ( var x = x1; x < x2; x += 4 )
 			{
 				var r = linearRgb[y, x, 0];
 				var g = linearRgb[y, x, 1];
 				var b = linearRgb[y, x, 2];
-				luminance[i++] = 0.2126f * r + 0.7152f * g + 0.0722f * b;
+				var lum = 0.2126f * r + 0.7152f * g + 0.0722f * b;
+				if ( lum > maxLum )
+				{
+					maxLum = lum;
+				}
+				sampleCount++;
 			}
 		}
 
-		Array.Sort(luminance);
-		if ( luminance.Length == 0 )
+		if ( sampleCount == 0 )
 		{
 			return 1f;
 		}
 
-		var p99Index = ( int ) ( ( luminance.Length - 1 ) * 0.99f );
-		var p99 = Math.Max(1e-6f, luminance[p99Index]);
-		const float target = 0.85f;
-		var gain = target / p99;
-
-		// Keep gain in a sane range to avoid extreme pumping on unusual frames.
-		return Math.Clamp(gain, 0.5f, 6.0f);
+		// Target the brightest region to be 0.9 (avoid clipping)
+		const float target = 0.9f;
+		var gain = target / maxLum;
+		
+		// Clamp to reasonable range
+		return Math.Clamp(gain, 0.5f, 3.0f);
 	}
 
 	private static RawDngPipelineState ApplyToneMapping(RawDngPipelineState state)

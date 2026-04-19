@@ -19,6 +19,9 @@ public class RawDngPhase3PipelineTests
 			AsShotNeutral = new[] { 2f, 1f, 4f },
 			ColorMatrix1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
 			CfaPattern = new byte[] { 0, 1, 1, 2 },
+			ForwardMatrix1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CameraCalibration1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CameraCalibration2 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
 			Bayer = new ushort[,]
 			{
 				{ 0, 512 },

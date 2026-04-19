@@ -1,4 +1,3 @@
-using System;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.RawDng;
 
