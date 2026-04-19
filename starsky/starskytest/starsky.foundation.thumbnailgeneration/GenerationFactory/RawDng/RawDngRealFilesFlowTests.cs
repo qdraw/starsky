@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,6 +39,10 @@ public class RawDngRealFilesFlowTests
 		var succeeded = new List<string>();
 		var unsupported = new List<string>();
 
+		// Create a temp output directory for generated JPEG files
+		var tempDir = Path.Combine(Path.GetTempPath(), "starsky_rawdng_tests");
+		Directory.CreateDirectory(tempDir);
+
 		foreach ( var file in files )
 		{
 			if ( !File.Exists(file) )
@@ -47,9 +52,36 @@ public class RawDngRealFilesFlowTests
 			}
 
 			using var input = File.OpenRead(file);
-			using var output = new MemoryStream();
+			// Create a unique output filename in the temp folder
+			var baseName = Path.GetFileNameWithoutExtension(file);
+			if ( string.IsNullOrEmpty(baseName) )
+			{
+				baseName = "output";
+			}
+
+			// sanitize baseName for file system just in case
+			foreach ( var c in Path.GetInvalidFileNameChars() )
+			{
+				baseName = baseName.Replace(c, '_');
+			}
+
+			var outputPath = Path.Combine(tempDir,
+				baseName + "_" + Guid.NewGuid().ToString("N") + ".jpg");
+			using var output = File.Open(outputPath, FileMode.Create, FileAccess.Write);
 			var ok = RawDngPipelineRunner.TryRunToJpeg(input, output, out var error);
-			var result = $"{( ok ? "OK" : "FAIL" )}|{output.Length}|{error}|{file}";
+			output.Flush();
+			long outLength = 0;
+			try
+			{
+				outLength = new FileInfo(outputPath).Length;
+			}
+			catch
+			{
+				// if for some reason getting file info fails, fall back to stream length
+				outLength = output.Length;
+			}
+
+			var result = $"{( ok ? "OK" : "FAIL" )}|{outLength}|{error}|{file}|{outputPath}";
 			TestContext.WriteLine(result);
 			if ( ok )
 			{
@@ -64,7 +96,7 @@ public class RawDngRealFilesFlowTests
 				failed.Add(result);
 			}
 		}
-		
+
 		TestContext.WriteLine(
 			$"SUMMARY|ok={succeeded.Count}|unsupported={unsupported.Count}|fail={failed.Count}");
 		Assert.IsGreaterThan(0, succeeded.Count,
@@ -79,7 +111,9 @@ public class RawDngRealFilesFlowTests
 
 	private static bool IsExpectedUnsupported(string error)
 	{
-		return error.StartsWith("Only uncompressed DNG is supported", System.StringComparison.OrdinalIgnoreCase)
-		       || error.StartsWith("Unsupported bits per sample", System.StringComparison.OrdinalIgnoreCase);
+		return error.StartsWith("Only uncompressed DNG is supported",
+			       StringComparison.OrdinalIgnoreCase)
+		       || error.StartsWith("Unsupported bits per sample",
+			       StringComparison.OrdinalIgnoreCase);
 	}
 }

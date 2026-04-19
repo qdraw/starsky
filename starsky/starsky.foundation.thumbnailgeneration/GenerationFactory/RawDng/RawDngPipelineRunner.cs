@@ -27,15 +27,27 @@ internal static class RawDngPipelineRunner
 		Action<RawDngPipelineStep>? onStep = null, Action<byte[,]>? onRawDebug = null)
 	{
 		error = string.Empty;
+		string? pipelineError = null;
 		if ( TryRun(input, out var state, out error, onStep, onRawDebug) &&
 		     state?.DisplayRgb != null )
 		{
 			return RawDngJpegExporter.TryWriteDisplayRgbAsJpeg(state.DisplayRgb, output, out error);
 		}
 
-		error = string.IsNullOrEmpty(error)
-			? "No display RGB output available"
-			: error;
+		pipelineError = error;
+		if ( JpegContainerFallback.TryExtractLargestJpeg(input, output, out var fallbackError) )
+		{
+			error = string.Empty;
+			return true;
+		}
+
+		error = string.IsNullOrEmpty(pipelineError)
+			? ( string.IsNullOrEmpty(fallbackError)
+				? "No display RGB output available"
+				: fallbackError )
+			: ( string.IsNullOrEmpty(fallbackError)
+				? pipelineError
+				: $"{pipelineError}; fallback: {fallbackError}" );
 		return false;
 	}
 }
