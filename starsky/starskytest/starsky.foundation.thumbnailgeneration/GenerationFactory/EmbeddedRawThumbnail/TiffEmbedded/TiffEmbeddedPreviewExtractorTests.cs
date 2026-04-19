@@ -666,6 +666,313 @@ public class TiffEmbeddedPreviewExtractorTests
 		return jpeg;
 	}
 
+	private static byte[] CreateIfdWithStripTags(uint stripOffset, uint stripLength,
+		uint? compression)
+	{
+		var entryCount = compression.HasValue ? 3 : 2;
+		var ifd = new byte[2 + entryCount * 12 + 4];
+		var pos = 0;
+		ifd[pos++] = ( byte ) entryCount;
+		ifd[pos++] = 0;
+
+		void WriteLongEntry(ushort tag, uint value)
+		{
+			ifd[pos++] = ( byte ) ( tag & 0xFF );
+			ifd[pos++] = ( byte ) ( ( tag >> 8 ) & 0xFF );
+			ifd[pos++] = 4;
+			ifd[pos++] = 0;
+			ifd[pos++] = 1;
+			ifd[pos++] = 0;
+			ifd[pos++] = 0;
+			ifd[pos++] = 0;
+			ifd[pos++] = ( byte ) ( value & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 16 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 24 ) & 0xFF );
+		}
+
+		if ( compression.HasValue )
+		{
+			WriteLongEntry(0x0103, compression.Value);
+		}
+
+		WriteLongEntry(0x0111, stripOffset);
+		WriteLongEntry(0x0117, stripLength);
+
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos] = 0;
+		return ifd;
+	}
+
+	private static byte[] CreateIfdWithExifIfdOffset(uint exifIfdOffset)
+	{
+		var ifd = new byte[2 + 12 + 4];
+		var pos = 0;
+		ifd[pos++] = 1;
+		ifd[pos++] = 0;
+
+		// TagExifIfd 0x8769 (type LONG, count 1)
+		ifd[pos++] = 0x69;
+		ifd[pos++] = 0x87;
+		ifd[pos++] = 4;
+		ifd[pos++] = 0;
+		ifd[pos++] = 1;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = ( byte ) ( exifIfdOffset & 0xFF );
+		ifd[pos++] = ( byte ) ( ( exifIfdOffset >> 8 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( exifIfdOffset >> 16 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( exifIfdOffset >> 24 ) & 0xFF );
+
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos] = 0;
+		return ifd;
+	}
+
+	private static byte[] CreateMakerNoteWithArrayStripTags(uint stripOffsetsTableOffset,
+		uint stripLengthsTableOffset)
+	{
+		var ifd = new byte[2 + 2 * 12 + 4];
+		var pos = 0;
+		ifd[pos++] = 2;
+		ifd[pos++] = 0;
+
+		void WriteArrayEntry(ushort tag, uint tableOffset)
+		{
+			ifd[pos++] = ( byte ) ( tag & 0xFF );
+			ifd[pos++] = ( byte ) ( ( tag >> 8 ) & 0xFF );
+			ifd[pos++] = 4; // LONG
+			ifd[pos++] = 0;
+			ifd[pos++] = 2; // n = 2 (array)
+			ifd[pos++] = 0;
+			ifd[pos++] = 0;
+			ifd[pos++] = 0;
+			ifd[pos++] = ( byte ) ( tableOffset & 0xFF );
+			ifd[pos++] = ( byte ) ( ( tableOffset >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( tableOffset >> 16 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( tableOffset >> 24 ) & 0xFF );
+		}
+
+		WriteArrayEntry(0x0111, stripOffsetsTableOffset);
+		WriteArrayEntry(0x0117, stripLengthsTableOffset);
+
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos] = 0;
+		return ifd;
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithCanonStripPreviewWithoutCompressionTag_ExtractsPreview()
+	{
+		const uint stripOffset = 1500;
+		const int stripLength = 5600;
+
+		using var ms = new MemoryStream();
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+		await ms.WriteAsync(CreateIfdWithStripTags(stripOffset, stripLength, null),
+			TestContext.CancellationToken);
+		ms.Seek(stripOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateMinimalJpeg(stripLength), TestContext.CancellationToken);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath, out _,
+			out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
+
+		Assert.IsTrue(result,
+			"CR2 strip preview should be detected even when Compression tag is missing");
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath), "Expected output preview written");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithCanonPreviewInExifIfdMakerNote_ExtractsPreview()
+	{
+		const uint exifIfdOffset = 128;
+		const uint makerNoteOffset = 256;
+		const uint previewOffset = 2400;
+		const int previewLength = 5800;
+
+		using var ms = new MemoryStream();
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+		await ms.WriteAsync(CreateIfdWithExifIfdOffset(exifIfdOffset),
+			TestContext.CancellationToken);
+
+		var makerNote = CreateIfdWithStripTags(previewOffset, previewLength, null);
+		ms.Seek(exifIfdOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateIfdWithMakerNote(makerNoteOffset, ( uint ) makerNote.Length),
+			TestContext.CancellationToken);
+		ms.Seek(makerNoteOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(makerNote, TestContext.CancellationToken);
+		ms.Seek(previewOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateMinimalJpeg(previewLength), TestContext.CancellationToken);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath, out _,
+			out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
+
+		Assert.IsTrue(result,
+			"CR2 previews reachable only through ExifIFD MakerNote should be extracted");
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath), "Expected output preview written");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithCanonIfdArrayStripOffsetsAndLengths_ExtractsPreview()
+	{
+		const uint stripOffsetsTableOffset = 160;
+		const uint stripLengthsTableOffset = 168;
+		const uint previewOffset = 3200;
+		const int previewLength = 6200;
+
+		using var ms = new MemoryStream();
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+
+		var ifd = new byte[2 + 3 * 12 + 4];
+		var pos = 0;
+		ifd[pos++] = 3;
+		ifd[pos++] = 0;
+
+		void WriteLongEntry(ushort tag, uint count, uint value)
+		{
+			ifd[pos++] = ( byte ) ( tag & 0xFF );
+			ifd[pos++] = ( byte ) ( ( tag >> 8 ) & 0xFF );
+			ifd[pos++] = 4;
+			ifd[pos++] = 0;
+			ifd[pos++] = ( byte ) ( count & 0xFF );
+			ifd[pos++] = ( byte ) ( ( count >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( count >> 16 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( count >> 24 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( value & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 16 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 24 ) & 0xFF );
+		}
+
+		WriteLongEntry(0x0103, 1, 6); // Compression JPEG old-style
+		WriteLongEntry(0x0111, 2, stripOffsetsTableOffset);
+		WriteLongEntry(0x0117, 2, stripLengthsTableOffset);
+
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos] = 0;
+
+		await ms.WriteAsync(ifd, TestContext.CancellationToken);
+
+		ms.Seek(stripOffsetsTableOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(
+			new byte[]
+			{
+				( byte ) ( previewOffset & 0xFF ), ( byte ) ( ( previewOffset >> 8 ) & 0xFF ),
+				( byte ) ( ( previewOffset >> 16 ) & 0xFF ),
+				( byte ) ( ( previewOffset >> 24 ) & 0xFF ), 0x20, 0x1F, 0x00, 0x00
+			}, TestContext.CancellationToken);
+
+		ms.Seek(stripLengthsTableOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(
+			new byte[]
+			{
+				previewLength & 0xFF, ( previewLength >> 8 ) & 0xFF,
+				( previewLength >> 16 ) & 0xFF, ( previewLength >> 24 ) & 0xFF, 0x00, 0x04,
+				0x00, 0x00
+			}, TestContext.CancellationToken);
+
+		ms.Seek(previewOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateMinimalJpeg(previewLength), TestContext.CancellationToken);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath, out _,
+			out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
+
+		Assert.IsTrue(result, "CR2 array-valued strip offsets/lengths should extract preview");
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath), "Expected output preview written");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithCanonMakerNoteArrayStripOffsetsAndLengths_ExtractsPreview()
+	{
+		const uint makerNoteOffset = 300;
+		const uint stripOffsetsTableOffset = 380;
+		const uint stripLengthsTableOffset = 388;
+		const uint previewOffset = 4600;
+		const int previewLength = 6400;
+
+		using var ms = new MemoryStream();
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+
+		var makerNote = CreateMakerNoteWithArrayStripTags(stripOffsetsTableOffset,
+			stripLengthsTableOffset);
+		await ms.WriteAsync(CreateIfdWithMakerNote(makerNoteOffset, 4096),
+			TestContext.CancellationToken);
+
+		ms.Seek(makerNoteOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(makerNote, TestContext.CancellationToken);
+
+		ms.Seek(stripOffsetsTableOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(
+			new byte[]
+			{
+				( byte ) ( previewOffset & 0xFF ), ( byte ) ( ( previewOffset >> 8 ) & 0xFF ),
+				( byte ) ( ( previewOffset >> 16 ) & 0xFF ),
+				( byte ) ( ( previewOffset >> 24 ) & 0xFF ), 0x20, 0x1F, 0x00, 0x00
+			}, TestContext.CancellationToken);
+
+		ms.Seek(stripLengthsTableOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(
+			new byte[]
+			{
+				previewLength & 0xFF, ( previewLength >> 8 ) & 0xFF,
+				( previewLength >> 16 ) & 0xFF, ( previewLength >> 24 ) & 0xFF, 0x00, 0x04,
+				0x00, 0x00
+			}, TestContext.CancellationToken);
+
+		ms.Seek(previewOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateMinimalJpeg(previewLength), TestContext.CancellationToken);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath, out _,
+			out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
+
+		Assert.IsTrue(result,
+			"CR2 MakerNote array-valued strip offsets/lengths should extract preview");
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath), "Expected output preview written");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithCanonStripPreviewWithoutCompressionTagLossless_ReturnsFalse()
+	{
+		const uint stripOffset = 1600;
+		const int stripLength = 5600;
+
+		using var ms = new MemoryStream();
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+		await ms.WriteAsync(CreateIfdWithStripTags(stripOffset, stripLength, null),
+			TestContext.CancellationToken);
+		ms.Seek(stripOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateLosslessJpeg(stripLength), TestContext.CancellationToken);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath, out _, out _);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
+
+		Assert.IsFalse(result,
+			"Lossless CR2 strip should still be rejected when Compression tag is missing");
+	}
+
 	[TestMethod]
 	public async Task TryExtract_WithStripJpegCompression7_ExtractsPreview()
 	{

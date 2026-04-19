@@ -39,6 +39,7 @@ public partial class TiffEmbeddedPreviewExtractor
 	private const ushort TagJpegOffset = 0x0201;
 	private const ushort TagJpegLength = 0x0202;
 	private const ushort TagSubIfds = 0x014A;
+	private const ushort TagExifIfd = 0x8769;
 	private const ushort TagMakerNote = 0x927C;
 
 	private const ushort TagSonyPreviewOffset = 0x2010;
@@ -313,21 +314,30 @@ public partial class TiffEmbeddedPreviewExtractor
 			case TagImageLength when n == 1:
 				state.IfdHeight = ReadScalarValue(type, value, littleEndian);
 				return;
-			case TagStripOffsets when n == 1:
-				state.StripOffset = value;
-				state.HasStrip = true;
+			case TagStripOffsets when n >= 1 &&
+			                          TryReadFirstIfdValue(input, type, n, value, littleEndian,
+				                          out var stripOffset):
+				state.StripOffset = stripOffset;
+				state.HasStrip = stripOffset > 0;
 				return;
-			case TagStripByteCounts when n == 1:
-				state.StripLength = value;
+			case TagStripByteCounts when n >= 1 &&
+			                             TryReadFirstIfdValue(input, type, n, value, littleEndian,
+				                             out var stripLength):
+				state.StripLength = stripLength;
 				return;
-			case TagJpegOffset:
-				state.JpegOffset = value;
-				state.HasJpeg = true;
+			case TagJpegOffset when n >= 1 &&
+			                        TryReadFirstIfdValue(input, type, n, value, littleEndian,
+				                        out var jpegOffset):
+				state.JpegOffset = jpegOffset;
+				state.HasJpeg = jpegOffset > 0;
 				return;
-			case TagJpegLength:
-				state.JpegLength = value;
+			case TagJpegLength when n >= 1 &&
+			                        TryReadFirstIfdValue(input, type, n, value, littleEndian,
+				                        out var jpegLength):
+				state.JpegLength = jpegLength;
 				return;
 			case TagSubIfds:
+			case TagExifIfd:
 				AddSubIfdOffsets(input, littleEndian, subIfdOffsets, type, n, value);
 				return;
 			case TagMakerNote when n > 4 && value > 0:
@@ -336,6 +346,60 @@ public partial class TiffEmbeddedPreviewExtractor
 				state.MakerNoteLength = n;
 				return;
 		}
+	}
+
+	internal static bool TryReadFirstIfdValue(Stream input, ushort type, uint n, uint value,
+		bool littleEndian, out uint resolvedValue)
+	{
+		resolvedValue = 0;
+		if ( n == 0 )
+		{
+			return false;
+		}
+
+		if ( n == 1 )
+		{
+			resolvedValue = ReadScalarValue(type, value, littleEndian);
+			return true;
+		}
+
+		if ( type != 3 && type != 4 )
+		{
+			return false;
+		}
+
+		var bytesPerValue = type == 3 ? 2u : 4u;
+		var totalBytes = ( ulong ) n * bytesPerValue;
+		if ( totalBytes <= 4 )
+		{
+			if ( type == 3 )
+			{
+				resolvedValue = littleEndian
+					? value & 0xFFFF
+					: ( value >> 16 ) & 0xFFFF;
+				return true;
+			}
+
+			resolvedValue = value;
+			return true;
+		}
+
+		var boundedCount = StreamPrimitives.ClampIndirectCount(input, value, type, n, 1);
+		if ( boundedCount == 0 )
+		{
+			return false;
+		}
+
+		var firstValues = new List<uint>(1);
+		StreamPrimitives.ReadIndirectOffsets(input, value, type, boundedCount, littleEndian,
+			firstValues);
+		if ( firstValues.Count == 0 )
+		{
+			return false;
+		}
+
+		resolvedValue = firstValues[0];
+		return true;
 	}
 
 	internal static void AddSubIfdOffsets(Stream input, bool littleEndian,
@@ -360,8 +424,13 @@ public partial class TiffEmbeddedPreviewExtractor
 		// Canon CR2 IFD3/IFD4 use strip tags for raw lossless data; reject those markers.
 		var shouldRejectCanonLosslessStrip = rawFlavor == RawFlavor.CanonCr2 &&
 		                                     IsLosslessJpegAtOffset(input, state.StripOffset);
-		if ( IsJpegCompression(state.IfdCompression) && state is
-			     { HasStrip: true, StripOffset: > 0, StripLength: >= MinJpegSize } &&
+		var hasStripCandidate = state is
+			{ HasStrip: true, StripOffset: > 0, StripLength: >= MinJpegSize };
+		var isCanonStripPreviewWithoutCompression = rawFlavor == RawFlavor.CanonCr2 &&
+		                                            state.IfdCompression == 0 &&
+		                                            IsJpegAtOffset(input, state.StripOffset);
+		if ( hasStripCandidate &&
+		     ( IsJpegCompression(state.IfdCompression) || isCanonStripPreviewWithoutCompression ) &&
 		     !shouldRejectCanonLosslessStrip )
 		{
 			previews.Add(new PreviewCandidate
@@ -569,7 +638,7 @@ public partial class TiffEmbeddedPreviewExtractor
 				return ( false, 0, 0 );
 			}
 
-			var (candidateOffset, candidateLength) = ExtractTagPairValues(
+			var (candidateOffset, candidateLength) = ExtractTagPairValues(input,
 				buf.AsSpan(0, entryBytes), entryCount, query);
 			return ( candidateOffset > 0, candidateOffset, candidateLength );
 		}
@@ -609,6 +678,58 @@ public partial class TiffEmbeddedPreviewExtractor
 	private static bool TryReadFull(Stream input, byte[] buffer, int bytesToRead)
 	{
 		return input.Read(buffer, 0, bytesToRead) >= bytesToRead;
+	}
+
+	internal static (uint Offset, uint Length) ExtractTagPairValues(Stream input,
+		ReadOnlySpan<byte> entries,
+		int entryCount,
+		IfdTagPairQuery query)
+	{
+		var candidateOffset = 0u;
+		var candidateLength = 0u;
+
+		for ( var i = 0; i < entryCount; i++ )
+		{
+			var e = entries.Slice(i * 12, 12);
+			var tag = ReadUInt16(e, query.LittleEndian);
+			if ( tag != query.PrimaryOffsetTag && tag != query.PrimaryLengthTag &&
+			     ( query.AltTag == 0 || tag != query.AltTag ) )
+			{
+				continue;
+			}
+
+			var type = ReadUInt16(e[2..], query.LittleEndian);
+			var n = ReadUInt32(e[4..], query.LittleEndian);
+			var rawValue = ReadUInt32(e[8..], query.LittleEndian);
+			if ( !TryReadFirstIfdValue(input, type, n, rawValue, query.LittleEndian,
+				    out var value) )
+			{
+				continue;
+			}
+
+			if ( tag == query.PrimaryOffsetTag )
+			{
+				candidateOffset = value;
+				continue;
+			}
+
+			if ( tag == query.PrimaryLengthTag )
+			{
+				candidateLength = value;
+				continue;
+			}
+
+			if ( candidateOffset == 0 )
+			{
+				candidateOffset = value;
+			}
+			else if ( candidateLength == 0 )
+			{
+				candidateLength = value;
+			}
+		}
+
+		return ( candidateOffset, candidateLength );
 	}
 
 	internal static (uint Offset, uint Length) ExtractTagPairValues(ReadOnlySpan<byte> entries,
