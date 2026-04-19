@@ -35,6 +35,20 @@ internal static class RawDngPipelineRunner
 		}
 
 		pipelineError = error;
+
+		// Try DNG-aware JPEG preview extraction first (reads SubIFD preview with proper color)
+		if ( input.CanSeek )
+		{
+			input.Seek(0, SeekOrigin.Begin);
+		}
+
+		if ( DngSubsetReader.TryExtractJpegPreview(input, output, out var previewError) )
+		{
+			error = string.Empty;
+			return true;
+		}
+
+		// Fall back to binary JPEG container scan
 		if ( JpegContainerFallback.TryExtractLargestJpeg(input, output, out var fallbackError) )
 		{
 			error = string.Empty;
@@ -47,7 +61,7 @@ internal static class RawDngPipelineRunner
 				: fallbackError )
 			: ( string.IsNullOrEmpty(fallbackError)
 				? pipelineError
-				: $"{pipelineError}; fallback: {fallbackError}" );
+				: $"{pipelineError}; preview: {previewError}; fallback: {fallbackError}" );
 		return false;
 	}
 }

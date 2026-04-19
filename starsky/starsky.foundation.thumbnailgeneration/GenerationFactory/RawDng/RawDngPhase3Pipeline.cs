@@ -10,6 +10,7 @@ internal enum RawDngPipelineStep
 	BilinearDemosaic,
 	WhiteBalance,
 	ColorMatrix,
+	ExposureCompensation,
 	ToneCurve
 }
 
@@ -45,10 +46,13 @@ internal static class RawDngPhase3Pipeline
 				ExecuteStep(state, Demosaic, onStep, RawDngPipelineStep.BilinearDemosaic))
 			.Add(state =>
 				ExecuteStep(state, ApplyWhiteBalance, onStep, RawDngPipelineStep.WhiteBalance))
-			.Add(state =>
-				ExecuteStep(state, ApplyColorMatrix, onStep, RawDngPipelineStep.ColorMatrix))
-			.Add(state =>
-				ExecuteStep(state, ApplyToneMapping, onStep, RawDngPipelineStep.ToneCurve));
+		.Add(state =>
+			ExecuteStep(state, ApplyColorMatrix, onStep, RawDngPipelineStep.ColorMatrix))
+		.Add(state =>
+			ExecuteStep(state, ApplyExposureCompensation, onStep,
+				RawDngPipelineStep.ExposureCompensation))
+		.Add(state =>
+			ExecuteStep(state, ApplyToneMapping, onStep, RawDngPipelineStep.ToneCurve));
 
 		return pipeline.Run(initial);
 	}
@@ -136,6 +140,32 @@ internal static class RawDngPhase3Pipeline
 			WhiteBalanceGains = state.WhiteBalanceGains,
 			CameraToSrgbMatrix = cameraToSrgb
 		};
+	}
+
+	private static RawDngPipelineState ApplyExposureCompensation(RawDngPipelineState state)
+	{
+		if ( state.LinearRgb == null )
+		{
+			return state;
+		}
+
+		// RAW images are intentionally underexposed. Apply +1.5 EV exposure boost
+		// so that the Hable tone curve has appropriately-bright input values.
+		const float exposureEv = 1.5f;
+		var gain = MathF.Pow(2f, exposureEv);
+		var h = state.LinearRgb.GetLength(0);
+		var w = state.LinearRgb.GetLength(1);
+		for ( var y = 0; y < h; y++ )
+		{
+			for ( var x = 0; x < w; x++ )
+			{
+				state.LinearRgb[y, x, 0] *= gain;
+				state.LinearRgb[y, x, 1] *= gain;
+				state.LinearRgb[y, x, 2] *= gain;
+			}
+		}
+
+		return state;
 	}
 
 	private static RawDngPipelineState ApplyToneMapping(RawDngPipelineState state)

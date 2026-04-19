@@ -30,17 +30,51 @@ internal static class ToneMapping
 
 	internal static float MapValue(float linear, float invGamma, ToneCurve curve)
 	{
-		var value = linear <= 0f ? 0f : ( float ) Math.Pow(linear, invGamma);
-		value = curve switch
+		if ( linear <= 0f )
 		{
-			ToneCurve.Hable => Hable(value),
-			ToneCurve.Aces => Aces(value),
-			_ => value
-		};
+			return 0f;
+		}
+
+		// Step 1: apply tone curve on linear light values
+		float mapped;
+		switch ( curve )
+		{
+			case ToneCurve.Hable:
+				mapped = HableNormalized(linear);
+				break;
+			case ToneCurve.Aces:
+				mapped = Aces(linear);
+				break;
+			default:
+				mapped = linear;
+				break;
+		}
+
+		// Step 2: gamma-encode the tone-mapped result
+		var value = ( float ) Math.Pow(Math.Max(mapped, 0f), invGamma);
 		return Math.Clamp(value, 0f, 1f);
 	}
 
-	private static float Hable(float x)
+	/// <summary>
+	/// Uncharted 2 / Hable filmic curve applied to linear input and normalized
+	/// by the curve's white point so that a value of 1 maps to 1.
+	/// </summary>
+	private static float HableNormalized(float x)
+	{
+		// White point: scene-linear value that should map to display white.
+		// 4.0 works well for typical RAW input after +1.5 EV compensation.
+		const float w = 4.0f;
+		var tw = HableF(w);
+		if ( tw <= 0f )
+		{
+			return 0f;
+		}
+
+		return HableF(x) / tw;
+	}
+
+	/// <summary>Raw Hable curve operator (Uncharted 2 filmic).</summary>
+	private static float HableF(float x)
 	{
 		const float a = 0.15f;
 		const float b = 0.50f;
@@ -48,16 +82,8 @@ internal static class ToneMapping
 		const float d = 0.20f;
 		const float e = 0.02f;
 		const float f = 0.30f;
-		const float w = 11.2f;
 
-		var t = ( x * ( a * x + c * b ) + d * e ) / ( x * ( a * x + b ) + d * f ) - e / f;
-		var tw = ( w * ( a * w + c * b ) + d * e ) / ( w * ( a * w + b ) + d * f ) - e / f;
-		if ( tw <= 0f )
-		{
-			return 0f;
-		}
-
-		return t / tw;
+		return ( x * ( a * x + c * b ) + d * e ) / ( x * ( a * x + b ) + d * f ) - e / f;
 	}
 
 	private static float Aces(float x)

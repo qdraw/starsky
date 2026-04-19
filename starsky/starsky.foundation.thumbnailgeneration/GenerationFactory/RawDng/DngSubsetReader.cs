@@ -23,6 +23,20 @@ internal sealed class DngRawImage
 	public required byte[] CfaPattern { get; init; }
 }
 
+internal sealed class DngRawCapture
+{
+	public required int Width { get; init; }
+	public required int Height { get; init; }
+	public required int BitsPerSample { get; init; }
+	public required ushort Compression { get; init; }
+	public required bool IsTiled { get; init; }
+	public required int RowsPerStrip { get; init; }
+	public required int TileWidth { get; init; }
+	public required int TileLength { get; init; }
+	public required byte[] CfaPattern { get; init; }
+	public required byte[][] EncodedChunks { get; init; }
+}
+
 internal static class DngSubsetReader
 {
 	private const ushort TagSubIfds = 0x014A;
@@ -36,6 +50,10 @@ internal static class DngSubsetReader
 	private const ushort TagRowsPerStrip = 0x0116;
 	private const ushort TagStripByteCounts = 0x0117;
 	private const ushort TagPredictor = 0x013D;
+	private const ushort TagTileWidth = 0x0142;
+	private const ushort TagTileLength = 0x0143;
+	private const ushort TagTileOffsets = 0x0144;
+	private const ushort TagTileByteCounts = 0x0145;
 	private const ushort TagCfaRepeatPatternDim = 0x828D;
 	private const ushort TagCfaPattern = 0x828E;
 	private const ushort TagBlackLevel = 0xC61A;
@@ -44,6 +62,8 @@ internal static class DngSubsetReader
 	private const ushort TagColorMatrix1 = 0xC621;
 
 	private const ushort CompressionUncompressed = 1;
+	private const ushort CompressionJpegOldStyle = 6;
+	private const ushort CompressionJpeg = 7;
 	private const ushort CompressionDeflate = 8;
 	private const ushort CompressionAdobeDeflate = 32946;
 	private const ushort PhotometricCfa = 32803;
@@ -72,6 +92,225 @@ internal static class DngSubsetReader
 			return false;
 		}
 
+		return true;
+	}
+
+	internal static bool TryExtractRawCapture(Stream input, out DngRawCapture? capture,
+		out string error)
+	{
+		capture = null;
+		error = string.Empty;
+
+		if ( !TryParseHeader(input, out var littleEndian, out var firstIfdOffset) )
+		{
+			error = "Invalid TIFF/DNG header";
+			return false;
+		}
+
+		var ifd0 = ReadIfd(input, firstIfdOffset, littleEndian);
+		if ( ifd0 == null )
+		{
+			error = "Failed to read IFD0";
+			return false;
+		}
+
+		var rawIfd = ResolveRawIfd(input, littleEndian, ifd0) ?? ifd0;
+		if ( !TryGetUnsigned(input, littleEndian, rawIfd, TagImageWidth, out var widthU) ||
+		     !TryGetUnsigned(input, littleEndian, rawIfd, TagImageLength, out var heightU) ||
+		     !TryGetUnsigned(input, littleEndian, rawIfd, TagBitsPerSample, out var bitsU) ||
+		     !TryGetUnsigned(input, littleEndian, rawIfd, TagCompression, out var compU) )
+		{
+			error = "Missing RAW IFD metadata";
+			return false;
+		}
+
+		var hasTiles = TryGetUnsignedArray(input, littleEndian, rawIfd, TagTileOffsets,
+			out var tileOffsets) && tileOffsets.Length > 0;
+		var hasStrips = TryGetUnsignedArray(input, littleEndian, rawIfd, TagStripOffsets,
+			out var stripOffsets) && stripOffsets.Length > 0;
+
+		if ( !hasTiles && !hasStrips )
+		{
+			error = "No strip/tile payload found in RAW IFD";
+			return false;
+		}
+
+		uint[] offsets;
+		uint[] counts;
+		var rowsPerStrip = TryGetUnsigned(input, littleEndian, rawIfd, TagRowsPerStrip, out var rowsU)
+			? ( int ) rowsU
+			: 0;
+		var tileWidth = TryGetUnsigned(input, littleEndian, rawIfd, TagTileWidth, out var tw)
+			? ( int ) tw
+			: 0;
+		var tileLength = TryGetUnsigned(input, littleEndian, rawIfd, TagTileLength, out var tl)
+			? ( int ) tl
+			: 0;
+
+		if ( hasTiles )
+		{
+			if ( !TryGetUnsignedArray(input, littleEndian, rawIfd, TagTileByteCounts,
+				    out var tileCounts) || tileCounts.Length != tileOffsets.Length )
+			{
+				error = "Invalid tile offsets/counts metadata";
+				return false;
+			}
+
+			offsets = tileOffsets;
+			counts = tileCounts;
+		}
+		else
+		{
+			if ( !TryGetUnsignedArray(input, littleEndian, rawIfd, TagStripByteCounts,
+				    out var stripCounts) || stripCounts.Length != stripOffsets.Length )
+			{
+				error = "Invalid strip offsets/counts metadata";
+				return false;
+			}
+
+			offsets = stripOffsets;
+			counts = stripCounts;
+		}
+
+		var chunks = new byte[offsets.Length][];
+		for ( var i = 0; i < offsets.Length; i++ )
+		{
+			var chunk = new byte[counts[i]];
+			if ( !TrySeekAndRead(input, offsets[i], chunk, 0, chunk.Length) )
+			{
+				error = "Failed to read RAW payload chunk";
+				return false;
+			}
+
+			chunks[i] = chunk;
+		}
+
+		var cfaPattern = TryGetByteArray(input, littleEndian, rawIfd, TagCfaPattern, out var cfa) &&
+		                 cfa.Length >= 4
+			? cfa.Take(4).ToArray()
+			: [0, 1, 1, 2];
+
+		capture = new DngRawCapture
+		{
+			Width = ( int ) widthU,
+			Height = ( int ) heightU,
+			BitsPerSample = ( int ) bitsU,
+			Compression = ( ushort ) compU,
+			IsTiled = hasTiles,
+			RowsPerStrip = rowsPerStrip,
+			TileWidth = tileWidth,
+			TileLength = tileLength,
+			CfaPattern = cfaPattern,
+			EncodedChunks = chunks
+		};
+
+		return true;
+	}
+
+	/// <summary>
+	/// Scans all SubIFDs in the DNG for a JPEG-compressed, non-raw (non-CFA) preview image
+	/// and writes the largest found (by pixel area) to <paramref name="output"/>.
+	/// </summary>
+	public static bool TryExtractJpegPreview(Stream input, Stream output, out string error)
+	{
+		error = string.Empty;
+
+		if ( !TryParseHeader(input, out var littleEndian, out var firstIfdOffset) )
+		{
+			error = "Invalid TIFF/DNG header";
+			return false;
+		}
+
+		var ifd0 = ReadIfd(input, firstIfdOffset, littleEndian);
+		if ( ifd0 == null )
+		{
+			error = "Failed to read IFD0";
+			return false;
+		}
+
+		// Scan all SubIFDs; collect (jpegBytes, pixelArea) pairs for JPEG-compressed, non-CFA IFDs
+		var candidates = new List<(byte[] Data, long Area)>();
+
+		if ( TryGetUnsignedArray(input, littleEndian, ifd0, TagSubIfds, out var subIfdOffsets) )
+		{
+			foreach ( var subOffset in subIfdOffsets )
+			{
+				var sub = ReadIfd(input, subOffset, littleEndian);
+				if ( sub == null )
+				{
+					continue;
+				}
+
+				if ( !TryGetUnsigned(input, littleEndian, sub, TagCompression, out var comp) )
+				{
+					continue;
+				}
+
+				// Only standard JPEG (old or new style), not raw lossless JPEG variants
+				if ( comp is not ( CompressionJpegOldStyle or CompressionJpeg ) )
+				{
+					continue;
+				}
+
+				// Skip CFA (raw sensor) IFDs — we only want rendered color previews
+				if ( TryGetUnsigned(input, littleEndian, sub, TagPhotometricInterpretation,
+					    out var photo) && photo == PhotometricCfa )
+				{
+					continue;
+				}
+
+				TryGetUnsigned(input, littleEndian, sub, TagImageWidth, out var w);
+				TryGetUnsigned(input, littleEndian, sub, TagImageLength, out var h);
+
+				if ( !TryGetUnsignedArray(input, littleEndian, sub, TagStripOffsets,
+					    out var stripOffsets) ||
+				     !TryGetUnsignedArray(input, littleEndian, sub, TagStripByteCounts,
+					    out var stripCounts) ||
+				     stripOffsets.Length == 0 || stripOffsets.Length != stripCounts.Length )
+				{
+					continue;
+				}
+
+				var totalBytes = checked(( int ) stripCounts.Sum(c => ( long ) c));
+				var jpegBytes = new byte[totalBytes];
+				var cursor = 0;
+				var readOk = true;
+				for ( var i = 0; i < stripOffsets.Length; i++ )
+				{
+					if ( !TrySeekAndRead(input, stripOffsets[i], jpegBytes, cursor,
+						    ( int ) stripCounts[i]) )
+					{
+						readOk = false;
+						break;
+					}
+
+					cursor += ( int ) stripCounts[i];
+				}
+
+				if ( !readOk || jpegBytes.Length < 4 )
+				{
+					continue;
+				}
+
+				// Verify JPEG SOI signature
+				if ( jpegBytes[0] != 0xFF || jpegBytes[1] != 0xD8 )
+				{
+					continue;
+				}
+
+				candidates.Add(( jpegBytes, ( long ) w * h ));
+			}
+		}
+
+		if ( candidates.Count == 0 )
+		{
+			error = "No JPEG preview SubIFD found in DNG";
+			return false;
+		}
+
+		// Write the highest-resolution candidate
+		var best = candidates.OrderByDescending(c => c.Area).First().Data;
+		output.Write(best, 0, best.Length);
 		return true;
 	}
 
@@ -129,19 +368,67 @@ internal static class DngSubsetReader
 			return false;
 		}
 
-		if ( !TryGetUnsignedArray(input, littleEndian, ifd, TagStripOffsets, out var stripOffsets) ||
-		     !TryGetUnsignedArray(input, littleEndian, ifd, TagStripByteCounts,
-			     out var stripByteCounts) ||
-		     stripOffsets.Length == 0 || stripByteCounts.Length == 0 )
+		// Check for tiled or strip-based image
+		var hasTiles = TryGetUnsignedArray(input, littleEndian, ifd, TagTileOffsets,
+			out var tileOffsets) && tileOffsets.Length > 0;
+		var hasStrips = TryGetUnsignedArray(input, littleEndian, ifd, TagStripOffsets,
+			out var stripOffsets) && stripOffsets.Length > 0;
+
+		if ( !hasTiles && !hasStrips )
 		{
-			error = "Missing strip data pointers";
+			error = "Missing tile or strip data pointers";
 			return false;
 		}
 
-		if ( stripOffsets.Length != stripByteCounts.Length )
+		uint[] offsets, counts;
+		int tileWidth = 0, tileLength = 0;
+
+		if ( hasTiles )
 		{
-			error = "Strip offsets/counts mismatch";
-			return false;
+			// Tiled image
+			if ( !TryGetUnsignedArray(input, littleEndian, ifd, TagTileByteCounts,
+				    out var tileByteCounts) || tileByteCounts.Length == 0 )
+			{
+				error = "Missing tile byte counts";
+				return false;
+			}
+
+			if ( tileOffsets.Length != tileByteCounts.Length )
+			{
+				error = "Tile offsets/counts mismatch";
+				return false;
+			}
+
+			if ( !TryGetUnsigned(input, littleEndian, ifd, TagTileWidth, out var tw) ||
+			     !TryGetUnsigned(input, littleEndian, ifd, TagTileLength, out var tl) )
+			{
+				error = "Missing tile dimensions";
+				return false;
+			}
+
+			tileWidth = ( int ) tw;
+			tileLength = ( int ) tl;
+			offsets = tileOffsets;
+			counts = tileByteCounts;
+		}
+		else
+		{
+			// Strip-based image
+			if ( !TryGetUnsignedArray(input, littleEndian, ifd, TagStripByteCounts,
+				    out var stripByteCounts) || stripByteCounts.Length == 0 )
+			{
+				error = "Missing strip byte counts";
+				return false;
+			}
+
+			if ( stripOffsets.Length != stripByteCounts.Length )
+			{
+				error = "Strip offsets/counts mismatch";
+				return false;
+			}
+
+			offsets = stripOffsets;
+			counts = stripByteCounts;
 		}
 
 		var width = ( int ) widthU;
@@ -168,11 +455,23 @@ internal static class DngSubsetReader
 
 		var bayer = new ushort[height, width];
 		var pixelCount = width * height;
-		if ( !TryReadPixels(input, littleEndian, stripOffsets, stripByteCounts, bitsPerSample,
-			    width, height, rowsPerStrip, ( ushort ) compression, bayer) )
+		if ( hasTiles )
 		{
-			error = "Failed to decode strip payload";
-			return false;
+			if ( !TryReadPixelsTiled(input, littleEndian, offsets, counts, bitsPerSample,
+				    width, height, tileWidth, tileLength, ( ushort ) compression, bayer) )
+			{
+				error = "Failed to decode tile payload";
+				return false;
+			}
+		}
+		else
+		{
+			if ( !TryReadPixels(input, littleEndian, offsets, counts, bitsPerSample,
+				    width, height, rowsPerStrip, ( ushort ) compression, bayer) )
+			{
+				error = "Failed to decode strip payload";
+				return false;
+			}
 		}
 
 		var blackLevel = TryGetFloat(input, littleEndian, ifd, TagBlackLevel, out var black)
@@ -265,6 +564,85 @@ internal static class DngSubsetReader
 		}
 
 		return rowCursor == height;
+	}
+
+	private static bool TryReadPixelsTiled(Stream input, bool littleEndian,
+		IReadOnlyList<uint> offsets, IReadOnlyList<uint> counts, int bitsPerSample, int width,
+		int height, int tileWidth, int tileLength, ushort compression, ushort[,] bayer)
+	{
+		if ( width <= 0 || height <= 0 || tileWidth <= 0 || tileLength <= 0 )
+		{
+			return false;
+		}
+
+		var tilesAcross = ( width + tileWidth - 1 ) / tileWidth;
+		var tilesDown = ( height + tileLength - 1 ) / tileLength;
+		if ( offsets.Count != tilesAcross * tilesDown )
+		{
+			return false;
+		}
+
+		var tileIndex = 0;
+		for ( var ty = 0; ty < tilesDown; ty++ )
+		{
+			for ( var tx = 0; tx < tilesAcross; tx++ )
+			{
+				if ( tileIndex >= offsets.Count )
+				{
+					return false;
+				}
+
+				var count = ( int ) counts[tileIndex];
+				if ( count <= 0 )
+				{
+					return false;
+				}
+
+				var encoded = new byte[count];
+				if ( !TrySeekAndRead(input, offsets[tileIndex], encoded, 0, count) )
+				{
+					return false;
+				}
+
+				var payload = compression switch
+				{
+					CompressionUncompressed => encoded,
+					CompressionDeflate or CompressionAdobeDeflate => Inflate(encoded),
+					_ => null
+				};
+
+				if ( payload == null )
+				{
+					return false;
+				}
+
+				var tilePixelCount = tileWidth * tileLength;
+				var decoded = DecodePixels(payload, littleEndian, bitsPerSample, tilePixelCount);
+				if ( decoded == null )
+				{
+					return false;
+				}
+
+				// Copy tile data into Bayer array
+				var tileStartY = ty * tileLength;
+				var tileStartX = tx * tileWidth;
+				for ( var p = 0; p < decoded.Length; p++ )
+				{
+					var py = p / tileWidth;
+					var px = p % tileWidth;
+					var y = tileStartY + py;
+					var x = tileStartX + px;
+					if ( y < height && x < width )
+					{
+						bayer[y, x] = decoded[p];
+					}
+				}
+
+				tileIndex++;
+			}
+		}
+
+		return true;
 	}
 
 	private static byte[]? Inflate(byte[] compressed)
