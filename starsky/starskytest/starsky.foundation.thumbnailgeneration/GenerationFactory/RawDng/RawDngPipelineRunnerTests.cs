@@ -24,11 +24,12 @@ public class RawDngPipelineRunnerTests
 			ForwardMatrix1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
 			CameraCalibration1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
 			CameraCalibration2 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
-			Bayer = new ushort[,]
-			{
-				{ 0, 512 },
-				{ 1024, 1024 }
-			}
+			CalibrationIlluminant1 = 17,
+ 			Bayer = new ushort[,]
+ 			{
+ 				{ 0, 512 },
+ 				{ 1024, 1024 }
+ 			}
 		};
 
 		var steps = new List<RawDngPipelineStep>();
@@ -160,6 +161,8 @@ public class RawDngPipelineRunnerTests
 		data[offset + 3] = ( byte ) ( ( value >> 24 ) & 0xFF );
 	}
 }
+
+
 
 
 

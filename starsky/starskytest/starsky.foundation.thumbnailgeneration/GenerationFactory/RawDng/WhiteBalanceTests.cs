@@ -31,4 +31,3 @@ public class WhiteBalanceTests
 		Assert.AreEqual(0.4f, rgb[0, 0, 2], 1e-6f);
 	}
 }
-

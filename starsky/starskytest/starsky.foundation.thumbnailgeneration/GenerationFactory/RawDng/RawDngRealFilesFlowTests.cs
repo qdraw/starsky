@@ -182,33 +182,33 @@ public class RawDngRealFilesFlowTests
 				return "NOT_TIFF";
 			}
 
-		// Extract from IFD0 first to see if there are SubIFDs
-		uint width = 0, height = 0, bitsPerSample = 0, compression = 0;
-		var ifdOffset = ReadUInt32(header, 4, littleEndian);
-		var subIfdOffset = 0u;
+			// Extract from IFD0 first to see if there are SubIFDs
+			uint width = 0, height = 0, bitsPerSample = 0, compression = 0;
+			var ifdOffset = ReadUInt32(header, 4, littleEndian);
+			var subIfdOffset = 0u;
 
-		if ( ifdOffset > 0 && ifdOffset < fs.Length )
-		{
-			var (w, h, b, c, sub) = ReadIfdMetadata(fs, ifdOffset, littleEndian);
-			width = w;
-			height = h;
-			bitsPerSample = b;
-			compression = c;
-			subIfdOffset = sub;
-		}
-
-		// If there's a SubIFD with CFA photometric (raw image), use that instead
-		if ( subIfdOffset > 0 && subIfdOffset < fs.Length )
-		{
-			var (w, h, b, c, _) = ReadIfdMetadata(fs, subIfdOffset, littleEndian);
-			if ( w > 0 && h > 0 ) // SubIFD has valid dimensions
+			if ( ifdOffset > 0 && ifdOffset < fs.Length )
 			{
+				var (w, h, b, c, sub) = ReadIfdMetadata(fs, ifdOffset, littleEndian);
 				width = w;
 				height = h;
 				bitsPerSample = b;
 				compression = c;
+				subIfdOffset = sub;
 			}
-		}
+
+			// If there's a SubIFD with CFA photometric (raw image), use that instead
+			if ( subIfdOffset > 0 && subIfdOffset < fs.Length )
+			{
+				var (w, h, b, c, _) = ReadIfdMetadata(fs, subIfdOffset, littleEndian);
+				if ( w > 0 && h > 0 ) // SubIFD has valid dimensions
+				{
+					width = w;
+					height = h;
+					bitsPerSample = b;
+					compression = c;
+				}
+			}
 
 			var compressionName = compression switch
 			{

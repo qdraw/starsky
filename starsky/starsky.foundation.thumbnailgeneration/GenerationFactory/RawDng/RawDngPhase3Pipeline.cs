@@ -127,7 +127,13 @@ internal static class RawDngPhase3Pipeline
 		}
 
 		var cameraToSrgb = ColorMatrixTransform.BuildCameraToSrgb(state.Raw.ColorMatrix1,
-			state.Raw.CameraCalibration1);
+			state.Raw.ForwardMatrix1, state.Raw.CalibrationIlluminant1,
+			state.Raw.CameraCalibration1,
+			state.Raw.ColorMatrix2,
+			state.Raw.ForwardMatrix2,
+			state.Raw.CalibrationIlluminant2,
+			state.Raw.CameraCalibration2,
+			state.Raw.AsShotNeutral);
 		ColorMatrixTransform.ApplyInPlace(state.LinearRgb, cameraToSrgb);
 
 		return new RawDngPipelineState
@@ -249,7 +255,4 @@ internal static class RawDngPhase3Pipeline
 		return copy;
 	}
 }
-
-
-
 

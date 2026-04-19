@@ -66,6 +66,48 @@ public class DngSubsetReaderTests
 		Assert.AreEqual(( ushort ) 400, image.Bayer[1, 1]);
 	}
 
+	[TestMethod]
+	public void TryLoad_WithD50Illuminant_StoresLeicaIlluminant()
+	{
+		// Leica cameras typically use D50 illuminant (code 23)
+		using var ms = BuildMinimalDng(16, new byte[8], 8, illuminant: 23);
+
+		var ok = DngSubsetReader.TryLoad(ms, out var image, out var error);
+
+		Assert.IsTrue(ok, error);
+		Assert.IsNotNull(image);
+		Assert.AreEqual(( ushort ) 23, image.CalibrationIlluminant1, "Leica D50 illuminant");
+	}
+
+	[TestMethod]
+	public void TryLoad_WithMissingIlluminant_DefaultsToD65()
+	{
+		// When illuminant is missing, should default to D65 (21), not unknown (0)
+		using var ms = BuildMinimalDng(16, new byte[8], 8, illuminant: null);
+
+		var ok = DngSubsetReader.TryLoad(ms, out var image, out var error);
+
+		Assert.IsTrue(ok, error);
+		Assert.IsNotNull(image);
+		Assert.AreEqual(( ushort ) 21, image.CalibrationIlluminant1, "Should default to D65");
+	}
+
+	[TestMethod]
+	public void TryLoad_WithPerChannelBlackWhiteLevels_PreservesArray()
+	{
+		// Leica stores per-CFA-site black/white levels like [60, 50, 50, 60]
+		var blackLevels = new float[] { 60f, 50f, 50f, 60f };
+		var whiteLevels = new float[] { 4000f, 4000f, 4000f, 4000f };
+		using var ms = BuildMinimalDng(16, new byte[8], 8, blackLevels: blackLevels, whiteLevels: whiteLevels);
+
+		var ok = DngSubsetReader.TryLoad(ms, out var image, out var error);
+
+		Assert.IsTrue(ok, error);
+		Assert.IsNotNull(image);
+		CollectionAssert.AreEqual(blackLevels, image.BlackLevel);
+		CollectionAssert.AreEqual(whiteLevels, image.WhiteLevel);
+	}
+
 	private static MemoryStream BuildMinimalDng()
 	{
 		var raw = new byte[8];
@@ -76,9 +118,17 @@ public class DngSubsetReaderTests
 		return BuildMinimalDng(16, raw, raw.Length);
 	}
 
-	private static MemoryStream BuildMinimalDng(ushort bitsPerSample, byte[] rawPayload,
-		int stripByteCount)
+	private static MemoryStream BuildMinimalDng(ushort bitsPerSample = 16, byte[]? rawPayload = null,
+		int stripByteCount = 0, float[]? blackLevels = null, float[]? whiteLevels = null,
+		ushort? illuminant = null)
 	{
+		rawPayload ??= new byte[8];
+		WriteU16(rawPayload, 0, 100);
+		WriteU16(rawPayload, 2, 200);
+		WriteU16(rawPayload, 4, 300);
+		WriteU16(rawPayload, 6, 400);
+		stripByteCount = rawPayload.Length;
+
 		var data = new byte[512];
 
 		// TIFF header: little-endian, magic 42, IFD0 at offset 8
@@ -87,13 +137,23 @@ public class DngSubsetReaderTests
 		WriteU16(data, 2, 42);
 		WriteU32(data, 4, 8);
 
-		var entryCount = 14;
+		// Prepare black/white level arrays
+		blackLevels ??= [64f, 64f, 64f, 64f];
+		whiteLevels ??= [1023f, 1023f, 1023f, 1023f];
+
+		// Count entries needed
+		var hasBlackArray = blackLevels.Length > 1;
+		var hasWhiteArray = whiteLevels.Length > 1;
+		var entryCount = 14 + ( hasBlackArray ? 1 : 0 ) + ( hasWhiteArray ? 1 : 0 );
+
 		WriteU16(data, 8, ( ushort ) entryCount);
 		var entryBase = 10;
 
 		var rawDataOffset = 220u;
 		var asShotNeutralOffset = 240u;
 		var colorMatrixOffset = 264u;
+		var blackLevelOffset = 300u;
+		var whiteLevelOffset = 332u;
 
 		var idx = 0;
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0100, 4, 1, 2); // width
@@ -107,9 +167,31 @@ public class DngSubsetReaderTests
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0117, 4, 1, ( uint ) stripByteCount); // strip byte counts
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x828D, 3, 2, 0x00020002); // CFA repeat 2x2 inline
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x828E, 1, 4, 0x02010100); // CFA pattern RGGB inline
-		WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61A, 3, 1, 64); // black
-		WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61D, 3, 1, 1023); // white
-		WriteIfdEntry(data, entryBase + idx * 12, 0xC628, 5, 3, asShotNeutralOffset); // AsShotNeutral
+
+		if ( hasBlackArray )
+		{
+			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61A, 5, ( uint ) blackLevels.Length, blackLevelOffset); // black array
+		}
+		else
+		{
+			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61A, 3, 1, ( uint ) ( int ) blackLevels[0]); // black scalar
+		}
+
+		if ( hasWhiteArray )
+		{
+			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61D, 5, ( uint ) whiteLevels.Length, whiteLevelOffset); // white array
+		}
+		else
+		{
+			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61D, 3, 1, ( uint ) ( int ) whiteLevels[0]); // white scalar
+		}
+
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0xC628, 5, 3, asShotNeutralOffset); // AsShotNeutral
+
+		if ( illuminant.HasValue )
+		{
+			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC65A, 3, 1, illuminant.Value); // CalibrationIlluminant1
+		}
 
 		// Next IFD = 0
 		WriteU32(data, entryBase + entryCount * 12, 0);
@@ -122,13 +204,23 @@ public class DngSubsetReaderTests
 		WriteRational(data, ( int ) asShotNeutralOffset + 8, 1, 1);
 		WriteRational(data, ( int ) asShotNeutralOffset + 16, 2, 1);
 
-		// Optional ColorMatrix1 (identity) to exercise parser
-		for ( var i = 0; i < 9; i++ )
+		// Black level array
+		if ( hasBlackArray && blackLevelOffset + blackLevels.Length * 8 <= data.Length )
 		{
-			WriteSignedRational(data, ( int ) colorMatrixOffset + i * 8, i % 4 == 0 ? 1 : 0, 1);
+			for ( var i = 0; i < blackLevels.Length; i++ )
+			{
+				WriteRational(data, ( int ) blackLevelOffset + i * 8, ( uint ) blackLevels[i], 1);
+			}
 		}
 
-		// Patch in ColorMatrix1 entry by replacing AsShotNeutral slot if needed is intentionally omitted in minimal case.
+		// White level array
+		if ( hasWhiteArray && whiteLevelOffset + whiteLevels.Length * 8 <= data.Length )
+		{
+			for ( var i = 0; i < whiteLevels.Length; i++ )
+			{
+				WriteRational(data, ( int ) whiteLevelOffset + i * 8, ( uint ) whiteLevels[i], 1);
+			}
+		}
 
 		return new MemoryStream(data);
 	}

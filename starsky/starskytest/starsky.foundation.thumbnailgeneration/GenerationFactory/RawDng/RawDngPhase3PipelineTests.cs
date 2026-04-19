@@ -22,6 +22,7 @@ public class RawDngPhase3PipelineTests
 			ForwardMatrix1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
 			CameraCalibration1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
 			CameraCalibration2 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CalibrationIlluminant1 = 17, // D50
 			Bayer = new ushort[,]
 			{
 				{ 0, 512 },
@@ -54,8 +55,3 @@ public class RawDngPhase3PipelineTests
 		Assert.IsTrue(state.DisplayRgb[1, 1, 2] is >= 0f and <= 1f);
 	}
 }
-
-
-
-
-

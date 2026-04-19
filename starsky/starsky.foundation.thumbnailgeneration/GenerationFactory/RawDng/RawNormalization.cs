@@ -33,13 +33,13 @@ internal static class RawNormalization
 		{
 			for ( var x = 0; x < width; x++ )
 			{
-				// Determine which CFA channel this pixel belongs to
+				// CFA site index in 2x2 tile: 0..3
 				var cfaIndex = ( y & 1 ) * 2 + ( x & 1 );
 				var cfaChannel = cfaPattern[cfaIndex];
 				
-				// Clamp to available per-channel levels (max 4 CFA channels)
-				var blackLevel = cfaChannel < blackLevels.Length ? blackLevels[cfaChannel] : 0f;
-				var whiteLevel = cfaChannel < whiteLevels.Length ? whiteLevels[cfaChannel] : 65535f;
+				// DNG arrays can be per-site (common: 4 entries), per-color, or scalar.
+				var blackLevel = ResolveLevel(blackLevels, cfaIndex, cfaChannel, 0f);
+				var whiteLevel = ResolveLevel(whiteLevels, cfaIndex, cfaChannel, 65535f);
 
 				normalized[y, x] = NormalizeSample(bayer[y, x], blackLevel, whiteLevel);
 			}
@@ -48,16 +48,40 @@ internal static class RawNormalization
 		return normalized;
 	}
 
-	/// <summary>
-	/// Legacy overload for backward compatibility. Falls back to uniform black/white levels.
-	/// </summary>
-	internal static float[,] NormalizeBayerToLinear(ushort[,] bayer, float blackLevel,
-		float whiteLevel)
+	private static float ResolveLevel(float[] levels, int cfaIndex, int cfaChannel,
+		float fallback)
 	{
-		var blackLevels = new[] { blackLevel, blackLevel, blackLevel, blackLevel };
-		var whiteLevels = new[] { whiteLevel, whiteLevel, whiteLevel, whiteLevel };
-		var cfaPattern = new byte[] { 0, 1, 1, 2 }; // Assume RGGB
-		return NormalizeBayerToLinear(bayer, blackLevels, whiteLevels, cfaPattern);
+		if ( levels.Length == 0 )
+		{
+			return fallback;
+		}
+
+		if ( levels.Length == 1 )
+		{
+			return levels[0];
+		}
+
+		// For arrays with 2+ values, prefer per-CFA-site indexing (standard DNG interpretation)
+		// This handles cases where each value corresponds to a position in the 2×2 Bayer pattern:
+		// [0,1,1,2] RGGB pattern with levels [60,50,50,60] means:
+		//   Site 0 (R) → levels[0] = 60
+		//   Site 1 (G) → levels[1] = 50
+		//   Site 2 (G) → levels[2] = 50 (second green, can differ from site 1)
+		//   Site 3 (B) → levels[3] = 60
+		// This is the standard interpretation and works correctly for both Leica and standard cameras.
+		
+		if ( cfaIndex >= 0 && cfaIndex < levels.Length )
+		{
+			return levels[cfaIndex];
+		}
+
+		// Fallback: interpret as per-color indexing if cfaIndex is out of range.
+		// This handles cases with fewer than 4 values.
+		if ( cfaChannel >= 0 && cfaChannel < levels.Length )
+		{
+			return levels[cfaChannel];
+		}
+
+		return levels[^1];
 	}
 }
-

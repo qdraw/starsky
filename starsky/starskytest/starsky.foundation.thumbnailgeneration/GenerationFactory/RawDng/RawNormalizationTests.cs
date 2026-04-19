@@ -18,25 +18,7 @@ public class RawNormalizationTests
 		Assert.AreEqual(1f, RawNormalization.NormalizeSample(1024, black, white));
 		Assert.AreEqual(1f, RawNormalization.NormalizeSample(4095, black, white));
 	}
-
-	[TestMethod]
-	public void NormalizeBayerToLinear_ConvertsAllPixels()
-	{
-		ushort[,] bayer =
-		{
-			{ 64, 544 },
-			{ 1024, 2048 }
-		};
-
-		var normalized = RawNormalization.NormalizeBayerToLinear(bayer, 64f, 1024f);
-
-		Assert.AreEqual(2, normalized.GetLength(0));
-		Assert.AreEqual(2, normalized.GetLength(1));
-		Assert.AreEqual(0f, normalized[0, 0], 1e-6f);
-		Assert.AreEqual(0.5f, normalized[0, 1], 1e-6f);
-		Assert.AreEqual(1f, normalized[1, 0], 1e-6f);
-		Assert.AreEqual(1f, normalized[1, 1], 1e-6f);
-	}
+	
 
 	[TestMethod]
 	public void NormalizeSample_WithInvalidRange_ReturnsZero()

@@ -12,24 +12,207 @@ internal static class ColorMatrixTransform
 		{ 0.0556434f, -0.2040259f, 1.0572252f }
 	};
 
-	internal static float[,] BuildCameraToSrgb(float[,] colorMatrix1, float[,]? cameraCalibration1 = null)
+	// Bradford-style chromatic adaptation from D50 to D65 white point.
+	// This is a standard step when the camera profile (ColorMatrix1) is specified
+	// relative to a D50 illuminant, but the target sRGB space uses a D65 illuminant.
+	// Omitting this step is a common cause of red/magenta color casts.
+	private static readonly float[,] XyzD50ToD65 =
 	{
-		if ( !TryInvert3X3(colorMatrix1, out var cameraToXyz) )
+		{ 0.99044f, -0.01229f, -0.00336f },
+		{ -0.00713f, 1.01559f, 0.00118f },
+		{ -0.00094f, -0.00238f, 1.08369f }
+	};
+
+	internal static float[,] BuildCameraToSrgb(float[,] colorMatrix1,
+		float[,] forwardMatrix1, ushort calibrationIlluminant1,
+		float[,]? cameraCalibration1 = null,
+		float[,]? colorMatrix2 = null,
+		float[,]? forwardMatrix2 = null,
+		ushort? calibrationIlluminant2 = null,
+		float[,]? cameraCalibration2 = null,
+		float[]? asShotNeutral = null)
+	{
+		if ( !TryBuildCameraToXyz(colorMatrix1, forwardMatrix1, calibrationIlluminant1,
+			cameraCalibration1, out var cameraToXyz1) )
 		{
 			return Identity3X3();
 		}
 
-		// If camera calibration is provided (phone cameras especially need this),
-		// apply it first to correct per-channel color bias before full matrix transform.
-		if ( cameraCalibration1 != null && !IsIdentity3X3(cameraCalibration1) )
+		var cameraToXyz = cameraToXyz1;
+		if ( colorMatrix2 != null && calibrationIlluminant2.HasValue &&
+		    TryBuildCameraToXyz(colorMatrix2,
+			    forwardMatrix2 ?? Identity3X3(),
+			    calibrationIlluminant2.Value,
+			    cameraCalibration2,
+			    out var cameraToXyz2) &&
+		    TryEstimateCctFromDualProfiles(asShotNeutral, cameraToXyz1, cameraToXyz2,
+			    out var asShotCct) )
 		{
-			cameraToXyz = Multiply3X3(cameraCalibration1, cameraToXyz);
+			var cct1 = IlluminantToCct(calibrationIlluminant1);
+			var cct2 = IlluminantToCct(calibrationIlluminant2.Value);
+			var w = ComputeReciprocalTemperatureWeight(asShotCct, cct1, cct2);
+			cameraToXyz = Lerp3X3(cameraToXyz1, cameraToXyz2, w);
 		}
 
-		// Transform from camera XYZ to sRGB. 
-		// Note: ColorMatrix1 in DNG is designed to work with XYZ D50 or D65 depending on 
-		// the camera/software. Most modern implementations use D65 directly without extra adaptation.
+		// Final transform from the profile connection space (XYZ) to sRGB.
 		return Multiply3X3(XyzToSrgb, cameraToXyz);
+	}
+
+	private static bool TryBuildCameraToXyz(float[,] colorMatrix, float[,] forwardMatrix,
+		ushort calibrationIlluminant, float[,]? cameraCalibration, out float[,] cameraToXyz)
+	{
+		cameraToXyz = Identity3X3();
+		var cameraCalibrationInv = Identity3X3();
+		if ( cameraCalibration != null && !IsIdentity3X3(cameraCalibration) &&
+		     TryInvert3X3(cameraCalibration, out var invCalibration) )
+		{
+			cameraCalibrationInv = invCalibration;
+		}
+
+		if ( !IsIdentity3X3(forwardMatrix) )
+		{
+			cameraToXyz = Multiply3X3(forwardMatrix, cameraCalibrationInv);
+			return true;
+		}
+
+		if ( !TryInvert3X3(colorMatrix, out var invertedCameraToXyz) )
+		{
+			return false;
+		}
+
+		cameraToXyz = Multiply3X3(invertedCameraToXyz, cameraCalibrationInv);
+		
+		// Apply chromatic adaptation based on illuminant.
+		// D65 (21) is the standard for modern digital photography and sRGB.
+		// D50 (23) is used by legacy rangefinders (Leica) and needs adaptation.
+		// Other illuminants (17=D55, 20=StdA, etc.) are treated conservatively
+		// and get adaptation to D65 for best results in sRGB space.
+		var needsD50ToD65Adaptation = calibrationIlluminant switch
+		{
+			21 => false,  // D65 - no adaptation needed
+			1 => false,   // Daylight (equivalent to D65)
+			_ => true     // All others (including 23=D50, unknown) need adaptation
+		};
+		
+		if ( needsD50ToD65Adaptation )
+		{
+			cameraToXyz = Multiply3X3(XyzD50ToD65, cameraToXyz);
+		}
+
+		return true;
+	}
+
+	private static bool TryEstimateCctFromDualProfiles(float[]? asShotNeutral,
+		float[,] cameraToXyz1, float[,] cameraToXyz2, out float cct)
+	{
+		cct = 0f;
+		var ok1 = TryEstimateCctFromAsShotNeutral(asShotNeutral, cameraToXyz1, out var cct1);
+		var ok2 = TryEstimateCctFromAsShotNeutral(asShotNeutral, cameraToXyz2, out var cct2);
+
+		if ( ok1 && ok2 )
+		{
+			// Blend in reciprocal-temperature domain for better stability.
+			var r1 = 1f / Math.Max(1000f, cct1);
+			var r2 = 1f / Math.Max(1000f, cct2);
+			var r = ( r1 + r2 ) * 0.5f;
+			cct = 1f / r;
+			return true;
+		}
+
+		if ( ok1 )
+		{
+			cct = cct1;
+			return true;
+		}
+
+		if ( ok2 )
+		{
+			cct = cct2;
+			return true;
+		}
+
+		return false;
+	}
+
+	private static bool TryEstimateCctFromAsShotNeutral(float[]? asShotNeutral,
+		float[,] cameraToXyz, out float cct)
+	{
+		cct = 0f;
+		if ( asShotNeutral == null || asShotNeutral.Length < 3 )
+		{
+			return false;
+		}
+
+		var r = asShotNeutral[0];
+		var g = asShotNeutral[1];
+		var b = asShotNeutral[2];
+		if ( r <= 0f || g <= 0f || b <= 0f )
+		{
+			return false;
+		}
+
+		var x = cameraToXyz[0, 0] * r + cameraToXyz[0, 1] * g + cameraToXyz[0, 2] * b;
+		var y = cameraToXyz[1, 0] * r + cameraToXyz[1, 1] * g + cameraToXyz[1, 2] * b;
+		var z = cameraToXyz[2, 0] * r + cameraToXyz[2, 1] * g + cameraToXyz[2, 2] * b;
+		var sum = x + y + z;
+		if ( sum <= 1e-8f )
+		{
+			return false;
+		}
+
+		var chromaX = x / sum;
+		var chromaY = y / sum;
+		if ( chromaY <= 1e-6f )
+		{
+			return false;
+		}
+
+		// McCamy approximation
+		var n = ( chromaX - 0.3320f ) / ( 0.1858f - chromaY );
+		cct = 449f * n * n * n + 3525f * n * n + 6823.3f * n + 5520.33f;
+		return cct is > 1000f and < 25000f && !float.IsNaN(cct) && !float.IsInfinity(cct);
+	}
+
+	private static float IlluminantToCct(ushort illuminant)
+	{
+		return illuminant switch
+		{
+			17 => 5003f, // D50
+			20 => 5503f, // D55
+			21 => 6504f, // D65
+			22 => 7504f, // D75
+			_ => 5500f
+		};
+	}
+
+	private static float ComputeReciprocalTemperatureWeight(float asShotCct, float cct1,
+		float cct2)
+	{
+		var r = 1f / Math.Max(1000f, asShotCct);
+		var r1 = 1f / Math.Max(1000f, cct1);
+		var r2 = 1f / Math.Max(1000f, cct2);
+		var denom = r1 - r2;
+		if ( Math.Abs(denom) < 1e-8f )
+		{
+			return 0.5f;
+		}
+
+		var w = ( r - r2 ) / denom;
+		return Math.Clamp(w, 0f, 1f);
+	}
+
+	private static float[,] Lerp3X3(float[,] a, float[,] b, float t)
+	{
+		var result = new float[3, 3];
+		for ( var r = 0; r < 3; r++ )
+		{
+			for ( var c = 0; c < 3; c++ )
+			{
+				result[r, c] = a[r, c] * t + b[r, c] * ( 1f - t );
+			}
+		}
+
+		return result;
 	}
 
 	private static bool IsIdentity3X3(float[,] m)

@@ -14,7 +14,12 @@ public class ColorMatrixTransformTests
 			{ 1f, 0f, 0f },
 			{ 0f, 1f, 0f },
 			{ 0f, 0f, 1f }
-		});
+		}, new[,]
+		{
+			{ 1f, 0f, 0f },
+			{ 0f, 1f, 0f },
+			{ 0f, 0f, 1f }
+		}, 17);
 
 		Assert.AreEqual(3, cameraToSrgb.GetLength(0));
 		Assert.AreEqual(3, cameraToSrgb.GetLength(1));
@@ -48,4 +53,3 @@ public class ColorMatrixTransformTests
 		Assert.AreEqual(0.3f, rgb[0, 0, 2], 1e-6f);
 	}
 }
-

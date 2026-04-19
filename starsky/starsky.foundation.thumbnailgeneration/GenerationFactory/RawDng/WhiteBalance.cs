@@ -1,4 +1,3 @@
-
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.RawDng;
 
 internal static class WhiteBalance
@@ -26,8 +25,9 @@ internal static class WhiteBalance
 		var gainG = 1f / g;
 		var gainB = 1f / b;
 
-		// Normalize by GREEN channel (standard practice).
-		// Green is the most perceptually important channel.
+		// Normalize by the green channel's gain. This is the standard industry practice
+		// (used by dcraw, LibRaw, etc.) and ensures that the green channel, which contributes
+		// most to luminance, is not shifted. This prevents color casts.
 		return [gainR / gainG, 1f, gainB / gainG];
 	}
 
@@ -51,5 +51,3 @@ internal static class WhiteBalance
 		}
 	}
 }
-
-

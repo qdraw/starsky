@@ -46,6 +46,7 @@ internal static class RawDngPipelineRunner
 			error = string.Empty;
 			return true;
 		}
+		
 
 		// Fall back to binary JPEG container scan
 		if ( JpegContainerFallback.TryExtractLargestJpeg(input, output, out var fallbackError) )

@@ -20,10 +20,14 @@ internal sealed class DngRawImage
 	public required float[] WhiteLevel { get; init; } // Per-channel white levels (up to 4 values for CFA channels)
 	public required float[] AsShotNeutral { get; init; }
 	public required float[,] ColorMatrix1 { get; init; }
+	public float[,]? ColorMatrix2 { get; init; }
 	public required byte[] CfaPattern { get; init; }
 	public required float[,] ForwardMatrix1 { get; init; } // Optional: used if ColorMatrix1 absent
+	public float[,]? ForwardMatrix2 { get; init; }
 	public required float[,] CameraCalibration1 { get; init; } // Optional: applies per-channel color correction
 	public required float[,] CameraCalibration2 { get; init; } // Optional: second calibration
+	public required ushort CalibrationIlluminant1 { get; init; } // Illuminant for ColorMatrix1
+	public ushort? CalibrationIlluminant2 { get; init; }
 }
 
 internal sealed class DngRawCapture
@@ -62,10 +66,17 @@ internal static class DngSubsetReader
 	private const ushort TagBlackLevel = 0xC61A;
 	private const ushort TagWhiteLevel = 0xC61D;
 	private const ushort TagAsShotNeutral = 0xC628;
+	private const ushort TagAsShotWhiteXy = 0xC629;
+	private const ushort TagAnalogBalance = 0xC627;
+	private const ushort TagExifIfd = 0x8769;
 	private const ushort TagColorMatrix1 = 0xC621;
+	private const ushort TagColorMatrix2 = 0xC622;
 	private const ushort TagForwardMatrix1 = 0xC714;
+	private const ushort TagForwardMatrix2 = 0xC715;
 	private const ushort TagCameraCalibration1 = 0xC723;
 	private const ushort TagCameraCalibration2 = 0xC724;
+	private const ushort TagCalibrationIlluminant1 = 0xC65A;
+	private const ushort TagCalibrationIlluminant2 = 0xC65B;
 
 	private const ushort CompressionUncompressed = 1;
 	private const ushort CompressionJpegOldStyle = 6;
@@ -448,7 +459,7 @@ internal static class DngSubsetReader
 			? ( int ) predictorU
 			: 1;
 
-		if ( bitsPerSample is not ( 8 or 12 or 14 or 16 ) )
+		if ( bitsPerSample is not ( 8 or 10 or 12 or 14 or 16 ) )
 		{
 			error = $"Unsupported bits per sample: {bitsPerSample}";
 			return false;
@@ -461,7 +472,6 @@ internal static class DngSubsetReader
 		}
 
 		var bayer = new ushort[height, width];
-		var pixelCount = width * height;
 		if ( hasTiles )
 		{
 			if ( !TryReadPixelsTiled(input, littleEndian, offsets, counts, bitsPerSample,
@@ -494,24 +504,35 @@ internal static class DngSubsetReader
 			? whites
 			: [defaultWhiteLevel, defaultWhiteLevel, defaultWhiteLevel, defaultWhiteLevel];
 		
-		var asShotNeutral = TryGetFloatArray(input, littleEndian, ifd, TagAsShotNeutral,
-			out var neutralRaw) && neutralRaw.Length >= 3
-			? neutralRaw.Take(3).ToArray()
-			: TryGetFloatArray(input, littleEndian, ifd0, TagAsShotNeutral, out var neutral0) &&
-			  neutral0.Length >= 3
-				? neutral0.Take(3).ToArray()
-				: [1f, 1f, 1f];
-		var colorMatrix = TryGetFloatArray(input, littleEndian, ifd, TagColorMatrix1,
-			out var matrixValuesRaw) && matrixValuesRaw.Length >= 9
-			? To3x3(matrixValuesRaw)
-			: TryGetFloatArray(input, littleEndian, ifd0, TagColorMatrix1, out var matrixValues0) &&
-			  matrixValues0.Length >= 9
+ 		var colorMatrix = TryGetFloatArray(input, littleEndian, ifd, TagColorMatrix1,
+ 			out var matrixValuesRaw) && matrixValuesRaw.Length >= 9
+ 			? To3x3(matrixValuesRaw)
+ 			: TryGetFloatArray(input, littleEndian, ifd0, TagColorMatrix1, out var matrixValues0) &&
+ 			  matrixValues0.Length >= 9
 				? To3x3(matrixValues0)
 				: Identity3x3();
-		var cfaPattern = TryGetByteArray(input, littleEndian, ifd, TagCfaPattern, out var cfa) &&
-		                 cfa.Length >= 4
-			? cfa.Take(4).ToArray()
-			: new byte[] { 0, 1, 1, 2 }; // fallback RGGB
+		var colorMatrix2 = TryGetFloatArray(input, littleEndian, ifd, TagColorMatrix2,
+			out var matrix2Raw) && matrix2Raw.Length >= 9
+			? To3x3(matrix2Raw)
+			: TryGetFloatArray(input, littleEndian, ifd0, TagColorMatrix2, out var matrix20) &&
+			  matrix20.Length >= 9
+				? To3x3(matrix20)
+				: null;
+
+		var asShotNeutral = TryGetAsShotNeutral(input, littleEndian, ifd, ifd0, out var neutral)
+			? neutral
+			: TryGetAsShotWhiteXy(input, littleEndian, ifd, ifd0, out var whiteXy) &&
+			  TryComputeNeutralFromWhiteXy(whiteXy, colorMatrix, out var neutralFromXy)
+				? neutralFromXy
+				: [1f, 1f, 1f];
+
+		// Read AnalogBalance metadata to stay aligned with DNG WB metadata coverage.
+		// Not applied yet in this simplified pipeline, but useful for diagnostics/future tuning.
+		_ = TryGetAnalogBalance(input, littleEndian, ifd, ifd0, out _);
+ 		var cfaPattern = TryGetByteArray(input, littleEndian, ifd, TagCfaPattern, out var cfa) &&
+ 		                 cfa.Length >= 4
+ 			? cfa.Take(4).ToArray()
+ 			: new byte[] { 0, 1, 1, 2 }; // fallback RGGB
 
 		var forwardMatrix = TryGetFloatArray(input, littleEndian, ifd, TagForwardMatrix1,
 			out var fwdRaw) && fwdRaw.Length >= 9
@@ -520,6 +541,13 @@ internal static class DngSubsetReader
 			  fwd0.Length >= 9
 				? To3x3(fwd0)
 				: Identity3x3();
+		var forwardMatrix2 = TryGetFloatArray(input, littleEndian, ifd, TagForwardMatrix2,
+			out var fwd2Raw) && fwd2Raw.Length >= 9
+			? To3x3(fwd2Raw)
+			: TryGetFloatArray(input, littleEndian, ifd0, TagForwardMatrix2, out var fwd20) &&
+			  fwd20.Length >= 9
+				? To3x3(fwd20)
+				: null;
 		var cameraCalibration1 = TryGetFloatArray(input, littleEndian, ifd, TagCameraCalibration1,
 			out var cal1Raw) && cal1Raw.Length >= 9
 			? To3x3(cal1Raw)
@@ -534,161 +562,332 @@ internal static class DngSubsetReader
 			  cal20.Length >= 9
 				? To3x3(cal20)
 				: Identity3x3();
+		
+		var calibrationIlluminant1 =
+			TryGetUnsigned(input, littleEndian, ifd, TagCalibrationIlluminant1, out var illumRaw)
+				? ( ushort ) illumRaw
+				: TryGetUnsigned(input, littleEndian, ifd0, TagCalibrationIlluminant1,
+					out var illum0)
+					? ( ushort ) illum0
+					: ( ushort ) 21; // Default to D65 (21) instead of unknown (0)
+		var calibrationIlluminant2 =
+			TryGetUnsigned(input, littleEndian, ifd, TagCalibrationIlluminant2, out var illum2Raw)
+				? ( ushort? ) illum2Raw
+				: TryGetUnsigned(input, littleEndian, ifd0, TagCalibrationIlluminant2,
+					out var illum20)
+					? ( ushort? ) illum20
+					: ( ushort? ) null;
+ 
+ 		image = new DngRawImage
+ 		{
+ 			Bayer = bayer,
+ 			Width = width,
+ 			Height = height,
+ 			BitsPerSample = bitsPerSample,
+ 			BlackLevel = blackLevels,
+ 			WhiteLevel = whiteLevels,
+ 			AsShotNeutral = asShotNeutral,
+ 			ColorMatrix1 = colorMatrix,
+ 			ColorMatrix2 = colorMatrix2,
+ 			CfaPattern = cfaPattern,
+ 			ForwardMatrix1 = forwardMatrix,
+ 			ForwardMatrix2 = forwardMatrix2,
+ 			CameraCalibration1 = cameraCalibration1,
+ 			CameraCalibration2 = cameraCalibration2,
+			CalibrationIlluminant1 = calibrationIlluminant1,
+			CalibrationIlluminant2 = calibrationIlluminant2
+ 		};
+ 
+ 		return true;
+ 	}
 
-		image = new DngRawImage
+	private static bool TryGetAsShotNeutral(Stream input, bool littleEndian, IfdDirectory rawIfd,
+		IfdDirectory ifd0, out float[] neutral)
+	{
+		neutral = [1f, 1f, 1f];
+
+		if ( TryReadNeutralFromIfd(input, littleEndian, rawIfd, out neutral) )
 		{
-			Bayer = bayer,
-			Width = width,
-			Height = height,
-			BitsPerSample = bitsPerSample,
-			BlackLevel = blackLevels,
-			WhiteLevel = whiteLevels,
-			AsShotNeutral = asShotNeutral,
-			ColorMatrix1 = colorMatrix,
-			CfaPattern = cfaPattern,
-			ForwardMatrix1 = forwardMatrix,
-			CameraCalibration1 = cameraCalibration1,
-			CameraCalibration2 = cameraCalibration2
-		};
+			return true;
+		}
 
+		if ( TryReadNeutralFromIfd(input, littleEndian, ifd0, out neutral) )
+		{
+			return true;
+		}
+
+		if ( TryGetUnsigned(input, littleEndian, ifd0, TagExifIfd, out var exifIfdOffset) )
+		{
+			var exifIfd = ReadIfd(input, exifIfdOffset, littleEndian);
+			if ( exifIfd != null && TryReadNeutralFromIfd(input, littleEndian, exifIfd, out neutral) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static bool TryGetAsShotWhiteXy(Stream input, bool littleEndian,
+		IfdDirectory rawIfd, IfdDirectory ifd0, out float[] whiteXy)
+	{
+		whiteXy = [0f, 0f];
+
+		if ( TryReadWhiteXyFromIfd(input, littleEndian, rawIfd, out whiteXy) )
+		{
+			return true;
+		}
+
+		if ( TryReadWhiteXyFromIfd(input, littleEndian, ifd0, out whiteXy) )
+		{
+			return true;
+		}
+
+		if ( TryGetUnsigned(input, littleEndian, ifd0, TagExifIfd, out var exifIfdOffset) )
+		{
+			var exifIfd = ReadIfd(input, exifIfdOffset, littleEndian);
+			if ( exifIfd != null && TryReadWhiteXyFromIfd(input, littleEndian, exifIfd, out whiteXy) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static bool TryReadNeutralFromIfd(Stream input, bool littleEndian, IfdDirectory ifd,
+		out float[] neutral)
+	{
+		neutral = [1f, 1f, 1f];
+		if ( !TryGetFloatArray(input, littleEndian, ifd, TagAsShotNeutral, out var raw) ||
+		     raw.Length < 3 )
+		{
+			return false;
+		}
+
+		neutral = [raw[0], raw[1], raw[2]];
 		return true;
 	}
 
-	private static bool TryReadPixels(Stream input, bool littleEndian, IReadOnlyList<uint> offsets,
-		IReadOnlyList<uint> counts, int bitsPerSample, int width, int height, int rowsPerStrip,
-		ushort compression, ushort[,] bayer)
+	private static bool TryReadWhiteXyFromIfd(Stream input, bool littleEndian, IfdDirectory ifd,
+		out float[] whiteXy)
 	{
-		if ( width <= 0 || height <= 0 || rowsPerStrip <= 0 )
+		whiteXy = [0f, 0f];
+		if ( !TryGetFloatArray(input, littleEndian, ifd, TagAsShotWhiteXy, out var raw) ||
+		     raw.Length < 2 )
 		{
 			return false;
 		}
 
-		var rowCursor = 0;
-		for ( var i = 0; i < offsets.Count && rowCursor < height; i++ )
-		{
-			var count = ( int ) counts[i];
-			if ( count <= 0 )
-			{
-				return false;
-			}
-
-			var encoded = new byte[count];
-			if ( !TrySeekAndRead(input, offsets[i], encoded, 0, count) )
-			{
-				return false;
-			}
-
-			var payload = compression switch
-			{
-				CompressionUncompressed => encoded,
-				CompressionDeflate or CompressionAdobeDeflate => Inflate(encoded),
-				_ => null
-			};
-
-			if ( payload == null )
-			{
-				return false;
-			}
-
-			var rowsInStrip = Math.Min(rowsPerStrip, height - rowCursor);
-			var stripPixelCount = checked(rowsInStrip * width);
-			var decoded = DecodePixels(payload, littleEndian, bitsPerSample, stripPixelCount);
-			if ( decoded == null )
-			{
-				return false;
-			}
-
-			for ( var p = 0; p < decoded.Length; p++ )
-			{
-				var y = rowCursor + p / width;
-				var x = p % width;
-				bayer[y, x] = decoded[p];
-			}
-
-			rowCursor += rowsInStrip;
-		}
-
-		return rowCursor == height;
-	}
-
-	private static bool TryReadPixelsTiled(Stream input, bool littleEndian,
-		IReadOnlyList<uint> offsets, IReadOnlyList<uint> counts, int bitsPerSample, int width,
-		int height, int tileWidth, int tileLength, ushort compression, ushort[,] bayer)
-	{
-		if ( width <= 0 || height <= 0 || tileWidth <= 0 || tileLength <= 0 )
-		{
-			return false;
-		}
-
-		var tilesAcross = ( width + tileWidth - 1 ) / tileWidth;
-		var tilesDown = ( height + tileLength - 1 ) / tileLength;
-		if ( offsets.Count != tilesAcross * tilesDown )
-		{
-			return false;
-		}
-
-		var tileIndex = 0;
-		for ( var ty = 0; ty < tilesDown; ty++ )
-		{
-			for ( var tx = 0; tx < tilesAcross; tx++ )
-			{
-				if ( tileIndex >= offsets.Count )
-				{
-					return false;
-				}
-
-				var count = ( int ) counts[tileIndex];
-				if ( count <= 0 )
-				{
-					return false;
-				}
-
-				var encoded = new byte[count];
-				if ( !TrySeekAndRead(input, offsets[tileIndex], encoded, 0, count) )
-				{
-					return false;
-				}
-
-				var payload = compression switch
-				{
-					CompressionUncompressed => encoded,
-					CompressionDeflate or CompressionAdobeDeflate => Inflate(encoded),
-					_ => null
-				};
-
-				if ( payload == null )
-				{
-					return false;
-				}
-
-				var tilePixelCount = tileWidth * tileLength;
-				var decoded = DecodePixels(payload, littleEndian, bitsPerSample, tilePixelCount);
-				if ( decoded == null )
-				{
-					return false;
-				}
-
-				// Copy tile data into Bayer array
-				var tileStartY = ty * tileLength;
-				var tileStartX = tx * tileWidth;
-				for ( var p = 0; p < decoded.Length; p++ )
-				{
-					var py = p / tileWidth;
-					var px = p % tileWidth;
-					var y = tileStartY + py;
-					var x = tileStartX + px;
-					if ( y < height && x < width )
-					{
-						bayer[y, x] = decoded[p];
-					}
-				}
-
-				tileIndex++;
-			}
-		}
-
+		whiteXy = [raw[0], raw[1]];
 		return true;
 	}
+
+	private static bool TryComputeNeutralFromWhiteXy(float[] whiteXy, float[,] xyzToCamera,
+		out float[] neutral)
+	{
+		neutral = [1f, 1f, 1f];
+		if ( whiteXy.Length < 2 )
+		{
+			return false;
+		}
+
+		var x = whiteXy[0];
+		var y = whiteXy[1];
+		if ( x <= 0f || y <= 0f || x + y >= 1f )
+		{
+			return false;
+		}
+
+		// Convert xy (with Y=1) to XYZ.
+		var xVal = x / y;
+		const float yVal = 1f;
+		var zVal = ( 1f - x - y ) / y;
+
+		// ColorMatrix1 is XYZ->Camera in DNG. Multiply to get camera-space neutral.
+		var r = xyzToCamera[0, 0] * xVal + xyzToCamera[0, 1] * yVal + xyzToCamera[0, 2] * zVal;
+		var g = xyzToCamera[1, 0] * xVal + xyzToCamera[1, 1] * yVal + xyzToCamera[1, 2] * zVal;
+		var b = xyzToCamera[2, 0] * xVal + xyzToCamera[2, 1] * yVal + xyzToCamera[2, 2] * zVal;
+
+		if ( r <= 0f || g <= 0f || b <= 0f ||
+		     float.IsNaN(r) || float.IsNaN(g) || float.IsNaN(b) ||
+		     float.IsInfinity(r) || float.IsInfinity(g) || float.IsInfinity(b) )
+		{
+			return false;
+		}
+
+		neutral = [r, g, b];
+		return true;
+	}
+
+	private static bool TryGetAnalogBalance(Stream input, bool littleEndian,
+		IfdDirectory rawIfd, IfdDirectory ifd0, out float[] analog)
+	{
+		analog = [1f, 1f, 1f];
+		if ( TryGetFloatArray(input, littleEndian, rawIfd, TagAnalogBalance, out var rawVals) &&
+		     rawVals.Length >= 3 )
+		{
+			analog = [rawVals[0], rawVals[1], rawVals[2]];
+			return true;
+		}
+
+		if ( TryGetFloatArray(input, littleEndian, ifd0, TagAnalogBalance, out var ifd0Vals) &&
+		     ifd0Vals.Length >= 3 )
+		{
+			analog = [ifd0Vals[0], ifd0Vals[1], ifd0Vals[2]];
+			return true;
+		}
+
+		if ( TryGetUnsigned(input, littleEndian, ifd0, TagExifIfd, out var exifIfdOffset) )
+		{
+			var exifIfd = ReadIfd(input, exifIfdOffset, littleEndian);
+			if ( exifIfd != null &&
+			     TryGetFloatArray(input, littleEndian, exifIfd, TagAnalogBalance, out var exifVals) &&
+			     exifVals.Length >= 3 )
+			{
+				analog = [exifVals[0], exifVals[1], exifVals[2]];
+				return true;
+			}
+		}
+
+		return false;
+	}
+ 
+ 	private static bool TryReadPixels(Stream input, bool littleEndian, IReadOnlyList<uint> offsets,
+ 		IReadOnlyList<uint> counts, int bitsPerSample, int width, int height, int rowsPerStrip,
+ 		ushort compression, ushort[,] bayer)
+ 	{
+ 		if ( width <= 0 || height <= 0 || rowsPerStrip <= 0 )
+ 		{
+ 			return false;
+ 		}
+
+ 		var rowCursor = 0;
+ 		for ( var i = 0; i < offsets.Count && rowCursor < height; i++ )
+ 		{
+ 			var count = ( int ) counts[i];
+ 			if ( count <= 0 )
+ 			{
+ 				return false;
+ 			}
+
+ 			var encoded = new byte[count];
+ 			if ( !TrySeekAndRead(input, offsets[i], encoded, 0, count) )
+ 			{
+ 				return false;
+ 			}
+
+ 			var payload = compression switch
+ 			{
+ 				CompressionUncompressed => encoded,
+ 				CompressionDeflate or CompressionAdobeDeflate => Inflate(encoded),
+ 				_ => null
+ 			};
+
+ 			if ( payload == null )
+ 			{
+ 				return false;
+ 			}
+
+ 			var rowsInStrip = Math.Min(rowsPerStrip, height - rowCursor);
+ 			var stripPixelCount = checked(rowsInStrip * width);
+ 			var decoded = DecodePixels(payload, littleEndian, bitsPerSample, stripPixelCount);
+ 			if ( decoded == null )
+ 			{
+ 				return false;
+ 			}
+
+ 			for ( var p = 0; p < decoded.Length; p++ )
+ 			{
+ 				var y = rowCursor + p / width;
+ 				var x = p % width;
+ 				bayer[y, x] = decoded[p];
+ 			}
+
+ 			rowCursor += rowsInStrip;
+ 		}
+
+ 		return rowCursor == height;
+ 	}
+
+ 	private static bool TryReadPixelsTiled(Stream input, bool littleEndian,
+ 		IReadOnlyList<uint> offsets, IReadOnlyList<uint> counts, int bitsPerSample, int width,
+ 		int height, int tileWidth, int tileLength, ushort compression, ushort[,] bayer)
+ 	{
+ 		if ( width <= 0 || height <= 0 || tileWidth <= 0 || tileLength <= 0 )
+ 		{
+ 			return false;
+ 		}
+
+ 		var tilesAcross = ( width + tileWidth - 1 ) / tileWidth;
+ 		var tilesDown = ( height + tileLength - 1 ) / tileLength;
+ 		if ( offsets.Count != tilesAcross * tilesDown )
+ 		{
+ 			return false;
+ 		}
+
+ 		var tileIndex = 0;
+ 		for ( var ty = 0; ty < tilesDown; ty++ )
+ 		{
+ 			for ( var tx = 0; tx < tilesAcross; tx++ )
+ 			{
+ 				if ( tileIndex >= offsets.Count )
+ 				{
+ 					return false;
+ 				}
+
+ 				var count = ( int ) counts[tileIndex];
+ 				if ( count <= 0 )
+ 				{
+ 					return false;
+ 				}
+
+ 				var encoded = new byte[count];
+ 				if ( !TrySeekAndRead(input, offsets[tileIndex], encoded, 0, count) )
+ 				{
+ 					return false;
+ 				}
+
+ 				var payload = compression switch
+ 				{
+ 					CompressionUncompressed => encoded,
+ 					CompressionDeflate or CompressionAdobeDeflate => Inflate(encoded),
+ 					_ => null
+ 				};
+
+ 				if ( payload == null )
+ 				{
+ 					return false;
+ 				}
+
+ 				var tilePixelCount = tileWidth * tileLength;
+ 				var decoded = DecodePixels(payload, littleEndian, bitsPerSample, tilePixelCount);
+ 				if ( decoded == null )
+ 				{
+ 					return false;
+ 				}
+
+ 				// Copy tile data into Bayer array
+ 				var tileStartY = ty * tileLength;
+ 				var tileStartX = tx * tileWidth;
+ 				for ( var p = 0; p < decoded.Length; p++ )
+ 				{
+ 					var py = p / tileWidth;
+ 					var px = p % tileWidth;
+ 					var y = tileStartY + py;
+ 					var x = tileStartX + px;
+ 					if ( y < height && x < width )
+ 					{
+ 						bayer[y, x] = decoded[p];
+ 					}
+ 				}
+
+ 				tileIndex++;
+ 			}
+ 		}
+
+ 		return true;
+ 	}
 
 	private static byte[]? Inflate(byte[] compressed)
 	{
@@ -700,8 +899,9 @@ internal static class DngSubsetReader
 			zlib.CopyTo(output);
 			return output.ToArray();
 		}
-		catch
+		catch ( Exception zlibEx )
 		{
+			// zlib failed, try raw DEFLATE format
 			try
 			{
 				using var input = new MemoryStream(compressed);
@@ -711,327 +911,334 @@ internal static class DngSubsetReader
 				deflate.CopyTo(output);
 				return output.ToArray();
 			}
-			catch
+			catch ( Exception deflateEx )
 			{
+				// Both decompression methods failed
+				// Log diagnostic info for debugging
+				System.Diagnostics.Debug.WriteLine(
+					$"Decompression failed: zlib={zlibEx.GetType().Name}, " +
+					$"deflate={deflateEx.GetType().Name}");
 				return null;
 			}
 		}
 	}
 
-	private static ushort[]? DecodePixels(byte[] payload, bool littleEndian, int bitsPerSample,
-		int pixelCount)
+ 	private static ushort[]? DecodePixels(byte[] payload, bool littleEndian, int bitsPerSample,
+ 		int pixelCount)
+ 	{
+ 		if ( bitsPerSample == 8 )
+ 		{
+ 			return Decode8(payload, pixelCount);
+ 		}
+
+ 		if ( bitsPerSample == 16 )
+ 		{
+ 			return Decode16(payload, littleEndian, pixelCount);
+ 		}
+
+ 		if ( payload.Length >= pixelCount * 2 )
+ 		{
+ 			return DecodeWordStored(payload, littleEndian, bitsPerSample, pixelCount);
+ 		}
+
+ 		return littleEndian
+ 			? DecodePackedLittleEndian(payload, bitsPerSample, pixelCount)
+ 			: DecodePackedBigEndian(payload, bitsPerSample, pixelCount);
+ 	}
+
+ 	private static ushort[]? Decode8(byte[] payload, int pixelCount)
+ 	{
+ 		if ( payload.Length < pixelCount )
+ 		{
+ 			return null;
+ 		}
+
+ 		var result = new ushort[pixelCount];
+ 		for ( var i = 0; i < pixelCount; i++ )
+ 		{
+ 			result[i] = payload[i];
+ 		}
+
+ 		return result;
+ 	}
+
+ 	private static ushort[]? Decode16(byte[] payload, bool littleEndian, int pixelCount)
+ 	{
+ 		if ( payload.Length < pixelCount * 2 )
+ 		{
+ 			return null;
+ 		}
+
+ 		var result = new ushort[pixelCount];
+ 		for ( var i = 0; i < pixelCount; i++ )
+ 		{
+ 			var span = payload.AsSpan(i * 2, 2);
+ 			result[i] = littleEndian
+ 				? BinaryPrimitives.ReadUInt16LittleEndian(span)
+ 				: BinaryPrimitives.ReadUInt16BigEndian(span);
+ 		}
+
+ 		return result;
+ 	}
+
+ 	private static ushort[]? DecodeWordStored(byte[] payload, bool littleEndian, int bitsPerSample,
+ 		int pixelCount)
+ 	{
+ 		var words = Decode16(payload, littleEndian, pixelCount);
+ 		if ( words == null )
+ 		{
+ 			return null;
+ 		}
+
+ 		var mask = ( 1u << bitsPerSample ) - 1u;
+ 		for ( var i = 0; i < words.Length; i++ )
+ 		{
+ 			words[i] = ( ushort ) ( words[i] & mask );
+ 		}
+
+ 		return words;
+ 	}
+
+ 	private static ushort[]? DecodePackedLittleEndian(byte[] payload, int bitsPerSample,
+ 		int pixelCount)
+ 	{
+ 		var requiredBytes = ( pixelCount * bitsPerSample + 7 ) / 8;
+ 		if ( payload.Length < requiredBytes )
+ 		{
+ 			return null;
+ 		}
+
+ 		var result = new ushort[pixelCount];
+ 		var bitIndex = 0;
+ 		for ( var i = 0; i < pixelCount; i++ )
+ 		{
+ 			var byteIndex = bitIndex >> 3;
+ 			var bitOffset = bitIndex & 7;
+ 			ulong scratch = 0;
+ 			for ( var b = 0; b < 4 && byteIndex + b < payload.Length; b++ )
+ 			{
+ 				scratch |= ( ulong ) payload[byteIndex + b] << ( b * 8 );
+ 			}
+
+ 			result[i] = ( ushort ) ( ( scratch >> bitOffset ) & ( ( 1u << bitsPerSample ) - 1u ) );
+ 			bitIndex += bitsPerSample;
+ 		}
+
+ 		return result;
+ 	}
+
+ 	private static ushort[]? DecodePackedBigEndian(byte[] payload, int bitsPerSample,
+ 		int pixelCount)
+ 	{
+ 		var requiredBytes = ( pixelCount * bitsPerSample + 7 ) / 8;
+ 		if ( payload.Length < requiredBytes )
+ 		{
+ 			return null;
+ 		}
+
+ 		var result = new ushort[pixelCount];
+ 		var bitCursor = 0;
+ 		for ( var i = 0; i < pixelCount; i++ )
+ 		{
+ 			uint value = 0;
+ 			for ( var b = 0; b < bitsPerSample; b++ )
+ 			{
+ 				var absoluteBit = bitCursor + b;
+ 				var byteIndex = absoluteBit >> 3;
+ 				var bitInByte = 7 - ( absoluteBit & 7 );
+ 				var bit = ( payload[byteIndex] >> bitInByte ) & 1;
+ 				value = ( value << 1 ) | ( uint ) bit;
+ 			}
+
+ 			result[i] = ( ushort ) value;
+ 			bitCursor += bitsPerSample;
+ 		}
+
+ 		return result;
+ 	}
+
+ 	private static float[,] To3x3(IReadOnlyList<float> v)
+ 	{
+ 		return new[,]
+ 		{
+ 			{ v[0], v[1], v[2] },
+ 			{ v[3], v[4], v[5] },
+ 			{ v[6], v[7], v[8] }
+ 		};
+ 	}
+
+ 	private static float[,] Identity3x3()
+ 	{
+ 		return new[,]
+ 		{
+ 			{ 1f, 0f, 0f },
+ 			{ 0f, 1f, 0f },
+ 			{ 0f, 0f, 1f }
+ 		};
+ 	}
+
+ 	private static bool TryParseHeader(Stream input, out bool littleEndian, out uint firstIfd)
+ 	{
+ 		littleEndian = true;
+ 		firstIfd = 0;
+ 		Span<byte> header = stackalloc byte[8];
+ 		if ( input.Read(header) < 8 )
+ 		{
+ 			return false;
+ 		}
+
+ 		if ( header[0] == 'I' && header[1] == 'I' )
+ 		{
+ 			littleEndian = true;
+ 		}
+ 		else if ( header[0] == 'M' && header[1] == 'M' )
+ 		{
+ 			littleEndian = false;
+ 		}
+ 		else
+ 		{
+ 			return false;
+ 		}
+
+ 		var magic = ReadUInt16(header[2..], littleEndian);
+ 		if ( magic != 42 )
+ 		{
+ 			return false;
+ 		}
+
+ 		firstIfd = ReadUInt32(header[4..], littleEndian);
+ 		return firstIfd > 0 && firstIfd < input.Length;
+ 	}
+
+ 	private static IfdDirectory? ReadIfd(Stream input, uint offset, bool littleEndian)
+ 	{
+ 		if ( !TrySeek(input, offset) )
+ 		{
+ 			return null;
+ 		}
+
+ 		Span<byte> countBuf = stackalloc byte[2];
+ 		if ( input.Read(countBuf) < 2 )
+ 		{
+ 			return null;
+ 		}
+
+ 		var count = ReadUInt16(countBuf, littleEndian);
+ 		if ( count == 0 || count > 4096 )
+ 		{
+ 			return null;
+ 		}
+
+ 		var entries = new Dictionary<ushort, IfdEntry>();
+ 		for ( var i = 0; i < count; i++ )
+ 		{
+ 			Span<byte> e = stackalloc byte[12];
+ 			if ( input.Read(e) < 12 )
+ 			{
+ 				return null;
+ 			}
+
+ 			var tag = ReadUInt16(e, littleEndian);
+ 			entries[tag] = new IfdEntry
+ 			{
+ 				Type = ReadUInt16(e[2..], littleEndian),
+ 				Count = ReadUInt32(e[4..], littleEndian),
+ 				ValueOrOffset = ReadUInt32(e[8..], littleEndian)
+ 			};
+ 		}
+
+ 		return new IfdDirectory(entries);
+ 	}
+
+ 	private static bool TryGetUnsigned(Stream input, bool littleEndian, IfdDirectory ifd,
+ 		ushort tag, out uint value)
+ 	{
+ 		value = 0;
+ 		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
+ 		{
+ 			return false;
+ 		}
+
+ 		var values = ReadUnsignedValues(input, littleEndian, entry, 1);
+ 		if ( values.Length == 0 )
+ 		{
+ 			return false;
+ 		}
+
+ 		value = values[0];
+ 		return true;
+ 	}
+
+ 	private static bool TryGetUnsignedArray(Stream input, bool littleEndian, IfdDirectory ifd,
+ 		ushort tag, out uint[] values)
+ 	{
+ 		values = [];
+ 		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
+ 		{
+ 			return false;
+ 		}
+
+ 		values = ReadUnsignedValues(input, littleEndian, entry, ( int ) entry.Count);
+ 		return values.Length > 0;
+ 	}
+
+ 	private static bool TryGetByteArray(Stream input, bool littleEndian, IfdDirectory ifd,
+ 		ushort tag, out byte[] values)
+ 	{
+ 		values = [];
+ 		if ( !ifd.Entries.TryGetValue(tag, out var entry) || entry.Type != 1 )
+ 		{
+ 			return false;
+ 		}
+
+ 		values = ReadBytes(input, littleEndian, entry);
+ 		return values.Length > 0;
+ 	}
+
+ 	private static bool TryGetFloat(Stream input, bool littleEndian, IfdDirectory ifd,
+ 		ushort tag, out float value)
+ 	{
+ 		value = 0;
+ 		if ( !TryGetFloatArray(input, littleEndian, ifd, tag, out var values) || values.Length == 0 )
+ 		{
+ 			return false;
+ 		}
+
+ 		value = values[0];
+ 		return true;
+ 	}
+
+ 	private static bool TryGetFloatArray(Stream input, bool littleEndian, IfdDirectory ifd,
+ 		ushort tag, out float[] values)
+ 	{
+ 		values = [];
+ 		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
+ 		{
+ 			return false;
+ 		}
+
+ 		values = entry.Type switch
+ 		{
+ 			3 or 4 => ReadUnsignedValues(input, littleEndian, entry, ( int ) entry.Count)
+ 				.Select(v => ( float ) v).ToArray(),
+ 			5 => ReadRationalValues(input, littleEndian, entry, signed: false),
+ 			10 => ReadRationalValues(input, littleEndian, entry, signed: true),
+ 			11 => ReadFloatValues(input, littleEndian, entry, isDouble: false),
+ 			12 => ReadFloatValues(input, littleEndian, entry, isDouble: true),
+ 			_ => []
+ 		};
+ 		return values.Length > 0;
+ 	}
+
+	private static float[] ReadFloatValues(Stream input, bool littleEndian, IfdEntry entry,
+		bool isDouble)
 	{
-		if ( bitsPerSample == 8 )
-		{
-			return Decode8(payload, pixelCount);
-		}
-
-		if ( bitsPerSample == 16 )
-		{
-			return Decode16(payload, littleEndian, pixelCount);
-		}
-
-		if ( payload.Length >= pixelCount * 2 )
-		{
-			return DecodeWordStored(payload, littleEndian, bitsPerSample, pixelCount);
-		}
-
-		return littleEndian
-			? DecodePackedLittleEndian(payload, bitsPerSample, pixelCount)
-			: DecodePackedBigEndian(payload, bitsPerSample, pixelCount);
-	}
-
-	private static ushort[]? Decode8(byte[] payload, int pixelCount)
-	{
-		if ( payload.Length < pixelCount )
-		{
-			return null;
-		}
-
-		var result = new ushort[pixelCount];
-		for ( var i = 0; i < pixelCount; i++ )
-		{
-			result[i] = payload[i];
-		}
-
-		return result;
-	}
-
-	private static ushort[]? Decode16(byte[] payload, bool littleEndian, int pixelCount)
-	{
-		if ( payload.Length < pixelCount * 2 )
-		{
-			return null;
-		}
-
-		var result = new ushort[pixelCount];
-		for ( var i = 0; i < pixelCount; i++ )
-		{
-			var span = payload.AsSpan(i * 2, 2);
-			result[i] = littleEndian
-				? BinaryPrimitives.ReadUInt16LittleEndian(span)
-				: BinaryPrimitives.ReadUInt16BigEndian(span);
-		}
-
-		return result;
-	}
-
-	private static ushort[]? DecodeWordStored(byte[] payload, bool littleEndian, int bitsPerSample,
-		int pixelCount)
-	{
-		var words = Decode16(payload, littleEndian, pixelCount);
-		if ( words == null )
-		{
-			return null;
-		}
-
-		var mask = ( 1u << bitsPerSample ) - 1u;
-		for ( var i = 0; i < words.Length; i++ )
-		{
-			words[i] = ( ushort ) ( words[i] & mask );
-		}
-
-		return words;
-	}
-
-	private static ushort[]? DecodePackedLittleEndian(byte[] payload, int bitsPerSample,
-		int pixelCount)
-	{
-		var requiredBytes = ( pixelCount * bitsPerSample + 7 ) / 8;
-		if ( payload.Length < requiredBytes )
-		{
-			return null;
-		}
-
-		var result = new ushort[pixelCount];
-		var bitIndex = 0;
-		for ( var i = 0; i < pixelCount; i++ )
-		{
-			var byteIndex = bitIndex >> 3;
-			var bitOffset = bitIndex & 7;
-			ulong scratch = 0;
-			for ( var b = 0; b < 4 && byteIndex + b < payload.Length; b++ )
-			{
-				scratch |= ( ulong ) payload[byteIndex + b] << ( b * 8 );
-			}
-
-			result[i] = ( ushort ) ( ( scratch >> bitOffset ) & ( ( 1u << bitsPerSample ) - 1u ) );
-			bitIndex += bitsPerSample;
-		}
-
-		return result;
-	}
-
-	private static ushort[]? DecodePackedBigEndian(byte[] payload, int bitsPerSample,
-		int pixelCount)
-	{
-		var requiredBytes = ( pixelCount * bitsPerSample + 7 ) / 8;
-		if ( payload.Length < requiredBytes )
-		{
-			return null;
-		}
-
-		var result = new ushort[pixelCount];
-		var bitCursor = 0;
-		for ( var i = 0; i < pixelCount; i++ )
-		{
-			uint value = 0;
-			for ( var b = 0; b < bitsPerSample; b++ )
-			{
-				var absoluteBit = bitCursor + b;
-				var byteIndex = absoluteBit >> 3;
-				var bitInByte = 7 - ( absoluteBit & 7 );
-				var bit = ( payload[byteIndex] >> bitInByte ) & 1;
-				value = ( value << 1 ) | ( uint ) bit;
-			}
-
-			result[i] = ( ushort ) value;
-			bitCursor += bitsPerSample;
-		}
-
-		return result;
-	}
-
-	private static float[,] To3x3(IReadOnlyList<float> v)
-	{
-		return new[,]
-		{
-			{ v[0], v[1], v[2] },
-			{ v[3], v[4], v[5] },
-			{ v[6], v[7], v[8] }
-		};
-	}
-
-	private static float[,] Identity3x3()
-	{
-		return new[,]
-		{
-			{ 1f, 0f, 0f },
-			{ 0f, 1f, 0f },
-			{ 0f, 0f, 1f }
-		};
-	}
-
-	private static bool TryParseHeader(Stream input, out bool littleEndian, out uint firstIfd)
-	{
-		littleEndian = true;
-		firstIfd = 0;
-		Span<byte> header = stackalloc byte[8];
-		if ( input.Read(header) < 8 )
-		{
-			return false;
-		}
-
-		if ( header[0] == 'I' && header[1] == 'I' )
-		{
-			littleEndian = true;
-		}
-		else if ( header[0] == 'M' && header[1] == 'M' )
-		{
-			littleEndian = false;
-		}
-		else
-		{
-			return false;
-		}
-
-		var magic = ReadUInt16(header[2..], littleEndian);
-		if ( magic != 42 )
-		{
-			return false;
-		}
-
-		firstIfd = ReadUInt32(header[4..], littleEndian);
-		return firstIfd > 0 && firstIfd < input.Length;
-	}
-
-	private static IfdDirectory? ReadIfd(Stream input, uint offset, bool littleEndian)
-	{
-		if ( !TrySeek(input, offset) )
-		{
-			return null;
-		}
-
-		Span<byte> countBuf = stackalloc byte[2];
-		if ( input.Read(countBuf) < 2 )
-		{
-			return null;
-		}
-
-		var count = ReadUInt16(countBuf, littleEndian);
-		if ( count == 0 || count > 4096 )
-		{
-			return null;
-		}
-
-		var entries = new Dictionary<ushort, IfdEntry>();
-		for ( var i = 0; i < count; i++ )
-		{
-			Span<byte> e = stackalloc byte[12];
-			if ( input.Read(e) < 12 )
-			{
-				return null;
-			}
-
-			var tag = ReadUInt16(e, littleEndian);
-			entries[tag] = new IfdEntry
-			{
-				Type = ReadUInt16(e[2..], littleEndian),
-				Count = ReadUInt32(e[4..], littleEndian),
-				ValueOrOffset = ReadUInt32(e[8..], littleEndian)
-			};
-		}
-
-		return new IfdDirectory(entries);
-	}
-
-	private static bool TryGetUnsigned(Stream input, bool littleEndian, IfdDirectory ifd,
-		ushort tag, out uint value)
-	{
-		value = 0;
-		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
-		{
-			return false;
-		}
-
-		var values = ReadUnsignedValues(input, littleEndian, entry, 1);
-		if ( values.Length == 0 )
-		{
-			return false;
-		}
-
-		value = values[0];
-		return true;
-	}
-
-	private static bool TryGetUnsignedArray(Stream input, bool littleEndian, IfdDirectory ifd,
-		ushort tag, out uint[] values)
-	{
-		values = [];
-		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
-		{
-			return false;
-		}
-
-		values = ReadUnsignedValues(input, littleEndian, entry, ( int ) entry.Count);
-		return values.Length > 0;
-	}
-
-	private static bool TryGetByteArray(Stream input, bool littleEndian, IfdDirectory ifd,
-		ushort tag, out byte[] values)
-	{
-		values = [];
-		if ( !ifd.Entries.TryGetValue(tag, out var entry) || entry.Type != 1 )
-		{
-			return false;
-		}
-
-		values = ReadBytes(input, littleEndian, entry);
-		return values.Length > 0;
-	}
-
-	private static bool TryGetFloat(Stream input, bool littleEndian, IfdDirectory ifd,
-		ushort tag, out float value)
-	{
-		value = 0;
-		if ( !TryGetFloatArray(input, littleEndian, ifd, tag, out var values) || values.Length == 0 )
-		{
-			return false;
-		}
-
-		value = values[0];
-		return true;
-	}
-
-	private static bool TryGetFloatArray(Stream input, bool littleEndian, IfdDirectory ifd,
-		ushort tag, out float[] values)
-	{
-		values = [];
-		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
-		{
-			return false;
-		}
-
-		values = entry.Type switch
-		{
-			3 or 4 => ReadUnsignedValues(input, littleEndian, entry, ( int ) entry.Count)
-				.Select(v => ( float ) v).ToArray(),
-			5 => ReadRationalValues(input, littleEndian, entry, signed: false),
-			10 => ReadRationalValues(input, littleEndian, entry, signed: true),
-			_ => []
-		};
-		return values.Length > 0;
-	}
-
-	private static uint[] ReadUnsignedValues(Stream input, bool littleEndian, IfdEntry entry,
-		int wanted)
-	{
-		if ( entry.Type is not ( 3 or 4 ) || entry.Count == 0 )
+		if ( entry.Count == 0 )
 		{
 			return [];
 		}
 
-		var typeSize = entry.Type == 3 ? 2 : 4;
+		var typeSize = isDouble ? 8 : 4;
 		var totalSize = checked(( int ) entry.Count * typeSize);
 		var data = ReadRawValueBytes(input, littleEndian, entry, totalSize);
 		if ( data.Length < totalSize )
@@ -1039,143 +1246,181 @@ internal static class DngSubsetReader
 			return [];
 		}
 
-		var count = Math.Min(( int ) entry.Count, wanted);
-		var result = new uint[count];
-		for ( var i = 0; i < count; i++ )
-		{
-			result[i] = entry.Type == 3
-				? ReadUInt16(data.AsSpan(i * 2, 2), littleEndian)
-				: ReadUInt32(data.AsSpan(i * 4, 4), littleEndian);
-		}
-
-		return result;
-	}
-
-	private static float[] ReadRationalValues(Stream input, bool littleEndian, IfdEntry entry,
-		bool signed)
-	{
-		if ( entry.Count == 0 )
-		{
-			return [];
-		}
-
-		var total = checked(( int ) entry.Count * 8);
-		if ( !TrySeek(input, entry.ValueOrOffset) )
-		{
-			return [];
-		}
-
-		var buf = new byte[total];
-		if ( input.Read(buf, 0, total) < total )
-		{
-			return [];
-		}
-
 		var values = new float[entry.Count];
 		for ( var i = 0; i < entry.Count; i++ )
 		{
-			var pos = i * 8;
-			if ( signed )
+			if ( isDouble )
 			{
-				var n = ( int ) ReadUInt32(buf.AsSpan(pos, 4), littleEndian);
-				var d = ( int ) ReadUInt32(buf.AsSpan(pos + 4, 4), littleEndian);
-				values[i] = d == 0 ? 0 : ( float ) n / d;
+				var bits = littleEndian
+					? BinaryPrimitives.ReadUInt64LittleEndian(data.AsSpan(i * 8, 8))
+					: BinaryPrimitives.ReadUInt64BigEndian(data.AsSpan(i * 8, 8));
+				values[i] = ( float ) BitConverter.Int64BitsToDouble(( long ) bits);
 			}
 			else
 			{
-				var n = ReadUInt32(buf.AsSpan(pos, 4), littleEndian);
-				var d = ReadUInt32(buf.AsSpan(pos + 4, 4), littleEndian);
-				values[i] = d == 0 ? 0 : ( float ) n / d;
+				var bits = littleEndian
+					? BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(i * 4, 4))
+					: BinaryPrimitives.ReadUInt32BigEndian(data.AsSpan(i * 4, 4));
+				values[i] = BitConverter.Int32BitsToSingle(( int ) bits);
 			}
 		}
 
 		return values;
 	}
 
-	private static byte[] ReadBytes(Stream input, bool littleEndian, IfdEntry entry)
-	{
-		var total = ( int ) entry.Count;
-		if ( total <= 0 )
-		{
-			return [];
-		}
+ 	private static uint[] ReadUnsignedValues(Stream input, bool littleEndian, IfdEntry entry,
+ 		int wanted)
+ 	{
+ 		if ( entry.Type is not ( 3 or 4 ) || entry.Count == 0 )
+ 		{
+ 			return [];
+ 		}
 
-		return ReadRawValueBytes(input, littleEndian, entry, total);
-	}
+ 		var typeSize = entry.Type == 3 ? 2 : 4;
+ 		var totalSize = checked(( int ) entry.Count * typeSize);
+ 		var data = ReadRawValueBytes(input, littleEndian, entry, totalSize);
+ 		if ( data.Length < totalSize )
+ 		{
+ 			return [];
+ 		}
 
-	private static byte[] ReadRawValueBytes(Stream input, bool littleEndian, IfdEntry entry,
-		int totalSize)
-	{
-		if ( totalSize <= 4 )
-		{
-			Span<byte> inline = stackalloc byte[4];
-			if ( littleEndian )
-			{
-				BinaryPrimitives.WriteUInt32LittleEndian(inline, entry.ValueOrOffset);
-			}
-			else
-			{
-				BinaryPrimitives.WriteUInt32BigEndian(inline, entry.ValueOrOffset);
-			}
+ 		var count = Math.Min(( int ) entry.Count, wanted);
+ 		var result = new uint[count];
+ 		for ( var i = 0; i < count; i++ )
+ 		{
+ 			result[i] = entry.Type == 3
+ 				? ReadUInt16(data.AsSpan(i * 2, 2), littleEndian)
+ 				: ReadUInt32(data.AsSpan(i * 4, 4), littleEndian);
+ 		}
 
-			return inline[..totalSize].ToArray();
-		}
+ 		return result;
+ 	}
 
-		if ( !TrySeek(input, entry.ValueOrOffset) )
-		{
-			return [];
-		}
+ 	private static float[] ReadRationalValues(Stream input, bool littleEndian, IfdEntry entry,
+ 		bool signed)
+ 	{
+ 		if ( entry.Count == 0 )
+ 		{
+ 			return [];
+ 		}
 
-		var bytes = new byte[totalSize];
-		return input.Read(bytes, 0, totalSize) >= totalSize ? bytes : [];
-	}
+ 		var total = checked(( int ) entry.Count * 8);
+ 		if ( !TrySeek(input, entry.ValueOrOffset) )
+ 		{
+ 			return [];
+ 		}
 
-	private static bool TrySeek(Stream input, long offset)
-	{
-		if ( !input.CanSeek || offset < 0 || offset >= input.Length )
-		{
-			return false;
-		}
+ 		var buf = new byte[total];
+ 		if ( input.Read(buf, 0, total) < total )
+ 		{
+ 			return [];
+ 		}
 
-		input.Seek(offset, SeekOrigin.Begin);
-		return true;
-	}
+ 		var values = new float[entry.Count];
+ 		for ( var i = 0; i < entry.Count; i++ )
+ 		{
+ 			var pos = i * 8;
+ 			if ( signed )
+ 			{
+ 				var n = ( int ) ReadUInt32(buf.AsSpan(pos, 4), littleEndian);
+ 				var d = ( int ) ReadUInt32(buf.AsSpan(pos + 4, 4), littleEndian);
+ 				values[i] = d == 0 ? 0 : ( float ) n / d;
+ 			}
+ 			else
+ 			{
+ 				var n = ReadUInt32(buf.AsSpan(pos, 4), littleEndian);
+ 				var d = ReadUInt32(buf.AsSpan(pos + 4, 4), littleEndian);
+ 				values[i] = d == 0 ? 0 : ( float ) n / d;
+ 			}
+ 		}
 
-	private static bool TrySeekAndRead(Stream input, long offset, byte[] buffer,
-		int writeOffset, int count)
-	{
-		if ( !TrySeek(input, offset) )
-		{
-			return false;
-		}
+ 		return values;
+ 	}
 
-		return input.Read(buffer, writeOffset, count) >= count;
-	}
+ 	private static byte[] ReadBytes(Stream input, bool littleEndian, IfdEntry entry)
+ 	{
+ 		var total = ( int ) entry.Count;
+ 		if ( total <= 0 )
+ 		{
+ 			return [];
+ 		}
 
-	private static ushort ReadUInt16(ReadOnlySpan<byte> bytes, bool littleEndian)
-	{
-		return littleEndian
-			? BinaryPrimitives.ReadUInt16LittleEndian(bytes)
-			: BinaryPrimitives.ReadUInt16BigEndian(bytes);
-	}
+ 		return ReadRawValueBytes(input, littleEndian, entry, total);
+ 	}
 
-	private static uint ReadUInt32(ReadOnlySpan<byte> bytes, bool littleEndian)
-	{
-		return littleEndian
-			? BinaryPrimitives.ReadUInt32LittleEndian(bytes)
-			: BinaryPrimitives.ReadUInt32BigEndian(bytes);
-	}
+ 	private static byte[] ReadRawValueBytes(Stream input, bool littleEndian, IfdEntry entry,
+ 		int totalSize)
+ 	{
+ 		if ( totalSize <= 4 )
+ 		{
+ 			Span<byte> inline = stackalloc byte[4];
+ 			if ( littleEndian )
+ 			{
+ 				BinaryPrimitives.WriteUInt32LittleEndian(inline, entry.ValueOrOffset);
+ 			}
+ 			else
+ 			{
+ 				BinaryPrimitives.WriteUInt32BigEndian(inline, entry.ValueOrOffset);
+ 			}
 
-	private sealed class IfdDirectory(Dictionary<ushort, IfdEntry> entries)
-	{
-		public Dictionary<ushort, IfdEntry> Entries { get; } = entries;
-	}
+ 			return inline[..totalSize].ToArray();
+ 		}
 
-	private sealed class IfdEntry
-	{
-		public ushort Type { get; init; }
-		public uint Count { get; init; }
-		public uint ValueOrOffset { get; init; }
-	}
+ 		if ( !TrySeek(input, entry.ValueOrOffset) )
+ 		{
+ 			return [];
+ 		}
+
+ 		var bytes = new byte[totalSize];
+ 		return input.Read(bytes, 0, totalSize) >= totalSize ? bytes : [];
+ 	}
+
+ 	private static bool TrySeek(Stream input, long offset)
+ 	{
+ 		if ( !input.CanSeek || offset < 0 || offset >= input.Length )
+ 		{
+ 			return false;
+ 		}
+
+ 		input.Seek(offset, SeekOrigin.Begin);
+ 		return true;
+ 	}
+
+ 	private static bool TrySeekAndRead(Stream input, long offset, byte[] buffer,
+ 		int writeOffset, int count)
+ 	{
+ 		if ( !TrySeek(input, offset) )
+ 		{
+ 			return false;
+ 		}
+
+ 		return input.Read(buffer, writeOffset, count) >= count;
+ 	}
+
+ 	private static ushort ReadUInt16(ReadOnlySpan<byte> bytes, bool littleEndian)
+ 	{
+ 		return littleEndian
+ 			? BinaryPrimitives.ReadUInt16LittleEndian(bytes)
+ 			: BinaryPrimitives.ReadUInt16BigEndian(bytes);
+ 	}
+
+ 	private static uint ReadUInt32(ReadOnlySpan<byte> bytes, bool littleEndian)
+ 	{
+ 		return littleEndian
+ 			? BinaryPrimitives.ReadUInt32LittleEndian(bytes)
+ 			: BinaryPrimitives.ReadUInt32BigEndian(bytes);
+ 	}
+
+ 	private sealed class IfdDirectory(Dictionary<ushort, IfdEntry> entries)
+ 	{
+ 		public Dictionary<ushort, IfdEntry> Entries { get; } = entries;
+ 	}
+
+ 	private sealed class IfdEntry
+ 	{
+ 		public ushort Type { get; init; }
+ 		public uint Count { get; init; }
+ 		public uint ValueOrOffset { get; init; }
+ 	}
 }
 
