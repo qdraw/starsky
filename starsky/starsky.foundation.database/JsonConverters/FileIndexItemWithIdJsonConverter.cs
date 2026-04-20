@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using starsky.foundation.database.Models;
@@ -40,7 +41,25 @@ public sealed class FileIndexItemWithIdJsonConverter : JsonConverter<FileIndexIt
 		using var jsonDoc = JsonDocument.ParseValue(ref reader);
 		var element = jsonDoc.RootElement;
 		var json = element.GetRawText();
-		return JsonSerializer.Deserialize<FileIndexItem>(json, readOptions) ?? new FileIndexItem();
+
+		var result = JsonSerializer.Deserialize<FileIndexItem>(json, readOptions) ??
+		             new FileIndexItem();
+
+		// If JSON contains an explicit id field, set it on the result even if the POCO has [JsonIgnore]
+		// (we write "id" in Write as lower-case). Be case-insensitive to support different naming policies.
+		foreach ( var propValue in element.EnumerateObject()
+			         .Where(prop =>
+				         string.Equals(prop.Name, "id", StringComparison.OrdinalIgnoreCase))
+			         .Select(prop => prop.Value) )
+		{
+			if ( propValue.ValueKind == JsonValueKind.Number &&
+			     propValue.TryGetInt32(out var idVal) )
+			{
+				result.Id = idVal;
+			}
+		}
+
+		return result;
 	}
 
 	public override void Write(Utf8JsonWriter writer, FileIndexItem value,

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.database.JsonConverters;
 using starsky.foundation.injection;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
@@ -21,7 +22,8 @@ public sealed class MetaUpdateBackgroundJobHandler(IServiceScopeFactory scopeFac
 			throw new ArgumentException("Missing payload");
 		}
 
-		var payload = JsonSerializer.Deserialize<MetaUpdateBackgroundPayload>(payloadJson)
+		var payload = JsonSerializer.Deserialize<MetaUpdateBackgroundPayload>(payloadJson,
+			              DefaultJsonFileIndexJsonSerializer.WithIdConverter)
 		              ?? throw new ArgumentException("Invalid payload");
 		using var scope = scopeFactory.CreateScope();
 		var metaUpdateService = scope.ServiceProvider

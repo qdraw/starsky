@@ -32,14 +32,9 @@ public sealed class FileIndexItemWithIdJsonConverterFactory : JsonConverterFacto
 
 		var genDef = typeToConvert.GetGenericTypeDefinition();
 		var arg = typeToConvert.GetGenericArguments()[0];
-		if ( arg == typeof(FileIndexItem) &&
-		     ( genDef == typeof(List<>) || genDef == typeof(IList<>) ||
-		       genDef == typeof(IEnumerable<>) ) )
-		{
-			return true;
-		}
-
-		return false;
+		return arg == typeof(FileIndexItem) &&
+		       ( genDef == typeof(List<>) || genDef == typeof(IList<>) ||
+		         genDef == typeof(IEnumerable<>) );
 	}
 
 	public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
