@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.Metrics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,12 +31,15 @@ public sealed class DiskWatcherBackgroundTaskQueueTest
 		var queue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
 		await queue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			JobType = "Test.DiskWatcherQueue.v1", PayloadJson = "{}", MetaData = string.Empty
+			JobType = "Test.DiskWatcherQueue.v1",
+			PayloadJson = "{}",
+			// example
+			MetaData = string.Empty
 		});
 
 		Assert.AreEqual(1, queue.Count());
 
-		var token = new CancellationToken();
+		var token = CancellationToken.None;
 		await queue.DequeueJobAsync(token);
 
 		Assert.AreEqual(0, queue.Count());
@@ -57,7 +61,7 @@ public sealed class DiskWatcherBackgroundTaskQueueTest
 	public async Task QueueJobAsync_JobTypeRequired_ArgumentException()
 	{
 		var backgroundQueue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
-		await Assert.ThrowsExactlyAsync<System.ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 		{
 			await backgroundQueue.QueueJobAsync(new BackgroundTaskQueueJob());
 		});

@@ -17,5 +17,5 @@ public sealed class MetaReplaceBackgroundPayload
 	///     EXIF / the database by the background job.
 	/// </summary>
 	[JsonConverter(typeof(FileIndexItemWithIdJsonConverterFactory))]
-	public List<FileIndexItem> FileIndexResultsList { get; set; } = new();
+	public List<FileIndexItem> FileIndexResultsList { get; set; } = [];
 }
