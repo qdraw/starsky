@@ -25,16 +25,11 @@ public sealed class FileIndexItemWithIdJsonConverter : JsonConverter<FileIndexIt
 		};
 
 		// Copy converters except this one to avoid recursion
-			foreach ( var conv in options.Converters )
+		foreach ( var conv in options.Converters )
 		{
-			if ( conv == null )
-			{
-				continue;
-			}
-
-				// Skip this converter and the factory to avoid recursion when building safe options
-				if ( conv.GetType() == typeof(FileIndexItemWithIdJsonConverter) ||
-					 conv.GetType() == typeof(FileIndexItemWithIdJsonConverterFactory) )
+			// Skip this converter and the factory to avoid recursion when building safe options
+			if ( conv is FileIndexItemWithIdJsonConverter
+			    or FileIndexItemWithIdJsonConverterFactory )
 			{
 				continue;
 			}
@@ -63,14 +58,9 @@ public sealed class FileIndexItemWithIdJsonConverter : JsonConverter<FileIndexIt
 
 		foreach ( var conv in options.Converters )
 		{
-			if ( conv == null )
-			{
-				continue;
-			}
-
 			// Skip this converter and the factory to avoid recursion when building safe options
-			if ( conv.GetType() == typeof(FileIndexItemWithIdJsonConverter) ||
-				 conv.GetType() == typeof(FileIndexItemWithIdJsonConverterFactory) )
+			if ( conv is FileIndexItemWithIdJsonConverter
+			    or FileIndexItemWithIdJsonConverterFactory )
 			{
 				continue;
 			}
