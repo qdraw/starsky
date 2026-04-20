@@ -8,8 +8,8 @@ public sealed class MetaUpdateBackgroundPayload
 {
 	public Dictionary<string, List<string>> ChangedFileIndexItemName { get; set; } = new();
 
-	[JsonConverter(typeof(FileIndexItemWithIdJsonConverter))]
-	public List<FileIndexItem> FileIndexResultsList { get; set; } = [];
+	[JsonConverter(typeof(FileIndexItemWithIdJsonConverterFactory))]
+	public List<FileIndexItem> FileIndexResultsList { get; set; } = new();
 
 	public bool Collections { get; set; }
 	public bool Append { get; set; }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,7 +27,22 @@ public sealed class DefaultJsonFileIndexJsonSerializerTest
 
 		// The custom converter should include the id field
 		Assert.IsTrue(json.Contains("\"id\":42") || json.Contains("\"id\": 42"), json);
-		Assert.IsTrue(json.Contains("\"fileName\":") || json.Contains("fileName"), json);
+
+		// Parse JSON and assert that a filename property exists (case-insensitive)
+		using var doc = JsonDocument.Parse(json);
+		var root = doc.RootElement;
+		var hasFileName = false;
+		foreach ( var prop in root.EnumerateObject() )
+		{
+			if ( string.Equals(prop.Name, "fileName", StringComparison.OrdinalIgnoreCase) ||
+			     string.Equals(prop.Name, "FileName", StringComparison.OrdinalIgnoreCase) )
+			{
+				hasFileName = true;
+				break;
+			}
+		}
+
+		Assert.IsTrue(hasFileName, json);
 	}
 
 	[TestMethod]

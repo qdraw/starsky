@@ -17,6 +17,6 @@ public class DefaultJsonFileIndexJsonSerializer
 			PropertyNameCaseInsensitive = true,
 			AllowTrailingCommas = true,
 			WriteIndented = false,
-			Converters = { new FileIndexItemWithIdJsonConverter() }
+			Converters = { new FileIndexItemWithIdJsonConverterFactory() }
 		};
 }

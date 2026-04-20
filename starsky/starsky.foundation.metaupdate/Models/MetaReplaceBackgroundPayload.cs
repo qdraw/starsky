@@ -16,6 +16,6 @@ public sealed class MetaReplaceBackgroundPayload
 	///     The already-modified items (with the replaced values) to be written to
 	///     EXIF / the database by the background job.
 	/// </summary>
-	[JsonConverter(typeof(FileIndexItemWithIdJsonConverter))]
-	public List<FileIndexItem> FileIndexResultsList { get; set; } = [];
+	[JsonConverter(typeof(FileIndexItemWithIdJsonConverterFactory))]
+	public List<FileIndexItem> FileIndexResultsList { get; set; } = new();
 }

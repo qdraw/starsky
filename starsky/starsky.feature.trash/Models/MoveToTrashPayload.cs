@@ -6,16 +6,16 @@ namespace starsky.feature.trash.Models;
 
 public sealed class MoveToTrashPayload
 {
-	[JsonConverter(typeof(FileIndexItemWithIdJsonConverter))]
-	public List<FileIndexItem> MoveToTrashList { get; set; } = [];
+	[JsonConverter(typeof(FileIndexItemWithIdJsonConverterFactory))]
+	public List<FileIndexItem> MoveToTrashList { get; set; } = new();
 
 	public bool IsSystemTrashEnabled { get; set; }
 	public Dictionary<string, List<string>> ChangedFileIndexItemName { get; set; } = new();
 
-	[JsonConverter(typeof(FileIndexItemWithIdJsonConverter))]
-	public List<FileIndexItem> FileIndexResultsList { get; set; } = [];
+	[JsonConverter(typeof(FileIndexItemWithIdJsonConverterFactory))]
+	public List<FileIndexItem> FileIndexResultsList { get; set; } = new();
 
-	[JsonConverter(typeof(FileIndexItemWithIdJsonConverter))]
+	[JsonConverter(typeof(FileIndexItemWithIdJsonConverterFactory))]
 	public FileIndexItem InputModel { get; set; } = new();
 
 	public bool Collections { get; set; }

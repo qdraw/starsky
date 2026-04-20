@@ -14,20 +14,32 @@ public sealed class FileIndexItemWithIdJsonConverter : JsonConverter<FileIndexIt
 	public override FileIndexItem Read(ref Utf8JsonReader reader, Type typeToConvert,
 		JsonSerializerOptions options)
 	{
-		// Create a copy of options but ensure the Id is not ignored and avoid recursion
-		var readOptions = new JsonSerializerOptions(options)
+		// Build read options based on provided options but ensure Id is not ignored
+		var readOptions = new JsonSerializerOptions
 		{
-			DefaultIgnoreCondition = JsonIgnoreCondition.Never
+			PropertyNamingPolicy = options.PropertyNamingPolicy,
+			DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+			PropertyNameCaseInsensitive = options.PropertyNameCaseInsensitive,
+			AllowTrailingCommas = options.AllowTrailingCommas,
+			WriteIndented = options.WriteIndented
 		};
 
-		// Remove this converter from the copy to avoid recursion
-		for ( var i = readOptions.Converters.Count - 1; i >= 0; i-- )
+		// Copy converters except this one to avoid recursion
+			foreach ( var conv in options.Converters )
 		{
-			var conv = readOptions.Converters[i];
-			if ( conv?.GetType() == typeof(FileIndexItemWithIdJsonConverter) )
+			if ( conv == null )
 			{
-				readOptions.Converters.RemoveAt(i);
+				continue;
 			}
+
+				// Skip this converter and the factory to avoid recursion when building safe options
+				if ( conv.GetType() == typeof(FileIndexItemWithIdJsonConverter) ||
+					 conv.GetType() == typeof(FileIndexItemWithIdJsonConverterFactory) )
+			{
+				continue;
+			}
+
+			readOptions.Converters.Add(conv);
 		}
 
 		using var jsonDoc = JsonDocument.ParseValue(ref reader);
@@ -39,22 +51,31 @@ public sealed class FileIndexItemWithIdJsonConverter : JsonConverter<FileIndexIt
 	public override void Write(Utf8JsonWriter writer, FileIndexItem value,
 		JsonSerializerOptions options)
 	{
-		// Create safe options that do NOT contain this converter to avoid recursion
-		var safeOptions = new JsonSerializerOptions(options);
-
-		for ( var i = options.Converters.Count - 1; i >= 0; i-- )
+		// Build safe options that copy key settings but exclude this converter to avoid recursion
+		var safeOptions = new JsonSerializerOptions
 		{
-			var conv = options.Converters[i];
-			if ( conv?.GetType() == typeof(FileIndexItemWithIdJsonConverter) )
+			PropertyNamingPolicy = options.PropertyNamingPolicy,
+			DefaultIgnoreCondition = options.DefaultIgnoreCondition,
+			PropertyNameCaseInsensitive = options.PropertyNameCaseInsensitive,
+			AllowTrailingCommas = options.AllowTrailingCommas,
+			WriteIndented = options.WriteIndented
+		};
+
+		foreach ( var conv in options.Converters )
+		{
+			if ( conv == null )
 			{
-				// skip adding this converter
 				continue;
 			}
-			// Only add converters that aren't already present on the safe copy
-			if ( !safeOptions.Converters.Contains(conv) )
+
+			// Skip this converter and the factory to avoid recursion when building safe options
+			if ( conv.GetType() == typeof(FileIndexItemWithIdJsonConverter) ||
+				 conv.GetType() == typeof(FileIndexItemWithIdJsonConverterFactory) )
 			{
-				safeOptions.Converters.Add(conv);
+				continue;
 			}
+
+			safeOptions.Converters.Add(conv);
 		}
 
 		// Serialize to JSON element first using the safe options
@@ -67,9 +88,10 @@ public sealed class FileIndexItemWithIdJsonConverter : JsonConverter<FileIndexIt
 		// First, write the Id field explicitly
 		writer.WriteNumber("id", value.Id);
 
-		// Then write all other properties from the serialized JSON
+		// Then write all other properties from the serialized JSON (write name and value)
 		foreach ( var property in element.EnumerateObject() )
 		{
+			writer.WritePropertyName(property.Name);
 			property.Value.WriteTo(writer);
 		}
 
