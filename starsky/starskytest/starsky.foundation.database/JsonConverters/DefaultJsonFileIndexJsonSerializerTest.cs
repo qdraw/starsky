@@ -59,4 +59,20 @@ public sealed class DefaultJsonFileIndexJsonSerializerTest
 		Assert.Contains("\"id\":1", json, json);
 		Assert.Contains("\"id\":2", json, json);
 	}
+
+	[TestMethod]
+	public void Serialize_ToArrayWithOptions_IncludesIdForEach()
+	{
+		var items = new List<FileIndexItem>
+		{
+			new() { Id = 1, FileName = "a.jpg" }, new() { Id = 2, FileName = "b.jpg" }
+		}.ToArray();
+
+		var json =
+			JsonSerializer.Serialize(items,
+				DefaultJsonFileIndexJsonSerializer.WithIdConverter);
+
+		Assert.Contains("\"id\":1", json, json);
+		Assert.Contains("\"id\":2", json, json);
+	}
 }

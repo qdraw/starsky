@@ -58,17 +58,9 @@ public sealed class FileIndexItemWithIdJsonConverterFactory : JsonConverterFacto
 		{
 			var genDef = typeToConvert.GetGenericTypeDefinition();
 			var arg = typeToConvert.GetGenericArguments()[0];
-			if ( arg == typeof(FileIndexItem) && genDef == typeof(List<>) )
-			{
-				return new ListFileIndexItemConverter();
-			}
-
-			if ( arg == typeof(FileIndexItem) && genDef == typeof(IEnumerable<>) )
-			{
-				return new ListFileIndexItemConverter();
-			}
-
-			if ( arg == typeof(FileIndexItem) && genDef == typeof(IList<>) )
+			if ( ( arg == typeof(FileIndexItem) && genDef == typeof(List<>) ) ||
+			     ( arg == typeof(FileIndexItem) && genDef == typeof(IEnumerable<>) ) ||
+			     ( arg == typeof(FileIndexItem) && genDef == typeof(IList<>) ) )
 			{
 				return new ListFileIndexItemConverter();
 			}
@@ -106,7 +98,7 @@ public sealed class FileIndexItemWithIdJsonConverterFactory : JsonConverterFacto
 			return list;
 		}
 
-		public override void Write(Utf8JsonWriter writer, List<FileIndexItem> value,
+		public override void Write(Utf8JsonWriter writer, List<FileIndexItem>? value,
 			JsonSerializerOptions options)
 		{
 			if ( value == null )
@@ -154,7 +146,7 @@ public sealed class FileIndexItemWithIdJsonConverterFactory : JsonConverterFacto
 			return list.ToArray();
 		}
 
-		public override void Write(Utf8JsonWriter writer, FileIndexItem[] value,
+		public override void Write(Utf8JsonWriter writer, FileIndexItem[]? value,
 			JsonSerializerOptions options)
 		{
 			if ( value == null )

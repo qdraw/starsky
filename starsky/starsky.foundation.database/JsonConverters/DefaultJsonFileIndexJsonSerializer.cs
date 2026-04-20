@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace starsky.foundation.database.JsonConverters;
 
-public class DefaultJsonFileIndexJsonSerializer
+public static class DefaultJsonFileIndexJsonSerializer
 {
 	/// <summary>
 	///     PascalCase (No Naming policy)
