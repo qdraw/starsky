@@ -51,7 +51,7 @@ jobs:
 
       - name: Extract metadata Github Actions (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@a7807070e67ad478bd5f672f499303a151742e53
+        uses: docker/metadata-action@deaa0dee567db6b95038c14152b037af85a8fe3b
         with:
           images: |
             ghcr.io/${{ github.repository }}-unstable-nightly
