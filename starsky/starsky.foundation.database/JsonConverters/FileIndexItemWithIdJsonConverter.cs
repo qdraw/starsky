@@ -6,7 +6,7 @@ using starsky.foundation.database.Models;
 namespace starsky.foundation.database.JsonConverters;
 
 /// <summary>
-///     Custom JSON converter for FileIndexItem that includes the Id field.
+///     Custom JSON converter for FileIndexItem that includes the `Id` field.
 ///     Uses reflection to serialize all properties dynamically, overriding the [JsonIgnore] on Id.
 /// </summary>
 public sealed class FileIndexItemWithIdJsonConverter : JsonConverter<FileIndexItem>
