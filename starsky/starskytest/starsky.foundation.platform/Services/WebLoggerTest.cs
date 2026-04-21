@@ -295,6 +295,9 @@ public sealed class WebLoggerTest
 
 	private sealed class ThrowingLogger : ILogger
 	{
+		[SuppressMessage("Usage",
+			"CS8633: Nullability in constraints for type parameter" +
+			" 'TState' of method 'WebLoggerTest.ThrowingLogger.BeginScope<TState>(TState)' ")]
 		IDisposable? ILogger.BeginScope<TState>(TState state)
 		{
 			return null;
