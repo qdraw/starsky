@@ -45,7 +45,7 @@ public sealed class WebLogger : IWebLogger
 			return;
 		}
 
-		_logger.LogDebug(message, args);
+		SafeLog(() => _logger.LogDebug(message, args));
 	}
 
 	public void LogInformation(string? message, params object[] args)
@@ -61,7 +61,7 @@ public sealed class WebLogger : IWebLogger
 			return;
 		}
 
-		_logger.LogInformation(message, args);
+		SafeLog(() => _logger.LogInformation(message, args));
 	}
 
 	public void LogInformation(Exception exception, string message,
@@ -73,7 +73,7 @@ public sealed class WebLogger : IWebLogger
 			return;
 		}
 
-		_logger.LogInformation(exception, message, args);
+		SafeLog(() => _logger.LogInformation(exception, message, args));
 	}
 
 	public void LogError(string? message, params object[] args)
@@ -89,7 +89,7 @@ public sealed class WebLogger : IWebLogger
 			return;
 		}
 
-		_logger.LogError(message, args);
+		SafeLog(() => _logger.LogError(message, args));
 	}
 
 	public void LogError(Exception exception, string message, params object[] args)
@@ -100,7 +100,7 @@ public sealed class WebLogger : IWebLogger
 			return;
 		}
 
-		_logger.LogError(exception, message, args);
+		SafeLog(() => _logger.LogError(exception, message, args));
 	}
 
 	public void LogWarning(Exception exception, string message, params object[] args)
@@ -111,6 +111,18 @@ public sealed class WebLogger : IWebLogger
 			return;
 		}
 
-		_logger.LogWarning(exception, message, args);
+		SafeLog(() => _logger.LogWarning(exception, message, args));
+	}
+
+	internal void SafeLog(Action logAction)
+	{
+		try
+		{
+			logAction();
+		}
+		catch ( Exception exception )
+		{
+			_console?.WriteLine($"Logging failed: {exception.Message}");
+		}
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -166,12 +167,12 @@ public sealed class WebLoggerTest
 		Assert.AreEqual(expectedException.Message, error);
 		Assert.AreEqual(LogLevel.Information, logLevel);
 	}
-	
+
 	[TestMethod]
 	public void Warning_Exception_String_ShouldPassFakeLogger()
 	{
 		var factory = new FakeILoggerFactory();
-		new WebLogger(factory).LogWarning(new Exception(), 
+		new WebLogger(factory).LogWarning(new Exception(),
 			"warning");
 		var error = factory.Storage.ErrorLog[0];
 		var logLevel = factory.Storage.LogLevelLog[0];
@@ -179,16 +180,16 @@ public sealed class WebLoggerTest
 		Assert.Contains("Exception", error);
 		Assert.AreEqual(LogLevel.Warning, logLevel);
 	}
-	
+
 	[TestMethod]
 	public void Warning_Exception_String_ConsoleFallback()
 	{
-		new WebLogger(null, _scopeFactory).LogWarning(new Exception(), 
+		new WebLogger(null, _scopeFactory).LogWarning(new Exception(),
 			"warning");
 		var fakeConsole =
 			_scopeFactory.CreateScope().ServiceProvider
 				.GetService<IConsole>() as FakeConsoleWrapper;
-		
+
 		Assert.Contains("Exception", fakeConsole?.WrittenLines[0]!);
 	}
 
@@ -211,8 +212,9 @@ public sealed class WebLoggerTest
 		Assert.IsNotNull(webLogger);
 
 		var type = typeof(WebLogger);
-		var loggerField = type.GetField("_logger", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-		var consoleField = type.GetField("_console", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+		var loggerField = type.GetField("_logger", BindingFlags.Instance | BindingFlags.NonPublic);
+		var consoleField =
+			type.GetField("_console", BindingFlags.Instance | BindingFlags.NonPublic);
 
 		Assert.IsNotNull(loggerField, "Expected private field '_logger' to exist");
 		Assert.IsNotNull(consoleField, "Expected private field '_console' to exist");
@@ -221,7 +223,8 @@ public sealed class WebLoggerTest
 		var consoleValueBefore = consoleField.GetValue(webLogger);
 
 		Assert.IsNull(loggerValueBefore, "_logger should be null when no ILoggerFactory provided");
-		Assert.IsNull(consoleValueBefore, "_console should be null when no IServiceScopeFactory provided");
+		Assert.IsNull(consoleValueBefore,
+			"_console should be null when no IServiceScopeFactory provided");
 
 		// Act: call all logging methods (should not throw)
 		webLogger.LogDebug("debug {0}", 1);
@@ -236,6 +239,29 @@ public sealed class WebLoggerTest
 
 		Assert.IsNull(loggerValueAfter, "_logger should remain null after log calls");
 		Assert.IsNull(consoleValueAfter, "_console should remain null after log calls");
+	}
+
+	[TestMethod]
+	public void SafeLog_WhenLoggerThrows_WritesToConsole()
+	{
+		var capture = new FakeConsoleWrapper();
+
+		// Build a simple service collection that returns our IConsole when requested
+		var services = new ServiceCollection();
+		services.AddSingleton<IConsole>(capture);
+
+		var scopeFactory = new FakeServiceScopeFactory(services);
+		var loggerFactory = new ThrowingLoggerFactory();
+
+		var webLogger = new WebLogger(loggerFactory, scopeFactory);
+
+		// This will call into the ThrowingLogger which throws; SafeLog should catch and
+		// write a message to the injected IConsole instance.
+		webLogger.LogInformation("hello world");
+
+		Assert.IsNotEmpty(capture.WrittenLines, "No console output captured");
+		Assert.Contains("Logging failed:", capture.WrittenLines[0]);
+		Assert.Contains("boom", capture.WrittenLines[0]);
 	}
 
 	private sealed class FakeILogger : ILogger
@@ -266,6 +292,41 @@ public sealed class WebLoggerTest
 #pragma warning restore CS8633 // Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
 		{
 			throw new NotImplementedException();
+		}
+	}
+
+	private sealed class ThrowingLogger : ILogger
+	{
+		public IDisposable? BeginScope<TState>(TState state)
+		{
+			return null;
+		}
+
+		public bool IsEnabled(LogLevel logLevel)
+		{
+			return true;
+		}
+
+		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
+			Exception? exception, Func<TState, Exception?, string> formatter)
+		{
+			throw new InvalidOperationException("boom");
+		}
+	}
+
+	private sealed class ThrowingLoggerFactory : ILoggerFactory
+	{
+		public void AddProvider(ILoggerProvider provider)
+		{
+		}
+
+		public ILogger CreateLogger(string categoryName)
+		{
+			return new ThrowingLogger();
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 
