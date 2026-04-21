@@ -34,7 +34,10 @@
       LensModel: ,
       MakeCameraSerial: ,
       Size: 1877,
-      Artist: 
+      Artist: ,
+      SuggestedTags: ,
+      RejectedTags: ,
+      ImageClassificationModel: 
     },
     SourceFullFilePath: /test.mp4,
     Structure: {

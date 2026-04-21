@@ -120,8 +120,42 @@ public sealed class ReadMetaExif
 		SetArrayBasedItemSerial(allExifItems, item);
 		SetArrayBasedItemsSoftwareStabilization(allExifItems, item);
 		SetArrayBasedItemsArtist(allExifItems, item);
+		SetArrayBasedItemsAiClassification(allExifItems, item);
 
 		return item;
+	}
+
+	private static void SetArrayBasedItemsAiClassification(List<Directory> allExifItems,
+		FileIndexItem item)
+	{
+		var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+
+		var suggestedTags = GetXmpDataList(xmpDirectory, "ai:SuggestedTags[");
+		if ( !string.IsNullOrWhiteSpace(suggestedTags) )
+		{
+			item.SuggestedTags = suggestedTags;
+		}
+
+		var rejectedTags = GetXmpDataList(xmpDirectory, "ai:RejectedTags[");
+		if ( !string.IsNullOrWhiteSpace(rejectedTags) )
+		{
+			item.RejectedTags = rejectedTags;
+		}
+
+		var model = GetXmpData(xmpDirectory, "ai:ImageClassificationModel");
+		if ( !string.IsNullOrWhiteSpace(model) )
+		{
+			item.ImageClassificationModel = model;
+		}
+
+		var generatedAt = GetXmpData(xmpDirectory, "ai:ImageClassificationGeneratedAt");
+		if ( !string.IsNullOrWhiteSpace(generatedAt) &&
+		     DateTime.TryParse(generatedAt, CultureInfo.InvariantCulture,
+			     DateTimeStyles.RoundtripKind, out var parsedGeneratedAt) &&
+		     parsedGeneratedAt.Year >= 2 )
+		{
+			item.ImageClassificationGeneratedAt = parsedGeneratedAt;
+		}
 	}
 
 	private static void SetArrayBasedItemsArtist(List<Directory> allExifItems, FileIndexItem item)
@@ -594,6 +628,25 @@ public sealed class ReadMetaExif
 				select property.Value ).FirstOrDefault();
 		result ??= string.Empty;
 		return result;
+	}
+
+	private static string GetXmpDataList(Directory? exifItem, string propertyPathPrefix)
+	{
+		if ( exifItem is not XmpDirectory xmpDirectory || xmpDirectory.XmpMeta == null )
+		{
+			return string.Empty;
+		}
+
+		var values = new HashSet<string>();
+		foreach ( var property in xmpDirectory.XmpMeta.Properties.Where(p =>
+			         !string.IsNullOrWhiteSpace(p.Value) &&
+			         !string.IsNullOrWhiteSpace(p.Path) &&
+			         p.Path.StartsWith(propertyPathPrefix, StringComparison.Ordinal)) )
+		{
+			values.Add(property.Value);
+		}
+
+		return HashSetHelper.HashSetToString(values);
 	}
 
 	public static string GetObjectName(List<Directory> allExifItems)

@@ -41,7 +41,10 @@
       FocalLength: 31.0,
       Size: 58452,
       ImageStabilisation: On,
-      Artist: marianne
+      Artist: marianne,
+      SuggestedTags: ,
+      RejectedTags: ,
+      ImageClassificationModel: 
     },
     SourceFullFilePath: /a6700.arw,
     Structure: {

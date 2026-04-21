@@ -35,7 +35,10 @@
       MakeCameraSerial: ,
       Size: 50000,
       ImageStabilisation: On,
-      Artist: Dion van Velde
+      Artist: Dion van Velde,
+      SuggestedTags: ,
+      RejectedTags: ,
+      ImageClassificationModel: 
     },
     SourceFullFilePath: /a6660.arw,
     Structure: {

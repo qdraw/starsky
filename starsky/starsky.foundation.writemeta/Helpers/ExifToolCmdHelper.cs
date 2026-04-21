@@ -123,6 +123,10 @@ public sealed class ExifToolCmdHelper
 		command = UpdateMakeModelCommand(command, comparedNames, updateModel);
 		command = UpdateImageStabilization(command, comparedNames, updateModel);
 		command = UpdateArtist(command, comparedNames, updateModel);
+		command = UpdateSuggestedTags(command, comparedNames, updateModel);
+		command = UpdateRejectedTags(command, comparedNames, updateModel);
+		command = UpdateImageClassificationModel(command, comparedNames, updateModel);
+		command = UpdateImageClassificationGeneratedAt(command, comparedNames, updateModel);
 
 		if ( command == initCommand )
 		{
@@ -146,6 +150,63 @@ public sealed class ExifToolCmdHelper
 			// IPTC:By-line
 			command +=
 				$" -Artist=\"{updateModel.Artist}\" -XMP-dc:Creator=\"{updateModel.Artist}\" ";
+		}
+
+		return command;
+	}
+
+	private static string UpdateSuggestedTags(string command, List<string> comparedNames,
+		FileIndexItem updateModel)
+	{
+		if ( comparedNames.Contains(nameof(FileIndexItem.SuggestedTags).ToLowerInvariant()) &&
+		     !string.IsNullOrWhiteSpace(updateModel.SuggestedTags) )
+		{
+			var value = updateModel.SuggestedTags.QuotesCommandLineEscape();
+			command += $" -sep \", \" \"-XMP-ai:SuggestedTags\"=\"{value}\" ";
+		}
+
+		return command;
+	}
+
+	private static string UpdateRejectedTags(string command, List<string> comparedNames,
+		FileIndexItem updateModel)
+	{
+		if ( comparedNames.Contains(nameof(FileIndexItem.RejectedTags).ToLowerInvariant()) &&
+		     !string.IsNullOrWhiteSpace(updateModel.RejectedTags) )
+		{
+			var value = updateModel.RejectedTags.QuotesCommandLineEscape();
+			command += $" -sep \", \" \"-XMP-ai:RejectedTags\"=\"{value}\" ";
+		}
+
+		return command;
+	}
+
+	private static string UpdateImageClassificationModel(string command,
+		List<string> comparedNames,
+		FileIndexItem updateModel)
+	{
+		if ( comparedNames.Contains(nameof(FileIndexItem.ImageClassificationModel)
+			     .ToLowerInvariant()) &&
+		     !string.IsNullOrWhiteSpace(updateModel.ImageClassificationModel) )
+		{
+			var value = updateModel.ImageClassificationModel.QuotesCommandLineEscape();
+			command += $" -XMP-ai:ImageClassificationModel=\"{value}\" ";
+		}
+
+		return command;
+	}
+
+	private static string UpdateImageClassificationGeneratedAt(string command,
+		List<string> comparedNames,
+		FileIndexItem updateModel)
+	{
+		if ( comparedNames.Contains(nameof(FileIndexItem.ImageClassificationGeneratedAt)
+			     .ToLowerInvariant()) &&
+		     updateModel.ImageClassificationGeneratedAt.Year >= 2 )
+		{
+			var value = updateModel.ImageClassificationGeneratedAt.ToString("o",
+				CultureInfo.InvariantCulture);
+			command += $" -XMP-ai:ImageClassificationGeneratedAt=\"{value}\" ";
 		}
 
 		return command;

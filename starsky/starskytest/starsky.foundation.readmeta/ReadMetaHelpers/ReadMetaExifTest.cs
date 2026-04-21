@@ -12,6 +12,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using XmpCore;
 using XmpCore.Impl;
 using Directory = MetadataExtractor.Directory;
 
@@ -190,5 +191,34 @@ public class ReadMetaExifTest
 		Assert.AreEqual("EOS 80D", result.Model);
 		Assert.AreEqual(ImageRotation.Rotation.Horizontal, result.Orientation);
 		Assert.AreEqual("E 18-200mm F3.5-6.3 OSS LE", result.LensModel);
+	}
+
+	[TestMethod]
+	public void ParseExifDirectory_ReadsAiFieldsFromXmpDirectory()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>cat</rdf:li><rdf:li>park</rdf:li></rdf:Bag></ai:SuggestedTags>" +
+		                       "<ai:RejectedTags><rdf:Bag><rdf:li>car</rdf:li></rdf:Bag></ai:RejectedTags>" +
+		                       "<ai:ImageClassificationModel>vit-base-1</ai:ImageClassificationModel>" +
+		                       "<ai:ImageClassificationGeneratedAt>2026-04-21T10:20:30Z</ai:ImageClassificationGeneratedAt>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var xmpDirectory = new XmpDirectory();
+		xmpDirectory.SetXmpMeta(XmpMetaFactory.ParseFromString(xmpData));
+
+		var directories = new List<Directory> { xmpDirectory };
+		var readMetaExif =
+			new ReadMetaExif(new FakeIStorage(), new AppSettings(), new FakeIWebLogger());
+		var item = new FileIndexItem("/test.jpg");
+
+		var result = readMetaExif.ParseExifDirectory(directories, item);
+
+		Assert.AreEqual("cat, park", result.SuggestedTags);
+		Assert.AreEqual("car", result.RejectedTags);
+		Assert.AreEqual("vit-base-1", result.ImageClassificationModel);
+		Assert.AreEqual(new DateTime(2026, 4, 21, 10, 20, 30, DateTimeKind.Utc),
+			result.ImageClassificationGeneratedAt);
 	}
 }

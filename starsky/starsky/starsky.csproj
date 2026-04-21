@@ -119,6 +119,9 @@
         <Content Update="appsettings.default.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Update="exiftool-starsky.config">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Content Remove="generic-site\**"/>
         <Content Update="wwwroot\baseline-searcher-detective-263238__192px.png">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

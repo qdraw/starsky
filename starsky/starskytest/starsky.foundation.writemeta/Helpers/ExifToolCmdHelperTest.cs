@@ -23,6 +23,8 @@ public sealed class ExifToolCmdHelperTest
 		_appSettings = new AppSettings();
 	}
 
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task ExifToolCmdHelper_UpdateTest()
 	{
@@ -365,6 +367,34 @@ public sealed class ExifToolCmdHelperTest
 		Assert.AreEqual(string.Empty, result);
 	}
 
+	[TestMethod]
+	public void ExifToolCommandLineArgs_AiMetadataFields()
+	{
+		var generatedAt = new DateTime(2026, 4, 21, 10, 20, 30, DateTimeKind.Utc);
+		var updateModel = new FileIndexItem
+		{
+			SuggestedTags = "cat, park",
+			RejectedTags = "car",
+			ImageClassificationModel = "vit-base-1",
+			ImageClassificationGeneratedAt = generatedAt
+		};
+
+		var comparedNames = new List<string>
+		{
+			nameof(FileIndexItem.SuggestedTags).ToLowerInvariant(),
+			nameof(FileIndexItem.RejectedTags).ToLowerInvariant(),
+			nameof(FileIndexItem.ImageClassificationModel).ToLowerInvariant(),
+			nameof(FileIndexItem.ImageClassificationGeneratedAt).ToLowerInvariant()
+		};
+
+		var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel, comparedNames, true);
+
+		Assert.Contains("-XMP-ai:SuggestedTags", result);
+		Assert.Contains("-XMP-ai:RejectedTags", result);
+		Assert.Contains("-XMP-ai:ImageClassificationModel=\"vit-base-1\"", result);
+		Assert.Contains($"-XMP-ai:ImageClassificationGeneratedAt=\"{generatedAt:o}\"", result);
+	}
+
 	/// <summary>
 	///     Tests the BeforeFileHash method via UpdateAsync
 	///     When FilePath doesn't match the path parameter, it should call FileHash.GetHashCodeAsync
@@ -472,6 +502,4 @@ public sealed class ExifToolCmdHelperTest
 		Assert.AreEqual(result.Rename[0].NewFileHash, afterQueryResult.FileHash);
 		Assert.AreEqual("test", afterQueryResult.Reasons);
 	}
-
-	public TestContext TestContext { get; set; }
 }

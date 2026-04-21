@@ -252,4 +252,26 @@ public sealed class XmpReadHelperTest
 
 		Assert.AreEqual("NLD", data.LocationCountryCode);
 	}
+
+	[TestMethod]
+	public void XmpReadHelperTest_GetData_AiMetadata()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>cat</rdf:li><rdf:li>park</rdf:li></rdf:Bag></ai:SuggestedTags>" +
+		                       "<ai:RejectedTags><rdf:Bag><rdf:li>car</rdf:li></rdf:Bag></ai:RejectedTags>" +
+		                       "<ai:ImageClassificationModel>vit-base-1</ai:ImageClassificationModel>" +
+		                       "<ai:ImageClassificationGeneratedAt>2026-04-21T10:20:30Z</ai:ImageClassificationGeneratedAt>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual("cat, park", data.SuggestedTags);
+		Assert.AreEqual("car", data.RejectedTags);
+		Assert.AreEqual("vit-base-1", data.ImageClassificationModel);
+		Assert.AreEqual(new DateTime(2026, 4, 21, 10, 20, 30, DateTimeKind.Utc),
+			data.ImageClassificationGeneratedAt);
+	}
 }
