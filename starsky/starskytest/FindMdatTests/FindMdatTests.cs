@@ -246,6 +246,40 @@ public class FindMdatTests
 	}
 
 	[TestMethod]
+	public void TryReadAtomHeader_TruncatedExtendedSize_ReturnsFalse()
+	{
+		var method = typeof(FindMdat).GetMethod("TryReadAtomHeader",
+			BindingFlags.NonPublic | BindingFlags.Static);
+		Assert.IsNotNull(method);
+
+		using var ms = new MemoryStream();
+		ms.Write(new byte[] { 0, 0, 0, 1 }, 0, 4);
+		ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
+		// only 4 bytes for extended size (need 8)
+		ms.Write(new byte[] { 1, 2, 3, 4 }, 0, 4);
+		ms.Position = 0;
+
+		var args = new object?[] { ms, ms.Length, 0L, null, 0L, 0, 0L };
+		var res = ( bool ) method.Invoke(null, args)!;
+		Assert.IsFalse(res);
+	}
+
+	[TestMethod]
+	public void HashMdatPayload_NullPayloadLen_UsesMaxBytes()
+	{
+		var path = TempFile();
+		try
+		{
+			File.WriteAllBytes(path, new byte[] { 1, 2, 3, 4, 5 });
+			var fi = new FileInfo(path);
+			var (md5Hex, b32) = FindMdat.HashMdatPayload(fi, 0, null, 3);
+			Assert.IsFalse(string.IsNullOrEmpty(md5Hex));
+			Assert.IsFalse(string.IsNullOrEmpty(b32));
+		}
+		finally { File.Delete(path); }
+	}
+
+	[TestMethod]
 	public void FindFirstMdat_InvalidAtomSize_NegativeToSkip_ReturnsNull()
 	{
 		// create a file with one atom whose size is smaller than header (size=4)
