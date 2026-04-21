@@ -117,7 +117,7 @@ public sealed class FileIndexItemWithIdJsonConverterTest
 
 		var json = Encoding.UTF8.GetString(ms.ToArray());
 		// with camelCase naming policy, properties should be camel-cased
-		Assert.IsTrue(json.Contains("\"id\":11"), json);
+		Assert.Contains("\"id\":11", json, json);
 		Assert.IsTrue(json.Contains("\"fileName\"") || json.Contains("\"FileName\""), json);
 	}
 
