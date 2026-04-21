@@ -59,7 +59,7 @@ public class QueryAddRangeTest_Error
 
 		var fakeQuery = new Query(dbUpdateExceptionDbContext, new AppSettings(), scope,
 			new FakeIWebLogger());
-		await fakeQuery.AddRangeAsync(new List<FileIndexItem> { new("/test22.jpg") });
+		await fakeQuery.AddRangeAsync([new FileIndexItem("/test22.jpg") { Id = 30 }]);
 
 		Assert.AreEqual(1, dbUpdateExceptionDbContext.Count);
 	}
