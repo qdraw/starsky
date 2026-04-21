@@ -114,7 +114,7 @@ public sealed class WebLogger : IWebLogger
 		SafeLog(() => _logger.LogWarning(exception, message, args));
 	}
 
-	internal void SafeLog(Action logAction)
+	private void SafeLog(Action logAction)
 	{
 		try
 		{
