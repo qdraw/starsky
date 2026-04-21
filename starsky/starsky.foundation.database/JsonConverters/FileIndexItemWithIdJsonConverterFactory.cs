@@ -133,12 +133,13 @@ public sealed class FileIndexItemWithIdJsonConverterFactory : JsonConverterFacto
 			reader.Read();
 			while ( reader.TokenType != JsonTokenType.EndArray )
 			{
-				var item = _elementConverter.Read(ref reader, typeof(FileIndexItem), options);
+				var item = _elementConverter.Read(ref reader,
+					typeof(FileIndexItem), options);
 				list.Add(item);
 				reader.Read();
 			}
 
-			return list.ToArray();
+			return [.. list];
 		}
 
 		public override void Write(Utf8JsonWriter writer, FileIndexItem[]? value,

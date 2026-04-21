@@ -120,4 +120,68 @@ public sealed class FileIndexItemWithIdJsonConverterTest
 		Assert.IsTrue(json.Contains("\"id\":11"), json);
 		Assert.IsTrue(json.Contains("\"fileName\"") || json.Contains("\"FileName\""), json);
 	}
+
+	[TestMethod]
+	public void Write_SkipsSelfAndFactoryInSafeOptions()
+	{
+		var conv = new FileIndexItemWithIdJsonConverter();
+		var item = new FileIndexItem { Id = 21, FileName = "g.jpg", ParentDirectory = "/" };
+
+		var options = new JsonSerializerOptions();
+		// include this converter instance and factory to ensure they are skipped when building safeOptions
+		options.Converters.Add(conv);
+		options.Converters.Add(new FileIndexItemWithIdJsonConverterFactory());
+
+		using var ms = new MemoryStream();
+		using ( var writer = new Utf8JsonWriter(ms) )
+		{
+			conv.Write(writer, item, options);
+		}
+
+		var json = Encoding.UTF8.GetString(ms.ToArray());
+		using var doc = JsonDocument.Parse(json);
+		var root = doc.RootElement;
+
+		Assert.IsTrue(root.TryGetProperty("id", out var idProp) && idProp.GetInt32() == 21, json);
+	}
+
+	[TestMethod]
+	public void Read_SkipsSelfAndFactoryInReadOptions()
+	{
+		var conv = new FileIndexItemWithIdJsonConverter();
+		var json = "{\"id\":33,\"FileName\":\"h.jpg\",\"ParentDirectory\":\"/\"}";
+		var bytes = Encoding.UTF8.GetBytes(json);
+		var reader = new Utf8JsonReader(bytes);
+		reader.Read();
+
+		var options = new JsonSerializerOptions();
+		// include this converter and factory so the read logic will skip adding them to readOptions
+		options.Converters.Add(conv);
+		options.Converters.Add(new FileIndexItemWithIdJsonConverterFactory());
+
+		var result = conv.Read(ref reader, typeof(FileIndexItem), options);
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual(33, result.Id);
+		Assert.AreEqual("h.jpg", result.FileName);
+	}
+
+	[TestMethod]
+	public void Read_NoIdProperty_ReturnsDefaultId()
+	{
+		var conv = new FileIndexItemWithIdJsonConverter();
+		var json = "{\"FileName\":\"noid.jpg\",\"ParentDirectory\":\"/\"}";
+		var bytes = Encoding.UTF8.GetBytes(json);
+		var reader = new Utf8JsonReader(bytes);
+		reader.Read();
+
+		var options = new JsonSerializerOptions();
+		options.Converters.Add(new FileIndexItemWithIdJsonConverterFactory());
+
+		var result = conv.Read(ref reader, typeof(FileIndexItem), options);
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual(0, result.Id);
+		Assert.AreEqual("noid.jpg", result.FileName);
+	}
 }
