@@ -75,4 +75,40 @@ public sealed class DefaultJsonFileIndexJsonSerializerTest
 		Assert.Contains("\"id\":1", json, json);
 		Assert.Contains("\"id\":2", json, json);
 	}
+
+	[TestMethod]
+	public void Deserialize_List_NullJson_ReturnsNull()
+	{
+		const string json = "null";
+		var result = JsonSerializer.Deserialize<List<FileIndexItem>>(json,
+			DefaultJsonFileIndexJsonSerializer.WithIdConverter);
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public void Deserialize_List_WrongToken_ThrowsJsonException()
+	{
+		const string json = "{}"; // not an array
+		Assert.ThrowsExactly<JsonException>(() =>
+			JsonSerializer.Deserialize<List<FileIndexItem>>(json,
+				DefaultJsonFileIndexJsonSerializer.WithIdConverter));
+	}
+
+	[TestMethod]
+	public void Deserialize_Array_NullJson_ReturnsNull()
+	{
+		const string json = "null";
+		var result = JsonSerializer.Deserialize<FileIndexItem[]>(json,
+			DefaultJsonFileIndexJsonSerializer.WithIdConverter);
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public void Deserialize_Array_WrongToken_ThrowsJsonException()
+	{
+		const string json = "{}"; // not an array
+		Assert.ThrowsExactly<JsonException>(() =>
+			JsonSerializer.Deserialize<FileIndexItem[]>(json,
+				DefaultJsonFileIndexJsonSerializer.WithIdConverter));
+	}
 }
