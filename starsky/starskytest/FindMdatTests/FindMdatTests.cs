@@ -187,6 +187,83 @@ public class FindMdatTests
 		}
 	}
 
+	[TestMethod]
+	public void TryReadAtomHeader_ShortHeader_ReturnsFalse()
+	{
+		var method = typeof(FindMdat).GetMethod("TryReadAtomHeader", BindingFlags.NonPublic | BindingFlags.Static);
+		Assert.IsNotNull(method);
+
+		using var ms = new MemoryStream(new byte[4]);
+		var args = new object?[] { ms, ms.Length, 0L, null, 0L, 0, 0L };
+		var res = (bool)method.Invoke(null, args)!;
+		Assert.IsFalse(res);
+	}
+
+	[TestMethod]
+	public void TryReadAtomHeader_ExtendedSize_ClampToLongMax()
+	{
+		var method = typeof(FindMdat).GetMethod("TryReadAtomHeader", BindingFlags.NonPublic | BindingFlags.Static);
+		Assert.IsNotNull(method);
+
+		// construct header: size32==1, type 'mdat', size64 = ulong.MaxValue
+		using var ms = new MemoryStream();
+		ms.Write([0, 0, 0, 1], 0, 4);
+		ms.Write("mdat"u8.ToArray(), 0, 4);
+		ms.Write([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], 0, 8);
+		ms.Position = 0;
+
+		var args = new object?[] { ms, ms.Length, 0L, null, 0L, 0, 0L };
+		var res = (bool)method.Invoke(null, args)!;
+		Assert.IsTrue(res);
+		Assert.AreEqual("mdat", args[3] as string);
+		Assert.AreEqual(16, (int)args[5]!);
+		Assert.AreEqual(long.MaxValue, (long)args[4]!);
+	}
+
+	[TestMethod]
+	public void FindFirstMdat_InvalidAtomSize_NegativeToSkip_ReturnsNull()
+	{
+		// create a file with one atom whose size is smaller than header (size=4)
+		var path = TempFile();
+		try
+		{
+			using var ms = new MemoryStream();
+			ms.Write([0, 0, 0, 4], 0, 4);
+			ms.Write("free"u8.ToArray(), 0, 4);
+			File.WriteAllBytes(path, ms.ToArray());
+
+			var fi = new FileInfo(path);
+			var info = FindMdat.FindFirstMdat(fi);
+			Assert.IsNull(info);
+		}
+		finally { File.Delete(path); }
+	}
+
+	[TestMethod]
+	public void HashMdatPayload_ReadBeyondEOF_BreaksLoop()
+	{
+		var path = TempFile();
+		try
+		{
+			File.WriteAllBytes(path, [1, 2, 3]);
+			var fi = new FileInfo(path);
+			// request dataOffset beyond EOF
+			var (md5Hex, b32) = FindMdat.HashMdatPayload(fi, 1000, 10, 10);
+			Assert.IsFalse(string.IsNullOrEmpty(md5Hex));
+			Assert.IsFalse(string.IsNullOrEmpty(b32));
+		}
+		finally { File.Delete(path); }
+	}
+
+	[TestMethod]
+	public void Base32NoPadding_EmptyArray_ReturnsEmpty()
+	{
+		var method = typeof(FindMdat).GetMethod("Base32NoPadding", BindingFlags.NonPublic | BindingFlags.Static);
+		Assert.IsNotNull(method);
+		var res = (string)method.Invoke(null, [Array.Empty<byte>()])!;
+		Assert.AreEqual(string.Empty, res);
+	}
+
 	private class ThrowOnSeekStream : MemoryStream
 	{
 		public ThrowOnSeekStream(byte[] data) : base(data)
@@ -197,5 +274,29 @@ public class FindMdatTests
 		{
 			throw new IOException("seek not supported");
 		}
+	}
+
+	[TestMethod]
+	public void FindFirstMdat_StreamOverloads_Handle_NonSeekable_And_ZeroSize()
+	{
+		// 1) Extended size == 0 -> atomSize == 0 -> FindFirstMdat should return null
+		using var ms1 = new MemoryStream();
+		ms1.Write([0, 0, 0, 1], 0, 4); // size32 == 1
+		ms1.Write("free"u8.ToArray(), 0, 4);
+		ms1.Write(new byte[8], 0, 8); // extended size == 0
+		ms1.Position = 0;
+		var res1 = FindMdat.FindFirstMdat(ms1, ms1.Length);
+		Assert.IsNull(res1);
+
+		// 2) Non-seekable stream: TrySkip fallback should return false and FindFirstMdat returns null
+		var ms2 = new MemoryStream();
+		// first atom size=12 (header 8 + 4 payload) but we won't include payload -> toSkip=4 but not enough data
+		ms2.Write([0, 0, 0, 12], 0, 4);
+		ms2.Write("free"u8.ToArray(), 0, 4);
+		// no payload
+		ms2.Position = 0;
+		using var s = new ThrowOnSeekStream(ms2.ToArray());
+		var res2 = FindMdat.FindFirstMdat(s, s.Length);
+		Assert.IsNull(res2);
 	}
 }

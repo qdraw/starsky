@@ -22,14 +22,19 @@ public static class FindMdat
 	public static MdatInfo? FindFirstMdat(FileInfo file)
 	{
 		using var fs = file.OpenRead();
-		var fileLen = fs.Length;
+		return FindFirstMdat(fs, fs.Length);
+	}
 
+	// Internal overload that operates on a provided stream. This allows testing edge cases
+	// (for example non-seekable streams) by passing a custom Stream implementation.
+	internal static MdatInfo? FindFirstMdat(Stream fs, long fileLen)
+	{
 		while ( true )
 		{
 			var posHeader = fs.Position;
 
 			if ( !TryReadAtomHeader(fs, fileLen, posHeader, out var atomType, out var atomSize,
-				    out var headerSize, out var dataOffset) )
+					out var headerSize, out var dataOffset) )
 			{
 				return null;
 			}
