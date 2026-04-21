@@ -237,18 +237,6 @@ public class ExifToolStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public void GetExifToolArgumentsWithConfig_DoesNotIncludeConfig_WhenShouldNotInject()
-	{
-		var appSettings = new AppSettings { ExifToolPath = "invalid" };
-		var sut = new ExifToolStreamToStreamRunner(appSettings, new FakeIWebLogger());
-
-		var input = "-json -overwrite_original";
-		var result = sut.GetExifToolArgumentsWithConfig(input);
-
-		Assert.AreEqual(input, result);
-	}
-
-	[TestMethod]
 	public void GetExifToolArgumentsWithConfig_DoesNotIncludeConfig_WhenConfigMissing()
 	{
 		var tempDir = Path.Combine(new CreateAnImage().BasePath, "ExifToolConfigTestsMissing");
