@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -34,7 +35,7 @@ public static class FindMdat
 			var posHeader = fs.Position;
 
 			if ( !TryReadAtomHeader(fs, fileLen, posHeader, out var atomType, out var atomSize,
-					out var headerSize, out var dataOffset) )
+				    out var headerSize, out var dataOffset) )
 			{
 				return null;
 			}
@@ -167,6 +168,9 @@ public static class FindMdat
 		}
 	}
 
+	[SuppressMessage("Usage",
+		"S4790:Make sure this weak hash algorithm is not used in a sensitive context here.",
+		Justification = "Not used for passwords")]
 	public static (string md5Hex, string base32) HashMdatPayload(FileInfo file, long dataOffset,
 		long? payloadLen, int maxBytes)
 	{

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Services;
 
@@ -190,19 +191,21 @@ public class FindMdatTests
 	[TestMethod]
 	public void TryReadAtomHeader_ShortHeader_ReturnsFalse()
 	{
-		var method = typeof(FindMdat).GetMethod("TryReadAtomHeader", BindingFlags.NonPublic | BindingFlags.Static);
+		var method = typeof(FindMdat).GetMethod("TryReadAtomHeader",
+			BindingFlags.NonPublic | BindingFlags.Static);
 		Assert.IsNotNull(method);
 
 		using var ms = new MemoryStream(new byte[4]);
 		var args = new object?[] { ms, ms.Length, 0L, null, 0L, 0, 0L };
-		var res = (bool)method.Invoke(null, args)!;
+		var res = ( bool ) method.Invoke(null, args)!;
 		Assert.IsFalse(res);
 	}
 
 	[TestMethod]
 	public void TryReadAtomHeader_ExtendedSize_ClampToLongMax()
 	{
-		var method = typeof(FindMdat).GetMethod("TryReadAtomHeader", BindingFlags.NonPublic | BindingFlags.Static);
+		var method = typeof(FindMdat).GetMethod("TryReadAtomHeader",
+			BindingFlags.NonPublic | BindingFlags.Static);
 		Assert.IsNotNull(method);
 
 		// construct header: size32==1, type 'mdat', size64 = ulong.MaxValue
@@ -213,11 +216,33 @@ public class FindMdatTests
 		ms.Position = 0;
 
 		var args = new object?[] { ms, ms.Length, 0L, null, 0L, 0, 0L };
-		var res = (bool)method.Invoke(null, args)!;
+		var res = ( bool ) method.Invoke(null, args)!;
 		Assert.IsTrue(res);
 		Assert.AreEqual("mdat", args[3] as string);
-		Assert.AreEqual(16, (int)args[5]!);
-		Assert.AreEqual(long.MaxValue, (long)args[4]!);
+		Assert.AreEqual(16, ( int ) args[5]!);
+		Assert.AreEqual(long.MaxValue, ( long ) args[4]!);
+	}
+
+	[TestMethod]
+	public void TryReadAtomHeader_ExtendedSize_SmallSize_ReturnsSize()
+	{
+		var method = typeof(FindMdat).GetMethod("TryReadAtomHeader",
+			BindingFlags.NonPublic | BindingFlags.Static);
+		Assert.IsNotNull(method);
+
+		using var ms = new MemoryStream();
+		ms.Write(new byte[] { 0, 0, 0, 1 }, 0, 4);
+		ms.Write(Encoding.ASCII.GetBytes("free"), 0, 4);
+		// size64 = 20
+		ms.Write(new byte[] { 0, 0, 0, 0, 0, 0, 0, 20 }, 0, 8);
+		ms.Position = 0;
+
+		var args = new object?[] { ms, ms.Length, 0L, null, 0L, 0, 0L };
+		var res = ( bool ) method.Invoke(null, args)!;
+		Assert.IsTrue(res);
+		Assert.AreEqual("free", args[3] as string);
+		Assert.AreEqual(16, ( int ) args[5]!);
+		Assert.AreEqual(20L, ( long ) args[4]!);
 	}
 
 	[TestMethod]
@@ -236,7 +261,10 @@ public class FindMdatTests
 			var info = FindMdat.FindFirstMdat(fi);
 			Assert.IsNull(info);
 		}
-		finally { File.Delete(path); }
+		finally
+		{
+			File.Delete(path);
+		}
 	}
 
 	[TestMethod]
@@ -252,28 +280,20 @@ public class FindMdatTests
 			Assert.IsFalse(string.IsNullOrEmpty(md5Hex));
 			Assert.IsFalse(string.IsNullOrEmpty(b32));
 		}
-		finally { File.Delete(path); }
+		finally
+		{
+			File.Delete(path);
+		}
 	}
 
 	[TestMethod]
 	public void Base32NoPadding_EmptyArray_ReturnsEmpty()
 	{
-		var method = typeof(FindMdat).GetMethod("Base32NoPadding", BindingFlags.NonPublic | BindingFlags.Static);
+		var method = typeof(FindMdat).GetMethod("Base32NoPadding",
+			BindingFlags.NonPublic | BindingFlags.Static);
 		Assert.IsNotNull(method);
-		var res = (string)method.Invoke(null, [Array.Empty<byte>()])!;
+		var res = ( string ) method.Invoke(null, [Array.Empty<byte>()])!;
 		Assert.AreEqual(string.Empty, res);
-	}
-
-	private class ThrowOnSeekStream : MemoryStream
-	{
-		public ThrowOnSeekStream(byte[] data) : base(data)
-		{
-		}
-
-		public override long Seek(long offset, SeekOrigin loc)
-		{
-			throw new IOException("seek not supported");
-		}
 	}
 
 	[TestMethod]
@@ -298,5 +318,17 @@ public class FindMdatTests
 		using var s = new ThrowOnSeekStream(ms2.ToArray());
 		var res2 = FindMdat.FindFirstMdat(s, s.Length);
 		Assert.IsNull(res2);
+	}
+
+	private class ThrowOnSeekStream : MemoryStream
+	{
+		public ThrowOnSeekStream(byte[] data) : base(data)
+		{
+		}
+
+		public override long Seek(long offset, SeekOrigin loc)
+		{
+			throw new IOException("seek not supported");
+		}
 	}
 }
