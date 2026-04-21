@@ -127,5 +127,25 @@ public sealed class FileIndexItemWithIdJsonConverterFactoryTest
         Assert.AreEqual(1, listIList.Count);
         Assert.AreEqual(8, listIList[0].Id);
     }
+
+    [TestMethod]
+    public void Read_NullToken_ReturnsNull_ForListAndArray()
+    {
+        var factory = new FileIndexItemWithIdJsonConverterFactory();
+        var options = new JsonSerializerOptions();
+
+        var listConv = (JsonConverter<List<FileIndexItem>>)factory.CreateConverter(typeof(List<FileIndexItem>), options);
+        var arrayConv = (JsonConverter<FileIndexItem[]>)factory.CreateConverter(typeof(FileIndexItem[]), options);
+
+        var readerListNull = new Utf8JsonReader(System.Text.Encoding.UTF8.GetBytes("null"));
+        readerListNull.Read();
+        var listNull = listConv.Read(ref readerListNull, typeof(List<FileIndexItem>), options);
+        Assert.IsNull(listNull);
+
+        var readerArrayNull = new Utf8JsonReader(System.Text.Encoding.UTF8.GetBytes("null"));
+        readerArrayNull.Read();
+        var arrNull = arrayConv.Read(ref readerArrayNull, typeof(FileIndexItem[]), options);
+        Assert.IsNull(arrNull);
+    }
 }
 
