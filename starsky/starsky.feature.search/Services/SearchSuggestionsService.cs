@@ -61,6 +61,7 @@ public class SearchSuggestionsService : ISearchSuggest
 		try
 		{
 			allFilesList = await _context.FileIndex
+				.AsNoTracking()
 				.Where(p => !string.IsNullOrEmpty(p.Tags))
 				.GroupBy(i => i.Tags)
 				// ReSharper disable once UseMethodAny.1
