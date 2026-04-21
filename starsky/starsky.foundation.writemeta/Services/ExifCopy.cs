@@ -4,6 +4,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -24,12 +25,13 @@ public sealed class ExifCopy
 	private readonly IStorage _subPathStorage;
 
 	public ExifCopy(IStorage subPathStorage, IStorage thumbnailStorage, IExifTool exifTool,
-		IReadMeta readMeta, IThumbnailQuery thumbnailQuery, IWebLogger logger)
+		IReadMeta readMeta, IThumbnailQuery thumbnailQuery, IWebLogger logger,
+		AppSettings appSettings)
 	{
 		_subPathStorage = subPathStorage;
 		_readMeta = readMeta;
 		_exifToolCmdHelper = new ExifToolCmdHelper(exifTool, _subPathStorage,
-			thumbnailStorage, _readMeta, thumbnailQuery, logger);
+			thumbnailStorage, _readMeta, thumbnailQuery, logger, appSettings);
 	}
 
 	/// <summary>

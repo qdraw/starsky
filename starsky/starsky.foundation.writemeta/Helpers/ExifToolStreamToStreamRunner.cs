@@ -13,7 +13,6 @@ namespace starsky.foundation.writemeta.Helpers;
 /// </summary>
 public class ExifToolStreamToStreamRunner
 {
-	private const string ExifToolConfigFileName = "exiftool-starsky.config";
 	private readonly AppSettings _appSettings;
 	private readonly IWebLogger _logger;
 
@@ -41,8 +40,7 @@ public class ExifToolStreamToStreamRunner
 			$"info: {sourceStream.CanRead}  {sourceStream.CanSeek}  {sourceStream.CanWrite}" +
 			$" {sourceStream.Position}");
 
-		var argumentsWithConfig = GetExifToolArgumentsWithConfig(exifToolInputArguments);
-		var argumentsWithPipeEnd = $"{argumentsWithConfig} -o - -";
+		var argumentsWithPipeEnd = $"{exifToolInputArguments} -o - -";
 
 		var memoryStream = new MemoryStream();
 
@@ -73,18 +71,5 @@ public class ExifToolStreamToStreamRunner
 			                            "Please make sure exifTool is installed, and its path is properly " +
 			                            "specified in the options.", exception);
 		}
-	}
-
-	internal string GetExifToolArgumentsWithConfig(string exifToolInputArguments)
-	{
-		var appSettingsDirectory = Path.GetDirectoryName(_appSettings.AppSettingsPath);
-		var configBaseDirectory = string.IsNullOrWhiteSpace(appSettingsDirectory)
-			? _appSettings.BaseDirectoryProject
-			: appSettingsDirectory;
-		var configPath = Path.Combine(configBaseDirectory, ExifToolConfigFileName);
-
-		return !File.Exists(configPath)
-			? exifToolInputArguments
-			: $"-config \"{configPath}\" {exifToolInputArguments}";
 	}
 }

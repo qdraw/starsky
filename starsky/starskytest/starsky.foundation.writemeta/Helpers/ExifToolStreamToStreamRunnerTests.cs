@@ -90,7 +90,7 @@ public class ExifToolStreamToStreamRunnerTests
 		var streamResult = await runner.RunProcessAsync(new MemoryStream([]),
 			string.Empty, "test / unit test");
 
-		await StreamToStringHelper.StreamToStringAsync(streamResult, false);
+		var t = await StreamToStringHelper.StreamToStringAsync(streamResult, false);
 
 		Assert.AreEqual(0, streamResult.Length);
 
@@ -205,62 +205,62 @@ public class ExifToolStreamToStreamRunnerTests
 				"-1", "image2"));
 	}
 
-	[TestMethod]
-	public async Task GetExifToolArgumentsWithConfig_IncludesConfigWhenPresent()
-	{
-		var tempDir = Path.Combine(new CreateAnImage().BasePath, "ExifToolConfigTests");
-		Directory.CreateDirectory(tempDir);
-		try
-		{
-			var configPath = Path.Combine(tempDir, "exiftool-starsky.config");
-			await File.WriteAllTextAsync(configPath, "1;", TestContext.CancellationToken);
+	// [TestMethod]
+	// public async Task GetExifToolArgumentsWithConfig_IncludesConfigWhenPresent()
+	// {
+	// 	var tempDir = Path.Combine(new CreateAnImage().BasePath, "ExifToolConfigTests");
+	// 	Directory.CreateDirectory(tempDir);
+	// 	try
+	// 	{
+	// 		var configPath = Path.Combine(tempDir, "exiftool-starsky.config");
+	// 		await File.WriteAllTextAsync(configPath, "1;", TestContext.CancellationToken);
+	//
+	// 		var appSettings = new AppSettings
+	// 		{
+	// 			ExifToolPath = _appSettingsWithExifTool.ExifToolPath,
+	// 			AppSettingsPath = Path.Combine(tempDir, "appsettings.patch.json")
+	// 		};
+	// 		var sut = new ExifToolStreamToStreamRunner(appSettings, new FakeIWebLogger());
+	//
+	// 		var result = sut.GetExifToolArgumentsWithConfig("-json -overwrite_original");
+	//
+	// 		Assert.Contains($"-config \"{configPath}\"", result);
+	// 		Assert.Contains("-json -overwrite_original", result);
+	// 	}
+	// 	finally
+	// 	{
+	// 		if ( Directory.Exists(tempDir) )
+	// 		{
+	// 			Directory.Delete(tempDir, true);
+	// 		}
+	// 	}
+	// }
 
-			var appSettings = new AppSettings
-			{
-				ExifToolPath = _appSettingsWithExifTool.ExifToolPath,
-				AppSettingsPath = Path.Combine(tempDir, "appsettings.patch.json")
-			};
-			var sut = new ExifToolStreamToStreamRunner(appSettings, new FakeIWebLogger());
-
-			var result = sut.GetExifToolArgumentsWithConfig("-json -overwrite_original");
-
-			Assert.Contains($"-config \"{configPath}\"", result);
-			Assert.Contains("-json -overwrite_original", result);
-		}
-		finally
-		{
-			if ( Directory.Exists(tempDir) )
-			{
-				Directory.Delete(tempDir, true);
-			}
-		}
-	}
-
-	[TestMethod]
-	public void GetExifToolArgumentsWithConfig_DoesNotIncludeConfig_WhenConfigMissing()
-	{
-		var tempDir = Path.Combine(new CreateAnImage().BasePath, "ExifToolConfigTestsMissing");
-		Directory.CreateDirectory(tempDir);
-		try
-		{
-			var appSettings = new AppSettings
-			{
-				ExifToolPath = Path.Combine(tempDir, "exiftool"),
-				AppSettingsPath = Path.Combine(tempDir, "appsettings.patch.json")
-			};
-			var sut = new ExifToolStreamToStreamRunner(appSettings, new FakeIWebLogger());
-
-			var input = "-json -overwrite_original";
-			var result = sut.GetExifToolArgumentsWithConfig(input);
-
-			Assert.AreEqual(input, result);
-		}
-		finally
-		{
-			if ( Directory.Exists(tempDir) )
-			{
-				Directory.Delete(tempDir, true);
-			}
-		}
-	}
+	// [TestMethod]
+	// public void GetExifToolArgumentsWithConfig_DoesNotIncludeConfig_WhenConfigMissing()
+	// {
+	// 	var tempDir = Path.Combine(new CreateAnImage().BasePath, "ExifToolConfigTestsMissing");
+	// 	Directory.CreateDirectory(tempDir);
+	// 	try
+	// 	{
+	// 		var appSettings = new AppSettings
+	// 		{
+	// 			ExifToolPath = Path.Combine(tempDir, "exiftool"),
+	// 			AppSettingsPath = Path.Combine(tempDir, "appsettings.patch.json")
+	// 		};
+	// 		var sut = new ExifToolStreamToStreamRunner(appSettings, new FakeIWebLogger());
+	//
+	// 		var input = "-json -overwrite_original";
+	// 		var result = sut.GetExifToolArgumentsWithConfig(input);
+	//
+	// 		Assert.AreEqual(input, result);
+	// 	}
+	// 	finally
+	// 	{
+	// 		if ( Directory.Exists(tempDir) )
+	// 		{
+	// 			Directory.Delete(tempDir, true);
+	// 		}
+	// 	}
+	// }
 }
