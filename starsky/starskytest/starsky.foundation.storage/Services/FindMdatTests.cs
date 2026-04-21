@@ -276,7 +276,10 @@ public class FindMdatTests
 			Assert.IsFalse(string.IsNullOrEmpty(md5Hex));
 			Assert.IsFalse(string.IsNullOrEmpty(b32));
 		}
-		finally { File.Delete(path); }
+		finally
+		{
+			File.Delete(path);
+		}
 	}
 
 	[TestMethod]
@@ -354,12 +357,78 @@ public class FindMdatTests
 		Assert.IsNull(res2);
 	}
 
-	private class ThrowOnSeekStream : MemoryStream
+	[TestMethod]
+	public void TryReadAtomHeader_TruncatedExtendedSize_ReturnsFalse_NewFile()
 	{
-		public ThrowOnSeekStream(byte[] data) : base(data)
-		{
-		}
+		var method = typeof(FindMdat).GetMethod("TryReadAtomHeader",
+			BindingFlags.NonPublic | BindingFlags.Static);
+		Assert.IsNotNull(method);
 
+		using var ms = new MemoryStream();
+		ms.Write(new byte[] { 0, 0, 0, 1 }, 0, 4);
+		ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
+		// only 4 bytes for extended size (need 8)
+		ms.Write(new byte[] { 1, 2, 3, 4 }, 0, 4);
+		ms.Position = 0;
+
+		var args = new object?[] { ms, ms.Length, 0L, null, 0L, 0, 0L };
+		var res = ( bool ) method.Invoke(null, args)!;
+		Assert.IsFalse(res);
+	}
+
+	[TestMethod]
+	public void HashMdatPayload_ForceNullHashFlag_UsesEmptyDigest()
+	{
+		var oldFlag = FindMdat.ForceNullHashForTests;
+		try
+		{
+			FindMdat.ForceNullHashForTests = true;
+			var path = TempFile();
+			try
+			{
+				File.WriteAllBytes(path, new byte[] { 1, 2, 3 });
+				var fi = new FileInfo(path);
+				var (md5Hex, b32) = FindMdat.HashMdatPayload(fi, 0, null, 10);
+				// When Hash is forced null, production code should fall back to empty arrays -> empty strings
+				Assert.AreEqual(string.Empty, md5Hex);
+				Assert.AreEqual(string.Empty, b32);
+			}
+			finally
+			{
+				File.Delete(path);
+			}
+		}
+		finally
+		{
+			FindMdat.ForceNullHashForTests = oldFlag;
+		}
+	}
+
+	[TestMethod]
+	public void FindMdatProgram_Main_ExtendedMdat_PayloadLenNull_UsesHashBytes_NewFile()
+	{
+		var path = TempFile();
+		try
+		{
+			// size32 = 1, type = "mdat", extended size = 4 (< headerSize 16) -> PayloadLen null
+			using var ms = new MemoryStream();
+			ms.Write(new byte[] { 0, 0, 0, 1 }, 0, 4);
+			ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
+			ms.Write(new byte[] { 0, 0, 0, 0, 0, 0, 0, 4 }, 0, 8);
+			File.WriteAllBytes(path, ms.ToArray());
+
+			// With --hash-bytes specified, Main should use hashBytes when PayloadLen is null
+			var exit = FindMdatProgram.Main(new[] { path, "--hash-bytes", "2" });
+			Assert.AreEqual(0, exit);
+		}
+		finally
+		{
+			File.Delete(path);
+		}
+	}
+
+	private sealed class ThrowOnSeekStream(byte[] data) : MemoryStream(data)
+	{
 		public override long Seek(long offset, SeekOrigin loc)
 		{
 			throw new IOException("seek not supported");

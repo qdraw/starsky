@@ -18,6 +18,12 @@ public sealed class MdatInfo
 
 public static class FindMdat
 {
+	public static Func<HashAlgorithm>? Md5Factory { get; set; }
+
+	// Test hook: when true the code will treat the computed Hash as null to exercise the
+	// null-coalescing fallback in tests.
+	public static bool ForceNullHashForTests { get; set; }
+
 	// Find the first 'mdat' atom in an MP4 file and return info similar to the python script.
 	// Refactored to reduce cognitive complexity by extracting helpers for reading headers and skipping.
 	public static MdatInfo? FindFirstMdat(FileInfo file)
@@ -175,7 +181,7 @@ public static class FindMdat
 		long? payloadLen, int maxBytes)
 	{
 		var toRead = payloadLen.HasValue ? Math.Min(payloadLen.Value, maxBytes) : maxBytes;
-		using var md5 = MD5.Create();
+		using var md5 = ( Md5Factory ?? ( Func<HashAlgorithm> ) ( () => MD5.Create() ) )();
 		using var fs = file.OpenRead();
 		fs.Seek(dataOffset, SeekOrigin.Begin);
 		var buffer = new byte[65536];
@@ -193,7 +199,13 @@ public static class FindMdat
 		}
 
 		md5.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
-		var digest = md5.Hash ?? Array.Empty<byte>();
+		var digest = md5.Hash;
+		if ( ForceNullHashForTests )
+		{
+			digest = null;
+		}
+
+		digest ??= Array.Empty<byte>();
 		return ( BitConverter.ToString(digest).Replace("-", string.Empty).ToLowerInvariant(),
 			Base32NoPadding(digest) );
 	}
@@ -267,9 +279,14 @@ public static class FindMdatProgram
 		var hashBytes = 0;
 		for ( var i = 1; i < args.Length; i++ )
 		{
-			if ( args[i] == "--hash-bytes" && i + 1 < args.Length )
+			if ( args[i] != "--hash-bytes" || i + 1 >= args.Length )
 			{
-				int.TryParse(args[i + 1], out hashBytes);
+				continue;
+			}
+
+			if ( int.TryParse(args[i + 1], out hashBytes) )
+			{
+				break;
 			}
 		}
 
