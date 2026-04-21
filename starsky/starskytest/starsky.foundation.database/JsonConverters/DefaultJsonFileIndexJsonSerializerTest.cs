@@ -111,4 +111,41 @@ public sealed class DefaultJsonFileIndexJsonSerializerTest
 			JsonSerializer.Deserialize<FileIndexItem[]>(json,
 				DefaultJsonFileIndexJsonSerializer.WithIdConverter));
 	}
+
+	[TestMethod]
+	public void Serialize_NullList_WritesNull()
+	{
+		List<FileIndexItem>? items = null;
+		var json = JsonSerializer.Serialize(items, DefaultJsonFileIndexJsonSerializer.WithIdConverter);
+		Assert.AreEqual("null", json);
+	}
+
+	[TestMethod]
+	public void Serialize_NullArray_WritesNull()
+	{
+		FileIndexItem[]? items = null;
+		var json = JsonSerializer.Serialize(items, DefaultJsonFileIndexJsonSerializer.WithIdConverter);
+		Assert.AreEqual("null", json);
+	}
+
+	[TestMethod]
+	public void Deserialize_List_Valid_ReturnsList()
+	{
+		const string json = "[{\"id\":1,\"FileName\":\"a.jpg\"},{\"id\":2,\"FileName\":\"b.jpg\"}]";
+		var result = JsonSerializer.Deserialize<List<FileIndexItem>>(json, DefaultJsonFileIndexJsonSerializer.WithIdConverter);
+		Assert.IsNotNull(result);
+		Assert.HasCount(2, result);
+		Assert.AreEqual(1, result[0].Id);
+		Assert.AreEqual("a.jpg", result[0].FileName);
+	}
+
+	[TestMethod]
+	public void Deserialize_Array_Valid_ReturnsArray()
+	{
+		const string json = "[{\"id\":3,\"FileName\":\"c.jpg\"}]";
+		var result = JsonSerializer.Deserialize<FileIndexItem[]>(json, DefaultJsonFileIndexJsonSerializer.WithIdConverter);
+		Assert.IsNotNull(result);
+		Assert.HasCount(1, result);
+		Assert.AreEqual(3, result[0].Id);
+	}
 }
