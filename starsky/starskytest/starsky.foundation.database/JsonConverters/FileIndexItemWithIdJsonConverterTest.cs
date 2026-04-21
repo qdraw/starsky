@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -183,5 +184,41 @@ public sealed class FileIndexItemWithIdJsonConverterTest
 		Assert.IsNotNull(result);
 		Assert.AreEqual(0, result.Id);
 		Assert.AreEqual("noid.jpg", result.FileName);
+	}
+
+	[TestMethod]
+	public void Read_WhenInnerDeserializerReturnsNull_UsesNewFileIndexItem()
+	{
+		var conv = new FileIndexItemWithIdJsonConverter();
+		var json = "{}"; // empty object
+		var bytes = Encoding.UTF8.GetBytes(json);
+		var reader = new Utf8JsonReader(bytes);
+		reader.Read();
+
+		var options = new JsonSerializerOptions();
+		// Add a custom converter that will return null when deserializing FileIndexItem
+		options.Converters.Add(new NullReturningConverter());
+
+		var result = conv.Read(ref reader, typeof(FileIndexItem), options);
+
+		Assert.IsNotNull(result);
+		// should be default values
+		Assert.AreEqual(0, result.Id);
+		Assert.IsTrue(string.IsNullOrEmpty(result.FileName));
+	}
+
+	private sealed class NullReturningConverter : JsonConverter<FileIndexItem>
+	{
+		public override FileIndexItem Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		{
+			// consume the token to keep reader state consistent
+			using var _ = JsonDocument.ParseValue(ref reader);
+			return null!; // intentional: simulate a null-returning inner deserializer
+		}
+
+		public override void Write(Utf8JsonWriter writer, FileIndexItem value, JsonSerializerOptions options)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
