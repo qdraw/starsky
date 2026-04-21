@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.database.JsonConverters;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
@@ -23,10 +24,10 @@ namespace starsky.Controllers;
 public sealed class MetaUpdateController : Controller
 {
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
+	private readonly IMetaUpdateConnectionService _connectionService;
 	private readonly IWebLogger _logger;
 	private readonly IMetaPreflight _metaPreflight;
 	private readonly IMetaUpdateService _metaUpdateService;
-	private readonly IMetaUpdateConnectionService _connectionService;
 
 	public MetaUpdateController(IMetaPreflight metaPreflight,
 		IMetaUpdateService metaUpdateService,
@@ -93,14 +94,15 @@ public sealed class MetaUpdateController : Controller
 			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = MetaUpdateBackgroundJobHandler.MetaUpdate,
-			PayloadJson = JsonSerializer.Serialize(new MetaUpdateBackgroundPayload
-			{
-				ChangedFileIndexItemName = changedFileIndexItemName,
-				FileIndexResultsList = fileIndexResultsList,
-				Collections = collections,
-				Append = append,
-				RotateClock = rotateClock
-			})
+			PayloadJson = JsonSerializer.Serialize(
+				new MetaUpdateBackgroundPayload
+				{
+					ChangedFileIndexItemName = changedFileIndexItemName,
+					FileIndexResultsList = fileIndexResultsList,
+					Collections = collections,
+					Append = append,
+					RotateClock = rotateClock
+				}, DefaultJsonFileIndexJsonSerializer.WithIdConverter)
 		});
 
 		// before sending not founds

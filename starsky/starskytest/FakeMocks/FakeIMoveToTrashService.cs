@@ -1,7 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.feature.trash.Interfaces;
-using starsky.feature.trash.Services;
+using starsky.feature.trash.Models;
 using starsky.foundation.database.Models;
 
 namespace starskytest.FakeMocks;
@@ -41,7 +42,7 @@ public class FakeIMoveToTrashService : IMoveToTrashService
 
 	public Task MoveToTrashAsync(MoveToTrashPayload payload)
 	{
-		throw new System.NotImplementedException();
+		throw new NotImplementedException();
 	}
 
 	public bool IsEnabled()

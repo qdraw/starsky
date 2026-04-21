@@ -246,10 +246,14 @@ public sealed class MountWatcherCliTest
 			new FakeMountWatcherFactory(),
 			new FakeServiceInstaller());
 
-		// Act: trigger mount detected event
+		// Act: trigger mount detected event and await handling completion
 		sut.OnMountDetected(null,
 			new MountDetectedEventArgs { MountPath = mountPath, DetectedAt = DateTime.Now });
-		await Task.Delay(50, TestContext.CancellationToken);
+		// Await the internal task responsible for handling the mount event to make the test deterministic
+		if ( sut.LastHandleMountTask != null )
+		{
+			await sut.LastHandleMountTask;
+		}
 
 		// Assert
 		Assert.IsNotEmpty(fakeImport.Calls, "Importer was not called");
@@ -273,10 +277,13 @@ public sealed class MountWatcherCliTest
 			new FakeMountWatcherFactory(),
 			new FakeServiceInstaller());
 
-		// Act: trigger mount detected event
+		// Act: trigger mount detected event and await handling completion
 		sut.OnMountDetected(null,
 			new MountDetectedEventArgs { MountPath = mountPath, DetectedAt = DateTime.Now });
-		await Task.Delay(50, TestContext.CancellationToken);
+		if ( sut.LastHandleMountTask != null )
+		{
+			await sut.LastHandleMountTask;
+		}
 
 		// Assert: importer not called and debug logged
 		Assert.IsEmpty(fakeImport.Calls);

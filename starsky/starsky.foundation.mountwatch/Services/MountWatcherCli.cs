@@ -77,6 +77,16 @@ public class MountWatcherCli
 	}
 
 	/// <summary>
+	///     Handle mount detected event
+	/// </summary>
+	/// <summary>
+	///     Exposed for tests: last task started to handle a mount event. Tests may await this
+	///     task to deterministically observe logging and import behavior instead of relying
+	///     on timing delays.
+	/// </summary>
+	public Task? LastHandleMountTask { get; private set; }
+
+	/// <summary>
 	///     Start the mount watcher and listen for camera mounts.
 	///     Handles --install / --uninstall before starting the watcher loop.
 	/// </summary>
@@ -244,18 +254,14 @@ public class MountWatcherCli
 		var mountPath = NormalizeMountPath(eventArgs.MountPath);
 		_logger.LogInformation($"Mount detected: {mountPath}");
 
-		_ = Task.Run(async () => await HandleMountDetectedAsync(mountPath));
+		// store the task so tests can await the completion deterministically
+		LastHandleMountTask = Task.Run(async () => await HandleMountDetectedAsync(mountPath));
 	}
 
 	internal static string NormalizeMountPath(string mountPath)
 	{
 		var normalized = mountPath.Trim();
-		if ( normalized.Length <= 1 )
-		{
-			return normalized;
-		}
-
-		return normalized.TrimEnd('/');
+		return normalized.Length <= 1 ? normalized : normalized.TrimEnd('/');
 	}
 
 	private async Task HandleMountDetectedAsync(string mountPath)

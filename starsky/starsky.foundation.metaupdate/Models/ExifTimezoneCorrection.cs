@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using starsky.foundation.database.JsonConverters;
 using starsky.foundation.database.Models;
 
 namespace starsky.foundation.metaupdate.Models;
@@ -37,5 +39,6 @@ public class ExifTimezoneCorrectionResult
 	/// </summary>
 	public string Error { get; set; } = string.Empty;
 
+	[JsonConverter(typeof(FileIndexItemWithIdJsonConverterFactory))]
 	public FileIndexItem? FileIndexItem { get; set; }
 }

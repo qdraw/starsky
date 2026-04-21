@@ -1,5 +1,6 @@
 using System.Text.Json;
 using starsky.feature.trash.Interfaces;
+using starsky.feature.trash.Models;
 using starsky.foundation.injection;
 using starsky.foundation.worker.Interfaces;
 
