@@ -30,7 +30,10 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	/// </summary>
 	private const int MaxBytesToHash = 1024 * 1024;
 
-	private const int MaxReadVideoSize = 1024 * 1024; // 1024 KB
+	/// <summary>
+	///     the largest mp4 file start=1158014
+	/// </summary>
+	private const int MaxReadVideoSize = 1290 * 1024; // 1290 KB
 
 	/// <summary>
 	///     Buffer size for reading atom data
