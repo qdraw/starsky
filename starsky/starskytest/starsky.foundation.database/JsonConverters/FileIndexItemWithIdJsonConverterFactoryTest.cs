@@ -98,5 +98,34 @@ public sealed class FileIndexItemWithIdJsonConverterFactoryTest
         Assert.HasCount(1, arr);
         Assert.AreEqual(6, arr[0].Id);
     }
+
+    [TestMethod]
+    public void CreateConverter_ForIEnumerableAndIList_Works()
+    {
+        var factory = new FileIndexItemWithIdJsonConverterFactory();
+        var options = new JsonSerializerOptions();
+
+        // IEnumerable<FileIndexItem>
+        var enumConvObj = factory.CreateConverter(typeof(IEnumerable<FileIndexItem>), options);
+        var enumConv = (JsonConverter<List<FileIndexItem>>)enumConvObj; // underlying converter is ListFileIndexItemConverter
+
+        var readerValidEnum = new Utf8JsonReader(System.Text.Encoding.UTF8.GetBytes("[{\"id\":7,\"FileName\":\"z.jpg\"}]"));
+        readerValidEnum.Read();
+        var listEnum = enumConv.Read(ref readerValidEnum, typeof(List<FileIndexItem>), options);
+        Assert.IsNotNull(listEnum);
+        Assert.AreEqual(1, listEnum.Count);
+        Assert.AreEqual(7, listEnum[0].Id);
+
+        // IList<FileIndexItem>
+        var ilistConvObj = factory.CreateConverter(typeof(IList<FileIndexItem>), options);
+        var ilistConv = (JsonConverter<List<FileIndexItem>>)ilistConvObj;
+
+        var readerValidIList = new Utf8JsonReader(System.Text.Encoding.UTF8.GetBytes("[{\"id\":8,\"FileName\":\"w.jpg\"}]"));
+        readerValidIList.Read();
+        var listIList = ilistConv.Read(ref readerValidIList, typeof(List<FileIndexItem>), options);
+        Assert.IsNotNull(listIList);
+        Assert.AreEqual(1, listIList.Count);
+        Assert.AreEqual(8, listIList[0].Id);
+    }
 }
 
