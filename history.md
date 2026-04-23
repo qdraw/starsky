@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.16 - _(Unreleased)_ - 2026-?-? {#v0.7.16}
+## version 0.7.17 - _(Unreleased)_ - 2026-?-? {#v0.7.17}
+
+- nothing yet
+
+## version 0.7.16 - 2026-04-23 {#v0.7.16}
 
 - [x] (Fixed) _Back-end_ bug fixes across database retry logic, MP4 file hashing (PR #2999)
 - [x] (Fixed) _Back-end_ JSON converter FileIndexItem that ensures the `Id` property is always
