@@ -70,7 +70,7 @@ public class MozJpegService : IMozJpegService
 
 		var tempFilePath = outputInputPath + ".optimizing";
 
-		var (command, outputStream) =
+		var (command, outputStream, cmdArguments) =
 			await CommandRetry(exePath, outputInputPath, optimizer, parent);
 		if ( command == null || outputStream == null )
 		{
@@ -82,7 +82,10 @@ public class MozJpegService : IMozJpegService
 
 		if ( !command.Result.Success )
 		{
-			LogAndCleanup(command.Result.StandardError, tempFilePath, outputInputPath,
+			LogAndCleanup(command.Result.StandardError,
+				cmdArguments,
+				tempFilePath,
+				outputInputPath,
 				"MozJPEG failed");
 			return;
 		}
@@ -90,8 +93,11 @@ public class MozJpegService : IMozJpegService
 		var tempInfo = _hostFileSystemStorage.Info(tempFilePath);
 		if ( tempInfo.Size <= 0 || !IsJpegOutput(tempFilePath) )
 		{
-			LogAndCleanup("invalid output", tempFilePath,
-				outputInputPath, "MozJPEG failed to run");
+			LogAndCleanup("invalid output",
+				cmdArguments,
+				tempFilePath,
+				outputInputPath,
+				"MozJPEG failed to run");
 			return;
 		}
 
@@ -101,57 +107,71 @@ public class MozJpegService : IMozJpegService
 		                       "MozJPEG optimized: " + outputInputPath);
 	}
 
-	private void LogAndCleanup(string message, string tempFilePath,
+	/// <summary>
+	///     [ImageOptimisationService] MozJPEG failed for {outputInputPath}: {message}
+	/// </summary>
+	/// <param name="message">Append message</param>
+	/// <param name="tempFilePath">which file</param>
+	/// <param name="outputInputPath">which input</param>
+	/// <param name="prefix">which process</param>
+	private void LogAndCleanup(string message,
+		List<string> cmdArguments,
+		string tempFilePath,
 		string outputInputPath,
 		string prefix)
 	{
 		_logger.LogError($"[ImageOptimisationService] {prefix} " +
-		                 $"for {outputInputPath}: {message}");
+		                 $"for {outputInputPath}: {message}" +
+		                 $"Arguments: \"{string.Join(" ", cmdArguments)}\"");
 		if ( _hostFileSystemStorage.ExistFile(tempFilePath) )
 		{
 			_hostFileSystemStorage.FileDelete(tempFilePath);
 		}
 	}
 
-	private async Task<(Command? command, MemoryStream? outputStream)> CommandRetry(string exePath,
-		string outputInputPath, Optimizer optimizer, DirectoryInfo? parent)
+	private async Task<(Command? command, MemoryStream? outputStream, List<string> cmdArguments)>
+		CommandRetry(string exePath,
+			string outputInputPath, Optimizer optimizer, DirectoryInfo? parent)
 	{
 		Command command;
 		MemoryStream outputStream;
+		List<string> cmdArguments = [];
 		try
 		{
-			( command, outputStream ) = await Command(exePath, outputInputPath, optimizer, parent);
+			( command, outputStream, cmdArguments ) =
+				await Command(exePath, outputInputPath, optimizer, parent);
 		}
-		catch ( Exception )
+		catch ( Exception exception1 )
 		{
 			if ( !await _mozJpegDownload.FixPermissions(exePath) )
 			{
 				_logger.LogError(
 					$"[ImageOptimisationService] " +
 					$"MozJPEG failed to run for {outputInputPath}: " +
-					$"unable to set execute permissions");
-				return ( null, null );
+					$"unable to set execute permissions", exception1);
+				return ( null, null, [] );
 			}
 
 			try
 			{
-				( command, outputStream ) =
+				( command, outputStream, cmdArguments ) =
 					await Command(exePath, outputInputPath, optimizer, parent);
 			}
-			catch ( Exception exception )
+			catch ( Exception exception2 )
 			{
 				_logger.LogError(
 					$"[ImageOptimisationService] " +
 					$"MozJPEG failed to run for {outputInputPath}: " +
-					$"{exception.Message}");
-				return ( null, null );
+					$"Arguments: \"{string.Join(" ", cmdArguments)}\"" +
+					$"{exception2.Message} ", exception2);
+				return ( null, null, [] );
 			}
 		}
 
-		return ( command, outputStream );
+		return ( command, outputStream, cmdArguments );
 	}
 
-	private static async Task<(Command command, MemoryStream outputStream)>
+	private static async Task<(Command command, MemoryStream outputStream, List<string>)>
 		Command(string exePath,
 			string outputInputPath, Optimizer optimizer, DirectoryInfo? parent)
 	{
@@ -172,7 +192,7 @@ public class MozJpegService : IMozJpegService
 			}
 		) > outputStream;
 		await command.Task.TimeoutAfter(TimeSpan.FromMinutes(5));
-		return ( command, outputStream );
+		return ( command, outputStream, arguments );
 	}
 
 	private bool IsJpegOutput(string outputPath)
