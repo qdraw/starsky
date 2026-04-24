@@ -57,6 +57,8 @@ internal class WindowsMountWatcher : BaseMountWatcher
 		}
 
 		IsRunning = true;
+		Started.TrySetResult();
+
 		SeedKnownMounts(GetMountedVolumes());
 		logger.LogInformation(
 			$"Windows mount watcher baseline seeded: {string.Join(", ", _knownMountedVolumes)}");
@@ -67,7 +69,6 @@ internal class WindowsMountWatcher : BaseMountWatcher
 		}
 		else
 		{
-			Started.TrySetResult();
 			RunPollingFallback();
 		}
 	}
