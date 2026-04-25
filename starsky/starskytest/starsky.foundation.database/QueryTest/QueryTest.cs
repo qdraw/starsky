@@ -223,7 +223,7 @@ public sealed class QueryTest
 
 		// Create Query with cache disabled by passing null for IMemoryCache
 		var queryNoCache = new Query(dbContext, new AppSettings { Verbose = true }, serviceScope,
-			_logger, null);
+			_logger);
 
 		// Act
 		var result = await queryNoCache.GetSubPathsByHashAsync("myhash");
@@ -1235,7 +1235,7 @@ public sealed class QueryTest
 	{
 		_query.AddCacheParentItem("/3479824783",
 		[
-			new()
+			new FileIndexItem
 			{
 				Id = 401,
 				Tags = "___not___",

@@ -78,6 +78,8 @@ public sealed class CacheIndexControllerTest
 		_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 	}
 
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task CacheIndexController_CheckIfCacheIsRemoved_CleanCache()
 	{
@@ -241,6 +243,4 @@ public sealed class CacheIndexControllerTest
 		Assert.IsNotNull(actionResult);
 		Assert.IsNotNull(actionResult.Value);
 	}
-
-	public TestContext TestContext { get; set; }
 }

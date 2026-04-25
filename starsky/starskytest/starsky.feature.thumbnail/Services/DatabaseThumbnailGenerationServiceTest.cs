@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.thumbnail.Services;
@@ -46,7 +47,7 @@ public class DatabaseThumbnailGenerationServiceTest
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery())
 		);
 
-		await service.ExecuteQueuedJobAsync(System.Threading.CancellationToken.None);
+		await service.ExecuteQueuedJobAsync(CancellationToken.None);
 
 		// Ensure the running flag was cleared
 		Assert.IsFalse(fakeThumbnailQuery.IsRunningJob());
@@ -85,7 +86,7 @@ public class DatabaseThumbnailGenerationServiceTest
 			new UpdateStatusGeneratedThumbnailService(thumbnailQuery)
 		);
 
-		await service.ExecuteQueuedJobAsync(System.Threading.CancellationToken.None);
+		await service.ExecuteQueuedJobAsync(CancellationToken.None);
 
 		// Ensure the running flag was cleared
 		Assert.IsFalse(thumbnailQuery.IsRunningJob());
@@ -96,7 +97,7 @@ public class DatabaseThumbnailGenerationServiceTest
 		Assert.Contains(
 			p => p.Item2 != null && p.Item2.Contains("Done"), logger.TrackedInformation);
 	}
-	
+
 	[TestMethod]
 	public async Task StartBackgroundQueue_NoContentSoHitOnce()
 	{
@@ -118,7 +119,8 @@ public class DatabaseThumbnailGenerationServiceTest
 	public async Task StartBackgroundQueue_OneItemSoTrigger()
 	{
 		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
-		var thumbnailQuery = new FakeIThumbnailQuery([new("12", null, null, null, null)]);
+		var thumbnailQuery =
+			new FakeIThumbnailQuery([new ThumbnailItem("12", null, null, null, null)]);
 
 		var databaseThumbnailGenerationService = new DatabaseThumbnailGenerationService(
 			new FakeIQuery(), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
@@ -132,12 +134,13 @@ public class DatabaseThumbnailGenerationServiceTest
 
 		Assert.AreEqual(1, bgTaskQueue.Count());
 	}
-	
+
 	[TestMethod]
 	public async Task WorkThumbnailGeneration_ZeroItems()
 	{
 		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
-		var thumbnailQuery = new FakeIThumbnailQuery([new("12", null, null, null, null)]);
+		var thumbnailQuery =
+			new FakeIThumbnailQuery([new ThumbnailItem("12", null, null, null, null)]);
 
 		var databaseThumbnailGenerationService = new DatabaseThumbnailGenerationService(
 			new FakeIQuery(), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
@@ -157,7 +160,8 @@ public class DatabaseThumbnailGenerationServiceTest
 	public async Task WorkThumbnailGeneration_NotFoundItem_Database()
 	{
 		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
-		var thumbnailQuery = new FakeIThumbnailQuery([new("12", null, null, null, null)]);
+		var thumbnailQuery =
+			new FakeIThumbnailQuery([new ThumbnailItem("12", null, null, null, null)]);
 
 		var databaseThumbnailGenerationService = new DatabaseThumbnailGenerationService(
 			new FakeIQuery(), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
@@ -169,9 +173,9 @@ public class DatabaseThumbnailGenerationServiceTest
 		);
 
 		var result = ( await databaseThumbnailGenerationService.WorkThumbnailGeneration(
-			[new("74283rei_ot_fs_kl", null, null, null, null)],
+			[new ThumbnailItem("74283rei_ot_fs_kl", null, null, null, null)],
 			[
-				new()
+				new FileIndexItem
 				{
 					FileHash = "74283rei_ot_fs_kl",
 					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
@@ -187,7 +191,7 @@ public class DatabaseThumbnailGenerationServiceTest
 	{
 		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
 		var thumbnailQuery = new FakeIThumbnailQuery([
-			new("74283rei_ot_fs_kl", null, null, null, null)
+			new ThumbnailItem("74283rei_ot_fs_kl", null, null, null, null)
 		]);
 
 		var databaseThumbnailGenerationService = new DatabaseThumbnailGenerationService(
@@ -199,9 +203,9 @@ public class DatabaseThumbnailGenerationServiceTest
 		);
 
 		var result = ( await databaseThumbnailGenerationService.WorkThumbnailGeneration(
-			[new("74283rei_ot_fs_kl", null, null, null, null)],
+			[new ThumbnailItem("74283rei_ot_fs_kl", null, null, null, null)],
 			[
-				new()
+				new FileIndexItem
 				{
 					FileHash = "74283rei_ot_fs_kl",
 					FilePath = "/test.jpg",
@@ -218,7 +222,7 @@ public class DatabaseThumbnailGenerationServiceTest
 	{
 		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
 		var thumbnailQuery = new FakeIThumbnailQuery([
-			new("345742938fs_jk_df_kj", null, null, null, null)
+			new ThumbnailItem("345742938fs_jk_df_kj", null, null, null, null)
 		]);
 
 		var databaseThumbnailGenerationService = new DatabaseThumbnailGenerationService(
@@ -232,9 +236,9 @@ public class DatabaseThumbnailGenerationServiceTest
 		);
 
 		var result = ( await databaseThumbnailGenerationService.WorkThumbnailGeneration(
-			[new("345742938fs_jk_df_kj", null, null, null, null)],
+			[new ThumbnailItem("345742938fs_jk_df_kj", null, null, null, null)],
 			[
-				new()
+				new FileIndexItem
 				{
 					FileHash = "345742938fs_jk_df_kj",
 					FilePath = "/test.jpg",
@@ -251,7 +255,8 @@ public class DatabaseThumbnailGenerationServiceTest
 	public async Task WorkThumbnailGeneration_MatchItem()
 	{
 		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
-		var thumbnailQuery = new FakeIThumbnailQuery([new("12", null, null, null, null)]);
+		var thumbnailQuery =
+			new FakeIThumbnailQuery([new ThumbnailItem("12", null, null, null, null)]);
 
 		var databaseThumbnailGenerationService = new DatabaseThumbnailGenerationService(
 			new FakeIQuery(), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
@@ -262,9 +267,12 @@ public class DatabaseThumbnailGenerationServiceTest
 		);
 
 		var result = ( await databaseThumbnailGenerationService.WorkThumbnailGeneration(
-			[new("345742938fs_jk_df_kj", null, null, null, null)],
+			[new ThumbnailItem("345742938fs_jk_df_kj", null, null, null, null)],
 			[
-				new() { FileHash = "345742938fs_jk_df_kj", Status = FileIndexItem.ExifStatus.Ok }
+				new FileIndexItem
+				{
+					FileHash = "345742938fs_jk_df_kj", Status = FileIndexItem.ExifStatus.Ok
+				}
 			]) ).ToList();
 
 		Assert.HasCount(1, result);

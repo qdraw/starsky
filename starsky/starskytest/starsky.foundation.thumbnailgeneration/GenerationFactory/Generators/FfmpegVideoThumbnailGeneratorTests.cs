@@ -77,18 +77,17 @@ public class FfmpegVideoThumbnailGeneratorTests
 		var videoProcess = new FakeIVideoProcess(selectorStorage);
 		var sut = new FfmpegVideoThumbnailGenerator(selectorStorage, videoProcess,
 			new FakeIWebLogger());
-		
+
 		videoProcess.SetFailureResult("Error");
 
 		// Act
 		var result =
-			(await sut.GenerateThumbnail(singleSubPath, fileHash, imageFormat,
-				thumbnailSizes)).ToList();
+			( await sut.GenerateThumbnail(singleSubPath, fileHash, imageFormat,
+				thumbnailSizes) ).ToList();
 
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.IsFalse(result.All(r => r.IsNotFound));
 		Assert.IsFalse(result.All(r => r.Success));
-
 	}
 }
