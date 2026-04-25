@@ -43,7 +43,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.17 - _(Unreleased)_ - 2026-?-? {#v0.7.17}
 
-- nothing yet
+- [x] (Fixed) Add directory scan limit for starskyMountWatchercli to avoid issues (PR #3013)
+- [x] (Fixed) Add tests for ImportIgnore (PR #3013)
+
 
 ## version 0.7.16 - 2026-04-23 {#v0.7.16}
 
