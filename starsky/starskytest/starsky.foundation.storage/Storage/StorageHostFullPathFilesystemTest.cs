@@ -360,6 +360,34 @@ public sealed class StorageHostFullPathFilesystemTest
 	}
 
 	[TestMethod]
+	public void GetDirectoryRecursive_MaxInnerChildDirectoryLookups_One_IncludesOneLevelDeeper()
+	{
+		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var root = Path.Combine(Path.GetTempPath(),
+			$"GetDirectoryRecursive_MaxInnerChildDirectoryLookups_One_{Guid.NewGuid():N}");
+		var level1 = Path.Combine(root, "level1");
+		var level2 = Path.Combine(level1, "level2");
+		var level3 = Path.Combine(level2, "level3");
+
+		try
+		{
+			hostStorage.CreateDirectory(level3);
+
+			var result = hostStorage.GetDirectoryRecursive(root, 1)
+				.Select(p => p.Key)
+				.ToList();
+
+			Assert.Contains(level1, result);
+			Assert.Contains(level2, result);
+			Assert.DoesNotContain(level3, result);
+		}
+		finally
+		{
+			hostStorage.FolderDelete(root);
+		}
+	}
+
+	[TestMethod]
 	public async Task WriteStreamAsync_CanNotWriteDisposedStream()
 	{
 		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
