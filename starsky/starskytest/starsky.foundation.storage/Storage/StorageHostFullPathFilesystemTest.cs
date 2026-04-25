@@ -304,6 +304,62 @@ public sealed class StorageHostFullPathFilesystemTest
 	}
 
 	[TestMethod]
+	public void GetDirectoryRecursive_MaxInnerChildDirectoryLookups_Zero_ReturnsOnlyDirectChildren()
+	{
+		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var root = Path.Combine(Path.GetTempPath(),
+			$"GetDirectoryRecursive_MaxInnerChildDirectoryLookups_Zero_{Guid.NewGuid():N}");
+		var level1 = Path.Combine(root, "level1");
+		var level2 = Path.Combine(level1, "level2");
+		var sibling = Path.Combine(root, "sibling");
+
+		try
+		{
+			hostStorage.CreateDirectory(level2);
+			hostStorage.CreateDirectory(sibling);
+
+			var result = hostStorage.GetDirectoryRecursive(root, 0)
+				.Select(p => p.Key)
+				.ToList();
+
+			Assert.HasCount(2, result);
+			Assert.Contains(level1, result);
+			Assert.Contains(sibling, result);
+			Assert.DoesNotContain(level2, result);
+		}
+		finally
+		{
+			hostStorage.FolderDelete(root);
+		}
+	}
+
+	[TestMethod]
+	public void GetDirectoryRecursive_DefaultUnlimited_IncludesNestedChildren()
+	{
+		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var root = Path.Combine(Path.GetTempPath(),
+			$"GetDirectoryRecursive_DefaultUnlimited_{Guid.NewGuid():N}");
+		var level1 = Path.Combine(root, "level1");
+		var level2 = Path.Combine(level1, "level2");
+
+		try
+		{
+			hostStorage.CreateDirectory(level2);
+
+			var result = hostStorage.GetDirectoryRecursive(root)
+				.Select(p => p.Key)
+				.ToList();
+
+			Assert.Contains(level1, result);
+			Assert.Contains(level2, result);
+		}
+		finally
+		{
+			hostStorage.FolderDelete(root);
+		}
+	}
+
+	[TestMethod]
 	public async Task WriteStreamAsync_CanNotWriteDisposedStream()
 	{
 		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
