@@ -55,7 +55,7 @@ public sealed class MacOsServiceInstallerTest
 		var result = await sut.InstallAsync("/usr/local/bin/cli");
 
 		Assert.IsFalse(result);
-		Assert.AreNotEqual(0, logger.TrackedExceptions.Count);
+		Assert.IsNotEmpty(logger.TrackedExceptions);
 	}
 
 	[TestMethod]
@@ -155,7 +155,7 @@ public sealed class MacOsServiceInstallerTest
 
 		// Assert
 		Assert.IsTrue(result);
-		Assert.AreNotEqual(0, launchctlCalls.Count);
+		Assert.IsNotEmpty(launchctlCalls);
 		Assert.Contains("unload", launchctlCalls[0]);
 	}
 

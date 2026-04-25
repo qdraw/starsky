@@ -124,7 +124,9 @@ public sealed class MacOsFullDiskAccessTest
 		public bool FolderDelete(string path) => _inner.FolderDelete(path);
 		public IEnumerable<string> GetAllFilesInDirectory(string path) => _inner.GetAllFilesInDirectory(path);
 		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path) => _inner.GetAllFilesInDirectoryRecursive(path);
-		public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path) => _inner.GetDirectoryRecursive(path);
+		public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path,
+			int? maxInnerChildDirectoryLookups = null) => _inner.GetDirectoryRecursive(path,
+			maxInnerChildDirectoryLookups);
 		public Stream ReadStream(string path, int maxRead = -1) => _inner.ReadStream(path, maxRead);
 		public bool WriteStream(Stream stream, string path) => _inner.WriteStream(stream, path);
 		public bool WriteStreamOpenOrCreate(Stream stream, string path) => _inner.WriteStreamOpenOrCreate(stream, path);
