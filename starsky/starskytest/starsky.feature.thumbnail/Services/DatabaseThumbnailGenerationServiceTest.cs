@@ -150,7 +150,7 @@ public class DatabaseThumbnailGenerationServiceTest
 		var result = await databaseThumbnailGenerationService.WorkThumbnailGeneration(
 			[], []);
 
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]

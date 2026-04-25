@@ -77,7 +77,7 @@ public sealed class StorageHostFullPathFilesystemTest
 				?.Contains("Could not find a part of the path"));
 		}
 
-		Assert.AreEqual(0, directories.Count());
+		Assert.IsEmpty(directories);
 	}
 
 	[TestMethod]
@@ -300,7 +300,7 @@ public sealed class StorageHostFullPathFilesystemTest
 	{
 		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 		var result = hostStorage.GetDirectoryRecursive("not-found-directory-47539");
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]

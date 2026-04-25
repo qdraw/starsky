@@ -14,7 +14,7 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		{
 			IEnumerable<string>? chucky = null;
 			var result = chucky!.ChunkyEnumerable(1);
-			Assert.AreEqual(0,result.Count());
+			Assert.IsEmpty(result);
 		}
 
 		[TestMethod]
@@ -24,7 +24,7 @@ namespace starskytest.starsky.foundation.platform.Extensions
 			var exampleList = new List<string>{"test1","test2","test3", "test4","test5"};
 			var result = exampleList.ChunkyEnumerable(1);
 			Assert.IsNotNull(result);
-			Assert.AreEqual(5,result.Count());
+			Assert.HasCount(5,result);
 			Assert.AreEqual("test1",result.ToList()[0].ToList()[0]);
 			Assert.AreEqual("test2",result.ToList()[1].ToList()[0]);
 			Assert.AreEqual("test3",result.ToList()[2].ToList()[0]);
@@ -38,7 +38,7 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		{
 			var exampleList = new List<string>{"test1","test2","test3", "test4","test5"};
 			var result = exampleList.ChunkyEnumerable(2);
-			Assert.AreEqual(3,result.Count());
+			Assert.HasCount(3,result);
 			Assert.AreEqual("test1",result.ToList()[0].ToList()[0]);
 			Assert.AreEqual("test2",result.ToList()[0].ToList()[1]);
 			Assert.AreEqual("test3",result.ToList()[1].ToList()[0]);
@@ -53,7 +53,7 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		{
 			var exampleList = new List<string>{"test1","test2","test3", "test4","test5"};
 			var result = exampleList.ChunkyEnumerable(50);
-			Assert.AreEqual(1,result.Count());
+			Assert.HasCount(1,result);
 			Assert.AreEqual("test1",result.ToList()[0].ToList()[0]);
 			Assert.AreEqual("test2",result.ToList()[0].ToList()[1]);
 			Assert.AreEqual("test3",result.ToList()[0].ToList()[2]);

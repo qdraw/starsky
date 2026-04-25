@@ -41,7 +41,7 @@ public class FfmpegVideoThumbnailGeneratorTests
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.IsTrue(result.Any());
+		Assert.IsNotEmpty(result);
 	}
 
 	[TestMethod]

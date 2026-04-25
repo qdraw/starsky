@@ -57,7 +57,7 @@ public class EmbeddedRawThumbnailGeneratorTests
 			[ThumbnailSize.Large]);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]

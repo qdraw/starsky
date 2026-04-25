@@ -250,7 +250,7 @@ public sealed class SyncWatcherConnectorTest
 				Path.Combine(appSettings.StorageFolder, "test.jpg"), null,
 				WatcherChangeTypes.Changed));
 
-		Assert.AreEqual(0, query.DisplayFileFolders().Count());
+		Assert.IsEmpty(query.DisplayFileFolders());
 	}
 
 	[TestMethod]

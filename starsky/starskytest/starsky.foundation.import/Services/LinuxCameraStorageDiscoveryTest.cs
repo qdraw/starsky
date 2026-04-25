@@ -22,7 +22,7 @@ public class LinuxCameraStorageDiscoveryTest
 		var result = discovery.FindCameraStorages();
 
 		// Assert
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -115,7 +115,7 @@ public class LinuxCameraStorageDiscoveryTest
 
 		// Assert - should not throw, should return accessible devices
 		Assert.IsNotNull(result);
-		Assert.IsTrue(result.Any());
+		Assert.IsNotEmpty(result);
 	}
 
 	[TestMethod]
@@ -132,7 +132,7 @@ public class LinuxCameraStorageDiscoveryTest
 		var result = discovery.FindCameraStorages();
 
 		// Assert
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -149,6 +149,6 @@ public class LinuxCameraStorageDiscoveryTest
 		var result = discovery.FindCameraStorages();
 
 		// Assert
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 }

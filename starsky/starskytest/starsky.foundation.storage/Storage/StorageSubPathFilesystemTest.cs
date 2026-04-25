@@ -46,7 +46,7 @@ public sealed class StorageSubPathFilesystemTest
 		_storage.CreateDirectory("/test");
 		var filesInFolder = _storage.GetDirectoryRecursive("/").Select(p => p.Key).ToList();
 
-		Assert.AreNotEqual(0, filesInFolder.Count);
+		Assert.IsNotEmpty(filesInFolder);
 
 		_storage.FolderDelete("/test");
 	}
@@ -55,21 +55,21 @@ public sealed class StorageSubPathFilesystemTest
 	public void GetAllFilesInDirectory_Null_NotFound()
 	{
 		var result = _storage.GetAllFilesInDirectory("/not_found");
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
 	public void GetDirectories_Null_NotFound()
 	{
 		var result = _storage.GetDirectories("/not_found");
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
 	public void GetDirectoryRecursive_Null_NotFound()
 	{
 		var result = _storage.GetDirectoryRecursive("/not_found").Select(p => p.Key);
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -86,7 +86,7 @@ public sealed class StorageSubPathFilesystemTest
 		var filesInFolder = _storage.GetAllFilesInDirectoryRecursive(
 			"/test_GetAllFilesInDirectoryRecursive").ToList();
 
-		Assert.AreNotEqual(0, filesInFolder.Count);
+		Assert.IsNotEmpty(filesInFolder);
 		Assert.AreEqual("/test_GetAllFilesInDirectoryRecursive/test", filesInFolder[0]);
 		Assert.AreEqual("/test_GetAllFilesInDirectoryRecursive/test/already_09010.tmp",
 			filesInFolder[1]);
