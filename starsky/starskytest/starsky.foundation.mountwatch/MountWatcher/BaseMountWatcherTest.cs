@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.mountwatch.MountWatcher;
@@ -37,15 +38,41 @@ public sealed class BaseMountWatcherTest
 			])
 		};
 		var detected = new List<string>();
-		sut.MountDetected += (_, args) => detected.Add(args.MountPath);
+		var detectedLock = new object();
+		var detectedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+		sut.MountDetected += (_, args) =>
+		{
+			lock ( detectedLock )
+			{
+				detected.Add(args.MountPath);
+			}
+			detectedTcs.TrySetResult(true);
+		};
 		sut.SetRunning(true);
 
 		var pollingTask = Task.Run(sut.RunPollingFallbackForTest, TestContext.CancellationToken);
-		await Task.Delay(4300, TestContext.CancellationToken);
-		sut.SetRunning(false);
-		await pollingTask;
+		bool hasDetectedMount;
+		try
+		{
+			await detectedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.CancellationToken);
+			hasDetectedMount = true;
+		}
+		catch ( TimeoutException )
+		{
+			hasDetectedMount = false;
+		}
+		finally
+		{
+			sut.SetRunning(false);
+			await pollingTask;
+		}
 
-		CollectionAssert.AreEqual(new List<string> { "/mnt/camera" }, detected);
+		Assert.IsTrue(hasDetectedMount,
+			$"Timed out waiting for mount detection. GetMountedVolumesCallCount={sut.GetMountedVolumesCallCount}");
+		lock ( detectedLock )
+		{
+			CollectionAssert.AreEqual(new List<string> { "/mnt/camera" }, detected);
+		}
 	}
 
 	[TestMethod]
@@ -62,15 +89,33 @@ public sealed class BaseMountWatcherTest
 		sut.SetRunning(true);
 
 		var pollingTask = Task.Run(sut.RunPollingFallbackForTest, TestContext.CancellationToken);
-		await Task.Delay(20, TestContext.CancellationToken);
-		sut.SetRunning(false);
-		await pollingTask;
+		bool reachedSecondRead;
+		try
+		{
+			await sut.WaitForCallCountAsync(2, TimeSpan.FromSeconds(3),
+				TestContext.CancellationToken);
+			reachedSecondRead = true;
+		}
+		catch ( TimeoutException )
+		{
+			reachedSecondRead = false;
+		}
+		finally
+		{
+			sut.SetRunning(false);
+			await pollingTask;
+		}
 
+		Assert.IsTrue(reachedSecondRead,
+			$"Polling did not reach a second read in time. GetMountedVolumesCallCount={sut.GetMountedVolumesCallCount}");
 		Assert.IsGreaterThanOrEqualTo(2, sut.GetMountedVolumesCallCount);
 	}
 
 	private sealed class TestBaseMountWatcher : BaseMountWatcher
 	{
+		private readonly TaskCompletionSource<int> _readsObserved =
+			new(TaskCreationOptions.RunContinuationsAsynchronously);
+
 		public TestBaseMountWatcher() : base(new FakeIWebLogger(),10)
 		{
 		}
@@ -90,6 +135,11 @@ public sealed class BaseMountWatcherTest
 		public override List<string> GetMountedVolumes()
 		{
 			GetMountedVolumesCallCount++;
+			if ( GetMountedVolumesCallCount >= 2 )
+			{
+				_readsObserved.TrySetResult(GetMountedVolumesCallCount);
+			}
+
 			if ( ThrowOnReadNumber > 0 && GetMountedVolumesCallCount == ThrowOnReadNumber )
 			{
 				throw new InvalidOperationException("simulated");
@@ -116,6 +166,17 @@ public sealed class BaseMountWatcherTest
 		public void RaiseMount(string mountPath)
 		{
 			OnMountDetected(mountPath);
+		}
+
+		public async Task WaitForCallCountAsync(int expectedCount, TimeSpan timeout,
+			CancellationToken cancellationToken)
+		{
+			if ( GetMountedVolumesCallCount >= expectedCount )
+			{
+				return;
+			}
+
+			await _readsObserved.Task.WaitAsync(timeout, cancellationToken);
 		}
 	}
 }
