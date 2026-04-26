@@ -43,6 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.17 - _(Unreleased)_ - 2026-?-? {#v0.7.17}
 
+- [x] (Fixed) _Back-end_ MozJpeg Quoting `outputInputPath` issues with spaces in paths (PR #3015)
+- [x] (Fixed) _Back-end_ Local File System Copy Logic copy `CopyAllContent` (PR #3015)
 - [x] (Fixed) _Back-end_ Improving test reliability and diagnostics (PR #3014)
 - [x] (Fixed) _Back-end_ Add directory scan limit starskyMountWatchercli to avoid issues (PR #3013)
 - [x] (Fixed) _Back-end_ Add tests for ImportIgnore (PR #3013)
