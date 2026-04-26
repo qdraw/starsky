@@ -454,7 +454,7 @@ public sealed class StorageSubPathFilesystemTest
 	}
 
 	[TestMethod]
-	public void IsFolderEmpty_FileAppearsBetweenChecks_Reliable()
+	public async Task IsFolderEmpty_FileAppearsBetweenChecks()
 	{
 		var baseStorage = Path.Combine(Path.GetTempPath(),
 			"StorageSubPathFilesystemTest_" + Guid.NewGuid());
@@ -468,18 +468,18 @@ public sealed class StorageSubPathFilesystemTest
 			var fullPath = appSettings.DatabasePathToFilePath(dbPath);
 			var filePath = Path.Combine(fullPath, "latefile.txt");
 
-			// Start background task that creates the file after a short delay
-			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-			Task.Run(async () =>
+			// Create a file shortly after polling starts. Await this task to surface failures.
+			var writerTask = Task.Run(async () =>
 			{
-				await Task.Delay(50, CancellationToken.None).ConfigureAwait(false);
-				await File.WriteAllTextAsync(filePath, "x", cts.Token);
+				await Task.Delay(100, CancellationToken.None);
+				await File.WriteAllTextAsync(filePath, "x", CancellationToken.None);
 			}, CancellationToken.None);
 
-			// Poll until IsFolderEmpty returns false or timeout
+			// Poll until IsFolderEmpty returns false or timeout.
+			// CI can be slow to schedule both worker and file system notifications.
 			var sw = Stopwatch.StartNew();
 			var success = false;
-			while ( sw.Elapsed < TimeSpan.FromSeconds(2) )
+			while ( sw.Elapsed < TimeSpan.FromSeconds(5) )
 			{
 				if ( !storage.IsFolderEmpty(dbPath) )
 				{
@@ -487,10 +487,15 @@ public sealed class StorageSubPathFilesystemTest
 					break;
 				}
 
-				Task.Delay(20, CancellationToken.None).Wait(TestContext.CancellationToken);
+				await Task.Delay(25, CancellationToken.None);
 			}
 
-			cts.Dispose();
+			await writerTask;
+			if ( !success )
+			{
+				success = !storage.IsFolderEmpty(dbPath);
+			}
+
 			Assert.IsTrue(success, "Expected folder to become non-empty after the file is created");
 		}
 		finally
