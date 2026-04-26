@@ -471,15 +471,15 @@ public sealed class StorageSubPathFilesystemTest
 			// Create a file shortly after polling starts. Await this task to surface failures.
 			var writerTask = Task.Run(async () =>
 			{
-				await Task.Delay(100, CancellationToken.None);
+				await Task.Delay(20, CancellationToken.None);
 				await File.WriteAllTextAsync(filePath, "x", CancellationToken.None);
 			}, CancellationToken.None);
 
 			// Poll until IsFolderEmpty returns false or timeout.
-			// CI can be slow to schedule both worker and file system notifications.
+			// Keep timeout CI-safe, but much lower than before to reduce test runtime.
 			var sw = Stopwatch.StartNew();
 			var success = false;
-			while ( sw.Elapsed < TimeSpan.FromSeconds(5) )
+			while ( sw.Elapsed < TimeSpan.FromMilliseconds(1200) )
 			{
 				if ( !storage.IsFolderEmpty(dbPath) )
 				{
@@ -487,13 +487,20 @@ public sealed class StorageSubPathFilesystemTest
 					break;
 				}
 
-				await Task.Delay(25, CancellationToken.None);
+				await Task.Delay(10, CancellationToken.None);
 			}
 
 			await writerTask;
 			if ( !success )
 			{
-				success = !storage.IsFolderEmpty(dbPath);
+				for ( var i = 0; i < 10 && !success; i++ )
+				{
+					success = !storage.IsFolderEmpty(dbPath);
+					if ( !success )
+					{
+						await Task.Delay(10, CancellationToken.None);
+					}
+				}
 			}
 
 			Assert.IsTrue(success, "Expected folder to become non-empty after the file is created");
