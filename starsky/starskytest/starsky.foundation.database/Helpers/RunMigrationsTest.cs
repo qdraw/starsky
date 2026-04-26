@@ -88,7 +88,7 @@ public sealed class RunMigrationsTest
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.Mysql,
 			DatabaseConnection =
-				"server=localhost;database=mydatabase;user=root;password=mypassword"
+				"server=localhost;database=mydatabase;user=root;password=mypassword;Connection Timeout=1"
 		};
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase("MovieListDatabase")

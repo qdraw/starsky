@@ -37,11 +37,18 @@ public sealed class BaseMountWatcherTest
 			])
 		};
 		var detected = new List<string>();
-		sut.MountDetected += (_, args) => detected.Add(args.MountPath);
+		var detectedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+		sut.MountDetected += (_, args) =>
+		{
+			detected.Add(args.MountPath);
+			detectedTcs.TrySetResult(true);
+		};
 		sut.SetRunning(true);
 
 		var pollingTask = Task.Run(sut.RunPollingFallbackForTest, TestContext.CancellationToken);
-		await Task.Delay(4300, TestContext.CancellationToken);
+		var completed = await Task.WhenAny(detectedTcs.Task,
+			Task.Delay(1000, TestContext.CancellationToken));
+		Assert.AreEqual(detectedTcs.Task, completed, "Timed out waiting for mount detection");
 		sut.SetRunning(false);
 		await pollingTask;
 
