@@ -180,7 +180,7 @@ public class MozJpegService : IMozJpegService
 		List<string> arguments =
 		[
 			"-quality", optimizer.Options.Quality.ToString(),
-			"-optimize", outputInputPath
+			"-optimize", $"\"{outputInputPath}\""
 		];
 
 		var command = Default.Run(
