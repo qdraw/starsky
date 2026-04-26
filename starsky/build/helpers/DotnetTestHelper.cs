@@ -57,6 +57,11 @@ public static class DotnetTestHelper
 
 			Log.Information("runSettingsFile {RunSettingsFile}", runSettingsFile);
 
+			var trxFullFilePath = Path.Combine(
+				testParentPath,
+				"TestResults",
+				"test_results.trx");
+
 			try
 			{
 				// search for: dotnet test
@@ -72,13 +77,12 @@ public static class DotnetTestHelper
 			}
 			catch ( ProcessException )
 			{
-				var trxFullFilePath = Path.Combine(
-					testParentPath,
-					"TestResults",
-					"test_results.trx");
-
 				TrxParserHelper.DisplayFailedFileTests(trxFullFilePath);
 				throw;
+			}
+			finally
+			{
+				TrxParserHelper.DisplaySlowestTests(trxFullFilePath);
 			}
 
 			var coverageEnum = GetFilesHelper.GetFiles("**/coverage.opencover.xml");
