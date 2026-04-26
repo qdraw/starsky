@@ -77,7 +77,7 @@ public static class DotnetTestHelper
 					"TestResults",
 					"test_results.trx");
 
-				TrxParserHelper.DisplayFileTests(trxFullFilePath);
+				TrxParserHelper.DisplayFailedFileTests(trxFullFilePath);
 				throw;
 			}
 

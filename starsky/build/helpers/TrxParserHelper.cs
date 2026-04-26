@@ -22,7 +22,7 @@ public static class TrxParserHelper
 	static readonly XNamespace TeamTestNamespace =
 		"http://microsoft.com/schemas/VisualStudio/TeamTest/2010";
 
-	public static void DisplayFileTests(string trxFullFilePath)
+	public static void DisplayFailedFileTests(string trxFullFilePath)
 	{
 		if ( !File.Exists(trxFullFilePath) )
 		{
