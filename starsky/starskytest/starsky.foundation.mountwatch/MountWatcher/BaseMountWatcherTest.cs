@@ -37,22 +37,41 @@ public sealed class BaseMountWatcherTest
 			])
 		};
 		var detected = new List<string>();
+		var detectedLock = new object();
 		var detectedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 		sut.MountDetected += (_, args) =>
 		{
-			detected.Add(args.MountPath);
+			lock ( detectedLock )
+			{
+				detected.Add(args.MountPath);
+			}
 			detectedTcs.TrySetResult(true);
 		};
 		sut.SetRunning(true);
 
 		var pollingTask = Task.Run(sut.RunPollingFallbackForTest, TestContext.CancellationToken);
-		var completed = await Task.WhenAny(detectedTcs.Task,
-			Task.Delay(1000, TestContext.CancellationToken));
-		Assert.AreEqual(detectedTcs.Task, completed, "Timed out waiting for mount detection");
-		sut.SetRunning(false);
-		await pollingTask;
+		bool hasDetectedMount;
+		try
+		{
+			await detectedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.CancellationToken);
+			hasDetectedMount = true;
+		}
+		catch ( TimeoutException )
+		{
+			hasDetectedMount = false;
+		}
+		finally
+		{
+			sut.SetRunning(false);
+			await pollingTask;
+		}
 
-		CollectionAssert.AreEqual(new List<string> { "/mnt/camera" }, detected);
+		Assert.IsTrue(hasDetectedMount,
+			$"Timed out waiting for mount detection. GetMountedVolumesCallCount={sut.GetMountedVolumesCallCount}");
+		lock ( detectedLock )
+		{
+			CollectionAssert.AreEqual(new List<string> { "/mnt/camera" }, detected);
+		}
 	}
 
 	[TestMethod]
