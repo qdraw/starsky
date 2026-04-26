@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -39,13 +40,15 @@ public sealed class BaseMountWatcherTest
 		};
 		var detected = new List<string>();
 		var detectedLock = new object();
-		var detectedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+		var detectedTcs =
+			new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 		sut.MountDetected += (_, args) =>
 		{
 			lock ( detectedLock )
 			{
 				detected.Add(args.MountPath);
 			}
+
 			detectedTcs.TrySetResult(true);
 		};
 		sut.SetRunning(true);
@@ -54,7 +57,8 @@ public sealed class BaseMountWatcherTest
 		bool hasDetectedMount;
 		try
 		{
-			await detectedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.CancellationToken);
+			await detectedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5),
+				TestContext.CancellationToken);
 			hasDetectedMount = true;
 		}
 		catch ( TimeoutException )
@@ -89,16 +93,20 @@ public sealed class BaseMountWatcherTest
 		sut.SetRunning(true);
 
 		var pollingTask = Task.Run(sut.RunPollingFallbackForTest, TestContext.CancellationToken);
-		bool reachedSecondRead;
+		var reachedSecondRead = false;
 		try
 		{
-			await sut.WaitForCallCountAsync(2, TimeSpan.FromSeconds(3),
-				TestContext.CancellationToken);
-			reachedSecondRead = true;
-		}
-		catch ( TimeoutException )
-		{
-			reachedSecondRead = false;
+			var sw = Stopwatch.StartNew();
+			while ( sw.Elapsed < TimeSpan.FromSeconds(3) )
+			{
+				if ( sut.GetMountedVolumesCallCount >= 2 )
+				{
+					reachedSecondRead = true;
+					break;
+				}
+
+				await Task.Delay(10, TestContext.CancellationToken);
+			}
 		}
 		finally
 		{
@@ -113,16 +121,15 @@ public sealed class BaseMountWatcherTest
 
 	private sealed class TestBaseMountWatcher : BaseMountWatcher
 	{
-		private readonly TaskCompletionSource<int> _readsObserved =
-			new(TaskCreationOptions.RunContinuationsAsynchronously);
+		private int _getMountedVolumesCallCount;
 
-		public TestBaseMountWatcher() : base(new FakeIWebLogger(),10)
+		public TestBaseMountWatcher() : base(new FakeIWebLogger(), 10)
 		{
 		}
 
 		public Queue<List<string>> Snapshots { get; set; } = new();
 		public int ThrowOnReadNumber { get; set; }
-		public int GetMountedVolumesCallCount { get; private set; }
+		public int GetMountedVolumesCallCount => Volatile.Read(ref _getMountedVolumesCallCount);
 
 		public override void Start()
 		{
@@ -134,13 +141,9 @@ public sealed class BaseMountWatcherTest
 
 		public override List<string> GetMountedVolumes()
 		{
-			GetMountedVolumesCallCount++;
-			if ( GetMountedVolumesCallCount >= 2 )
-			{
-				_readsObserved.TrySetResult(GetMountedVolumesCallCount);
-			}
+			var callCount = Interlocked.Increment(ref _getMountedVolumesCallCount);
 
-			if ( ThrowOnReadNumber > 0 && GetMountedVolumesCallCount == ThrowOnReadNumber )
+			if ( ThrowOnReadNumber > 0 && callCount == ThrowOnReadNumber )
 			{
 				throw new InvalidOperationException("simulated");
 			}
@@ -166,17 +169,6 @@ public sealed class BaseMountWatcherTest
 		public void RaiseMount(string mountPath)
 		{
 			OnMountDetected(mountPath);
-		}
-
-		public async Task WaitForCallCountAsync(int expectedCount, TimeSpan timeout,
-			CancellationToken cancellationToken)
-		{
-			if ( GetMountedVolumesCallCount >= expectedCount )
-			{
-				return;
-			}
-
-			await _readsObserved.Task.WaitAsync(timeout, cancellationToken);
 		}
 	}
 }
