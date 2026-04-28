@@ -43,6 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.17 - _(Unreleased)_ - 2026-?-? {#v0.7.17}
 
+- [x] (Added) _Back-end_ Add support for add custom AI tags: SuggestedTags, RejectedTags,
+  ImageClassificationModel and ImageClassificationGeneratedAt (PR #3000)
 - [x] (Added) _Back-end_ Flexible background queue, support for multiple backends (in-memory,
   database, and RabbitMQ) (InMemory already exists) (PR #3020)
 - [x] (Fixed) _Back-end_ MozJpeg Quoting `outputInputPath` issues with spaces in paths (PR #3015)

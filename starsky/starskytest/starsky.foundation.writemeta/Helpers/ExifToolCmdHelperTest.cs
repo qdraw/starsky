@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -127,15 +128,11 @@ public sealed class ExifToolCmdHelperTest
 			"\"-xmp-dc:title=Title \\\"test\\\"\"";
 		Assert.AreEqual(expectedResult, helperResult.Command);
 	}
-	
+
 	[TestMethod]
 	public async Task ExifToolCmdHelper_ConfigFirst()
 	{
-		var updateModel = new FileIndexItem
-		{
-			Tags = "tags",
-			SuggestedTags = "test"
-		};
+		var updateModel = new FileIndexItem { Tags = "tags", SuggestedTags = "test" };
 		var comparedNames = new List<string>
 		{
 			nameof(FileIndexItem.SuggestedTags).ToLowerInvariant(),
@@ -147,8 +144,8 @@ public sealed class ExifToolCmdHelperTest
 
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		var sut = new ExifToolCmdHelper(fakeExifTool, storage, storage,
-				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(),
-				new AppSettings());
+			new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(),
+			new AppSettings());
 		var helperResult = await sut.UpdateAsync(updateModel, comparedNames);
 
 		var expectedResult =
@@ -157,6 +154,36 @@ public sealed class ExifToolCmdHelperTest
 			"-ObjectName=\"\" \"-title\"=\"\" \"-xmp-dc:title=\" " +
 			"-sep \", \" -XMP-ai:SuggestedTags=\"test\" ";
 		Assert.AreEqual(expectedResult, helperResult.Command);
+	}
+
+	[TestMethod]
+	public void ExifToolCommandLineArgs_AiMetadata_MissingConfig_LogsError()
+	{
+		var appSettings = new AppSettings
+		{
+			// Force config lookup to a non-existing directory
+			AppSettingsPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(),
+				"appsettings.patch.json")
+		};
+
+		var logger = new FakeIWebLogger();
+		var updateModel = new FileIndexItem { SuggestedTags = "test" };
+		var comparedNames = new List<string>
+		{
+			nameof(FileIndexItem.SuggestedTags).ToLowerInvariant()
+		};
+
+		var sut = new ExifToolCmdHelper(null!, null!, null!, null!, null!, logger,
+			appSettings);
+		var result = sut.ExifToolCommandLineArgs(updateModel, comparedNames, true);
+
+		Assert.Contains("-json -overwrite_original", result);
+		Assert.Contains("-XMP-ai:SuggestedTags=\"test\"", result);
+		Assert.IsFalse(result.Contains("-config \"", StringComparison.Ordinal),
+			"Config should not be added when file does not exist");
+		Assert.Contains(
+			p => ( p.Item2 ?? string.Empty ).Contains("[UpdateAiConfig] Missing ExifTool config:"),
+			logger.TrackedExceptions);
 	}
 
 	[TestMethod]
