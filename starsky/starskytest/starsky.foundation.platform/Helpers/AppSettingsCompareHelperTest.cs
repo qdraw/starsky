@@ -370,14 +370,14 @@ public sealed class AppSettingsCompareHelperTest
 
 		var compare = AppSettingsCompareHelper.Compare(source, to);
 
-		Assert.AreEqual(true, source.UseImageClassificationOnStartup);
+		Assert.IsTrue(source.UseImageClassificationOnStartup.GetValueOrDefault());
 		Assert.AreEqual("llava:13b", source.OllamaModel);
 		Assert.AreEqual("/opt/ollama/ollama", source.OllamaExecutablePath);
 		Assert.AreEqual(64, source.ImageClassificationBatchSize);
-		Assert.IsTrue(compare.Contains("useimageclassificationonstartup"));
-		Assert.IsTrue(compare.Contains("ollamamodel"));
-		Assert.IsTrue(compare.Contains("ollamaexecutablepath"));
-		Assert.IsTrue(compare.Contains("imageclassificationbatchsize"));
+		Assert.Contains("useimageclassificationonstartup", compare);
+		Assert.Contains("ollamamodel", compare);
+		Assert.Contains("ollamaexecutablepath", compare);
+		Assert.Contains("imageclassificationbatchsize", compare);
 	}
 
 	[TestMethod]
