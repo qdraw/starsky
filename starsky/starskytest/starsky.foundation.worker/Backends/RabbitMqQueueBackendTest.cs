@@ -236,9 +236,11 @@ public sealed class RabbitMqQueueBackendTest
 		cts.CancelAfter(TimeSpan.FromMilliseconds(100));
 
 		var sw = Stopwatch.StartNew();
-		await Assert.ThrowsExactlyAsync<TaskCanceledException>(async () =>
+		var exception = await Assert.ThrowsAsync<OperationCanceledException>(async () =>
 			await backend.DequeueJobAsync(cts.Token));
 		sw.Stop();
+		Assert.AreEqual(cts.Token, exception.CancellationToken,
+			"The cancellation should come from the test token");
 
 		// Should have executed at least 1 delay iteration before cancellation
 		Assert.IsGreaterThanOrEqualTo(50, sw.ElapsedMilliseconds,
