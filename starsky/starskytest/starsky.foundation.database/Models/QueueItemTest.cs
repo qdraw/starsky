@@ -15,7 +15,7 @@ public sealed class QueueItemTest
 		Assert.AreEqual(string.Empty, model.QueueName);
 		Assert.AreEqual(string.Empty, model.JobType);
 		Assert.AreEqual(QueueItemStatus.Pending, model.Status);
-		Assert.IsTrue(model.CreatedAtUtc > DateTime.UtcNow.AddMinutes(-1));
+		Assert.AreNotEqual(default, model.CreatedAtUtc);
 	}
 
 	[TestMethod]

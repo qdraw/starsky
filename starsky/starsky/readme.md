@@ -138,6 +138,9 @@ machinename with your computer name in lowercase)_
 45. `SyncAlwaysUpdateLastEditedTime` - Update the last edited time in the database during sync (
     default true).
 46. `UseSystemTrash` - Use the system trash for file deletions if supported (default null).
+47. `Queue` - Configure background queues per queue name. Use `InMemory`, `Database` or `RabbitMq`.
+    Existing queues stay `InMemory` by default. `Queue.Default` is the fallback,
+    `Queue.Queues` contains per-queue overrides, and `Queue.RabbitMq` stores shared broker settings.
 
 ### Appsettings.json example
 
@@ -148,6 +151,23 @@ machinename with your computer name in lowercase)_
     "StorageFolder": "Y:\\data\\photodirectory\\storage",
     "DatabaseType": "mysql",
     "DatabaseConnection": "Server=mysqlserver.nl;database=dbname;uid=username;pwd=password;",
+    "Queue": {
+      "Default": "InMemory",
+      "DatabasePollIntervalInMilliseconds": 500,
+      "Queues": {
+        "ImageClassification": "Database",
+        "Update": "InMemory",
+        "Thumbnail": "InMemory",
+        "DiskWatcher": "InMemory"
+      },
+      "RabbitMq": {
+        "Host": "localhost",
+        "Port": 5672,
+        "Username": "guest",
+        "Password": "guest",
+        "VirtualHost": "/"
+      }
+    },
     "Structure": {
         "DefaultPattern": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext"
     },
@@ -163,6 +183,80 @@ machinename with your computer name in lowercase)_
 
 > Tip: When using the `mysql`-setting, make sure the database uses `utf8mb4` and as
 > collate `utf8mb4_unicode_ci` to avoid encoding errors.
+
+### Queue backend configuration
+
+Starsky background queues can now be configured per queue. The queue name is the same key that is
+used in settings, database persistence and RabbitMQ queue naming.
+
+Current queue keys are:
+
+- `Update`
+- `Thumbnail`
+- `DiskWatcher`
+- `ImageClassification`
+
+Available backends:
+
+- `InMemory` - current/default behavior, fastest and simplest for a single process
+- `Database` - queue items are stored in the Starsky database and picked up by listeners
+- `RabbitMq` - queue items are sent to RabbitMQ using the shared broker settings in `Queue.RabbitMq`
+
+#### Typical example
+
+Use database-backed image classification while keeping existing queues in memory:
+
+```json
+{
+  "App": {
+    "Queue": {
+      "Default": "InMemory",
+      "Queues": {
+        "ImageClassification": "Database"
+      }
+    }
+  }
+}
+```
+
+#### RabbitMQ example
+
+Switch one queue to RabbitMQ and keep the rest on the default backend:
+
+```json
+{
+  "App": {
+    "Queue": {
+      "Default": "InMemory",
+      "Queues": {
+        "ImageClassification": "RabbitMq"
+      },
+      "RabbitMq": {
+        "Host": "rabbitmq",
+        "Port": 5672,
+        "Username": "guest",
+        "Password": "guest",
+        "VirtualHost": "/"
+      }
+    }
+  }
+}
+```
+
+#### Environment variable examples
+
+For container or CI environments, the same settings can be provided by environment variables:
+
+- `app__queue__default=InMemory`
+- `app__queue__queues__imageclassification=Database`
+- `app__queue__rabbitmq__host=rabbitmq`
+- `app__queue__rabbitmq__port=5672`
+
+#### Merge behavior
+
+Queue settings participate in normal appsettings merge behavior. This means you can keep defaults in
+`appsettings.default.json`, override them in `appsettings.patch.json`, and override them again with
+machine-specific or environment-based settings.
 
 ## Structure configuration change in version 0.7.0
 

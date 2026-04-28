@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace starsky.foundation.platform.Models;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum QueueBackendType
 {
 	InMemory = 0,
