@@ -58,5 +58,5 @@
   "MSTest.TestAdapter 4.2.1",
   "MSTest.TestFramework 4.2.1",
   "Verify.MSTest 31.16.2",
-  "coverlet.collector 8.0.1"
+  "coverlet.collector 10.0.0"
 ]
