@@ -199,4 +199,32 @@ public sealed class SetupAppSettingsTest
 
 		_hostStorage.FolderDelete(testDir);
 	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_StackImageClassificationSettings()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject,
+			"_test_image_classification_merge");
+		if ( _hostStorage.ExistFolder(testDir) )
+		{
+			_hostStorage.FolderDelete(testDir);
+		}
+
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"useImageClassificationOnStartup\": false,\n    \"ollamaModel\": \"gemma3:4b\",\n    \"ollamaExecutablePath\": \"\",\n    \"imageClassificationBatchSize\": 25\n  }\n}\n"), Path.Combine(testDir, "appsettings.json"));
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"useImageClassificationOnStartup\": true,\n    \"ollamaModel\": \"llava:13b\",\n    \"ollamaExecutablePath\": \"/opt/ollama/ollama\",\n    \"imageClassificationBatchSize\": 64\n  }\n}\n"), Path.Combine(testDir, "appsettings.patch.json"));
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.IsTrue(result.UseImageClassificationOnStartup.GetValueOrDefault());
+		Assert.AreEqual("llava:13b", result.OllamaModel);
+		Assert.AreEqual("/opt/ollama/ollama", result.OllamaExecutablePath);
+		Assert.AreEqual(64, result.ImageClassificationBatchSize);
+
+		_hostStorage.FolderDelete(testDir);
+	}
 }
