@@ -46,6 +46,7 @@
         <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj"/>
         <ProjectReference Include="..\starsky.feature.trash\starsky.feature.trash.csproj"/>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.imageclassification\starsky.foundation.imageclassification.csproj"/>
         <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
         <ProjectReference Include="..\starsky.foundation.native\starsky.foundation.native.csproj"/>

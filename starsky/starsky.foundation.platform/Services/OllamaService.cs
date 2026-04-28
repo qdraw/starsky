@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
@@ -20,6 +22,7 @@ public sealed class OllamaService : IOllamaService
 	private readonly IWebLogger _logger;
 	private readonly IOllamaProcessRunner _processRunner;
 	private readonly OllamaExePath _ollamaExePath;
+	private int? _servePort;
 
 	public OllamaService(AppSettings appSettings, IWebLogger logger,
 		IOllamaProcessRunner processRunner)
@@ -34,6 +37,11 @@ public sealed class OllamaService : IOllamaService
 	{
 		if ( _processRunner.IsServeRunning )
 		{
+			if ( _servePort == null )
+			{
+				_servePort = GetFreePort();
+			}
+
 			return true;
 		}
 
@@ -45,6 +53,7 @@ public sealed class OllamaService : IOllamaService
 			return false;
 		}
 
+		_servePort = GetFreePort();
 		var environmentVariables = GetOllamaEnvironmentVariables();
 		var started = await _processRunner.StartServeAsync(executablePath,
 			environmentVariables, cancellationToken);
@@ -118,10 +127,21 @@ public sealed class OllamaService : IOllamaService
 	{
 		var modelsDirectory = Path.Combine(_appSettings.DependenciesFolder, "ollama-models");
 		Directory.CreateDirectory(modelsDirectory);
+		var port = _servePort ??= GetFreePort();
 		return new Dictionary<string, string>
 		{
-			{ "OLLAMA_MODELS", modelsDirectory }
+			{ "OLLAMA_MODELS", modelsDirectory },
+			{ "OLLAMA_HOST", $"127.0.0.1:{port}" }
 		};
+	}
+
+	private static int GetFreePort()
+	{
+		var listener = new TcpListener(IPAddress.Loopback, 0);
+		listener.Start();
+		var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+		listener.Stop();
+		return port;
 	}
 
 	private static string EscapeArgument(string value)
@@ -129,4 +149,5 @@ public sealed class OllamaService : IOllamaService
 		return $"\"{value.Replace("\"", "\\\"")}\"";
 	}
 }
+
 
