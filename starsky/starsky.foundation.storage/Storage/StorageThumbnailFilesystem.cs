@@ -156,7 +156,8 @@ public sealed class StorageThumbnailFilesystem : IStorage
 		throw new NotSupportedException();
 	}
 
-	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
+	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path,
+		int? maxInnerChildDirectoryLookups = null)
 	{
 		throw new NotSupportedException();
 	}

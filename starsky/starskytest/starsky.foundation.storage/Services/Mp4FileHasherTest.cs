@@ -1722,7 +1722,8 @@ public sealed class Mp4FileHasherTest
 			return [];
 		}
 
-		public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
+		public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path,
+			int? maxInnerChildDirectoryLookups = null)
 		{
 			return [];
 		}

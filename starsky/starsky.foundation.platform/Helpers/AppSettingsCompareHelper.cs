@@ -118,6 +118,17 @@ public static class AppSettingsCompareHelper
 				newMountWatcherModel, differenceList);
 		}
 
+		if ( propertyB.PropertyType == typeof(AppSettingsQueueModel) )
+		{
+			var oldQueueModel =
+				( AppSettingsQueueModel? ) propertyInfoFromA.GetValue(sourceIndexItem,
+					null);
+			var newQueueModel =
+				( AppSettingsQueueModel? ) propertyB.GetValue(updateObject, null);
+			CompareAppSettingsQueueModel(propertyB.Name, sourceIndexItem,
+				oldQueueModel, newQueueModel, differenceList);
+		}
+
 		if ( propertyInfoFromA.PropertyType ==
 		     typeof(List<AppSettingsDefaultEditorApplication>) &&
 		     propertyB.PropertyType == typeof(List<AppSettingsDefaultEditorApplication>) )
@@ -177,6 +188,26 @@ public static class AppSettingsCompareHelper
 				oldAppSettingsPublishProfilesRemoteValue,
 				newAppSettingsPublishProfilesRemoteValue, differenceList);
 		}
+	}
+
+	private static void CompareAppSettingsQueueModel(string propertyBName,
+		AppSettings sourceIndexItem,
+		AppSettingsQueueModel? oldQueueModel,
+		AppSettingsQueueModel? newQueueModel,
+		List<string> differenceList)
+	{
+		if ( oldQueueModel == null ||
+		     newQueueModel == null ||
+		     JsonSerializer.Serialize(oldQueueModel) == JsonSerializer.Serialize(newQueueModel) ||
+		     JsonSerializer.Serialize(newQueueModel) ==
+		     JsonSerializer.Serialize(new AppSettingsQueueModel()) )
+		{
+			return;
+		}
+
+		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
+			newQueueModel, null);
+		differenceList.Add(propertyBName.ToLowerInvariant());
 	}
 
 	private static void CompareAppSettingsMountWatcherModel(string propertyBName,

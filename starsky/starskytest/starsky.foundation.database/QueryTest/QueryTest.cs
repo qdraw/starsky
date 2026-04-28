@@ -223,7 +223,7 @@ public sealed class QueryTest
 
 		// Create Query with cache disabled by passing null for IMemoryCache
 		var queryNoCache = new Query(dbContext, new AppSettings { Verbose = true }, serviceScope,
-			_logger, null);
+			_logger);
 
 		// Act
 		var result = await queryNoCache.GetSubPathsByHashAsync("myhash");
@@ -1182,7 +1182,7 @@ public sealed class QueryTest
 		// already verbose
 		_query.CacheUpdateItem([item1]);
 
-		Assert.AreNotEqual(0, _logger.TrackedInformation.Count);
+		Assert.IsNotEmpty(_logger.TrackedInformation);
 		Assert.IsTrue(_logger.TrackedInformation.FirstOrDefault().Item2
 			?.Contains("[CacheUpdateItem]"));
 	}
@@ -1235,7 +1235,7 @@ public sealed class QueryTest
 	{
 		_query.AddCacheParentItem("/3479824783",
 		[
-			new()
+			new FileIndexItem
 			{
 				Id = 401,
 				Tags = "___not___",
@@ -1317,10 +1317,10 @@ public sealed class QueryTest
 		});
 
 		var dp1 = _query.DisplayFileFolders("/StackCollection");
-		Assert.AreEqual(1, dp1.Count());
+		Assert.HasCount(1, dp1);
 
 		var dp2 = _query.DisplayFileFolders("/StackCollection", null, false);
-		Assert.AreEqual(2, dp2.Count());
+		Assert.HasCount(2, dp2);
 	}
 
 	[TestMethod]

@@ -101,7 +101,7 @@ public sealed class SearchSuggestionsServiceTest
 		// zebra is 1 time in the list
 		var result = await _suggest.SearchSuggest("zebr", false);
 
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -111,7 +111,7 @@ public sealed class SearchSuggestionsServiceTest
 		var result = await new SearchSuggestionsService(_dbContext, null, null!, new AppSettings())
 			.SearchSuggest("sch", false);
 
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -122,7 +122,7 @@ public sealed class SearchSuggestionsServiceTest
 			new FakeIWebLogger(),
 			new AppSettings { AddMemoryCache = false }).SearchSuggest("sch", false);
 
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]

@@ -169,7 +169,7 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 
 		// Some cameras place DCIM one level down
 		var dcimCandidate = _hostStorage
-			.GetDirectoryRecursive(rootPath)
+			.GetDirectoryRecursive(rootPath, 1)
 			.Select(value => PathHelper.GetFileName(value.Key))
 			.Any(name =>
 				!string.IsNullOrEmpty(name) &&

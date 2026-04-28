@@ -83,7 +83,7 @@ public sealed class ZipperTest
 
 		Console.WriteLine("List content:");
 		Console.WriteLine(hostService.GetAllFilesInDirectory(testOutputFolder).FirstOrDefault());
-		Assert.AreEqual(1, hostService.GetAllFilesInDirectory(testOutputFolder).Count());
+		Assert.HasCount(1, hostService.GetAllFilesInDirectory(testOutputFolder));
 
 		Assert.IsTrue(Path.Exists(outputFile));
 

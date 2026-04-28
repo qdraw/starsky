@@ -49,8 +49,8 @@ public sealed class ImportTest : VerifyBase
 	public ImportTest()
 	{
 		_iStorageFake = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/color_class_winner.jpg" },
+			["/"],
+			["/test.jpg", "/color_class_winner.jpg"],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(), CreateAnImageColorClass.Bytes.ToArray()
@@ -62,8 +62,8 @@ public sealed class ImportTest : VerifyBase
 			.Key;
 
 		_iStorageDirectoryRecursive = new FakeIStorage(
-			new List<string> { "/", "/test", "/test/test" },
-			new List<string> { "/layer0.jpg", "/test/layer1.jpg", "/test/test/layer2.jpg" },
+			["/", "/test", "/test/test"],
+			["/layer0.jpg", "/test/layer1.jpg", "/test/test/layer2.jpg"],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(),
@@ -72,7 +72,7 @@ public sealed class ImportTest : VerifyBase
 			}
 		);
 
-		_console = new FakeConsoleWrapper(new List<string>());
+		_console = new FakeConsoleWrapper([]);
 	}
 
 	[TestMethod]
@@ -163,7 +163,7 @@ public sealed class ImportTest : VerifyBase
 	{
 		var appSettings = new AppSettings
 		{
-			Verbose = true, ImportIgnore = new List<string> { "test" }
+			Verbose = true, ImportIgnore = ["test"]
 		};
 		var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings,
 			new FakeIImportQuery(),
@@ -172,12 +172,76 @@ public sealed class ImportTest : VerifyBase
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
-			new List<string> { "/test.jpg" },
+			["/test.jpg"],
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result.FirstOrDefault());
 		Assert.AreEqual(ImportStatus.Ignore, result.FirstOrDefault()?.Status);
 
+		Assert.IsNull(result.FirstOrDefault()?.FileIndexItem);
+	}
+
+	[TestMethod]
+	public async Task Preflight_Ignore_ByDirectoryName()
+	{
+		// Pattern is just a directory name, file is inside a child folder path
+		const string directoryName = "lost+found";
+		const string filePath = $"/test/{directoryName}/file.jpg";
+
+		var fakeStorage = new FakeIStorage(
+			["/", "/test", $"/test/{directoryName}"],
+			[filePath],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
+		);
+
+		var appSettings = new AppSettings
+		{
+			Verbose = true, ImportIgnore = [directoryName]
+		};
+		var importService = new Import(new FakeSelectorStorage(fakeStorage), appSettings,
+			new FakeIImportQuery(),
+			new FakeExifTool(fakeStorage, appSettings), null!,
+			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
+
+		var result = await importService.Preflight(
+			[filePath],
+			new ImportSettingsModel());
+
+		Assert.IsNotNull(result.FirstOrDefault());
+		Assert.AreEqual(ImportStatus.Ignore, result.FirstOrDefault()?.Status);
+		Assert.IsNull(result.FirstOrDefault()?.FileIndexItem);
+	}
+
+	[TestMethod]
+	public async Task Preflight_Ignore_ByFullDirectoryPath()
+	{
+		// Pattern is a full directory path, file is inside that directory
+		const string directoryPath = "/some/path/lost+found";
+		const string filePath = $"{directoryPath}/file.jpg";
+
+		var fakeStorage = new FakeIStorage(
+			["/", "/some", "/some/path", directoryPath],
+			[filePath],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
+		);
+
+		var appSettings = new AppSettings
+		{
+			Verbose = true, ImportIgnore = [directoryPath]
+		};
+		var importService = new Import(new FakeSelectorStorage(fakeStorage), appSettings,
+			new FakeIImportQuery(),
+			new FakeExifTool(fakeStorage, appSettings), null!,
+			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
+
+		var result = await importService.Preflight(
+			[filePath],
+			new ImportSettingsModel());
+
+		Assert.IsNotNull(result.FirstOrDefault());
+		Assert.AreEqual(ImportStatus.Ignore, result.FirstOrDefault()?.Status);
 		Assert.IsNull(result.FirstOrDefault()?.FileIndexItem);
 	}
 
@@ -192,7 +256,7 @@ public sealed class ImportTest : VerifyBase
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
-			new List<string> { "/color_class_winner.jpg" },
+			["/color_class_winner.jpg"],
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -217,7 +281,7 @@ public sealed class ImportTest : VerifyBase
 			new FakeMemoryCache());
 
 		var result = await importService.Preflight(
-			new List<string> { "/color_class_winner.jpg" }, // <- in this test we change it
+			["/color_class_winner.jpg"], // <- in this test we change it
 			new ImportSettingsModel
 			{
 				ColorClass = 5 // <- - - - - - - - - - - - -
@@ -266,8 +330,8 @@ public sealed class ImportTest : VerifyBase
 	{
 		var appSettings = new AppSettings { Verbose = true };
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { Array.Empty<byte>() }
 		);
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
@@ -277,7 +341,7 @@ public sealed class ImportTest : VerifyBase
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
-			new List<string> { "/test.jpg" },
+			["/test.jpg"],
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -290,8 +354,8 @@ public sealed class ImportTest : VerifyBase
 		var appSettings = new AppSettings { Verbose = true };
 
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.unknown" },
+			["/"],
+			["/test.unknown"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 
@@ -303,7 +367,7 @@ public sealed class ImportTest : VerifyBase
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
-			new List<string> { "/test.unknown" },
+			["/test.unknown"],
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -316,12 +380,12 @@ public sealed class ImportTest : VerifyBase
 		// Exist already
 		var appSettings = new AppSettings { Verbose = true };
 		var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings,
-			new FakeIImportQuery(new List<string> { _exampleHash }),
+			new FakeIImportQuery([_exampleHash]),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
-		var result = await importService.Preflight(new List<string> { "/test.jpg" },
+		var result = await importService.Preflight(["/test.jpg"],
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -333,12 +397,12 @@ public sealed class ImportTest : VerifyBase
 	{
 		var appSettings = new AppSettings();
 		var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings,
-			new FakeIImportQuery(new List<string> { _exampleHash }),
+			new FakeIImportQuery([_exampleHash]),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
-		var result = await importService.Preflight(new List<string> { "/test.jpg" },
+		var result = await importService.Preflight(["/test.jpg"],
 			new ImportSettingsModel { IndexMode = false });
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -355,7 +419,7 @@ public sealed class ImportTest : VerifyBase
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
-		var result = await importService.Preflight(new List<string> { "/non-exist.jpg" },
+		var result = await importService.Preflight(["/non-exist.jpg"],
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -372,7 +436,7 @@ public sealed class ImportTest : VerifyBase
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
-		var result = await importService.Preflight(new List<string> { "/non-exist" },
+		var result = await importService.Preflight(["/non-exist"],
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -391,7 +455,7 @@ public sealed class ImportTest : VerifyBase
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var importIndexItems = await importService.Preflight(
-			new List<string> { "/" },
+			["/"],
 			new ImportSettingsModel { RecursiveDirectory = true, IndexMode = false });
 
 		Assert.IsNotNull(importIndexItems.FirstOrDefault());
@@ -425,7 +489,7 @@ public sealed class ImportTest : VerifyBase
 			null!, _console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
-		var result = await importService.Preflight(new List<string> { "/test" },
+		var result = await importService.Preflight(["/test"],
 			new ImportSettingsModel { RecursiveDirectory = false });
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -687,8 +751,8 @@ public sealed class ImportTest : VerifyBase
 		var appSettings = new AppSettings { Verbose = true };
 		var query = new FakeIQuery();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+			["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
@@ -716,8 +780,8 @@ public sealed class ImportTest : VerifyBase
 		var appSettings = new AppSettings { Verbose = true, ExifToolImportXmpCreate = true };
 		var query = new FakeIQuery();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+			["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
@@ -745,8 +809,8 @@ public sealed class ImportTest : VerifyBase
 
 		var query = new FakeIQuery();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+			["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 
 		var importService = new Import(new FakeSelectorStorage(storage),
@@ -777,8 +841,8 @@ public sealed class ImportTest : VerifyBase
 		var appSettings = new AppSettings { Verbose = true };
 		var query = new FakeIQuery();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.dng" },
+			["/"],
+			["/test.dng"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray() });
 
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
@@ -836,8 +900,8 @@ public sealed class ImportTest : VerifyBase
 		var appSettings = new AppSettings();
 
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/2018", "/2018/04", "/2018/04/2018_04_22" },
-			new List<string> { "/test.jpg", "/2018/04/2018_04_22/20180422_161454_test.jpg" },
+			["/", "/2018", "/2018/04", "/2018/04/2018_04_22"],
+			["/test.jpg", "/2018/04/2018_04_22/20180422_161454_test.jpg"],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(), Array.Empty<byte>()
@@ -939,8 +1003,8 @@ public sealed class ImportTest : VerifyBase
 		var appSettings = new AppSettings();
 		var query = new FakeIQuery();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
@@ -964,8 +1028,8 @@ public sealed class ImportTest : VerifyBase
 		var appSettings = new AppSettings();
 		var query = new FakeIQuery();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
@@ -987,8 +1051,8 @@ public sealed class ImportTest : VerifyBase
 		var appSettings = new AppSettings();
 		var query = new FakeIQuery();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
@@ -1013,8 +1077,8 @@ public sealed class ImportTest : VerifyBase
 		var query = new FakeIQuery();
 		var importQuery = new FakeIImportQuery();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 
@@ -1041,8 +1105,8 @@ public sealed class ImportTest : VerifyBase
 	{
 		var appSettings = new AppSettings { Verbose = true };
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 
@@ -1067,14 +1131,13 @@ public sealed class ImportTest : VerifyBase
 		var query = new FakeIQuery();
 		var importQuery = new FakeIImportQuery();
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/0001", "/2020" },
-			new List<string>
-			{
+			["/", "/0001", "/2020"],
+			[
 				"/test.jpg",
 				"/0001/00010101_000000_d.png",
 				"/0001/00010101_000000_d_2.png",
 				"/2020/20200501_120000_1.png"
-			},
+			],
 			new List<byte[]>
 			{
 				Array.Empty<byte>(),
@@ -1140,14 +1203,13 @@ public sealed class ImportTest : VerifyBase
 		var query = new FakeIQuery();
 
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/0001", "/2020" },
-			new List<string>
-			{
+			["/", "/0001", "/2020"],
+			[
 				"/test.jpg",
 				"/0001/00010101_000000_d.png",
 				"/0001/00010101_000000_d_2.png",
 				"/2020/20200501_120000_1.png"
-			},
+			],
 			new List<byte[]>
 			{
 				Array.Empty<byte>(),
@@ -1320,8 +1382,8 @@ public sealed class ImportTest : VerifyBase
 	public void ExistXmpSidecarForThisFileType_DngReturn_True()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+			["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 		var appSettings = new AppSettings();
 		var importService = new Import(new FakeSelectorStorage(storage),
@@ -1341,8 +1403,8 @@ public sealed class ImportTest : VerifyBase
 	public void ExistXmpSidecarForThisFileType_JpegReturn_False()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/test.xmp" },
+			["/"],
+			["/test.jpg", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 		var appSettings = new AppSettings();
 		var importService = new Import(new FakeSelectorStorage(storage),
@@ -1362,14 +1424,14 @@ public sealed class ImportTest : VerifyBase
 	public async Task AddToQueryAndImportDatabaseAsync_NoConnection_NoVerbose()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/test.xmp" },
+			["/"],
+			["/test.jpg", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 
 		var logger = new FakeIWebLogger();
 		var appSettings = new AppSettings();
 		var importService = new Import(new FakeSelectorStorage(storage),
-			appSettings, new FakeIImportQuery(new List<string>(), false),
+			appSettings, new FakeIImportQuery([], false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
 			new FakeIReverseGeoCodeService(),
@@ -1387,14 +1449,14 @@ public sealed class ImportTest : VerifyBase
 	public async Task RemoveFromQueryAndImportDatabaseAsync_NoConnection_NoVerbose()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/test.xmp" },
+			["/"],
+			["/test.jpg", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 
 		var logger = new FakeIWebLogger();
 		var appSettings = new AppSettings();
 		var importService = new Import(new FakeSelectorStorage(storage),
-			appSettings, new FakeIImportQuery(new List<string>(), false),
+			appSettings, new FakeIImportQuery([], false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
 			new FakeIReverseGeoCodeService(),
@@ -1412,14 +1474,14 @@ public sealed class ImportTest : VerifyBase
 	public async Task AddToQueryAndImportDatabaseAsync_NoConnection_YesVerbose()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/test.xmp" },
+			["/"],
+			["/test.jpg", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 
 		var logger = new FakeIWebLogger();
 		var appSettings = new AppSettings { Verbose = true };
 		var importService = new Import(new FakeSelectorStorage(storage),
-			appSettings, new FakeIImportQuery(new List<string>(), false),
+			appSettings, new FakeIImportQuery([], false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
 			new FakeIReverseGeoCodeService(),
@@ -1444,22 +1506,22 @@ public sealed class ImportTest : VerifyBase
 	public void CheckForReadOnlyFileSystems_1()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/test.xmp" },
+			["/"],
+			["/test.jpg", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() },
 			new List<DateTime> { DateTime.Now, DateTime.Now });
 		var appSettings = new AppSettings { Verbose = true };
 		var logger = new FakeIWebLogger();
 
 		var importService = new Import(new FakeSelectorStorage(storage),
-			appSettings, new FakeIImportQuery(new List<string>(), false),
+			appSettings, new FakeIImportQuery([], false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
 			new FakeIReverseGeoCodeService(),
 			new FakeMemoryCache());
 
 		var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(
-			new List<ImportIndexItem> { new() { SourceFullFilePath = "/test.jpg" } });
+			[new() { SourceFullFilePath = "/test.jpg" }]);
 
 		Assert.HasCount(1, readOnlyFileSystems);
 		Assert.AreEqual(DefaultPath(), readOnlyFileSystems[0].Item1);
@@ -1469,22 +1531,22 @@ public sealed class ImportTest : VerifyBase
 	public void CheckForReadOnlyFileSystems_1_DirectoryGetParentNull()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/test.xmp" },
+			["/"],
+			["/test.jpg", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() },
 			new List<DateTime> { DateTime.Now, DateTime.Now });
 		var appSettings = new AppSettings { Verbose = true };
 		var logger = new FakeIWebLogger();
 
 		var importService = new Import(new FakeSelectorStorage(storage),
-			appSettings, new FakeIImportQuery(new List<string>(), false),
+			appSettings, new FakeIImportQuery([], false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
 			new FakeIReverseGeoCodeService(),
 			new FakeMemoryCache());
 
 		var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(
-			new List<ImportIndexItem> { new() { SourceFullFilePath = "/" } });
+			[new() { SourceFullFilePath = "/" }]);
 
 		// Directory.GetParent returns null
 		Assert.HasCount(1, readOnlyFileSystems);
@@ -1499,7 +1561,7 @@ public sealed class ImportTest : VerifyBase
 		var logger = new FakeIWebLogger();
 
 		var importService = new Import(new FakeSelectorStorage(storage),
-			appSettings, new FakeIImportQuery(new List<string>(), false),
+			appSettings, new FakeIImportQuery([], false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
 			new FakeIReverseGeoCodeService(),
@@ -1528,7 +1590,7 @@ public sealed class ImportTest : VerifyBase
 		var logger = new FakeIWebLogger();
 
 		var importService = new Import(new FakeSelectorStorage(storage),
-			appSettings, new FakeIImportQuery(new List<string>(), false),
+			appSettings, new FakeIImportQuery([], false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
 			new FakeIReverseGeoCodeService(),
@@ -1553,15 +1615,15 @@ public sealed class ImportTest : VerifyBase
 	public void CheckForReadOnlyFileSystems_3()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/test.xmp" },
+			["/"],
+			["/test.jpg", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() },
 			new List<DateTime> { DateTime.Now, DateTime.Now });
 		var appSettings = new AppSettings { Verbose = true };
 		var logger = new FakeIWebLogger();
 
 		var importService = new Import(new FakeSelectorStorage(storage),
-			appSettings, new FakeIImportQuery(new List<string>(), false),
+			appSettings, new FakeIImportQuery([], false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
 			new FakeIReverseGeoCodeService(),
