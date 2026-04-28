@@ -101,6 +101,14 @@
         <Content Include="github-artifacts-download.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="download-mirror.sh"/>
+        <Content Include="download-mirror.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="ollama-dependencies-download.sh"/>
+        <Content Include="ollama-dependencies-download.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <None Remove="service-cron-restart.sh"/>
         <Content Include="service-cron-restart.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
