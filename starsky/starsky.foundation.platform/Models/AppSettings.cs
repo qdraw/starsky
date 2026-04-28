@@ -81,11 +81,6 @@ public sealed class AppSettings
 		MetaThumbnail = 8,
 
 		/// <summary>
-		///     DiskWatcherWorkerService
-		/// </summary>
-		DiskWatcherWorkerService = 9,
-
-		/// <summary>
 		///     Seed application for demos
 		/// </summary>
 		DemoSeed = 10,
@@ -135,7 +130,7 @@ public sealed class AppSettings
 	private string _storageFolder = string.Empty;
 
 	/// <summary>
-	///     Private: Location of temp folder
+	///     Private: Location of the temp folder
 	/// </summary>
 	private string? _tempFolder;
 
@@ -229,7 +224,7 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
-	///     Allow overwrite this name in AppSettingsController
+	///     Allow overwriting this name in AppSettingsController
 	/// </summary>
 	public bool StorageFolderAllowEdit =>
 		string.IsNullOrEmpty(
@@ -290,7 +285,8 @@ public sealed class AppSettings
 	/// <summary>
 	///     Background queue backend configuration.
 	/// </summary>
-	[PackageTelemetry] public AppSettingsQueueModel Queue { get; set; } = new();
+	[PackageTelemetry]
+	public AppSettingsQueueModel Queue { get; set; } = new();
 
 	/// <summary>
 	///     Used for syncing gpx files
@@ -955,6 +951,8 @@ public sealed class AppSettings
 
 		ReplaceOpenTelemetryData(appSettings);
 		ReplaceCloudImportData(appSettings);
+
+		Queue.RabbitMq.Password = CloneToDisplaySecurityWarning;
 
 		return appSettings;
 	}

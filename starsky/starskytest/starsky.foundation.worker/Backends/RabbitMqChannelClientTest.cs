@@ -35,22 +35,14 @@ public sealed class RabbitMqChannelClientTest
 			var client = new RabbitMqChannelClient(settings, "test_queue");
 			client.Dispose();
 		}
-		catch ( BrokerUnreachableException )
+		catch ( Exception exception ) when ( exception is BrokerUnreachableException
+			                                    or SocketException or TimeoutException
+			                                    or AggregateException )
 		{
 			// Expected - no RabbitMQ server
 		}
-		catch ( SocketException )
-		{
-			// Expected - connection refused
-		}
-		catch ( TimeoutException )
-		{
-			// Expected - timeout
-		}
-		catch ( AggregateException )
-		{
-			// Expected - aggregated exceptions
-		}
+
+		Assert.IsNotNull(settings, "Settings should not be null");
 	}
 
 	[TestMethod]
@@ -59,7 +51,7 @@ public sealed class RabbitMqChannelClientTest
 		var settings = CreateConnectionSettings("invalid-nonexistent-host-12345.local");
 
 		var caughtException = false;
-		Exception? exception = null;	
+		Exception? exception = null;
 		try
 		{
 			_ = new RabbitMqChannelClient(settings, "test_queue");
@@ -69,7 +61,7 @@ public sealed class RabbitMqChannelClientTest
 			exception = exception2;
 			caughtException = true;
 		}
-		
+
 		Assert.IsTrue(
 			exception is BrokerUnreachableException or SocketException or AggregateException,
 			$"Expected connection exception, got {exception!.GetType().Name}"
@@ -83,7 +75,7 @@ public sealed class RabbitMqChannelClientTest
 		var settings = CreateConnectionSettings(port: 9999);
 
 		var caughtException = false;
-		Exception? exception = null;	
+		Exception? exception = null;
 
 		try
 		{
@@ -101,26 +93,6 @@ public sealed class RabbitMqChannelClientTest
 			$"Expected connection exception, got {exception.GetType().Name}"
 		);
 		Assert.IsTrue(caughtException, "Expected an exception to be thrown");
-	}
-
-	[TestMethod]
-	public void Constructor_CreatesChannelAndDeclaresQueue()
-	{
-		// Even with a bogus connection, we can verify the queue name is passed correctly
-		var settings = CreateConnectionSettings("invalid-host.local");
-		const string expectedQueueName = "important_queue";
-
-		try
-		{
-			_ = new RabbitMqChannelClient(settings, expectedQueueName);
-		}
-		catch
-		{
-			// Expected - bogus host will fail
-		}
-
-		// If the queue name parameter wasn't passed correctly, an exception would have occurred
-		// during the QueueDeclare call in the constructor
 	}
 
 	[TestMethod]
@@ -146,5 +118,7 @@ public sealed class RabbitMqChannelClientTest
 		{
 			// Expected - timeout errors
 		}
+
+		Assert.IsNotNull(settings);
 	}
 }

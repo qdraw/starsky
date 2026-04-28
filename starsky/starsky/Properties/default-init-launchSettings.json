@@ -54,7 +54,8 @@
         "___app__PublishProfilesRemote__Profiles___default__0__type": "ftp",
         "___app__PublishProfilesRemote__Profiles___default__0__ftp__webFtp": "ftp://user:pass@ftp.example.com/path",
         "___app__ImportBackup__Enabled": "false",
-        "___app__ImportBackup__StorageFolder": "remove prefix underscores ___ and update value"
+        "___app__ImportBackup__StorageFolder": "remove prefix underscores ___ and update value",
+        "app__queue__default": "InMemory"
       }
     },
     "IIS": {
