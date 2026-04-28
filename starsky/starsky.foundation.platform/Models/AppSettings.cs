@@ -288,6 +288,11 @@ public sealed class AppSettings
 	[PackageTelemetry] public AppSettingsMountWatcherModel ImportMountWatcher { get; set; } = new();
 
 	/// <summary>
+	///     Background queue backend configuration.
+	/// </summary>
+	[PackageTelemetry] public AppSettingsQueueModel Queue { get; set; } = new();
+
+	/// <summary>
 	///     Used for syncing gpx files
 	/// </summary>
 	[PackageTelemetry]

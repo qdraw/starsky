@@ -30,6 +30,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 	public DbSet<ThumbnailItem> Thumbnails { get; set; }
 
 	public DbSet<DiagnosticsItem> Diagnostics { get; set; }
+	public DbSet<QueueItem> QueueItems { get; set; }
 
 	/// <summary>
 	///     Store secure keys to generate cookies
@@ -232,6 +233,33 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 				etb.HasKey(e => e.Key);
 
 				etb.ToTable("Diagnostics");
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+			}
+		);
+
+		modelBuilder.Entity<QueueItem>(etb =>
+			{
+				etb.HasKey(e => e.Id);
+				etb.Property(e => e.Id)
+					.ValueGeneratedOnAdd()
+					.HasAnnotation(mySqlValueGeneratedOnAdd, true)
+					.HasAnnotation(sqliteAutoincrement, true)
+					.HasAnnotation(mysqlValuegenerationstrategy,
+						MySqlValueGenerationStrategy.IdentityColumn);
+
+				etb.Property(e => e.QueueName).IsRequired().HasMaxLength(64);
+				etb.Property(e => e.JobType).IsRequired().HasMaxLength(150);
+				etb.Property(e => e.MetaData).HasMaxLength(1024);
+				etb.Property(e => e.TraceParentId).HasMaxLength(512);
+				etb.Property(e => e.Status).IsConcurrencyToken();
+
+				etb.HasIndex(e => new { e.QueueName, e.Status, e.CreatedAtUtc })
+					.HasDatabaseName("IX_QueueItems_Queue_Status_Created");
+				etb.HasIndex(e => e.JobId)
+					.HasDatabaseName("IX_QueueItems_JobId")
+					.IsUnique();
+
+				etb.ToTable("QueueItems");
 				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
 			}
 		);
