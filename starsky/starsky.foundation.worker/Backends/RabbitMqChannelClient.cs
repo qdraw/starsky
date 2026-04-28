@@ -1,10 +1,12 @@
-﻿using RabbitMQ.Client;
+﻿using System.Diagnostics.CodeAnalysis;
+using RabbitMQ.Client;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Backends.Interfaces;
 using starsky.foundation.worker.Interfaces;
 
 namespace starsky.foundation.worker.Backends;
 
+[ExcludeFromCodeCoverage]
 internal sealed class RabbitMqChannelClient : IRabbitMqChannelClient
 {
 	private readonly IConnection _connection;
