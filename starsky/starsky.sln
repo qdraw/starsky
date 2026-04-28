@@ -190,6 +190,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.mountwat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.imageclassification", "starsky.foundation.imageclassification\starsky.foundation.imageclassification.csproj", "{6F2F1B4E-9D2A-4A6D-BF52-8D9E4D4BFABC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyimageclassificationcli", "starskyimageclassificationcli\starskyimageclassificationcli.csproj", "{F13D9C2C-4A8E-4F56-B5F8-3D9E1F5A2B44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -424,6 +426,10 @@ Global
 		{6F2F1B4E-9D2A-4A6D-BF52-8D9E4D4BFABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F2F1B4E-9D2A-4A6D-BF52-8D9E4D4BFABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F2F1B4E-9D2A-4A6D-BF52-8D9E4D4BFABC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F13D9C2C-4A8E-4F56-B5F8-3D9E1F5A2B44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F13D9C2C-4A8E-4F56-B5F8-3D9E1F5A2B44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F13D9C2C-4A8E-4F56-B5F8-3D9E1F5A2B44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F13D9C2C-4A8E-4F56-B5F8-3D9E1F5A2B44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

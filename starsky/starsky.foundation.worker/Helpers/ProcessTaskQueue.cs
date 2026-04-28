@@ -18,6 +18,7 @@ public static class ProcessTaskQueue
 	public const int PriorityLaneUpdate = 1;
 	public const int PriorityLaneDiskWatcher = 2;
 	public const int PriorityLaneThumbnail = 3;
+	public const int PriorityLaneImageClassification = 4;
 
 	public static readonly BoundedChannelOptions DefaultBoundedChannelOptions =
 		new(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait };

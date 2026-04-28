@@ -93,7 +93,12 @@ public sealed class AppSettings
 		/// <summary>
 		///     Mount watcher
 		/// </summary>
-		MountWatcher = 12
+		MountWatcher = 12,
+
+		/// <summary>
+		///     Image classification queue worker CLI
+		/// </summary>
+		ImageClassification = 13
 	}
 
 	/// <summary>
