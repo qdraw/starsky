@@ -101,6 +101,31 @@ public sealed class DatabaseQueueBackendTest
 	}
 
 	[TestMethod]
+	public async Task QueueJobAsync_Null_ThrowsArgumentNullException()
+	{
+		var (backend, _, _) = CreateBackend("Queue-A");
+		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+			await backend.QueueJobAsync(null!));
+	}
+
+	[TestMethod]
+	public async Task QueueJobAsync_DefaultCreatedAtUtc_IsPersistedAsUtcNow()
+	{
+		var (backend, provider, _) = CreateBackend("Queue-A");
+
+		await backend.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			JobType = "A",
+			CreatedAtUtc = default
+		});
+
+		using var scope = provider.CreateScope();
+		var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		var queueItem = context.QueueItems.Single();
+		Assert.AreNotEqual(default, queueItem.CreatedAtUtc);
+	}
+
+	[TestMethod]
 	public async Task DequeueJobAsync_CancelledToken_ThrowsOperationCanceledException()
 	{
 		var (backend, _, _) = CreateBackend("Queue-A");
@@ -109,6 +134,26 @@ public sealed class DatabaseQueueBackendTest
 
 		await Assert.ThrowsExactlyAsync<OperationCanceledException>(async () =>
 			await backend.DequeueJobAsync(cancellation.Token));
+	}
+
+	[TestMethod]
+	public async Task DequeueJobAsync_EmptyQueue_WaitsUntilCancelled()
+	{
+		var (backend, _, _) = CreateBackend("Queue-A");
+		using var cancellation = new CancellationTokenSource(150);
+		Exception? exception = null;
+
+		try
+		{
+			await backend.DequeueJobAsync(cancellation.Token);
+		}
+		catch ( Exception ex )
+		{
+			exception = ex;
+		}
+
+		Assert.IsNotNull(exception);
+		Assert.IsInstanceOfType<OperationCanceledException>(exception);
 	}
 
 	[TestMethod]

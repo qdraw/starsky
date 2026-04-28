@@ -5,6 +5,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Backends;
@@ -132,6 +134,61 @@ public sealed class RabbitMqQueueBackendTest
 	}
 
 	[TestMethod]
+	public async Task DequeueJobAsync_NullDeserializedPayload_NacksAndContinues()
+	{
+		var (backend, adapter, _) = CreateBackend();
+		adapter.Messages.Enqueue(new RabbitMqGetResult
+		{
+			DeliveryTag = 20,
+			Body = Encoding.UTF8.GetBytes("null")
+		});
+
+		var validPayload = JsonSerializer.Serialize(new BackgroundTaskQueueJob
+		{
+			JobType = "Rabbit.v1",
+			PayloadJson = "ok"
+		});
+		adapter.Messages.Enqueue(new RabbitMqGetResult
+		{
+			DeliveryTag = 21,
+			Body = Encoding.UTF8.GetBytes(validPayload)
+		});
+
+		var dequeued = await backend.DequeueJobAsync(CancellationToken.None);
+
+		Assert.AreEqual("Rabbit.v1", dequeued.JobType);
+		CollectionAssert.AreEqual(new List<ulong> { 20 }, adapter.Nacked.Select(p => p.DeliveryTag).ToList());
+		CollectionAssert.AreEqual(new List<ulong> { 21 }, adapter.Acked.ToList());
+	}
+
+	[TestMethod]
+	public void Count_BrokerUnreachable_ReturnsZeroAndLogsWarning()
+	{
+		var (backend, adapter, logger) = CreateBackend();
+		adapter.GetMessageCountException = new BrokerUnreachableException(new Exception("offline"));
+
+		var count = backend.Count();
+
+		Assert.AreEqual(0, count);
+		Assert.IsTrue(logger.TrackedWarnings.Any(p =>
+			(p.Item2 ?? string.Empty).Contains("Unable to read queue depth")));
+	}
+
+	[TestMethod]
+	public void Count_OperationInterrupted_ReturnsZeroAndLogsWarning()
+	{
+		var (backend, adapter, logger) = CreateBackend();
+		var shutdownArgs = new ShutdownEventArgs(ShutdownInitiator.Library, 541, "shutdown");
+		adapter.GetMessageCountException = new OperationInterruptedException(shutdownArgs);
+
+		var count = backend.Count();
+
+		Assert.AreEqual(0, count);
+		Assert.IsTrue(logger.TrackedWarnings.Any(p =>
+			(p.Item2 ?? string.Empty).Contains("Unable to read queue depth")));
+	}
+
+	[TestMethod]
 	public async Task DequeueJobAsync_CancelledToken_ThrowsOperationCanceledException()
 	{
 		var (backend, _, _) = CreateBackend();
@@ -145,6 +202,7 @@ public sealed class RabbitMqQueueBackendTest
 
 internal sealed class FakeRabbitMqChannelAdapter : IRabbitMqChannelAdapter
 {
+	public Exception? GetMessageCountException { get; set; }
 	public int MessageCount { get; set; }
 	public List<(string QueueName, byte[] Body, bool Persistent)> Published { get; } = [];
 	public Queue<RabbitMqGetResult> Messages { get; } = new();
@@ -153,6 +211,11 @@ internal sealed class FakeRabbitMqChannelAdapter : IRabbitMqChannelAdapter
 
 	public int GetMessageCount(string queueName)
 	{
+		if ( GetMessageCountException != null )
+		{
+			throw GetMessageCountException;
+		}
+
 		return MessageCount;
 	}
 
