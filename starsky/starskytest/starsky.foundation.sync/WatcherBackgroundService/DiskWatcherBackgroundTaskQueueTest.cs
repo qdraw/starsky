@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.sync.Metrics;
 using starsky.foundation.sync.WatcherBackgroundService;
+using starsky.foundation.worker.Backends;
+using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
 using starskytest.FakeMocks;
 
@@ -58,6 +60,20 @@ public sealed class DiskWatcherBackgroundTaskQueueTest
 	}
 
 	[TestMethod]
+	public async Task Constructor_WithFactory_UsesQueueNameConstant()
+	{
+		var factory = new RecordingDiskWatcherQueueBackendFactory();
+		var queue = new DiskWatcherBackgroundTaskQueue(_scopeFactory, factory);
+
+		await queue.QueueJobAsync(new BackgroundTaskQueueJob
+		{
+			JobType = "Test.DiskWatcherQueue.v1", PayloadJson = "{}", MetaData = string.Empty
+		});
+
+		Assert.AreEqual(QueueNames.DiskWatcher, factory.LastQueueName);
+	}
+
+	[TestMethod]
 	public async Task QueueJobAsync_JobTypeRequired_ArgumentException()
 	{
 		var backgroundQueue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
@@ -67,3 +83,16 @@ public sealed class DiskWatcherBackgroundTaskQueueTest
 		});
 	}
 }
+
+internal sealed class RecordingDiskWatcherQueueBackendFactory : IQueueBackendFactory
+{
+	private readonly InMemoryQueueBackend _backend = new();
+	public string? LastQueueName { get; private set; }
+
+	public IBaseBackgroundTaskQueue Create(string queueName)
+	{
+		LastQueueName = queueName;
+		return _backend;
+	}
+}
+

@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -15,14 +14,14 @@ namespace starsky.foundation.worker.Backends;
 public sealed class RabbitMqQueueBackend(
 	AppSettings appSettings,
 	IWebLogger logger,
-	string queueName) : IBaseBackgroundTaskQueue
+	string queueName,
+	IRabbitMqChannelAdapter? adapter = null) : IBaseBackgroundTaskQueue
 {
 	private readonly object _sync = new();
+	private readonly IRabbitMqChannelAdapter _adapter = adapter ??
+	                                                    new RabbitMqChannelAdapter(appSettings);
 	private readonly int _pollIntervalInMilliseconds =
 		Math.Max(100, appSettings.Queue.DatabasePollIntervalInMilliseconds);
-
-	private IConnection? _connection;
-	private IModel? _channel;
 
 	public int Count()
 	{
@@ -30,9 +29,7 @@ public sealed class RabbitMqQueueBackend(
 		{
 			lock ( _sync )
 			{
-				var channel = EnsureChannel();
-				var state = channel.QueueDeclarePassive(queueName);
-				return (int)state.MessageCount;
+				return _adapter.GetMessageCount(queueName);
 			}
 		}
 		catch ( Exception exception ) when (exception is BrokerUnreachableException or OperationInterruptedException)
@@ -53,16 +50,8 @@ public sealed class RabbitMqQueueBackend(
 
 		lock ( _sync )
 		{
-			var channel = EnsureChannel();
 			var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(job));
-			var properties = channel.CreateBasicProperties();
-			properties.Persistent = true;
-
-			channel.BasicPublish(
-				exchange: string.Empty,
-				routingKey: queueName,
-				basicProperties: properties,
-				body: body);
+			_adapter.Publish(queueName, body, true);
 		}
 
 		return ValueTask.CompletedTask;
@@ -73,11 +62,10 @@ public sealed class RabbitMqQueueBackend(
 	{
 		while ( !cancellationToken.IsCancellationRequested )
 		{
-			BasicGetResult? result;
+			RabbitMqGetResult? result;
 			lock ( _sync )
 			{
-				var channel = EnsureChannel();
-				result = channel.BasicGet(queueName, false);
+				result = _adapter.TryGet(queueName);
 			}
 
 			if ( result == null )
@@ -86,7 +74,7 @@ public sealed class RabbitMqQueueBackend(
 				continue;
 			}
 
-			var json = Encoding.UTF8.GetString(result.Body.ToArray());
+			var json = Encoding.UTF8.GetString(result.Body);
 			BackgroundTaskQueueJob? queueJob;
 			try
 			{
@@ -98,7 +86,7 @@ public sealed class RabbitMqQueueBackend(
 					$"[RabbitMqQueueBackend] Invalid message payload for queue {queueName}");
 				lock ( _sync )
 				{
-					_channel?.BasicNack(result.DeliveryTag, false, false);
+					_adapter.Nack(result.DeliveryTag, false);
 				}
 
 				continue;
@@ -108,7 +96,7 @@ public sealed class RabbitMqQueueBackend(
 			{
 				lock ( _sync )
 				{
-					_channel?.BasicNack(result.DeliveryTag, false, false);
+					_adapter.Nack(result.DeliveryTag, false);
 				}
 
 				continue;
@@ -116,42 +104,13 @@ public sealed class RabbitMqQueueBackend(
 
 			lock ( _sync )
 			{
-				_channel?.BasicAck(result.DeliveryTag, false);
+				_adapter.Ack(result.DeliveryTag);
 			}
 
 			return queueJob;
 		}
 
 		throw new OperationCanceledException(cancellationToken);
-	}
-
-	private IModel EnsureChannel()
-	{
-		if ( _connection?.IsOpen == true && _channel?.IsOpen == true )
-		{
-			return _channel;
-		}
-
-		_channel?.Dispose();
-		_connection?.Dispose();
-
-		var rabbitMqSettings = appSettings.Queue.RabbitMq;
-		var factory = new ConnectionFactory
-		{
-			HostName = rabbitMqSettings.Host,
-			Port = rabbitMqSettings.Port,
-			UserName = rabbitMqSettings.Username,
-			Password = rabbitMqSettings.Password,
-			VirtualHost = rabbitMqSettings.VirtualHost,
-			DispatchConsumersAsync = true
-		};
-
-		_connection = factory.CreateConnection();
-		_channel = _connection.CreateModel();
-		_channel.QueueDeclare(queue: queueName, durable: true, exclusive: false,
-			autoDelete: false, arguments: null);
-
-		return _channel;
 	}
 }
 
