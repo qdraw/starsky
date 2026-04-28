@@ -90,8 +90,13 @@ public sealed class ExifToolCmdHelper
 	internal string ExifToolCommandLineArgs(FileIndexItem updateModel,
 		List<string> comparedNames, bool includeSoftware)
 	{
-		var command = "-json -overwrite_original";
-		var initCommand = command; // to check if nothing
+		var command = string.Empty;
+		
+		// Update AI config needed first to be working
+		command = UpdateAiConfig(command, comparedNames);
+
+		const string initCommand = "-json -overwrite_original"; // to check if nothing
+		command += initCommand;
 
 		// Create an XMP File -> as those files don't support those tags
 		// Check first if it is needed
@@ -129,12 +134,13 @@ public sealed class ExifToolCmdHelper
 		command = UpdateMakeModelCommand(command, comparedNames, updateModel);
 		command = UpdateImageStabilization(command, comparedNames, updateModel);
 		command = UpdateArtist(command, comparedNames, updateModel);
+
 		// AI models
+
 		command = UpdateSuggestedTags(command, comparedNames, updateModel);
 		command = UpdateRejectedTags(command, comparedNames, updateModel);
 		command = UpdateImageClassificationModel(command, comparedNames, updateModel);
 		command = UpdateImageClassificationGeneratedAt(command, comparedNames, updateModel);
-		command = UpdateAiConfig(command, comparedNames);
 
 		if ( command == initCommand )
 		{
@@ -145,8 +151,18 @@ public sealed class ExifToolCmdHelper
 		return command;
 	}
 
+	internal string GetConfigPath()
+	{
+		var appSettingsDirectory = Path.GetDirectoryName(_appSettings.AppSettingsPath);
+		var configBaseDirectory = string.IsNullOrWhiteSpace(appSettingsDirectory)
+			? _appSettings.BaseDirectoryProject
+			: appSettingsDirectory;
+		var configPath = Path.Combine(configBaseDirectory, ExifToolConfigFileName);
+		return configPath;
+	}
 
-	internal string UpdateAiConfig(string command, List<string> comparedNames)
+
+	private string UpdateAiConfig(string command, List<string> comparedNames)
 	{
 		var required = new[]
 			{
@@ -160,16 +176,15 @@ public sealed class ExifToolCmdHelper
 		{
 			return command;
 		}
-
-		var appSettingsDirectory = Path.GetDirectoryName(_appSettings.AppSettingsPath);
-		var configBaseDirectory = string.IsNullOrWhiteSpace(appSettingsDirectory)
-			? _appSettings.BaseDirectoryProject
-			: appSettingsDirectory;
-		var configPath = Path.Combine(configBaseDirectory, ExifToolConfigFileName);
+		
+		var configPath = GetConfigPath();
 		if ( File.Exists(configPath) )
 		{
-			command += $"-config \"{configPath}\" ";
+			command += $" -config \"{configPath}\" ";
+			return command;
 		}
+
+		_webLogger.LogError($"[UpdateAiConfig] Missing ExifTool config: {configPath}");
 
 		return command;
 	}
@@ -203,7 +218,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		var value = updateModel.SuggestedTags.QuotesCommandLineEscape();
-		command += $" -sep \", \" \"-XMP-ai:SuggestedTags\"=\"{value}\" ";
+		command += $" -sep \", \" -XMP-ai:SuggestedTags=\"{value}\" ";
 
 		return command;
 	}
@@ -218,7 +233,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		var value = updateModel.RejectedTags.QuotesCommandLineEscape();
-		command += $" -sep \", \" \"-XMP-ai:RejectedTags\"=\"{value}\" ";
+		command += $" -sep \", \" -XMP-ai:RejectedTags=\"{value}\" ";
 
 		return command;
 	}

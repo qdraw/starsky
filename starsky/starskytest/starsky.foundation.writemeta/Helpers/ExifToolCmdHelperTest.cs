@@ -127,6 +127,37 @@ public sealed class ExifToolCmdHelperTest
 			"\"-xmp-dc:title=Title \\\"test\\\"\"";
 		Assert.AreEqual(expectedResult, helperResult.Command);
 	}
+	
+	[TestMethod]
+	public async Task ExifToolCmdHelper_ConfigFirst()
+	{
+		var updateModel = new FileIndexItem
+		{
+			Tags = "tags",
+			SuggestedTags = "test"
+		};
+		var comparedNames = new List<string>
+		{
+			nameof(FileIndexItem.SuggestedTags).ToLowerInvariant(),
+			nameof(FileIndexItem.Title).ToLowerInvariant()
+		};
+
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]>());
+
+		var fakeExifTool = new FakeExifTool(storage, _appSettings);
+		var sut = new ExifToolCmdHelper(fakeExifTool, storage, storage,
+				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(),
+				new AppSettings());
+		var helperResult = await sut.UpdateAsync(updateModel, comparedNames);
+
+		var expectedResult =
+			$" -config \"{sut.GetConfigPath()}\" " +
+			"-json -overwrite_original " +
+			"-ObjectName=\"\" \"-title\"=\"\" \"-xmp-dc:title=\" " +
+			"-sep \", \" -XMP-ai:SuggestedTags=\"test\" ";
+		Assert.AreEqual(expectedResult, helperResult.Command);
+	}
 
 	[TestMethod]
 	public async Task ExifToolCmdHelper_Update_UpdateLocationAltitudeCommandTest()
