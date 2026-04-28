@@ -91,7 +91,7 @@ public sealed class ExifToolCmdHelper
 		List<string> comparedNames, bool includeSoftware)
 	{
 		var command = string.Empty;
-		
+
 		// Update AI config needed first to be working
 		command = UpdateAiConfig(command, comparedNames);
 
@@ -136,7 +136,6 @@ public sealed class ExifToolCmdHelper
 		command = UpdateArtist(command, comparedNames, updateModel);
 
 		// AI models
-
 		command = UpdateSuggestedTags(command, comparedNames, updateModel);
 		command = UpdateRejectedTags(command, comparedNames, updateModel);
 		command = UpdateImageClassificationModel(command, comparedNames, updateModel);
@@ -146,7 +145,6 @@ public sealed class ExifToolCmdHelper
 		{
 			return string.Empty;
 		}
-
 
 		return command;
 	}
@@ -160,7 +158,6 @@ public sealed class ExifToolCmdHelper
 		var configPath = Path.Combine(configBaseDirectory, ExifToolConfigFileName);
 		return configPath;
 	}
-
 
 	private string UpdateAiConfig(string command, List<string> comparedNames)
 	{
@@ -176,7 +173,7 @@ public sealed class ExifToolCmdHelper
 		{
 			return command;
 		}
-		
+
 		var configPath = GetConfigPath();
 		if ( File.Exists(configPath) )
 		{
