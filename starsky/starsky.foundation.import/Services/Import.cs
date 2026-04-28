@@ -725,7 +725,7 @@ public class Import : IImport
 		{
 			var exifCopy = new ExifCopy(_subPathStorage,
 				_thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage,
-					_appSettings, null!, _logger), _thumbnailQuery, _logger);
+					_appSettings, null!, _logger), _thumbnailQuery, _logger, _appSettings);
 			await exifCopy.XmpSync(importIndexItem.FileIndexItem!.FilePath!);
 		}
 	}

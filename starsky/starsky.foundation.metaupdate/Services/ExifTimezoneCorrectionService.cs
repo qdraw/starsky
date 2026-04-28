@@ -51,7 +51,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 			_storage,
 			selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail),
 			new ReadMeta(_storage, appSettings, null, logger),
-			thumbnailQuery, logger);
+			thumbnailQuery, logger, appSettings);
 		_logger = logger;
 		_query = query;
 		_appSettings = appSettings;

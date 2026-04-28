@@ -461,7 +461,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 
 		// Write it back
 		await new ExifToolCmdHelper(_exifTool, _hostFileSystemStorage,
-			_thumbnailStorage, null!, null!, _logger).UpdateAsync(item,
+			_thumbnailStorage, null!, null!, _logger, _appSettings).UpdateAsync(item,
 			[outputPath], comparedNames,
 			false, false);
 	}
