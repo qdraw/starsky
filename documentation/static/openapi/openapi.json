@@ -15740,6 +15740,30 @@
               "referenceV2": "#/definitions/AppSettingsMountWatcherModel"
             }
           },
+          "queue": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "AppSettingsQueueModel",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/AppSettingsQueueModel",
+              "referenceV2": "#/definitions/AppSettingsQueueModel"
+            }
+          },
           "cameraTimeZone": {
             "type": "string",
             "readOnly": false,
@@ -17564,6 +17588,226 @@
                 "referenceV2": "#/definitions/RemoteCredentialWrapper"
               }
             },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "AppSettingsQueueModel": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "default": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "QueueBackendType",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/QueueBackendType",
+              "referenceV2": "#/definitions/QueueBackendType"
+            }
+          },
+          "queues": {
+            "type": "object",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "additionalProperties": {
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false,
+              "reference": {
+                "isFragrament": false,
+                "type": 0,
+                "id": "QueueBackendType",
+                "isExternal": false,
+                "isLocal": true,
+                "referenceV3": "#/components/schemas/QueueBackendType",
+                "referenceV2": "#/definitions/QueueBackendType"
+              }
+            },
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "rabbitMq": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "AppSettingsRabbitMqModel",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/AppSettingsRabbitMqModel",
+              "referenceV2": "#/definitions/AppSettingsRabbitMqModel"
+            }
+          },
+          "databasePollIntervalInMilliseconds": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "AppSettingsRabbitMqModel": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "host": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "port": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "username": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "password": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "virtualHost": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
             "properties": {},
             "additionalPropertiesAllowed": true,
             "enum": [],
@@ -21529,6 +21773,38 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "QueueBackendType": {
+        "type": "string",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {},
+        "additionalPropertiesAllowed": true,
+        "enum": [
+          {
+            "primitiveType": 4,
+            "anyType": 0,
+            "value": "InMemory"
+          },
+          {
+            "primitiveType": 4,
+            "anyType": 0,
+            "value": "Database"
+          },
+          {
+            "primitiveType": 4,
+            "anyType": 0,
+            "value": "RabbitMq"
+          }
+        ],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "RawJpegMode": {
         "type": "integer",
         "format": "int32",
@@ -22324,11 +22600,6 @@
           {
             "primitiveType": 0,
             "anyType": 0,
-            "value": 9
-          },
-          {
-            "primitiveType": 0,
-            "anyType": 0,
             "value": 10
           },
           {
@@ -23040,5 +23311,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "D697ADBEE99D604F5C62B5E723E68FC9C42DA559A97BE0F1CB3174B034F9B6583B4C99D42B510AD2CE983AF06A04E5A7BF830F217CBDD23225DC6AC951E34B40"
+  "hashCode": "9D2A8AB95E976667E9B20081C6FFA5760669AA048872FA50F5A70678D5A9BA01FF4EE42A805F83E38F0A08420ED643D0DD7980CF4B42FF953DA35AD9654B1FAD"
 }
