@@ -254,6 +254,58 @@ public sealed class XmpReadHelperTest
 	}
 
 	[TestMethod]
+	public void AddCommaSeparatedUnique_EmptyNextValue_ReturnsCurrentValue()
+	{
+		// Tests AddCommaSeparatedUnique: when next is empty the current value is preserved
+		// ai:SuggestedTags bag items contain whitespace-only values -> early return path
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>cat</rdf:li><rdf:li>   </rdf:li></rdf:Bag></ai:SuggestedTags>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		// The whitespace-only item should be ignored, only "cat" kept
+		Assert.AreEqual("cat", data.SuggestedTags);
+	}
+
+	[TestMethod]
+	public void AddCommaSeparatedUnique_NullCurrentAndEmptyNext_ReturnsEmptyString()
+	{
+		// Tests AddCommaSeparatedUnique: current=null, next empty -> returns string.Empty
+		// An ai bag with only whitespace items and no prior value produces empty SuggestedTags
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>   </rdf:li></rdf:Bag></ai:SuggestedTags>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(string.Empty, data.SuggestedTags);
+	}
+
+	[TestMethod]
+	public void AddCommaSeparatedUnique_EmptyBag_DoesNotOverwriteExistingValue()
+	{
+		// Tests AddCommaSeparatedUnique: bag present but provides no valid items
+		// RejectedTags starts empty and stays empty when all bag items are whitespace
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:RejectedTags><rdf:Bag>" +
+		                       "<rdf:li></rdf:li></rdf:Bag></ai:RejectedTags>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(string.Empty, data.RejectedTags);
+	}
+
+	[TestMethod]
 	public void XmpReadHelperTest_GetData_AiMetadata()
 	{
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
