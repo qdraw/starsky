@@ -14,7 +14,8 @@ public sealed class RabbitMqChannelAdapterTest
 	[TestMethod]
 	public void PublicConstructor_CanInstantiateWithoutConnecting()
 	{
-		_ = new RabbitMqChannelAdapter(new AppSettings());
+		var result = new RabbitMqChannelAdapter(new AppSettings());
+		Assert.IsNotNull(result);
 	}
 
 	[TestMethod]

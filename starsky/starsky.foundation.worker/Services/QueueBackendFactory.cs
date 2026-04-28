@@ -25,7 +25,7 @@ public sealed class QueueBackendFactory(
 			throw new ArgumentException("Queue name is required", nameof(queueName));
 		}
 
-		return _instances.GetOrAdd(queueName, _ => CreateBySettings(queueName));
+		return _instances.GetOrAdd(queueName, CreateBySettings);
 	}
 
 	private IBaseBackgroundTaskQueue CreateBySettings(string queueName)
@@ -34,7 +34,8 @@ public sealed class QueueBackendFactory(
 			? perQueue
 			: appSettings.Queue.Default;
 
-		logger.LogInformation($"[QueueBackendFactory] Queue {queueName} uses backend {backendType}");
+		logger.LogInformation(
+			$"[QueueBackendFactory] Queue {queueName} uses backend {backendType}");
 
 		return backendType switch
 		{
@@ -46,5 +47,3 @@ public sealed class QueueBackendFactory(
 		};
 	}
 }
-
-

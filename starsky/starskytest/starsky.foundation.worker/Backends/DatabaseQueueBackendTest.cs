@@ -165,8 +165,9 @@ public sealed class DatabaseQueueBackendTest
 		var dequeued = await backend.DequeueJobAsync(CancellationToken.None);
 
 		Assert.AreEqual("A", dequeued.JobType);
-		Assert.IsTrue(logger.TrackedInformation.Any(info =>
-			( info.Item2 ?? string.Empty ).Contains("Queue claim race detected")));
+		Assert.Contains(info =>
+				( info.Item2 ?? string.Empty ).Contains("Queue claim race detected"),
+			logger.TrackedInformation);
 	}
 
 	[TestMethod]

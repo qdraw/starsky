@@ -58,7 +58,7 @@ public sealed class RabbitMqQueueBackendTest
 
 		await backend.QueueJobAsync(job);
 
-		Assert.AreEqual(1, adapter.Published.Count);
+		Assert.HasCount(1, adapter.Published);
 		var published = adapter.Published[0];
 		Assert.AreEqual("TestQueue", published.QueueName);
 		Assert.IsTrue(published.Persistent);
@@ -98,7 +98,7 @@ public sealed class RabbitMqQueueBackendTest
 
 		Assert.AreEqual("Rabbit.v1", dequeued.JobType);
 		CollectionAssert.AreEqual(new List<ulong> { 100 }, adapter.Acked.ToList());
-		Assert.AreEqual(0, adapter.Nacked.Count);
+		Assert.IsEmpty(adapter.Nacked);
 	}
 
 	[TestMethod]
@@ -125,8 +125,8 @@ public sealed class RabbitMqQueueBackendTest
 		CollectionAssert.AreEqual(new List<ulong> { 10 },
 			adapter.Nacked.Select(p => p.DeliveryTag).ToList());
 		CollectionAssert.AreEqual(new List<ulong> { 11 }, adapter.Acked.ToList());
-		Assert.IsTrue(logger.TrackedExceptions.Any(p =>
-			( p.Item2 ?? string.Empty ).Contains("Invalid message payload")));
+		Assert.Contains(p =>
+			( p.Item2 ?? string.Empty ).Contains("Invalid message payload"), logger.TrackedExceptions);
 	}
 
 	[TestMethod]
@@ -164,8 +164,8 @@ public sealed class RabbitMqQueueBackendTest
 		var count = backend.Count();
 
 		Assert.AreEqual(0, count);
-		Assert.IsTrue(logger.TrackedWarnings.Any(p =>
-			( p.Item2 ?? string.Empty ).Contains("Unable to read queue depth")));
+		Assert.Contains(p =>
+			( p.Item2 ?? string.Empty ).Contains("Unable to read queue depth"), logger.TrackedWarnings);
 	}
 
 	[TestMethod]
@@ -178,8 +178,8 @@ public sealed class RabbitMqQueueBackendTest
 		var count = backend.Count();
 
 		Assert.AreEqual(0, count);
-		Assert.IsTrue(logger.TrackedWarnings.Any(p =>
-			( p.Item2 ?? string.Empty ).Contains("Unable to read queue depth")));
+		Assert.Contains(p =>
+			( p.Item2 ?? string.Empty ).Contains("Unable to read queue depth"), logger.TrackedWarnings);
 	}
 
 	[TestMethod]
@@ -226,7 +226,7 @@ public sealed class RabbitMqQueueBackendTest
 	{
 		var appSettings = new AppSettings
 		{
-			Queue = new AppSettingsQueueModel { DatabasePollIntervalInMilliseconds = 50 }
+			Queue = new AppSettingsQueueModel { DatabasePollIntervalInMilliseconds = 1 }
 		};
 		var adapter = new AlwaysEmptyAdapter();
 		var logger = new FakeIWebLogger();
@@ -236,12 +236,12 @@ public sealed class RabbitMqQueueBackendTest
 		cts.CancelAfter(TimeSpan.FromMilliseconds(100));
 
 		var sw = Stopwatch.StartNew();
-		await Assert.ThrowsExactlyAsync<OperationCanceledException>(async () =>
+		await Assert.ThrowsExactlyAsync<TaskCanceledException>(async () =>
 			await backend.DequeueJobAsync(cts.Token));
 		sw.Stop();
 
 		// Should have executed at least 1 delay iteration before cancellation
-		Assert.IsTrue(sw.ElapsedMilliseconds >= 50,
+		Assert.IsGreaterThanOrEqualTo(50, sw.ElapsedMilliseconds,
 			"Should have waited for at least one poll interval");
 		Assert.IsTrue(adapter.GetWasCalled, "TryGet should have been called at least once");
 	}
@@ -287,13 +287,12 @@ internal sealed class FakeRabbitMqChannelAdapter : IRabbitMqChannelAdapter
 	}
 }
 
-internal class CompletingEmptyThenMessageAdapter : IRabbitMqChannelAdapter
+internal sealed class CompletingEmptyThenMessageAdapter : IRabbitMqChannelAdapter
 {
 	public bool GetWasCalledTwice { get; private set; }
 	public List<ulong> Acked { get; } = [];
-	public List<(ulong DeliveryTag, bool Requeue)> Nacked { get; } = [];
 	public Queue<RabbitMqGetResult> Messages { get; } = new();
-	private int _callCount = 0;
+	private int _callCount;
 
 	public int GetMessageCount(string queueName)
 	{
@@ -311,7 +310,6 @@ internal class CompletingEmptyThenMessageAdapter : IRabbitMqChannelAdapter
 
 	public void Nack(ulong deliveryTag, bool requeue)
 	{
-		Nacked.Add(( deliveryTag, requeue ));
 	}
 
 	public RabbitMqGetResult? TryGet(string queueName)
@@ -327,11 +325,9 @@ internal class CompletingEmptyThenMessageAdapter : IRabbitMqChannelAdapter
 	}
 }
 
-internal class AlwaysEmptyAdapter : IRabbitMqChannelAdapter
+internal sealed class AlwaysEmptyAdapter : IRabbitMqChannelAdapter
 {
 	public bool GetWasCalled { get; private set; }
-	public List<ulong> Acked { get; } = [];
-	public List<(ulong DeliveryTag, bool Requeue)> Nacked { get; } = [];
 
 	public int GetMessageCount(string queueName)
 	{
@@ -344,12 +340,10 @@ internal class AlwaysEmptyAdapter : IRabbitMqChannelAdapter
 
 	public void Ack(ulong deliveryTag)
 	{
-		Acked.Add(deliveryTag);
 	}
 
 	public void Nack(ulong deliveryTag, bool requeue)
 	{
-		Nacked.Add(( deliveryTag, requeue ));
 	}
 
 	public RabbitMqGetResult? TryGet(string queueName)
