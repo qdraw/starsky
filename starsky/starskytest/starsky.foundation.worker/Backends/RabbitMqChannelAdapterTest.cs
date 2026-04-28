@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Backends;
+using starsky.foundation.worker.Backends.Interfaces;
 using starsky.foundation.worker.Interfaces;
 
 namespace starskytest.starsky.foundation.worker.Backends;
@@ -82,12 +83,11 @@ public sealed class RabbitMqChannelAdapterTest
 
 		fakeClient.NextResult = new RabbitMqGetResult
 		{
-			DeliveryTag = 42,
-			Body = Encoding.UTF8.GetBytes("abc")
+			DeliveryTag = 42, Body = Encoding.UTF8.GetBytes("abc")
 		};
 		var result = adapter.TryGet("queue");
 		Assert.IsNotNull(result);
-		Assert.AreEqual((ulong)42, result.DeliveryTag);
+		Assert.AreEqual(( ulong ) 42, result.DeliveryTag);
 	}
 
 	[TestMethod]
@@ -100,8 +100,8 @@ public sealed class RabbitMqChannelAdapterTest
 		adapter.Ack(11);
 		adapter.Nack(22, true);
 
-		Assert.AreEqual((ulong)11, fakeClient.LastAckDeliveryTag);
-		Assert.AreEqual((ulong)22, fakeClient.LastNackDeliveryTag);
+		Assert.AreEqual(( ulong ) 11, fakeClient.LastAckDeliveryTag);
+		Assert.AreEqual(( ulong ) 22, fakeClient.LastNackDeliveryTag);
 		Assert.IsTrue(fakeClient.LastNackRequeue);
 	}
 }
@@ -158,6 +158,3 @@ internal sealed class FakeRabbitMqChannelClient : IRabbitMqChannelClient
 		DisposeCalled = true;
 	}
 }
-
-
-

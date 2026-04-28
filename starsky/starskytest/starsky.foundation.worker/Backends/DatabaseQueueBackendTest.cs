@@ -26,13 +26,14 @@ public sealed class DatabaseQueueBackendTest
 		if ( throwConcurrencyOnce )
 		{
 			ThrowOnceClaimApplicationDbContext.ShouldThrowOnProcessingClaim = true;
-			services.AddDbContext<ApplicationDbContext, ThrowOnceClaimApplicationDbContext>(
-				options => options.UseInMemoryDatabase(databaseName));
+			services
+				.AddDbContext<ApplicationDbContext, ThrowOnceClaimApplicationDbContext>(options =>
+					options.UseInMemoryDatabase(databaseName));
 		}
 		else
 		{
-			services.AddDbContext<ApplicationDbContext>(
-				options => options.UseInMemoryDatabase(databaseName));
+			services.AddDbContext<ApplicationDbContext>(options =>
+				options.UseInMemoryDatabase(databaseName));
 		}
 
 		var provider = services.BuildServiceProvider();
@@ -115,8 +116,7 @@ public sealed class DatabaseQueueBackendTest
 
 		await backend.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			JobType = "A",
-			CreatedAtUtc = default
+			JobType = "A", CreatedAtUtc = default
 		});
 
 		using var scope = provider.CreateScope();
@@ -166,7 +166,32 @@ public sealed class DatabaseQueueBackendTest
 
 		Assert.AreEqual("A", dequeued.JobType);
 		Assert.IsTrue(logger.TrackedInformation.Any(info =>
-			(info.Item2 ?? string.Empty).Contains("Queue claim race detected")));
+			( info.Item2 ?? string.Empty ).Contains("Queue claim race detected")));
+	}
+
+	[TestMethod]
+	public async Task DequeueJobAsync_EmptyQueueLoopsWithContinue_ThenCancelled()
+	{
+		// This test verifies that the continue statement is hit when queue is empty
+		var (backend, _, _) = CreateBackend("Queue-A");
+
+		using var cancellation = new CancellationTokenSource();
+		// Set timeout to allow multiple iterations of the empty queue loop
+		// which will hit the continue statement multiple times
+		cancellation.CancelAfter(500);
+
+		Exception? exception = null;
+		try
+		{
+			await backend.DequeueJobAsync(cancellation.Token);
+		}
+		catch ( Exception ex )
+		{
+			exception = ex;
+		}
+
+		Assert.IsNotNull(exception);
+		Assert.IsInstanceOfType<OperationCanceledException>(exception);
 	}
 }
 
@@ -195,4 +220,3 @@ internal sealed class ThrowOnceClaimApplicationDbContext(DbContextOptions option
 		throw new DbUpdateConcurrencyException("Simulated queue claim race");
 	}
 }
-
