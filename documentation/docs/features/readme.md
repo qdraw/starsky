@@ -1,4 +1,4 @@
----
+﻿---
 sidebar_position: 1
 ---
 
@@ -25,6 +25,7 @@ Here below there is a list of key features:
     - [Cloud Import](import/cloudimport.md)
 - [Meta Data and super compatible photo management](metadata.md)
 - [Realtime](realtime.md)
+- [Queue backends (RabbitMQ and Database)](rabbitmq-queue-backend.md)
 - [Rename by DateTime](rename-by-datetime.md)
 - [Rename files and folders](rename-single.md)
 - [Search](search.md)
@@ -34,3 +35,4 @@ Here below there is a list of key features:
 - [Video Support - Play videos and generate thumbnails](video.md)
 - [Publish media with watermarks and optimizers](webhtmlpublish.md)
 - [Timezone Shift: Adjust Photo Timestamps Easily](timezone-shifting.md)
+

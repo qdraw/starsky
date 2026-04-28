@@ -16,6 +16,7 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.CpuEventListener.Interfaces;
+using starsky.foundation.worker.Backends;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Models;
@@ -92,6 +93,18 @@ public sealed class ThumbnailQueuedHostedServiceTest
 
 		var count = backgroundQueue.Count();
 		Assert.AreEqual(1, count);
+	}
+
+	[TestMethod]
+	public async Task Constructor_WithFactory_UsesQueueNameConstant()
+	{
+		var factory = new RecordingThumbnailQueueBackendFactory();
+		var queue = new ThumbnailBackgroundTaskQueue(new FakeICpuUsageListener(),
+			new FakeIWebLogger(), new AppSettings(), _scopeFactory, factory);
+
+		await queue.QueueJobAsync(CreateJob());
+
+		Assert.AreEqual(QueueNames.Thumbnail, factory.LastQueueName);
 	}
 
 	[TestMethod]
@@ -325,3 +338,16 @@ internal sealed class TestThumbnailBackgroundJobHandler : IBackgroundJobHandler
 		return Task.CompletedTask;
 	}
 }
+
+internal sealed class RecordingThumbnailQueueBackendFactory : IQueueBackendFactory
+{
+	private readonly InMemoryQueueBackend _backend = new();
+	public string? LastQueueName { get; private set; }
+
+	public IBaseBackgroundTaskQueue Create(string queueName)
+	{
+		LastQueueName = queueName;
+		return _backend;
+	}
+}
+

@@ -271,6 +271,85 @@ public sealed class AppSettingsCompareHelperTest
 	}
 
 	[TestMethod]
+	public void AppSettingsQueueModel()
+	{
+		var source = new AppSettings
+		{
+			Queue = new AppSettingsQueueModel
+			{
+				Default = QueueBackendType.InMemory,
+				DatabasePollIntervalInMilliseconds = 500,
+				Queues = new Dictionary<string, QueueBackendType>
+				{
+					{ "Update", QueueBackendType.InMemory }
+				},
+				RabbitMq = new AppSettingsRabbitMqModel
+				{
+					Host = "localhost",
+					Port = 5672,
+					Username = "guest",
+					Password = "guest",
+					VirtualHost = "/"
+				}
+			}
+		};
+
+		var to = new AppSettings
+		{
+			Queue = new AppSettingsQueueModel
+			{
+				Default = QueueBackendType.RabbitMq,
+				DatabasePollIntervalInMilliseconds = 900,
+				Queues = new Dictionary<string, QueueBackendType>
+				{
+					{ "ImageClassification", QueueBackendType.Database }
+				},
+				RabbitMq = new AppSettingsRabbitMqModel
+				{
+					Host = "mq.internal",
+					Port = 5673,
+					Username = "starsky",
+					Password = "secret",
+					VirtualHost = "/starsky"
+				}
+			}
+		};
+
+		var compare = AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.AreEqual(QueueBackendType.RabbitMq, source.Queue.Default);
+		Assert.AreEqual(900, source.Queue.DatabasePollIntervalInMilliseconds);
+		Assert.AreEqual(QueueBackendType.Database,
+			source.Queue.Queues["ImageClassification"]);
+		Assert.AreEqual("mq.internal", source.Queue.RabbitMq.Host);
+		Assert.AreEqual("queue", compare.LastOrDefault());
+	}
+
+	[TestMethod]
+	public void AppSettingsQueueModel_Ignore_DefaultOption()
+	{
+		var source = new AppSettings
+		{
+			Queue = new AppSettingsQueueModel
+			{
+				Default = QueueBackendType.Database,
+				Queues = new Dictionary<string, QueueBackendType>
+				{
+					{ "Update", QueueBackendType.RabbitMq }
+				}
+			}
+		};
+
+		var to = new AppSettings { Queue = new AppSettingsQueueModel() };
+
+		var compare = AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.AreEqual(QueueBackendType.Database, source.Queue.Default);
+		Assert.AreEqual(QueueBackendType.RabbitMq, source.Queue.Queues["Update"]);
+		Assert.DoesNotContain(compare, "queue");
+	}
+
+	[TestMethod]
 	public void StringCompare()
 	{
 		var source = new AppSettings

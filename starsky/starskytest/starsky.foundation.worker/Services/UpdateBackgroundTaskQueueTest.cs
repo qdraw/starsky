@@ -19,6 +19,7 @@ using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Models;
 using starsky.foundation.worker.Services;
+using starsky.foundation.worker.Backends;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.worker.Services;
@@ -74,6 +75,17 @@ public sealed class UpdateBackgroundTaskQueueTest
 		await backgroundQueue.QueueJobAsync(CreateJob());
 		var count = backgroundQueue.Count();
 		Assert.AreEqual(1, count);
+	}
+
+	[TestMethod]
+	public async Task Constructor_WithFactory_UsesQueueNameConstant()
+	{
+		var factory = new RecordingQueueBackendFactory();
+		var queue = new UpdateBackgroundTaskQueue(_scopeFactory, factory);
+
+		await queue.QueueJobAsync(CreateJob());
+
+		Assert.AreEqual(QueueNames.Update, factory.LastQueueName);
 	}
 
 	// https://stackoverflow.com/a/51224556
@@ -237,3 +249,16 @@ internal sealed class TestUpdateBackgroundJobHandler : IBackgroundJobHandler
 		return Task.CompletedTask;
 	}
 }
+
+internal sealed class RecordingQueueBackendFactory : IQueueBackendFactory
+{
+	private readonly InMemoryQueueBackend _backend = new();
+	public string? LastQueueName { get; private set; }
+
+	public IBaseBackgroundTaskQueue Create(string queueName)
+	{
+		LastQueueName = queueName;
+		return _backend;
+	}
+}
+
