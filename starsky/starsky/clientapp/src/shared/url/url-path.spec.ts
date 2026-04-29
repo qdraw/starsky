@@ -90,6 +90,14 @@ describe("url-path", () => {
       const test = urlPath.StringToIUrl("?keywords=tag1,tag2");
       expect(test.keywords).toStrictEqual(["tag1", "tag2"]);
     });
+    it("keywords empty", () => {
+      const test = urlPath.StringToIUrl("?keywords=");
+      expect(test.keywords).toStrictEqual([]);
+    });
+    it("keywords single", () => {
+      const test = urlPath.StringToIUrl("?keywords=tag1");
+      expect(test.keywords).toStrictEqual(["tag1"]);
+    });
     it("dateFrom", () => {
       const test = urlPath.StringToIUrl("?dateFrom=2026-04-01");
       expect(test.dateFrom).toBe("2026-04-01");

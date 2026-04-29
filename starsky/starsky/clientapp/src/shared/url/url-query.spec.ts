@@ -173,6 +173,32 @@ describe("url-query", () => {
       const result = urlQuery.BuildSearchQueryFromUrl({ imageFormat: "RAW" });
       expect(result).toContain('-ImageFormat="arw,dng,nef,raf,cr2,cr3,orf,rw2,pef,x3f"');
     });
+
+    it("returns undefined when query and filters are empty", () => {
+      const result = urlQuery.BuildSearchQueryFromUrl({
+        t: "   ",
+        camera: "   ",
+        keywords: ["   "],
+        dateFrom: "   ",
+        dateTo: "   "
+      });
+
+      expect(result).toBeUndefined();
+    });
+
+    it("trims structured filter values before composing", () => {
+      const result = urlQuery.BuildSearchQueryFromUrl({
+        camera: "  Canon  ",
+        keywords: ["  travel  ", " "],
+        dateFrom: " 2026-04-01 ",
+        dateTo: " 2026-04-30 "
+      });
+
+      expect(result).toContain('-Make="Canon"');
+      expect(result).toContain('-Tags="travel"');
+      expect(result).toContain("-DateTime>2026-04-01T00:00:00");
+      expect(result).toContain("-DateTime<2026-04-30T23:59:59");
+    });
   });
 
   describe("HasStructuredFilters", () => {
@@ -182,6 +208,10 @@ describe("url-query", () => {
 
     it("false", () => {
       expect(urlQuery.HasStructuredFilters({ t: "only-free-text" })).toBeFalsy();
+    });
+
+    it("false for whitespace-only structured values", () => {
+      expect(urlQuery.HasStructuredFilters({ camera: "   ", keywords: ["  "] })).toBeFalsy();
     });
   });
 

@@ -52,4 +52,23 @@ describe("Archive", () => {
 
     container.unmount();
   });
+
+  it("updates url when shared filter changes", () => {
+    const navigateSpy = jest.spyOn(Router, "navigate").mockImplementation(jest.fn());
+    const container = render(
+      <Archive
+        {...newIArchive()}
+        colorClassActiveList={[]}
+        colorClassUsage={[]}
+        fileIndexItems={[]}
+      />
+    );
+
+    screen.getByTestId("shared-filter-toggle").click();
+
+    expect(navigateSpy).toHaveBeenCalled();
+
+    navigateSpy.mockRestore();
+    container.unmount();
+  });
 });
