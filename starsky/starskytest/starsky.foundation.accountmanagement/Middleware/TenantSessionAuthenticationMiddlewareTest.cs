@@ -73,6 +73,63 @@ public class TenantSessionAuthenticationMiddlewareTest : DatabaseTest
 	}
 
 	[TestMethod]
+	public async Task Invoke_TenantApi_AnonymousEndpoint_WithoutSessionCookie_AllowsRequest()
+	{
+		var sessionStore = new FakeTenantSessionStore();
+		var serviceProvider = CreateServiceProvider(sessionStore);
+		var context = CreateContext(serviceProvider, "/api/account/status", false, "main");
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.IsTrue(nextCalled);
+	}
+
+	[TestMethod]
+	public async Task Invoke_GlobalTenantsMine_WithoutSessionCookie_Returns401()
+	{
+		var sessionStore = new FakeTenantSessionStore();
+		var serviceProvider = CreateServiceProvider(sessionStore);
+		var context = CreateContext(serviceProvider, "/api/tenants/mine", true, null);
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.AreEqual(StatusCodes.Status401Unauthorized, context.Response.StatusCode);
+		Assert.IsFalse(nextCalled);
+	}
+
+	[TestMethod]
+	public async Task Invoke_GlobalTenantsMine_InvalidSession_Returns401()
+	{
+		var sessionStore = new FakeTenantSessionStore();
+		var serviceProvider = CreateServiceProvider(sessionStore);
+		var context = CreateContext(serviceProvider, "/api/tenants/mine", true, null,
+			TenantAuthenticationConstants.SessionCookieName + "=unknown-session");
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.AreEqual(StatusCodes.Status401Unauthorized, context.Response.StatusCode);
+		Assert.IsFalse(nextCalled);
+	}
+
+	[TestMethod]
 	[DataRow(false, true, true)]
 	[DataRow(true, false, true)]
 	[DataRow(true, true, false)]
@@ -174,6 +231,35 @@ public class TenantSessionAuthenticationMiddlewareTest : DatabaseTest
 			context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 		Assert.AreEqual("true",
 			context.User.FindFirst(TenantAuthenticationConstants.GlobalAdminClaimType)?.Value);
+	}
+
+	[TestMethod]
+	public async Task Invoke_GlobalTenantsMine_WithSessionButUnknownUser_Returns401()
+	{
+		var session = new WebSession
+		{
+			Id = 9101,
+			SessionId = "missing-user-session",
+			UserId = 999999,
+			Created = DateTime.UtcNow,
+			LastSeen = DateTime.UtcNow,
+			ExpiresAt = DateTime.UtcNow.AddHours(1)
+		};
+		var sessionStore = new FakeTenantSessionStore { Session = session };
+		var serviceProvider = CreateServiceProvider(sessionStore);
+		var context = CreateContext(serviceProvider, "/api/tenants/mine", true, null,
+			TenantAuthenticationConstants.SessionCookieName + "=" + session.SessionId);
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.AreEqual(StatusCodes.Status401Unauthorized, context.Response.StatusCode);
+		Assert.IsFalse(nextCalled);
 	}
 
 	[TestMethod]
@@ -331,8 +417,242 @@ public class TenantSessionAuthenticationMiddlewareTest : DatabaseTest
 		Assert.IsFalse(nextCalled);
 	}
 
+	[TestMethod]
+	public async Task Invoke_WithExistingAuthenticatedPrincipalTrySetFailsOnNonApi_AllowsRequest()
+	{
+		var user = new User
+		{
+			Name = "existing-nonapi",
+			Created = DateTime.UtcNow,
+			IsGlobalAdmin = false
+		};
+		await DbContext.Users.AddAsync(user, TestContext.CancellationTokenSource.Token);
+		await DbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		var serviceProvider = CreateServiceProvider(new FakeTenantSessionStore());
+		var context = CreateContext(serviceProvider, "/account/status", true, "main");
+		context.User = CreateAuthenticatedPrincipal(user.Id);
+
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.IsTrue(nextCalled);
+	}
+
+	[TestMethod]
+	public async Task Invoke_InvalidSession_AnonymousEndpoint_AllowsRequest()
+	{
+		var sessionStore = new FakeTenantSessionStore();
+		var serviceProvider = CreateServiceProvider(sessionStore);
+		var context = CreateContext(serviceProvider, "/account/status", false, "main",
+			TenantAuthenticationConstants.SessionCookieName + "=unknown-session");
+
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.IsTrue(nextCalled);
+	}
+
+	[TestMethod]
+	public async Task Invoke_TenantNotActivated_AnonymousEndpoint_AllowsRequest()
+	{
+		var user = new User
+		{
+			Name = "tenant-not-active-anon",
+			Created = DateTime.UtcNow
+		};
+		await DbContext.Users.AddAsync(user, TestContext.CancellationTokenSource.Token);
+
+		var tenant = new Tenant
+		{
+			Slug = "main",
+			Name = "main",
+			IsEnabled = true,
+			Created = DateTime.UtcNow
+		};
+		await DbContext.Tenants.AddAsync(tenant, TestContext.CancellationTokenSource.Token);
+		await DbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		await DbContext.TenantUsers.AddAsync(new TenantUser
+		{
+			TenantId = tenant.Id,
+			UserId = user.Id,
+			Role = TenantRole.User,
+			Created = DateTime.UtcNow
+		}, TestContext.CancellationTokenSource.Token);
+		await DbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		var session = new WebSession
+		{
+			Id = 9601,
+			SessionId = "not-activated-anon",
+			UserId = user.Id,
+			Created = DateTime.UtcNow,
+			LastSeen = DateTime.UtcNow,
+			ExpiresAt = DateTime.UtcNow.AddHours(1)
+		};
+		var sessionStore = new FakeTenantSessionStore { Session = session, TenantActivated = false };
+		var serviceProvider = CreateServiceProvider(sessionStore);
+		var context = CreateContext(serviceProvider, "/account/status", false, tenant.Slug,
+			TenantAuthenticationConstants.SessionCookieName + "=" + session.SessionId);
+
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.IsTrue(nextCalled);
+	}
+
+	[TestMethod]
+	public async Task Invoke_WithExistingAuthenticatedPrincipalInvalidUserId_Returns403()
+	{
+		var tenant = new Tenant
+		{
+			Slug = "main",
+			Name = "main",
+			IsEnabled = true,
+			Created = DateTime.UtcNow
+		};
+		await DbContext.Tenants.AddAsync(tenant, TestContext.CancellationTokenSource.Token);
+		await DbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		var serviceProvider = CreateServiceProvider(new FakeTenantSessionStore());
+		var context = CreateContext(serviceProvider, "/api/account/status", true, tenant.Slug);
+		var claims = new[] { new Claim(ClaimTypes.NameIdentifier, "not-an-int") };
+		context.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
+
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.AreEqual(StatusCodes.Status403Forbidden, context.Response.StatusCode);
+		Assert.IsFalse(nextCalled);
+	}
+
+	[TestMethod]
+	public async Task Invoke_TenantMissing_AnonymousEndpoint_AllowsRequest()
+	{
+		var user = new User { Name = "tenant-missing-user", Created = DateTime.UtcNow };
+		await DbContext.Users.AddAsync(user, TestContext.CancellationTokenSource.Token);
+		await DbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		var session = new WebSession
+		{
+			Id = 9301,
+			SessionId = "tenant-missing-session",
+			UserId = user.Id,
+			Created = DateTime.UtcNow,
+			LastSeen = DateTime.UtcNow,
+			ExpiresAt = DateTime.UtcNow.AddHours(1)
+		};
+		var sessionStore = new FakeTenantSessionStore { Session = session, TenantActivated = true };
+		var serviceProvider = CreateServiceProvider(sessionStore);
+		var context = CreateContext(serviceProvider, "/api/account/status", false, "main",
+			TenantAuthenticationConstants.SessionCookieName + "=" + session.SessionId);
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.IsTrue(nextCalled);
+	}
+
+	[TestMethod]
+	public async Task Invoke_MembershipMissing_AnonymousEndpoint_AllowsRequest()
+	{
+		var user = new User { Name = "no-membership-anon", Created = DateTime.UtcNow };
+		await DbContext.Users.AddAsync(user, TestContext.CancellationTokenSource.Token);
+		var tenant = new Tenant
+		{
+			Slug = "main",
+			Name = "main",
+			IsEnabled = true,
+			Created = DateTime.UtcNow
+		};
+		await DbContext.Tenants.AddAsync(tenant, TestContext.CancellationTokenSource.Token);
+		await DbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		var session = new WebSession
+		{
+			Id = 9401,
+			SessionId = "no-membership-anon-session",
+			UserId = user.Id,
+			Created = DateTime.UtcNow,
+			LastSeen = DateTime.UtcNow,
+			ExpiresAt = DateTime.UtcNow.AddHours(1)
+		};
+		var sessionStore = new FakeTenantSessionStore { Session = session, TenantActivated = true };
+		var serviceProvider = CreateServiceProvider(sessionStore);
+		var context = CreateContext(serviceProvider, "/api/account/status", false, tenant.Slug,
+			TenantAuthenticationConstants.SessionCookieName + "=" + session.SessionId);
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.IsTrue(nextCalled);
+	}
+
 	private IServiceProvider CreateServiceProvider(ITenantSessionStore sessionStore)
 	{
+		[TestMethod]
+		public async Task Invoke_WithExistingAuthenticatedPrincipalUnknownTenant_Returns403()
+		{
+			var user = new User
+			{
+				Name = "existing-unknown-tenant",
+				Created = DateTime.UtcNow
+			};
+			await DbContext.Users.AddAsync(user, TestContext.CancellationTokenSource.Token);
+			await DbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+			var serviceProvider = CreateServiceProvider(new FakeTenantSessionStore());
+			var context = CreateContext(serviceProvider, "/api/account/status", true, "unknown-tenant");
+			context.User = CreateAuthenticatedPrincipal(user.Id);
+
+			var nextCalled = false;
+			var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+			{
+				nextCalled = true;
+				return Task.CompletedTask;
+			});
+
+			await middleware.Invoke(context);
+
+			Assert.AreEqual(StatusCodes.Status403Forbidden, context.Response.StatusCode);
+			Assert.IsFalse(nextCalled);
+		}
+
 		var services = new ServiceCollection();
 		services.AddSingleton(DbContext);
 		services.AddSingleton(sessionStore);

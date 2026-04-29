@@ -133,19 +133,7 @@ public sealed class TenantSessionAuthenticationMiddleware(RequestDelegate next)
 			return;
 		}
 
-		var account = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == session.UserId);
-		if (account == null)
-		{
-			if (requiresAuthorization && isApiCall)
-			{
-				context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-				await context.Response.WriteAsync("Unauthorized");
-				return;
-			}
-
-			await next(context);
-			return;
-		}
+		var account = await dbContext.Users.FirstAsync(u => u.Id == session.UserId);
 
 		context.User = CreateClaimsPrincipal(account.Id, account.IsGlobalAdmin, tenant, membership.Role);
 		await sessionStore.TouchSessionAsync(session.Id, tenant.Id);
@@ -174,11 +162,7 @@ public sealed class TenantSessionAuthenticationMiddleware(RequestDelegate next)
 			return false;
 		}
 
-		var account = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-		if (account == null)
-		{
-			return false;
-		}
+		var account = await dbContext.Users.FirstAsync(u => u.Id == userId);
 
 		context.User = CreateClaimsPrincipal(account.Id, account.IsGlobalAdmin, tenant, membership.Role);
 		return true;
