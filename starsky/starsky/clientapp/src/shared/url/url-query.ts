@@ -142,7 +142,7 @@ export class UrlQuery {
 
     if (url.imageFormat) {
       if (url.imageFormat.toLowerCase() === "raw") {
-        result.push('-ImageFormat="arw,dng,nef,raf,cr2,cr3,orf,rw2,pef,fff,x3f"');
+        result.push('-ImageFormat="arw,dng,nef,raf,cr2,cr3,orf,rw2,pef,x3f"');
       } else {
         result.push(`-ImageFormat=${url.imageFormat.toLowerCase()}`);
       }

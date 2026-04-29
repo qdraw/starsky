@@ -171,7 +171,7 @@ describe("url-query", () => {
 
     it("compose raw file type token", () => {
       const result = urlQuery.BuildSearchQueryFromUrl({ imageFormat: "RAW" });
-      expect(result).toContain('-ImageFormat="arw,dng,nef,raf,cr2,cr3,orf,rw2,pef,fff,x3f"');
+      expect(result).toContain('-ImageFormat="arw,dng,nef,raf,cr2,cr3,orf,rw2,pef,x3f"');
     });
   });
 

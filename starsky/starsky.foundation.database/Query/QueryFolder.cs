@@ -84,7 +84,6 @@ public partial class Query // For folder displays only
 					ExtensionRolesHelper.ImageFormat.orf,
 					ExtensionRolesHelper.ImageFormat.rw2,
 					ExtensionRolesHelper.ImageFormat.pef,
-					ExtensionRolesHelper.ImageFormat.fff,
 					ExtensionRolesHelper.ImageFormat.x3f
 				};
 
