@@ -9,7 +9,7 @@ public class TenantSlugValidatorTest
 	[TestMethod]
 	[DataRow("main")]
 	[DataRow("abc-123")]
-	[DataRow("a1")]
+	[DataRow("a1b")]
 	[DataRow("tenant-01")]
 	public void IsValid_ValidSlug_ReturnsTrue(string slug)
 	{
@@ -21,6 +21,7 @@ public class TenantSlugValidatorTest
 	[DataRow("")]
 	[DataRow("A")]
 	[DataRow("a")]
+	[DataRow("a1")]
 	[DataRow("-abc")]
 	[DataRow("abc-")]
 	[DataRow("abc_def")]

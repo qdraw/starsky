@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Models;
 using starsky.foundation.accountmanagement.Models.Account;
@@ -237,6 +238,50 @@ public sealed class AccountControllerTest
 		await controller.LoginPost(new LoginViewModel { Email = "e500", Password = "t1" });
 
 		Assert.AreEqual(500, controller.Response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task LoginPost_FirstTenantAutoCreateOnlyOnce_UnknownSecondTenantNotAutoCreated()
+	{
+		var unique = Guid.NewGuid().ToString("N").Substring(0, 10);
+		var email = unique + "@tenant.local";
+		const string password = "pass123456789";
+		await _userManager.SignUpAsync(unique, "email", email, password);
+
+		var httpContext = new DefaultHttpContext
+		{
+			RequestServices = _serviceProvider
+		};
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
+
+		httpContext.Items[TenantAuthenticationConstants.TenantSlugItemKey] = "main";
+		var firstTenantLogin = await controller.LoginPost(new LoginViewModel
+		{
+			Email = email,
+			Password = password
+		});
+
+		Assert.IsInstanceOfType<JsonResult>(firstTenantLogin);
+		Assert.IsTrue(await _dbContext.Tenants.AnyAsync(t => t.Slug == "main",
+			TestContext.CancellationTokenSource.Token));
+		Assert.AreEqual(1, await _dbContext.Tenants.CountAsync(
+			TestContext.CancellationTokenSource.Token));
+
+		controller.ModelState.Clear();
+		httpContext.Items[TenantAuthenticationConstants.TenantSlugItemKey] = "second";
+		var secondTenantLogin = await controller.LoginPost(new LoginViewModel
+		{
+			Email = email,
+			Password = password
+		});
+
+		Assert.IsInstanceOfType<NotFoundObjectResult>(secondTenantLogin);
+		Assert.AreEqual("Tenant not found", ( ( NotFoundObjectResult ) secondTenantLogin ).Value);
+		Assert.IsFalse(await _dbContext.Tenants.AnyAsync(t => t.Slug == "second",
+			TestContext.CancellationTokenSource.Token));
+		Assert.AreEqual(1, await _dbContext.Tenants.CountAsync(
+			TestContext.CancellationTokenSource.Token));
 	}
 
 	[TestMethod]

@@ -9,7 +9,7 @@ namespace starsky.foundation.accountmanagement.Services;
 public sealed class TenantSlugValidator : ITenantSlugValidator
 {
 	private static readonly Regex SlugRegex = new(
-		"^[a-z0-9](?:[a-z0-9-]{1,48}[a-z0-9])?$",
+		"^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$",
 		RegexOptions.Compiled,
 		TimeSpan.FromMilliseconds(100));
 
