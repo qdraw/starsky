@@ -26,6 +26,17 @@ describe("url-query", () => {
     expect(result).toContain("test");
   });
 
+  it("UrlQueryServerApi includes structured filters", () => {
+    const result = urlQuery.UrlQueryServerApi(
+      "?f=test&imageFormat=jpg&camera=Canon&keywords=tag1,tag2&dateFrom=2026-04-01&dateTo=2026-04-30"
+    );
+    expect(result).toContain("imageFormat=jpg");
+    expect(result).toContain("camera=Canon");
+    expect(result).toContain("keywords=tag1,tag2");
+    expect(result).toContain("dateFrom=2026-04-01");
+    expect(result).toContain("dateTo=2026-04-30");
+  });
+
   it("UrlQueryServerApi sort", () => {
     const result = urlQuery.UrlQueryServerApi("?sort=fileName");
     expect(result).toContain("sort");
@@ -131,6 +142,49 @@ describe("url-query", () => {
     const result = urlQuery.UrlSearchTrashApi();
     expect(result).toContain("trash");
   });
+
+  it("UrlSearchSuggestCameraApi", () => {
+    const result = urlQuery.UrlSearchSuggestCameraApi("can");
+    expect(result).toContain("/api/suggest/camera");
+    expect(result).toContain("t=can");
+  });
+
+  describe("BuildSearchQueryFromUrl", () => {
+    it("compose free text and structured filters", () => {
+      const result = urlQuery.BuildSearchQueryFromUrl({
+        t: "sunset",
+        imageFormat: "jpg",
+        camera: "Canon EOS",
+        keywords: ["holiday", "beach"],
+        dateFrom: "2026-04-01",
+        dateTo: "2026-04-30"
+      });
+
+      expect(result).toContain("sunset");
+      expect(result).toContain("-ImageFormat=jpg");
+      expect(result).toContain('-Make="Canon EOS"');
+      expect(result).toContain('-Tags="holiday"');
+      expect(result).toContain('-Tags="beach"');
+      expect(result).toContain("-DateTime>2026-04-01T00:00:00");
+      expect(result).toContain("-DateTime<2026-04-30T23:59:59");
+    });
+
+    it("compose raw file type token", () => {
+      const result = urlQuery.BuildSearchQueryFromUrl({ imageFormat: "RAW" });
+      expect(result).toContain('-ImageFormat="arw,dng,nef,raf,cr2,cr3,orf,rw2,pef,fff,x3f"');
+    });
+  });
+
+  describe("HasStructuredFilters", () => {
+    it("true", () => {
+      expect(urlQuery.HasStructuredFilters({ dateFrom: "2026-04-01" })).toBeTruthy();
+    });
+
+    it("false", () => {
+      expect(urlQuery.HasStructuredFilters({ t: "only-free-text" })).toBeFalsy();
+    });
+  });
+
   it("UrlQuerySearchApi should contain test", () => {
     const result = urlQuery.UrlQuerySearchApi("test");
     expect(result).toContain("test");

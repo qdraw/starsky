@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { newIArchive } from "../../interfaces/IArchive";
+import { Router } from "../../router-app/router-app";
 import Archive from "./archive";
 
 describe("Archive", () => {
@@ -28,6 +29,25 @@ describe("Archive", () => {
     );
 
     const warningBox = screen.queryByTestId("list-view-no-photos-in-folder") as HTMLDivElement;
+    expect(warningBox).toBeTruthy();
+
+    container.unmount();
+  });
+
+  it("shows structured filter warning when no items and structured filters are active", () => {
+    Router.navigate("/?f=/&dateFrom=2026-04-01");
+
+    const container = render(
+      <Archive
+        {...newIArchive()}
+        colorClassActiveList={[]}
+        colorClassUsage={[]}
+        fileIndexItems={[]}
+        collectionsCount={0}
+      />
+    );
+
+    const warningBox = screen.queryByTestId("archive-structured-filter-warning") as HTMLDivElement;
     expect(warningBox).toBeTruthy();
 
     container.unmount();

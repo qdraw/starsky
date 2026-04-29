@@ -6,12 +6,14 @@ import useLocation from "../hooks/use-location/use-location";
 import useSearchList from "../hooks/use-searchlist";
 import { PageType } from "../interfaces/IDetailView";
 import { URLPath } from "../shared/url/url-path";
+import { UrlQuery } from "../shared/url/url-query";
 
 export const SearchPage: FunctionComponent = () => {
   const history = useLocation();
 
   const urlObject = new URLPath().StringToIUrl(history.location.search);
-  const searchList = useSearchList(urlObject.t, urlObject.p, true);
+  const composedQuery = new UrlQuery().BuildSearchQueryFromUrl(urlObject);
+  const searchList = useSearchList(composedQuery, urlObject.p, true);
 
   if (!searchList) return <>Something went wrong</>;
   if (searchList.pageType === PageType.ApplicationException) {

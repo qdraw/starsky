@@ -428,11 +428,17 @@ function UpdateColorClassUsageActiveList(state: IArchiveProps, colorclass: numbe
  */
 function updateCache(stateLocal: IArchiveProps): IArchiveProps {
   if (stateLocal.pageType !== PageType.Archive) return stateLocal;
+  const currentUrl = new URLPath().StringToIUrl(globalThis.location.search);
   const urlObject = {
     f: stateLocal.subPath,
     colorClass: stateLocal.colorClassActiveList,
     collections: stateLocal.collections,
-    sort: stateLocal.sort
+    sort: stateLocal.sort,
+    imageFormat: currentUrl.imageFormat,
+    camera: currentUrl.camera,
+    keywords: currentUrl.keywords,
+    dateFrom: currentUrl.dateFrom,
+    dateTo: currentUrl.dateTo
   } as IUrl;
   new FileListCache().CacheSetObject(urlObject, { ...stateLocal });
   return stateLocal;

@@ -79,7 +79,13 @@ public class FakeIQuery : IQuery
 
 	public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/",
 		List<ColorClassParser.Color>? colorClassActiveList = null,
-		bool enableCollections = true, bool hideDeleted = true)
+		bool enableCollections = true,
+		bool hideDeleted = true,
+		string? imageFormat = null,
+		string? camera = null,
+		string? keywords = null,
+		string? dateFrom = null,
+		string? dateTo = null)
 	{
 		return GetAllFiles(subPath);
 	}
@@ -87,7 +93,13 @@ public class FakeIQuery : IQuery
 	public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems,
 		List<ColorClassParser.Color>?
 			colorClassActiveList = null,
-		bool enableCollections = true, bool hideDeleted = true)
+		bool enableCollections = true,
+		bool hideDeleted = true,
+		string? imageFormat = null,
+		string? camera = null,
+		string? keywords = null,
+		string? dateFrom = null,
+		string? dateTo = null)
 	{
 		throw new NotImplementedException();
 	}

@@ -58,7 +58,8 @@ public sealed class SearchSuggestControllerTest
 				FileName = $"{i}.jpg",
 				FileHash = $"hash_{i}",
 				ParentDirectory = "/",
-				Tags = tags
+				Tags = tags,
+				MakeModel = i == 0 ? "Canon EOS R5" : "Sony A7"
 			});
 		}
 	}
@@ -152,5 +153,16 @@ public sealed class SearchSuggestControllerTest
 			new("enter", 10), new("sandman", 10), new("exit", 10)
 		};
 		CollectionAssert.AreEqual(expected, keyValuePairs);
+	}
+
+	[TestMethod]
+	public async Task CameraSuggestion_Result()
+	{
+		await InjectMockedData();
+		var controller = new SearchSuggestController(_searchSuggest);
+		var result = await controller.Camera("Can") as JsonResult;
+		var list = result!.Value as List<string>;
+
+		CollectionAssert.Contains(list!, "Canon EOS R5");
 	}
 }

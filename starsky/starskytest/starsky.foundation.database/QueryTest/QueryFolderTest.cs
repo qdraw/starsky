@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -120,6 +121,52 @@ public sealed class QueryFolderTest
 
 		await query.RemoveItemAsync(item);
 		await query.RemoveItemAsync(item1);
+	}
+
+	[TestMethod]
+	public void DisplayFileFolders_AppliesStructuredFilters()
+	{
+		var query = new Query(CreateNewScope().CreateScope().ServiceProvider
+				.GetRequiredService<ApplicationDbContext>(),
+			new AppSettings(),
+			CreateNewScope(),
+			new FakeIWebLogger(),
+			_memoryCache);
+
+		var input = new List<FileIndexItem>
+		{
+			new()
+			{
+				FileName = "a.jpg",
+				ParentDirectory = "/",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
+				MakeModel = "Canon EOS R5",
+				Tags = "holiday, beach",
+				DateTime = new DateTime(2026, 4, 10)
+			},
+			new()
+			{
+				FileName = "a.arw",
+				ParentDirectory = "/",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.arw,
+				MakeModel = "Sony A7",
+				Tags = "city",
+				DateTime = new DateTime(2026, 4, 15)
+			}
+		};
+
+		var result = query.DisplayFileFolders(input,
+			null,
+			true,
+			true,
+			"jpg",
+			"canon",
+			"holiday",
+			"2026-04-01",
+			"2026-04-30").ToList();
+
+		Assert.HasCount(1, result);
+		Assert.AreEqual("a.jpg", result[0].FileName);
 	}
 }
 

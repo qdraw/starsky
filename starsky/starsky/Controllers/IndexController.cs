@@ -30,6 +30,11 @@ public sealed class IndexController : Controller
 	/// <param name="collections">to combine files with the same name before the extension</param>
 	/// <param name="hideDelete">ignore deleted files</param>
 	/// <param name="sort">how to orderBy, defaults to fileName</param>
+	/// <param name="imageFormat">image format filter (raw, jpg, png, etc)</param>
+	/// <param name="camera">camera filter against MakeModel</param>
+	/// <param name="keywords">comma-separated tags</param>
+	/// <param name="dateFrom">inclusive date from</param>
+	/// <param name="dateTo">inclusive date to</param>
 	/// <returns></returns>
 	/// <response code="200">returns a list of items from the database</response>
 	/// <response code="404">subPath not found in the database</response>
@@ -44,7 +49,12 @@ public sealed class IndexController : Controller
 		string? colorClass = null,
 		bool collections = true,
 		bool hideDelete = true,
-		SortType sort = SortType.FileName)
+		SortType sort = SortType.FileName,
+		string? imageFormat = null,
+		string? camera = null,
+		string? keywords = null,
+		string? dateFrom = null,
+		string? dateTo = null)
 	{
 		if ( !ModelState.IsValid )
 		{
@@ -75,9 +85,11 @@ public sealed class IndexController : Controller
 
 		var fileIndexItems = SortHelper.Helper(
 			_query.DisplayFileFolders(subPath, colorClassActiveList,
-				collections, hideDelete), sort).ToList();
+				collections, hideDelete, imageFormat, camera, keywords, dateFrom, dateTo), sort)
+			.ToList();
 		var fileIndexItemsWithoutCollections = _query.DisplayFileFolders(
-			subPath, null, false, hideDelete).ToList();
+			subPath, null, false, hideDelete, imageFormat, camera, keywords, dateFrom, dateTo)
+			.ToList();
 
 		// (singleItem.IsDirectory) or not found
 		var directoryModel = new ArchiveViewModel

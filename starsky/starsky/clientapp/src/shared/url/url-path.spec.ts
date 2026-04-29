@@ -78,6 +78,34 @@ describe("url-path", () => {
       const test = urlPath.StringToIUrl("?t=test");
       expect(test.t).toBe("test");
     });
+    it("imageFormat", () => {
+      const test = urlPath.StringToIUrl("?imageFormat=jpg");
+      expect(test.imageFormat).toBe("jpg");
+    });
+    it("camera", () => {
+      const test = urlPath.StringToIUrl("?camera=Canon%20R5");
+      expect(test.camera).toBe("Canon R5");
+    });
+    it("keywords", () => {
+      const test = urlPath.StringToIUrl("?keywords=tag1,tag2");
+      expect(test.keywords).toStrictEqual(["tag1", "tag2"]);
+    });
+    it("dateFrom", () => {
+      const test = urlPath.StringToIUrl("?dateFrom=2026-04-01");
+      expect(test.dateFrom).toBe("2026-04-01");
+    });
+    it("dateTo", () => {
+      const test = urlPath.StringToIUrl("?dateTo=2026-04-30");
+      expect(test.dateTo).toBe("2026-04-30");
+    });
+    it("filtersOpen true", () => {
+      const test = urlPath.StringToIUrl("?filtersOpen=true");
+      expect(test.filtersOpen).toStrictEqual(true);
+    });
+    it("filtersOpen false", () => {
+      const test = urlPath.StringToIUrl("?filtersOpen=false");
+      expect(test.filtersOpen).toStrictEqual(false);
+    });
     it("p null", () => {
       const test = urlPath.StringToIUrl("?p=NaN");
       expect(test.p).toBeUndefined();

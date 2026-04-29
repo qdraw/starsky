@@ -159,4 +159,20 @@ public sealed class SearchSuggestionsServiceTest
 		// Should not contain system suggestions
 		Assert.DoesNotContain(r => r.StartsWith("-ImageFormat"), result);
 	}
+
+	[TestMethod]
+	public async Task SearchSuggestionsService_CameraSuggestions()
+	{
+		await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "camera1.jpg",
+			ParentDirectory = "/stations",
+			FileHash = "camera-hash-1",
+			MakeModel = "Canon EOS R5"
+		});
+
+		var result = await _suggest.SearchCameraSuggest("Can");
+
+		Assert.Contains("Canon EOS R5", result.ToList());
+	}
 }

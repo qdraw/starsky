@@ -16,7 +16,12 @@ public partial class Query // For folder displays only
 		string subPath = "/",
 		List<ColorClassParser.Color>? colorClassActiveList = null,
 		bool enableCollections = true,
-		bool hideDeleted = true)
+		bool hideDeleted = true,
+		string? imageFormat = null,
+		string? camera = null,
+		string? keywords = null,
+		string? dateFrom = null,
+		string? dateTo = null)
 	{
 		if ( subPath != "/" )
 		{
@@ -28,7 +33,12 @@ public partial class Query // For folder displays only
 		return DisplayFileFolders(fileIndexItems,
 			colorClassActiveList,
 			enableCollections,
-			hideDeleted);
+			hideDeleted,
+			imageFormat,
+			camera,
+			keywords,
+			dateFrom,
+			dateTo);
 	}
 
 	// Display File folder displays content of the folder
@@ -37,7 +47,12 @@ public partial class Query // For folder displays only
 		List<FileIndexItem> fileIndexItems,
 		List<ColorClassParser.Color>? colorClassActiveList = null,
 		bool enableCollections = true,
-		bool hideDeleted = true)
+		bool hideDeleted = true,
+		string? imageFormat = null,
+		string? camera = null,
+		string? keywords = null,
+		string? dateFrom = null,
+		string? dateTo = null)
 	{
 		colorClassActiveList ??= new List<ColorClassParser.Color>();
 
@@ -50,6 +65,68 @@ public partial class Query // For folder displays only
 		{
 			fileIndexItems = fileIndexItems.Where(p => colorClassActiveList.Contains(p.ColorClass))
 				.ToList();
+		}
+
+		if ( !string.IsNullOrWhiteSpace(imageFormat) )
+		{
+			var imageFormatLower = imageFormat.Trim().ToLowerInvariant();
+
+			if ( imageFormatLower == "raw" )
+			{
+				var rawFormats = new HashSet<ExtensionRolesHelper.ImageFormat>
+				{
+					ExtensionRolesHelper.ImageFormat.arw,
+					ExtensionRolesHelper.ImageFormat.dng,
+					ExtensionRolesHelper.ImageFormat.nef,
+					ExtensionRolesHelper.ImageFormat.raf,
+					ExtensionRolesHelper.ImageFormat.cr2,
+					ExtensionRolesHelper.ImageFormat.cr3,
+					ExtensionRolesHelper.ImageFormat.orf,
+					ExtensionRolesHelper.ImageFormat.rw2,
+					ExtensionRolesHelper.ImageFormat.pef,
+					ExtensionRolesHelper.ImageFormat.fff,
+					ExtensionRolesHelper.ImageFormat.x3f
+				};
+
+				fileIndexItems = fileIndexItems.Where(p => rawFormats.Contains(p.ImageFormat)).ToList();
+			}
+			else if ( Enum.TryParse<ExtensionRolesHelper.ImageFormat>(imageFormatLower,
+				out var castImageFormat) )
+			{
+				fileIndexItems = fileIndexItems.Where(p => p.ImageFormat == castImageFormat).ToList();
+			}
+		}
+
+		if ( !string.IsNullOrWhiteSpace(camera) )
+		{
+			var cameraLower = camera.Trim().ToLowerInvariant();
+			fileIndexItems = fileIndexItems.Where(p =>
+				!string.IsNullOrEmpty(p.MakeModel) &&
+				p.MakeModel.ToLowerInvariant().Contains(cameraLower)).ToList();
+		}
+
+		if ( !string.IsNullOrWhiteSpace(keywords) )
+		{
+			var keywordList = keywords.Split(',').Select(p => p.Trim().ToLowerInvariant())
+				.Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
+
+			if ( keywordList.Count >= 1 )
+			{
+				fileIndexItems = fileIndexItems.Where(item =>
+					!string.IsNullOrWhiteSpace(item.Tags) &&
+					keywordList.All(keyword => item.Tags.ToLowerInvariant().Contains(keyword))).ToList();
+			}
+		}
+
+		if ( DateTime.TryParse(dateFrom, out var fromDateTime) )
+		{
+			fileIndexItems = fileIndexItems.Where(item => item.DateTime >= fromDateTime).ToList();
+		}
+
+		if ( DateTime.TryParse(dateTo, out var toDateTime) )
+		{
+			var endOfDay = toDateTime.Date.AddDays(1).AddTicks(-1);
+			fileIndexItems = fileIndexItems.Where(item => item.DateTime <= endOfDay).ToList();
 		}
 
 		if ( fileIndexItems.Count == 0 )
