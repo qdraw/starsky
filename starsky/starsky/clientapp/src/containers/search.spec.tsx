@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { newIArchive } from "../interfaces/IArchive";
 import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
+import { Router } from "../router-app/router-app";
 import Search from "./search";
 
 describe("Search", () => {
@@ -70,11 +71,30 @@ describe("Search", () => {
           />
         </BrowserRouter>
       );
-      console.log(component.container.innerHTML);
 
       const searchPagination = screen.queryAllByTestId("search-pagination");
 
       expect(searchPagination.length).toEqual(2);
+      component.unmount();
+    });
+
+    it("updates url when shared filter changes", () => {
+      const navigateSpy = jest.spyOn(Router, "navigate").mockImplementation(jest.fn());
+      const component = render(
+        <Search
+          {...newIArchive()}
+          collectionsCount={1}
+          fileIndexItems={[]}
+          pageNumber={0}
+          colorClassUsage={[]}
+        />
+      );
+
+      screen.getByTestId("shared-filter-toggle").click();
+
+      expect(navigateSpy).toHaveBeenCalled();
+
+      navigateSpy.mockRestore();
       component.unmount();
     });
   });

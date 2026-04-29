@@ -2,6 +2,16 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import SharedStructuredFilter from "./shared-structured-filter";
 
 describe("SharedStructuredFilter", () => {
+  beforeEach(() => {
+    jest.spyOn(global, "fetch").mockResolvedValue({
+      json: async () => ["Canon EOS"]
+    } as Response);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("shows collapsed empty state by default", () => {
     render(<SharedStructuredFilter urlObject={{}} onChange={jest.fn()} />);
 
@@ -51,5 +61,78 @@ describe("SharedStructuredFilter", () => {
     fireEvent.click(screen.getByTestId("shared-filter-filetype-jpg"));
 
     expect(onChange).toHaveBeenCalledWith({ filtersOpen: true, imageFormat: "jpg" });
+  });
+
+  it("file type button toggles off active format", () => {
+    const onChange = jest.fn();
+    render(
+      <SharedStructuredFilter
+        urlObject={{ filtersOpen: true, imageFormat: "jpg" }}
+        onChange={onChange}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId("shared-filter-filetype-jpg"));
+
+    expect(onChange).toHaveBeenCalledWith({ filtersOpen: true });
+  });
+
+  it("toggle button closes panel when open without active filters", () => {
+    const onChange = jest.fn();
+    render(<SharedStructuredFilter urlObject={{ filtersOpen: true }} onChange={onChange} />);
+
+    fireEvent.click(screen.getByTestId("shared-filter-toggle"));
+
+    expect(onChange).toHaveBeenCalledWith({ filtersOpen: false });
+  });
+
+  it("clears date inputs when date values are removed", () => {
+    const onChange = jest.fn();
+    render(
+      <SharedStructuredFilter
+        urlObject={{ filtersOpen: true, dateFrom: "2026-04-01", dateTo: "2026-04-30" }}
+        onChange={onChange}
+      />
+    );
+
+    fireEvent.change(screen.getByTestId("shared-filter-date-from"), {
+      target: { value: "" }
+    });
+    fireEvent.change(screen.getByTestId("shared-filter-date-to"), {
+      target: { value: "" }
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ filtersOpen: true, dateTo: "2026-04-30" });
+    expect(onChange).toHaveBeenCalledWith({ filtersOpen: true, dateFrom: "2026-04-01" });
+  });
+
+  it("updates keywords and removes empty keyword list", () => {
+    const onChange = jest.fn();
+    render(<SharedStructuredFilter urlObject={{ filtersOpen: true }} onChange={onChange} />);
+
+    const keywords = screen.getByTestId("shared-filter-keywords");
+    keywords.textContent = "tag1, tag2";
+    fireEvent.input(keywords);
+
+    keywords.textContent = "   ";
+    fireEvent.input(keywords);
+
+    expect(onChange).toHaveBeenCalledWith({ filtersOpen: true, keywords: ["tag1", "tag2"] });
+    expect(onChange).toHaveBeenCalledWith({ filtersOpen: true });
+  });
+
+  it("loads camera suggestions and selects camera", async () => {
+    const onChange = jest.fn();
+    render(<SharedStructuredFilter urlObject={{ filtersOpen: true }} onChange={onChange} />);
+
+    const cameraInput = screen.getByRole("textbox");
+    fireEvent.change(cameraInput, { target: { value: "can" } });
+    fireEvent.keyDown(cameraInput, { key: "ArrowDown" });
+
+    const option = await screen.findByText("Canon EOS");
+    fireEvent.click(option);
+
+    expect(global.fetch).toHaveBeenCalled();
+    expect(onChange).toHaveBeenCalledWith({ filtersOpen: true, camera: "Canon EOS" });
   });
 });
