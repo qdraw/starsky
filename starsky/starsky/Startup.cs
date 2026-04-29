@@ -21,6 +21,7 @@ using starsky.feature.health.HealthCheck;
 using starsky.feature.packagetelemetry.Services;
 using starsky.feature.syncbackground.Services;
 using starsky.foundation.accountmanagement.Extensions;
+using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.DataProtection;
 using starsky.foundation.database.Helpers;
@@ -99,7 +100,7 @@ public sealed class Startup
 			})
 			.AddCookie(options =>
 				{
-					options.Cookie.Name = "_id";
+					options.Cookie.Name = TenantAuthenticationConstants.SessionCookieName;
 					options.ExpireTimeSpan = TimeSpan.FromDays(60);
 					options.SlidingExpiration = false;
 					options.Cookie.HttpOnly = true;
@@ -111,8 +112,8 @@ public sealed class Startup
 					options.Cookie.SameSite =
 						SameSiteMode
 							.Lax; // when on strict and visiting the page again its logged out
-					options.LoginPath = "/account/login";
-					options.LogoutPath = "/account/logout";
+					options.LoginPath = "/-/tenants";
+					options.LogoutPath = "/-/tenants";
 					options.Events.OnRedirectToLogin =
 						ReplaceReDirectorHelper.ReplaceReDirector(HttpStatusCode.Unauthorized,
 							options.Events.OnRedirectToLogin);
@@ -251,6 +252,8 @@ public sealed class Startup
 		// Use the name of the application to use behind a reverse proxy
 		app.UsePathBase(PathHelper.PrefixDbSlash("starsky"));
 
+		app.UseTenantPathPrefix();
+
 		app.UseRouting();
 
 		new SwaggerSetupHelper(_appSettings!).Add02AppUseSwaggerAndUi(app);
@@ -263,6 +266,7 @@ public sealed class Startup
 		app.UseBasicAuthentication();
 		app.UseNoAccount(_appSettings?.NoAccountLocalhost == true ||
 		                 _appSettings?.DemoUnsafeDeleteStorageFolder == true);
+		app.UseTenantSessionAuthentication();
 		app.UseCheckIfAccountExist();
 
 		app.UseAuthorization();

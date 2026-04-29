@@ -22,9 +22,12 @@ namespace starsky.foundation.database.Models.Account
 
 		public int AccessFailedCount { get; set; }
 
+		public bool IsGlobalAdmin { get; set; }
+
 		// menu settings in the future
 
 		public virtual ICollection<Credential>? Credentials { get; set; }
+		public virtual ICollection<TenantUser>? TenantUsers { get; set; }
 
 	}
 }

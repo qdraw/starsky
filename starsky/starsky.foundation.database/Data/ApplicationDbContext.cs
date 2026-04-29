@@ -22,6 +22,10 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 	public DbSet<UserRole> UserRoles { get; set; }
 	public DbSet<Permission> Permissions { get; set; }
 	public DbSet<RolePermission> RolePermissions { get; set; }
+	public DbSet<Tenant> Tenants { get; set; }
+	public DbSet<TenantUser> TenantUsers { get; set; }
+	public DbSet<WebSession> WebSessions { get; set; }
+	public DbSet<WebSessionTenant> WebSessionTenants { get; set; }
 
 	public DbSet<NotificationItem> Notifications { get; set; }
 
@@ -185,6 +189,52 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
 				etb.HasKey(e => new { e.RoleId, e.PermissionId });
 				etb.ToTable("RolePermissions");
+			}
+		);
+
+		modelBuilder.Entity<Tenant>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.HasKey(e => e.Id);
+				etb.Property(e => e.Id)
+					.ValueGeneratedOnAdd()
+					.HasAnnotation(mySqlValueGeneratedOnAdd, true);
+				etb.Property(e => e.Slug).IsRequired().HasMaxLength(50);
+				etb.Property(e => e.Name).IsRequired().HasMaxLength(100);
+				etb.HasIndex(e => e.Slug).IsUnique();
+				etb.ToTable("Tenants");
+			}
+		);
+
+		modelBuilder.Entity<TenantUser>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.HasKey(e => new { e.TenantId, e.UserId });
+				etb.HasIndex(e => new { e.TenantId, e.UserId }).IsUnique();
+				etb.ToTable("TenantUsers");
+			}
+		);
+
+		modelBuilder.Entity<WebSession>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.HasKey(e => e.Id);
+				etb.Property(e => e.Id)
+					.ValueGeneratedOnAdd()
+					.HasAnnotation(mySqlValueGeneratedOnAdd, true);
+				etb.Property(e => e.SessionId).IsRequired().HasMaxLength(128);
+				etb.HasIndex(e => e.SessionId).IsUnique();
+				etb.HasIndex(e => e.UserId);
+				etb.ToTable("WebSessions");
+			}
+		);
+
+		modelBuilder.Entity<WebSessionTenant>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.HasKey(e => new { e.WebSessionId, e.TenantId });
+				etb.HasIndex(e => new { e.WebSessionId, e.TenantId }).IsUnique();
+				etb.ToTable("WebSessionTenants");
 			}
 		);
 

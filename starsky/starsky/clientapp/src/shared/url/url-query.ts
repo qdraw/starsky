@@ -7,6 +7,31 @@ import packageJson from "../../../package.json";
 export class UrlQuery {
   public prefix: string = "/starsky";
 
+  private CurrentTenant(): string | null {
+    const path = document.location.pathname;
+    const withoutPrefix = path.startsWith(this.prefix) ? path.slice(this.prefix.length) : path;
+    const segments = withoutPrefix.split("/").filter(Boolean);
+    if (segments.length === 0) {
+      return null;
+    }
+
+    const first = segments[0].toLowerCase();
+    if (first === "-" || first === "assets" || first === "api" || first === "account") {
+      return null;
+    }
+
+    return first;
+  }
+
+  private TenantPrefix(): string {
+    const tenant = this.CurrentTenant();
+    if (!tenant) {
+      return this.prefix;
+    }
+
+    return `${this.prefix}/${tenant}`;
+  }
+
   public UrlHomePage(): string {
     return document.location.pathname.includes(this.prefix) ? `${this.prefix}/` : "/";
   }
@@ -73,34 +98,31 @@ export class UrlQuery {
   }
 
   public UrlLoginPage(): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/account/login`
-      : `/account/login`;
+    const tenantPrefix = this.TenantPrefix();
+    return `${tenantPrefix}/account/login`;
   }
 
   public UrlLogoutPage(returnUrl: string): string {
     if (!IsRelativeUrl(returnUrl)) {
       returnUrl = "/?f=/";
     }
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`
-      : `/account/logout?ReturnUrl=${returnUrl}`;
+    return `${this.TenantPrefix()}/account/logout?ReturnUrl=${returnUrl}`;
   }
 
   public UrlLoginApi(): string {
-    return `${this.prefix}/api/account/login`;
+    return `${this.TenantPrefix()}/api/account/login`;
   }
 
   public UrlLogoutApi(): string {
-    return `${this.prefix}/api/account/logout`;
+    return `${this.TenantPrefix()}/api/account/logout`;
   }
 
   public UrlAccountRegisterApi(): string {
-    return `${this.prefix}/api/account/register`;
+    return `${this.TenantPrefix()}/api/account/register`;
   }
 
   public UrlAccountRegisterPage(): string {
-    return `${this.prefix}/account/register`;
+    return `${this.TenantPrefix()}/account/register`;
   }
 
   public UrlSearchRelativeApi = (f: string, t: string | undefined, pageNumber = 0): string => {
@@ -131,15 +153,15 @@ export class UrlQuery {
   };
 
   public UrlAccountStatus = (): string => {
-    return `${this.prefix}/api/account/status`;
+    return `${this.TenantPrefix()}/api/account/status`;
   };
 
   public UrlAccountRegisterStatus = (): string => {
-    return `${this.prefix}/api/account/register/status`;
+    return `${this.TenantPrefix()}/api/account/register/status`;
   };
 
   public UrlAccountChangeSecret = (): string => {
-    return `${this.prefix}/api/account/change-secret`;
+    return `${this.TenantPrefix()}/api/account/change-secret`;
   };
 
   public UrlCloudImportStatus = (): string => {
@@ -151,7 +173,15 @@ export class UrlQuery {
   };
 
   public UrlAccountPermissions = (): string => {
-    return `${this.prefix}/api/account/permissions`;
+    return `${this.TenantPrefix()}/api/account/permissions`;
+  };
+
+  public UrlTenantsMineApi = (): string => {
+    return `${this.prefix}/api/tenants/mine`;
+  };
+
+  public UrlMyTenantsPage = (): string => {
+    return `${this.prefix}/-/tenants`;
   };
 
   public KeyAccountPermissionAppSettingsWrite = (): string => {
