@@ -151,7 +151,7 @@ public sealed class ImportControllerTest
 		var payload = JsonSerializer.Deserialize<ImportBackgroundPayload>(queuedJob.PayloadJson!);
 		Assert.IsNotNull(payload);
 		Assert.HasCount(1, payload.TempImportPaths);
-		Assert.EndsWith(payload.TempImportPaths[0], "chunk-import.jpg");
+		Assert.EndsWith("chunk-import.jpg", payload.TempImportPaths[0]);
 	}
 
 	[TestMethod]
