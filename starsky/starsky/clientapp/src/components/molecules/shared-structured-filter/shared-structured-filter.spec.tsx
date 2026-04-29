@@ -135,4 +135,68 @@ describe("SharedStructuredFilter", () => {
     expect(global.fetch).toHaveBeenCalled();
     expect(onChange).toHaveBeenCalledWith({ filtersOpen: true, camera: "Canon EOS" });
   });
+
+  it("does not fetch camera suggestions for too-short query", async () => {
+    jest.useFakeTimers();
+    const onChange = jest.fn();
+    render(<SharedStructuredFilter urlObject={{ filtersOpen: true }} onChange={onChange} />);
+
+    const cameraInput = screen.getByRole("textbox");
+    fireEvent.change(cameraInput, { target: { value: "c" } });
+    jest.advanceTimersByTime(350);
+
+    expect(global.fetch).not.toHaveBeenCalled();
+    jest.useRealTimers();
+  });
+
+  it("handles non-array camera suggestion response", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      json: async () => ({ value: "invalid" })
+    } as Response);
+
+    render(<SharedStructuredFilter urlObject={{ filtersOpen: true }} onChange={jest.fn()} />);
+
+    const cameraInput = screen.getByRole("textbox");
+    fireEvent.change(cameraInput, { target: { value: "canon" } });
+
+    const noResults = await screen.findByTestId("searchable-dropdown-no-results");
+    expect(noResults).toBeTruthy();
+  });
+
+  it("supports selecting empty camera value", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      json: async () => [""]
+    } as Response);
+
+    const onChange = jest.fn();
+    const container = render(
+      <SharedStructuredFilter urlObject={{ filtersOpen: true, camera: "Canon" }} onChange={onChange} />
+    );
+
+    const cameraInput = screen.getByRole("textbox");
+    fireEvent.change(cameraInput, { target: { value: "can" } });
+
+    await screen.findByTestId("searchable-dropdown-list");
+    const emptyItemButton = container.container.querySelector(
+      '[data-test="searchable-dropdown-item-"] button'
+    ) as HTMLButtonElement;
+    fireEvent.click(emptyItemButton);
+
+    expect(onChange).toHaveBeenCalledWith({ filtersOpen: true });
+  });
+
+  it("updates date values when selecting valid date range", () => {
+    const onChange = jest.fn();
+    render(<SharedStructuredFilter urlObject={{ filtersOpen: true }} onChange={onChange} />);
+
+    fireEvent.change(screen.getByTestId("shared-filter-date-from"), {
+      target: { value: "2026-04-01" }
+    });
+    fireEvent.change(screen.getByTestId("shared-filter-date-to"), {
+      target: { value: "2026-04-30" }
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ filtersOpen: true, dateFrom: "2026-04-01" });
+    expect(onChange).toHaveBeenCalledWith({ filtersOpen: true, dateTo: "2026-04-30" });
+  });
 });

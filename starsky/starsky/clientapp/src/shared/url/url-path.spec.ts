@@ -1,4 +1,5 @@
 import { IFileIndexItem, newIFileIndexItemArray } from "../../interfaces/IFileIndexItem";
+import { PageType } from "../../interfaces/IDetailView";
 import { URLPath } from "./url-path";
 
 describe("url-path", () => {
@@ -258,6 +259,19 @@ describe("url-path", () => {
     });
   });
 
+  describe("GetAllSelection", () => {
+    it("adds missing file names", () => {
+      const selection = ["a.jpg"];
+      const list = [
+        { fileName: "a.jpg" } as IFileIndexItem,
+        { fileName: "b.jpg" } as IFileIndexItem
+      ];
+
+      const test = urlPath.GetAllSelection(selection, list);
+      expect(test).toStrictEqual(["a.jpg", "b.jpg"]);
+    });
+  });
+
   describe("ArrayToCommaSeparatedString", () => {
     it("default", () => {
       const test = urlPath.ArrayToCommaSeparatedString([]);
@@ -358,6 +372,23 @@ describe("url-path", () => {
     it("/test", () => {
       const encoded = new URLPath().StartOnSlash("/test");
       expect(encoded).toBe("/test");
+    });
+  });
+
+  describe("IsCollections", () => {
+    it("returns false for search page", () => {
+      const test = urlPath.IsCollections(PageType.Search, "?collections=true");
+      expect(test).toBeFalsy();
+    });
+
+    it("returns false when collections is false", () => {
+      const test = urlPath.IsCollections(PageType.Index, "?collections=false");
+      expect(test).toBeFalsy();
+    });
+
+    it("returns true by default", () => {
+      const test = urlPath.IsCollections(PageType.Index, "?f=/");
+      expect(test).toBeTruthy();
     });
   });
 });

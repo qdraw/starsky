@@ -53,6 +53,21 @@ describe("Archive", () => {
     container.unmount();
   });
 
+  it("renders collapsed layout when sidebar query is true", () => {
+    Router.navigate("/?sidebar=true");
+    const container = render(
+      <Archive
+        {...newIArchive()}
+        colorClassActiveList={[]}
+        colorClassUsage={[]}
+        fileIndexItems={[]}
+      />
+    );
+
+    expect(container.container.querySelector(".archive.collapsed")).toBeTruthy();
+    container.unmount();
+  });
+
   it("updates url when shared filter changes", () => {
     const navigateSpy = jest.spyOn(Router, "navigate").mockImplementation(jest.fn());
     const container = render(

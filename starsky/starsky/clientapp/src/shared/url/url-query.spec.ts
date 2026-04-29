@@ -225,6 +225,24 @@ describe("url-query", () => {
     expect(result).toContain("login");
   });
 
+  it("UrlAccountRegisterApi", () => {
+    const result = urlQuery.UrlAccountRegisterApi();
+    expect(result).toContain("/api/account/register");
+  });
+
+  it("UrlAccountRegisterPage", () => {
+    const result = urlQuery.UrlAccountRegisterPage();
+    expect(result).toContain("/account/register");
+  });
+
+  it("UrlSearchRelativeApi", () => {
+    const result = urlQuery.UrlSearchRelativeApi("/test+folder", "sun", 2);
+    expect(result).toContain("/api/search/relative-objects");
+    expect(result).toContain("f=/test%2Bfolder");
+    expect(result).toContain("t=sun");
+    expect(result).toContain("p=2");
+  });
+
   it("UrlLogoutApi", () => {
     const result = urlQuery.UrlLogoutApi();
     expect(result).toContain("logout");
@@ -315,6 +333,85 @@ describe("url-query", () => {
       const test = urlQuery.UrlGeoStatus("parm");
       expect(test).toContain("/geo/status");
       expect(test).toContain("parm");
+    });
+  });
+
+  describe("Additional UrlQuery methods", () => {
+    it("UrlRealtime on http", () => {
+      const test = urlQuery.UrlRealtime();
+      expect(test).toContain("ws://");
+      expect(test).toContain("/realtime");
+    });
+
+    it("UrlBatchRenamePreview", () => {
+      expect(urlQuery.UrlBatchRenamePreview()).toContain("/api/batch-rename/preview");
+    });
+
+    it("UrlBatchRenameExecute", () => {
+      expect(urlQuery.UrlBatchRenameExecute()).toContain("/api/batch-rename/execute");
+    });
+
+    it("DocsGettingStartedFirstSteps", () => {
+      expect(urlQuery.DocsGettingStartedFirstSteps()).toContain("getting-started/first-steps");
+    });
+
+    it("UrlTimezonePreview", () => {
+      expect(urlQuery.UrlTimezonePreview()).toContain("/api/meta-time-correct/timezone-preview");
+    });
+
+    it("UrlTimezoneExecute", () => {
+      expect(urlQuery.UrlTimezoneExecute()).toContain("/api/meta-time-correct/timezone-execute");
+    });
+
+    it("UrlOffsetPreview", () => {
+      expect(urlQuery.UrlOffsetPreview()).toContain("/api/meta-time-correct/offset-preview");
+    });
+
+    it("UrlOffsetExecute", () => {
+      expect(urlQuery.UrlOffsetExecute()).toContain("/api/meta-time-correct/offset-execute");
+    });
+
+    it("UrlBatchRenameOffsetPreview", () => {
+      expect(urlQuery.UrlBatchRenameOffsetPreview()).toContain(
+        "/api/batch-rename-datetime/offset-preview"
+      );
+    });
+
+    it("UrlBatchRenameOffsetExecute", () => {
+      expect(urlQuery.UrlBatchRenameOffsetExecute()).toContain(
+        "/api/batch-rename-datetime/offset-execute"
+      );
+    });
+
+    it("UrlBatchRenameTimezonePreview", () => {
+      expect(urlQuery.UrlBatchRenameTimezonePreview()).toContain(
+        "/api/batch-rename-datetime/timezone-preview"
+      );
+    });
+
+    it("UrlBatchRenameTimezoneExecute", () => {
+      expect(urlQuery.UrlBatchRenameTimezoneExecute()).toContain(
+        "/api/batch-rename-datetime/timezone-execute"
+      );
+    });
+
+    it("UrlGeoLocationNameCityTimezone", () => {
+      const test = urlQuery.UrlGeoLocationNameCityTimezone("2026-04-01 10:00", "New York");
+      expect(test).toContain("/api/geo-location-name/city-timezone");
+      expect(test).toContain("dateTime=2026-04-01%2010%3A00");
+      expect(test).toContain("city=New%20York");
+    });
+
+    it("UrlGeoLocationNameCity", () => {
+      const test = urlQuery.UrlGeoLocationNameCity("New York");
+      expect(test).toContain("/api/geo-location-name/city?city=New%20York");
+    });
+
+    it("UrlGeoReverseNominatim", () => {
+      const test = urlQuery.UrlGeoReverseNominatim(51.5, 4.3);
+      expect(test).toContain("/api/geo-reverse-nominatim");
+      expect(test).toContain("lat=51.5");
+      expect(test).toContain("lon=4.3");
     });
   });
 
