@@ -147,6 +147,11 @@ public sealed class FileIndexItem
 	private string _title = string.Empty;
 
 	/// <summary>
+	///     Private API: to store xmpMM:InstanceID
+	/// </summary>
+	private string _instanceId = string.Empty;
+
+	/// <summary>
 	///     Default
 	/// </summary>
 	public FileIndexItem()
@@ -337,6 +342,25 @@ public sealed class FileIndexItem
 			// So remove duplicate keywords
 			Keywords = HashSetHelper.StringToHashSet(value.Trim());
 			_tags = HashSetHelper.HashSetToString(Keywords);
+		}
+	}
+
+	/// <summary>
+	///     XMP Media Management Instance ID (xmpMM:InstanceID)
+	/// </summary>
+	[MaxLength(80)]
+	public string? InstanceId
+	{
+		get => _instanceId ?? string.Empty;
+		set
+		{
+			if ( string.IsNullOrWhiteSpace(value) )
+			{
+				_instanceId = string.Empty;
+				return;
+			}
+
+			_instanceId = value.Trim();
 		}
 	}
 
@@ -896,6 +920,14 @@ public sealed class FileIndexItem
 	public static bool IsRelativeOrientation(int rotateClock)
 	{
 		return rotateClock == -1 || rotateClock == 1; // rotateClock == -1 || rotateClock == 1 true
+	}
+
+	/// <summary>
+	///     Generate a fresh xmpMM:InstanceID value.
+	/// </summary>
+	public static string CreateInstanceId()
+	{
+		return $"xmp.iid:{Guid.NewGuid():D}";
 	}
 
 	/// <summary>

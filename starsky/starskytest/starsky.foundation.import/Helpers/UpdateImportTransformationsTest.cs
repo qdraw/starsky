@@ -15,6 +15,45 @@ namespace starskytest.starsky.foundation.import.Helpers;
 public sealed class UpdateImportTransformationsTest
 {
 	[TestMethod]
+	public void AddInstanceIdToComparedNamesList_Contain()
+	{
+		var item = new FileIndexItem("/test.jpg");
+		var list = UpdateImportTransformations.AddInstanceIdToComparedNamesList(
+			new List<string>(), item);
+
+		Assert.HasCount(1, list);
+		Assert.AreEqual(nameof(FileIndexItem.InstanceId).ToLowerInvariant(), list[0]);
+		Assert.IsFalse(string.IsNullOrWhiteSpace(item.InstanceId));
+	}
+
+	[TestMethod]
+	public async Task UpdateTransformations_ShouldGenerate_InstanceId_IndexModeOn()
+	{
+		var storage = new FakeIStorage(
+			new List<string> { "/" },
+			new List<string> { "/test.jpg", "/test.xmp" },
+			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
+		var appSettings = new AppSettings();
+
+		var updateImportTransformations = new UpdateImportTransformations(new FakeIWebLogger(),
+			new FakeExifTool(storage, appSettings),
+			new FakeSelectorStorage(storage), appSettings,
+			new FakeIThumbnailQuery());
+
+		var query = new FakeIQuery();
+		await query.AddItemAsync(new FileIndexItem("/test.jpg") { FileHash = "test" });
+
+		UpdateImportTransformations.QueryUpdateDelegate updateItemAsync = query.UpdateItemAsync;
+
+		await updateImportTransformations.UpdateTransformations(updateItemAsync,
+			new FileIndexItem("/test.jpg"), -1,
+			false, true, true, string.Empty);
+
+		var updatedItem = await query.GetObjectByFilePathAsync("/test.jpg");
+		StringAssert.StartsWith(updatedItem!.InstanceId, "xmp.iid:");
+	}
+
+	[TestMethod]
 	public async Task UpdateTransformations_ShouldUpdate_ColorClass_IndexModeOn()
 	{
 		var storage = new FakeIStorage(

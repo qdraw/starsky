@@ -107,6 +107,8 @@ public class UpdateImportTransformations
 			comparedNamesList = AddReverseGeoCodeToComparedNamesList(comparedNamesList);
 		}
 
+		comparedNamesList = AddInstanceIdToComparedNamesList(comparedNamesList, fileIndexItem);
+
 		if ( comparedNamesList.Count == 0 )
 		{
 			return fileIndexItem;
@@ -148,6 +150,19 @@ public class UpdateImportTransformations
 	internal static List<string> AddColorClassToComparedNamesList(List<string> list)
 	{
 		list.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant());
+		return list;
+	}
+
+	internal static List<string> AddInstanceIdToComparedNamesList(List<string> list,
+		FileIndexItem fileIndexItem)
+	{
+		if ( !string.IsNullOrWhiteSpace(fileIndexItem.InstanceId) )
+		{
+			return list;
+		}
+
+		fileIndexItem.InstanceId = FileIndexItem.CreateInstanceId();
+		list.Add(nameof(FileIndexItem.InstanceId).ToLowerInvariant());
 		return list;
 	}
 

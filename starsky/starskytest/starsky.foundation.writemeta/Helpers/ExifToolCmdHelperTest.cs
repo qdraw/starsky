@@ -305,6 +305,28 @@ public sealed class ExifToolCmdHelperTest
 	}
 
 	[TestMethod]
+	public void ExifToolCommandLineArgs_InstanceId()
+	{
+		var updateModel = new FileIndexItem
+		{
+			InstanceId = "xmp.iid:12345678-1234-1234-1234-1234567890ab"
+		};
+		var comparedNames = new List<string>
+		{
+			nameof(FileIndexItem.InstanceId).ToLowerInvariant()
+		};
+
+		var result = new ExifToolCmdHelper(null!, null!,
+			null!, null!,
+			null!, null!, new AppSettings()).ExifToolCommandLineArgs(updateModel,
+			comparedNames, true);
+
+		Assert.AreEqual(
+			"-json -overwrite_original -XMP-xmpMM:InstanceID=\"xmp.iid:12345678-1234-1234-1234-1234567890ab\" ",
+			result);
+	}
+
+	[TestMethod]
 	public void ExifToolCommandLineArgsImageStabilisation()
 	{
 		var updateModel = new FileIndexItem

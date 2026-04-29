@@ -50,6 +50,21 @@ public sealed class FileIndexItemTest
 		Assert.AreEqual(item.Description, string.Empty);
 	}
 
+	[TestMethod]
+	public void FileIndexItemTest_SetInstanceIdToNull()
+	{
+		var item = new FileIndexItem { InstanceId = null };
+		Assert.AreEqual(string.Empty, item.InstanceId);
+	}
+
+	[TestMethod]
+	public void FileIndexItemTest_CreateInstanceId()
+	{
+		var value = FileIndexItem.CreateInstanceId();
+		Assert.IsTrue(value.StartsWith("xmp.iid:", StringComparison.Ordinal));
+		Assert.IsTrue(Guid.TryParse(value.Replace("xmp.iid:", string.Empty), out _));
+	}
+
 
 	[TestMethod]
 	public void FileIndexItemTest_SetColorClassTestDefault()
