@@ -146,4 +146,85 @@ public class NewItemTest
 
 		Assert.IsNotNull(result);
 	}
+
+	[TestMethod]
+	public async Task NewFileItemAsync_ListOverload_ProcessesAllItems()
+	{
+		// Test the List<FileIndexItem> overload
+		var storage = new FakeIStorage(
+			new List<string> { "/" },
+			new List<string> { "/a.jpg", "/b.jpg" },
+			new List<byte[]> { new byte[100], new byte[100] });
+
+		var inputItems = new List<FileIndexItem>
+		{
+			new FileIndexItem("/a.jpg"),
+			new FileIndexItem("/b.jpg")
+		};
+
+		var results = await new NewItem(storage, new FakeReadMeta(), new FakeIWebLogger())
+			.NewFileItemAsync(inputItems);
+
+		Assert.HasCount(2, results);
+		Assert.IsNotNull(results[0]);
+		Assert.IsNotNull(results[1]);
+	}
+
+	[TestMethod]
+	public async Task NewFileItemAsync_RootPath_SkipsJsonSidecar()
+	{
+		// When filePath = "/" (root / directory), fileName is empty → JSON sidecar is skipped
+		var storage = new FakeIStorage(
+			new List<string> { "/" },
+			new List<string> { "/" },
+			new List<byte[]> { new byte[100] });
+
+		// FilePath defaults to "/" for FileIndexItem()
+		var result = await new NewItem(storage, new FakeReadMeta(), new FakeIWebLogger())
+			.NewFileItemAsync(new FileIndexItem());
+
+		Assert.IsNotNull(result);
+	}
+
+	[TestMethod]
+	public async Task ReadAndApplyJsonSidecar_NullItemInJson_DoesNotApply()
+	{
+		// JSON sidecar with {"item": null} should not crash and should not modify the item
+		var jsonBytes = Encoding.UTF8.GetBytes("{\"item\": null}");
+
+		var storage = new FakeIStorage(
+			new List<string> { "/" },
+			new List<string> { "/test.jpg", "/.starsky.test.jpg.json" },
+			new List<byte[]> { new byte[100], jsonBytes });
+
+		var result = await new NewItem(storage, new FakeReadMeta(), new FakeIWebLogger())
+			.NewFileItemAsync(new FileIndexItem("/test.jpg"));
+
+		// FakeReadMeta tags should remain unchanged (JSON sidecar had null item)
+		Assert.AreEqual("test, fake read meta", result.Tags);
+	}
+
+	[TestMethod]
+	public async Task PrepareUpdateFileItemAsync_WithExistingFileHash_SkipsHashComputation()
+	{
+		// When dbItem already has a FileHash, SetFileHashStatus should skip hash computation
+		const string existingHash = "EXISTINGHASHVALUE";
+		var storage = new FakeIStorage(
+			new List<string> { "/" },
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { new byte[100] });
+
+		var dbItem = new FileIndexItem("/test.jpg")
+		{
+			FileHash = existingHash,
+			LastChanged = new List<string>()
+		};
+
+		var result = await new NewItem(storage, new FakeReadMeta(), new FakeIWebLogger())
+			.PrepareUpdateFileItemAsync(dbItem, 100);
+
+		// FileHash should be unchanged (not recomputed)
+		Assert.AreEqual(existingHash, result.FileHash);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+	}
 }

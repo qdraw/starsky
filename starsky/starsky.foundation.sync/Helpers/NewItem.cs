@@ -116,12 +116,7 @@ public sealed class NewItem
 	/// <param name="fileIndexItem">item to enrich with JSON sidecar data</param>
 	private async Task ReadAndApplyJsonSidecarAsync(string filePath, FileIndexItem fileIndexItem)
 	{
-		if ( string.IsNullOrEmpty(filePath) )
-		{
-			return;
-		}
-
-		// Guard: JsonSidecarLocation requires a non-empty filename component
+		// Guard: JsonSidecarLocation requires a non-empty filename component (e.g. filePath "/" has none)
 		var fileName = PathHelper.GetFileName(filePath);
 		if ( string.IsNullOrEmpty(fileName) )
 		{
