@@ -5,6 +5,7 @@ import { GetCookie } from "../../../shared/cookie/get-cookie";
 
 // 95MB chunk size to stay well under Cloudflare's 100MB limit
 const CHUNK_SIZE = 95 * 1024 * 1024;
+const MAX_CHUNK_RETRIES = 2;
 
 interface ChunkUploadInitResponse {
   uploadId: string;
@@ -131,30 +132,46 @@ export class ChunkUploadHelper {
     chunkIndex: number,
     chunk: Blob
   ): Promise<boolean> {
-    try {
-      const url = `${this.endpoint}/chunk/${uploadId}?chunkIndex=${chunkIndex}`;
+    const url = `${this.endpoint}/chunk/${uploadId}?chunkIndex=${chunkIndex}`;
 
-      const settings: RequestInit = {
-        method: "PUT",
-        body: chunk,
-        credentials: "include" as RequestCredentials,
-        headers: {
-          "X-XSRF-TOKEN": GetCookie("X-XSRF-TOKEN"),
-          "Content-Type": "application/octet-stream"
+    const settings: RequestInit = {
+      method: "PUT",
+      body: chunk,
+      credentials: "include" as RequestCredentials,
+      headers: {
+        "X-XSRF-TOKEN": GetCookie("X-XSRF-TOKEN"),
+        "Content-Type": "application/octet-stream"
+      }
+    };
+
+    for (let attempt = 0; attempt <= MAX_CHUNK_RETRIES; attempt++) {
+      try {
+        const response = await fetch(url, settings);
+        if (response.ok) {
+          return true;
         }
-      };
 
-      const response = await fetch(url, settings);
-      if (!response.ok) {
-        console.error(`Chunk upload failed for index ${chunkIndex}:`, response);
-        return false;
+        console.error(`Chunk upload failed for index ${chunkIndex} attempt ${attempt + 1}:`, response);
+        if (!this.shouldRetryChunkUpload(response.status) || attempt === MAX_CHUNK_RETRIES) {
+          return false;
+        }
+      } catch (error) {
+        console.error(`Error uploading chunk ${chunkIndex} attempt ${attempt + 1}:`, error);
+        if (attempt === MAX_CHUNK_RETRIES) {
+          return false;
+        }
       }
 
-      return true;
-    } catch (error) {
-      console.error(`Error uploading chunk ${chunkIndex}:`, error);
-      return false;
+      this.setNotificationStatus(
+        `Retrying chunk ${chunkIndex + 1} (${attempt + 1}/${MAX_CHUNK_RETRIES})`
+      );
     }
+
+    return false;
+  }
+
+  private shouldRetryChunkUpload(status?: number): boolean {
+    return status !== 400 && status !== 404;
   }
 
   private async completeChunkUpload(uploadId: string): Promise<IFileIndexItem[] | null> {
@@ -231,6 +248,7 @@ export function getChunkThreshold(): number {
   // Use 95MB as threshold for chunk upload (stays under 100MB Cloudflare limit)
   return 95 * 1024 * 1024;
 }
+
 
 
 

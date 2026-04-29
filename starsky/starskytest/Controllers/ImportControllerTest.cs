@@ -4,6 +4,8 @@ using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +20,8 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
 using starsky.foundation.import.Interfaces;
+using starsky.foundation.import.Models;
+using starsky.foundation.import.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.worker.Interfaces;
@@ -34,6 +38,7 @@ public sealed class ImportControllerTest
 	private readonly AppSettings _appSettings;
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly IImport _import;
+	private readonly IChunkUploadSessionStore _chunkUploadSessionStore;
 
 	public ImportControllerTest()
 	{
@@ -42,7 +47,7 @@ public sealed class ImportControllerTest
 
 		var services = new ServiceCollection();
 
-		_appSettings = new AppSettings();
+		_appSettings = new AppSettings { TempFolder = new CreateAnImage().BasePath };
 
 		// Add Background services
 		services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
@@ -57,6 +62,7 @@ public sealed class ImportControllerTest
 		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 
 		_import = new FakeIImport(new FakeSelectorStorage(new FakeIStorage()));
+		_chunkUploadSessionStore = new InMemoryChunkUploadSessionStore();
 	}
 
 	/// <summary>
@@ -73,6 +79,79 @@ public sealed class ImportControllerTest
 		var actionContext = new ActionContext(httpContext, new RouteData(),
 			new ControllerActionDescriptor());
 		return new ControllerContext(actionContext);
+	}
+
+	private static ControllerContext RequestWithBinary(byte[] bytes)
+	{
+		var httpContext = new DefaultHttpContext();
+		httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
+		httpContext.Request.Body = new MemoryStream(bytes);
+
+		var actionContext = new ActionContext(httpContext, new RouteData(),
+			new ControllerActionDescriptor());
+		return new ControllerContext(actionContext);
+	}
+
+	[TestMethod]
+	public void ImportChunkInit_InvalidPayload_BadRequest()
+	{
+		var importController = new ImportController(_import, _appSettings,
+			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger(),
+			_chunkUploadSessionStore)
+		{
+			ControllerContext = RequestWithFile()
+		};
+
+		var actionResult = importController.ImportChunkInit(string.Empty, 0, 0) as BadRequestObjectResult;
+		Assert.AreEqual(400, actionResult?.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task CompleteImportChunk_DefaultFlow_QueuesJob()
+	{
+		var fakeStorage = new FakeIStorage();
+		var fakeSelectorStorage = new FakeSelectorStorage(fakeStorage);
+		var fakeImport = new FakeIImport(fakeSelectorStorage);
+		var importController = new ImportController(fakeImport, _appSettings,
+			_bgTaskQueue, null!, fakeSelectorStorage, new FakeIWebLogger(),
+			_chunkUploadSessionStore)
+		{
+			ControllerContext = RequestWithFile()
+		};
+
+		var imageBytes = CreateAnImage.Bytes.ToArray();
+		var chunkSize = imageBytes.Length / 2;
+		var firstChunk = imageBytes.Take(chunkSize).ToArray();
+		var secondChunk = imageBytes.Skip(chunkSize).ToArray();
+
+		var initActionResult = importController.ImportChunkInit("chunk-import.jpg", 2,
+			imageBytes.Length) as JsonResult;
+		var initModel = initActionResult?.Value as ChunkUploadInitResultModel;
+		Assert.IsNotNull(initModel);
+
+		importController.ControllerContext = RequestWithBinary(firstChunk);
+		await importController.ImportChunkPart(initModel.UploadId, 0);
+
+		importController.ControllerContext = RequestWithBinary(secondChunk);
+		await importController.ImportChunkPart(initModel.UploadId, 1);
+
+		importController.ControllerContext = new ControllerContext
+		{
+			HttpContext = new DefaultHttpContext()
+		};
+		var completeActionResult = await importController.CompleteImportChunk(initModel.UploadId) as JsonResult;
+		var list = completeActionResult?.Value as List<ImportIndexItem>;
+
+		Assert.IsNotNull(list);
+		Assert.AreEqual(ImportStatus.Ok, list.FirstOrDefault()?.Status);
+		Assert.AreEqual(1, _bgTaskQueue.Count());
+
+		var queuedJob = await _bgTaskQueue.DequeueJobAsync(CancellationToken.None);
+		Assert.AreEqual(ImportBackgroundJobHandler.Import, queuedJob.JobType);
+		var payload = JsonSerializer.Deserialize<ImportBackgroundPayload>(queuedJob.PayloadJson!);
+		Assert.IsNotNull(payload);
+		Assert.HasCount(1, payload.TempImportPaths);
+		Assert.EndsWith(payload.TempImportPaths[0], "chunk-import.jpg");
 	}
 
 	[TestMethod]
@@ -138,29 +217,6 @@ public sealed class ImportControllerTest
 
 		// When Preflight returns an empty list (no Ok items) and IndexMode is true,
 		// the controller should set Response.StatusCode to 206
-		Assert.AreEqual(206, importController.Response.StatusCode);
-	}
-
-	[TestMethod]
-	public async Task IndexPost_AllItemsAlreadyImported_Returns206_EmptyPreflight()
-	{
-		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
-		var fakeImport = new FakeIImportForImportTest();
-
-		var importController = new ImportController(fakeImport,
-			_appSettings,
-			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
-		{
-			ControllerContext = RequestWithFile()
-		};
-
-		// Act
-		var actionResult = await importController.IndexPost() as JsonResult;
-		var list = actionResult?.Value as List<ImportIndexItem>;
-
-		// Assert
-		Assert.IsNotNull(list);
-		Assert.IsEmpty(list);
 		Assert.AreEqual(206, importController.Response.StatusCode);
 	}
 

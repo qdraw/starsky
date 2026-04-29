@@ -1,7 +1,7 @@
 ﻿# Chunked Upload Feature Implementation Summary
 
 ## Overview
-Implemented a complete chunked upload system for Starsky to handle files up to 95MB+ for both `/api/upload` and `/api/import` endpoints, addressing Cloudflare's 100MB request limit.
+Implemented a chunked upload system for Starsky to handle files above the Cloudflare request limit for both `/api/upload` and `/api/import`, with backend controller coverage, direct chunk-store tests, and frontend specs for threshold switching and helper behavior.
 
 ## Architecture
 
@@ -24,17 +24,27 @@ Implemented a complete chunked upload system for Starsky to handle files up to 9
 
 **Modified Files:**
 - `starsky/Controllers/UploadController.cs`
-  - Added 5 new chunk endpoints
+  - Added 5 upload chunk endpoints
   - Refactored upload finalization into reusable method
   - Maintained backward compatibility with direct upload
+- `starsky/Controllers/ImportController.cs`
+  - Added 5 import chunk endpoints
+  - Reused the same chunk session store
+  - Finalizes into the existing background import queue flow
 
 **New Endpoints:**
 ```
-POST   /api/upload/chunk/init                    - Initialize chunk session
-PUT    /api/upload/chunk/{uploadId}              - Upload single chunk (120MB limit)
-GET    /api/upload/chunk/{uploadId}/status       - Poll upload progress
-POST   /api/upload/chunk/{uploadId}/complete     - Finalize and process upload
-DELETE /api/upload/chunk/{uploadId}              - Cleanup session
+POST   /api/upload/chunk/init                    - Initialize upload chunk session
+PUT    /api/upload/chunk/{uploadId}              - Upload single upload chunk (120MB limit)
+GET    /api/upload/chunk/{uploadId}/status       - Poll upload chunk progress
+POST   /api/upload/chunk/{uploadId}/complete     - Finalize upload chunk session
+DELETE /api/upload/chunk/{uploadId}              - Cleanup upload chunk session
+
+POST   /api/import/chunk/init                    - Initialize import chunk session
+PUT    /api/import/chunk/{uploadId}              - Upload single import chunk (120MB limit)
+GET    /api/import/chunk/{uploadId}/status       - Poll import chunk progress
+POST   /api/import/chunk/{uploadId}/complete     - Finalize import and queue background job
+DELETE /api/import/chunk/{uploadId}              - Cleanup import chunk session
 ```
 
 **Tests:**
@@ -42,6 +52,17 @@ DELETE /api/upload/chunk/{uploadId}              - Cleanup session
   - `UploadChunkInit_NoToHeader_BadRequest` - validation test
   - `UploadChunkFlow_DefaultFlow` - end-to-end chunked upload
   - All 18 existing upload tests pass (no regressions)
+- `starskytest/Controllers/ImportControllerTest.cs`
+  - `ImportChunkInit_InvalidPayload_BadRequest`
+  - `CompleteImportChunk_DefaultFlow_QueuesJob`
+- `starskytest/starsky.foundation.import/Services/InMemoryChunkUploadSessionStoreTests.cs`
+  - create/status lifecycle
+  - invalid index
+  - duplicate chunk
+  - missing chunk
+  - size mismatch
+  - ordered assembly
+  - delete lifecycle
 
 ---
 
@@ -61,6 +82,10 @@ DELETE /api/upload/chunk/{uploadId}              - Cleanup session
   - Routes large files to `ChunkUploadHelper`
   - Routes small files to existing direct upload path
   - Preserves all error handling and response processing
+- `starsky/clientapp/src/components/atoms/drop-area/drop-area.spec.tsx`
+  - Added threshold-switch test to verify large files use `ChunkUploadHelper`
+- `starsky/clientapp/src/components/atoms/drop-area/chunk-upload-helper.spec.ts`
+  - Added helper tests for init/chunk/complete success and cleanup on chunk failure
 
 **Upload Flow Decision Logic:**
 ```
@@ -143,12 +168,19 @@ Backend returns standard `ImportIndexItem[]` (same as direct upload) containing:
 
 ## Testing
 
-### Backend Tests (18/18 passing)
+### Backend Tests
 ```bash
-dotnet test starskytest/starskytest.csproj --filter "FullyQualifiedName~UploadControllerTest"
+dotnet test starskytest/starskytest.csproj --filter "FullyQualifiedName~ImportControllerTest|FullyQualifiedName~InMemoryChunkUploadSessionStoreTests|FullyQualifiedName~UploadControllerTest"
 ```
-- 2 new chunk-specific tests
-- 16 existing upload tests (all pass, no regressions)
+- upload controller tests passing
+- import controller chunk tests passing
+- direct chunk store tests passing
+
+### Frontend Tests
+```bash
+npx jest --runInBand --runTestsByPath src/components/atoms/drop-area/drop-area.spec.tsx src/components/atoms/drop-area/chunk-upload-helper.spec.ts
+```
+- threshold switch and chunk helper tests passing
 
 ### Frontend Build
 ```bash
@@ -201,11 +233,16 @@ npm run build
 - ✅ Added: `C:\DEV\starsky\starsky\starsky.foundation.import\Interfaces\IChunkUploadSessionStore.cs`
 - ✅ Added: `C:\DEV\starsky\starsky\starsky.foundation.import\Services\InMemoryChunkUploadSessionStore.cs`
 - ✅ Modified: `C:\DEV\starsky\starsky\starsky\Controllers\UploadController.cs` (85 lines added)
+- ✅ Modified: `C:\DEV\starsky\starsky\starsky\Controllers\ImportController.cs`
 - ✅ Modified: `C:\DEV\starsky\starsky\starskytest\Controllers\UploadControllerTest.cs` (92 lines added)
+- ✅ Modified: `C:\DEV\starsky\starsky\starskytest\Controllers\ImportControllerTest.cs`
+- ✅ Added: `C:\DEV\starsky\starsky\starskytest\starsky.foundation.import\Services\InMemoryChunkUploadSessionStoreTests.cs`
 
 ### Frontend
 - ✅ Added: `C:\DEV\starsky\starsky\starsky\clientapp\src\components\atoms\drop-area\chunk-upload-helper.ts`
 - ✅ Modified: `C:\DEV\starsky\starsky\starsky\clientapp\src\components\atoms\drop-area\post-single-form-data.ts` (53 lines added/modified)
+- ✅ Modified: `C:\DEV\starsky\starsky\starsky\clientapp\src\components\atoms\drop-area\drop-area.spec.tsx`
+- ✅ Added: `C:\DEV\starsky\starsky\starsky\clientapp\src\components\atoms\drop-area\chunk-upload-helper.spec.ts`
 
 ### Build Status
 - ✅ Backend: `.NET 8.0` - compiles without errors
@@ -224,4 +261,5 @@ npm run build
 - [ ] Verify error scenarios (network interruption, timeout)
 - [ ] Document new endpoints in API docs
 - [ ] Update user documentation if needed
+
 

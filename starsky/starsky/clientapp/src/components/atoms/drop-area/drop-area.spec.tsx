@@ -4,6 +4,7 @@ import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/I
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import DropArea from "./drop-area";
+import { ChunkUploadHelper } from "./chunk-upload-helper";
 import { PostSingleFormData } from "./post-single-form-data";
 
 describe("DropArea", () => {
@@ -149,8 +150,27 @@ describe("DropArea", () => {
       expect(callBackWhenReady).toHaveBeenCalledWith([]);
     });
 
-    it("to big", () => {
+    it("uses chunk helper above threshold", (done) => {
       const callBackWhenReady = jest.fn();
+      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockResolvedValue({
+        ...newIConnectionDefault(),
+        data: []
+      });
+      fetchPostSpy.mockClear();
+      const chunkUploadSpy = jest
+        .spyOn(ChunkUploadHelper.prototype, "uploadFileInChunks")
+        .mockResolvedValueOnce([
+          {
+            fileName: "test.jpg",
+            filePath: "/test.jpg",
+            fileCollectionName: "",
+            fileHash: "",
+            parentDirectory: "/",
+            status: IExifStatus.Ok,
+            isDirectory: false,
+            lastEdited: new Date().toISOString()
+          }
+        ]);
 
       const file = {
         name: "test.jpg",
@@ -158,16 +178,19 @@ describe("DropArea", () => {
         size: 3000000000000
       } as File;
 
-      PostSingleFormData("/", undefined, [file], 0, [], callBackWhenReady, jest.fn());
-      expect(callBackWhenReady).toHaveBeenCalled();
-
-      expect(callBackWhenReady).toHaveBeenCalledWith([
-        {
-          fileName: "test.jpg",
-          filePath: "test.jpg",
-          status: "ServerError"
-        }
-      ]);
+      PostSingleFormData("/", undefined, [file], 0, [], (result) => {
+        expect(chunkUploadSpy).toHaveBeenCalledWith(file, 0, 1);
+        expect(fetchPostSpy).not.toHaveBeenCalled();
+        expect(callBackWhenReady).not.toHaveBeenCalled();
+        expect(result).toEqual([
+          expect.objectContaining({
+            fileName: "test.jpg",
+            filePath: "/test.jpg",
+            status: "Ok"
+          })
+        ]);
+        done();
+      }, jest.fn());
     });
 
     it("status Ok", (done) => {
