@@ -1643,6 +1643,149 @@ public sealed class ImportTest : VerifyBase
 		Assert.AreEqual(ImportStatus.Default, testItem?.Status);
 	}
 
+	[TestMethod]
+	public void GetJsonSidecarSourcePath_UnixStyle_ReturnsCorrectPath()
+	{
+		var result = Import.GetJsonSidecarSourcePath("/path/to/test.jpg");
+		Assert.AreEqual("/path/to/.starsky.test.jpg.json", result);
+	}
+
+	[TestMethod]
+	public void GetJsonSidecarSourcePath_RootFile_ReturnsCorrectPath()
+	{
+		var result = Import.GetJsonSidecarSourcePath("/test.jpg");
+		Assert.AreEqual("/.starsky.test.jpg.json", result);
+	}
+
+	[TestMethod]
+	public void GetJsonSidecarSourcePath_Empty_ReturnsEmpty()
+	{
+		var result = Import.GetJsonSidecarSourcePath(string.Empty);
+		Assert.AreEqual(string.Empty, result);
+	}
+
+	[TestMethod]
+	public void ExistJsonSidecarForThisFile_WhenExists_ReturnsTrue()
+	{
+		var storage = new FakeIStorage(
+			["/"],
+			["/test.jpg", "/.starsky.test.jpg.json"],
+			new List<byte[]>
+			{
+				CreateAnImage.Bytes.ToArray(),
+				Array.Empty<byte>()
+			});
+
+		var importService = new Import(new FakeSelectorStorage(storage), new AppSettings(),
+			new FakeIImportQuery(), new FakeExifTool(storage, new AppSettings()),
+			new FakeIQuery(), _console, new FakeIMetaExifThumbnailService(),
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
+
+		var result = importService.ExistJsonSidecarForThisFile("/test.jpg");
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void ExistJsonSidecarForThisFile_WhenNotExists_ReturnsFalse()
+	{
+		var storage = new FakeIStorage(
+			["/"],
+			["/test.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var importService = new Import(new FakeSelectorStorage(storage), new AppSettings(),
+			new FakeIImportQuery(), new FakeExifTool(storage, new AppSettings()),
+			new FakeIQuery(), _console, new FakeIMetaExifThumbnailService(),
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
+
+		var result = importService.ExistJsonSidecarForThisFile("/test.jpg");
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void ExistJsonSidecarForThisFile_EmptyPath_ReturnsFalse()
+	{
+		var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(),
+			new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
+			new FakeIQuery(), _console, new FakeIMetaExifThumbnailService(),
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
+
+		var result = importService.ExistJsonSidecarForThisFile(string.Empty);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task Preflight_WithJsonSidecar_AppliesTagsFromSidecar()
+	{
+		// A JSON sidecar alongside the source file should have its tags applied to the imported item
+		const string jsonTags = "imported-from-json-sidecar";
+		const string jsonContent = "{\"item\":{\"tags\":\"" + jsonTags + "\"}}";
+		var jsonBytes = System.Text.Encoding.UTF8.GetBytes(jsonContent);
+
+		var storage = new FakeIStorage(
+			["/"],
+			["/test.jpg", "/.starsky.test.jpg.json"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray(), jsonBytes });
+
+		var appSettings = new AppSettings { Verbose = true };
+		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
+			new FakeIImportQuery(), new FakeExifTool(storage, appSettings),
+			new FakeIQuery(), _console, new FakeIMetaExifThumbnailService(),
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
+
+		var result = await importService.Preflight(["/test.jpg"], new ImportSettingsModel());
+
+		Assert.IsNotNull(result.FirstOrDefault());
+		Assert.AreEqual(ImportStatus.Ok, result[0].Status);
+		Assert.AreEqual(jsonTags, result[0].FileIndexItem?.Tags);
+	}
+
+	[TestMethod]
+	public async Task Importer_WithJsonSidecar_CopiesJsonToSubPathStorage()
+	{
+		// When importing a file that has a .starsky.filename.json sidecar,
+		// the sidecar should be copied to the destination subpath storage
+		const string jsonTags = "copied-sidecar-test";
+		const string jsonContent = "{\"item\":{\"tags\":\"" + jsonTags + "\"}}";
+		var jsonBytes = System.Text.Encoding.UTF8.GetBytes(jsonContent);
+
+		var storage = new FakeIStorage(
+			["/"],
+			["/test.jpg", "/.starsky.test.jpg.json"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray(), jsonBytes });
+
+		var appSettings = new AppSettings { Verbose = true };
+		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
+			new FakeIImportQuery(), new FakeExifTool(storage, appSettings),
+			new FakeIQuery(), _console, new FakeIMetaExifThumbnailService(),
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
+
+		var result = await importService.Importer(
+			new List<string> { "/test.jpg" }, new ImportSettingsModel());
+
+		Assert.IsNotNull(result.FirstOrDefault());
+		Assert.AreEqual(ImportStatus.Ok, result[0].Status);
+
+		// The JSON sidecar should have been copied to the subPath destination
+		var expectedJsonSubPath = JsonSidecarLocation.JsonLocation(
+			result[0].FileIndexItem!.ParentDirectory!,
+			result[0].FileIndexItem!.FileName!);
+		Assert.IsTrue(storage.ExistFile(expectedJsonSubPath),
+			$"JSON sidecar should exist at {expectedJsonSubPath}");
+
+		// Verify content was copied correctly
+		var copiedStream = storage.ReadStream(expectedJsonSubPath);
+		var copiedContent = await StreamToStringHelper.StreamToStringAsync(copiedStream);
+		Assert.IsNotNull(copiedContent);
+		Assert.AreNotEqual(string.Empty, copiedContent);
+		Assert.Contains(jsonTags, copiedContent);
+	}
+
 	private sealed class FakeReadOnlyStorage : FakeIStorage
 	{
 		public override StorageInfo Info(string path)
