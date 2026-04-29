@@ -53,6 +53,26 @@ public sealed class UserManagerTest
 	}
 
 	[TestMethod]
+	public async Task SignUpAsync_FirstUser_GlobalAdmin_SecondUser_NotGlobalAdmin()
+	{
+		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
+			_memoryCache);
+
+		await userManager.SignUpAsync("first", "email", "first@test.local", "pass123456789");
+		await userManager.SignUpAsync("second", "email", "second@test.local", "pass123456789");
+
+		var firstUser = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == "first",
+			TestContext.CancellationTokenSource.Token);
+		var secondUser = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == "second",
+			TestContext.CancellationTokenSource.Token);
+
+		Assert.IsNotNull(firstUser);
+		Assert.IsNotNull(secondUser);
+		Assert.IsTrue(firstUser.IsGlobalAdmin);
+		Assert.IsFalse(secondUser.IsGlobalAdmin);
+	}
+
+	[TestMethod]
 	public async Task ValidateAsync_CredentialType_stringEmpty()
 	{
 		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),

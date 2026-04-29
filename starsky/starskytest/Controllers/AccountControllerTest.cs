@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -124,8 +125,7 @@ public sealed class AccountControllerTest
 		httpContext!.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 		httpContext.RequestServices = _serviceProvider;
 
-		var controller = new AccountController(_userManager, _appSettings,
-			_antiForgery, _selectorStorage);
+		var controller = CreateController(_userManager);
 		controller.ControllerContext.HttpContext = httpContext;
 
 		// Get context for url (netcore3)
@@ -179,8 +179,7 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task LoginPost_LockOutStatusCode()
 	{
-		var controller = new AccountController(new FakeUserManagerActiveUsers(),
-			_appSettings, _antiForgery, _selectorStorage);
+		var controller = CreateController(new FakeUserManagerActiveUsers());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		await controller.LoginPost(new LoginViewModel { Email = "lockout", Password = "t1" });
@@ -191,8 +190,7 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task LoginPost_RejectStatusCode()
 	{
-		var controller = new AccountController(new FakeUserManagerActiveUsers(),
-			_appSettings, _antiForgery, _selectorStorage);
+		var controller = CreateController(new FakeUserManagerActiveUsers());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		await controller.LoginPost(new LoginViewModel { Email = "reject", Password = "t1" });
@@ -203,7 +201,7 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task LoginPost_RejectStatusCode_noData()
 	{
-		var controller = new AccountController(new FakeIUserManger(new UserOverviewModel(
+		var controller = CreateController(new FakeIUserManger(new UserOverviewModel(
 			new List<User>
 			{
 				new()
@@ -219,7 +217,7 @@ public sealed class AccountControllerTest
 						}
 					}
 				}
-			})), _appSettings, _antiForgery, _selectorStorage);
+			})));
 		controller.ControllerContext.HttpContext = new DefaultHttpContext
 		{
 			User = new ClaimsPrincipal()
@@ -233,8 +231,7 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task LoginPost_Fail_SignIn()
 	{
-		var controller = new AccountController(new FakeUserManagerActiveUsers(),
-			_appSettings, _antiForgery, _selectorStorage);
+		var controller = CreateController(new FakeUserManagerActiveUsers());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		await controller.LoginPost(new LoginViewModel { Email = "e500", Password = "t1" });
@@ -245,9 +242,8 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_Model_is_not_correct_NoUsersActive()
 	{
-		var controller = new AccountController(
-			new UserManager(_dbContext, _appSettings, new FakeIWebLogger()), _appSettings,
-			_antiForgery, _selectorStorage);
+		var controller = CreateController(
+			new UserManager(_dbContext, _appSettings, new FakeIWebLogger()));
 		var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>()
 			.HttpContext;
 		Assert.IsNotNull(httpContext);
@@ -266,8 +262,7 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_Model_WithUsersActive_GetRegisterPage_Forbid()
 	{
-		var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings,
-			_antiForgery, _selectorStorage);
+		var controller = CreateController(new FakeUserManagerActiveUsers());
 		var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>()
 			.HttpContext;
 		Assert.IsNotNull(httpContext);
@@ -287,8 +282,7 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_ChangeSecret_NotLoggedIn()
 	{
-		var controller = new AccountController(_userManager, _appSettings, _antiForgery,
-			_selectorStorage);
+		var controller = CreateController(_userManager);
 		var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>()
 			.HttpContext;
 		Assert.IsNotNull(httpContext);
@@ -308,17 +302,13 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_ChangeSecret_WrongInput()
 	{
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext =
-				{
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext {
 					HttpContext = new DefaultHttpContext
 					{
 						User = SetTestClaimsSet("test", "1")
 					}
-				}
-			};
+				};
 
 		var changePasswordViewModel = new ChangePasswordViewModel
 		{
@@ -337,14 +327,11 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_ChangeSecret_PasswordChange_Success_Injected()
 	{
-		var controller = new AccountController(new FakeUserManagerActiveUsers("test",
-			new User { Name = "t1", Id = 99 }), _appSettings, _antiForgery, _selectorStorage)
+		var controller = CreateController(new FakeUserManagerActiveUsers("test",
+			new User { Name = "t1", Id = 99 }));
+		controller.ControllerContext = new ControllerContext
 		{
-			ControllerContext =
-			{
-				HttpContext =
-					new DefaultHttpContext { User = SetTestClaimsSet("test", "99") }
-			}
+			HttpContext = new DefaultHttpContext { User = SetTestClaimsSet("test", "99") }
 		};
 
 		var changePasswordViewModel = new ChangePasswordViewModel
@@ -363,15 +350,10 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task ChangeSecret_RejectDueNotLogin()
 	{
-		var controller =
-			new AccountController(new FakeIUserManger(new UserOverviewModel()), _appSettings,
-				_antiForgery, _selectorStorage)
-			{
-				ControllerContext =
-				{
+		var controller = CreateController(new FakeIUserManger(new UserOverviewModel()));
+		controller.ControllerContext = new ControllerContext {
 					HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-				}
-			};
+				};
 
 		var changePasswordViewModel = new ChangePasswordViewModel
 		{
@@ -392,17 +374,13 @@ public sealed class AccountControllerTest
 		var userManager = new FakeUserManagerActiveUsers("reject",
 			new User { Name = "t1", Id = 99 });
 
-		var controller =
-			new AccountController(userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext =
-				{
+		var controller = CreateController(userManager);
+		controller.ControllerContext = new ControllerContext {
 					HttpContext = new DefaultHttpContext
 					{
 						User = SetTestClaimsSet("reject", "99")
 					}
-				}
-			};
+				};
 
 		var changePasswordViewModel = new ChangePasswordViewModel
 		{
@@ -420,7 +398,7 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_Model_WithUsersActive_GetRegisterPage_BlockedByDefault()
 	{
-		var controller = new AccountController(new FakeUserManagerActiveUsers(),
+		var controller = CreateController(new FakeUserManagerActiveUsers(),
 			new AppSettings { IsAccountRegisterOpen = false }, _antiForgery, _selectorStorage);
 		var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>()
 			.HttpContext;
@@ -443,17 +421,13 @@ public sealed class AccountControllerTest
 	{
 		var user = new User { Name = "JohnDoe2" };
 
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext =
-				{
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext {
 					HttpContext = new DefaultHttpContext
 					{
 						User = SetTestClaimsSet(user.Name, user.Id.ToString())
 					}
-				}
-			};
+				};
 
 		var registerViewModel = new RegisterViewModel
 		{
@@ -478,14 +452,11 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task Register_RejectDueNotLogin_AlreadyAccounts()
 	{
-		var controller = new AccountController(
-			new FakeIUserManger(new UserOverviewModel(new List<User> { new() })),
-			_appSettings, _antiForgery, _selectorStorage)
+		var controller = CreateController(
+			new FakeIUserManger(new UserOverviewModel(new List<User> { new() })));
+		controller.ControllerContext = new ControllerContext
 		{
-			ControllerContext =
-			{
-				HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-			}
+			HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
 		};
 
 		await controller.Register(new RegisterViewModel());
@@ -502,17 +473,13 @@ public sealed class AccountControllerTest
 		_dbContext.Users.Add(user);
 		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext =
-				{
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext {
 					HttpContext = new DefaultHttpContext
 					{
 						User = SetTestClaimsSet(user.Name, user.Id.ToString())
 					}
-				}
-			};
+				};
 
 		await controller.Status();
 		Assert.AreEqual(200, controller.Response.StatusCode);
@@ -529,8 +496,7 @@ public sealed class AccountControllerTest
 	public async Task AccountController_WithActiveUsers_IndexGetLoginFail()
 	{
 		// There are users active
-		var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings,
-			_antiForgery, _selectorStorage);
+		var controller = CreateController(new FakeUserManagerActiveUsers());
 
 		var identity = new ClaimsIdentity();
 		var claimsPrincipal = new ClaimsPrincipal(identity);
@@ -550,13 +516,9 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task Status_Fail()
 	{
-		var controller =
-			new AccountController(
-				new FakeIUserManger(new UserOverviewModel { IsSuccess = false }),
-				_appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext = { HttpContext = new DefaultHttpContext { User = null! } }
-			};
+		var controller = CreateController(
+				new FakeIUserManger(new UserOverviewModel { IsSuccess = false }));
+		controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = null! } };
 
 		await controller.Status();
 		Assert.AreEqual(503, controller.Response.StatusCode);
@@ -565,8 +527,7 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public void AccountController_LogInGet()
 	{
-		var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings,
-			_antiForgery, _selectorStorage);
+		var controller = CreateController(new FakeUserManagerActiveUsers());
 		var result = controller.LoginGet();
 		Assert.IsNotNull(result);
 	}
@@ -574,7 +535,7 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public void AccountController_LogInGet_NotFound()
 	{
-		var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings,
+		var controller = CreateController(new FakeUserManagerActiveUsers(), _appSettings,
 			_antiForgery, new FakeSelectorStorage());
 		var result = controller.LoginGet() as ContentResult;
 		Assert.AreEqual("Please check if the client code exist", result?.Content);
@@ -598,11 +559,8 @@ public sealed class AccountControllerTest
 		// needed to have httpContext.User.Identity.IsAuthenticated
 		_serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
 
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext = { HttpContext = httpContext }
-			};
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
 
 		// Get context for url (netcore3)
 		var routeData = new RouteData();
@@ -630,7 +588,7 @@ public sealed class AccountControllerTest
 
 		// The logout is mocked so this will not actual log it out
 		// controller.Logout() not crashing is good enough
-		controller.LogoutJson();
+		await controller.LogoutJson();
 
 		var newAccountDuplicate = new RegisterViewModel
 		{
@@ -649,7 +607,7 @@ public sealed class AccountControllerTest
 		Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
 
 		// The logout is mocked so this will not actual log it out and controller.Logout() not crashing is good enough
-		controller.LogoutJson();
+		await controller.LogoutJson();
 
 		// Clean afterwards            
 		var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == userId,
@@ -662,11 +620,8 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_RegisterStatus_NoAccounts()
 	{
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext = { HttpContext = new DefaultHttpContext() }
-			};
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
 		var actionResult = await controller.RegisterStatus() as JsonResult;
 
@@ -677,12 +632,8 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_RegisterStatus_ActiveUsers()
 	{
-		var controller =
-			new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery,
-				_selectorStorage)
-			{
-				ControllerContext = { HttpContext = new DefaultHttpContext() }
-			};
+		var controller = CreateController(new FakeUserManagerActiveUsers());
+		controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
 		var actionResult = await controller.RegisterStatus() as JsonResult;
 
@@ -693,14 +644,11 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task RegisterStatus_RejectDueNotLogin_AlreadyAccounts()
 	{
-		var controller = new AccountController(
-			new FakeIUserManger(new UserOverviewModel(new List<User> { new() })),
-			_appSettings, _antiForgery, _selectorStorage)
+		var controller = CreateController(
+			new FakeIUserManger(new UserOverviewModel(new List<User> { new() })));
+		controller.ControllerContext = new ControllerContext
 		{
-			ControllerContext =
-			{
-				HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-			}
+			HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
 		};
 
 		await controller.RegisterStatus();
@@ -711,13 +659,10 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_RegisterStatus_ActiveUsers_AppSettingOpen()
 	{
-		var controller =
-			new AccountController(new FakeUserManagerActiveUsers(),
+		var controller = CreateController(new FakeUserManagerActiveUsers(),
 				new AppSettings { IsAccountRegisterOpen = true }, _antiForgery,
-				_selectorStorage)
-			{
-				ControllerContext = { HttpContext = new DefaultHttpContext() }
-			};
+				_selectorStorage);
+		controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
 		var actionResult = await controller.RegisterStatus() as JsonResult;
 
@@ -728,11 +673,8 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_LoginStatus_NoAccounts()
 	{
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext = { HttpContext = new DefaultHttpContext() }
-			};
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
 		var actionResult = await controller.Status() as JsonResult;
 
@@ -743,12 +685,8 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_LoginStatus_NoAccountLocalhost_WithAppSettings()
 	{
-		var controller =
-			new AccountController(_userManager, new AppSettings { NoAccountLocalhost = true },
-				_antiForgery, _selectorStorage)
-			{
-				ControllerContext = { HttpContext = new DefaultHttpContext() }
-			};
+		var controller = CreateController(_userManager, new AppSettings { NoAccountLocalhost = true });
+		controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
 		var actionResult = await controller.Status() as UnauthorizedObjectResult;
 
@@ -764,13 +702,9 @@ public sealed class AccountControllerTest
 			User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"))
 		};
 
-		var controller =
-			new AccountController(new FakeUserManagerActiveUsers(
-					"test", new User { Name = "t1", Id = 99 }),
-				_appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext = { HttpContext = httpContext }
-			};
+		var controller = CreateController(new FakeUserManagerActiveUsers(
+					"test", new User { Name = "t1", Id = 99 }));
+		controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
 
 		var actionResult = await controller.Status() as JsonResult;
 		var user = actionResult?.Value as UserIdentifierStatusModel;
@@ -789,12 +723,8 @@ public sealed class AccountControllerTest
 			User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"))
 		};
 
-		var controller =
-			new AccountController(new FakeUserManagerActiveUsers("test1"), // <-- null
-				_appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext = { HttpContext = httpContext }
-			};
+		var controller = CreateController(new FakeUserManagerActiveUsers("test1"));
+		controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
 
 		var actionResult = await controller.Status() as ConflictObjectResult;
 
@@ -806,11 +736,8 @@ public sealed class AccountControllerTest
 	public void Permissions()
 	{
 		var claims = SetTestClaimsSet("test", "1");
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext = { HttpContext = new DefaultHttpContext { User = claims } }
-			};
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = claims } };
 
 		var actionResult = controller.Permissions() as JsonResult;
 		var list = actionResult?.Value as IEnumerable<string>;
@@ -826,11 +753,8 @@ public sealed class AccountControllerTest
 	public void Logout_ModelStateIsInvalid_ReturnsBadRequest()
 	{
 		// Arrange
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext = { HttpContext = new DefaultHttpContext() }
-			};
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act
@@ -844,11 +768,8 @@ public sealed class AccountControllerTest
 	public void LoginGet_ModelStateIsInvalid_ReturnsBadRequest()
 	{
 		// Arrange
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext = { HttpContext = new DefaultHttpContext() }
-			};
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act
@@ -862,17 +783,13 @@ public sealed class AccountControllerTest
 	public async Task ChangeSecret_ModelStateIsInvalid_ReturnsBadRequest()
 	{
 		// Arrange
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext =
-				{
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext {
 					HttpContext = new DefaultHttpContext
 					{
 						User = SetTestClaimsSet("test", "1")
 					}
-				}
-			};
+				};
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act
@@ -886,17 +803,13 @@ public sealed class AccountControllerTest
 	public async Task LoginPost_ModelStateIsInvalid_ReturnsBadRequest()
 	{
 		// Arrange
-		var controller =
-			new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
-			{
-				ControllerContext =
-				{
+		var controller = CreateController(_userManager);
+		controller.ControllerContext = new ControllerContext {
 					HttpContext = new DefaultHttpContext
 					{
 						User = SetTestClaimsSet("test", "1")
 					}
-				}
-			};
+				};
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act
@@ -904,6 +817,21 @@ public sealed class AccountControllerTest
 
 		// Assert
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	private AccountController CreateController(IUserManager? userManager = null,
+		AppSettings? appSettings = null, IAntiforgery? antiForgery = null,
+		ISelectorStorage? selectorStorage = null)
+	{
+		var usedAppSettings = appSettings ?? _appSettings;
+		var usedAntiForgery = antiForgery ?? _antiForgery;
+		var usedSelectorStorage = selectorStorage ?? _selectorStorage;
+		var tenantSlugValidator = new TenantSlugValidator();
+		var tenantSessionStore = new TenantSessionStore(_dbContext);
+
+		return new AccountController(userManager ?? _userManager, usedAppSettings,
+			usedAntiForgery, usedSelectorStorage, _dbContext, tenantSlugValidator,
+			tenantSessionStore);
 	}
 
 	public TestContext TestContext { get; set; }
