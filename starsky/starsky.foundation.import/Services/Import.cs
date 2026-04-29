@@ -146,7 +146,10 @@ public class Import : IImport
 					=> await PreflightPerFile(includedFilePath, importSettings),
 				_appSettings.MaxDegreesOfParallelism) )!.ToList();
 
-		MarkInBatchDuplicateHashes(importIndexItemsList);
+		if ( importSettings.IndexMode )
+		{
+			MarkInBatchDuplicateHashes(importIndexItemsList);
+		}
 
 		var directoriesContent = ParentFoldersDictionary(importIndexItemsList);
 
@@ -157,7 +160,7 @@ public class Import : IImport
 		return importIndexItemsList;
 	}
 
-	internal static void MarkInBatchDuplicateHashes(List<ImportIndexItem> importIndexItemsList)
+	internal void MarkInBatchDuplicateHashes(List<ImportIndexItem> importIndexItemsList)
 	{
 		var seenHashes = new HashSet<string>(StringComparer.Ordinal);
 		foreach ( var item in importIndexItemsList.Where(p => p.Status == ImportStatus.Ok) )
@@ -172,6 +175,8 @@ public class Import : IImport
 				continue;
 			}
 
+			ConsoleIfVerbose(
+				$"🤷 Ignored, batch duplicate hash {item.SourceFullFilePath}");
 			item.Status = ImportStatus.IgnoredAlreadyImported;
 		}
 	}

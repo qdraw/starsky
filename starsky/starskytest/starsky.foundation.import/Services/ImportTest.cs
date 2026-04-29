@@ -423,6 +423,60 @@ public sealed class ImportTest : VerifyBase
 	}
 
 	[TestMethod]
+	public async Task Preflight_BatchDuplicateByHash_IndexModeOff_DoesNotIgnore()
+	{
+		var appSettings = new AppSettings { Verbose = true };
+		var storage = new FakeIStorage(
+			["/"],
+			["/test-a.jpg", "/test-b.jpg"],
+			new List<byte[]>
+			{
+				CreateAnImage.Bytes.ToArray(),
+				CreateAnImage.Bytes.ToArray()
+			});
+
+		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
+			new FakeIImportQuery(),
+			new FakeExifTool(storage, appSettings), null!, _console,
+			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
+
+		var result = await importService.Preflight(["/test-a.jpg", "/test-b.jpg"],
+			new ImportSettingsModel { IndexMode = false });
+
+		Assert.HasCount(2, result);
+		Assert.IsTrue(result.All(p => p.Status == ImportStatus.Ok));
+	}
+
+	[TestMethod]
+	public async Task Preflight_BatchDuplicateByHash_LogsDistinctVerboseMessage()
+	{
+		var appSettings = new AppSettings { Verbose = true };
+		var fakeConsole = new FakeConsoleWrapper([]);
+		var storage = new FakeIStorage(
+			["/"],
+			["/test-a.jpg", "/test-b.jpg"],
+			new List<byte[]>
+			{
+				CreateAnImage.Bytes.ToArray(),
+				CreateAnImage.Bytes.ToArray()
+			});
+
+		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
+			new FakeIImportQuery(),
+			new FakeExifTool(storage, appSettings), null!, fakeConsole,
+			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
+
+		await importService.Preflight(["/test-a.jpg", "/test-b.jpg"],
+			new ImportSettingsModel());
+
+		var verboseBatchDuplicateLog = fakeConsole.WrittenLines.FirstOrDefault(p =>
+			p.Contains("batch duplicate hash", StringComparison.Ordinal));
+		Assert.IsNotNull(verboseBatchDuplicateLog);
+	}
+
+	[TestMethod]
 	public async Task Preflight_SingleImage_Ignore_HashAlreadyInImportDb()
 	{
 		var appSettings = new AppSettings();
