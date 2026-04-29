@@ -623,36 +623,59 @@ public class TenantSessionAuthenticationMiddlewareTest : DatabaseTest
 		Assert.IsTrue(nextCalled);
 	}
 
+	[TestMethod]
+	public async Task Invoke_WithExistingAuthenticatedPrincipalUnknownTenant_Returns403()
+	{
+		var user = new User
+		{
+			Name = "existing-unknown-tenant",
+			Created = DateTime.UtcNow
+		};
+		await DbContext.Users.AddAsync(user, TestContext.CancellationTokenSource.Token);
+		await DbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		var serviceProvider = CreateServiceProvider(new FakeTenantSessionStore());
+		var context = CreateContext(serviceProvider, "/api/account/status", true, "unknown-tenant");
+		context.User = CreateAuthenticatedPrincipal(user.Id);
+
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.AreEqual(StatusCodes.Status403Forbidden, context.Response.StatusCode);
+		Assert.IsFalse(nextCalled);
+	}
+
+	[TestMethod]
+	public async Task Invoke_WithDefaultPathAndNoEndpoint_AllowsRequest()
+	{
+		var serviceProvider = CreateServiceProvider(new FakeTenantSessionStore());
+		var context = new DefaultHttpContext
+		{
+			RequestServices = serviceProvider
+		};
+		context.Request.Path = default;
+		context.Items[TenantAuthenticationConstants.TenantSlugItemKey] = "main";
+
+		var nextCalled = false;
+		var middleware = new TenantSessionAuthenticationMiddleware(_ =>
+		{
+			nextCalled = true;
+			return Task.CompletedTask;
+		});
+
+		await middleware.Invoke(context);
+
+		Assert.IsTrue(nextCalled);
+	}
+
 	private IServiceProvider CreateServiceProvider(ITenantSessionStore sessionStore)
 	{
-		[TestMethod]
-		public async Task Invoke_WithExistingAuthenticatedPrincipalUnknownTenant_Returns403()
-		{
-			var user = new User
-			{
-				Name = "existing-unknown-tenant",
-				Created = DateTime.UtcNow
-			};
-			await DbContext.Users.AddAsync(user, TestContext.CancellationTokenSource.Token);
-			await DbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
-
-			var serviceProvider = CreateServiceProvider(new FakeTenantSessionStore());
-			var context = CreateContext(serviceProvider, "/api/account/status", true, "unknown-tenant");
-			context.User = CreateAuthenticatedPrincipal(user.Id);
-
-			var nextCalled = false;
-			var middleware = new TenantSessionAuthenticationMiddleware(_ =>
-			{
-				nextCalled = true;
-				return Task.CompletedTask;
-			});
-
-			await middleware.Invoke(context);
-
-			Assert.AreEqual(StatusCodes.Status403Forbidden, context.Response.StatusCode);
-			Assert.IsFalse(nextCalled);
-		}
-
 		var services = new ServiceCollection();
 		services.AddSingleton(DbContext);
 		services.AddSingleton(sessionStore);

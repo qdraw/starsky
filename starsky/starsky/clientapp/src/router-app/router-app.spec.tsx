@@ -110,12 +110,14 @@ describe("Router", () => {
   });
 
   it("NotFoundPage", () => {
-    jest.spyOn(NotFoundPage, "NotFoundPage").mockImplementationOnce(() => <></>);
+    const notFoundPageSpy = jest
+      .spyOn(NotFoundPage, "NotFoundPage")
+      .mockImplementationOnce(() => <></>);
 
     Router.navigate("/not-found");
     const component = render(<RouterApp></RouterApp>);
 
-    expect(component.queryByTestId("not-found-page")).not.toBeNull();
+    expect(notFoundPageSpy).toHaveBeenCalled();
 
     component.unmount();
   });
