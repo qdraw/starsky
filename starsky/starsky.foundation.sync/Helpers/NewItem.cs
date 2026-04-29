@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
@@ -115,6 +116,18 @@ public sealed class NewItem
 	/// <param name="fileIndexItem">item to enrich with JSON sidecar data</param>
 	private async Task ReadAndApplyJsonSidecarAsync(string filePath, FileIndexItem fileIndexItem)
 	{
+		if ( string.IsNullOrEmpty(filePath) )
+		{
+			return;
+		}
+
+		// Guard: JsonSidecarLocation requires a non-empty filename component
+		var fileName = PathHelper.GetFileName(filePath);
+		if ( string.IsNullOrEmpty(fileName) )
+		{
+			return;
+		}
+
 		var jsonSubPath = JsonSidecarLocation.JsonLocation(filePath);
 
 		if ( !_subPathStorage.ExistFile(jsonSubPath) )
@@ -122,8 +135,18 @@ public sealed class NewItem
 			return;
 		}
 
-		var container = await new DeserializeJson(_subPathStorage)
-			.ReadAsync<MetadataContainer>(jsonSubPath);
+		MetadataContainer? container;
+		try
+		{
+			container = await new DeserializeJson(_subPathStorage)
+				.ReadAsync<MetadataContainer>(jsonSubPath);
+		}
+		catch ( Exception ex )
+		{
+			_logger.LogError($"[NewItem] Failed to read JSON sidecar {jsonSubPath}: {ex.Message}",
+				ex);
+			return;
+		}
 
 		if ( container?.Item == null )
 		{
