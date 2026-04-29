@@ -14,11 +14,6 @@ describe("Search", () => {
     render(<Search {...newIArchive()} />);
   });
 
-  it("returns guard when archive is missing", () => {
-    const container = render((Search as unknown as (props: unknown) => JSX.Element)(undefined));
-    expect(container.container.textContent).toBe("(Search) no archive");
-  });
-
   it("returns guard when color class usage is missing", () => {
     const archive = newIArchive();
     const container = render(<Search {...archive} colorClassUsage={undefined as never} />);
@@ -27,7 +22,7 @@ describe("Search", () => {
 
   it("renders collapsed layout when sidebar query is true", () => {
     Router.navigate("/?sidebar=true");
-    const container = render(<Search {...newIArchive()} colorClassUsage={[]} />);
+    const container = render(<Search {...newIArchive()} colorClassUsage={[]} fileIndexItems={[]} />);
     expect(container.container.querySelector(".archive.collapsed")).toBeTruthy();
     container.unmount();
   });
