@@ -176,7 +176,8 @@ const SharedStructuredFilter: React.FunctionComponent<ISharedStructuredFilterPro
                 noResultsText={MessageNoResultsFound}
                 defaultValue={urlObject.camera ?? ""}
                 onSelect={(id) => {
-                  const next = { ...urlObject, camera: id, filtersOpen: true };
+                  const next: IUrl = { ...urlObject, filtersOpen: true };
+                  next.camera = id;
                   if (!id) {
                     delete next.camera;
                   }
@@ -194,7 +195,8 @@ const SharedStructuredFilter: React.FunctionComponent<ISharedStructuredFilterPro
                 onInput={(event) => {
                   const text = event.currentTarget.textContent ?? "";
                   const keywords = parseKeywords(text);
-                  const next = { ...urlObject, keywords, filtersOpen: true };
+                  const next: IUrl = { ...urlObject, filtersOpen: true };
+                  next.keywords = keywords;
                   if (keywords.length === 0) {
                     delete next.keywords;
                   }
@@ -217,7 +219,8 @@ const SharedStructuredFilter: React.FunctionComponent<ISharedStructuredFilterPro
                   value={urlObject.dateFrom ?? ""}
                   onChange={(event) => {
                     const value = event.currentTarget.value;
-                    const next = { ...urlObject, dateFrom: value, filtersOpen: true };
+                    const next: IUrl = { ...urlObject, filtersOpen: true };
+                    next.dateFrom = value;
                     if (!value) {
                       delete next.dateFrom;
                     }
@@ -230,7 +233,8 @@ const SharedStructuredFilter: React.FunctionComponent<ISharedStructuredFilterPro
                   value={urlObject.dateTo ?? ""}
                   onChange={(event) => {
                     const value = event.currentTarget.value;
-                    const next = { ...urlObject, dateTo: value, filtersOpen: true };
+                    const next: IUrl = { ...urlObject, filtersOpen: true };
+                    next.dateTo = value;
                     if (!value) {
                       delete next.dateTo;
                     }

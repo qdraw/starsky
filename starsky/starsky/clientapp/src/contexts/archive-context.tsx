@@ -8,6 +8,7 @@ import { IFileIndexItem, ImageFormat } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
+import { URLPath } from "../shared/url/url-path";
 import { sorter } from "./sorter";
 
 const ArchiveContext = createContext<IArchiveContext>({} as IArchiveContext);
