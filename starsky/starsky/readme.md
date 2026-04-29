@@ -27,6 +27,13 @@
 
 ## starsky/starsky docs
 
+### Multi-tenant session and routing
+
+- [Multi-tenant Session Cookie and Tenant Routing](../../starsky/docs/multi-tenant-session-cookie.md)
+  - rollout notes for `.Starsky.Session`
+  - tenant route scope and reserved global routes
+  - 401/403 behavior matrix and verification checklist
+
 ### Structure configuration:
 
 When setup Starksy there are two options to configure the installation.
