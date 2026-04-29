@@ -13,6 +13,7 @@
       ParentDirectory: /2010/02/2010_02_03,
       IsDirectory: false,
       Tags: ,
+      InstanceId: ,
       Status: Ok,
       Description: ,
       Title: ,
