@@ -393,6 +393,36 @@ public sealed class ImportTest : VerifyBase
 	}
 
 	[TestMethod]
+	public async Task Preflight_BatchDuplicateByHash_IsIgnoredAlreadyImported()
+	{
+		var appSettings = new AppSettings { Verbose = true };
+		var storage = new FakeIStorage(
+			["/"],
+			["/test-a.jpg", "/test-b.jpg"],
+			new List<byte[]>
+			{
+				CreateAnImage.Bytes.ToArray(),
+				CreateAnImage.Bytes.ToArray()
+			});
+
+		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
+			new FakeIImportQuery(),
+			new FakeExifTool(storage, appSettings), null!, _console,
+			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
+
+		var result = await importService.Preflight(["/test-a.jpg", "/test-b.jpg"],
+			new ImportSettingsModel());
+
+		Assert.HasCount(2, result);
+		var okItem = result.SingleOrDefault(p => p.Status == ImportStatus.Ok);
+		Assert.IsNotNull(okItem);
+		var ignoredItem =
+			result.SingleOrDefault(p => p.Status == ImportStatus.IgnoredAlreadyImported);
+		Assert.IsNotNull(ignoredItem);
+	}
+
+	[TestMethod]
 	public async Task Preflight_SingleImage_Ignore_HashAlreadyInImportDb()
 	{
 		var appSettings = new AppSettings();

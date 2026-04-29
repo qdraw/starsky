@@ -146,6 +146,8 @@ public class Import : IImport
 					=> await PreflightPerFile(includedFilePath, importSettings),
 				_appSettings.MaxDegreesOfParallelism) )!.ToList();
 
+		MarkInBatchDuplicateHashes(importIndexItemsList);
+
 		var directoriesContent = ParentFoldersDictionary(importIndexItemsList);
 
 		importIndexItemsList =
@@ -153,6 +155,25 @@ public class Import : IImport
 		CheckForReadOnlyFileSystems(importIndexItemsList, importSettings.DeleteAfter);
 
 		return importIndexItemsList;
+	}
+
+	internal static void MarkInBatchDuplicateHashes(List<ImportIndexItem> importIndexItemsList)
+	{
+		var seenHashes = new HashSet<string>(StringComparer.Ordinal);
+		foreach ( var item in importIndexItemsList.Where(p => p.Status == ImportStatus.Ok) )
+		{
+			if ( string.IsNullOrWhiteSpace(item.FileHash) )
+			{
+				continue;
+			}
+
+			if ( seenHashes.Add(item.FileHash) )
+			{
+				continue;
+			}
+
+			item.Status = ImportStatus.IgnoredAlreadyImported;
+		}
 	}
 
 	/// <summary>
