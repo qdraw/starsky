@@ -98,7 +98,7 @@ public class DngSubsetReaderTests
 		// Leica stores per-CFA-site black/white levels like [60, 50, 50, 60]
 		var blackLevels = new float[] { 60f, 50f, 50f, 60f };
 		var whiteLevels = new float[] { 4000f, 4000f, 4000f, 4000f };
-		using var ms = BuildMinimalDng(16, new byte[8], 8, blackLevels: blackLevels, whiteLevels: whiteLevels);
+		using var ms = BuildMinimalDng(16, new byte[8], 8, blackLevels, whiteLevels);
 
 		var ok = DngSubsetReader.TryLoad(ms, out var image, out var error);
 
@@ -124,6 +124,22 @@ public class DngSubsetReaderTests
 		Assert.AreEqual(( ushort ) 1600, image.Bayer[3, 3]);
 	}
 
+	[TestMethod]
+	public void
+		TryExtractRawCapture_WithReducedPreviewAndLinearRawSubIfd_SelectsFullResolutionSubIfd()
+	{
+		using var ms = BuildDngWithPreviewAndLinearRawSubIfd();
+
+		var ok = DngSubsetReader.TryExtractRawCapture(ms, out var capture, out var error);
+
+		Assert.IsTrue(ok, error);
+		Assert.IsNotNull(capture);
+		Assert.AreEqual(4, capture.Width);
+		Assert.AreEqual(4, capture.Height);
+		Assert.AreEqual(16, capture.BitsPerSample);
+		Assert.AreEqual(( ushort ) 7, capture.Compression);
+	}
+
 	private static MemoryStream BuildMinimalDng()
 	{
 		var raw = new byte[8];
@@ -134,7 +150,8 @@ public class DngSubsetReaderTests
 		return BuildMinimalDng(16, raw, raw.Length);
 	}
 
-	private static MemoryStream BuildMinimalDng(ushort bitsPerSample = 16, byte[]? rawPayload = null,
+	private static MemoryStream BuildMinimalDng(ushort bitsPerSample = 16,
+		byte[]? rawPayload = null,
 		int stripByteCount = 0, float[]? blackLevels = null, float[]? whiteLevels = null,
 		ushort? illuminant = null)
 	{
@@ -184,33 +201,42 @@ public class DngSubsetReaderTests
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0111, 4, 1, rawDataOffset); // strip offset
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0115, 3, 1, 1); // samples per pixel
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0116, 4, 1, 2); // rows per strip
-		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0117, 4, 1, ( uint ) stripByteCount); // strip byte counts
-		WriteIfdEntry(data, entryBase + idx++ * 12, 0x828D, 3, 2, 0x00020002); // CFA repeat 2x2 inline
-		WriteIfdEntry(data, entryBase + idx++ * 12, 0x828E, 1, 4, 0x02010100); // CFA pattern RGGB inline
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0117, 4, 1,
+			( uint ) stripByteCount); // strip byte counts
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x828D, 3, 2,
+			0x00020002); // CFA repeat 2x2 inline
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x828E, 1, 4,
+			0x02010100); // CFA pattern RGGB inline
 
 		if ( hasBlackArray )
 		{
-			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61A, 5, ( uint ) blackLevels.Length, blackLevelOffset); // black array
+			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61A, 5, ( uint ) blackLevels.Length,
+				blackLevelOffset); // black array
 		}
 		else
 		{
-			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61A, 3, 1, ( uint ) ( int ) blackLevels[0]); // black scalar
+			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61A, 3, 1,
+				( uint ) ( int ) blackLevels[0]); // black scalar
 		}
 
 		if ( hasWhiteArray )
 		{
-			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61D, 5, ( uint ) whiteLevels.Length, whiteLevelOffset); // white array
+			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61D, 5, ( uint ) whiteLevels.Length,
+				whiteLevelOffset); // white array
 		}
 		else
 		{
-			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61D, 3, 1, ( uint ) ( int ) whiteLevels[0]); // white scalar
+			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC61D, 3, 1,
+				( uint ) ( int ) whiteLevels[0]); // white scalar
 		}
 
-		WriteIfdEntry(data, entryBase + idx++ * 12, 0xC628, 5, 3, asShotNeutralOffset); // AsShotNeutral
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0xC628, 5, 3,
+			asShotNeutralOffset); // AsShotNeutral
 
 		if ( illuminant.HasValue )
 		{
-			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC65A, 3, 1, illuminant.Value); // CalibrationIlluminant1
+			WriteIfdEntry(data, entryBase + idx++ * 12, 0xC65A, 3, 1,
+				illuminant.Value); // CalibrationIlluminant1
 		}
 
 		// Next IFD = 0
@@ -273,7 +299,7 @@ public class DngSubsetReaderTests
 		var fullRaw = new byte[4 * 4 * 2];
 		for ( var i = 0; i < 16; i++ )
 		{
-			WriteU16(fullRaw, i * 2, ( ushort ) ( ( i + 1 ) * 100 ) );
+			WriteU16(fullRaw, i * 2, ( ushort ) ( ( i + 1 ) * 100 ));
 		}
 
 		var data = new byte[1024];
@@ -296,10 +322,10 @@ public class DngSubsetReaderTests
 		WriteU32(data, ( int ) subIfdArrayOffset, previewIfdOffset);
 		WriteU32(data, ( int ) subIfdArrayOffset + 4, fullIfdOffset);
 
-		WriteRawSubIfd(data, ( int ) previewIfdOffset, width: 2, height: 2, bitsPerSample: 8,
-			rawOffset: previewRawOffset, stripByteCount: previewRaw.Length, newSubFileType: 1);
-		WriteRawSubIfd(data, ( int ) fullIfdOffset, width: 4, height: 4, bitsPerSample: 16,
-			rawOffset: fullRawOffset, stripByteCount: fullRaw.Length, newSubFileType: 0);
+		WriteRawSubIfd(data, ( int ) previewIfdOffset, 2, 2, 8,
+			previewRawOffset, previewRaw.Length, 1);
+		WriteRawSubIfd(data, ( int ) fullIfdOffset, 4, 4, 16,
+			fullRawOffset, fullRaw.Length, 0);
 
 		Array.Copy(previewRaw, 0, data, ( int ) previewRawOffset, previewRaw.Length);
 		Array.Copy(fullRaw, 0, data, ( int ) fullRawOffset, fullRaw.Length);
@@ -310,6 +336,14 @@ public class DngSubsetReaderTests
 	private static void WriteRawSubIfd(byte[] data, int offset, uint width, uint height,
 		ushort bitsPerSample, uint rawOffset, int stripByteCount, uint newSubFileType)
 	{
+		WriteRawSubIfd(data, offset, width, height, bitsPerSample, rawOffset, stripByteCount,
+			newSubFileType, 32803);
+	}
+
+	private static void WriteRawSubIfd(byte[] data, int offset, uint width, uint height,
+		ushort bitsPerSample, uint rawOffset, int stripByteCount, uint newSubFileType,
+		ushort photometric, ushort compression = 1)
+	{
 		WriteU16(data, offset, 10);
 		var entryBase = offset + 2;
 		var idx = 0;
@@ -317,13 +351,58 @@ public class DngSubsetReaderTests
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0100, 4, 1, width);
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0101, 4, 1, height);
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0102, 3, 1, bitsPerSample);
-		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0103, 3, 1, 1);
-		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0106, 3, 1, 32803);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0103, 3, 1, compression);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0106, 3, 1, photometric);
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0111, 4, 1, rawOffset);
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0115, 3, 1, 1);
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0116, 4, 1, height);
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0117, 4, 1, ( uint ) stripByteCount);
 		WriteU32(data, entryBase + 10 * 12, 0);
+	}
+
+	private static MemoryStream BuildDngWithPreviewAndLinearRawSubIfd()
+	{
+		var previewRaw = new byte[] { 1, 2, 3, 4 };
+		var fullRaw = new byte[32];
+		for ( var i = 0; i < fullRaw.Length; i++ )
+		{
+			fullRaw[i] = ( byte ) ( i + 1 );
+		}
+
+		var data = new byte[1024];
+		data[0] = ( byte ) 'I';
+		data[1] = ( byte ) 'I';
+		WriteU16(data, 2, 42);
+		WriteU32(data, 4, 8);
+
+		const uint subIfdOffset = 160;
+		const uint previewRawOffset = 320;
+		const uint fullRawOffset = 512;
+
+		WriteU16(data, 8, 11);
+		var entryBase = 10;
+		var idx = 0;
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x00FE, 4, 1, 1);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0100, 4, 1, 2);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0101, 4, 1, 2);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0102, 3, 1, 8);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0103, 3, 1, 1);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0106, 3, 1, 2);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0111, 4, 1, previewRawOffset);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0115, 3, 1, 1);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0116, 4, 1, 2);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0117, 4, 1, ( uint ) previewRaw.Length);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x014A, 4, 1, subIfdOffset);
+		WriteU32(data, entryBase + 11 * 12, 0);
+
+		WriteRawSubIfd(data, ( int ) subIfdOffset, 4, 4, 16,
+			fullRawOffset, fullRaw.Length, 0,
+			34892, 7);
+
+		Array.Copy(previewRaw, 0, data, ( int ) previewRawOffset, previewRaw.Length);
+		Array.Copy(fullRaw, 0, data, ( int ) fullRawOffset, fullRaw.Length);
+
+		return new MemoryStream(data);
 	}
 
 	private static void WriteIfdEntry(byte[] data, int offset, ushort tag, ushort type,
@@ -362,5 +441,3 @@ public class DngSubsetReaderTests
 		WriteU32(data, offset + 4, unchecked(( uint ) denominator));
 	}
 }
-
-

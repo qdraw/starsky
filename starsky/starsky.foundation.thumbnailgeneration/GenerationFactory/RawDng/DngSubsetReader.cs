@@ -18,15 +18,23 @@ internal sealed class DngRawImage
 	public required int Width { get; init; }
 	public required int Height { get; init; }
 	public required int BitsPerSample { get; init; }
-	public required float[] BlackLevel { get; init; } // Per-channel black levels (up to 4 values for CFA channels)
-	public required float[] WhiteLevel { get; init; } // Per-channel white levels (up to 4 values for CFA channels)
+
+	public required float[]
+		BlackLevel { get; init; } // Per-channel black levels (up to 4 values for CFA channels)
+
+	public required float[]
+		WhiteLevel { get; init; } // Per-channel white levels (up to 4 values for CFA channels)
+
 	public required float[] AsShotNeutral { get; init; }
 	public required float[,] ColorMatrix1 { get; init; }
 	public float[,]? ColorMatrix2 { get; init; }
 	public required byte[] CfaPattern { get; init; }
 	public required float[,] ForwardMatrix1 { get; init; } // Optional: used if ColorMatrix1 absent
 	public float[,]? ForwardMatrix2 { get; init; }
-	public required float[,] CameraCalibration1 { get; init; } // Optional: applies per-channel color correction
+
+	public required float[,]
+		CameraCalibration1 { get; init; } // Optional: applies per-channel color correction
+
 	public required float[,] CameraCalibration2 { get; init; } // Optional: second calibration
 	public required ushort CalibrationIlluminant1 { get; init; } // Illuminant for ColorMatrix1
 	public ushort? CalibrationIlluminant2 { get; init; }
@@ -87,6 +95,7 @@ internal static class DngSubsetReader
 	private const ushort CompressionDeflate = 8;
 	private const ushort CompressionAdobeDeflate = 32946;
 	private const ushort PhotometricCfa = 32803;
+	private const ushort PhotometricLinearRaw = 34892;
 
 	public static bool TryLoad(Stream input, out DngRawImage? image, out string error)
 	{
@@ -157,9 +166,10 @@ internal static class DngSubsetReader
 
 		uint[] offsets;
 		uint[] counts;
-		var rowsPerStrip = TryGetUnsigned(input, littleEndian, rawIfd, TagRowsPerStrip, out var rowsU)
-			? ( int ) rowsU
-			: 0;
+		var rowsPerStrip =
+			TryGetUnsigned(input, littleEndian, rawIfd, TagRowsPerStrip, out var rowsU)
+				? ( int ) rowsU
+				: 0;
 		var tileWidth = TryGetUnsigned(input, littleEndian, rawIfd, TagTileWidth, out var tw)
 			? ( int ) tw
 			: 0;
@@ -267,7 +277,7 @@ internal static class DngSubsetReader
 				}
 
 				// Only standard JPEG (old or new style), not raw lossless JPEG variants
-				if ( comp is not ( CompressionJpegOldStyle or CompressionJpeg ) )
+				if ( comp is not (CompressionJpegOldStyle or CompressionJpeg) )
 				{
 					continue;
 				}
@@ -283,9 +293,9 @@ internal static class DngSubsetReader
 				TryGetUnsigned(input, littleEndian, sub, TagImageLength, out var h);
 
 				if ( !TryGetUnsignedArray(input, littleEndian, sub, TagStripOffsets,
-					    out var stripOffsets) ||
+					     out var stripOffsets) ||
 				     !TryGetUnsignedArray(input, littleEndian, sub, TagStripByteCounts,
-					    out var stripCounts) ||
+					     out var stripCounts) ||
 				     stripOffsets.Length == 0 || stripOffsets.Length != stripCounts.Length )
 				{
 					continue;
@@ -375,8 +385,8 @@ internal static class DngSubsetReader
 
 		var hasPayload = TryGetUnsignedArray(input, littleEndian, ifd, TagTileOffsets,
 			out var tileOffsets) && tileOffsets.Length > 0;
-		hasPayload = hasPayload || TryGetUnsignedArray(input, littleEndian, ifd, TagStripOffsets,
-			out var stripOffsets) && stripOffsets.Length > 0;
+		hasPayload = hasPayload || ( TryGetUnsignedArray(input, littleEndian, ifd, TagStripOffsets,
+			out var stripOffsets) && stripOffsets.Length > 0 );
 
 		var isReducedResolution = ( newSubFileType & 0x1 ) != 0;
 		candidates.Add(new RawIfdCandidate(ifd, hasPayload, !isReducedResolution,
@@ -391,7 +401,7 @@ internal static class DngSubsetReader
 			return false;
 		}
 
-		return photometric == PhotometricCfa;
+		return photometric is PhotometricCfa or PhotometricLinearRaw;
 	}
 
 	private static bool TryBuildRawImage(Stream input, bool littleEndian, IfdDirectory ifd,
@@ -415,7 +425,8 @@ internal static class DngSubsetReader
 			return false;
 		}
 
-		if ( compression is not ( CompressionUncompressed or CompressionDeflate or CompressionAdobeDeflate ) )
+		if ( compression is not (CompressionUncompressed or CompressionDeflate
+		    or CompressionAdobeDeflate) )
 		{
 			error = "Only uncompressed DNG is supported in the subset reader";
 			return false;
@@ -494,7 +505,7 @@ internal static class DngSubsetReader
 			? ( int ) predictorU
 			: 1;
 
-		if ( bitsPerSample is not ( 8 or 10 or 12 or 14 or 16 ) )
+		if ( bitsPerSample is not (8 or 10 or 12 or 14 or 16) )
 		{
 			error = $"Unsupported bits per sample: {bitsPerSample}";
 			return false;
@@ -528,22 +539,22 @@ internal static class DngSubsetReader
 
 		// Per-channel black levels (DNG spec allows array for CFA channels)
 		var blackLevels = TryGetFloatArray(input, littleEndian, ifd, TagBlackLevel, out var blacks)
-			&& blacks.Length > 0
+		                  && blacks.Length > 0
 			? blacks
 			: [0f, 0f, 0f, 0f];
-		
+
 		// Per-channel white levels (DNG spec allows array for CFA channels)
 		var defaultWhiteLevel = ( float ) ( ( 1 << Math.Min(16, bitsPerSample) ) - 1 );
 		var whiteLevels = TryGetFloatArray(input, littleEndian, ifd, TagWhiteLevel, out var whites)
-			&& whites.Length > 0
+		                  && whites.Length > 0
 			? whites
 			: [defaultWhiteLevel, defaultWhiteLevel, defaultWhiteLevel, defaultWhiteLevel];
-		
- 		var colorMatrix = TryGetFloatArray(input, littleEndian, ifd, TagColorMatrix1,
- 			out var matrixValuesRaw) && matrixValuesRaw.Length >= 9
- 			? To3x3(matrixValuesRaw)
- 			: TryGetFloatArray(input, littleEndian, ifd0, TagColorMatrix1, out var matrixValues0) &&
- 			  matrixValues0.Length >= 9
+
+		var colorMatrix = TryGetFloatArray(input, littleEndian, ifd, TagColorMatrix1,
+			out var matrixValuesRaw) && matrixValuesRaw.Length >= 9
+			? To3x3(matrixValuesRaw)
+			: TryGetFloatArray(input, littleEndian, ifd0, TagColorMatrix1, out var matrixValues0) &&
+			  matrixValues0.Length >= 9
 				? To3x3(matrixValues0)
 				: Identity3x3();
 		var colorMatrix2 = TryGetFloatArray(input, littleEndian, ifd, TagColorMatrix2,
@@ -564,10 +575,10 @@ internal static class DngSubsetReader
 		// Read AnalogBalance metadata to stay aligned with DNG WB metadata coverage.
 		// Not applied yet in this simplified pipeline, but useful for diagnostics/future tuning.
 		_ = TryGetAnalogBalance(input, littleEndian, ifd, ifd0, out _);
- 		var cfaPattern = TryGetByteArray(input, littleEndian, ifd, TagCfaPattern, out var cfa) &&
- 		                 cfa.Length >= 4
- 			? cfa.Take(4).ToArray()
- 			: new byte[] { 0, 1, 1, 2 }; // fallback RGGB
+		var cfaPattern = TryGetByteArray(input, littleEndian, ifd, TagCfaPattern, out var cfa) &&
+		                 cfa.Length >= 4
+			? cfa.Take(4).ToArray()
+			: new byte[] { 0, 1, 1, 2 }; // fallback RGGB
 
 		var forwardMatrix = TryGetFloatArray(input, littleEndian, ifd, TagForwardMatrix1,
 			out var fwdRaw) && fwdRaw.Length >= 9
@@ -597,7 +608,7 @@ internal static class DngSubsetReader
 			  cal20.Length >= 9
 				? To3x3(cal20)
 				: Identity3x3();
-		
+
 		var calibrationIlluminant1 =
 			TryGetUnsigned(input, littleEndian, ifd, TagCalibrationIlluminant1, out var illumRaw)
 				? ( ushort ) illumRaw
@@ -612,29 +623,29 @@ internal static class DngSubsetReader
 					out var illum20)
 					? ( ushort? ) illum20
 					: ( ushort? ) null;
- 
- 		image = new DngRawImage
- 		{
- 			Bayer = bayer,
- 			Width = width,
- 			Height = height,
- 			BitsPerSample = bitsPerSample,
- 			BlackLevel = blackLevels,
- 			WhiteLevel = whiteLevels,
- 			AsShotNeutral = asShotNeutral,
- 			ColorMatrix1 = colorMatrix,
- 			ColorMatrix2 = colorMatrix2,
- 			CfaPattern = cfaPattern,
- 			ForwardMatrix1 = forwardMatrix,
- 			ForwardMatrix2 = forwardMatrix2,
- 			CameraCalibration1 = cameraCalibration1,
- 			CameraCalibration2 = cameraCalibration2,
+
+		image = new DngRawImage
+		{
+			Bayer = bayer,
+			Width = width,
+			Height = height,
+			BitsPerSample = bitsPerSample,
+			BlackLevel = blackLevels,
+			WhiteLevel = whiteLevels,
+			AsShotNeutral = asShotNeutral,
+			ColorMatrix1 = colorMatrix,
+			ColorMatrix2 = colorMatrix2,
+			CfaPattern = cfaPattern,
+			ForwardMatrix1 = forwardMatrix,
+			ForwardMatrix2 = forwardMatrix2,
+			CameraCalibration1 = cameraCalibration1,
+			CameraCalibration2 = cameraCalibration2,
 			CalibrationIlluminant1 = calibrationIlluminant1,
 			CalibrationIlluminant2 = calibrationIlluminant2
- 		};
- 
- 		return true;
- 	}
+		};
+
+		return true;
+	}
 
 	private static bool TryGetAsShotNeutral(Stream input, bool littleEndian, IfdDirectory rawIfd,
 		IfdDirectory ifd0, out float[] neutral)
@@ -654,7 +665,8 @@ internal static class DngSubsetReader
 		if ( TryGetUnsigned(input, littleEndian, ifd0, TagExifIfd, out var exifIfdOffset) )
 		{
 			var exifIfd = ReadIfd(input, exifIfdOffset, littleEndian);
-			if ( exifIfd != null && TryReadNeutralFromIfd(input, littleEndian, exifIfd, out neutral) )
+			if ( exifIfd != null &&
+			     TryReadNeutralFromIfd(input, littleEndian, exifIfd, out neutral) )
 			{
 				return true;
 			}
@@ -681,7 +693,8 @@ internal static class DngSubsetReader
 		if ( TryGetUnsigned(input, littleEndian, ifd0, TagExifIfd, out var exifIfdOffset) )
 		{
 			var exifIfd = ReadIfd(input, exifIfdOffset, littleEndian);
-			if ( exifIfd != null && TryReadWhiteXyFromIfd(input, littleEndian, exifIfd, out whiteXy) )
+			if ( exifIfd != null &&
+			     TryReadWhiteXyFromIfd(input, littleEndian, exifIfd, out whiteXy) )
 			{
 				return true;
 			}
@@ -777,7 +790,8 @@ internal static class DngSubsetReader
 		{
 			var exifIfd = ReadIfd(input, exifIfdOffset, littleEndian);
 			if ( exifIfd != null &&
-			     TryGetFloatArray(input, littleEndian, exifIfd, TagAnalogBalance, out var exifVals) &&
+			     TryGetFloatArray(input, littleEndian, exifIfd, TagAnalogBalance,
+				     out var exifVals) &&
 			     exifVals.Length >= 3 )
 			{
 				analog = [exifVals[0], exifVals[1], exifVals[2]];
@@ -787,7 +801,7 @@ internal static class DngSubsetReader
 
 		return false;
 	}
- 
+
 	private static int GetMaxCount(IReadOnlyList<uint> counts)
 	{
 		var max = 0;
@@ -888,8 +902,8 @@ internal static class DngSubsetReader
 		}
 		finally
 		{
-			ArrayPool<ushort>.Shared.Return(decodedBuf, clearArray: false);
-			ArrayPool<byte>.Shared.Return(encodedBuf, clearArray: false);
+			ArrayPool<ushort>.Shared.Return(decodedBuf, false);
+			ArrayPool<byte>.Shared.Return(encodedBuf, false);
 		}
 	}
 
@@ -998,8 +1012,8 @@ internal static class DngSubsetReader
 		}
 		finally
 		{
-			ArrayPool<ushort>.Shared.Return(decodedBuf, clearArray: false);
-			ArrayPool<byte>.Shared.Return(encodedBuf, clearArray: false);
+			ArrayPool<ushort>.Shared.Return(decodedBuf, false);
+			ArrayPool<byte>.Shared.Return(encodedBuf, false);
 		}
 	}
 
@@ -1007,9 +1021,9 @@ internal static class DngSubsetReader
 	{
 		try
 		{
-			using var ms = new MemoryStream(compressed, 0, count, writable: false,
-				publiclyVisible: true);
-			using var zlib = new ZLibStream(ms, CompressionMode.Decompress, leaveOpen: false);
+			using var ms = new MemoryStream(compressed, 0, count, false,
+				true);
+			using var zlib = new ZLibStream(ms, CompressionMode.Decompress, false);
 			using var output = new MemoryStream();
 			zlib.CopyTo(output);
 			return output.ToArray();
@@ -1019,10 +1033,10 @@ internal static class DngSubsetReader
 			// zlib failed – try raw DEFLATE format
 			try
 			{
-				using var ms = new MemoryStream(compressed, 0, count, writable: false,
-					publiclyVisible: true);
+				using var ms = new MemoryStream(compressed, 0, count, false,
+					true);
 				using var deflate = new DeflateStream(ms, CompressionMode.Decompress,
-					leaveOpen: false);
+					false);
 				using var output = new MemoryStream();
 				deflate.CopyTo(output);
 				return output.ToArray();
@@ -1194,178 +1208,169 @@ internal static class DngSubsetReader
 		return true;
 	}
 
- 	private static float[,] To3x3(IReadOnlyList<float> v)
- 	{
- 		return new[,]
- 		{
- 			{ v[0], v[1], v[2] },
- 			{ v[3], v[4], v[5] },
- 			{ v[6], v[7], v[8] }
- 		};
- 	}
+	private static float[,] To3x3(IReadOnlyList<float> v)
+	{
+		return new[,] { { v[0], v[1], v[2] }, { v[3], v[4], v[5] }, { v[6], v[7], v[8] } };
+	}
 
- 	private static float[,] Identity3x3()
- 	{
- 		return new[,]
- 		{
- 			{ 1f, 0f, 0f },
- 			{ 0f, 1f, 0f },
- 			{ 0f, 0f, 1f }
- 		};
- 	}
+	private static float[,] Identity3x3()
+	{
+		return new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } };
+	}
 
- 	private static bool TryParseHeader(Stream input, out bool littleEndian, out uint firstIfd)
- 	{
- 		littleEndian = true;
- 		firstIfd = 0;
- 		Span<byte> header = stackalloc byte[8];
- 		if ( input.Read(header) < 8 )
- 		{
- 			return false;
- 		}
+	private static bool TryParseHeader(Stream input, out bool littleEndian, out uint firstIfd)
+	{
+		littleEndian = true;
+		firstIfd = 0;
+		Span<byte> header = stackalloc byte[8];
+		if ( input.Read(header) < 8 )
+		{
+			return false;
+		}
 
- 		if ( header[0] == 'I' && header[1] == 'I' )
- 		{
- 			littleEndian = true;
- 		}
- 		else if ( header[0] == 'M' && header[1] == 'M' )
- 		{
- 			littleEndian = false;
- 		}
- 		else
- 		{
- 			return false;
- 		}
+		if ( header[0] == 'I' && header[1] == 'I' )
+		{
+			littleEndian = true;
+		}
+		else if ( header[0] == 'M' && header[1] == 'M' )
+		{
+			littleEndian = false;
+		}
+		else
+		{
+			return false;
+		}
 
- 		var magic = ReadUInt16(header[2..], littleEndian);
- 		if ( magic != 42 )
- 		{
- 			return false;
- 		}
+		var magic = ReadUInt16(header[2..], littleEndian);
+		if ( magic != 42 )
+		{
+			return false;
+		}
 
- 		firstIfd = ReadUInt32(header[4..], littleEndian);
- 		return firstIfd > 0 && firstIfd < input.Length;
- 	}
+		firstIfd = ReadUInt32(header[4..], littleEndian);
+		return firstIfd > 0 && firstIfd < input.Length;
+	}
 
- 	private static IfdDirectory? ReadIfd(Stream input, uint offset, bool littleEndian)
- 	{
- 		if ( !TrySeek(input, offset) )
- 		{
- 			return null;
- 		}
+	private static IfdDirectory? ReadIfd(Stream input, uint offset, bool littleEndian)
+	{
+		if ( !TrySeek(input, offset) )
+		{
+			return null;
+		}
 
- 		Span<byte> countBuf = stackalloc byte[2];
- 		if ( input.Read(countBuf) < 2 )
- 		{
- 			return null;
- 		}
+		Span<byte> countBuf = stackalloc byte[2];
+		if ( input.Read(countBuf) < 2 )
+		{
+			return null;
+		}
 
- 		var count = ReadUInt16(countBuf, littleEndian);
- 		if ( count == 0 || count > 4096 )
- 		{
- 			return null;
- 		}
+		var count = ReadUInt16(countBuf, littleEndian);
+		if ( count == 0 || count > 4096 )
+		{
+			return null;
+		}
 
- 		var entries = new Dictionary<ushort, IfdEntry>();
-			Span<byte> entryBuffer = stackalloc byte[12];
- 		for ( var i = 0; i < count; i++ )
- 		{
-				if ( input.Read(entryBuffer) < 12 )
- 			{
- 				return null;
- 			}
+		var entries = new Dictionary<ushort, IfdEntry>();
+		Span<byte> entryBuffer = stackalloc byte[12];
+		for ( var i = 0; i < count; i++ )
+		{
+			if ( input.Read(entryBuffer) < 12 )
+			{
+				return null;
+			}
 
-				var tag = ReadUInt16(entryBuffer, littleEndian);
- 			entries[tag] = new IfdEntry
- 			{
-					Type = ReadUInt16(entryBuffer[2..], littleEndian),
-					Count = ReadUInt32(entryBuffer[4..], littleEndian),
-					ValueOrOffset = ReadUInt32(entryBuffer[8..], littleEndian)
- 			};
- 		}
+			var tag = ReadUInt16(entryBuffer, littleEndian);
+			entries[tag] = new IfdEntry
+			{
+				Type = ReadUInt16(entryBuffer[2..], littleEndian),
+				Count = ReadUInt32(entryBuffer[4..], littleEndian),
+				ValueOrOffset = ReadUInt32(entryBuffer[8..], littleEndian)
+			};
+		}
 
- 		return new IfdDirectory(entries);
- 	}
+		return new IfdDirectory(entries);
+	}
 
- 	private static bool TryGetUnsigned(Stream input, bool littleEndian, IfdDirectory ifd,
- 		ushort tag, out uint value)
- 	{
- 		value = 0;
- 		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
- 		{
- 			return false;
- 		}
+	private static bool TryGetUnsigned(Stream input, bool littleEndian, IfdDirectory ifd,
+		ushort tag, out uint value)
+	{
+		value = 0;
+		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
+		{
+			return false;
+		}
 
- 		var values = ReadUnsignedValues(input, littleEndian, entry, 1);
- 		if ( values.Length == 0 )
- 		{
- 			return false;
- 		}
+		var values = ReadUnsignedValues(input, littleEndian, entry, 1);
+		if ( values.Length == 0 )
+		{
+			return false;
+		}
 
- 		value = values[0];
- 		return true;
- 	}
+		value = values[0];
+		return true;
+	}
 
- 	private static bool TryGetUnsignedArray(Stream input, bool littleEndian, IfdDirectory ifd,
- 		ushort tag, out uint[] values)
- 	{
- 		values = [];
- 		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
- 		{
- 			return false;
- 		}
+	private static bool TryGetUnsignedArray(Stream input, bool littleEndian, IfdDirectory ifd,
+		ushort tag, out uint[] values)
+	{
+		values = [];
+		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
+		{
+			return false;
+		}
 
- 		values = ReadUnsignedValues(input, littleEndian, entry, ( int ) entry.Count);
- 		return values.Length > 0;
- 	}
+		values = ReadUnsignedValues(input, littleEndian, entry, ( int ) entry.Count);
+		return values.Length > 0;
+	}
 
- 	private static bool TryGetByteArray(Stream input, bool littleEndian, IfdDirectory ifd,
- 		ushort tag, out byte[] values)
- 	{
- 		values = [];
- 		if ( !ifd.Entries.TryGetValue(tag, out var entry) || entry.Type != 1 )
- 		{
- 			return false;
- 		}
+	private static bool TryGetByteArray(Stream input, bool littleEndian, IfdDirectory ifd,
+		ushort tag, out byte[] values)
+	{
+		values = [];
+		if ( !ifd.Entries.TryGetValue(tag, out var entry) || entry.Type != 1 )
+		{
+			return false;
+		}
 
- 		values = ReadBytes(input, littleEndian, entry);
- 		return values.Length > 0;
- 	}
+		values = ReadBytes(input, littleEndian, entry);
+		return values.Length > 0;
+	}
 
- 	private static bool TryGetFloat(Stream input, bool littleEndian, IfdDirectory ifd,
- 		ushort tag, out float value)
- 	{
- 		value = 0;
- 		if ( !TryGetFloatArray(input, littleEndian, ifd, tag, out var values) || values.Length == 0 )
- 		{
- 			return false;
- 		}
+	private static bool TryGetFloat(Stream input, bool littleEndian, IfdDirectory ifd,
+		ushort tag, out float value)
+	{
+		value = 0;
+		if ( !TryGetFloatArray(input, littleEndian, ifd, tag, out var values) ||
+		     values.Length == 0 )
+		{
+			return false;
+		}
 
- 		value = values[0];
- 		return true;
- 	}
+		value = values[0];
+		return true;
+	}
 
- 	private static bool TryGetFloatArray(Stream input, bool littleEndian, IfdDirectory ifd,
- 		ushort tag, out float[] values)
- 	{
- 		values = [];
- 		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
- 		{
- 			return false;
- 		}
+	private static bool TryGetFloatArray(Stream input, bool littleEndian, IfdDirectory ifd,
+		ushort tag, out float[] values)
+	{
+		values = [];
+		if ( !ifd.Entries.TryGetValue(tag, out var entry) )
+		{
+			return false;
+		}
 
- 		values = entry.Type switch
- 		{
- 			3 or 4 => ReadUnsignedValues(input, littleEndian, entry, ( int ) entry.Count)
- 				.Select(v => ( float ) v).ToArray(),
- 			5 => ReadRationalValues(input, littleEndian, entry, signed: false),
- 			10 => ReadRationalValues(input, littleEndian, entry, signed: true),
- 			11 => ReadFloatValues(input, littleEndian, entry, isDouble: false),
- 			12 => ReadFloatValues(input, littleEndian, entry, isDouble: true),
- 			_ => []
- 		};
- 		return values.Length > 0;
- 	}
+		values = entry.Type switch
+		{
+			3 or 4 => ReadUnsignedValues(input, littleEndian, entry, ( int ) entry.Count)
+				.Select(v => ( float ) v).ToArray(),
+			5 => ReadRationalValues(input, littleEndian, entry, false),
+			10 => ReadRationalValues(input, littleEndian, entry, true),
+			11 => ReadFloatValues(input, littleEndian, entry, false),
+			12 => ReadFloatValues(input, littleEndian, entry, true),
+			_ => []
+		};
+		return values.Length > 0;
+	}
 
 	private static float[] ReadFloatValues(Stream input, bool littleEndian, IfdEntry entry,
 		bool isDouble)
@@ -1405,169 +1410,172 @@ internal static class DngSubsetReader
 		return values;
 	}
 
- 	private static uint[] ReadUnsignedValues(Stream input, bool littleEndian, IfdEntry entry,
- 		int wanted)
- 	{
- 		if ( entry.Type is not ( 3 or 4 ) || entry.Count == 0 )
- 		{
- 			return [];
- 		}
-
- 		var typeSize = entry.Type == 3 ? 2 : 4;
- 		var totalSize = checked(( int ) entry.Count * typeSize);
- 		var data = ReadRawValueBytes(input, littleEndian, entry, totalSize);
- 		if ( data.Length < totalSize )
- 		{
- 			return [];
- 		}
-
- 		var count = Math.Min(( int ) entry.Count, wanted);
- 		var result = new uint[count];
- 		for ( var i = 0; i < count; i++ )
- 		{
- 			result[i] = entry.Type == 3
- 				? ReadUInt16(data.AsSpan(i * 2, 2), littleEndian)
- 				: ReadUInt32(data.AsSpan(i * 4, 4), littleEndian);
- 		}
-
- 		return result;
- 	}
-
- 	private static float[] ReadRationalValues(Stream input, bool littleEndian, IfdEntry entry,
- 		bool signed)
- 	{
- 		if ( entry.Count == 0 )
- 		{
- 			return [];
- 		}
-
- 		var total = checked(( int ) entry.Count * 8);
- 		if ( !TrySeek(input, entry.ValueOrOffset) )
- 		{
- 			return [];
- 		}
-
- 		var buf = new byte[total];
- 		if ( input.Read(buf, 0, total) < total )
- 		{
- 			return [];
- 		}
-
- 		var values = new float[entry.Count];
- 		for ( var i = 0; i < entry.Count; i++ )
- 		{
- 			var pos = i * 8;
- 			if ( signed )
- 			{
- 				var n = ( int ) ReadUInt32(buf.AsSpan(pos, 4), littleEndian);
- 				var d = ( int ) ReadUInt32(buf.AsSpan(pos + 4, 4), littleEndian);
- 				values[i] = d == 0 ? 0 : ( float ) n / d;
- 			}
- 			else
- 			{
- 				var n = ReadUInt32(buf.AsSpan(pos, 4), littleEndian);
- 				var d = ReadUInt32(buf.AsSpan(pos + 4, 4), littleEndian);
- 				values[i] = d == 0 ? 0 : ( float ) n / d;
- 			}
- 		}
-
- 		return values;
- 	}
-
- 	private static byte[] ReadBytes(Stream input, bool littleEndian, IfdEntry entry)
- 	{
- 		var total = ( int ) entry.Count;
- 		if ( total <= 0 )
- 		{
- 			return [];
- 		}
-
- 		return ReadRawValueBytes(input, littleEndian, entry, total);
- 	}
-
- 	private static byte[] ReadRawValueBytes(Stream input, bool littleEndian, IfdEntry entry,
- 		int totalSize)
- 	{
- 		if ( totalSize <= 4 )
- 		{
- 			Span<byte> inline = stackalloc byte[4];
- 			if ( littleEndian )
- 			{
- 				BinaryPrimitives.WriteUInt32LittleEndian(inline, entry.ValueOrOffset);
- 			}
- 			else
- 			{
- 				BinaryPrimitives.WriteUInt32BigEndian(inline, entry.ValueOrOffset);
- 			}
-
- 			return inline[..totalSize].ToArray();
- 		}
-
- 		if ( !TrySeek(input, entry.ValueOrOffset) )
- 		{
- 			return [];
- 		}
-
- 		var bytes = new byte[totalSize];
- 		return input.Read(bytes, 0, totalSize) >= totalSize ? bytes : [];
- 	}
-
- 	private static bool TrySeek(Stream input, long offset)
- 	{
- 		if ( !input.CanSeek || offset < 0 || offset >= input.Length )
- 		{
- 			return false;
- 		}
-
- 		input.Seek(offset, SeekOrigin.Begin);
- 		return true;
- 	}
-
- 	private static bool TrySeekAndRead(Stream input, long offset, byte[] buffer,
- 		int writeOffset, int count)
- 	{
- 		if ( !TrySeek(input, offset) )
- 		{
- 			return false;
- 		}
-
- 		return input.Read(buffer, writeOffset, count) >= count;
- 	}
-
- 	private static ushort ReadUInt16(ReadOnlySpan<byte> bytes, bool littleEndian)
- 	{
- 		return littleEndian
- 			? BinaryPrimitives.ReadUInt16LittleEndian(bytes)
- 			: BinaryPrimitives.ReadUInt16BigEndian(bytes);
- 	}
-
- 	private static uint ReadUInt32(ReadOnlySpan<byte> bytes, bool littleEndian)
- 	{
- 		return littleEndian
- 			? BinaryPrimitives.ReadUInt32LittleEndian(bytes)
- 			: BinaryPrimitives.ReadUInt32BigEndian(bytes);
- 	}
-
- 	private sealed class IfdDirectory(Dictionary<ushort, IfdEntry> entries)
- 	{
- 		public Dictionary<ushort, IfdEntry> Entries { get; } = entries;
- 	}
-
- 	private sealed class IfdEntry
- 	{
- 		public ushort Type { get; init; }
- 		public uint Count { get; init; }
- 		public uint ValueOrOffset { get; init; }
- 	}
-
-		private sealed class RawIfdCandidate(IfdDirectory ifd, bool hasPayload,
-			bool isFullResolution, long area, int bitsPerSample)
+	private static uint[] ReadUnsignedValues(Stream input, bool littleEndian, IfdEntry entry,
+		int wanted)
+	{
+		if ( entry.Type is not (3 or 4) || entry.Count == 0 )
 		{
-			public IfdDirectory Ifd { get; } = ifd;
-			public bool HasPayload { get; } = hasPayload;
-			public bool IsFullResolution { get; } = isFullResolution;
-			public long Area { get; } = area;
-			public int BitsPerSample { get; } = bitsPerSample;
+			return [];
 		}
-}
 
+		var typeSize = entry.Type == 3 ? 2 : 4;
+		var totalSize = checked(( int ) entry.Count * typeSize);
+		var data = ReadRawValueBytes(input, littleEndian, entry, totalSize);
+		if ( data.Length < totalSize )
+		{
+			return [];
+		}
+
+		var count = Math.Min(( int ) entry.Count, wanted);
+		var result = new uint[count];
+		for ( var i = 0; i < count; i++ )
+		{
+			result[i] = entry.Type == 3
+				? ReadUInt16(data.AsSpan(i * 2, 2), littleEndian)
+				: ReadUInt32(data.AsSpan(i * 4, 4), littleEndian);
+		}
+
+		return result;
+	}
+
+	private static float[] ReadRationalValues(Stream input, bool littleEndian, IfdEntry entry,
+		bool signed)
+	{
+		if ( entry.Count == 0 )
+		{
+			return [];
+		}
+
+		var total = checked(( int ) entry.Count * 8);
+		if ( !TrySeek(input, entry.ValueOrOffset) )
+		{
+			return [];
+		}
+
+		var buf = new byte[total];
+		if ( input.Read(buf, 0, total) < total )
+		{
+			return [];
+		}
+
+		var values = new float[entry.Count];
+		for ( var i = 0; i < entry.Count; i++ )
+		{
+			var pos = i * 8;
+			if ( signed )
+			{
+				var n = ( int ) ReadUInt32(buf.AsSpan(pos, 4), littleEndian);
+				var d = ( int ) ReadUInt32(buf.AsSpan(pos + 4, 4), littleEndian);
+				values[i] = d == 0 ? 0 : ( float ) n / d;
+			}
+			else
+			{
+				var n = ReadUInt32(buf.AsSpan(pos, 4), littleEndian);
+				var d = ReadUInt32(buf.AsSpan(pos + 4, 4), littleEndian);
+				values[i] = d == 0 ? 0 : ( float ) n / d;
+			}
+		}
+
+		return values;
+	}
+
+	private static byte[] ReadBytes(Stream input, bool littleEndian, IfdEntry entry)
+	{
+		var total = ( int ) entry.Count;
+		if ( total <= 0 )
+		{
+			return [];
+		}
+
+		return ReadRawValueBytes(input, littleEndian, entry, total);
+	}
+
+	private static byte[] ReadRawValueBytes(Stream input, bool littleEndian, IfdEntry entry,
+		int totalSize)
+	{
+		if ( totalSize <= 4 )
+		{
+			Span<byte> inline = stackalloc byte[4];
+			if ( littleEndian )
+			{
+				BinaryPrimitives.WriteUInt32LittleEndian(inline, entry.ValueOrOffset);
+			}
+			else
+			{
+				BinaryPrimitives.WriteUInt32BigEndian(inline, entry.ValueOrOffset);
+			}
+
+			return inline[..totalSize].ToArray();
+		}
+
+		if ( !TrySeek(input, entry.ValueOrOffset) )
+		{
+			return [];
+		}
+
+		var bytes = new byte[totalSize];
+		return input.Read(bytes, 0, totalSize) >= totalSize ? bytes : [];
+	}
+
+	private static bool TrySeek(Stream input, long offset)
+	{
+		if ( !input.CanSeek || offset < 0 || offset >= input.Length )
+		{
+			return false;
+		}
+
+		input.Seek(offset, SeekOrigin.Begin);
+		return true;
+	}
+
+	private static bool TrySeekAndRead(Stream input, long offset, byte[] buffer,
+		int writeOffset, int count)
+	{
+		if ( !TrySeek(input, offset) )
+		{
+			return false;
+		}
+
+		return input.Read(buffer, writeOffset, count) >= count;
+	}
+
+	private static ushort ReadUInt16(ReadOnlySpan<byte> bytes, bool littleEndian)
+	{
+		return littleEndian
+			? BinaryPrimitives.ReadUInt16LittleEndian(bytes)
+			: BinaryPrimitives.ReadUInt16BigEndian(bytes);
+	}
+
+	private static uint ReadUInt32(ReadOnlySpan<byte> bytes, bool littleEndian)
+	{
+		return littleEndian
+			? BinaryPrimitives.ReadUInt32LittleEndian(bytes)
+			: BinaryPrimitives.ReadUInt32BigEndian(bytes);
+	}
+
+	private sealed class IfdDirectory(Dictionary<ushort, IfdEntry> entries)
+	{
+		public Dictionary<ushort, IfdEntry> Entries { get; } = entries;
+	}
+
+	private sealed class IfdEntry
+	{
+		public ushort Type { get; init; }
+		public uint Count { get; init; }
+		public uint ValueOrOffset { get; init; }
+	}
+
+	private sealed class RawIfdCandidate(
+		IfdDirectory ifd,
+		bool hasPayload,
+		bool isFullResolution,
+		long area,
+		int bitsPerSample)
+	{
+		public IfdDirectory Ifd { get; } = ifd;
+		public bool HasPayload { get; } = hasPayload;
+		public bool IsFullResolution { get; } = isFullResolution;
+		public long Area { get; } = area;
+		public int BitsPerSample { get; } = bitsPerSample;
+	}
+}
