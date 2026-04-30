@@ -108,6 +108,22 @@ public class DngSubsetReaderTests
 		CollectionAssert.AreEqual(whiteLevels, image.WhiteLevel);
 	}
 
+	[TestMethod]
+	public void TryLoad_WithReducedPreviewRawAndFullRawSubIfds_SelectsFullResolutionRaw()
+	{
+		using var ms = BuildDngWithPreviewAndFullRawSubIfds();
+
+		var ok = DngSubsetReader.TryLoad(ms, out var image, out var error);
+
+		Assert.IsTrue(ok, error);
+		Assert.IsNotNull(image);
+		Assert.AreEqual(4, image.Width);
+		Assert.AreEqual(4, image.Height);
+		Assert.AreEqual(16, image.BitsPerSample);
+		Assert.AreEqual(( ushort ) 100, image.Bayer[0, 0]);
+		Assert.AreEqual(( ushort ) 1600, image.Bayer[3, 3]);
+	}
+
 	private static MemoryStream BuildMinimalDng()
 	{
 		var raw = new byte[8];
@@ -249,6 +265,65 @@ public class DngSubsetReaderTests
 		}
 
 		return packed;
+	}
+
+	private static MemoryStream BuildDngWithPreviewAndFullRawSubIfds()
+	{
+		var previewRaw = new byte[] { 1, 2, 3, 4 };
+		var fullRaw = new byte[4 * 4 * 2];
+		for ( var i = 0; i < 16; i++ )
+		{
+			WriteU16(fullRaw, i * 2, ( ushort ) ( ( i + 1 ) * 100 ) );
+		}
+
+		var data = new byte[1024];
+
+		data[0] = ( byte ) 'I';
+		data[1] = ( byte ) 'I';
+		WriteU16(data, 2, 42);
+		WriteU32(data, 4, 8);
+
+		const uint subIfdArrayOffset = 32;
+		const uint previewIfdOffset = 80;
+		const uint fullIfdOffset = 256;
+		const uint previewRawOffset = 192;
+		const uint fullRawOffset = 512;
+
+		WriteU16(data, 8, 1);
+		WriteIfdEntry(data, 10, 0x014A, 4, 2, subIfdArrayOffset);
+		WriteU32(data, 22, 0);
+
+		WriteU32(data, ( int ) subIfdArrayOffset, previewIfdOffset);
+		WriteU32(data, ( int ) subIfdArrayOffset + 4, fullIfdOffset);
+
+		WriteRawSubIfd(data, ( int ) previewIfdOffset, width: 2, height: 2, bitsPerSample: 8,
+			rawOffset: previewRawOffset, stripByteCount: previewRaw.Length, newSubFileType: 1);
+		WriteRawSubIfd(data, ( int ) fullIfdOffset, width: 4, height: 4, bitsPerSample: 16,
+			rawOffset: fullRawOffset, stripByteCount: fullRaw.Length, newSubFileType: 0);
+
+		Array.Copy(previewRaw, 0, data, ( int ) previewRawOffset, previewRaw.Length);
+		Array.Copy(fullRaw, 0, data, ( int ) fullRawOffset, fullRaw.Length);
+
+		return new MemoryStream(data);
+	}
+
+	private static void WriteRawSubIfd(byte[] data, int offset, uint width, uint height,
+		ushort bitsPerSample, uint rawOffset, int stripByteCount, uint newSubFileType)
+	{
+		WriteU16(data, offset, 10);
+		var entryBase = offset + 2;
+		var idx = 0;
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x00FE, 4, 1, newSubFileType);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0100, 4, 1, width);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0101, 4, 1, height);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0102, 3, 1, bitsPerSample);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0103, 3, 1, 1);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0106, 3, 1, 32803);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0111, 4, 1, rawOffset);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0115, 3, 1, 1);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0116, 4, 1, height);
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0117, 4, 1, ( uint ) stripByteCount);
+		WriteU32(data, entryBase + 10 * 12, 0);
 	}
 
 	private static void WriteIfdEntry(byte[] data, int offset, ushort tag, ushort type,

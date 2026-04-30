@@ -49,6 +49,7 @@ internal sealed class DngRawCapture
 internal static class DngSubsetReader
 {
 	private const ushort TagSubIfds = 0x014A;
+	private const ushort TagNewSubFileType = 0x00FE;
 	private const ushort TagImageWidth = 0x0100;
 	private const ushort TagImageLength = 0x0101;
 	private const ushort TagBitsPerSample = 0x0102;
@@ -335,19 +336,51 @@ internal static class DngSubsetReader
 
 	private static IfdDirectory? ResolveRawIfd(Stream input, bool littleEndian, IfdDirectory ifd0)
 	{
+		var candidates = new List<RawIfdCandidate>();
+		TryAddRawIfdCandidate(input, littleEndian, ifd0, candidates);
+
 		if ( TryGetUnsignedArray(input, littleEndian, ifd0, TagSubIfds, out var subIfdOffsets) )
 		{
 			foreach ( var offset in subIfdOffsets )
 			{
 				var sub = ReadIfd(input, offset, littleEndian);
-				if ( sub != null && IsRawIfd(input, littleEndian, sub) )
+				if ( sub != null )
 				{
-					return sub;
+					TryAddRawIfdCandidate(input, littleEndian, sub, candidates);
 				}
 			}
 		}
 
-		return IsRawIfd(input, littleEndian, ifd0) ? ifd0 : null;
+		return candidates
+			.OrderByDescending(c => c.HasPayload)
+			.ThenByDescending(c => c.IsFullResolution)
+			.ThenByDescending(c => c.Area)
+			.ThenByDescending(c => c.BitsPerSample)
+			.Select(c => c.Ifd)
+			.FirstOrDefault();
+	}
+
+	private static void TryAddRawIfdCandidate(Stream input, bool littleEndian, IfdDirectory ifd,
+		ICollection<RawIfdCandidate> candidates)
+	{
+		if ( !IsRawIfd(input, littleEndian, ifd) )
+		{
+			return;
+		}
+
+		TryGetUnsigned(input, littleEndian, ifd, TagImageWidth, out var width);
+		TryGetUnsigned(input, littleEndian, ifd, TagImageLength, out var height);
+		TryGetUnsigned(input, littleEndian, ifd, TagBitsPerSample, out var bitsPerSample);
+		TryGetUnsigned(input, littleEndian, ifd, TagNewSubFileType, out var newSubFileType);
+
+		var hasPayload = TryGetUnsignedArray(input, littleEndian, ifd, TagTileOffsets,
+			out var tileOffsets) && tileOffsets.Length > 0;
+		hasPayload = hasPayload || TryGetUnsignedArray(input, littleEndian, ifd, TagStripOffsets,
+			out var stripOffsets) && stripOffsets.Length > 0;
+
+		var isReducedResolution = ( newSubFileType & 0x1 ) != 0;
+		candidates.Add(new RawIfdCandidate(ifd, hasPayload, !isReducedResolution,
+			checked(( long ) width * height), ( int ) bitsPerSample));
 	}
 
 	private static bool IsRawIfd(Stream input, bool littleEndian, IfdDirectory ifd)
@@ -1526,5 +1559,15 @@ internal static class DngSubsetReader
  		public uint Count { get; init; }
  		public uint ValueOrOffset { get; init; }
  	}
+
+		private sealed class RawIfdCandidate(IfdDirectory ifd, bool hasPayload,
+			bool isFullResolution, long area, int bitsPerSample)
+		{
+			public IfdDirectory Ifd { get; } = ifd;
+			public bool HasPayload { get; } = hasPayload;
+			public bool IsFullResolution { get; } = isFullResolution;
+			public long Area { get; } = area;
+			public int BitsPerSample { get; } = bitsPerSample;
+		}
 }
 
