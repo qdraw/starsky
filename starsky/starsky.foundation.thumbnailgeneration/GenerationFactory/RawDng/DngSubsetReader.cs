@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("starskytest")]
+[assembly: InternalsVisibleTo("starsky.benchmarks.rawdng")]
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.RawDng;
 
@@ -797,12 +798,15 @@ internal static class DngSubsetReader
  				return false;
  			}
 
- 			for ( var p = 0; p < decoded.Length; p++ )
- 			{
- 				var y = rowCursor + p / width;
- 				var x = p % width;
- 				bayer[y, x] = decoded[p];
- 			}
+				var decodedIndex = 0;
+				for ( var y = 0; y < rowsInStrip; y++ )
+				{
+					var targetY = rowCursor + y;
+					for ( var x = 0; x < width; x++ )
+					{
+						bayer[targetY, x] = decoded[decodedIndex++];
+					}
+				}
 
  			rowCursor += rowsInStrip;
  		}
@@ -867,18 +871,24 @@ internal static class DngSubsetReader
  					return false;
  				}
 
- 				// Copy tile data into Bayer array
+					// Copy tile data into Bayer array
  				var tileStartY = ty * tileLength;
  				var tileStartX = tx * tileWidth;
- 				for ( var p = 0; p < decoded.Length; p++ )
+					var maxY = Math.Min(tileLength, height - tileStartY);
+					var maxX = Math.Min(tileWidth, width - tileStartX);
+					if ( maxY <= 0 || maxX <= 0 )
  				{
- 					var py = p / tileWidth;
- 					var px = p % tileWidth;
- 					var y = tileStartY + py;
- 					var x = tileStartX + px;
- 					if ( y < height && x < width )
+						tileIndex++;
+						continue;
+					}
+
+					for ( var y = 0; y < maxY; y++ )
+					{
+						var sourceRowOffset = y * tileWidth;
+						var targetY = tileStartY + y;
+						for ( var x = 0; x < maxX; x++ )
  					{
- 						bayer[y, x] = decoded[p];
+							bayer[targetY, tileStartX + x] = decoded[sourceRowOffset + x];
  					}
  				}
 
@@ -970,12 +980,22 @@ internal static class DngSubsetReader
  		}
 
  		var result = new ushort[pixelCount];
- 		for ( var i = 0; i < pixelCount; i++ )
+			var payloadIndex = 0;
+			if ( littleEndian )
  		{
- 			var span = payload.AsSpan(i * 2, 2);
- 			result[i] = littleEndian
- 				? BinaryPrimitives.ReadUInt16LittleEndian(span)
- 				: BinaryPrimitives.ReadUInt16BigEndian(span);
+				for ( var i = 0; i < pixelCount; i++ )
+				{
+					result[i] = ( ushort ) ( payload[payloadIndex] | ( payload[payloadIndex + 1] << 8 ) );
+					payloadIndex += 2;
+				}
+			}
+			else
+			{
+				for ( var i = 0; i < pixelCount; i++ )
+				{
+					result[i] = ( ushort ) ( ( payload[payloadIndex] << 8 ) | payload[payloadIndex + 1] );
+					payloadIndex += 2;
+				}
  		}
 
  		return result;
@@ -1008,20 +1028,22 @@ internal static class DngSubsetReader
  			return null;
  		}
 
- 		var result = new ushort[pixelCount];
- 		var bitIndex = 0;
+			var result = new ushort[pixelCount];
+			var mask = ( uint ) ( ( 1 << bitsPerSample ) - 1 );
+			ulong bitBuffer = 0;
+			var bitsInBuffer = 0;
+			var sourceIndex = 0;
  		for ( var i = 0; i < pixelCount; i++ )
  		{
- 			var byteIndex = bitIndex >> 3;
- 			var bitOffset = bitIndex & 7;
- 			ulong scratch = 0;
- 			for ( var b = 0; b < 4 && byteIndex + b < payload.Length; b++ )
+				while ( bitsInBuffer < bitsPerSample )
  			{
- 				scratch |= ( ulong ) payload[byteIndex + b] << ( b * 8 );
+					bitBuffer |= ( ulong ) payload[sourceIndex++] << bitsInBuffer;
+					bitsInBuffer += 8;
  			}
 
- 			result[i] = ( ushort ) ( ( scratch >> bitOffset ) & ( ( 1u << bitsPerSample ) - 1u ) );
- 			bitIndex += bitsPerSample;
+				result[i] = ( ushort ) ( bitBuffer & mask );
+				bitBuffer >>= bitsPerSample;
+				bitsInBuffer -= bitsPerSample;
  		}
 
  		return result;
@@ -1036,22 +1058,30 @@ internal static class DngSubsetReader
  			return null;
  		}
 
- 		var result = new ushort[pixelCount];
- 		var bitCursor = 0;
+			var result = new ushort[pixelCount];
+			var mask = ( uint ) ( ( 1 << bitsPerSample ) - 1 );
+			ulong bitBuffer = 0;
+			var bitsInBuffer = 0;
+			var sourceIndex = 0;
  		for ( var i = 0; i < pixelCount; i++ )
  		{
- 			uint value = 0;
- 			for ( var b = 0; b < bitsPerSample; b++ )
+				while ( bitsInBuffer < bitsPerSample )
  			{
- 				var absoluteBit = bitCursor + b;
- 				var byteIndex = absoluteBit >> 3;
- 				var bitInByte = 7 - ( absoluteBit & 7 );
- 				var bit = ( payload[byteIndex] >> bitInByte ) & 1;
- 				value = ( value << 1 ) | ( uint ) bit;
+					bitBuffer = ( bitBuffer << 8 ) | payload[sourceIndex++];
+					bitsInBuffer += 8;
  			}
 
- 			result[i] = ( ushort ) value;
- 			bitCursor += bitsPerSample;
+				var shift = bitsInBuffer - bitsPerSample;
+				result[i] = ( ushort ) ( ( bitBuffer >> shift ) & mask );
+				bitsInBuffer -= bitsPerSample;
+				if ( bitsInBuffer == 0 )
+				{
+					bitBuffer = 0;
+				}
+				else
+				{
+					bitBuffer &= ( 1UL << bitsInBuffer ) - 1UL;
+				}
  		}
 
  		return result;

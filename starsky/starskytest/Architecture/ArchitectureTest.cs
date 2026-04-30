@@ -37,6 +37,7 @@ public partial class TheSolutionShould
 	private const string MainProjectWeb = "starsky.project.web";
 
 	private const string TestProjectSuffix = "test";
+	private const string BenchmarkProject = "benchmark";
 	private const string BuildProject = "_build";
 	private const string DocsProject = "documentation";
 
@@ -85,6 +86,7 @@ public partial class TheSolutionShould
 			}
 
 			if ( project.Key.Contains(ProjectCli, StringComparison.OrdinalIgnoreCase) ||
+			     project.Key.Contains(BenchmarkProject, StringComparison.OrdinalIgnoreCase) ||
 			     project.Key.Contains(TestProjectSuffix,
 				     StringComparison.OrdinalIgnoreCase) || project.Key == BuildProject ||
 			     project.Key == DocsProject || project.Key == MainProjectWeb ||
