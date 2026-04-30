@@ -31,10 +31,7 @@ public static class PathTraversalGuard
 			: rootFullPath + Path.DirectorySeparatorChar;
 
 		var normalizedDbPath = dbPath.Replace('\\', '/');
-		if ( normalizedDbPath.StartsWith('/') )
-		{
-			normalizedDbPath = normalizedDbPath[1..];
-		}
+		normalizedDbPath = normalizedDbPath.TrimStart('/');
 
 		var relativePath = normalizedDbPath.Replace('/', Path.DirectorySeparatorChar);
 		var fullPath = Path.GetFullPath(Path.Combine(rootFullPath, relativePath));
@@ -52,5 +49,6 @@ public static class PathTraversalGuard
 		return fullPath;
 	}
 }
+
 
 
