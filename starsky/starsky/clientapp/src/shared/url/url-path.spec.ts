@@ -178,8 +178,18 @@ describe("url-path", () => {
       expect(test[0]).toStrictEqual("/test/test.jpg");
     });
 
-    it("merge home item", () => {
+    it("merge home item - Slash", () => {
       const test = urlPath.MergeSelectParent(["test.jpg"], "/");
+      expect(test[0]).toStrictEqual("/test.jpg");
+    });
+
+    it("merge home item - undefined", () => {
+      const test = urlPath.MergeSelectParent(["test.jpg"], undefined);
+      expect(test[0]).toStrictEqual("/test.jpg");
+    });
+
+    it("merge home item - Empty string", () => {
+      const test = urlPath.MergeSelectParent(["test.jpg"], "");
       expect(test[0]).toStrictEqual("/test.jpg");
     });
   });

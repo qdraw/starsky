@@ -24,7 +24,12 @@ namespace starsky.foundation.database.Query
 		{
 			async Task<bool> LocalRemoveDefaultQuery()
 			{
-				await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
+				var scope = new InjectServiceScope(_scopeFactory);
+				await scope.ExecuteAsync(async context =>
+				{
+					await LocalRemoveQuery(context);
+					return true;
+				});
 				return true;
 			}
 
@@ -85,7 +90,12 @@ namespace starsky.foundation.database.Query
 		{
 			async Task<bool> LocalRemoveDefaultQuery()
 			{
-				await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
+				var scope = new InjectServiceScope(_scopeFactory);
+				await scope.ExecuteAsync(async context =>
+				{
+					await LocalRemoveQuery(context);
+					return true;
+				});
 				return true;
 			}
 

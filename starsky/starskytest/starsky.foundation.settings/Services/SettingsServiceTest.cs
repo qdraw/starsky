@@ -275,11 +275,11 @@ public class SettingsServiceTest
 	}
 
 	[TestMethod]
-	[DataRow(null, default, typeof(DateTime))]
+	[DataRow(null, null, typeof(DateTime))]
 	[DataRow("2024-01-01T02:00:00Z", "2024-01-01T02:00:00Z", typeof(DateTime))]
-	[DataRow("invalid-date", default, typeof(DateTime))]
+	[DataRow("invalid-date", null, typeof(DateTime))]
 	[DataRow("test-value", "test-value", typeof(string))]
-	[DataRow("test-value", default(int), typeof(int))]
+	[DataRow("test-value", 0, typeof(int))]
 	[Timeout(5000, CooperativeCancellation = true)]
 	public void CastSettingTheory(string? inputValue, object expectedValue, Type targetType)
 	{

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
@@ -194,6 +195,8 @@ public sealed class ReadMetaXmp
 	{
 		foreach ( var property in xmp.Properties )
 		{
+			SetCombinedAiMetadata(property, item);
+
 			var artist = GetNullNameSpace(property, "dc:creator[1]");
 			if ( artist != null )
 			{
@@ -298,6 +301,8 @@ public sealed class ReadMetaXmp
 
 		foreach ( var property in xmp.Properties )
 		{
+			SetCombinedAiMetadata(property, item);
+
 			SetCombinedLatLong(property, item);
 			SetCombinedDateTime(property, item);
 			SetCombinedColorClass(property, item);
@@ -350,6 +355,50 @@ public sealed class ReadMetaXmp
 		}
 
 		return item;
+	}
+
+	private static void SetCombinedAiMetadata(IXmpPropertyInfo property, FileIndexItem item)
+	{
+		if ( string.IsNullOrWhiteSpace(property.Path) || string.IsNullOrWhiteSpace(property.Value) )
+		{
+			return;
+		}
+
+		if ( property.Path.StartsWith("ai:SuggestedTags[", StringComparison.Ordinal) )
+		{
+			item.SuggestedTags = AddCommaSeparatedUnique(item.SuggestedTags, property.Value);
+		}
+
+		if ( property.Path.StartsWith("ai:RejectedTags[", StringComparison.Ordinal) )
+		{
+			item.RejectedTags = AddCommaSeparatedUnique(item.RejectedTags, property.Value);
+		}
+
+		if ( property.Path == "ai:ImageClassificationModel" )
+		{
+			item.ImageClassificationModel = property.Value;
+		}
+
+		if ( property.Path == "ai:ImageClassificationGeneratedAt" &&
+		     DateTime.TryParse(property.Value, CultureInfo.InvariantCulture,
+			     DateTimeStyles.RoundtripKind, out var generatedAt) &&
+		     generatedAt.Year >= 2 )
+		{
+			item.ImageClassificationGeneratedAt = generatedAt;
+		}
+	}
+
+	private static string AddCommaSeparatedUnique(string? current, string value)
+	{
+		var next = value.Trim();
+		if ( string.IsNullOrEmpty(next) )
+		{
+			return current ?? string.Empty;
+		}
+
+		var values = HashSetHelper.StringToHashSet(current ?? string.Empty);
+		values.Add(next);
+		return string.Join(", ", values.Where(v => !string.IsNullOrWhiteSpace(v)));
 	}
 
 	private static void SetCombinedOrientation(IXmpPropertyInfo property, FileIndexItem item)

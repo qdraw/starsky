@@ -2,9 +2,11 @@
 
 Starsky uses IPTC and XMP metadata to read and write.
 That are two standards that every photo organizer should use
-So when you remove the database a single rescan will restore the metadata since it is stored inside the images.
+So when you remove the database a single rescan will restore the metadata since it is stored inside
+the images.
 
-When you use other tools to edit XMP or IPTC metadata, Starsky will able to read the changes and display them in the application.
+When you use other tools to edit XMP or IPTC metadata, Starsky will able to read the changes and
+display them in the application.
 
 ![Meta data usage](../assets/metadata_usage_v0410.jpg)
 _Left Exiftool viewing image and right Starsky with the same info_
@@ -59,10 +61,23 @@ Starsky uses IPTC or XMP metadata to read and write.
     - The lens of the camera
 - Image Stabilization
     - If the image is stabilized (only for Sony cameras)
+- Artist
+    - The artist of the image
+- Suggested Tags (Custom namespaced tag)
+    - AI generated tags suggested to the user based on image content
+- Rejected Tags (Custom namespaced tag)
+    - AI generated tags that are rejected by the user
+- Image Classification Model (Custom namespaced tag)
+    - Name and version of the AI model that generated the suggested tags
+- Image Classification Generated At (Custom namespaced tag)
+    - Date and time when the AI metadata was generated
 
 ## Tag Autocomplete
 
-The Tag Autocomplete feature in Starsky makes it easier and faster to add tags (keywords) to your images. As you start typing a tag, Starsky will automatically suggest existing tags based on your previous entries. This helps you maintain consistency in your tagging, avoid typos, and quickly reuse tags you have used before.
+The Tag Autocomplete feature in Starsky makes it easier and faster to add tags (keywords) to your
+images. As you start typing a tag, Starsky will automatically suggest existing tags based on your
+previous entries. This helps you maintain consistency in your tagging, avoid typos, and quickly
+reuse tags you have used before.
 
 - **How it works:**
     - When editing tags, a dropdown appears with suggestions as you type.
@@ -73,4 +88,5 @@ The Tag Autocomplete feature in Starsky makes it easier and faster to add tags (
     - Reduces duplicate or misspelled tags.
     - Helps organize your photo library more efficiently.
 
-Tag Autocomplete is especially useful for large collections where consistent tagging is important for search and organization.
+Tag Autocomplete is especially useful for large collections where consistent tagging is important
+for search and organization.

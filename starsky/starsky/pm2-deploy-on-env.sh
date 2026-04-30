@@ -51,9 +51,10 @@ fi
 
 pm2 stop $PM2NAME
 
+USER_VIEWS="UserViews"
 # Keep UserViews over a release
-if [[ -d "WebHtmlPublish/UserViews" ]]; then
-  cp -r "WebHtmlPublish/UserViews" "UserViews/"
+if [[ -d "WebHtmlPublish/$USER_VIEWS" ]]; then
+  cp -r "WebHtmlPublish/$USER_VIEWS" "$USER_VIEWS/"
 fi
 
 # delete files in www-root
@@ -69,7 +70,7 @@ if [[ -f starsky.dll ]]; then
         && $ENTRY != "service-"*
         && $ENTRY != "thumbnailTempFolder"
         && $ENTRY != "temp"
-        && $ENTRY != "UserViews"* # Keep UserViews
+        && $ENTRY != "$USER_VIEWS"* # Keep UserViews
         && $ENTRY != "starsky-"*
         && $ENTRY != *".db" ]];
         then
@@ -97,67 +98,40 @@ fi
 /usr/bin/find . -type f -exec chmod 644 {} \;
 
 # to restore the content UserViews
-if [[ -d "UserViews" ]]; then
-  cp -fr "UserViews" "WebHtmlPublish"
-  rm -rf "UserViews"
+if [[ -d "$USER_VIEWS" ]]; then
+  cp -fr "$USER_VIEWS" "WebHtmlPublish"
+  rm -rf "$USER_VIEWS"
 fi
 
 # excute right for specific files
-if [[ -f starsky ]]; then
-    chmod +x ./starsky
-fi
+files=(
+  "starskygeocli"
+  "starskyimportercli"
+  "starskysynchronizecli"
+  "starskythumbnailcli"
+  "starskythumbnailmetacli"
+  "starskywebftpcli"
+  "starskywebhtmlcli"
+  "starskyadmincli"
+  "starskymountwatchercli"
+  "starskydependenciesdownloadcli"
+  "pm2-deploy-on-env.sh"
+  "pm2-install-latest-release.sh"
+  "pm2-new-instance.sh"
+  "pm2-download-azure-devops.sh"
+  "dependencies/exiftool-unix/exiftool"
+  "pm2-restore-x-rights.sh"
+  "pm2-warmup.sh"
+  "service-deploy-systemd.sh",
+  "github-artifacts-download.sh",
+  "starsky"
+)
 
-if [[ -f starskygeocli ]]; then
-    chmod +x ./starskygeocli
-fi
-
-if [[ -f starskyimportercli ]]; then
-    chmod +x ./starskyimportercli
-fi
-
-if [[ -f starskysynchronizecli ]]; then
-    chmod +x ./starskysynchronizecli
-fi
-
-if [[ -f starskythumbnailcli ]]; then
-    chmod +x ./starskythumbnailcli
-fi
-
-if [[ -f starskythumbnailmetacli ]]; then
-    chmod +x ./starskythumbnailmetacli
-fi
-
-if [[ -f starskywebftpcli ]]; then
-    chmod +x ./starskywebftpcli
-fi
-
-if [[ -f starskywebhtmlcli ]]; then
-    chmod +x ./starskywebhtmlcli
-fi
-
-if [[ -f starskyadmincli ]]; then
-    chmod +x ./starskyadmincli
-fi
-
-if [[ -f pm2-deploy-on-env.sh ]]; then
-    chmod +x ./pm2-deploy-on-env.sh
-fi
-
-if [[ -f pm2-new-instance.sh ]]; then
-    chmod +x ./pm2-new-instance.sh
-fi
-
-if [[ -f pm2-download-azure-devops.sh ]]; then
-    chmod +x ./pm2-download-azure-devops.sh
-fi
-
-if [[ -f pm2-warmup.sh ]]; then
-    chmod +x ./pm2-warmup.sh
-fi
-
-if [[ -f dependencies/exiftool-unix/exiftool ]]; then
-    chmod +x dependencies/exiftool-unix/exiftool
-fi
+for file in "${files[@]}"; do
+  if [[ -f "$file" ]]; then
+    chmod +x "$file"
+  fi
+done
 
 pm2 start $PM2NAME
 

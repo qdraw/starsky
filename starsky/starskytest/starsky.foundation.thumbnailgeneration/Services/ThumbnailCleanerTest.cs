@@ -37,7 +37,8 @@ public sealed class ThumbnailCleanerTest
 		builder.UseInMemoryDatabase(nameof(ThumbnailCleanerTest));
 		var options = builder.Options;
 		var context = new ApplicationDbContext(options);
-		_query = new Query(context, new AppSettings(), null, null!, memoryCache);
+		_query = new Query(context, new AppSettings(),
+			null!, null!, memoryCache);
 		_imageFormat = new AppSettings().ThumbnailImageFormat;
 	}
 
@@ -86,13 +87,13 @@ public sealed class ThumbnailCleanerTest
 
 		// there are now two files inside this dir
 		var allThumbnailFilesBefore = thumbnailStorage.GetAllFilesInDirectory("/");
-		Assert.AreEqual(2, allThumbnailFilesBefore.Count());
+		Assert.HasCount(2, allThumbnailFilesBefore);
 
 		await thumbnailCleaner.CleanAllUnusedFilesAsync();
 
 		// DELETE.jpg is removed > is missing in database
 		var allThumbnailFilesAfter = thumbnailStorage.GetAllFilesInDirectory("/");
-		Assert.AreEqual(1, allThumbnailFilesAfter.Count());
+		Assert.HasCount(1, allThumbnailFilesAfter);
 
 		new StorageHostFullPathFilesystem(new FakeIWebLogger()).FolderDelete(existFullDir);
 	}

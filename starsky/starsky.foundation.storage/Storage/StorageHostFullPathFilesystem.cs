@@ -126,7 +126,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			{
 				throw;
 			}
-			
+
 			// Does not throw when UnauthorizedAccessException or DirectoryNotFoundException
 			return [];
 		}
@@ -168,20 +168,34 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 	/// </summary>
 	/// <param name="path">path</param>
 	/// <returns>list of paths and last edited times - default ordered by last edited times</returns>
-	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
+	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path,
+		int? maxInnerChildDirectoryLookups = null)
 	{
 		// Tuple > FilePath,Directory.GetLastWriteTime
 		var folders = new Queue<KeyValuePair<string, DateTime>>();
 		folders.Enqueue(
 			new KeyValuePair<string, DateTime>(path, Directory.GetLastWriteTime(path)));
 		var folderList = new List<KeyValuePair<string, DateTime>>();
+		var innerChildLookupCount = 0;
 		while ( folders.Count != 0 )
 		{
 			var (currentFolder, _) = folders.Dequeue();
+			var isRootFolder = string.Equals(currentFolder, path, StringComparison.Ordinal);
+			if ( ShouldSkipInnerLookup(isRootFolder, innerChildLookupCount,
+				     maxInnerChildDirectoryLookups) )
+			{
+				continue;
+			}
+
 			try
 			{
 				var foldersInCurrent = Directory.GetDirectories(currentFolder,
 					"*.*", SearchOption.TopDirectoryOnly);
+				if ( !isRootFolder )
+				{
+					innerChildLookupCount++;
+				}
+
 				foreach ( var current in foldersInCurrent )
 				{
 					var lastEditDate = Directory.GetLastWriteTime(current);
@@ -194,13 +208,8 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 				}
 			}
 			catch ( Exception exception )
+				when ( exception is UnauthorizedAccessException or DirectoryNotFoundException )
 			{
-				if ( exception is not (UnauthorizedAccessException
-				    or DirectoryNotFoundException) )
-				{
-					throw;
-				}
-
 				_logger?.LogDebug("[StorageHostFullPathFilesystem] Catch-ed " +
 				                  "DirectoryNotFoundException/UnauthorizedAccessException => " +
 				                  exception.Message);
@@ -208,6 +217,13 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		}
 
 		return folderList.OrderBy(p => p.Value);
+
+		static bool ShouldSkipInnerLookup(bool isRootFolder, int innerChildLookupCount,
+			int? maxInnerChildDirectoryLookups)
+		{
+			return !isRootFolder && maxInnerChildDirectoryLookups is >= 0 &&
+			       innerChildLookupCount >= maxInnerChildDirectoryLookups.Value;
+		}
 	}
 
 	/// <summary>
@@ -240,6 +256,11 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		}
 
 		return File.ReadLinesAsync(path, cancellationToken);
+	}
+
+	public string[] ReadAllLines(string path)
+	{
+		return File.ReadAllLines(path);
 	}
 
 	/// <summary>
@@ -487,7 +508,22 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 				_logger.LogInformation("[WriteStreamAsync] " +
 				                       "DirectoryNotFoundException " +
 				                       "Auto-created directory: " + dir, exception);
-				await LocalCopy();
+				try
+				{
+					await LocalCopy();
+				}
+				catch ( UnauthorizedAccessException )
+				{
+					_logger.LogError($"[WriteStreamAsync] UnauthorizedAccessException [dir] " +
+					                 $"for path: {path}");
+					return false;
+				}
+			}
+			catch ( UnauthorizedAccessException )
+			{
+				_logger.LogError($"[WriteStreamAsync] UnauthorizedAccessException " +
+				                 $"for path: {path}");
+				return false;
 			}
 			finally
 			{

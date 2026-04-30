@@ -156,7 +156,8 @@ public sealed class QueryGetAllFilesTest
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 		};
 		var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
-		var query = new Query(dbContext, new AppSettings(), null, new FakeIWebLogger(),
+		var query = new Query(dbContext, new AppSettings(),
+			null!, new FakeIWebLogger(),
 			new FakeMemoryCache());
 
 		await dbContext.FileIndex.AddAsync(

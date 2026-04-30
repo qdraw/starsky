@@ -101,8 +101,7 @@ public class TestForNonAuthorizeAttributesTest
 				attributes.AddRange(allowAnonymousAttributes);
 				attributes.AddRange(allowAnonymousParentAttributes);
 
-				Assert.AreNotEqual(0,
-					attributes.Count,
+				Assert.IsNotEmpty(attributes,
 					$"No AuthorizeAttribute found on {controller.FullName} {method.Name} method");
 			}
 		}

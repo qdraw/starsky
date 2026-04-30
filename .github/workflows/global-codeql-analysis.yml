@@ -8,6 +8,10 @@ on:
   push:
     branches: [master]
     # all files because parent git hashes are used to compare in PR's
+  pull_request: 
+    branches: [master]
+    paths: 
+      - '.github/workflows/global-codeql-analysis.yml'
 
 permissions:
   contents: read
@@ -34,7 +38,7 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@b623f5fd572a69d335c9da3487c1ce53741a09bf
+      uses: github/codeql-action/init@65216971a11ded447a6b76263d5a144519e5eee1
        #Override language selection by uncommenting this and choosing your languages
       with:
          languages: csharp, javascript, actions
@@ -67,4 +71,4 @@ jobs:
       run: bash build.sh --Target=BuildNetCore --no-sonar --no-dependencies --no-publish
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@b623f5fd572a69d335c9da3487c1ce53741a09bf
+      uses: github/codeql-action/analyze@65216971a11ded447a6b76263d5a144519e5eee1

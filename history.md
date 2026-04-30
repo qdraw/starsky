@@ -41,8 +41,37 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.15 - _(Unreleased)_ - 2026-?-? {#v0.7.15}
+## version 0.7.17 - _(Unreleased)_ - 2026-?-? {#v0.7.17}
 
+- [x] (Added) _Back-end_ Add support for add custom AI tags: SuggestedTags, RejectedTags,
+  ImageClassificationModel and ImageClassificationGeneratedAt (PR #3000)
+- [x] (Added) _Back-end_ Flexible background queue, support for multiple backends (in-memory,
+  database, and RabbitMQ) (InMemory already exists) (PR #3020)
+- [x] (Fixed) _Back-end_ MozJpeg Quoting `outputInputPath` issues with spaces in paths (PR #3015)
+- [x] (Fixed) _Back-end_ Local File System Copy Logic copy `CopyAllContent` (PR #3015)
+- [x] (Fixed) _Back-end_ Improving test reliability and diagnostics (PR #3014)
+- [x] (Fixed) _Back-end_ Add directory scan limit starskyMountWatchercli to avoid issues (PR #3013)
+- [x] (Fixed) _Back-end_ Add tests for ImportIgnore (PR #3013)
+
+## version 0.7.16 - 2026-04-23 {#v0.7.16}
+
+- [x] (Fixed) _Back-end_ bug fixes across database retry logic, MP4 file hashing (PR #2999)
+- [x] (Fixed) _Back-end_ JSON converter FileIndexItem that ensures the `Id` property is always
+  included during serialization and deserialization (PR #2997)
+- [x] (Fixed) _Back-end_ InjectServiceScope utility provides Execute and ExecuteAsync (PR #2921)
+- [x] (Added) _Back-end_ Export/Download Zipper export directory structure (PR #2833 Issue #81)
+
+## version 0.7.15 - 2026-04-15 {#v0.7.15}
+
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.420 (Runtime: 8.0.25) (PR #2979)
+- [x] (Added) _Back-end_ Check installation running status mount watcher --status flag (PR #2973)
+- [x] (Added) _Back-end_ Import Backup timestamped copy of imported to a specified folder (PR #2965)
+- [x] (Added) _Back-end_ Delete After setting Import specific for MountCLI (PR #2965)
+- [x] (Fixed) _Back-end_ Native FileSystem interop on Intel macOS vs Apple Silicon (PR #2960)
+- [x] (Fixed) _Back-end_ Zero-payload non-mdat atom (e.g. wide, free) gives hash back (PR #2955)
+- [x] (Fixed) _Back-end_ GetWindowsDriveInfo where Z:\\ was used to find an unused drive. (PR #2905)
+- [x] (Added) _Back-end_ Fix disk Detect File System for macOS and Linux (PR #2905)
+- [x] (Added) _Back-end_ Add starskyMountWatcherCli to auto import (PR #2905)
 - [x] (Added) _Back-end_ Add Title and Tags overview razor template (PR #2891)
 - [x] (Added) _Back-end_ Create Job to generate thumbnails when missing in Thumbnail and Zoom API
   (PR #2891)

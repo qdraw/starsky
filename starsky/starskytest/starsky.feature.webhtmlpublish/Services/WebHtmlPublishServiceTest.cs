@@ -126,9 +126,18 @@ public sealed class WebHtmlPublishServiceTest
 							Append = "__fi_kl"
 						},
 
-						new AppSettingsPublishProfiles { ContentType = TemplateContentType.MoveSourceFiles },
-						new AppSettingsPublishProfiles { ContentType = TemplateContentType.PublishContent },
-						new AppSettingsPublishProfiles { ContentType = TemplateContentType.PublishManifest }
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.MoveSourceFiles
+						},
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.PublishContent
+						},
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.PublishManifest
+						}
 					]
 				}
 			}
@@ -320,7 +329,8 @@ public sealed class WebHtmlPublishServiceTest
 			"EmbeddedViews");
 		Directory.CreateDirectory(viewFolder);
 		var badView = Path.Combine(viewFolder, "Bad.cshtml");
-		await File.WriteAllTextAsync(badView, "@{ var x = ; }", TestContext.CancellationToken); // invalid razor syntax
+		await File.WriteAllTextAsync(badView, "@{ var x = ; }",
+			TestContext.CancellationToken); // invalid razor syntax
 
 		var appSettings = new AppSettings
 		{
@@ -571,10 +581,11 @@ public sealed class WebHtmlPublishServiceTest
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings
 		{
-			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
-			{
-				{ "default", [profile] }
-			},
+			PublishProfiles =
+				new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{ "default", [profile] }
+				},
 			Verbose = true
 		};
 
@@ -611,10 +622,11 @@ public sealed class WebHtmlPublishServiceTest
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings
 		{
-			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
-			{
-				{ "default", [profile] }
-			},
+			PublishProfiles =
+				new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{ "default", [profile] }
+				},
 			Verbose = true
 		};
 
@@ -719,22 +731,17 @@ public sealed class WebHtmlPublishServiceTest
 	[Timeout(5000, CooperativeCancellation = true)]
 	[DataRow(true)]
 	[DataRow(false)]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
 	public async Task GenerateJpeg_ResizerLocal_ImageOptimisationThrows__UnixOnly(
 		bool optimizerFailsBashScript)
 	{
-		if ( new AppSettings().IsWindows )
-		{
-			Assert.Inconclusive("This test if for Unix Only");
-			return;
-		}
-
 		// Use real filesystem storage so we can create a non-executable mozjpeg file
 		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var logger = new FakeIWebLogger();
 
-		// Prepare appsettings with dependencies folder inside a temp folder
-		var tempBase = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test_deps_mozjpeg");
+		var tempBase = Path.Combine(Path.GetTempPath(),
+			"starsky_test_deps_mozjpeg_" + Guid.NewGuid().ToString("N"));
 		if ( Directory.Exists(tempBase) )
 		{
 			Directory.Delete(tempBase, true);
@@ -747,9 +754,9 @@ public sealed class WebHtmlPublishServiceTest
 			DependenciesFolder = tempBase, StorageFolder = new CreateAnImage().BasePath
 		};
 
-		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp.jpg"));
+		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp1.jpg"));
 		File.Copy(new CreateAnImage().FullFilePath,
-			new CreateAnImage().FullFilePath.Replace(".jpg", "_temp.jpg"));
+			new CreateAnImage().FullFilePath.Replace(".jpg", "_temp1.jpg"));
 
 		// Create a dummy mozjpeg file without +x permissions (Unix) to trigger permission denied
 		var exePath = new ImageOptimisationExePath(appSettings).GetExePath("mozjpeg",
@@ -769,19 +776,19 @@ public sealed class WebHtmlPublishServiceTest
 				TestContext.CancellationToken);
 		}
 
-		// Ensure it's not executable on unix systems
+		// Explicitly control executability per scenario to keep behavior deterministic
 		if ( !appSettings.IsWindows )
 		{
-			// remove all execute bits if any (best-effort)
+			var mode = optimizerFailsBashScript ? "644" : "755";
 			try
 			{
 				var fi = new FileInfo(exePath);
 				fi.Attributes &= ~FileAttributes.ReadOnly;
-				// chmod 0644
+				// chmod 0644 for the failing path, 0755 for the successful path
 				var proc = Process.Start(new ProcessStartInfo
 				{
 					FileName = "/bin/chmod",
-					Arguments = "644 " + exePath,
+					Arguments = mode + " " + exePath,
 					RedirectStandardOutput = true,
 					RedirectStandardError = true,
 					UseShellExecute = false,
@@ -800,13 +807,7 @@ public sealed class WebHtmlPublishServiceTest
 			new FakeIStorage());
 
 		// Use real MozJpegService but fake the download as already OK
-		var download = new FakeMozJpegDownload(ImageOptimisationDownloadStatus.Ok)
-		{
-			FixPermissionsDelegate =
-				new ImageOptimisationChmod(
-						new FakeSelectorStorage(new StorageHostFullPathFilesystem(logger)), logger)
-					.Chmod
-		};
+		var download = new FakeMozJpegDownload(ImageOptimisationDownloadStatus.Ok);
 
 		var mozService = new MozJpegService(appSettings, new FakeSelectorStorage(storage), logger,
 			download);
@@ -843,7 +844,7 @@ public sealed class WebHtmlPublishServiceTest
 			}
 		];
 
-		var photoPath = new CreateAnImage().FileName.Replace(".jpg", "_temp.jpg");
+		var photoPath = new CreateAnImage().FileName.Replace(".jpg", "_temp1.jpg");
 		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
 				new ConsoleWrapper(), fakeSelectorStorage
 				, new FakeIWebLogger()),
@@ -893,7 +894,7 @@ public sealed class WebHtmlPublishServiceTest
 		}
 
 
-		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp.jpg"));
+		File.Delete(new CreateAnImage().FullFilePath.Replace(".jpg", "_temp1.jpg"));
 		Directory.Delete(tempBase, true);
 	}
 }

@@ -40,7 +40,10 @@
       MakeCameraSerial: ,
       FocalLength: 100.0,
       Size: 9998,
-      Artist: 
+      Artist: ,
+      SuggestedTags: ,
+      RejectedTags: ,
+      ImageClassificationModel: 
     },
     SourceFullFilePath: /test.jpg,
     Structure: {

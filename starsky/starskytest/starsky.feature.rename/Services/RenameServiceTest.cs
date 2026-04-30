@@ -50,7 +50,7 @@ public sealed class RenameServiceTest
 			StorageFolder = PathHelper.AddBackslash(_newImage.BasePath),
 			ThumbnailTempFolder = _newImage.BasePath
 		};
-		_query = new Query(context, appSettings, null,
+		_query = new Query(context, appSettings, new FakeIServiceScopeFactory(),
 			new FakeIWebLogger(), memoryCache);
 
 		if ( _query.GetAllFilesAsync("/").Result.TrueForAll(p => p.FileName != _newImage.FileName) )
@@ -741,22 +741,22 @@ public sealed class RenameServiceTest
 	[TestMethod]
 	public async Task Rename_Move_SidecarFile_ShouldMove_FileToFolder()
 	{
-		const string item1dng = "/child_folder/test_20.dng";
+		const string item1Dng = "/child_folder/test_20.dng";
 		const string item1SideCar = "/child_folder/test_20.xmp";
 
-		await _query.AddItemAsync(new FileIndexItem(item1dng));
-		await _query.AddParentItemsAsync(item1dng);
+		await _query.AddItemAsync(new FileIndexItem(item1Dng));
+		await _query.AddParentItemsAsync(item1Dng);
 
 		var iStorage = new FakeIStorage(
 			new List<string> { "/", "/child_folder", "/child_folder2" },
-			new List<string> { item1dng, item1SideCar }); // item1
+			new List<string> { item1Dng, item1SideCar }); // item1
 
 		// Move DNG to different folder
 		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
-			.Rename(item1dng, "/child_folder2");
+			.Rename(item1Dng, "/child_folder2");
 
-		Assert.AreEqual(item1dng, renameFs[0].FilePath);
-		Assert.AreEqual(item1dng.Replace("child_folder", "child_folder2"),
+		Assert.AreEqual(item1Dng, renameFs[0].FilePath);
+		Assert.AreEqual(item1Dng.Replace("child_folder", "child_folder2"),
 			renameFs[1].FilePath);
 
 		// did move the side car file
@@ -1125,7 +1125,8 @@ public sealed class RenameServiceTest
 
 		var appSettings = new AppSettings { StorageFolder = "/", ThumbnailTempFolder = "/" };
 		var memoryCache = new MemoryCache(new MemoryCacheOptions());
-		var query = new Query(context, appSettings, null, new FakeIWebLogger(), memoryCache);
+		var query = new Query(context, appSettings,
+			new FakeIServiceScopeFactory(), new FakeIWebLogger(), memoryCache);
 
 		var fileIndexItem = new FileIndexItem { FileHash = "test-hash", FilePath = "/test.jpg" };
 		await query.AddItemAsync(fileIndexItem);

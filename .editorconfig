@@ -115,6 +115,10 @@ dotnet_diagnostic.CA1852.severity = warning
 # but does not override memory-based 'ReadAsync'
 dotnet_diagnostic.CA1844.severity = warning
 
+# CA1860: Prefer comparing 'Count' to 0 rather than using 'Any()', 
+# both for clarity and for performance
+dotnet_diagnostic.CA1860.severity = warning
+
 # Indentation preferences
 csharp_indent_block_contents = true
 csharp_indent_braces = false

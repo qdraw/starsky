@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -79,6 +78,8 @@ public sealed class CacheIndexControllerTest
 		_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 	}
 
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task CacheIndexController_CheckIfCacheIsRemoved_CleanCache()
 	{
@@ -96,7 +97,7 @@ public sealed class CacheIndexControllerTest
 			FileName = "file.jpg", ParentDirectory = "/cacheDeleteTest", IsDirectory = false
 		});
 
-		Assert.IsTrue(_query.DisplayFileFolders("/cacheDeleteTest").Any());
+		Assert.IsNotEmpty(_query.DisplayFileFolders("/cacheDeleteTest"));
 
 		// Ask the cache
 		_query.DisplayFileFolders("/cacheDeleteTest");
@@ -112,7 +113,7 @@ public sealed class CacheIndexControllerTest
 
 		// Check if there is one item in the cache
 		var beforeQuery = _query.DisplayFileFolders("/cacheDeleteTest");
-		Assert.AreEqual(1, beforeQuery.Count());
+		Assert.HasCount(1, beforeQuery);
 
 		// Act, remove content from cache
 		var actionResult = controller.RemoveCache("/cacheDeleteTest") as JsonResult;
@@ -120,7 +121,7 @@ public sealed class CacheIndexControllerTest
 
 		// Check if there are now two items in the cache
 		var newQuery = _query.DisplayFileFolders("/cacheDeleteTest");
-		Assert.AreEqual(2, newQuery.Count());
+		Assert.HasCount(2, newQuery);
 	}
 
 	[TestMethod]
@@ -242,6 +243,4 @@ public sealed class CacheIndexControllerTest
 		Assert.IsNotNull(actionResult);
 		Assert.IsNotNull(actionResult.Value);
 	}
-
-	public TestContext TestContext { get; set; }
 }

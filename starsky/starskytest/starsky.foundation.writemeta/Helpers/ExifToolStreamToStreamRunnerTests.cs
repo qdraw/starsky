@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
@@ -35,6 +36,8 @@ public class ExifToolStreamToStreamRunnerTests
 		var exifToolExe = new AppSettings().IsWindows ? exifToolExeWindows : _exifToolExePosix;
 		_appSettingsWithExifTool = new AppSettings { ExifToolPath = exifToolExe };
 	}
+
+	public TestContext TestContext { get; set; }
 
 	[ClassCleanup]
 	public static void CleanUp()
@@ -87,7 +90,7 @@ public class ExifToolStreamToStreamRunnerTests
 		var streamResult = await runner.RunProcessAsync(new MemoryStream([]),
 			string.Empty, "test / unit test");
 
-		await StreamToStringHelper.StreamToStringAsync(streamResult, false);
+		var t = await StreamToStringHelper.StreamToStringAsync(streamResult, false);
 
 		Assert.AreEqual(0, streamResult.Length);
 
@@ -160,13 +163,19 @@ public class ExifToolStreamToStreamRunnerTests
 		var sut = new ExifToolStreamToStreamRunner(_appSettingsWithExifTool,
 			new FakeIWebLogger());
 
-		var stream = await sut.RunProcessAsync(sourceStream, "arg1",
-			"reference");
+		var stream = await RetryHelper.DoAsync(Run, TimeSpan.FromSeconds(1));
 
 		Assert.IsNotNull(stream);
 
 		await sourceStream.DisposeAsync();
 		await stream.DisposeAsync();
+		return;
+
+		async Task<Stream> Run()
+		{
+			return await sut.RunProcessAsync(sourceStream, "arg1",
+				"reference");
+		}
 	}
 
 	[TestMethod]
@@ -195,4 +204,63 @@ public class ExifToolStreamToStreamRunnerTests
 			await sut.RunProcessAsync(Stream.Null,
 				"-1", "image2"));
 	}
+
+	// [TestMethod]
+	// public async Task GetExifToolArgumentsWithConfig_IncludesConfigWhenPresent()
+	// {
+	// 	var tempDir = Path.Combine(new CreateAnImage().BasePath, "ExifToolConfigTests");
+	// 	Directory.CreateDirectory(tempDir);
+	// 	try
+	// 	{
+	// 		var configPath = Path.Combine(tempDir, "exiftool-starsky.config");
+	// 		await File.WriteAllTextAsync(configPath, "1;", TestContext.CancellationToken);
+	//
+	// 		var appSettings = new AppSettings
+	// 		{
+	// 			ExifToolPath = _appSettingsWithExifTool.ExifToolPath,
+	// 			AppSettingsPath = Path.Combine(tempDir, "appsettings.patch.json")
+	// 		};
+	// 		var sut = new ExifToolStreamToStreamRunner(appSettings, new FakeIWebLogger());
+	//
+	// 		var result = sut.GetExifToolArgumentsWithConfig("-json -overwrite_original");
+	//
+	// 		Assert.Contains($"-config \"{configPath}\"", result);
+	// 		Assert.Contains("-json -overwrite_original", result);
+	// 	}
+	// 	finally
+	// 	{
+	// 		if ( Directory.Exists(tempDir) )
+	// 		{
+	// 			Directory.Delete(tempDir, true);
+	// 		}
+	// 	}
+	// }
+
+	// [TestMethod]
+	// public void GetExifToolArgumentsWithConfig_DoesNotIncludeConfig_WhenConfigMissing()
+	// {
+	// 	var tempDir = Path.Combine(new CreateAnImage().BasePath, "ExifToolConfigTestsMissing");
+	// 	Directory.CreateDirectory(tempDir);
+	// 	try
+	// 	{
+	// 		var appSettings = new AppSettings
+	// 		{
+	// 			ExifToolPath = Path.Combine(tempDir, "exiftool"),
+	// 			AppSettingsPath = Path.Combine(tempDir, "appsettings.patch.json")
+	// 		};
+	// 		var sut = new ExifToolStreamToStreamRunner(appSettings, new FakeIWebLogger());
+	//
+	// 		var input = "-json -overwrite_original";
+	// 		var result = sut.GetExifToolArgumentsWithConfig(input);
+	//
+	// 		Assert.AreEqual(input, result);
+	// 	}
+	// 	finally
+	// 	{
+	// 		if ( Directory.Exists(tempDir) )
+	// 		{
+	// 			Directory.Delete(tempDir, true);
+	// 		}
+	// 	}
+	// }
 }

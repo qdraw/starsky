@@ -37,6 +37,12 @@ public sealed class StorageThumbnailFilesystem : IStorage
 		throw new NotSupportedException();
 	}
 
+	public string[] ReadAllLines(string path)
+	{
+		var fullPath = CombinePath(path);
+		return new StorageHostFullPathFilesystem(_logger).ReadAllLines(fullPath);
+	}
+
 	/// <summary>
 	/// </summary>
 	/// <param name="path">FileHash not path</param>
@@ -150,7 +156,8 @@ public sealed class StorageThumbnailFilesystem : IStorage
 		throw new NotSupportedException();
 	}
 
-	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
+	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path,
+		int? maxInnerChildDirectoryLookups = null)
 	{
 		throw new NotSupportedException();
 	}

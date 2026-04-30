@@ -103,7 +103,8 @@ public class FakeIStorageTransient : IStorage
 		return new List<string>();
 	}
 
-	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
+	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path,
+		int? maxInnerChildDirectoryLookups = null)
 	{
 		_getDirCalls++;
 		if ( _getDirCalls >= 2 && _subdirsAppearOnSecondCall )
@@ -145,6 +146,11 @@ public class FakeIStorageTransient : IStorage
 	}
 
 	public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken)
+	{
+		throw new NotImplementedException();
+	}
+
+	public string[] ReadAllLines(string path)
 	{
 		throw new NotImplementedException();
 	}

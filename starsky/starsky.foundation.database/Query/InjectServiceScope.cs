@@ -1,36 +1,31 @@
-using System.Diagnostics.CodeAnalysis;
+using System;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
-
-#pragma warning disable CS8618
 
 [assembly: InternalsVisibleTo("starskytest"),
            InternalsVisibleTo("starsky.foundation.settings")]
 
 namespace starsky.foundation.database.Query;
 
-public class InjectServiceScope
+public class InjectServiceScope(IServiceScopeFactory scopeFactory)
 {
-	private readonly ApplicationDbContext _dbContext;
 
-	[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
-	public InjectServiceScope(IServiceScopeFactory? scopeFactory)
+	internal TResult Execute<TResult>(Func<ApplicationDbContext, TResult> action)
 	{
-		if ( scopeFactory == null )
-		{
-			return;
-		}
+		using var scope = scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-		var scope = scopeFactory.CreateScope();
-		_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		return action(dbContext);
 	}
 
-	/// <summary>
-	///     Dependency injection, used in background tasks
-	/// </summary>
-	internal ApplicationDbContext Context()
+	internal async Task<TResult> ExecuteAsync<TResult>(
+		Func<ApplicationDbContext, Task<TResult>> action)
 	{
-		return _dbContext;
+		using var scope = scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		return await action(dbContext);
 	}
 }

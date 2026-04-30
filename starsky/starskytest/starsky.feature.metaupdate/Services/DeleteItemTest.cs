@@ -247,7 +247,7 @@ public sealed class DeleteItemTest
 		Assert.AreEqual("/test/image.jpg", result[1].FilePath);
 		Assert.AreEqual("/test/image.dng", result[2].FilePath);
 
-		Assert.AreEqual(0, storage.GetAllFilesInDirectoryRecursive("/").Count());
+		Assert.IsEmpty(storage.GetAllFilesInDirectoryRecursive("/"));
 		Assert.IsEmpty(await fakeQuery.GetAllRecursiveAsync());
 	}
 
@@ -275,7 +275,7 @@ public sealed class DeleteItemTest
 		Assert.AreEqual("/test/image.jpg", result[1].FilePath);
 		Assert.AreEqual("/test/image.dng", result[2].FilePath);
 
-		Assert.AreEqual(0, storage.GetAllFilesInDirectoryRecursive("/").Count());
+		Assert.IsEmpty(storage.GetAllFilesInDirectoryRecursive("/"));
 		Assert.IsEmpty(await fakeQuery.GetAllRecursiveAsync());
 	}
 

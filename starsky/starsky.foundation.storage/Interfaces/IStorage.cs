@@ -53,8 +53,13 @@ public interface IStorage
 	///     old name: GetFilesRecursive
 	/// </summary>
 	/// <param name="path">directory</param>
+	/// <param name="maxInnerChildDirectoryLookups">
+	///     Optional maximum number of inner child directory lookup iterations.
+	///     Default null means unlimited (current behavior).
+	/// </param>
 	/// <returns>list</returns>
-	IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path);
+	IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path,
+		int? maxInnerChildDirectoryLookups = null);
 
 	/// <summary>
 	///     Read Stream (and keep open)
@@ -94,4 +99,6 @@ public interface IStorage
 
 	IAsyncEnumerable<string> ReadLinesAsync(string path,
 		CancellationToken cancellationToken);
+
+	string[] ReadAllLines(string path);
 }

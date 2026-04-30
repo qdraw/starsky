@@ -44,9 +44,9 @@ public partial class Query
 			_logger.LogDebug($"[GetAllFilesAsync] catch-ed and retry after {timeout}",
 				invalidOperationException);
 			await Task.Delay(timeout);
-			return FormatOk(
-				await GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(), filePaths)
-					.ToListAsync());
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(async context =>
+				FormatOk(await GetAllFilesQuery(context, filePaths).ToListAsync()));
 		}
 	}
 

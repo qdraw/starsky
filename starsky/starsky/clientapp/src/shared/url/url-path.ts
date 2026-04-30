@@ -239,7 +239,12 @@ export class URLPath {
 
   public MergeSelectParent(select: string[] | undefined, parent: string | undefined): string[] {
     const subPaths: string[] = [];
-    if (select === undefined || parent === undefined) return subPaths;
+
+    if (!parent) {
+      parent = "/";
+    }
+
+    if (select === undefined) return subPaths;
 
     for (const item of select) {
       if (parent === "/") {

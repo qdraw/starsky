@@ -1,6 +1,6 @@
 {
   "name": "localtunnel-project",
-  "version": "0.7.14",
+  "version": "0.7.16",
   "description": "",
   "main": "localtunnel.js",
   "scripts": {

@@ -81,11 +81,6 @@ public sealed class AppSettings
 		MetaThumbnail = 8,
 
 		/// <summary>
-		///     DiskWatcherWorkerService
-		/// </summary>
-		DiskWatcherWorkerService = 9,
-
-		/// <summary>
 		///     Seed application for demos
 		/// </summary>
 		DemoSeed = 10,
@@ -93,7 +88,12 @@ public sealed class AppSettings
 		/// <summary>
 		///     Download external dependencies
 		/// </summary>
-		DependenciesDownload = 11
+		DependenciesDownload = 11,
+
+		/// <summary>
+		///     Mount watcher
+		/// </summary>
+		MountWatcher = 12
 	}
 
 	/// <summary>
@@ -130,7 +130,7 @@ public sealed class AppSettings
 	private string _storageFolder = string.Empty;
 
 	/// <summary>
-	///     Private: Location of temp folder
+	///     Private: Location of the temp folder
 	/// </summary>
 	private string? _tempFolder;
 
@@ -224,7 +224,7 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
-	///     Allow overwrite this name in AppSettingsController
+	///     Allow overwriting this name in AppSettingsController
 	/// </summary>
 	public bool StorageFolderAllowEdit =>
 		string.IsNullOrEmpty(
@@ -277,6 +277,16 @@ public sealed class AppSettings
 
 	[PackageTelemetry]
 	public AppSettingsImportTransformationModel ImportTransformation { get; set; } = new();
+
+	[PackageTelemetry] public AppSettingsImportBackupModel ImportBackup { get; set; } = new();
+
+	[PackageTelemetry] public AppSettingsMountWatcherModel ImportMountWatcher { get; set; } = new();
+
+	/// <summary>
+	///     Background queue backend configuration.
+	/// </summary>
+	[PackageTelemetry]
+	public AppSettingsQueueModel Queue { get; set; } = new();
 
 	/// <summary>
 	///     Used for syncing gpx files
@@ -489,16 +499,16 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
-	/// Represents the default settings for publish profiles,
-	/// including configuration and feature specifications
-	/// used when no specific profile overrides are provided.
+	///     Represents the default settings for publish profiles,
+	///     including configuration and feature specifications
+	///     used when no specific profile overrides are provided.
 	/// </summary>
 	[PackageTelemetry]
 	public AppSettingsPublishProfilesDefaults PublishProfilesDefaults { get; set; } =
 		new();
 
 	/// <summary>
-	/// Represents the remote publishing profiles configuration for the application.
+	///     Represents the remote publishing profiles configuration for the application.
 	/// </summary>
 	public AppSettingsPublishProfilesRemote PublishProfilesRemote { get; set; } = new();
 
@@ -684,7 +694,7 @@ public sealed class AppSettings
 			if ( EnablePackageTelemetryPrivate == null )
 			{
 #pragma warning disable CS0162
-#if ( DEBUG )
+#if DEBUG
 				return false;
 #endif
 				// ReSharper disable once HeuristicUnreachableCode
@@ -941,6 +951,8 @@ public sealed class AppSettings
 
 		ReplaceOpenTelemetryData(appSettings);
 		ReplaceCloudImportData(appSettings);
+
+		Queue.RabbitMq.Password = CloneToDisplaySecurityWarning;
 
 		return appSettings;
 	}

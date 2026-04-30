@@ -1,0 +1,25 @@
+name: Tools SonarCloud Create Issue
+
+on:
+  schedule:
+    - cron: "0 0/12 * * *"
+  workflow_dispatch:
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+
+      - name: Run SonarCloud script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: |
+          chmod +x starsky-tools/build-tools/sonarcloud-create-issue.sh
+          starsky-tools/build-tools/sonarcloud-create-issue.sh

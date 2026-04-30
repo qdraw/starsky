@@ -22,6 +22,8 @@ namespace starskytest.starsky.foundation.database.QueryTest;
 [SuppressMessage("ReSharper", "ArrangeObjectCreationWhenTypeEvident")]
 public class QueryAddRangeTest
 {
+	public TestContext TestContext { get; set; }
+
 	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
@@ -75,9 +77,11 @@ public class QueryAddRangeTest
 			new AppSettings { AddMemoryCache = false }, serviceScopeFactory, new FakeIWebLogger(),
 			new FakeMemoryCache()).AddRangeAsync(expectedResult);
 
-		var context = new InjectServiceScope(serviceScopeFactory).Context();
-		var queryFromDb = context.FileIndex
-			.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
+		var injectServiceScope = new InjectServiceScope(serviceScopeFactory);
+		var queryFromDb = await injectServiceScope.ExecuteAsync(async context =>
+			await context.FileIndex
+				.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5")
+				.ToListAsync(TestContext.CancellationToken));
 
 		Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash,
 			queryFromDb.FirstOrDefault()?.FileHash);

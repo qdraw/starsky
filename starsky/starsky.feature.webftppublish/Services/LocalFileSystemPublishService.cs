@@ -107,7 +107,7 @@ public class LocalFileSystemPublishService(
 		// Create subdirectories
 		var selectedCopyContent = SelectContentToCopy(
 			copyContent,
-			setting);
+			setting).ToList();
 
 		foreach ( var copyItem in selectedCopyContent )
 		{
@@ -130,9 +130,7 @@ public class LocalFileSystemPublishService(
 		}
 
 		// Copy files
-		var filesToCopy = copyContent.Where(p => p.Value)
-			.Select(p => p.Key).ToList();
-		foreach ( var fileSubPath in filesToCopy )
+		foreach ( var fileSubPath in selectedCopyContent.Select(p => p.Key) )
 		{
 			var sourcePath = Path.Combine(sourceDirectory, fileSubPath);
 			var destPath = Path.Combine(destinationBasePath, fileSubPath);

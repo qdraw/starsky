@@ -193,6 +193,163 @@ public sealed class AppSettingsCompareHelperTest
 	}
 
 	[TestMethod]
+	public void AppSettingsImportBackupModel()
+	{
+		var source = new AppSettings
+		{
+			ImportBackup = new AppSettingsImportBackupModel
+			{
+				Enabled = false, StorageFolder = "/test-1"
+			}
+		};
+
+		var to = new AppSettings
+		{
+			ImportBackup = new AppSettingsImportBackupModel
+			{
+				Enabled = true, StorageFolder = "/test"
+			}
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.ImportBackup.Enabled);
+		Assert.AreEqual("/test", source.ImportBackup.StorageFolder);
+	}
+
+	[TestMethod]
+	public void AppSettingsImportBackupModel_Ignore_DefaultOption()
+	{
+		var source = new AppSettings
+		{
+			ImportBackup = new AppSettingsImportBackupModel
+			{
+				Enabled = true, StorageFolder = "/test"
+			}
+		};
+
+		var to = new AppSettings { ImportBackup = new AppSettingsImportBackupModel() };
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.ImportBackup.Enabled);
+		Assert.AreEqual("/test",
+			source.ImportBackup.StorageFolder);
+	}
+
+	[TestMethod]
+	public void AppSettingsMountWatcher()
+	{
+		var source = new AppSettings
+		{
+			ImportMountWatcher = new AppSettingsMountWatcherModel { DeleteAfter = false }
+		};
+
+		var to = new AppSettings
+		{
+			ImportMountWatcher = new AppSettingsMountWatcherModel { DeleteAfter = true }
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.ImportMountWatcher.DeleteAfter);
+	}
+
+	[TestMethod]
+	public void ImportMountWatcherModel_Ignore_DefaultOption()
+	{
+		var source = new AppSettings
+		{
+			ImportMountWatcher = new AppSettingsMountWatcherModel { DeleteAfter = true }
+		};
+
+		var to = new AppSettings { ImportMountWatcher = new AppSettingsMountWatcherModel() };
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.ImportMountWatcher.DeleteAfter);
+	}
+
+	[TestMethod]
+	public void AppSettingsQueueModel()
+	{
+		var source = new AppSettings
+		{
+			Queue = new AppSettingsQueueModel
+			{
+				Default = QueueBackendType.InMemory,
+				DatabasePollIntervalInMilliseconds = 500,
+				Queues = new Dictionary<string, QueueBackendType>
+				{
+					{ "Update", QueueBackendType.InMemory }
+				},
+				RabbitMq = new AppSettingsRabbitMqModel
+				{
+					Host = "localhost",
+					Port = 5672,
+					Username = "guest",
+					Password = "guest",
+					VirtualHost = "/"
+				}
+			}
+		};
+
+		var to = new AppSettings
+		{
+			Queue = new AppSettingsQueueModel
+			{
+				Default = QueueBackendType.RabbitMq,
+				DatabasePollIntervalInMilliseconds = 900,
+				Queues = new Dictionary<string, QueueBackendType>
+				{
+					{ "ImageClassification", QueueBackendType.Database }
+				},
+				RabbitMq = new AppSettingsRabbitMqModel
+				{
+					Host = "mq.internal",
+					Port = 5673,
+					Username = "starsky",
+					Password = "secret",
+					VirtualHost = "/starsky"
+				}
+			}
+		};
+
+		var compare = AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.AreEqual(QueueBackendType.RabbitMq, source.Queue.Default);
+		Assert.AreEqual(900, source.Queue.DatabasePollIntervalInMilliseconds);
+		Assert.AreEqual(QueueBackendType.Database,
+			source.Queue.Queues["ImageClassification"]);
+		Assert.AreEqual("mq.internal", source.Queue.RabbitMq.Host);
+		Assert.AreEqual("queue", compare.LastOrDefault());
+	}
+
+	[TestMethod]
+	public void AppSettingsQueueModel_Ignore_DefaultOption()
+	{
+		var source = new AppSettings
+		{
+			Queue = new AppSettingsQueueModel
+			{
+				Default = QueueBackendType.Database,
+				Queues = new Dictionary<string, QueueBackendType>
+				{
+					{ "Update", QueueBackendType.RabbitMq }
+				}
+			}
+		};
+
+		var to = new AppSettings { Queue = new AppSettingsQueueModel() };
+
+		var compare = AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.AreEqual(QueueBackendType.Database, source.Queue.Default);
+		Assert.AreEqual(QueueBackendType.RabbitMq, source.Queue.Queues["Update"]);
+		Assert.DoesNotContain(compare, "queue");
+	}
+
+	[TestMethod]
 	public void StringCompare()
 	{
 		var source = new AppSettings

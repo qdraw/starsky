@@ -37,7 +37,10 @@
       MakeCameraSerial: 1130703009,
       FocalLength: 15.0,
       Size: 11062629,
-      Artist: Kees Guequierre
+      Artist: Kees Guequierre,
+      SuggestedTags: ,
+      RejectedTags: ,
+      ImageClassificationModel: 
     },
     SourceFullFilePath: /eos7d.cr2,
     Structure: {

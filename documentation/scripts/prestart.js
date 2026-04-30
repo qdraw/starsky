@@ -121,6 +121,26 @@ copyFileSync(
 	"advanced-options/starsky/starskybusinesslogic/readme.md"
 );
 
+copyFileSync(
+	"starsky/starskymountwatchercli/readme.md",
+	"advanced-options/starsky/starskymountwatchercli/readme.md"
+);
+
+copyFileSync(
+	"starsky/starskydemoseedcli/readme.md",
+	"advanced-options/starsky/starskydemoseedcli/readme.md"
+);
+
+copyFileSync(
+	"starsky/starskydependenciesdownloadcli/readme.md",
+	"advanced-options/starsky/starskydependenciesdownloadcli/readme.md"
+);
+
+copyFileSync(
+	"starsky/starskydemoseedcli/readme.md",
+	"advanced-options/starsky/starskydemoseedcli/readme.md"
+);
+
 copyFileSync("starskydesktop/readme.md", "advanced-options/starskydesktop/readme.md");
 
 touchSync("advanced-options/starskydesktop/__do_not_edit_this__folder");

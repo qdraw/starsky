@@ -48,7 +48,7 @@ public class BatchRenameServiceTest
 			StorageFolder = PathHelper.AddBackslash(newImage.BasePath),
 			ThumbnailTempFolder = newImage.BasePath
 		};
-		_query = new Query(context, appSettings, null,
+		_query = new Query(context, appSettings, new FakeIServiceScopeFactory(),
 			new FakeIWebLogger(), memoryCache);
 
 		if ( _query.GetAllFilesAsync("/").Result.TrueForAll(p => p.FileName != newImage.FileName) )

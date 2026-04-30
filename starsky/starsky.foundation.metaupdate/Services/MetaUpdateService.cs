@@ -138,7 +138,7 @@ public class MetaUpdateService : IMetaUpdateService
 			// feature to exif update
 			var exifUpdateFilePaths = new List<string> { fileIndexItem.FilePath! };
 			var exifTool = new ExifToolCmdHelper(_exifTool, _iStorage, _thumbnailStorage,
-				_readMeta, _thumbnailQuery, _logger);
+				_readMeta, _thumbnailQuery, _logger, _appSettings);
 
 			// to avoid diskWatcher catch up
 			_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!, fileIndexItem,

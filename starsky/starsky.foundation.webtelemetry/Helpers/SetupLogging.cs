@@ -31,6 +31,8 @@ public static class SetupLogging
 			logging.ClearProviders();
 			logging.AddConsole();
 
+			new AddEventLogger().AddEventLog(logging, appSettings.ApplicationType);
+
 			if ( string.IsNullOrEmpty(appSettings.OpenTelemetry?.LogsEndpoint) )
 			{
 				return;
@@ -52,8 +54,9 @@ public static class SetupLogging
 			);
 		});
 
-		services.AddScoped<IWebLogger, WebLogger>();
+		services.AddSingleton<IWebLogger, WebLogger>();
 	}
+
 
 	internal static List<KeyValuePair<string, object>> GetTelemetryAttributes(
 		AppSettings appSettings)
@@ -69,7 +72,7 @@ public static class SetupLogging
 				appSettings.AppVersionBuildDateTime.ToString(
 					new CultureInfo("nl-NL"))),
 			new KeyValuePair<string, object>(FrameworkDescriptionName,
-				RuntimeInformation.FrameworkDescription),
+				RuntimeInformation.FrameworkDescription)
 		];
 	}
 }

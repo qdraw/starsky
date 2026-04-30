@@ -126,6 +126,7 @@ public sealed class QueryTest
 		// retry 2
 		if ( homeItem?.FileIndexItem != null )
 		{
+			await Task.Delay(50, TestContext.CancellationToken);
 			await _query.RemoveItemAsync(homeItem.FileIndexItem);
 
 			// Query again if needed
@@ -222,7 +223,7 @@ public sealed class QueryTest
 
 		// Create Query with cache disabled by passing null for IMemoryCache
 		var queryNoCache = new Query(dbContext, new AppSettings { Verbose = true }, serviceScope,
-			_logger, null);
+			_logger);
 
 		// Act
 		var result = await queryNoCache.GetSubPathsByHashAsync("myhash");
@@ -1181,7 +1182,7 @@ public sealed class QueryTest
 		// already verbose
 		_query.CacheUpdateItem([item1]);
 
-		Assert.AreNotEqual(0, _logger.TrackedInformation.Count);
+		Assert.IsNotEmpty(_logger.TrackedInformation);
 		Assert.IsTrue(_logger.TrackedInformation.FirstOrDefault().Item2
 			?.Contains("[CacheUpdateItem]"));
 	}
@@ -1234,7 +1235,7 @@ public sealed class QueryTest
 	{
 		_query.AddCacheParentItem("/3479824783",
 		[
-			new()
+			new FileIndexItem
 			{
 				Id = 401,
 				Tags = "___not___",
@@ -1316,10 +1317,10 @@ public sealed class QueryTest
 		});
 
 		var dp1 = _query.DisplayFileFolders("/StackCollection");
-		Assert.AreEqual(1, dp1.Count());
+		Assert.HasCount(1, dp1);
 
 		var dp2 = _query.DisplayFileFolders("/StackCollection", null, false);
-		Assert.AreEqual(2, dp2.Count());
+		Assert.HasCount(2, dp2);
 	}
 
 	[TestMethod]
@@ -1408,10 +1409,11 @@ public sealed class QueryTest
 		await dbContext.DisposeAsync();
 		await query.AddItemAsync(new FileIndexItem("/test982.jpg") { Tags = "test" });
 
-		var dbContext2 = new InjectServiceScope(serviceScope).Context();
+		var injectServiceScope = new InjectServiceScope(serviceScope);
 		var itemItShouldContain =
-			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test982.jpg",
-				TestContext.CancellationTokenSource.Token);
+			await injectServiceScope.ExecuteAsync(async dbContext2 =>
+				await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test982.jpg",
+					TestContext.CancellationTokenSource.Token));
 		Assert.IsNotNull(itemItShouldContain);
 		Assert.AreEqual("test", itemItShouldContain.Tags);
 	}
@@ -1463,10 +1465,11 @@ public sealed class QueryTest
 		Assert.IsNotNull(item);
 		await query.RemoveItemAsync(item);
 
-		var dbContext2 = new InjectServiceScope(serviceScope).Context();
+		var injectServiceScope = new InjectServiceScope(serviceScope);
 		var itemItShouldBeNull =
-			await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
-				TestContext.CancellationTokenSource.Token);
+			await injectServiceScope.ExecuteAsync(async dbContext2 =>
+				await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg",
+					TestContext.CancellationTokenSource.Token));
 		Assert.IsNull(itemItShouldBeNull);
 	}
 

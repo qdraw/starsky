@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -45,7 +46,7 @@ public sealed class StorageSubPathFilesystemTest
 		_storage.CreateDirectory("/test");
 		var filesInFolder = _storage.GetDirectoryRecursive("/").Select(p => p.Key).ToList();
 
-		Assert.AreNotEqual(0, filesInFolder.Count);
+		Assert.IsNotEmpty(filesInFolder);
 
 		_storage.FolderDelete("/test");
 	}
@@ -54,21 +55,21 @@ public sealed class StorageSubPathFilesystemTest
 	public void GetAllFilesInDirectory_Null_NotFound()
 	{
 		var result = _storage.GetAllFilesInDirectory("/not_found");
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
 	public void GetDirectories_Null_NotFound()
 	{
 		var result = _storage.GetDirectories("/not_found");
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
 	public void GetDirectoryRecursive_Null_NotFound()
 	{
 		var result = _storage.GetDirectoryRecursive("/not_found").Select(p => p.Key);
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -85,7 +86,7 @@ public sealed class StorageSubPathFilesystemTest
 		var filesInFolder = _storage.GetAllFilesInDirectoryRecursive(
 			"/test_GetAllFilesInDirectoryRecursive").ToList();
 
-		Assert.AreNotEqual(0, filesInFolder.Count);
+		Assert.IsNotEmpty(filesInFolder);
 		Assert.AreEqual("/test_GetAllFilesInDirectoryRecursive/test", filesInFolder[0]);
 		Assert.AreEqual("/test_GetAllFilesInDirectoryRecursive/test/already_09010.tmp",
 			filesInFolder[1]);
@@ -324,6 +325,37 @@ public sealed class StorageSubPathFilesystemTest
 	}
 
 	[TestMethod]
+	public void ReadAllLines_SubPath_ReturnsLines()
+	{
+		// Arrange: create a file under the storage folder used by _storage
+		const string dbPath = "/test_readall.txt";
+		var fullPath = Path.Combine(new CreateAnImage().BasePath, "test_readall.txt");
+		var lines = new[] { "one", "two", "three" };
+		File.WriteAllLines(fullPath, lines);
+
+		try
+		{
+			// The storage instance in this test class uses CreateAnImage.BasePath as StorageFolder
+			var result = _storage.ReadAllLines(dbPath);
+			CollectionAssert.AreEqual(lines, result);
+		}
+		finally
+		{
+			try
+			{
+				if ( File.Exists(fullPath) )
+				{
+					File.Delete(fullPath);
+				}
+			}
+			catch
+			{
+				// best effort cleanup
+			}
+		}
+	}
+
+	[TestMethod]
 	public void IsFolderEmpty_EmptyFolder_ReturnsTrue()
 	{
 		var baseStorage = Path.Combine(Path.GetTempPath(),
@@ -422,9 +454,10 @@ public sealed class StorageSubPathFilesystemTest
 	}
 
 	[TestMethod]
-	public void IsFolderEmpty_FileAppearsBetweenChecks_Reliable()
+	public async Task IsFolderEmpty_FileAppearsBetweenChecks()
 	{
-		var baseStorage = Path.Combine(Path.GetTempPath(), "StorageSubPathFilesystemTest_" + Guid.NewGuid());
+		var baseStorage = Path.Combine(Path.GetTempPath(),
+			"StorageSubPathFilesystemTest_" + Guid.NewGuid());
 		try
 		{
 			var appSettings = new AppSettings { StorageFolder = baseStorage };
@@ -435,18 +468,18 @@ public sealed class StorageSubPathFilesystemTest
 			var fullPath = appSettings.DatabasePathToFilePath(dbPath);
 			var filePath = Path.Combine(fullPath, "latefile.txt");
 
-			// Start background task that creates the file after a short delay
-			var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-			Task.Run(async () =>
+			// Create a file shortly after polling starts. Await this task to surface failures.
+			var writerTask = Task.Run(async () =>
 			{
-				await Task.Delay(50, CancellationToken.None).ConfigureAwait(false);
-				await File.WriteAllTextAsync(filePath, "x", cts.Token);
+				await Task.Delay(20, CancellationToken.None);
+				await File.WriteAllTextAsync(filePath, "x", CancellationToken.None);
 			}, CancellationToken.None);
 
-			// Poll until IsFolderEmpty returns false or timeout
-			var sw = System.Diagnostics.Stopwatch.StartNew();
+			// Poll until IsFolderEmpty returns false or timeout.
+			// Keep timeout CI-safe, but much lower than before to reduce test runtime.
+			var sw = Stopwatch.StartNew();
 			var success = false;
-			while ( sw.Elapsed < TimeSpan.FromSeconds(2) )
+			while ( sw.Elapsed < TimeSpan.FromMilliseconds(1200) )
 			{
 				if ( !storage.IsFolderEmpty(dbPath) )
 				{
@@ -454,10 +487,22 @@ public sealed class StorageSubPathFilesystemTest
 					break;
 				}
 
-				Task.Delay(20, CancellationToken.None).Wait(TestContext.CancellationToken);
+				await Task.Delay(10, CancellationToken.None);
 			}
 
-			cts.Dispose();
+			await writerTask;
+			if ( !success )
+			{
+				for ( var i = 0; i < 10 && !success; i++ )
+				{
+					success = !storage.IsFolderEmpty(dbPath);
+					if ( !success )
+					{
+						await Task.Delay(10, CancellationToken.None);
+					}
+				}
+			}
+
 			Assert.IsTrue(success, "Expected folder to become non-empty after the file is created");
 		}
 		finally

@@ -1,13 +1,13 @@
 using System;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.worker.Backends;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.CpuEventListener.Interfaces;
-using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Models;
 using starsky.foundation.worker.ThumbnailServices.Exceptions;
@@ -22,29 +22,30 @@ namespace starsky.foundation.worker.ThumbnailServices;
 	InjectionLifetime = InjectionLifetime.Singleton)]
 public sealed class ThumbnailBackgroundTaskQueue : IThumbnailQueuedHostedService
 {
+	public const string QueueName = QueueNames.Thumbnail;
+
 	private readonly AppSettings _appSettings;
+	private readonly IBaseBackgroundTaskQueue _backend;
 	private readonly ICpuUsageListener _cpuUsageListenerService;
 	private readonly IWebLogger _logger;
 
 	private readonly ThumbnailBackgroundQueuedMetrics _metrics;
 
-	private readonly Channel<BackgroundTaskQueueJob> _queue;
-
 	public ThumbnailBackgroundTaskQueue(ICpuUsageListener cpuUsageListenerService,
-		IWebLogger logger, AppSettings appSettings, IServiceScopeFactory scopeFactory)
+		IWebLogger logger, AppSettings appSettings, IServiceScopeFactory scopeFactory,
+		IQueueBackendFactory? queueBackendFactory = null)
 	{
 		_cpuUsageListenerService = cpuUsageListenerService;
 		_logger = logger;
 		_appSettings = appSettings;
-		_queue = Channel.CreateBounded<BackgroundTaskQueueJob>(
-			ProcessTaskQueue.DefaultBoundedChannelOptions);
+		_backend = queueBackendFactory?.Create(QueueName) ?? new InMemoryQueueBackend();
 		_metrics = scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<ThumbnailBackgroundQueuedMetrics>();
 	}
 
 	public int Count()
 	{
-		return _queue.Reader.Count;
+		return _backend.Count();
 	}
 
 	public bool ThrowExceptionIfCpuUsageIsToHigh(string? metaData)
@@ -68,13 +69,13 @@ public sealed class ThumbnailBackgroundTaskQueue : IThumbnailQueuedHostedService
 			throw new ArgumentException("JobType is required", nameof(job));
 		}
 		ThrowExceptionIfCpuUsageIsToHigh(job.MetaData);
-		return _queue.Writer.WriteAsync(job);
+		return _backend.QueueJobAsync(job);
 	}
 
 	public async ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(
 		CancellationToken cancellationToken)
 	{
-		var workItem = await _queue.Reader.ReadAsync(cancellationToken);
+		var workItem = await _backend.DequeueJobAsync(cancellationToken);
 		_metrics.Value = Count();
 		return workItem;
 	}

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Enums;
@@ -27,6 +26,6 @@ public class NotSupportedFallbackThumbnailGeneratorTests
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.IsFalse(result.Any());
+		Assert.IsEmpty(result);
 	}
 }

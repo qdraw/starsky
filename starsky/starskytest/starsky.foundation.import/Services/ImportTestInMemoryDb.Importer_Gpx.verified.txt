@@ -34,7 +34,10 @@
       LensModel: ,
       MakeCameraSerial: ,
       Size: 6193,
-      Artist: 
+      Artist: ,
+      SuggestedTags: ,
+      RejectedTags: ,
+      ImageClassificationModel: 
     },
     SourceFullFilePath: /test.gpx,
     Structure: {

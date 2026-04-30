@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</ProjectGuid>
+        <RuntimeFrameworkVersion>8.0.26</RuntimeFrameworkVersion>
+        <DebugType>Full</DebugType>
+        <Version>0.7.16</Version>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.import\starsky.foundation.import.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Management" Version="10.0.7"/>
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+</Project>
+
+
+

@@ -46,7 +46,7 @@ public sealed class ThumbnailControllerTest
 		var options = builderDb.Options;
 		var context = new ApplicationDbContext(options);
 		_query = new Query(context, new AppSettings(),
-			null, new FakeIWebLogger(), memoryCache);
+			new FakeIServiceScopeFactory(), new FakeIWebLogger(), memoryCache);
 	}
 
 	private static ThumbnailController CreateSut(IStorage storage, IQuery query,

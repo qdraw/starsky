@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 
 namespace starsky.foundation.storage.Services;
 
@@ -29,7 +30,10 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	/// </summary>
 	private const int MaxBytesToHash = 1024 * 1024;
 
-	private const int MaxReadVideoSize = 1024 * 1024; // 1024 KB
+	/// <summary>
+	///     the largest mp4 file start=1158014
+	/// </summary>
+	private const int MaxReadVideoSize = 1290 * 1024; // 1290 KB
 
 	/// <summary>
 	///     Buffer size for reading atom data
@@ -46,7 +50,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	///     Base32 encoded MD5 hash of video content,
 	///     or empty string if no mdat atom found
 	/// </returns>
-	public async Task<string> HashMp4VideoContentAsync(string fullFilePath)
+	public async Task<HashMp4Result> HashMp4VideoContentAsync(string fullFilePath)
 	{
 		using var md5 = MD5.Create();
 		var buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
@@ -59,7 +63,9 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		catch ( Exception e )
 		{
 			logger.LogError($"Mp4FileHasher.HashMp4VideoContentAsync Error: {e.Message}");
-			return string.Empty;
+			return new HashMp4Result(string.Empty,
+				false,
+				$"Error processing MP4 file: {e.Message}");
 		}
 		finally
 		{
@@ -70,12 +76,12 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	/// <summary>
 	///     Processes MP4 atoms and finds/hashes the mdat atom
 	/// </summary>
-	internal async Task<string> ProcessMp4AtomsAsync(Stream stream,
+	internal async Task<HashMp4Result> ProcessMp4AtomsAsync(Stream stream,
 		MD5 md5, byte[] buffer, CancellationToken cancellationToken)
 	{
 		if ( stream == Stream.Null )
 		{
-			return string.Empty;
+			return new HashMp4Result(string.Empty, false, "Stream is null");
 		}
 
 		// Delegate handling based on stream seekability to reduce method complexity
@@ -86,7 +92,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	// Consolidated atom processing for both seekable and non-seekable streams
 	// If isSeekable is true we collect mdat atoms and hash them after scanning.
 	// If false we hash the first mdat encountered immediately.
-	private async Task<string> ProcessAtomsCommonAsync(Stream stream,
+	private async Task<HashMp4Result> ProcessAtomsCommonAsync(Stream stream,
 		MD5 md5, byte[] buffer, bool isSeekable, CancellationToken cancellationToken)
 	{
 		var mdats = isSeekable ? new List<Mp4Atom>() : null;
@@ -107,18 +113,23 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 				await ProcessAtomAsync(stream, md5, buffer, atom.Value, mdats, isSeekable);
 			if ( !shouldContinue )
 			{
-				return immediateResult;
+				return new HashMp4Result(immediateResult,
+					!string.IsNullOrEmpty(immediateResult),
+					string.IsNullOrEmpty(immediateResult) ? "Failed to process atom" : "Ok");
 			}
 		}
 
 		if ( !isSeekable )
 		{
-			return string.Empty;
+			return new HashMp4Result(string.Empty,
+				false,
+				"No mdat atom found in non-seekable stream");
 		}
 
 		if ( mdats!.Count == 0 )
 		{
-			return string.Empty; // no mdats found
+			return new HashMp4Result(string.Empty,
+				false, "no mdats found");
 		}
 
 		// Hash collected mdats for seekable streams
@@ -165,10 +176,11 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 			return await HandleNonMdatSkipAsync(stream, buffer, payloadSize, isSeekable);
 		}
 
-		logger.LogInformation(isSeekable
-			? "Mp4FileHasher.ProcessSeekableStreamAsync invalid zero-size non-mdat atom"
-			: "Mp4FileHasher.ProcessNonSeekableStreamAsync invalid zero-size non-mdat atom");
-		return ( false, string.Empty );
+		// Zero-payload atoms such as 'wide', 'free', 'skip' are valid QuickTime/MP4 spacers.
+		// Continue scanning rather than aborting so that the mdat atom that follows is found.
+		logger.LogDebug(
+			$"Mp4FileHasher: zero-payload '{atom.Type}' spacer atom encountered — continuing");
+		return ( true, string.Empty );
 	}
 
 	private async Task<(bool shouldContinue, string immediateResult)> HandleMdatSeekableAsync(
@@ -240,7 +252,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		return Base32.Encode(hash!);
 	}
 
-	private static async Task<string> HashMdatAtomsSeekableAsync(Stream stream, MD5 md5,
+	private static async Task<HashMp4Result> HashMdatAtomsSeekableAsync(Stream stream, MD5 md5,
 		byte[] buffer,
 		List<Mp4Atom> mDats)
 	{
@@ -287,11 +299,12 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 
 		if ( totalHashed == 0 )
 		{
-			return string.Empty;
+			return new HashMp4Result(string.Empty,
+				false, "No mdat content hashed");
 		}
 
 		md5.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
-		return Base32.Encode(md5.Hash!);
+		return new HashMp4Result(Base32.Encode(md5.Hash!), true, "Ok");
 	}
 
 	/// <summary>

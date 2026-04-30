@@ -11,6 +11,7 @@ using Medallion.Shell;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Architecture;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
@@ -261,8 +262,12 @@ public sealed class ExifToolDownload : IExifToolDownload
 					exifToolUnixFolderFullFilePath);
 			}
 
-			_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,
-				exifToolUnixFolderFullFilePath);
+			RetryHelper.Do(() =>
+			{
+				_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,
+					exifToolUnixFolderFullFilePath);
+				return true;
+			}, TimeSpan.FromSeconds(1));
 		}
 		else
 		{
@@ -270,7 +275,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 			return false;
 		}
 
-		// remove tar.gz file afterwards
+		// remove tar.gz file afterward
 		_hostFileSystemStorage.FileDelete(tarGzArchiveFullFilePath);
 
 		var exifToolExePath =

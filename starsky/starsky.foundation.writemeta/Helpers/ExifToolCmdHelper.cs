@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -20,6 +22,8 @@ namespace starsky.foundation.writemeta.Helpers;
 
 public sealed class ExifToolCmdHelper
 {
+	private const string ExifToolConfigFileName = "exiftool.config";
+	private readonly AppSettings _appSettings;
 	private readonly IExifTool _exifTool;
 	private readonly IStorage _iStorage;
 	private readonly IReadMeta _readMeta;
@@ -35,9 +39,10 @@ public sealed class ExifToolCmdHelper
 	/// <param name="thumbnailStorage">Thumbnail Storage Abstraction provider</param>
 	/// <param name="readMeta">ReadMeta abstraction</param>
 	/// <param name="thumbnailQuery">thumbnailQuery</param>
+	/// <param name="appSettings">app settings</param>
 	public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage,
 		IStorage thumbnailStorage, IReadMeta readMeta, IThumbnailQuery thumbnailQuery,
-		IWebLogger webLogger)
+		IWebLogger webLogger, AppSettings appSettings)
 	{
 		_exifTool = exifTool;
 		_iStorage = iStorage;
@@ -45,6 +50,7 @@ public sealed class ExifToolCmdHelper
 		_thumbnailQuery = thumbnailQuery;
 		_webLogger = webLogger;
 		_thumbnailStorage = thumbnailStorage;
+		_appSettings = appSettings;
 	}
 
 
@@ -81,11 +87,16 @@ public sealed class ExifToolCmdHelper
 	/// <param name="comparedNames">list of fields that are changed, other fields are ignored</param>
 	/// <param name="includeSoftware">to include the original software name</param>
 	/// <returns>command line args</returns>
-	internal static string ExifToolCommandLineArgs(FileIndexItem updateModel,
+	internal string ExifToolCommandLineArgs(FileIndexItem updateModel,
 		List<string> comparedNames, bool includeSoftware)
 	{
-		var command = "-json -overwrite_original";
-		var initCommand = command; // to check if nothing
+		var command = string.Empty;
+
+		// Update AI config needed first to be working
+		command = UpdateAiConfig(command, comparedNames);
+
+		const string initCommand = "-json -overwrite_original"; // to check if nothing
+		command += initCommand;
 
 		// Create an XMP File -> as those files don't support those tags
 		// Check first if it is needed
@@ -124,10 +135,53 @@ public sealed class ExifToolCmdHelper
 		command = UpdateImageStabilization(command, comparedNames, updateModel);
 		command = UpdateArtist(command, comparedNames, updateModel);
 
+		// AI models
+		command = UpdateSuggestedTags(command, comparedNames, updateModel);
+		command = UpdateRejectedTags(command, comparedNames, updateModel);
+		command = UpdateImageClassificationModel(command, comparedNames, updateModel);
+		command = UpdateImageClassificationGeneratedAt(command, comparedNames, updateModel);
+
 		if ( command == initCommand )
 		{
 			return string.Empty;
 		}
+
+		return command;
+	}
+
+	internal string GetConfigPath()
+	{
+		var appSettingsDirectory = Path.GetDirectoryName(_appSettings.AppSettingsPath);
+		var configBaseDirectory = string.IsNullOrWhiteSpace(appSettingsDirectory)
+			? _appSettings.BaseDirectoryProject
+			: appSettingsDirectory;
+		var configPath = Path.Combine(configBaseDirectory, ExifToolConfigFileName);
+		return configPath;
+	}
+
+	private string UpdateAiConfig(string command, List<string> comparedNames)
+	{
+		var required = new[]
+			{
+				nameof(FileIndexItem.SuggestedTags), nameof(FileIndexItem.RejectedTags),
+				nameof(FileIndexItem.ImageClassificationModel),
+				nameof(FileIndexItem.ImageClassificationGeneratedAt)
+			}
+			.Select(x => x.ToLowerInvariant());
+
+		if ( !comparedNames.Intersect(required).Any() )
+		{
+			return command;
+		}
+
+		var configPath = GetConfigPath();
+		if ( File.Exists(configPath) )
+		{
+			command += $" -config \"{configPath}\" ";
+			return command;
+		}
+
+		_webLogger.LogError($"[UpdateAiConfig] Missing ExifTool config: {configPath}");
 
 		return command;
 	}
@@ -147,6 +201,71 @@ public sealed class ExifToolCmdHelper
 			command +=
 				$" -Artist=\"{updateModel.Artist}\" -XMP-dc:Creator=\"{updateModel.Artist}\" ";
 		}
+
+		return command;
+	}
+
+	private static string UpdateSuggestedTags(string command, List<string> comparedNames,
+		FileIndexItem updateModel)
+	{
+		if ( !comparedNames.Contains(nameof(FileIndexItem.SuggestedTags).ToLowerInvariant()) ||
+		     string.IsNullOrWhiteSpace(updateModel.SuggestedTags) )
+		{
+			return command;
+		}
+
+		var value = updateModel.SuggestedTags.QuotesCommandLineEscape();
+		command += $" -sep \", \" -XMP-ai:SuggestedTags=\"{value}\" ";
+
+		return command;
+	}
+
+	private static string UpdateRejectedTags(string command, List<string> comparedNames,
+		FileIndexItem updateModel)
+	{
+		if ( !comparedNames.Contains(nameof(FileIndexItem.RejectedTags).ToLowerInvariant()) ||
+		     string.IsNullOrWhiteSpace(updateModel.RejectedTags) )
+		{
+			return command;
+		}
+
+		var value = updateModel.RejectedTags.QuotesCommandLineEscape();
+		command += $" -sep \", \" -XMP-ai:RejectedTags=\"{value}\" ";
+
+		return command;
+	}
+
+	private static string UpdateImageClassificationModel(string command,
+		List<string> comparedNames,
+		FileIndexItem updateModel)
+	{
+		if ( !comparedNames.Contains(nameof(FileIndexItem.ImageClassificationModel)
+			     .ToLowerInvariant()) ||
+		     string.IsNullOrWhiteSpace(updateModel.ImageClassificationModel) )
+		{
+			return command;
+		}
+
+		var value = updateModel.ImageClassificationModel.QuotesCommandLineEscape();
+		command += $" -XMP-ai:ImageClassificationModel=\"{value}\" ";
+
+		return command;
+	}
+
+	private static string UpdateImageClassificationGeneratedAt(string command,
+		List<string> comparedNames,
+		FileIndexItem updateModel)
+	{
+		if ( !comparedNames.Contains(nameof(FileIndexItem.ImageClassificationGeneratedAt)
+			     .ToLowerInvariant()) ||
+		     updateModel.ImageClassificationGeneratedAt.Year < 2 )
+		{
+			return command;
+		}
+
+		var value = updateModel.ImageClassificationGeneratedAt.ToString("o",
+			CultureInfo.InvariantCulture);
+		command += $" -XMP-ai:ImageClassificationGeneratedAt=\"{value}\" ";
 
 		return command;
 	}
@@ -176,7 +295,7 @@ public sealed class ExifToolCmdHelper
 			}
 
 			var exifCopy = new ExifCopy(_iStorage, _thumbnailStorage, _exifTool,
-				_readMeta, _thumbnailQuery, _webLogger);
+				_readMeta, _thumbnailQuery, _webLogger, _appSettings);
 			exifCopy.XmpCreate(withXmpPath);
 
 			_webLogger.LogInformation($"Create template xmp file for: {withXmpPath}");
