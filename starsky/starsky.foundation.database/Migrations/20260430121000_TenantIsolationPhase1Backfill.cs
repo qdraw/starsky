@@ -62,6 +62,21 @@ UPDATE QueueItems
 SET TenantId = (SELECT Id FROM Tenants WHERE Slug = 'main' LIMIT 1),
     TenantSlug = COALESCE(TenantSlug, 'main')
 WHERE TenantId IS NULL;");
+
+            // Migrate existing global admins to the 'main' tenant as admins
+            migrationBuilder.Sql(@"
+INSERT INTO TenantUsers (TenantId, UserId, Role)
+SELECT 
+    (SELECT Id FROM Tenants WHERE Slug = 'main' LIMIT 1),
+    u.Id,
+    1  -- TenantRole.Admin = 1
+FROM Users u
+WHERE u.IsGlobalAdmin = 1 
+  AND NOT EXISTS (
+    SELECT 1 FROM TenantUsers tu 
+    WHERE tu.TenantId = (SELECT Id FROM Tenants WHERE Slug = 'main' LIMIT 1) 
+      AND tu.UserId = u.Id
+  );");
         }
 
         /// <inheritdoc />

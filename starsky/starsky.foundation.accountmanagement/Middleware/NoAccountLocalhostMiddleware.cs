@@ -3,9 +3,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
 
@@ -57,14 +59,18 @@ public sealed class NoAccountMiddleware
 		{
 			var userManager =
 				( IUserManager ) context.RequestServices.GetRequiredService(typeof(IUserManager));
-			var user = await CreateOrUpdateNewUsers(userManager);
+			var dbContext =
+				( ApplicationDbContext ) context.RequestServices.GetRequiredService(typeof(ApplicationDbContext));
+			var sessionStore =
+				( ITenantSessionStore ) context.RequestServices.GetRequiredService(typeof(ITenantSessionStore));
+			var user = await CreateOrUpdateNewUsers(userManager, dbContext, sessionStore);
 			await userManager.SignIn(context, user, true);
 		}
 
 		await _next.Invoke(context);
 	}
 
-	internal static async Task<User?> CreateOrUpdateNewUsers(IUserManager userManager)
+	internal static async Task<User?> CreateOrUpdateNewUsers(IUserManager userManager, ApplicationDbContext dbContext, ITenantSessionStore sessionStore)
 	{
 		var user = userManager.GetUser(CredentialType, Identifier);
 		if ( user == null )
@@ -83,14 +89,60 @@ public sealed class NoAccountMiddleware
 				user.Credentials!.FirstOrDefault(p => p.CredentialTypeId == credentialType?.Id);
 			if ( credential!.IterationCount == IterationCountType.Iterate100KSha256 )
 			{
-				return user;
+				// Credential is up-to-date, continue
 			}
+			else
+			{
+				var newPassword = Convert.ToBase64String(
+					Pbkdf2Hasher.GenerateRandomSalt());
+				userManager.ChangeSecret(CredentialType, Identifier, newPassword + newPassword);
+			}
+		}
 
-			var newPassword = Convert.ToBase64String(
-				Pbkdf2Hasher.GenerateRandomSalt());
-			userManager.ChangeSecret(CredentialType, Identifier, newPassword + newPassword);
+		// Handle multi-tenancy: ensure user is in main tenant and session is activated
+		if ( user != null )
+		{
+			await EnsureUserInMainTenant(user, dbContext, sessionStore);
 		}
 
 		return user;
+	}
+
+	private static async Task EnsureUserInMainTenant(User user, ApplicationDbContext dbContext, ITenantSessionStore sessionStore)
+	{
+		// Ensure main tenant exists
+		var mainTenant = await dbContext.Tenants.FirstOrDefaultAsync(t => t.Slug == "main");
+		if ( mainTenant == null )
+		{
+			mainTenant = new Tenant
+			{
+				Slug = "main",
+				Name = "main",
+				IsEnabled = true
+			};
+			dbContext.Tenants.Add(mainTenant);
+			await dbContext.SaveChangesAsync();
+		}
+
+		// Check if user is already a member of main tenant
+		var existingMembership = await dbContext.TenantUsers
+			.FirstOrDefaultAsync(tu => tu.TenantId == mainTenant.Id && tu.UserId == user.Id);
+
+		if ( existingMembership == null )
+		{
+			// Add user to main tenant as admin for localhost development
+			var tenantUser = new TenantUser
+			{
+				TenantId = mainTenant.Id,
+				UserId = user.Id,
+				Role = TenantRole.Admin
+			};
+			dbContext.TenantUsers.Add(tenantUser);
+			await dbContext.SaveChangesAsync();
+		}
+
+		// Create/get a session for the user and activate the main tenant
+		var session = await sessionStore.CreateOrRefreshSessionAsync(user.Id);
+		await sessionStore.ActivateTenantAsync(session.Id, mainTenant.Id);
 	}
 }

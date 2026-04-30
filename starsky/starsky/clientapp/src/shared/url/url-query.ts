@@ -24,6 +24,11 @@ export class UrlQuery {
   }
 
   private TenantPrefix(): string {
+    // Only use prefix if the current pathname includes it
+    if (!document.location.pathname.includes(this.prefix)) {
+      return "";
+    }
+
     const tenant = this.CurrentTenant();
     if (!tenant) {
       return this.prefix;
@@ -180,11 +185,15 @@ export class UrlQuery {
     return `${this.prefix}/api/tenants/mine`;
   };
 
-  public UrlMyTenantsPage = (): string => {
-    return `${this.prefix}/-/tenants`;
-  };
+	public UrlMyTenantsPage = (): string => {
+		return `${this.prefix}/-/tenants`;
+	};
 
-  public KeyAccountPermissionAppSettingsWrite = (): string => {
+	public UrlTenantCreateApi = (): string => {
+		return `${this.prefix}/api/tenants/create`;
+	};
+
+	public KeyAccountPermissionAppSettingsWrite = (): string => {
     return "AppSettingsWrite";
   };
 
