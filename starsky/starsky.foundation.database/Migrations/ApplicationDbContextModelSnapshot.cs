@@ -510,6 +510,9 @@ namespace starsky.foundation.database.Migrations
                         .HasMaxLength(1024)
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
                         .HasColumnType("TEXT");
 
@@ -522,6 +525,9 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("FilePath");
 
+                    b.HasIndex("TenantId", "FilePath")
+                        .HasDatabaseName("IX_FileIndex_Tenant_FilePath");
+
                     b.HasIndex("ImageFormat");
 
                     b.HasIndex("ParentDirectory")
@@ -532,6 +538,9 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("FileName", "ParentDirectory");
 
                     b.HasIndex("ParentDirectory", "FileName");
+
+                    b.HasIndex("TenantId", "ParentDirectory", "FileName")
+                        .HasDatabaseName("IX_FileIndex_Tenant_Parent_FileName");
 
                     b.ToTable("FileIndex");
 
@@ -769,6 +778,13 @@ namespace starsky.foundation.database.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TenantSlug")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("TraceParentId")
                         .HasMaxLength(512)
                         .HasColumnType("TEXT");
@@ -781,6 +797,9 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("QueueName", "Status", "CreatedAtUtc")
                         .HasDatabaseName("IX_QueueItems_Queue_Status_Created");
+
+                    b.HasIndex("TenantId", "QueueName", "Status", "CreatedAtUtc")
+                        .HasDatabaseName("IX_QueueItems_Tenant_Queue_Status_Created");
 
                     b.ToTable("QueueItems", (string)null);
 

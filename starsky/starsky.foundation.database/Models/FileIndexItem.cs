@@ -282,6 +282,9 @@ public sealed class FileIndexItem
 		}
 	}
 
+	// Nullable in phase 1 to allow zero-downtime backfill of legacy rows.
+	public int? TenantId { get; set; }
+
 	/// <summary>
 	///     Gets or sets a value indicating whether this instance is directory.
 	/// </summary>

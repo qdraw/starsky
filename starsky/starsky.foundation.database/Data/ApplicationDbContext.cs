@@ -75,9 +75,13 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
 			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 			etb.HasIndex(x => new { x.FilePath });
+			etb.HasIndex(x => new { x.TenantId, x.FilePath })
+				.HasDatabaseName("IX_FileIndex_Tenant_FilePath");
 			// The Tags Index is truncated to fit within the index size limit
 			etb.HasIndex(x => new { x.Tags });
 			etb.HasIndex(x => new { x.ImageFormat });
+			etb.HasIndex(x => new { x.TenantId, x.ParentDirectory, x.FileName })
+				.HasDatabaseName("IX_FileIndex_Tenant_Parent_FileName");
 
 			// Search indexes - for WideSearch (SearchService.cs) performance
 			// Date range search indexes
@@ -305,6 +309,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 
 				etb.HasIndex(e => new { e.QueueName, e.Status, e.CreatedAtUtc })
 					.HasDatabaseName("IX_QueueItems_Queue_Status_Created");
+				etb.HasIndex(e => new { e.TenantId, e.QueueName, e.Status, e.CreatedAtUtc })
+					.HasDatabaseName("IX_QueueItems_Tenant_Queue_Status_Created");
 				etb.HasIndex(e => e.JobId)
 					.HasDatabaseName("IX_QueueItems_JobId")
 					.IsUnique();
