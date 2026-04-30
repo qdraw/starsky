@@ -46,6 +46,7 @@ export class UrlQuery {
    *          tenant = null,   path = "/2020/img.jpg"      → "/2020/img.jpg"  (no-op)
    */
   public StripTenantPrefix(filePath: string): string {
+    if (!filePath) return filePath;
     const tenant = this.CurrentTenant();
     if (!tenant) return filePath;
     const prefix = `/${tenant}/`;

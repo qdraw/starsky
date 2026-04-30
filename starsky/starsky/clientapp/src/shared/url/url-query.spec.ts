@@ -344,6 +344,14 @@ describe("url-query", () => {
       expect(result).toBe("/main/2020/image.jpg");
     });
 
+    it("returns null/empty as-is when filePath is null or empty", () => {
+      window.history.pushState({}, "", "/main/");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(new UrlQuery().StripTenantPrefix(null as any)).toBeNull();
+      expect(new UrlQuery().StripTenantPrefix("")).toBe("");
+      window.history.pushState({}, "", "/");
+    });
+
     it("UrlThumbnailImage strips tenant prefix from f param", () => {
       window.history.pushState({}, "", "/main/");
       const result = new UrlQuery().UrlThumbnailImage("HASH", "/main/2020/img.jpg", false);
