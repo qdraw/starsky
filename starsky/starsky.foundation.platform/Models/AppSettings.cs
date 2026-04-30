@@ -1116,11 +1116,10 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string DatabasePathToFilePath(string databaseFilePath)
 	{
-		var filepath = StorageFolder + databaseFilePath;
-
-		filepath = PathToFileReplacePathStyle(filepath);
-
-		return filepath;
+		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);
+		databaseFilePath = PathHelper.PrefixDbSlash(databaseFilePath);
+		var filepath = PathTraversalGuard.ToSafeFullPath(StorageFolder, databaseFilePath);
+		return PathToFileReplacePathStyle(filepath);
 	}
 
 	/// <summary>
@@ -1138,11 +1137,17 @@ public sealed class AppSettings
 			return DatabasePathToFilePath(databaseFilePath);
 		}
 
-		// StorageFolder ends with separator, databaseFilePath starts with "/", so
-		// "/photos/" + "main" + "/2020/photo.jpg" = "/photos/main/2020/photo.jpg"
-		var filepath = StorageFolder + tenantSlug + databaseFilePath;
-		filepath = PathToFileReplacePathStyle(filepath);
-		return filepath;
+		if ( PathTraversalGuard.ContainsTraversal(tenantSlug) ||
+		     tenantSlug.Contains('/') || tenantSlug.Contains('\\') )
+		{
+			throw new UnauthorizedAccessException("Path traversal detected");
+		}
+
+		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);
+		databaseFilePath = PathHelper.PrefixDbSlash(databaseFilePath);
+		var tenantRoot = Path.Combine(StorageFolder, tenantSlug);
+		var filepath = PathTraversalGuard.ToSafeFullPath(tenantRoot, databaseFilePath);
+		return PathToFileReplacePathStyle(filepath);
 	}
 
 	/// <summary>

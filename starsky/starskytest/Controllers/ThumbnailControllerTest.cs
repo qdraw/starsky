@@ -117,6 +117,19 @@ public sealed class ThumbnailControllerTest
 	}
 
 	[TestMethod]
+	public async Task Thumbnail_FilePathTraversal_BadRequest()
+	{
+		var controller = new ThumbnailController(_query, new FakeSelectorStorage(), new AppSettings(),
+			new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		var actionResult = await controller.Thumbnail("E27GEVUPZGCHPGGJ7IO36UVYEA",
+			"/../../second/secret.jpg", true) as BadRequestResult;
+		Assert.AreEqual(400, actionResult?.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task Thumbnail_CorruptImage_NoContentResult_Test()
 	{
 		// Arrange
@@ -567,6 +580,16 @@ public sealed class ThumbnailControllerTest
 	}
 
 	[TestMethod]
+	public async Task ByZoomFactor_FilePathTraversal_BadRequest()
+	{
+		var sut = CreateSut(new FakeSelectorStorage(), _query);
+
+		var actionResult = await sut.ByZoomFactorAsync("E27GEVUPZGCHPGGJ7IO36UVYEA", 1,
+			"/../../second/secret.jpg") as BadRequestResult;
+		Assert.AreEqual(400, actionResult?.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task ByZoomFactor_IgnoreRawFile()
 	{
 		var storageSelector = new FakeSelectorStorage(ArrangeStorage());
@@ -717,6 +740,16 @@ public sealed class ThumbnailControllerTest
 		var sut = CreateSut(storageSelector, _query);
 
 		var actionResult = sut.ThumbnailSmallOrTinyMeta("../") as BadRequestResult;
+		Assert.AreEqual(400, actionResult?.StatusCode);
+	}
+
+	[TestMethod]
+	public void ThumbnailSmallOrTinyMeta_FilePathTraversal_BadRequest()
+	{
+		var sut = CreateSut(new FakeSelectorStorage(), _query);
+
+		var actionResult = sut.ThumbnailSmallOrTinyMeta("E27GEVUPZGCHPGGJ7IO36UVYEA",
+			"/../../second/secret.jpg") as BadRequestResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 	}
 

@@ -68,6 +68,18 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
+		public async Task Info_PathTraversal_BadRequest()
+		{
+			var controller = new MetaInfoController(_metaInfo)
+			{
+				ControllerContext = { HttpContext = new DefaultHttpContext() }
+			};
+
+			var result = await controller.InfoAsync("/../../second/secret.jpg");
+			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+		}
+
+		[TestMethod]
 		public async Task ReadOnly()
 		{
 			var controller = new MetaInfoController(_metaInfo)

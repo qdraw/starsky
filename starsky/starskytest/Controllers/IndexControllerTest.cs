@@ -187,6 +187,16 @@ public sealed class IndexControllerTest
 	}
 
 	[TestMethod]
+	public void Index_PathTraversal_BadRequest()
+	{
+		var controller = new IndexController(new FakeIQuery(), new AppSettings());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		var result = controller.Index("/../../second/file.jpg");
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
 	public void HomeControllerIndex404Test()
 	{
 		var controller = new IndexController(_query, new AppSettings());

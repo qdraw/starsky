@@ -527,6 +527,36 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
+	public void DatabasePathToFilePath_PathTraversal_Throws()
+	{
+		var appSettings = new AppSettings();
+		try
+		{
+			appSettings.DatabasePathToFilePath("/../../second/secret.jpg");
+			Assert.Fail("Expected UnauthorizedAccessException");
+		}
+		catch ( UnauthorizedAccessException )
+		{
+			// expected
+		}
+	}
+
+	[TestMethod]
+	public void DatabasePathToFilePath_Tenant_PathTraversal_Throws()
+	{
+		var appSettings = new AppSettings();
+		try
+		{
+			appSettings.DatabasePathToFilePath("/../../second/secret.jpg", "main");
+			Assert.Fail("Expected UnauthorizedAccessException");
+		}
+		catch ( UnauthorizedAccessException )
+		{
+			// expected
+		}
+	}
+
+	[TestMethod]
 	public void AppSettingsToTransferObjectConversion()
 	{
 		// Arrange

@@ -73,6 +73,11 @@ public sealed class ThumbnailController : Controller
 			return BadRequest(ModelError);
 		}
 
+		if ( !string.IsNullOrEmpty(f) && PathTraversalGuard.ContainsTraversal(f) )
+		{
+			return BadRequest();
+		}
+
 		const string xImageSizeHeader = "x-image-size";
 
 		fileHash = FilenamesHelper.GetFileNameWithoutExtension(fileHash);
@@ -281,6 +286,11 @@ public sealed class ThumbnailController : Controller
 			return BadRequest(ModelError);
 		}
 
+		if ( !string.IsNullOrEmpty(filePath) && PathTraversalGuard.ContainsTraversal(filePath) )
+		{
+			return BadRequest();
+		}
+
 		// f is Hash
 		// isSingleItem => detailView
 		// Retry thumbnail => is when you press reset thumbnail
@@ -413,6 +423,11 @@ public sealed class ThumbnailController : Controller
 		if ( !ModelState.IsValid )
 		{
 			return BadRequest(ModelError);
+		}
+
+		if ( !string.IsNullOrEmpty(filePath) && PathTraversalGuard.ContainsTraversal(filePath) )
+		{
+			return BadRequest();
 		}
 
 		// For serving jpeg files

@@ -51,6 +51,11 @@ public sealed class IndexController : Controller
 			return BadRequest("Model invalid");
 		}
 
+		if ( PathTraversalGuard.ContainsTraversal(f) )
+		{
+			return BadRequest("Invalid path");
+		}
+
 		// Used in Detail and Index View => does not hide this single item
 		var colorClassActiveList = FileIndexItem.GetColorClassList(colorClass);
 
