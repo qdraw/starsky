@@ -87,6 +87,14 @@ public sealed class MetaReplaceController : Controller
 				p => p.FilePath!,
 				_ => new List<string> { fieldName.ToLowerInvariant() });
 
+		// When all items are not actionable, skip queueing and return not found/error semantics.
+		if ( resultsOkOrDeleteList.Count == 0 )
+		{
+			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update",
+				fileIndexResultsList.FirstOrDefault()?.FilePath!, collections, stopwatch);
+			return NotFound(fileIndexResultsList);
+		}
+
 		// Update >
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
@@ -107,11 +115,6 @@ public sealed class MetaReplaceController : Controller
 		new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update",
 			fileIndexResultsList.FirstOrDefault()?.FilePath!, collections, stopwatch);
 
-		// When all items are not found
-		if ( resultsOkOrDeleteList.Count == 0 )
-		{
-			return NotFound(fileIndexResultsList);
-		}
 
 		// Push direct to socket when update or replace to avoid undo after a second
 		var webSocketResponse =

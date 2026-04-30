@@ -82,24 +82,7 @@ public sealed class ImportController : Controller
 		var importSettings = new ImportSettingsModel(Request);
 
 		var fileIndexResultsList = await _import.Preflight(tempImportPaths, importSettings);
-
-		// Import files >
-		var payload = new ImportBackgroundPayload
-		{
-			TempImportPaths = tempImportPaths,
-			ImportSettings = importSettings,
-			IsVerbose = _appSettings.IsVerbose()
-		};
-		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
-		{
-			MetaData = string.Join(",", tempImportPaths),
-			TraceParentId = Activity.Current?.Id,
-			TenantId = _tenantContext?.TenantId,
-			TenantSlug = _tenantContext?.TenantSlug,
-			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
-			JobType = ImportBackgroundJobHandler.Import,
-			PayloadJson = JsonSerializer.Serialize(payload)
-		});
+		var hasImportableItems = fileIndexResultsList.Exists(p => p.Status == ImportStatus.Ok);
 
 		// When all items are already imported
 		if ( importSettings.IndexMode &&
@@ -115,6 +98,27 @@ public sealed class ImportController : Controller
 		{
 			_logger.LogDebug("Wrong input");
 			Response.StatusCode = 415;
+		}
+
+		if ( hasImportableItems )
+		{
+			// Import files >
+			var payload = new ImportBackgroundPayload
+			{
+				TempImportPaths = tempImportPaths,
+				ImportSettings = importSettings,
+				IsVerbose = _appSettings.IsVerbose()
+			};
+			await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+			{
+				MetaData = string.Join(",", tempImportPaths),
+				TraceParentId = Activity.Current?.Id,
+				TenantId = _tenantContext?.TenantId,
+				TenantSlug = _tenantContext?.TenantSlug,
+				PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
+				JobType = ImportBackgroundJobHandler.Import,
+				PayloadJson = JsonSerializer.Serialize(payload)
+			});
 		}
 
 		return Json(fileIndexResultsList);
