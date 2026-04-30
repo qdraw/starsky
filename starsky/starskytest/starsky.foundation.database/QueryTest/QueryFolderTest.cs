@@ -1,6 +1,8 @@
 using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -197,5 +200,67 @@ public class QueryDisplayFileFolders_NotSupportedException_Test
 			CreateCount++;
 			return new FakeServiceScope(new FakeServiceProvider(ctx));
 		}
+	}
+}
+
+[TestClass]
+public sealed class QueryDisplayFileFoldersTenantSlugFilterTest
+{
+	[TestMethod]
+	public async Task QueryDisplayFileFolders_ExcludesTenantSlugFromRootListing()
+	{
+		// Arrange
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>();
+		options.UseInMemoryDatabase(Guid.NewGuid().ToString());
+		var context = new ApplicationDbContext(options.Options);
+
+		// Set up a fake tenant context for "main" tenant
+		var tenantContext = new FakeTenantContext { TenantSlug = "main", TenantId = 1 };
+		context.TenantContext = tenantContext;
+
+		// Create FileIndexItems: 
+		// - A user folder "photos" at root
+		// - A directory entry for "main" at root (which should be filtered out)
+		var userFolder = new FileIndexItem("/photos")
+		{
+			FileName = "photos",
+			ParentDirectory = "/",
+			IsDirectory = true,
+			TenantId = 1
+		};
+		var tenantFolderEntry = new FileIndexItem("/main")
+		{
+			FileName = "main",
+			ParentDirectory = "/",
+			IsDirectory = true,
+			TenantId = 1
+		};
+
+		context.FileIndex.AddRange(userFolder, tenantFolderEntry);
+		await context.SaveChangesAsync();
+
+		// Create Query service
+		var services = new ServiceCollection();
+		services.AddMemoryCache();
+		var serviceProvider = services.BuildServiceProvider();
+		var query = new Query(context, new AppSettings(), 
+			null!, new FakeIWebLogger(), 
+			serviceProvider.GetService<IMemoryCache>());
+
+		// Act
+		var result = query.QueryDisplayFileFolders("/").ToList();
+
+		// Assert: "main" directory should be excluded, only "photos" should appear
+		Assert.AreEqual(1, result.Count);
+		Assert.IsTrue(result.All(x => x.FileName == "photos"), 
+			"Root listing should only contain 'photos', not the tenant slug 'main'");
+	}
+
+	private sealed class FakeTenantContext : ITenantContext
+	{
+#pragma warning disable CS8618
+		public int? TenantId { get; set; }
+		public string? TenantSlug { get; set; }
+#pragma warning restore CS8618
 	}
 }

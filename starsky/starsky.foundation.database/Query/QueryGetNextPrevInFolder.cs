@@ -20,6 +20,13 @@ public partial class Query
 				     && p.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json
 				     && p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp).ToList();
 
+			// When querying the root of a tenant, exclude directory entries that match the tenant slug
+			if (parentFolderPath == "/" && context.TenantContext?.TenantSlug != null)
+			{
+				var tenantSlug = context.TenantContext.TenantSlug;
+				items = items.Where(p => !string.Equals(p.FileName, tenantSlug, StringComparison.OrdinalIgnoreCase)).ToList();
+			}
+
 			var groupedItems = items
 				.GroupBy(item => item.FileCollectionName)
 				.Select(group =>

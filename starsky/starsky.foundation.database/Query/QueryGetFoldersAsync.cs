@@ -60,7 +60,17 @@ public partial class Query : IQuery
 				subPath = "/";
 			}
 
-			predicates.Add(p => p.ParentDirectory == subPath && p.IsDirectory == true);
+			// When querying the root of a tenant, exclude directory entries that match the tenant slug
+			if (subPath == "/" && context.TenantContext?.TenantSlug != null)
+			{
+				var tenantSlug = context.TenantContext.TenantSlug;
+				predicates.Add(p => p.ParentDirectory == subPath && p.IsDirectory == true
+					&& !string.Equals(p.FileName, tenantSlug, StringComparison.OrdinalIgnoreCase));
+			}
+			else
+			{
+				predicates.Add(p => p.ParentDirectory == subPath && p.IsDirectory == true);
+			}
 		}
 
 		var predicate = PredicateBuilder.OrLoop(predicates);
