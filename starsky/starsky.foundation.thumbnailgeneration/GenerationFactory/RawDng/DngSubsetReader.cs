@@ -1160,20 +1160,20 @@ internal static class DngSubsetReader
  		}
 
  		var entries = new Dictionary<ushort, IfdEntry>();
+			Span<byte> entryBuffer = stackalloc byte[12];
  		for ( var i = 0; i < count; i++ )
  		{
- 			Span<byte> e = stackalloc byte[12];
- 			if ( input.Read(e) < 12 )
+				if ( input.Read(entryBuffer) < 12 )
  			{
  				return null;
  			}
 
- 			var tag = ReadUInt16(e, littleEndian);
+				var tag = ReadUInt16(entryBuffer, littleEndian);
  			entries[tag] = new IfdEntry
  			{
- 				Type = ReadUInt16(e[2..], littleEndian),
- 				Count = ReadUInt32(e[4..], littleEndian),
- 				ValueOrOffset = ReadUInt32(e[8..], littleEndian)
+					Type = ReadUInt16(entryBuffer[2..], littleEndian),
+					Count = ReadUInt32(entryBuffer[4..], littleEndian),
+					ValueOrOffset = ReadUInt32(entryBuffer[8..], littleEndian)
  			};
  		}
 
