@@ -37,12 +37,25 @@ export class UrlQuery {
   }
 
   /**
-   * Returns the frontend navigation prefix matching the current browser path.
-   * Unlike `prefix` (which always uses /starsky/...), this returns `/tenant`
-   * when the browser is at a non-starsky tenant URL such as `/main/`.
+   * Strips a leading tenant-slug segment from a file path returned by the API.
+   * When the backend stores paths relative to the storage root (e.g. `/main/image.jpg`)
+   * but the tenant-scoped API and thumbnail service expect paths relative to the
+   * tenant root (e.g. `/image.jpg`), this method removes the superfluous prefix.
+   *
+   * Example: tenant = "main", path = "/main/2020/img.jpg" → "/2020/img.jpg"
+   *          tenant = null,   path = "/2020/img.jpg"      → "/2020/img.jpg"  (no-op)
    */
-  private NavigationPrefix(): string {
-    const path = document.location.pathname;
+  public StripTenantPrefix(filePath: string): string {
+    const tenant = this.CurrentTenant();
+    if (!tenant) return filePath;
+    const prefix = `/${tenant}/`;
+    if (filePath.startsWith(prefix)) {
+      return filePath.slice(prefix.length - 1); // keep leading slash
+    }
+    return filePath;
+  }
+
+  private NavigationPrefix(): string {    const path = document.location.pathname;
     const tenant = this.CurrentTenant();
 
     if (path.startsWith(this._prefix)) {
@@ -229,7 +242,7 @@ export class UrlQuery {
     emptySelectQuery?: boolean
   ): string {
     const url = new URLPath().StringToIUrl(historyLocationHash);
-    url.f = toUpdateFilePath;
+    url.f = this.StripTenantPrefix(toUpdateFilePath);
     // when browsing to a parent folder from a detailview item
     if (clearTSearchQuery) {
       delete url.t;
@@ -352,6 +365,7 @@ export class UrlQuery {
     if (!fileHash) {
       return "";
     }
+    const normalizedPath = filePath ? this.StripTenantPrefix(filePath) : filePath;
     if (!extraLarge) {
       return (
         this.prefix +
@@ -359,7 +373,7 @@ export class UrlQuery {
         fileHash +
         `.${this.ImageFormat()}?issingleitem=true&extraLarge=false` +
         "&filePath=" +
-        filePath
+        normalizedPath
       );
     }
     return (
@@ -368,7 +382,7 @@ export class UrlQuery {
       fileHash +
       `@2000.${this.ImageFormat()}?issingleitem=true&extraLarge=true` +
       "&filePath=" +
-      filePath
+      normalizedPath
     );
   };
 
@@ -377,12 +391,13 @@ export class UrlQuery {
     filePath: string,
     alwaysLoadImage: boolean
   ): string => {
+    const normalizedPath = this.StripTenantPrefix(filePath);
     if (alwaysLoadImage) {
       return (
         this.prefix + "/api/thumbnail/" + fileHash + `.${this.ImageFormat()}?issingleitem=true`
       );
     }
-    return `${this.prefix}/api/thumbnail/small/${fileHash}.${this.ImageFormat()}?f=${filePath}`;
+    return `${this.prefix}/api/thumbnail/small/${fileHash}.${this.ImageFormat()}?f=${normalizedPath}`;
   };
 
   /**

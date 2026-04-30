@@ -272,6 +272,20 @@ describe("url-query", () => {
       window.history.pushState({}, "", "/");
     });
 
+    it("updateFilePathHash strips tenant prefix from toUpdateFilePath", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().updateFilePathHash("", "/main/2020/image.jpg");
+      expect(result).toBe("/main/?f=/2020/image.jpg");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("updateFilePathHash at /main/ with f=/main/subfolder strips to /subfolder", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().updateFilePathHash("?f=/main", "/main/subfolder");
+      expect(result).toBe("/main/?f=/subfolder");
+      window.history.pushState({}, "", "/");
+    });
+
     it("UrlHomePage returns /main/ when at non-starsky tenant path", () => {
       window.history.pushState({}, "", "/main/");
       const result = new UrlQuery().UrlHomePage();
@@ -305,6 +319,42 @@ describe("url-query", () => {
       const result = new UrlQuery().UrlPreferencesPage();
       expect(result).toBe("/main/preferences");
       window.history.pushState({}, "", "/");
+    });
+  });
+
+  describe("StripTenantPrefix", () => {
+    afterEach(() => {
+      window.history.pushState({}, "", "/");
+    });
+
+    it("strips /main/ prefix when at /main/ URL", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().StripTenantPrefix("/main/2020/image.jpg");
+      expect(result).toBe("/2020/image.jpg");
+    });
+
+    it("is a no-op when path does not start with tenant prefix", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().StripTenantPrefix("/2020/image.jpg");
+      expect(result).toBe("/2020/image.jpg");
+    });
+
+    it("is a no-op when no tenant in URL", () => {
+      const result = new UrlQuery().StripTenantPrefix("/main/2020/image.jpg");
+      expect(result).toBe("/main/2020/image.jpg");
+    });
+
+    it("UrlThumbnailImage strips tenant prefix from f param", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlThumbnailImage("HASH", "/main/2020/img.jpg", false);
+      expect(result).toContain("?f=/2020/img.jpg");
+      expect(result).not.toContain("/main/2020/");
+    });
+
+    it("UrlThumbnailImage does not strip when path is already correct", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlThumbnailImage("HASH", "/2020/img.jpg", false);
+      expect(result).toContain("?f=/2020/img.jpg");
     });
   });
 
