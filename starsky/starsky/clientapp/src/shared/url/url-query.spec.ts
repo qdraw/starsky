@@ -264,6 +264,48 @@ describe("url-query", () => {
       expect(result).toBe("/starsky/main/api/index?f=/");
       window.history.pushState({}, "", "/");
     });
+
+    it("updateFilePathHash preserves /main/ tenant when at non-starsky path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().updateFilePathHash("?f=/subfolder", "/subfolder/child");
+      expect(result).toBe("/main/?f=/subfolder/child");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlHomePage returns /main/ when at non-starsky tenant path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlHomePage();
+      expect(result).toBe("/main/");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlSearchPage returns /main/search when at non-starsky tenant path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlSearchPage("cats");
+      expect(result).toBe("/main/search?t=cats");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlTrashPage returns /main/trash when at non-starsky tenant path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlTrashPage();
+      expect(result).toBe("/main/trash?t=!delete!");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlImportPage returns /main/import when at non-starsky tenant path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlImportPage();
+      expect(result).toBe("/main/import");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlPreferencesPage returns /main/preferences when at non-starsky tenant path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlPreferencesPage();
+      expect(result).toBe("/main/preferences");
+      window.history.pushState({}, "", "/");
+    });
   });
 
   describe("UrlThumbnailImageLargeOrExtraLarge", () => {

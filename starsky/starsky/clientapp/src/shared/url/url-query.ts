@@ -36,16 +36,40 @@ export class UrlQuery {
     return this.prefix;
   }
 
+  /**
+   * Returns the frontend navigation prefix matching the current browser path.
+   * Unlike `prefix` (which always uses /starsky/...), this returns `/tenant`
+   * when the browser is at a non-starsky tenant URL such as `/main/`.
+   */
+  private NavigationPrefix(): string {
+    const path = document.location.pathname;
+    const tenant = this.CurrentTenant();
+
+    if (path.startsWith(this._prefix)) {
+      // /starsky or /starsky/tenant
+      return tenant ? `${this._prefix}/${tenant}` : this._prefix;
+    }
+
+    if (tenant) {
+      // /tenant (without /starsky)
+      return `/${tenant}`;
+    }
+
+    return "";
+  }
+
   public UrlHomePage(): string {
-    return document.location.pathname.includes(this.prefix) ? `${this.prefix}/` : "/";
+    const np = this.NavigationPrefix();
+    return np ? `${np}/` : "/";
   }
 
   public UrlHomeIndexPage(locationHash: string): string {
     if (!IsRelativeUrl(locationHash)) {
       locationHash = "/";
     }
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}${new URLPath().StartOnSlash(locationHash)}`
+    const np = this.NavigationPrefix();
+    return np
+      ? `${np}${new URLPath().StartOnSlash(locationHash)}`
       : `${new URLPath().StartOnSlash(locationHash)}`;
   }
 
@@ -70,9 +94,8 @@ export class UrlQuery {
    * @param t query
    */
   public UrlSearchPage(t: string): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/search?t=${t}`
-      : `/search?t=${t}`;
+    const np = this.NavigationPrefix();
+    return np ? `${np}/search?t=${t}` : `/search?t=${t}`;
   }
 
   /**
@@ -80,25 +103,25 @@ export class UrlQuery {
    */
   public HashSearchPage(historyLocationHash: string): string {
     const url = new URLPath().StringToIUrl(historyLocationHash);
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/search${new URLPath().IUrlToString(url)}`
+    const np = this.NavigationPrefix();
+    return np
+      ? `${np}/search${new URLPath().IUrlToString(url)}`
       : `/search${new URLPath().IUrlToString(url)}`;
   }
 
   public UrlTrashPage(): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/trash?t=!delete!`
-      : `/trash?t=!delete!`;
+    const np = this.NavigationPrefix();
+    return np ? `${np}/trash?t=!delete!` : `/trash?t=!delete!`;
   }
 
   public UrlImportPage(): string {
-    return document.location.pathname.includes(this.prefix) ? `${this.prefix}/import` : `/import`;
+    const np = this.NavigationPrefix();
+    return np ? `${np}/import` : `/import`;
   }
 
   public UrlPreferencesPage(): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/preferences`
-      : `/preferences`;
+    const np = this.NavigationPrefix();
+    return np ? `${np}/preferences` : `/preferences`;
   }
 
   public UrlLoginPage(): string {
@@ -216,8 +239,9 @@ export class UrlQuery {
     if (emptySelectQuery && url.select && url.select?.length >= 1) {
       url.select = [];
     }
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/${new URLPath().IUrlToString(url)}`
+    const np = this.NavigationPrefix();
+    return np
+      ? `${np}/${new URLPath().IUrlToString(url)}`
       : `/${new URLPath().IUrlToString(url)}`;
   }
 
