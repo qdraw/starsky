@@ -117,6 +117,19 @@ public sealed class ThumbnailControllerTest
 	}
 
 	[TestMethod]
+	public async Task Thumbnail_FilePathTraversal_BadRequest()
+	{
+		var controller = new ThumbnailController(_query, new FakeSelectorStorage(), new AppSettings(),
+			new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		var actionResult = await controller.Thumbnail("E27GEVUPZGCHPGGJ7IO36UVYEA",
+			"/../../second/secret.jpg", true) as BadRequestResult;
+		Assert.AreEqual(400, actionResult?.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task Thumbnail_CorruptImage_NoContentResult_Test()
 	{
 		// Arrange
@@ -278,6 +291,42 @@ public sealed class ThumbnailControllerTest
 		Assert.AreEqual("image/jpeg", thumbnailAnswer);
 
 		await actionResult!.FileStream.DisposeAsync(); // for windows
+	}
+
+	[TestMethod]
+	public async Task Thumbnail_HashFound_TenantPrefixedDbPath_UsesTenantScopedStoragePath()
+	{
+		var storage = new FakeIStorage(
+			new List<string> { "/", "/0001" },
+			new List<string> { "/0001/20250428_133057_d.jpg" },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var query = new FakeIQuery(new List<FileIndexItem>
+		{
+			new("/main/0001/20250428_133057_d.jpg")
+			{
+				FileHash = "ORVMPJ5BSB7IMEPTXJONENSCRU", IsDirectory = false
+			}
+		});
+
+		var controller = new ThumbnailController(query, new FakeSelectorStorage(storage),
+			new AppSettings(), new FakeIWebLogger(),
+			new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext.Items[TenantConstants.TenantSlugItemKey] = "main";
+
+		var actionResult = await controller.Thumbnail(
+			"ORVMPJ5BSB7IMEPTXJONENSCRU@2000.webp",
+			"/0001/20250428_133057_d.jpg",
+			true) as FileStreamResult;
+
+		Assert.IsNotNull(actionResult);
+		controller.Response.Headers.TryGetValue("x-filename", out var value);
+		Assert.AreEqual("20250428_133057_d.jpg", value.ToString());
+		Assert.AreEqual("image/jpeg", actionResult.ContentType);
+
+		await actionResult.FileStream.DisposeAsync();
 	}
 
 	[TestMethod]
@@ -531,6 +580,16 @@ public sealed class ThumbnailControllerTest
 	}
 
 	[TestMethod]
+	public async Task ByZoomFactor_FilePathTraversal_BadRequest()
+	{
+		var sut = CreateSut(new FakeSelectorStorage(), _query);
+
+		var actionResult = await sut.ByZoomFactorAsync("E27GEVUPZGCHPGGJ7IO36UVYEA", 1,
+			"/../../second/secret.jpg") as BadRequestResult;
+		Assert.AreEqual(400, actionResult?.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task ByZoomFactor_IgnoreRawFile()
 	{
 		var storageSelector = new FakeSelectorStorage(ArrangeStorage());
@@ -681,6 +740,16 @@ public sealed class ThumbnailControllerTest
 		var sut = CreateSut(storageSelector, _query);
 
 		var actionResult = sut.ThumbnailSmallOrTinyMeta("../") as BadRequestResult;
+		Assert.AreEqual(400, actionResult?.StatusCode);
+	}
+
+	[TestMethod]
+	public void ThumbnailSmallOrTinyMeta_FilePathTraversal_BadRequest()
+	{
+		var sut = CreateSut(new FakeSelectorStorage(), _query);
+
+		var actionResult = sut.ThumbnailSmallOrTinyMeta("E27GEVUPZGCHPGGJ7IO36UVYEA",
+			"/../../second/secret.jpg") as BadRequestResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 	}
 

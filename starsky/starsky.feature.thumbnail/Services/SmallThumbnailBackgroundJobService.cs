@@ -21,7 +21,8 @@ public class SmallThumbnailBackgroundJobService(
 	IThumbnailService thumbnailService,
 	ISelectorStorage selectorStorage,
 	IThumbnailSocketService socketService,
-	IWebLogger logger) : ISmallThumbnailBackgroundJobService
+	IWebLogger logger,
+	ITenantContext? tenantContext = null) : ISmallThumbnailBackgroundJobService
 {
 	public const string JobType = "Thumbnail.SmallGeneration.v1";
 
@@ -47,6 +48,8 @@ public class SmallThumbnailBackgroundJobService(
 		{
 			MetaData = "SmallThumbnailBackgroundJobService",
 			TraceParentId = Activity.Current?.Id,
+			TenantId = tenantContext?.TenantId,
+			TenantSlug = tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
 			JobType = JobType,
 			PayloadJson =

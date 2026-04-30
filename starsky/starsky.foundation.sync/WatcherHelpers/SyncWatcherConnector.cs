@@ -27,12 +27,15 @@ namespace starsky.foundation.sync.WatcherHelpers;
 public sealed class SyncWatcherConnector
 {
 	private readonly IServiceScope? _serviceScope;
+	private readonly string? _tenantSlugOverride;
+	private readonly int? _tenantIdOverride;
 	private AppSettings? _appSettings;
 	private IWebSocketConnectionsService? _connectionsService;
 	private IWebLogger? _logger;
 	private INotificationQuery? _notificationQuery;
 	private IQuery? _query;
 	private ISynchronize? _synchronize;
+	private ITenantContext? _tenantContext;
 
 	internal SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize,
 		IWebSocketConnectionsService connectionsService, IQuery query, IWebLogger logger,
@@ -46,9 +49,12 @@ public sealed class SyncWatcherConnector
 		_notificationQuery = notificationQuery;
 	}
 
-	public SyncWatcherConnector(IServiceScopeFactory scopeFactory)
+	public SyncWatcherConnector(IServiceScopeFactory scopeFactory,
+		string? tenantSlug = null, int? tenantId = null)
 	{
 		_serviceScope = scopeFactory.CreateScope();
+		_tenantSlugOverride = tenantSlug;
+		_tenantIdOverride = tenantId;
 	}
 
 	internal bool InjectScopes()
@@ -72,6 +78,13 @@ public sealed class SyncWatcherConnector
 			memoryCache, _appSettings, serviceScopeFactory, _logger).Query();
 		_notificationQuery = _serviceScope.ServiceProvider
 			.GetService<INotificationQuery>();
+		_tenantContext = _serviceScope.ServiceProvider.GetService<ITenantContext>();
+		if ( _tenantContext != null && !string.IsNullOrWhiteSpace(_tenantSlugOverride) )
+		{
+			_tenantContext.TenantSlug = _tenantSlugOverride;
+			_tenantContext.TenantId = _tenantIdOverride;
+		}
+
 		return true;
 	}
 
@@ -104,6 +117,7 @@ public sealed class SyncWatcherConnector
 		Tuple<string, string?, WatcherChangeTypes> watcherOutput)
 	{
 		var (fullFilePath, toPath, type) = watcherOutput;
+		var tenantSlug = _tenantContext?.TenantSlug;
 
 		var syncData = new List<FileIndexItem>();
 
@@ -113,11 +127,11 @@ public sealed class SyncWatcherConnector
 		if ( type == WatcherChangeTypes.Renamed && !string.IsNullOrEmpty(toPath) )
 		{
 			// from path sync
-			var path = _appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath);
+			var path = _appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath, tenantSlug);
 			await _synchronize!.Sync(path);
 
 			syncData.Add(
-				new FileIndexItem(_appSettings.FullPathStorageFolderToDatabaseStyle(fullFilePath))
+				new FileIndexItem(_appSettings.FullPathStorageFolderToDatabaseStyle(fullFilePath, tenantSlug))
 				{
 					IsDirectory = true,
 					ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
@@ -125,14 +139,14 @@ public sealed class SyncWatcherConnector
 				});
 
 			// and now to-path sync
-			var pathToDatabaseStyle = _appSettings.FullPathStorageFolderToDatabaseStyle(toPath);
+			var pathToDatabaseStyle = _appSettings.FullPathStorageFolderToDatabaseStyle(toPath, tenantSlug);
 			syncData.AddRange(await _synchronize.Sync(pathToDatabaseStyle));
 		}
 		else
 		{
 			syncData =
 				await _synchronize!.Sync(
-					_appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath));
+					_appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath, tenantSlug));
 		}
 
 		var filtered = FilterBefore(syncData);

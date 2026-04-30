@@ -75,7 +75,7 @@ public partial class Query // For folder displays only
 		}
 
 		// Return values from IMemoryCache
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
+		var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 			subPath);
 
 		if ( !_cache.TryGetValue(queryCacheName,
@@ -155,6 +155,15 @@ public partial class Query // For folder displays only
 				.TagWith("QueryDisplayFileFolders")
 				.Where(p => p.ParentDirectory == subPath && p.FileName != "/")
 				.OrderBy(p => p.FileName).AsEnumerable().DistinctBy(p => p.FileName);
+			
+			// When querying the root of a tenant, exclude directory entries that match the tenant slug
+			// (e.g., when listing "/" in the "main" tenant, don't show a "/main" directory)
+			if (subPath == "/" && context.TenantContext?.TenantSlug != null)
+			{
+				var tenantSlug = context.TenantContext.TenantSlug;
+				queryItems = queryItems.Where(p => !string.Equals(p.FileName, tenantSlug, StringComparison.OrdinalIgnoreCase)).ToList();
+			}
+			
 			return queryItems.OrderBy(p => p.FileName, StringComparer.InvariantCulture).ToList();
 		}
 

@@ -160,6 +160,65 @@ namespace starsky.foundation.database.Migrations
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
 
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.Tenant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Tenants", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.TenantUser", b =>
+                {
+                    b.Property<int>("TenantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TenantId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("TenantId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("TenantUsers", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
             modelBuilder.Entity("starsky.foundation.database.Models.Account.User", b =>
                 {
                     b.Property<int>("Id")
@@ -172,6 +231,9 @@ namespace starsky.foundation.database.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsGlobalAdmin")
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
@@ -205,6 +267,71 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.WebSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LastSeen")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("WebSessions", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.WebSessionTenant", b =>
+                {
+                    b.Property<int>("WebSessionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LastSeen")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("WebSessionId", "TenantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("WebSessionId", "TenantId")
+                        .IsUnique();
+
+                    b.ToTable("WebSessionTenants", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
@@ -383,6 +510,9 @@ namespace starsky.foundation.database.Migrations
                         .HasMaxLength(1024)
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
                         .HasColumnType("TEXT");
 
@@ -395,6 +525,9 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("FilePath");
 
+                    b.HasIndex("TenantId", "FilePath")
+                        .HasDatabaseName("IX_FileIndex_Tenant_FilePath");
+
                     b.HasIndex("ImageFormat");
 
                     b.HasIndex("ParentDirectory")
@@ -405,6 +538,9 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("FileName", "ParentDirectory");
 
                     b.HasIndex("ParentDirectory", "FileName");
+
+                    b.HasIndex("TenantId", "ParentDirectory", "FileName")
+                        .HasDatabaseName("IX_FileIndex_Tenant_Parent_FileName");
 
                     b.ToTable("FileIndex");
 
@@ -642,6 +778,13 @@ namespace starsky.foundation.database.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TenantSlug")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("TraceParentId")
                         .HasMaxLength(512)
                         .HasColumnType("TEXT");
@@ -654,6 +797,9 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("QueueName", "Status", "CreatedAtUtc")
                         .HasDatabaseName("IX_QueueItems_Queue_Status_Created");
+
+                    b.HasIndex("TenantId", "QueueName", "Status", "CreatedAtUtc")
+                        .HasDatabaseName("IX_QueueItems_Tenant_Queue_Status_Created");
 
                     b.ToTable("QueueItems", (string)null);
 
@@ -753,6 +899,25 @@ namespace starsky.foundation.database.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.TenantUser", b =>
+                {
+                    b.HasOne("starsky.foundation.database.Models.Account.Tenant", "Tenant")
+                        .WithMany("TenantUsers")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("starsky.foundation.database.Models.Account.User", "User")
+                        .WithMany("TenantUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("starsky.foundation.database.Models.Account.UserRole", b =>
                 {
                     b.HasOne("starsky.foundation.database.Models.Account.Role", "Role")
@@ -772,14 +937,58 @@ namespace starsky.foundation.database.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.WebSession", b =>
+                {
+                    b.HasOne("starsky.foundation.database.Models.Account.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.WebSessionTenant", b =>
+                {
+                    b.HasOne("starsky.foundation.database.Models.Account.Tenant", "Tenant")
+                        .WithMany("WebSessionTenants")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("starsky.foundation.database.Models.Account.WebSession", "WebSession")
+                        .WithMany("WebSessionTenants")
+                        .HasForeignKey("WebSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("WebSession");
+                });
+
             modelBuilder.Entity("starsky.foundation.database.Models.Account.CredentialType", b =>
                 {
                     b.Navigation("Credentials");
                 });
 
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.Tenant", b =>
+                {
+                    b.Navigation("TenantUsers");
+
+                    b.Navigation("WebSessionTenants");
+                });
+
             modelBuilder.Entity("starsky.foundation.database.Models.Account.User", b =>
                 {
                     b.Navigation("Credentials");
+
+                    b.Navigation("TenantUsers");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.WebSession", b =>
+                {
+                    b.Navigation("WebSessionTenants");
                 });
 #pragma warning restore 612, 618
         }

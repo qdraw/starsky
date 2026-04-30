@@ -35,6 +35,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	private readonly IQuery _query;
 	private readonly IUpdateBackgroundTaskQueue _queue;
 	private readonly IStorage _storage;
+	private readonly ITenantContext? _tenantContext;
 
 	public ExifTimezoneCorrectionService(
 		IUpdateBackgroundTaskQueue queue,
@@ -43,7 +44,8 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		IQuery query,
 		IThumbnailQuery thumbnailQuery,
 		AppSettings appSettings,
-		IWebLogger logger)
+		IWebLogger logger,
+		ITenantContext? tenantContext = null)
 	{
 		_queue = queue;
 		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -55,6 +57,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		_logger = logger;
 		_query = query;
 		_appSettings = appSettings;
+		_tenantContext = tenantContext;
 	}
 
 	/// <summary>
@@ -101,6 +104,8 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		{
 			MetaData = "MetaTimeCorrect",
 			TraceParentId = Activity.Current?.Id,
+			TenantId = _tenantContext?.TenantId,
+			TenantSlug = _tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = MetaTimeCorrectBackgroundJobHandler.MetaTimeCorrect,
 			PayloadJson = JsonSerializer.Serialize(payload)

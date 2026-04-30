@@ -228,7 +228,11 @@ public sealed class UpdateBackgroundTaskQueueTest
 	{
 		return new BackgroundTaskQueueJob
 		{
-			JobType = TestJobType, PayloadJson = payload, MetaData = string.Empty
+			JobType = TestJobType,
+			PayloadJson = payload,
+			MetaData = string.Empty,
+			TenantId = 1,
+			TenantSlug = "main"
 		};
 	}
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
+using starsky.foundation.platform.Interfaces;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
@@ -12,6 +13,23 @@ namespace starsky.foundation.database.Data;
 
 public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
+	/// <summary>
+	///     Set by the DI factory (see SetupDatebaseTypes.BuilderDb) after construction so that
+	///     the global query filter can scope <see cref="FileIndex" /> results to the current
+	///     tenant.  Null means "no active tenant" – all rows are visible (used by CLI tools,
+	///     migrations, and unauthenticated scopes).
+	/// </summary>
+	internal ITenantContext? TenantContext { get; set; }
+
+	/// <summary>
+	///     Safe accessor used inside the EF Core global query filter.
+	///     Returns the tenant ID or null; never throws even when <see cref="TenantContext" /> is null.
+	///     EF Core evaluates this method at query-compilation time to extract query parameters;
+	///     using a method (rather than a direct property chain) prevents NullReferenceException
+	///     during that phase.
+	/// </summary>
+	private int? GetCurrentTenantId() => TenantContext?.TenantId;
+
 	public virtual DbSet<FileIndexItem> FileIndex { get; set; }
 	public DbSet<ImportIndexItem> ImportIndex { get; set; }
 
@@ -22,6 +40,10 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 	public DbSet<UserRole> UserRoles { get; set; }
 	public DbSet<Permission> Permissions { get; set; }
 	public DbSet<RolePermission> RolePermissions { get; set; }
+	public DbSet<Tenant> Tenants { get; set; }
+	public DbSet<TenantUser> TenantUsers { get; set; }
+	public DbSet<WebSession> WebSessions { get; set; }
+	public DbSet<WebSessionTenant> WebSessionTenants { get; set; }
 
 	public DbSet<NotificationItem> Notifications { get; set; }
 
@@ -61,6 +83,18 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 		modelBuilder.HasCharSet(utf8Mb4,
 			DelegationModes.ApplyToAll);
 
+		// -----------------------------------------------------------------
+		// Tenant isolation: filter FileIndex rows to the current tenant.
+		// When TenantContext is null (CLI / migration / unauthenticated) all rows are visible.
+		// When TenantContext.TenantId is null the user has no active tenant – all rows visible.
+		// When set, only rows belonging to that tenant are returned by any query.
+		// Use .IgnoreQueryFilters() on a specific query to bypass the filter deliberately.
+		// GetCurrentTenantId() is used (not a direct property chain) so that EF Core's
+		// parameter-extraction phase does not throw NullReferenceException when TenantContext is null.
+		// -----------------------------------------------------------------
+		modelBuilder.Entity<FileIndexItem>()
+			.HasQueryFilter(f => GetCurrentTenantId() == null || f.TenantId == GetCurrentTenantId());
+
 		// Add Index to speed performance (on MySQL max key length is 3072 bytes)
 		// MySql:CharSet might be working a future release, but now it does nothing
 		modelBuilder.Entity<FileIndexItem>(etb =>
@@ -71,9 +105,13 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
 			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 			etb.HasIndex(x => new { x.FilePath });
+			etb.HasIndex(x => new { x.TenantId, x.FilePath })
+				.HasDatabaseName("IX_FileIndex_Tenant_FilePath");
 			// The Tags Index is truncated to fit within the index size limit
 			etb.HasIndex(x => new { x.Tags });
 			etb.HasIndex(x => new { x.ImageFormat });
+			etb.HasIndex(x => new { x.TenantId, x.ParentDirectory, x.FileName })
+				.HasDatabaseName("IX_FileIndex_Tenant_Parent_FileName");
 
 			// Search indexes - for WideSearch (SearchService.cs) performance
 			// Date range search indexes
@@ -188,6 +226,52 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 			}
 		);
 
+		modelBuilder.Entity<Tenant>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.HasKey(e => e.Id);
+				etb.Property(e => e.Id)
+					.ValueGeneratedOnAdd()
+					.HasAnnotation(mySqlValueGeneratedOnAdd, true);
+				etb.Property(e => e.Slug).IsRequired().HasMaxLength(50);
+				etb.Property(e => e.Name).IsRequired().HasMaxLength(100);
+				etb.HasIndex(e => e.Slug).IsUnique();
+				etb.ToTable("Tenants");
+			}
+		);
+
+		modelBuilder.Entity<TenantUser>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.HasKey(e => new { e.TenantId, e.UserId });
+				etb.HasIndex(e => new { e.TenantId, e.UserId }).IsUnique();
+				etb.ToTable("TenantUsers");
+			}
+		);
+
+		modelBuilder.Entity<WebSession>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.HasKey(e => e.Id);
+				etb.Property(e => e.Id)
+					.ValueGeneratedOnAdd()
+					.HasAnnotation(mySqlValueGeneratedOnAdd, true);
+				etb.Property(e => e.SessionId).IsRequired().HasMaxLength(128);
+				etb.HasIndex(e => e.SessionId).IsUnique();
+				etb.HasIndex(e => e.UserId);
+				etb.ToTable("WebSessions");
+			}
+		);
+
+		modelBuilder.Entity<WebSessionTenant>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.HasKey(e => new { e.WebSessionId, e.TenantId });
+				etb.HasIndex(e => new { e.WebSessionId, e.TenantId }).IsUnique();
+				etb.ToTable("WebSessionTenants");
+			}
+		);
+
 		modelBuilder.Entity<ImportIndexItem>()
 			.HasIndex(x => new { x.FileHash })
 			.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
@@ -255,6 +339,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 
 				etb.HasIndex(e => new { e.QueueName, e.Status, e.CreatedAtUtc })
 					.HasDatabaseName("IX_QueueItems_Queue_Status_Created");
+				etb.HasIndex(e => new { e.TenantId, e.QueueName, e.Status, e.CreatedAtUtc })
+					.HasDatabaseName("IX_QueueItems_Tenant_Queue_Status_Created");
 				etb.HasIndex(e => e.JobId)
 					.HasDatabaseName("IX_QueueItems_JobId")
 					.IsUnique();

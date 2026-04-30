@@ -26,6 +26,7 @@ public class FakeDiskWatcherUpdateBackgroundTaskQueue : IDiskWatcherBackgroundTa
 	public bool QueueBackgroundWorkItemCalled { get; set; }
 	public int QueueBackgroundWorkItemCalledCounter { get; set; }
 	public int DequeueAsyncCounter { get; set; }
+	public BackgroundTaskQueueJob? LastQueuedJob { get; private set; }
 
 	public int Count()
 	{
@@ -36,6 +37,7 @@ public class FakeDiskWatcherUpdateBackgroundTaskQueue : IDiskWatcherBackgroundTa
 	{
 		QueueBackgroundWorkItemCalled = true;
 		QueueBackgroundWorkItemCalledCounter++;
+		LastQueuedJob = job;
 		await Task.Yield();
 
 		// If a scope factory is provided, attempt to resolve a matching IBackgroundJobHandler and execute immediately

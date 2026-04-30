@@ -122,6 +122,59 @@ public sealed class IndexControllerTest
 	}
 
 	[TestMethod]
+	public void Index_RootRequest_WithTenantSlug_MapsToTenantRoot()
+	{
+		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+		{
+			new("/main") { IsDirectory = true },
+			new("/main/root-file.jpg")
+			{
+				ParentDirectory = "/main",
+				FileHash = "tenant-root-file",
+				IsDirectory = false
+			}
+		});
+
+		var controller = new IndexController(fakeQuery, new AppSettings());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext.Items[TenantConstants.TenantSlugItemKey] = "main";
+
+		var actionResult = controller.Index("/") as JsonResult;
+		Assert.IsNotNull(actionResult);
+		var jsonCollection = actionResult.Value as ArchiveViewModel;
+		Assert.IsNotNull(jsonCollection);
+		Assert.AreEqual("/main", jsonCollection.SubPath);
+		Assert.AreEqual("tenant-root-file", jsonCollection.FileIndexItems.FirstOrDefault()?.FileHash);
+	}
+
+	[TestMethod]
+	public void Index_ChildRequest_WithTenantSlug_MapsToTenantChildPath()
+	{
+		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+		{
+			new("/main") { IsDirectory = true },
+			new("/main/0001") { IsDirectory = true },
+			new("/main/0001/child-file.jpg")
+			{
+				ParentDirectory = "/main/0001",
+				FileHash = "tenant-child-file",
+				IsDirectory = false
+			}
+		});
+
+		var controller = new IndexController(fakeQuery, new AppSettings());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext.Items[TenantConstants.TenantSlugItemKey] = "main";
+
+		var actionResult = controller.Index("/0001") as JsonResult;
+		Assert.IsNotNull(actionResult);
+		var jsonCollection = actionResult.Value as ArchiveViewModel;
+		Assert.IsNotNull(jsonCollection);
+		Assert.AreEqual("/main/0001", jsonCollection.SubPath);
+		Assert.AreEqual("tenant-child-file", jsonCollection.FileIndexItems.FirstOrDefault()?.FileHash);
+	}
+
+	[TestMethod]
 	public void Index_BadRequest()
 	{
 		var controller = new IndexController(new FakeIQuery(), new AppSettings());
@@ -130,6 +183,16 @@ public sealed class IndexControllerTest
 
 		var result = controller.Index(null!);
 
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
+	public void Index_PathTraversal_BadRequest()
+	{
+		var controller = new IndexController(new FakeIQuery(), new AppSettings());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		var result = controller.Index("/../../second/file.jpg");
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 

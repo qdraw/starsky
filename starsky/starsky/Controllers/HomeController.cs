@@ -201,6 +201,16 @@ public sealed class HomeController : Controller
 		return PhysicalFile(_clientApp, TextHtmlMimeType);
 	}
 
+	[HttpGet("/-/tenants")]
+	[AllowAnonymous]
+	[Produces("text/html")]
+	[ProducesResponseType(200)]
+	public IActionResult MyTenants()
+	{
+		new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
+		return PhysicalFile(_clientApp, TextHtmlMimeType);
+	}
+
 	/// <summary>
 	///     View the Register form (HTML)
 	/// </summary>

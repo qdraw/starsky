@@ -26,10 +26,12 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 	private readonly IQuery _query;
 	private readonly ISocketSyncUpdateService _socketUpdateService;
 	private readonly ISynchronize _synchronize;
+	private readonly ITenantContext? _tenantContext;
 
 	public ManualBackgroundSyncService(ISynchronize synchronize, IQuery query,
 		ISocketSyncUpdateService socketUpdateService,
-		IMemoryCache cache, IWebLogger logger, IUpdateBackgroundTaskQueue bgTaskQueue)
+		IMemoryCache cache, IWebLogger logger, IUpdateBackgroundTaskQueue bgTaskQueue,
+		ITenantContext? tenantContext = null)
 	{
 		_synchronize = synchronize;
 		_socketUpdateService = socketUpdateService;
@@ -37,6 +39,7 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 		_cache = cache;
 		_logger = logger;
 		_bgTaskQueue = bgTaskQueue;
+		_tenantContext = tenantContext;
 	}
 
 	public async Task<FileIndexItem.ExifStatus> ManualSync(string subPath)
@@ -74,6 +77,8 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 		{
 			MetaData = fileIndexItem.FilePath,
 			TraceParentId = Activity.Current?.Id,
+			TenantId = _tenantContext?.TenantId,
+			TenantSlug = _tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = JobType,
 			PayloadJson = JsonSerializer.Serialize(payload)

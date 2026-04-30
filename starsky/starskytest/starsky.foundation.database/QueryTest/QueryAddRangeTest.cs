@@ -112,6 +112,32 @@ public class QueryAddRangeTest
 	}
 
 	[TestMethod]
+	public async Task AddRange_AssignsMainTenant_WhenTenantIsMissing()
+	{
+		var expectedResult = new List<FileIndexItem>
+		{
+			new FileIndexItem("/tenant-range/1.jpg"),
+			new FileIndexItem("/tenant-range/2.jpg")
+		};
+
+		var serviceScopeFactory = CreateNewScope();
+		var scope = serviceScopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		await new Query(dbContext,
+			new AppSettings { AddMemoryCache = false }, serviceScopeFactory, new FakeIWebLogger(),
+			new FakeMemoryCache()).AddRangeAsync(expectedResult);
+
+		var queryFromDb = dbContext.FileIndex
+			.Where(p => p.ParentDirectory == "/tenant-range")
+			.ToList();
+
+		Assert.HasCount(2, queryFromDb);
+		Assert.IsTrue(queryFromDb.All(p => p.TenantId.HasValue));
+		Assert.AreEqual(queryFromDb[0].TenantId, queryFromDb[1].TenantId);
+	}
+
+	[TestMethod]
 	public async Task AddRangeAsync_DbUpdateConcurrencyException()
 	{
 		var expectedResult = new List<FileIndexItem>

@@ -14,91 +14,107 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.JsonService;
 
-namespace starsky.feature.metaupdate.Services
+namespace starsky.feature.metaupdate.Services;
+
+[Service(typeof(IMetaInfo), InjectionLifetime = InjectionLifetime.Scoped)]
+public class MetaInfo : IMetaInfo
 {
-	[Service(typeof(IMetaInfo), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class MetaInfo : IMetaInfo
+	private readonly IStorage _iStorage;
+	private readonly IQuery _query;
+	private readonly ReadMeta _readMeta;
+	private readonly StatusCodesHelper _statusCodeHelper;
+	private readonly ITenantContext? _tenantContext;
+
+	public MetaInfo(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage,
+		IMemoryCache memoryCache, IWebLogger logger, ITenantContext? tenantContext = null)
 	{
-		private readonly IQuery _query;
-		private readonly ReadMeta _readMeta;
-		private readonly IStorage _iStorage;
-		private readonly StatusCodesHelper _statusCodeHelper;
+		_query = query;
+		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		_readMeta = new ReadMeta(_iStorage, appSettings, memoryCache, logger);
+		_statusCodeHelper = new StatusCodesHelper(appSettings);
+		_tenantContext = tenantContext;
+	}
 
-		public MetaInfo(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage, IMemoryCache memoryCache, IWebLogger logger)
+	public async Task<List<FileIndexItem>> GetInfoAsync(List<string> inputFilePaths,
+		bool collections)
+	{
+		// the result list
+		var fileIndexResultsList = new List<FileIndexItem>();
+
+		foreach ( var subPath in inputFilePaths )
 		{
-			_query = query;
-			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_readMeta = new ReadMeta(_iStorage, appSettings, memoryCache, logger);
-			_statusCodeHelper = new StatusCodesHelper(appSettings);
-		}
+			var detailView = _query.SingleItem(subPath, null, collections, false);
 
-		public async Task<List<FileIndexItem>> GetInfoAsync(List<string> inputFilePaths, bool collections)
-		{
-			// the result list
-			var fileIndexResultsList = new List<FileIndexItem>();
-
-			foreach ( var subPath in inputFilePaths )
+			if ( detailView?.FileIndexItem == null )
 			{
-				var detailView = _query.SingleItem(subPath, null, collections, false);
-
-				if ( detailView?.FileIndexItem == null )
-				{
-					StatusCodesHelper.ReturnExifStatusError(new FileIndexItem(subPath),
-						FileIndexItem.ExifStatus.NotFoundNotInIndex,
-						fileIndexResultsList);
-					continue;
-				}
-
-				if ( !_iStorage.ExistFile(detailView.FileIndexItem.FilePath!) )
-				{
-					StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem!,
-						FileIndexItem.ExifStatus.NotFoundSourceMissing,
-						fileIndexResultsList);
-					continue;
-				}
-
-				// Check if extension is supported for ExtensionExifToolSupportedList
-				// Not all files are able to write with exifTool
-				if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem!.FileName)
-				   && !ExtensionRolesHelper.IsExtensionSidecar(detailView.FileIndexItem!.FileName) )
-				{
-					StatusCodesHelper.ReturnExifStatusError(
-						await new FileIndexItemJsonParser(_iStorage).ReadAsync(detailView.FileIndexItem),
-						FileIndexItem.ExifStatus.ExifWriteNotSupported,
-						fileIndexResultsList);
-					continue;
-				}
-
-				var statusResults = StatusCodesHelper.IsDeletedStatus(detailView);
-				// only when default status to avoid unneeded checks
-				if ( statusResults == FileIndexItem.ExifStatus.Default )
-				{
-					statusResults = _statusCodeHelper.IsReadOnlyStatus(detailView);
-				}
-				// when everything is checked, it should be good
-				if ( statusResults == FileIndexItem.ExifStatus.Default )
-				{
-					statusResults = FileIndexItem.ExifStatus.Ok;
-				}
-
-				var collectionSubPathList = DetailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
-
-				foreach ( var collectionSubPath in collectionSubPathList )
-				{
-					var collectionItem = await _readMeta.ReadExifAndXmpFromFileAsync(collectionSubPath);
-
-					collectionItem!.Status = statusResults;
-					collectionItem.CollectionPaths = collectionSubPathList;
-					collectionItem.ImageFormat =
-						ExtensionRolesHelper.MapFileTypesToExtension(collectionSubPath);
-					var storageInfo = _iStorage.Info(collectionSubPath);
-					collectionItem.Size = storageInfo.Size;
-					collectionItem.LastEdited = storageInfo.LastWriteTime;
-					fileIndexResultsList.Add(collectionItem);
-				}
+				StatusCodesHelper.ReturnExifStatusError(new FileIndexItem(subPath),
+					FileIndexItem.ExifStatus.NotFoundNotInIndex,
+					fileIndexResultsList);
+				continue;
 			}
 
-			return fileIndexResultsList;
+			var normalizedFilePath = TenantPathHelper.NormalizeForTenantScopedStorage(
+				detailView.FileIndexItem.FilePath!, _tenantContext?.TenantSlug);
+			if ( !_iStorage.ExistFile(normalizedFilePath) )
+			{
+				StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem!,
+					FileIndexItem.ExifStatus.NotFoundSourceMissing,
+					fileIndexResultsList);
+				continue;
+			}
+
+			// Check if extension is supported for ExtensionExifToolSupportedList
+			// Not all files are able to write with exifTool
+			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem!
+				     .FileName)
+			     && !ExtensionRolesHelper.IsExtensionSidecar(detailView.FileIndexItem!.FileName) )
+			{
+				StatusCodesHelper.ReturnExifStatusError(
+					await new FileIndexItemJsonParser(_iStorage)
+						.ReadAsync(detailView.FileIndexItem),
+					FileIndexItem.ExifStatus.ExifWriteNotSupported,
+					fileIndexResultsList);
+				continue;
+			}
+
+			var statusResults = StatusCodesHelper.IsDeletedStatus(detailView);
+			// only when default status to avoid unneeded checks
+			if ( statusResults == FileIndexItem.ExifStatus.Default )
+			{
+				statusResults = _statusCodeHelper.IsReadOnlyStatus(detailView);
+			}
+
+			// when everything is checked, it should be good
+			if ( statusResults == FileIndexItem.ExifStatus.Default )
+			{
+				statusResults = FileIndexItem.ExifStatus.Ok;
+			}
+
+			var collectionSubPathList =
+				DetailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
+
+			foreach ( var collectionSubPath in collectionSubPathList )
+			{
+				var normalizedCollectionSubPath = TenantPathHelper
+					.NormalizeForTenantScopedStorage(collectionSubPath, _tenantContext?.TenantSlug);
+				var collectionItem = await _readMeta.ReadExifAndXmpFromFileAsync(
+					normalizedCollectionSubPath);
+				if ( collectionItem != null && normalizedCollectionSubPath != collectionSubPath )
+				{
+					collectionItem.FilePath = collectionSubPath;
+				}
+
+				collectionItem!.Status = statusResults;
+				collectionItem.CollectionPaths = collectionSubPathList;
+				collectionItem.ImageFormat =
+					ExtensionRolesHelper.MapFileTypesToExtension(collectionSubPath);
+				var storageInfo = _iStorage.Info(normalizedCollectionSubPath);
+				collectionItem.Size = storageInfo.Size;
+				collectionItem.LastEdited = storageInfo.LastWriteTime;
+				fileIndexResultsList.Add(collectionItem);
+			}
 		}
+
+		return fileIndexResultsList;
 	}
 }

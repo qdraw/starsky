@@ -1398,6 +1398,28 @@ public sealed class QueryTest
 	}
 
 	[TestMethod]
+	public async Task AddItemAsync_AssignsMainTenant_WhenTenantIsMissing()
+	{
+		var item = await _query.AddItemAsync(new FileIndexItem("/tenant-auto/item.jpg"));
+
+		Assert.IsTrue(item.TenantId.HasValue);
+
+		var stored = await _query.GetObjectByFilePathAsync("/tenant-auto/item.jpg");
+		Assert.IsNotNull(stored);
+		Assert.IsTrue(stored.TenantId.HasValue);
+		Assert.AreEqual(item.TenantId, stored.TenantId);
+
+		using var scope = CreateNewScope().CreateScope();
+		var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		var tenant = await context.Tenants.FirstOrDefaultAsync(t => t.Id == item.TenantId,
+			TestContext.CancellationTokenSource.Token);
+		Assert.IsNotNull(tenant);
+		Assert.AreEqual("main", tenant.Slug);
+
+		await _query.RemoveItemAsync(item);
+	}
+
+	[TestMethod]
 	public async Task AddItemAsync_Disposed()
 	{
 		var serviceScope = CreateNewScope();

@@ -91,12 +91,12 @@ public sealed class GeoControllerTest
 		_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
 		// get the background helper
-		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+		_bgTaskQueue = new FakeIUpdateBackgroundTaskQueue();
 	}
 
 
 	[TestMethod]
-	public async Task FolderExist()
+	public async Task GeoControllerTest_FolderExist()
 	{
 		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg" });

@@ -22,9 +22,20 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      // IMPORTANT: Order matters in Vite proxy config. More specific patterns should come first.
+      // Proxy tenant-specific API paths BEFORE the global /starsky/api rule
+      // (e.g., /main/api -> http://localhost:4000/main/api)
+      "^/[a-z][a-z0-9-]*/api": "http://localhost:4000",
+      // Proxy tenant-specific realtime paths
+      // (e.g., /main/realtime -> ws://localhost:4000/main/realtime)
+      "^/[a-z][a-z0-9-]*/realtime": {
+        target: "ws://localhost:4000",
+        ws: true
+      },
+      // Global API paths: /starsky/api/* after tenant-specific patterns have been checked
       "/starsky/api": "http://localhost:4000",
       "/starsky/realtime": {
-        target: "ws://localhost:4000/starsky/realtime",
+        target: "ws://localhost:4000",
         ws: true
       }
     }

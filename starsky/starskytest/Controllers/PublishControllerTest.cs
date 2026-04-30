@@ -77,7 +77,7 @@ public sealed class PublishControllerTest
 		serviceProvider.GetRequiredService<AppSettings>();
 
 		// get the background helper
-		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+		_bgTaskQueue = new FakeIUpdateBackgroundTaskQueue();
 		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
 

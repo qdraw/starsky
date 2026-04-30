@@ -142,6 +142,7 @@ public sealed class UserManager : IUserManager
 
 		// The email is stored in the Credentials database
 		var user = Exist(identifier);
+		var isNewUser = false;
 		if ( user == null )
 		{
 			// Check if user not already exist
@@ -159,6 +160,15 @@ public sealed class UserManager : IUserManager
 			{
 				throw new AggregateException("user should not be null");
 			}
+
+			isNewUser = true;
+		}
+
+		if ( isNewUser && await _dbContext.Users.CountAsync() == 1 )
+		{
+			user.IsGlobalAdmin = true;
+			_dbContext.Users.Update(user);
+			await _dbContext.SaveChangesAsync();
 		}
 
 		// Add a user role based on a user id

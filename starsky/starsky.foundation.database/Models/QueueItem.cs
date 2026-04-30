@@ -34,6 +34,12 @@ public sealed class QueueItem
 	[MaxLength(512)]
 	public string? TraceParentId { get; set; }
 
+	// Nullable in phase 1; will become required after data backfill and strict rollout.
+	public int? TenantId { get; set; }
+
+	[MaxLength(50)]
+	public string? TenantSlug { get; set; }
+
 	public int PriorityLane { get; set; }
 
 	public string? PayloadJson { get; set; }

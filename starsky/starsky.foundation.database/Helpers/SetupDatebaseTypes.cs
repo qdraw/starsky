@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using starsky.foundation.database.Data;
-using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Helpers;
 
@@ -113,7 +113,14 @@ public sealed class SetupDatabaseTypes
 			_logger.LogInformation($"Database connection: {_appSettings.DatabaseConnection}");
 		}
 
-		_services.AddScoped(_ =>
-			new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
+		_services.AddScoped(provider =>
+		{
+			var context = new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName));
+			// Wire tenant context so global query filter works.
+			// GetService (not GetRequiredService) – may be null during early startup or CLI use,
+			// in which case no tenant filter is applied (all rows visible).
+			context.TenantContext = provider.GetService<ITenantContext>();
+			return context;
+		});
 	}
 }

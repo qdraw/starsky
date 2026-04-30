@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -9,20 +8,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.worker.Interfaces;
-using starsky.foundation.worker.Metrics;
-using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -37,24 +31,8 @@ public sealed class ImportControllerTest
 
 	public ImportControllerTest()
 	{
-		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-		builder.UseInMemoryDatabase("test");
-
-		var services = new ServiceCollection();
-
 		_appSettings = new AppSettings();
-
-		// Add Background services
-		services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
-		services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
-		// metrics
-		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
-		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
-
-		var serviceProvider = services.BuildServiceProvider();
-
-		// get the background helper
-		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+		_bgTaskQueue = new FakeIUpdateBackgroundTaskQueue();
 
 		_import = new FakeIImport(new FakeSelectorStorage(new FakeIStorage()));
 	}
@@ -146,10 +124,11 @@ public sealed class ImportControllerTest
 	{
 		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
 		var fakeImport = new FakeIImportForImportTest();
+		var fakeQueue = new FakeIUpdateBackgroundTaskQueue();
 
 		var importController = new ImportController(fakeImport,
 			_appSettings,
-			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
+			fakeQueue, null!, fakeStorageSelector, new FakeIWebLogger())
 		{
 			ControllerContext = RequestWithFile()
 		};
@@ -162,6 +141,8 @@ public sealed class ImportControllerTest
 		Assert.IsNotNull(list);
 		Assert.IsEmpty(list);
 		Assert.AreEqual(206, importController.Response.StatusCode);
+		Assert.IsFalse(fakeQueue.QueueBackgroundWorkItemCalled,
+			"Empty preflight should not enqueue any background import job.");
 	}
 
 	[TestMethod]

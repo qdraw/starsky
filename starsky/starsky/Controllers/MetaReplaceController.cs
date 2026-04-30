@@ -28,15 +28,18 @@ public sealed class MetaReplaceController : Controller
 	private readonly IRealtimeConnectionsService _connectionsService;
 	private readonly IWebLogger _logger;
 	private readonly IMetaReplaceService _metaReplaceService;
+	private readonly ITenantContext? _tenantContext;
 
 	public MetaReplaceController(IMetaReplaceService metaReplaceService,
 		IUpdateBackgroundTaskQueue queue,
-		IRealtimeConnectionsService connectionsService, IWebLogger logger)
+		IRealtimeConnectionsService connectionsService, IWebLogger logger,
+		ITenantContext? tenantContext = null)
 	{
 		_metaReplaceService = metaReplaceService;
 		_bgTaskQueue = queue;
 		_connectionsService = connectionsService;
 		_logger = logger;
+		_tenantContext = tenantContext;
 	}
 
 	/// <summary>
@@ -84,11 +87,21 @@ public sealed class MetaReplaceController : Controller
 				p => p.FilePath!,
 				_ => new List<string> { fieldName.ToLowerInvariant() });
 
+		// When all items are not actionable, skip queueing and return not found/error semantics.
+		if ( resultsOkOrDeleteList.Count == 0 )
+		{
+			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update",
+				fileIndexResultsList.FirstOrDefault()?.FilePath!, collections, stopwatch);
+			return NotFound(fileIndexResultsList);
+		}
+
 		// Update >
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = string.Empty,
 			TraceParentId = Activity.Current?.Id,
+			TenantId = _tenantContext?.TenantId,
+			TenantSlug = _tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = MetaReplaceBackgroundJobHandler.MetaReplace,
 			PayloadJson = JsonSerializer.Serialize(new MetaReplaceBackgroundPayload
@@ -102,11 +115,6 @@ public sealed class MetaReplaceController : Controller
 		new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update",
 			fileIndexResultsList.FirstOrDefault()?.FilePath!, collections, stopwatch);
 
-		// When all items are not found
-		if ( resultsOkOrDeleteList.Count == 0 )
-		{
-			return NotFound(fileIndexResultsList);
-		}
 
 		// Push direct to socket when update or replace to avoid undo after a second
 		var webSocketResponse =

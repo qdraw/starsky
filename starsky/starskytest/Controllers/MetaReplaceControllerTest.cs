@@ -107,7 +107,7 @@ public sealed class MetaReplaceControllerTest
 
 
 		// get the background helper
-		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+		_bgTaskQueue = new FakeIUpdateBackgroundTaskQueue();
 
 		_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 	}

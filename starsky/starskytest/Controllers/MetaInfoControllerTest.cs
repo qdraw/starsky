@@ -68,6 +68,18 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
+		public async Task Info_PathTraversal_BadRequest()
+		{
+			var controller = new MetaInfoController(_metaInfo)
+			{
+				ControllerContext = { HttpContext = new DefaultHttpContext() }
+			};
+
+			var result = await controller.InfoAsync("/../../second/secret.jpg");
+			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+		}
+
+		[TestMethod]
 		public async Task ReadOnly()
 		{
 			var controller = new MetaInfoController(_metaInfo)
@@ -80,6 +92,35 @@ namespace starskytest.Controllers
 			Assert.AreEqual("test, sion", listResult?.FirstOrDefault()?.Tags);
 			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly,
 				listResult?.FirstOrDefault()?.Status);
+		}
+
+		[TestMethod]
+		public async Task Info_TenantPrefixedPath_UsesTenantScopedStoragePath()
+		{
+			var tenantAwareMetaInfo = new MetaInfo(new FakeIQuery(
+					new List<FileIndexItem>
+					{
+						new FileIndexItem("/main/test.jpg") { FileHash = "hash-tenant" }
+					}),
+				new AppSettings(),
+				new FakeSelectorStorage(new FakeIStorage(new List<string>(),
+					new List<string> { "/test.jpg" },
+					new List<byte[]> { CreateAnImage.Bytes.ToArray() })),
+				null!,
+				new FakeIWebLogger(),
+				new FakeITenantContext { TenantSlug = "main", TenantId = 1 });
+
+			var controller = new MetaInfoController(tenantAwareMetaInfo)
+			{
+				ControllerContext = { HttpContext = new DefaultHttpContext() }
+			};
+
+			var jsonResult = await controller.InfoAsync("/main/test.jpg", false) as JsonResult;
+			Assert.IsNotNull(jsonResult);
+			var listResult = jsonResult.Value as List<FileIndexItem>;
+			Assert.IsNotNull(listResult);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, listResult.FirstOrDefault()?.Status);
+			Assert.AreEqual("/main/test.jpg", listResult.FirstOrDefault()?.FilePath);
 		}
 	}
 }

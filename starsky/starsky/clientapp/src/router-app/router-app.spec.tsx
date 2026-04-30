@@ -110,13 +110,7 @@ describe("Router", () => {
   });
 
   it("NotFoundPage", () => {
-    jest.spyOn(NotFoundPage, "NotFoundPage").mockImplementationOnce(() => <></>);
-
-    Router.navigate("/not-found");
-    const component = render(<RouterApp></RouterApp>);
-
-    expect(component.queryByTestId("not-found-page")).not.toBeNull();
-
-    component.unmount();
+    const wildcardRoute = RoutesConfig.find((x) => x.path === "*");
+    expect(wildcardRoute?.element).toEqual(<NotFoundPage.NotFoundPage />);
   });
 });

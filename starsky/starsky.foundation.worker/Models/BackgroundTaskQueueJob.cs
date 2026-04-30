@@ -8,6 +8,8 @@ public sealed class BackgroundTaskQueueJob
 	public Guid JobId { get; init; } = Guid.NewGuid();
 	public string? MetaData { get; init; }
 	public string? TraceParentId { get; init; }
+	public int? TenantId { get; init; }
+	public string? TenantSlug { get; init; }
 	public int PriorityLane { get; init; }
 	public DateTime CreatedAtUtc { get; init; } = DateTime.UtcNow;
 	public string? JobType { get; init; }

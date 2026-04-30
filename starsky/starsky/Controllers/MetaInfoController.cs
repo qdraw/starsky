@@ -42,6 +42,10 @@ namespace starsky.Controllers
 			}
 			
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
+			if ( inputFilePaths.Any(PathTraversalGuard.ContainsTraversal) )
+			{
+				return BadRequest("Invalid path");
+			}
 
 			var fileIndexResultsList = await _metaInfo.GetInfoAsync(inputFilePaths, collections);
 

@@ -11,6 +11,7 @@
       FileHash: C66ABTTMYNDAHIQQNQP5WIAX7E,
       FileCollectionName: 20180905_193153_test,
       ParentDirectory: /2018/09/2018_09_05,
+      TenantId: 1,
       IsDirectory: false,
       Tags: ,
       Status: Ok,

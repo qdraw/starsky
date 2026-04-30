@@ -58,6 +58,24 @@ describe("url-query", () => {
     expect(result).toBe(urlQuery.prefix + "/api/info?f=/&json=true");
   });
 
+  it("UrlQueryInfoApi strips tenant prefix when at /main/", () => {
+    window.history.pushState({}, "", "/main/");
+    const result = new UrlQuery().UrlQueryInfoApi("/main/101NZ_50__nikon_raw/DSC_0048.JPG");
+    expect(result).toBe(
+      "/starsky/main/api/info?f=/101NZ_50__nikon_raw/DSC_0048.JPG&json=true"
+    );
+    window.history.pushState({}, "", "/");
+  });
+
+  it("UrlQueryInfoApi keeps tenant-relative path when at /main/", () => {
+    window.history.pushState({}, "", "/main/");
+    const result = new UrlQuery().UrlQueryInfoApi("/101NZ_50__nikon_raw/DSC_0048.JPG");
+    expect(result).toBe(
+      "/starsky/main/api/info?f=/101NZ_50__nikon_raw/DSC_0048.JPG&json=true"
+    );
+    window.history.pushState({}, "", "/");
+  });
+
   it("UrlQueryUpdateApi", () => {
     const result = urlQuery.UrlUpdateApi();
     expect(result).toContain("update");
@@ -254,6 +272,145 @@ describe("url-query", () => {
       const expectedUrl = "https://example.com/api/index?f=example/path";
       const result = urlQuery.UrlIndexServerApiPath(path);
       expect(result).toBe(expectedUrl);
+    });
+  });
+
+  describe("tenant-aware prefixes", () => {
+    it("UrlIndexServerApi includes tenant from /main/ path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlIndexServerApi({ f: "/" });
+      expect(result).toBe("/starsky/main/api/index?f=/");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("updateFilePathHash preserves /main/ tenant when at non-starsky path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().updateFilePathHash("?f=/subfolder", "/subfolder/child");
+      expect(result).toBe("/main/?f=/subfolder/child");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("updateFilePathHash strips tenant prefix from toUpdateFilePath", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().updateFilePathHash("", "/main/2020/image.jpg");
+      expect(result).toBe("/main/?f=/2020/image.jpg");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("updateFilePathHash at /main/ with f=/main/subfolder strips to /subfolder", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().updateFilePathHash("?f=/main", "/main/subfolder");
+      expect(result).toBe("/main/?f=/subfolder");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("updateFilePathHash at /main/ strips /main root folder to /", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().updateFilePathHash("", "/main");
+      expect(result).toBe("/main/?f=/");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlHomePage returns /main/ when at non-starsky tenant path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlHomePage();
+      expect(result).toBe("/main/");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlSearchPage returns /main/search when at non-starsky tenant path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlSearchPage("cats");
+      expect(result).toBe("/main/search?t=cats");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlTrashPage returns /main/trash when at non-starsky tenant path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlTrashPage();
+      expect(result).toBe("/main/trash?t=!delete!");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlImportPage returns /main/import when at non-starsky tenant path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlImportPage();
+      expect(result).toBe("/main/import");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlPreferencesPage returns /main/preferences when at non-starsky tenant path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlPreferencesPage();
+      expect(result).toBe("/main/preferences");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlDownloadPhotoApi strips tenant prefix in f query", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlDownloadPhotoApi("/main/101NZ_50__nikon_raw/DSC_0054.JPG");
+      expect(result).toContain("/api/download-photo?f=/101NZ_50__nikon_raw/DSC_0054.JPG");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlThumbnailZoom strips tenant prefix in filePath query", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlThumbnailZoom(
+        "E27GEVUPZGCHPGGJ7IO36UVYEA",
+        "/main/101NZ_50__nikon_raw/DSC_0054.JPG",
+        2
+      );
+      expect(result).toContain("filePath=/101NZ_50__nikon_raw/DSC_0054.JPG");
+      window.history.pushState({}, "", "/");
+    });
+  });
+
+  describe("StripTenantPrefix", () => {
+    afterEach(() => {
+      window.history.pushState({}, "", "/");
+    });
+
+    it("strips /main/ prefix when at /main/ URL", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().StripTenantPrefix("/main/2020/image.jpg");
+      expect(result).toBe("/2020/image.jpg");
+    });
+
+    it("converts /main (root folder) to / when at /main/ URL", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().StripTenantPrefix("/main");
+      expect(result).toBe("/");
+    });
+
+    it("is a no-op when path does not start with tenant prefix", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().StripTenantPrefix("/2020/image.jpg");
+      expect(result).toBe("/2020/image.jpg");
+    });
+
+    it("is a no-op when no tenant in URL", () => {
+      const result = new UrlQuery().StripTenantPrefix("/main/2020/image.jpg");
+      expect(result).toBe("/main/2020/image.jpg");
+    });
+
+    it("returns null/empty as-is when filePath is null or empty", () => {
+      window.history.pushState({}, "", "/main/");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(new UrlQuery().StripTenantPrefix(null as any)).toBeNull();
+      expect(new UrlQuery().StripTenantPrefix("")).toBe("");
+    });
+
+    it("UrlThumbnailImage strips tenant prefix from f param", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlThumbnailImage("HASH", "/main/2020/img.jpg", false);
+      expect(result).toContain("?f=/2020/img.jpg");
+      expect(result).not.toContain("/main/2020/");
+    });
+
+    it("UrlThumbnailImage does not strip when path is already correct", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlThumbnailImage("HASH", "/2020/img.jpg", false);
+      expect(result).toContain("?f=/2020/img.jpg");
     });
   });
 

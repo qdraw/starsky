@@ -51,6 +51,11 @@ public sealed class IndexController : Controller
 			return BadRequest("Model invalid");
 		}
 
+		if ( PathTraversalGuard.ContainsTraversal(f) )
+		{
+			return BadRequest("Invalid path");
+		}
+
 		// Used in Detail and Index View => does not hide this single item
 		var colorClassActiveList = FileIndexItem.GetColorClassList(colorClass);
 
@@ -59,6 +64,31 @@ public sealed class IndexController : Controller
 		if ( string.IsNullOrEmpty(subPath) )
 		{
 			subPath = "/";
+		}
+
+		// Tenant-aware mapping for legacy DB paths that are still stored as /{tenant}/... .
+		// If request path is unscoped (e.g. / or /0001), try the tenant-scoped equivalent.
+		var tenantSlug = HttpContext.Items
+			.TryGetValue(TenantConstants.TenantSlugItemKey, out var tenantSlugValue) == true
+			? tenantSlugValue as string
+			: null;
+		if ( !string.IsNullOrWhiteSpace(tenantSlug) )
+		{
+			var tenantRootPath = PathHelper.PrefixDbSlash(tenantSlug);
+			var isAlreadyTenantScoped = subPath.Equals(tenantRootPath) ||
+			                            subPath.StartsWith(tenantRootPath + "/");
+
+			if ( !isAlreadyTenantScoped )
+			{
+				var tenantScopedPath = subPath == "/"
+					? tenantRootPath
+					: tenantRootPath + subPath;
+
+				if ( _query.GetObjectByFilePath(tenantScopedPath) != null )
+				{
+					subPath = tenantScopedPath;
+				}
+			}
 		}
 
 		// First check if it is a single Item

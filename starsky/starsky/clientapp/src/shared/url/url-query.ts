@@ -5,18 +5,89 @@ import { IsRelativeUrl } from "./url.ts";
 import packageJson from "../../../package.json";
 
 export class UrlQuery {
-  public prefix: string = "/starsky";
+  private _prefix: string = "/starsky";
+
+  public get prefix(): string {
+    const tenant = this.CurrentTenant();
+    return tenant ? `${this._prefix}/${tenant}` : this._prefix;
+  }
+
+  public set prefix(value: string) {
+    this._prefix = value;
+  }
+
+  private CurrentTenant(): string | null {
+    const path = document.location.pathname;
+    const withoutPrefix = path.startsWith(this._prefix) ? path.slice(this._prefix.length) : path;
+    const segments = withoutPrefix.split("/").filter(Boolean);
+    if (segments.length === 0) {
+      return null;
+    }
+
+    const first = segments[0].toLowerCase();
+    if (first === "-" || first === "assets" || first === "api" || first === "account") {
+      return null;
+    }
+
+    return first;
+  }
+
+  private TenantPrefix(): string {
+    return this.prefix;
+  }
+
+  /**
+   * Strips a leading tenant-slug segment from a file path returned by the API.
+   * When the backend stores paths relative to the storage root (e.g. `/main/image.jpg`)
+   * but the tenant-scoped API and thumbnail service expect paths relative to the
+   * tenant root (e.g. `/image.jpg`), this method removes the superfluous prefix.
+   *
+   * Example: tenant = "main", path = "/main/2020/img.jpg" → "/2020/img.jpg"
+   *          tenant = null,   path = "/2020/img.jpg"      → "/2020/img.jpg"  (no-op)
+   */
+  public StripTenantPrefix(filePath: string): string {
+    if (!filePath) return filePath;
+    const tenant = this.CurrentTenant();
+    if (!tenant) return filePath;
+    const tenantPath = `/${tenant}`;
+    // Handle both root folder (/main) and subfolders (/main/2020)
+    if (filePath === tenantPath) {
+      return "/";
+    }
+    if (filePath.startsWith(tenantPath + "/")) {
+      return filePath.slice(tenantPath.length);
+    }
+    return filePath;
+  }
+
+  private NavigationPrefix(): string {    const path = document.location.pathname;
+    const tenant = this.CurrentTenant();
+
+    if (path.startsWith(this._prefix)) {
+      // /starsky or /starsky/tenant
+      return tenant ? `${this._prefix}/${tenant}` : this._prefix;
+    }
+
+    if (tenant) {
+      // /tenant (without /starsky)
+      return `/${tenant}`;
+    }
+
+    return "";
+  }
 
   public UrlHomePage(): string {
-    return document.location.pathname.includes(this.prefix) ? `${this.prefix}/` : "/";
+    const np = this.NavigationPrefix();
+    return np ? `${np}/` : "/";
   }
 
   public UrlHomeIndexPage(locationHash: string): string {
     if (!IsRelativeUrl(locationHash)) {
       locationHash = "/";
     }
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}${new URLPath().StartOnSlash(locationHash)}`
+    const np = this.NavigationPrefix();
+    return np
+      ? `${np}${new URLPath().StartOnSlash(locationHash)}`
       : `${new URLPath().StartOnSlash(locationHash)}`;
   }
 
@@ -41,9 +112,8 @@ export class UrlQuery {
    * @param t query
    */
   public UrlSearchPage(t: string): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/search?t=${t}`
-      : `/search?t=${t}`;
+    const np = this.NavigationPrefix();
+    return np ? `${np}/search?t=${t}` : `/search?t=${t}`;
   }
 
   /**
@@ -51,62 +121,60 @@ export class UrlQuery {
    */
   public HashSearchPage(historyLocationHash: string): string {
     const url = new URLPath().StringToIUrl(historyLocationHash);
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/search${new URLPath().IUrlToString(url)}`
+    const np = this.NavigationPrefix();
+    return np
+      ? `${np}/search${new URLPath().IUrlToString(url)}`
       : `/search${new URLPath().IUrlToString(url)}`;
   }
 
   public UrlTrashPage(): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/trash?t=!delete!`
-      : `/trash?t=!delete!`;
+    const np = this.NavigationPrefix();
+    return np ? `${np}/trash?t=!delete!` : `/trash?t=!delete!`;
   }
 
   public UrlImportPage(): string {
-    return document.location.pathname.includes(this.prefix) ? `${this.prefix}/import` : `/import`;
+    const np = this.NavigationPrefix();
+    return np ? `${np}/import` : `/import`;
   }
 
   public UrlPreferencesPage(): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/preferences`
-      : `/preferences`;
+    const np = this.NavigationPrefix();
+    return np ? `${np}/preferences` : `/preferences`;
   }
 
   public UrlLoginPage(): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/account/login`
-      : `/account/login`;
+    const tenantPrefix = this.TenantPrefix();
+    return `${tenantPrefix}/account/login`;
   }
 
   public UrlLogoutPage(returnUrl: string): string {
     if (!IsRelativeUrl(returnUrl)) {
       returnUrl = "/?f=/";
     }
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`
-      : `/account/logout?ReturnUrl=${returnUrl}`;
+    return `${this.TenantPrefix()}/account/logout?ReturnUrl=${returnUrl}`;
   }
 
   public UrlLoginApi(): string {
-    return `${this.prefix}/api/account/login`;
+    return `${this.TenantPrefix()}/api/account/login`;
   }
 
   public UrlLogoutApi(): string {
-    return `${this.prefix}/api/account/logout`;
+    return `${this.TenantPrefix()}/api/account/logout`;
   }
 
   public UrlAccountRegisterApi(): string {
-    return `${this.prefix}/api/account/register`;
+    return `${this.TenantPrefix()}/api/account/register`;
   }
 
   public UrlAccountRegisterPage(): string {
-    return `${this.prefix}/account/register`;
+    return `${this.TenantPrefix()}/account/register`;
   }
 
   public UrlSearchRelativeApi = (f: string, t: string | undefined, pageNumber = 0): string => {
+    const normalizedF = this.NormalizeApiPath(f);
     return (
       `${this.prefix}/api/search/relative-objects?f=` +
-      new URLPath().encodeURI(f) +
+      new URLPath().encodeURI(normalizedF) +
       "&t=" +
       t +
       "&p=" +
@@ -131,15 +199,15 @@ export class UrlQuery {
   };
 
   public UrlAccountStatus = (): string => {
-    return `${this.prefix}/api/account/status`;
+    return `${this.TenantPrefix()}/api/account/status`;
   };
 
   public UrlAccountRegisterStatus = (): string => {
-    return `${this.prefix}/api/account/register/status`;
+    return `${this.TenantPrefix()}/api/account/register/status`;
   };
 
   public UrlAccountChangeSecret = (): string => {
-    return `${this.prefix}/api/account/change-secret`;
+    return `${this.TenantPrefix()}/api/account/change-secret`;
   };
 
   public UrlCloudImportStatus = (): string => {
@@ -151,10 +219,22 @@ export class UrlQuery {
   };
 
   public UrlAccountPermissions = (): string => {
-    return `${this.prefix}/api/account/permissions`;
+    return `${this.TenantPrefix()}/api/account/permissions`;
   };
 
-  public KeyAccountPermissionAppSettingsWrite = (): string => {
+  public UrlTenantsMineApi = (): string => {
+    return `${this.prefix}/api/tenants/mine`;
+  };
+
+	public UrlMyTenantsPage = (): string => {
+    return `${this._prefix}/-/tenants`;
+	};
+
+	public UrlTenantCreateApi = (): string => {
+      return `${this._prefix}/api/tenants/create`;
+	};
+
+	public KeyAccountPermissionAppSettingsWrite = (): string => {
     return "AppSettingsWrite";
   };
 
@@ -168,7 +248,7 @@ export class UrlQuery {
     emptySelectQuery?: boolean
   ): string {
     const url = new URLPath().StringToIUrl(historyLocationHash);
-    url.f = toUpdateFilePath;
+    url.f = this.StripTenantPrefix(toUpdateFilePath);
     // when browsing to a parent folder from a detailview item
     if (clearTSearchQuery) {
       delete url.t;
@@ -178,8 +258,9 @@ export class UrlQuery {
     if (emptySelectQuery && url.select && url.select?.length >= 1) {
       url.select = [];
     }
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/${new URLPath().IUrlToString(url)}`
+    const np = this.NavigationPrefix();
+    return np
+      ? `${np}/${new URLPath().IUrlToString(url)}`
       : `/${new URLPath().IUrlToString(url)}`;
   }
 
@@ -215,6 +296,9 @@ export class UrlQuery {
    * Get Direct api/index with IUrl
    */
   public UrlIndexServerApi = (urlObject: IUrl): string => {
+    if (urlObject.f) {
+      urlObject.f = this.NormalizeApiPath(urlObject.f);
+    }
     return `${this.prefix}/api/index${new URLPath().IUrlToString(urlObject)}`;
   };
 
@@ -222,7 +306,7 @@ export class UrlQuery {
    * Get Direct api/index with IUrl
    */
   public UrlIndexServerApiPath = (path: string): string => {
-    return `${this.prefix}/api/index?f=${path}`;
+    return `${this.prefix}/api/index?f=${this.NormalizeApiPath(path)}`;
   };
 
   /**
@@ -231,7 +315,7 @@ export class UrlQuery {
    */
   public UrlQueryInfoApi(subPath: string): string {
     if (!subPath) return "";
-    const url = this.urlReplacePath(subPath);
+    const url = this.NormalizeApiPath(subPath);
     return `${this.prefix}/api/info?f=${url}&json=true`;
   }
 
@@ -290,6 +374,7 @@ export class UrlQuery {
     if (!fileHash) {
       return "";
     }
+    const normalizedPath = filePath ? this.StripTenantPrefix(filePath) : filePath;
     if (!extraLarge) {
       return (
         this.prefix +
@@ -297,7 +382,7 @@ export class UrlQuery {
         fileHash +
         `.${this.ImageFormat()}?issingleitem=true&extraLarge=false` +
         "&filePath=" +
-        filePath
+        normalizedPath
       );
     }
     return (
@@ -306,7 +391,7 @@ export class UrlQuery {
       fileHash +
       `@2000.${this.ImageFormat()}?issingleitem=true&extraLarge=true` +
       "&filePath=" +
-      filePath
+      normalizedPath
     );
   };
 
@@ -315,12 +400,13 @@ export class UrlQuery {
     filePath: string,
     alwaysLoadImage: boolean
   ): string => {
+    const normalizedPath = this.StripTenantPrefix(filePath);
     if (alwaysLoadImage) {
       return (
         this.prefix + "/api/thumbnail/" + fileHash + `.${this.ImageFormat()}?issingleitem=true`
       );
     }
-    return `${this.prefix}/api/thumbnail/small/${fileHash}.${this.ImageFormat()}?f=${filePath}`;
+    return `${this.prefix}/api/thumbnail/small/${fileHash}.${this.ImageFormat()}?f=${normalizedPath}`;
   };
 
   /**
@@ -330,7 +416,8 @@ export class UrlQuery {
    * @param id filePath
    */
   public UrlThumbnailZoom = (f: string, id: string | undefined, z: number): string => {
-    return `${this.prefix}/api/thumbnail/zoom/${f}@${z}?filePath=${id}`;
+    const normalizedPath = id ? this.NormalizeApiPath(id) : id;
+    return `${this.prefix}/api/thumbnail/zoom/${f}@${z}?filePath=${normalizedPath}`;
   };
 
   public UrlThumbnailJsonApi = (fileHash: string): string => {
@@ -342,8 +429,15 @@ export class UrlQuery {
     isThumbnail: boolean = true,
     cache: boolean = true
   ): string => {
+    const normalizedPath = this.NormalizeApiPath(f);
     return (
-      this.prefix + "/api/download-photo?f=" + f + "&isThumbnail=" + isThumbnail + "&cache=" + cache
+      this.prefix +
+      "/api/download-photo?f=" +
+      normalizedPath +
+      "&isThumbnail=" +
+      isThumbnail +
+      "&cache=" +
+      cache
     );
   };
 
@@ -382,7 +476,7 @@ export class UrlQuery {
    * @param parentFolder no need to encode this (done in this method)
    */
   public UrlSync(parentFolder: string): string {
-    return this.prefix + "/api/synchronize?f=" + new URLPath().encodeURI(parentFolder);
+    return this.prefix + "/api/synchronize?f=" + new URLPath().encodeURI(this.NormalizeApiPath(parentFolder));
   }
 
   /**
@@ -408,7 +502,7 @@ export class UrlQuery {
   }
 
   public UrlAllowedTypesThumb(filename: string): string {
-    return this.prefix + "/api/allowed-types/thumb?f=" + filename;
+    return this.prefix + "/api/allowed-types/thumb?f=" + this.NormalizeApiPath(filename);
   }
 
   public UrlHealthDetails(): string {
@@ -425,7 +519,7 @@ export class UrlQuery {
   }
 
   public UrlRemoveCache(parentFolder: string): string {
-    return this.prefix + "/api/remove-cache?json=true&f=" + parentFolder;
+    return this.prefix + "/api/remove-cache?json=true&f=" + this.NormalizeApiPath(parentFolder);
   }
 
   public UrlGeoSync(): string {
@@ -433,7 +527,7 @@ export class UrlQuery {
   }
 
   public UrlGeoStatus(arg0: string): string {
-    return this.prefix + "/api/geo/status/?f=" + arg0;
+    return this.prefix + "/api/geo/status/?f=" + this.NormalizeApiPath(arg0);
   }
 
   public UrlThumbnailGeneration(): string {
@@ -551,6 +645,11 @@ export class UrlQuery {
   private urlReplacePath(input: string): string {
     const output = input.replaceAll("#", "");
     return output.replaceAll("+", "%2B");
+  }
+
+  private NormalizeApiPath(input: string): string {
+    if (!input) return input;
+    return this.StripTenantPrefix(this.urlReplacePath(input));
   }
 
   public UrlGeoReverseNominatim(latitude: number, longitude: number): string {

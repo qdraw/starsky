@@ -2,12 +2,18 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Models.Account;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -21,28 +27,27 @@ namespace starsky.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly IAntiforgery _antiForgery;
 		private readonly IStorage _storageHostFullPathFilesystem;
+		private readonly ApplicationDbContext _dbContext;
+		private readonly ITenantSlugValidator _tenantSlugValidator;
+		private readonly ITenantSessionStore _tenantSessionStore;
 
 		private const string ModelError = "Model is not correct";
 
 		public AccountController(IUserManager userManager, AppSettings appSettings,
-			IAntiforgery antiForgery, ISelectorStorage selectorStorage)
+			IAntiforgery antiForgery, ISelectorStorage selectorStorage,
+			ApplicationDbContext dbContext, ITenantSlugValidator tenantSlugValidator,
+			ITenantSessionStore tenantSessionStore)
 		{
 			_userManager = userManager;
 			_appSettings = appSettings;
 			_antiForgery = antiForgery;
+			_dbContext = dbContext;
+			_tenantSlugValidator = tenantSlugValidator;
+			_tenantSessionStore = tenantSessionStore;
 			_storageHostFullPathFilesystem =
 				selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		}
 
-		/// <summary>
-		/// Check the account status of the current logged-in user
-		/// </summary>
-		/// <response code="200">Logged in</response>
-		/// <response code="401">When not logged in</response>
-		/// <response code="406">There are no accounts, you must create an account first</response>
-		/// <response code="409">The Current User does not exist in database</response>
-		/// <response code="503">Database Connection Error</response>
-		/// <returns>account name, id, and create date as json</returns>
 		[HttpGet("/api/account/status")]
 		[ProducesResponseType(typeof(UserIdentifierStatusModel), 200)]
 		[ProducesResponseType(typeof(string), 401)]
@@ -52,6 +57,12 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public async Task<IActionResult> Status()
 		{
+			var tenant = GetTenantSlug();
+			if ( !_tenantSlugValidator.IsValid(tenant) )
+			{
+				return NotFound("Tenant not found");
+			}
+
 			var userOverview = await _userManager.AllUsersAsync();
 			if ( !userOverview.IsSuccess )
 			{
@@ -65,13 +76,18 @@ namespace starsky.Controllers
 				return Json("There are no accounts, you must create an account first");
 			}
 
-			if ( User.Identity?.IsAuthenticated == false )
+			if ( User.Identity?.IsAuthenticated != true )
 			{
 				return Unauthorized("false");
 			}
 
-			// use model to avoid circular references
-			var currentUser = _userManager.GetCurrentUser(HttpContext);
+			var idValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if ( !int.TryParse(idValue, out var userId) )
+			{
+				return Unauthorized("false");
+			}
+
+			var currentUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
 			if ( currentUser == null )
 			{
 				return Conflict("Current User does not exist in database");
@@ -82,6 +98,7 @@ namespace starsky.Controllers
 				Name = currentUser.Name,
 				Id = currentUser.Id,
 				Created = currentUser.Created,
+				RoleCode = User.FindFirstValue(TenantAuthenticationConstants.TenantRoleClaimType)
 			};
 
 			var credentials = _userManager.GetCredentialsByUserId(currentUser.Id);
@@ -94,19 +111,9 @@ namespace starsky.Controllers
 
 			model.CredentialsIdentifiers?.Add(credentials.Identifier!);
 			model.CredentialTypeIds?.Add(credentials.CredentialTypeId);
-
-			var role = await _userManager.GetRoleAsync(currentUser.Id);
-			model.RoleCode = role?.Code;
-
 			return Json(model);
 		}
 
-
-		/// <summary>
-		/// Login form page (HTML)
-		/// </summary>
-		/// <returns></returns>
-		/// <response code="200">Login form page</response>
 		[HttpGet("/account/login")]
 		[HttpHead("/account/login")]
 		[ProducesResponseType(200)]
@@ -116,6 +123,12 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public IActionResult LoginGet(string? returnUrl = null, bool? fromLogout = null)
 		{
+			var tenant = GetTenantSlug();
+			if ( !_tenantSlugValidator.IsValid(tenant) )
+			{
+				return NotFound("Tenant not found");
+			}
+
 			if ( !ModelState.IsValid )
 			{
 				return BadRequest(ModelError);
@@ -133,16 +146,6 @@ namespace starsky.Controllers
 			return PhysicalFile(clientApp, "text/html");
 		}
 
-		/// <summary>
-		/// Login the current HttpContext in
-		/// </summary>
-		/// <param name="model">Email, password and remember me bool</param>
-		/// <returns>Login status</returns>
-		/// <response code="200">Successful login</response>
-		/// <response code="401">Login failed</response>
-		/// <response code="405">ValidateAntiForgeryToken error</response>
-		/// <response code="423">Login failed due lock</response>
-		/// <response code="500">Login failed due signIn errors</response>
 		[HttpPost("/api/account/login")]
 		[ProducesResponseType(typeof(string), 200)]
 		[ProducesResponseType(typeof(string), 401)]
@@ -154,6 +157,12 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public async Task<IActionResult> LoginPost(LoginViewModel model)
 		{
+			var tenant = GetTenantSlug();
+			if ( !_tenantSlugValidator.IsValid(tenant) )
+			{
+				return NotFound("Tenant not found");
+			}
+
 			if ( !ModelState.IsValid )
 			{
 				return BadRequest(ModelError);
@@ -173,60 +182,129 @@ namespace starsky.Controllers
 				return Json("Login failed");
 			}
 
-			await _userManager.SignIn(HttpContext, validateResult.User, model.RememberMe);
-			if ( User.Identity?.IsAuthenticated == true )
+			var user = validateResult.User;
+			if ( user == null )
 			{
-				return Json("Login Success");
+				Response.StatusCode = 401;
+				return Json("Login failed");
 			}
 
-			Response.StatusCode = 500;
-			return Json("Login failed");
+			var tenantEntity = await _dbContext.Tenants.FirstOrDefaultAsync(t => t.Slug == tenant);
+			if ( tenantEntity == null )
+			{
+				var anyTenantExists = await _dbContext.Tenants.AnyAsync();
+				if ( anyTenantExists )
+				{
+					return NotFound("Tenant not found");
+				}
+
+				tenantEntity = new Tenant
+				{
+					Slug = tenant,
+					Name = tenant,
+					IsEnabled = true,
+					Created = System.DateTime.UtcNow
+				};
+				await _dbContext.Tenants.AddAsync(tenantEntity);
+				await _dbContext.SaveChangesAsync();
+			}
+
+			if ( !tenantEntity.IsEnabled )
+			{
+				return Forbid();
+			}
+
+			var membership = await _dbContext.TenantUsers
+				.FirstOrDefaultAsync(m => m.TenantId == tenantEntity.Id && m.UserId == user.Id);
+
+			if ( membership == null )
+			{
+				var hasMembers = await _dbContext.TenantUsers.AnyAsync(m => m.TenantId == tenantEntity.Id);
+				if ( hasMembers )
+				{
+					return StatusCode(StatusCodes.Status403Forbidden,
+						"User is not a member of this tenant");
+				}
+
+				membership = new TenantUser
+				{
+					TenantId = tenantEntity.Id,
+					UserId = user.Id,
+					Role = TenantRole.Admin,
+					Created = System.DateTime.UtcNow
+				};
+
+				await _dbContext.TenantUsers.AddAsync(membership);
+				await _dbContext.SaveChangesAsync();
+			}
+
+			Request.Cookies.TryGetValue(TenantAuthenticationConstants.SessionCookieName,
+				out var existingSessionId);
+
+			var webSession = await _tenantSessionStore.CreateOrRefreshSessionAsync(user.Id,
+				existingSessionId);
+			await _tenantSessionStore.ActivateTenantAsync(webSession.Id, tenantEntity.Id);
+
+			Response.Cookies.Append(TenantAuthenticationConstants.SessionCookieName,
+				webSession.SessionId,
+				new CookieOptions
+				{
+					HttpOnly = true,
+					Path = "/",
+					SameSite = SameSiteMode.Lax,
+					Secure = _appSettings.HttpsOn == true,
+					Expires = webSession.ExpiresAt,
+					IsEssential = true
+				});
+
+			return Json("Login Success");
 		}
 
-		/// <summary>
-		/// Logout the current HttpContext out
-		/// </summary>
-		/// <returns>Login Status</returns>
-		/// <response code="200">Successful logout</response>
 		[HttpPost("/api/account/logout")]
 		[ProducesResponseType(200)]
 		[AllowAnonymous]
-		public IActionResult LogoutJson()
+		public async Task<IActionResult> LogoutJson()
 		{
-			_userManager.SignOut(HttpContext);
+			var tenant = GetTenantSlug();
+			if ( !_tenantSlugValidator.IsValid(tenant) )
+			{
+				return NotFound("Tenant not found");
+			}
+
+			if ( Request.Cookies.TryGetValue(TenantAuthenticationConstants.SessionCookieName,
+					 out var sessionId) && !string.IsNullOrWhiteSpace(sessionId) )
+			{
+				var tenantEntity = await _dbContext.Tenants.FirstOrDefaultAsync(t => t.Slug == tenant);
+				var webSession = await _tenantSessionStore.GetValidSessionAsync(sessionId);
+				if ( tenantEntity != null && webSession != null )
+				{
+					await _tenantSessionStore.DeactivateTenantAsync(webSession.Id, tenantEntity.Id);
+				}
+			}
+
 			return Json("your logged out");
 		}
 
-		/// <summary>
-		/// Logout the current HttpContext and redirect to login 
-		/// </summary>
-		/// <param name="returnUrl">insert url to redirect</param>
-		/// <response code="302">redirect to return url</response>
-		/// <returns>Redirect to login page</returns>
 		[HttpGet("/account/logout")]
 		[ProducesResponseType(200)]
 		[AllowAnonymous]
 		public IActionResult Logout(string? returnUrl = null)
 		{
+			var tenant = GetTenantSlug();
+			if ( !_tenantSlugValidator.IsValid(tenant) )
+			{
+				return NotFound("Tenant not found");
+			}
+
 			if ( !ModelState.IsValid )
 			{
 				return BadRequest(ModelError);
 			}
 
-			_userManager.SignOut(HttpContext);
-			// fromLogout is used in middleware
 			return RedirectToAction(nameof(LoginGet),
 				new { ReturnUrl = returnUrl, fromLogout = true });
 		}
 
-		/// <summary>
-		/// Update password for current user
-		/// </summary>
-		/// <param name="model">Password, ChangedPassword and ChangedConfirmPassword</param>
-		/// <returns>Change secret status</returns>
-		/// <response code="200">successful login</response>
-		/// <response code="400">Model is not correct</response>
-		/// <response code="401">please log in first or your current password is not correct</response>
 		[HttpPost("/api/account/change-secret")]
 		[ProducesResponseType(typeof(string), 200)]
 		[ProducesResponseType(typeof(string), 400)]
@@ -235,6 +313,12 @@ namespace starsky.Controllers
 		[Authorize]
 		public async Task<IActionResult> ChangeSecret(ChangePasswordViewModel model)
 		{
+			var tenant = GetTenantSlug();
+			if ( !_tenantSlugValidator.IsValid(tenant) )
+			{
+				return NotFound("Tenant not found");
+			}
+
 			if ( User.Identity?.IsAuthenticated != true )
 			{
 				return Unauthorized("please login first");
@@ -250,7 +334,6 @@ namespace starsky.Controllers
 			currentUserId ??= -1;
 			var credential = _userManager.GetCredentialsByUserId(( int ) currentUserId);
 
-			// Re-check password
 			var validateResult = await _userManager.ValidateAsync(
 				"Email",
 				credential?.Identifier,
@@ -268,15 +351,6 @@ namespace starsky.Controllers
 			return Json(changeSecretResult);
 		}
 
-		/// <summary>
-		/// Create a new user (you need a AF-token first)
-		/// </summary>
-		/// <param name="model">with the userdata</param>
-		/// <returns>redirect or json</returns>
-		/// <response code="200">successful register</response>
-		/// <response code="400">Wrong model or Wrong AntiForgeryToken</response>
-		/// <response code="403">Account Register page is closed</response>
-		/// <response code="405">AF token is missing</response>
 		[HttpPost("/api/account/register")]
 		[ProducesResponseType(typeof(string), 200)]
 		[ProducesResponseType(typeof(string), 400)]
@@ -287,6 +361,12 @@ namespace starsky.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Register(RegisterViewModel model)
 		{
+			var tenant = GetTenantSlug();
+			if ( !_tenantSlugValidator.IsValid(tenant) )
+			{
+				return NotFound("Tenant not found");
+			}
+
 			if ( await IsAccountRegisterClosed(User.Identity?.IsAuthenticated == true) )
 			{
 				Response.StatusCode = 403;
@@ -299,16 +379,10 @@ namespace starsky.Controllers
 				return Json("Account Created");
 			}
 
-			// If we got this far, something failed, redisplay form
 			Response.StatusCode = 400;
 			return Json(ModelError);
 		}
 
-		/// <summary>
-		/// True == not allowed
-		/// </summary>
-		/// <param name="userIdentityIsAuthenticated"></param>
-		/// <returns></returns>
 		private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
 		{
 			if ( userIdentityIsAuthenticated )
@@ -320,13 +394,6 @@ namespace starsky.Controllers
 				   ( await _userManager.AllUsersAsync() ).Users.Count != 0;
 		}
 
-		/// <summary>
-		/// Is the register form open
-		/// </summary>
-		/// <returns></returns>
-		/// <response code="200">Account Register page is open</response>
-		/// <response code="202">open, but you are the first user</response>
-		/// <response code="403">Account Register page is closed</response>
 		[HttpGet("/api/account/register/status")]
 		[ProducesResponseType(typeof(string), 200)]
 		[ProducesResponseType(typeof(string), 403)]
@@ -334,6 +401,12 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public async Task<IActionResult> RegisterStatus()
 		{
+			var tenant = GetTenantSlug();
+			if ( !_tenantSlugValidator.IsValid(tenant) )
+			{
+				return NotFound("Tenant not found");
+			}
+
 			if ( ( await _userManager.AllUsersAsync() ).Users.Count == 0 )
 			{
 				Response.StatusCode = 202;
@@ -349,20 +422,50 @@ namespace starsky.Controllers
 			return Json("Account Register page is closed");
 		}
 
-		/// <summary>
-		/// List of current permissions
-		/// </summary>
-		/// <returns>list of current permissions</returns>
-		/// <response code="200">list of permissions</response>
-		/// <response code="401"> please login first</response>
 		[HttpGet("/api/account/permissions")]
 		[Authorize]
 		[ProducesResponseType(typeof(List<string>), 200)]
 		[ProducesResponseType(401)]
 		public IActionResult Permissions()
 		{
+			var tenant = GetTenantSlug();
+			if ( !_tenantSlugValidator.IsValid(tenant) )
+			{
+				return NotFound("Tenant not found");
+			}
+
 			var claims = User.Claims.Where(p => p.Type == "Permission").Select(p => p.Value);
 			return Json(claims);
 		}
+
+		[HttpPost("/api/account/logout-all")]
+		[AllowAnonymous]
+		public async Task<IActionResult> LogoutAll()
+		{
+			if ( Request.Cookies.TryGetValue(TenantAuthenticationConstants.SessionCookieName,
+					 out var sessionId) && !string.IsNullOrWhiteSpace(sessionId) )
+			{
+				var webSession = await _tenantSessionStore.GetValidSessionAsync(sessionId);
+				if ( webSession != null )
+				{
+					await _tenantSessionStore.RevokeSessionAsync(webSession.Id);
+				}
+			}
+
+			Response.Cookies.Delete(TenantAuthenticationConstants.SessionCookieName,
+				new CookieOptions { Path = "/" });
+			return Json("Logged out from all tenants");
+		}
+
+	private string? GetTenantSlug()
+	{
+		if ( HttpContext?.Items == null )
+		{
+			return "main";
+		}
+
+		var tenant = HttpContext.Items[TenantAuthenticationConstants.TenantSlugItemKey] as string;
+		return !string.IsNullOrWhiteSpace(tenant) ? tenant : "main";
+	}
 	}
 }

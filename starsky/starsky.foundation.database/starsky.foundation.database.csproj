@@ -79,10 +79,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Migrations"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Content Include="..\..\documentation\docs\developer-guide\migrations\migrations.md">
             <Link>migrations.md</Link>
         </Content>

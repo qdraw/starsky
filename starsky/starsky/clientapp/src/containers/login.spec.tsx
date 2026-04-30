@@ -90,7 +90,7 @@ describe("Login", () => {
 
     // no prefix (starsky in url)
     expect((screen.queryByTestId("logout") as HTMLAnchorElement).href).toBe(
-      "http://localhost/account/logout?ReturnUrl=/test"
+      "http://localhost/starsky/account/logout?ReturnUrl=/test"
     );
 
     expect((login.queryAllByTestId("stayLoggedin")[0] as HTMLAnchorElement).href).toBe(
