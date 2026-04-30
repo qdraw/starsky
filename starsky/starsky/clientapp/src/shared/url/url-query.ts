@@ -49,9 +49,13 @@ export class UrlQuery {
     if (!filePath) return filePath;
     const tenant = this.CurrentTenant();
     if (!tenant) return filePath;
-    const prefix = `/${tenant}/`;
-    if (filePath.startsWith(prefix)) {
-      return filePath.slice(prefix.length - 1); // keep leading slash
+    const tenantPath = `/${tenant}`;
+    // Handle both root folder (/main) and subfolders (/main/2020)
+    if (filePath === tenantPath) {
+      return "/";
+    }
+    if (filePath.startsWith(tenantPath + "/")) {
+      return filePath.slice(tenantPath.length);
     }
     return filePath;
   }

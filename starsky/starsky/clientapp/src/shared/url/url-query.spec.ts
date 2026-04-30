@@ -286,6 +286,13 @@ describe("url-query", () => {
       window.history.pushState({}, "", "/");
     });
 
+    it("updateFilePathHash at /main/ strips /main root folder to /", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().updateFilePathHash("", "/main");
+      expect(result).toBe("/main/?f=/");
+      window.history.pushState({}, "", "/");
+    });
+
     it("UrlHomePage returns /main/ when at non-starsky tenant path", () => {
       window.history.pushState({}, "", "/main/");
       const result = new UrlQuery().UrlHomePage();
@@ -333,6 +340,12 @@ describe("url-query", () => {
       expect(result).toBe("/2020/image.jpg");
     });
 
+    it("converts /main (root folder) to / when at /main/ URL", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().StripTenantPrefix("/main");
+      expect(result).toBe("/");
+    });
+
     it("is a no-op when path does not start with tenant prefix", () => {
       window.history.pushState({}, "", "/main/");
       const result = new UrlQuery().StripTenantPrefix("/2020/image.jpg");
@@ -349,7 +362,6 @@ describe("url-query", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(new UrlQuery().StripTenantPrefix(null as any)).toBeNull();
       expect(new UrlQuery().StripTenantPrefix("")).toBe("");
-      window.history.pushState({}, "", "/");
     });
 
     it("UrlThumbnailImage strips tenant prefix from f param", () => {
