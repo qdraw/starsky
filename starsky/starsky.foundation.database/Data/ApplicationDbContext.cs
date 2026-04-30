@@ -21,6 +21,15 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 	/// </summary>
 	internal ITenantContext? TenantContext { get; set; }
 
+	/// <summary>
+	///     Safe accessor used inside the EF Core global query filter.
+	///     Returns the tenant ID or null; never throws even when <see cref="TenantContext" /> is null.
+	///     EF Core evaluates this method at query-compilation time to extract query parameters;
+	///     using a method (rather than a direct property chain) prevents NullReferenceException
+	///     during that phase.
+	/// </summary>
+	private int? GetCurrentTenantId() => TenantContext?.TenantId;
+
 	public virtual DbSet<FileIndexItem> FileIndex { get; set; }
 	public DbSet<ImportIndexItem> ImportIndex { get; set; }
 
@@ -80,12 +89,11 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 		// When TenantContext.TenantId is null the user has no active tenant – all rows visible.
 		// When set, only rows belonging to that tenant are returned by any query.
 		// Use .IgnoreQueryFilters() on a specific query to bypass the filter deliberately.
+		// GetCurrentTenantId() is used (not a direct property chain) so that EF Core's
+		// parameter-extraction phase does not throw NullReferenceException when TenantContext is null.
 		// -----------------------------------------------------------------
 		modelBuilder.Entity<FileIndexItem>()
-			.HasQueryFilter(f =>
-				TenantContext == null ||
-				TenantContext.TenantId == null ||
-				f.TenantId == TenantContext.TenantId);
+			.HasQueryFilter(f => GetCurrentTenantId() == null || f.TenantId == GetCurrentTenantId());
 
 		// Add Index to speed performance (on MySQL max key length is 3072 bytes)
 		// MySql:CharSet might be working a future release, but now it does nothing
