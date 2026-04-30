@@ -85,6 +85,10 @@ public sealed class NoAccountMiddlewareTest
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IUserManager, FakeUserManagerActiveUsers>();
+		var dbOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(OnHomePageNotLoginShouldAutoLogin)).Options;
+		services.AddSingleton(new ApplicationDbContext(dbOptions));
+		services.AddSingleton<ITenantSessionStore, FakeITenantSessionStore>();
 		var serviceProvider = services.BuildServiceProvider();
 
 		var httpContext = new DefaultHttpContext
@@ -119,6 +123,10 @@ public sealed class NoAccountMiddlewareTest
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IUserManager, FakeUserManagerActiveUsers>();
+		var dbOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(OnHomePageNotLoginShouldAutoLogin_DemoModeOn)).Options;
+		services.AddSingleton(new ApplicationDbContext(dbOptions));
+		services.AddSingleton<ITenantSessionStore, FakeITenantSessionStore>();
 		var serviceProvider = services.BuildServiceProvider();
 
 		var httpContext = new DefaultHttpContext
@@ -186,6 +194,10 @@ public sealed class NoAccountMiddlewareTest
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IUserManager, FakeUserManagerActiveUsers>();
+		var dbOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(NullNotLoginShouldCreate)).Options;
+		services.AddSingleton(new ApplicationDbContext(dbOptions));
+		services.AddSingleton<ITenantSessionStore, FakeITenantSessionStore>();
 		var serviceProvider = services.BuildServiceProvider();
 
 		var httpContext = new DefaultHttpContext
@@ -277,7 +289,12 @@ public sealed class NoAccountMiddlewareTest
 
 		var userManager = serviceProvider.GetRequiredService<IUserManager>();
 
-		await NoAccountMiddleware.CreateOrUpdateNewUsers(userManager);
+		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builder.UseInMemoryDatabase(nameof(CreateOrUpdateNewUsers_NewUser));
+		var dbContext = new ApplicationDbContext(builder.Options);
+		var sessionStore = new FakeITenantSessionStore();
+
+		await NoAccountMiddleware.CreateOrUpdateNewUsers(userManager, dbContext, sessionStore);
 
 		var test = userManager.GetUser("email", NoAccountMiddleware.Identifier);
 
@@ -319,7 +336,13 @@ public sealed class NoAccountMiddlewareTest
 		await userManager.SignUpAsync(string.Empty, "email", NoAccountMiddleware.Identifier,
 			"test");
 
-		await NoAccountMiddleware.CreateOrUpdateNewUsers(userManager);
+		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builder.UseInMemoryDatabase(
+			$"{nameof(CreateOrUpdateNewUsers_UpgradeUser)}_{iterationCountType}");
+		var dbContext = new ApplicationDbContext(builder.Options);
+		var sessionStore = new FakeITenantSessionStore();
+
+		await NoAccountMiddleware.CreateOrUpdateNewUsers(userManager, dbContext, sessionStore);
 
 		var test = userManager.GetUser("email", NoAccountMiddleware.Identifier);
 

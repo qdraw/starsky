@@ -110,6 +110,12 @@ public sealed class NoAccountMiddleware
 
 	private static async Task EnsureUserInMainTenant(User user, ApplicationDbContext dbContext, ITenantSessionStore sessionStore)
 	{
+		// Guard: user must be persisted (have a valid ID) to be assigned to a tenant
+		if ( user.Id <= 0 )
+		{
+			return;
+		}
+
 		// Ensure main tenant exists
 		var mainTenant = await dbContext.Tenants.FirstOrDefaultAsync(t => t.Slug == "main");
 		if ( mainTenant == null )
