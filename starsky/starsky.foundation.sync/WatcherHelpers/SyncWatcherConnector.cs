@@ -27,6 +27,8 @@ namespace starsky.foundation.sync.WatcherHelpers;
 public sealed class SyncWatcherConnector
 {
 	private readonly IServiceScope? _serviceScope;
+	private readonly string? _tenantSlugOverride;
+	private readonly int? _tenantIdOverride;
 	private AppSettings? _appSettings;
 	private IWebSocketConnectionsService? _connectionsService;
 	private IWebLogger? _logger;
@@ -47,9 +49,12 @@ public sealed class SyncWatcherConnector
 		_notificationQuery = notificationQuery;
 	}
 
-	public SyncWatcherConnector(IServiceScopeFactory scopeFactory)
+	public SyncWatcherConnector(IServiceScopeFactory scopeFactory,
+		string? tenantSlug = null, int? tenantId = null)
 	{
 		_serviceScope = scopeFactory.CreateScope();
+		_tenantSlugOverride = tenantSlug;
+		_tenantIdOverride = tenantId;
 	}
 
 	internal bool InjectScopes()
@@ -74,6 +79,12 @@ public sealed class SyncWatcherConnector
 		_notificationQuery = _serviceScope.ServiceProvider
 			.GetService<INotificationQuery>();
 		_tenantContext = _serviceScope.ServiceProvider.GetService<ITenantContext>();
+		if ( _tenantContext != null && !string.IsNullOrWhiteSpace(_tenantSlugOverride) )
+		{
+			_tenantContext.TenantSlug = _tenantSlugOverride;
+			_tenantContext.TenantId = _tenantIdOverride;
+		}
+
 		return true;
 	}
 

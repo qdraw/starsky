@@ -83,4 +83,48 @@ public sealed class QueueProcessorJobHandlerTest
 
 		Assert.HasCount(1, synchronize.Inputs);
 	}
+
+	[TestMethod]
+	public async Task ExecuteAsync_WithTenantPayload_ShouldStripTenantPrefixFromPath()
+	{
+		var services = new ServiceCollection();
+		var synchronize = new FakeISynchronize();
+		var appSettings = new AppSettings { StorageFolder = "/photos/" };
+		var connectionsService = new FakeIWebSocketConnectionsService();
+		var query = new FakeIQuery();
+		var logger = new FakeIWebLogger();
+		var notificationQuery = new FakeINotificationQuery();
+		var tenantContext = new FakeITenantContext();
+
+		services.AddSingleton<ISynchronize>(synchronize);
+		services.AddSingleton(appSettings);
+		services.AddSingleton<IWebSocketConnectionsService>(connectionsService);
+		services.AddSingleton<IQuery>(query);
+		services.AddSingleton<IWebLogger>(logger);
+		services.AddSingleton<INotificationQuery>(notificationQuery);
+		services.AddScoped<ITenantContext>(_ => tenantContext);
+
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var handler = new QueueProcessorJobHandler(scopeFactory);
+		var filePath = Path.Combine("/photos", "main", "2020", "image.jpg");
+		var payload = new QueueProcessorPayload
+		{
+			FilePath = filePath,
+			ToPath = null,
+			ChangeTypes = WatcherChangeTypes.Created,
+			TenantSlug = "main",
+			TenantId = 42
+		};
+		var payloadJson = JsonSerializer.Serialize(payload);
+
+		await handler.ExecuteAsync(payloadJson, CancellationToken.None);
+
+		// The path passed to ISynchronize should start with /2020/, not /main/2020/
+		Assert.HasCount(1, synchronize.Inputs);
+		var syncPath = synchronize.Inputs[0].Item1;
+		Assert.IsTrue(syncPath.StartsWith("/2020/", StringComparison.OrdinalIgnoreCase),
+			$"Expected path to start with /2020/ (tenant prefix stripped), but got: {syncPath}");
+	}
 }

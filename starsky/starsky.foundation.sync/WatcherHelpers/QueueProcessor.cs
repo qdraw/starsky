@@ -61,7 +61,11 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 
 		var payload = new QueueProcessorPayload
 		{
-			FilePath = filepath, ToPath = toPath, ChangeTypes = changeTypes
+			FilePath = filepath,
+			ToPath = toPath,
+			ChangeTypes = changeTypes,
+			TenantSlug = tenantSlug,
+			TenantId = tenantId
 		};
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
@@ -127,4 +131,6 @@ public sealed class QueueProcessorPayload
 	public string FilePath { get; set; } = string.Empty;
 	public string? ToPath { get; set; }
 	public WatcherChangeTypes ChangeTypes { get; set; }
+	public string? TenantSlug { get; set; }
+	public int? TenantId { get; set; }
 }

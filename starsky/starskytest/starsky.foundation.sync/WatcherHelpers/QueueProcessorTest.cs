@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,6 +95,12 @@ public sealed class QueueProcessorTest
 		Assert.IsNotNull(queue.LastQueuedJob);
 		Assert.AreEqual("main", queue.LastQueuedJob.TenantSlug);
 		Assert.IsTrue(queue.LastQueuedJob.TenantId.HasValue);
+
+		// Verify the payload JSON also carries the tenant so QueueProcessorJobHandler can use it
+		var payload = JsonSerializer.Deserialize<QueueProcessorPayload>(queue.LastQueuedJob.PayloadJson!);
+		Assert.IsNotNull(payload);
+		Assert.AreEqual("main", payload.TenantSlug);
+		Assert.IsTrue(payload.TenantId.HasValue);
 	}
 
 	[TestMethod]
