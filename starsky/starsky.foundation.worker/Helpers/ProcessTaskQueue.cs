@@ -175,6 +175,13 @@ public static class ProcessTaskQueue
 		}
 
 		using var scope = scopeFactory.CreateScope();
+		var tenantContext = scope.ServiceProvider.GetService<ITenantContext>();
+		if ( tenantContext != null )
+		{
+			tenantContext.TenantId = queueJob.TenantId;
+			tenantContext.TenantSlug = queueJob.TenantSlug;
+		}
+
 		var handlers = scope.ServiceProvider.GetServices<IBackgroundJobHandler>();
 		var handler = handlers.FirstOrDefault(h => h.JobType == queueJob.JobType);
 		if ( handler == null )

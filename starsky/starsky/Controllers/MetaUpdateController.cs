@@ -28,18 +28,21 @@ public sealed class MetaUpdateController : Controller
 	private readonly IWebLogger _logger;
 	private readonly IMetaPreflight _metaPreflight;
 	private readonly IMetaUpdateService _metaUpdateService;
+	private readonly ITenantContext? _tenantContext;
 
 	public MetaUpdateController(IMetaPreflight metaPreflight,
 		IMetaUpdateService metaUpdateService,
 		IUpdateBackgroundTaskQueue queue,
 		IWebLogger logger,
-		IMetaUpdateConnectionService connectionService)
+		IMetaUpdateConnectionService connectionService,
+		ITenantContext? tenantContext = null)
 	{
 		_metaPreflight = metaPreflight;
 		_metaUpdateService = metaUpdateService;
 		_bgTaskQueue = queue;
 		_logger = logger;
 		_connectionService = connectionService;
+		_tenantContext = tenantContext;
 	}
 
 	/// <summary>
@@ -92,6 +95,8 @@ public sealed class MetaUpdateController : Controller
 		{
 			MetaData = "MetaUpdate",
 			TraceParentId = Activity.Current?.Id,
+			TenantId = _tenantContext?.TenantId,
+			TenantSlug = _tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = MetaUpdateBackgroundJobHandler.MetaUpdate,
 			PayloadJson = JsonSerializer.Serialize(

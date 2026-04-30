@@ -36,7 +36,9 @@ public sealed class DiskWatcherBackgroundTaskQueueTest
 			JobType = "Test.DiskWatcherQueue.v1",
 			PayloadJson = "{}",
 			// example
-			MetaData = string.Empty
+			MetaData = string.Empty,
+			TenantId = 1,
+			TenantSlug = "main"
 		});
 
 		Assert.AreEqual(1, queue.Count());
@@ -53,7 +55,11 @@ public sealed class DiskWatcherBackgroundTaskQueueTest
 		var backgroundQueue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
 		await backgroundQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			JobType = "Test.DiskWatcherQueue.v1", PayloadJson = "{}", MetaData = string.Empty
+			JobType = "Test.DiskWatcherQueue.v1",
+			PayloadJson = "{}",
+			MetaData = string.Empty,
+			TenantId = 1,
+			TenantSlug = "main"
 		});
 		var count = backgroundQueue.Count();
 		Assert.AreEqual(1, count);
@@ -67,7 +73,11 @@ public sealed class DiskWatcherBackgroundTaskQueueTest
 
 		await queue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			JobType = "Test.DiskWatcherQueue.v1", PayloadJson = "{}", MetaData = string.Empty
+			JobType = "Test.DiskWatcherQueue.v1",
+			PayloadJson = "{}",
+			MetaData = string.Empty,
+			TenantId = 1,
+			TenantSlug = "main"
 		});
 
 		Assert.AreEqual(QueueNames.DiskWatcher, factory.LastQueueName);

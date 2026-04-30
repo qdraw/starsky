@@ -53,6 +53,8 @@ public sealed class DatabaseQueueBackendTest
 		{
 			JobType = "Job-1",
 			PayloadJson = "{\"k\":1}",
+			TenantId = 1,
+			TenantSlug = "main",
 			CreatedAtUtc = new DateTime(2026, 1, 1, 0, 0, 1, DateTimeKind.Utc)
 		});
 
@@ -60,6 +62,8 @@ public sealed class DatabaseQueueBackendTest
 		{
 			JobType = "Job-2",
 			PayloadJson = "{\"k\":2}",
+			TenantId = 1,
+			TenantSlug = "main",
 			CreatedAtUtc = new DateTime(2026, 1, 1, 0, 0, 2, DateTimeKind.Utc)
 		});
 
@@ -81,8 +85,10 @@ public sealed class DatabaseQueueBackendTest
 			provider.GetRequiredService<IServiceScopeFactory>(),
 			new AppSettings(), new FakeIWebLogger(), "Queue-B");
 
-		await backendA.QueueJobAsync(new BackgroundTaskQueueJob { JobType = "A" });
-		await backendB.QueueJobAsync(new BackgroundTaskQueueJob { JobType = "B" });
+		await backendA.QueueJobAsync(new BackgroundTaskQueueJob
+			{ JobType = "A", TenantId = 1, TenantSlug = "main" });
+		await backendB.QueueJobAsync(new BackgroundTaskQueueJob
+			{ JobType = "B", TenantId = 1, TenantSlug = "main" });
 
 		Assert.AreEqual(1, backendA.Count());
 		Assert.AreEqual(1, backendB.Count());
@@ -116,7 +122,7 @@ public sealed class DatabaseQueueBackendTest
 
 		await backend.QueueJobAsync(new BackgroundTaskQueueJob
 		{
-			JobType = "A", CreatedAtUtc = default
+			JobType = "A", CreatedAtUtc = default, TenantId = 1, TenantSlug = "main"
 		});
 
 		using var scope = provider.CreateScope();
@@ -160,7 +166,8 @@ public sealed class DatabaseQueueBackendTest
 	public async Task DequeueJobAsync_OnConcurrencyRace_RetriesAndLogsInformation()
 	{
 		var (backend, _, logger) = CreateBackend("Queue-A", true);
-		await backend.QueueJobAsync(new BackgroundTaskQueueJob { JobType = "A" });
+		await backend.QueueJobAsync(new BackgroundTaskQueueJob
+			{ JobType = "A", TenantId = 1, TenantSlug = "main" });
 
 		var dequeued = await backend.DequeueJobAsync(CancellationToken.None);
 

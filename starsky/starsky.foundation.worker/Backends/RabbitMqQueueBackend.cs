@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RabbitMQ.Client.Exceptions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
 
@@ -47,6 +48,8 @@ public sealed class RabbitMqQueueBackend(
 		{
 			throw new ArgumentException("JobType is required", nameof(job));
 		}
+
+		QueueJobTenantEnforcer.ValidateTenantOrThrow(job, logger, queueName);
 
 		lock ( _sync )
 		{

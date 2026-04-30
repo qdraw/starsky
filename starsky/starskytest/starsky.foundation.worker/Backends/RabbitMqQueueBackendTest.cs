@@ -53,7 +53,11 @@ public sealed class RabbitMqQueueBackendTest
 		var (backend, adapter, _) = CreateBackend();
 		var job = new BackgroundTaskQueueJob
 		{
-			JobType = "Rabbit.v1", MetaData = "meta", PayloadJson = "{\"k\":1}"
+			JobType = "Rabbit.v1",
+			MetaData = "meta",
+			PayloadJson = "{\"k\":1}",
+			TenantId = 1,
+			TenantSlug = "main"
 		};
 
 		await backend.QueueJobAsync(job);
@@ -87,7 +91,7 @@ public sealed class RabbitMqQueueBackendTest
 		var (backend, adapter, _) = CreateBackend();
 		var payload = JsonSerializer.Serialize(new BackgroundTaskQueueJob
 		{
-			JobType = "Rabbit.v1", PayloadJson = "ok"
+			JobType = "Rabbit.v1", PayloadJson = "ok", TenantId = 1, TenantSlug = "main"
 		});
 		adapter.Messages.Enqueue(new RabbitMqGetResult
 		{
@@ -112,7 +116,7 @@ public sealed class RabbitMqQueueBackendTest
 
 		var validPayload = JsonSerializer.Serialize(new BackgroundTaskQueueJob
 		{
-			JobType = "Rabbit.v1", PayloadJson = "ok"
+			JobType = "Rabbit.v1", PayloadJson = "ok", TenantId = 1, TenantSlug = "main"
 		});
 		adapter.Messages.Enqueue(new RabbitMqGetResult
 		{
@@ -140,7 +144,7 @@ public sealed class RabbitMqQueueBackendTest
 
 		var validPayload = JsonSerializer.Serialize(new BackgroundTaskQueueJob
 		{
-			JobType = "Rabbit.v1", PayloadJson = "ok"
+			JobType = "Rabbit.v1", PayloadJson = "ok", TenantId = 1, TenantSlug = "main"
 		});
 		adapter.Messages.Enqueue(new RabbitMqGetResult
 		{
@@ -206,7 +210,7 @@ public sealed class RabbitMqQueueBackendTest
 
 		var validPayload = JsonSerializer.Serialize(new BackgroundTaskQueueJob
 		{
-			JobType = "Rabbit.v1", PayloadJson = "ok"
+			JobType = "Rabbit.v1", PayloadJson = "ok", TenantId = 1, TenantSlug = "main"
 		});
 		adapter.Messages.Enqueue(new RabbitMqGetResult
 		{

@@ -8,6 +8,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
 
@@ -37,6 +38,8 @@ public sealed class DatabaseQueueBackend(
 		{
 			throw new ArgumentException("JobType is required", nameof(job));
 		}
+
+		QueueJobTenantEnforcer.ValidateTenantOrThrow(job, logger, queueName);
 
 		using var scope = scopeFactory.CreateScope();
 		var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

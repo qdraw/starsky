@@ -10,6 +10,7 @@ using starsky.feature.export.Models;
 using starsky.feature.export.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.worker.Helpers;
@@ -26,14 +27,17 @@ public sealed class ExportController : Controller
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly IExport _export;
 	private readonly IStorage _hostFileSystemStorage;
+	private readonly ITenantContext? _tenantContext;
 
 	public ExportController(IUpdateBackgroundTaskQueue queue,
-		ISelectorStorage selectorStorage, IExport export)
+		ISelectorStorage selectorStorage, IExport export,
+		ITenantContext? tenantContext = null)
 	{
 		_bgTaskQueue = queue;
 		_hostFileSystemStorage =
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_export = export;
+		_tenantContext = tenantContext;
 	}
 
 	/// <summary>
@@ -75,6 +79,8 @@ public sealed class ExportController : Controller
 		{
 			MetaData = zipOutputName,
 			TraceParentId = Activity.Current?.Id,
+			TenantId = _tenantContext?.TenantId,
+			TenantSlug = _tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = ExportBackgroundJobHandler.Export,
 			PayloadJson = JsonSerializer.Serialize(new ExportBackgroundPayload

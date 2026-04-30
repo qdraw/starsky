@@ -23,7 +23,13 @@ public sealed class InMemoryQueueBackend : IBaseBackgroundTaskQueue
 		ArgumentNullException.ThrowIfNull(job);
 		return string.IsNullOrWhiteSpace(job.JobType)
 			? throw new ArgumentException("JobType is required", nameof(job))
-			: _queue.Writer.WriteAsync(job);
+			: QueueJobInternal(job);
+	}
+
+	private ValueTask QueueJobInternal(BackgroundTaskQueueJob job)
+	{
+		QueueJobTenantEnforcer.ValidateTenantOrThrow(job, null, "InMemory");
+		return _queue.Writer.WriteAsync(job);
 	}
 
 	public ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(CancellationToken cancellationToken)

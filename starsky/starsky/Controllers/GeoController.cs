@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
@@ -19,7 +20,8 @@ namespace starsky.Controllers;
 public sealed class GeoController(
 	IUpdateBackgroundTaskQueue queue,
 	ISelectorStorage selectorStorage,
-	IMemoryCache? memoryCache)
+	IMemoryCache? memoryCache,
+	ITenantContext? tenantContext = null)
 	: Controller
 {
 	private readonly IStorage _iStorage =
@@ -89,6 +91,8 @@ public sealed class GeoController(
 		{
 			MetaData = f,
 			TraceParentId = Activity.Current?.Id,
+			TenantId = tenantContext?.TenantId,
+			TenantSlug = tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = GeoSyncBackgroundJobHandler.GeoSync,
 			PayloadJson = JsonSerializer.Serialize(new GeoSyncBackgroundPayload

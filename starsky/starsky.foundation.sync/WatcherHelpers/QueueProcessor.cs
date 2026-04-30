@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.sync.WatcherInterfaces;
 using starsky.foundation.worker.Helpers;
@@ -24,16 +25,20 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 	public const string JobType = "Sync.QueueProcessorInput.v1";
 
 	private readonly IDiskWatcherBackgroundTaskQueue _bgTaskQueue;
+	private readonly ITenantContext? _tenantContext;
 
 	public QueueProcessor(IServiceScopeFactory serviceProvider)
 	{
 		_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider
 			.GetRequiredService<IDiskWatcherBackgroundTaskQueue>();
+		_tenantContext = null;
 	}
 
-	internal QueueProcessor(IDiskWatcherBackgroundTaskQueue diskWatcherBackgroundTaskQueue)
+	internal QueueProcessor(IDiskWatcherBackgroundTaskQueue diskWatcherBackgroundTaskQueue,
+		ITenantContext? tenantContext = null)
 	{
 		_bgTaskQueue = diskWatcherBackgroundTaskQueue;
+		_tenantContext = tenantContext;
 	}
 
 
@@ -49,6 +54,8 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 			MetaData = $"from:{filepath}" +
 			           ( string.IsNullOrEmpty(toPath) ? string.Empty : "_to:" + toPath ),
 			TraceParentId = Activity.Current?.Id,
+			TenantId = _tenantContext?.TenantId,
+			TenantSlug = _tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneDiskWatcher,
 			JobType = JobType,
 			PayloadJson = JsonSerializer.Serialize(payload)

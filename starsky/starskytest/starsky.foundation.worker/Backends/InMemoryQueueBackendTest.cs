@@ -30,8 +30,14 @@ public sealed class InMemoryQueueBackendTest
 	public async Task QueueAndDequeue_FifoAndCount_AreCorrect()
 	{
 		var backend = new InMemoryQueueBackend();
-		var first = new BackgroundTaskQueueJob { JobType = "job-1", PayloadJson = "1" };
-		var second = new BackgroundTaskQueueJob { JobType = "job-2", PayloadJson = "2" };
+		var first = new BackgroundTaskQueueJob
+		{
+			JobType = "job-1", PayloadJson = "1", TenantId = 1, TenantSlug = "main"
+		};
+		var second = new BackgroundTaskQueueJob
+		{
+			JobType = "job-2", PayloadJson = "2", TenantId = 1, TenantSlug = "main"
+		};
 
 		await backend.QueueJobAsync(first);
 		await backend.QueueJobAsync(second);

@@ -28,15 +28,18 @@ public sealed class MetaReplaceController : Controller
 	private readonly IRealtimeConnectionsService _connectionsService;
 	private readonly IWebLogger _logger;
 	private readonly IMetaReplaceService _metaReplaceService;
+	private readonly ITenantContext? _tenantContext;
 
 	public MetaReplaceController(IMetaReplaceService metaReplaceService,
 		IUpdateBackgroundTaskQueue queue,
-		IRealtimeConnectionsService connectionsService, IWebLogger logger)
+		IRealtimeConnectionsService connectionsService, IWebLogger logger,
+		ITenantContext? tenantContext = null)
 	{
 		_metaReplaceService = metaReplaceService;
 		_bgTaskQueue = queue;
 		_connectionsService = connectionsService;
 		_logger = logger;
+		_tenantContext = tenantContext;
 	}
 
 	/// <summary>
@@ -89,6 +92,8 @@ public sealed class MetaReplaceController : Controller
 		{
 			MetaData = string.Empty,
 			TraceParentId = Activity.Current?.Id,
+			TenantId = _tenantContext?.TenantId,
+			TenantSlug = _tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = MetaReplaceBackgroundJobHandler.MetaReplace,
 			PayloadJson = JsonSerializer.Serialize(new MetaReplaceBackgroundPayload

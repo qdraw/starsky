@@ -24,16 +24,19 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 	private readonly IWebLogger _logger;
 	private readonly IThumbnailSocketService _socketService;
 	private readonly IThumbnailService _thumbnailService;
+	private readonly ITenantContext? _tenantContext;
 
 	public ManualThumbnailGenerationService(IWebLogger logger,
 		IThumbnailSocketService socketService,
 		IThumbnailService thumbnailService,
-		IThumbnailQueuedHostedService bgTaskQueue)
+		IThumbnailQueuedHostedService bgTaskQueue,
+		ITenantContext? tenantContext = null)
 	{
 		_logger = logger;
 		_socketService = socketService;
 		_thumbnailService = thumbnailService;
 		_bgTaskQueue = bgTaskQueue;
+		_tenantContext = tenantContext;
 	}
 
 	public async Task CreateJob(string subPath)
@@ -43,6 +46,8 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 		{
 			MetaData = subPath,
 			TraceParentId = Activity.Current?.Id,
+			TenantId = _tenantContext?.TenantId,
+			TenantSlug = _tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneThumbnail,
 			JobType = JobType,
 			PayloadJson = JsonSerializer.Serialize(new ManualThumbnailGenerationPayload

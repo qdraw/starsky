@@ -41,10 +41,12 @@ public sealed class ImportController : Controller
 	private readonly IImport _import;
 	private readonly IWebLogger _logger;
 	private readonly ISelectorStorage _selectorStorage;
+	private readonly ITenantContext? _tenantContext;
 
 	public ImportController(IImport import, AppSettings appSettings,
 		IUpdateBackgroundTaskQueue queue,
-		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, IWebLogger logger)
+		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, IWebLogger logger,
+		ITenantContext? tenantContext = null)
 	{
 		_appSettings = appSettings;
 		_import = import;
@@ -54,6 +56,7 @@ public sealed class ImportController : Controller
 		_hostFileSystemStorage =
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_logger = logger;
+		_tenantContext = tenantContext;
 	}
 
 	/// <summary>
@@ -91,6 +94,8 @@ public sealed class ImportController : Controller
 		{
 			MetaData = string.Join(",", tempImportPaths),
 			TraceParentId = Activity.Current?.Id,
+			TenantId = _tenantContext?.TenantId,
+			TenantSlug = _tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = ImportBackgroundJobHandler.Import,
 			PayloadJson = JsonSerializer.Serialize(payload)

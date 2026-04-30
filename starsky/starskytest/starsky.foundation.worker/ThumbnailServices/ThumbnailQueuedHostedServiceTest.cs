@@ -73,7 +73,11 @@ public sealed class ThumbnailQueuedHostedServiceTest
 	{
 		return new BackgroundTaskQueueJob
 		{
-			JobType = TestJobType, PayloadJson = payload, MetaData = string.Empty
+			JobType = TestJobType,
+			PayloadJson = payload,
+			MetaData = string.Empty,
+			TenantId = 1,
+			TenantSlug = "main"
 		};
 	}
 

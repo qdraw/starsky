@@ -32,11 +32,13 @@ public sealed class PublishController : Controller
 	private readonly IStorage _hostStorage;
 	private readonly IMetaInfo _metaInfo;
 	private readonly IPublishPreflight _publishPreflight;
+	private readonly ITenantContext? _tenantContext;
 	private readonly IWebLogger _webLogger;
 
 	public PublishController(AppSettings appSettings, IPublishPreflight publishPreflight, IMetaInfo metaInfo,
 		ISelectorStorage selectorStorage,
-		IUpdateBackgroundTaskQueue queue, IWebLogger webLogger)
+		IUpdateBackgroundTaskQueue queue, IWebLogger webLogger,
+		ITenantContext? tenantContext = null)
 	{
 		_appSettings = appSettings;
 		_publishPreflight = publishPreflight;
@@ -44,6 +46,7 @@ public sealed class PublishController : Controller
 		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_bgTaskQueue = queue;
 		_webLogger = webLogger;
+		_tenantContext = tenantContext;
 	}
 
 	/// <summary>
@@ -124,6 +127,8 @@ public sealed class PublishController : Controller
 		{
 			MetaData = publishProfileName + "_" + itemName,
 			TraceParentId = Activity.Current?.Id,
+			TenantId = _tenantContext?.TenantId,
+			TenantSlug = _tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
 			JobType = PublishCreateBackgroundJobHandler.JobTypeValue,
 			PayloadJson = JsonSerializer.Serialize(payload)

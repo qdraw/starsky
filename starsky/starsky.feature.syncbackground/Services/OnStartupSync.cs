@@ -39,7 +39,8 @@ public class OnStartupSync(
 	AppSettings appSettings,
 	ISynchronize synchronize,
 	ISettingsService settingsService,
-	IWebLogger logger) : IOnStartupSync
+	IWebLogger logger,
+	ITenantContext? tenantContext = null) : IOnStartupSync
 {
 	public async Task StartUpSyncTask()
 	{
@@ -65,6 +66,8 @@ public class OnStartupSync(
 		await backgroundTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			TraceParentId = Activity.Current?.Id,
+			TenantId = tenantContext?.TenantId,
+			TenantSlug = tenantContext?.TenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneDiskWatcher,
 			JobType = OnStartupSyncJobHandler.OnStartup,
 			PayloadJson = JsonSerializer.Serialize(new OnStartupSyncPayload())
