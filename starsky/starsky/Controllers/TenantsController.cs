@@ -11,7 +11,10 @@ using starsky.foundation.database.Models.Account;
 
 namespace starsky.Controllers;
 
-public sealed class TenantsController(ApplicationDbContext dbContext, ITenantSessionStore sessionStore, ITenantSlugValidator tenantSlugValidator)
+public sealed class TenantsController(
+	ApplicationDbContext dbContext,
+	ITenantSessionStore sessionStore,
+	ITenantSlugValidator tenantSlugValidator)
 	: Controller
 {
 	[HttpGet("/api/tenants/mine")]
@@ -19,20 +22,21 @@ public sealed class TenantsController(ApplicationDbContext dbContext, ITenantSes
 	[Produces("application/json")]
 	public async Task<IActionResult> Mine()
 	{
-		if (!Request.Cookies.TryGetValue(TenantAuthenticationConstants.SessionCookieName, out var sessionId) ||
-			string.IsNullOrWhiteSpace(sessionId))
+		if ( !Request.Cookies.TryGetValue(TenantAuthenticationConstants.SessionCookieName,
+			     out var sessionId) ||
+		     string.IsNullOrWhiteSpace(sessionId) )
 		{
 			return Unauthorized("Missing session");
 		}
 
 		var session = await sessionStore.GetValidSessionAsync(sessionId);
-		if (session == null)
+		if ( session == null )
 		{
 			return Unauthorized("Invalid session");
 		}
 
 		var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == session.UserId);
-		if (user == null)
+		if ( user == null )
 		{
 			return Unauthorized("Invalid session user");
 		}
@@ -42,13 +46,7 @@ public sealed class TenantsController(ApplicationDbContext dbContext, ITenantSes
 			.Join(dbContext.Tenants,
 				m => m.TenantId,
 				t => t.Id,
-				(m, t) => new
-				{
-					t.Slug,
-					t.Name,
-					t.IsEnabled,
-					TenantRole = m.Role.ToString()
-				})
+				(m, t) => new { t.Slug, t.Name, t.IsEnabled, TenantRole = m.Role.ToString() })
 			.OrderBy(t => t.Slug)
 			.ToListAsync();
 
@@ -67,59 +65,56 @@ public sealed class TenantsController(ApplicationDbContext dbContext, ITenantSes
 	[Produces("application/json")]
 	public async Task<IActionResult> Create([FromBody] CreateTenantRequest request)
 	{
-		if (!ModelState.IsValid)
+		if ( !ModelState.IsValid )
 		{
 			return BadRequest("Invalid request");
 		}
 
-		if (string.IsNullOrWhiteSpace(request.Slug) || string.IsNullOrWhiteSpace(request.Name))
+		if ( string.IsNullOrWhiteSpace(request.Slug) || string.IsNullOrWhiteSpace(request.Name) )
 		{
 			return BadRequest("Slug and Name are required");
 		}
 
-		if (!Request.Cookies.TryGetValue(TenantAuthenticationConstants.SessionCookieName, out var sessionId) ||
-			string.IsNullOrWhiteSpace(sessionId))
+		if ( !Request.Cookies.TryGetValue(TenantAuthenticationConstants.SessionCookieName,
+			     out var sessionId) ||
+		     string.IsNullOrWhiteSpace(sessionId) )
 		{
 			return Unauthorized("Missing session");
 		}
 
 		var session = await sessionStore.GetValidSessionAsync(sessionId);
-		if (session == null)
+		if ( session == null )
 		{
 			return Unauthorized("Invalid session");
 		}
 
 		var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == session.UserId);
-		if (user == null)
+		if ( user == null )
 		{
 			return Unauthorized("Invalid session user");
 		}
 
 		// Only global admins can create tenants
-		if (!user.IsGlobalAdmin)
+		if ( !user.IsGlobalAdmin )
 		{
 			return Forbid("Only global administrators can create tenants");
 		}
 
 		// Validate slug
-		if (!tenantSlugValidator.IsValid(request.Slug))
+		if ( !tenantSlugValidator.IsValid(request.Slug) )
 		{
-			return BadRequest("Invalid tenant slug. Must be lowercase alphanumeric with hyphens, 3-50 characters");
+			return BadRequest(
+				"Invalid tenant slug. Must be lowercase alphanumeric with hyphens, 3-50 characters");
 		}
 
 		// Check if slug already exists
-		if (await dbContext.Tenants.AnyAsync(t => t.Slug == request.Slug))
+		if ( await dbContext.Tenants.AnyAsync(t => t.Slug == request.Slug) )
 		{
 			return BadRequest("Tenant slug already exists");
 		}
 
 		// Create new tenant
-		var newTenant = new Tenant
-		{
-			Slug = request.Slug,
-			Name = request.Name,
-			IsEnabled = true
-		};
+		var newTenant = new Tenant { Slug = request.Slug, Name = request.Name, IsEnabled = true };
 
 		dbContext.Tenants.Add(newTenant);
 		await dbContext.SaveChangesAsync();
@@ -131,27 +126,23 @@ public sealed class TenantsController(ApplicationDbContext dbContext, ITenantSes
 		// Add creator as admin of the new tenant
 		var tenantUser = new TenantUser
 		{
-			TenantId = newTenant.Id,
-			UserId = user.Id,
-			Role = TenantRole.Admin
+			TenantId = newTenant.Id, UserId = user.Id, Role = TenantRole.Admin
 		};
 
 		dbContext.TenantUsers.Add(tenantUser);
 
 		// If this is the first tenant, add all existing global admins as admins of this tenant
-		if (isFirstTenant)
+		if ( isFirstTenant )
 		{
 			var globalAdmins = await dbContext.Users
 				.Where(u => u.IsGlobalAdmin && u.Id != user.Id)
 				.ToListAsync();
 
-			foreach (var globalAdmin in globalAdmins)
+			foreach ( var globalAdmin in globalAdmins )
 			{
 				dbContext.TenantUsers.Add(new TenantUser
 				{
-					TenantId = newTenant.Id,
-					UserId = globalAdmin.Id,
-					Role = TenantRole.Admin
+					TenantId = newTenant.Id, UserId = globalAdmin.Id, Role = TenantRole.Admin
 				});
 			}
 		}
@@ -173,6 +164,7 @@ public sealed class TenantsController(ApplicationDbContext dbContext, ITenantSes
 	}
 }
 
+[AllowAnonymous]
 public class CreateTenantRequest
 {
 	[Required]
@@ -180,7 +172,5 @@ public class CreateTenantRequest
 	[RegularExpression(@"^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$", ErrorMessage = "Invalid slug format")]
 	public required string Slug { get; set; }
 
-	[Required]
-	[StringLength(100)]
-	public required string Name { get; set; }
+	[Required] [StringLength(100)] public required string Name { get; set; }
 }

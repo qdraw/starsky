@@ -281,6 +281,42 @@ public sealed class ThumbnailControllerTest
 	}
 
 	[TestMethod]
+	public async Task Thumbnail_HashFound_TenantPrefixedDbPath_UsesTenantScopedStoragePath()
+	{
+		var storage = new FakeIStorage(
+			new List<string> { "/", "/0001" },
+			new List<string> { "/0001/20250428_133057_d.jpg" },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var query = new FakeIQuery(new List<FileIndexItem>
+		{
+			new("/main/0001/20250428_133057_d.jpg")
+			{
+				FileHash = "ORVMPJ5BSB7IMEPTXJONENSCRU", IsDirectory = false
+			}
+		});
+
+		var controller = new ThumbnailController(query, new FakeSelectorStorage(storage),
+			new AppSettings(), new FakeIWebLogger(),
+			new FakeISmallThumbnailBackgroundJobService(),
+			new FakeIManualThumbnailGenerationService());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext.Items[TenantConstants.TenantSlugItemKey] = "main";
+
+		var actionResult = await controller.Thumbnail(
+			"ORVMPJ5BSB7IMEPTXJONENSCRU@2000.webp",
+			"/0001/20250428_133057_d.jpg",
+			true) as FileStreamResult;
+
+		Assert.IsNotNull(actionResult);
+		controller.Response.Headers.TryGetValue("x-filename", out var value);
+		Assert.AreEqual("20250428_133057_d.jpg", value.ToString());
+		Assert.AreEqual("image/jpeg", actionResult.ContentType);
+
+		await actionResult.FileStream.DisposeAsync();
+	}
+
+	[TestMethod]
 	public async Task Thumbnail_HashNotFound_ButFilePath_Not_Valid()
 	{
 		await InsertSearchData();

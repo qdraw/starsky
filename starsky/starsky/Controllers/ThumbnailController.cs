@@ -224,6 +224,25 @@ public sealed class ThumbnailController : Controller
 		return File(stream, MimeHelper.GetMimeType(_imageFormat.ToString()));
 	}
 
+	private string? GetTenantSlugFromRequest()
+	{
+		return HttpContext.Items
+			.TryGetValue(TenantConstants.TenantSlugItemKey, out var tenantSlugValue)
+			? tenantSlugValue as string
+			: null;
+	}
+
+	private string NormalizePathForTenantScopedStorage(string sourcePath)
+	{
+		return TenantPathHelper.NormalizeForTenantScopedStorage(sourcePath,
+			GetTenantSlugFromRequest());
+	}
+
+	private string ToTenantScopedPath(string filePath)
+	{
+		return TenantPathHelper.ToTenantScopedPath(filePath, GetTenantSlugFromRequest());
+	}
+
 	/// <summary>
 	///     Get thumbnail with fallback to original source image.
 	///     Return source image when IsExtensionThumbnailSupported is true
@@ -312,15 +331,29 @@ public sealed class ThumbnailController : Controller
 			// remove from cache
 			_query.ResetItemByHash(f);
 
-			if ( string.IsNullOrEmpty(filePath) ||
-			     await _query.GetObjectByFilePathAsync(filePath) == null )
+			if ( string.IsNullOrEmpty(filePath) )
 			{
 				SetExpiresResponseHeadersToZero();
 				return NotFound("not in index");
 			}
 
-			sourcePath = filePath;
+			var tenantScopedFilePath = ToTenantScopedPath(filePath);
+			var filePathInIndex = await _query.GetObjectByFilePathAsync(filePath) != null
+				? filePath
+				: await _query.GetObjectByFilePathAsync(tenantScopedFilePath) != null
+					? tenantScopedFilePath
+					: null;
+
+			if ( filePathInIndex == null )
+			{
+				SetExpiresResponseHeadersToZero();
+				return NotFound("not in index");
+			}
+
+			sourcePath = filePathInIndex;
 		}
+
+		sourcePath = NormalizePathForTenantScopedStorage(sourcePath);
 
 		if ( !_iStorage.ExistFile(sourcePath) )
 		{
@@ -396,13 +429,22 @@ public sealed class ThumbnailController : Controller
 		var sourcePath = ( await _query.GetSubPathsByHashAsync(f) ).FirstOrDefaultWithFallback(f);
 		if ( sourcePath == null )
 		{
-			if ( await _query.GetObjectByFilePathAsync(filePath) == null )
+			var tenantScopedFilePath = ToTenantScopedPath(filePath);
+			var filePathInIndex = await _query.GetObjectByFilePathAsync(filePath) != null
+				? filePath
+				: await _query.GetObjectByFilePathAsync(tenantScopedFilePath) != null
+					? tenantScopedFilePath
+					: null;
+
+			if ( filePathInIndex == null )
 			{
 				return NotFound("not in index");
 			}
 
-			sourcePath = filePath;
+			sourcePath = filePathInIndex;
 		}
+
+		sourcePath = NormalizePathForTenantScopedStorage(sourcePath);
 
 		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath) )
 		{
