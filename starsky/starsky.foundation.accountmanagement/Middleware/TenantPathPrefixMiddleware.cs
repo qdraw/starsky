@@ -32,6 +32,21 @@ public sealed class TenantPathPrefixMiddleware(RequestDelegate next)
 		"/preferences"
 	];
 
+	private static readonly string[] ReservedTenantSegments =
+	[
+		"-",
+		"assets",
+		"api",
+		"account",
+		"search",
+		"trash",
+		"import",
+		"preferences",
+		"error",
+		"swagger",
+		"realtime"
+	];
+
 	public async Task Invoke(HttpContext context)
 	{
 		var validator = (ITenantSlugValidator)context.RequestServices.GetRequiredService(typeof(ITenantSlugValidator));
@@ -51,12 +66,14 @@ public sealed class TenantPathPrefixMiddleware(RequestDelegate next)
 		}
 
 		var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-		if (segments.Length >= 2 && validator.IsValid(segments[0]))
+		if (segments.Length >= 1 && validator.IsValid(segments[0]) && !IsReservedTenantSegment(segments[0]))
 		{
 			var tenantSlug = segments[0];
-			var rewritten = "/" + string.Join('/', segments.Skip(1));
+			var rewritten = segments.Length == 1
+				? "/"
+				: "/" + string.Join('/', segments.Skip(1));
 			context.Items[TenantAuthenticationConstants.TenantSlugItemKey] = tenantSlug;
-			context.Request.Path = string.IsNullOrWhiteSpace(rewritten) ? "/" : rewritten;
+			context.Request.Path = rewritten;
 			await next(context);
 			return;
 		}
@@ -84,5 +101,11 @@ public sealed class TenantPathPrefixMiddleware(RequestDelegate next)
 	private static bool RequiresTenant(string path)
 	{
 		return TenantRequiredPrefixes.Any(path.StartsWith);
+	}
+
+	private static bool IsReservedTenantSegment(string segment)
+	{
+		return ReservedTenantSegments.Any(prefix =>
+			segment.Equals(prefix, StringComparison.OrdinalIgnoreCase));
 	}
 }

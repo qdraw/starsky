@@ -5,11 +5,20 @@ import { IsRelativeUrl } from "./url.ts";
 import packageJson from "../../../package.json";
 
 export class UrlQuery {
-  public prefix: string = "/starsky";
+  private _prefix: string = "/starsky";
+
+  public get prefix(): string {
+    const tenant = this.CurrentTenant();
+    return tenant ? `${this._prefix}/${tenant}` : this._prefix;
+  }
+
+  public set prefix(value: string) {
+    this._prefix = value;
+  }
 
   private CurrentTenant(): string | null {
     const path = document.location.pathname;
-    const withoutPrefix = path.startsWith(this.prefix) ? path.slice(this.prefix.length) : path;
+    const withoutPrefix = path.startsWith(this._prefix) ? path.slice(this._prefix.length) : path;
     const segments = withoutPrefix.split("/").filter(Boolean);
     if (segments.length === 0) {
       return null;
@@ -24,17 +33,7 @@ export class UrlQuery {
   }
 
   private TenantPrefix(): string {
-    // Only use prefix if the current pathname includes it
-    if (!document.location.pathname.includes(this.prefix)) {
-      return "";
-    }
-
-    const tenant = this.CurrentTenant();
-    if (!tenant) {
-      return this.prefix;
-    }
-
-    return `${this.prefix}/${tenant}`;
+    return this.prefix;
   }
 
   public UrlHomePage(): string {
@@ -186,11 +185,11 @@ export class UrlQuery {
   };
 
 	public UrlMyTenantsPage = (): string => {
-		return `${this.prefix}/-/tenants`;
+    return `${this._prefix}/-/tenants`;
 	};
 
 	public UrlTenantCreateApi = (): string => {
-		return `${this.prefix}/api/tenants/create`;
+      return `${this._prefix}/api/tenants/create`;
 	};
 
 	public KeyAccountPermissionAppSettingsWrite = (): string => {

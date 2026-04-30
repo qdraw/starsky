@@ -257,6 +257,15 @@ describe("url-query", () => {
     });
   });
 
+  describe("tenant-aware prefixes", () => {
+    it("UrlIndexServerApi includes tenant from /main/ path", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlIndexServerApi({ f: "/" });
+      expect(result).toBe("/starsky/main/api/index?f=/");
+      window.history.pushState({}, "", "/");
+    });
+  });
+
   describe("UrlThumbnailImageLargeOrExtraLarge", () => {
     it("should contain hash_test (large false)", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("hash_test", "filePath", false);
