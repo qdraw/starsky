@@ -645,7 +645,7 @@ public partial class Query : IQuery
 	/// </summary>
 	private string TenantCachingDbName(string functionName, string? singleItemDbPath)
 	{
-		var tenantId = _context.TenantContext?.TenantId;
+		var tenantId = _context?.TenantContext?.TenantId;
 		var baseName = CachingDbName(functionName, singleItemDbPath);
 		return tenantId.HasValue ? $"t{tenantId}:{baseName}" : baseName;
 	}
