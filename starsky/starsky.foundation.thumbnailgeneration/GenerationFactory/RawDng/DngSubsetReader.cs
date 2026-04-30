@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
@@ -754,49 +755,88 @@ internal static class DngSubsetReader
 		return false;
 	}
  
- 	private static bool TryReadPixels(Stream input, bool littleEndian, IReadOnlyList<uint> offsets,
- 		IReadOnlyList<uint> counts, int bitsPerSample, int width, int height, int rowsPerStrip,
- 		ushort compression, ushort[,] bayer)
- 	{
- 		if ( width <= 0 || height <= 0 || rowsPerStrip <= 0 )
- 		{
- 			return false;
- 		}
+	private static int GetMaxCount(IReadOnlyList<uint> counts)
+	{
+		var max = 0;
+		for ( var i = 0; i < counts.Count; i++ )
+		{
+			var v = ( int ) counts[i];
+			if ( v > max )
+			{
+				max = v;
+			}
+		}
 
- 		var rowCursor = 0;
- 		for ( var i = 0; i < offsets.Count && rowCursor < height; i++ )
- 		{
- 			var count = ( int ) counts[i];
- 			if ( count <= 0 )
- 			{
- 				return false;
- 			}
+		return max;
+	}
 
- 			var encoded = new byte[count];
- 			if ( !TrySeekAndRead(input, offsets[i], encoded, 0, count) )
- 			{
- 				return false;
- 			}
+	private static bool TryReadPixels(Stream input, bool littleEndian, IReadOnlyList<uint> offsets,
+		IReadOnlyList<uint> counts, int bitsPerSample, int width, int height, int rowsPerStrip,
+		ushort compression, ushort[,] bayer)
+	{
+		if ( width <= 0 || height <= 0 || rowsPerStrip <= 0 )
+		{
+			return false;
+		}
 
- 			var payload = compression switch
- 			{
- 				CompressionUncompressed => encoded,
- 				CompressionDeflate or CompressionAdobeDeflate => Inflate(encoded),
- 				_ => null
- 			};
+		var maxEncoded = GetMaxCount(counts);
+		if ( maxEncoded <= 0 )
+		{
+			return false;
+		}
 
- 			if ( payload == null )
- 			{
- 				return false;
- 			}
+		var maxPixels = checked(Math.Min(rowsPerStrip, height) * width);
+		if ( maxPixels <= 0 )
+		{
+			return false;
+		}
 
- 			var rowsInStrip = Math.Min(rowsPerStrip, height - rowCursor);
- 			var stripPixelCount = checked(rowsInStrip * width);
- 			var decoded = DecodePixels(payload, littleEndian, bitsPerSample, stripPixelCount);
- 			if ( decoded == null )
- 			{
- 				return false;
- 			}
+		var encodedBuf = ArrayPool<byte>.Shared.Rent(maxEncoded);
+		var decodedBuf = ArrayPool<ushort>.Shared.Rent(maxPixels);
+		try
+		{
+			var rowCursor = 0;
+			for ( var i = 0; i < offsets.Count && rowCursor < height; i++ )
+			{
+				var count = ( int ) counts[i];
+				if ( count <= 0 || count > encodedBuf.Length )
+				{
+					return false;
+				}
+
+				if ( !TrySeekAndRead(input, offsets[i], encodedBuf, 0, count) )
+				{
+					return false;
+				}
+
+				byte[]? inflated = null;
+				ReadOnlySpan<byte> payload;
+				if ( compression == CompressionUncompressed )
+				{
+					payload = encodedBuf.AsSpan(0, count);
+				}
+				else if ( compression is CompressionDeflate or CompressionAdobeDeflate )
+				{
+					inflated = Inflate(encodedBuf, count);
+					if ( inflated == null )
+					{
+						return false;
+					}
+
+					payload = inflated;
+				}
+				else
+				{
+					return false;
+				}
+
+				var rowsInStrip = Math.Min(rowsPerStrip, height - rowCursor);
+				var stripPixelCount = checked(rowsInStrip * width);
+				if ( !DecodePixelsInto(payload, littleEndian, bitsPerSample, stripPixelCount,
+					    decodedBuf.AsSpan(0, stripPixelCount)) )
+				{
+					return false;
+				}
 
 				var decodedIndex = 0;
 				for ( var y = 0; y < rowsInStrip; y++ )
@@ -804,118 +844,151 @@ internal static class DngSubsetReader
 					var targetY = rowCursor + y;
 					for ( var x = 0; x < width; x++ )
 					{
-						bayer[targetY, x] = decoded[decodedIndex++];
+						bayer[targetY, x] = decodedBuf[decodedIndex++];
 					}
 				}
 
- 			rowCursor += rowsInStrip;
- 		}
+				rowCursor += rowsInStrip;
+			}
 
- 		return rowCursor == height;
- 	}
+			return rowCursor == height;
+		}
+		finally
+		{
+			ArrayPool<ushort>.Shared.Return(decodedBuf, clearArray: false);
+			ArrayPool<byte>.Shared.Return(encodedBuf, clearArray: false);
+		}
+	}
 
- 	private static bool TryReadPixelsTiled(Stream input, bool littleEndian,
- 		IReadOnlyList<uint> offsets, IReadOnlyList<uint> counts, int bitsPerSample, int width,
- 		int height, int tileWidth, int tileLength, ushort compression, ushort[,] bayer)
- 	{
- 		if ( width <= 0 || height <= 0 || tileWidth <= 0 || tileLength <= 0 )
- 		{
- 			return false;
- 		}
+	private static bool TryReadPixelsTiled(Stream input, bool littleEndian,
+		IReadOnlyList<uint> offsets, IReadOnlyList<uint> counts, int bitsPerSample, int width,
+		int height, int tileWidth, int tileLength, ushort compression, ushort[,] bayer)
+	{
+		if ( width <= 0 || height <= 0 || tileWidth <= 0 || tileLength <= 0 )
+		{
+			return false;
+		}
 
- 		var tilesAcross = ( width + tileWidth - 1 ) / tileWidth;
- 		var tilesDown = ( height + tileLength - 1 ) / tileLength;
- 		if ( offsets.Count != tilesAcross * tilesDown )
- 		{
- 			return false;
- 		}
+		var tilesAcross = ( width + tileWidth - 1 ) / tileWidth;
+		var tilesDown = ( height + tileLength - 1 ) / tileLength;
+		if ( offsets.Count != tilesAcross * tilesDown )
+		{
+			return false;
+		}
 
- 		var tileIndex = 0;
- 		for ( var ty = 0; ty < tilesDown; ty++ )
- 		{
- 			for ( var tx = 0; tx < tilesAcross; tx++ )
- 			{
- 				if ( tileIndex >= offsets.Count )
- 				{
- 					return false;
- 				}
+		var maxEncoded = GetMaxCount(counts);
+		if ( maxEncoded <= 0 )
+		{
+			return false;
+		}
 
- 				var count = ( int ) counts[tileIndex];
- 				if ( count <= 0 )
- 				{
- 					return false;
- 				}
+		var tilePixelCount = checked(tileWidth * tileLength);
+		if ( tilePixelCount <= 0 )
+		{
+			return false;
+		}
 
- 				var encoded = new byte[count];
- 				if ( !TrySeekAndRead(input, offsets[tileIndex], encoded, 0, count) )
- 				{
- 					return false;
- 				}
-
- 				var payload = compression switch
- 				{
- 					CompressionUncompressed => encoded,
- 					CompressionDeflate or CompressionAdobeDeflate => Inflate(encoded),
- 					_ => null
- 				};
-
- 				if ( payload == null )
- 				{
- 					return false;
- 				}
-
- 				var tilePixelCount = tileWidth * tileLength;
- 				var decoded = DecodePixels(payload, littleEndian, bitsPerSample, tilePixelCount);
- 				if ( decoded == null )
- 				{
- 					return false;
- 				}
-
-					// Copy tile data into Bayer array
- 				var tileStartY = ty * tileLength;
- 				var tileStartX = tx * tileWidth;
-					var maxY = Math.Min(tileLength, height - tileStartY);
-					var maxX = Math.Min(tileWidth, width - tileStartX);
-					if ( maxY <= 0 || maxX <= 0 )
- 				{
-						tileIndex++;
-						continue;
+		var encodedBuf = ArrayPool<byte>.Shared.Rent(maxEncoded);
+		var decodedBuf = ArrayPool<ushort>.Shared.Rent(tilePixelCount);
+		try
+		{
+			var tileIndex = 0;
+			for ( var ty = 0; ty < tilesDown; ty++ )
+			{
+				for ( var tx = 0; tx < tilesAcross; tx++ )
+				{
+					if ( tileIndex >= offsets.Count )
+					{
+						return false;
 					}
 
-					for ( var y = 0; y < maxY; y++ )
+					var count = ( int ) counts[tileIndex];
+					if ( count <= 0 || count > encodedBuf.Length )
 					{
-						var sourceRowOffset = y * tileWidth;
-						var targetY = tileStartY + y;
-						for ( var x = 0; x < maxX; x++ )
- 					{
-							bayer[targetY, tileStartX + x] = decoded[sourceRowOffset + x];
- 					}
- 				}
+						return false;
+					}
 
- 				tileIndex++;
- 			}
- 		}
+					if ( !TrySeekAndRead(input, offsets[tileIndex], encodedBuf, 0, count) )
+					{
+						return false;
+					}
 
- 		return true;
- 	}
+					byte[]? inflated = null;
+					ReadOnlySpan<byte> payload;
+					if ( compression == CompressionUncompressed )
+					{
+						payload = encodedBuf.AsSpan(0, count);
+					}
+					else if ( compression is CompressionDeflate or CompressionAdobeDeflate )
+					{
+						inflated = Inflate(encodedBuf, count);
+						if ( inflated == null )
+						{
+							return false;
+						}
 
-	private static byte[]? Inflate(byte[] compressed)
+						payload = inflated;
+					}
+					else
+					{
+						return false;
+					}
+
+					if ( !DecodePixelsInto(payload, littleEndian, bitsPerSample, tilePixelCount,
+						    decodedBuf.AsSpan(0, tilePixelCount)) )
+					{
+						return false;
+					}
+
+					var tileStartY = ty * tileLength;
+					var tileStartX = tx * tileWidth;
+					var maxY = Math.Min(tileLength, height - tileStartY);
+					var maxX = Math.Min(tileWidth, width - tileStartX);
+					if ( maxY > 0 && maxX > 0 )
+					{
+						for ( var y = 0; y < maxY; y++ )
+						{
+							var srcRow = y * tileWidth;
+							var targetY = tileStartY + y;
+							for ( var x = 0; x < maxX; x++ )
+							{
+								bayer[targetY, tileStartX + x] = decodedBuf[srcRow + x];
+							}
+						}
+					}
+
+					tileIndex++;
+				}
+			}
+
+			return true;
+		}
+		finally
+		{
+			ArrayPool<ushort>.Shared.Return(decodedBuf, clearArray: false);
+			ArrayPool<byte>.Shared.Return(encodedBuf, clearArray: false);
+		}
+	}
+
+	private static byte[]? Inflate(byte[] compressed, int count)
 	{
 		try
 		{
-			using var input = new MemoryStream(compressed);
-			using var zlib = new ZLibStream(input, CompressionMode.Decompress, leaveOpen: false);
+			using var ms = new MemoryStream(compressed, 0, count, writable: false,
+				publiclyVisible: true);
+			using var zlib = new ZLibStream(ms, CompressionMode.Decompress, leaveOpen: false);
 			using var output = new MemoryStream();
 			zlib.CopyTo(output);
 			return output.ToArray();
 		}
 		catch ( Exception zlibEx )
 		{
-			// zlib failed, try raw DEFLATE format
+			// zlib failed – try raw DEFLATE format
 			try
 			{
-				using var input = new MemoryStream(compressed);
-				using var deflate = new DeflateStream(input, CompressionMode.Decompress,
+				using var ms = new MemoryStream(compressed, 0, count, writable: false,
+					publiclyVisible: true);
+				using var deflate = new DeflateStream(ms, CompressionMode.Decompress,
 					leaveOpen: false);
 				using var output = new MemoryStream();
 				deflate.CopyTo(output);
@@ -923,8 +996,6 @@ internal static class DngSubsetReader
 			}
 			catch ( Exception deflateEx )
 			{
-				// Both decompression methods failed
-				// Log diagnostic info for debugging
 				System.Diagnostics.Debug.WriteLine(
 					$"Decompression failed: zlib={zlibEx.GetType().Name}, " +
 					$"deflate={deflateEx.GetType().Name}");
@@ -933,159 +1004,162 @@ internal static class DngSubsetReader
 		}
 	}
 
- 	private static ushort[]? DecodePixels(byte[] payload, bool littleEndian, int bitsPerSample,
- 		int pixelCount)
- 	{
- 		if ( bitsPerSample == 8 )
- 		{
- 			return Decode8(payload, pixelCount);
- 		}
+	// --- decode-into-span helpers (no per-call heap allocation) ---
 
- 		if ( bitsPerSample == 16 )
- 		{
- 			return Decode16(payload, littleEndian, pixelCount);
- 		}
+	private static bool DecodePixelsInto(ReadOnlySpan<byte> payload, bool littleEndian,
+		int bitsPerSample, int pixelCount, Span<ushort> dest)
+	{
+		if ( dest.Length < pixelCount )
+		{
+			return false;
+		}
 
- 		if ( payload.Length >= pixelCount * 2 )
- 		{
- 			return DecodeWordStored(payload, littleEndian, bitsPerSample, pixelCount);
- 		}
+		if ( bitsPerSample == 8 )
+		{
+			return Decode8Into(payload, pixelCount, dest);
+		}
 
- 		return littleEndian
- 			? DecodePackedLittleEndian(payload, bitsPerSample, pixelCount)
- 			: DecodePackedBigEndian(payload, bitsPerSample, pixelCount);
- 	}
+		if ( bitsPerSample == 16 )
+		{
+			return Decode16Into(payload, littleEndian, pixelCount, dest);
+		}
 
- 	private static ushort[]? Decode8(byte[] payload, int pixelCount)
- 	{
- 		if ( payload.Length < pixelCount )
- 		{
- 			return null;
- 		}
+		if ( payload.Length >= pixelCount * 2 )
+		{
+			return DecodeWordStoredInto(payload, littleEndian, bitsPerSample, pixelCount, dest);
+		}
 
- 		var result = new ushort[pixelCount];
- 		for ( var i = 0; i < pixelCount; i++ )
- 		{
- 			result[i] = payload[i];
- 		}
+		return littleEndian
+			? DecodePackedLittleEndianInto(payload, bitsPerSample, pixelCount, dest)
+			: DecodePackedBigEndianInto(payload, bitsPerSample, pixelCount, dest);
+	}
 
- 		return result;
- 	}
+	private static bool Decode8Into(ReadOnlySpan<byte> payload, int pixelCount, Span<ushort> dest)
+	{
+		if ( payload.Length < pixelCount )
+		{
+			return false;
+		}
 
- 	private static ushort[]? Decode16(byte[] payload, bool littleEndian, int pixelCount)
- 	{
- 		if ( payload.Length < pixelCount * 2 )
- 		{
- 			return null;
- 		}
+		for ( var i = 0; i < pixelCount; i++ )
+		{
+			dest[i] = payload[i];
+		}
 
- 		var result = new ushort[pixelCount];
-			var payloadIndex = 0;
-			if ( littleEndian )
- 		{
-				for ( var i = 0; i < pixelCount; i++ )
-				{
-					result[i] = ( ushort ) ( payload[payloadIndex] | ( payload[payloadIndex + 1] << 8 ) );
-					payloadIndex += 2;
-				}
+		return true;
+	}
+
+	private static bool Decode16Into(ReadOnlySpan<byte> payload, bool littleEndian, int pixelCount,
+		Span<ushort> dest)
+	{
+		if ( payload.Length < pixelCount * 2 )
+		{
+			return false;
+		}
+
+		var idx = 0;
+		if ( littleEndian )
+		{
+			for ( var i = 0; i < pixelCount; i++ )
+			{
+				dest[i] = ( ushort ) ( payload[idx] | ( payload[idx + 1] << 8 ) );
+				idx += 2;
+			}
+		}
+		else
+		{
+			for ( var i = 0; i < pixelCount; i++ )
+			{
+				dest[i] = ( ushort ) ( ( payload[idx] << 8 ) | payload[idx + 1] );
+				idx += 2;
+			}
+		}
+
+		return true;
+	}
+
+	private static bool DecodeWordStoredInto(ReadOnlySpan<byte> payload, bool littleEndian,
+		int bitsPerSample, int pixelCount, Span<ushort> dest)
+	{
+		if ( !Decode16Into(payload, littleEndian, pixelCount, dest) )
+		{
+			return false;
+		}
+
+		var mask = ( 1u << bitsPerSample ) - 1u;
+		for ( var i = 0; i < pixelCount; i++ )
+		{
+			dest[i] = ( ushort ) ( dest[i] & mask );
+		}
+
+		return true;
+	}
+
+	private static bool DecodePackedLittleEndianInto(ReadOnlySpan<byte> payload, int bitsPerSample,
+		int pixelCount, Span<ushort> dest)
+	{
+		var requiredBytes = ( pixelCount * bitsPerSample + 7 ) / 8;
+		if ( payload.Length < requiredBytes )
+		{
+			return false;
+		}
+
+		var mask = ( uint ) ( ( 1 << bitsPerSample ) - 1 );
+		ulong bitBuffer = 0;
+		var bitsInBuffer = 0;
+		var srcIdx = 0;
+		for ( var i = 0; i < pixelCount; i++ )
+		{
+			while ( bitsInBuffer < bitsPerSample )
+			{
+				bitBuffer |= ( ulong ) payload[srcIdx++] << bitsInBuffer;
+				bitsInBuffer += 8;
+			}
+
+			dest[i] = ( ushort ) ( bitBuffer & mask );
+			bitBuffer >>= bitsPerSample;
+			bitsInBuffer -= bitsPerSample;
+		}
+
+		return true;
+	}
+
+	private static bool DecodePackedBigEndianInto(ReadOnlySpan<byte> payload, int bitsPerSample,
+		int pixelCount, Span<ushort> dest)
+	{
+		var requiredBytes = ( pixelCount * bitsPerSample + 7 ) / 8;
+		if ( payload.Length < requiredBytes )
+		{
+			return false;
+		}
+
+		var mask = ( uint ) ( ( 1 << bitsPerSample ) - 1 );
+		ulong bitBuffer = 0;
+		var bitsInBuffer = 0;
+		var srcIdx = 0;
+		for ( var i = 0; i < pixelCount; i++ )
+		{
+			while ( bitsInBuffer < bitsPerSample )
+			{
+				bitBuffer = ( bitBuffer << 8 ) | payload[srcIdx++];
+				bitsInBuffer += 8;
+			}
+
+			var shift = bitsInBuffer - bitsPerSample;
+			dest[i] = ( ushort ) ( ( bitBuffer >> shift ) & mask );
+			bitsInBuffer -= bitsPerSample;
+			if ( bitsInBuffer == 0 )
+			{
+				bitBuffer = 0;
 			}
 			else
 			{
-				for ( var i = 0; i < pixelCount; i++ )
-				{
-					result[i] = ( ushort ) ( ( payload[payloadIndex] << 8 ) | payload[payloadIndex + 1] );
-					payloadIndex += 2;
-				}
- 		}
+				bitBuffer &= ( 1UL << bitsInBuffer ) - 1UL;
+			}
+		}
 
- 		return result;
- 	}
-
- 	private static ushort[]? DecodeWordStored(byte[] payload, bool littleEndian, int bitsPerSample,
- 		int pixelCount)
- 	{
- 		var words = Decode16(payload, littleEndian, pixelCount);
- 		if ( words == null )
- 		{
- 			return null;
- 		}
-
- 		var mask = ( 1u << bitsPerSample ) - 1u;
- 		for ( var i = 0; i < words.Length; i++ )
- 		{
- 			words[i] = ( ushort ) ( words[i] & mask );
- 		}
-
- 		return words;
- 	}
-
- 	private static ushort[]? DecodePackedLittleEndian(byte[] payload, int bitsPerSample,
- 		int pixelCount)
- 	{
- 		var requiredBytes = ( pixelCount * bitsPerSample + 7 ) / 8;
- 		if ( payload.Length < requiredBytes )
- 		{
- 			return null;
- 		}
-
-			var result = new ushort[pixelCount];
-			var mask = ( uint ) ( ( 1 << bitsPerSample ) - 1 );
-			ulong bitBuffer = 0;
-			var bitsInBuffer = 0;
-			var sourceIndex = 0;
- 		for ( var i = 0; i < pixelCount; i++ )
- 		{
-				while ( bitsInBuffer < bitsPerSample )
- 			{
-					bitBuffer |= ( ulong ) payload[sourceIndex++] << bitsInBuffer;
-					bitsInBuffer += 8;
- 			}
-
-				result[i] = ( ushort ) ( bitBuffer & mask );
-				bitBuffer >>= bitsPerSample;
-				bitsInBuffer -= bitsPerSample;
- 		}
-
- 		return result;
- 	}
-
- 	private static ushort[]? DecodePackedBigEndian(byte[] payload, int bitsPerSample,
- 		int pixelCount)
- 	{
- 		var requiredBytes = ( pixelCount * bitsPerSample + 7 ) / 8;
- 		if ( payload.Length < requiredBytes )
- 		{
- 			return null;
- 		}
-
-			var result = new ushort[pixelCount];
-			var mask = ( uint ) ( ( 1 << bitsPerSample ) - 1 );
-			ulong bitBuffer = 0;
-			var bitsInBuffer = 0;
-			var sourceIndex = 0;
- 		for ( var i = 0; i < pixelCount; i++ )
- 		{
-				while ( bitsInBuffer < bitsPerSample )
- 			{
-					bitBuffer = ( bitBuffer << 8 ) | payload[sourceIndex++];
-					bitsInBuffer += 8;
- 			}
-
-				var shift = bitsInBuffer - bitsPerSample;
-				result[i] = ( ushort ) ( ( bitBuffer >> shift ) & mask );
-				bitsInBuffer -= bitsPerSample;
-				if ( bitsInBuffer == 0 )
-				{
-					bitBuffer = 0;
-				}
-				else
-				{
-					bitBuffer &= ( 1UL << bitsInBuffer ) - 1UL;
-				}
- 		}
-
- 		return result;
- 	}
+		return true;
+	}
 
  	private static float[,] To3x3(IReadOnlyList<float> v)
  	{
