@@ -13,6 +13,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Models.Account;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -477,6 +478,8 @@ public partial class Query : IQuery
 
 		async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 		{
+			await EnsureTenantIdAsync(context, fileIndexItem);
+
 			// only in test case fileIndex is null
 			if ( context.FileIndex != null )
 			{
@@ -516,6 +519,38 @@ public partial class Query : IQuery
 			return await RetryHelper.DoAsync(
 				LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		}
+	}
+
+	private static async Task EnsureTenantIdAsync(ApplicationDbContext context,
+		FileIndexItem fileIndexItem)
+	{
+		if ( fileIndexItem.TenantId.HasValue )
+		{
+			return;
+		}
+
+		var tenantId = context.TenantContext?.TenantId;
+		if ( tenantId.HasValue )
+		{
+			fileIndexItem.TenantId = tenantId.Value;
+			return;
+		}
+
+		var mainTenant = await context.Tenants.FirstOrDefaultAsync(t => t.Slug == "main");
+		if ( mainTenant == null )
+		{
+			mainTenant = new Tenant
+			{
+				Slug = "main",
+				Name = "main",
+				IsEnabled = true,
+				Created = DateTime.UtcNow
+			};
+			await context.Tenants.AddAsync(mainTenant);
+			await context.SaveChangesAsync();
+		}
+
+		fileIndexItem.TenantId = mainTenant.Id;
 	}
 
 	/// <summary>
