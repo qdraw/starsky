@@ -14,25 +14,27 @@ public class RawDngRealFilesFlowTests
 	[TestMethod]
 	public void TryRunToJpeg_WithProvidedRealDngFiles_ReportsPerFileResult()
 	{
+		var basePath = $"C:\\data\\testcontent\\raws-dng-converter\\";
+		
 		string[] files =
 		[
-			"/Users/dion/data/testcontent/raws/20260308_210002_DSC05386-Verbeterd-NR.dng",
-			"/Users/dion/data/testcontent/raws/Apple - iPhone XS - 16bit (4_3).dng",
-			"/Users/dion/data/testcontent/raws/Apple iPhone 13 Pro (ProRAW mode) IMG_3234.dng",
-			"/Users/dion/data/testcontent/raws/Canon - EOS 5D Mark III - 16bit 16bit RAW.dng",
-			"/Users/dion/data/testcontent/raws/DJI - FC7303 - 16bit (16_9).dng",
-			"/Users/dion/data/testcontent/raws/Google - Pixel 8 Pro - 16bit (4_3).dng",
-			"/Users/dion/data/testcontent/raws/HUAWEI - EVA-AL00 - 16bit (4_3).dng",
-			"/Users/dion/data/testcontent/raws/Leica - M (Typ 240) - 16bit 16bit compressed (3_2).dng",
-			"/Users/dion/data/testcontent/raws/leica_cl_01.dng",
-			"/Users/dion/data/testcontent/raws/OnePlus - ONEPLUS A6003 - 16bit (4_3).dng",
-			"/Users/dion/data/testcontent/raws/Pentax - K-3 II - 14bit (3_2).dng",
-			"/Users/dion/data/testcontent/raws/Pentax - K-S1 - 12bit (3_2).dng",
-			"/Users/dion/data/testcontent/raws/pentax_k_1_mark_ii_01.dng",
-			"/Users/dion/data/testcontent/raws/Plustek - OpticFilm 8100 - 16bit (4_3).dng",
-			"/Users/dion/data/testcontent/raws/RAW_LEICA_M8.dng",
-			"/Users/dion/data/testcontent/raws/Samsung - Galaxy S22 Ulra - 4_3.dng",
-			"/Users/dion/data/testcontent/raws/Xiaomi - Redmi Note 7 - 16bit (4_3).dng"
+			$"{basePath}20260308_210002_DSC05386-Verbeterd-NR.dng",
+			$"{basePath}Apple - iPhone XS - 16bit (4_3).dng",
+			$"{basePath}Apple iPhone 13 Pro (ProRAW mode) IMG_3234.dng",
+			$"{basePath}Canon - EOS 5D Mark III - 16bit 16bit RAW.dng",
+			$"{basePath}DJI - FC7303 - 16bit (16_9).dng",
+			$"{basePath}Google - Pixel 8 Pro - 16bit (4_3).dng",
+			$"{basePath}HUAWEI - EVA-AL00 - 16bit (4_3).dng",
+			$"{basePath}Leica - M (Typ 240) - 16bit 16bit compressed (3_2).dng",
+			$"{basePath}leica_cl_01.dng",
+			$"{basePath}OnePlus - ONEPLUS A6003 - 16bit (4_3).dng",
+			$"{basePath}Pentax - K-3 II - 14bit (3_2).dng",
+			$"{basePath}Pentax - K-S1 - 12bit (3_2).dng",
+			$"{basePath}pentax_k_1_mark_ii_01.dng",
+			$"{basePath}Plustek - OpticFilm 8100 - 16bit (4_3).dng",
+			$"{basePath}RAW_LEICA_M8.dng",
+			$"{basePath}Samsung - Galaxy S22 Ulra - 4_3.dng",
+			$"{basePath}Xiaomi - Redmi Note 7 - 16bit (4_3).dng"
 		];
 
 		var failed = new List<string>();
