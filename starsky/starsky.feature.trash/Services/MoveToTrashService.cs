@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using starsky.feature.trash.Interfaces;
+using starsky.feature.trash.Models;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -197,14 +198,4 @@ public class MoveToTrashService : IMoveToTrashService
 
 		await _query.RemoveItemAsync(persistedItems);
 	}
-}
-
-public sealed class MoveToTrashPayload
-{
-	public List<FileIndexItem> MoveToTrashList { get; set; } = [];
-	public bool IsSystemTrashEnabled { get; set; }
-	public Dictionary<string, List<string>> ChangedFileIndexItemName { get; set; } = new();
-	public List<FileIndexItem> FileIndexResultsList { get; set; } = [];
-	public FileIndexItem InputModel { get; set; } = new();
-	public bool Collections { get; set; }
 }

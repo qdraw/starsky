@@ -25,11 +25,11 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.26" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
-        <PackageReference Include="MSTest.TestAdapter" Version="4.1.0"/>
-        <PackageReference Include="MSTest.TestFramework" Version="4.1.0"/>
-        <PackageReference Include="Verify.MSTest" Version="31.13.0"/>
-        <PackageReference Include="coverlet.collector" Version="8.0.1">
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="4.2.1"/>
+        <PackageReference Include="MSTest.TestFramework" Version="4.2.1"/>
+        <PackageReference Include="Verify.MSTest" Version="31.16.2"/>
+        <PackageReference Include="coverlet.collector" Version="10.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -44,6 +44,7 @@
         <ProjectReference Include="..\starsky.feature.settings\starsky.feature.settings.csproj"/>
         <ProjectReference Include="..\starsky.feature.thumbnail\starsky.feature.thumbnail.csproj"/>
         <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj"/>
+        <ProjectReference Include="..\starsky.feature.trash\starsky.feature.trash.csproj"/>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
         <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>

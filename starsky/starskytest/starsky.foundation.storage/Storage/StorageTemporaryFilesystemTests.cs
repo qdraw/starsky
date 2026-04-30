@@ -338,7 +338,7 @@ public sealed class StorageTemporaryFilesystemTests
 		var filesInFolder = _tempStorage.GetAllFilesInDirectoryRecursive(
 			"/test_GetAllFilesInDirectoryRecursive").ToList();
 
-		Assert.AreNotEqual(0, filesInFolder.Count);
+		Assert.IsNotEmpty(filesInFolder);
 		Assert.AreEqual("/test_GetAllFilesInDirectoryRecursive/test", filesInFolder[0]);
 		Assert.AreEqual("/test_GetAllFilesInDirectoryRecursive/test/already_09010.tmp",
 			filesInFolder[1]);
@@ -350,14 +350,90 @@ public sealed class StorageTemporaryFilesystemTests
 	public void Temporary_GetDirectories_Null_NotFound()
 	{
 		var result = _tempStorage.GetDirectories("/not_found");
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
 	public void Temporary_GetDirectoryRecursive_Null_NotFound()
 	{
 		var result = _tempStorage.GetDirectoryRecursive("/not_found").Select(p => p.Key);
-		Assert.AreEqual(0, result.Count());
+		Assert.IsEmpty(result);
+	}
+
+	[TestMethod]
+	public void Temporary_GetDirectoryRecursive_FolderExists_ReturnsNestedFolders()
+	{
+		var root = $"/tmp_get_dir_recursive_{Guid.NewGuid():N}";
+		var level1 = $"{root}/level1";
+		var level2 = $"{level1}/level2";
+
+		try
+		{
+			_tempStorage.CreateDirectory(level2);
+
+			var result = _tempStorage.GetDirectoryRecursive(root)
+				.Select(p => p.Key)
+				.ToList();
+
+			Assert.Contains(p => p.EndsWith("/level1", StringComparison.Ordinal), result);
+			Assert.Contains(p => p.EndsWith("/level1/level2", StringComparison.Ordinal), result);
+		}
+		finally
+		{
+			_tempStorage.FolderDelete(root);
+		}
+	}
+
+	[TestMethod]
+	public void Temporary_GetDirectoryRecursive_MaxLookups_Zero_ReturnsOnlyDirectChildren()
+	{
+		var root = $"/tmp_get_dir_recursive_zero_{Guid.NewGuid():N}";
+		var level1 = $"{root}/level1";
+		var level2 = $"{level1}/level2";
+
+		try
+		{
+			_tempStorage.CreateDirectory(level2);
+
+			var result = _tempStorage.GetDirectoryRecursive(root, 0)
+				.Select(p => p.Key)
+				.ToList();
+
+			Assert.Contains(p => p.EndsWith("/level1", StringComparison.Ordinal), result);
+			Assert.DoesNotContain(p => p.EndsWith("/level1/level2", StringComparison.Ordinal),
+				result);
+		}
+		finally
+		{
+			_tempStorage.FolderDelete(root);
+		}
+	}
+
+	[TestMethod]
+	public void Temporary_GetDirectoryRecursive_MaxLookups_One_IncludesOneLevelDeeper()
+	{
+		var root = $"/tmp_get_dir_recursive_one_{Guid.NewGuid():N}";
+		var level1 = $"{root}/level1";
+		var level2 = $"{level1}/level2";
+		var level3 = $"{level2}/level3";
+
+		try
+		{
+			_tempStorage.CreateDirectory(level3);
+
+			var result = _tempStorage.GetDirectoryRecursive(root, 1)
+				.Select(p => p.Key)
+				.ToList();
+
+			Assert.Contains(p => p.EndsWith("/level1", StringComparison.Ordinal), result);
+			Assert.Contains(p => p.EndsWith("/level1/level2", StringComparison.Ordinal), result);
+			Assert.DoesNotContain(
+				p => p.EndsWith("/level1/level2/level3", StringComparison.Ordinal), result);
+		}
+		finally
+		{
+			_tempStorage.FolderDelete(root);
+		}
 	}
 
 	[TestMethod]

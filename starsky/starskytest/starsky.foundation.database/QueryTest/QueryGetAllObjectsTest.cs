@@ -173,7 +173,7 @@ public sealed class QueryGetAllObjects_MySqlException_Test
 			new FakeIWebLogger());
 
 		// Act
-		var result = query.GetAllObjectsAsync(["/col"]).Result;
+		var result = query.GetAllObjectsAsync(["/col"], 1).Result;
 
 		// Assert
 		Assert.IsNotNull(result);

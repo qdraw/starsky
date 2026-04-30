@@ -116,7 +116,7 @@ public class UpdateImportTransformations
 		var exifToolCmdHelper = new ExifToolCmdHelper(_exifTool,
 			_subPathStorage, _thumbnailStorage,
 			new ReadMeta(_subPathStorage, _appSettings, null!, _logger),
-			_thumbnailQuery, _logger);
+			_thumbnailQuery, _logger, _appSettings);
 		await exifToolCmdHelper.UpdateAsync(fileIndexItem, comparedNamesList);
 
 		// Only update database when indexMode is true

@@ -30,7 +30,7 @@ public sealed class ExifCopyTest
 
 		var sut = new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta,
 			new FakeIThumbnailQuery(),
-			new FakeIWebLogger());
+			new FakeIWebLogger(), _appSettings);
 		return ( sut, storage );
 	}
 
@@ -46,7 +46,7 @@ public sealed class ExifCopyTest
 		var fakeReadMeta = new ReadMeta(storage, _appSettings, null, new FakeIWebLogger());
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		var helperResult = await new ExifCopy(storage, storage, fakeExifTool,
-				fakeReadMeta, new FakeIThumbnailQuery(), new FakeIWebLogger())
+				fakeReadMeta, new FakeIThumbnailQuery(), new FakeIWebLogger(), _appSettings)
 			.CopyExifPublish("/test.jpg", "/test2");
 		Assert.Contains("HistorySoftwareAgent", helperResult);
 	}

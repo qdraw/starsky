@@ -100,7 +100,7 @@ public sealed class UserManagerTest
 			_memoryCache);
 
 		var claims = userManager.GetUserClaims(new User());
-		Assert.AreEqual(0, claims.Count());
+		Assert.IsEmpty(claims);
 	}
 
 	[TestMethod]
@@ -110,7 +110,7 @@ public sealed class UserManagerTest
 			_memoryCache);
 
 		var claims = userManager.GetUserClaims(null);
-		Assert.AreEqual(0, claims.Count());
+		Assert.IsEmpty(claims);
 	}
 
 	[TestMethod]

@@ -763,6 +763,31 @@ public sealed class FileIndexItem
 	public string? Artist { get; set; } = string.Empty;
 
 	/// <summary>
+	///     AI generated tags that should be suggested to the user.
+	///     Stored as comma separated string.
+	/// </summary>
+	[MaxLength(1024)]
+	public string? SuggestedTags { get; set; } = string.Empty;
+
+	/// <summary>
+	///     AI generated tags rejected by the user.
+	///     Stored as comma separated string.
+	/// </summary>
+	[MaxLength(1024)]
+	public string? RejectedTags { get; set; } = string.Empty;
+
+	/// <summary>
+	///     Name/version of the model that generated AI metadata.
+	/// </summary>
+	[MaxLength(200)]
+	public string? ImageClassificationModel { get; set; } = string.Empty;
+
+	/// <summary>
+	///     Datetime when AI metadata was generated.
+	/// </summary>
+	public DateTime ImageClassificationGeneratedAt { get; set; }
+
+	/// <summary>
 	///     Sets the file path as Filename and ParentDirectory
 	/// </summary>
 	/// <param name="value">The value.</param>

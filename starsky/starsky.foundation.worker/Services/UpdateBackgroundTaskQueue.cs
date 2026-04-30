@@ -1,10 +1,8 @@
-using System;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.worker.Backends;
 using starsky.foundation.injection;
-using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Models;
@@ -17,13 +15,15 @@ namespace starsky.foundation.worker.Services;
 [Service(typeof(IUpdateBackgroundTaskQueue), InjectionLifetime = InjectionLifetime.Singleton)]
 public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 {
-	private readonly UpdateBackgroundQueuedMetrics _metrics;
-	private readonly Channel<BackgroundTaskQueueJob> _queue;
+	public const string QueueName = QueueNames.Update;
 
-	public UpdateBackgroundTaskQueue(IServiceScopeFactory scopeFactory)
+	private readonly IBaseBackgroundTaskQueue _backend;
+	private readonly UpdateBackgroundQueuedMetrics _metrics;
+
+	public UpdateBackgroundTaskQueue(IServiceScopeFactory scopeFactory,
+		IQueueBackendFactory? queueBackendFactory = null)
 	{
-		_queue = Channel.CreateBounded<BackgroundTaskQueueJob>(
-			ProcessTaskQueue.DefaultBoundedChannelOptions);
+		_backend = queueBackendFactory?.Create(QueueName) ?? new InMemoryQueueBackend();
 
 		_metrics = scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<UpdateBackgroundQueuedMetrics>();
@@ -31,21 +31,18 @@ public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 
 	public int Count()
 	{
-		return _queue.Reader.Count;
+		return _backend.Count();
 	}
 
 	public ValueTask QueueJobAsync(BackgroundTaskQueueJob job)
 	{
-		ArgumentNullException.ThrowIfNull(job);
-		return string.IsNullOrWhiteSpace(job.JobType)
-			? throw new ArgumentException("JobType is required", nameof(job))
-			: _queue.Writer.WriteAsync(job);
+		return _backend.QueueJobAsync(job);
 	}
 
 	public async ValueTask<BackgroundTaskQueueJob> DequeueJobAsync(
 		CancellationToken cancellationToken)
 	{
-		var queueItem = await _queue.Reader.ReadAsync(cancellationToken);
+		var queueItem = await _backend.DequeueJobAsync(cancellationToken);
 		_metrics.Value = Count();
 		return queueItem;
 	}

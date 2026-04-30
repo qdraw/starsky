@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -22,6 +23,8 @@ public sealed class ExifToolCmdHelperTest
 		// get the service
 		_appSettings = new AppSettings();
 	}
+
+	public TestContext TestContext { get; set; }
 
 	[TestMethod]
 	public async Task ExifToolCmdHelper_UpdateTest()
@@ -66,7 +69,7 @@ public sealed class ExifToolCmdHelperTest
 
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		var sut = new ExifToolCmdHelper(fakeExifTool, storage, storage,
-			new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger());
+			new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(), new AppSettings());
 		var helperResult = await sut.UpdateAsync(updateModel, comparedNames);
 
 		Assert.Contains(updateModel.Tags, helperResult.Command);
@@ -110,7 +113,8 @@ public sealed class ExifToolCmdHelperTest
 
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		var helperResult = await new ExifToolCmdHelper(fakeExifTool, storage, storage,
-				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
+				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(),
+				new AppSettings())
 			.UpdateAsync(updateModel, comparedNames);
 
 		const string expectedResult =
@@ -123,6 +127,63 @@ public sealed class ExifToolCmdHelperTest
 			"\"-title\"=\"Title \\\"test\\\"\" " +
 			"\"-xmp-dc:title=Title \\\"test\\\"\"";
 		Assert.AreEqual(expectedResult, helperResult.Command);
+	}
+
+	[TestMethod]
+	public async Task ExifToolCmdHelper_ConfigFirst()
+	{
+		var updateModel = new FileIndexItem { Tags = "tags", SuggestedTags = "test" };
+		var comparedNames = new List<string>
+		{
+			nameof(FileIndexItem.SuggestedTags).ToLowerInvariant(),
+			nameof(FileIndexItem.Title).ToLowerInvariant()
+		};
+
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]>());
+
+		var fakeExifTool = new FakeExifTool(storage, _appSettings);
+		var sut = new ExifToolCmdHelper(fakeExifTool, storage, storage,
+			new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(),
+			new AppSettings());
+		var helperResult = await sut.UpdateAsync(updateModel, comparedNames);
+
+		var expectedResult =
+			$" -config \"{sut.GetConfigPath()}\" " +
+			"-json -overwrite_original " +
+			"-ObjectName=\"\" \"-title\"=\"\" \"-xmp-dc:title=\" " +
+			"-sep \", \" -XMP-ai:SuggestedTags=\"test\" ";
+		Assert.AreEqual(expectedResult, helperResult.Command);
+	}
+
+	[TestMethod]
+	public void ExifToolCommandLineArgs_AiMetadata_MissingConfig_LogsError()
+	{
+		var appSettings = new AppSettings
+		{
+			// Force config lookup to a non-existing directory
+			AppSettingsPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(),
+				"appsettings.patch.json")
+		};
+
+		var logger = new FakeIWebLogger();
+		var updateModel = new FileIndexItem { SuggestedTags = "test" };
+		var comparedNames = new List<string>
+		{
+			nameof(FileIndexItem.SuggestedTags).ToLowerInvariant()
+		};
+
+		var sut = new ExifToolCmdHelper(null!, null!, null!, null!, null!, logger,
+			appSettings);
+		var result = sut.ExifToolCommandLineArgs(updateModel, comparedNames, true);
+
+		Assert.Contains("-json -overwrite_original", result);
+		Assert.Contains("-XMP-ai:SuggestedTags=\"test\"", result);
+		Assert.IsFalse(result.Contains("-config \"", StringComparison.Ordinal),
+			"Config should not be added when file does not exist");
+		Assert.Contains(
+			p => ( p.Item2 ?? string.Empty ).Contains("[UpdateAiConfig] Missing ExifTool config:"),
+			logger.TrackedExceptions);
 	}
 
 	[TestMethod]
@@ -144,7 +205,8 @@ public sealed class ExifToolCmdHelperTest
 
 		var helperResult = await new ExifToolCmdHelper(fakeExifTool,
 				storage, storage,
-				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
+				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(),
+				new AppSettings())
 			.UpdateAsync(updateModel, comparedNames);
 
 		Assert.Contains("-GPSAltitude=\"-41", helperResult.Command);
@@ -164,7 +226,8 @@ public sealed class ExifToolCmdHelperTest
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		await new ExifToolCmdHelper(fakeExifTool,
 				storage, storage,
-				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
+				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(),
+				new AppSettings())
 			.CreateXmpFileIsNotExist(updateModel, inputSubPaths);
 
 		Assert.IsFalse(storage.ExistFile("/test.xmp"));
@@ -183,7 +246,8 @@ public sealed class ExifToolCmdHelperTest
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		await new ExifToolCmdHelper(fakeExifTool,
 				storage, storage,
-				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
+				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(),
+				new AppSettings())
 			.CreateXmpFileIsNotExist(updateModel, inputSubPaths);
 
 		Assert.IsTrue(storage.ExistFile("/test.xmp"));
@@ -204,7 +268,8 @@ public sealed class ExifToolCmdHelperTest
 
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		var helperResult = await new ExifToolCmdHelper(fakeExifTool, storage, storage,
-				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
+				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(),
+				new AppSettings())
 			.UpdateAsync(updateModel, comparedNames);
 
 		Assert.Contains("tags", helperResult.Command);
@@ -231,7 +296,8 @@ public sealed class ExifToolCmdHelperTest
 
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		var helperResult = await new ExifToolCmdHelper(fakeExifTool, storage, storage,
-				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
+				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger(),
+				new AppSettings())
 			.UpdateAsync(updateModel, comparedNames);
 
 		Assert.Contains("tags", helperResult.Command);
@@ -250,7 +316,9 @@ public sealed class ExifToolCmdHelperTest
 			nameof(FileIndexItem.ImageStabilisation).ToLowerInvariant()
 		};
 
-		var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+		var result = new ExifToolCmdHelper(null!, null!,
+			null!, null!,
+			null!, null!, new AppSettings()).ExifToolCommandLineArgs(updateModel,
 			comparedNames, true);
 
 		Assert.AreEqual("-json -overwrite_original -ImageStabilization=\"On\" ", result);
@@ -268,7 +336,9 @@ public sealed class ExifToolCmdHelperTest
 			nameof(FileIndexItem.ImageStabilisation).ToLowerInvariant()
 		};
 
-		var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+		var result = new ExifToolCmdHelper(null!, null!,
+			null!, null!,
+			null!, null!, new AppSettings()).ExifToolCommandLineArgs(updateModel,
 			comparedNames, true);
 
 		Assert.AreEqual(string.Empty, result);
@@ -286,7 +356,9 @@ public sealed class ExifToolCmdHelperTest
 			nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()
 		};
 
-		var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+		var result = new ExifToolCmdHelper(null!, null!,
+			null!, null!,
+			null!, null!, new AppSettings()).ExifToolCommandLineArgs(updateModel,
 			comparedNames, true);
 
 		Assert.AreEqual(
@@ -342,7 +414,9 @@ public sealed class ExifToolCmdHelperTest
 		};
 		var comparedNames = new List<string> { nameof(FileIndexItem.Artist).ToLowerInvariant() };
 
-		var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+		var result = new ExifToolCmdHelper(null!, null!,
+			null!, null!,
+			null!, null!, new AppSettings()).ExifToolCommandLineArgs(updateModel,
 			comparedNames, true);
 
 		Assert.AreEqual(
@@ -359,10 +433,43 @@ public sealed class ExifToolCmdHelperTest
 		};
 		var comparedNames = new List<string> { nameof(FileIndexItem.Artist).ToLowerInvariant() };
 
-		var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+		var result = new ExifToolCmdHelper(null!, null!,
+			null!, null!,
+			null!, null!, new AppSettings()).ExifToolCommandLineArgs(updateModel,
 			comparedNames, true);
 
 		Assert.AreEqual(string.Empty, result);
+	}
+
+	[TestMethod]
+	public void ExifToolCommandLineArgs_AiMetadataFields()
+	{
+		var generatedAt = new DateTime(2026, 4, 21, 10, 20, 30, DateTimeKind.Utc);
+		var updateModel = new FileIndexItem
+		{
+			SuggestedTags = "cat, park",
+			RejectedTags = "car",
+			ImageClassificationModel = "vit-base-1",
+			ImageClassificationGeneratedAt = generatedAt
+		};
+
+		var comparedNames = new List<string>
+		{
+			nameof(FileIndexItem.SuggestedTags).ToLowerInvariant(),
+			nameof(FileIndexItem.RejectedTags).ToLowerInvariant(),
+			nameof(FileIndexItem.ImageClassificationModel).ToLowerInvariant(),
+			nameof(FileIndexItem.ImageClassificationGeneratedAt).ToLowerInvariant()
+		};
+
+		var result = new ExifToolCmdHelper(null!, null!,
+				null!, null!,
+				null!, null!, new AppSettings())
+			.ExifToolCommandLineArgs(updateModel, comparedNames, true);
+
+		Assert.Contains("-XMP-ai:SuggestedTags", result);
+		Assert.Contains("-XMP-ai:RejectedTags", result);
+		Assert.Contains("-XMP-ai:ImageClassificationModel=\"vit-base-1\"", result);
+		Assert.Contains($"-XMP-ai:ImageClassificationGeneratedAt=\"{generatedAt:o}\"", result);
 	}
 
 	/// <summary>
@@ -401,7 +508,7 @@ public sealed class ExifToolCmdHelperTest
 		]);
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		var sut = new ExifToolCmdHelper(fakeExifTool, storage, storage,
-			new FakeReadMeta(), thumbnailQuery, new FakeIWebLogger());
+			new FakeReadMeta(), thumbnailQuery, new FakeIWebLogger(), new AppSettings());
 
 		// Act - call UpdateAsync which internally calls BeforeFileHash
 		// Since FilePath ("/original.jpg") != path ("/different.jpg"), it should calculate the hash
@@ -452,7 +559,7 @@ public sealed class ExifToolCmdHelperTest
 
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 		var sut = new ExifToolCmdHelper(fakeExifTool, storage, storage,
-			new FakeReadMeta(), thumbnailQuery, new FakeIWebLogger());
+			new FakeReadMeta(), thumbnailQuery, new FakeIWebLogger(), new AppSettings());
 
 		// Act - call UpdateAsync with matching FilePath and path
 		// Since they match, it should use the cached FileHash
@@ -472,6 +579,4 @@ public sealed class ExifToolCmdHelperTest
 		Assert.AreEqual(result.Rename[0].NewFileHash, afterQueryResult.FileHash);
 		Assert.AreEqual("test", afterQueryResult.Reasons);
 	}
-
-	public TestContext TestContext { get; set; }
 }

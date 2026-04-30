@@ -172,4 +172,31 @@ public sealed class SetupAppSettingsTest
 
 		Environment.SetEnvironmentVariable("app__appsettingspath", null);
 	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_StackQueueSettings()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test_queue_merge");
+		if ( _hostStorage.ExistFolder(testDir) )
+		{
+			_hostStorage.FolderDelete(testDir);
+		}
+
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"queue\": {\n      \"default\": \"InMemory\",\n      \"databasePollIntervalInMilliseconds\": 500,\n      \"queues\": {\n        \"Update\": \"InMemory\"\n      }\n    }\n  }\n}\n"), Path.Combine(testDir, "appsettings.json"));
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{\n  \"app\": {\n    \"queue\": {\n      \"default\": \"RabbitMq\",\n      \"databasePollIntervalInMilliseconds\": 900,\n      \"queues\": {\n        \"ImageClassification\": \"Database\"\n      },\n      \"rabbitMq\": {\n        \"host\": \"mq.internal\",\n        \"port\": 5673,\n        \"username\": \"starsky\",\n        \"password\": \"secret\",\n        \"virtualHost\": \"/starsky\"\n      }\n    }\n  }\n}\n"), Path.Combine(testDir, "appsettings.patch.json"));
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.AreEqual(QueueBackendType.RabbitMq, result.Queue.Default);
+		Assert.AreEqual(900, result.Queue.DatabasePollIntervalInMilliseconds);
+		Assert.AreEqual(QueueBackendType.Database, result.Queue.Queues["ImageClassification"]);
+		Assert.AreEqual("mq.internal", result.Queue.RabbitMq.Host);
+
+		_hostStorage.FolderDelete(testDir);
+	}
 }

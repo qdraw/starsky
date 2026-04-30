@@ -16,18 +16,22 @@ public class ExecuteWithRetry(
 	{
 		const int maxAttempts = 3;
 		var delayMs = 100; // initial backoff
+		Exception? lastException = null;
 
 		for ( var attempt = 1; attempt <= maxAttempts; attempt++ )
 		{
 			if ( scopeFactory == null )
 			{
-				var (success, result, delayMsOut1) =
+				var (success, result, delayMsOut1, ex1) =
 					await ExecuteOnContext(context, operation, attempt, maxAttempts, delayMs);
 				delayMs = delayMsOut1;
 				if ( success )
 				{
 					return result;
 				}
+
+				// capture last exception if provided by the helper
+				lastException = ex1 ?? lastException;
 
 				// transient happened and we should retry
 				continue;
@@ -36,7 +40,7 @@ public class ExecuteWithRetry(
 			// use a fresh scope/context per attempt
 			using var scope = scopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var (scSuccess, scResult, delayMsOut2) =
+			var (scSuccess, scResult, delayMsOut2, scException) =
 				await ExecuteOnContext(dbContext, operation, attempt,
 					maxAttempts, delayMs);
 			delayMs = delayMsOut2;
@@ -44,12 +48,15 @@ public class ExecuteWithRetry(
 			{
 				return scResult;
 			}
+
+			lastException = scException ?? lastException;
 		}
 
-		throw new InvalidOperationException("ExecuteWithRetryAsync exhausted retries");
+		// Include the last observed exception as InnerException to aid debugging.
+		throw new InvalidOperationException("ExecuteWithRetryAsync exhausted retries", lastException);
 	}
 
-	private async Task<(bool success, T result, int delayMs)> ExecuteOnContext<T>(
+	private async Task<(bool success, T result, int delayMs, Exception? lastException)> ExecuteOnContext<T>(
 		ApplicationDbContext dbCtx, Func<ApplicationDbContext, Task<T>> operation, int attempt,
 		int maxAttempts,
 		int delayMs)
@@ -57,7 +64,7 @@ public class ExecuteWithRetry(
 		try
 		{
 			var r = await operation(dbCtx);
-			return ( true, r, delayMs );
+			return ( true, r, delayMs, null );
 		}
 		catch ( ObjectDisposedException )
 		{
@@ -71,14 +78,14 @@ public class ExecuteWithRetry(
 				attempt, maxAttempts, ex.Message);
 			if ( attempt >= maxAttempts )
 			{
-				return ( false, default!, delayMs );
+				return ( false, default!, delayMs, ex );
 			}
 
 			await Task.Delay(delayMs);
 			delayMs *= 2;
 			// Return false to indicate the operation did not succeed. On the final attempt this
 			// allows the outer loop to finish and throw the final exhausted exception.
-			return ( false, default!, delayMs );
+			return ( false, default!, delayMs, ex );
 		}
 	}
 

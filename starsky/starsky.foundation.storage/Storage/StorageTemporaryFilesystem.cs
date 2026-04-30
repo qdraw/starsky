@@ -288,7 +288,8 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	/// </summary>
 	/// <param name="path">subPath in dir</param>
 	/// <returns>list of paths</returns>
-	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
+	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path,
+		int? maxInnerChildDirectoryLookups = null)
 	{
 		var storage = new StorageHostFullPathFilesystem(_logger);
 
@@ -298,7 +299,8 @@ public sealed class StorageTemporaryFilesystem : IStorage
 			return [];
 		}
 
-		var folders = storage.GetDirectoryRecursive(fullFilePath);
+		var folders = storage.GetDirectoryRecursive(fullFilePath,
+			maxInnerChildDirectoryLookups);
 
 		// Used For subfolders
 		// convert back to subPath style

@@ -317,7 +317,7 @@ public class FakeIStorage : IStorage
 	/// <returns>list of paths</returns>
 	[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
 	public IEnumerable<KeyValuePair<string, DateTime>>
-		GetDirectoryRecursive(string path)
+		GetDirectoryRecursive(string path, int? maxInnerChildDirectoryLookups = null)
 	{
 		if ( path != "/" )
 		{

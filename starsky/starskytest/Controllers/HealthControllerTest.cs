@@ -31,7 +31,7 @@ public sealed class HealthControllerTest
 		Assert.IsTrue(castedResult?.Entries.FirstOrDefault()?.IsHealthy);
 		Assert.AreEqual("test", castedResult?.Entries.FirstOrDefault()?.Name);
 		Assert.AreEqual(TimeSpan.Zero, castedResult?.Entries.FirstOrDefault()?.Duration);
-		Assert.AreNotEqual(0, castedResult!.Entries.Count);
+		Assert.IsNotEmpty(castedResult!.Entries);
 		Assert.AreEqual(TimeSpan.Zero, castedResult.TotalDuration);
 	}
 
@@ -53,7 +53,7 @@ public sealed class HealthControllerTest
 		Assert.IsFalse(castedResult?.Entries.FirstOrDefault()?.IsHealthy);
 		Assert.AreEqual("test", castedResult?.Entries.FirstOrDefault()?.Name);
 		Assert.AreEqual(TimeSpan.Zero, castedResult?.Entries.FirstOrDefault()?.Duration);
-		Assert.AreNotEqual(0, castedResult!.Entries.Count);
+		Assert.IsNotEmpty(castedResult!.Entries);
 		Assert.AreEqual(TimeSpan.Zero, castedResult.TotalDuration);
 	}
 

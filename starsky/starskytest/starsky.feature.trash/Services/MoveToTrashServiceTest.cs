@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.trash.Interfaces;
+using starsky.feature.trash.Models;
 using starsky.feature.trash.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;

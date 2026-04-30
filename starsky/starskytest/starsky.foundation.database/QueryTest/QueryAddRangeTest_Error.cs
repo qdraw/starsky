@@ -59,7 +59,7 @@ public class QueryAddRangeTest_Error
 
 		var fakeQuery = new Query(dbUpdateExceptionDbContext, new AppSettings(), scope,
 			new FakeIWebLogger());
-		await fakeQuery.AddRangeAsync(new List<FileIndexItem> { new("/test22.jpg") });
+		await fakeQuery.AddRangeAsync([new FileIndexItem("/test22.jpg") { Id = 30 }]);
 
 		Assert.AreEqual(1, dbUpdateExceptionDbContext.Count);
 	}
@@ -71,19 +71,21 @@ internal sealed class SqliteExceptionDbContext(DbContextOptions options)
 	public int Count { get; set; }
 
 
-#pragma warning disable 8603
-	public override DbSet<FileIndexItem> FileIndex => null;
-#pragma warning restore 8603
+	public override DbSet<FileIndexItem> FileIndex
+	{
+		get
+		{
+			Count++;
+#pragma warning disable CS8603 // Possible null reference return.
+			return Count == 1 ? throw new SqliteException("t", 1, 2) : null;
+#pragma warning restore CS8603 // Possible null reference return.
+		}
+	}
 
 	public override int SaveChanges()
 	{
 		Count++;
-		if ( Count == 1 )
-		{
-			throw new SqliteException("t", 1, 2);
-		}
-
-		return Count;
+		return Count == 1 ? throw new SqliteException("t", 1, 2) : Count;
 	}
 
 	public override Task<int> SaveChangesAsync(

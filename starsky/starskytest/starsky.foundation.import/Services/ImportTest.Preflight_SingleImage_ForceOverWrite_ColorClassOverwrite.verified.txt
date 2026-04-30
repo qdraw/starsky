@@ -41,7 +41,10 @@
       MakeCameraSerial: ,
       FocalLength: 20.0,
       Size: 4808,
-      Artist: 
+      Artist: ,
+      SuggestedTags: ,
+      RejectedTags: ,
+      ImageClassificationModel: 
     },
     SourceFullFilePath: /color_class_winner.jpg,
     Structure: {
