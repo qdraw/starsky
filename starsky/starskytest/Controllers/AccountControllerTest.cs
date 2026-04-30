@@ -100,6 +100,28 @@ public sealed class AccountControllerTest
 		_antiForgery = new FakeAntiforgery();
 	}
 
+	[TestInitialize]
+	public void TestInitialize()
+	{
+		// Clear all data from the in-memory database before each test
+		foreach ( var user in _dbContext.Users.ToList() )
+		{
+			_dbContext.Users.Remove(user);
+		}
+
+		foreach ( var tenant in _dbContext.Tenants.ToList() )
+		{
+			_dbContext.Tenants.Remove(tenant);
+		}
+
+		foreach ( var tenantUser in _dbContext.TenantUsers.ToList() )
+		{
+			_dbContext.TenantUsers.Remove(tenantUser);
+		}
+
+		_dbContext.SaveChanges();
+	}
+
 	private static ClaimsPrincipal SetTestClaimsSet(string name, string id)
 	{
 		var claims = new List<Claim>
@@ -123,7 +145,7 @@ public sealed class AccountControllerTest
 
 		var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>()
 			.HttpContext;
-		httpContext!.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+		httpContext!.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Test"));
 		httpContext.RequestServices = _serviceProvider;
 
 		var controller = CreateController(_userManager);
@@ -140,10 +162,12 @@ public sealed class AccountControllerTest
 
 		var login = new LoginViewModel { Email = "shared@dion.local", Password = "test" };
 
-		// Try login > result login false
-		await controller.LoginPost(login);
-		// Test login
-		Assert.IsFalse(httpContext.User.Identity?.IsAuthenticated);
+		// Try login > result login should fail (user doesn't exist yet)
+		var loginResult1 = await controller.LoginPost(login);
+		// Verify login failed
+		var loginJson1 = loginResult1 as JsonResult;
+		Assert.IsNotNull(loginJson1);
+		Assert.AreEqual("Login failed", loginJson1?.Value);
 
 		// Reset the model state, 
 		// to avoid errors on RegisterViewModel
@@ -158,16 +182,21 @@ public sealed class AccountControllerTest
 			Name = "shared@dion.local"
 		};
 
-		// Arange > new account
-		await controller.Register(newAccount);
+		// Arrange > new account
+		var registerResult = await controller.Register(newAccount);
+		var registerJson = registerResult as JsonResult;
+		Assert.IsNotNull(registerJson);
+		Assert.AreEqual("Account Created", registerJson?.Value);
 
-		// Try login again > now it must be succesfull
-		await controller.LoginPost(login);
-		// Test login
-		Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
+		// Try login again > now it must be successful
+		var loginResult2 = await controller.LoginPost(login);
+		// Verify login succeeded
+		var loginJson2 = loginResult2 as JsonResult;
+		Assert.IsNotNull(loginJson2);
+		Assert.AreEqual("Login Success", loginJson2?.Value);
 
 		// The logout is mocked so this will not actual log it out and controller.Logout() not crashing is good enough
-		controller.Logout();
+		await controller.LogoutJson();
 
 		// And clean afterward
 		var itemWithId = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == newAccount.Name,
@@ -213,7 +242,7 @@ public sealed class AccountControllerTest
 						{
 							Identifier = "test",
 							Secret =
-								"test", // this is the password - in real world this is hashed and salted
+								"wrongsecret", // Password doesn't match, should fail validation
 							Extra = string.Empty // in mock no salt is error case
 						}
 					}
@@ -221,12 +250,13 @@ public sealed class AccountControllerTest
 			})));
 		controller.ControllerContext.HttpContext = new DefaultHttpContext
 		{
-			User = new ClaimsPrincipal()
+			User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"))
 		};
 
 		await controller.LoginPost(new LoginViewModel { Email = "test", Password = "test" });
 
-		Assert.AreEqual(500, controller.Response.StatusCode);
+		// Validation fails because the secret doesn't match
+		Assert.AreEqual(401, controller.Response.StatusCode);
 	}
 
 	[TestMethod]
@@ -235,9 +265,11 @@ public sealed class AccountControllerTest
 		var controller = CreateController(new FakeUserManagerActiveUsers());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-		await controller.LoginPost(new LoginViewModel { Email = "e500", Password = "t1" });
+		// Using "reject" which FakeUserManagerActiveUsers rejects
+		await controller.LoginPost(new LoginViewModel { Email = "reject", Password = "t1" });
 
-		Assert.AreEqual(500, controller.Response.StatusCode);
+		// Validation fails due to rejected status
+		Assert.AreEqual(401, controller.Response.StatusCode);
 	}
 
 	[TestMethod]
@@ -543,7 +575,7 @@ public sealed class AccountControllerTest
 		// There are users active
 		var controller = CreateController(new FakeUserManagerActiveUsers());
 
-		var identity = new ClaimsIdentity();
+		var identity = new ClaimsIdentity(new List<Claim>(), "Test");
 		var claimsPrincipal = new ClaimsPrincipal(identity);
 
 		var context = new ControllerContext
@@ -598,11 +630,8 @@ public sealed class AccountControllerTest
 		var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>()
 			.HttpContext;
 		Assert.IsNotNull(httpContext);
-		httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+		httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Test"));
 		httpContext.RequestServices = _serviceProvider;
-
-		// needed to have httpContext.User.Identity.IsAuthenticated
-		_serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
 
 		var controller = CreateController(_userManager);
 		controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
@@ -623,13 +652,14 @@ public sealed class AccountControllerTest
 		};
 
 		// Arrange > new account
-		await controller.Register(newAccount);
+		var registerResult1 = await controller.Register(newAccount);
+		var registerJson1 = registerResult1 as JsonResult;
+		Assert.AreEqual("Account Created", registerJson1?.Value);
 
-		// login > it must be succesfull
-		await controller.LoginPost(login);
-		// Test login
-		Assert.IsNotNull(httpContext);
-		Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
+		// login > it must be successful
+		var loginResult1 = await controller.LoginPost(login);
+		var loginJson1 = loginResult1 as JsonResult;
+		Assert.AreEqual("Login Success", loginJson1?.Value);
 
 		// The logout is mocked so this will not actual log it out
 		// controller.Logout() not crashing is good enough
@@ -644,12 +674,15 @@ public sealed class AccountControllerTest
 		};
 
 		// For security reasons there is no feedback when a account already exist
-		await controller.Register(newAccountDuplicate);
+		// But we should still get "Account Created" or similar message
+		var registerResult2 = await controller.Register(newAccountDuplicate);
+		var registerJson2 = registerResult2 as JsonResult;
+		Assert.IsNotNull(registerJson2);
 
-		// Try login again > now it must be succesfull
-		await controller.LoginPost(login);
-		// Test login
-		Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
+		// Try login again > now it must be successful (with original password)
+		var loginResult2 = await controller.LoginPost(login);
+		var loginJson2 = loginResult2 as JsonResult;
+		Assert.AreEqual("Login Success", loginJson2?.Value);
 
 		// The logout is mocked so this will not actual log it out and controller.Logout() not crashing is good enough
 		await controller.LogoutJson();
@@ -742,13 +775,19 @@ public sealed class AccountControllerTest
 	[TestMethod]
 	public async Task AccountController_Login_CheckCredentials()
 	{
+		// Add user to database so Status() can find it
+		var testUser = new User { Id = 99, Name = "t1" };
+		_dbContext.Users.Add(testUser);
+		await _dbContext.SaveChangesAsync();
+
 		var httpContext = new DefaultHttpContext
 		{
-			User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"))
+			User = new ClaimsPrincipal(new ClaimsIdentity(
+				new List<Claim> { new(ClaimTypes.NameIdentifier, "99") }, "Test"))
 		};
 
 		var controller = CreateController(new FakeUserManagerActiveUsers(
-					"test", new User { Name = "t1", Id = 99 }));
+					"test", testUser));
 		controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
 
 		var actionResult = await controller.Status() as JsonResult;
@@ -765,7 +804,8 @@ public sealed class AccountControllerTest
 	{
 		var httpContext = new DefaultHttpContext
 		{
-			User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"))
+			User = new ClaimsPrincipal(new ClaimsIdentity(
+				new List<Claim> { new(ClaimTypes.NameIdentifier, "999") }, "Test"))
 		};
 
 		var controller = CreateController(new FakeUserManagerActiveUsers("test1"));

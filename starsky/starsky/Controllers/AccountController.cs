@@ -457,15 +457,15 @@ namespace starsky.Controllers
 			return Json("Logged out from all tenants");
 		}
 
-		private string? GetTenantSlug()
+	private string? GetTenantSlug()
+	{
+		if ( HttpContext?.Items == null )
 		{
-			var tenant = HttpContext.Items[TenantAuthenticationConstants.TenantSlugItemKey] as string;
-			if ( !string.IsNullOrWhiteSpace(tenant) )
-			{
-				return tenant;
-			}
-
 			return "main";
 		}
+
+		var tenant = HttpContext.Items[TenantAuthenticationConstants.TenantSlugItemKey] as string;
+		return !string.IsNullOrWhiteSpace(tenant) ? tenant : "main";
+	}
 	}
 }
