@@ -122,11 +122,15 @@ public class DngSubsetReaderTests
 		int stripByteCount = 0, float[]? blackLevels = null, float[]? whiteLevels = null,
 		ushort? illuminant = null)
 	{
-		rawPayload ??= new byte[8];
-		WriteU16(rawPayload, 0, 100);
-		WriteU16(rawPayload, 2, 200);
-		WriteU16(rawPayload, 4, 300);
-		WriteU16(rawPayload, 6, 400);
+		if ( rawPayload == null )
+		{
+			rawPayload = new byte[8];
+			WriteU16(rawPayload, 0, 100);
+			WriteU16(rawPayload, 2, 200);
+			WriteU16(rawPayload, 4, 300);
+			WriteU16(rawPayload, 6, 400);
+		}
+
 		stripByteCount = rawPayload.Length;
 
 		var data = new byte[512];
