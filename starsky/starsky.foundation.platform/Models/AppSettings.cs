@@ -1124,6 +1124,84 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
+	///     from relative database path => file location path, scoped to a specific tenant.
+	///     Storage layout convention: <c>StorageFolder/{tenantSlug}{databaseFilePath}</c>
+	///     (StorageFolder already ends with a path separator, databaseFilePath starts with "/").
+	/// </summary>
+	/// <param name="databaseFilePath">database-style path, e.g. "/2020/photo.jpg"</param>
+	/// <param name="tenantSlug">tenant slug, e.g. "main". Null or empty falls back to the non-tenant overload.</param>
+	/// <returns>absolute OS path</returns>
+	public string DatabasePathToFilePath(string databaseFilePath, string? tenantSlug)
+	{
+		if ( string.IsNullOrEmpty(tenantSlug) )
+		{
+			return DatabasePathToFilePath(databaseFilePath);
+		}
+
+		// StorageFolder ends with separator, databaseFilePath starts with "/", so
+		// "/photos/" + "main" + "/2020/photo.jpg" = "/photos/main/2020/photo.jpg"
+		var filepath = StorageFolder + tenantSlug + databaseFilePath;
+		filepath = PathToFileReplacePathStyle(filepath);
+		return filepath;
+	}
+
+	/// <summary>
+	///     Full OS path (inside a tenant's storage root) back to database-style path.
+	///     Strips <c>StorageFolder/{tenantSlug}</c> prefix and normalises separators.
+	/// </summary>
+	/// <param name="subpath">full OS path inside the tenant's storage root</param>
+	/// <param name="tenantSlug">tenant slug used to determine the root; null falls back to non-tenant overload</param>
+	/// <returns>database-style path starting with "/"</returns>
+	public string FullPathStorageFolderToDatabaseStyle(string subpath, string? tenantSlug)
+	{
+		if ( string.IsNullOrEmpty(tenantSlug) )
+		{
+			return FullPathStorageFolderToDatabaseStyle(subpath);
+		}
+
+		// Strip "StorageFolder + tenantSlug" prefix, e.g. "/photos/main"
+		var tenantRoot = StorageFolder + tenantSlug;
+		var databaseFilePath = subpath.Replace(tenantRoot, string.Empty);
+		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);
+		return PathHelper.PrefixDbSlash(databaseFilePath);
+	}
+
+	/// <summary>
+	///     Rename a list of full OS paths inside a tenant's storage root to database style.
+	/// </summary>
+	public List<string> RenameListItemsToDbStyle(IEnumerable<string> localSubFolderList,
+		string? tenantSlug)
+	{
+		if ( string.IsNullOrEmpty(tenantSlug) )
+		{
+			return RenameListItemsToDbStyle(localSubFolderList);
+		}
+
+		return localSubFolderList
+			.Select(path => FullPathStorageFolderToDatabaseStyle(path, tenantSlug))
+			.ToList();
+	}
+
+	/// <summary>
+	///     Rename a list of full OS paths (with DateTimes) inside a tenant's storage root to
+	///     database style.
+	/// </summary>
+	public IEnumerable<KeyValuePair<string, DateTime>> RenameListItemsToDbStyle(
+		IEnumerable<KeyValuePair<string, DateTime>> localSubFolderList,
+		string? tenantSlug)
+	{
+		if ( string.IsNullOrEmpty(tenantSlug) )
+		{
+			return RenameListItemsToDbStyle(localSubFolderList);
+		}
+
+		return localSubFolderList
+			.Select(item => new KeyValuePair<string, DateTime>(
+				FullPathStorageFolderToDatabaseStyle(item.Key, tenantSlug), item.Value))
+			.ToList();
+	}
+
+	/// <summary>
 	///     Temp folder relative path
 	/// </summary>
 	/// <param name="databaseFilePath">databaseFilePath</param>

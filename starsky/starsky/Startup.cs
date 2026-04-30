@@ -31,6 +31,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
+using starsky.foundation.storage.Services;
 using starsky.foundation.video.GetDependencies;
 using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
@@ -179,6 +180,10 @@ public sealed class Startup
 		services.AddSingleton<OnStartupSyncBackgroundService>();
 		services.AddSingleton<CleanDemoDataService>();
 		services.AddSingleton<FfMpegDownloadBackgroundService>();
+
+		// One-time file migration: moves existing StorageFolder/ content into StorageFolder/main/
+		// Safe to run on every startup - exits immediately once 'main' directory exists.
+		services.AddHostedService<StorageTenantMigrationService>();
 	}
 
 	/// <summary>

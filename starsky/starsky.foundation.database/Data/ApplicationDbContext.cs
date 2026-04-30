@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
+using starsky.foundation.platform.Interfaces;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
@@ -12,6 +13,14 @@ namespace starsky.foundation.database.Data;
 
 public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
+	/// <summary>
+	///     Set by the DI factory (see SetupDatebaseTypes.BuilderDb) after construction so that
+	///     the global query filter can scope <see cref="FileIndex" /> results to the current
+	///     tenant.  Null means "no active tenant" – all rows are visible (used by CLI tools,
+	///     migrations, and unauthenticated scopes).
+	/// </summary>
+	internal ITenantContext? TenantContext { get; set; }
+
 	public virtual DbSet<FileIndexItem> FileIndex { get; set; }
 	public DbSet<ImportIndexItem> ImportIndex { get; set; }
 
@@ -64,6 +73,19 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 		// does not have direct effect
 		modelBuilder.HasCharSet(utf8Mb4,
 			DelegationModes.ApplyToAll);
+
+		// -----------------------------------------------------------------
+		// Tenant isolation: filter FileIndex rows to the current tenant.
+		// When TenantContext is null (CLI / migration / unauthenticated) all rows are visible.
+		// When TenantContext.TenantId is null the user has no active tenant – all rows visible.
+		// When set, only rows belonging to that tenant are returned by any query.
+		// Use .IgnoreQueryFilters() on a specific query to bypass the filter deliberately.
+		// -----------------------------------------------------------------
+		modelBuilder.Entity<FileIndexItem>()
+			.HasQueryFilter(f =>
+				TenantContext == null ||
+				TenantContext.TenantId == null ||
+				f.TenantId == TenantContext.TenantId);
 
 		// Add Index to speed performance (on MySQL max key length is 3072 bytes)
 		// MySql:CharSet might be working a future release, but now it does nothing

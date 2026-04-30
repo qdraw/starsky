@@ -169,6 +169,7 @@
         <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj"/>
         <ProjectReference Include="..\starsky.foundation.native\starsky.foundation.native.csproj"/>
         <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
         <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj"/>
         <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj"/>
         <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj"/>

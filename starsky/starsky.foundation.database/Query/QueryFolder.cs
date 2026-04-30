@@ -75,7 +75,7 @@ public partial class Query // For folder displays only
 		}
 
 		// Return values from IMemoryCache
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
+		var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 			subPath);
 
 		if ( !_cache.TryGetValue(queryCacheName,

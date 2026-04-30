@@ -146,7 +146,7 @@ public partial class Query : IQuery
 		}
 
 		// Return values from IMemoryCache
-		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
+		var queryHashListCacheName = TenantCachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
 
 		// if the result is not null return cached value
 		if ( _cache!.TryGetValue(queryHashListCacheName, out var cachedSubPaths)
@@ -173,7 +173,7 @@ public partial class Query : IQuery
 			return;
 		}
 
-		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
+		var queryHashListCacheName = TenantCachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
 		if ( _cache.TryGetValue(queryHashListCacheName, out _) )
 		{
 			_cache.Remove(queryHashListCacheName);
@@ -351,7 +351,7 @@ public partial class Query : IQuery
 			}
 
 			// ToList() > Collection was modified; enumeration operation may not execute.
-			var queryCacheName = CachingDbName(nameof(FileIndexItem),
+			var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 				item.ParentDirectory!);
 
 			if ( !_cache.TryGetValue(queryCacheName,
@@ -429,7 +429,7 @@ public partial class Query : IQuery
 			return false;
 		}
 
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
+		var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 			PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()!));
 		if ( !_cache.TryGetValue(queryCacheName, out _) )
 		{
@@ -453,7 +453,7 @@ public partial class Query : IQuery
 			return false;
 		}
 
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
+		var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 			PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()!));
 
 		_cache.Set(queryCacheName, items,
@@ -616,7 +616,9 @@ public partial class Query : IQuery
 	}
 
 	/// <summary>
-	///     Get the name of Key in the cache db
+	///     Get the name of Key in the cache db (static, no tenant prefix).
+	///     Prefer the instance method <see cref="TenantCachingDbName" /> inside Query to get a
+	///     tenant-scoped key that prevents cross-tenant cache collisions.
 	/// </summary>
 	/// <param name="functionName">how is the function called</param>
 	/// <param name="singleItemDbPath">the path</param>
@@ -633,6 +635,19 @@ public partial class Query : IQuery
 		var uniqueSingleDbCacheNameBuilder = new StringBuilder();
 		uniqueSingleDbCacheNameBuilder.Append(functionName + "_" + singleItemDbPath);
 		return uniqueSingleDbCacheNameBuilder.ToString();
+	}
+
+	/// <summary>
+	///     Tenant-scoped cache key that prefixes the base key with the current tenant ID so that
+	///     different tenants sharing the same DB sub-path never collide in the memory cache.
+	///     Falls back to the plain <see cref="CachingDbName" /> when no tenant is active
+	///     (CLI, background jobs without explicit tenant, single-tenant setups).
+	/// </summary>
+	private string TenantCachingDbName(string functionName, string? singleItemDbPath)
+	{
+		var tenantId = _context.TenantContext?.TenantId;
+		var baseName = CachingDbName(functionName, singleItemDbPath);
+		return tenantId.HasValue ? $"t{tenantId}:{baseName}" : baseName;
 	}
 
 	/// <summary>
@@ -761,7 +776,7 @@ public partial class Query : IQuery
 				return;
 			}
 
-			var queryCacheName = CachingDbName(nameof(FileIndexItem),
+			var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 				updateStatusContent.ParentDirectory!);
 			if ( !cache.TryGetValue(queryCacheName, out var objectFileFolders) )
 			{
@@ -798,7 +813,7 @@ public partial class Query : IQuery
 			return;
 		}
 
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
+		var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 			updateStatusContent.ParentDirectory!);
 
 		if ( !_cache.TryGetValue(queryCacheName, out var objectFileFolders) )
