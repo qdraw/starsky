@@ -5,9 +5,12 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.sync.WatcherInterfaces;
 using starsky.foundation.worker.Helpers;
@@ -25,10 +28,12 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 	public const string JobType = "Sync.QueueProcessorInput.v1";
 
 	private readonly IDiskWatcherBackgroundTaskQueue _bgTaskQueue;
+	private readonly IServiceScopeFactory? _scopeFactory;
 	private readonly ITenantContext? _tenantContext;
 
 	public QueueProcessor(IServiceScopeFactory serviceProvider)
 	{
+		_scopeFactory = serviceProvider;
 		_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider
 			.GetRequiredService<IDiskWatcherBackgroundTaskQueue>();
 		_tenantContext = null;
@@ -38,6 +43,7 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 		ITenantContext? tenantContext = null)
 	{
 		_bgTaskQueue = diskWatcherBackgroundTaskQueue;
+		_scopeFactory = null;
 		_tenantContext = tenantContext;
 	}
 
@@ -45,6 +51,14 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 	public async Task QueueJob(string filepath, string? toPath,
 		WatcherChangeTypes changeTypes)
 	{
+		var tenantId = _tenantContext?.TenantId;
+		var tenantSlug = _tenantContext?.TenantSlug;
+
+		if ( !tenantId.HasValue && string.IsNullOrWhiteSpace(tenantSlug) )
+		{
+			(tenantId, tenantSlug) = await ResolveTenantByFolderAsync(filepath, toPath);
+		}
+
 		var payload = new QueueProcessorPayload
 		{
 			FilePath = filepath, ToPath = toPath, ChangeTypes = changeTypes
@@ -54,12 +68,57 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 			MetaData = $"from:{filepath}" +
 			           ( string.IsNullOrEmpty(toPath) ? string.Empty : "_to:" + toPath ),
 			TraceParentId = Activity.Current?.Id,
-			TenantId = _tenantContext?.TenantId,
-			TenantSlug = _tenantContext?.TenantSlug,
+			TenantId = tenantId,
+			TenantSlug = tenantSlug,
 			PriorityLane = ProcessTaskQueue.PriorityLaneDiskWatcher,
 			JobType = JobType,
 			PayloadJson = JsonSerializer.Serialize(payload)
 		});
+	}
+
+	private async Task<(int?, string?)> ResolveTenantByFolderAsync(string filepath, string? toPath)
+	{
+		if ( _scopeFactory == null )
+		{
+			return (null, null);
+		}
+
+		using var scope = _scopeFactory.CreateScope();
+		var appSettings = scope.ServiceProvider.GetService<AppSettings>();
+		var dbContext = scope.ServiceProvider.GetService<ApplicationDbContext>();
+		if ( appSettings == null || dbContext == null )
+		{
+			return (null, null);
+		}
+
+		var folderSlug = ExtractTenantSlugFromPath(toPath ?? filepath, appSettings.StorageFolder);
+		if ( string.IsNullOrWhiteSpace(folderSlug) )
+		{
+			return (null, null);
+		}
+
+		var tenant = await dbContext.Tenants
+			.FirstOrDefaultAsync(t => t.Slug == folderSlug);
+		return tenant == null ? (null, null) : (tenant.Id, tenant.Slug);
+	}
+
+	internal static string? ExtractTenantSlugFromPath(string fullPath, string storageFolder)
+	{
+		if ( string.IsNullOrWhiteSpace(fullPath) || string.IsNullOrWhiteSpace(storageFolder) )
+		{
+			return null;
+		}
+
+		var normalizedFullPath = fullPath.Replace('\\', '/');
+		var normalizedStorage = storageFolder.Replace('\\', '/').TrimEnd('/');
+		if ( !normalizedFullPath.StartsWith(normalizedStorage + "/", StringComparison.OrdinalIgnoreCase) )
+		{
+			return null;
+		}
+
+		var relativePath = normalizedFullPath[(normalizedStorage.Length + 1)..];
+		var segments = relativePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+		return segments.Length > 0 ? segments[0] : null;
 	}
 }
 

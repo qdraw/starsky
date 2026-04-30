@@ -536,6 +536,30 @@ public partial class Query : IQuery
 			return;
 		}
 
+		var tenantSlug = context.TenantContext?.TenantSlug;
+		if ( !string.IsNullOrWhiteSpace(tenantSlug) )
+		{
+			var tenantBySlug = await context.Tenants
+				.FirstOrDefaultAsync(t => t.Slug == tenantSlug);
+			if ( tenantBySlug != null )
+			{
+				fileIndexItem.TenantId = tenantBySlug.Id;
+				return;
+			}
+		}
+
+		var pathBasedSlug = GetTenantSlugFromFilePath(fileIndexItem.FilePath);
+		if ( !string.IsNullOrWhiteSpace(pathBasedSlug) )
+		{
+			var tenantByPath = await context.Tenants
+				.FirstOrDefaultAsync(t => t.Slug == pathBasedSlug);
+			if ( tenantByPath != null )
+			{
+				fileIndexItem.TenantId = tenantByPath.Id;
+				return;
+			}
+		}
+
 		var mainTenant = await context.Tenants.FirstOrDefaultAsync(t => t.Slug == "main");
 		if ( mainTenant == null )
 		{
@@ -551,6 +575,18 @@ public partial class Query : IQuery
 		}
 
 		fileIndexItem.TenantId = mainTenant.Id;
+	}
+
+	private static string? GetTenantSlugFromFilePath(string? filePath)
+	{
+		if ( string.IsNullOrWhiteSpace(filePath) )
+		{
+			return null;
+		}
+
+		var segments = filePath
+			.Split('/', StringSplitOptions.RemoveEmptyEntries);
+		return segments.Length > 0 ? segments[0] : null;
 	}
 
 	/// <summary>
