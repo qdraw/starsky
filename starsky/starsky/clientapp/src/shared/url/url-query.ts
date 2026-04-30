@@ -171,9 +171,10 @@ export class UrlQuery {
   }
 
   public UrlSearchRelativeApi = (f: string, t: string | undefined, pageNumber = 0): string => {
+    const normalizedF = this.NormalizeApiPath(f);
     return (
       `${this.prefix}/api/search/relative-objects?f=` +
-      new URLPath().encodeURI(f) +
+      new URLPath().encodeURI(normalizedF) +
       "&t=" +
       t +
       "&p=" +
@@ -295,6 +296,9 @@ export class UrlQuery {
    * Get Direct api/index with IUrl
    */
   public UrlIndexServerApi = (urlObject: IUrl): string => {
+    if (urlObject.f) {
+      urlObject.f = this.NormalizeApiPath(urlObject.f);
+    }
     return `${this.prefix}/api/index${new URLPath().IUrlToString(urlObject)}`;
   };
 
@@ -302,7 +306,7 @@ export class UrlQuery {
    * Get Direct api/index with IUrl
    */
   public UrlIndexServerApiPath = (path: string): string => {
-    return `${this.prefix}/api/index?f=${path}`;
+    return `${this.prefix}/api/index?f=${this.NormalizeApiPath(path)}`;
   };
 
   /**
@@ -311,7 +315,7 @@ export class UrlQuery {
    */
   public UrlQueryInfoApi(subPath: string): string {
     if (!subPath) return "";
-    const url = this.urlReplacePath(subPath);
+    const url = this.NormalizeApiPath(subPath);
     return `${this.prefix}/api/info?f=${url}&json=true`;
   }
 
@@ -412,7 +416,8 @@ export class UrlQuery {
    * @param id filePath
    */
   public UrlThumbnailZoom = (f: string, id: string | undefined, z: number): string => {
-    return `${this.prefix}/api/thumbnail/zoom/${f}@${z}?filePath=${id}`;
+    const normalizedPath = id ? this.NormalizeApiPath(id) : id;
+    return `${this.prefix}/api/thumbnail/zoom/${f}@${z}?filePath=${normalizedPath}`;
   };
 
   public UrlThumbnailJsonApi = (fileHash: string): string => {
@@ -424,8 +429,15 @@ export class UrlQuery {
     isThumbnail: boolean = true,
     cache: boolean = true
   ): string => {
+    const normalizedPath = this.NormalizeApiPath(f);
     return (
-      this.prefix + "/api/download-photo?f=" + f + "&isThumbnail=" + isThumbnail + "&cache=" + cache
+      this.prefix +
+      "/api/download-photo?f=" +
+      normalizedPath +
+      "&isThumbnail=" +
+      isThumbnail +
+      "&cache=" +
+      cache
     );
   };
 
@@ -464,7 +476,7 @@ export class UrlQuery {
    * @param parentFolder no need to encode this (done in this method)
    */
   public UrlSync(parentFolder: string): string {
-    return this.prefix + "/api/synchronize?f=" + new URLPath().encodeURI(parentFolder);
+    return this.prefix + "/api/synchronize?f=" + new URLPath().encodeURI(this.NormalizeApiPath(parentFolder));
   }
 
   /**
@@ -490,7 +502,7 @@ export class UrlQuery {
   }
 
   public UrlAllowedTypesThumb(filename: string): string {
-    return this.prefix + "/api/allowed-types/thumb?f=" + filename;
+    return this.prefix + "/api/allowed-types/thumb?f=" + this.NormalizeApiPath(filename);
   }
 
   public UrlHealthDetails(): string {
@@ -507,7 +519,7 @@ export class UrlQuery {
   }
 
   public UrlRemoveCache(parentFolder: string): string {
-    return this.prefix + "/api/remove-cache?json=true&f=" + parentFolder;
+    return this.prefix + "/api/remove-cache?json=true&f=" + this.NormalizeApiPath(parentFolder);
   }
 
   public UrlGeoSync(): string {
@@ -515,7 +527,7 @@ export class UrlQuery {
   }
 
   public UrlGeoStatus(arg0: string): string {
-    return this.prefix + "/api/geo/status/?f=" + arg0;
+    return this.prefix + "/api/geo/status/?f=" + this.NormalizeApiPath(arg0);
   }
 
   public UrlThumbnailGeneration(): string {
@@ -633,6 +645,11 @@ export class UrlQuery {
   private urlReplacePath(input: string): string {
     const output = input.replaceAll("#", "");
     return output.replaceAll("+", "%2B");
+  }
+
+  private NormalizeApiPath(input: string): string {
+    if (!input) return input;
+    return this.StripTenantPrefix(this.urlReplacePath(input));
   }
 
   public UrlGeoReverseNominatim(latitude: number, longitude: number): string {

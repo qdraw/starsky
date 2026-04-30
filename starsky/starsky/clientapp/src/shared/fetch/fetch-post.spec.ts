@@ -2,6 +2,10 @@ import FetchPost from "./fetch-post";
 
 // FetchPost tests
 describe("fetch-post", () => {
+  afterEach(() => {
+    window.history.pushState({}, "", "/");
+  });
+
   it("default string response", async () => {
     const response = new Response(JSON.stringify("response"));
     const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
@@ -103,5 +107,49 @@ describe("fetch-post", () => {
     });
     expect(result.data).toStrictEqual(null);
     expect(result.statusCode).toStrictEqual(999);
+  });
+
+  it("normalizes tenant-prefixed f and filePath in string body", async () => {
+    window.history.pushState({}, "", "/main/");
+    const response = new Response(JSON.stringify({ ok: true }));
+    const spy = jest.spyOn(window, "fetch").mockImplementationOnce(() => Promise.resolve(response));
+
+    await FetchPost(
+      "/test",
+      "f=%2Fmain%2F101NZ_50__nikon_raw%2FDSC_0054.JPG&filePath=%2Fmain%2F101NZ_50__nikon_raw%2FDSC_0054.JPG"
+    );
+
+    expect(spy).toHaveBeenCalledWith("/test", {
+      body: "f=%2F101NZ_50__nikon_raw%2FDSC_0054.JPG&filePath=%2F101NZ_50__nikon_raw%2FDSC_0054.JPG",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-XSRF-TOKEN": ""
+      },
+      method: "post"
+    });
+  });
+
+  it("normalizes tenant-prefixed multi-path f in string body", async () => {
+    window.history.pushState({}, "", "/main/");
+    const response = new Response(JSON.stringify({ ok: true }));
+    const spy = jest.spyOn(window, "fetch").mockImplementationOnce(() => Promise.resolve(response));
+
+    await FetchPost(
+      "/test",
+      "f=%2Fmain%2Fa.jpg%3B%2Fmain%2Fb.jpg"
+    );
+
+    expect(spy).toHaveBeenCalledWith("/test", {
+      body: "f=%2Fa.jpg%3B%2Fb.jpg",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-XSRF-TOKEN": ""
+      },
+      method: "post"
+    });
   });
 });

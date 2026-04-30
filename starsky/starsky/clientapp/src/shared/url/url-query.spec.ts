@@ -58,6 +58,24 @@ describe("url-query", () => {
     expect(result).toBe(urlQuery.prefix + "/api/info?f=/&json=true");
   });
 
+  it("UrlQueryInfoApi strips tenant prefix when at /main/", () => {
+    window.history.pushState({}, "", "/main/");
+    const result = new UrlQuery().UrlQueryInfoApi("/main/101NZ_50__nikon_raw/DSC_0048.JPG");
+    expect(result).toBe(
+      "/starsky/main/api/info?f=/101NZ_50__nikon_raw/DSC_0048.JPG&json=true"
+    );
+    window.history.pushState({}, "", "/");
+  });
+
+  it("UrlQueryInfoApi keeps tenant-relative path when at /main/", () => {
+    window.history.pushState({}, "", "/main/");
+    const result = new UrlQuery().UrlQueryInfoApi("/101NZ_50__nikon_raw/DSC_0048.JPG");
+    expect(result).toBe(
+      "/starsky/main/api/info?f=/101NZ_50__nikon_raw/DSC_0048.JPG&json=true"
+    );
+    window.history.pushState({}, "", "/");
+  });
+
   it("UrlQueryUpdateApi", () => {
     const result = urlQuery.UrlUpdateApi();
     expect(result).toContain("update");
@@ -325,6 +343,24 @@ describe("url-query", () => {
       window.history.pushState({}, "", "/main/");
       const result = new UrlQuery().UrlPreferencesPage();
       expect(result).toBe("/main/preferences");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlDownloadPhotoApi strips tenant prefix in f query", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlDownloadPhotoApi("/main/101NZ_50__nikon_raw/DSC_0054.JPG");
+      expect(result).toContain("/api/download-photo?f=/101NZ_50__nikon_raw/DSC_0054.JPG");
+      window.history.pushState({}, "", "/");
+    });
+
+    it("UrlThumbnailZoom strips tenant prefix in filePath query", () => {
+      window.history.pushState({}, "", "/main/");
+      const result = new UrlQuery().UrlThumbnailZoom(
+        "E27GEVUPZGCHPGGJ7IO36UVYEA",
+        "/main/101NZ_50__nikon_raw/DSC_0054.JPG",
+        2
+      );
+      expect(result).toContain("filePath=/101NZ_50__nikon_raw/DSC_0054.JPG");
       window.history.pushState({}, "", "/");
     });
   });

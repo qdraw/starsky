@@ -1,5 +1,49 @@
 import { IConnectionDefault } from "../../interfaces/IConnectionDefault";
 import { GetCookie } from "../cookie/get-cookie.ts";
+import { UrlQuery } from "../url/url-query";
+
+const normalizeTenantPath = (value: string): string => {
+  if (!value) return value;
+  return new UrlQuery().StripTenantPrefix(value);
+};
+
+const normalizeTenantPathList = (value: string): string => {
+  if (!value) return value;
+  return value
+    .split(";")
+    .map((p) => normalizeTenantPath(p))
+    .join(";");
+};
+
+const normalizeBody = (body: string | FormData): string | FormData => {
+  if (typeof body === "string") {
+    if (!body.includes("f=") && !body.includes("filePath=")) {
+      return body;
+    }
+    const params = new URLSearchParams(body);
+    if (params.has("f")) {
+      params.set("f", normalizeTenantPathList(params.get("f") ?? ""));
+    }
+    if (params.has("filePath")) {
+      params.set("filePath", normalizeTenantPath(params.get("filePath") ?? ""));
+    }
+    return params.toString();
+  }
+
+  const normalized = new FormData();
+  for (const [key, value] of body.entries()) {
+    if (typeof value === "string" && key === "f") {
+      normalized.append(key, normalizeTenantPathList(value));
+      continue;
+    }
+    if (typeof value === "string" && key === "filePath") {
+      normalized.append(key, normalizeTenantPath(value));
+      continue;
+    }
+    normalized.append(key, value);
+  }
+  return normalized;
+};
 
 ///**
 // * Generic fetch POST, or DELETE function
@@ -15,9 +59,10 @@ const FetchPost = async (
   method: "post" | "delete" = "post",
   headers: Record<string, string | undefined> = {}
 ): Promise<IConnectionDefault> => {
+  const normalizedBody = normalizeBody(body);
   const settings: RequestInit = {
     method: method,
-    body,
+    body: normalizedBody,
     credentials: "include" as RequestCredentials,
     headers: {
       "X-XSRF-TOKEN": GetCookie("X-XSRF-TOKEN"),
@@ -26,7 +71,7 @@ const FetchPost = async (
     }
   };
 
-  if (typeof body === "string" && !headers["Content-Type"]) {
+  if (typeof normalizedBody === "string" && !headers["Content-Type"]) {
     (settings.headers as Record<string, string>)["Content-Type"] =
       "application/x-www-form-urlencoded";
   }
