@@ -5,7 +5,7 @@
         <ProjectGuid>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</ProjectGuid>
         <RuntimeFrameworkVersion>8.0.26</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
-        <Version>0.7.16</Version>
+        <Version>0.7.17</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
