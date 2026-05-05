@@ -2,6 +2,7 @@ using System;
 using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.accountmanagement.Helpers;
+using starsky.foundation.database.Models.Account;
 
 namespace starskytest.starsky.foundation.accountmanagement.Helpers;
 
@@ -61,32 +62,30 @@ public class Pbkdf2HasherTests
 	[TestMethod]
 	public void ComputeHash_DifferentIterationCounts_ReturnsDifferentHashes()
 	{
-		// Arrange
 		const string password = "testPassword";
 		var salt = new byte[16];
 		RandomNumberGenerator.Fill(salt);
 
-		// Act
-		var hash1 = Pbkdf2Hasher.ComputeHash(password, salt, false); // 10,000 iterations
-		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt); // 100,000 iterations
+		var hash1 =
+			Pbkdf2Hasher.ComputeHash(password, salt,
+				IterationCountType.IterateLegacySha1); // 10,000 SHA-1
+		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt); // 600,000 SHA-256 (default)
 
-		// Assert
 		Assert.AreNotEqual(hash1, hash2);
 	}
 
 	[TestMethod]
 	public void ComputeHash_DifferentIterations_HashesCompareLengths()
 	{
-		// Arrange
 		const string password = "testPassword";
 		var salt = new byte[16];
 		RandomNumberGenerator.Fill(salt);
 
-		// Act
-		var hash1 = Pbkdf2Hasher.ComputeHash(password, salt, false); // 10,000 iterations
-		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt); // 100,000 iterations
+		var hash1 =
+			Pbkdf2Hasher.ComputeHash(password, salt,
+				IterationCountType.IterateLegacySha1); // 10,000 SHA-1
+		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt); // 600,000 SHA-256 (default)
 
-		// Assert
 		Assert.AreEqual(hash1.Length, hash2.Length,
 			"Hashes should have the same length regardless of iterations.");
 		Assert.AreNotEqual(hash1, hash2, "Hashes should differ due to different iteration counts.");
@@ -132,11 +131,8 @@ public class Pbkdf2HasherTests
 	[TestMethod]
 	public void GenerateRandomSalt_ShouldReturnCorrectLength()
 	{
-		// Act
 		var salt = Pbkdf2Hasher.GenerateRandomSalt();
-
-		// Assert
-		Assert.HasCount(16, salt); // 128 / 8 = 16
+		Assert.HasCount(32, salt); // 256 / 8 = 32 bytes
 	}
 
 	[TestMethod]

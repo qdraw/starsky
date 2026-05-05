@@ -5,4 +5,5 @@ public enum IterationCountType
 	Default = 0,
 	IterateLegacySha1 = 10_000,
 	Iterate100KSha256 = 100_000,
+	Iterate600KSha256 = 600_000
 }

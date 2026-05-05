@@ -283,7 +283,7 @@ public sealed class NoAccountMiddlewareTest
 
 		Assert.IsNotNull(test);
 		Assert.AreEqual(NoAccountMiddleware.Identifier, test.Credentials!.First().Identifier);
-		Assert.AreEqual(IterationCountType.Iterate100KSha256,
+		Assert.AreEqual(IterationCountType.Iterate600KSha256,
 			test.Credentials!.First().IterationCount);
 	}
 
@@ -325,18 +325,51 @@ public sealed class NoAccountMiddlewareTest
 
 		Assert.IsNotNull(test);
 		Assert.AreEqual(NoAccountMiddleware.Identifier, test.Credentials!.First().Identifier);
-		Assert.AreEqual(IterationCountType.Iterate100KSha256,
+		// Both legacy and 100K credentials are below the current 600K threshold,
+		// so the upgrade path fires for all rows and the secret is always rewritten.
+		Assert.AreEqual(IterationCountType.Iterate600KSha256,
 			test.Credentials!.First().IterationCount);
+		Assert.AreNotEqual(beforeCredential?.Secret,
+			test.Credentials!.FirstOrDefault()!.Secret);
+	}
 
-		if ( iterationCountType == IterationCountType.Iterate100KSha256 )
+	[TestMethod]
+	[DataRow(IterationCountType.Iterate600KSha256)]
+	public async Task CreateOrUpdateNewUsers_AlreadyUpToDate_NoSecretChange(
+		IterationCountType iterationCountType)
+	{
+		const string existingSecret = "already-strong-hash";
+		var userManager = new FakeIUserManger(new UserOverviewModel
 		{
-			Assert.AreEqual(beforeCredential?.Secret,
-				test.Credentials!.FirstOrDefault()!.Secret);
-		}
-		else
-		{
-			Assert.AreNotEqual(beforeCredential?.Secret,
-				test.Credentials!.FirstOrDefault()!.Secret);
-		}
+			Users =
+			[
+				new User
+				{
+					Credentials = new List<Credential>
+					{
+						new()
+						{
+							Identifier = NoAccountMiddleware.Identifier,
+							CredentialType = new CredentialType { Code = "email" },
+							CredentialTypeId = 0,
+							IterationCount = iterationCountType,
+							Secret = existingSecret,
+							Extra = "",
+							Id = 0
+						}
+					}
+				}
+			]
+		});
+
+		await NoAccountMiddleware.CreateOrUpdateNewUsers(userManager);
+
+		var test = userManager.GetUser("email", NoAccountMiddleware.Identifier);
+
+		Assert.IsNotNull(test);
+		// Already at 600K – middleware must not change the stored secret.
+		Assert.AreEqual(existingSecret, test.Credentials!.First().Secret);
+		Assert.AreEqual(IterationCountType.Iterate600KSha256,
+			test.Credentials!.First().IterationCount);
 	}
 }
