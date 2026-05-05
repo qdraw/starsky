@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "8.0.26");
+                .HasAnnotation("ProductVersion", "8.0.25");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -226,7 +226,7 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataProtectionKeys");
+                    b.ToTable("DataProtectionKeys", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
@@ -294,13 +294,6 @@ namespace starsky.foundation.database.Migrations
                     b.Property<double>("FocalLength")
                         .HasColumnType("REAL");
 
-                    b.Property<DateTime>("ImageClassificationGeneratedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ImageClassificationModel")
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("ImageFormat")
                         .HasColumnType("INTEGER");
 
@@ -357,10 +350,6 @@ namespace starsky.foundation.database.Migrations
                         .HasMaxLength(190)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("RejectedTags")
-                        .HasMaxLength(1024)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("ShutterSpeed")
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
@@ -373,10 +362,6 @@ namespace starsky.foundation.database.Migrations
 
                     b.Property<string>("Software")
                         .HasMaxLength(40)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("SuggestedTags")
-                        .HasMaxLength(1024)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Tags")
@@ -406,7 +391,7 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("ParentDirectory", "FileName");
 
-                    b.ToTable("FileIndex");
+                    b.ToTable("FileIndex", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
@@ -566,7 +551,7 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("FileHash")
                         .HasAnnotation("MySql:CharSet", "utf8mb4");
 
-                    b.ToTable("ImportIndex");
+                    b.ToTable("ImportIndex", (string)null);
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.NotificationItem", b =>
@@ -593,69 +578,6 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("DateTimeEpoch");
 
                     b.ToTable("Notifications", (string)null);
-
-                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
-                });
-
-            modelBuilder.Entity("starsky.foundation.database.Models.QueueItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true)
-                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
-                        .HasAnnotation("Sqlite:Autoincrement", true);
-
-                    b.Property<DateTime?>("ClaimedAtUtc")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("JobId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("JobType")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("MetaData")
-                        .HasMaxLength(1024)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PayloadJson")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("PriorityLane")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("ProcessedAtUtc")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("QueueName")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Status")
-                        .IsConcurrencyToken()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("TraceParentId")
-                        .HasMaxLength(512)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_QueueItems_JobId");
-
-                    b.HasIndex("QueueName", "Status", "CreatedAtUtc")
-                        .HasDatabaseName("IX_QueueItems_Queue_Status_Created");
-
-                    b.ToTable("QueueItems", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
