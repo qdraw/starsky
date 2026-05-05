@@ -88,6 +88,12 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Update="Migrations\20260505142535_QueueItemsTableAddCustomAiTags.sql">
+            <DependentUpon>20260505142535_QueueItemsTableAddCustomAiTags.cs</DependentUpon>
+        </None>
+    </ItemGroup>
+
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>

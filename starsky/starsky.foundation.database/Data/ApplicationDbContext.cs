@@ -51,9 +51,6 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 	{
 		base.OnModelCreating(modelBuilder);
 
-		var providerName = Database.ProviderName ?? string.Empty;
-		var isMySql = providerName.Contains("MySql", StringComparison.OrdinalIgnoreCase);
-
 		const string utf8Mb4 = "utf8mb4";
 		const string mySqlCharSetAnnotation = "MySql:CharSet";
 		const string mySqlValueGeneratedOnAdd = "MySql:ValueGeneratedOnAdd";
