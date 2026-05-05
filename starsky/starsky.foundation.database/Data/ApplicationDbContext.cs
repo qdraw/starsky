@@ -253,13 +253,11 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 				etb.Property(e => e.MetaData).HasMaxLength(1024);
 				etb.Property(e => e.TraceParentId).HasMaxLength(512);
 				etb.Property(e => e.Status).IsConcurrencyToken();
-				etb.Property(e => e.CreatedAtUtc).HasColumnType("TEXT").HasMaxLength(27);
-				etb.Property(e => e.ClaimedAtUtc).HasColumnType("TEXT").HasMaxLength(27);
-				etb.Property(e => e.ProcessedAtUtc).HasColumnType("TEXT").HasMaxLength(27);
-				etb.Property(e => e.JobId).HasColumnType("varchar(36)").HasMaxLength(36);
+				etb.Property(e => e.CreatedAtUtc).HasMaxLength(27);
+				etb.Property(e => e.ClaimedAtUtc).HasMaxLength(27);
+				etb.Property(e => e.ProcessedAtUtc).HasMaxLength(27);
+				etb.Property(e => e.JobId).HasMaxLength(36);
 
-				etb.HasIndex(e => new { e.QueueName, e.Status, e.CreatedAtUtc })
-					.HasDatabaseName("IX_QueueItems_Queue_Status_Created");
 				etb.HasIndex(e => e.JobId)
 					.HasDatabaseName("IX_QueueItems_JobId")
 					.IsUnique();

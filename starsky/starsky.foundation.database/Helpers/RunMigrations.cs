@@ -49,6 +49,7 @@ public static class RunMigrations
 		await databaseFixes.FixUtf8Encoding(tableNames);
 		await databaseFixes.FixAutoIncrement("Notifications");
 		await databaseFixes.FixAutoIncrement("DataProtectionKeys");
+		await databaseFixes.FixAutoIncrement("QueueItems");
 		await databaseFixes.DisposeAsync();
 		return true;
 	}
