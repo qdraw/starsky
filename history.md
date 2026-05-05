@@ -41,6 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
+## version 0.7.18 - 2026-05-05 {#v0.7.18}
+
+- [x] (Fixed) _Back-end_ Mysql migrations: search for
+  `20260505142535_QueueItemsTableAddCustomAiTags.sql` to reset migrations done in v0.7.17 (PR #3042)
+
 ## version 0.7.17 - 2026-05-04 {#v0.7.17}
 
 - [x] (Added) _Back-end_ Add support for add custom AI tags: SuggestedTags, RejectedTags,
