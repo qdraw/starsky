@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -16,9 +17,11 @@ namespace starsky.foundation.database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("Sqlite:Autoincrement", true)
+                        .Annotation("MySql:ValueGeneratedOnAdd", true)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     QueueName = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    JobId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    JobId = table.Column<Guid>(type: "varchar(36)", maxLength: 36, nullable: false),
                     JobType = table.Column<string>(type: "TEXT", maxLength: 150, nullable: false),
                     MetaData = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
                     TraceParentId = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),

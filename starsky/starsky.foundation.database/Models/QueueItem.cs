@@ -22,6 +22,8 @@ public sealed class QueueItem
 	[Required]
 	public string QueueName { get; set; } = string.Empty;
 
+	[Column(TypeName = "varchar(36)")]
+	[MaxLength(36)]
 	public Guid JobId { get; set; }
 
 	[MaxLength(150)]
