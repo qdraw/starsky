@@ -48,6 +48,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.17 - 2026-05-04 {#v0.7.17}
 
+**Skip v0.7.17 due migration issues see #3042**
+
 - [x] (Added) _Back-end_ Add support for add custom AI tags: SuggestedTags, RejectedTags,
   ImageClassificationModel and ImageClassificationGeneratedAt (PR #3000)
 - [x] (Added) _Back-end_ Flexible background queue, support for multiple backends (in-memory,
