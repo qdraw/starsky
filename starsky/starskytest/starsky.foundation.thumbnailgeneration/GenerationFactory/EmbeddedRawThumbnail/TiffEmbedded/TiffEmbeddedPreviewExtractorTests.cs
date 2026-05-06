@@ -358,6 +358,36 @@ public class TiffEmbeddedPreviewExtractorTests
 		}
 	}
 
+	private static byte[] CreateIfdWithExifIfdOffset(uint exifIfdOffset)
+	{
+		var ifd = new byte[2 + 12 + 4];
+		var pos = 0;
+
+		ifd[pos++] = 1;
+		ifd[pos++] = 0;
+
+		// Tag: ExifIFDPointer (0x8769)
+		ifd[pos++] = 0x69;
+		ifd[pos++] = 0x87;
+		ifd[pos++] = 4; // LONG
+		ifd[pos++] = 0;
+		ifd[pos++] = 1;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = ( byte ) ( exifIfdOffset & 0xFF );
+		ifd[pos++] = ( byte ) ( ( exifIfdOffset >> 8 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( exifIfdOffset >> 16 ) & 0xFF );
+		ifd[pos++] = ( byte ) ( ( exifIfdOffset >> 24 ) & 0xFF );
+
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos] = 0;
+
+		return ifd;
+	}
+
 	[TestMethod]
 	public async Task TryExtract_WithValidTiffAndJpeg_ReturnsTrue()
 	{
@@ -763,6 +793,50 @@ public class TiffEmbeddedPreviewExtractorTests
 
 		Assert.IsTrue(result,
 			"Extractor should find the preview at the exiftool-reported start/length");
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath),
+			"Expected extracted preview written to temp storage");
+	}
+
+	[TestMethod]
+	public async Task TryExtract_WithRealWorld_MG_5522_CR2_ExifIfdMakerNote_ExtractsPreview()
+	{
+		// ExifTool says: Preview Image Start = 41932, Preview Image Length = 222680
+		const uint exifIfdOffset = 512;
+		const uint makerNoteOffset = 1024;
+		const uint previewOffset = 41932;
+		const uint previewLength = 222680;
+
+		using var ms = new MemoryStream(new byte[previewOffset + previewLength + 16]);
+
+		ms.Position = 0;
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+
+		// IFD0 points to Exif IFD, Exif IFD points to MakerNote.
+		ms.Position = 8;
+		await ms.WriteAsync(CreateIfdWithExifIfdOffset(exifIfdOffset),
+			TestContext.CancellationToken);
+
+		ms.Position = exifIfdOffset;
+		var makerNote = CreateCanonMakerNoteWithHeader(previewOffset, previewLength);
+		await ms.WriteAsync(CreateIfdWithMakerNote(makerNoteOffset, ( uint ) makerNote.Length),
+			TestContext.CancellationToken);
+
+		ms.Position = makerNoteOffset;
+		await ms.WriteAsync(makerNote, TestContext.CancellationToken);
+
+		ms.Position = previewOffset;
+		await ms.WriteAsync(CreateMinimalJpeg(( int ) previewLength), TestContext.CancellationToken);
+
+		ms.Seek(0, SeekOrigin.Begin);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath,
+			out _, out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
+
+		Assert.IsTrue(result,
+			"Extractor should find Canon preview when MakerNote is located via Exif IFD pointer");
 		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath),
 			"Expected extracted preview written to temp storage");
 	}

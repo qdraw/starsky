@@ -40,6 +40,7 @@ public partial class TiffEmbeddedPreviewExtractor
 	private const ushort TagJpegOffset = 0x0201;
 	private const ushort TagJpegLength = 0x0202;
 	private const ushort TagSubIfds = 0x014A;
+	private const ushort TagExifIfd = 0x8769;
 	private const ushort TagMakerNote = 0x927C;
 
 	private const ushort TagSonyPreviewOffset = 0x2010;
@@ -331,6 +332,9 @@ public partial class TiffEmbeddedPreviewExtractor
 			case TagSubIfds:
 				AddSubIfdOffsets(input, littleEndian, subIfdOffsets, type, n, value);
 				return;
+				case TagExifIfd when n == 1 && value > 0:
+					subIfdOffsets.Add(value);
+					return;
 			case TagMakerNote when n > 4 && value > 0:
 				state.HasMakerNote = true;
 				state.MakerNoteOffset = value;
