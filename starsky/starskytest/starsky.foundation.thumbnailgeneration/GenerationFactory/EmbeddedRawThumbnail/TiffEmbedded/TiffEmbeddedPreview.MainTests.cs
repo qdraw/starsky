@@ -664,23 +664,55 @@ public class TiffEmbeddedPreviewCoverageTests
 	}
 
 	[TestMethod]
-	public void IsLosslessJpegAtOffset_WithVariousHeaders_ReturnsExpected()
+	[DataRow(1, false)]
+	[DataRow(2, true)]
+	[DataRow(3, true)]
+	[DataRow(4, true)]
+	[DataRow(5, true)]
+	[DataRow(6, true)]
+	public void IsLosslessJpegAtOffset_WithVariousHeaders_ReturnsExpected(int index,
+		bool expected)
 	{
-		// FF D8 FF C4 (DHT) -> True
-		using var ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC4]);
-		Assert.IsTrue(TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms1, 0));
+		var ms1 = new MemoryStream();
+		switch ( index )
+		{
+			case 1:
+				// FF D8 FF C4 ... FF C0 = baseline JPEG starting with DHT -> False
+				ms1 = new MemoryStream([
+					0xFF, 0xD8,
+					0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
+					0xFF, 0xDB, 0x00, 0x04, 0x00, 0x00,
+					0xFF, 0xC0, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01,
+					0x11, 0x00
+				]);
+				break;
+			case 2:
+				ms1 = new MemoryStream([
+					0xFF, 0xD8,
+					0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
+					0xFF, 0xC3, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01,
+					0x11, 0x00
+				]);
+				break;
+			case 3:
+				// FF D8 FF C4 (DHT) -> True
+				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC4]);
+				break;
+			case 4:
+				// FF D8 FF C3 (SOF3) -> True
+				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC3]);
+				break;
+			case 5:
+				// FF D8 FF E0 (Normal JPEG) -> False
+				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC3]);
+				break;
+			case 6:
+				// Too short -> False
+				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC3]);
+				break;
+		}
 
-		// FF D8 FF C3 (SOF3) -> True
-		using var ms2 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC3]);
-		Assert.IsTrue(TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms2, 0));
-
-		// FF D8 FF E0 (Normal JPEG) -> False
-		using var ms3 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xE0]);
-		Assert.IsFalse(TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms3, 0));
-
-		// Too short -> False
-		using var ms4 = new MemoryStream([0xFF, 0xD8, 0xFF]);
-		Assert.IsFalse(TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms4, 0));
+		Assert.AreEqual(expected, TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms1, 0));
 	}
 
 	[TestMethod]
