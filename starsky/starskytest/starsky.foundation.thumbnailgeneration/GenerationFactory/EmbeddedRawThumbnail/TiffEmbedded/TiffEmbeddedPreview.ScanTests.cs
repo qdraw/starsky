@@ -11,19 +11,33 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.E
 public class TiffEmbeddedPreviewScanTests
 {
 	[TestMethod]
-	public void IsLosslessJpegAtOffset_ReturnsTrue_For_FF_D8_FF_C4()
+	public void IsLosslessJpegAtOffset_ReturnsFalse_For_BaselineJpeg_StartingWith_FF_D8_FF_C4()
 	{
-		var bytes = new byte[] { 0x00, 0xFF, 0xD8, 0xFF, 0xC4, 0x00 };
+		var bytes = new byte[]
+		{
+			0x00,
+			0xFF, 0xD8,
+			0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
+			0xFF, 0xDB, 0x00, 0x04, 0x00, 0x00,
+			0xFF, 0xC0, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x11,
+			0x00
+		};
 		using var ms = new MemoryStream(bytes);
 		// offset points to 0xFF in the sequence (index 1)
 		var result = TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms, 1);
-		Assert.IsTrue(result);
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
-	public void IsLosslessJpegAtOffset_ReturnsTrue_For_FF_D8_FF_C3()
+	public void IsLosslessJpegAtOffset_ReturnsTrue_For_LosslessSof3Jpeg()
 	{
-		var bytes = new byte[] { 0xFF, 0xD8, 0xFF, 0xC3 };
+		var bytes = new byte[]
+		{
+			0xFF, 0xD8,
+			0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
+			0xFF, 0xC3, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x11,
+			0x00
+		};
 		using var ms = new MemoryStream(bytes);
 		var result = TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms, 0);
 		Assert.IsTrue(result);
@@ -79,7 +93,13 @@ public class TryBuildScanCandidateTests
 		ms.Write(padding, 0, padding.Length);
 		var soi = ( uint ) 10;
 		ms.Seek(soi, SeekOrigin.Begin);
-		ms.Write(new byte[] { 0xFF, 0xD8, 0xFF, 0xC4 }, 0, 4); // lossless marker
+		ms.Write(new byte[]
+			{
+				0xFF, 0xD8,
+				0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
+				0xFF, 0xC3, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01,
+				0x11, 0x00
+			}, 0, 21); // lossless SOF3 marker chain
 
 		// resume position should be different from soi to ensure it's restored
 		ms.Seek(5, SeekOrigin.Begin);

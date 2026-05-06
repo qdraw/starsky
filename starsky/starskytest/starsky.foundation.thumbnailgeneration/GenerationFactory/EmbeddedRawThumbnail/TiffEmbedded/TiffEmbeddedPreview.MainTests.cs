@@ -666,10 +666,10 @@ public class TiffEmbeddedPreviewCoverageTests
 	[TestMethod]
 	[DataRow(1, false)]
 	[DataRow(2, true)]
-	[DataRow(3, true)]
+	[DataRow(3, false)]
 	[DataRow(4, true)]
-	[DataRow(5, true)]
-	[DataRow(6, true)]
+	[DataRow(5, false)]
+	[DataRow(6, false)]
 	public void IsLosslessJpegAtOffset_WithVariousHeaders_ReturnsExpected(int index,
 		bool expected)
 	{
@@ -687,6 +687,7 @@ public class TiffEmbeddedPreviewCoverageTests
 				]);
 				break;
 			case 2:
+				// FF D8 FF C4 ... FF C3 (lossless SOF3) -> True
 				ms1 = new MemoryStream([
 					0xFF, 0xD8,
 					0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
@@ -695,20 +696,20 @@ public class TiffEmbeddedPreviewCoverageTests
 				]);
 				break;
 			case 3:
-				// FF D8 FF C4 (DHT) -> True
+				// FF D8 FF C4 (DHT alone, no SOF marker) -> False (scan completes without finding SOF)
 				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC4]);
 				break;
 			case 4:
-				// FF D8 FF C3 (SOF3) -> True
+				// FF D8 FF C3 (SOF3 lossless) -> True
 				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC3]);
 				break;
 			case 5:
-				// FF D8 FF E0 (Normal JPEG) -> False
-				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC3]);
+				// FF D8 FF E0 (APP0 marker, normal JPEG) -> False
+				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
 				break;
 			case 6:
-				// Too short -> False
-				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC3]);
+				// Too short (< 4 bytes) -> False
+				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF]);
 				break;
 		}
 
