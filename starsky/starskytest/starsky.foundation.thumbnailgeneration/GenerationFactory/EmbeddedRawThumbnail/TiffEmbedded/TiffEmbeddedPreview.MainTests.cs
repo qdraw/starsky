@@ -666,12 +666,21 @@ public class TiffEmbeddedPreviewCoverageTests
 	[TestMethod]
 	public void IsLosslessJpegAtOffset_WithVariousHeaders_ReturnsExpected()
 	{
-		// FF D8 FF C4 (DHT) -> True
-		using var ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC4]);
-		Assert.IsTrue(TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms1, 0));
+		// FF D8 FF C4 ... FF C0 = baseline JPEG starting with DHT -> False
+		using var ms1 = new MemoryStream([
+			0xFF, 0xD8,
+			0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
+			0xFF, 0xDB, 0x00, 0x04, 0x00, 0x00,
+			0xFF, 0xC0, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01,
+			0x11, 0x00]);
+		Assert.IsFalse(TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms1, 0));
 
-		// FF D8 FF C3 (SOF3) -> True
-		using var ms2 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC3]);
+		// FF D8 FF C4 ... FF C3 (SOF3) -> True
+		using var ms2 = new MemoryStream([
+			0xFF, 0xD8,
+			0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
+			0xFF, 0xC3, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01,
+			0x11, 0x00]);
 		Assert.IsTrue(TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms2, 0));
 
 		// FF D8 FF E0 (Normal JPEG) -> False

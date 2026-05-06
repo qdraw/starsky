@@ -159,6 +159,22 @@ public class TiffEmbeddedPreviewExtractorTests
 		return jpeg;
 	}
 
+	private static byte[] CreateBaselineJpegStartingWithDht(int size = 5000)
+	{
+		var jpeg = CreateMinimalJpeg(size);
+		var header = new byte[]
+		{
+			0xFF, 0xD8,
+			0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
+			0xFF, 0xDB, 0x00, 0x04, 0x00, 0x00,
+			0xFF, 0xC0, 0x00, 0x0B, 0x08, 0x05, 0x08, 0x07, 0x90, 0x01, 0x01, 0x11,
+			0x00,
+			0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x3F, 0x00
+		};
+		Array.Copy(header, jpeg, header.Length);
+		return jpeg;
+	}
+
 	private static byte[] CreateIfdWithMakerNote(uint makerNoteOffset, uint makerNoteLength)
 	{
 		var ifd = new byte[2 + 12 + 4];
@@ -841,13 +857,75 @@ public class TiffEmbeddedPreviewExtractorTests
 			"Expected extracted preview written to temp storage");
 	}
 
+	[TestMethod]
+	public async Task TryExtract_WithCanonIfd0PreviewStartingWithDht_ExtractsPreview()
+	{
+		const uint stripOffset = 42008;
+		const int stripLength = 246568;
+
+		using var ms = new MemoryStream(new byte[stripOffset + stripLength + 16]);
+		await ms.WriteAsync(CreateMinimalTiffHeader(), TestContext.CancellationToken);
+
+		var ifd = new byte[2 + 3 * 12 + 4];
+		var pos = 0;
+		ifd[pos++] = 3;
+		ifd[pos++] = 0;
+
+		WriteLongEntry(0x0103, 6);
+		WriteLongEntry(0x0111, stripOffset);
+		WriteLongEntry(0x0117, stripLength);
+
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos++] = 0;
+		ifd[pos] = 0;
+
+		await ms.WriteAsync(ifd, TestContext.CancellationToken);
+		ms.Seek(stripOffset, SeekOrigin.Begin);
+		await ms.WriteAsync(CreateBaselineJpegStartingWithDht(stripLength),
+			TestContext.CancellationToken);
+
+		var selectorStorage = CreateSelectorStorage(ms.ToArray(), InputCr2SubPath,
+			out _, out var tempStorage);
+		var extractor = new TiffEmbeddedPreviewExtractor(new FakeIWebLogger(), selectorStorage);
+
+		var result = await extractor.TryExtract(InputCr2SubPath, OutputSubPath);
+
+		Assert.IsTrue(result,
+			"A valid baseline JPEG preview starting with DHT should not be rejected as lossless");
+		Assert.IsTrue(tempStorage.ExistFile(OutputSubPath),
+			"Expected extracted preview written to temp storage");
+		return;
+
+		void WriteLongEntry(ushort tag, uint value)
+		{
+			ifd[pos++] = ( byte ) ( tag & 0xFF );
+			ifd[pos++] = ( byte ) ( ( tag >> 8 ) & 0xFF );
+			ifd[pos++] = 4;
+			ifd[pos++] = 0;
+			ifd[pos++] = 1;
+			ifd[pos++] = 0;
+			ifd[pos++] = 0;
+			ifd[pos++] = 0;
+			ifd[pos++] = ( byte ) ( value & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 8 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 16 ) & 0xFF );
+			ifd[pos++] = ( byte ) ( ( value >> 24 ) & 0xFF );
+		}
+	}
+
 	private static byte[] CreateLosslessJpeg(int size = 5000)
 	{
-		var jpeg = new byte[size];
-		jpeg[0] = 0xFF;
-		jpeg[1] = 0xD8;
-		jpeg[2] = 0xFF;
-		jpeg[3] = 0xC4; // DHT without DQT → lossless marker
+		var jpeg = CreateMinimalJpeg(size);
+		var header = new byte[]
+		{
+			0xFF, 0xD8,
+			0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
+			0xFF, 0xC3, 0x00, 0x0B, 0x08, 0x05, 0x08, 0x07, 0x90, 0x01, 0x01, 0x11,
+			0x00,
+			0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x3F, 0x00
+		};
+		Array.Copy(header, jpeg, header.Length);
 		jpeg[size - 2] = 0xFF;
 		jpeg[size - 1] = 0xD9;
 		return jpeg;

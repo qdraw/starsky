@@ -15,8 +15,9 @@ public partial class TiffEmbeddedPreviewExtractor
 {
 	/// <summary>
 	///     Returns true when the JPEG at <paramref name="offset" /> is lossless.
-	///     Canon CR2 stores lossless raw strips starting with FF D8 FF C4 (SOI + DHT, no DQT).
-	///     ImageSharp cannot decode these; they must be excluded from preview candidates.
+	///     Canon CR2 raw strips often start with FF D8 FF C4 because the first marker is DHT,
+	///     but valid preview JPEGs may do the same. Distinguish them by scanning until the first
+	///     SOF marker and classifying only lossless SOF variants as raw strips.
 	/// </summary>
 	internal static bool IsLosslessJpegAtOffset(Stream input, uint offset)
 	{
@@ -25,20 +26,40 @@ public partial class TiffEmbeddedPreviewExtractor
 			return false;
 		}
 
-		Span<byte> header = stackalloc byte[4];
-		if ( input.Read(header) < 4 )
+		var buffer = new byte[1024];
+		var read = input.Read(buffer, 0, buffer.Length);
+		if ( read < 4 )
 		{
 			return false;
 		}
 
-		// FF D8 = SOI; FF C4 = DHT without prior DQT -> lossless JPEG
-		// FF D8 = SOI; FF C3 = SOF3 = lossless sequential
-		if ( header[0] != 0xFF || header[1] != 0xD8 || header[2] != 0xFF )
+		if ( buffer[0] != 0xFF || buffer[1] != 0xD8 || buffer[2] != 0xFF )
 		{
 			return false;
 		}
 
-		return header[3] == 0xC4 || header[3] == 0xC3;
+		var pos = 2;
+		while ( TryFindNextMarker(buffer, read, ref pos, out var marker, out var segLen) )
+		{
+			if ( IsSofMarker(marker) )
+			{
+				return IsLosslessSofMarker(marker);
+			}
+
+			if ( marker == 0xDA )
+			{
+				return false;
+			}
+
+			pos += 2 + Math.Max(0, segLen);
+		}
+
+		return false;
+	}
+
+	private static bool IsLosslessSofMarker(int marker)
+	{
+		return marker is 0xC3 or 0xC7 or 0xCB or 0xCF;
 	}
 
 	internal static IEnumerable<PreviewCandidate?> ScanJpegsInRange(Stream input, uint rangeOffset,
