@@ -31,6 +31,7 @@ public partial class TiffEmbeddedPreviewExtractor
 	private const int MinJpegSize = 4096; // 4KB minimum for valid JPEG
 	private const int MaxMakerNoteScanBytes = 50 * 1024 * 1024;
 	private const int CanonFallbackScanBytes = 2 * 1024 * 1024;
+	private const int CanonMakerNoteIfdProbeBytes = 64;
 
 	// TIFF IFD Tags
 	private const ushort TagImageWidth = 0x0100;
@@ -497,39 +498,61 @@ public partial class TiffEmbeddedPreviewExtractor
 		};
 
 		var foundExplicitCandidate = false;
+		var seenCandidates = new HashSet<ulong>();
+		var ifdOffsets = GetCanonMakerNoteIfdOffsets(input, makerNoteOffset, makerNoteLength,
+			littleEndian);
 		foreach ( var query in queries )
 		{
-			var (hasPair, rawOffset, rawLength) = ReadIfdTagPair(input, makerNoteOffset,
-				makerNoteLength,
-				query);
-
-			if ( !hasPair ||
-			     !TryResolveMakerNoteOffset(input, makerNoteOffset, rawOffset,
-				     out var resolvedOffset) )
+			foreach ( var ifdOffset in ifdOffsets )
 			{
-				continue;
-			}
+				var ifdBlockLength = ( uint ) ( ( ulong ) makerNoteOffset + makerNoteLength -
+				                                ifdOffset );
+				var (hasPair, rawOffset, rawLength) = ReadIfdTagPair(input, ifdOffset,
+					ifdBlockLength,
+					query);
 
-			var resolvedLength = rawLength;
-			if ( resolvedLength < MinJpegSize )
-			{
-				resolvedLength = JpegScannerUtilities.DetectJpegLengthFromStart(input,
-					resolvedOffset,
-					Math.Min(MaxMakerNoteScanBytes,
-						( int ) ( input.Length - resolvedOffset )));
-			}
+				if ( !hasPair )
+				{
+					continue;
+				}
 
-			if ( resolvedLength < MinJpegSize )
-			{
-				continue;
-			}
+				if ( !TryResolveMakerNoteOffset(input, makerNoteOffset, rawOffset,
+					     out var resolvedOffset) &&
+				     !TryResolveMakerNoteOffset(input, ifdOffset, rawOffset,
+					     out resolvedOffset) )
+				{
+					continue;
+				}
 
-			foundExplicitCandidate = true;
-			previews.Add(new PreviewCandidate { Offset = resolvedOffset, Length = resolvedLength });
+				var resolvedLength = rawLength;
+				if ( resolvedLength < MinJpegSize )
+				{
+					resolvedLength = JpegScannerUtilities.DetectJpegLengthFromStart(input,
+						resolvedOffset,
+						Math.Min(MaxMakerNoteScanBytes,
+							( int ) ( input.Length - resolvedOffset )));
+				}
 
-			if ( previews.Count >= MaxPreviews )
-			{
-				return;
+				if ( resolvedLength < MinJpegSize )
+				{
+					continue;
+				}
+
+				if ( !seenCandidates.Add(( ( ulong ) resolvedOffset << 32 ) | resolvedLength) )
+				{
+					continue;
+				}
+
+				foundExplicitCandidate = true;
+				previews.Add(new PreviewCandidate
+				{
+					Offset = resolvedOffset, Length = resolvedLength
+				});
+
+				if ( previews.Count >= MaxPreviews )
+				{
+					return;
+				}
 			}
 		}
 
@@ -547,6 +570,37 @@ public partial class TiffEmbeddedPreviewExtractor
 				break;
 			}
 		}
+	}
+
+	internal static List<uint> GetCanonMakerNoteIfdOffsets(Stream input, uint makerNoteOffset,
+		uint makerNoteLength, bool littleEndian)
+	{
+		var offsets = new List<uint> { makerNoteOffset };
+		if ( makerNoteLength <= 6 )
+		{
+			return offsets;
+		}
+
+		var maxProbe = Math.Min(CanonMakerNoteIfdProbeBytes, makerNoteLength - 6);
+		for ( uint delta = 1; delta <= maxProbe; delta++ )
+		{
+			var ifdOffset = makerNoteOffset + delta;
+			var ifdBlockLength = makerNoteLength - delta;
+			if ( ifdBlockLength < 6 )
+			{
+				break;
+			}
+
+			if ( !TryReadIfdEntryHeader(input, ifdOffset, ifdBlockLength, littleEndian, out _,
+				    out _) )
+			{
+				continue;
+			}
+
+			offsets.Add(ifdOffset);
+		}
+
+		return offsets;
 	}
 
 	internal static (bool HasPair, uint CandidateOffset, uint CandidateLength) ReadIfdTagPair(
