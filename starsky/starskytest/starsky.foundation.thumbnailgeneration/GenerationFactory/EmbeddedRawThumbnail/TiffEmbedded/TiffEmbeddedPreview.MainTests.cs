@@ -696,16 +696,20 @@ public class TiffEmbeddedPreviewCoverageTests
 				]);
 				break;
 			case 3:
-				// FF D8 FF C4 (DHT alone, no SOF marker) -> False (scan completes without finding SOF)
-				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC4]);
+				// FF D8 FF C4 ... (DHT alone, no SOF marker) -> False (scan completes without finding SOF)
+				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC4, 0x00, 0x04]);
 				break;
 			case 4:
 				// FF D8 FF C3 (SOF3 lossless) -> True
-				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xC3]);
+				ms1 = new MemoryStream([
+					0xFF, 0xD8, 0xFF, 0xC3, 0x00, 0x08, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01
+				]);
 				break;
 			case 5:
 				// FF D8 FF E0 (APP0 marker, normal JPEG) -> False
-				ms1 = new MemoryStream([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
+				ms1 = new MemoryStream([
+					0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46
+				]);
 				break;
 			case 6:
 				// Too short (< 4 bytes) -> False
