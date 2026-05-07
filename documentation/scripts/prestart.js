@@ -86,6 +86,8 @@ writeFile(
 	})
 );
 
+touchSync("advanced-options/thumbnail-generation/__do_not_edit_this__folder");
+
 copyFileSync(
 	"starsky/starsky.foundation.thumbnailgeneration/raw-embedded-preview-extraction.md",
 	"advanced-options/thumbnail-generation/raw-embedded-preview-extraction.md"
