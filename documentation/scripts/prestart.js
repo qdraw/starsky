@@ -72,6 +72,25 @@ writeFile(
 copyFileSync("starsky/readme.md", "advanced-options/starsky/readme.md");
 
 copyFileSync("starsky/starsky/readme.md", "advanced-options/starsky/starsky/readme.md");
+
+copyFileSync(
+	"starsky/starsky.foundation.thumbnailgeneration/readme.md",
+	"advanced-options/thumbnail-generation/readme.md"
+);
+
+writeFile(
+	"advanced-options/thumbnail-generation/_category_.json",
+	JSON.stringify({
+		label: "Thumbnail Generation",
+		position: 18
+	})
+);
+
+copyFileSync(
+	"starsky/starsky.foundation.thumbnailgeneration/raw-embedded-preview-extraction.md",
+	"advanced-options/thumbnail-generation/raw-embedded-preview-extraction.md"
+);
+
 copyFileSync(
 	"starsky/starsky/readme-docker-hub.md",
 	"advanced-options/starsky/starsky/readme-docker-hub.md"
