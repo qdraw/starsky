@@ -79,6 +79,21 @@ public class TiffEmbeddedPreviewScanTests
 		var result = TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms, 0);
 		Assert.IsFalse(result);
 	}
+	
+	[TestMethod]
+	public void IsLosslessJpegAtOffset_ReturnsFalse_When_SosMarkerFoundBeforeSof()
+	{
+		// Start Of Scan (SOS, 0xDA) appearing before any SOF should be treated as non-lossless
+		var bytes = new byte[]
+		{
+			0xFF, 0xD8,
+			0xFF, 0xDA, 0x00, 0x04, 0x00, 0x00, // SOS marker with a small segment length
+			0xFF, 0xC3, 0x00, 0x0B, 0x08 // (optional tail)
+		};
+		using var ms = new MemoryStream(bytes);
+		var result = TiffEmbeddedPreviewExtractor.IsLosslessJpegAtOffset(ms, 0);
+		Assert.IsFalse(result, "Encountering SOS before any SOF must be treated as non-lossless");
+	}
 }
 
 [TestClass]
