@@ -11,6 +11,10 @@ When using ApplicationDbContext use DatabaseTest as a base class for testing. Th
 
 When writing tests use `[TestMethod]` and `[DataRow]` to cover multiple scenarios in a single test method. `[DataTestMethod]` is deprecated use `[TestMethod]` with `[DataRow]` instead.
 
+- Unit tests are located in `starsky/starskytest`.
+- Run tests with:
+  `dotnet test starsky/starskytest/starskytest.csproj`
+
 Be concise.
 
 If I say "review": Review the code. When reviewing, start with a list of what needs to improve, then separately compliment on the good stuff. We don't use try catch, errors are caught on a higher level.
@@ -18,3 +22,5 @@ If I say "review": Review the code. When reviewing, start with a list of what ne
 Always start with a summary in bullets, then full response.
 
 When I ask to explain: explain from a functional point of view what the code does. Do not explain what the fields or the methods do, because the names should be self-explanatory. Then tell me what technical principles have been used. At the end note the design patterns used and the dependencies.
+
+Documentation output must be written to `documentation/docs` relative to the repository root.
