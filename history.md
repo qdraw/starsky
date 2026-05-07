@@ -41,7 +41,18 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.17 - _(Unreleased)_ - 2026-?-? {#v0.7.17}
+## version 0.7.19 - _(Unreleased)_ - 2026-?-? {#v0.7.19}
+
+- [x] (Added) _Back-end_ Support for old Canon CR2 Raws (EOS 10D, 20D, 30D) (PR #3047)
+
+## version 0.7.18 - 2026-05-05 {#v0.7.18}
+
+- [x] (Fixed) _Back-end_ Mysql migrations: search for
+  `20260505142535_QueueItemsTableAddCustomAiTags.sql` to reset migrations done in v0.7.17, only needed if has run 0.7.17, for older versions this is auto done (PR #3042)
+
+## version 0.7.17 - 2026-05-04 {#v0.7.17}
+
+**Skip v0.7.17 due migration issues see #3042**
 
 - [x] (Added) _Back-end_ Add support for add custom AI tags: SuggestedTags, RejectedTags,
   ImageClassificationModel and ImageClassificationGeneratedAt (PR #3000)

@@ -602,18 +602,19 @@ namespace starsky.foundation.database.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
-                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true)
-                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
-                        .HasAnnotation("Sqlite:Autoincrement", true);
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 
                     b.Property<DateTime?>("ClaimedAtUtc")
+                        .HasMaxLength(27)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAtUtc")
+                        .HasMaxLength(27)
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("JobId")
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("JobType")
                         .IsRequired()
@@ -625,12 +626,14 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PayloadJson")
+                        .HasMaxLength(4096)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("PriorityLane")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("ProcessedAtUtc")
+                        .HasMaxLength(27)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("QueueName")
@@ -651,9 +654,6 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("JobId")
                         .IsUnique()
                         .HasDatabaseName("IX_QueueItems_JobId");
-
-                    b.HasIndex("QueueName", "Status", "CreatedAtUtc")
-                        .HasDatabaseName("IX_QueueItems_Queue_Status_Created");
 
                     b.ToTable("QueueItems", (string)null);
 

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
+using starsky.foundation.database.Extensions;
 using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Models;
@@ -640,7 +641,8 @@ public sealed class FileIndexItem
 	public string? Software
 	{
 		get => string.IsNullOrEmpty(_softwareData) ? string.Empty : _softwareData;
-		set => _softwareData = string.IsNullOrEmpty(value) ? string.Empty : value;
+		set => _softwareData =
+			string.IsNullOrEmpty(value) ? string.Empty : value.TruncateWithEllipsis(40);
 	}
 
 	/// <summary>
