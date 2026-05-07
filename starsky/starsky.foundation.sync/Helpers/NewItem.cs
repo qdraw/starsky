@@ -66,7 +66,6 @@ public sealed class NewItem
 
 		// future: read Json sidecar
 		await SetFileHashStatus(filePath, fileHash, updatedDatabaseItem);
-		EnsureInstanceId(updatedDatabaseItem);
 		updatedDatabaseItem.SetAddToDatabase();
 		var info = _subPathStorage.Info(filePath);
 
@@ -89,14 +88,9 @@ public sealed class NewItem
 	{
 		var metaDataItem = await _readMeta.ReadExifAndXmpFromFileAsync(dbItem.FilePath!);
 		var compare = FileIndexCompareHelper.Compare(dbItem, metaDataItem);
-		if ( string.IsNullOrWhiteSpace(dbItem.InstanceId) )
-		{
-			dbItem.InstanceId = FileIndexItem.CreateInstanceId();
-			if ( !compare.Contains(nameof(FileIndexItem.InstanceId).ToLowerInvariant()) )
-			{
-				compare.Add(nameof(FileIndexItem.InstanceId).ToLowerInvariant());
-			}
-		}
+
+		AddInstanceIdToDatabaseItem(dbItem, compare);
+
 		dbItem.Size = size;
 		await SetFileHashStatus(dbItem.FilePath!, dbItem.FileHash!, dbItem);
 		dbItem.LastChanged.AddRange(compare);
@@ -106,6 +100,21 @@ public sealed class NewItem
 		}
 
 		return dbItem;
+	}
+
+
+	private static void AddInstanceIdToDatabaseItem(FileIndexItem dbItem, List<string> compare)
+	{
+		if ( !string.IsNullOrWhiteSpace(dbItem.InstanceId) )
+		{
+			return;
+		}
+
+		dbItem.InstanceId = InstanceId.CreateNewInstanceId();
+		if ( !compare.Contains(nameof(FileIndexItem.InstanceId).ToLowerInvariant()) )
+		{
+			compare.Add(nameof(FileIndexItem.InstanceId).ToLowerInvariant());
+		}
 	}
 
 	/// <summary>
@@ -129,14 +138,6 @@ public sealed class NewItem
 			updatedDatabaseItem.Status = success
 				? FileIndexItem.ExifStatus.Ok
 				: FileIndexItem.ExifStatus.OperationNotSupported;
-		}
-	}
-
-	private static void EnsureInstanceId(FileIndexItem updatedDatabaseItem)
-	{
-		if ( string.IsNullOrWhiteSpace(updatedDatabaseItem.InstanceId) )
-		{
-			updatedDatabaseItem.InstanceId = FileIndexItem.CreateInstanceId();
 		}
 	}
 }

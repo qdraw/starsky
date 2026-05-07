@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode;
@@ -107,8 +108,6 @@ public class UpdateImportTransformations
 			comparedNamesList = AddReverseGeoCodeToComparedNamesList(comparedNamesList);
 		}
 
-		comparedNamesList = AddInstanceIdToComparedNamesList(comparedNamesList, fileIndexItem);
-
 		if ( comparedNamesList.Count == 0 )
 		{
 			return fileIndexItem;
@@ -153,6 +152,12 @@ public class UpdateImportTransformations
 		return list;
 	}
 
+	/// <summary>
+	/// This 
+	/// </summary>
+	/// <param name="list"></param>
+	/// <param name="fileIndexItem"></param>
+	/// <returns></returns>
 	internal static List<string> AddInstanceIdToComparedNamesList(List<string> list,
 		FileIndexItem fileIndexItem)
 	{
@@ -161,7 +166,7 @@ public class UpdateImportTransformations
 			return list;
 		}
 
-		fileIndexItem.InstanceId = FileIndexItem.CreateInstanceId();
+		fileIndexItem.InstanceId = InstanceId.CreateNewInstanceId();
 		list.Add(nameof(FileIndexItem.InstanceId).ToLowerInvariant());
 		return list;
 	}

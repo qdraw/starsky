@@ -921,16 +921,9 @@ public sealed class FileIndexItem
 	/// </returns>
 	public static bool IsRelativeOrientation(int rotateClock)
 	{
-		return rotateClock == -1 || rotateClock == 1; // rotateClock == -1 || rotateClock == 1 true
+		return rotateClock is -1 or 1; // rotateClock == -1 || rotateClock == 1 true
 	}
 
-	/// <summary>
-	///     Generate a fresh xmpMM:InstanceID value.
-	/// </summary>
-	public static string CreateInstanceId()
-	{
-		return $"xmp.iid:{Guid.NewGuid():D}";
-	}
 
 	/// <summary>
 	///     Sets the relative orientation.

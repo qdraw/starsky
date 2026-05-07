@@ -58,15 +58,6 @@ public sealed class FileIndexItemTest
 	}
 
 	[TestMethod]
-	public void FileIndexItemTest_CreateInstanceId()
-	{
-		var value = FileIndexItem.CreateInstanceId();
-		Assert.IsTrue(value.StartsWith("xmp.iid:", StringComparison.Ordinal));
-		Assert.IsTrue(Guid.TryParse(value.Replace("xmp.iid:", string.Empty), out _));
-	}
-
-
-	[TestMethod]
 	public void FileIndexItemTest_SetColorClassTestDefault()
 	{
 		var input = ColorClassParser.GetColorClass();
@@ -78,8 +69,8 @@ public sealed class FileIndexItemTest
 	public void FileIndexItemTest_SetColorClassTestMin1()
 	{
 		var input = ColorClassParser.GetColorClass("-1");
-		var output = ColorClassParser.Color.DoNotChange;
-		Assert.AreEqual(input, output);
+		const ColorClassParser.Color output = ColorClassParser.Color.DoNotChange;
+		Assert.AreEqual(output, input);
 	}
 
 	[TestMethod]
@@ -87,32 +78,32 @@ public sealed class FileIndexItemTest
 	public void FileIndexItemTest_SetColorClassTest0()
 	{
 		var input = ColorClassParser.GetColorClass("0");
-		var output = ColorClassParser.Color.None;
-		Assert.AreEqual(input, output);
+		const ColorClassParser.Color output = ColorClassParser.Color.None;
+		Assert.AreEqual(output, input);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetColorClassTest1()
 	{
 		var input = ColorClassParser.GetColorClass("1");
-		var output = ColorClassParser.Color.Winner;
-		Assert.AreEqual(input, output);
+		const ColorClassParser.Color output = ColorClassParser.Color.Winner;
+		Assert.AreEqual(output, input);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetColorClassTest2()
 	{
 		var input = ColorClassParser.GetColorClass("2");
-		var output = ColorClassParser.Color.WinnerAlt;
-		Assert.AreEqual(input, output);
+		const ColorClassParser.Color output = ColorClassParser.Color.WinnerAlt;
+		Assert.AreEqual(output, input);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetColorClassTest3()
 	{
 		var input = ColorClassParser.GetColorClass("3");
-		var output = ColorClassParser.Color.Superior;
-		Assert.AreEqual(input, output);
+		const ColorClassParser.Color output = ColorClassParser.Color.Superior;
+		Assert.AreEqual(output, input);
 	}
 
 	[TestMethod]
@@ -127,38 +118,38 @@ public sealed class FileIndexItemTest
 	public void FileIndexItemTest_SetColorClassTest5()
 	{
 		var input = ColorClassParser.GetColorClass("5");
-		var output = ColorClassParser.Color.Typical;
-		Assert.AreEqual(input, output);
+		const ColorClassParser.Color output = ColorClassParser.Color.Typical;
+		Assert.AreEqual(output, input);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetColorClassTest6()
 	{
 		var input = ColorClassParser.GetColorClass("6");
-		var output = ColorClassParser.Color.TypicalAlt;
-		Assert.AreEqual(input, output);
+		const ColorClassParser.Color output = ColorClassParser.Color.TypicalAlt;
+		Assert.AreEqual(output, input);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetColorClassTest7()
 	{
 		var input = ColorClassParser.GetColorClass("7");
-		var output = ColorClassParser.Color.Extras;
-		Assert.AreEqual(input, output);
+		const ColorClassParser.Color output = ColorClassParser.Color.Extras;
+		Assert.AreEqual(output, input);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetColorClassTest8()
 	{
 		var input = ColorClassParser.GetColorClass("8");
-		var output = ColorClassParser.Color.Trash;
-		Assert.AreEqual(input, output);
+		const ColorClassParser.Color output = ColorClassParser.Color.Trash;
+		Assert.AreEqual(output, input);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_GetColorClassListTestEightSeven()
 	{
-		var input = "8,7";
+		const string input = "8,7";
 		var eightSeven = new List<ColorClassParser.Color>
 		{
 			ColorClassParser.Color.Trash, ColorClassParser.Color.Extras
@@ -170,7 +161,7 @@ public sealed class FileIndexItemTest
 	[TestMethod]
 	public void FileIndexItemTest_GetColorClassListString()
 	{
-		var input = "string";
+		const string input = "string";
 		var output = FileIndexItem.GetColorClassList(input);
 		Assert.IsEmpty(output); // <= 0
 	}
@@ -247,7 +238,6 @@ public sealed class FileIndexItemTest
 		var t = new FileIndexItem { Orientation = ImageRotation.Rotation.Rotate270Cw };
 		Assert.AreEqual(ImageRotation.Rotation.Horizontal, t.RelativeOrientation(1));
 	}
-
 
 	[TestMethod]
 	public void FileIndexItemTest_SetOrientationrelativeRelativeOrientation_Plus5()
