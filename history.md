@@ -41,6 +41,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
+## version 0.7.19 - _(Unreleased)_ - 2026-?-? {#v0.7.19}
+
+- [x] (Added) _Back-end_ Support for old Canon CR2 Raws (EOS 10D, 20D, 30D) (PR #3047)
+
 ## version 0.7.18 - 2026-05-05 {#v0.7.18}
 
 - [x] (Fixed) _Back-end_ Mysql migrations: search for
