@@ -51,10 +51,10 @@ public sealed class NewItem
 	/// <summary>
 	///     Prepare a new item (no update in db)
 	/// </summary>
-	/// <param name="filePath">path of file</param>
+	/// <param name="filePath">path of the file</param>
 	/// <param name="fileHash">optional could be null</param>
 	/// <param name="parentDirectory">parent directory name</param>
-	/// <param name="fileName">name without path</param>
+	/// <param name="fileName">name without the path</param>
 	/// <returns></returns>
 	private async Task<FileIndexItem> NewFileItemAsync(string filePath, string fileHash,
 		string parentDirectory, string fileName)
@@ -64,7 +64,7 @@ public sealed class NewItem
 		updatedDatabaseItem!.ImageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 		await stream.DisposeAsync();
 
-		// future: read Json sidecar
+		// future: read JSON sidecar
 		await SetFileHashStatus(filePath, fileHash, updatedDatabaseItem);
 		updatedDatabaseItem.SetAddToDatabase();
 		var info = _subPathStorage.Info(filePath);
@@ -84,12 +84,13 @@ public sealed class NewItem
 	/// <param name="dbItem">database item</param>
 	/// <param name="size">byte size</param>
 	/// <returns>the updated item</returns>
-	public async Task<FileIndexItem> PrepareUpdateFileItemAsync(FileIndexItem dbItem, long size)
+	public async Task<FileIndexItem> PrepareUpdateFileItemAsync(FileIndexItem dbItem,
+		long size, bool appSettingsExifToolImportSkipAddInstanceId)
 	{
 		var metaDataItem = await _readMeta.ReadExifAndXmpFromFileAsync(dbItem.FilePath!);
 		var compare = FileIndexCompareHelper.Compare(dbItem, metaDataItem);
 
-		AddInstanceIdToDatabaseItem(dbItem, compare);
+		AddInstanceIdToDatabaseItem(appSettingsExifToolImportSkipAddInstanceId, dbItem, compare);
 
 		dbItem.Size = size;
 		await SetFileHashStatus(dbItem.FilePath!, dbItem.FileHash!, dbItem);
@@ -102,10 +103,11 @@ public sealed class NewItem
 		return dbItem;
 	}
 
-
-	private static void AddInstanceIdToDatabaseItem(FileIndexItem dbItem, List<string> compare)
+	private static void AddInstanceIdToDatabaseItem(bool appSettingsExifToolImportSkipAddInstanceId,
+		FileIndexItem dbItem, List<string> compare)
 	{
-		if ( !string.IsNullOrWhiteSpace(dbItem.InstanceId) )
+		if ( !string.IsNullOrWhiteSpace(dbItem.InstanceId) ||
+		     appSettingsExifToolImportSkipAddInstanceId )
 		{
 			return;
 		}
