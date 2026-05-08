@@ -12,16 +12,23 @@ internal static class ColorMatrixTransform
 		{ 0.0556434f, -0.2040259f, 1.0572252f }
 	};
 
-	// Bradford-style chromatic adaptation from D50 to D65 white point.
-	// This is a standard step when the camera profile (ColorMatrix1) is specified
-	// relative to a D50 illuminant, but the target sRGB space uses a D65 illuminant.
-	// Omitting this step is a common cause of red/magenta color casts.
-	private static readonly float[,] XyzD50ToD65 =
+	// Bradford chromatic adaptation matrices used to normalize the profile's
+	// white-balanced camera neutral to the D65 white point expected by sRGB.
+	private static readonly float[,] Bradford =
 	{
-		{ 0.99044f, -0.01229f, -0.00336f },
-		{ -0.00713f, 1.01559f, 0.00118f },
-		{ -0.00094f, -0.00238f, 1.08369f }
+		{ 0.8951f, 0.2664f, -0.1614f },
+		{ -0.7502f, 1.7135f, 0.0367f },
+		{ 0.0389f, -0.0685f, 1.0296f }
 	};
+
+	private static readonly float[,] BradfordInverse =
+	{
+		{ 0.9869929f, -0.1470543f, 0.1599627f },
+		{ 0.4323053f, 0.5183603f, 0.0492912f },
+		{ -0.0085287f, 0.0400428f, 0.9684867f }
+	};
+
+	private static readonly float[] D65White = [0.95047f, 1f, 1.08883f];
 
 	internal static float[,] BuildCameraToSrgb(float[,] colorMatrix1,
 		float[,] forwardMatrix1, ushort calibrationIlluminant1,
@@ -32,7 +39,7 @@ internal static class ColorMatrixTransform
 		float[,]? cameraCalibration2 = null,
 		float[]? asShotNeutral = null)
 	{
-		if ( !TryBuildCameraToXyz(colorMatrix1, forwardMatrix1, calibrationIlluminant1,
+		if ( !TryBuildCameraToXyz(colorMatrix1, forwardMatrix1,
 			cameraCalibration1, out var cameraToXyz1) )
 		{
 			return Identity3X3();
@@ -42,7 +49,6 @@ internal static class ColorMatrixTransform
 		if ( colorMatrix2 != null && calibrationIlluminant2.HasValue &&
 		    TryBuildCameraToXyz(colorMatrix2,
 			    forwardMatrix2 ?? Identity3X3(),
-			    calibrationIlluminant2.Value,
 			    cameraCalibration2,
 			    out var cameraToXyz2) &&
 		    TryEstimateCctFromDualProfiles(asShotNeutral, cameraToXyz1, cameraToXyz2,
@@ -54,12 +60,14 @@ internal static class ColorMatrixTransform
 			cameraToXyz = Lerp3X3(cameraToXyz1, cameraToXyz2, w);
 		}
 
+		cameraToXyz = NormalizeWhiteBalancedNeutralToD65(cameraToXyz);
+
 		// Final transform from the profile connection space (XYZ) to sRGB.
 		return Multiply3X3(XyzToSrgb, cameraToXyz);
 	}
 
 	private static bool TryBuildCameraToXyz(float[,] colorMatrix, float[,] forwardMatrix,
-		ushort calibrationIlluminant, float[,]? cameraCalibration, out float[,] cameraToXyz)
+		float[,]? cameraCalibration, out float[,] cameraToXyz)
 	{
 		cameraToXyz = Identity3X3();
 		var cameraCalibrationInv = Identity3X3();
@@ -81,24 +89,49 @@ internal static class ColorMatrixTransform
 		}
 
 		cameraToXyz = Multiply3X3(invertedCameraToXyz, cameraCalibrationInv);
-		
-		// Apply chromatic adaptation based on illuminant.
-		// D65 (21) is the standard for modern digital photography and sRGB.
-		// D50 (23) is used by legacy rangefinders (Leica) and needs adaptation.
-		// Other illuminants (17=D55, 20=StdA, etc.) are treated conservatively
-		// and get adaptation to D65 for best results in sRGB space.
-		var needsD50ToD65Adaptation = calibrationIlluminant switch
+
+		return true;
+	}
+
+	private static float[,] NormalizeWhiteBalancedNeutralToD65(float[,] cameraToXyz)
+	{
+		var sourceWhite = Multiply3X3Vector(cameraToXyz, 1f, 1f, 1f);
+		if ( !TryBuildBradfordAdaptation(sourceWhite, D65White, out var adaptation) )
 		{
-			21 => false,  // D65 - no adaptation needed
-			1 => false,   // Daylight (equivalent to D65)
-			_ => true     // All others (including 23=D50, unknown) need adaptation
-		};
-		
-		if ( needsD50ToD65Adaptation )
-		{
-			cameraToXyz = Multiply3X3(XyzD50ToD65, cameraToXyz);
+			return cameraToXyz;
 		}
 
+		return Multiply3X3(adaptation, cameraToXyz);
+	}
+
+	private static bool TryBuildBradfordAdaptation(float[] sourceWhite, float[] targetWhite,
+		out float[,] adaptation)
+	{
+		adaptation = Identity3X3();
+		if ( sourceWhite.Length < 3 || targetWhite.Length < 3 )
+		{
+			return false;
+		}
+
+		var sourceCone = Multiply3X3Vector(Bradford, sourceWhite[0], sourceWhite[1], sourceWhite[2]);
+		var targetCone = Multiply3X3Vector(Bradford, targetWhite[0], targetWhite[1], targetWhite[2]);
+		for ( var i = 0; i < 3; i++ )
+		{
+			if ( !float.IsFinite(sourceCone[i]) || !float.IsFinite(targetCone[i]) ||
+			     sourceCone[i] <= 1e-6f || targetCone[i] <= 1e-6f )
+			{
+				return false;
+			}
+		}
+
+		var coneScale = new[,]
+		{
+			{ targetCone[0] / sourceCone[0], 0f, 0f },
+			{ 0f, targetCone[1] / sourceCone[1], 0f },
+			{ 0f, 0f, targetCone[2] / sourceCone[2] }
+		};
+
+		adaptation = Multiply3X3(BradfordInverse, Multiply3X3(coneScale, Bradford));
 		return true;
 	}
 
@@ -177,10 +210,11 @@ internal static class ColorMatrixTransform
 	{
 		return illuminant switch
 		{
-			17 => 5003f, // D50
+			17 => 2856f, // Standard Light A
 			20 => 5503f, // D55
 			21 => 6504f, // D65
 			22 => 7504f, // D75
+			23 => 5003f, // D50
 			_ => 5500f
 		};
 	}
@@ -302,6 +336,16 @@ internal static class ColorMatrixTransform
 		}
 
 		return result;
+	}
+
+	private static float[] Multiply3X3Vector(float[,] matrix, float x, float y, float z)
+	{
+		return
+		[
+			matrix[0, 0] * x + matrix[0, 1] * y + matrix[0, 2] * z,
+			matrix[1, 0] * x + matrix[1, 1] * y + matrix[1, 2] * z,
+			matrix[2, 0] * x + matrix[2, 1] * y + matrix[2, 2] * z
+		];
 	}
 
 	private static float[,] Identity3X3()

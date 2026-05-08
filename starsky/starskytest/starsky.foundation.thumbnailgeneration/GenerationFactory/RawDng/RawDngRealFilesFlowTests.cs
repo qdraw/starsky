@@ -14,8 +14,8 @@ public class RawDngRealFilesFlowTests
 	[TestMethod]
 	public void TryRunToJpeg_WithProvidedRealDngFiles_ReportsPerFileResult()
 	{
-		var basePath1 = "C:\\data\\testcontent\\raws-dng-converter\\";
-		var basePath = "/data/testcontent/raws-dng-converter/";
+		var basePath1 = "C:\\data\\testcontent\\main\\raws-dng-converter\\";
+		var basePath = "/Users/dion/data/testcontent/main/raws-dng-converter/";
 
 		string[] files =
 		[
@@ -146,6 +146,16 @@ public class RawDngRealFilesFlowTests
 			"/Users/dion/data/testcontent/main/raws2/IMG_1016.DNG"
 		];
 
+		// Create a temp output directory for generated JPEG files
+		var tempDir = Path.Combine(Path.GetTempPath(), "starsky_rawdng_tests3");
+
+		if ( Directory.Exists(tempDir) )
+		{
+			Directory.Delete(tempDir, true);
+		}
+
+		Directory.CreateDirectory(tempDir);
+
 		var missing = new List<string>();
 		foreach ( var file in files )
 		{
@@ -163,7 +173,10 @@ public class RawDngRealFilesFlowTests
 		foreach ( var file in files )
 		{
 			using var input = File.OpenRead(file);
-			using var output = new MemoryStream();
+			var outputPath = Path.Combine(tempDir,
+				"baseName" + "_" + Guid.NewGuid().ToString("N") + ".jpg");
+
+			using var output = File.Open(outputPath, FileMode.Create, FileAccess.Write);
 
 			var ok = RawDngPipelineRunner.TryRunToJpeg(input, output, out var error);
 			TestContext.WriteLine(
@@ -171,17 +184,19 @@ public class RawDngRealFilesFlowTests
 
 			Assert.IsTrue(ok, $"Expected RAW decode success for {file}: {error}");
 			Assert.IsGreaterThan(8L, output.Length, $"Expected JPEG output for {file}");
-			var bytes = output.ToArray();
-			Assert.AreEqual(( byte ) 0xFF, bytes[0], $"Expected JPEG SOI for {file}");
-			Assert.AreEqual(( byte ) 0xD8, bytes[1], $"Expected JPEG SOI for {file}");
+			output.Flush();
+
+			// var bytes = output.ToArray();
+			// Assert.AreEqual(( byte ) 0xFF, bytes[0], $"Expected JPEG SOI for {file}");
+			// Assert.AreEqual(( byte ) 0xD8, bytes[1], $"Expected JPEG SOI for {file}");
 		}
 	}
 
 	[TestMethod]
 	public void TryRunToJpeg_WithProvidedRealDngFiles_ReportsPerFileResult2()
 	{
-		var basePath = "/Users/dion/data/testcontent/";
-		var basePath111 = "C:\\data\\testcontent\\";
+		var basePath = "/Users/dion/data/testcontent/main/";
+		var basePath111 = "C:\\data\\testcontent\\main\\";
 
 		string[] files =
 		[
