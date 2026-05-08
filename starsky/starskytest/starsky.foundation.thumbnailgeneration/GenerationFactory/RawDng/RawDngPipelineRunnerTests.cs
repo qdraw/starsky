@@ -29,7 +29,7 @@ public class RawDngPipelineRunnerTests
 		};
 
 		var steps = new List<RawDngPipelineStep>();
-		var state = RawDngPhase3Pipeline.Run(raw, steps.Add);
+		var state = RawDngPipelineExecutor.Run(raw, steps.Add);
 
 		CollectionAssert.AreEqual(
 			new[]
@@ -79,6 +79,19 @@ public class RawDngPipelineRunnerTests
 		using var output = new MemoryStream();
 
 		var ok = RawDngPipelineRunner.TryRunToJpeg(dng, output, out var error);
+
+		Assert.IsFalse(ok);
+		Assert.AreEqual(0, output.Length);
+		Assert.AreEqual("Missing width/height/bits metadata", error);
+	}
+
+	[TestMethod]
+	public void ExecutorTryRunToJpeg_WhenOnlyEmbeddedPreviewExists_DoesNotFallbackToPreview()
+	{
+		using var dng = BuildPreviewOnlyDng();
+		using var output = new MemoryStream();
+
+		var ok = RawDngPipelineExecutor.TryRunToJpeg(dng, output, out var error);
 
 		Assert.IsFalse(ok);
 		Assert.AreEqual(0, output.Length);

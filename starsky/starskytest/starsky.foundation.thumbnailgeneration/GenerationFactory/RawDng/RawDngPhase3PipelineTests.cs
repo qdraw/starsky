@@ -1,10 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.RawDng;
+using System.Collections.Generic;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.RawDng;
 
 [TestClass]
-public class RawDngPhase3PipelineTests
+public class RawDngPipelineExecutorTests
 {
 	[TestMethod]
 	public void Run_ProducesNormalizedAndLinearRgb_WithWhiteBalanceApplied()
@@ -30,7 +31,7 @@ public class RawDngPhase3PipelineTests
 			}
 		};
 
-		var state = RawDngPhase3Pipeline.Run(raw);
+		var state = RawDngPipelineExecutor.Run(raw);
 
 		Assert.IsNotNull(state.NormalizedBayer);
 		Assert.IsNotNull(state.LinearRgb);
@@ -53,5 +54,38 @@ public class RawDngPhase3PipelineTests
 
 		Assert.IsTrue(state.DisplayRgb[0, 0, 0] is >= 0f and <= 1f);
 		Assert.IsTrue(state.DisplayRgb[1, 1, 2] is >= 0f and <= 1f);
+	}
+
+	[TestMethod]
+	public void Run_WithStepHook_UsesCanonicalRawProcessingOrder()
+	{
+		var raw = new DngRawImage
+		{
+			Width = 2,
+			Height = 2,
+			BitsPerSample = 16,
+			BlackLevel = new[] { 0f, 0f, 0f, 0f },
+			WhiteLevel = new[] { 1024f, 1024f, 1024f, 1024f },
+			AsShotNeutral = [1f, 1f, 1f],
+			ColorMatrix1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CfaPattern = [0, 1, 1, 2],
+			ForwardMatrix1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CameraCalibration1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CameraCalibration2 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CalibrationIlluminant1 = 21,
+			Bayer = new ushort[,] { { 0, 512 }, { 1024, 1024 } }
+		};
+
+		var steps = new List<RawDngPipelineStep>();
+		RawDngPipelineExecutor.Run(raw, steps.Add);
+
+		CollectionAssert.AreEqual(
+			new[]
+			{
+				RawDngPipelineStep.DumpRawGrayscaleImage, RawDngPipelineStep.Normalize,
+				RawDngPipelineStep.BilinearDemosaic, RawDngPipelineStep.WhiteBalance,
+				RawDngPipelineStep.ColorMatrix, RawDngPipelineStep.ExposureCompensation,
+				RawDngPipelineStep.ToneCurve
+			}, steps);
 	}
 }
