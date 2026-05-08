@@ -6,7 +6,7 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.RawDng;
 internal static class RawDngPipelineRunner
 {
 	internal static bool TryRun(Stream input, out RawDngPipelineState? state, out string error,
-		Action<RawDngPipelineStep>? onStep = null, Action<byte[,]>? onRawDebug = null)
+		Action<RawDngPipelineStep>? onStep = null)
 	{
 		state = null;
 		error = string.Empty;
@@ -23,10 +23,9 @@ internal static class RawDngPipelineRunner
 	}
 
 	internal static bool TryRunToJpeg(Stream input, Stream output, out string error,
-		Action<RawDngPipelineStep>? onStep = null, Action<byte[,]>? onRawDebug = null)
+		Action<RawDngPipelineStep>? onStep = null)
 	{
-		error = string.Empty;
-		if ( TryRun(input, out var state, out error, onStep, onRawDebug) &&
+		if ( TryRun(input, out var state, out error, onStep) &&
 		     state?.DisplayRgb != null )
 		{
 			return RawDngJpegExporter.TryWriteDisplayRgbAsJpeg(state.DisplayRgb, output, out error);

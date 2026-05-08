@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.PreviewImageNative;
 using starskytest.FakeMocks;
@@ -42,6 +45,48 @@ public class PreviewImageNativeServiceTests
 		// Assert
 		Assert.IsFalse(result);
 		Assert.IsEmpty(logger.TrackedInformation); // No logs expected
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
+	public void GeneratePreviewImage_WithUserProvidedCompressedDngFiles_Succeeds__MacOnly()
+	{
+		string[] inputPaths =
+		[
+			"/Users/dion/data/testcontent/main/raws2/20250809_201105_d.dng",
+			"/Users/dion/data/testcontent/main/raws2/DSC08279_raw.dng"
+		];
+
+		var missing = inputPaths.Where(path => !File.Exists(path)).ToList();
+		if ( missing.Count > 0 )
+		{
+			Assert.Inconclusive($"Missing local DNG fixtures: {string.Join(", ", missing)}");
+		}
+
+		var tempDir = Path.Combine(Path.GetTempPath(), "starsky_native_preview_tests");
+		Directory.CreateDirectory(tempDir);
+
+		foreach ( var inputPath in inputPaths )
+		{
+			var outputPath = Path.Combine(tempDir, $"{Guid.NewGuid():N}.jpg");
+			try
+			{
+				var (service, _) = CreateSut();
+
+				var result = service.GeneratePreviewImage(inputPath, outputPath, 4032, 3024);
+
+				Assert.IsTrue(result, $"Expected native DNG render success for {inputPath}");
+				Assert.IsTrue(File.Exists(outputPath), $"Expected output file for {inputPath}");
+				Assert.IsGreaterThan(0L, new FileInfo(outputPath).Length);
+			}
+			finally
+			{
+				if ( File.Exists(outputPath) )
+				{
+					File.Delete(outputPath);
+				}
+			}
+		}
 	}
 
 	[TestMethod]

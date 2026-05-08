@@ -65,7 +65,11 @@ public class ThumbnailGeneratorFactory(
 
 		if ( filePath.EndsWith(".dng", StringComparison.OrdinalIgnoreCase) )
 		{
-			return new RawDngThumbnailGenerator(selectorStorage, logger);
+			return new CompositeThumbnailGenerator(
+			[
+				new RawDngThumbnailGenerator(selectorStorage, logger),
+				nativePreviewThumbnailGenerator
+			], logger);
 		}
 
 		if ( ExtensionRolesHelper.IsExtensionRawThumbnailSupported(filePath) )

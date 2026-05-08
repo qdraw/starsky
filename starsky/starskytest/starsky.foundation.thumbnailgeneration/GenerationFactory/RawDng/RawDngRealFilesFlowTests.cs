@@ -14,7 +14,8 @@ public class RawDngRealFilesFlowTests
 	[TestMethod]
 	public void TryRunToJpeg_WithProvidedRealDngFiles_ReportsPerFileResult()
 	{
-		var basePath = "C:\\data\\testcontent\\raws-dng-converter\\";
+		var basePath1 = "C:\\data\\testcontent\\raws-dng-converter\\";
+		var basePath = "/data/testcontent/raws-dng-converter/";
 
 		string[] files =
 		[
@@ -137,11 +138,10 @@ public class RawDngRealFilesFlowTests
 	}
 
 	[TestMethod]
-	public void TryRunToJpeg_WithUserProvidedDngFiles_DecodesRawToJpeg()
+	public void TryRunToJpeg_WithUserProvidedUncompressedDngFiles_DecodesRawToJpeg()
 	{
 		string[] files =
 		[
-			"/Users/dion/data/testcontent/main/raws2/20250809_201105_d.dng",
 			"/Users/dion/data/testcontent/main/raws2/IMG_0872_chdk.dng",
 			"/Users/dion/data/testcontent/main/raws2/IMG_1016.DNG"
 		];
@@ -181,7 +181,7 @@ public class RawDngRealFilesFlowTests
 	public void TryRunToJpeg_WithProvidedRealDngFiles_ReportsPerFileResult2()
 	{
 		var basePath = "/Users/dion/data/testcontent/";
-		basePath = "C:\\data\\testcontent\\";
+		var basePath111 = "C:\\data\\testcontent\\";
 
 		string[] files =
 		[
