@@ -6,6 +6,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 [assembly: InternalsVisibleTo("starskytest")]
 [assembly: InternalsVisibleTo("starsky.benchmarks.rawdng")]
@@ -1020,41 +1022,43 @@ internal static class DngSubsetReader
 					return false;
 				}
 
-			byte[]? decompressed = null;
-			ReadOnlySpan<byte> payload;
-			if ( compression == CompressionUncompressed )
-			{
-				payload = encodedBuf.AsSpan(0, count);
-			}
-			else if ( compression is CompressionDeflate or CompressionAdobeDeflate )
-			{
-				decompressed = Inflate(encodedBuf, count);
-				if ( decompressed == null )
+				byte[]? decompressed = null;
+				ReadOnlySpan<byte> payload;
+
+				var rowsInStrip = Math.Min(rowsPerStrip, height - rowCursor);
+				var stripPixelCount = checked(rowsInStrip * width);
+
+				if ( compression == CompressionUncompressed )
+				{
+					payload = encodedBuf.AsSpan(0, count);
+				}
+				else if ( compression is CompressionDeflate or CompressionAdobeDeflate )
+				{
+					decompressed = Inflate(encodedBuf, count);
+					if ( decompressed == null )
+					{
+						return false;
+					}
+
+					payload = decompressed;
+				}
+				else if ( compression is CompressionJpeg or CompressionJpegOldStyle )
+				{
+					decompressed = DecompressJpeg(encodedBuf, count);
+					if ( decompressed == null )
+					{
+						return false;
+					}
+
+					payload = decompressed;
+				}
+				else
 				{
 					return false;
 				}
 
-				payload = decompressed;
-			}
-			else if ( compression is CompressionJpeg or CompressionJpegOldStyle )
-			{
-				decompressed = DecompressJpeg(encodedBuf, count);
-				if ( decompressed == null )
-				{
-					return false;
-				}
-
-				payload = decompressed;
-			}
-			else
-			{
-				return false;
-			}
-
-			var rowsInStrip = Math.Min(rowsPerStrip, height - rowCursor);
-			var stripPixelCount = checked(rowsInStrip * width);
 				if ( !DecodePixelsInto(payload, littleEndian, bitsPerSample, stripPixelCount,
-					    decodedBuf.AsSpan(0, stripPixelCount)) )
+						decodedBuf.AsSpan(0, stripPixelCount)) )
 				{
 					return false;
 				}
@@ -1173,16 +1177,11 @@ internal static class DngSubsetReader
 				}
 
 				if ( !DecodePixelsInto(payload, littleEndian, bitsPerSample, tilePixelCount,
-					    decodedBuf.AsSpan(0, tilePixelCount)) )
-					{
-						return false;
-					}
+						decodedBuf.AsSpan(0, tilePixelCount)) )
+				{
+					return false;
+				}
 
-					if ( predictor == 2 )
-					{
-						ApplyHorizontalPredictorInverse(decodedBuf.AsSpan(0, tilePixelCount),
-							tileWidth, tileLength, bitsPerSample);
-					}
 
 					var tileStartY = ty * tileLength;
 					var tileStartX = tx * tileWidth;
@@ -1250,21 +1249,38 @@ internal static class DngSubsetReader
 
 	private static byte[]? DecompressJpeg(byte[] compressed, int count)
 	{
-		// JPEG lossless compression in DNG files uses Huffman-based encoding, which is distinct
-		// from standard lossy JPEG. Full implementation requires either:
-		// 1. P/Invoke to libjpeg with lossless support enabled, or
-		// 2. Port/binding of a C JPEG lossless decoder to C#, or
-		// 3. Commercial library like Magick.NET or similar
-		// 
-		// This is a known limitation. Most DNGs use Deflate (ZIP) compression instead.
-		// Future enhancement: consider adding libjpeg-turbo via P/Invoke or native binding.
+		// Attempt to decode standard (lossy) JPEG payloads into an 8-bit per-pixel
+		// grayscale buffer using ImageSharp. Lossless JPEG (special raw JPEG used by
+		// some RAW formats) is not supported by ImageSharp and will fail here.
+		try
+		{
+			// Load only the provided segment of the buffer
+			using var ms = new MemoryStream(compressed, 0, count, false, true);
+			// Decode directly into single-channel 8-bit luminance (L8)
+			using var gray = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.L8>(ms);
+			var w = gray.Width;
+			var h = gray.Height;
+			var outBytes = new byte[checked(w * h)];
 
-		System.Diagnostics.Debug.WriteLine(
-			$"JPEG lossless compression not supported. File size: {count} bytes. " +
-			"Consider using libraw, dcraw, or JPEG lossless-capable tools for full DNG support.");
-		
-		return null;
+			for (var y = 0; y < h; y++)
+			{
+				for (var x = 0; x < w; x++)
+				{
+					// L8.PackedValue is the 8-bit luminance
+					outBytes[y * w + x] = gray[x, y].PackedValue;
+				}
+			}
+
+			return outBytes;
+		}
+		catch (Exception ex)
+		{
+			System.Diagnostics.Debug.WriteLine($"DecompressJpeg failed: {ex.GetType().Name}: {ex.Message}");
+			return null;
+		}
 	}
+
+
 
 	// --- decode-into-span helpers (no per-call heap allocation) ---
 
