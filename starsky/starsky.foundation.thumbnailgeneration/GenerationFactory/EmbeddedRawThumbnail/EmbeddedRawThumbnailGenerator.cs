@@ -19,6 +19,10 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawTh
 /// <summary>
 ///     Generator for extracting embedded preview thumbnails from RAW image files.
 ///     Supports: CR2, CR3, NEF, ARW, DNG, RAF, FFF, X3F formats.
+///     
+///     Portrait & Rotation Support:
+///     All extracted embedded previews automatically support EXIF-based image orientation.
+///     Portrait mode images and other rotations are correctly oriented during thumbnail generation.
 /// </summary>
 [Service(typeof(IEmbeddedRawThumbnailGenerator),
 	InjectionLifetime = InjectionLifetime.Transient)]

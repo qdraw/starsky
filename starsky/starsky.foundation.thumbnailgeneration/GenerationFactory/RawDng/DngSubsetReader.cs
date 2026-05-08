@@ -516,9 +516,19 @@ internal static class DngSubsetReader
 			return false;
 		}
 
-		if ( predictor != 1 )
+		if ( predictor is not (1 or 2) )
 		{
 			error = $"Unsupported predictor: {predictor}";
+			return false;
+		}
+
+		if ( TryGetUnsignedArray(input, littleEndian, ifd, TagCfaRepeatPatternDim,
+			     out var cfaRepeatPatternDim) &&
+		     cfaRepeatPatternDim.Length >= 2 &&
+		     ( cfaRepeatPatternDim[0] != 2 || cfaRepeatPatternDim[1] != 2 ) )
+		{
+			error =
+				$"Unsupported CFA repeat pattern: {cfaRepeatPatternDim[1]}x{cfaRepeatPatternDim[0]}";
 			return false;
 		}
 
@@ -526,7 +536,8 @@ internal static class DngSubsetReader
 		if ( hasTiles )
 		{
 			if ( !TryReadPixelsTiled(input, littleEndian, offsets, counts, bitsPerSample,
-				    width, height, tileWidth, tileLength, ( ushort ) compression, bayer) )
+				    width, height, tileWidth, tileLength, predictor, ( ushort ) compression,
+				    bayer) )
 			{
 				error = "Failed to decode tile payload";
 				return false;
@@ -535,7 +546,7 @@ internal static class DngSubsetReader
 		else
 		{
 			if ( !TryReadPixels(input, littleEndian, offsets, counts, bitsPerSample,
-				    width, height, rowsPerStrip, ( ushort ) compression, bayer) )
+				    width, height, rowsPerStrip, predictor, ( ushort ) compression, bayer) )
 			{
 				error = "Failed to decode strip payload";
 				return false;
@@ -967,7 +978,7 @@ internal static class DngSubsetReader
 
 	private static bool TryReadPixels(Stream input, bool littleEndian, IReadOnlyList<uint> offsets,
 		IReadOnlyList<uint> counts, int bitsPerSample, int width, int height, int rowsPerStrip,
-		ushort compression, ushort[,] bayer)
+		int predictor, ushort compression, ushort[,] bayer)
 	{
 		if ( width <= 0 || height <= 0 || rowsPerStrip <= 0 )
 		{
@@ -1033,6 +1044,12 @@ internal static class DngSubsetReader
 					return false;
 				}
 
+				if ( predictor == 2 )
+				{
+					ApplyHorizontalPredictorInverse(decodedBuf.AsSpan(0, stripPixelCount), width,
+						rowsInStrip, bitsPerSample);
+				}
+
 				var decodedIndex = 0;
 				for ( var y = 0; y < rowsInStrip; y++ )
 				{
@@ -1057,7 +1074,8 @@ internal static class DngSubsetReader
 
 	private static bool TryReadPixelsTiled(Stream input, bool littleEndian,
 		IReadOnlyList<uint> offsets, IReadOnlyList<uint> counts, int bitsPerSample, int width,
-		int height, int tileWidth, int tileLength, ushort compression, ushort[,] bayer)
+		int height, int tileWidth, int tileLength, int predictor, ushort compression,
+		ushort[,] bayer)
 	{
 		if ( width <= 0 || height <= 0 || tileWidth <= 0 || tileLength <= 0 )
 		{
@@ -1133,6 +1151,12 @@ internal static class DngSubsetReader
 						    decodedBuf.AsSpan(0, tilePixelCount)) )
 					{
 						return false;
+					}
+
+					if ( predictor == 2 )
+					{
+						ApplyHorizontalPredictorInverse(decodedBuf.AsSpan(0, tilePixelCount),
+							tileWidth, tileLength, bitsPerSample);
 					}
 
 					var tileStartY = ty * tileLength;
@@ -1225,6 +1249,26 @@ internal static class DngSubsetReader
 		}
 
 		return DecodePackedBestEffortInto(payload, littleEndian, bitsPerSample, pixelCount, dest);
+	}
+
+	private static void ApplyHorizontalPredictorInverse(Span<ushort> decoded,
+		int rowWidth, int rowCount, int bitsPerSample)
+	{
+		if ( rowWidth <= 1 || rowCount <= 0 )
+		{
+			return;
+		}
+
+		var mask = bitsPerSample >= 16 ? 0xFFFFu : ( ( 1u << bitsPerSample ) - 1u );
+		for ( var row = 0; row < rowCount; row++ )
+		{
+			var rowOffset = row * rowWidth;
+			for ( var x = 1; x < rowWidth; x++ )
+			{
+				var idx = rowOffset + x;
+				decoded[idx] = ( ushort ) ( ( decoded[idx] + decoded[idx - 1] ) & mask );
+			}
+		}
 	}
 
 	private static bool DecodePackedBestEffortInto(ReadOnlySpan<byte> payload, bool littleEndian,

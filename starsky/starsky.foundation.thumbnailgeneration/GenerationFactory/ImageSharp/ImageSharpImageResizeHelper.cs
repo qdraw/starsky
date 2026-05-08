@@ -8,7 +8,7 @@ internal static class ImageSharpImageResizeHelper
 {
 	internal static void ImageSharpImageResize(Image image, int width, bool removeExif)
 	{
-		// Add original rotation to the image as json
+		// Preserve EXIF metadata if requested
 		if ( image.Metadata.ExifProfile != null && !removeExif )
 		{
 			image.Metadata.ExifProfile.SetValue(ExifTag.Software, "Starsky");
@@ -27,6 +27,9 @@ internal static class ImageSharpImageResizeHelper
 			width = 0;
 		}
 
+		// AutoOrient automatically reads and applies EXIF orientation tag to the image pixels,
+		// ensuring portrait and other rotated images display correctly.
+		// Supports EXIF orientation values 1-8 (all standard EXIF rotation modes).
 		image.Mutate(x => x.AutoOrient());
 		image.Mutate(x => x
 			.Resize(width, height, KnownResamplers.Lanczos3)

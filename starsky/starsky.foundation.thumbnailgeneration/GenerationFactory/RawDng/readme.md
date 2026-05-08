@@ -5,6 +5,28 @@ ensuring that the image data is correctly processed for thumbnail generation.
 Forbidden to use embedded jpeg files in DNG files.
 For using the embedded jpeg files, see EmbeddedRawThumbnail class.
 
+## Current RawDNG support in this folder
+
+The RAW pipeline (`DngSubsetReader` -> `RawDngPipelineExecutor`) is **RAW-only** and does not
+fallback to embedded preview JPEGs.
+
+| Area | Status | Notes |
+|---|---|---|
+| Bit depth | Supported | 8/10/12/14/16-bit |
+| Compression | Supported | Uncompressed (`1`), Deflate (`8`), AdobeDeflate (`32946`) |
+| Compression | Not supported | JPEG-compressed RAW (`6`/`7`, lossy/lossless JPEG) |
+| Packing layout | Supported | Packed bits + word-stored samples |
+| Endianness | Supported | Little- and big-endian TIFF parsing |
+| Predictor decoding | Supported | None (`1`) and horizontal differencing (`2`) |
+| CFA pattern | Supported | 2x2 Bayer patterns (RGGB/BGGR/GBRG/GRBG style) |
+| CFA pattern | Not supported | Non-2x2 repeat patterns (e.g. X-Trans) |
+| Linear vs mosaic | Partial | Mosaic CFA path is primary; linear RAW variants are limited |
+| Tile/strip layout | Supported | Both strip and tile payloads |
+| Black/white levels | Supported | Scalar and array metadata handling |
+| Color matrices | Supported | ColorMatrix/ForwardMatrix + WB pipeline |
+| Crop/orientation | Supported | ActiveArea/DefaultCrop + Orientation (1/3/6/8) |
+| Opcode processing | Not supported | Gain maps/lens opcodes are not applied |
+
 # DNG Bit Depth and Compression Overview
 
 | Bit Depth | Compression         | Typical File Size | Quality Impact | Editing Flexibility | Common Usage                  |

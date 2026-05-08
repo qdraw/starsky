@@ -33,6 +33,38 @@ public class DngSubsetReaderTests
 	}
 
 	[TestMethod]
+	public void TryLoad_WithPredictor2_DecodesHorizontalDifferencing()
+	{
+		var differencedRaw = new byte[8];
+		WriteU16(differencedRaw, 0, 100); // row 0, col 0
+		WriteU16(differencedRaw, 2, 100); // row 0, col 1 = 200 - 100
+		WriteU16(differencedRaw, 4, 300); // row 1, col 0
+		WriteU16(differencedRaw, 6, 100); // row 1, col 1 = 400 - 300
+		using var ms = BuildMinimalDng(16, differencedRaw, differencedRaw.Length,
+			predictor: 2);
+
+		var ok = DngSubsetReader.TryLoad(ms, out var image, out var error);
+
+		Assert.IsTrue(ok, error);
+		Assert.IsNotNull(image);
+		Assert.AreEqual(( ushort ) 100, image.Bayer[0, 0]);
+		Assert.AreEqual(( ushort ) 200, image.Bayer[0, 1]);
+		Assert.AreEqual(( ushort ) 300, image.Bayer[1, 0]);
+		Assert.AreEqual(( ushort ) 400, image.Bayer[1, 1]);
+	}
+
+	[TestMethod]
+	public void TryLoad_WithUnsupportedCfaRepeatPattern_ReturnsError()
+	{
+		using var ms = BuildMinimalDng(16, cfaRepeatWidth: 6, cfaRepeatHeight: 6);
+
+		var ok = DngSubsetReader.TryLoad(ms, out _, out var error);
+
+		Assert.IsFalse(ok);
+		StringAssert.StartsWith(error, "Unsupported CFA repeat pattern:");
+	}
+
+	[TestMethod]
 	public void TryLoad_WithMinimalUncompressed8BitCfaDng_Loads8BitPixels()
 	{
 		var raw = new byte[] { 10, 20, 30, 40 };
@@ -153,7 +185,8 @@ public class DngSubsetReaderTests
 	private static MemoryStream BuildMinimalDng(ushort bitsPerSample = 16,
 		byte[]? rawPayload = null,
 		int stripByteCount = 0, float[]? blackLevels = null, float[]? whiteLevels = null,
-		ushort? illuminant = null)
+		ushort? illuminant = null, ushort predictor = 1, ushort cfaRepeatWidth = 2,
+		ushort cfaRepeatHeight = 2)
 	{
 		if ( rawPayload == null )
 		{
@@ -181,7 +214,7 @@ public class DngSubsetReaderTests
 		// Count entries needed
 		var hasBlackArray = blackLevels.Length > 1;
 		var hasWhiteArray = whiteLevels.Length > 1;
-		var entryCount = 14 + ( hasBlackArray ? 1 : 0 ) + ( hasWhiteArray ? 1 : 0 );
+		var entryCount = 15 + ( hasBlackArray ? 1 : 0 ) + ( hasWhiteArray ? 1 : 0 );
 
 		WriteU16(data, 8, ( ushort ) entryCount);
 		var entryBase = 10;
@@ -198,13 +231,14 @@ public class DngSubsetReaderTests
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0102, 3, 1, bitsPerSample); // bits
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0103, 3, 1, 1); // compression
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0106, 3, 1, 32803); // CFA photometric
+		WriteIfdEntry(data, entryBase + idx++ * 12, 0x013D, 3, 1, predictor); // predictor
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0111, 4, 1, rawDataOffset); // strip offset
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0115, 3, 1, 1); // samples per pixel
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0116, 4, 1, 2); // rows per strip
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x0117, 4, 1,
 			( uint ) stripByteCount); // strip byte counts
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x828D, 3, 2,
-			0x00020002); // CFA repeat 2x2 inline
+			( uint ) ( cfaRepeatWidth | ( cfaRepeatHeight << 16 ) )); // CFA repeat inline
 		WriteIfdEntry(data, entryBase + idx++ * 12, 0x828E, 1, 4,
 			0x02010100); // CFA pattern RGGB inline
 
