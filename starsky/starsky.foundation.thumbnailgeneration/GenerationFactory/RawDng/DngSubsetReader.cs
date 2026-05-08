@@ -434,11 +434,11 @@ internal static class DngSubsetReader
 		// Support uncompressed, deflate (ZIP), and Adobe deflate compression
 		// Note: JPEG lossless compression inDNG (types 6, 7) is specialized and not yet implemented
 		if ( compression is not (CompressionUncompressed or CompressionDeflate
-		    or CompressionAdobeDeflate) )
+		    or CompressionAdobeDeflate or CompressionJpeg or CompressionJpegOldStyle) )
 		{
 			error =
 				$"Unsupported compression type: {compression}. Supported: uncompressed (1), " +
-				$"deflate/ZIP (8), adobe-deflate (32946). JPEG lossless (6, 7) not yet implemented.";
+				$"deflate/ZIP (8), adobe-deflate (32946)..";
 			return false;
 		}
 
@@ -1514,8 +1514,19 @@ internal static class DngSubsetReader
 	{
 		littleEndian = true;
 		firstIfd = 0;
+
+		if ( !input.CanSeek )
+		{
+			return false;
+		}
+
+		if ( input.Length < 8 || !TrySeek(input, 0) )
+		{
+			return false;
+		}
+
 		Span<byte> header = stackalloc byte[8];
-		if ( input.Read(header) < 8 )
+		if ( !TryReadExactly(input, header) )
 		{
 			return false;
 		}
@@ -1540,7 +1551,24 @@ internal static class DngSubsetReader
 		}
 
 		firstIfd = ReadUInt32(header[4..], littleEndian);
-		return firstIfd > 0 && firstIfd < input.Length;
+		return firstIfd > 0 && firstIfd <= input.Length - 2;
+	}
+
+	private static bool TryReadExactly(Stream input, Span<byte> buffer)
+	{
+		var total = 0;
+		while ( total < buffer.Length )
+		{
+			var read = input.Read(buffer[total..]);
+			if ( read <= 0 )
+			{
+				return false;
+			}
+
+			total += read;
+		}
+
+		return true;
 	}
 
 	private static IfdDirectory? ReadIfd(Stream input, uint offset, bool littleEndian)

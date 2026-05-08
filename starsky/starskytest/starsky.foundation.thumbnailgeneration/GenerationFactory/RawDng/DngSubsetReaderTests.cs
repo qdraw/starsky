@@ -54,6 +54,20 @@ public class DngSubsetReaderTests
 	}
 
 	[TestMethod]
+	public void TryLoad_WithStreamPositionNotAtStart_StillParsesHeader()
+	{
+		using var ms = BuildMinimalDng();
+		ms.Position = 5;
+
+		var ok = DngSubsetReader.TryLoad(ms, out var image, out var error);
+
+		Assert.IsTrue(ok, error);
+		Assert.IsNotNull(image);
+		Assert.AreEqual(2, image.Width);
+		Assert.AreEqual(2, image.Height);
+	}
+
+	[TestMethod]
 	public void TryLoad_WithUnsupportedCfaRepeatPattern_ReturnsError()
 	{
 		using var ms = BuildMinimalDng(16, cfaRepeatWidth: 6, cfaRepeatHeight: 6);
@@ -474,4 +488,5 @@ public class DngSubsetReaderTests
 		WriteU32(data, offset, unchecked(( uint ) numerator));
 		WriteU32(data, offset + 4, unchecked(( uint ) denominator));
 	}
+
 }
