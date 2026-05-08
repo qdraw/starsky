@@ -424,16 +424,21 @@ internal static class DngSubsetReader
 			return false;
 		}
 
-		if ( !TryGetUnsigned(input, littleEndian, ifd, TagCompression, out var compression) )
+		// Default to uncompressed (1) if compression tag is missing (per TIFF spec)
+		var compression = CompressionUncompressed;
+		if ( TryGetUnsigned(input, littleEndian, ifd, TagCompression, out var compU) )
 		{
-			error = "Only uncompressed DNG is supported in the subset reader";
-			return false;
+			compression = ( ushort ) compU;
 		}
 
+		// Support uncompressed, deflate (ZIP), and Adobe deflate compression
+		// Note: JPEG lossless compression (type 7) requires specialized decoder, not yet implemented
 		if ( compression is not (CompressionUncompressed or CompressionDeflate
 		    or CompressionAdobeDeflate) )
 		{
-			error = "Only uncompressed DNG is supported in the subset reader";
+			error =
+				$"Unsupported compression type: {compression}. Supported types: uncompressed (1), deflate (8), adobe-deflate (32946). " +
+				$"JPEG compression types (6, 7) require specialized JPEG lossless decoder.";
 			return false;
 		}
 
@@ -1015,29 +1020,39 @@ internal static class DngSubsetReader
 					return false;
 				}
 
-				byte[]? inflated = null;
-				ReadOnlySpan<byte> payload;
-				if ( compression == CompressionUncompressed )
-				{
-					payload = encodedBuf.AsSpan(0, count);
-				}
-				else if ( compression is CompressionDeflate or CompressionAdobeDeflate )
-				{
-					inflated = Inflate(encodedBuf, count);
-					if ( inflated == null )
-					{
-						return false;
-					}
-
-					payload = inflated;
-				}
-				else
+			byte[]? decompressed = null;
+			ReadOnlySpan<byte> payload;
+			if ( compression == CompressionUncompressed )
+			{
+				payload = encodedBuf.AsSpan(0, count);
+			}
+			else if ( compression is CompressionDeflate or CompressionAdobeDeflate )
+			{
+				decompressed = Inflate(encodedBuf, count);
+				if ( decompressed == null )
 				{
 					return false;
 				}
 
-				var rowsInStrip = Math.Min(rowsPerStrip, height - rowCursor);
-				var stripPixelCount = checked(rowsInStrip * width);
+				payload = decompressed;
+			}
+			else if ( compression is CompressionJpeg or CompressionJpegOldStyle )
+			{
+				decompressed = DecompressJpeg(encodedBuf, count);
+				if ( decompressed == null )
+				{
+					return false;
+				}
+
+				payload = decompressed;
+			}
+			else
+			{
+				return false;
+			}
+
+			var rowsInStrip = Math.Min(rowsPerStrip, height - rowCursor);
+			var stripPixelCount = checked(rowsInStrip * width);
 				if ( !DecodePixelsInto(payload, littleEndian, bitsPerSample, stripPixelCount,
 					    decodedBuf.AsSpan(0, stripPixelCount)) )
 				{
@@ -1126,29 +1141,39 @@ internal static class DngSubsetReader
 						return false;
 					}
 
-					byte[]? inflated = null;
-					ReadOnlySpan<byte> payload;
-					if ( compression == CompressionUncompressed )
-					{
-						payload = encodedBuf.AsSpan(0, count);
-					}
-					else if ( compression is CompressionDeflate or CompressionAdobeDeflate )
-					{
-						inflated = Inflate(encodedBuf, count);
-						if ( inflated == null )
-						{
-							return false;
-						}
-
-						payload = inflated;
-					}
-					else
+				byte[]? decompressed = null;
+				ReadOnlySpan<byte> payload;
+				if ( compression == CompressionUncompressed )
+				{
+					payload = encodedBuf.AsSpan(0, count);
+				}
+				else if ( compression is CompressionDeflate or CompressionAdobeDeflate )
+				{
+					decompressed = Inflate(encodedBuf, count);
+					if ( decompressed == null )
 					{
 						return false;
 					}
 
-					if ( !DecodePixelsInto(payload, littleEndian, bitsPerSample, tilePixelCount,
-						    decodedBuf.AsSpan(0, tilePixelCount)) )
+					payload = decompressed;
+				}
+				else if ( compression is CompressionJpeg or CompressionJpegOldStyle )
+				{
+					decompressed = DecompressJpeg(encodedBuf, count);
+					if ( decompressed == null )
+					{
+						return false;
+					}
+
+					payload = decompressed;
+				}
+				else
+				{
+					return false;
+				}
+
+				if ( !DecodePixelsInto(payload, littleEndian, bitsPerSample, tilePixelCount,
+					    decodedBuf.AsSpan(0, tilePixelCount)) )
 					{
 						return false;
 					}
@@ -1221,6 +1246,27 @@ internal static class DngSubsetReader
 				return null;
 			}
 		}
+	}
+
+	private static byte[]? DecompressJpeg(byte[] compressed, int count)
+	{
+		// JPEG compression in DNG refers to JPEG lossless compression (Huffman coding)
+		// This is a specialized format that requires a dedicated JPEG lossless decoder.
+		// Standard JPEG decoders are designed for lossy compression and cannot handle it.
+		
+		// Currently, full support requires:
+		// - A JPEG lossless decoder library (e.g., libjpeg-turbo with lossless support, or Magick.NET)
+		// - Or P/Invoke to native JPEG lossless decoder
+		// - Or a pure C# implementation of JPEG lossless decoding
+		
+		// This is a known limitation being tracked for future implementation.
+		// JPEG-compressed DNGs are less common than uncompressed or deflate-compressed variants.
+		
+		System.Diagnostics.Debug.WriteLine(
+			$"JPEG lossless decompression not yet supported. Data size: {count} bytes. " +
+			"JPEG compression in DNG requires specialized JPEG lossless decoder.");
+		
+		return null;
 	}
 
 	// --- decode-into-span helpers (no per-call heap allocation) ---

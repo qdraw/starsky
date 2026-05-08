@@ -82,19 +82,9 @@ public class RawDngRealFilesFlowTests
 
 			var outputPath = Path.Combine(tempDir,
 				baseName + "_" + Guid.NewGuid().ToString("N") + ".jpg");
-			var rawCaptureBase = Path.Combine(tempDir,
-				baseName + "_" + Guid.NewGuid().ToString("N"));
-			if ( DngSubsetReader.TryExtractRawCapture(captureInput, out var capture,
-				    out var captureError) && capture != null )
-			{
-				WriteRawCaptureArtifacts(rawCaptureBase, capture);
-				TestContext.WriteLine(
-					$"RAW_CAPTURE|{file}|meta={rawCaptureBase}.rawmeta.txt|data={rawCaptureBase}.rawpayload.bin");
-			}
-			else
-			{
-				TestContext.WriteLine($"RAW_CAPTURE_FAIL|{file}|{captureError}");
-			}
+
+			// Reset input stream position to the beginning before JPEG conversion
+			input.Seek(0, SeekOrigin.Begin);
 
 			using var outputBuffer = new MemoryStream();
 			var ok = RawDngPipelineRunner.TryRunToJpeg(input, outputBuffer, out var error);
@@ -142,7 +132,7 @@ public class RawDngRealFilesFlowTests
 				"No fixtures are currently supported by the RAW subset decoder in this set.");
 		}
 
-		Assert.IsGreaterThan(0, succeeded.Count,
+		Assert.IsTrue(succeeded.Count > 0,
 			"Expected at least one DNG file to pass current subset pipeline.");
 
 
@@ -432,19 +422,22 @@ public class RawDngRealFilesFlowTests
 
 			var outputPath = Path.Combine(tempDir,
 				baseName + "_" + Guid.NewGuid().ToString("N") + ".jpg");
-			var rawCaptureBase = Path.Combine(tempDir,
-				baseName + "_" + Guid.NewGuid().ToString("N"));
-			if ( DngSubsetReader.TryExtractRawCapture(captureInput, out var capture,
-				    out var captureError) && capture != null )
-			{
-				WriteRawCaptureArtifacts(rawCaptureBase, capture);
-				TestContext.WriteLine(
-					$"RAW_CAPTURE|{file}|meta={rawCaptureBase}.rawmeta.txt|data={rawCaptureBase}.rawpayload.bin");
-			}
-			else
-			{
-				TestContext.WriteLine($"RAW_CAPTURE_FAIL|{file}|{captureError}");
-			}
+			// var rawCaptureBase = Path.Combine(tempDir,
+			// 	baseName + "_" + Guid.NewGuid().ToString("N"));
+			// if ( DngSubsetReader.TryExtractRawCapture(captureInput, out var capture,
+			// 	    out var captureError) && capture != null )
+			// {
+			// 	WriteRawCaptureArtifacts(rawCaptureBase, capture);
+			// 	TestContext.WriteLine(
+			// 		$"RAW_CAPTURE|{file}|meta={rawCaptureBase}.rawmeta.txt|data={rawCaptureBase}.rawpayload.bin");
+			// }
+			// else
+			// {
+			// 	TestContext.WriteLine($"RAW_CAPTURE_FAIL|{file}|{captureError}");
+			// }
+
+			// Reset input stream position to the beginning before JPEG conversion
+			input.Seek(0, SeekOrigin.Begin);
 
 			using var outputBuffer = new MemoryStream();
 			var ok = RawDngPipelineRunner.TryRunToJpeg(input, outputBuffer, out var error);
@@ -492,7 +485,7 @@ public class RawDngRealFilesFlowTests
 				"No fixtures are currently supported by the RAW subset decoder in this set.");
 		}
 
-		Assert.IsGreaterThan(0, succeeded.Count,
+		Assert.IsTrue(succeeded.Count > 0,
 			"Expected at least one DNG file to pass current subset pipeline.");
 
 
@@ -581,9 +574,10 @@ public class RawDngRealFilesFlowTests
 			var compressionName = compression switch
 			{
 				1 => "Uncompressed",
+				6 => "JPEG-OldStyle",
+				7 => "JPEG-Lossless",
 				8 => "Deflate",
 				32946 => "AdobeDeflate",
-				7 => "JPEG",
 				_ => $"Unknown({compression})"
 			};
 
@@ -683,7 +677,7 @@ public class RawDngRealFilesFlowTests
 
 	private static bool IsExpectedUnsupported(string error)
 	{
-		return error.StartsWith("Only uncompressed DNG is supported",
+		return error.StartsWith("Unsupported compression type",
 			       StringComparison.OrdinalIgnoreCase)
 		       || error.StartsWith("Unsupported predictor",
 			       StringComparison.OrdinalIgnoreCase)
@@ -692,6 +686,8 @@ public class RawDngRealFilesFlowTests
 		       || error.StartsWith("Missing width/height/bits metadata",
 			       StringComparison.OrdinalIgnoreCase)
 		       || error.StartsWith("Unsupported bits per sample",
-			       StringComparison.OrdinalIgnoreCase);
+			       StringComparison.OrdinalIgnoreCase)
+		       || error.Contains("JPEG compression types") // JPEG lossless not yet supported
+		       || error.Contains("JPEG lossless decompression not yet supported");
 	}
 }
