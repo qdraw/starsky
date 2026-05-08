@@ -432,13 +432,13 @@ internal static class DngSubsetReader
 		}
 
 		// Support uncompressed, deflate (ZIP), and Adobe deflate compression
-		// Note: JPEG lossless compression (type 7) requires specialized decoder, not yet implemented
+		// Note: JPEG lossless compression inDNG (types 6, 7) is specialized and not yet implemented
 		if ( compression is not (CompressionUncompressed or CompressionDeflate
 		    or CompressionAdobeDeflate) )
 		{
 			error =
-				$"Unsupported compression type: {compression}. Supported types: uncompressed (1), deflate (8), adobe-deflate (32946). " +
-				$"JPEG compression types (6, 7) require specialized JPEG lossless decoder.";
+				$"Unsupported compression type: {compression}. Supported: uncompressed (1), " +
+				$"deflate/ZIP (8), adobe-deflate (32946). JPEG lossless (6, 7) not yet implemented.";
 			return false;
 		}
 
@@ -1250,21 +1250,18 @@ internal static class DngSubsetReader
 
 	private static byte[]? DecompressJpeg(byte[] compressed, int count)
 	{
-		// JPEG compression in DNG refers to JPEG lossless compression (Huffman coding)
-		// This is a specialized format that requires a dedicated JPEG lossless decoder.
-		// Standard JPEG decoders are designed for lossy compression and cannot handle it.
-		
-		// Currently, full support requires:
-		// - A JPEG lossless decoder library (e.g., libjpeg-turbo with lossless support, or Magick.NET)
-		// - Or P/Invoke to native JPEG lossless decoder
-		// - Or a pure C# implementation of JPEG lossless decoding
-		
-		// This is a known limitation being tracked for future implementation.
-		// JPEG-compressed DNGs are less common than uncompressed or deflate-compressed variants.
-		
+		// JPEG lossless compression in DNG files uses Huffman-based encoding, which is distinct
+		// from standard lossy JPEG. Full implementation requires either:
+		// 1. P/Invoke to libjpeg with lossless support enabled, or
+		// 2. Port/binding of a C JPEG lossless decoder to C#, or
+		// 3. Commercial library like Magick.NET or similar
+		// 
+		// This is a known limitation. Most DNGs use Deflate (ZIP) compression instead.
+		// Future enhancement: consider adding libjpeg-turbo via P/Invoke or native binding.
+
 		System.Diagnostics.Debug.WriteLine(
-			$"JPEG lossless decompression not yet supported. Data size: {count} bytes. " +
-			"JPEG compression in DNG requires specialized JPEG lossless decoder.");
+			$"JPEG lossless compression not supported. File size: {count} bytes. " +
+			"Consider using libraw, dcraw, or JPEG lossless-capable tools for full DNG support.");
 		
 		return null;
 	}

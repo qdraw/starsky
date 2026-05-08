@@ -558,7 +558,7 @@ public class RawDngRealFilesFlowTests
 				subIfdOffset = sub;
 			}
 
-			// If there's a SubIFD with CFA photometric (raw image), use that instead
+			// If there's a SubIFD, prefer it over IFD0 (SubIFDs typically contain the RAW data)
 			if ( subIfdOffset > 0 && subIfdOffset < fs.Length )
 			{
 				var (w, h, b, c, _) = ReadIfdMetadata(fs, subIfdOffset, littleEndian);
@@ -569,6 +569,17 @@ public class RawDngRealFilesFlowTests
 					bitsPerSample = b;
 					compression = c;
 				}
+			}
+
+			// Validate results
+			if ( width == 0 || height == 0 || bitsPerSample == 0 )
+			{
+				return "INVALID_METADATA";
+			}
+
+			if ( width > 100000 || height > 100000 || bitsPerSample > 16 )
+			{
+				return "CORRUPTED_VALUES";
 			}
 
 			var compressionName = compression switch
@@ -597,6 +608,11 @@ public class RawDngRealFilesFlowTests
 
 		try
 		{
+			if ( ifdOffset == 0 || ifdOffset >= fs.Length )
+			{
+				return ( 0, 0, 0, 0, 0 );
+			}
+
 			fs.Seek(ifdOffset, SeekOrigin.Begin);
 			var countBuf = new byte[2];
 			if ( fs.Read(countBuf, 0, 2) < 2 )
@@ -605,8 +621,18 @@ public class RawDngRealFilesFlowTests
 			}
 
 			var entryCount = ReadUInt16(countBuf, 0, littleEndian);
-			for ( var i = 0; i < entryCount && fs.Position < fs.Length - 12; i++ )
+			if ( entryCount == 0 || entryCount > 1000 )  // Sanity check
 			{
+				return ( 0, 0, 0, 0, 0 );
+			}
+
+			for ( var i = 0; i < entryCount; i++ )
+			{
+				if ( fs.Position + 12 > fs.Length )
+				{
+					break;
+				}
+
 				var entry = new byte[12];
 				if ( fs.Read(entry, 0, 12) < 12 )
 				{
@@ -618,25 +644,30 @@ public class RawDngRealFilesFlowTests
 				var count = ReadUInt32(entry, 4, littleEndian);
 				var value = ReadUInt32(entry, 8, littleEndian);
 
-				if ( tag == 0x0100 )
+				// Sanity check on values
+				if ( tag == 0 && type == 0 && count == 0 && value == 0 )
 				{
-					width = value; // ImageWidth
+					break;  // End of entries
 				}
-				else if ( tag == 0x0101 )
+
+				if ( tag == 0x0100 && (type == 3 || type == 4) )  // ImageWidth (SHORT or LONG)
 				{
-					height = value; // ImageLength
+					width = value;
 				}
-				else if ( tag == 0x0102 )
+				else if ( tag == 0x0101 && (type == 3 || type == 4) )  // ImageLength (SHORT or LONG)
 				{
-					bits = value; // BitsPerSample
+					height = value;
 				}
-				else if ( tag == 0x0103 )
+				else if ( tag == 0x0102 && type == 3 )  // BitsPerSample (SHORT)
 				{
-					compression = value; // Compression
+					bits = value & 0xFFFF;  // Keep only lower 16 bits for SHORT type
 				}
-				else if ( tag == 0x014A && count > 0 )
+				else if ( tag == 0x0103 && type == 3 )  // Compression (SHORT)
 				{
-					// SubIFDs - get first one
+					compression = value & 0xFFFF;  // Keep only lower 16 bits for SHORT type
+				}
+				else if ( tag == 0x014A && count > 0 )  // SubIFDs
+				{
 					subIfd = value;
 				}
 			}
