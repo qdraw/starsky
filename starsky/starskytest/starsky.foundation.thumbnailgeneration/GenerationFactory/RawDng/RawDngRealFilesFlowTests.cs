@@ -14,8 +14,8 @@ public class RawDngRealFilesFlowTests
 	[TestMethod]
 	public void TryRunToJpeg_WithProvidedRealDngFiles_ReportsPerFileResult()
 	{
-		var basePath = $"C:\\data\\testcontent\\raws-dng-converter\\";
-		
+		var basePath = "C:\\data\\testcontent\\raws-dng-converter\\";
+
 		string[] files =
 		[
 			$"{basePath}20260308_210002_DSC05386-Verbeterd-NR.dng",
@@ -137,11 +137,52 @@ public class RawDngRealFilesFlowTests
 	}
 
 	[TestMethod]
+	public void TryRunToJpeg_WithUserProvidedDngFiles_DecodesRawToJpeg()
+	{
+		string[] files =
+		[
+			"/Users/dion/data/testcontent/main/raws2/20250809_201105_d.dng",
+			"/Users/dion/data/testcontent/main/raws2/IMG_0872_chdk.dng",
+			"/Users/dion/data/testcontent/main/raws2/IMG_1016.DNG"
+		];
+
+		var missing = new List<string>();
+		foreach ( var file in files )
+		{
+			if ( !File.Exists(file) )
+			{
+				missing.Add(file);
+			}
+		}
+
+		if ( missing.Count > 0 )
+		{
+			Assert.Inconclusive("Missing local DNG fixtures: " + string.Join(", ", missing));
+		}
+
+		foreach ( var file in files )
+		{
+			using var input = File.OpenRead(file);
+			using var output = new MemoryStream();
+
+			var ok = RawDngPipelineRunner.TryRunToJpeg(input, output, out var error);
+			TestContext.WriteLine(
+				$"RAWDNG_USER_FILE|{file}|ok={ok}|len={output.Length}|error={error}");
+
+			Assert.IsTrue(ok, $"Expected RAW decode success for {file}: {error}");
+			Assert.IsGreaterThan(8L, output.Length, $"Expected JPEG output for {file}");
+			var bytes = output.ToArray();
+			Assert.AreEqual(( byte ) 0xFF, bytes[0], $"Expected JPEG SOI for {file}");
+			Assert.AreEqual(( byte ) 0xD8, bytes[1], $"Expected JPEG SOI for {file}");
+		}
+	}
+
+	[TestMethod]
 	public void TryRunToJpeg_WithProvidedRealDngFiles_ReportsPerFileResult2()
 	{
 		var basePath = "/Users/dion/data/testcontent/";
 		basePath = "C:\\data\\testcontent\\";
-		
+
 		string[] files =
 		[
 			$"{basePath}raws-dng-converter{Path.DirectorySeparatorChar}Xiaomi - Redmi Note 7 - 16bit (4_3).dng",

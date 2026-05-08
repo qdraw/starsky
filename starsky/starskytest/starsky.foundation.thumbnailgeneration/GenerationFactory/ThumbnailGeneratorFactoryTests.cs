@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Generators;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.RawDng;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory;
@@ -28,6 +29,7 @@ public class ThumbnailGeneratorFactoryTests
 	[DataRow("test.jpg", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.mp4", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.txt", typeof(NotSupportedFallbackThumbnailGenerator))]
+	[DataRow("test.dng", typeof(RawDngThumbnailGenerator))]
 	[DataRow("test.arw", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.gif", typeof(CompositeThumbnailGenerator))]
 	[DataRow("test.heic", typeof(CompositeThumbnailGenerator))]

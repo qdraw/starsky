@@ -25,26 +25,20 @@ public class RawDngPipelineRunnerTests
 			CameraCalibration1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
 			CameraCalibration2 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
 			CalibrationIlluminant1 = 17,
- 			Bayer = new ushort[,]
- 			{
- 				{ 0, 512 },
- 				{ 1024, 1024 }
- 			}
+			Bayer = new ushort[,] { { 0, 512 }, { 1024, 1024 } }
 		};
 
 		var steps = new List<RawDngPipelineStep>();
 		var state = RawDngPhase3Pipeline.Run(raw, steps.Add);
 
-		CollectionAssert.AreEqual(new[]
-		{
-			RawDngPipelineStep.DumpRawGrayscaleImage,
-			RawDngPipelineStep.Normalize,
-			RawDngPipelineStep.BilinearDemosaic,
-			RawDngPipelineStep.WhiteBalance,
-			RawDngPipelineStep.ColorMatrix,
-			RawDngPipelineStep.ExposureCompensation,
-			RawDngPipelineStep.ToneCurve
-		}, steps);
+		CollectionAssert.AreEqual(
+			new[]
+			{
+				RawDngPipelineStep.DumpRawGrayscaleImage, RawDngPipelineStep.Normalize,
+				RawDngPipelineStep.BilinearDemosaic, RawDngPipelineStep.WhiteBalance,
+				RawDngPipelineStep.ColorMatrix, RawDngPipelineStep.ExposureCompensation,
+				RawDngPipelineStep.ToneCurve
+			}, steps);
 		Assert.IsNotNull(state.DisplayRgb);
 	}
 
@@ -76,6 +70,19 @@ public class RawDngPipelineRunnerTests
 		var bytes = output.ToArray();
 		Assert.AreEqual(( byte ) 0xFF, bytes[0]);
 		Assert.AreEqual(( byte ) 0xD8, bytes[1]);
+	}
+
+	[TestMethod]
+	public void TryRunToJpeg_WhenOnlyEmbeddedPreviewExists_DoesNotFallbackToPreview()
+	{
+		using var dng = BuildPreviewOnlyDng();
+		using var output = new MemoryStream();
+
+		var ok = RawDngPipelineRunner.TryRunToJpeg(dng, output, out var error);
+
+		Assert.IsFalse(ok);
+		Assert.AreEqual(0, output.Length);
+		Assert.AreEqual("Missing width/height/bits metadata", error);
 	}
 
 	private static MemoryStream BuildMinimalDng()
@@ -111,6 +118,39 @@ public class RawDngPipelineRunnerTests
 		return new MemoryStream(data);
 	}
 
+	private static MemoryStream BuildPreviewOnlyDng()
+	{
+		var data = new byte[256];
+
+		data[0] = ( byte ) 'I';
+		data[1] = ( byte ) 'I';
+		WriteU16(data, 2, 42);
+		WriteU32(data, 4, 8);
+
+		const uint subIfdOffset = 64;
+		const uint jpegOffset = 200;
+		WriteU16(data, 8, 1);
+		WriteIfdEntry(data, 10, 0x014A, 4, 1, subIfdOffset);
+		WriteU32(data, 22, 0);
+
+		WriteU16(data, ( int ) subIfdOffset, 6);
+		var entryBase = ( int ) subIfdOffset + 2;
+		WriteIfdEntry(data, entryBase + 0, 0x0100, 4, 1, 1);
+		WriteIfdEntry(data, entryBase + 12, 0x0101, 4, 1, 1);
+		WriteIfdEntry(data, entryBase + 24, 0x0103, 3, 1, 7);
+		WriteIfdEntry(data, entryBase + 36, 0x0106, 3, 1, 2);
+		WriteIfdEntry(data, entryBase + 48, 0x0111, 4, 1, jpegOffset);
+		WriteIfdEntry(data, entryBase + 60, 0x0117, 4, 1, 4);
+		WriteU32(data, entryBase + 72, 0);
+
+		data[jpegOffset + 0] = 0xFF;
+		data[jpegOffset + 1] = 0xD8;
+		data[jpegOffset + 2] = 0xFF;
+		data[jpegOffset + 3] = 0xD9;
+
+		return new MemoryStream(data);
+	}
+
 	private static void WriteIfdEntry(byte[] data, int offset, ushort tag, ushort type,
 		uint count, uint value)
 	{
@@ -134,8 +174,3 @@ public class RawDngPipelineRunnerTests
 		data[offset + 3] = ( byte ) ( ( value >> 24 ) & 0xFF );
 	}
 }
-
-
-
-
-

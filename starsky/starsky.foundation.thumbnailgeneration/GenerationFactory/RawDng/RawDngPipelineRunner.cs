@@ -26,44 +26,15 @@ internal static class RawDngPipelineRunner
 		Action<RawDngPipelineStep>? onStep = null, Action<byte[,]>? onRawDebug = null)
 	{
 		error = string.Empty;
-		string? pipelineError = null;
 		if ( TryRun(input, out var state, out error, onStep, onRawDebug) &&
 		     state?.DisplayRgb != null )
 		{
 			return RawDngJpegExporter.TryWriteDisplayRgbAsJpeg(state.DisplayRgb, output, out error);
 		}
 
-		pipelineError = error;
-
-		// Try DNG-aware JPEG preview extraction first (reads SubIFD preview with proper color)
-		if ( input.CanSeek )
-		{
-			input.Seek(0, SeekOrigin.Begin);
-		}
-
-		if ( DngSubsetReader.TryExtractJpegPreview(input, output, out var previewError) )
-		{
-			error = string.Empty;
-			return true;
-		}
-		
-
-		// // Fall back to binary JPEG container scan
-		// if ( JpegContainerFallback.TryExtractLargestJpeg(input, output, out var fallbackError) )
-		// {
-		// 	error = string.Empty;
-		// 	return true;
-		// }
-		//
-		// error = string.IsNullOrEmpty(pipelineError)
-		// 	? ( string.IsNullOrEmpty(fallbackError)
-		// 		? "No display RGB output available"
-		// 		: fallbackError )
-		// 	: ( string.IsNullOrEmpty(fallbackError)
-		// 		? pipelineError
-		// 		: $"{pipelineError}; preview: {previewError}; fallback: {fallbackError}" );
+		error = string.IsNullOrWhiteSpace(error)
+			? "No display RGB output available from DNG RAW decode"
+			: error;
 		return false;
 	}
 }
-
-

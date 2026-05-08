@@ -1,0 +1,1 @@
+No fallback to JPEG preview inside
