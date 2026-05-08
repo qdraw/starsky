@@ -53,7 +53,16 @@ internal static class ToneMapping
 		// Step 2: gamma-encode the tone-mapped result
 		// The tone curve should have already compressed highlights naturally
 		var value = ( float ) Math.Pow(Math.Max(mapped, 0f), invGamma);
+
+		// Step 3: apply a mild global contrast boost to counter flat-looking output.
+		// Keep this conservative to avoid clipping or color shifts.
+		value = ApplyGlobalContrast(value, 1.08f);
 		return Math.Clamp(value, 0f, 1f);
+	}
+
+	private static float ApplyGlobalContrast(float value, float contrast)
+	{
+		return 0.5f + ( value - 0.5f ) * contrast;
 	}
 
 	/// <summary>

@@ -1224,9 +1224,66 @@ internal static class DngSubsetReader
 			return DecodeWordStoredInto(payload, littleEndian, bitsPerSample, pixelCount, dest);
 		}
 
-		return littleEndian
+		return DecodePackedBestEffortInto(payload, littleEndian, bitsPerSample, pixelCount, dest);
+	}
+
+	private static bool DecodePackedBestEffortInto(ReadOnlySpan<byte> payload, bool littleEndian,
+		int bitsPerSample, int pixelCount, Span<ushort> dest)
+	{
+		// Some camera writers store packed bits with the opposite in-byte order from
+		// strict TIFF endianness interpretation. Try both variants and keep the smoother
+		// candidate, which is generally the physically plausible RAW stream.
+		var primaryOk = littleEndian
 			? DecodePackedLittleEndianInto(payload, bitsPerSample, pixelCount, dest)
 			: DecodePackedBigEndianInto(payload, bitsPerSample, pixelCount, dest);
+		if ( !primaryOk )
+		{
+			return false;
+		}
+
+		var alternateBuffer = ArrayPool<ushort>.Shared.Rent(pixelCount);
+		try
+		{
+			var altSpan = alternateBuffer.AsSpan(0, pixelCount);
+			var alternateOk = littleEndian
+				? DecodePackedBigEndianInto(payload, bitsPerSample, pixelCount, altSpan)
+				: DecodePackedLittleEndianInto(payload, bitsPerSample, pixelCount, altSpan);
+			if ( !alternateOk )
+			{
+				return true;
+			}
+
+			var primaryScore = ComputePackedSmoothnessScore(dest[..pixelCount]);
+			var alternateScore = ComputePackedSmoothnessScore(altSpan);
+			if ( alternateScore < primaryScore )
+			{
+				altSpan.CopyTo(dest);
+			}
+
+			return true;
+		}
+		finally
+		{
+			ArrayPool<ushort>.Shared.Return(alternateBuffer);
+		}
+	}
+
+	private static ulong ComputePackedSmoothnessScore(ReadOnlySpan<ushort> samples)
+	{
+		if ( samples.Length <= 1 )
+		{
+			return 0;
+		}
+
+		ulong score = 0;
+		for ( var i = 1; i < samples.Length; i++ )
+		{
+			var a = samples[i - 1];
+			var b = samples[i];
+			score += ( ulong ) Math.Abs(a - b);
+		}
+
+		return score;
 	}
 
 	private static bool Decode8Into(ReadOnlySpan<byte> payload, int pixelCount, Span<ushort> dest)
