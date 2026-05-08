@@ -7,8 +7,7 @@ internal static class ColorMatrixTransform
 	// Linear XYZ (D65) to linear sRGB
 	private static readonly float[,] XyzToSrgb =
 	{
-		{ 3.2404542f, -1.5371385f, -0.4985314f },
-		{ -0.9692660f, 1.8760108f, 0.0415560f },
+		{ 3.2404542f, -1.5371385f, -0.4985314f }, { -0.9692660f, 1.8760108f, 0.0415560f },
 		{ 0.0556434f, -0.2040259f, 1.0572252f }
 	};
 
@@ -16,15 +15,13 @@ internal static class ColorMatrixTransform
 	// white-balanced camera neutral to the D65 white point expected by sRGB.
 	private static readonly float[,] Bradford =
 	{
-		{ 0.8951f, 0.2664f, -0.1614f },
-		{ -0.7502f, 1.7135f, 0.0367f },
+		{ 0.8951f, 0.2664f, -0.1614f }, { -0.7502f, 1.7135f, 0.0367f },
 		{ 0.0389f, -0.0685f, 1.0296f }
 	};
 
 	private static readonly float[,] BradfordInverse =
 	{
-		{ 0.9869929f, -0.1470543f, 0.1599627f },
-		{ 0.4323053f, 0.5183603f, 0.0492912f },
+		{ 0.9869929f, -0.1470543f, 0.1599627f }, { 0.4323053f, 0.5183603f, 0.0492912f },
 		{ -0.0085287f, 0.0400428f, 0.9684867f }
 	};
 
@@ -40,19 +37,19 @@ internal static class ColorMatrixTransform
 		float[]? asShotNeutral = null)
 	{
 		if ( !TryBuildCameraToXyz(colorMatrix1, forwardMatrix1,
-			cameraCalibration1, out var cameraToXyz1) )
+			    cameraCalibration1, out var cameraToXyz1) )
 		{
 			return Identity3X3();
 		}
 
 		var cameraToXyz = cameraToXyz1;
 		if ( colorMatrix2 != null && calibrationIlluminant2.HasValue &&
-		    TryBuildCameraToXyz(colorMatrix2,
-			    forwardMatrix2 ?? Identity3X3(),
-			    cameraCalibration2,
-			    out var cameraToXyz2) &&
-		    TryEstimateCctFromDualProfiles(asShotNeutral, cameraToXyz1, cameraToXyz2,
-			    out var asShotCct) )
+		     TryBuildCameraToXyz(colorMatrix2,
+			     forwardMatrix2 ?? Identity3X3(),
+			     cameraCalibration2,
+			     out var cameraToXyz2) &&
+		     TryEstimateCctFromDualProfiles(asShotNeutral, cameraToXyz1, cameraToXyz2,
+			     out var asShotCct) )
 		{
 			var cct1 = IlluminantToCct(calibrationIlluminant1);
 			var cct2 = IlluminantToCct(calibrationIlluminant2.Value);
@@ -113,8 +110,10 @@ internal static class ColorMatrixTransform
 			return false;
 		}
 
-		var sourceCone = Multiply3X3Vector(Bradford, sourceWhite[0], sourceWhite[1], sourceWhite[2]);
-		var targetCone = Multiply3X3Vector(Bradford, targetWhite[0], targetWhite[1], targetWhite[2]);
+		var sourceCone =
+			Multiply3X3Vector(Bradford, sourceWhite[0], sourceWhite[1], sourceWhite[2]);
+		var targetCone =
+			Multiply3X3Vector(Bradford, targetWhite[0], targetWhite[1], targetWhite[2]);
 		for ( var i = 0; i < 3; i++ )
 		{
 			if ( !float.IsFinite(sourceCone[i]) || !float.IsFinite(targetCone[i]) ||
@@ -127,8 +126,7 @@ internal static class ColorMatrixTransform
 		var coneScale = new[,]
 		{
 			{ targetCone[0] / sourceCone[0], 0f, 0f },
-			{ 0f, targetCone[1] / sourceCone[1], 0f },
-			{ 0f, 0f, targetCone[2] / sourceCone[2] }
+			{ 0f, targetCone[1] / sourceCone[1], 0f }, { 0f, 0f, targetCone[2] / sourceCone[2] }
 		};
 
 		adaptation = Multiply3X3(BradfordInverse, Multiply3X3(coneScale, Bradford));
@@ -278,12 +276,14 @@ internal static class ColorMatrixTransform
 				var g = linearRgb[y, x, 1];
 				var b = linearRgb[y, x, 2];
 
-				// Apply matrix. Clamp output to >= 0 to handle out-of-gamut pixels.
-				// DO NOT clamp the matrix itself — negative coefficients are essential
-				// for correct hue discrimination.
-				linearRgb[y, x, 0] = Math.Max(0f, cameraToSrgb[0, 0] * r + cameraToSrgb[0, 1] * g + cameraToSrgb[0, 2] * b);
-				linearRgb[y, x, 1] = Math.Max(0f, cameraToSrgb[1, 0] * r + cameraToSrgb[1, 1] * g + cameraToSrgb[1, 2] * b);
-				linearRgb[y, x, 2] = Math.Max(0f, cameraToSrgb[2, 0] * r + cameraToSrgb[2, 1] * g + cameraToSrgb[2, 2] * b);
+				// Keep signed matrix results until tone mapping; early clamping here causes
+				// strong false colors on profiles with negative coefficients.
+				linearRgb[y, x, 0] = cameraToSrgb[0, 0] * r + cameraToSrgb[0, 1] * g +
+				                     cameraToSrgb[0, 2] * b;
+				linearRgb[y, x, 1] = cameraToSrgb[1, 0] * r + cameraToSrgb[1, 1] * g +
+				                     cameraToSrgb[1, 2] * b;
+				linearRgb[y, x, 2] = cameraToSrgb[2, 0] * r + cameraToSrgb[2, 1] * g +
+				                     cameraToSrgb[2, 2] * b;
 			}
 		}
 	}
@@ -315,7 +315,9 @@ internal static class ColorMatrixTransform
 		var invDet = 1f / det;
 		inverse = new[,]
 		{
-			{ ( e * i - f * h ) * invDet, ( c * h - b * i ) * invDet, ( b * f - c * e ) * invDet },
+			{
+				( e * i - f * h ) * invDet, ( c * h - b * i ) * invDet, ( b * f - c * e ) * invDet
+			},
 			{ ( f * g - d * i ) * invDet, ( a * i - c * g ) * invDet, ( c * d - a * f ) * invDet },
 			{ ( d * h - e * g ) * invDet, ( b * g - a * h ) * invDet, ( a * e - b * d ) * invDet }
 		};
@@ -350,12 +352,6 @@ internal static class ColorMatrixTransform
 
 	private static float[,] Identity3X3()
 	{
-		return new[,]
-		{
-			{ 1f, 0f, 0f },
-			{ 0f, 1f, 0f },
-			{ 0f, 0f, 1f }
-		};
+		return new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } };
 	}
 }
-

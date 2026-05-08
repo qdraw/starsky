@@ -38,6 +38,7 @@ internal sealed class DngRawImage
 	public required float[,] CameraCalibration2 { get; init; } // Optional: second calibration
 	public required ushort CalibrationIlluminant1 { get; init; } // Illuminant for ColorMatrix1
 	public ushort? CalibrationIlluminant2 { get; init; }
+	public ushort Orientation { get; init; } = 1;
 }
 
 internal sealed class DngRawCapture
@@ -80,6 +81,7 @@ internal static class DngSubsetReader
 	private const ushort TagAsShotWhiteXy = 0xC629;
 	private const ushort TagAnalogBalance = 0xC627;
 	private const ushort TagExifIfd = 0x8769;
+	private const ushort TagOrientation = 0x0112;
 	private const ushort TagColorMatrix1 = 0xC621;
 	private const ushort TagColorMatrix2 = 0xC622;
 	private const ushort TagForwardMatrix1 = 0xC714;
@@ -88,6 +90,9 @@ internal static class DngSubsetReader
 	private const ushort TagCameraCalibration2 = 0xC724;
 	private const ushort TagCalibrationIlluminant1 = 0xC65A;
 	private const ushort TagCalibrationIlluminant2 = 0xC65B;
+	private const ushort TagDefaultCropOrigin = 0xC61F;
+	private const ushort TagDefaultCropSize = 0xC620;
+	private const ushort TagActiveArea = 0xC68D;
 
 	private const ushort CompressionUncompressed = 1;
 	private const ushort CompressionJpegOldStyle = 6;
@@ -580,6 +585,16 @@ internal static class DngSubsetReader
 			? cfa.Take(4).ToArray()
 			: new byte[] { 0, 1, 1, 2 }; // fallback RGGB
 
+		if ( TryResolveCropRegion(input, littleEndian, ifd, ifd0, width, height,
+			     out var cropLeft, out var cropTop, out var cropWidth, out var cropHeight) &&
+		     ( cropLeft != 0 || cropTop != 0 || cropWidth != width || cropHeight != height ) )
+		{
+			bayer = CropBayer(bayer, cropLeft, cropTop, cropWidth, cropHeight);
+			cfaPattern = ShiftCfaPattern(cfaPattern, cropLeft, cropTop);
+			width = cropWidth;
+			height = cropHeight;
+		}
+
 		var forwardMatrix = TryGetFloatArray(input, littleEndian, ifd, TagForwardMatrix1,
 			out var fwdRaw) && fwdRaw.Length >= 9
 			? To3x3(fwdRaw)
@@ -641,7 +656,12 @@ internal static class DngSubsetReader
 			CameraCalibration1 = cameraCalibration1,
 			CameraCalibration2 = cameraCalibration2,
 			CalibrationIlluminant1 = calibrationIlluminant1,
-			CalibrationIlluminant2 = calibrationIlluminant2
+			CalibrationIlluminant2 = calibrationIlluminant2,
+			Orientation = TryGetUnsigned(input, littleEndian, ifd, TagOrientation, out var orientationRaw)
+				? ( ushort ) orientationRaw
+				: TryGetUnsigned(input, littleEndian, ifd0, TagOrientation, out var orientationIfd0)
+					? ( ushort ) orientationIfd0
+					: ( ushort ) 1
 		};
 
 		return true;
@@ -815,6 +835,134 @@ internal static class DngSubsetReader
 		}
 
 		return max;
+	}
+
+	private static bool TryResolveCropRegion(Stream input, bool littleEndian,
+		IfdDirectory rawIfd, IfdDirectory ifd0, int width, int height,
+		out int cropLeft, out int cropTop, out int cropWidth, out int cropHeight)
+	{
+		cropLeft = 0;
+		cropTop = 0;
+		cropWidth = width;
+		cropHeight = height;
+
+		var activeTop = 0;
+		var activeLeft = 0;
+		var activeBottom = height;
+		var activeRight = width;
+
+		if ( TryGetIntArrayFromIfdOrIfd0(input, littleEndian, rawIfd, ifd0, TagActiveArea,
+			     4, out var activeArea) )
+		{
+			activeTop = activeArea[0];
+			activeLeft = activeArea[1];
+			activeBottom = activeArea[2];
+			activeRight = activeArea[3];
+		}
+
+		activeTop = Math.Clamp(activeTop, 0, height);
+		activeLeft = Math.Clamp(activeLeft, 0, width);
+		activeBottom = Math.Clamp(activeBottom, activeTop, height);
+		activeRight = Math.Clamp(activeRight, activeLeft, width);
+
+		var activeWidth = Math.Max(1, activeRight - activeLeft);
+		var activeHeight = Math.Max(1, activeBottom - activeTop);
+
+		var defaultOriginX = 0;
+		var defaultOriginY = 0;
+		if ( TryGetIntArrayFromIfdOrIfd0(input, littleEndian, rawIfd, ifd0, TagDefaultCropOrigin,
+			     2, out var defaultOrigin) )
+		{
+			defaultOriginX = defaultOrigin[0];
+			defaultOriginY = defaultOrigin[1];
+		}
+
+		var defaultWidth = activeWidth;
+		var defaultHeight = activeHeight;
+		if ( TryGetIntArrayFromIfdOrIfd0(input, littleEndian, rawIfd, ifd0, TagDefaultCropSize,
+			     2, out var defaultSize) )
+		{
+			defaultWidth = defaultSize[0];
+			defaultHeight = defaultSize[1];
+		}
+
+		defaultOriginX = Math.Clamp(defaultOriginX, 0, Math.Max(0, activeWidth - 1));
+		defaultOriginY = Math.Clamp(defaultOriginY, 0, Math.Max(0, activeHeight - 1));
+		defaultWidth = Math.Clamp(defaultWidth, 1, activeWidth - defaultOriginX);
+		defaultHeight = Math.Clamp(defaultHeight, 1, activeHeight - defaultOriginY);
+
+		cropLeft = Math.Clamp(activeLeft + defaultOriginX, 0, width - 1);
+		cropTop = Math.Clamp(activeTop + defaultOriginY, 0, height - 1);
+		cropWidth = Math.Clamp(defaultWidth, 1, width - cropLeft);
+		cropHeight = Math.Clamp(defaultHeight, 1, height - cropTop);
+		return true;
+	}
+
+	private static bool TryGetIntArrayFromIfdOrIfd0(Stream input, bool littleEndian,
+		IfdDirectory rawIfd, IfdDirectory ifd0, ushort tag, int wanted, out int[] values)
+	{
+		values = [];
+		if ( TryGetIntArray(input, littleEndian, rawIfd, tag, wanted, out values) )
+		{
+			return true;
+		}
+
+		return TryGetIntArray(input, littleEndian, ifd0, tag, wanted, out values);
+	}
+
+	private static bool TryGetIntArray(Stream input, bool littleEndian, IfdDirectory ifd,
+		ushort tag, int wanted, out int[] values)
+	{
+		values = [];
+		if ( TryGetUnsignedArray(input, littleEndian, ifd, tag, out var unsignedValues) &&
+		     unsignedValues.Length >= wanted )
+		{
+			values = unsignedValues.Take(wanted).Select(v => ( int ) v).ToArray();
+			return true;
+		}
+
+		if ( TryGetFloatArray(input, littleEndian, ifd, tag, out var floats) && floats.Length >= wanted )
+		{
+			values = floats.Take(wanted).Select(v => ( int ) MathF.Round(v)).ToArray();
+			return true;
+		}
+
+		return false;
+	}
+
+	private static ushort[,] CropBayer(ushort[,] source, int left, int top, int width, int height)
+	{
+		var cropped = new ushort[height, width];
+		for ( var y = 0; y < height; y++ )
+		{
+			for ( var x = 0; x < width; x++ )
+			{
+				cropped[y, x] = source[top + y, left + x];
+			}
+		}
+
+		return cropped;
+	}
+
+	private static byte[] ShiftCfaPattern(byte[] cfaPattern, int offsetX, int offsetY)
+	{
+		if ( cfaPattern.Length < 4 )
+		{
+			return [0, 1, 1, 2];
+		}
+
+		var shifted = new byte[4];
+		for ( var y = 0; y < 2; y++ )
+		{
+			for ( var x = 0; x < 2; x++ )
+			{
+				var srcY = ( y + ( offsetY & 1 ) ) & 1;
+				var srcX = ( x + ( offsetX & 1 ) ) & 1;
+				shifted[y * 2 + x] = cfaPattern[srcY * 2 + srcX];
+			}
+		}
+
+		return shifted;
 	}
 
 	private static bool TryReadPixels(Stream input, bool littleEndian, IReadOnlyList<uint> offsets,

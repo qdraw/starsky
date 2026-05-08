@@ -172,15 +172,35 @@ public class RawDngRealFilesFlowTests
 
 		foreach ( var file in files )
 		{
+			using ( var diagInput = File.OpenRead(file) )
+			{
+				if ( RawDngPipelineExecutor.TryRun(diagInput, out var state, out var diagError) &&
+				     state != null )
+				{
+					TestContext.WriteLine(
+						$"RAWDNG_DIAG|{file}|wb={FormatVector(state.WhiteBalanceGains)}|matrix={FormatMatrix(state.CameraToSrgbMatrix)}|linear={ComputeRgbStats(state.LinearRgb)}|display={ComputeRgbStats(state.DisplayRgb)}");
+				}
+				else
+				{
+					TestContext.WriteLine($"RAWDNG_DIAG_FAIL|{file}|error={diagError}");
+				}
+			}
+
 			using var input = File.OpenRead(file);
+			var baseName = Path.GetFileNameWithoutExtension(file);
+			if ( string.IsNullOrWhiteSpace(baseName) )
+			{
+				baseName = "baseName";
+			}
+
 			var outputPath = Path.Combine(tempDir,
-				"baseName" + "_" + Guid.NewGuid().ToString("N") + ".jpg");
+				baseName + "_" + Guid.NewGuid().ToString("N") + ".jpg");
 
 			using var output = File.Open(outputPath, FileMode.Create, FileAccess.Write);
 
 			var ok = RawDngPipelineRunner.TryRunToJpeg(input, output, out var error);
 			TestContext.WriteLine(
-				$"RAWDNG_USER_FILE|{file}|ok={ok}|len={output.Length}|error={error}");
+				$"RAWDNG_USER_FILE|{file}|ok={ok}|len={output.Length}|error={error}|out={outputPath}");
 
 			Assert.IsTrue(ok, $"Expected RAW decode success for {file}: {error}");
 			Assert.IsGreaterThan(8L, output.Length, $"Expected JPEG output for {file}");
@@ -190,6 +210,76 @@ public class RawDngRealFilesFlowTests
 			// Assert.AreEqual(( byte ) 0xFF, bytes[0], $"Expected JPEG SOI for {file}");
 			// Assert.AreEqual(( byte ) 0xD8, bytes[1], $"Expected JPEG SOI for {file}");
 		}
+	}
+
+	private static string FormatVector(float[]? vector)
+	{
+		if ( vector == null || vector.Length == 0 )
+		{
+			return "[]";
+		}
+
+		return "[" + string.Join(',', Array.ConvertAll(vector,
+			v => float.IsFinite(v) ? v.ToString("F4") : "NaN")) + "]";
+	}
+
+	private static string FormatMatrix(float[,]? matrix)
+	{
+		if ( matrix == null || matrix.GetLength(0) != 3 || matrix.GetLength(1) != 3 )
+		{
+			return "[]";
+		}
+
+		return
+			$"[{matrix[0, 0]:F4},{matrix[0, 1]:F4},{matrix[0, 2]:F4};{matrix[1, 0]:F4},{matrix[1, 1]:F4},{matrix[1, 2]:F4};{matrix[2, 0]:F4},{matrix[2, 1]:F4},{matrix[2, 2]:F4}]";
+	}
+
+	private static string ComputeRgbStats(float[,,]? rgb)
+	{
+		if ( rgb == null )
+		{
+			return "none";
+		}
+
+		var h = rgb.GetLength(0);
+		var w = rgb.GetLength(1);
+		if ( h == 0 || w == 0 )
+		{
+			return "empty";
+		}
+
+		var min = new[] { float.MaxValue, float.MaxValue, float.MaxValue };
+		var max = new[] { float.MinValue, float.MinValue, float.MinValue };
+		double[] sum = [0, 0, 0];
+		var count = 0L;
+
+		for ( var y = 0; y < h; y += 4 )
+		{
+			for ( var x = 0; x < w; x += 4 )
+			{
+				for ( var c = 0; c < 3; c++ )
+				{
+					var v = rgb[y, x, c];
+					if ( v < min[c] )
+					{
+						min[c] = v;
+					}
+
+					if ( v > max[c] )
+					{
+						max[c] = v;
+					}
+
+					sum[c] += v;
+				}
+
+				count++;
+			}
+		}
+
+		var inv = count > 0 ? 1.0 / count : 0.0;
+		return
+			$"size={w}x{h}|min={min[0]:F4},{min[1]:F4},{min[2]:F4}|max={max[0]:F4},{max[1]:F4},{max[2]:F4}|mean={(float)(sum[0] * inv):F4},{(float)(sum[1] * inv):F4},{(float)(sum[2] * inv):F4}";
 	}
 
 	[TestMethod]

@@ -88,5 +88,36 @@ public class RawDngPipelineExecutorTests
 				RawDngPipelineStep.ToneCurve
 			}, steps);
 	}
+
+	[TestMethod]
+	public void Run_WithOrientationRotate90Clockwise_RotatesDisplayBuffer()
+	{
+		var raw = new DngRawImage
+		{
+			Width = 4,
+			Height = 2,
+			BitsPerSample = 16,
+			BlackLevel = new[] { 0f, 0f, 0f, 0f },
+			WhiteLevel = new[] { 1024f, 1024f, 1024f, 1024f },
+			AsShotNeutral = [1f, 1f, 1f],
+			ColorMatrix1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CfaPattern = [0, 1, 1, 2],
+			ForwardMatrix1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CameraCalibration1 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CameraCalibration2 = new[,] { { 1f, 0f, 0f }, { 0f, 1f, 0f }, { 0f, 0f, 1f } },
+			CalibrationIlluminant1 = 21,
+			Orientation = 6,
+			Bayer = new ushort[,]
+			{
+				{ 100, 200, 300, 400 },
+				{ 500, 600, 700, 800 }
+			}
+		};
+
+		var state = RawDngPipelineExecutor.Run(raw);
+		Assert.IsNotNull(state.DisplayRgb);
+		Assert.AreEqual(4, state.DisplayRgb.GetLength(0));
+		Assert.AreEqual(2, state.DisplayRgb.GetLength(1));
+	}
 }
 

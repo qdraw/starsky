@@ -240,6 +240,7 @@ internal static class RawDngPipelineExecutor
 
 		var display = CopyRgb(state.LinearRgb);
 		ToneMapping.ApplyInPlace(display, 2.2f, ToneCurve.Hable);
+		display = ApplyOrientation(display, state.Raw.Orientation);
 
 		return new RawDngPipelineState
 		{
@@ -250,6 +251,74 @@ internal static class RawDngPipelineExecutor
 			WhiteBalanceGains = state.WhiteBalanceGains,
 			CameraToSrgbMatrix = state.CameraToSrgbMatrix
 		};
+	}
+
+	private static float[,,] ApplyOrientation(float[,,] source, ushort orientation)
+	{
+		return orientation switch
+		{
+			3 => Rotate180(source),
+			6 => Rotate90Clockwise(source),
+			8 => Rotate270Clockwise(source),
+			_ => source
+		};
+	}
+
+	private static float[,,] Rotate90Clockwise(float[,,] source)
+	{
+		var h = source.GetLength(0);
+		var w = source.GetLength(1);
+		var rotated = new float[w, h, 3];
+		for ( var y = 0; y < h; y++ )
+		{
+			for ( var x = 0; x < w; x++ )
+			{
+				for ( var c = 0; c < 3; c++ )
+				{
+					rotated[x, h - 1 - y, c] = source[y, x, c];
+				}
+			}
+		}
+
+		return rotated;
+	}
+
+	private static float[,,] Rotate270Clockwise(float[,,] source)
+	{
+		var h = source.GetLength(0);
+		var w = source.GetLength(1);
+		var rotated = new float[w, h, 3];
+		for ( var y = 0; y < h; y++ )
+		{
+			for ( var x = 0; x < w; x++ )
+			{
+				for ( var c = 0; c < 3; c++ )
+				{
+					rotated[w - 1 - x, y, c] = source[y, x, c];
+				}
+			}
+		}
+
+		return rotated;
+	}
+
+	private static float[,,] Rotate180(float[,,] source)
+	{
+		var h = source.GetLength(0);
+		var w = source.GetLength(1);
+		var rotated = new float[h, w, 3];
+		for ( var y = 0; y < h; y++ )
+		{
+			for ( var x = 0; x < w; x++ )
+			{
+				for ( var c = 0; c < 3; c++ )
+				{
+					rotated[h - 1 - y, w - 1 - x, c] = source[y, x, c];
+				}
+			}
+		}
+
+		return rotated;
 	}
 
 	private static float[,,] CopyRgb(float[,,] source)

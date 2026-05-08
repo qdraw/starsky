@@ -314,7 +314,7 @@ For questions about specific topics:
 - HUAWEI EVA-AL00: 16-bit RAW, D65 illuminant
 
 ### Related Files (Not Modified):
-- RawDngPhase3Pipeline.cs (processing pipeline)
+- RawDngPipelineExecutor.cs (processing pipeline)
 - BilinearDemosaic.cs (demosaicing algorithm)
 - WhiteBalance.cs (white balance calculation)
 - ToneMapping.cs (tone mapping)

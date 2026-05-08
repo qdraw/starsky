@@ -309,7 +309,7 @@ Solution: Capture and report exception types
 - Often uses Deflate compression
 
 ### Understanding DNG Processing:
-- See RawDngPhase3Pipeline.cs for processing stages
+- See RawDngPipelineExecutor.cs for processing stages
 - See ColorMatrixTransform.cs for illuminant handling
 - See RawNormalization.cs for black/white level application
 
