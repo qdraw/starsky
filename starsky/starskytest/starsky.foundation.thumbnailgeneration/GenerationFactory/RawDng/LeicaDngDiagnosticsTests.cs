@@ -14,9 +14,9 @@ public class LeicaDngDiagnosticsTests
 	{
 		string[] files =
 		[
-			"/Users/dion/data/testcontent/raws/leica_cl_01.dng",
-			"/Users/dion/data/testcontent/raws/RAW_LEICA_M8.dng",
-			"/Users/dion/data/testcontent/raws/Leica - M (Typ 240) - 16bit 16bit compressed (3_2).dng"
+			"/Users/dion/data/testcontent/main/raws/leica_cl_01.dng",
+			"/Users/dion/data/testcontent/main/raws/RAW_LEICA_M8.dng",
+			"/Users/dion/data/testcontent/main/raws/Leica - M (Typ 240) - 16bit 16bit compressed (3_2).dng"
 		];
 
 		foreach ( var file in files )
