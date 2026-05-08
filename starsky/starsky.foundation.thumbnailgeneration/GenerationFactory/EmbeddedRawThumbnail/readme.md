@@ -18,6 +18,19 @@ It uses a factory-like approach to select the appropriate extractor based on the
 - **Sigma:** X3F.
 - **Standard JPEG:** JPG/JPEG (extracts embedded EXIF thumbnails).
 
+### Portrait & Rotation Support
+
+All extracted embedded previews automatically support **EXIF-based image orientation and rotation**,
+including:
+
+- **Portrait mode:** Images rotated 90° or 270° are correctly oriented.
+- **Landscape mode:** Standard and flipped orientations (EXIF values 1-8).
+- **Automatic handling:** EXIF orientation metadata from the embedded JPEG is automatically detected
+  and applied during thumbnail generation via ImageSharp's `AutoOrient()` method.
+
+This ensures that portrait photographs taken with portrait orientation are displayed correctly without
+requiring manual rotation adjustments.
+
 ---
 
 ## Core Components

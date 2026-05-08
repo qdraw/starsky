@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>starsky.benchmarks.rawdng.RawDngLoadBenchmarks-20260430-110723</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.15.6, Windows 11 (10.0.26200.8246)
+Intel Core Ultra 7 265HX 2.60GHz, 1 CPU, 20 logical and 20 physical cores
+.NET SDK 8.0.420
+  [Host]   : .NET 8.0.26 (8.0.26, 8.0.2626.16921), X64 RyuJIT x86-64-v3
+  ShortRun : .NET 8.0.26 (8.0.26, 8.0.2626.16921), X64 RyuJIT x86-64-v3
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method</th><th>Job</th><th>Toolchain       </th><th>IterationCount</th><th>LaunchCount</th><th>WarmupCount</th><th>Width</th><th>Height</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>TryLoad_8Bit</td><td>InProcess</td><td>InProcessEmitToolchain</td><td>Default</td><td>Default</td><td>Default</td><td>4032</td><td>3024</td><td>25.37 ms</td><td>0.511 ms</td><td>1.499 ms</td><td>25.52 ms</td><td>468.7500</td><td>468.7500</td><td>312.5000</td><td>58.14 MB</td>
+</tr><tr><td>TryLoad_8Bit</td><td>ShortRun</td><td>Default</td><td>3</td><td>1</td><td>3</td><td>4032</td><td>3024</td><td>26.03 ms</td><td>18.011 ms</td><td>0.987 ms</td><td>26.03 ms</td><td>406.2500</td><td>406.2500</td><td>250.0000</td><td>58.14 MB</td>
+</tr><tr><td>TryLoad_8Bit</td><td>InProcess</td><td>InProcessEmitToolchain</td><td>Default</td><td>Default</td><td>Default</td><td>4032</td><td>4024</td><td>33.16 ms</td><td>0.623 ms</td><td>0.583 ms</td><td>33.34 ms</td><td>687.5000</td><td>687.5000</td><td>375.0000</td><td>77.37 MB</td>
+</tr><tr><td>TryLoad_8Bit</td><td>ShortRun</td><td>Default</td><td>3</td><td>1</td><td>3</td><td>4032</td><td>4024</td><td>33.66 ms</td><td>13.323 ms</td><td>0.730 ms</td><td>33.43 ms</td><td>562.5000</td><td>562.5000</td><td>250.0000</td><td>77.37 MB</td>
+</tr><tr><td>TryLoad_8Bit</td><td>InProcess</td><td>InProcessEmitToolchain</td><td>Default</td><td>Default</td><td>Default</td><td>6048</td><td>3024</td><td>41.15 ms</td><td>1.505 ms</td><td>4.438 ms</td><td>39.36 ms</td><td>642.8571</td><td>642.8571</td><td>285.7143</td><td>87.21 MB</td>
+</tr><tr><td>TryLoad_8Bit</td><td>ShortRun</td><td>Default</td><td>3</td><td>1</td><td>3</td><td>6048</td><td>3024</td><td>40.39 ms</td><td>32.537 ms</td><td>1.783 ms</td><td>39.77 ms</td><td>692.3077</td><td>692.3077</td><td>307.6923</td><td>87.21 MB</td>
+</tr><tr><td>TryLoad_8Bit</td><td>InProcess</td><td>InProcessEmitToolchain</td><td>Default</td><td>Default</td><td>Default</td><td>6048</td><td>4024</td><td>47.50 ms</td><td>2.283 ms</td><td>6.730 ms</td><td>49.76 ms</td><td>333.3333</td><td>333.3333</td><td>333.3333</td><td>116.05 MB</td>
+</tr><tr><td>TryLoad_8Bit</td><td>ShortRun</td><td>Default</td><td>3</td><td>1</td><td>3</td><td>6048</td><td>4024</td><td>46.32 ms</td><td>13.602 ms</td><td>0.746 ms</td><td>46.54 ms</td><td>636.3636</td><td>636.3636</td><td>181.8182</td><td>116.05 MB</td>
+</tr></tbody></table>
+</body>
+</html>

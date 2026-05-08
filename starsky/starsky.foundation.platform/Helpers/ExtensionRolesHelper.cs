@@ -497,7 +497,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	public static bool IsExtensionNativeSupported(string? filename)
 	{
 		List<string> nativeSupportList =
-			[..ExtensionImageSharpThumbnailSupportedList, ..ExtensionHeic];
+			[..ExtensionImageSharpThumbnailSupportedList, ..ExtensionHeic, ..ExtensionRawAdobe];
 		return IsExtensionForce(filename?.ToLowerInvariant(),
 			nativeSupportList);
 	}

@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.PreviewImageNative;
 using starskytest.FakeMocks;
