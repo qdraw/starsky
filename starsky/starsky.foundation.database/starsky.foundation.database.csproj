@@ -6,7 +6,7 @@
         <ProjectGuid>{46588bf9-d745-460d-a22d-d8fdfc698809}</ProjectGuid>
         <DebugType>Full</DebugType>
         <DefineConstants>T</DefineConstants>
-        <Version>0.7.16</Version>
+        <Version>0.7.18</Version>
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.foundation.database</RootNamespace>
         <ImplicitUsings>disable</ImplicitUsings>
@@ -89,6 +89,12 @@
         <Content Include="..\..\documentation\docs\developer-guide\migrations\migrations.md">
             <Link>migrations.md</Link>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Migrations\20260505142535_QueueItemsTableAddCustomAiTags.sql">
+            <DependentUpon>20260505142535_QueueItemsTableAddCustomAiTags.cs</DependentUpon>
+        </None>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

@@ -42,7 +42,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		// Do nothing because of that in debug mode this only triggered
-#if ( DEBUG )
+#if DEBUG
 		optionsBuilder.EnableSensitiveDataLogging();
 #endif
 	}
@@ -239,28 +239,27 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 
 		modelBuilder.Entity<QueueItem>(etb =>
 			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
 				etb.HasKey(e => e.Id);
 				etb.Property(e => e.Id)
 					.ValueGeneratedOnAdd()
-					.HasAnnotation(mySqlValueGeneratedOnAdd, true)
-					.HasAnnotation(sqliteAutoincrement, true)
-					.HasAnnotation(mysqlValuegenerationstrategy,
-						MySqlValueGenerationStrategy.IdentityColumn);
+					.HasAnnotation(mySqlValueGeneratedOnAdd, true);
 
 				etb.Property(e => e.QueueName).IsRequired().HasMaxLength(64);
 				etb.Property(e => e.JobType).IsRequired().HasMaxLength(150);
 				etb.Property(e => e.MetaData).HasMaxLength(1024);
 				etb.Property(e => e.TraceParentId).HasMaxLength(512);
 				etb.Property(e => e.Status).IsConcurrencyToken();
+				etb.Property(e => e.CreatedAtUtc).HasMaxLength(27);
+				etb.Property(e => e.ClaimedAtUtc).HasMaxLength(27);
+				etb.Property(e => e.ProcessedAtUtc).HasMaxLength(27);
+				etb.Property(e => e.JobId).HasMaxLength(36);
 
-				etb.HasIndex(e => new { e.QueueName, e.Status, e.CreatedAtUtc })
-					.HasDatabaseName("IX_QueueItems_Queue_Status_Created");
 				etb.HasIndex(e => e.JobId)
 					.HasDatabaseName("IX_QueueItems_JobId")
 					.IsUnique();
 
 				etb.ToTable("QueueItems");
-				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
 			}
 		);
 
