@@ -40,8 +40,8 @@ describe("UpdateRelativeObject", () => {
     jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockIConnectionDefault2);
 
     new UpdateRelativeObject().Update(newDetailView(), true, "/?t=test", test).then(() => {
-      done();
       expect(test).toHaveBeenCalledTimes(1);
+      done();
     });
   });
 
