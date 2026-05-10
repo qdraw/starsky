@@ -13,12 +13,7 @@ describe("ModalDownload", () => {
   });
 
   it("renders", () => {
-    // interface IModalExportProps {
-    //   isOpen: boolean;
-    //   select: Array<string> | undefined;
-    //   handleExit: Function;
-    // }
-    render(
+    const item = render(
       <ModalDownload
         collections={false}
         select={["/"]}
@@ -26,6 +21,7 @@ describe("ModalDownload", () => {
         handleExit={() => {}}
       ></ModalDownload>
     );
+    expect(item).toBeTruthy();
   });
 
   beforeEach(() => {});

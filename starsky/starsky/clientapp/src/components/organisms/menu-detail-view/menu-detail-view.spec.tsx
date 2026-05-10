@@ -29,11 +29,12 @@ describe("MenuDetailView", () => {
         parentDirectory: "/test"
       }
     } as IDetailView;
-    render(
+    const item = render(
       <MemoryRouter>
         <MenuDetailView state={state} dispatch={jest.fn()} />
       </MemoryRouter>
     );
+    expect(item).toBeTruthy();
   });
 
   describe("readonly status context", () => {

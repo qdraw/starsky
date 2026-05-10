@@ -9,7 +9,8 @@ import MediaContent from "./media-content";
 
 describe("MediaContent", () => {
   it("renders", () => {
-    render(<MediaContent />);
+    const item = render(<MediaContent />);
+    expect(item).toBeTruthy();
   });
   it("application failed", () => {
     // use this import => import * as useFileList from '../hooks/use-filelist';

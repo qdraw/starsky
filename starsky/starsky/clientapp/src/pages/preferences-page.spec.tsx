@@ -7,6 +7,7 @@ describe("PreferencesPage", () => {
     jest
       .spyOn(useSearchParams, "useSearchParams")
       .mockReturnValue([new URLSearchParams(), jest.fn()]);
-    render(<PreferencesPage />);
+    const item = render(<PreferencesPage />);
+    expect(item).toBeTruthy();
   });
 });

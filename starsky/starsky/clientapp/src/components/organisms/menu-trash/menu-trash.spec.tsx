@@ -16,9 +16,10 @@ import MenuTrash from "./menu-trash";
 
 describe("MenuTrash", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <MenuTrash state={{ fileIndexItems: [] } as unknown as IArchiveProps} dispatch={jest.fn()} />
     );
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

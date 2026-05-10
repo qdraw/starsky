@@ -14,9 +14,10 @@ describe("ModalDetailviewRenameFile", () => {
   });
 
   it("renders", () => {
-    render(
+    const item = render(
       <ModalDetailviewRenameFile state={{} as IDetailView} isOpen={true} handleExit={() => {}} />
     );
+    expect(item).toBeTruthy();
   });
 
   describe("rename", () => {

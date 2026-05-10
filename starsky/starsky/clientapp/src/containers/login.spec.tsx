@@ -9,7 +9,8 @@ import { Login } from "./login";
 
 describe("Login", () => {
   it("renders", () => {
-    render(<Login />);
+    const item = render(<Login />);
+    expect(item).toBeTruthy();
   });
 
   it("account already logged in", () => {

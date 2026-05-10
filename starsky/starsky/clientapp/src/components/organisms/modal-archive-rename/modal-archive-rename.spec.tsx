@@ -13,9 +13,10 @@ describe("ModalArchiveRename", () => {
   });
 
   it("renders", () => {
-    render(
+    const item = render(
       <ModalArchiveRename isOpen={true} subPath="/" handleExit={() => {}}></ModalArchiveRename>
     );
+    expect(item).toBeTruthy();
   });
   describe("rename", () => {
     it("rename to non valid directory name", async () => {

@@ -10,11 +10,12 @@ import DetailViewWrapper, { DetailViewEventListenerUseEffect } from "./detailvie
 
 describe("DetailViewWrapper", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <MemoryRouter>
         <DetailViewWrapper {...newDetailView()} />
       </MemoryRouter>
     );
+    expect(item).toBeTruthy();
   });
 
   describe("with mount", () => {

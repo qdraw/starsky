@@ -14,8 +14,12 @@ describe("ModalArchiveMkdir", () => {
   });
 
   it("renders", () => {
-    render(<ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}></ModalDatetime>);
+    const item = render(
+      <ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}></ModalDatetime>
+    );
+    expect(item).toBeTruthy();
   });
+
   describe("with Context", () => {
     beforeEach(() => {
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});

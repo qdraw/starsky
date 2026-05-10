@@ -4,7 +4,8 @@ import Archive from "./archive";
 
 describe("Archive", () => {
   it("renders", () => {
-    render(<Archive {...newIArchive()} />);
+    const item = render(<Archive {...newIArchive()} />);
+    expect(item).toBeTruthy();
   });
 
   it("no colorclass usage", () => {
