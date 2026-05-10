@@ -11,7 +11,7 @@ import * as ColorClassUpdateSingle from "./color-class-update-single";
 
 describe("ColorClassSelect", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <ColorClassSelect
         collections={true}
         isEnabled={true}
@@ -19,6 +19,7 @@ describe("ColorClassSelect", () => {
         onToggle={() => {}}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   it("onClick value", () => {

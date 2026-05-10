@@ -8,7 +8,10 @@ jest.mock("../../../hooks/use-intersection-observer");
 
 describe("ListImageTest", () => {
   it("renders", () => {
-    render(<ListImage filePath={""} alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />);
+    const item = render(
+      <ListImage filePath={""} alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />
+    );
+    expect(item).toBeTruthy();
   });
 
   it("useIntersection = true", () => {

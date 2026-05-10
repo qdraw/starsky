@@ -8,7 +8,7 @@ describe("ArchiveSidebar", () => {
   it("renders", () => {
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
-    render(
+    const item = render(
       <ArchiveSidebar
         pageType={PageType.Loading}
         subPath={"/"}
@@ -17,6 +17,7 @@ describe("ArchiveSidebar", () => {
         fileIndexItems={newIFileIndexItemArray()}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   describe("with mount", () => {

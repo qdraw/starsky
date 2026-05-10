@@ -4,11 +4,12 @@ import FormControl from "./form-control";
 
 describe("FormControl", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <FormControl contentEditable={true} onBlur={() => {}} name="test">
         &nbsp;
       </FormControl>
     );
+    expect(item).toBeTruthy();
   });
 
   describe("with events", () => {

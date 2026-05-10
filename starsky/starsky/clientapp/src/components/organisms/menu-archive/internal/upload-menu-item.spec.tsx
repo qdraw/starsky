@@ -5,7 +5,7 @@ import { UploadMenuItem } from "./upload-menu-item";
 
 describe("MenuArchive", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <UploadMenuItem
         readOnly={true}
         setDropAreaUploadFilesList={() => {}}
@@ -13,6 +13,7 @@ describe("MenuArchive", () => {
         state={{} as IArchiveProps}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

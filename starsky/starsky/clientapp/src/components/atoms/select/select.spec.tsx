@@ -3,7 +3,8 @@ import Select from "./select";
 
 describe("SwitchButton", () => {
   it("renders", () => {
-    render(<Select selectOptions={[]} />);
+    const item = render(<Select selectOptions={[]} />);
+    expect(item).toBeTruthy();
   });
 
   it("trigger change", async () => {

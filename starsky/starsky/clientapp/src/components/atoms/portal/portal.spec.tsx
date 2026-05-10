@@ -3,7 +3,8 @@ import Portal from "./portal";
 
 describe("Portal", () => {
   it("renders", () => {
-    render(<Portal />);
+    const item = render(<Portal />);
+    expect(item).toBeTruthy();
   });
 
   it("default render", () => {

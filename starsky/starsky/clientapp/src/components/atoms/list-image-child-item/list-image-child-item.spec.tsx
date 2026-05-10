@@ -4,7 +4,8 @@ import ListImageChildItem from "./list-image-child-item";
 
 describe("FlatListItem", () => {
   it("renders", () => {
-    render(<ListImageChildItem {...newIFileIndexItem()} />);
+    const item = render(<ListImageChildItem {...newIFileIndexItem()} />);
+    expect(item).toBeTruthy();
   });
 
   it("check if name exist", () => {

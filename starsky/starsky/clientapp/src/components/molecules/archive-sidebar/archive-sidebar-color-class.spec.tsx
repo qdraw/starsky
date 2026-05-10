@@ -9,13 +9,14 @@ import * as ColorClassSelect from "../color-class-select/color-class-select";
 import ArchiveSidebarColorClass from "./archive-sidebar-color-class";
 describe("ArchiveSidebarColorClass", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <ArchiveSidebarColorClass
         pageType={PageType.Archive}
         fileIndexItems={newIFileIndexItemArray()}
         isReadOnly={false}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   describe("mount object (mount= select is child element)", () => {

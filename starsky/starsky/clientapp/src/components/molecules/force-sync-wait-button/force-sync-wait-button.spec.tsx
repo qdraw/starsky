@@ -10,7 +10,7 @@ import ForceSyncWaitButton, { ForceSyncRequestNewContent } from "./force-sync-wa
 
 describe("ForceSyncWaitButton", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <ForceSyncWaitButton
         historyLocationSearch={""}
         dispatch={jest.fn()}
@@ -18,6 +18,7 @@ describe("ForceSyncWaitButton", () => {
         isShortLabel={false}
       ></ForceSyncWaitButton>
     );
+    expect(item).toBeTruthy();
   });
 
   const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({

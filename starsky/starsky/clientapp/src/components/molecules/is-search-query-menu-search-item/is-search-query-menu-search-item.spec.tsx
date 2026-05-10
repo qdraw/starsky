@@ -14,7 +14,7 @@ describe("IsSearchQueryMenuSearchItem", () => {
       },
       navigate: jest.fn()
     } as unknown as IUseLocation;
-    render(
+    const item = render(
       <BrowserRouter>
         <IsSearchQueryMenuSearchItem
           history={history}
@@ -24,6 +24,7 @@ describe("IsSearchQueryMenuSearchItem", () => {
         />
       </BrowserRouter>
     );
+    expect(item).toBeTruthy();
   });
 
   it("should contain test id", () => {

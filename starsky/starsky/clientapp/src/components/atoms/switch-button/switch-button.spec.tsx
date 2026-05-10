@@ -5,7 +5,8 @@ import SwitchButton from "./switch-button";
 describe("SwitchButton", () => {
   it("renders", () => {
     const toggle = jest.fn();
-    render(<SwitchButton onToggle={toggle} leftLabel={"on"} rightLabel={"off"} />);
+    const item = render(<SwitchButton onToggle={toggle} leftLabel={"on"} rightLabel={"off"} />);
+    expect(item).toBeTruthy();
   });
 
   it("renders (disabled:state)", () => {
