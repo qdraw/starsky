@@ -29,5 +29,5 @@ export const mountReactHook = (hook: (...args: unknown[]) => unknown, args: unkn
       </Component>
     );
   });
-  return { componentMount, componentHook } as MountReactHookResult;
+  return { componentMount, componentHook };
 };

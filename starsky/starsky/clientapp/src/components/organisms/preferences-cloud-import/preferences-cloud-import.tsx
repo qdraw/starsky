@@ -79,7 +79,7 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
       return;
     }
 
-    setStatusData(statusResponse.data as CloudImportStatusResponse);
+    setStatusData(statusResponse.data);
     setStatusError(null);
     setIsLoading(false);
   }, [messageStatusUnavailable]);

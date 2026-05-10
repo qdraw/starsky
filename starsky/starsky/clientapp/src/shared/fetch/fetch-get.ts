@@ -22,13 +22,13 @@ const FetchGet = async (
     return {
       statusCode: res.status,
       data: response
-    } as IConnectionDefault;
+    };
   } catch (err) {
     console.error(err);
     return {
       statusCode: res.status,
       data: null
-    } as IConnectionDefault;
+    };
   }
 };
 
