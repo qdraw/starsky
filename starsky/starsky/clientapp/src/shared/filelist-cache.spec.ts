@@ -157,6 +157,7 @@ describe("FileListCache", () => {
       // the detailview value needs to have a fileIndexItem value
       fileListCache.CacheSet("?f=/test_non_valid/image.jpg&collections=false", newDetailView());
 
+      expect(fileListCache.CacheGet("?f=/test_non_valid&collections=false")).toBeNull();
       // expect nothing happend
     });
 

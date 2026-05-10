@@ -20,8 +20,10 @@ describe("UpdateRelativeObject", () => {
       .then((status) => {
         console.log("--should not display status");
         console.log(status);
+        expect(status).toBeUndefined();
       })
       .catch(() => {
+        expect(test).toHaveBeenCalledTimes(0);
         done();
       });
   });
@@ -39,6 +41,7 @@ describe("UpdateRelativeObject", () => {
 
     new UpdateRelativeObject().Update(newDetailView(), true, "/?t=test", test).then(() => {
       done();
+      expect(test).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -59,6 +62,7 @@ describe("UpdateRelativeObject", () => {
         console.log(status);
       })
       .catch(() => {
+        expect(test).toHaveBeenCalledTimes(0);
         done();
       });
   });

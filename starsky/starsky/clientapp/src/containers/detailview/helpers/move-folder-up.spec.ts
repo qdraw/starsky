@@ -4,7 +4,7 @@ import { IDetailView } from "../../../interfaces/IDetailView";
 import { Keyboard } from "../../../shared/keyboard/keyboard";
 import { moveFolderUp } from "./move-folder-up";
 
-describe("statusRemoved", () => {
+describe("move folder up", () => {
   it("renders", () => {
     const item = moveFolderUp({} as KeyboardEvent, {} as IUseLocation, true, {} as IDetailView);
     expect(item).toBeUndefined();

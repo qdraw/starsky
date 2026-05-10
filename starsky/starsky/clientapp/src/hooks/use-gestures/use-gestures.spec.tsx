@@ -193,6 +193,7 @@ describe("useGestures", () => {
       const image = component.container.querySelector("img") as HTMLImageElement;
       const touchmoveEvent = createEvent.wheel(image, exampleSingleTouches);
 
+      expect(image).toBeTruthy();
       fireEvent(image, touchmoveEvent);
 
       jest.advanceTimersByTime(201);

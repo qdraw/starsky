@@ -5,7 +5,8 @@ import { DocumentTitle } from "./document-title";
 describe("document-title", () => {
   describe("SetDocumentTitle", () => {
     it("do nothing / do not fail", () => {
-      new DocumentTitle().SetDocumentTitle({} as IArchiveProps);
+      const item = new DocumentTitle().SetDocumentTitle({} as IArchiveProps);
+      expect(item).toBeUndefined();
     });
 
     it("Archive Home", () => {
