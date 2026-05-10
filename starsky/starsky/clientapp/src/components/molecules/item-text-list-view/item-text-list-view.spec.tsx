@@ -5,7 +5,10 @@ import ItemTextListView from "./item-text-list-view";
 
 describe("ItemTextListView", () => {
   it("renders (without state component)", () => {
-    render(<ItemTextListView fileIndexItems={newIFileIndexItemArray()} callback={() => {}} />);
+    const item = render(
+      <ItemTextListView fileIndexItems={newIFileIndexItemArray()} callback={() => {}} />
+    );
+    expect(item).toBeTruthy();
   });
 
   it("renders undefined", () => {

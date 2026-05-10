@@ -6,7 +6,8 @@ import { moveFolderUp } from "./move-folder-up";
 
 describe("statusRemoved", () => {
   it("renders", () => {
-    moveFolderUp({} as KeyboardEvent, {} as IUseLocation, true, {} as IDetailView);
+    const item = moveFolderUp({} as KeyboardEvent, {} as IUseLocation, true, {} as IDetailView);
+    expect(item).toBeUndefined();
   });
 
   it("should navigate [search query on]", () => {
