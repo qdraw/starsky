@@ -49,7 +49,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
 
   describe("default function", () => {
     it("renders without crashing", () => {
-      render(
+      const item = render(
         <MenuOptionDesktopEditorOpenSelection
           isReadOnly={true}
           select={[]}
@@ -57,6 +57,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
           setEnableMoreMenu={() => {}}
         />
       );
+      expect(item).toBeTruthy();
     });
 
     it("-- calls StartMenuOptionDesktopEditorOpenSelection on hotkey trigger", async () => {

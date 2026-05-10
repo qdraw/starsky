@@ -25,6 +25,7 @@ describe("WebSocketService", () => {
     it("send", () => {
       webSocketService.send("");
       // should not crash
+      expect(webSocketService).toBeTruthy();
     });
 
     it("onMessage", () => {

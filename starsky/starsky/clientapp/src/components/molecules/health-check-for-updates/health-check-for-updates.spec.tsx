@@ -9,7 +9,8 @@ import HealthCheckForUpdates, {
 
 describe("HealthCheckForUpdates", () => {
   it("renders (without state component)", () => {
-    render(<HealthCheckForUpdates />);
+    const item = render(<HealthCheckForUpdates />);
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

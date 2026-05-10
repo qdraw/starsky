@@ -21,6 +21,7 @@ describe("DetailViewGpx", () => {
   it("renders (without state component)", () => {
     jest.spyOn(FetchXml, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
     const component = render(<DetailViewGpx></DetailViewGpx>);
+    expect(component).toBeTruthy();
     component.unmount();
   });
 

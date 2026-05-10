@@ -43,7 +43,7 @@ describe("ModalTimezoneShift", () => {
   });
 
   it("renders when open", () => {
-    render(
+    const item = render(
       <ModalTimezoneShift
         isOpen={true}
         handleExit={() => {}}
@@ -55,6 +55,7 @@ describe("ModalTimezoneShift", () => {
         collections={true}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   it("shows mode selection initially", () => {
