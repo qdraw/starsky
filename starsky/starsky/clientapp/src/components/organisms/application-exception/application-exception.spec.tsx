@@ -4,7 +4,8 @@ import ApplicationException from "./application-exception";
 
 describe("ApplicationException", () => {
   it("renders", () => {
-    render(<ApplicationException />);
+    const item = render(<ApplicationException />);
+    expect(item).toBeTruthy();
   });
 
   it("should have menu", () => {

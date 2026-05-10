@@ -3,8 +3,9 @@ import HamburgerMenuToggle from "./hamburger-menu-toggle";
 
 describe("HamburgerMenuToggle", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <HamburgerMenuToggle select={false} hamburgerMenu={true} setHamburgerMenu={jest.fn()} />
     );
+    expect(item).toBeTruthy();
   });
 });

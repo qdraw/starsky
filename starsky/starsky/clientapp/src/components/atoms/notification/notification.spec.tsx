@@ -4,7 +4,8 @@ import Notification, { NotificationType } from "./notification";
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
-    render(<Notification type={NotificationType.default} />);
+    const item = render(<Notification type={NotificationType.default} />);
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

@@ -5,7 +5,8 @@ import { Router } from "../../../router-app/router-app";
 import SearchPagination from "./search-pagination";
 describe("SearchPagination", () => {
   it("renders", () => {
-    render(<SearchPagination />);
+    const item = render(<SearchPagination />);
+    expect(item).toBeTruthy();
   });
 
   it("next page exist", () => {

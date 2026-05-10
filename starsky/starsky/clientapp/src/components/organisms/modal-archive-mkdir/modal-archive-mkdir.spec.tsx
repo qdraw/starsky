@@ -16,7 +16,7 @@ describe("ModalArchiveMkdir", () => {
   });
 
   it("renders", () => {
-    render(
+    const item = render(
       <ModalArchiveMkdir
         dispatch={jest.fn()}
         state={{} as IArchiveProps}
@@ -24,6 +24,7 @@ describe("ModalArchiveMkdir", () => {
         handleExit={() => {}}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   describe("mkdir", () => {

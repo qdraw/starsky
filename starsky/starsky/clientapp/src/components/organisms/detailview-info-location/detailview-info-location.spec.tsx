@@ -11,7 +11,7 @@ import DetailViewInfoLocation from "./detailview-info-location";
 
 describe("DetailViewInfoLocation", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <DetailViewInfoLocation
         fileIndexItem={{} as IFileIndexItem}
         isFormEnabled={false}
@@ -19,6 +19,7 @@ describe("DetailViewInfoLocation", () => {
         setFileIndexItem={jest.fn()}
       ></DetailViewInfoLocation>
     );
+    expect(item).toBeTruthy();
   });
 
   it("[DetailViewInfoLocation] should open modal", async () => {

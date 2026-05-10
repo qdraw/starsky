@@ -4,7 +4,10 @@ import FlatListItem from "./flat-list-item";
 
 describe("FlatListItem", () => {
   it("renders", () => {
-    render(<FlatListItem item={newIFileIndexItem()} onSelectionCallback={jest.fn()} />);
+    const item = render(
+      <FlatListItem item={newIFileIndexItem()} onSelectionCallback={jest.fn()} />
+    );
+    expect(item).toBeTruthy();
   });
 
   it("check if name exist", () => {

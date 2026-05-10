@@ -28,7 +28,7 @@ export function newIRelativeObjects(): IRelativeObjects {
     nextHash: "",
     prevHash: "",
     args: new Array<string>()
-  } as IRelativeObjects;
+  };
 }
 
 export interface IDetailView {

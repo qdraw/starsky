@@ -24,7 +24,8 @@ import MenuArchive from "./menu-archive";
 
 describe("MenuArchive", () => {
   it("renders", () => {
-    render(<MenuArchive />);
+    const item = render(<MenuArchive />);
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

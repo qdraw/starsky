@@ -1,7 +1,6 @@
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../interfaces/IDetailView";
-import { INavigateState } from "../../../interfaces/INavigateState";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url/url-path";
@@ -36,7 +35,7 @@ const IsSearchQueryMenuSearchItem: React.FunctionComponent<IsSearchQueryMenuSear
 
           setIsLoading(true);
         }}
-        state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
+        state={{ filePath: state.fileIndexItem.filePath }}
         to={new UrlQuery().HashSearchPage(history.location.search)}
       >
         {query === "!delete!" ? language.key(localization.MessageTrash) : query}

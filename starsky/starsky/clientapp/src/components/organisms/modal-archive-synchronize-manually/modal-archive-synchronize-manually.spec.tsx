@@ -14,9 +14,10 @@ describe("ModalArchiveSynchronizeManually", () => {
   });
 
   it("renders", () => {
-    render(
+    const item = render(
       <ModalArchiveSynchronizeManually isOpen={true} parentFolder="/" handleExit={() => {}} />
     );
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

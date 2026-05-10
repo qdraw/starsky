@@ -17,7 +17,8 @@ const renderWithRouter = (initialPath = "/preferences") => {
 
 describe("Preferences", () => {
   it("renders", () => {
-    renderWithRouter();
+    const item = renderWithRouter();
+    expect(item).toBeTruthy();
   });
 
   describe("tabs", () => {

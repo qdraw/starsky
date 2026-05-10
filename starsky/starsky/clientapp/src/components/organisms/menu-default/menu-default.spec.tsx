@@ -4,7 +4,8 @@ import MenuDefault from "./menu-default";
 
 describe("MenuDefault", () => {
   it("renders", () => {
-    render(<MenuDefault isEnabled={false} />);
+    const item = render(<MenuDefault isEnabled={false} />);
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

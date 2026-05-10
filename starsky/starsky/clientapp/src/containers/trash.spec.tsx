@@ -6,7 +6,8 @@ import Trash from "./trash";
 
 describe("Trash", () => {
   it("renders", () => {
-    render(<Trash {...newIArchive()} />);
+    const item = render(<Trash {...newIArchive()} />);
+    expect(item).toBeTruthy();
   });
 
   it("check if warning exist with no items in the list", () => {

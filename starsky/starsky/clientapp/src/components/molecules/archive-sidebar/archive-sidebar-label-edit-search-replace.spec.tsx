@@ -11,9 +11,10 @@ import { UrlQuery } from "../../../shared/url/url-query";
 import * as Notification from "../../atoms/notification/notification";
 import ArchiveSidebarLabelEditSearchReplace from "./archive-sidebar-label-edit-search-replace";
 
-describe("ArchiveSidebarLabelEditAddOverwrite", () => {
+describe("ArchiveSidebarLabelEditSearchReplace", () => {
   it("renders", () => {
-    render(<ArchiveSidebarLabelEditSearchReplace />);
+    const item = render(<ArchiveSidebarLabelEditSearchReplace />);
+    expect(item).toBeTruthy();
   });
 
   it("isReadOnly: true", () => {

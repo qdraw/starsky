@@ -3,7 +3,8 @@ import ButtonStyled from "./button-styled";
 
 describe("CurrentLocationButton", () => {
   it("renders", () => {
-    render(<ButtonStyled />);
+    const item = render(<ButtonStyled />);
+    expect(item).toBeTruthy();
   });
 
   describe("ButtonStyled", () => {

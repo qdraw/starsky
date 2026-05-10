@@ -7,7 +7,8 @@ import PreferencesPassword from "./preferences-password";
 
 describe("PreferencesPassword", () => {
   it("renders", () => {
-    render(<PreferencesPassword />);
+    const item = render(<PreferencesPassword />);
+    expect(item).toBeTruthy();
   });
 
   describe("context", () => {

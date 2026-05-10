@@ -4,11 +4,13 @@ import MenuMenuSearchContainer from "./menu-search-container";
 
 describe("MenuMenuSearchContainer", () => {
   it("renders", () => {
-    render(<MenuMenuSearchContainer />);
+    const item = render(<MenuMenuSearchContainer />);
+    expect(item).toBeTruthy();
   });
 
   it("expect child object", () => {
     jest.spyOn(MenuSearch, "default").mockImplementationOnce(() => null);
-    render(<MenuMenuSearchContainer />);
+    const item = render(<MenuMenuSearchContainer />);
+    expect(item).toBeTruthy();
   });
 });

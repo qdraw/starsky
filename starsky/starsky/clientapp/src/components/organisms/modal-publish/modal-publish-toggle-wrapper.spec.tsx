@@ -5,7 +5,7 @@ import ModalPublishToggleWrapper from "./modal-publish-toggle-wrapper";
 
 describe("ModalPublish", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <ModalPublishToggleWrapper
         select={["/"]}
         stateFileIndexItems={[]}
@@ -13,6 +13,7 @@ describe("ModalPublish", () => {
         setModalPublishOpen={() => {}}
       ></ModalPublishToggleWrapper>
     );
+    expect(item).toBeTruthy();
   });
   it("should Not pass undefined", () => {
     const modalPublishSpy = jest.spyOn(ModalPublish, "default").mockImplementationOnce(() => <></>);

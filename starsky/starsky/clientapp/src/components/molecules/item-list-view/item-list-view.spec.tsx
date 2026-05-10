@@ -12,13 +12,14 @@ import ItemListView from "./item-list-view";
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
-    render(
+    const item = render(
       <ItemListView
         iconList={true}
         fileIndexItems={newIFileIndexItemArray()}
         colorClassUsage={[]}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

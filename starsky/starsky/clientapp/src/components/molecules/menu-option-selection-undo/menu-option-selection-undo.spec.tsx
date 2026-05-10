@@ -4,17 +4,18 @@ import { MenuOptionSelectionUndo } from "./menu-option-selection-undo";
 
 describe("MenuOptionSelectionUndo", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <MenuOptionSelectionUndo
         select={[]}
         state={{} as unknown as IArchiveProps}
         undoSelection={() => {}}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   it("renders 2", () => {
-    render(
+    const item = render(
       <MenuOptionSelectionUndo
         select={[]}
         state={
@@ -25,6 +26,7 @@ describe("MenuOptionSelectionUndo", () => {
         undoSelection={() => {}}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   it("keyDown tab skipped", () => {

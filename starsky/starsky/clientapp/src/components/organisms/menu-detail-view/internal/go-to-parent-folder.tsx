@@ -1,6 +1,5 @@
 import { IUseLocation } from "../../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../../interfaces/IDetailView";
-import { INavigateState } from "../../../../interfaces/INavigateState";
 import localization from "../../../../localization/localization.json";
 import { UrlQuery } from "../../../../shared/url/url-query";
 import MenuOption from "../../../atoms/menu-option/menu-option";
@@ -26,7 +25,7 @@ export const GoToParentFolder: React.FunctionComponent<IGoToParentFolderProps> =
       {
         state: {
           filePath: state.fileIndexItem.filePath
-        } as INavigateState
+        }
       }
     );
   }

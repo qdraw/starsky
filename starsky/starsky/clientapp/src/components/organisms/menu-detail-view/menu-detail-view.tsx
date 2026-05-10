@@ -6,7 +6,6 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import { INavigateState } from "../../../interfaces/INavigateState";
 import localization from "../../../localization/localization.json";
 import { CommaSeperatedFileList } from "../../../shared/comma-seperated-filelist/comma-seperated-filelist";
 import { IsEditedNow } from "../../../shared/date";
@@ -249,7 +248,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
             <Link
               className="item item--first item--close"
               data-test="menu-detail-view-close"
-              state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
+              state={{ filePath: state.fileIndexItem.filePath }}
               onClick={(event) => {
                 // Command (mac) or ctrl click means open new window
                 // event.button = is only trigged in safari

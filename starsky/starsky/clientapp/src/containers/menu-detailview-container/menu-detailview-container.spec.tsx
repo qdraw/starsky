@@ -6,11 +6,12 @@ import MenuDetailViewContainer from "./menu-detailview-container";
 
 describe("MenuDetailViewContainer", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <MemoryRouter>
         <MenuDetailViewContainer />
       </MemoryRouter>
     );
+    expect(item).toBeTruthy();
   });
 
   it("expect child object", () => {

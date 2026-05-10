@@ -18,7 +18,7 @@ describe("ModalMoveFile", () => {
   });
 
   it("renders", () => {
-    render(
+    const item = render(
       <ModalMoveFile
         parentDirectory="/"
         selectedSubPath="/test.jpg"
@@ -26,6 +26,7 @@ describe("ModalMoveFile", () => {
         handleExit={() => {}}
       ></ModalMoveFile>
     );
+    expect(item).toBeTruthy();
   });
 
   it("Input Not found", () => {

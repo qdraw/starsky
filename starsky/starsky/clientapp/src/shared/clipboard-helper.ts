@@ -29,7 +29,7 @@ export class ClipboardHelper {
         tags,
         description,
         title
-      } as IClipboardData)
+      })
     );
     return true;
   }

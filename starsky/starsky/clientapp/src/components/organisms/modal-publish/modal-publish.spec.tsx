@@ -16,7 +16,10 @@ describe("ModalPublish", () => {
   });
 
   it("renders", () => {
-    render(<ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>);
+    const item = render(
+      <ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>
+    );
+    expect(item).toBeTruthy();
   });
 
   it("Publish button exist test", () => {

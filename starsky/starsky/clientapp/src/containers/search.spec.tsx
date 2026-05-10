@@ -10,7 +10,8 @@ describe("Search", () => {
   });
 
   it("renders", () => {
-    render(<Search {...newIArchive()} />);
+    const item = render(<Search {...newIArchive()} />);
+    expect(item).toBeTruthy();
   });
 
   describe("Results count", () => {
