@@ -10,20 +10,21 @@ using starsky.foundation.import.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.import.Services;
 
 [Service(typeof(IImportIndexJsonService), InjectionLifetime = InjectionLifetime.Scoped)]
-public sealed class ImportIndexJsonService : IImportIndexJsonService
+public sealed class ImportIndexJsonService(
+	IImportQuery importQuery,
+	AppSettings appSettings,
+	ISelectorStorage selectorStorage)
+	: IImportIndexJsonService
 {
-	private readonly AppSettings _appSettings;
-	private readonly IImportQuery _importQuery;
-
-	public ImportIndexJsonService(IImportQuery importQuery, AppSettings appSettings)
-	{
-		_importQuery = importQuery;
-		_appSettings = appSettings;
-	}
+	private readonly IStorage _iStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
 	public async Task<string> ExportAsync(string outputJsonPath)
 	{
@@ -35,19 +36,20 @@ public sealed class ImportIndexJsonService : IImportIndexJsonService
 		var directory = Path.GetDirectoryName(outputJsonPath);
 		if ( !string.IsNullOrWhiteSpace(directory) )
 		{
-			Directory.CreateDirectory(directory);
+			_iStorage.CreateDirectory(directory);
 		}
 
 		var exportModel = new ImportIndexJsonContainer
 		{
 			ExportedAtUtc = DateTime.UtcNow,
-			Version = _appSettings.AppVersion,
-			Structure = _appSettings.Structure.Clone(),
-			Items = _importQuery.GetAll()
+			Version = appSettings.AppVersion,
+			Structure = appSettings.Structure.Clone(),
+			Items = importQuery.GetAll()
 		};
 
 		var json = JsonSerializer.Serialize(exportModel, DefaultJsonSerializer.CamelCase);
-		await File.WriteAllTextAsync(outputJsonPath, json);
+		await using var stream = StringToStreamHelper.StringToStream(json);
+		await _iStorage.WriteStreamAsync(stream, outputJsonPath);
 
 		return outputJsonPath;
 	}
@@ -59,22 +61,20 @@ public sealed class ImportIndexJsonService : IImportIndexJsonService
 			throw new ArgumentException("Input path is required", nameof(inputJsonPath));
 		}
 
-		if ( !File.Exists(inputJsonPath) )
+		if ( !_iStorage.ExistFile(inputJsonPath) )
 		{
 			throw new FileNotFoundException("ImportIndex json file not found", inputJsonPath);
 		}
 
-		var json = await File.ReadAllTextAsync(inputJsonPath);
+		await using var readStream = _iStorage.ReadStream(inputJsonPath);
+		using var reader = new StreamReader(readStream);
+		var json = await reader.ReadToEndAsync();
 		ValidateStructureAndDataSections(json);
 
-		var importModel = JsonSerializer.Deserialize<ImportIndexJsonContainer>(json,
-			DefaultJsonSerializer.CamelCase);
-
-		if ( importModel == null )
-		{
+		var importModel =
+			JsonSerializer.Deserialize<ImportIndexJsonContainer>(json,
+				DefaultJsonSerializer.CamelCase) ??
 			throw new InvalidDataException("Failed to deserialize ImportIndex json container");
-		}
-
 		var result = new List<ImportIndexItem>();
 		foreach ( var item in importModel.Items )
 		{
@@ -85,7 +85,7 @@ public sealed class ImportIndexJsonService : IImportIndexJsonService
 				continue;
 			}
 
-			if ( await _importQuery.IsHashInImportDbAsync(item.FileHash) )
+			if ( await importQuery.IsHashInImportDbAsync(item.FileHash) )
 			{
 				item.Status = ImportStatus.IgnoredAlreadyImported;
 				result.Add(item);
@@ -93,7 +93,7 @@ public sealed class ImportIndexJsonService : IImportIndexJsonService
 			}
 
 			item.Status = ImportStatus.Ok;
-			await _importQuery.AddAsync(item, false);
+			await importQuery.AddAsync(item, false);
 			result.Add(item);
 		}
 

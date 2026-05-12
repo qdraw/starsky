@@ -10,6 +10,7 @@ using starsky.foundation.import.Models;
 using starsky.foundation.import.Services;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.import.Services;
@@ -28,12 +29,16 @@ public sealed class ImportIndexJsonServiceTest
 				Structure = new AppSettingsStructureModel("/yyyy/MM/{filenamebase}.ext")
 			};
 			var query = new FakeIImportQuery(["hash-a", "hash-b"]);
-			var sut = new ImportIndexJsonService(query, appSettings);
+			var fakeStorage = new FakeIStorage();
+			var selectorStorage = new FakeSelectorStorage(fakeStorage);
+			var sut = new ImportIndexJsonService(query, appSettings, selectorStorage);
 
 			await sut.ExportAsync(tempFile);
 
-			Assert.IsTrue(File.Exists(tempFile));
-			var json = await File.ReadAllTextAsync(tempFile);
+			Assert.IsTrue(fakeStorage.ExistFile(tempFile));
+			using var rs = fakeStorage.ReadStream(tempFile);
+			using var sr = new System.IO.StreamReader(rs);
+			var json = await sr.ReadToEndAsync();
 			Assert.IsTrue(json.Contains("\"structure\""));
 			Assert.IsTrue(json.Contains("\"items\""));
 		}
@@ -63,10 +68,12 @@ public sealed class ImportIndexJsonServiceTest
 			};
 
 			var json = JsonSerializer.Serialize(model, DefaultJsonSerializer.CamelCase);
-			await File.WriteAllTextAsync(tempFile, json);
+			var fakeStorage = new FakeIStorage();
+			var selectorStorage = new FakeSelectorStorage(fakeStorage);
+			await fakeStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(json), tempFile);
 
 			var query = new FakeIImportQuery(["exists"]);
-			var sut = new ImportIndexJsonService(query, new AppSettings());
+			var sut = new ImportIndexJsonService(query, new AppSettings(), selectorStorage);
 
 			var result = await sut.ImportAsync(tempFile);
 
@@ -93,7 +100,11 @@ public sealed class ImportIndexJsonServiceTest
 		{
 			await File.WriteAllTextAsync(tempFile, "{\"items\":[]}");
 
-			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings());
+			var fakeStorage = new FakeIStorage();
+			var selectorStorage = new FakeSelectorStorage(fakeStorage);
+			await fakeStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("{\"items\":[]}"), tempFile);
+
+			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(), selectorStorage);
 
 			await Assert.ThrowsExactlyAsync<InvalidDataException>(async () => await sut.ImportAsync(tempFile));
 		}
