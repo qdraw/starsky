@@ -58,7 +58,7 @@ Invoke-Expression -Command "taskkill /F /IM mmc.exe"
 
 function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $description, $login, $password, $startUpType, $displayName, $localRemove)
 {
-    Write-Host "Trying to create service: $localServiceName - $binaryPath"
+    Write-Output "Trying to create service: $localServiceName - $binaryPath"
 
     #Check Parameters
     if ((Test-Path $binaryPath)-eq $false)
@@ -93,7 +93,7 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
         Write-Output "Service removed: $localServiceName"
 
         if ($localRemove) {
-            Write-Host "remove flag used so done now"
+            Write-Output "remove flag used so done now"
             return;
         }
     }
@@ -124,7 +124,7 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
 
     # Trying to start new service
     Write-Output "Trying to start new service: $localServiceName"
-    $serviceToStart = Get-WmiObject -Class Win32_Service -Filter "name='$localServiceName'"
+    $serviceToStart = Get-CimInstance -Class Win32_Service -Filter "name='$localServiceName'"
     $serviceToStart.startservice()
     Write-Output "Service started: $localServiceName"
 
@@ -139,7 +139,7 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
     }
     else
     {
-        Write-Host "Smoke test: OK."
+        Write-Output "Smoke test: OK."
     }
     # https://stackoverflow.com/questions/14708825/how-to-create-a-windows-service-in-powershell-for-network-service-account
 }
