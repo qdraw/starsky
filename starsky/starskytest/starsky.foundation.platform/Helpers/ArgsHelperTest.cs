@@ -718,4 +718,28 @@ public sealed class ArgsHelperTest
 		var result = ArgsHelper.GetRuntimes(["--runtime osx-arm64,osx-x64"]);
 		Assert.AreEqual(expected, string.Join(",", result));
 	}
+
+	[TestMethod]
+	public void ArgsHelper_GetImportIndexExportJsonPath()
+	{
+		var args = new List<string> { "--importindex-export-json", "/tmp/export.json" }.ToArray();
+		var value = ArgsHelper.GetImportIndexExportJsonPath(args);
+		Assert.AreEqual("/tmp/export.json", value);
+	}
+
+	[TestMethod]
+	public void ArgsHelper_GetImportIndexImportJsonPath()
+	{
+		var args = new List<string> { "--importindex-import-json", "/tmp/import.json" }.ToArray();
+		var value = ArgsHelper.GetImportIndexImportJsonPath(args);
+		Assert.AreEqual("/tmp/import.json", value);
+	}
+
+	[TestMethod]
+	public void ArgsHelper_GetImportIndexImportJsonPath_Fallback()
+	{
+		var args = new List<string> { "--importindex-import-json" }.ToArray();
+		var value = ArgsHelper.GetImportIndexImportJsonPath(args);
+		Assert.AreEqual(string.Empty, value);
+	}
 }

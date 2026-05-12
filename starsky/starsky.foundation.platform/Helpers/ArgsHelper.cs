@@ -109,6 +109,8 @@ public sealed class ArgsHelper
 	// -n --name
 	// -x --clean
 	// --colorclass (no shorthand)
+	// --importindex-export-json (no shorthand)
+	// --importindex-import-json (no shorthand)
 
 	/// <summary>
 	///     Simple injection
@@ -322,6 +324,10 @@ public sealed class ArgsHelper
 					"--provider place-here-id-from-config ; use cloud import and select a provider within " +
 					"CloudImport Providers, used for example with Dropbox, " +
 					"skips local import");
+				_console.WriteLine(
+					"--importindex-export-json == parameter: (string) ; full path of output json file");
+				_console.WriteLine(
+					"--importindex-import-json == parameter: (string) ; full path of input json file");
 				break;
 			case AppSettings.StarskyAppType.Sync:
 				// When this change please update ./readme.md
@@ -1076,6 +1082,54 @@ public sealed class ArgsHelper
 		}
 
 		return profile;
+	}
+
+	/// <summary>
+	///     Get ImportIndex export json output path
+	/// </summary>
+	/// <param name="args">input args</param>
+	/// <returns>output json path</returns>
+	public static string GetImportIndexExportJsonPath(IReadOnlyList<string> args)
+	{
+		var jsonPath = string.Empty;
+
+		for ( var arg = 0; arg < args.Count; arg++ )
+		{
+			if ( !args[arg].Equals("--importindex-export-json",
+				     StringComparison.CurrentCultureIgnoreCase) ||
+			     arg + 1 == args.Count )
+			{
+				continue;
+			}
+
+			jsonPath = args[arg + 1];
+		}
+
+		return jsonPath;
+	}
+
+	/// <summary>
+	///     Get ImportIndex import json input path
+	/// </summary>
+	/// <param name="args">input args</param>
+	/// <returns>input json path</returns>
+	public static string GetImportIndexImportJsonPath(IReadOnlyList<string> args)
+	{
+		var jsonPath = string.Empty;
+
+		for ( var arg = 0; arg < args.Count; arg++ )
+		{
+			if ( !args[arg].Equals("--importindex-import-json",
+				     StringComparison.CurrentCultureIgnoreCase) ||
+			     arg + 1 == args.Count )
+			{
+				continue;
+			}
+
+			jsonPath = args[arg + 1];
+		}
+
+		return jsonPath;
 	}
 
 	public static List<string> GetRuntimes(List<string> args)

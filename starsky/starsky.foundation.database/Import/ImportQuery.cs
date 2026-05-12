@@ -124,6 +124,21 @@ public sealed class ImportQuery : IImportQuery
 	}
 
 	/// <summary>
+	///     Get all imported items
+	/// </summary>
+	/// <returns>List of all items</returns>
+	public List<ImportIndexItem> GetAll()
+	{
+		if ( _scopeFactory == null )
+		{
+			return _dbContext!.ImportIndex.ToList();
+		}
+
+		var scope = new InjectServiceScope(_scopeFactory);
+		return scope.Execute(context => context.ImportIndex.ToList());
+	}
+
+	/// <summary>
 	///     Get imported items for today
 	/// </summary>
 	/// <returns>List of items</returns>

@@ -22,11 +22,13 @@ public class ImportCli
 	private readonly IExifToolDownload _exifToolDownload;
 	private readonly IGeoFileDownload _geoFileDownload;
 	private readonly IImport _importService;
+	private readonly IImportIndexJsonService? _importIndexJsonService;
 	private readonly IWebLogger _logger;
 
 	public ImportCli(IImport importService, AppSettings appSettings, IConsole console,
 		IWebLogger logger, IExifToolDownload exifToolDownload,
-		IGeoFileDownload geoFileDownload, ICameraStorageDetector cameraStorageDetector)
+		IGeoFileDownload geoFileDownload, ICameraStorageDetector cameraStorageDetector,
+		IImportIndexJsonService? importIndexJsonService = null)
 	{
 		_importService = importService;
 		_appSettings = appSettings;
@@ -35,6 +37,7 @@ public class ImportCli
 		_exifToolDownload = exifToolDownload;
 		_geoFileDownload = geoFileDownload;
 		_cameraStorageDetector = cameraStorageDetector;
+		_importIndexJsonService = importIndexJsonService;
 	}
 
 	/// <summary>
@@ -52,6 +55,46 @@ public class ImportCli
 		await _geoFileDownload.DownloadAsync();
 
 		_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
+
+		var importSettings = new ImportSettingsModel
+		{
+			DeleteAfter = ArgsHelper.GetMove(args),
+			RecursiveDirectory = ArgsHelper.NeedRecursive(args),
+			IndexMode = ArgsHelper.GetIndexMode(args),
+			ColorClass = ArgsHelper.GetColorClass(args),
+			ConsoleOutputMode = ArgsHelper.GetConsoleOutputMode(args),
+			Origin = ArgsHelper.GetOrigin(args)
+		};
+
+		var importIndexExportJsonPath = ArgsHelper.GetImportIndexExportJsonPath(args);
+		if ( !string.IsNullOrWhiteSpace(importIndexExportJsonPath) )
+		{
+			if ( _importIndexJsonService == null )
+			{
+				_logger.LogError("ImportIndex json export service is not configured");
+				return false;
+			}
+
+			var exportLocation = await _importIndexJsonService.ExportAsync(importIndexExportJsonPath);
+			_logger.LogInformation($"Exported ImportIndex to {exportLocation}");
+			return true;
+		}
+
+		var importIndexImportJsonPath = ArgsHelper.GetImportIndexImportJsonPath(args);
+		if ( !string.IsNullOrWhiteSpace(importIndexImportJsonPath) )
+		{
+			if ( _importIndexJsonService == null )
+			{
+				_logger.LogError("ImportIndex json import service is not configured");
+				return false;
+			}
+
+			var stopWatchImportJson = Stopwatch.StartNew();
+			var resultFromJson = await _importIndexJsonService.ImportAsync(importIndexImportJsonPath);
+			WriteOutputStatus(importSettings, resultFromJson, stopWatchImportJson);
+			return resultFromJson.TrueForAll(p =>
+				p.Status is ImportStatus.Ok or ImportStatus.IgnoredAlreadyImported);
+		}
 
 		var inputPathListFormArgs = new ArgsHelper(_appSettings).GetPathListFormArgs(args).ToList();
 		if ( inputPathListFormArgs.Count == 0 && ArgsHelper.NeedCamera(args) )
@@ -84,16 +127,6 @@ public class ImportCli
 				_console.WriteLine($">> import: {inputPath}");
 			}
 		}
-
-		var importSettings = new ImportSettingsModel
-		{
-			DeleteAfter = ArgsHelper.GetMove(args),
-			RecursiveDirectory = ArgsHelper.NeedRecursive(args),
-			IndexMode = ArgsHelper.GetIndexMode(args),
-			ColorClass = ArgsHelper.GetColorClass(args),
-			ConsoleOutputMode = ArgsHelper.GetConsoleOutputMode(args),
-			Origin = ArgsHelper.GetOrigin(args)
-		};
 
 		if ( _appSettings.IsVerbose() )
 		{

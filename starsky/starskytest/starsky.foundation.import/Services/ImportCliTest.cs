@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starsky.foundation.import.Services;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
@@ -204,5 +205,58 @@ public sealed class ImportCliTest
 				p.Item2.Contains(
 					"Camera storage detection recommends -r or --recursive to be enabled. If not you only importing from the root of the camera storage."),
 			webLogger.TrackedInformation);
+	}
+
+	[TestMethod]
+	public async Task ImporterCli_ImportIndexJson_Export_Command()
+	{
+		var fakeConsole = new FakeConsoleWrapper([]);
+		var fakeCameraStorageDetector = new FakeCameraStorageDetector([]);
+		var fakeImportIndexJsonService = new FakeIImportIndexJsonService();
+		var sut = new ImportCli(
+			new FakeIImport(new FakeSelectorStorage()),
+			new AppSettings(),
+			fakeConsole,
+			new FakeIWebLogger(),
+			new FakeExifToolDownload(),
+			new FakeIGeoFileDownload(),
+			fakeCameraStorageDetector,
+			fakeImportIndexJsonService);
+
+		var result = await sut.Importer(["--importindex-export-json", "/tmp/export.json"]);
+
+		Assert.IsTrue(result);
+		Assert.AreEqual("/tmp/export.json", fakeImportIndexJsonService.ExportPath);
+	}
+
+	[TestMethod]
+	public async Task ImporterCli_ImportIndexJson_Import_Command()
+	{
+		var fakeConsole = new FakeConsoleWrapper([]);
+		var fakeCameraStorageDetector = new FakeCameraStorageDetector([]);
+		var fakeImportIndexJsonService = new FakeIImportIndexJsonService
+		{
+			ImportResult =
+			[
+				new ImportIndexItem { FileHash = "a", Status = ImportStatus.Ok },
+				new ImportIndexItem
+					{ FileHash = "b", Status = ImportStatus.IgnoredAlreadyImported }
+			]
+		};
+
+		var sut = new ImportCli(
+			new FakeIImport(new FakeSelectorStorage()),
+			new AppSettings(),
+			fakeConsole,
+			new FakeIWebLogger(),
+			new FakeExifToolDownload(),
+			new FakeIGeoFileDownload(),
+			fakeCameraStorageDetector,
+			fakeImportIndexJsonService);
+
+		var result = await sut.Importer(["--importindex-import-json", "/tmp/import.json"]);
+
+		Assert.IsTrue(result);
+		Assert.AreEqual("/tmp/import.json", fakeImportIndexJsonService.ImportPath);
 	}
 }
