@@ -3,20 +3,26 @@
 ## List of [Starsky](../../../readme.md) Projects
 
 - [By App documentation](../../../starsky/readme.md) _database photo index & import index project_
-  - [starsky](../../../starsky/starsky/readme.md) _web api application / interface_
-    - **[clientapp](../../../starsky/starsky/clientapp/readme.md) react front-end application**
-  - [starskyImporterCli](../../../starsky/starskyimportercli/readme.md) _import command line interface_
-  - [starskyGeoCli](../../../starsky/starskygeocli/readme.md) _gpx sync and reverse 'geo tagging'_
-  - [starskyWebHtmlCli](../../../starsky/starskywebhtmlcli/readme.md) _publish web images to a content package_
-  - [starskyWebFtpCli](../../../starsky/starskywebftpcli/readme.md) _copy a content package to a ftp service_
-  - [starskyAdminCli](../../../starsky/starskyadmincli/readme.md) _manage user accounts_
-  - [starskySynchronizeCli](../../../starsky/starskysynchronizecli/readme.md) _check if disk changes are updated in the database_
-  - [starskyThumbnailCli](../../../starsky/starskythumbnailcli/readme.md) _speed web performance by generating smaller images_
-  - [Starsky Business Logic](../../../starsky/starskybusinesslogic/readme.md) _business logic libraries (.NET)_
-  - [starskyTest](../../../starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
+    - [starsky](../../../starsky/starsky/readme.md) _web api application / interface_
+        - **[clientapp](../../../starsky/starsky/clientapp/readme.md) react front-end application**
+    - [starskyImporterCli](../../../starsky/starskyimportercli/readme.md) _import command line
+      interface_
+    - [starskyGeoCli](../../../starsky/starskygeocli/readme.md) _gpx sync and reverse 'geo tagging'_
+    - [starskyWebHtmlCli](../../../starsky/starskywebhtmlcli/readme.md) _publish web images to a
+      content package_
+    - [starskyWebFtpCli](../../../starsky/starskywebftpcli/readme.md) _copy a content package to a
+      ftp service_
+    - [starskyAdminCli](../../../starsky/starskyadmincli/readme.md) _manage user accounts_
+    - [starskySynchronizeCli](../../../starsky/starskysynchronizecli/readme.md) _check if disk
+      changes are updated in the database_
+    - [starskyThumbnailCli](../../../starsky/starskythumbnailcli/readme.md) _speed web performance
+      by generating smaller images_
+    - [Starsky Business Logic](../../../starsky/starskybusinesslogic/readme.md) _business logic
+      libraries (.NET)_
+    - [starskyTest](../../../starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](../../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
 - [Starsky Desktop](../../../starskydesktop/readme.md) _Desktop Application_
-  - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
+    - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 - [Changelog](../../../history.md) _Release notes and history_
 
 ## starsky/starsky/clientapp docs
@@ -35,14 +41,18 @@ Open http://localhost:3000 to view it in the browser.
 The page will reload if you make edits.
 You will also see any lint errors in the console.
 
-Make sure you run the Starsky API on http://localhost:4000 or us a local tunnel proxy (which you can find in `./starsky-tools/localtunnel`)
+Make sure you run the Starsky API on http://localhost:4000 or us a local tunnel proxy (which you can
+find in `./starsky-tools/localtunnel`)
 
 ### `npm test`
 
 Launches the test runner in the interactive watch mode.
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+See the section
+about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more
+information.
 Although we **don't** use Create React App, we do use the same test runner.
-See https://jestjs.io/ and https://testing-library.com/docs/react-testing-library/intro/ for more information.
+See https://jestjs.io/ and https://testing-library.com/docs/react-testing-library/intro/ for more
+information.
 
 ### `npm test:ci`
 
@@ -56,11 +66,13 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.<br/>
 Your app is ready to be deployed!
 
-In this application we use the `build.sh` or `build.ps1` to combine the frontend application with the .NET Core backend.
+In this application we use the `build.sh` or `build.ps1` to combine the frontend application with
+the .NET Core backend.
 
 ### `npm run storybook`
 
-Storybook is an open source tool for developing UI components in isolation for React and other platfoms. It makes building stunning UIs organized and efficient.
+Storybook is an open source tool for developing UI components in isolation for React and other
+platfoms. It makes building stunning UIs organized and efficient.
 
 A Storybook is a collection of stories. Each story represents a single visual state of a component.
 Technically, a story is a function that returns something that can be rendered to screen.
@@ -139,7 +151,8 @@ npm ci && npm test:ci
 #### Manual Upgrade
 
 The default Vite / Typescript package is used to keep future upgrades less painfull.
-In the repository of [Vite releases](https://github.com/vitejs/vite/releases) you can find if we are using the latest version.
+In the repository of [Vite releases](https://github.com/vitejs/vite/releases) you can find if we are
+using the latest version.
 
 #### To keep all Vite dependencies in place
 
@@ -156,7 +169,8 @@ react, react-dom
 
 **Dev dependencies, that are included**
 @types/react, @types/react-dom, @typescript-eslint/eslint-plugin, @typescript-eslint/parser,
-@vitejs/plugin-react, eslint, eslint-plugin-react-hooks, eslint-plugin-react-refresh, typescript, vite
+@vitejs/plugin-react, eslint, eslint-plugin-react-hooks, eslint-plugin-react-refresh, typescript,
+vite
 
 npm install --save leaflet
 npm install --save core-js
@@ -361,7 +375,8 @@ You should replace the existing eslintConfig chapter
 
 ## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+You can learn more in
+the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
@@ -383,12 +398,15 @@ This template provides a minimal setup to get React working in Vite with HMR and
 
 Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md)
+  uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc)
+  uses [SWC](https://swc.rs/) for Fast Refresh
 
 ## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+If you are developing a production application, we recommend updating the configuration to enable
+type aware lint rules:
 
 - Configure the top-level `parserOptions` property like this:
 
@@ -401,6 +419,9 @@ If you are developing a production application, we recommend updating the config
    },
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
+- Replace `plugin:@typescript-eslint/recommended` to
+  `plugin:@typescript-eslint/recommended-type-checked` or
+  `plugin:@typescript-eslint/strict-type-checked`
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add
+  `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list

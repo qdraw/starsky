@@ -60,7 +60,7 @@ public static class WindowsOpenDesktopApp
 	}
 
 	/// <summary>
-	///     Skip if is Mac OS
+	///     Skip if is macOS
 	/// </summary>
 	/// <param name="fileUrls"></param>
 	/// <param name="applicationUrl"></param>
