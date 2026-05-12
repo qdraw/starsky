@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -18,10 +17,13 @@ namespace starskytest.starsky.foundation.import.Services;
 [TestClass]
 public sealed class ImportIndexJsonServiceTest
 {
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task ExportAsync_IncludesStructureAndData()
 	{
-		var tempFile = Path.Combine(Path.GetTempPath(), $"starsky-importindex-export-{Guid.NewGuid():N}.json");
+		var tempFile = Path.Combine(Path.GetTempPath(),
+			$"starsky-importindex-export-{Guid.NewGuid():N}.json");
 		try
 		{
 			var appSettings = new AppSettings
@@ -36,11 +38,11 @@ public sealed class ImportIndexJsonServiceTest
 			await sut.ExportAsync(tempFile);
 
 			Assert.IsTrue(fakeStorage.ExistFile(tempFile));
-			using var rs = fakeStorage.ReadStream(tempFile);
-			using var sr = new System.IO.StreamReader(rs);
-			var json = await sr.ReadToEndAsync();
-			Assert.IsTrue(json.Contains("\"structure\""));
-			Assert.IsTrue(json.Contains("\"items\""));
+			await using var rs = fakeStorage.ReadStream(tempFile);
+			using var sr = new StreamReader(rs);
+			var json = await sr.ReadToEndAsync(TestContext.CancellationToken);
+			Assert.Contains("\"structure\"", json);
+			Assert.Contains("\"items\"", json);
 		}
 		finally
 		{
@@ -54,7 +56,8 @@ public sealed class ImportIndexJsonServiceTest
 	[TestMethod]
 	public async Task ImportAsync_SkipsExistingByFileHash()
 	{
-		var tempFile = Path.Combine(Path.GetTempPath(), $"starsky-importindex-import-{Guid.NewGuid():N}.json");
+		var tempFile = Path.Combine(Path.GetTempPath(),
+			$"starsky-importindex-import-{Guid.NewGuid():N}.json");
 		try
 		{
 			var model = new ImportIndexJsonContainer
@@ -77,7 +80,7 @@ public sealed class ImportIndexJsonServiceTest
 
 			var result = await sut.ImportAsync(tempFile);
 
-			Assert.AreEqual(2, result.Count);
+			Assert.HasCount(2, result);
 			Assert.AreEqual(ImportStatus.IgnoredAlreadyImported,
 				result.Single(p => p.FileHash == "exists").Status);
 			Assert.AreEqual(ImportStatus.Ok, result.Single(p => p.FileHash == "new").Status);
@@ -95,16 +98,21 @@ public sealed class ImportIndexJsonServiceTest
 	[TestMethod]
 	public async Task ImportAsync_ThrowsOnMissingStructureOrItemsSection()
 	{
-		var tempFile = Path.Combine(Path.GetTempPath(), $"starsky-importindex-invalid-{Guid.NewGuid():N}.json");
+		var tempFile = Path.Combine(Path.GetTempPath(),
+			$"starsky-importindex-invalid-{Guid.NewGuid():N}.json");
 		try
 		{
 			var fakeStorage = new FakeIStorage();
 			var selectorStorage = new FakeSelectorStorage(fakeStorage);
-			await fakeStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("{\"items\":[]}"), tempFile);
+			await fakeStorage.WriteStreamAsync(
+				StringToStreamHelper.StringToStream("{\"items\":[]}"), 
+				tempFile);
 
-			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(), selectorStorage);
+			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+				selectorStorage);
 
-			await Assert.ThrowsExactlyAsync<InvalidDataException>(async () => await sut.ImportAsync(tempFile));
+			await Assert.ThrowsExactlyAsync<InvalidDataException>(async () =>
+				await sut.ImportAsync(tempFile));
 		}
 		finally
 		{
@@ -121,7 +129,8 @@ public sealed class ImportIndexJsonServiceTest
 		var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
 			new FakeSelectorStorage(new FakeIStorage()));
 
-		await Assert.ThrowsExactlyAsync<ArgumentException>(async () => await sut.ExportAsync(string.Empty));
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
+			await sut.ExportAsync(string.Empty));
 	}
 
 	[TestMethod]
@@ -145,7 +154,8 @@ public sealed class ImportIndexJsonServiceTest
 		var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
 			new FakeSelectorStorage(new FakeIStorage()));
 
-		await Assert.ThrowsExactlyAsync<ArgumentException>(async () => await sut.ImportAsync(string.Empty));
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
+			await sut.ImportAsync(string.Empty));
 	}
 
 	[TestMethod]
@@ -154,13 +164,15 @@ public sealed class ImportIndexJsonServiceTest
 		var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
 			new FakeSelectorStorage(new FakeIStorage()));
 
-		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () => await sut.ImportAsync("/missing.json"));
+		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
+			await sut.ImportAsync("/missing.json"));
 	}
 
 	[TestMethod]
 	public async Task ImportAsync_MarksMissingFileHashAsFileError()
 	{
-		var tempFile = Path.Combine(Path.GetTempPath(), $"starsky-importindex-nohash-{Guid.NewGuid():N}.json");
+		var tempFile = Path.Combine(Path.GetTempPath(),
+			$"starsky-importindex-nohash-{Guid.NewGuid():N}.json");
 		try
 		{
 			var model = new ImportIndexJsonContainer
@@ -174,10 +186,12 @@ public sealed class ImportIndexJsonServiceTest
 			var fakeStorage = new FakeIStorage();
 			var selectorStorage = new FakeSelectorStorage(fakeStorage);
 			await fakeStorage.WriteStreamAsync(
-				StringToStreamHelper.StringToStream(JsonSerializer.Serialize(model, DefaultJsonSerializer.CamelCase)),
+				StringToStreamHelper.StringToStream(
+					JsonSerializer.Serialize(model, DefaultJsonSerializer.CamelCase)),
 				tempFile);
 
-			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(), selectorStorage);
+			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+				selectorStorage);
 			var result = await sut.ImportAsync(tempFile);
 
 			Assert.AreEqual(ImportStatus.FileError, result.Single().Status);
@@ -194,7 +208,8 @@ public sealed class ImportIndexJsonServiceTest
 	[TestMethod]
 	public async Task ImportAsync_ThrowsOnNullItemsAfterDeserialization()
 	{
-		var tempFile = Path.Combine(Path.GetTempPath(), $"starsky-importindex-nullitems-{Guid.NewGuid():N}.json");
+		var tempFile = Path.Combine(Path.GetTempPath(),
+			$"starsky-importindex-nullitems-{Guid.NewGuid():N}.json");
 		try
 		{
 			var fakeStorage = new FakeIStorage();
@@ -203,9 +218,11 @@ public sealed class ImportIndexJsonServiceTest
 				StringToStreamHelper.StringToStream("{\"structure\":{},\"items\":null}"),
 				tempFile);
 
-			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(), selectorStorage);
+			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+				selectorStorage);
 
-			await Assert.ThrowsExactlyAsync<InvalidDataException>(async () => await sut.ImportAsync(tempFile));
+			await Assert.ThrowsExactlyAsync<InvalidDataException>(async () =>
+				await sut.ImportAsync(tempFile));
 		}
 		finally
 		{
