@@ -137,7 +137,6 @@ public sealed class ImportIndexJsonServiceTest
 	public async Task ExportAsync_WithDirectory_CreatesDirectory()
 	{
 		var tempDirectory = $"{Path.GetTempPath()}" +
-		                    $"{Path.DirectorySeparatorChar}" +
 		                    $"tmp-{Guid.NewGuid():N}";
 
 		var outputPath = Path.Combine(tempDirectory, "import-index.json");
@@ -151,7 +150,14 @@ public sealed class ImportIndexJsonServiceTest
 		Assert.IsTrue(fakeStorage.ExistFolder(tempDirectory));
 		Assert.IsTrue(fakeStorage.ExistFile(outputPath));
 
-		Directory.Delete(tempDirectory, true);
+		try
+		{
+			Directory.Delete(tempDirectory, true);
+		}
+		catch ( Exception )
+		{
+			// ignored
+		}
 	}
 
 	[TestMethod]
