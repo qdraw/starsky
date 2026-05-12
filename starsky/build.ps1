@@ -77,7 +77,7 @@ function Restart-Command-Not-In-Path
     param (
         [string]$command
     )
-    
+
     if ($null -eq (Get-Command $command -ErrorAction SilentlyContinue)) {
         Write-Output ""
         Write-Output "Please restart the current powershell window and run the ./build.ps1 again"
@@ -127,18 +127,17 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
     }
     else {
         Write-Output "wrong version is installed"
-        
         if ($null -ne (Get-Command "choco" -ErrorAction SilentlyContinue)) {
             Write-Output "next: install via choco"
-            
+
             $firstCharOfVersion = $shouldBeNetVersion.SubString(0,1)
-            $showCommand = 'choco install dotnet-' + $firstCharOfVersion + '.0-sdk --version ' + $shouldBeNetVersion + ' -y --no-progress' 
+            $showCommand = 'choco install dotnet-' + $firstCharOfVersion + '.0-sdk --version ' + $shouldBeNetVersion + ' -y --no-progress'
             # to uninstall choco uninstall dotnet-6.0-sdk
             Write-Output "next run: " $showCommand
-            
+
             $resultInstall = Invoke-Expression -Command $showCommand -ErrorAction SilentlyContinue
             if ($LASTEXITCODE -eq 0) {
-                Write-Output "version found" 
+                Write-Output "version found"
             }
             else {
                 Write-Output "version not found so skip"
@@ -149,21 +148,21 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
         }
 
         if (($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) -and (-not (Get-Command "choco" -ErrorAction SilentlyContinue))) {
-        
+
             Write-Output "next: install via winget"
 
             # just to get by those messages
             Invoke-Expression "winget search dotnet --accept-source-agreements" -ErrorAction SilentlyContinue | Out-Null
 
             $firstCharOfVersion = $shouldBeNetVersion.SubString(0,1)
-            $showCommand = 'winget show dotnet-sdk-' + $firstCharOfVersion + ' -v ' + $shouldBeNetVersion + ' --disable-interactivity' 
+            $showCommand = 'winget show dotnet-sdk-' + $firstCharOfVersion + ' -v ' + $shouldBeNetVersion + ' --disable-interactivity'
             Write-Output "next run: " $showCommand
             $resultInstall = Invoke-Expression -Command $showCommand -ErrorAction SilentlyContinue
             if ($LASTEXITCODE -eq 0) {
-                Write-Output "version found - next install" 
+                Write-Output "version found - next install"
                 Write-Output "you will be asked for an admin"
                 $installCommand = 'winget install dotnet-sdk-' + $firstCharOfVersion + ' -v ' + $shouldBeNetVersion + ' --disable-interactivity --accept-source-agreements --accept-package-agreements'
-                Invoke-Expression -Command $installCommand 
+                Invoke-Expression -Command $installCommand
             }
             else {
                 Write-Output "version not found so skip"
@@ -189,11 +188,10 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
         Invoke-Expression -Command "choco install nvm -y"
 
         Restart-Command-Not-In-Path -Command "nvm"
-         
         Test-Switch-Nvm-Path
 
     }
-    
+
     if (($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) -and (-not (Get-Command "choco" -ErrorAction SilentlyContinue))) {
 
         if ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) {
@@ -247,7 +245,7 @@ else {
             $DotNetVersion = $DotNetGlobal.sdk.version
         }
     }
-    
+
     # Install by channel or version
     $DotNetDirectory = "$TempDirectory\dotnet-win"
 

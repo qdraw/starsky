@@ -34,12 +34,12 @@ if (-not [string]::IsNullOrWhiteSpace($TestUrl)) {
             $statusCode = [int]$response.StatusCode
             $stopwatchMilliSeconds = $Stopwatch.ElapsedMilliseconds
             Write-Output "$statusCode Second request took $stopWatchMilliSeconds ms"
-            if ($statusCode -ge 200 -And $statusCode -lt 400) {
+            if ($statusCode -ge 200 -and $statusCode -lt 400) {
                 break;
             }
             Start-Sleep -s 2
         } catch {
-            $_.Exception|format-list -force
+            $_.Exception|Format-List -Force
             Start-Sleep -s 30
         }
     }
