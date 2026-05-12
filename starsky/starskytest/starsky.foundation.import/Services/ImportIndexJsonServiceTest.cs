@@ -105,7 +105,7 @@ public sealed class ImportIndexJsonServiceTest
 			var fakeStorage = new FakeIStorage();
 			var selectorStorage = new FakeSelectorStorage(fakeStorage);
 			await fakeStorage.WriteStreamAsync(
-				StringToStreamHelper.StringToStream("{\"items\":[]}"), 
+				StringToStreamHelper.StringToStream("{\"items\":[]}"),
 				tempFile);
 
 			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
@@ -136,22 +136,44 @@ public sealed class ImportIndexJsonServiceTest
 	[TestMethod]
 	public async Task ExportAsync_WithDirectory_CreatesDirectory()
 	{
-		var tempDirectory = $"/tmp-{Guid.NewGuid():N}";
+		var tempDirectory = $"{Path.GetTempPath()}" +
+		                    $"{Path.DirectorySeparatorChar}" +
+		                    $"tmp-{Guid.NewGuid():N}";
+
 		var outputPath = Path.Combine(tempDirectory, "import-index.json");
 		var fakeStorage = new FakeIStorage();
-		var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+		var sut = new ImportIndexJsonService(new FakeIImportQuery(),
+			new AppSettings(),
 			new FakeSelectorStorage(fakeStorage));
 
 		await sut.ExportAsync(outputPath);
 
 		Assert.IsTrue(fakeStorage.ExistFolder(tempDirectory));
 		Assert.IsTrue(fakeStorage.ExistFile(outputPath));
+
+		Directory.Delete(tempDirectory, true);
+	}
+
+	[TestMethod]
+	public async Task ExportAsync_NoDirectory_WritesFile()
+	{
+		const string outputPath = "import-index.json"; // no directory part
+		var fakeStorage = new FakeIStorage();
+		var sut = new ImportIndexJsonService(
+			new FakeIImportQuery(), new AppSettings(),
+			new FakeSelectorStorage(fakeStorage));
+
+		var result = await sut.ExportAsync(outputPath);
+
+		Assert.AreEqual(outputPath, result);
+		Assert.IsTrue(fakeStorage.ExistFile(outputPath));
 	}
 
 	[TestMethod]
 	public async Task ImportAsync_ThrowsOnEmptyPath()
 	{
-		var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+		var sut = new ImportIndexJsonService(new FakeIImportQuery(),
+			new AppSettings(),
 			new FakeSelectorStorage(new FakeIStorage()));
 
 		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
@@ -161,7 +183,8 @@ public sealed class ImportIndexJsonServiceTest
 	[TestMethod]
 	public async Task ImportAsync_ThrowsOnFileNotFound()
 	{
-		var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+		var sut = new ImportIndexJsonService(new FakeIImportQuery(),
+			new AppSettings(),
 			new FakeSelectorStorage(new FakeIStorage()));
 
 		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
@@ -187,10 +210,12 @@ public sealed class ImportIndexJsonServiceTest
 			var selectorStorage = new FakeSelectorStorage(fakeStorage);
 			await fakeStorage.WriteStreamAsync(
 				StringToStreamHelper.StringToStream(
-					JsonSerializer.Serialize(model, DefaultJsonSerializer.CamelCase)),
+					JsonSerializer.Serialize(model,
+						DefaultJsonSerializer.CamelCase)),
 				tempFile);
 
-			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+			var sut = new ImportIndexJsonService(new FakeIImportQuery(),
+				new AppSettings(),
 				selectorStorage);
 			var result = await sut.ImportAsync(tempFile);
 
@@ -218,7 +243,8 @@ public sealed class ImportIndexJsonServiceTest
 				StringToStreamHelper.StringToStream("{\"structure\":{},\"items\":null}"),
 				tempFile);
 
-			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+			var sut = new ImportIndexJsonService(new FakeIImportQuery(),
+				new AppSettings(),
 				selectorStorage);
 
 			await Assert.ThrowsExactlyAsync<InvalidDataException>(async () =>
