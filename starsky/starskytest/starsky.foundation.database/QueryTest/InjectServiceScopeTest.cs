@@ -3,18 +3,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Query;
 
-namespace starskytest.starsky.foundation.database.QueryTest
+namespace starskytest.starsky.foundation.database.QueryTest;
+
+[TestClass]
+public sealed class InjectServiceScopeTest
 {
-	[TestClass]
-	public sealed class InjectServiceScopeTest
+	[TestMethod]
+	public void NoScope()
 	{
-		[TestMethod]
-		public void NoScope()
-		{
-			IServiceScopeFactory? scope = null;
-			Assert.ThrowsExactly<NullReferenceException>(() =>
-				new InjectServiceScope(scope!).Execute(_ => true));
-			Assert.IsNull(scope);
-		}
+		IServiceScopeFactory? scope = null;
+		Assert.ThrowsExactly<NullReferenceException>(() =>
+			new InjectServiceScope(scope!).Execute(_ => true));
+		Assert.IsNull(scope);
 	}
 }

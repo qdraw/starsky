@@ -5,23 +5,22 @@ using starsky.foundation.database.Models;
 
 #pragma warning disable 1998
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeIWebHtmlPublishService : IWebHtmlPublishService
 {
-	public class FakeIWebHtmlPublishService : IWebHtmlPublishService
+	public List<string> ItemNamesGenerateZip { get; set; } = new();
+
+	public async Task<Dictionary<string, bool>?> RenderCopy(
+		List<FileIndexItem> fileIndexItemsList, string publishProfileName, string itemName,
+		string outputParentFullFilePathFolder, bool moveSourceFiles = false)
 	{
-		public List<string> ItemNamesGenerateZip { get; set; } = new List<string>();
+		return new Dictionary<string, bool>();
+	}
 
-		public async Task<Dictionary<string, bool>?> RenderCopy(
-			List<FileIndexItem> fileIndexItemsList, string publishProfileName, string itemName,
-			string outputParentFullFilePathFolder, bool moveSourceFiles = false)
-		{
-			return new Dictionary<string, bool>();
-		}
-
-		public async Task GenerateZip(string fullFileParentFolderPath, string itemName,
-			Dictionary<string, bool>? renderCopyResult)
-		{
-			ItemNamesGenerateZip.Add(itemName);
-		}
+	public async Task GenerateZip(string fullFileParentFolderPath, string itemName,
+		Dictionary<string, bool>? renderCopyResult)
+	{
+		ItemNamesGenerateZip.Add(itemName);
 	}
 }

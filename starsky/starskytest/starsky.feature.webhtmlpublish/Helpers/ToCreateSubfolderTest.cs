@@ -3,18 +3,18 @@ using starsky.feature.webhtmlpublish.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.webhtmlpublish.Helpers
+namespace starskytest.starsky.feature.webhtmlpublish.Helpers;
+
+[TestClass]
+public sealed class ToCreateSubfolderTest
 {
-	[TestClass]
-	public sealed class ToCreateSubfolderTest
+	[TestMethod]
+	public void Create()
 	{
-		[TestMethod]
-		public void Create()
-		{
-			var iStorage = new FakeIStorage();
-			new ToCreateSubfolder(iStorage).Create(new AppSettingsPublishProfiles{Folder = "test"},"/parent" );
-			
-			Assert.IsTrue(iStorage.ExistFolder("/parent/test/"));
-		}
+		var iStorage = new FakeIStorage();
+		new ToCreateSubfolder(iStorage).Create(new AppSettingsPublishProfiles { Folder = "test" },
+			"/parent");
+
+		Assert.IsTrue(iStorage.ExistFolder("/parent/test/"));
 	}
 }

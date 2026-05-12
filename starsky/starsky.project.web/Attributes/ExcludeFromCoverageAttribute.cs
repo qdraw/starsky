@@ -1,9 +1,8 @@
 using System;
 
-namespace starsky.project.web.Attributes
+namespace starsky.project.web.Attributes;
+
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor)]
+public sealed class ExcludeFromCoverageAttribute : Attribute
 {
-	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor)]
-	public sealed class ExcludeFromCoverageAttribute : Attribute
-	{
-	}
 }

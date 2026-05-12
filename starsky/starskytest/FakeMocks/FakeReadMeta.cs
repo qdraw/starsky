@@ -4,53 +4,47 @@ using starsky.foundation.database.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeReadMeta : IReadMeta
 {
-	public class FakeReadMeta : IReadMeta
-	{
 #pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
-		public Task<FileIndexItem> ReadExifAndXmpFromFileAsync(string subPath)
+	public Task<FileIndexItem> ReadExifAndXmpFromFileAsync(string subPath)
 #pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
+	{
+		return Task.FromResult(new FileIndexItem
 		{
-			return Task.FromResult(new FileIndexItem
-			{
-				Status = FileIndexItem.ExifStatus.Ok,
-				Tags = "test, fake read meta"
-			});
-		}
+			Status = FileIndexItem.ExifStatus.Ok, Tags = "test, fake read meta"
+		});
+	}
 
-		public Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList,
-			List<string>? fileHashes = null)
+	public Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(
+		List<string> subPathList,
+		List<string>? fileHashes = null)
+	{
+		var createAnImage = new CreateAnImage();
+		return Task.FromResult(new List<FileIndexItem>
 		{
-			var createAnImage = new CreateAnImage();
-			return Task.FromResult(new List<FileIndexItem>
-			{
-				new FileIndexItem
-				{
-					Status = FileIndexItem.ExifStatus.Ok, 
-					FileName = createAnImage.FileName
-				}
-			});
-		}
+			new() { Status = FileIndexItem.ExifStatus.Ok, FileName = createAnImage.FileName }
+		});
+	}
 
-		public bool? RemoveReadMetaCache(string fullFilePath)
-		{
-			// dont do anything
-			return true;
-		}
+	public bool? RemoveReadMetaCache(string fullFilePath)
+	{
+		// dont do anything
+		return true;
+	}
 
-		public void RemoveReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+	public void RemoveReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+	{
+		// dont do anything
+		foreach ( var item in objectExifToolModel )
 		{
-			// dont do anything
-			foreach ( var item in objectExifToolModel )
-			{
-				RemoveReadMetaCache(item.FilePath!);
-			}
-			return;
+			RemoveReadMetaCache(item.FilePath!);
 		}
+	}
 
-		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
-		{
-		}
+	public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+	{
 	}
 }

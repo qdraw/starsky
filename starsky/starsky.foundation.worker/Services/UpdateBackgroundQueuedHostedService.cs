@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,35 +10,30 @@ using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.foundation.worker.Services
+
+namespace starsky.foundation.worker.Services;
+
+[Service(typeof(IHostedService),
+	InjectionLifetime = InjectionLifetime.Singleton)]
+[SuppressMessage("Usage", "S927: Rename parameter 'stoppingToken' " +
+                          "to 'cancellationToken' to match the base class declaration",
+	Justification = "Is checked")]
+public sealed class UpdateBackgroundQueuedHostedService(
+	IUpdateBackgroundTaskQueue taskQueue,
+	IWebLogger logger,
+	IServiceScopeFactory scopeFactory)
+	: BackgroundService
 {
-	[Service(typeof(IHostedService),
-		InjectionLifetime = InjectionLifetime.Singleton)]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S927: Rename parameter 'stoppingToken' " +
-		"to 'cancellationToken' to match the base class declaration", Justification = "Is checked")]
-	public sealed class UpdateBackgroundQueuedHostedService : BackgroundService
+	protected override Task ExecuteAsync(CancellationToken cancellationToken)
 	{
-		private readonly IUpdateBackgroundTaskQueue _taskQueue;
-		private readonly IWebLogger _logger;
-		private readonly IServiceScopeFactory _scopeFactory;
+		return ProcessTaskQueue.ProcessTaskQueueAsync(taskQueue, logger,
+			cancellationToken, scopeFactory);
+	}
 
-		public UpdateBackgroundQueuedHostedService(
-			IUpdateBackgroundTaskQueue taskQueue,
-			IWebLogger logger,
-			IServiceScopeFactory scopeFactory) =>
-			(_taskQueue, _logger, _scopeFactory) = (taskQueue, logger, scopeFactory);
-
-		protected override Task ExecuteAsync(CancellationToken cancellationToken)
-		{
-			return ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger,
-				cancellationToken, _scopeFactory);
-		}
-
-		public override async Task StopAsync(CancellationToken stoppingToken)
-		{
-			_logger.LogInformation(
-				$"QueuedHostedService {_taskQueue.GetType().Name} is stopping. Counts: {_taskQueue.Count()}");
-			await base.StopAsync(stoppingToken);
-		}
+	public override async Task StopAsync(CancellationToken stoppingToken)
+	{
+		logger.LogInformation(
+			$"QueuedHostedService {taskQueue.GetType().Name} is stopping. Counts: {taskQueue.Count()}");
+		await base.StopAsync(stoppingToken);
 	}
 }

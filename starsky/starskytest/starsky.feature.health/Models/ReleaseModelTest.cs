@@ -1,16 +1,15 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.health.UpdateCheck.Models;
 
-namespace starskytest.starsky.feature.health.Models
+namespace starskytest.starsky.feature.health.Models;
+
+[TestClass]
+public sealed class ReleaseModelTest
 {
-	[TestClass]
-	public sealed class ReleaseModelTest
+	[TestMethod]
+	public void TagNameNoNull()
 	{
-		[TestMethod]
-		public void TagNameNoNull()
-		{
-			var releaseModel = new ReleaseModel { TagName = null! };
-			Assert.AreEqual(string.Empty, releaseModel.TagName);
-		}
+		var releaseModel = new ReleaseModel { TagName = null! };
+		Assert.AreEqual(string.Empty, releaseModel.TagName);
 	}
 }

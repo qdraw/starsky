@@ -15,121 +15,119 @@ using starsky.foundation.platform.VersionHelpers;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
-namespace starsky.feature.health.UpdateCheck.Services
+namespace starsky.feature.health.UpdateCheck.Services;
+
+[Service(typeof(ICheckForUpdates), InjectionLifetime = InjectionLifetime.Singleton)]
+public class CheckForUpdates : ICheckForUpdates
 {
-	[Service(typeof(ICheckForUpdates), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class CheckForUpdates : ICheckForUpdates
+	internal const string GithubStarskyReleaseApi =
+		"https://api.github.com/repos/qdraw/starsky/releases";
+
+	internal const string GithubStarskyReleaseMirrorApi =
+		"https://qdraw.nl/special/starsky/releases";
+
+	internal const string QueryCheckForUpdatesCacheName = "CheckForUpdates";
+
+	private readonly AppSettings? _appSettings;
+	private readonly IMemoryCache? _cache;
+	private readonly IHttpClientHelper _httpClientHelper;
+
+	public CheckForUpdates(IHttpClientHelper httpClientHelper, AppSettings? appSettings,
+		IMemoryCache? cache)
 	{
-		internal const string GithubStarskyReleaseApi =
-			"https://api.github.com/repos/qdraw/starsky/releases";
+		_httpClientHelper = httpClientHelper;
+		_appSettings = appSettings;
+		_cache = cache;
+	}
 
-		internal const string GithubStarskyReleaseMirrorApi =
-			"https://qdraw.nl/special/starsky/releases";
-
-		internal const string QueryCheckForUpdatesCacheName = "CheckForUpdates";
-
-		private readonly AppSettings? _appSettings;
-		private readonly IMemoryCache? _cache;
-		private readonly IHttpClientHelper _httpClientHelper;
-
-		public CheckForUpdates(IHttpClientHelper httpClientHelper, AppSettings? appSettings,
-			IMemoryCache? cache)
+	/// <summary>
+	/// </summary>
+	/// <param name="currentVersion">defaults to _appSettings</param>
+	/// <returns></returns>
+	public async Task<(UpdateStatus, string?)> IsUpdateNeeded(
+		string currentVersion = "")
+	{
+		if ( _appSettings == null || _appSettings.CheckForUpdates == false )
 		{
-			_httpClientHelper = httpClientHelper;
-			_appSettings = appSettings;
-			_cache = cache;
+			return ( UpdateStatus.Disabled, string.Empty );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="currentVersion">defaults to _appSettings</param>
-		/// <returns></returns>
-		public async Task<(UpdateStatus, string?)> IsUpdateNeeded(
-			string currentVersion = "")
+		currentVersion = string.IsNullOrWhiteSpace(currentVersion)
+			? _appSettings.AppVersion
+			: currentVersion;
+
+		// The CLI programs uses no cache
+		if ( _cache == null || _appSettings.AddMemoryCache != true )
 		{
-			if ( _appSettings == null || _appSettings.CheckForUpdates == false )
-			{
-				return (UpdateStatus.Disabled, string.Empty);
-			}
-
-			currentVersion = string.IsNullOrWhiteSpace(currentVersion)
-				? _appSettings.AppVersion
-				: currentVersion;
-
-			// The CLI programs uses no cache
-			if ( _cache == null || _appSettings.AddMemoryCache != true )
-			{
-				return Parse(await QueryIsUpdateNeededAsync(), currentVersion);
-			}
-
-			if ( _cache.TryGetValue(QueryCheckForUpdatesCacheName,
-					out var cacheResult) && cacheResult != null )
-			{
-				return Parse(( List<ReleaseModel> ) cacheResult, currentVersion);
-			}
-
-			cacheResult = await QueryIsUpdateNeededAsync();
-
-			_cache.Set(QueryCheckForUpdatesCacheName, cacheResult,
-				new TimeSpan(48, 0, 0));
-
-			return Parse(( List<ReleaseModel>? ) cacheResult, currentVersion);
+			return Parse(await QueryIsUpdateNeededAsync(), currentVersion);
 		}
 
-
-		internal async Task<List<ReleaseModel>?> QueryIsUpdateNeededAsync()
+		if ( _cache.TryGetValue(QueryCheckForUpdatesCacheName,
+			    out var cacheResult) && cacheResult != null )
 		{
-			// argument check is done in QueryIsUpdateNeeded
-			var (key, value) = await _httpClientHelper.ReadString(GithubStarskyReleaseApi);
-			if ( !key )
-			{
-				(key, value) = await _httpClientHelper.ReadString(GithubStarskyReleaseMirrorApi);
-			}
-
-			return !key
-				? new List<ReleaseModel>()
-				: JsonSerializer.Deserialize<List<ReleaseModel>>(value,
-					DefaultJsonSerializer.CamelCase);
+			return Parse(( List<ReleaseModel> ) cacheResult, currentVersion);
 		}
 
-		/// <summary>
-		/// Parse the result from the API
-		/// </summary>
-		/// <param name="releaseModelList">inputModel</param>
-		/// <param name="currentVersion">The current Version</param>
-		/// <returns>Status and LatestVersion</returns>
-		internal static (UpdateStatus, string) Parse(IEnumerable<ReleaseModel>? releaseModelList,
-			string currentVersion)
+		cacheResult = await QueryIsUpdateNeededAsync();
+
+		_cache.Set(QueryCheckForUpdatesCacheName, cacheResult,
+			new TimeSpan(48, 0, 0));
+
+		return Parse(( List<ReleaseModel>? ) cacheResult, currentVersion);
+	}
+
+
+	internal async Task<List<ReleaseModel>?> QueryIsUpdateNeededAsync()
+	{
+		// argument check is done in QueryIsUpdateNeeded
+		var (key, value) = await _httpClientHelper.ReadString(GithubStarskyReleaseApi);
+		if ( !key )
 		{
-			var orderedReleaseModelList =
-				// remove v at start
-				releaseModelList?.OrderByDescending(p => SemVersion.Parse(p.TagName, false));
+			( key, value ) = await _httpClientHelper.ReadString(GithubStarskyReleaseMirrorApi);
+		}
 
-			var tagName = orderedReleaseModelList?
-				.FirstOrDefault(p => p is { Draft: false, PreRelease: false })?.TagName;
+		return !key
+			? new List<ReleaseModel>()
+			: JsonSerializer.Deserialize<List<ReleaseModel>>(value,
+				DefaultJsonSerializer.CamelCase);
+	}
 
-			if ( string.IsNullOrWhiteSpace(tagName) ||
-				 !tagName.StartsWith('v') )
-			{
-				return (UpdateStatus.NoReleasesFound, string.Empty);
-			}
+	/// <summary>
+	///     Parse the result from the API
+	/// </summary>
+	/// <param name="releaseModelList">inputModel</param>
+	/// <param name="currentVersion">The current Version</param>
+	/// <returns>Status and LatestVersion</returns>
+	internal static (UpdateStatus, string) Parse(IEnumerable<ReleaseModel>? releaseModelList,
+		string currentVersion)
+	{
+		var orderedReleaseModelList =
+			// remove v at start
+			releaseModelList?.OrderByDescending(p => SemVersion.Parse(p.TagName, false));
 
-			try
-			{
-				// remove v at start
-				var latestVersion = SemVersion.Parse(tagName);
-				var currentVersionObject = SemVersion.Parse(currentVersion);
-				var isNewer = latestVersion > currentVersionObject;
-				var status = isNewer
-					? UpdateStatus.NeedToUpdate
-					: UpdateStatus.CurrentVersionIsLatest;
-				return (status, latestVersion.ToString());
-			}
-			catch ( ArgumentException )
-			{
-				return (UpdateStatus.InputNotValid, string.Empty);
-			}
+		var tagName = orderedReleaseModelList?
+			.FirstOrDefault(p => p is { Draft: false, PreRelease: false })?.TagName;
+
+		if ( string.IsNullOrWhiteSpace(tagName) ||
+		     !tagName.StartsWith('v') )
+		{
+			return ( UpdateStatus.NoReleasesFound, string.Empty );
+		}
+
+		try
+		{
+			// remove v at start
+			var latestVersion = SemVersion.Parse(tagName);
+			var currentVersionObject = SemVersion.Parse(currentVersion);
+			var isNewer = latestVersion > currentVersionObject;
+			var status = isNewer
+				? UpdateStatus.NeedToUpdate
+				: UpdateStatus.CurrentVersionIsLatest;
+			return ( status, latestVersion.ToString() );
+		}
+		catch ( ArgumentException )
+		{
+			return ( UpdateStatus.InputNotValid, string.Empty );
 		}
 	}
 }

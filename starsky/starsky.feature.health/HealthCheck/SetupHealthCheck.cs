@@ -4,80 +4,70 @@ using starsky.foundation.database.Data;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.feature.health.HealthCheck
+namespace starsky.feature.health.HealthCheck;
+
+public class SetupHealthCheck(AppSettings appSettings, IServiceCollection services)
 {
-	public class SetupHealthCheck
+	/// <summary>
+	///     Enable .NET health checks
+	/// </summary>
+	/// <exception cref="AggregateException">when your type is not _appSettings.DatabaseType</exception>
+	public void BuilderHealth()
 	{
-		private readonly IServiceCollection _services;
-		private readonly AppSettings _appSettings;
+		var logger = services.BuildServiceProvider().GetRequiredService<IWebLogger>();
 
-		public SetupHealthCheck(AppSettings appSettings, IServiceCollection services)
+		services.AddHealthChecks()
+			.AddDbContextCheck<ApplicationDbContext>()
+			.AddDiskStorageHealthCheck(
+				diskOptions =>
+				{
+					DiskOptionsPercentageSetup.Setup(appSettings.StorageFolder,
+						diskOptions);
+				},
+				"Storage_StorageFolder")
+			.AddDiskStorageHealthCheck(
+				diskOptions =>
+				{
+					DiskOptionsPercentageSetup.Setup(appSettings.ThumbnailTempFolder,
+						diskOptions);
+				},
+				"Storage_ThumbnailTempFolder")
+			.AddDiskStorageHealthCheck(
+				diskOptions =>
+				{
+					DiskOptionsPercentageSetup.Setup(appSettings.TempFolder,
+						diskOptions);
+				},
+				"Storage_TempFolder")
+			.AddPathExistHealthCheck(
+				pathOptions => pathOptions.AddPath(appSettings.StorageFolder),
+				name: "Exist_StorageFolder", logger: logger)
+			.AddPathExistHealthCheck(
+				pathOptions => pathOptions.AddPath(appSettings.TempFolder),
+				name: "Exist_TempFolder", logger: logger)
+			.AddPathExistHealthCheck(
+				pathOptions => pathOptions.AddPath(appSettings.ExifToolPath),
+				name: "Exist_ExifToolPath", logger: logger)
+			.AddPathExistHealthCheck(
+				pathOptions => pathOptions.AddPath(appSettings.ThumbnailTempFolder),
+				name: "Exist_ThumbnailTempFolder", logger: logger)
+			.AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
+
+		var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
+
+		switch ( appSettings.DatabaseType )
 		{
-			_services = services;
-			_appSettings = appSettings;
-		}
-
-		/// <summary>
-		/// Enable .NET CORE health checks
-		/// </summary>
-		/// <exception cref="AggregateException">when your type is not _appSettings.DatabaseType</exception>
-		public void BuilderHealth()
-		{
-			var logger = _services.BuildServiceProvider().GetRequiredService<IWebLogger>();
-
-			_services.AddHealthChecks()
-				.AddDbContextCheck<ApplicationDbContext>()
-				.AddDiskStorageHealthCheck(
-					setup: diskOptions =>
-					{
-						DiskOptionsPercentageSetup.Setup(_appSettings.StorageFolder,
-							diskOptions);
-					},
-					name: "Storage_StorageFolder")
-				.AddDiskStorageHealthCheck(
-					setup: diskOptions =>
-					{
-						DiskOptionsPercentageSetup.Setup(_appSettings.ThumbnailTempFolder,
-							diskOptions);
-					},
-					name: "Storage_ThumbnailTempFolder")
-				.AddDiskStorageHealthCheck(
-					setup: diskOptions =>
-					{
-						DiskOptionsPercentageSetup.Setup(_appSettings.TempFolder,
-							diskOptions);
-					},
-					name: "Storage_TempFolder")
-				.AddPathExistHealthCheck(
-					setup: pathOptions => pathOptions.AddPath(_appSettings.StorageFolder),
-					name: "Exist_StorageFolder", logger: logger)
-				.AddPathExistHealthCheck(
-					setup: pathOptions => pathOptions.AddPath(_appSettings.TempFolder),
-					name: "Exist_TempFolder", logger: logger)
-				.AddPathExistHealthCheck(
-					setup: pathOptions => pathOptions.AddPath(_appSettings.ExifToolPath),
-					name: "Exist_ExifToolPath", logger: logger)
-				.AddPathExistHealthCheck(
-					setup: pathOptions => pathOptions.AddPath(_appSettings.ThumbnailTempFolder),
-					name: "Exist_ThumbnailTempFolder", logger: logger)
-				.AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
-
-			var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
-
-			switch ( _appSettings.DatabaseType )
-			{
-				case ( AppSettings.DatabaseTypeList.Mysql ):
-					_services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
-					break;
-				case AppSettings.DatabaseTypeList.Sqlite:
-					_services.AddHealthChecks()
-						.AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery);
-					break;
-				case AppSettings.DatabaseTypeList.InMemoryDatabase:
-					break;
-				default:
-					throw new AggregateException("database type does not exist");
-			}
+			case AppSettings.DatabaseTypeList.Mysql:
+				services.AddHealthChecks().AddMySql(appSettings.DatabaseConnection);
+				break;
+			case AppSettings.DatabaseTypeList.Sqlite:
+				services.AddHealthChecks()
+					.AddSqlite(appSettings.DatabaseConnection, healthSqlQuery);
+				break;
+			case AppSettings.DatabaseTypeList.InMemoryDatabase:
+				break;
+			default:
+				throw new AggregateException("database type does not exist");
 		}
 	}
 }

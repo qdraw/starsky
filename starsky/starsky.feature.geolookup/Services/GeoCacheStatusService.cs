@@ -3,53 +3,44 @@ using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.geolookup.Models;
 using static System.Int32;
 
-namespace starsky.feature.geolookup.Services
+namespace starsky.feature.geolookup.Services;
+
+public class GeoCacheStatusService(IMemoryCache? memoryCache = null)
 {
-	public class GeoCacheStatusService
+	public GeoCacheStatus Status(string path)
 	{
-		private readonly IMemoryCache? _cache;
-
-		public GeoCacheStatusService(IMemoryCache? memoryCache = null)
+		if ( memoryCache == null || string.IsNullOrWhiteSpace(path) )
 		{
-			_cache = memoryCache;
+			return new GeoCacheStatus { Total = -1 };
 		}
 
-		public GeoCacheStatus Status(string path)
+		var totalCacheName = nameof(GeoCacheStatus) + path + StatusType.Total;
+		var result = new GeoCacheStatus();
+
+		if ( memoryCache.TryGetValue(totalCacheName, out var statusObjectTotal) &&
+		     TryParse(statusObjectTotal?.ToString(), out var totalStatus) )
 		{
-			if ( _cache == null || string.IsNullOrWhiteSpace(path) )
-			{
-				return new GeoCacheStatus { Total = -1 };
-			}
-
-			var totalCacheName = nameof(GeoCacheStatus) + path + StatusType.Total;
-			var result = new GeoCacheStatus();
-
-			if ( _cache.TryGetValue(totalCacheName, out var statusObjectTotal) &&
-			   TryParse(statusObjectTotal?.ToString(), out var totalStatus) )
-			{
-				result.Total = totalStatus;
-			}
-
-			var currentCacheName = nameof(GeoCacheStatus) + path + StatusType.Current;
-			if ( _cache.TryGetValue(currentCacheName, out var statusObjectCurrent) &&
-			   TryParse(statusObjectCurrent?.ToString(), out var currentStatus) )
-			{
-				result.Current = currentStatus;
-			}
-
-			return result;
+			result.Total = totalStatus;
 		}
 
-		public void StatusUpdate(string path, int current, StatusType type)
+		var currentCacheName = nameof(GeoCacheStatus) + path + StatusType.Current;
+		if ( memoryCache.TryGetValue(currentCacheName, out var statusObjectCurrent) &&
+		     TryParse(statusObjectCurrent?.ToString(), out var currentStatus) )
 		{
-			if ( _cache == null || string.IsNullOrWhiteSpace(path) )
-			{
-				return;
-			}
-
-			var queryGeoCacheName = nameof(GeoCacheStatus) + path + type;
-			_cache.Set(queryGeoCacheName, current, new TimeSpan(10, 0, 0));
+			result.Current = currentStatus;
 		}
 
+		return result;
+	}
+
+	public void StatusUpdate(string path, int current, StatusType type)
+	{
+		if ( memoryCache == null || string.IsNullOrWhiteSpace(path) )
+		{
+			return;
+		}
+
+		var queryGeoCacheName = nameof(GeoCacheStatus) + path + type;
+		memoryCache.Set(queryGeoCacheName, current, new TimeSpan(10, 0, 0));
 	}
 }
