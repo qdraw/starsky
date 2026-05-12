@@ -79,14 +79,14 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
     if (Get-Service $localServiceName -ErrorAction SilentlyContinue)
     {
         # using WMI to remove Windows service because PowerShell does not have CmdLet for this
-        $serviceToRemove = Get-CimInstance -Class Win32_Service -Filter "name='$localServiceName'"
-        $id = $serviceToRemove   |  Select-Object -ExpandProperty ProcessId
+        $serviceToRemove = Get-CimInstance -ClassName Win32_Service -Filter "name='$localServiceName'"
+        $id = $serviceToRemove | Select-Object -ExpandProperty ProcessId
 
         Stop-Process -ID $id -Force -ErrorAction SilentlyContinue
 
         Write-Output "next delete:"
 
-        $serviceToRemove.delete()
+        $serviceToRemove.Delete()
         #  for powershell 6+
         # Remove-Service -Name ServiceName
         # or sc.exe delete ServiceName
@@ -124,8 +124,8 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
 
     # Trying to start new service
     Write-Output "Trying to start new service: $localServiceName"
-    $serviceToStart = Get-CimInstance -Class Win32_Service -Filter "name='$localServiceName'"
-    $serviceToStart.startservice()
+    $serviceToStart = Get-CimInstance -ClassName Win32_Service -Filter "name='$localServiceName'"
+    $serviceToStart.StartService()
     Write-Output "Service started: $localServiceName"
 
     # SmokeTest
