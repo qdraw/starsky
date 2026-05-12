@@ -190,4 +190,29 @@ public sealed class ImportIndexJsonServiceTest
 			}
 		}
 	}
+
+	[TestMethod]
+	public async Task ImportAsync_ThrowsOnNullItemsAfterDeserialization()
+	{
+		var tempFile = Path.Combine(Path.GetTempPath(), $"starsky-importindex-nullitems-{Guid.NewGuid():N}.json");
+		try
+		{
+			var fakeStorage = new FakeIStorage();
+			var selectorStorage = new FakeSelectorStorage(fakeStorage);
+			await fakeStorage.WriteStreamAsync(
+				StringToStreamHelper.StringToStream("{\"structure\":{},\"items\":null}"),
+				tempFile);
+
+			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(), selectorStorage);
+
+			await Assert.ThrowsExactlyAsync<InvalidDataException>(async () => await sut.ImportAsync(tempFile));
+		}
+		finally
+		{
+			if ( File.Exists(tempFile) )
+			{
+				File.Delete(tempFile);
+			}
+		}
+	}
 }

@@ -21,14 +21,13 @@ public class ImportCli
 	private readonly IConsole _console;
 	private readonly IExifToolDownload _exifToolDownload;
 	private readonly IGeoFileDownload _geoFileDownload;
-	private readonly IImportIndexJsonService _importIndexJsonService;
 	private readonly IImport _importService;
 	private readonly IWebLogger _logger;
 
 	public ImportCli(IImport importService, AppSettings appSettings, IConsole console,
 		IWebLogger logger, IExifToolDownload exifToolDownload,
-		IGeoFileDownload geoFileDownload, ICameraStorageDetector cameraStorageDetector,
-		IImportIndexJsonService importIndexJsonService)
+		IGeoFileDownload geoFileDownload, ICameraStorageDetector cameraStorageDetector
+	)
 	{
 		_importService = importService;
 		_appSettings = appSettings;
@@ -37,7 +36,6 @@ public class ImportCli
 		_exifToolDownload = exifToolDownload;
 		_geoFileDownload = geoFileDownload;
 		_cameraStorageDetector = cameraStorageDetector;
-		_importIndexJsonService = importIndexJsonService;
 	}
 
 	/// <summary>
@@ -65,26 +63,6 @@ public class ImportCli
 			ConsoleOutputMode = ArgsHelper.GetConsoleOutputMode(args),
 			Origin = ArgsHelper.GetOrigin(args)
 		};
-
-		var importIndexExportJsonPath = ArgsHelper.GetImportIndexExportJsonPath(args);
-		if ( !string.IsNullOrWhiteSpace(importIndexExportJsonPath) )
-		{
-			var exportLocation =
-				await _importIndexJsonService.ExportAsync(importIndexExportJsonPath);
-			_logger.LogInformation($"Exported ImportIndex to {exportLocation}");
-			return true;
-		}
-
-		var importIndexImportJsonPath = ArgsHelper.GetImportIndexImportJsonPath(args);
-		if ( !string.IsNullOrWhiteSpace(importIndexImportJsonPath) )
-		{
-			var stopWatchImportJson = Stopwatch.StartNew();
-			var resultFromJson =
-				await _importIndexJsonService.ImportAsync(importIndexImportJsonPath);
-			WriteOutputStatus(importSettings, resultFromJson, stopWatchImportJson);
-			return resultFromJson.TrueForAll(p =>
-				p.Status is ImportStatus.Ok or ImportStatus.IgnoredAlreadyImported);
-		}
 
 		var inputPathListFormArgs = new ArgsHelper(_appSettings).GetPathListFormArgs(args).ToList();
 		if ( inputPathListFormArgs.Count == 0 && ArgsHelper.NeedCamera(args) )

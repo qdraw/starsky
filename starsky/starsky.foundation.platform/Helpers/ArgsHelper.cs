@@ -1085,10 +1085,11 @@ public sealed class ArgsHelper
 	}
 
 	/// <summary>
-	///     Get ImportIndex export json output path
+	///     Get ImportIndex export JSON output path
+	///     --importindex-export-json
 	/// </summary>
 	/// <param name="args">input args</param>
-	/// <returns>output json path</returns>
+	/// <returns>output JSON path</returns>
 	public static string GetImportIndexExportJsonPath(IReadOnlyList<string> args)
 	{
 		var jsonPath = string.Empty;
@@ -1109,7 +1110,7 @@ public sealed class ArgsHelper
 	}
 
 	/// <summary>
-	///     Get ImportIndex import json input path
+	///     Get ImportIndex import JSON input path
 	/// </summary>
 	/// <param name="args">input args</param>
 	/// <returns>input json path</returns>

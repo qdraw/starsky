@@ -73,8 +73,11 @@ public sealed class ImportIndexJsonService(
 
 		var importModel =
 			JsonSerializer.Deserialize<ImportIndexJsonContainer>(json,
-				DefaultJsonSerializer.CamelCase) ??
+				DefaultJsonSerializer.CamelCase);
+		if ( importModel?.Structure == null || importModel.Items == null )
+		{
 			throw new InvalidDataException("Failed to deserialize ImportIndex json container");
+		}
 		var result = new List<ImportIndexItem>();
 		foreach ( var item in importModel.Items )
 		{

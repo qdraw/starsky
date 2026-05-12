@@ -47,7 +47,7 @@ public static class Program
 		var geoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>();
 		var cloudImport = serviceProvider.GetRequiredService<ICloudImportService>();
 		var storageDetector = serviceProvider.GetRequiredService<ICameraStorageDetector>();
-		var importIndexJsonService = serviceProvider.GetRequiredService<IImportIndexJsonService>();
+		var importJsonCli = serviceProvider.GetRequiredService<IImportJsonCli>();
 
 		// Migrations before importing
 		await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
@@ -59,9 +59,15 @@ public static class Program
 			return;
 		}
 
+		if ( await importJsonCli.ImportExportByArgs(args) )
+		{
+			return;
+		}
+
 		// Help and other Command Line Tools args are included in the ImporterCli 
-		var service = new ImportCli(import, appSettings, console, webLogger, exifToolDownload,
-			geoFileDownload, storageDetector, importIndexJsonService);
+		var service = new ImportCli(import, appSettings, console,
+			webLogger, exifToolDownload,
+			geoFileDownload, storageDetector);
 		if ( !await service.Importer(args) )
 		{
 			throw new WebApplicationException("Import failed");
