@@ -1,106 +1,109 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
-namespace starsky.foundation.database.Query
+namespace starsky.foundation.database.Query;
+
+/// <summary>
+///     QueryAddRange
+/// </summary>
+public partial class Query
 {
-	public partial class Query
+	/// <summary>
+	///     Add a new item to the database
+	/// </summary>
+	/// <param name="fileIndexItemList"></param>
+	/// <returns>items with id</returns>
+	public virtual async Task<List<FileIndexItem>> AddRangeAsync(
+		List<FileIndexItem> fileIndexItemList)
 	{
-		/// <summary>
-		/// Add a new item to the database
-		/// </summary>
-		/// <param name="fileIndexItemList"></param>
-		/// <returns>items with id</returns>
-		public virtual async Task<List<FileIndexItem>> AddRangeAsync(
-			List<FileIndexItem> fileIndexItemList)
+		if ( fileIndexItemList.Count == 0 )
 		{
-			if ( fileIndexItemList.Count == 0 )
-			{
-				return new List<FileIndexItem>();
-			}
+			return new List<FileIndexItem>();
+		}
 
-			async Task LocalQuery(ApplicationDbContext context,
-				IReadOnlyCollection<FileIndexItem> items)
+		async Task LocalQuery(ApplicationDbContext context,
+			IReadOnlyCollection<FileIndexItem> items)
+		{
+			await context.FileIndex.AddRangeAsync(items);
+			await context.SaveChangesAsync();
+			foreach ( var item in items )
 			{
-				await context.FileIndex.AddRangeAsync(items);
-				await context.SaveChangesAsync();
-				foreach ( var item in items )
-				{
-					context.Attach(item).State = EntityState.Detached;
-				}
+				context.Attach(item).State = EntityState.Detached;
 			}
+		}
 
-			async Task<bool> LocalRemoveDefaultQuery()
+		async Task<bool> LocalRemoveDefaultQuery()
+		{
+			var scope = new InjectServiceScope(_scopeFactory);
+			await scope.ExecuteAsync(async context =>
 			{
-				var scope = new InjectServiceScope(_scopeFactory);
-				await scope.ExecuteAsync(async context =>
-				{
-					await LocalQuery(context, fileIndexItemList);
-					return true;
-				});
+				await LocalQuery(context, fileIndexItemList);
 				return true;
-			}
+			});
+			return true;
+		}
 
+		try
+		{
+			await LocalQuery(_context, fileIndexItemList);
+		}
+		catch ( DbUpdateConcurrencyException concurrencyException )
+		{
+			SolveConcurrency.SolveConcurrencyExceptionLoop(
+				concurrencyException.Entries);
 			try
 			{
-				await LocalQuery(_context, fileIndexItemList);
+				await _context.SaveChangesAsync();
 			}
-			catch ( DbUpdateConcurrencyException concurrencyException )
+			catch ( DbUpdateConcurrencyException e )
 			{
-				SolveConcurrency.SolveConcurrencyExceptionLoop(
-					concurrencyException.Entries);
-				try
+				if ( _appSettings.Verbose == true )
 				{
-					await _context.SaveChangesAsync();
+					_context.ChangeTracker.DetectChanges();
+					// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+					_logger?.LogDebug(_context.ChangeTracker.DebugView
+						.LongView);
 				}
-				catch ( DbUpdateConcurrencyException e )
-				{
-					if ( _appSettings.Verbose == true )
-					{
-						_context.ChangeTracker.DetectChanges();
-						// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-						_logger?.LogDebug(_context.ChangeTracker.DebugView
-							.LongView);
-					}
 
-					_logger?.LogError(e,
-						"[AddRangeAsync] save failed after DbUpdateConcurrencyException");
-				}
+				_logger?.LogError(e,
+					"[AddRangeAsync] save failed after DbUpdateConcurrencyException");
 			}
-			catch ( ObjectDisposedException )
-			{
-				var scope = new InjectServiceScope(_scopeFactory);
-				await scope.ExecuteAsync(async context =>
-				{
-					await LocalQuery(context, fileIndexItemList);
-					return true;
-				});
-			}
-			catch ( Microsoft.Data.Sqlite.SqliteException )
-			{
-				// Files that are locked
-				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
-					TimeSpan.FromSeconds(2), 4);
-			}
-			catch ( DbUpdateException )
-			{
-				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
-					TimeSpan.FromSeconds(2), 4);
-			}
-
-			fileIndexItemList = FormatOk(fileIndexItemList,
-				FileIndexItem.ExifStatus.NotFoundNotInIndex);
-
-			foreach ( var fileIndexItem in fileIndexItemList )
-			{
-				AddCacheItem(fileIndexItem);
-			}
-
-			return fileIndexItemList;
 		}
+		catch ( ObjectDisposedException )
+		{
+			var scope = new InjectServiceScope(_scopeFactory);
+			await scope.ExecuteAsync(async context =>
+			{
+				await LocalQuery(context, fileIndexItemList);
+				return true;
+			});
+		}
+		catch ( SqliteException )
+		{
+			// Files that are locked
+			await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
+				TimeSpan.FromSeconds(2), 4);
+		}
+		catch ( DbUpdateException )
+		{
+			await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
+				TimeSpan.FromSeconds(2), 4);
+		}
+
+		fileIndexItemList = FormatOk(fileIndexItemList,
+			FileIndexItem.ExifStatus.NotFoundNotInIndex);
+
+		foreach ( var fileIndexItem in fileIndexItemList )
+		{
+			AddCacheItem(fileIndexItem);
+		}
+
+		return fileIndexItemList;
 	}
 }

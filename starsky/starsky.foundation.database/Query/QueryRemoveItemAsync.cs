@@ -7,35 +7,102 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
-namespace starsky.foundation.database.Query
-{
+namespace starsky.foundation.database.Query;
 
+/// <summary>
+/// QueryRemoveItemAsync
+/// </summary>
+public partial class Query
+{
 	/// <summary>
-	/// QueryRemoveItemAsync
+	/// Remove a new item from the database (NOT from the file system)
 	/// </summary>
-	public partial class Query
+	/// <param name="updateStatusContent">the FileIndexItem with database data</param>
+	/// <returns></returns>
+	public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 	{
-		/// <summary>
-		/// Remove a new item from the database (NOT from the file system)
-		/// </summary>
-		/// <param name="updateStatusContent">the FileIndexItem with database data</param>
-		/// <returns></returns>
-		public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
+		async Task<bool> LocalRemoveDefaultQuery()
 		{
-			async Task<bool> LocalRemoveDefaultQuery()
+			var scope = new InjectServiceScope(_scopeFactory);
+			await scope.ExecuteAsync(async context =>
 			{
-				var scope = new InjectServiceScope(_scopeFactory);
-				await scope.ExecuteAsync(async context =>
-				{
-					await LocalRemoveQuery(context);
-					return true;
-				});
+				await LocalRemoveQuery(context);
 				return true;
+			});
+			return true;
+		}
+
+		async Task LocalRemoveQuery(ApplicationDbContext context)
+		{
+			// Detach first https://stackoverflow.com/a/42475617
+			var local = context.Set<FileIndexItem>()
+				.Local
+				.FirstOrDefault(entry => entry.Id.Equals(updateStatusContent.Id));
+			if ( local != null )
+			{
+				context.Entry(local).State = EntityState.Detached;
 			}
 
-			async Task LocalRemoveQuery(ApplicationDbContext context)
+			// keep conditional marker for test
+			context.FileIndex?.Remove(updateStatusContent);
+			await context.SaveChangesAsync();
+		}
+
+		try
+		{
+			await LocalRemoveQuery(_context);
+		}
+		catch ( Microsoft.Data.Sqlite.SqliteException )
+		{
+			// Files that are locked
+			await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
+				TimeSpan.FromSeconds(2), 4);
+		}
+		catch ( ObjectDisposedException )
+		{
+			await LocalRemoveDefaultQuery();
+		}
+		catch ( InvalidOperationException )
+		{
+			await LocalRemoveDefaultQuery();
+		}
+		catch ( DbUpdateConcurrencyException e )
+		{
+			_logger.LogInformation(e, "[RemoveItemAsync] catch-ed " +
+			                          "DbUpdateConcurrencyException (do nothing)");
+		}
+
+		// remove parent directory cache
+		RemoveCacheItem(updateStatusContent);
+
+		// remove getFileHash Cache
+		ResetItemByHash(updateStatusContent.FileHash);
+		return updateStatusContent;
+	}
+
+	/// <summary>
+	/// Remove a new item from the database (NOT from the file system)
+	/// </summary>
+	/// <param name="updateStatusContentList">the FileIndexItem with database data</param>
+	/// <returns></returns>
+	public async Task<List<FileIndexItem>> RemoveItemAsync(List<FileIndexItem> updateStatusContentList)
+	{
+		async Task<bool> LocalRemoveDefaultQuery()
+		{
+			var scope = new InjectServiceScope(_scopeFactory);
+			await scope.ExecuteAsync(async context =>
 			{
-				// Detach first https://stackoverflow.com/a/42475617
+				await LocalRemoveQuery(context);
+				return true;
+			});
+			return true;
+		}
+
+		async Task LocalRemoveQuery(ApplicationDbContext context)
+		{
+			// Detach first https://stackoverflow.com/a/42475617
+			foreach ( var updateStatusContent in updateStatusContentList )
+			{
 				var local = context.Set<FileIndexItem>()
 					.Local
 					.FirstOrDefault(entry => entry.Id.Equals(updateStatusContent.Id));
@@ -43,113 +110,44 @@ namespace starsky.foundation.database.Query
 				{
 					context.Entry(local).State = EntityState.Detached;
 				}
-
-				// keep conditional marker for test
-				context.FileIndex?.Remove(updateStatusContent);
-				await context.SaveChangesAsync();
 			}
-
-			try
-			{
-				await LocalRemoveQuery(_context);
-			}
-			catch ( Microsoft.Data.Sqlite.SqliteException )
-			{
-				// Files that are locked
-				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
-					TimeSpan.FromSeconds(2), 4);
-			}
-			catch ( ObjectDisposedException )
-			{
-				await LocalRemoveDefaultQuery();
-			}
-			catch ( InvalidOperationException )
-			{
-				await LocalRemoveDefaultQuery();
-			}
-			catch ( DbUpdateConcurrencyException e )
-			{
-				_logger.LogInformation(e, "[RemoveItemAsync] catch-ed " +
-										 "DbUpdateConcurrencyException (do nothing)");
-			}
-
-			// remove parent directory cache
-			RemoveCacheItem(updateStatusContent);
-
-			// remove getFileHash Cache
-			ResetItemByHash(updateStatusContent.FileHash);
-			return updateStatusContent;
+			// keep conditional marker for test
+			context.FileIndex?.RemoveRange(updateStatusContentList);
+			await context.SaveChangesAsync();
 		}
 
-		/// <summary>
-		/// Remove a new item from the database (NOT from the file system)
-		/// </summary>
-		/// <param name="updateStatusContentList">the FileIndexItem with database data</param>
-		/// <returns></returns>
-		public async Task<List<FileIndexItem>> RemoveItemAsync(List<FileIndexItem> updateStatusContentList)
+		try
 		{
-			async Task<bool> LocalRemoveDefaultQuery()
-			{
-				var scope = new InjectServiceScope(_scopeFactory);
-				await scope.ExecuteAsync(async context =>
-				{
-					await LocalRemoveQuery(context);
-					return true;
-				});
-				return true;
-			}
-
-			async Task LocalRemoveQuery(ApplicationDbContext context)
-			{
-				// Detach first https://stackoverflow.com/a/42475617
-				foreach ( var updateStatusContent in updateStatusContentList )
-				{
-					var local = context.Set<FileIndexItem>()
-						.Local
-						.FirstOrDefault(entry => entry.Id.Equals(updateStatusContent.Id));
-					if ( local != null )
-					{
-						context.Entry(local).State = EntityState.Detached;
-					}
-				}
-				// keep conditional marker for test
-				context.FileIndex?.RemoveRange(updateStatusContentList);
-				await context.SaveChangesAsync();
-			}
-
-			try
-			{
-				await LocalRemoveQuery(_context);
-			}
-			catch ( Microsoft.Data.Sqlite.SqliteException )
-			{
-				// Files that are locked
-				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
-					TimeSpan.FromSeconds(2), 4);
-			}
-			catch ( ObjectDisposedException )
-			{
-				await LocalRemoveDefaultQuery();
-			}
-			catch ( InvalidOperationException )
-			{
-				await LocalRemoveDefaultQuery();
-			}
-			catch ( DbUpdateConcurrencyException e )
-			{
-				_logger.LogInformation(e, "[RemoveItemAsync:List] catch-ed " +
-										 "DbUpdateConcurrencyException (do nothing)");
-			}
-
-			// remove parent directory cache
-			RemoveCacheItem(updateStatusContentList);
-
-			// remove getFileHash Cache
-			foreach ( var updateStatusContent in updateStatusContentList )
-			{
-				ResetItemByHash(updateStatusContent.FileHash);
-			}
-			return updateStatusContentList;
+			await LocalRemoveQuery(_context);
 		}
+		catch ( Microsoft.Data.Sqlite.SqliteException )
+		{
+			// Files that are locked
+			await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
+				TimeSpan.FromSeconds(2), 4);
+		}
+		catch ( ObjectDisposedException )
+		{
+			await LocalRemoveDefaultQuery();
+		}
+		catch ( InvalidOperationException )
+		{
+			await LocalRemoveDefaultQuery();
+		}
+		catch ( DbUpdateConcurrencyException e )
+		{
+			_logger.LogInformation(e, "[RemoveItemAsync:List] catch-ed " +
+			                          "DbUpdateConcurrencyException (do nothing)");
+		}
+
+		// remove parent directory cache
+		RemoveCacheItem(updateStatusContentList);
+
+		// remove getFileHash Cache
+		foreach ( var updateStatusContent in updateStatusContentList )
+		{
+			ResetItemByHash(updateStatusContent.FileHash);
+		}
+		return updateStatusContentList;
 	}
 }
