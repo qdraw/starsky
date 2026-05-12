@@ -125,7 +125,7 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
     # Trying to start new service
     Write-Output "Trying to start new service: $localServiceName"
     $serviceToStart = Get-CimInstance -ClassName Win32_Service -Filter "name='$localServiceName'"
-    $serviceToStart.StartService()
+    Invoke-CimMethod -InputObject $serviceToStart -MethodName StartService
     Write-Output "Service started: $localServiceName"
 
     # SmokeTest
