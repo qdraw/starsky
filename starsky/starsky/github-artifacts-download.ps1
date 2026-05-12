@@ -34,25 +34,25 @@ switch ([System.Environment]::OSVersion.Platform)
 
 if($runTime -eq '') {
 
-    If($IsWindows -eq $true) {
+    if($IsWindows -eq $true) {
         $runTime = "win-x64"
     }
-    ElseIf (($IsLinux -eq $true) -or ($IsMacOs -eq $true)) {
+    elseif (($IsLinux -eq $true) -or ($IsMacOs -eq $true)) {
         $uNameM = Invoke-Expression -Command "uname -m"
 
-        If(($uNameM -eq 'x86_64') -and ($IsLinux -eq $true)) {
+        if(($uNameM -eq 'x86_64') -and ($IsLinux -eq $true)) {
             $runTime = "linux-x64"
         }
-        If(($uNameM -eq 'x86_64') -and ($IsMacOs -eq $true)) {
+        if(($uNameM -eq 'x86_64') -and ($IsMacOs -eq $true)) {
             $runTime = "osx-x64"
         }
-        If(($uNameM -eq 'aarch64')) {
+        if(($uNameM -eq 'aarch64')) {
             $runTime = "linux-arm64"
         }
-        If(($uNameM -eq 'armv7l')) {
+        if(($uNameM -eq 'armv7l')) {
             $runTime = "linux-arm"
         }
-        If(($uNameM -eq 'arm64') -and ($IsMacOs -eq $true)) {
+        if(($uNameM -eq 'arm64') -and ($IsMacOs -eq $true)) {
             $runTime = "osx-arm64" # got gatekeeper errors
         }
     }
@@ -64,7 +64,7 @@ Write-Host "runtime:"$runTime
 $runTimeVersion=$runTime
 
 $versionZipArray = @()
-If($runTimeVersion.contains("desktop") -eq $false) {
+if($runTimeVersion.contains("desktop") -eq $false) {
     $versionZipArray = @("starsky-" + $runTime + ".zip")
 }
 else {
@@ -184,7 +184,7 @@ $ArtifactsUrl = $LatestRun.artifacts_url
 $artifactsUrlResult = (Invoke-WebRequest -Method GET -Uri $LatestRun.artifacts_url -Headers $ghHeaders -UseBasicParsing -ErrorAction Stop | ConvertFrom-Json)
 
 $artifactsDownloadUrl = ""
-ForEach ($artifact in $artifactsUrlResult.artifacts) {
+foreach ($artifact in $artifactsUrlResult.artifacts) {
 
     if($artifact.name -eq $runTimeVersion) {
         Write-Host  "artifact" $artifact.name

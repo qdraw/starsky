@@ -39,7 +39,7 @@ if($IsWindows -eq $False) {
   exit 0
 }
 
-If($outPut -eq "") {
+if($outPut -eq "") {
     $scriptRootPath = (Split-Path $MyInvocation.MyCommand.Path -Parent)
     $outPut = $scriptRootPath
 }
@@ -63,15 +63,15 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
     #Check Parameters
     if ((Test-Path $binaryPath)-eq $false)
     {
-        Write-Host "BinaryPath to service not found: $binaryPath"
-        Write-Host "Service was NOT installed."
+        Write-Output "BinaryPath to service not found: $binaryPath"
+        Write-Output "Service was NOT installed."
         return
     }
 
     if (("Automatic", "Manual", "Disabled") -notcontains $startUpType)
     {
-        Write-Host "Value for startUpType parameter should be (Automatic or Manual or Disabled) and it was $startUpType"
-        Write-Host "Service was NOT installed."
+        Write-Output "Value for startUpType parameter should be (Automatic or Manual or Disabled) and it was $startUpType"
+        Write-Output "Service was NOT installed."
         return
     }
 
@@ -79,18 +79,18 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
     if (Get-Service $localServiceName -ErrorAction SilentlyContinue)
     {
         # using WMI to remove Windows service because PowerShell does not have CmdLet for this
-        $serviceToRemove = Get-WmiObject -Class Win32_Service -Filter "name='$localServiceName'"
+        $serviceToRemove = Get-CimInstance -Class Win32_Service -Filter "name='$localServiceName'"
         $id = $serviceToRemove   |  Select-Object -ExpandProperty ProcessId
 
         Stop-Process -ID $id -Force -ErrorAction SilentlyContinue
 
-        Write-Host "next delete:"
+        Write-Output "next delete:"
 
         $serviceToRemove.delete()
         #  for powershell 6+
         # Remove-Service -Name ServiceName
         # or sc.exe delete ServiceName
-        Write-Host "Service removed: $localServiceName"
+        Write-Output "Service removed: $localServiceName"
 
         if ($localRemove) {
             Write-Host "remove flag used so done now"
@@ -105,7 +105,7 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
     {
         #$secpassword = (new-object System.Security.SecureString)
         # Bug detected by @GaTechThomas
-        $secpasswd = (new-object System.Security.SecureString)
+        $secpasswd = (New-Object System.Security.SecureString)
     }
     else
     {
@@ -114,34 +114,34 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
     $mycreds = New-Object System.Management.Automation.PSCredential ($login, $secpasswd)
 
     # Creating Windows Service using all provided parameters
-    Write-Host "Installing service: $localServiceName"
+    Write-Output "Installing service: $localServiceName"
 
     $binaryPathName = "$binaryPath $cmdArgs"
-    New-Service -name $localServiceName -binaryPathName $binaryPathName -Description $description -displayName $displayName `
-        -startupType $startUpType -credential $mycreds
+    New-Service -Name $localServiceName -binaryPathName $binaryPathName -Description $description -displayName $displayName `
+        -startupType $startUpType -Credential $mycreds
 
-    Write-Host "Installation completed: $localServiceName"
+    Write-Output "Installation completed: $localServiceName"
 
     # Trying to start new service
-    Write-Host "Trying to start new service: $localServiceName"
+    Write-Output "Trying to start new service: $localServiceName"
     $serviceToStart = Get-WmiObject -Class Win32_Service -Filter "name='$localServiceName'"
     $serviceToStart.startservice()
-    Write-Host "Service started: $localServiceName"
+    Write-Output "Service started: $localServiceName"
 
-    #SmokeTest
-    Write-Host "Waiting 5 seconds to give time service to start..."
+    # SmokeTest
+    Write-Output "Waiting 5 seconds to give time service to start..."
     Start-Sleep -s 5
     $SmokeTestService = Get-Service -Name $localServiceName
     if ($SmokeTestService.Status -ne "Running")
     {
-        Write-Host "Smoke test: FAILED. (SERVICE FAILED TO START)"
-        Throw "Smoke test: FAILED. (SERVICE FAILED TO START)"
+        Write-Output "Smoke test: FAILED. (SERVICE FAILED TO START)"
+        throw "Smoke test: FAILED. (SERVICE FAILED TO START)"
     }
     else
     {
         Write-Host "Smoke test: OK."
     }
-  # https://stackoverflow.com/questions/14708825/how-to-create-a-windows-service-in-powershell-for-network-service-account
+    # https://stackoverflow.com/questions/14708825/how-to-create-a-windows-service-in-powershell-for-network-service-account
 }
 
 $cmdArgsAdd = '--urls "http://localhost:' + $port + '"'
@@ -149,13 +149,14 @@ $cmdArgsAdd = '--urls "http://localhost:' + $port + '"'
 if ($anyWhere -eq $true) {
     $cmdArgsAdd = '--urls "http://*:' + $port + '"'
 }
-If($noTelemetry -eq $true) {
+
+if($noTelemetry -eq $true) {
      $cmdArgsAdd += " --app:enablePackageTelemetry=False"
 }
 
-Write-Host "args: "$cmdArgsAdd
+Write-Output "args: "$cmdArgsAdd
 
 ReinstallService $serviceName $exePath $cmdArgsAdd "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App" $remove
 
-Write-Host "done"
+Write-Output "done"
 exit 0

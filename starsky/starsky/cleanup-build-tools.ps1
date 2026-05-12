@@ -9,7 +9,7 @@ param(
 # for powershell 5
 switch ([System.Environment]::OSVersion.Platform)
 {
-    'Win32NT' { 
+    'Win32NT' {
         New-Variable -Option Constant -Name IsWindows -Value $True -ErrorAction SilentlyContinue
         New-Variable -Option Constant -Name IsLinux  -Value $false -ErrorAction SilentlyContinue
         New-Variable -Option Constant -Name IsMacOs  -Value $false -ErrorAction SilentlyContinue
@@ -27,7 +27,7 @@ if ((Test-Path -Path $sonarCache) -eq $True) {
 
     Remove-Item -Recurse -Force $sonarCache
     Write-Host     $sonarCache " in User Folder removed"
-} 
+}
 else {
  Write-Host     $sonarCache " in User Folder does not exists"
 }
@@ -41,7 +41,7 @@ $repoRoot = (Split-Path $rootPath -Parent)
 Write-Host "search for bin folder in rootPath: " $rootPath
 Write-Host "but ignore starskyWebProject" $starskyWebProject
 
-$binFolders = Get-ChildItem $rootPath -Directory -Recurse -Filter "bin" -ErrorAction SilentlyContinue -Force | 
+$binFolders = Get-ChildItem $rootPath -Directory -Recurse -Filter "bin" -ErrorAction SilentlyContinue -Force |
     Where-Object {$_.PSIsContainer -eq $true -and $_.Name -match "bin" -and $_.FullName -notmatch "node_modules"};
 
 foreach ($binFolder in $binFolders) {
@@ -192,7 +192,7 @@ if (((Test-Path -Path $currentVersionPackage) -eq $True) -and ((Test-Path -Path 
     foreach ($otherVersion in (Get-ChildItem $cypressCache)) {
         if ($otherVersion.FullName -ne $versionPath) {
             Write-Host "next delete: " $otherVersion.FullName
-            Remove-Item $otherVersion.FullName -Recurse    
+            Remove-Item $otherVersion.FullName -Recurse
         }
         else {
             Write-Host "skip: " $otherVersion.FullName
@@ -242,9 +242,9 @@ if ($LASTEXITCODE -ne 0) {
     $status = 1;
 
     while ($status -ne 0) {
-        Start-Sleep -Seconds 2 
+        Start-Sleep -Seconds 2
 
-        Try {
+        try {
             Invoke-Expression -Command "docker stats --no-stream" -ErrorAction Stop
             $status=$LASTEXITCODE
         }
