@@ -31,7 +31,7 @@ public class FilenamesHelperTest
 		// Assert
 		Assert.IsFalse(isValid);
 	}
-	
+
 	[TestMethod]
 	public void GetFileName_ShouldReturnCorrectFileName()
 	{
@@ -39,12 +39,12 @@ public class FilenamesHelperTest
 		const string filePath1 = "/path/to/file.txt";
 		const string filePath2 = "/another/path/to/another/file.pdf";
 		const string filePath3 = "file.csv";
-        
+
 		// Act
 		var fileName1 = FilenamesHelper.GetFileName(filePath1);
 		var fileName2 = FilenamesHelper.GetFileName(filePath2);
 		var fileName3 = FilenamesHelper.GetFileName(filePath3);
-        
+
 		// Assert
 		Assert.AreEqual("file.txt", fileName1);
 		Assert.AreEqual("file.pdf", fileName2);
@@ -58,18 +58,18 @@ public class FilenamesHelperTest
 		const string filePath1 = "/path/to/file.txt";
 		const string filePath2 = "/another/path/to/another/file.pdf";
 		const string filePath3 = "file.csv";
-        
+
 		// Act
 		var fileName1 = FilenamesHelper.GetFileName(filePath1, _ => true);
 		var fileName2 = FilenamesHelper.GetFileName(filePath2, _ => true);
 		var fileName3 = FilenamesHelper.GetFileName(filePath3, _ => true);
-        
+
 		// Assert
 		Assert.AreEqual("file.txt", fileName1);
 		Assert.AreEqual("file.pdf", fileName2);
 		Assert.AreEqual("file.csv", fileName3);
 	}
-	
+
 	[TestMethod]
 	public void GetFileName_IgnoreEscapedValues_RuntimeOverwrite()
 	{
@@ -80,7 +80,7 @@ public class FilenamesHelperTest
 		var fileName1 = FilenamesHelper.GetFileName(filePath1, _ => true);
 		Assert.AreEqual("file\\d.txt", fileName1);
 	}
-	
+
 	[TestMethod]
 	public void GetFileName_IgnoreEscapedValues()
 	{
@@ -107,11 +107,11 @@ public class FilenamesHelperTest
 	public void GetFileNameWithoutExtension_ValidFilePath_ReturnsFileNameWithoutExtension()
 	{
 		// Arrange
-		string filePath = "/MyFolder/MyFile.txt";
-		string expected = "MyFile";
+		const string filePath = "/MyFolder/MyFile.txt";
+		const string expected = "MyFile";
 
 		// Act
-		string actual = FilenamesHelper.GetFileNameWithoutExtension(filePath);
+		var actual = FilenamesHelper.GetFileNameWithoutExtension(filePath);
 
 		// Assert
 		Assert.AreEqual(expected, actual);
@@ -121,11 +121,11 @@ public class FilenamesHelperTest
 	public void GetFileNameWithoutExtension_NoExtension_ReturnsFileName()
 	{
 		// Arrange
-		string filePath = "/MyFolder/MyFile";
-		string expected = "MyFile";
+		var filePath = "/MyFolder/MyFile";
+		var expected = "MyFile";
 
 		// Act
-		string actual = FilenamesHelper.GetFileNameWithoutExtension(filePath);
+		var actual = FilenamesHelper.GetFileNameWithoutExtension(filePath);
 
 		// Assert
 		Assert.AreEqual(expected, actual);
@@ -135,16 +135,16 @@ public class FilenamesHelperTest
 	public void GetFileNameWithoutExtension_MultipleDotsInName_ReturnsFileNameWithoutExtension()
 	{
 		// Arrange
-		string filePath = "/MyFolder/My.File.Name.txt";
-		string expected = "My.File.Name";
+		var filePath = "/MyFolder/My.File.Name.txt";
+		var expected = "My.File.Name";
 
 		// Act
-		string actual = FilenamesHelper.GetFileNameWithoutExtension(filePath);
+		var actual = FilenamesHelper.GetFileNameWithoutExtension(filePath);
 
 		// Assert
 		Assert.AreEqual(expected, actual);
 	}
-	
+
 	[TestMethod]
 	public void GetFileExtensionWithoutDot_Should_Return_Empty_String_For_File_Without_Extension()
 	{
@@ -172,7 +172,8 @@ public class FilenamesHelperTest
 	}
 
 	[TestMethod]
-	public void GetFileExtensionWithoutDot_Should_Return_Extension_With_Up_To_4_Alphanumeric_Characters()
+	public void
+		GetFileExtensionWithoutDot_Should_Return_Extension_With_Up_To_4_Alphanumeric_Characters()
 	{
 		// Arrange
 		var filename = "testfile.some-extension01234.txt";
@@ -217,7 +218,7 @@ public class FilenamesHelperTest
 		var result = FilenamesHelper.GetParentPath(filePath);
 		Assert.AreEqual("/", result);
 	}
-	
+
 	[TestMethod]
 	public void GetParentPath_AddSlash2()
 	{
@@ -225,7 +226,7 @@ public class FilenamesHelperTest
 		var result = FilenamesHelper.GetParentPath(filePath);
 		Assert.AreEqual("/folder_no_content", result);
 	}
-	
+
 	[TestMethod]
 	public void GetParentPath_ReturnsCorrectPath_WhenFilePathIsValid()
 	{
