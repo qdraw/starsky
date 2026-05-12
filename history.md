@@ -6,7 +6,7 @@
     - [starsky](starsky/starsky/readme.md) _web api application / interface_
         - [client app](starsky/starsky/clientapp/readme.md) _react front-end application_
     - [starskyImporterCli](starsky/starskyimportercli/readme.md) _import command line interface_
-    - [starskyGeoCli](starsky/starskygeocli/readme.md) _gpx sync and reverse 'geo tagging'_
+    - [starskyGeoCli](starsky/starskygeocli/readme.md) _gpx sync and reverse 'geotagging'_
     - [starskyWebHtmlCli](starsky/starskywebhtmlcli/readme.md) _publish web images to a content
       package_
     - [starskyWebFtpCli](starsky/starskywebftpcli/readme.md) _copy a content package to a ftp
@@ -19,7 +19,7 @@
     - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _internal libraries (
       .NET)_
     - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
-- [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
+- [starsky-tools](starsky-tools/readme.md) _Node.js tools to add-on tasks_
 - [Starsky Desktop](starskydesktop/readme.md) _Desktop Application_
     - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 - **[Changelog](history.md) Release notes and history**
@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.19 - _(Unreleased)_ - 2026-?-? {#v0.7.19}
 
+- [x] (Fixed) _Back-end_ Allow ApplicationPath to be null to allow removal in settings (PR )
 - [x] (Fixed) _Front-end_ Code quality improvements (PR #3049 #3055 #3054)
 - [x] (Added) _Back-end_ Support for old Canon CR2 Raws (EOS 10D, 20D, 30D) (PR #3047)
 
@@ -50,7 +51,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Fixed) _Back-end_ Mysql migrations: search for
   `20260505142535_QueueItemsTableAddCustomAiTags.sql` to reset migrations done in v0.7.17, only
-  needed if has run 0.7.17, for older versions this is auto done (PR #3042)
+  needed if the app has run 0.7.17, for older versions this is auto done (PR #3042)
 
 ## version 0.7.17 - 2026-05-04 {#v0.7.17}
 
@@ -249,7 +250,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Changed) _Front-end_ Do not set 1 als default text in input field (PR #2398)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.415 (Runtime: 8.0.21) (PR #2382)
-- [x] (Changed) _Back-end_ Handle special characters for slugs e.g. ç -> c etc. (PR #2365)
+- [x] (Changed) _Back-end_ Handle special characters for slugs e.g. ç → c etc. (PR #2365)
 - [x] (Changed) _Back-end_ Location State is not required anymore (PR #2358)
 - [x] (Changed) _Front-end_ OpenStreetMap tile server endpoints change due block (PR #2343)
 - [x] (Changed) _Front-end_ Code style improvements (PR #2385 #2386 #2387 #2390 #2391 #2392)
@@ -466,7 +467,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Front-end_ Fix list item status OkAndSame is not red anymore (PR #1445)
 - [x] (Removed) _Back-end_ Unused .NET cultures (PR #1453)
 - [x] (Changed) _Back-end_ Change GetParentPath() to avoid regex due timeout (PR #1461)
-- [x] (Added) _Desktop_ Add support for Apple Silicon Mac OS in Desktop App (PR #1454)
+- [x] (Added) _Desktop_ Add support for Apple Silicon macOS in Desktop App (PR #1454)
 - [x] (Added) _Desktop_ SonarScanner for Desktop App (PR #1454)
 
 ## version 0.6.0-beta.2 - 2024-03-05 {#v0.6.0-beta.2}
@@ -514,7 +515,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Added) _Back-end_ Add support for OpenTelemetry (server side only) (PR #1323)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.100 (Runtime: 8.0.1) (PR #1335)
-- [x] (Fixed)  _Tools_ Fix runtime & update end2end (PR #1355)
+- [x] (Fixed)  _Tools_ Fix runtime & update end to end (PR #1355)
 - [x] (Fixed) _Back-end_ Build project more clear info object (PR #1354)
 - [x] (Fixed) _Back-end_ Move to Serilog (_build only) && update dotnet-sonarScan to the latest
   version (PR #1353)
@@ -575,7 +576,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Front-end_ Move from Create React App to Vite (PR #1204)
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR #1219, 1220, 1228, 1230, 1237, 1240)
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR 1241, 1239, 1252, 1244, 1246, 1247, 1250, 1251)
-- [x] (Changed) _Back-end_ Upgrade github yaml's (PR 1232, 1233, 1234, 1235)
+- [x] (Changed) _Back-end_ Upgrade GitHub YAML's (PR 1232, 1233, 1234, 1235)
 - [x] (Changed) _Desktop_ Upgrade Electron to 26.x (27.0 has removed support for macOS 10.13 and
   10.14) (PR #1255)
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.415 (Runtime: 6.0.23) (PR #1256)
@@ -760,11 +761,11 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed) _Back-end_ DiskWatcher with a non-existing folder does not crash (PR #978)
 - [x] (Fixed) _Back-end_ Import from read only folder does not partly import files and crash (PR
   #978)
-- [x] (Fixed) _Back-end_ Docker compose issues with file rights on Mac OS (PR #980)
+- [x] (Fixed) _Back-end_ Docker compose issues with file rights on macOS (PR #980)
 - [x] (Added) _Back-end_ More docs about how use the software (PR #981)
 - [x] (Fixed) _Back-end_ Publish on read-only files gives 0 items back (PR #938)
 - [x] (Fixed) _Front-end_ Move file button out of screen iOS (Issue #859 PR #984)
-- [x] (Fixed) _Desktop_ Update window of desktop again works again (Issue #987 PR #987)
+- [x] (Fixed) _Desktop_ Update window of desktop works (Issue #987 PR #987)
 - [x] (Fixed) _Front-end_ Add display of sorting option (Issue #985 PR #987)
 - [x] (Fixed) _Desktop_ Fix settings names remove valueOf (PR #987)
 - [x] (Fixed) _Back-end_ Seed Data CLI & Docker with deps bugfixes (PR #993)
@@ -801,7 +802,7 @@ _Known issues #1106, #1107 and #1108_
   starskysynchronizecli (PR #563)
 - [x] (0.5.0-beta.0) _Back-end_ rename "/api/sync/mkdir" to /api/disk/mkdir (PR #574)
 - [x] (0.5.0-beta.0) _Back-end_ rename "/api/sync/rename" to /api/disk/rename (PR #574)
-- [x] (0.5.0-beta.0) _Back-end_ Dropped support for older Mac OS version: now 10.15+ is required
+- [x] (0.5.0-beta.0) _Back-end_ Dropped support for older macOS version: now 10.15+ is required
 
 ## version 0.5.0-beta.9 - 2022-11-04
 
@@ -838,10 +839,10 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Added) _Back-end_ Add Settings Database Table incl. migration (PR #905)
 - [x] (Added) _Back-end_ Add feature toggle in AppSettings: `SyncOnStartup` (PR #905)
 - [x] (Added) _Back-end_ Sync latest changes on startup of application (PR #905)
-- [x] (Changed) _Back-end_ Code quality: Apply C# nullable for foundation.database project (PR
+- [x] (Changed) _Back-end_ Code quality: Apply C# nullable for `foundation.database` project (PR
   #905 & rework PR #906)
 - [x] (Security) _Front-end_ Client App - Create React App - Upgrade dependencies (PR #910)
-- [x] (Issue) _Tools_ Upgrade Cypress end2end testing tool to v10 (PR #911)
+- [x] (Issue) _Tools_ Upgrade Cypress end-to-end testing tool to v10 (PR #911)
 
 ## version 0.5.0-beta.7 - 2022-09-20
 
@@ -856,7 +857,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Changed)
   _Back-end_ [Upgrade to .NET 6 - SDK 6.0.401 (Runtime: 6.0.9)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.9/6.0.9.md) (
   PR #870)
-- [x] (Issue) _Tools_ Re-enable end2end test in CI (2022-09-20)
+- [x] (Issue) _Tools_ Re-enable end-to-end test in CI (2022-09-20)
 
 ## version 0.5.0-beta.6 - 2022-07-13
 
@@ -944,7 +945,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Changed) _Back-end_ Upgrade deps ImageSharp and RazorLight (PR #652)
 - [x] (Changed) _Back-end_ Write stream to unique temp folder to avoid collision with filenames (PR
   #653)
-- [x] (Changed) _Tools_ Fix some end2end tests (PR #653)
+- [x] (Changed) _Tools_ Fix some end-to-end tests (PR #653)
 - [x] (Fixed) _Back-end_ System.OutOfMemoryException trigger Garbage collection (PR #661 / Issue
   #660)
 - [x] (Fixed) _Back-end_ Remove Apple from VideoUseLocalTime since they use UTC (PR #661)
@@ -972,7 +973,7 @@ _Known issues #1106, #1107 and #1108_
 ## version 0.5.0-beta.1 - 2022-01-11
 
 - [x] (Changed) _Back-end_ Add request tracking for FSW SyncWatcherConnector (PR #589)
-- [x] (Changed) _Tools_ Add insider script for download Github artifacts (PR #589)
+- [x] (Changed) _Tools_ Add insider script for download GitHub artifacts (PR #589)
 - [x] (Changed) _App_ Middle mouse click in Electron app shows login page instead of content (PR
   #596 Issue #592 and PR #600)
 - [x] (Changed) _Front-end_ Add Trash title instead of !delete! (PR #597)
@@ -1012,7 +1013,7 @@ _Known issues #1106, #1107 and #1108_
   #483)
 - [x] (Fixed) _Back-end_ Fixed issue with Sony Lens Tamron lenses are displaying dashes (PR #483)
 - [x] (App) _Back-end_ UI update with storage folder is reverted after restart (PR #584 Issue #582)
-- [x] (Breaking change) _Back-end_ Dropped support for older Mac OS version: now 10.15+ is required
+- [x] (Breaking change) _Back-end_ Dropped support for older macOS version: now 10.15+ is required
   see:
 - [x] (Breaking change) Dropped support
   link: https://github.com/dotnet/core/blob/main/release-notes/3.1/3.1-supported-os.md
@@ -1066,8 +1067,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Added) _Back-end_ Add Application Insights logging for CLI Applications (Admin, Geo, Import,
   Synchronize, Thumbnail) (PR #552)
 - [x] (Changed) _Back-end_ Add dispose on parallel jobs (PR #552)
-- [x] (Added) _Back-end_ Add index for IX_ImportIndex_FileHash and IX_Credentials_Id_Identifier (PR
-  #555)
+- [x] (Added) _Back-end_ Add index for IX_ImportIndex_FileHash and `IX_Credentials_Id_Identifier` (
+  PR #555)
 - [x] (Added) _Back-end_ Fix for cache ManualSync when item is removed or added its now correct
   updated (PR #555)
 - [x] (Fixed) _Front-end_ Fix for Safari 14.x and newer that after close a modal, the scroll isn't
@@ -1082,7 +1083,7 @@ _Known issues #1106, #1107 and #1108_
 
 ## version 0.4.12 - 2021-11-04
 
-- [x] (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (
+- [x] (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non-valid passwords (
   PR #443 & #445 & #446)
 - [x] (Changed) _Back-end_ Database migration for AccessFailedCount, LockoutEnabled and LockoutEnd
   in Users table (PR #443 & #445)
@@ -1093,7 +1094,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed) _Back-end_ Dispose error on index page (Issue #424 / PR #449)
 - [x] (Added) _Back-end_ Support for `-software` search (issue #441 / PR #450)
 - [x] (Added) _Back-end_ Docker compose support (PR #469)
-- [x] (Change) _Front-end_ Remove Enzeme as framework for unittests and use react testing
+- [x] (Change) _Front-end_ Remove Enzeme as framework for unittests and use React testing
   framework (PR #463)
 - [x] (Change) _Back-end_ Retry for DiskWatcher (PR #479)
 - [x] (Change) _Back-end_ Max amount of retry for DiskWatcher when folders are not accessible (
@@ -1115,7 +1116,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Security) _Front-end_ Upgrade npm packages for clientapp/starskyapp (PR #431)
 - [x] (Changed) _Back-end_ Config order is documented in verbose help (add: -h -v to cli apps) (PR
   #432)
-- [x] (Changed) _Back-end_ When new, make more clear how to setup storageFolder path (PR #429)
+- [x] (Changed) _Back-end_ When new, make more clear how to set up storageFolder path (PR #429)
 - [x] (Fixed) _Back-end_ When download.geonames.org is down pick mirror (PR #434)
 - [x] (Added) _Back-end_ more logging for exiftool downloader (PR #434)
 - [x] (Added) _Back-end_ Fix websocket exception issues (PR #442 Issue #440 #436)
@@ -1163,7 +1164,7 @@ _Known issues #1106, #1107 and #1108_
 ## version 0.4.9 - 2021-06-17
 
 - [x] (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
-- [x] (Fixed) _Front-end_ Fix for keeps loading forever if use fileList (archive) fails (issue
+- [x] (Fixed) _Front-end_ Fix for keeps loading forever if you use fileList (archive) fails (issue
   #382 & PR #392)
 - [x] (Fixed) _Front-end_ Add retry/reload button in Application Exception page (PR #392)
 - [x] (Fixed) _Back-end_ Refactor Update validation to perform faster _(using a single query)_ (PR
@@ -1245,7 +1246,7 @@ _Known issues #1106, #1107 and #1108_
   no UI option yet (PR #302 Issue #251)
 - [x] (Fixed) _Front-end_ DetailView command click on close keeps loading (PR #324 Issue #316)
 - [x] (Changed) _Front-end_ Rename of 'Close' to 'Parent Folder' because its looks like closing a
-  window and it isn't the same (PR #324)
+  window, and it isn't the same (PR #324)
 
 ## version 0.4.5 - 2021-02-14
 
@@ -1271,9 +1272,9 @@ _Known issues #1106, #1107 and #1108_
 ## version 0.4.4 - 2021-01-10
 
 - [x] (Security) _App_ npm audit fix node_modules/ini 1.3.8
-- [x] (Fixed) _Front-end_ When updating tags in sidebar and refresh afterwards its now not the old
+- [x] (Fixed) _Front-end_ When updating tags in sidebar and refresh afterward its now not the old
   value anymore
-- [x] (Fixed) _App_ Starting from another user in Mac OS should work now
+- [x] (Fixed) _App_ Starting from another user in macOS should work now
 - [x] (Fixed) _Front-end_ Label copy (press c and v) does not save with titles - issue #248
 - [x] (Fixed) _Front-end_ update websocket data for other items outside view when receiving data
   bug - issue #265
@@ -1302,7 +1303,7 @@ _Known issues #1106, #1107 and #1108_
 
 - [x] (Changed) _Docs_ Update docs and remove old projects from docs
 - [x] (Security) _Frond-end_ Upgrade ClientApp CRA _(Create React App 4.0.1 2020-11-23)_
-- [x] (Security) _Frond-end_ Upgrade ClientApp Typescript version to 4.1.2
+- [x] (Security) _Frond-end_ Upgrade ClientApp TypeScript version to 4.1.2
 - [x] (Security) _Frond-end_ Upgrade ClientApp React version to 17.0.1
 - [x] (Added) _Front-end_ Add warning when Application fails for trash and search
 - [x] (Added) _Front-end_ Add menu text & Rename Collection mode to Show raw files
@@ -1328,7 +1329,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Added) _Back-end_ Notify realtime websockets when DiskWatcher detects changes
 - [x] (Added) _Back-end_ Notify other users when a file or folder is moved #212
 - [x] (Changed) _Back-end_ Importer does update the database when file copy happens #104
-- [x] (Fixed) _Back-end_ Item exist but not in folder cache, it now add this item to cache #228
+- [x] (Fixed) _Back-end_ Item exist but not in folder cache, it now adds this item to cache #228
 - [x] (Added) _Back-end_ Check if Exiftool exist before running the import CLI
 
 ## version 0.4.0 - 2020-11-14
@@ -1337,7 +1338,7 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 
 - [x] (Changed) _App_ Add styling to settings UI in App
 - [x] (Fixed) _Back-end_ Add extra catch to prevent sync issues when exif reading fails
-- [x] (Deprecated) _Back-end_ Json Sidecar format is very likely to change in future releases and be
+- [x] (Deprecated) _Back-end_ JSON Sidecar format is very likely to change in future releases and be
   incompatible
 - [x] (Added) _App_ Add extra delay to check for updates to avoid issues when local
 - [x] (Added) _App_ Add fix for selecting wrong domains to avoid an exception
@@ -1345,17 +1346,17 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
   done (this is fixed)
 - [x] (Security) _Back-end_ Upgrade .NET Core (TargetFramework) to 3.1.9 (using SDK 3.1.403)
 - [x] (Fixed) _Front-end_ Clean Front-end cache when moving file/renaming file
-- [x] (Fixed) _Front-end_ Change text when selecting an non existing filter combination
+- [x] (Fixed) _Front-end_ Change text when selecting a non-existing filter combination
 - [x] (Fixed) _Back-end_ Fix for dispose Errors in Query
 - [x] (Fixed) _Back-end_ Allow upload to folder with files that are uppercase
 - [x] (Fixed) _Back-end_ Database-item is now correct updated when you move an item to the root
   folder (/)
 - [x] (Security) _App_ Update Electron to 10.1.5 (Node 12.16.x and Chromium 85.0.x)
-- [x] (Added) _Back-end_ In the rename/move API When enable Collections, this files are also moved (
-  file to folder)
+- [x] (Added) _Back-end_ In the rename/move API When enable Collections, these files are also
+  moved (file to folder)
 - [x] (Added) _Back-end_ Xmp sidecar files are moved with gif/bmp/Raw/mp4 file types
-- [x] (Added) _Back-end_ In the rename API When enable Collections, this files are also moved (file
-  to deleted)
+- [x] (Added) _Back-end_ In the rename API When enable Collections, these files are also moved (file
+  to delete)
 - [x] (Deprecated) _App_ The current app-settings (so only the default app/remote location) are
   going to change.
   if you update those could be gone. but you could set them again
@@ -1366,24 +1367,25 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x] (Changed) _Back-end_ UseRealtime (sockets) backend option changed to enable by default
 - [x] (Fixed) _Front-end_ When updating files with realtime mode on, collection mode raws are shown
   after update
-- [x] (Added) _Back-end_ API to check if current version is the latest on github releases
+- [x] (Added) _Back-end_ API to check if current version is the latest on GitHub releases
 - [x] (Added) _Front-end_ Clientside check for latest version (click away for 4 days)
 - [x] (Added) _App_ Check for latest version and click away for 4 days
 
 ## version 0.4.0-beta.1 - 2020-10-31
 
-_First release on Github Releases_
+_First release on GitHub Releases_
 
-- [x] (Added) _App_ Press 'Command/Ctrl + E' to Edit a file with local tools (Mac OS & Windows)
+- [x] (Added) _App_ Press 'Command/Ctrl + E' to Edit a file with local tools (macOS & Windows)
 - [x] (Fixed) _Front-end_ Going next en prev in search detail view context is going more smooth
 - [x] (Fixed) _Back-end_ Allow websockets in CSP for Safari and old Firefox
-- [x] (Breaking change) _Back-end_ Change "/api/health/version" now its needed to upgrade StarskyApp
+- [x] (Breaking change) _Back-end_ Change "/api/health/version" now It's needed to upgrade
+  StarskyApp
   to 0.3 or newer
 - [x] (Added) _Back-end_ Add Sidecar API (xmp files) for getting by filepath
 - [x] (Added) _Back-end_ Uploading Sidecar API (xmp files)
 - [x] (Fixed) _Back-end_ Fix issue where rename did serve a 500 page after successful renaming
 - [x] (Fixed) _Back-end_ Uploading image with colorClass keeps it own colorClass instead of number
-  0/ grey
+  0/ gray
 - [x] (Fixed) _Back-end_ Remove file from temp folder after thumbnail upload (and copy it to
   thumbnailTemp)
 - [x] (Deprecated) _inotify-settings_ Plans to integrate inotify-wait in to the core product
@@ -1439,7 +1441,7 @@ _In the next major release websockets are used, please note when using a reverse
 - [x] (Added) _Back-end_ Realtime foundation project to support WebSocket updates (start on issue
   #75)
 - [x] (Added) _Back-end_ Importer asterisk does not always pick first item (fix issue #140)
-- [x] (Added) _Back-end_ Health Details are logged without Json Exception in Application Insights
+- [x] (Added) _Back-end_ Health Details are logged without JSON Exception in Application Insights
 - [x] (Added) _Front-end_ Add link to register page on login screen
 - [x] (Added) _Front-end_ Add link to login page on register screen
 - [x] (Added) _Front-end_ Add 'Move to Trash' to search pages
@@ -1468,7 +1470,7 @@ _In the next major release websockets are used, please note when using a reverse
 - [x] (Fixed) _Front-end_ Archive - When click on a Link in Archive, with command key it should
   ignore preloader
 - [x] (Fixed) _Front-end_ Modal Sync Manually - Folders with plus `+` in the url are synced
-- [x] (Fixed) _Front-end_ Modal Sync Manually - When ColorClass is selected, its now updating the
+- [x] (Fixed) _Front-end_ Modal Sync Manually - When ColorClass is selected, it's now updating the
   state to keep the selection
 - [x] (Fixed) _Front-end_ Modal Sync Manually - Sync Manual and Clears Cache cleans now also the
   client cache.
@@ -1491,7 +1493,7 @@ _In the next major release websockets are used, please note when using a reverse
   devices
 - [x] (Added) _Front-end_ Warning when video is not found
 - [x] (Added) _Front-end_ Warning when playback is not supported or not working
-- [x] (Added) _Back-end_ Download API has now default client side caching
+- [x] (Added) _Back-end_ Download API has now Defaulted client side caching
 - [x] (Added) _Front-end_ Add Preloader for ColorClass filter, only used when using this app on a
   slow server
 - [x] (Added) _Front-end_ Add updating parent items in the front-end cache
@@ -1500,7 +1502,7 @@ _In the next major release websockets are used, please note when using a reverse
 - [x] (Added) _Back-end_ Search - search for colorClass by indexer `--colorclass=1`
 - [x] (Added) _Front-end_ DetailView - Add fast copy for DetailView (press c to save tags, title and
   description)
-- [x] (Added) _Front-end_ DetailView - Add fast paste for DetailView (press v to overwrite tags,
+- [x] (Added) _Front-end_ DetailView - Add fast `paste` for DetailView (press v to overwrite tags,
   title and description)
 - [x] (Added) _Front-end_ DetailView - Show Notification dialog when Copy or Paste action happens
 - [x] (Fixed) _Front-end_ Search/DetailView - When going fast to the next/prev items this is
@@ -1539,7 +1541,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Added) _Back-end_ Update meta information for folders
 - [x] (Added) _Back-end_ Write component
 - [x] (Added) _Back-end_ Add read component (sync) (not implemented)
-- [x] (Added) _Back-end_ Move json sidecar file
+- [x] (Added) _Back-end_ Move JSON sidecar file
 - [x] (Added) _Back-end_ Directory sidecar write file
 - [x] (Fixed) _Back-end_ Unknown/GPX files sidecar files
 - [x] (Fixed) _Back-end_ GPX rename file does not work
@@ -1567,7 +1569,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
   scope.
 - [x] (Added) _Back-end_ `SYSTEM_TEXT_ENABLED` flag is enabled
 - [x] (Changed) _App_ update Electron to 9.0
-- [x] (Changed) _App_ remove inline javascript
+- [x] (Changed) _App_ remove inline JavaScript
 - [x] (Changed) _Back-end_ rename to "/api/account/change-secret"
 - [x] (Added) _Front-end_ Add preferences pane
 - [x] (Added) _Front-end_ Add first version of preferences-app-settings
@@ -1581,7 +1583,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Fixed) _Front-end_ Chrome 81+ Exif rotation on non-thumbnail images #48
 - [x] (Fixed) _Back-end_ Redirect with Prefix issue #49
 - [x] (Security) _Back-end_ Upgrade .NET Core (TargetFramework) to 3.1.4 (using SDK 3.1.300)
-- [x] (Fixed) _App_ Add playback for video in App Issue #53
+- [x] (Fixed) _App_ Add playback for video in-App Issue #53
 - [x] (Fixed) _App_ StarskyApp should see map Issue #52
 - [x] (Fixed) _Front-end_ Download folders with + (plus) not found Issue #54
 
@@ -1619,7 +1621,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Added) _Tools_ allow multiple inputs in `dropbox-importer`
 - [x] (Fixed) _Back-end_ QueueBackgroundWorkItem has now Application Insights Telemetry tracking for
   exceptions
-- [x] (Fixed) _Back-end_ Fix for imageFormat GPX. does now support without xml prefix
+- [x] (Fixed) _Back-end_ Fix for imageFormat GPX. does now support without XML prefix
 - [x] (Fixed) _Back-end_ Bugfix for Importer to allow .XMP files read and copy
 
 ## version 0.2.3 - 2020-05-04
@@ -1655,7 +1657,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Added) _Front-end_ Timezone issues in Safari
 - [x] (Feature) _Front-end_ Add menu for search
 - [x] (Fixed) _Front-end_ Collection support in update tags / ColorClassSelect
-- [x] (Fixed) _Front-end_ navigator.language issue in Safari
+- [x] (Fixed) _Front-end_ `navigator.language` issue in Safari
 - [x] (Changed) _Front-end_ use `starsky` prefix in api urls
 - [x] (Fixed) _Front-end_ use `starsky` prefix only when needed
 - [x] (Fixed) _Back-end_ Cookie path fix for stuck in 'Do you want to log out?' screen
@@ -1727,7 +1729,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (feature) _Back-end_ shutterSpeed XMP in file read/write support
 - [x] (feature) _Back-end_ isoSpeed XMP in file read/write support
 - [x] (feature) _Back-end_ focalLength XMP in file read/write support
-- [x] (bugfix) _Back-end_ search fix bug where Make/Model is giving a Exception (fixed)
+- [x] (bugfix) _Back-end_ search fix bug where Make/Model is giving an Exception (fixed)
 - [x] (bugfix) _Front-end_ clientside bug dateTime is not displayed correct
 
 ## version 0.1.16 - 2020-02-23
@@ -1776,7 +1778,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (bugfix) _Front-end_ translations in containers/search, containers/trash, search, trash and
   trash-page
 - [x] (bugfix) _Front-end_ translations in menu-trash and modal-export (isProcessing ===
-  ProcessingState.server)
+  `ProcessingState.server`)
 - [x] (feature) _Front-end_ tags on folder change to two line
 - [x] (feature) _Front-end_ _Back-end_ Health view, to make more clear when paths are configured
   right
@@ -1803,7 +1805,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (feature) _Front-end_ Move file in menu
 - [x] (bugfix) _API_ fix various issues in `/api/rename`
 - [x] (remove) _General_ starskyApp content
-- [x] (docs) _General_ add html generation to build process
+- [x] (docs) _General_ add HTML generation to build process
 - [x] (remove) _API_ only the retryThumbnail is removed `api/thumbnail?retryThumbnail=true`  
   (remove thumbnail if corrupt) due public facing
 - [x] (remove) _Front-end_ search replace is no longer a beta feature, so no feature toggle
@@ -1836,12 +1838,12 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (change) _Front-end_ Remove V1 from main menu
 - [x] (feature) _API_ Add new endpoint `/api/search/relativeObjects`
 - [x] (bugfix) _Front-end_ change default outline for Chrome/Safari
-- [x] (bugfix) _Front-end_ fix document.title undefined error
+- [x] (bugfix) _Front-end_ fix `document.title` undefined error
 - [x] (bugfix) _Front-end_ fix issue where on empty search query a sidebar is shown
-- [x] (bugfix) _Front-end_ When import a non supported image Ok is shown
+- [x] (bugfix) _Front-end_ When import a non-supported image Ok is shown
 - [x] (feature) _Front-end_ Show GPX Files with a map (powered by leaflet/openstreet maps)
 - [x] (change) _Back-end_ **Breaking change** Rename suggest API from `/suggest` to `/api/suggest`
-- [x] (bugfix) _Front-end_ Rotation in Detailview on iPad OS 13+ is working (fixed)
+- [x] (bugfix) _Front-end_ Rotation in DetailView on iPadOS 13+ is working (fixed)
 - [x] (feature) _API_ Add is Valid Filename check on rename API (`/api/rename`)
 
 ## version 0.1.10 - 2019-12-15
@@ -1849,9 +1851,9 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (bugfix) Archive to After pressing 'Apply' the updates are not shown
 - [x] (version) _Front-end_ Upgrade ClientApp from React 16.9.0 to 16.9.15 _(Create React App 3.3.0,
   5 Dec 2019)_
-- [x] (bugfix) _Front-end_ Front-end for Rename files (in detailview)
+- [x] (bugfix) _Front-end_ Rename files (in `detailview`)
 - [x] (feature) _Front-end_ (front-end) 'Rotate to Right'
-- [x] (bugfix) _Front-end_ Improve Unit test coverage (at least 80% on coverage-report _561 mstest
+- [x] (bugfix) _Front-end_ Improve Unit test coverage (at least 80% on coverage-report _561 `mstest`
   and 271 jest tests_)
 - [] (bug) _Front-end_ `/starsky` paths are not supported **not fixed**
 
@@ -1859,12 +1861,12 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 
 _Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
 
-- [x] use for example '3 hours' instead of yesterday in detailview
+- [x] use for example '3 hours' instead of yesterday in `detailview`
 - [x] (bugfix) EventTarget issue (Safari) when using /import
-- [x] (azure-pipeline) add yaml file to replace classic build pipeline
+- [x] (azure-pipeline) add YAML file to replace classic build pipeline
 - [x] Indexes are working now for MySQL at the first time run
 - [x] Upgrade to .NET Core & EF Core 3.1-preview3 (EF Core 3.0 is missing PredicateBuilder support)
-- [x] (bugfix) 23:00 o'clock/first of month date.spec unittest
+- [x] (bugfix) 23:00 o'clock/first of month `date.spec` unittest
 - [] (Add warning) (bug) for iOS Safari only when using .local domains login fails
   (work around use ip-addresses) (update to iOS13)
 - [x] Update build pipeline to support multiple runtimes in 1 run
@@ -1877,7 +1879,7 @@ _Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
 - [x] Login in V2 layout
 - (bugfix) Catch is used for example the region VA (Vatican City)
 - [x] (bugfix) when offline geoReverseLookup creates an 0 byte zip
-- [x] (bugfix) (UI) in archive mode, selecting and deselecting ColorClass does not include filepaths
+- [x] (bugfix) (UI) in archive mode, selecting and deselecting ColorClass does include `filepaths`
   in request.
 - [x] (bugfix) (UI) when pressing force sync and renew now the view is updated
 - [x] (tools) add Dropbox Import tool
@@ -1897,7 +1899,7 @@ _Works with .NET Core SDK 3.0.100_
 - (bugfix) LastEdited (in front-end) is now also shown when there is no Datetime
 - (bugfix) after account is created the redirect to a 404 page
 - (bugfix) (layout v1) import to the right controller
-- (alpha api/subject to change json output) /api/health to check the status of the application
+- (alpha api/subject to change JSON output) /api/health to check the status of the application
 - **Breaking change** rename of `starsky-node-client` → `starsky-tools`
 - (starsky-tools/localtunnel) to test local builds
 - starsky-tools/thumbnail, added auto cleanup, allow ranges e.g. 1-20 ago
@@ -1946,7 +1948,7 @@ _Works with .NET Core SDK 3.0.100_
 - Added `ExifStatus.Deleted` including in `ReplaceService`
 - **Breaking API change** from `/search/` to `/api/search`
 - **Breaking API change** from `/search/trash` to `/api/search/trash`
-- **API change** change number of search results per page from 20 to 120
+- **API change** number of search results per page from 20 to 120
 - _Legacy starsky.netFramework_ 0.1.6 release included
 
 ## version 0.1.5.9 - 2019-08-19
@@ -2002,7 +2004,7 @@ _Version number does not match SemVer_
 - bugfix: `/api?f=detailView` pages are now working
 - suggestions are part of the warmup script
 - bugfix: spaces where not rendered correctly during the 'update' call in archive view
-- **bugfix: you could login without password**
+- **bugfix: you could log in without password**
 
 ## version 0.1.5.4 - 2019-04-24
 
@@ -2034,7 +2036,7 @@ _Version number does not match SemVer_
 - [x] check: StarskySyncCli -t (thumbnail service)
 - [x] check: /api/delete
 - [x] check: /api/download photo
-- [x] check: xmpSync for exiftool
+- [x] check: `xmpSync` for exiftool
 - [x] check: starskyWebHtmlCli
 - [x] check: ResizeOverlayImage in webHtmlCli
 - [x] check: if (profile.MetaData) // todo: check if works
@@ -2044,11 +2046,11 @@ _Version number does not match SemVer_
 ## version 0.1.5.2 - 2019-03-22
 
 - exifTool implementation write bug fixed
-- [x] Performance upgrade xmp/tiff files (does not check filehash again)
+- [x] Performance upgrade xmp/tiff files (does not check file hash again)
 - refactor xmp/exif module to support iStorage
-- bugfix to searching filehashes with null content
+- bugfix to searching file hashes with null content
 - include test with incomplete xmp file
-- ExifToolImportXmpCreate in appsettings
+- `ExifToolImportXmpCreate` in `appsettings`
 - Bugfix / bug fix for: issue where import with spaces creates multiple items in the database
 - Already exist: config scheme overwrite feature for command line e.g. --scheme:/yyyy
 - _Legacy starsky.netFramework_ 0.1.5.2 release included
@@ -2064,7 +2066,7 @@ _Version number does not match SemVer_
 - add partial support for || (or) queries using search
     - the type datetime e.g. `-datetime=1 || -datetime=2` is not supported yet
 - bugfix to large int relative to today
-- add support for not queries `-file` to ignore the word file
+- add support for not queries `-file` to ignore the Word file
 - performance improvements to importer
 - .NET Core to 2.1.8 (TargetFramework) (update to dotnet-sdk-2.2.104)
 - input args changed: --recursive (typo)
@@ -2073,14 +2075,14 @@ _Version number does not match SemVer_
 - Search: performance update for searching multiple tags
 - Replace API introduced, search and replace in strings
 - Done some IStorage refactorings, but not complete yet
-- Next/Prev links are now served by backend code to avoid when javascript is not loaded, your
+- Next/Prev links are now served by backend code to avoid when JavaScript is not loaded, your
   selection is reset
 - Add Collections to DetailView model
 - Add more Update/Replace Tests
 
 ## version 0.1.4 - 2019-03-01
 
-- fix issue where login fails results in a error 500
+- fix issue where login fails results in an error 500
 - http push headers update (add /api/info to push on detailView)
 - Initial release of the `sync/rename` api (not implemented in the front-end)
 - Mark FilesHelper as deprecated, use IStorage now
@@ -2099,8 +2101,8 @@ _Version number does not match SemVer_
 
 ## version 0.1.2 - 2019-02-01
 
-- starskywebftpcli
-- add json export for starskyWebHtmlCli
+- `starskywebftpcli`
+- add JSON export for starskyWebHtmlCli
 - bugfix: migrations
 - change to runtime: 2.1.7
 - add 'import/FromUrl' api
