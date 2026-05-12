@@ -77,6 +77,22 @@ public class FakeIImportQuery : IImportQuery
 		return newFakeList;
 	}
 
+	public List<ImportIndexItem> GetAll()
+	{
+		var newFakeList = new List<ImportIndexItem>();
+		foreach ( var exist in _exist )
+		{
+			newFakeList.Add(new ImportIndexItem
+			{
+				Status = ImportStatus.Ok,
+				FilePath = exist,
+				FileHash = exist
+			});
+		}
+
+		return newFakeList;
+	}
+
 	public async Task<List<ImportIndexItem>> AddRangeAsync(
 		List<ImportIndexItem> importIndexItemList)
 	{

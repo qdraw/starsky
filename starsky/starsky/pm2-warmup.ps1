@@ -11,9 +11,9 @@ $TestUrl = "http://localhost:$port"
 Write-Output "Starting"
 $MaxAttempts = 30
 
-If (![string]::IsNullOrWhiteSpace($TestUrl)) {
+if (-not [string]::IsNullOrWhiteSpace($TestUrl)) {
     Write-Output "Making request to $TestUrl"
-    Try {
+    try {
         $stopwatch = [Diagnostics.Stopwatch]::StartNew()
         # Allow redirections on the warm up
         $response = Invoke-WebRequest -UseBasicParsing $TestUrl -MaximumRedirection 10
@@ -22,9 +22,9 @@ If (![string]::IsNullOrWhiteSpace($TestUrl)) {
         $stopwatchMilliSeconds = $Stopwatch.ElapsedMilliseconds
         Write-Output "$statusCode Warmed Up Site $TestUrl in $stopWatchMilliSeconds ms"
     } catch {
-        $_.Exception|format-list -force
+        $_.Exception|Format-List -Force
     }
-    For ($i = 0; $i -lt $MaxAttempts; $i++) {
+    for ($i = 0; $i -lt $MaxAttempts; $i++) {
         try {
             Write-Output "Checking Site"
             $stopwatch = [Diagnostics.Stopwatch]::StartNew()
@@ -34,7 +34,7 @@ If (![string]::IsNullOrWhiteSpace($TestUrl)) {
             $statusCode = [int]$response.StatusCode
             $stopwatchMilliSeconds = $Stopwatch.ElapsedMilliseconds
             Write-Output "$statusCode Second request took $stopWatchMilliSeconds ms"
-            If ($statusCode -ge 200 -And $statusCode -lt 400) {
+            if ($statusCode -ge 200 -And $statusCode -lt 400) {
                 break;
             }
             Start-Sleep -s 2
@@ -43,12 +43,12 @@ If (![string]::IsNullOrWhiteSpace($TestUrl)) {
             Start-Sleep -s 30
         }
     }
-    If ($statusCode -ge 200 -And $statusCode -lt 400) {
+    if ($statusCode -ge 200 -and $statusCode -lt 400) {
         # YES!, it worked
-    } Else {
+    } else {
         throw "Warm up failed for " + $TestUrl
     }
-} Else {
+} else {
     Write-Output "No TestUrl configured for this machine."
 }
 Write-Output "Done"

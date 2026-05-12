@@ -43,7 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.19 - _(Unreleased)_ - 2026-?-? {#v0.7.19}
 
-- [x] (Fixed) _Back-end_ Allow ApplicationPath to be null to allow removal in settings (PR )
+- [x] (Added) _Back-end_ Exporting and importing the ImportIndex database (PR #3058)
+- [x] (Fixed) _Back-end_ Allow ApplicationPath to be null to allow removal in settings (PR #3057)
 - [x] (Fixed) _Front-end_ Code quality improvements (PR #3049 #3055 #3054)
 - [x] (Added) _Back-end_ Support for old Canon CR2 Raws (EOS 10D, 20D, 30D) (PR #3047)
 

@@ -14,7 +14,7 @@ param(
 # for powershell 5
 switch ([System.Environment]::OSVersion.Platform)
 {
-    'Win32NT' { 
+    'Win32NT' {
         New-Variable -Option Constant -Name IsWindows -Value $True -ErrorAction SilentlyContinue
         New-Variable -Option Constant -Name IsLinux  -Value $false -ErrorAction SilentlyContinue
         New-Variable -Option Constant -Name IsMacOs  -Value $false -ErrorAction SilentlyContinue
@@ -22,20 +22,20 @@ switch ([System.Environment]::OSVersion.Platform)
 }
 
 if ($help -eq $True) {
-    write-host "help"
-    write-host "-port 4000"
-    write-host "-anyWhere"
-    write-host "-output folder_path"
-    write-host "-serviceName name_service"
-    write-host "-exeName starsky.exe"
-    write-host "-remove (to remove the service, keep files on disk)"
+    Write-Host "help"
+    Write-Host "-port 4000"
+    Write-Host "-anyWhere"
+    Write-Host "-output folder_path"
+    Write-Host "-serviceName name_service"
+    Write-Host "-exeName starsky.exe"
+    Write-Host "-remove (to remove the service, keep files on disk)"
     exit 0
 }
 
-write-host "-port"$port "-anywhere"$anyWhere "-serviceName"$serviceName "-noTelemetry"$noTelemetry
+Write-Host "-port"$port "-anywhere"$anyWhere "-serviceName"$serviceName "-noTelemetry"$noTelemetry
 
 if($IsWindows -eq $False) {
-  Write-host "This script is currently for windows only"
+  Write-Host "This script is currently for windows only"
   exit 0
 }
 
@@ -47,12 +47,12 @@ If($outPut -eq "") {
 $exePath = Join-Path $outPut $exeName
 
 if ((Test-Path -Path $exePath) -eq $false) {
-    write-host "-output path doesn't exist." $exePath
-    write-host "end script due fail"
+    Write-Host "-output path doesn't exist." $exePath
+    Write-Host "end script due fail"
     exit 1
-} 
+}
 
-write-host "next close windows of mmc.exe"
+Write-Host "next close windows of mmc.exe"
 Invoke-Expression -Command "taskkill /F /IM mmc.exe"
 
 
@@ -81,27 +81,27 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
         # using WMI to remove Windows service because PowerShell does not have CmdLet for this
         $serviceToRemove = Get-WmiObject -Class Win32_Service -Filter "name='$localServiceName'"
         $id = $serviceToRemove   |  Select-Object -ExpandProperty ProcessId
-     
+
         Stop-Process -ID $id -Force -ErrorAction SilentlyContinue
 
-        write-host "next delete:"
+        Write-Host "next delete:"
 
         $serviceToRemove.delete()
         #  for powershell 6+
         # Remove-Service -Name ServiceName
         # or sc.exe delete ServiceName
         Write-Host "Service removed: $localServiceName"
-        
+
         if ($localRemove) {
             Write-Host "remove flag used so done now"
             return;
         }
     }
 
-    # if password is empty, create a dummy one to allow have credentias for system accounts: 
+    # if password is empty, create a dummy one to allow have credentias for system accounts:
     #NT AUTHORITY\LOCAL SERVICE
     #NT AUTHORITY\NETWORK SERVICE
-    if ($password -eq "") 
+    if ($password -eq "")
     {
         #$secpassword = (new-object System.Security.SecureString)
         # Bug detected by @GaTechThomas
@@ -153,9 +153,9 @@ If($noTelemetry -eq $true) {
      $cmdArgsAdd += " --app:enablePackageTelemetry=False"
 }
 
-write-host "args: "$cmdArgsAdd
+Write-Host "args: "$cmdArgsAdd
 
 ReinstallService $serviceName $exePath $cmdArgsAdd "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App" $remove
 
-write-host "done"
+Write-Host "done"
 exit 0

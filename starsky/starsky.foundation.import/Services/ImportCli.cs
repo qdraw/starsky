@@ -26,7 +26,8 @@ public class ImportCli
 
 	public ImportCli(IImport importService, AppSettings appSettings, IConsole console,
 		IWebLogger logger, IExifToolDownload exifToolDownload,
-		IGeoFileDownload geoFileDownload, ICameraStorageDetector cameraStorageDetector)
+		IGeoFileDownload geoFileDownload, ICameraStorageDetector cameraStorageDetector
+	)
 	{
 		_importService = importService;
 		_appSettings = appSettings;
@@ -53,6 +54,16 @@ public class ImportCli
 
 		_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
 
+		var importSettings = new ImportSettingsModel
+		{
+			DeleteAfter = ArgsHelper.GetMove(args),
+			RecursiveDirectory = ArgsHelper.NeedRecursive(args),
+			IndexMode = ArgsHelper.GetIndexMode(args),
+			ColorClass = ArgsHelper.GetColorClass(args),
+			ConsoleOutputMode = ArgsHelper.GetConsoleOutputMode(args),
+			Origin = ArgsHelper.GetOrigin(args)
+		};
+
 		var inputPathListFormArgs = new ArgsHelper(_appSettings).GetPathListFormArgs(args).ToList();
 		if ( inputPathListFormArgs.Count == 0 && ArgsHelper.NeedCamera(args) )
 		{
@@ -63,6 +74,7 @@ public class ImportCli
 				                       "If not you only importing from the root " +
 				                       "of the camera storage.");
 			}
+
 			var cameraPaths = _cameraStorageDetector.FindCameraStorages().ToList();
 			inputPathListFormArgs.AddRange(cameraPaths);
 			if ( cameraPaths.Count == 0 )
@@ -84,16 +96,6 @@ public class ImportCli
 				_console.WriteLine($">> import: {inputPath}");
 			}
 		}
-
-		var importSettings = new ImportSettingsModel
-		{
-			DeleteAfter = ArgsHelper.GetMove(args),
-			RecursiveDirectory = ArgsHelper.NeedRecursive(args),
-			IndexMode = ArgsHelper.GetIndexMode(args),
-			ColorClass = ArgsHelper.GetColorClass(args),
-			ConsoleOutputMode = ArgsHelper.GetConsoleOutputMode(args),
-			Origin = ArgsHelper.GetOrigin(args)
-		};
 
 		if ( _appSettings.IsVerbose() )
 		{

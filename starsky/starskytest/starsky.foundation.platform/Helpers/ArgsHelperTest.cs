@@ -513,6 +513,8 @@ public sealed class ArgsHelperTest
 				console)
 			.NeedHelpShowDialog();
 		Assert.Contains("Importer", console.WrittenLines[0]);
+		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains("--importindex-export-json == parameter: (string) ; full path of output json file")));
+		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains("--importindex-import-json == parameter: (string) ; full path of input json file")));
 	}
 
 	[TestMethod]
@@ -717,5 +719,37 @@ public sealed class ArgsHelperTest
 		const string expected = "osx-arm64,osx-x64";
 		var result = ArgsHelper.GetRuntimes(["--runtime osx-arm64,osx-x64"]);
 		Assert.AreEqual(expected, string.Join(",", result));
+	}
+
+	[TestMethod]
+	public void ArgsHelper_GetImportIndexExportJsonPath()
+	{
+		var args = new List<string> { "--importindex-export-json", "/tmp/export.json" }.ToArray();
+		var value = ArgsHelper.GetImportIndexExportJsonPath(args);
+		Assert.AreEqual("/tmp/export.json", value);
+	}
+
+	[TestMethod]
+	public void ArgsHelper_GetImportIndexImportJsonPath()
+	{
+		var args = new List<string> { "--importindex-import-json", "/tmp/import.json" }.ToArray();
+		var value = ArgsHelper.GetImportIndexImportJsonPath(args);
+		Assert.AreEqual("/tmp/import.json", value);
+	}
+
+	[TestMethod]
+	public void ArgsHelper_GetImportIndexImportJsonPath_Fallback()
+	{
+		var args = new List<string> { "--importindex-import-json" }.ToArray();
+		var value = ArgsHelper.GetImportIndexImportJsonPath(args);
+		Assert.AreEqual(string.Empty, value);
+	}
+
+	[TestMethod]
+	public void ArgsHelper_GetImportIndexExportJsonPath_Fallback()
+	{
+		var args = new List<string> { "--importindex-export-json" }.ToArray();
+		var value = ArgsHelper.GetImportIndexExportJsonPath(args);
+		Assert.AreEqual(string.Empty, value);
 	}
 }
