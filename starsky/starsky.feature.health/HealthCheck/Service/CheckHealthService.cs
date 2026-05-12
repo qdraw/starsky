@@ -7,7 +7,6 @@ using starsky.feature.health.HealthCheck.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
-using starsky.project.web.ViewModels;
 
 namespace starsky.feature.health.HealthCheck.Service;
 

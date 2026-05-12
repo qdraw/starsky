@@ -8,60 +8,46 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.database.Query
+namespace starsky.foundation.database.Query;
+
+public class QueryFactory(
+	SetupDatabaseTypes? setupDatabaseTypes,
+	IQuery? query,
+	IMemoryCache? cache,
+	AppSettings? appSettings,
+	IServiceScopeFactory? serviceScopeFactory,
+	IWebLogger? logger)
 {
-	public class QueryFactory
+	public IQuery? Query()
 	{
-		private readonly SetupDatabaseTypes? _setupDatabaseTypes;
-		private readonly IQuery? _query;
-		private readonly IMemoryCache? _cache;
-		private readonly AppSettings? _appSettings;
-		private readonly IServiceScopeFactory? _serviceScopeFactory;
-		private readonly IWebLogger? _logger;
-
-		public QueryFactory(SetupDatabaseTypes? setupDatabaseTypes, IQuery? query,
-			IMemoryCache? cache, AppSettings? appSettings,
-			IServiceScopeFactory? serviceScopeFactory, IWebLogger? logger)
+		if ( query == null )
 		{
-			_setupDatabaseTypes = setupDatabaseTypes;
-			_query = query;
-			_cache = cache;
-			_appSettings = appSettings;
-			_serviceScopeFactory = serviceScopeFactory;
-			_logger = logger;
+			return null!;
 		}
 
-		public IQuery? Query()
+		var context = setupDatabaseTypes?.BuilderDbFactory();
+		if ( query.GetType() == typeof(Query) && context != null && appSettings != null &&
+		     logger != null )
 		{
-			if ( _query == null )
-			{
-				return null!;
-			}
-
-			var context = _setupDatabaseTypes?.BuilderDbFactory();
-			if ( _query.GetType() == typeof(Query) && context != null && _appSettings != null &&
-				 _logger != null )
-			{
-				return new Query(context, _appSettings, _serviceScopeFactory!, _logger, _cache);
-			}
-
-			// FakeIQuery should skip creation
-			var isAnyContentIncluded =
-				_query.GetReflectionFieldValue<List<FileIndexItem>?>("_content")?.Count >= 1;
-			if ( !isAnyContentIncluded )
-			{
-				// ApplicationDbContext context, 
-				// 	AppSettings appSettings,
-				// IServiceScopeFactory scopeFactory, 
-				// 	IWebLogger logger, IMemoryCache memoryCache = null
-
-				return Activator.CreateInstance(_query.GetType(), context,
-					_appSettings, _serviceScopeFactory, _logger,
-					_cache) as IQuery;
-			}
-
-			_logger?.LogInformation("FakeIQuery _content detected");
-			return _query;
+			return new Query(context, appSettings, serviceScopeFactory!, logger, cache);
 		}
+
+		// FakeIQuery should skip creation
+		var isAnyContentIncluded =
+			query.GetReflectionFieldValue<List<FileIndexItem>?>("_content")?.Count >= 1;
+		if ( !isAnyContentIncluded )
+		{
+			// ApplicationDbContext context, 
+			// 	AppSettings appSettings,
+			// IServiceScopeFactory scopeFactory, 
+			// 	IWebLogger logger, IMemoryCache memoryCache = null
+
+			return Activator.CreateInstance(query.GetType(), context,
+				appSettings, serviceScopeFactory, logger,
+				cache) as IQuery;
+		}
+
+		logger?.LogInformation("FakeIQuery _content detected");
+		return query;
 	}
 }

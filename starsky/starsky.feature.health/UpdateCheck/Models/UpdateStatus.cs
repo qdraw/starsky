@@ -1,12 +1,11 @@
-namespace starsky.feature.health.UpdateCheck.Models
+namespace starsky.feature.health.UpdateCheck.Models;
+
+public enum UpdateStatus
 {
-	public enum UpdateStatus
-	{
-		Disabled,
-		InputNotValid,
-		HttpError,
-		NoReleasesFound,
-		NeedToUpdate,
-		CurrentVersionIsLatest
-	}
+	Disabled,
+	InputNotValid,
+	HttpError,
+	NoReleasesFound,
+	NeedToUpdate,
+	CurrentVersionIsLatest
 }

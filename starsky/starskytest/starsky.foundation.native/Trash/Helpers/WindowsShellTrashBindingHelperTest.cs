@@ -173,7 +173,7 @@ public class WindowsShellTrashBindingHelperTest
 		var (hResult, info, pShQueryRbInfo) = WindowsShellTrashBindingHelper
 			.SHQueryRecycleBinWrapper("ZZ:\\");
 
-		// Shell32.dll is not available on Linux or Mac OS
+		// Shell32.dll is not available on Linux or macOS
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
 			Assert.IsNull(hResult);
@@ -216,7 +216,7 @@ public class WindowsShellTrashBindingHelperTest
 
 		Assert.AreEqual(0, items);
 
-		// Shell32.dll is not available on Linux or Mac OS
+		// Shell32.dll is not available on Linux or macOS
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
 			Assert.IsFalse(driveHasBin);
@@ -234,13 +234,13 @@ public class WindowsShellTrashBindingHelperTest
 		var (driveHasBin, items, info) = WindowsShellTrashBindingHelper
 			.DriveHasRecycleBin();
 
-		// Shell32.dll is not available on Linux or Mac OS
+		// Shell32.dll is not available on Linux or macOS
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
 			Assert.AreEqual(0, items);
 			Assert.IsFalse(driveHasBin);
 			Assert.Contains("Unable to load shared library", info);
-			Assert.Inconclusive("Shell32.dll is not available on Linux or Mac OS");
+			Assert.Inconclusive("Shell32.dll is not available on Linux or macOS");
 			return;
 		}
 

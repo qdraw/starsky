@@ -3,16 +3,15 @@ using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.database.Models;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeIGeoIndexGpx : IGeoIndexGpx
 {
-	public class FakeIGeoIndexGpx : IGeoIndexGpx
+	public int Count { get; set; }
+
+	public Task<List<FileIndexItem>> LoopFolderAsync(List<FileIndexItem> metaFilesInDirectory)
 	{
-		public int Count { get; set; }
-		
-		public Task<List<FileIndexItem>> LoopFolderAsync(List<FileIndexItem> metaFilesInDirectory)
-		{
-			Count++;
-			return Task.FromResult(new List<FileIndexItem>());
-		}
+		Count++;
+		return Task.FromResult(new List<FileIndexItem>());
 	}
 }

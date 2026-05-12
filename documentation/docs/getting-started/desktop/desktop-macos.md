@@ -1,4 +1,4 @@
-# Desktop Mac OS
+# Desktop macOS
 
 # Do I have Apple Silicon or Intel?
 

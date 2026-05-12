@@ -1,9 +1,8 @@
-namespace starsky.foundation.database.Models
+namespace starsky.foundation.database.Models;
+
+public enum ImageStabilisationType
 {
-	public enum ImageStabilisationType
-	{
-		Unknown = 0,
-		On = 1,
-		Off = 2
-	}
+	Unknown = 0,
+	On = 1,
+	Off = 2
 }

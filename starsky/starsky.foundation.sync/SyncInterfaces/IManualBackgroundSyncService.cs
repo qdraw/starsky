@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 
-namespace starsky.foundation.sync.SyncInterfaces
+namespace starsky.foundation.sync.SyncInterfaces;
+
+public interface IManualBackgroundSyncService
 {
-	public interface IManualBackgroundSyncService
-	{
-		Task<FileIndexItem.ExifStatus> ManualSync(string subPath);
-	}
+	Task<FileIndexItem.ExifStatus> ManualSync(string subPath);
 }

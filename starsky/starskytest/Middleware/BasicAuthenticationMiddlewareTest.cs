@@ -20,88 +20,81 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.Middleware
+namespace starskytest.Middleware;
+
+[TestClass]
+public sealed class BasicAuthenticationMiddlewareTest
 {
-	[TestClass]
-	public sealed class BasicAuthenticationMiddlewareTest
+	private readonly RequestDelegate _onNext;
+	private readonly Task _onNextResult = Task.FromResult(0);
+	private readonly IServiceProvider _serviceProvider;
+	private int _requestId;
+
+	public BasicAuthenticationMiddlewareTest()
 	{
-		private readonly IServiceProvider _serviceProvider;
-		private readonly Task _onNextResult = Task.FromResult(0);
-		private readonly RequestDelegate _onNext;
-		private int _requestId;
-        
-		public BasicAuthenticationMiddlewareTest()
+		var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase()
+			.BuildServiceProvider();
+
+		var services = new ServiceCollection();
+		services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+		services.AddOptions();
+		services
+			.AddDbContext<ApplicationDbContext>(b =>
+				b.UseInMemoryDatabase("test1234").UseInternalServiceProvider(efServiceProvider));
+
+		services.AddIdentity<ApplicationUser, IdentityRole>()
+			.AddEntityFrameworkStores<ApplicationDbContext>();
+
+		services.AddMvc();
+		services.AddSingleton<IAuthenticationService, NoOpAuth>();
+		services.AddSingleton<IUserManager, UserManager>();
+		services.AddSingleton<AppSettings, AppSettings>();
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
+
+		services.AddLogging();
+
+		// IHttpContextAccessor is required for SignInManager, and UserManager
+		var context = new DefaultHttpContext();
+		services.AddSingleton<IHttpContextAccessor>(
+			new HttpContextAccessor { HttpContext = context });
+
+		_serviceProvider = services.BuildServiceProvider();
+
+		_onNext = _ =>
 		{
-			var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
+			Interlocked.Increment(ref _requestId);
+			return _onNextResult;
+		};
+	}
 
-			var services = new ServiceCollection();
-			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-			services.AddOptions();
-			services
-				.AddDbContext<ApplicationDbContext>(b =>
-					b.UseInMemoryDatabase("test1234").UseInternalServiceProvider(efServiceProvider));
-			
-			services.AddIdentity<ApplicationUser, IdentityRole>()
-				.AddEntityFrameworkStores<ApplicationDbContext>();
-
-			services.AddMvc();
-			services.AddSingleton<IAuthenticationService, NoOpAuth>();
-			services.AddSingleton<IUserManager, UserManager>();
-			services.AddSingleton<AppSettings, AppSettings>();
-			services.AddSingleton<IWebLogger, FakeIWebLogger>();
-
-			services.AddLogging();
-
-			// IHttpContextAccessor is required for SignInManager, and UserManager
-			var context = new DefaultHttpContext();
-			services.AddSingleton<IHttpContextAccessor>(
-				new HttpContextAccessor()
-				{
-					HttpContext = context,
-				});
-
-			_serviceProvider = services.BuildServiceProvider();
-            
-			_onNext = _ =>
-			{
-				Interlocked.Increment(ref _requestId);
-				return _onNextResult;
-			};
+	[TestMethod]
+	public async Task BasicAuthenticationMiddlewareLoginTest()
+	{
+		// Arrange
+		var iUserManager = _serviceProvider.GetRequiredService<IUserManager>();
+		var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+		if ( httpContext == null )
+		{
+			throw new WebException("missing httpContext");
 		}
 
-		[TestMethod]
-		public async Task BasicAuthenticationMiddlewareLoginTest()
-		{
-	        
-			// Arrange
-			var iUserManager = _serviceProvider.GetRequiredService<IUserManager>();
-			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-			if ( httpContext == null )
-			{
-				throw new WebException("missing httpContext");
-			}
-            
-			const string userId = "TestUserA";
-			var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
-			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-            
-			httpContext.RequestServices = _serviceProvider;
-			
-			// Arange > new account
+		const string userId = "TestUserA";
+		var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, userId) };
+		httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
-			await iUserManager.SignUpAsync("test", "email", "test", "test");
+		httpContext.RequestServices = _serviceProvider;
 
-			// base64 dGVzdDp0ZXN0 > test:test
-			httpContext.Request.Headers.Authorization = "Basic dGVzdDp0ZXN0";
-                
-			// Call the middleware app
-			var basicAuthMiddleware = new BasicAuthenticationMiddleware(_onNext);
-			await basicAuthMiddleware.Invoke(httpContext);
-            
-			Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
+		// Arange > new account
 
-		}
-        
-        
+		await iUserManager.SignUpAsync("test", "email", "test", "test");
+
+		// base64 dGVzdDp0ZXN0 > test:test
+		httpContext.Request.Headers.Authorization = "Basic dGVzdDp0ZXN0";
+
+		// Call the middleware app
+		var basicAuthMiddleware = new BasicAuthenticationMiddleware(_onNext);
+		await basicAuthMiddleware.Invoke(httpContext);
+
+		Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
 	}
 }

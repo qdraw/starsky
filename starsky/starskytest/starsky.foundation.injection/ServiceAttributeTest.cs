@@ -1,15 +1,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.injection;
 
-namespace starskytest.starsky.foundation.injection
+namespace starskytest.starsky.foundation.injection;
+
+[TestClass]
+public sealed class ServiceAttributeTest
 {
-	[TestClass]
-	public sealed class ServiceAttributeTest
+	[TestMethod]
+	public void ServiceAttribute_defaultOption()
 	{
-		[TestMethod]
-		public void ServiceAttribute_defaultOption()
-		{
-			Assert.AreEqual(InjectionLifetime.Scoped,new ServiceAttribute().InjectionLifetime);
-		}
+		Assert.AreEqual(InjectionLifetime.Scoped, new ServiceAttribute().InjectionLifetime);
 	}
 }

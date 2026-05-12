@@ -1,10 +1,9 @@
-namespace starsky.foundation.storage.Models
+namespace starsky.foundation.storage.Models;
+
+public sealed class ThumbnailSizesExistStatusModel
 {
-	public sealed class ThumbnailSizesExistStatusModel
-	{
-		public bool TinyMeta { get; set; }
-		public bool Small { get; set; }
-		public bool Large { get; set; }
-		public bool ExtraLarge { get; set; }
-	}
+	public bool TinyMeta { get; set; }
+	public bool Small { get; set; }
+	public bool Large { get; set; }
+	public bool ExtraLarge { get; set; }
 }

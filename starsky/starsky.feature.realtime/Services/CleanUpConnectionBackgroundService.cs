@@ -5,34 +5,27 @@ using Microsoft.Extensions.Hosting;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.injection;
 
-namespace starsky.feature.realtime.Services
+namespace starsky.feature.realtime.Services;
+
+[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
+public class CleanUpConnectionBackgroundService(IServiceScopeFactory serviceScopeFactory)
+	: BackgroundService
 {
-
-	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class CleanUpConnectionBackgroundService : BackgroundService
+	/// <summary>
+	///     Running scoped services
+	///     @see: https://thinkrethink.net/2018/07/12/injecting-a-scoped-service-into-ihostedservice/
+	/// </summary>
+	/// <param name="stoppingToken">Cancellation Token, but it ignored</param>
+	/// <returns>CompletedTask</returns>
+	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		private readonly IServiceScopeFactory _serviceScopeFactory;
-
-		public CleanUpConnectionBackgroundService(IServiceScopeFactory serviceScopeFactory)
+		using ( var scope = serviceScopeFactory.CreateScope() )
 		{
-			_serviceScopeFactory = serviceScopeFactory;
-		}
+			var connectionsService =
+				scope.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
 
-		/// <summary>
-		/// Running scoped services
-		/// @see: https://thinkrethink.net/2018/07/12/injecting-a-scoped-service-into-ihostedservice/
-		/// </summary>
-		/// <param name="stoppingToken">Cancellation Token, but it ignored</param>
-		/// <returns>CompletedTask</returns>
-		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-		{
-			using ( var scope = _serviceScopeFactory.CreateScope() )
-			{
-				var connectionsService = scope.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
-
-				//exception is already catch-ed in the service
-				await connectionsService.CleanOldMessagesAsync();
-			}
+			//exception is already catch-ed in the service
+			await connectionsService.CleanOldMessagesAsync();
 		}
 	}
 }

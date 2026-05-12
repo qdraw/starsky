@@ -3,64 +3,65 @@ using System.IO;
 using System.Net;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeIFtpWebRequestFactory : IFtpWebRequestFactory
 {
-	public class FakeIFtpWebRequestFactory : IFtpWebRequestFactory
+	public IFtpWebRequest Create(string uri)
 	{
-		public IFtpWebRequest Create(string uri)
-		{
-			return new FakeIFtpWebRequest(uri);
-		}
+		return new FakeIFtpWebRequest(uri);
+	}
+}
+
+public class FakeIFtpWebRequest : IFtpWebRequest
+{
+	public FakeIFtpWebRequest(string uri)
+	{
+		Uri = uri;
 	}
 
-	public class FakeIFtpWebRequest : IFtpWebRequest
+	private string Uri { get; }
+
+	public string Method { get; set; } = string.Empty;
+
+	public NetworkCredential Credentials { get; set; } = new();
+
+	public bool UsePassive { get; set; }
+	public bool UseBinary { get; set; }
+	public bool KeepAlive { get; set; }
+
+	public IFtpWebResponse GetResponse()
 	{
-		private string Uri { get; set; }
-		public FakeIFtpWebRequest(string uri)
+		if ( Uri == "/web-exception" )
 		{
-			Uri = uri;
+			throw new WebException();
 		}
 
-		public string Method { get; set; } = string.Empty;
-
-		public NetworkCredential Credentials { get; set; } =
-			new NetworkCredential();
-		public bool UsePassive { get; set; }
-		public bool UseBinary { get; set; }
-		public bool KeepAlive { get; set; }
-
-		public IFtpWebResponse GetResponse()
-		{
-			if ( Uri == "/web-exception" )
-			{
-				throw new WebException();
-			}
-			return new FakeIFtpWebResponse();
-		}
-
-		public Stream GetRequestStream()
-		{
-			return new MemoryStream();
-		}
+		return new FakeIFtpWebResponse();
 	}
 
-	public class FakeIFtpWebResponse : IFtpWebResponse
+	public Stream GetRequestStream()
 	{
-		public void Dispose()
-		{
-			GC.SuppressFinalize(this);
-			Dispose(true);
-		}
-		
-		protected virtual void Dispose(bool disposing)
-		{
-			// do nothing
-		}
-		
+		return new MemoryStream();
+	}
+}
 
-		public Stream GetResponseStream()
-		{
-			return new MemoryStream();
-		}
-	} 
+public class FakeIFtpWebResponse : IFtpWebResponse
+{
+	public void Dispose()
+	{
+		GC.SuppressFinalize(this);
+		Dispose(true);
+	}
+
+
+	public Stream GetResponseStream()
+	{
+		return new MemoryStream();
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+		// do nothing
+	}
 }

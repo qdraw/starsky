@@ -18,6 +18,8 @@ public class MacOsOpenUrlTests
 	private const string ConsoleApp = "/System/Applications/Utilities/Console.app";
 	private const string ConsoleName = "Console";
 
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public void OpenDefault_NonMacOS()
 	{
@@ -44,7 +46,7 @@ public class MacOsOpenUrlTests
 	{
 		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test if for Mac OS Only");
+			Assert.Inconclusive("This test if for macOS Only");
 			return;
 		}
 
@@ -94,7 +96,7 @@ public class MacOsOpenUrlTests
 	{
 		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test if for Mac OS Only");
+			Assert.Inconclusive("This test if for macOS Only");
 			return;
 		}
 
@@ -166,6 +168,4 @@ public class MacOsOpenUrlTests
 		// Act & Assert
 		Assert.ThrowsExactly<DllNotFoundException>(() => MacOsOpenUrl.InvokeOpenUrl(IntPtr.Zero));
 	}
-
-	public TestContext TestContext { get; set; }
 }

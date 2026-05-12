@@ -1,7 +1,6 @@
-namespace starsky.foundation.sync.WatcherInterfaces
+namespace starsky.foundation.sync.WatcherInterfaces;
+
+public interface IDiskWatcher
 {
-	public interface IDiskWatcher
-	{
-		void Watcher(string fullFilePath);
-	}
+	void Watcher(string fullFilePath);
 }

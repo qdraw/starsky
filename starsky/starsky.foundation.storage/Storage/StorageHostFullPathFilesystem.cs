@@ -137,7 +137,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			// Path.GetExtension uses (.ext)
 			// the same check in SingleFile
 			// Recruisive >= same check
-			// ignore Files with ._ names, this is Mac OS specific
+			// ignore Files with ._ names, this is macOS specific
 			var isAppleDouble = Path.GetFileName(file).StartsWith("._");
 			if ( !isAppleDouble )
 			{
@@ -182,7 +182,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			var (currentFolder, _) = folders.Dequeue();
 			var isRootFolder = string.Equals(currentFolder, path, StringComparison.Ordinal);
 			if ( ShouldSkipInnerLookup(isRootFolder, innerChildLookupCount,
-				     maxInnerChildDirectoryLookups) )
+				    maxInnerChildDirectoryLookups) )
 			{
 				continue;
 			}

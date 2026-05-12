@@ -15,23 +15,18 @@ using starsky.foundation.storage.Storage;
 namespace starsky.feature.desktop.Service;
 
 [Service(typeof(IOpenEditorPreflight), InjectionLifetime = InjectionLifetime.Scoped)]
-public class OpenEditorPreflight : IOpenEditorPreflight
+public class OpenEditorPreflight(
+	IQuery query,
+	AppSettings appSettings,
+	ISelectorStorage selectorStorage,
+	IWebLogger logger)
+	: IOpenEditorPreflight
 {
-	private readonly IQuery _query;
-	private readonly AppSettings _appSettings;
-	private readonly IWebLogger _logger;
-	private readonly IStorage _iStorage;
-	private readonly IStorage _hostFileSystem;
+	private readonly IStorage _hostFileSystem =
+		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
-	public OpenEditorPreflight(IQuery query, AppSettings appSettings,
-		ISelectorStorage selectorStorage, IWebLogger logger)
-	{
-		_query = query;
-		_appSettings = appSettings;
-		_logger = logger;
-		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-		_hostFileSystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-	}
+	private readonly IStorage _iStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
 	public async Task<List<PathImageFormatExistsAppPathModel>> PreflightAsync(
 		List<string> inputFilePaths, bool collections)
@@ -39,26 +34,20 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 		var fileIndexItemList = await GetObjectsToOpenFromDatabase(inputFilePaths, collections);
 		fileIndexItemList = GroupByFileCollectionName(fileIndexItemList, collections);
 
-		var subPathAndImageFormatList = new List<PathImageFormatExistsAppPathModel>();
-
-		foreach ( var fileIndexItem in fileIndexItemList )
-		{
-			subPathAndImageFormatList.Add(new PathImageFormatExistsAppPathModel
+		return fileIndexItemList.Select(fileIndexItem => new PathImageFormatExistsAppPathModel
 			{
 				AppPath = GetDesktopEditorPath(fileIndexItem.ImageFormat),
 				Status = fileIndexItem.Status,
 				ImageFormat = fileIndexItem.ImageFormat,
 				SubPath = fileIndexItem.FilePath!,
-				FullFilePath = _appSettings.DatabasePathToFilePath(fileIndexItem.FilePath!)
-			});
-		}
-
-		return subPathAndImageFormatList;
+				FullFilePath = appSettings.DatabasePathToFilePath(fileIndexItem.FilePath!)
+			})
+			.ToList();
 	}
 
 	private string GetDesktopEditorPath(ExtensionRolesHelper.ImageFormat imageFormat)
 	{
-		var appSettingsDefaultEditor = _appSettings.DefaultDesktopEditor.Find(p =>
+		var appSettingsDefaultEditor = appSettings.DefaultDesktopEditor.Find(p =>
 			p.ImageFormats.Contains(imageFormat));
 
 		var appPath = appSettingsDefaultEditor?.ApplicationPath ?? string.Empty;
@@ -68,22 +57,22 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 			return string.Empty;
 		}
 
-		// Under Mac OS the ApplicationPath is a .app folder
+		// Under macOS the ApplicationPath is a .app folder
 		// Under Windows the ApplicationPath is a .exe file
 		if ( _hostFileSystem.IsFolderOrFile(appPath) !=
-			 FolderOrFileModel.FolderOrFileTypeList.Deleted )
+		     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 		{
 			return appPath;
 		}
 
-		_logger.LogError("[OpenEditorPreflight] AppPath not found: " + appPath);
+		logger.LogError("[OpenEditorPreflight] AppPath not found: " + appPath);
 		return string.Empty;
 	}
 
 	internal async Task<List<FileIndexItem>> GetObjectsToOpenFromDatabase(
 		List<string> inputFilePaths, bool collections)
 	{
-		var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
+		var resultFileIndexItemsList = await query.GetObjectsByFilePathAsync(
 			inputFilePaths, collections);
 		var fileIndexList = new List<FileIndexItem>();
 
@@ -91,7 +80,7 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 		{
 			// Files that are not on disk
 			if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath!) ==
-				 FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 					FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -100,8 +89,8 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 			}
 
 			// Dir is readonly / don't edit
-			if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
-				 == FileIndexItem.ExifStatus.ReadOnly )
+			if ( new StatusCodesHelper(appSettings).IsReadOnlyStatus(fileIndexItem)
+			     == FileIndexItem.ExifStatus.ReadOnly )
 			{
 				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 					FileIndexItem.ExifStatus.ReadOnly,
@@ -110,13 +99,13 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 			}
 
 			if ( fileIndexItem.ImageFormat is ExtensionRolesHelper.ImageFormat.xmp
-				or ExtensionRolesHelper.ImageFormat.meta_json )
+			    or ExtensionRolesHelper.ImageFormat.meta_json )
 			{
 				continue;
 			}
 
 			if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default
-				or FileIndexItem.ExifStatus.OkAndSame )
+			    or FileIndexItem.ExifStatus.OkAndSame )
 			{
 				fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 			}
@@ -136,9 +125,9 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 			return fileIndexInputList.ToList();
 		}
 
-		if ( _appSettings.DesktopCollectionsOpen is CollectionsOpenType.RawJpegMode.Default )
+		if ( appSettings.DesktopCollectionsOpen is CollectionsOpenType.RawJpegMode.Default )
 		{
-			_appSettings.DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Jpeg;
+			appSettings.DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Jpeg;
 		}
 
 		var toOpenResultList = new List<FileIndexItem>();
@@ -154,7 +143,7 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 
 			var byOrderResultList = new List<FileIndexItem>();
 
-			switch ( _appSettings.DesktopCollectionsOpen )
+			switch ( appSettings.DesktopCollectionsOpen )
 			{
 				case CollectionsOpenType.RawJpegMode.Jpeg:
 					byOrderResultList.AddRange(group.Where(p =>

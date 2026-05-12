@@ -8,38 +8,37 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 
-namespace starskytest.Attributes
+namespace starskytest.Attributes;
+
+[TestClass]
+public sealed class DisableFormValueModelBindingAttributeTest
 {
-	[TestClass]
-	public sealed class DisableFormValueModelBindingAttributeTest
+	[TestMethod]
+	public void DisableFormValueModelBindingAttribute_RemoveTest()
 	{
-		[TestMethod]
-		public void DisableFormValueModelBindingAttribute_RemoveTest()
-		{
-			// source: https://stackoverflow.com/a/53141666/8613589
+		// source: https://stackoverflow.com/a/53141666/8613589
 
-			var filter = new DisableFormValueModelBindingAttribute();
-			var actionContext = new ActionContext(
-				new DefaultHttpContext(),
-				new RouteData(),
-				new ActionDescriptor()
-			);
-			var filters = new List<IFilterMetadata>();
-			var values = new List<IValueProviderFactory>();
+		var filter = new DisableFormValueModelBindingAttribute();
+		var actionContext = new ActionContext(
+			new DefaultHttpContext(),
+			new RouteData(),
+			new ActionDescriptor()
+		);
+		var filters = new List<IFilterMetadata>();
+		var values = new List<IValueProviderFactory>();
 
-			var context = new ResourceExecutingContext(actionContext, filters, values);
+		var context = new ResourceExecutingContext(actionContext, filters, values);
 
-			//Run
-			filter.OnResourceExecuting(context);
+		//Run
+		filter.OnResourceExecuting(context);
 
-			// Run other class
-			filter.OnResourceExecuted(new ResourceExecutedContext(actionContext, filters));
+		// Run other class
+		filter.OnResourceExecuted(new ResourceExecutedContext(actionContext, filters));
 
-			// It is not removed in this case, because it didn't exist on forehand
+		// It is not removed in this case, because it didn't exist on forehand
 
-			Assert.IsNotNull(filter);
-			Assert.IsNotNull(actionContext);
-			Assert.IsNotNull(filters);
-		}
+		Assert.IsNotNull(filter);
+		Assert.IsNotNull(actionContext);
+		Assert.IsNotNull(filters);
 	}
 }

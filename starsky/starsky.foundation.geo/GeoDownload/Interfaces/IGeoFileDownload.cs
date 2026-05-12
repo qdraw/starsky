@@ -1,7 +1,6 @@
-namespace starsky.foundation.geo.GeoDownload.Interfaces
+namespace starsky.foundation.geo.GeoDownload.Interfaces;
+
+public interface IGeoFileDownload
 {
-	public interface IGeoFileDownload
-	{
-		Task DownloadAsync();
-	}
+	Task DownloadAsync();
 }

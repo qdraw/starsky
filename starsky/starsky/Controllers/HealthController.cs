@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using starsky.feature.health.HealthCheck;
 using starsky.feature.health.HealthCheck.Interfaces;
 using starsky.foundation.platform.VersionHelpers;
-using starsky.project.web.ViewModels;
 
 [assembly: InternalsVisibleTo("starskytest")]
 

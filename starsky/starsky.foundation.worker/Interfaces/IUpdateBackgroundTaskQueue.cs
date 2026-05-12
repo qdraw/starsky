@@ -1,6 +1,6 @@
-namespace starsky.foundation.worker.Interfaces
+namespace starsky.foundation.worker.Interfaces;
+
+public interface IUpdateBackgroundTaskQueue : IBaseBackgroundTaskQueue
 {
-	public interface IUpdateBackgroundTaskQueue : IBaseBackgroundTaskQueue
-	{
-	}
+	// nothing here since its inherited
 }

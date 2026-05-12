@@ -12,81 +12,75 @@ using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.Middleware
+namespace starskytest.Middleware;
+
+[TestClass]
+public sealed class BasicAuthenticationSignInManagerTest
 {
-	[TestClass]
-	public sealed class BasicAuthenticationSignInManagerTest
+	private readonly UserManager _userManager;
+
+	public BasicAuthenticationSignInManagerTest()
 	{
-		private readonly UserManager _userManager;
-		public IServiceProvider Services { get; set; }
-
-		public BasicAuthenticationSignInManagerTest()
-		{
-			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.AddAuthentication(sharedOptions =>
-				{
-					sharedOptions.DefaultAuthenticateScheme =
-						CookieAuthenticationDefaults.AuthenticationScheme;
-					sharedOptions.DefaultSignInScheme =
-						CookieAuthenticationDefaults.AuthenticationScheme;
-					sharedOptions.DefaultChallengeScheme =
-						CookieAuthenticationDefaults.AuthenticationScheme;
-				}).AddCookie("Cookies");
-			serviceCollection.AddLogging();
-
-			Services = serviceCollection.BuildServiceProvider();
-			Services.GetRequiredService<IServiceProvider>();
-			Services.GetRequiredService<IAuthenticationService>();
-
-			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase("test");
-			var options = builder.Options;
-			var context = new ApplicationDbContext(options);
-			_userManager = new UserManager(context, new AppSettings(), new FakeIWebLogger());
-		}
-
-		[TestMethod]
-		public async Task BasicAuthenticationSignInManager_TrySignInUser_False_Test()
-		{
-			var httpContext = new DefaultHttpContext
+		var serviceCollection = new ServiceCollection();
+		serviceCollection
+			.AddAuthentication(sharedOptions =>
 			{
-				HttpContext = { RequestServices = Services }
-			};
-			var authenticationHeaderValue =
-				new BasicAuthenticationHeaderValue("Basic dGVzdDp3cm9uZw==");
-			// base64 > test:wrong
+				sharedOptions.DefaultAuthenticateScheme =
+					CookieAuthenticationDefaults.AuthenticationScheme;
+				sharedOptions.DefaultSignInScheme =
+					CookieAuthenticationDefaults.AuthenticationScheme;
+				sharedOptions.DefaultChallengeScheme =
+					CookieAuthenticationDefaults.AuthenticationScheme;
+			}).AddCookie("Cookies");
+		serviceCollection.AddLogging();
 
-			await new BasicAuthenticationSignInManager(
-				httpContext,
-				authenticationHeaderValue,
-				_userManager).TrySignInUser();
-			
-			// User is not logged in
-			Assert.IsFalse(httpContext.User.Identity?.IsAuthenticated);
-		}
+		Services = serviceCollection.BuildServiceProvider();
+		Services.GetRequiredService<IServiceProvider>();
+		Services.GetRequiredService<IAuthenticationService>();
 
-		[TestMethod]
-		public async Task BasicAuthenticationSignInManager_TrySignInUser_True_Test()
-		{
-			await _userManager.SignUpAsync(string.Empty, "email", "log", "passs");
+		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builder.UseInMemoryDatabase("test");
+		var options = builder.Options;
+		var context = new ApplicationDbContext(options);
+		_userManager = new UserManager(context, new AppSettings(), new FakeIWebLogger());
+	}
 
-			var httpContext = new DefaultHttpContext
-			{
-				HttpContext = { RequestServices = Services }
-			};
-			var authService = httpContext.RequestServices.GetService<IAuthenticationService>();
-			Assert.IsNotNull(authService);
+	public IServiceProvider Services { get; set; }
 
-			var authenticationHeaderValue =
-				new BasicAuthenticationHeaderValue("Basic bG9nOnBhc3Nz");
-			// base64 > log:passs
-			await new BasicAuthenticationSignInManager(
-				httpContext,
-				authenticationHeaderValue,
-				_userManager).TrySignInUser();
-			// User is not logged in
-			Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
-		}
+	[TestMethod]
+	public async Task BasicAuthenticationSignInManager_TrySignInUser_False_Test()
+	{
+		var httpContext = new DefaultHttpContext { HttpContext = { RequestServices = Services } };
+		var authenticationHeaderValue =
+			new BasicAuthenticationHeaderValue("Basic dGVzdDp3cm9uZw==");
+		// base64 > test:wrong
+
+		await new BasicAuthenticationSignInManager(
+			httpContext,
+			authenticationHeaderValue,
+			_userManager).TrySignInUser();
+
+		// User is not logged in
+		Assert.IsFalse(httpContext.User.Identity?.IsAuthenticated);
+	}
+
+	[TestMethod]
+	public async Task BasicAuthenticationSignInManager_TrySignInUser_True_Test()
+	{
+		await _userManager.SignUpAsync(string.Empty, "email", "log", "passs");
+
+		var httpContext = new DefaultHttpContext { HttpContext = { RequestServices = Services } };
+		var authService = httpContext.RequestServices.GetService<IAuthenticationService>();
+		Assert.IsNotNull(authService);
+
+		var authenticationHeaderValue =
+			new BasicAuthenticationHeaderValue("Basic bG9nOnBhc3Nz");
+		// base64 > log:passs
+		await new BasicAuthenticationSignInManager(
+			httpContext,
+			authenticationHeaderValue,
+			_userManager).TrySignInUser();
+		// User is not logged in
+		Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
 	}
 }

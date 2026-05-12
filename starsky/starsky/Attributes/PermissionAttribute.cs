@@ -6,48 +6,42 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using starsky.foundation.accountmanagement.Services;
 
-namespace starsky.Attributes
+namespace starsky.Attributes;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
+public sealed class PermissionAttribute(params UserManager.AppPermissions[] permissions)
+	: AuthorizeAttribute, IAuthorizationFilter
 {
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-	public sealed class PermissionAttribute : AuthorizeAttribute, IAuthorizationFilter
+	public void OnAuthorization(AuthorizationFilterContext context)
 	{
-		private readonly UserManager.AppPermissions[] _permissions;
-		public PermissionAttribute(params UserManager.AppPermissions[] permission)
+		var user = context.HttpContext.User;
+
+		if ( user.Identity?.IsAuthenticated == false )
 		{
-			_permissions = permission;
+			context.Result = new UnauthorizedResult();
 		}
 
-		public void OnAuthorization(AuthorizationFilterContext context)
+		var collectedPermissions = new List<UserManager.AppPermissions>();
+		foreach ( var permission in permissions )
 		{
-			var user = context.HttpContext.User;
+			var claim = user.Claims.FirstOrDefault(p =>
+				p.Type == "Permission" && p.Value == permission.ToString());
 
-			if ( user.Identity?.IsAuthenticated == false )
+			if ( claim == null )
 			{
-				context.Result = new UnauthorizedResult();
+				continue;
 			}
 
-			var collectedPermissions = new List<UserManager.AppPermissions>();
-			foreach ( var permission in _permissions )
-			{
-				var claim = user.Claims.FirstOrDefault(p =>
-					p.Type == "Permission" && p.Value == permission.ToString());
-
-				if ( claim == null )
-				{
-					continue;
-				}
-				collectedPermissions.Add(permission);
-			}
-
-			if ( collectedPermissions.Count == 0 )
-			{
-				context.Result = new UnauthorizedResult();
-				return;
-			}
-
-			// add header for testing
-			context.HttpContext.Response.Headers.TryAdd("x-permission", "true");
+			collectedPermissions.Add(permission);
 		}
+
+		if ( collectedPermissions.Count == 0 )
+		{
+			context.Result = new UnauthorizedResult();
+			return;
+		}
+
+		// add header for testing
+		context.HttpContext.Response.Headers.TryAdd("x-permission", "true");
 	}
-
 }
