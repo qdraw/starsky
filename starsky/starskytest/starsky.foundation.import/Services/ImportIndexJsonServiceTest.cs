@@ -98,8 +98,6 @@ public sealed class ImportIndexJsonServiceTest
 		var tempFile = Path.Combine(Path.GetTempPath(), $"starsky-importindex-invalid-{Guid.NewGuid():N}.json");
 		try
 		{
-			await File.WriteAllTextAsync(tempFile, "{\"items\":[]}");
-
 			var fakeStorage = new FakeIStorage();
 			var selectorStorage = new FakeSelectorStorage(fakeStorage);
 			await fakeStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("{\"items\":[]}"), tempFile);
@@ -107,6 +105,82 @@ public sealed class ImportIndexJsonServiceTest
 			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(), selectorStorage);
 
 			await Assert.ThrowsExactlyAsync<InvalidDataException>(async () => await sut.ImportAsync(tempFile));
+		}
+		finally
+		{
+			if ( File.Exists(tempFile) )
+			{
+				File.Delete(tempFile);
+			}
+		}
+	}
+
+	[TestMethod]
+	public async Task ExportAsync_ThrowsOnEmptyPath()
+	{
+		var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+			new FakeSelectorStorage(new FakeIStorage()));
+
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () => await sut.ExportAsync(string.Empty));
+	}
+
+	[TestMethod]
+	public async Task ExportAsync_WithDirectory_CreatesDirectory()
+	{
+		var tempDirectory = $"/tmp-{Guid.NewGuid():N}";
+		var outputPath = Path.Combine(tempDirectory, "import-index.json");
+		var fakeStorage = new FakeIStorage();
+		var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+			new FakeSelectorStorage(fakeStorage));
+
+		await sut.ExportAsync(outputPath);
+
+		Assert.IsTrue(fakeStorage.ExistFolder(tempDirectory));
+		Assert.IsTrue(fakeStorage.ExistFile(outputPath));
+	}
+
+	[TestMethod]
+	public async Task ImportAsync_ThrowsOnEmptyPath()
+	{
+		var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+			new FakeSelectorStorage(new FakeIStorage()));
+
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () => await sut.ImportAsync(string.Empty));
+	}
+
+	[TestMethod]
+	public async Task ImportAsync_ThrowsOnFileNotFound()
+	{
+		var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(),
+			new FakeSelectorStorage(new FakeIStorage()));
+
+		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () => await sut.ImportAsync("/missing.json"));
+	}
+
+	[TestMethod]
+	public async Task ImportAsync_MarksMissingFileHashAsFileError()
+	{
+		var tempFile = Path.Combine(Path.GetTempPath(), $"starsky-importindex-nohash-{Guid.NewGuid():N}.json");
+		try
+		{
+			var model = new ImportIndexJsonContainer
+			{
+				Structure = new AppSettingsStructureModel(),
+				Items =
+				[
+					new ImportIndexItem { FileHash = string.Empty, FilePath = "/nohash.jpg" }
+				]
+			};
+			var fakeStorage = new FakeIStorage();
+			var selectorStorage = new FakeSelectorStorage(fakeStorage);
+			await fakeStorage.WriteStreamAsync(
+				StringToStreamHelper.StringToStream(JsonSerializer.Serialize(model, DefaultJsonSerializer.CamelCase)),
+				tempFile);
+
+			var sut = new ImportIndexJsonService(new FakeIImportQuery(), new AppSettings(), selectorStorage);
+			var result = await sut.ImportAsync(tempFile);
+
+			Assert.AreEqual(ImportStatus.FileError, result.Single().Status);
 		}
 		finally
 		{

@@ -21,14 +21,14 @@ public class ImportCli
 	private readonly IConsole _console;
 	private readonly IExifToolDownload _exifToolDownload;
 	private readonly IGeoFileDownload _geoFileDownload;
+	private readonly IImportIndexJsonService _importIndexJsonService;
 	private readonly IImport _importService;
-	private readonly IImportIndexJsonService? _importIndexJsonService;
 	private readonly IWebLogger _logger;
 
 	public ImportCli(IImport importService, AppSettings appSettings, IConsole console,
 		IWebLogger logger, IExifToolDownload exifToolDownload,
 		IGeoFileDownload geoFileDownload, ICameraStorageDetector cameraStorageDetector,
-		IImportIndexJsonService? importIndexJsonService = null)
+		IImportIndexJsonService importIndexJsonService)
 	{
 		_importService = importService;
 		_appSettings = appSettings;
@@ -69,13 +69,8 @@ public class ImportCli
 		var importIndexExportJsonPath = ArgsHelper.GetImportIndexExportJsonPath(args);
 		if ( !string.IsNullOrWhiteSpace(importIndexExportJsonPath) )
 		{
-			if ( _importIndexJsonService == null )
-			{
-				_logger.LogError("ImportIndex json export service is not configured");
-				return false;
-			}
-
-			var exportLocation = await _importIndexJsonService.ExportAsync(importIndexExportJsonPath);
+			var exportLocation =
+				await _importIndexJsonService.ExportAsync(importIndexExportJsonPath);
 			_logger.LogInformation($"Exported ImportIndex to {exportLocation}");
 			return true;
 		}
@@ -83,14 +78,9 @@ public class ImportCli
 		var importIndexImportJsonPath = ArgsHelper.GetImportIndexImportJsonPath(args);
 		if ( !string.IsNullOrWhiteSpace(importIndexImportJsonPath) )
 		{
-			if ( _importIndexJsonService == null )
-			{
-				_logger.LogError("ImportIndex json import service is not configured");
-				return false;
-			}
-
 			var stopWatchImportJson = Stopwatch.StartNew();
-			var resultFromJson = await _importIndexJsonService.ImportAsync(importIndexImportJsonPath);
+			var resultFromJson =
+				await _importIndexJsonService.ImportAsync(importIndexImportJsonPath);
 			WriteOutputStatus(importSettings, resultFromJson, stopWatchImportJson);
 			return resultFromJson.TrueForAll(p =>
 				p.Status is ImportStatus.Ok or ImportStatus.IgnoredAlreadyImported);
@@ -106,6 +96,7 @@ public class ImportCli
 				                       "If not you only importing from the root " +
 				                       "of the camera storage.");
 			}
+
 			var cameraPaths = _cameraStorageDetector.FindCameraStorages().ToList();
 			inputPathListFormArgs.AddRange(cameraPaths);
 			if ( cameraPaths.Count == 0 )

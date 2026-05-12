@@ -24,7 +24,7 @@ public sealed class ImportCliTest
 			new FakeIImport(new FakeSelectorStorage()),
 			new AppSettings { TempFolder = "/___not___found_" },
 			fakeConsole, new FakeIWebLogger(), fakeExifToolDownload, fakeGeoFileDownload,
-			fakeCameraStorageDetector);
+			fakeCameraStorageDetector, new FakeIImportIndexJsonService());
 		await sut.Importer([]);
 		Assert.HasCount(1, fakeExifToolDownload.Called);
 	}
@@ -40,7 +40,7 @@ public sealed class ImportCliTest
 			new FakeIImport(new FakeSelectorStorage()),
 			new AppSettings { TempFolder = "/___not___found_" },
 			fakeConsole, new FakeIWebLogger(), fakeExifToolDownload, fakeGeoFileDownload,
-			fakeCameraStorageDetector);
+			fakeCameraStorageDetector, new FakeIImportIndexJsonService());
 		await sut.Importer([]);
 		Assert.AreEqual(1, fakeGeoFileDownload.Count);
 	}
@@ -53,7 +53,8 @@ public sealed class ImportCliTest
 		var sut = new ImportCli(
 			new FakeIImport(new FakeSelectorStorage()), new AppSettings(),
 			fakeConsole, new FakeIWebLogger(), new FakeExifToolDownload(),
-			new FakeIGeoFileDownload(), fakeCameraStorageDetector);
+			new FakeIGeoFileDownload(), fakeCameraStorageDetector,
+			new FakeIImportIndexJsonService());
 		await sut.Importer([]);
 
 		Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault()
@@ -70,7 +71,8 @@ public sealed class ImportCliTest
 		var fakeCameraStorageDetector = new FakeCameraStorageDetector(new List<string>());
 		var sut = new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
 			new AppSettings(), new FakeConsoleWrapper(), webLogger,
-			new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector);
+			new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector,
+			new FakeIImportIndexJsonService());
 		await sut.Importer([
 			"-p", "/test"
 		]);
@@ -88,7 +90,8 @@ public sealed class ImportCliTest
 		var fakeCameraStorageDetector = new FakeCameraStorageDetector(new List<string>());
 		await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
 				new AppSettings(), fakeConsole, new FakeIWebLogger(),
-				new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector)
+				new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector,
+				new FakeIImportIndexJsonService())
 			.Importer(
 				new List<string> { "-p", "/test", "--output", "csv" }.ToArray());
 		Assert.IsFalse(fakeConsole.WrittenLines.FirstOrDefault()?.Contains("Done Importing"));
@@ -109,7 +112,8 @@ public sealed class ImportCliTest
 		var fakeCameraStorageDetector = new FakeCameraStorageDetector(new List<string>());
 		var cli = new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
 			new AppSettings { Verbose = true }, fakeConsole, webLogger,
-			new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector);
+			new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector,
+			new FakeIImportIndexJsonService());
 		// verbose is entered here 
 		await cli.Importer(new List<string> { "-p", "/test", "-v", "true" }.ToArray());
 		Assert.IsTrue(
@@ -127,7 +131,8 @@ public sealed class ImportCliTest
 		var fakeCameraStorageDetector = new FakeCameraStorageDetector(new List<string>());
 		await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
 				new AppSettings { Verbose = false }, fakeConsole, webLogger,
-				new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector)
+				new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector,
+				new FakeIImportIndexJsonService())
 			.Importer(new List<string> { "-p", "/test" }.ToArray());
 		Assert.IsTrue(
 			webLogger.TrackedInformation.Exists(p => p.Item2?.Contains("Failed") == true));
@@ -146,7 +151,7 @@ public sealed class ImportCliTest
 			webLogger,
 			new FakeExifToolDownload(),
 			new FakeIGeoFileDownload(),
-			fakeCameraStorageDetector);
+			fakeCameraStorageDetector, new FakeIImportIndexJsonService());
 
 		await sut.Importer(["--camera"]);
 		Assert.IsTrue(webLogger.TrackedInformation.Exists(p =>
@@ -172,7 +177,7 @@ public sealed class ImportCliTest
 			webLogger,
 			new FakeExifToolDownload(),
 			new FakeIGeoFileDownload(),
-			fakeCameraStorageDetector);
+			fakeCameraStorageDetector, new FakeIImportIndexJsonService());
 
 		var result = await sut.Importer(["--camera"]);
 		Assert.IsFalse(result);
@@ -194,7 +199,7 @@ public sealed class ImportCliTest
 			webLogger,
 			new FakeExifToolDownload(),
 			new FakeIGeoFileDownload(),
-			fakeCameraStorageDetector);
+			fakeCameraStorageDetector, new FakeIImportIndexJsonService());
 
 		// Act
 		await sut.Importer(["--camera"]);
@@ -239,8 +244,7 @@ public sealed class ImportCliTest
 			ImportResult =
 			[
 				new ImportIndexItem { FileHash = "a", Status = ImportStatus.Ok },
-				new ImportIndexItem
-					{ FileHash = "b", Status = ImportStatus.IgnoredAlreadyImported }
+				new ImportIndexItem { FileHash = "b", Status = ImportStatus.IgnoredAlreadyImported }
 			]
 		};
 
@@ -270,7 +274,7 @@ public sealed class ImportCliTest
 			new FakeIWebLogger(),
 			new FakeExifToolDownload(),
 			new FakeIGeoFileDownload(),
-			new FakeCameraStorageDetector([]));
+			new FakeCameraStorageDetector([]), new FakeIImportIndexJsonService());
 
 		var result = await sut.Importer(["--importindex-export-json", "/tmp/export.json"]);
 
@@ -287,7 +291,7 @@ public sealed class ImportCliTest
 			new FakeIWebLogger(),
 			new FakeExifToolDownload(),
 			new FakeIGeoFileDownload(),
-			new FakeCameraStorageDetector([]));
+			new FakeCameraStorageDetector([]), new FakeIImportIndexJsonService());
 
 		var result = await sut.Importer(["--importindex-import-json", "/tmp/import.json"]);
 

@@ -513,6 +513,8 @@ public sealed class ArgsHelperTest
 				console)
 			.NeedHelpShowDialog();
 		Assert.Contains("Importer", console.WrittenLines[0]);
+		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains("--importindex-export-json == parameter: (string) ; full path of output json file")));
+		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains("--importindex-import-json == parameter: (string) ; full path of input json file")));
 	}
 
 	[TestMethod]
