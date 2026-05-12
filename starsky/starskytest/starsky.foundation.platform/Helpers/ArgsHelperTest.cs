@@ -742,4 +742,12 @@ public sealed class ArgsHelperTest
 		var value = ArgsHelper.GetImportIndexImportJsonPath(args);
 		Assert.AreEqual(string.Empty, value);
 	}
+
+	[TestMethod]
+	public void ArgsHelper_GetImportIndexExportJsonPath_Fallback()
+	{
+		var args = new List<string> { "--importindex-export-json" }.ToArray();
+		var value = ArgsHelper.GetImportIndexExportJsonPath(args);
+		Assert.AreEqual(string.Empty, value);
+	}
 }

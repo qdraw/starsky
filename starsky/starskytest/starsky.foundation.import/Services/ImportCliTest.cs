@@ -259,4 +259,64 @@ public sealed class ImportCliTest
 		Assert.IsTrue(result);
 		Assert.AreEqual("/tmp/import.json", fakeImportIndexJsonService.ImportPath);
 	}
+
+	[TestMethod]
+	public async Task ImporterCli_ImportIndexJson_Export_Command_NoService()
+	{
+		var sut = new ImportCli(
+			new FakeIImport(new FakeSelectorStorage()),
+			new AppSettings(),
+			new FakeConsoleWrapper([]),
+			new FakeIWebLogger(),
+			new FakeExifToolDownload(),
+			new FakeIGeoFileDownload(),
+			new FakeCameraStorageDetector([]));
+
+		var result = await sut.Importer(["--importindex-export-json", "/tmp/export.json"]);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task ImporterCli_ImportIndexJson_Import_Command_NoService()
+	{
+		var sut = new ImportCli(
+			new FakeIImport(new FakeSelectorStorage()),
+			new AppSettings(),
+			new FakeConsoleWrapper([]),
+			new FakeIWebLogger(),
+			new FakeExifToolDownload(),
+			new FakeIGeoFileDownload(),
+			new FakeCameraStorageDetector([]));
+
+		var result = await sut.Importer(["--importindex-import-json", "/tmp/import.json"]);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task ImporterCli_ImportIndexJson_Import_Command_FailedStatus()
+	{
+		var fakeImportIndexJsonService = new FakeIImportIndexJsonService
+		{
+			ImportResult =
+			[
+				new ImportIndexItem { FileHash = "a", Status = ImportStatus.FileError }
+			]
+		};
+
+		var sut = new ImportCli(
+			new FakeIImport(new FakeSelectorStorage()),
+			new AppSettings(),
+			new FakeConsoleWrapper([]),
+			new FakeIWebLogger(),
+			new FakeExifToolDownload(),
+			new FakeIGeoFileDownload(),
+			new FakeCameraStorageDetector([]),
+			fakeImportIndexJsonService);
+
+		var result = await sut.Importer(["--importindex-import-json", "/tmp/import.json"]);
+
+		Assert.IsFalse(result);
+	}
 }
