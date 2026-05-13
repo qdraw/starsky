@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.19 - _(Unreleased)_ - 2026-?-? {#v0.7.19}
 
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.421 (Runtime: 8.0.27) (PR #3063)
 - [x] (Added) _Back-end_ Exporting and importing the ImportIndex database (PR #3058)
 - [x] (Fixed) _Back-end_ Allow ApplicationPath to be null to allow removal in settings (PR #3057)
 - [x] (Fixed) _Front-end_ Code quality improvements (PR #3049 #3055 #3054)
