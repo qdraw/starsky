@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.19 - _(Unreleased)_ - 2026-?-? {#v0.7.19}
+## version 0.7.20 - _(Unreleased)_ - 2026-?-? {#v0.7.20}
+
+- not released yet
+
+## version 0.7.19 - 2026-05-13 {#v0.7.19}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.421 (Runtime: 8.0.27) (PR #3063)
 - [x] (Added) _Back-end_ Exporting and importing the ImportIndex database (PR #3058)
