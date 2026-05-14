@@ -19,7 +19,7 @@ import DetailViewSidebar from "./detail-view-sidebar";
 
 describe("DetailViewSidebar", () => {
   it("renders (without state component)", () => {
-    render(
+    const item = render(
       <DetailViewSidebar
         status={IExifStatus.Default}
         filePath={"/t"}
@@ -27,6 +27,7 @@ describe("DetailViewSidebar", () => {
         dispatch={jest.fn()}
       ></DetailViewSidebar>
     );
+    expect(item).toBeTruthy();
   });
 
   beforeEach(() => {

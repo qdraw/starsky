@@ -31,7 +31,7 @@ describe("ModalGeo", () => {
   });
 
   it("renders", () => {
-    render(
+    const item = render(
       <ModalGeo
         parentDirectory="/"
         selectedSubPath="/test.jpg"
@@ -42,6 +42,7 @@ describe("ModalGeo", () => {
         isFormEnabled={false}
       ></ModalGeo>
     );
+    expect(item).toBeTruthy();
   });
 
   describe("getZoom", () => {

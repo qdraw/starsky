@@ -5,7 +5,8 @@ import Breadcrumb from "./breadcrumbs";
 describe("Breadcrumb", () => {
   it("renders", () => {
     jest.spyOn(Link, "default").mockImplementationOnce(() => <a></a>);
-    render(<Breadcrumb subPath="/" breadcrumb={["/"]} />);
+    const item = render(<Breadcrumb subPath="/" breadcrumb={["/"]} />);
+    expect(item).toBeTruthy();
   });
 
   it("disabled", () => {

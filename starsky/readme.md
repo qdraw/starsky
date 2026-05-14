@@ -21,7 +21,7 @@
     - [starskyTest](../starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
 - [Starsky Desktop](../starskydesktop/readme.md) _Desktop Application (Pre-alpha code)_
-    * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
+    * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 - [Changelog](../history.md) _Release notes and history_
 
 ## Run pre-build binaries (fastest)
@@ -42,7 +42,7 @@ to compile the application for development
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2. Get the `dotnet` 8.0.420 SDK. To get the 'Build apps - SDK' .NET Core
+2. Get the `dotnet` 8.0.421 SDK. To get the 'Build apps - SDK' .NET Core
    from https://www.microsoft.com/net/download or https://versionsof.net/
 3. Get a recent version of node.js (20.x or newer)
 
@@ -84,7 +84,7 @@ Windows Firewall has blocked some features of testhost on public and private net
 
 **You need to give permission to run the unit tests**
 
-_Or using bash (on Linux and Mac OS)_
+_Or using bash (on Linux and macOS)_
 
 ```sh
     ./build.sh
@@ -228,7 +228,7 @@ except for the executable files
 
 #### Startup problems with StarskyApp
 
-You could try to clean the temp Folder This is located on Mac OS:
+You could try to clean the temp Folder This is located on macOS:
 `~/Library/Application\ Support/starsky/` and Windows: `C:\Users\<user>\AppData\Roaming\starsky\`
 
 ### Bash build and configuration scripts
@@ -285,7 +285,7 @@ dependency)
 
 The Nuke script (build.sh/build.ps1) provide options to build for specific runtimes.
 
-### To build server app for Mac OS
+### To build server app for macOS
 
 _Using bash_
 

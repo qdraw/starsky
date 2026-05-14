@@ -13,7 +13,7 @@ describe("ModalForceDelete", () => {
   });
 
   it("renders", () => {
-    render(
+    const item = render(
       <ModalForceDelete
         isOpen={true}
         handleExit={() => {}}
@@ -24,6 +24,7 @@ describe("ModalForceDelete", () => {
         state={newIArchive()}
       ></ModalForceDelete>
     );
+    expect(item).toBeTruthy();
   });
 
   it("should fetchPost and dispatch", async () => {

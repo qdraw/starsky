@@ -22,9 +22,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using AuthenticationProperties = Microsoft.AspNetCore.Authentication.AuthenticationProperties;
 
-// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
 [assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.foundation.accountmanagement.Services;
@@ -66,7 +63,7 @@ public sealed class UserManager : IUserManager
 	public async Task<UserOverviewModel> AllUsersAsync()
 	{
 		if ( IsCacheEnabled() &&
-			 _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true )
+		     _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true )
 		{
 			return new UserOverviewModel(( List<User>? ) objectAllUsersResult);
 		}
@@ -237,8 +234,8 @@ public sealed class UserManager : IUserManager
 
 	public void RemoveFromRole(User user, string roleCode)
 	{
-		var role = _dbContext.Roles.TagWith("RemoveFromRole").FirstOrDefault(
-			r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+		var role = _dbContext.Roles.TagWith("RemoveFromRole").FirstOrDefault(r =>
+			string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
 
 		if ( role == null )
 		{
@@ -264,16 +261,16 @@ public sealed class UserManager : IUserManager
 	public ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier,
 		string secret)
 	{
-		var credentialType = _dbContext.CredentialTypes.FirstOrDefault(
-			ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
+		var credentialType = _dbContext.CredentialTypes.FirstOrDefault(ct =>
+			ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
 
 		if ( credentialType == null )
 		{
 			return new ChangeSecretResult(false, ChangeSecretResultError.CredentialTypeNotFound);
 		}
 
-		var credential = _dbContext.Credentials.TagWith("ChangeSecret").FirstOrDefault(
-			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+		var credential = _dbContext.Credentials.TagWith("ChangeSecret").FirstOrDefault(c =>
+			c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
 		if ( credential == null || identifier == null )
 		{
@@ -309,14 +306,14 @@ public sealed class UserManager : IUserManager
 		var cacheKey = "credentialTypeCode_" + credentialTypeCode;
 		// Add caching for credentialType
 		if ( IsCacheEnabled() && _cache?.TryGetValue(cacheKey,
-				out var objectCredentialTypeCode) == true )
+			    out var objectCredentialTypeCode) == true )
 		{
 			return ( CredentialType? ) objectCredentialTypeCode;
 		}
 
 		var credentialTypeSelect = _dbContext.CredentialTypes.AsNoTracking()
-			.TagWith("CredentialType").Where(
-				ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()))
+			.TagWith("CredentialType").Where(ct =>
+				ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()))
 			.Select(x => new { x.Id, x.Code, x.Name, x.Position }).FirstOrDefault();
 
 		if ( credentialTypeSelect == null )
@@ -345,9 +342,7 @@ public sealed class UserManager : IUserManager
 	{
 		var model = new RegisterViewModel
 		{
-			Email = userName,
-			Password = password,
-			ConfirmPassword = confirmPassword
+			Email = userName, Password = password, ConfirmPassword = confirmPassword
 		};
 
 		var context = new ValidationContext(model, null, null);
@@ -461,20 +456,18 @@ public sealed class UserManager : IUserManager
 		{
 			return new ValidateResult
 			{
-				Success = false,
-				Error = ValidateResultError.CredentialTypeNotFound
+				Success = false, Error = ValidateResultError.CredentialTypeNotFound
 			};
 		}
 
-		var credential = await _dbContext.Credentials.FirstOrDefaultAsync(
-			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+		var credential = await _dbContext.Credentials.FirstOrDefaultAsync(c =>
+			c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
 		if ( credential == null )
 		{
 			return new ValidateResult
 			{
-				Success = false,
-				Error = ValidateResultError.CredentialNotFound
+				Success = false, Error = ValidateResultError.CredentialNotFound
 			};
 		}
 
@@ -487,8 +480,7 @@ public sealed class UserManager : IUserManager
 		{
 			return new ValidateResult
 			{
-				Success = false,
-				Error = ValidateResultError.CredentialNotFound
+				Success = false, Error = ValidateResultError.CredentialNotFound
 			};
 		}
 
@@ -545,8 +537,8 @@ public sealed class UserManager : IUserManager
 			return null;
 		}
 
-		var credential = _dbContext.Credentials.FirstOrDefault(
-			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+		var credential = _dbContext.Credentials.FirstOrDefault(c =>
+			c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 		if ( credential == null )
 		{
 			return null;
@@ -653,14 +645,11 @@ public sealed class UserManager : IUserManager
 
 		// When not exist add it
 		if ( credentialType == null &&
-			 credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
+		     credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
 		{
 			credentialType = new CredentialType
 			{
-				Code = "email",
-				Name = "email",
-				Position = 1,
-				Id = 1
+				Code = "email", Name = "email", Position = 1, Id = 1
 			};
 			await _dbContext.CredentialTypes.AddAsync(credentialType);
 			await _dbContext.SaveChangesAsync();
@@ -724,15 +713,15 @@ public sealed class UserManager : IUserManager
 		var roleToAddToUser = _appSettings.AccountRegisterDefaultRole.ToString();
 
 		if ( _appSettings.AccountRegisterFirstRoleAdmin == true &&
-			 !_dbContext.Users.Any(p => p != user) )
+		     !_dbContext.Users.Any(p => p != user) )
 		{
 			return AccountRoles.AppAccountRoles.Administrator.ToString();
 		}
 
 		if ( _appSettings.AccountRolesByEmailRegisterOverwrite != null
-			 && _appSettings.AccountRolesByEmailRegisterOverwrite
-				 .TryGetValue(identifier, out var emailsForConfig) &&
-			 AccountRoles.GetAllRoles().Contains(emailsForConfig) )
+		     && _appSettings.AccountRolesByEmailRegisterOverwrite
+			     .TryGetValue(identifier, out var emailsForConfig) &&
+		     AccountRoles.GetAllRoles().Contains(emailsForConfig) )
 		{
 			return emailsForConfig;
 		}
@@ -762,23 +751,24 @@ public sealed class UserManager : IUserManager
 
 		// Add caching for credentialType
 		if ( IsCacheEnabled() && _cache?.TryGetValue(key,
-				out var objectCredentialTypeCode) == true )
+			    out var objectCredentialTypeCode) == true )
 		{
 			return ( Credential? ) objectCredentialTypeCode;
 		}
 
-		var credentialSelect = _dbContext.Credentials.AsNoTracking().TagWith("Credential").Where(
-			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier).Select(x =>
-			new
-			{
-				x.Id,
-				x.UserId,
-				x.CredentialTypeId,
-				x.Secret,
-				x.Extra,
-				x.IterationCount,
-				x.Identifier
-			}).FirstOrDefault();
+		var credentialSelect = _dbContext.Credentials.AsNoTracking().TagWith("Credential")
+			.Where(c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier)
+			.Select(x =>
+				new
+				{
+					x.Id,
+					x.UserId,
+					x.CredentialTypeId,
+					x.Secret,
+					x.Extra,
+					x.IterationCount,
+					x.Identifier
+				}).FirstOrDefault();
 
 		if ( credentialSelect == null )
 		{
@@ -893,8 +883,8 @@ public sealed class UserManager : IUserManager
 	private List<Claim> GetUserRoleClaims(User user)
 	{
 		var claims = new List<Claim>();
-		IEnumerable<int> roleIds = _dbContext.UserRoles.TagWith("GetUserRoleClaims").Where(
-			ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
+		IEnumerable<int> roleIds = _dbContext.UserRoles.TagWith("GetUserRoleClaims")
+			.Where(ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
 
 		foreach ( var roleId in roleIds )
 		{
@@ -914,8 +904,7 @@ public sealed class UserManager : IUserManager
 	internal IEnumerable<Claim> GetUserPermissionClaims(Role role)
 	{
 		var claims = new List<Claim>();
-		var rolePermissions = _dbContext.RolePermissions.Where(
-			rp => rp.RoleId == role.Id);
+		var rolePermissions = _dbContext.RolePermissions.Where(rp => rp.RoleId == role.Id);
 		IEnumerable<int> permissionIds = rolePermissions.Select(rp => rp.PermissionId).ToList();
 
 		foreach ( var permissionId in permissionIds )

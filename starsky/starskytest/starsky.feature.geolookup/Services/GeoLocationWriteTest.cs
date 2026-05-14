@@ -8,77 +8,76 @@ using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.geolookup.Services
+namespace starskytest.starsky.feature.geolookup.Services;
+
+[TestClass]
+public sealed class GeoLocationWriteTest
 {
-	[TestClass]
-	public sealed class GeoLocationWriteTest
+	private readonly AppSettings _appSettings;
+	private readonly IExifTool _exifTool;
+
+	public GeoLocationWriteTest()
 	{
-		private readonly IExifTool _exifTool;
-		private readonly AppSettings _appSettings;
+		// get the service
+		_appSettings = new AppSettings();
+		_exifTool = new FakeExifTool(new FakeIStorage(), _appSettings);
+	}
 
-		public GeoLocationWriteTest()
+	[TestMethod]
+	public async Task GeoLocationWriteLoopFolderTest()
+	{
+		var metaFilesInDirectory = new List<FileIndexItem>
 		{
-			// get the service
-			_appSettings = new AppSettings();
-			_exifTool = new FakeExifTool(new FakeIStorage(), _appSettings);
-		}
-
-		[TestMethod]
-		public async Task GeoLocationWriteLoopFolderTest()
-		{
-			var metaFilesInDirectory = new List<FileIndexItem>
+			new()
 			{
-				new FileIndexItem
-				{
-					FileName = "test.jpg", //<= used to check
-					ParentDirectory = "/",
-					Latitude = 1,
-					Longitude = 1,
-					LocationAltitude = 1,
-					LocationCity = "city",
-					LocationState = "state",
-					LocationCountry = "country"
-				}
-			};
-			var console = new FakeConsoleWrapper();
+				FileName = "test.jpg", //<= used to check
+				ParentDirectory = "/",
+				Latitude = 1,
+				Longitude = 1,
+				LocationAltitude = 1,
+				LocationCity = "city",
+				LocationState = "state",
+				LocationCountry = "country"
+			}
+		};
+		var console = new FakeConsoleWrapper();
 
-			var fakeIStorage = new FakeIStorage();
-			await new GeoLocationWrite(_appSettings, _exifTool,
-					new FakeSelectorStorage(fakeIStorage), console,
-					new FakeIWebLogger(), new FakeIThumbnailQuery())
-				.LoopFolderAsync(metaFilesInDirectory, true);
-			Assert.IsNotNull(metaFilesInDirectory);
+		var fakeIStorage = new FakeIStorage();
+		await new GeoLocationWrite(_appSettings, _exifTool,
+				new FakeSelectorStorage(fakeIStorage), console,
+				new FakeIWebLogger(), new FakeIThumbnailQuery())
+			.LoopFolderAsync(metaFilesInDirectory, true);
+		Assert.IsNotNull(metaFilesInDirectory);
 
-			Assert.HasCount(1, console.WrittenLines);
-			Assert.AreEqual("🚀", console.WrittenLines[0]);
-		}
+		Assert.HasCount(1, console.WrittenLines);
+		Assert.AreEqual("🚀", console.WrittenLines[0]);
+	}
 
-		[TestMethod]
-		public async Task GeoLocationWriteLoopFolderTest_verbose()
+	[TestMethod]
+	public async Task GeoLocationWriteLoopFolderTest_verbose()
+	{
+		var metaFilesInDirectory = new List<FileIndexItem>
 		{
-			var metaFilesInDirectory = new List<FileIndexItem>
+			new()
 			{
-				new FileIndexItem
-				{
-					FileName = "test.jpg", //<= used to check
-					ParentDirectory = "/",
-					Latitude = 1,
-					Longitude = 1,
-					LocationAltitude = 1,
-					LocationCity = "city",
-					LocationState = "state",
-					LocationCountry = "country"
-				}
-			};
-			var console = new FakeConsoleWrapper();
-			await new GeoLocationWrite(new AppSettings { Verbose = true },
-					_exifTool, new FakeSelectorStorage(), console, new FakeIWebLogger(),
-					new FakeIThumbnailQuery())
-				.LoopFolderAsync(metaFilesInDirectory,
-					true);
+				FileName = "test.jpg", //<= used to check
+				ParentDirectory = "/",
+				Latitude = 1,
+				Longitude = 1,
+				LocationAltitude = 1,
+				LocationCity = "city",
+				LocationState = "state",
+				LocationCountry = "country"
+			}
+		};
+		var console = new FakeConsoleWrapper();
+		await new GeoLocationWrite(new AppSettings { Verbose = true },
+				_exifTool, new FakeSelectorStorage(), console, new FakeIWebLogger(),
+				new FakeIThumbnailQuery())
+			.LoopFolderAsync(metaFilesInDirectory,
+				true);
 
-			Assert.HasCount(2, console.WrittenLines);
-			Assert.Contains("GeoLocationWrite", console.WrittenLines.Last());
-		}
+		Assert.HasCount(2, console.WrittenLines);
+		Assert.Contains("GeoLocationWrite", console.WrittenLines.Last());
 	}
 }

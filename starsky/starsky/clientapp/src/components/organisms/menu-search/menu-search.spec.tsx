@@ -10,7 +10,10 @@ import MenuSearch from "./menu-search";
 
 describe("MenuSearch", () => {
   it("renders", () => {
-    render(<MenuSearch state={undefined as unknown as IArchiveProps} dispatch={jest.fn()} />);
+    const item = render(
+      <MenuSearch state={undefined as unknown as IArchiveProps} dispatch={jest.fn()} />
+    );
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

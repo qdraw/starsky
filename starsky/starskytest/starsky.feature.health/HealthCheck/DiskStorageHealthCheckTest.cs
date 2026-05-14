@@ -153,7 +153,7 @@ public sealed class DiskStorageHealthCheckTest
 			.Select(d => char.ToUpperInvariant(d.Name[0]))
 			.ToHashSet();
 
-		for ( char letter = 'Z'; letter >= 'A'; letter-- )
+		for ( var letter = 'Z'; letter >= 'A'; letter-- )
 		{
 			if ( !usedLetters.Contains(letter) )
 			{

@@ -8,7 +8,8 @@ import { PostSingleFormData } from "./post-single-form-data";
 
 describe("DropArea", () => {
   it("renders", () => {
-    render(<DropArea endpoint="/import" />);
+    const item = render(<DropArea endpoint="/import" />);
+    expect(item).toBeTruthy();
   });
 
   describe("with events", () => {

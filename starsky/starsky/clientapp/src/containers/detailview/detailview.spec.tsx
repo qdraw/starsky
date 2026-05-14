@@ -49,7 +49,8 @@ describe("DetailView", () => {
     jest
       .spyOn(FileHashImage, "default")
       .mockImplementationOnce((props) => fileHashImageMock(props));
-    render(<DetailView {...newDetailView()} />);
+    const item = render(<DetailView {...newDetailView()} />);
+    expect(item).toBeTruthy();
   });
 
   const defaultState = {

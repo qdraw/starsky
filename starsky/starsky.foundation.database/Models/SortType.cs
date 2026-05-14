@@ -1,8 +1,7 @@
-namespace starsky.foundation.database.Models
+namespace starsky.foundation.database.Models;
+
+public enum SortType
 {
-	public enum SortType
-	{
-		FileName,
-		ImageFormat
-	}
+	FileName,
+	ImageFormat
 }

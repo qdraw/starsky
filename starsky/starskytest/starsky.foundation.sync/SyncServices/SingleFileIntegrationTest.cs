@@ -16,68 +16,69 @@ using starsky.foundation.sync.SyncServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.sync.SyncServices
+namespace starskytest.starsky.foundation.sync.SyncServices;
+
+[TestClass]
+public sealed class SingleFileIntegrationTest
 {
-	[TestClass]
-	public sealed class SingleFileIntegrationTest
+	private readonly AppSettings _appSettings;
+	private readonly CreateAnImage _createAnImage;
+	private readonly IStorage _iStorage;
+	private readonly IMemoryCache _memoryCache;
+	private readonly IQuery _query;
+
+	public SingleFileIntegrationTest()
 	{
-		private readonly IQuery _query;
-		private readonly AppSettings _appSettings;
-		private readonly IStorage _iStorage;
-		private readonly CreateAnImage _createAnImage;
-		private readonly IMemoryCache _memoryCache;
+		var provider = new ServiceCollection()
+			.AddMemoryCache();
 
-		public SingleFileIntegrationTest()
+		_createAnImage = new CreateAnImage();
+		_appSettings = new AppSettings
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache();
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+			StorageFolder = _createAnImage.BasePath,
+			Verbose = true
+		};
 
-			_createAnImage = new CreateAnImage();
-			_appSettings = new AppSettings{
-				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase, 
-				StorageFolder = _createAnImage.BasePath,
-				Verbose = true
-			};
+		provider.AddSingleton(_appSettings);
 
-			provider.AddSingleton(_appSettings);
+		new SetupDatabaseTypes(_appSettings, provider).BuilderDb();
+		provider.AddScoped<IQuery, Query>();
+		provider.AddScoped<IWebLogger, FakeIWebLogger>();
 
-			new SetupDatabaseTypes(_appSettings, provider).BuilderDb();
-			provider.AddScoped<IQuery,Query>();
-			provider.AddScoped<IWebLogger, FakeIWebLogger>();
-			
-			var serviceProvider = provider.BuildServiceProvider();
-			
-			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
-			serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			_memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+		var serviceProvider = provider.BuildServiceProvider();
 
-			_query = serviceProvider.GetRequiredService<IQuery>();
-		}
-		
-		[TestMethod]
-		public async Task ExistingItem()
+		_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
+		serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		_memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+
+		_query = serviceProvider.GetRequiredService<IQuery>();
+	}
+
+	[TestMethod]
+	public async Task ExistingItem()
+	{
+		await _query.AddItemAsync(new FileIndexItem(_createAnImage.DbPath)
 		{
-			await _query.AddItemAsync(new FileIndexItem(_createAnImage.DbPath)
-			{
-				Size = 9998,
-				FileHash = "INKV4BSQ54PIAIS5XUFAKBUW5Y"
-			});
+			Size = 9998, FileHash = "INKV4BSQ54PIAIS5XUFAKBUW5Y"
+		});
 
-				
-			var stopWatch = new Stopwatch();
-			stopWatch.Start();
-			
-			var sync = new Synchronize(_appSettings, _query, 
-				new FakeSelectorStorage(_iStorage), new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), 
-				null, _memoryCache);
-			var result = await sync.Sync("/");
-			
-			stopWatch.Stop();
-			var ts = stopWatch.Elapsed;
-			var elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-			Console.WriteLine("RunTime " + elapsedTime);
-			
-			Assert.IsNotNull(result);
-		}
+
+		var stopWatch = new Stopwatch();
+		stopWatch.Start();
+
+		var sync = new Synchronize(_appSettings, _query,
+			new FakeSelectorStorage(_iStorage), new FakeIWebLogger(),
+			new FakeISyncAddThumbnailTable(),
+			null, _memoryCache);
+		var result = await sync.Sync("/");
+
+		stopWatch.Stop();
+		var ts = stopWatch.Elapsed;
+		var elapsedTime =
+			$"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
+		Console.WriteLine("RunTime " + elapsedTime);
+
+		Assert.IsNotNull(result);
 	}
 }

@@ -22,7 +22,7 @@ public class TrashService : ITrashService
 
 	/// <summary>
 	///     Does not check if the file exists
-	///     Trash file for Mac OS and Windows
+	///     Trash file for macOS and Windows
 	/// </summary>
 	/// <param name="fullPath">system path</param>
 	/// <returns>operation succeed (NOT if file is gone)</returns>

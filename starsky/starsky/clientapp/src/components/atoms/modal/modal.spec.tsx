@@ -4,11 +4,12 @@ import Modal from "./modal";
 describe("Modal", () => {
   it("renders", () => {
     globalThis.scrollTo = jest.fn();
-    render(
+    const item = render(
       <Modal id="test2-modal" isOpen={true} handleExit={() => {}}>
         &nbsp;
       </Modal>
     );
+    expect(item).toBeTruthy();
   });
 
   describe("Close Modal", () => {

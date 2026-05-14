@@ -11,6 +11,7 @@ describe("ModalDropAreaFilesAdded", () => {
     const component = render(
       <ModalDropAreaFilesAdded isOpen={true} uploadFilesList={[]} handleExit={() => {}} />
     );
+    expect(component).toBeTruthy();
     component.unmount();
   });
 

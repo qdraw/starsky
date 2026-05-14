@@ -7,7 +7,7 @@ import ColorClassFilter from "./color-class-filter";
 
 describe("ColorClassFilter", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <MemoryRouter>
         <ColorClassFilter
           itemsCount={1}
@@ -17,6 +17,7 @@ describe("ColorClassFilter", () => {
         ></ColorClassFilter>
       </MemoryRouter>
     );
+    expect(item).toBeTruthy();
   });
 
   it("onClick value", () => {

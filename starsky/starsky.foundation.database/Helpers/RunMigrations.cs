@@ -49,6 +49,7 @@ public static class RunMigrations
 		await databaseFixes.FixUtf8Encoding(tableNames);
 		await databaseFixes.FixAutoIncrement("Notifications");
 		await databaseFixes.FixAutoIncrement("DataProtectionKeys");
+		await databaseFixes.FixAutoIncrement("QueueItems");
 		await databaseFixes.DisposeAsync();
 		return true;
 	}
@@ -82,6 +83,7 @@ public static class RunMigrations
 				innerExceptionMessage.Append(innerException.Message);
 				innerExceptionMessage.Append(innerException.InnerException?.Message);
 				innerExceptionMessage.Append(innerException.InnerException?.Data);
+				innerExceptionMessage.Append(innerException.InnerException?.StackTrace);
 			}
 
 			var messageAsString = "[RunMigrations] start migration failed\n " +

@@ -10,7 +10,8 @@ import PreferencesAppSettingsStorageFolder, {
 
 describe("PreferencesAppSettings", () => {
   it("renders", () => {
-    render(<PreferencesAppSettingsStorageFolder />);
+    const item = render(<PreferencesAppSettingsStorageFolder />);
+    expect(item).toBeTruthy();
   });
 
   describe("context", () => {

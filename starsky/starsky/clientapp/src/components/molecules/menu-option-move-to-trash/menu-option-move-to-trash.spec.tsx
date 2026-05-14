@@ -18,7 +18,7 @@ describe("MenuOptionMoveToTrash", () => {
       ...newIArchive(),
       fileIndexItems: newIFileIndexItemArray()
     } as IArchiveProps;
-    render(
+    const item = render(
       <MenuOptionMoveToTrash
         setSelect={jest.fn()}
         select={["test.jpg"]}
@@ -27,6 +27,7 @@ describe("MenuOptionMoveToTrash", () => {
         dispatch={jest.fn()}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   describe("context", () => {

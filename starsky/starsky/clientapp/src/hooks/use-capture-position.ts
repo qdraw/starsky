@@ -19,6 +19,6 @@ const capturePosition = () => {
       document.body.style.width = "initial";
       globalThis.scrollTo(0, topCachedPosition);
     }
-  } as ICaptionPosition;
+  };
 };
 export default capturePosition;

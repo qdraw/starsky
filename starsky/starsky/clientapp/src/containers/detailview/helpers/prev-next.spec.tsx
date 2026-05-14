@@ -6,7 +6,7 @@ import { PrevNext } from "./prev-next";
 
 describe("statusRemoved", () => {
   it("renders", () => {
-    new PrevNext(
+    const item = new PrevNext(
       {} as IRelativeObjects,
       {} as IDetailView,
       true,
@@ -14,6 +14,7 @@ describe("statusRemoved", () => {
       jest.fn(),
       jest.fn
     ).next();
+    expect(item).toBeUndefined();
   });
 
   it("not called", () => {

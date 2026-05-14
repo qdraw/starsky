@@ -6,24 +6,23 @@ using starsky.Controllers;
 using starsky.foundation.database.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.Controllers
-{
-	[TestClass]
-	public sealed class ImportHistoryControllerTest
-	{
-		private readonly FakeIImportQuery _fakeImportQuery;
+namespace starskytest.Controllers;
 
-		public ImportHistoryControllerTest()
-		{
-			_fakeImportQuery = new FakeIImportQuery(new List<string> {"/test.jpg"});
-		}
-		
-		[TestMethod]
-		public void HistoryTest()
-		{
-			var result = new ImportHistoryController(_fakeImportQuery).History() as JsonResult;
-			var output = result?.Value as List<ImportIndexItem>;
-			Assert.AreEqual("/test.jpg", output?.FirstOrDefault()?.FilePath);
-		}
+[TestClass]
+public sealed class ImportHistoryControllerTest
+{
+	private readonly FakeIImportQuery _fakeImportQuery;
+
+	public ImportHistoryControllerTest()
+	{
+		_fakeImportQuery = new FakeIImportQuery(new List<string> { "/test.jpg" });
+	}
+
+	[TestMethod]
+	public void HistoryTest()
+	{
+		var result = new ImportHistoryController(_fakeImportQuery).History() as JsonResult;
+		var output = result?.Value as List<ImportIndexItem>;
+		Assert.AreEqual("/test.jpg", output?.FirstOrDefault()?.FilePath);
 	}
 }

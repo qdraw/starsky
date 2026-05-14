@@ -36,7 +36,7 @@ export type PositionObject = {
  */
 const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
   const [panning, setPanning] = useState(false);
-  const [image, setImage] = useState({ width: 0, height: 0 } as ImageObject);
+  const [image, setImage] = useState({} as ImageObject);
 
   const defaultPosition = {
     oldX: 0,

@@ -12,7 +12,8 @@ import * as PanAndZoomImage from "./pan-and-zoom-image";
 
 describe("FileHashImage", () => {
   it("renders", () => {
-    render(<FileHashImage fileHash={""} />);
+    const item = render(<FileHashImage fileHash={""} />);
+    expect(item).toBeTruthy();
   });
 
   beforeEach(() => {

@@ -7,7 +7,8 @@ import HealthStatusError from "./health-status-error";
 
 describe("HealthStatusError", () => {
   it("renders (without state component)", () => {
-    render(<HealthStatusError />);
+    const item = render(<HealthStatusError />);
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

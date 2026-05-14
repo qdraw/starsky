@@ -3,7 +3,8 @@ import CurrentLocationButton from "./current-location-button";
 
 describe("CurrentLocationButton", () => {
   it("renders", () => {
-    render(<CurrentLocationButton />);
+    const item = render(<CurrentLocationButton />);
+    expect(item).toBeTruthy();
   });
 
   function globalNavigator() {

@@ -22,7 +22,7 @@
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
 * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
 * [Starsky Desktop](../../starskydesktop/readme.md) _Desktop Application_
-    * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
+    * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 * [Changelog](../../history.md) _Release notes and history_
 
 ## Starsky Business Logic docs
@@ -35,7 +35,7 @@ This is an overview of business logic
 |---------------------------------------------------------|---------|
 | Anywhere secure access                                  | ✅       |
 | Native iOS and Android mobile apps                      | ❌       |
-| Mac OS and Windows Desktop app                          | ✅       |
+| macOS and Windows Desktop app                           | ✅       |
 | Access controls with permissions and roles              | ✴️      |
 | User generation by Command Line                         | ✅       |
 | Customized branded login page                           | ❌       |

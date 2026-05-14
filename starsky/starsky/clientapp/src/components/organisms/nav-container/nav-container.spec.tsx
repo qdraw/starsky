@@ -3,6 +3,7 @@ import NavContainer from "./nav-container";
 
 describe("NavContainer", () => {
   it("renders", () => {
-    render(<NavContainer hamburgerMenu={true}>content</NavContainer>);
+    const item = render(<NavContainer hamburgerMenu={true}>content</NavContainer>);
+    expect(item).toBeTruthy();
   });
 });

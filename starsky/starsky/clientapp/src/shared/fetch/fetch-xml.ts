@@ -32,19 +32,19 @@ const FetchXml = async (url: string): Promise<IConnectionDefault> => {
       return {
         statusCode: 999,
         data: null
-      } as IConnectionDefault;
+      };
     }
 
     return {
       statusCode: res.status,
       data
-    } as IConnectionDefault;
+    };
   } catch (err) {
     console.error(err);
     return {
       statusCode: res.status,
       data: null
-    } as IConnectionDefault;
+    };
   }
 };
 

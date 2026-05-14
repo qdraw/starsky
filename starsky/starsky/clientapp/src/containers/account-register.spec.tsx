@@ -13,7 +13,8 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(
         () => Promise.resolve({ statusCode: 4638 }) as Promise<IConnectionDefault>
       );
-    render(<AccountRegister />);
+    const item = render(<AccountRegister />);
+    expect(item).toBeTruthy();
   });
 
   it("link to TOC exist", () => {

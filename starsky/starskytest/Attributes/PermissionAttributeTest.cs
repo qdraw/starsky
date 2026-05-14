@@ -9,70 +9,76 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.foundation.accountmanagement.Services;
 
-namespace starskytest.Attributes
+namespace starskytest.Attributes;
+
+[TestClass]
+public sealed class PermissionAttributeTest
 {
-	[TestClass]
-	public sealed class PermissionAttributeTest
+	[TestMethod]
+	public void NotLoggedIn()
 	{
-		[TestMethod]
-		public void NotLoggedIn()
-		{
-			var permissionAttribute = new PermissionAttribute(
-				new List<UserManager.AppPermissions> {UserManager.AppPermissions.AppSettingsWrite}
-					.ToArray());
-			
-			var authorizationFilterContext = new AuthorizationFilterContext(
-				new ActionContext(new DefaultHttpContext(), new RouteData(), new ActionDescriptor()),
-				new List<IFilterMetadata>());
-			
-			permissionAttribute.OnAuthorization(authorizationFilterContext);
-			
-			Assert.AreEqual(authorizationFilterContext.Result?.GetType(), new UnauthorizedResult().GetType());
-		}
-		
-		[TestMethod]
-		public void PermissionClaimMissing()
-		{
-			var permissionAttribute = new PermissionAttribute(
-				new List<UserManager.AppPermissions> {UserManager.AppPermissions.AppSettingsWrite}
-					.ToArray());
+		var permissionAttribute = new PermissionAttribute(
+			new List<UserManager.AppPermissions> { UserManager.AppPermissions.AppSettingsWrite }
+				.ToArray());
 
-			var httpContext = new DefaultHttpContext
-			{
-				User = new ClaimsPrincipal(new ClaimsIdentity(
-					new[] {new Claim(ClaimTypes.Name, "username")}, "someAuthTypeName"))
-			};
-			
-			var authorizationFilterContext = new AuthorizationFilterContext(
-				new ActionContext(httpContext, new RouteData(), new ActionDescriptor()),
-				new List<IFilterMetadata>());
-			
-			permissionAttribute.OnAuthorization(authorizationFilterContext);
-			
-			Assert.AreEqual(authorizationFilterContext.Result?.GetType(), new UnauthorizedResult().GetType());
-		}
-		
-		[TestMethod]
-		public void PermissionClaimExist()
+		var authorizationFilterContext = new AuthorizationFilterContext(
+			new ActionContext(new DefaultHttpContext(), new RouteData(), new ActionDescriptor()),
+			new List<IFilterMetadata>());
+
+		permissionAttribute.OnAuthorization(authorizationFilterContext);
+
+		Assert.AreEqual(authorizationFilterContext.Result?.GetType(),
+			new UnauthorizedResult().GetType());
+	}
+
+	[TestMethod]
+	public void PermissionClaimMissing()
+	{
+		var permissionAttribute = new PermissionAttribute(
+			new List<UserManager.AppPermissions> { UserManager.AppPermissions.AppSettingsWrite }
+				.ToArray());
+
+		var httpContext = new DefaultHttpContext
 		{
-			var permissionAttribute = new PermissionAttribute(
-				new List<UserManager.AppPermissions> {UserManager.AppPermissions.AppSettingsWrite}
-					.ToArray());
+			User = new ClaimsPrincipal(new ClaimsIdentity(
+				new[] { new Claim(ClaimTypes.Name, "username") }, "someAuthTypeName"))
+		};
 
-			var httpContext = new DefaultHttpContext
-			{
-				User = new ClaimsPrincipal(new ClaimsIdentity(
-					new[] {new Claim("Permission", UserManager.AppPermissions.AppSettingsWrite.ToString())}))
-			};
-			
-			var authorizationFilterContext = new AuthorizationFilterContext(
-				new ActionContext(httpContext, new RouteData(), new ActionDescriptor()),
-				new List<IFilterMetadata>());
-			
-			permissionAttribute.OnAuthorization(authorizationFilterContext);
+		var authorizationFilterContext = new AuthorizationFilterContext(
+			new ActionContext(httpContext, new RouteData(), new ActionDescriptor()),
+			new List<IFilterMetadata>());
 
-			var existHeader = authorizationFilterContext.HttpContext.Response.Headers["x-permission"] == "true";
-			Assert.IsTrue(existHeader);
-		}
+		permissionAttribute.OnAuthorization(authorizationFilterContext);
+
+		Assert.AreEqual(authorizationFilterContext.Result?.GetType(),
+			new UnauthorizedResult().GetType());
+	}
+
+	[TestMethod]
+	public void PermissionClaimExist()
+	{
+		var permissionAttribute = new PermissionAttribute(
+			new List<UserManager.AppPermissions> { UserManager.AppPermissions.AppSettingsWrite }
+				.ToArray());
+
+		var httpContext = new DefaultHttpContext
+		{
+			User = new ClaimsPrincipal(new ClaimsIdentity(
+				new[]
+				{
+					new Claim("Permission",
+						UserManager.AppPermissions.AppSettingsWrite.ToString())
+				}))
+		};
+
+		var authorizationFilterContext = new AuthorizationFilterContext(
+			new ActionContext(httpContext, new RouteData(), new ActionDescriptor()),
+			new List<IFilterMetadata>());
+
+		permissionAttribute.OnAuthorization(authorizationFilterContext);
+
+		var existHeader = authorizationFilterContext.HttpContext.Response.Headers["x-permission"] ==
+		                  "true";
+		Assert.IsTrue(existHeader);
 	}
 }

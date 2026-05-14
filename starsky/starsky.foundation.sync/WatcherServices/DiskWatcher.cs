@@ -74,7 +74,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		// the renaming of files or directories.
 
 		// handle many file system events quickly
-		_fileSystemWatcherWrapper.InternalBufferSize = 10 * 1024; // 10 KB - default = 4096 / 4 KB
+		_fileSystemWatcherWrapper.InternalBufferSize = 64 * 1024; // 64 KB - default = 4096 / 4 KB
 
 		// Add event handlers.
 		_fileSystemWatcherWrapper.Created += OnChanged;

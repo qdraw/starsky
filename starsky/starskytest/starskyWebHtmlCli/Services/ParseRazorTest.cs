@@ -3,18 +3,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Helpers;
 using starskytest.FakeMocks;
 
-namespace starskytest.starskyWebHtmlCli.Services
+namespace starskytest.starskyWebHtmlCli.Services;
+
+[TestClass]
+public sealed class ParseRazorTest
 {
-	[TestClass]
-	public sealed class ParseRazorTest
+	[TestMethod]
+	public async Task ParseRazorTestNotFound()
 	{
-		[TestMethod]
-		public async Task ParseRazorTestNotFound()
-		{
-			var result =
-				await new ParseRazor(new FakeIStorage(), new FakeIWebLogger()).EmbeddedViews(null!,
-					null!);
-			Assert.AreEqual(string.Empty, result);
-		}
+		var result =
+			await new ParseRazor(new FakeIStorage(), new FakeIWebLogger()).EmbeddedViews(null!,
+				null!);
+		Assert.AreEqual(string.Empty, result);
 	}
 }

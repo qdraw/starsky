@@ -57,7 +57,7 @@ done
 
 if (! docker stats --no-stream &> /dev/null); then
   if [[ "$(uname)" == "Darwin" ]]; then
-    # On Mac OS this would be the terminal command to launch Docker
+    # On macOS this would be the terminal command to launch Docker
     open /Applications/Docker.app
   elif [[ "$(uname -s)" == *"MINGW64_NT"* ]]; then
   printf "$PRINTF_COLOR_FORMAT_NEWLINE" $COLOR_RED "Make sure Docker Desktop is running and restart this script" $COLOR_REST

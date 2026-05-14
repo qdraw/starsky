@@ -1,8 +1,8 @@
 #!/usr/bin/env powershell
 
 # For insiders only - requires token
-# Please use: 
-# ./pm2-install-latest-release.sh 
+# Please use:
+# ./pm2-install-latest-release.sh
 # for public builds
 
 # Script goal:
@@ -24,7 +24,7 @@ param(
 # for powershell 5
 switch ([System.Environment]::OSVersion.Platform)
 {
-    'Win32NT' { 
+    'Win32NT' {
         New-Variable -Option Constant -Name IsWindows -Value $True -ErrorAction SilentlyContinue
         New-Variable -Option Constant -Name IsLinux  -Value $false -ErrorAction SilentlyContinue
         New-Variable -Option Constant -Name IsMacOs  -Value $false -ErrorAction SilentlyContinue
@@ -34,37 +34,37 @@ switch ([System.Environment]::OSVersion.Platform)
 
 if($runTime -eq '') {
 
-    If($IsWindows -eq $true) {
+    if($IsWindows -eq $true) {
         $runTime = "win-x64"
     }
-    ElseIf (($IsLinux -eq $true) -or ($IsMacOs -eq $true)) {
+    elseif (($IsLinux -eq $true) -or ($IsMacOs -eq $true)) {
         $uNameM = Invoke-Expression -Command "uname -m"
 
-        If(($uNameM -eq 'x86_64') -and ($IsLinux -eq $true)) {
+        if(($uNameM -eq 'x86_64') -and ($IsLinux -eq $true)) {
             $runTime = "linux-x64"
         }
-        If(($uNameM -eq 'x86_64') -and ($IsMacOs -eq $true)) {
+        if(($uNameM -eq 'x86_64') -and ($IsMacOs -eq $true)) {
             $runTime = "osx-x64"
         }
-        If(($uNameM -eq 'aarch64')) {
+        if(($uNameM -eq 'aarch64')) {
             $runTime = "linux-arm64"
         }
-        If(($uNameM -eq 'armv7l')) {
+        if(($uNameM -eq 'armv7l')) {
             $runTime = "linux-arm"
         }
-        If(($uNameM -eq 'arm64') -and ($IsMacOs -eq $true)) {
+        if(($uNameM -eq 'arm64') -and ($IsMacOs -eq $true)) {
             $runTime = "osx-arm64" # got gatekeeper errors
         }
     }
 }
 
-write-host "runtime:"$runTime
+Write-Host "runtime:"$runTime
 
 # rename
 $runTimeVersion=$runTime
 
 $versionZipArray = @()
-If($runTimeVersion.contains("desktop") -eq $false) {
+if($runTimeVersion.contains("desktop") -eq $false) {
     $versionZipArray = @("starsky-" + $runTime + ".zip")
 }
 else {
@@ -75,22 +75,22 @@ else {
 $versionName = $versionZipArray[0].replace(".zip","")
 
 if ((Test-Path -Path $outPut) -eq $false) {
-    write-host "-output path doesn't exist." $exePath
-    write-host "end script due fail"
+    Write-Host "-output path doesn't exist." $exePath
+    Write-Host "end script due fail"
     exit 1
-} 
+}
 
 $startupCsPath = Join-Path -Path $outPut -ChildPath "Startup.cs"
 
 if ((Test-Path -Path $startupCsPath) -eq $true) {
-    write-host "FAIL: You should not run this folder from the source folder"
-    write-host "copy this file to the location to run it from"
-    write-host "end script due failure"
+    Write-Host "FAIL: You should not run this folder from the source folder"
+    Write-Host "copy this file to the location to run it from"
+    Write-Host "end script due failure"
     exit 1
-} 
+}
 
 if ([string]::IsNullOrWhitespace($token)){
-    write-host "enter pat as --token and rerun"
+    Write-Host "enter pat as --token and rerun"
     exit 1
 }
 
@@ -184,32 +184,31 @@ $ArtifactsUrl = $LatestRun.artifacts_url
 $artifactsUrlResult = (Invoke-WebRequest -Method GET -Uri $LatestRun.artifacts_url -Headers $ghHeaders -UseBasicParsing -ErrorAction Stop | ConvertFrom-Json)
 
 $artifactsDownloadUrl = ""
-ForEach ($artifact in $artifactsUrlResult.artifacts) {
+foreach ($artifact in $artifactsUrlResult.artifacts) {
 
     if($artifact.name -eq $runTimeVersion) {
-        write-host  "artifact" $artifact.name
+        Write-Host  "artifact" $artifact.name
         $artifactsDownloadUrl = $artifact.archive_download_url
     }
 }
 
 if ([string]::IsNullOrWhitespace($artifactsDownloadUrl)){
-    write-host "[FAIL] artifactsDownloadUrl is null or empty"
+    Write-Host "[FAIL] artifactsDownloadUrl is null or empty"
     exit 1
-} 
-
+}
 
 $outPutZipTempPath= Join-Path -Path $outPut -ChildPath "${versionName}_tmp.zip"
 
-write-host "Next: download output file:" $outPutZipTempPath
+Write-Host "Next: download output file:" $outPutZipTempPath
 Invoke-WebRequest -Method GET -Uri $artifactsDownloadUrl -Headers $ghHeaders -OutFile $outPutZipTempPath -UseBasicParsing -ErrorAction Stop
 
 # remove already downloaded outputs
-ForEach ($singleVersionZip in $versionZipArray) {
+foreach ($singleVersionZip in $versionZipArray) {
     $singleOutPutZipPath = Join-Path -Path $outPut -ChildPath "${singleVersionZip}"
     if ((Test-Path -Path $singleOutPutZipPath) -eq $true) {
-        write-host "remove existing file." $singleOutPutZipPath
+        Write-Host "remove existing file." $singleOutPutZipPath
         Remove-Item -Path $singleOutPutZipPath -Force
-    } 
+    }
 }
 
 
@@ -220,7 +219,7 @@ Remove-Item $outPutZipTempPath
 $outPutZipPath = Join-Path -Path $outPut -ChildPath "${versionName}.zip"
 
 if ((Test-Path -Path $outPutZipPath) -eq $false) {
-    write-host "FAIL: output file doesn't exist." $outPutZipPath
+    Write-Host "FAIL: output file doesn't exist." $outPutZipPath
     exit 1
 }
 

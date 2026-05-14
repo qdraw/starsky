@@ -4,7 +4,8 @@ import ArchiveSidebarLabelEdit from "./archive-sidebar-label-edit";
 
 describe("ArchiveSidebarLabelEdit", () => {
   it("renders", () => {
-    render(<ArchiveSidebarLabelEdit />);
+    const item = render(<ArchiveSidebarLabelEdit />);
+    expect(item).toBeTruthy();
   });
 
   it("click on SwitchButton go to Replace", () => {

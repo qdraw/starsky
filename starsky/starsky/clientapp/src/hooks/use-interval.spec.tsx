@@ -19,7 +19,10 @@ describe("useInterval", () => {
     function callback() {
       done();
     }
-    render(<UseIntervalComponentTest timer={0} callback={callback}></UseIntervalComponentTest>);
+    const item = render(
+      <UseIntervalComponentTest timer={0} callback={callback}></UseIntervalComponentTest>
+    );
+    expect(item).toBeTruthy();
   });
 
   it("check if setInterval is called", () => {

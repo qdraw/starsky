@@ -55,7 +55,7 @@ export const fetchContent = async (
   const response = {
     statusCode,
     data
-  } as IConnectionDefault;
+  };
 
   if (mounted) {
     setData(response);

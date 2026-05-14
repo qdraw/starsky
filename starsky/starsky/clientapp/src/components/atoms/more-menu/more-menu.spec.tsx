@@ -4,7 +4,8 @@ import MoreMenu from "./more-menu";
 
 describe("More Menu", () => {
   it("renders", () => {
-    render(<MoreMenuWrapper></MoreMenuWrapper>);
+    const item = render(<MoreMenuWrapper></MoreMenuWrapper>);
+    expect(item).toBeTruthy();
   });
 
   function MoreMenuWrapper() {

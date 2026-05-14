@@ -11,7 +11,11 @@ import MenuOptionDesktopEditorOpenSelectionNoSelectWarning from "./menu-option-d
 
 describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
   it("should render without crashing", () => {
-    render(<MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false} />);
+    const item = render(
+      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false} />
+    );
+
+    expect(item).toBeTruthy();
   });
 
   it("should show error notification when trying to open editor without selecting anything", () => {

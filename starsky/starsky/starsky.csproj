@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <RuntimeFrameworkVersion>8.0.26</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.27</RuntimeFrameworkVersion>
         <Description>An attempt to create a database driven photo library</Description>
         <!-- use node script to update version -->
-        <Version>0.7.16</Version>
+        <Version>0.7.19</Version>
         <!-- SonarQube needs this -->
         <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
@@ -13,7 +13,7 @@
         <!-- due missing support of ts4.1-->
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
         <SynchReleaseVersion>false</SynchReleaseVersion>
-        <!-- maybe needed for mac os https://www.kenmuse.com/blog/notarizing-dotnet-console-apps-for-macos/ -->
+        <!-- maybe needed for macOS https://www.kenmuse.com/blog/notarizing-dotnet-console-apps-for-macos/ -->
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
         <IncludeSymbolsInSingleFile>false</IncludeSymbolsInSingleFile>
         <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
@@ -59,7 +59,7 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.26" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.27" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6"/>
     </ItemGroup>

@@ -10,11 +10,12 @@ describe("ListImageTest", () => {
       fileName: "test",
       status: IExifStatus.Ok
     } as IFileIndexItem;
-    render(
+    const item = render(
       <MemoryRouter>
         <ListImageNormalSelectContainer item={fileIndexItem} />
       </MemoryRouter>
     );
+    expect(item).toBeTruthy();
   });
 
   describe("NonSelectMode", () => {

@@ -22,7 +22,7 @@
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
 * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
 * [Starsky Desktop](../../starskydesktop/readme.md) _Desktop Application_
-    * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
+    * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 * [Changelog](../../history.md) _Release notes and history_
 
 ## starsky/starsky docs
@@ -340,7 +340,6 @@ __All text (not number or date) driven search queries use a contain search__
 | __software__          | -software:"photoshop"                | Last edited this app          |
 | __artist__            | -artist:"your-name"                  | Some cameras store an artist  |
 
-
 ### Rest API documentation
 
 Starsky has a Json restful API. There is a Swagger documentation available at `/swagger/index.html`
@@ -419,11 +418,11 @@ Then DiskWatcher is stopping and retry 20 times before the state will be disable
 
 Solution: make sure that all child folder are accessible
 
-#### DiskWatcher in combination with Mac OS APFS Disk
+#### DiskWatcher in combination with macOS APFS Disk
 
 When you set `/System/Volumes/Data` to watch for changes this makes the application crash with
 `System.ArgumentOutOfRangeException` when a single file is changed. There is currently no solution
-for this problem other then don't use the Diskwatcher with this location.
+for this problem other than don't use the Diskwatcher with this location.
 
 ```c#
 Unhandled exception. System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values.

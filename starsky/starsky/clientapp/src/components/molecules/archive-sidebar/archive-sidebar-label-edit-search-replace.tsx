@@ -4,7 +4,6 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { ISidebarGenericUpdate, ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
 import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
@@ -87,7 +86,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   }
 
   function handleFetchPostResponse(anyData: IConnectionDefault) {
-    const result = new CastToInterface().InfoFileIndexArray(anyData.data as IFileIndexItem[]);
+    const result = new CastToInterface().InfoFileIndexArray(anyData.data);
     for (const element of result) {
       if (element.status === IExifStatus.ReadOnly) setIsError(MessageWriteErrorReadOnly);
       if (element.status === IExifStatus.NotFoundSourceMissing)

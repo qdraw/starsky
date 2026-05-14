@@ -20,8 +20,10 @@ describe("UpdateRelativeObject", () => {
       .then((status) => {
         console.log("--should not display status");
         console.log(status);
+        expect(status).toBeUndefined();
       })
       .catch(() => {
+        expect(test).toHaveBeenCalledTimes(0);
         done();
       });
   });
@@ -38,6 +40,7 @@ describe("UpdateRelativeObject", () => {
     jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockIConnectionDefault2);
 
     new UpdateRelativeObject().Update(newDetailView(), true, "/?t=test", test).then(() => {
+      expect(test).toHaveBeenCalledTimes(1);
       done();
     });
   });
@@ -59,6 +62,7 @@ describe("UpdateRelativeObject", () => {
         console.log(status);
       })
       .catch(() => {
+        expect(test).toHaveBeenCalledTimes(0);
         done();
       });
   });

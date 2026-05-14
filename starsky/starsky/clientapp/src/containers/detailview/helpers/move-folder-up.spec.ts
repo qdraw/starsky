@@ -4,9 +4,10 @@ import { IDetailView } from "../../../interfaces/IDetailView";
 import { Keyboard } from "../../../shared/keyboard/keyboard";
 import { moveFolderUp } from "./move-folder-up";
 
-describe("statusRemoved", () => {
+describe("move folder up", () => {
   it("renders", () => {
-    moveFolderUp({} as KeyboardEvent, {} as IUseLocation, true, {} as IDetailView);
+    const item = moveFolderUp({} as KeyboardEvent, {} as IUseLocation, true, {} as IDetailView);
+    expect(item).toBeUndefined();
   });
 
   it("should navigate [search query on]", () => {

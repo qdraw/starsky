@@ -82,7 +82,7 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 		}
 
 		// When running in Windows as Service it does not open the application
-		// On Mac OS it does open the application
+		// On macOS it does open the application
 		if ( !environmentUserInteractive && runtimeInformationIsOsPlatform(OSPlatform.Windows) )
 		{
 			return false;

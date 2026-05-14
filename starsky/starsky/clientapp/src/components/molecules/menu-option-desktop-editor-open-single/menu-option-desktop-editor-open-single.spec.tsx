@@ -13,8 +13,8 @@ import MenuOptionDesktopEditorOpenSingle, {
 } from "./menu-option-desktop-editor-open-single";
 
 describe("MenuOptionDesktopEditorOpenSingle", () => {
-  it("should render without errors", () => {
-    render(
+  it("render without errors", () => {
+    const item = render(
       <MenuOptionDesktopEditorOpenSingle
         isDirectory={false}
         subPath=""
@@ -22,6 +22,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
         isReadOnly={true}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   const displayTextTheoryData = [

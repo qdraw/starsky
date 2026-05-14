@@ -14,7 +14,8 @@ import ArchiveSidebarLabelEditAddOverwrite from "./archive-sidebar-label-edit-ad
 
 describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("renders", () => {
-    render(<ArchiveSidebarLabelEditAddOverwrite />);
+    const item = render(<ArchiveSidebarLabelEditAddOverwrite />);
+    expect(item).toBeTruthy();
   });
 
   it("isReadOnly: true", () => {

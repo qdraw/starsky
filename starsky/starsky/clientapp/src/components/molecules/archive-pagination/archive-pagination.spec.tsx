@@ -5,11 +5,12 @@ import ArchivePagination from "./archive-pagination";
 
 describe("ArchivePagination", () => {
   it("renders new object", () => {
-    render(
+    const item = render(
       <MemoryRouter>
         <ArchivePagination relativeObjects={newIRelativeObjects()} />
       </MemoryRouter>
     );
+    expect(item).toBeTruthy();
   });
 
   const relativeObjects = {

@@ -11,7 +11,7 @@ import * as ColorClassUpdateSingle from "./color-class-update-single";
 
 describe("ColorClassSelectKeyboard", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <ColorClassSelectKeyboard
         collections={true}
         isEnabled={true}
@@ -19,6 +19,7 @@ describe("ColorClassSelectKeyboard", () => {
         onToggle={() => {}}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   it("press keyboard and should fire http request", async () => {

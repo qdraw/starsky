@@ -10,7 +10,8 @@ import MenuInlineSearch from "./menu-inline-search";
 
 describe("menu-inline-search", () => {
   it("renders", () => {
-    render(<MenuInlineSearch />);
+    const item = render(<MenuInlineSearch />);
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

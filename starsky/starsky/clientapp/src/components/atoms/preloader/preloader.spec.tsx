@@ -3,7 +3,8 @@ import Preloader from "./preloader";
 
 describe("Preloader", () => {
   it("renders", () => {
-    render(<Preloader isOverlay={false} />);
+    const item = render(<Preloader isOverlay={false} />);
+    expect(item).toBeTruthy();
   });
 
   it("no overlay", () => {

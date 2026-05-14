@@ -19,7 +19,8 @@ import ArchiveContextWrapper, {
 
 describe("ArchiveContextWrapper", () => {
   it("renders", () => {
-    render(<ArchiveContextWrapper {...newIArchive()} />);
+    const item = render(<ArchiveContextWrapper {...newIArchive()} />);
+    expect(item).toBeTruthy();
   });
 
   describe("with mount", () => {

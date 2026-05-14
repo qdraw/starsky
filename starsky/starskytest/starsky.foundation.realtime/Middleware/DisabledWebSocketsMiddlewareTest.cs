@@ -6,31 +6,33 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.realtime.Middleware;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.realtime.Middleware
-{
-	[TestClass]
-	public sealed class DisabledWebSocketsMiddlewareTest
-	{
-		[TestMethod]
-		public async Task DisabledWebSocketsMiddleware_Invoke()
-		{
-			var httpContext = new DefaultHttpContext();
-			var disabledWebSocketsMiddleware = new DisabledWebSocketsMiddleware(next: (_) => Task.CompletedTask);
-			await disabledWebSocketsMiddleware.Invoke(httpContext);
-			Assert.AreEqual(400,httpContext.Response.StatusCode);
-		}
-		
-		[TestMethod]
-		public async Task WebSocketConnection_MessageTooBig()
-		{
-			var httpContext = new FakeWebSocketHttpContext(false);
+namespace starskytest.starsky.foundation.realtime.Middleware;
 
-			var disabledWebSocketsMiddleware = new DisabledWebSocketsMiddleware(next: (_) => Task.CompletedTask);
-			await disabledWebSocketsMiddleware.Invoke(httpContext);
-			
-			var socketManager = httpContext.WebSockets as FakeWebSocketManager;
-			Assert.AreEqual(WebSocketCloseStatus.MessageTooBig, 
-				(socketManager?.FakeWebSocket as FakeWebSocket)?.FakeCloseOutputAsync.LastOrDefault());
-		}
+[TestClass]
+public sealed class DisabledWebSocketsMiddlewareTest
+{
+	[TestMethod]
+	public async Task DisabledWebSocketsMiddleware_Invoke()
+	{
+		var httpContext = new DefaultHttpContext();
+		var disabledWebSocketsMiddleware =
+			new DisabledWebSocketsMiddleware(_ => Task.CompletedTask);
+		await disabledWebSocketsMiddleware.Invoke(httpContext);
+		Assert.AreEqual(400, httpContext.Response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task WebSocketConnection_MessageTooBig()
+	{
+		var httpContext = new FakeWebSocketHttpContext(false);
+
+		var disabledWebSocketsMiddleware =
+			new DisabledWebSocketsMiddleware(_ => Task.CompletedTask);
+		await disabledWebSocketsMiddleware.Invoke(httpContext);
+
+		var socketManager = httpContext.WebSockets as FakeWebSocketManager;
+		Assert.AreEqual(WebSocketCloseStatus.MessageTooBig,
+			( socketManager?.FakeWebSocket as FakeWebSocket )?.FakeCloseOutputAsync
+			.LastOrDefault());
 	}
 }

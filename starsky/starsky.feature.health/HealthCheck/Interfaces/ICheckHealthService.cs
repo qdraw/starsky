@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using starsky.project.web.ViewModels;
 
 namespace starsky.feature.health.HealthCheck.Interfaces;
 

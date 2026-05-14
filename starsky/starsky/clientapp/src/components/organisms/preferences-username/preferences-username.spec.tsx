@@ -6,7 +6,8 @@ import PreferencesUsername from "./preferences-username";
 
 describe("PreferencesUsername", () => {
   it("renders", () => {
-    render(<PreferencesUsername />);
+    const item = render(<PreferencesUsername />);
+    expect(item).toBeTruthy();
   });
 
   describe("context", () => {

@@ -15,6 +15,8 @@ namespace starskytest.starsky.foundation.native.Trash.Helpers;
 [TestClass]
 public class MacOsTrashBindingHelperTest
 {
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public void MacOsTrashBindingHelper_Non_SupportOs()
 	{
@@ -29,7 +31,7 @@ public class MacOsTrashBindingHelperTest
 	{
 		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test if for Mac OS Only");
+			Assert.Inconclusive("This test if for macOS Only");
 			return;
 		}
 
@@ -43,7 +45,7 @@ public class MacOsTrashBindingHelperTest
 	{
 		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test if for Mac OS Only");
+			Assert.Inconclusive("This test if for macOS Only");
 			return;
 		}
 
@@ -97,7 +99,7 @@ public class MacOsTrashBindingHelperTest
 	{
 		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test if for Mac OS Only");
+			Assert.Inconclusive("This test if for macOS Only");
 			return;
 		}
 
@@ -110,7 +112,7 @@ public class MacOsTrashBindingHelperTest
 	{
 		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test if for non-Mac OS Only");
+			Assert.Inconclusive("This test if for non-macOS Only");
 			return;
 		}
 
@@ -132,7 +134,7 @@ public class MacOsTrashBindingHelperTest
 	{
 		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test if for non-Mac OS Only");
+			Assert.Inconclusive("This test if for non-macOS Only");
 			return;
 		}
 
@@ -155,7 +157,7 @@ public class MacOsTrashBindingHelperTest
 	{
 		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test is for non-Mac OS only");
+			Assert.Inconclusive("This test is for non-macOS only");
 			return;
 		}
 
@@ -169,7 +171,7 @@ public class MacOsTrashBindingHelperTest
 	{
 		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test is for non-Mac OS only");
+			Assert.Inconclusive("This test is for non-macOS only");
 			return;
 		}
 
@@ -183,7 +185,7 @@ public class MacOsTrashBindingHelperTest
 	{
 		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test is for non-Mac OS only");
+			Assert.Inconclusive("This test is for non-macOS only");
 			return;
 		}
 
@@ -197,7 +199,7 @@ public class MacOsTrashBindingHelperTest
 	{
 		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test is for non-Mac OS only");
+			Assert.Inconclusive("This test is for non-macOS only");
 			return;
 		}
 
@@ -236,6 +238,4 @@ public class MacOsTrashBindingHelperTest
 			( uint ) MacOsTrashBindingHelper.CfStringEncoding.ASCII
 		];
 	}
-
-	public TestContext TestContext { get; set; }
 }

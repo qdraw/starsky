@@ -9,8 +9,14 @@ namespace starsky.foundation.native.OpenApplicationNative.Helpers;
 	"generate P/Invoke marshalling code at compile time")]
 public static class MacOsOpenUrl
 {
+	private const string FoundationFramework =
+		"/System/Library/Frameworks/Foundation.framework/Foundation";
+
+	private const string AppKitFramework =
+		"/System/Library/Frameworks/AppKit.framework/AppKit";
+
 	/// <summary>
-	/// Add check if not Mac OS X
+	///     Add check if not macOS
 	/// </summary>
 	/// <param name="fileUrls"></param>
 	/// <param name="platform"></param>
@@ -22,7 +28,7 @@ public static class MacOsOpenUrl
 	}
 
 	/// <summary>
-	/// Does NOT check if file exists
+	///     Does NOT check if file exists
 	/// </summary>
 	/// <param name="fileUrls">Absolute Path of file</param>
 	/// <returns></returns>
@@ -53,12 +59,12 @@ public static class MacOsOpenUrl
 	}
 
 	/// <summary>
-	/// Does NOT check if a file exists
-	/// No Fallback if NOT Mac OS X
+	///     Does NOT check if a file exists
+	///     No Fallback if NOT macOS
 	/// </summary>
 	/// <param name="fileUrls">Absolute Paths</param>
 	/// <param name="applicationUrl">Open with .app folder</param>
-	/// <exception cref="DllNotFoundException">When not Mac OS</exception>
+	/// <exception cref="DllNotFoundException">When not macOS</exception>
 	internal static bool? OpenApplicationAtUrl(
 		List<string> fileUrls,
 		string applicationUrl)
@@ -85,7 +91,7 @@ public static class MacOsOpenUrl
 	}
 
 	/// <summary>
-	/// Open Default Url
+	///     Open Default Url
 	/// </summary>
 	/// <param name="fileUrlIntPtr">Pointer for urls</param>
 	/// <returns>Is Success</returns>
@@ -99,7 +105,8 @@ public static class MacOsOpenUrl
 
 
 	/// <summary>
-	/// @see: https://developer.apple.com/documentation/appkit/nsworkspace/3172702-openurls?language=objc
+	///     @see:
+	///     https://developer.apple.com/documentation/appkit/nsworkspace/3172702-openurls?language=objc
 	/// </summary>
 	internal static void OpenUrLsWithApplicationAtUrl(nint fileUrlIntPtrUrlArray,
 		nint applicationUrlIntPtr, nint nsWorkspaceOpenConfigurationDefault)
@@ -113,12 +120,6 @@ public static class MacOsOpenUrl
 			nsWorkspaceOpenConfigurationDefault,
 			IntPtr.Zero);
 	}
-
-	private const string FoundationFramework =
-		"/System/Library/Frameworks/Foundation.framework/Foundation";
-
-	private const string AppKitFramework =
-		"/System/Library/Frameworks/AppKit.framework/AppKit";
 
 	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
 	private static extern IntPtr objc_msgSend_retIntPtr(IntPtr target, IntPtr selector);
@@ -134,7 +135,7 @@ public static class MacOsOpenUrl
 
 	[DllImport(AppKitFramework)]
 	[SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments")]
-	static extern IntPtr objc_getClass(string className);
+	private static extern IntPtr objc_getClass(string className);
 
 	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
 	private static extern bool objc_msgSend_retBool_IntPtr_IntPtr(IntPtr target, IntPtr selector,

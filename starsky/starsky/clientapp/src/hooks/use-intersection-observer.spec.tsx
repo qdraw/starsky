@@ -42,8 +42,8 @@ describe("useIntersection", () => {
   };
 
   it("newIntersectionObserver is not failing", () => {
-    render(<NewIntersectionComponentTest />);
-    // there is no assert/check
+    const item = render(<NewIntersectionComponentTest />);
+    expect(item).toBeTruthy();
   });
 
   describe("newIntersectionObserver", () => {

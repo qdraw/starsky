@@ -1,7 +1,6 @@
 import { ModalOpenClassName } from "../../../components/atoms/modal/modal";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../interfaces/IDetailView";
-import { INavigateState } from "../../../interfaces/INavigateState";
 import { Keyboard } from "../../../shared/keyboard/keyboard";
 import { UrlQuery } from "../../../shared/url/url-query";
 
@@ -28,6 +27,6 @@ export function moveFolderUp(
   history.navigate(url, {
     state: {
       filePath: state.fileIndexItem.filePath
-    } as INavigateState
+    }
   });
 }

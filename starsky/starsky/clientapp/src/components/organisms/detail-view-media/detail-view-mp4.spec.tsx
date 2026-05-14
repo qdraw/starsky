@@ -9,7 +9,8 @@ import DetailViewMp4 from "./detail-view-mp4";
 
 describe("DetailViewMp4", () => {
   it("renders (without state component)", () => {
-    render(<DetailViewMp4></DetailViewMp4>);
+    const item = render(<DetailViewMp4></DetailViewMp4>);
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {
@@ -169,6 +170,7 @@ describe("DetailViewMp4", () => {
         const progress = component.querySelector("progress");
         if (progress == null) throw new Error("missing progress tag");
         progress.click();
+        expect(progress).toBeTruthy();
         root.unmount();
         done();
       }, 0);

@@ -7,7 +7,8 @@ import ArchiveSidebarSelectionList from "./archive-sidebar-selection-list";
 
 describe("archive-sidebar-selection-list", () => {
   it("renders", () => {
-    render(<ArchiveSidebarSelectionList fileIndexItems={newIFileIndexItemArray()} />);
+    const item = render(<ArchiveSidebarSelectionList fileIndexItems={newIFileIndexItemArray()} />);
+    expect(item).toBeTruthy();
   });
 
   describe("with select state", () => {

@@ -1,14 +1,13 @@
-namespace starsky.feature.geolookup.Models
-{
-	public enum StatusType
-	{
-		Total,
-		Current
-	}
+namespace starsky.feature.geolookup.Models;
 
-	public class GeoCacheStatus
-	{
-		public int Total { get; set; }
-		public int Current { get; set; }
-	}
+public enum StatusType
+{
+	Total,
+	Current
+}
+
+public class GeoCacheStatus
+{
+	public int Total { get; set; }
+	public int Current { get; set; }
 }

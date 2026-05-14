@@ -14,5 +14,5 @@ export interface IUrl {
 }
 
 export function newIUrl(): IUrl {
-  return {} as IUrl;
+  return {};
 }

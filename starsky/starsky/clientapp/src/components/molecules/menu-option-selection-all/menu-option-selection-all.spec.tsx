@@ -4,17 +4,18 @@ import { MenuOptionSelectionAll } from "./menu-option-selection-all";
 
 describe("MenuOptionSelectionAll", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <MenuOptionSelectionAll
         select={["test"]}
         state={{} as IArchiveProps}
         allSelection={() => {}}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   it("renders 2", () => {
-    render(
+    const item = render(
       <MenuOptionSelectionAll
         select={["test"]}
         state={
@@ -25,6 +26,7 @@ describe("MenuOptionSelectionAll", () => {
         allSelection={() => {}}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   it("keyDown tab skipped", () => {

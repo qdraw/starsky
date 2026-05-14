@@ -10,7 +10,8 @@ describe("inline-search-suggest", () => {
       inputFormControlReference: { current: null },
       featuresResult: {} as IConnectionDefault
     };
-    render(<InlineSearchSuggest {...props} />);
+    const item = render(<InlineSearchSuggest {...props} />);
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

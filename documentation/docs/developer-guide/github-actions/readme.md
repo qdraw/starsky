@@ -208,9 +208,9 @@ runs on release of a new stable version
 
 > [webapp-docker-release-on-tag-docker-hub.yml](https://github.com/qdraw/starsky/actions/workflows/webapp-docker-release-on-tag-docker-hub.yml)
 
-## Create Desktop Release on tag for .Net and Electron
+## Create Desktop Release on tag for .NET and Electron
 
-Build the .NET runtime for Linux, Windows and Mac OS
+Build the .NET runtime for Linux, Windows and macOS
 And build Electron
 Only create release when a new tag is pushed
 
@@ -269,7 +269,7 @@ Smoke tests for the starsky-tools
 ## starskyDesktop Electron PR (Missing .NET dependency)
 
 Build the Electron app on pull request without .NET so faster but does not run the app
-For Windows and Mac OS builds the app and runs the unit tests
+For Windows and macOS builds the app and runs the unit tests
 
 [![desktop-electron-pr-build-mac-win](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml)
 

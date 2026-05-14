@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 
-namespace starsky.feature.geolookup.Interfaces
+namespace starsky.feature.geolookup.Interfaces;
+
+public interface IGeoIndexGpx
 {
-	public interface IGeoIndexGpx
-	{
-		Task<List<FileIndexItem>> LoopFolderAsync(
-			List<FileIndexItem> metaFilesInDirectory);
-	}
+	Task<List<FileIndexItem>> LoopFolderAsync(
+		List<FileIndexItem> metaFilesInDirectory);
 }

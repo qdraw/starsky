@@ -7,7 +7,7 @@ import PanAndZoomImage from "./pan-and-zoom-image";
 
 describe("PanAndZoomImage", () => {
   it("renders", () => {
-    render(
+    const item = render(
       <PanAndZoomImage
         src=""
         translateRotation={Orientation.Horizontal}
@@ -15,6 +15,7 @@ describe("PanAndZoomImage", () => {
         onResetCallback={jest.fn()}
       />
     );
+    expect(item).toBeTruthy();
   });
 
   describe("PanAndZoomImage", () => {

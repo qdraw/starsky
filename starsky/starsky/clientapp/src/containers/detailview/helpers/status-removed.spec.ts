@@ -8,7 +8,7 @@ import { statusRemoved } from "./status-removed";
 
 describe("statusRemoved", () => {
   it("renders", () => {
-    statusRemoved(
+    const item = statusRemoved(
       {} as IDetailView,
       {} as IRelativeObjects,
       true,
@@ -16,6 +16,7 @@ describe("statusRemoved", () => {
       jest.fn(),
       jest.fn
     );
+    expect(item).toBeUndefined();
   });
 
   it("should call next", () => {

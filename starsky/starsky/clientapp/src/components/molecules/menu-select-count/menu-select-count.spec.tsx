@@ -3,7 +3,8 @@ import { MenuSelectCount } from "./menu-select-count";
 
 describe("MenuOptionSelectionAll", () => {
   it("renders", () => {
-    render(<MenuSelectCount select={["test"]} removeSidebarSelection={() => {}} />);
+    const item = render(<MenuSelectCount select={["test"]} removeSidebarSelection={() => {}} />);
+    expect(item).toBeTruthy();
   });
 
   it("selected-0 keyDown tab skipped", () => {

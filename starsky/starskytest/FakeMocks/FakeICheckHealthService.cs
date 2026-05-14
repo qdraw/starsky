@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using starsky.feature.health.HealthCheck;
 using starsky.feature.health.HealthCheck.Interfaces;
 using starsky.feature.health.HealthCheck.Service;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
-using starsky.project.web.ViewModels;
 
 namespace starskytest.FakeMocks;
 

@@ -145,6 +145,42 @@ public sealed class ImportQueryTest
 	}
 
 	[TestMethod]
+	public async Task GetAll_WithScopeFactory_ReturnsItems()
+	{
+		var expectedResult =
+			new ImportIndexItem { AddToDatabase = DateTime.UtcNow, FileHash = "GETALL1" };
+		var serviceScopeFactory = CreateNewScope(nameof(GetAll_WithScopeFactory_ReturnsItems));
+
+		await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			new FakeIWebLogger()).AddAsync(expectedResult);
+
+		var result = new ImportQuery(serviceScopeFactory,
+			new FakeConsoleWrapper(), new FakeIWebLogger()).GetAll();
+
+		Assert.IsTrue(result.Exists(p => p.FileHash == "GETALL1"));
+	}
+
+	[TestMethod]
+	public void GetAll_WithoutScopeFactory_UsesDbContext()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(GetAll_WithoutScopeFactory_UsesDbContext))
+			.Options;
+		using var dbContext = new ApplicationDbContext(options);
+		dbContext.ImportIndex.Add(new ImportIndexItem
+		{
+			AddToDatabase = DateTime.UtcNow, FileHash = "GETALL2"
+		});
+		dbContext.SaveChanges();
+
+		var result =
+			new ImportQuery(null, new FakeConsoleWrapper(), new FakeIWebLogger(), dbContext)
+				.GetAll();
+
+		Assert.IsTrue(result.Exists(p => p.FileHash == "GETALL2"));
+	}
+
+	[TestMethod]
 	public async Task AddRangeAsync()
 	{
 		var expectedResult = new List<ImportIndexItem>

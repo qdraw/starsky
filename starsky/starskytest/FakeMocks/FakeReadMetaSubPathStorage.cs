@@ -3,45 +3,45 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.readmeta.Interfaces;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeReadMetaSubPathStorage : IReadMetaSubPathStorage
 {
-	public class FakeReadMetaSubPathStorage : IReadMetaSubPathStorage
+	private readonly FakeReadMeta _readMeta;
+
+	public FakeReadMetaSubPathStorage()
 	{
-		private readonly FakeReadMeta _readMeta;
+		_readMeta = new FakeReadMeta();
+	}
 
-		public FakeReadMetaSubPathStorage()
-		{
-			_readMeta = new FakeReadMeta();
-		}
-		
-		public async Task<FileIndexItem?> ReadExifAndXmpFromFileAsync(string subPath)
-		{
-			return await _readMeta.ReadExifAndXmpFromFileAsync(subPath);
-		}
+	public async Task<FileIndexItem?> ReadExifAndXmpFromFileAsync(string subPath)
+	{
+		return await _readMeta.ReadExifAndXmpFromFileAsync(subPath);
+	}
 
-		public  async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList,
-			List<string>? fileHashes = null)
-		{
-			return await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(subPathList, fileHashes!);
-		}
+	public async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(
+		List<string> subPathList,
+		List<string>? fileHashes = null)
+	{
+		return await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(subPathList, fileHashes!);
+	}
 
-		public bool? RemoveReadMetaCache(string fullFilePath)
-		{
-			_readMeta.RemoveReadMetaCache(fullFilePath);
-			return true;
-		}
+	public bool? RemoveReadMetaCache(string fullFilePath)
+	{
+		_readMeta.RemoveReadMetaCache(fullFilePath);
+		return true;
+	}
 
-		public void RemoveReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+	public void RemoveReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+	{
+		foreach ( var item in objectExifToolModel )
 		{
-			foreach ( var item in objectExifToolModel )
-			{
-				RemoveReadMetaCache(item.FilePath!);
-			}
+			RemoveReadMetaCache(item.FilePath!);
 		}
+	}
 
-		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
-		{
-			_readMeta.UpdateReadMetaCache(objectExifToolModel);
-		}
+	public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+	{
+		_readMeta.UpdateReadMetaCache(objectExifToolModel);
 	}
 }

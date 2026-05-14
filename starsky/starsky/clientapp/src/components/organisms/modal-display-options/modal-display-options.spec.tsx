@@ -10,7 +10,10 @@ describe("ModalDisplayOptions", () => {
   });
 
   it("renders", () => {
-    render(<ModalDisplayOptions isOpen={true} handleExit={() => {}}></ModalDisplayOptions>);
+    const item = render(
+      <ModalDisplayOptions isOpen={true} handleExit={() => {}}></ModalDisplayOptions>
+    );
+    expect(item).toBeTruthy();
   });
 
   describe("with Context", () => {

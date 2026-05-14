@@ -4,41 +4,41 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.starsky.foundation.storage.Storage
+namespace starskytest.starsky.foundation.storage.Storage;
+
+[TestClass]
+public sealed class RetryStreamTest
 {
-	[TestClass]
-	public sealed class RetryStreamTest
+	[TestMethod]
+	public void ReturnedThe3TimeAnStream()
 	{
-		[TestMethod]
-		public void ReturnedThe3TimeAnStream()
-		{
-			var i = 0;
-			Stream LocalGet()
-			{
-				i++;
-				if ( i != 3 )
-				{
-					throw new IOException();
-				}
+		var i = 0;
 
-				return new MemoryStream(CreateAnImageNoExif.Bytes.ToArray());
-			}
-
-			var stream = new RetryStream(0).Retry(LocalGet);
-			Assert.AreNotEqual(0, stream.Length);
-		}
-		
-		[TestMethod]
-		[Timeout(4000, CooperativeCancellation = true)]
-		public void EndlessFail()
+		Stream LocalGet()
 		{
-			Stream LocalGet()
+			i++;
+			if ( i != 3 )
 			{
 				throw new IOException();
 			}
 
-			var stream = new RetryStream(0).Retry(LocalGet);
-			Assert.AreEqual(0, stream.Length);
+			return new MemoryStream(CreateAnImageNoExif.Bytes.ToArray());
 		}
+
+		var stream = new RetryStream(0).Retry(LocalGet);
+		Assert.AreNotEqual(0, stream.Length);
+	}
+
+	[TestMethod]
+	[Timeout(4000, CooperativeCancellation = true)]
+	public void EndlessFail()
+	{
+		Stream LocalGet()
+		{
+			throw new IOException();
+		}
+
+		var stream = new RetryStream(0).Retry(LocalGet);
+		Assert.AreEqual(0, stream.Length);
 	}
 }
