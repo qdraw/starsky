@@ -25,13 +25,12 @@ public sealed class ImportIndexJsonController(
 			return BadRequest("ModelState is not valid");
 		}
 
-		var jsonPayload = importJson.GetRawText();
-		if ( string.IsNullOrWhiteSpace(jsonPayload) ||
-		     jsonPayload.Equals("null", StringComparison.OrdinalIgnoreCase) )
+		if ( importJson.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined )
 		{
 			return BadRequest("json payload is required");
 		}
 
+		var jsonPayload = importJson.GetRawText();
 		var tempPath = GetTempPath(appSettings.TempFolder);
 		await System.IO.File.WriteAllTextAsync(tempPath, jsonPayload);
 
