@@ -48,6 +48,23 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
     return fallback;
   };
 
+  const readFileAsText = async (file: File): Promise<string> => {
+    if (typeof file.text === "function") {
+      return file.text();
+    }
+
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        resolve(typeof fileReader.result === "string" ? fileReader.result : "");
+      };
+      fileReader.onerror = () => {
+        reject(new Error("Unable to read file"));
+      };
+      fileReader.readAsText(file);
+    });
+  };
+
   const importJson = async (): Promise<void> => {
     if (!selectedFile) {
       setError(messageNoFileSelected);
@@ -58,7 +75,7 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
 
     let rawJson = "";
     try {
-      rawJson = await selectedFile.text();
+      rawJson = await readFileAsText(selectedFile);
       JSON.parse(rawJson);
     } catch {
       setError(messageInvalidJson);
@@ -111,12 +128,26 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
 
     const jsonPayload = await response.text();
 
-    const downloadLink = document.createElement("a");
-    downloadLink.href = `data:application/json;charset=utf-8,${encodeURIComponent(jsonPayload)}`;
-    downloadLink.download = "import-index-export.json";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+    try {
+      const jsonBlob = new Blob([jsonPayload], { type: "application/json" });
+      const objectUrl =
+        typeof URL.createObjectURL === "function" ? URL.createObjectURL(jsonBlob) : "";
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = objectUrl;
+      downloadLink.download = "import-index-export.json";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      if (objectUrl && typeof URL.revokeObjectURL === "function") {
+        URL.revokeObjectURL(objectUrl);
+      }
+    } catch {
+      setError(messageExportFail);
+      setIsExporting(false);
+      return;
+    }
 
     setSuccess(messageExportSuccess);
     setIsExporting(false);

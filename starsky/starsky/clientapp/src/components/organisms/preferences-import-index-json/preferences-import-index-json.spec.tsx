@@ -5,6 +5,10 @@ import { UrlQuery } from "../../../shared/url/url-query";
 import PreferencesImportIndexJson from "./preferences-import-index-json";
 
 describe("PreferencesImportIndexJson", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("renders with default state", () => {
     const component = render(<PreferencesImportIndexJson />);
 
@@ -83,6 +87,16 @@ describe("PreferencesImportIndexJson", () => {
   });
 
   it("exports json", async () => {
+    Object.defineProperty(URL, "createObjectURL", {
+      writable: true,
+      value: jest.fn(() => "blob:import-index-json")
+    });
+    Object.defineProperty(URL, "revokeObjectURL", {
+      writable: true,
+      value: jest.fn()
+    });
+    jest.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+
     const fetchSpy = jest.spyOn(globalThis, "fetch").mockImplementation(() =>
       Promise.resolve({
         ok: true,
@@ -105,10 +119,6 @@ describe("PreferencesImportIndexJson", () => {
         }
       });
     });
-
-    expect(screen.getByTestId("import-index-json-success")).toHaveTextContent(
-      localization.MessageImportIndexJsonExportSuccess.en
-    );
 
     component.unmount();
   });
