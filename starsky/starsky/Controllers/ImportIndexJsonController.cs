@@ -36,9 +36,9 @@ public sealed class ImportIndexJsonController(
 
 		var jsonPayload = importJson.GetRawText();
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
-		var tempPath = GetTempPath(appSettings.TempFolder, storage);
+		var tempPath = GetTempPath();
 
-		using var jsonStream = StringToStreamHelper.StringToStream(jsonPayload);
+		await using var jsonStream = StringToStreamHelper.StringToStream(jsonPayload);
 		await storage.WriteStreamAsync(jsonStream, tempPath);
 
 		try
@@ -48,7 +48,7 @@ public sealed class ImportIndexJsonController(
 		}
 		finally
 		{
-			TryDeleteFile(storage, tempPath);
+			storage.FileDelete(tempPath);
 		}
 	}
 
@@ -57,7 +57,7 @@ public sealed class ImportIndexJsonController(
 	public async Task<IActionResult> Export()
 	{
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
-		var tempPath = GetTempPath(appSettings.TempFolder, storage);
+		var tempPath = GetTempPath();
 		var exportPath = await importIndexJsonService.ExportAsync(tempPath);
 		try
 		{
@@ -72,21 +72,12 @@ public sealed class ImportIndexJsonController(
 		}
 		finally
 		{
-			TryDeleteFile(storage, exportPath);
+			storage.FileDelete(tempPath);
 		}
 	}
 
-	private static string GetTempPath(string tempFolder, IStorage storage)
+	private static string GetTempPath()
 	{
-		storage.CreateDirectory(tempFolder);
-		return Path.Combine(tempFolder, $"import-index-json-{Guid.NewGuid():N}.json");
-	}
-
-	private static void TryDeleteFile(IStorage storage, string filePath)
-	{
-		if ( storage.ExistFile(filePath) )
-		{
-			storage.FileDelete(filePath);
-		}
+		return $"{Path.DirectorySeparatorChar}import-index-json-{Guid.NewGuid():N}.json";
 	}
 }

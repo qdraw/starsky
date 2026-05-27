@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -8,8 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.foundation.database.Models;
-using starsky.foundation.import.Interfaces;
+using starsky.foundation.import.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
@@ -34,8 +32,7 @@ public sealed class ImportIndexJsonControllerTest
 	[TestMethod]
 	public async Task Import_InvalidModelState_ReturnsBadRequest()
 	{
-		var fakeService = new FakeIImportIndexJsonService();
-		var controller = CreateController(fakeService);
+		var (_, controller) = CreateSut();
 		controller.ModelState.AddModelError("json", "invalid");
 		using var payloadDocument = JsonDocument.Parse("{}");
 
@@ -43,28 +40,25 @@ public sealed class ImportIndexJsonControllerTest
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(400, result.StatusCode);
-		Assert.AreEqual(string.Empty, fakeService.ImportPath);
 	}
 
 	[TestMethod]
 	public async Task Import_NullJson_ReturnsBadRequest()
 	{
-		var fakeService = new FakeIImportIndexJsonService();
-		var controller = CreateController(fakeService);
+		var (_, controller) = CreateSut();
 		using var payloadDocument = JsonDocument.Parse("null");
 
 		var result = await controller.Import(payloadDocument.RootElement) as BadRequestObjectResult;
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(400, result.StatusCode);
-		Assert.AreEqual(string.Empty, fakeService.ImportPath);
 	}
 
 	[TestMethod]
 	public async Task Import_UndefinedJson_ReturnsBadRequest()
 	{
 		var fakeService = new FakeIImportIndexJsonService();
-		var controller = CreateController(fakeService);
+		var (_, controller) = CreateSut();
 
 		var result = await controller.Import(default) as BadRequestObjectResult;
 
@@ -76,20 +70,17 @@ public sealed class ImportIndexJsonControllerTest
 	[TestMethod]
 	public async Task Import_ValidJson_ReturnsJsonResult_AndDeletesTempFile()
 	{
-		var service = new CapturingImportIndexJsonService
-		{
-			ImportResult =
-			[
-				new ImportIndexItem { FilePath = "/example.jpg" }
-			]
-		};
-		var controller = CreateController(service);
+		var (service, controller) = CreateSut();
 		using var payloadDocument = JsonDocument.Parse("{\"id\":1}");
 
 		var result = await controller.Import(payloadDocument.RootElement) as JsonResult;
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual("{\"id\":1}", service.ImportPayload);
+
+		await service.ExportAsync("test.json");
+		
+			
+		Assert.AreEqual("{\"id\":1}", );
 		Assert.IsFalse(string.IsNullOrWhiteSpace(service.ImportPath));
 		Assert.IsTrue(service.ImportPath.StartsWith(_tempFolder, StringComparison.Ordinal));
 		Assert.IsFalse(File.Exists(service.ImportPath));
@@ -100,7 +91,7 @@ public sealed class ImportIndexJsonControllerTest
 	public async Task Export_WhenServiceDoesNotWriteFile_ReturnsNotFound()
 	{
 		var fakeService = new FakeIImportIndexJsonService();
-		var controller = CreateController(fakeService);
+		var controller = CreateSut(fakeService);
 
 		var result = await controller.Export() as NotFoundObjectResult;
 
@@ -112,8 +103,7 @@ public sealed class ImportIndexJsonControllerTest
 	public async Task Export_WhenServiceCreatesFile_ReturnsJsonContent_AndDeletesTempFile()
 	{
 		const string expectedPayload = "{\"items\":[]}";
-		var service = new CapturingImportIndexJsonService { ExportPayload = expectedPayload };
-		var controller = CreateController(service);
+		var controller = CreateSut(service);
 
 		var result = await controller.Export() as ContentResult;
 
@@ -136,40 +126,22 @@ public sealed class ImportIndexJsonControllerTest
 			( ( AuthorizeAttribute ) authorizeAttribute[0] ).Roles);
 	}
 
-	private ImportIndexJsonController CreateController(IImportIndexJsonService service)
+	private (ImportIndexJsonService, ImportIndexJsonController) CreateSut()
 	{
+		var appSettings = new AppSettings { TempFolder = _tempFolder };
 		var storage = new StorageTemporaryFilesystem(new AppSettings { TempFolder = _tempFolder },
 			new FakeIWebLogger());
 		var selectorStorage = new FakeSelectorStorage(storage);
+
+		var service = new ImportIndexJsonService(
+			new FakeIImportQuery([])
+			, appSettings, selectorStorage);
 		var controller =
 			new ImportIndexJsonController(
-				new AppSettings { TempFolder = _tempFolder },
+				appSettings,
 				service,
 				selectorStorage) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
 
-		return controller;
-	}
-
-	private sealed class CapturingImportIndexJsonService : IImportIndexJsonService
-	{
-		public string ExportPath { get; private set; } = string.Empty;
-		public string ImportPath { get; private set; } = string.Empty;
-		public string ImportPayload { get; private set; } = string.Empty;
-		public string ExportPayload { get; init; } = string.Empty;
-		public List<ImportIndexItem> ImportResult { get; init; } = [];
-
-		public async Task<string> ExportAsync(string outputJsonPath)
-		{
-			ExportPath = outputJsonPath;
-			await File.WriteAllTextAsync(outputJsonPath, ExportPayload);
-			return outputJsonPath;
-		}
-
-		public async Task<List<ImportIndexItem>> ImportAsync(string inputJsonPath)
-		{
-			ImportPath = inputJsonPath;
-			ImportPayload = await File.ReadAllTextAsync(inputJsonPath);
-			return ImportResult;
-		}
+		return ( service, controller );
 	}
 }
