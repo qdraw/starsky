@@ -6,13 +6,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 
 namespace starsky.Controllers;
 
 [Authorize(Roles = nameof(AccountRoles.AppAccountRoles.Administrator))]
 public sealed class ImportIndexJsonController(
 	AppSettings appSettings,
-	IImportIndexJsonService importIndexJsonService)
+	IImportIndexJsonService importIndexJsonService,
+	ISelectorStorage selectorStorage)
 	: Controller
 {
 	[HttpPost("/api/import/index-json/import")]
@@ -31,8 +35,11 @@ public sealed class ImportIndexJsonController(
 		}
 
 		var jsonPayload = importJson.GetRawText();
-		var tempPath = GetTempPath(appSettings.TempFolder);
-		await System.IO.File.WriteAllTextAsync(tempPath, jsonPayload);
+		var storage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
+		var tempPath = GetTempPath(appSettings.TempFolder, storage);
+
+		using var jsonStream = StringToStreamHelper.StringToStream(jsonPayload);
+		await storage.WriteStreamAsync(jsonStream, tempPath);
 
 		try
 		{
@@ -41,7 +48,7 @@ public sealed class ImportIndexJsonController(
 		}
 		finally
 		{
-			TryDeleteFile(tempPath);
+			TryDeleteFile(storage, tempPath);
 		}
 	}
 
@@ -49,35 +56,37 @@ public sealed class ImportIndexJsonController(
 	[Produces("application/json")]
 	public async Task<IActionResult> Export()
 	{
-		var tempPath = GetTempPath(appSettings.TempFolder);
+		var storage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
+		var tempPath = GetTempPath(appSettings.TempFolder, storage);
 		var exportPath = await importIndexJsonService.ExportAsync(tempPath);
 		try
 		{
-			if ( !System.IO.File.Exists(exportPath) )
+			if ( !storage.ExistFile(exportPath) )
 			{
 				return NotFound("Export file could not be created");
 			}
 
-			var jsonPayload = await System.IO.File.ReadAllTextAsync(exportPath);
+			var jsonPayload =
+				await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(exportPath));
 			return Content(jsonPayload, "application/json");
 		}
 		finally
 		{
-			TryDeleteFile(exportPath);
+			TryDeleteFile(storage, exportPath);
 		}
 	}
 
-	private static string GetTempPath(string tempFolder)
+	private static string GetTempPath(string tempFolder, IStorage storage)
 	{
-		Directory.CreateDirectory(tempFolder);
+		storage.CreateDirectory(tempFolder);
 		return Path.Combine(tempFolder, $"import-index-json-{Guid.NewGuid():N}.json");
 	}
 
-	private static void TryDeleteFile(string filePath)
+	private static void TryDeleteFile(IStorage storage, string filePath)
 	{
-		if ( System.IO.File.Exists(filePath) )
+		if ( storage.ExistFile(filePath) )
 		{
-			System.IO.File.Delete(filePath);
+			storage.FileDelete(filePath);
 		}
 	}
 }

@@ -11,6 +11,7 @@ using starsky.Controllers;
 using starsky.foundation.database.Models;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers;
@@ -91,7 +92,7 @@ public sealed class ImportIndexJsonControllerTest
 		Assert.AreEqual("{\"id\":1}", service.ImportPayload);
 		Assert.IsFalse(string.IsNullOrWhiteSpace(service.ImportPath));
 		Assert.IsTrue(service.ImportPath.StartsWith(_tempFolder, StringComparison.Ordinal));
-		Assert.IsFalse(System.IO.File.Exists(service.ImportPath));
+		Assert.IsFalse(File.Exists(service.ImportPath));
 		Assert.AreSame(service.ImportResult, result.Value);
 	}
 
@@ -111,10 +112,7 @@ public sealed class ImportIndexJsonControllerTest
 	public async Task Export_WhenServiceCreatesFile_ReturnsJsonContent_AndDeletesTempFile()
 	{
 		const string expectedPayload = "{\"items\":[]}";
-		var service = new CapturingImportIndexJsonService
-		{
-			ExportPayload = expectedPayload
-		};
+		var service = new CapturingImportIndexJsonService { ExportPayload = expectedPayload };
 		var controller = CreateController(service);
 
 		var result = await controller.Export() as ContentResult;
@@ -124,7 +122,7 @@ public sealed class ImportIndexJsonControllerTest
 		Assert.AreEqual(expectedPayload, result.Content);
 		Assert.IsFalse(string.IsNullOrWhiteSpace(service.ExportPath));
 		Assert.IsTrue(service.ExportPath.StartsWith(_tempFolder, StringComparison.Ordinal));
-		Assert.IsFalse(System.IO.File.Exists(service.ExportPath));
+		Assert.IsFalse(File.Exists(service.ExportPath));
 	}
 
 	[TestMethod]
@@ -140,11 +138,14 @@ public sealed class ImportIndexJsonControllerTest
 
 	private ImportIndexJsonController CreateController(IImportIndexJsonService service)
 	{
+		var storage = new StorageTemporaryFilesystem(new AppSettings { TempFolder = _tempFolder },
+			new FakeIWebLogger());
+		var selectorStorage = new FakeSelectorStorage(storage);
 		var controller =
-			new ImportIndexJsonController(new AppSettings { TempFolder = _tempFolder }, service)
-			{
-				ControllerContext = { HttpContext = new DefaultHttpContext() }
-			};
+			new ImportIndexJsonController(
+				new AppSettings { TempFolder = _tempFolder },
+				service,
+				selectorStorage) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
 
 		return controller;
 	}
@@ -160,14 +161,14 @@ public sealed class ImportIndexJsonControllerTest
 		public async Task<string> ExportAsync(string outputJsonPath)
 		{
 			ExportPath = outputJsonPath;
-			await System.IO.File.WriteAllTextAsync(outputJsonPath, ExportPayload);
+			await File.WriteAllTextAsync(outputJsonPath, ExportPayload);
 			return outputJsonPath;
 		}
 
 		public async Task<List<ImportIndexItem>> ImportAsync(string inputJsonPath)
 		{
 			ImportPath = inputJsonPath;
-			ImportPayload = await System.IO.File.ReadAllTextAsync(inputJsonPath);
+			ImportPayload = await File.ReadAllTextAsync(inputJsonPath);
 			return ImportResult;
 		}
 	}
