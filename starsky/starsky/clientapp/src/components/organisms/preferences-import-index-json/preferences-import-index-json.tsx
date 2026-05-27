@@ -40,12 +40,40 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
     setSuccessMessage(message);
   };
 
-  const mapStatusToError = (statusCode: number, fallback: string): string => {
+  const getErrorContext = (statusCode: number, data: unknown): string => {
+    const parts: string[] = [];
+
+    if (typeof data === "string" && data.trim().length > 0) {
+      parts.push(data.trim());
+    }
+
+    if (data && typeof data === "object") {
+      const candidateData = data as Record<string, unknown>;
+      const candidates = ["message", "error", "title", "detail"];
+      candidates.forEach((key) => {
+        const value = candidateData[key];
+        if (typeof value === "string" && value.trim().length > 0) {
+          parts.push(value.trim());
+        }
+      });
+    }
+
+    const uniqueParts = [...new Set(parts)];
+    const text = uniqueParts.join(" | ");
+
+    if (text.length > 0) {
+      return `HTTP ${statusCode}: ${text}`;
+    }
+
+    return `HTTP ${statusCode}`;
+  };
+
+  const mapStatusToError = (statusCode: number, fallback: string, data: unknown): string => {
     if (statusCode === 401 || statusCode === 403) {
       return messageAdminOnly;
     }
 
-    return fallback;
+    return `${fallback} (${getErrorContext(statusCode, data)})`;
   };
 
   const readFileAsText = async (file: File): Promise<string> => {
@@ -95,7 +123,7 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       setSuccess(messageImportSuccess);
     } else {
-      setError(mapStatusToError(response.statusCode, messageImportFail));
+      setError(mapStatusToError(response.statusCode, messageImportFail, response.data));
     }
 
     setIsImporting(false);
@@ -121,7 +149,14 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
     }
 
     if (!response.ok) {
-      setError(mapStatusToError(response.status, messageExportFail));
+      let errorData: unknown = null;
+      try {
+        errorData = await response.text();
+      } catch {
+        errorData = null;
+      }
+
+      setError(mapStatusToError(response.status, messageExportFail, errorData));
       setIsExporting(false);
       return;
     }

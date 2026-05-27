@@ -86,6 +86,38 @@ describe("PreferencesImportIndexJson", () => {
     component.unmount();
   });
 
+  it("shows backend error context when import fails", async () => {
+    jest.spyOn(FetchPost, "default").mockImplementation(() =>
+      Promise.resolve({
+        statusCode: 400,
+        data: "json payload is required"
+      })
+    );
+
+    const component = render(<PreferencesImportIndexJson />);
+
+    const file = new File(["{\"items\":[]}"], "import-index.json", {
+      type: "application/json"
+    });
+
+    fireEvent.change(screen.getByTestId("import-index-json-file"), {
+      target: { files: [file] }
+    });
+
+    fireEvent.click(screen.getByTestId("import-index-json-import-button"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("import-index-json-error")).toHaveTextContent(
+        localization.MessageImportIndexJsonImportFail.en
+      );
+      expect(screen.getByTestId("import-index-json-error")).toHaveTextContent(
+        "HTTP 400: json payload is required"
+      );
+    });
+
+    component.unmount();
+  });
+
   it("exports json", async () => {
     Object.defineProperty(URL, "createObjectURL", {
       writable: true,
