@@ -14,7 +14,6 @@ namespace starsky.Controllers;
 
 [Authorize(Roles = nameof(AccountRoles.AppAccountRoles.Administrator))]
 public sealed class ImportIndexJsonController(
-	AppSettings appSettings,
 	IImportIndexJsonService importIndexJsonService,
 	ISelectorStorage selectorStorage)
 	: Controller

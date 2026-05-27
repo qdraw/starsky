@@ -85,7 +85,8 @@ public sealed class ImportIndexJsonControllerTest
 		Assert.IsNotNull(result);
 		Assert.IsFalse(string.IsNullOrWhiteSpace(fakeService.ImportPath));
 		Assert.IsTrue(fakeService.ImportPath.StartsWith(Path.DirectorySeparatorChar));
-		var tempFilePath = Path.Combine(_tempFolder, fakeService.ImportPath.TrimStart(Path.DirectorySeparatorChar));
+		var tempFilePath = Path.Combine(_tempFolder,
+			fakeService.ImportPath.TrimStart(Path.DirectorySeparatorChar));
 		Assert.IsFalse(File.Exists(tempFilePath));
 		Assert.AreSame(fakeService.ImportResult, result.Value);
 	}
@@ -132,16 +133,13 @@ public sealed class ImportIndexJsonControllerTest
 
 	private ImportIndexJsonController CreateSut(IImportIndexJsonService service)
 	{
-		var appSettings = new AppSettings { TempFolder = _tempFolder };
 		var storage = new StorageTemporaryFilesystem(new AppSettings { TempFolder = _tempFolder },
 			new FakeIWebLogger());
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		return new ImportIndexJsonController(
-			appSettings,
 			service,
-			selectorStorage)
-		{ ControllerContext = { HttpContext = new DefaultHttpContext() } };
+			selectorStorage) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
 	}
 
 	private ImportIndexJsonController CreateSut()
@@ -164,7 +162,8 @@ public sealed class ImportIndexJsonControllerTest
 
 		public Task<string> ExportAsync(string outputJsonPath)
 		{
-			ExportPath = Path.Combine(baseFolder, outputJsonPath.TrimStart(Path.DirectorySeparatorChar));
+			ExportPath = Path.Combine(baseFolder,
+				outputJsonPath.TrimStart(Path.DirectorySeparatorChar));
 			var directory = Path.GetDirectoryName(ExportPath);
 			if ( !string.IsNullOrWhiteSpace(directory) )
 			{
