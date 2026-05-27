@@ -156,6 +156,16 @@ describe("url-query", () => {
     expect(result).toContain("/api/cloud-import/sync/dropbox-camera-uploads");
   });
 
+  it("UrlImportIndexJsonImport", () => {
+    const result = urlQuery.UrlImportIndexJsonImport();
+    expect(result).toContain("/api/import/index-json/import");
+  });
+
+  it("UrlImportIndexJsonExport", () => {
+    const result = urlQuery.UrlImportIndexJsonExport();
+    expect(result).toContain("/api/import/index-json/export");
+  });
+
   it("UrlLogoutPage ", () => {
     const result = urlQuery.UrlLogoutPage("test");
     expect(result).toContain("/account/logout?ReturnUrl=test");
