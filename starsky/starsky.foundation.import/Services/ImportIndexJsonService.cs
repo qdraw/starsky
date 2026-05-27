@@ -26,8 +26,10 @@ public sealed class ImportIndexJsonService(
 	private readonly IStorage _iStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
-	public async Task<string> ExportAsync(string outputJsonPath)
+	public async Task<string> ExportAsync(string outputJsonPath, 
+		SelectorStorage.StorageServices type = SelectorStorage.StorageServices.HostFilesystem)
 	{
+		var storage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		if ( string.IsNullOrWhiteSpace(outputJsonPath) )
 		{
 			throw new ArgumentException("Output path is required", nameof(outputJsonPath));

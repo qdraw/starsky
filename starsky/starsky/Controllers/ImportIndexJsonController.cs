@@ -21,6 +21,7 @@ public sealed class ImportIndexJsonController(
 	[HttpPost("/api/import/index-json/import")]
 	[Consumes("application/json")]
 	[Produces("application/json")]
+	[RequestSizeLimit(100_000_000)] // in bytes, 100MB
 	public async Task<IActionResult> Import([FromBody] JsonElement importJson)
 	{
 		if ( !ModelState.IsValid )
@@ -35,7 +36,7 @@ public sealed class ImportIndexJsonController(
 
 		var jsonPayload = importJson.GetRawText();
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
-		var tempPath = GetTempPath();
+		var tempPath = GetTempFileName();
 
 		await using var jsonStream = StringToStreamHelper.StringToStream(jsonPayload);
 		await storage.WriteStreamAsync(jsonStream, tempPath);
@@ -56,7 +57,7 @@ public sealed class ImportIndexJsonController(
 	public async Task<IActionResult> Export()
 	{
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
-		var tempPath = GetTempPath();
+		var tempPath = GetTempFileName();
 		var exportPath = await importIndexJsonService.ExportAsync(tempPath);
 		try
 		{
@@ -75,8 +76,8 @@ public sealed class ImportIndexJsonController(
 		}
 	}
 
-	private static string GetTempPath()
+	private static string GetTempFileName()
 	{
-		return $"{Path.DirectorySeparatorChar}import-index-json-{Guid.NewGuid():N}.json";
+		return $"import-index-json-{Guid.NewGuid():N}.json";
 	}
 }
