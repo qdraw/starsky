@@ -84,7 +84,7 @@ public sealed class ImportIndexJsonControllerTest
 
 		Assert.IsNotNull(result);
 		Assert.IsFalse(string.IsNullOrWhiteSpace(fakeService.ImportPath));
-		Assert.IsTrue(fakeService.ImportPath.StartsWith(Path.DirectorySeparatorChar));
+		Assert.StartsWith("import-index-json-", fakeService.ImportPath);
 		var tempFilePath = Path.Combine(_tempFolder,
 			fakeService.ImportPath.TrimStart(Path.DirectorySeparatorChar));
 		Assert.IsFalse(File.Exists(tempFilePath));
