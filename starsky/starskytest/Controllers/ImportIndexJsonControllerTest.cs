@@ -160,7 +160,8 @@ public sealed class ImportIndexJsonControllerTest
 	{
 		public string ExportPath { get; private set; } = string.Empty;
 
-		public Task<string> ExportAsync(string outputJsonPath)
+		public Task<string> ExportAsync(string outputJsonPath, 
+			SelectorStorage.StorageServices type =  SelectorStorage.StorageServices.HostFilesystem)
 		{
 			ExportPath = Path.Combine(baseFolder,
 				outputJsonPath.TrimStart(Path.DirectorySeparatorChar));
@@ -174,7 +175,8 @@ public sealed class ImportIndexJsonControllerTest
 			return Task.FromResult(outputJsonPath);
 		}
 
-		public Task<List<ImportIndexItem>> ImportAsync(string inputJsonPath)
+		public Task<List<ImportIndexItem>> ImportAsync(string inputJsonPath, 
+			SelectorStorage.StorageServices type =  SelectorStorage.StorageServices.HostFilesystem)
 		{
 			return Task.FromResult(new List<ImportIndexItem>());
 		}

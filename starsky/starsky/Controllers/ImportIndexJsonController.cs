@@ -43,7 +43,8 @@ public sealed class ImportIndexJsonController(
 
 		try
 		{
-			var result = await importIndexJsonService.ImportAsync(tempPath);
+			var result = await importIndexJsonService.ImportAsync(tempPath, 
+				SelectorStorage.StorageServices.Temporary);
 			return Json(result);
 		}
 		finally
