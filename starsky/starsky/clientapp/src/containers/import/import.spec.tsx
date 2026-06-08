@@ -3,10 +3,17 @@ import { act } from "react";
 import * as DropArea from "../../components/atoms/drop-area/drop-area";
 import * as Modal from "../../components/atoms/modal/modal.tsx";
 import * as ModalDropAreaFilesAdded from "../../components/molecules/modal-drop-area-files-added/modal-drop-area-files-added.tsx";
+import * as PreferencesCloudImport from "../../components/organisms/preferences-cloud-import/preferences-cloud-import";
 import { newIFileIndexItem } from "../../interfaces/IFileIndexItem";
 import { Import } from "./import";
 
 describe("Import", () => {
+  beforeEach(() => {
+    jest.spyOn(PreferencesCloudImport, "default").mockImplementation(() => {
+      return <div data-test="preferences-cloud-import" />;
+    });
+  });
+
   it("clears the drop area upload files list when modal is closed", () => {
     jest.spyOn(Modal, "default").mockImplementationOnce(() => {
       return <div data-test="modal-drop-area-files-added"></div>;
