@@ -5,6 +5,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import DropArea from "./drop-area";
 import { PostSingleFormData } from "./post-single-form-data";
+import { UploadFiles } from "./upload-files";
 
 describe("DropArea", () => {
   it("renders", () => {
@@ -25,6 +26,31 @@ describe("DropArea", () => {
     });
 
     expect(fetchPostSpy).not.toHaveBeenCalled();
+    fetchPostSpy.mockRestore();
+  });
+
+  it("uploads selected files when endpoint is provided", () => {
+    const uploadFilesSpy = jest
+      .spyOn(UploadFiles.prototype, "uploadFiles")
+      .mockImplementation(() => undefined);
+    const selectedFile = new File(["file contents"], "test.json", {
+      type: "application/json"
+    });
+
+    render(<DropArea endpoint="/import" enableInputButton={true} />);
+
+    fireEvent.change(screen.getByTestId("droparea-file-input"), {
+      target: { files: [selectedFile] }
+    });
+
+    expect(uploadFilesSpy).toHaveBeenCalledTimes(1);
+    expect(uploadFilesSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        0: selectedFile,
+        length: 1
+      })
+    );
+    uploadFilesSpy.mockRestore();
   });
 
   describe("with events", () => {
