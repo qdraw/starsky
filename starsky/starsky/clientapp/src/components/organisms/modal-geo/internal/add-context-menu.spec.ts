@@ -100,7 +100,7 @@ describe("AddContextMenu", () => {
 
   afterEach(() => {
     map.remove();
-    document.body.removeChild(mapContainer);
+    mapContainer.remove();
     jest.resetAllMocks();
 
     // Clean up any context menus

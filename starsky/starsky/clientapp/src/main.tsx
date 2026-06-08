@@ -23,5 +23,5 @@ root.render(
 // when React is loaded 'trouble loading' is not needed
 const troubleLoading = document.querySelector(".trouble-loading");
 if (troubleLoading?.parentElement) {
-  troubleLoading.parentElement.removeChild(troubleLoading);
+  troubleLoading.remove();
 }

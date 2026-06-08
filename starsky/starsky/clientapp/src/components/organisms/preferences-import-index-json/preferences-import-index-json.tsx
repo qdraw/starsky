@@ -77,22 +77,7 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
     return `${fallback} (${getErrorContext(statusCode, data)})`;
   };
 
-  const readFileAsText = async (file: File): Promise<string> => {
-    if (typeof file.text === "function") {
-      return file.text();
-    }
-
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.onload = () => {
-        resolve(typeof fileReader.result === "string" ? fileReader.result : "");
-      };
-      fileReader.onerror = () => {
-        reject(new Error("Unable to read file"));
-      };
-      fileReader.readAsText(file);
-    });
-  };
+  const readFileAsText = async (file: File): Promise<string> => file.text();
 
   const importJson = async (): Promise<void> => {
     if (!selectedFile) {
@@ -150,7 +135,7 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
     }
 
     if (!response.ok) {
-      let errorData: unknown = null;
+      let errorData: unknown;
       try {
         errorData = await response.text();
       } catch {
@@ -174,7 +159,7 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
       downloadLink.download = "import-index-export.json";
       document.body.appendChild(downloadLink);
       downloadLink.click();
-      document.body.removeChild(downloadLink);
+      downloadLink.remove();
 
       if (objectUrl && typeof URL.revokeObjectURL === "function") {
         URL.revokeObjectURL(objectUrl);
