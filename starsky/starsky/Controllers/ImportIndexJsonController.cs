@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -21,6 +22,8 @@ public sealed class ImportIndexJsonController(
 	[Consumes("application/json")]
 	[Produces("application/json")]
 	[RequestSizeLimit(100_000_000)] // in bytes, 100MB
+	[SuppressMessage("Usage", "S5693:Make sure the content " +
+	                          "length limit is safe here", Justification = "Is checked")]
 	public async Task<IActionResult> Import([FromBody] JsonElement importJson)
 	{
 		if ( !ModelState.IsValid )
