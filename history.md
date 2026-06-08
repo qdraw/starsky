@@ -43,7 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.20 - _(Unreleased)_ - 2026-?-? {#v0.7.20}
 
-- not released yet
+- [x] (Added) _Back-end_ Export and import the ImportIndex database from web api (PR #3080)
 
 ## version 0.7.19 - 2026-05-13 {#v0.7.19}
 

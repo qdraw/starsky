@@ -150,6 +150,14 @@ export class UrlQuery {
     return `${this.prefix}/api/cloud-import/sync/${encodeURIComponent(providerId)}`;
   };
 
+  public UrlImportIndexJsonImport = (): string => {
+    return `${this.prefix}/api/import/index-json/import`;
+  };
+
+  public UrlImportIndexJsonExport = (): string => {
+    return `${this.prefix}/api/import/index-json/export`;
+  };
+
   public UrlAccountPermissions = (): string => {
     return `${this.prefix}/api/account/permissions`;
   };

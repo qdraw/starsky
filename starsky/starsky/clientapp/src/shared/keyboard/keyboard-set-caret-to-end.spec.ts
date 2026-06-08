@@ -98,6 +98,6 @@ describe("Keyboard.setCaretToEnd", () => {
     } as unknown as KeyboardEvent;
     jest.spyOn(keyboard, "isInForm").mockReturnValue(true);
     expect(keyboard.setCaretToEnd(event)).toBe(false);
-    document.body.removeChild(input);
+    input.remove();
   });
 });

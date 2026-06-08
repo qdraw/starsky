@@ -153,7 +153,7 @@ describe("TagAutocomplete", () => {
       expect(removeAllRanges).toHaveBeenCalled();
       expect(addRange).toHaveBeenCalled();
 
-      document.body.removeChild(div);
+      div.remove();
     });
   });
 });

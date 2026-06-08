@@ -109,6 +109,76 @@
     "nl": "Cloud-import",
     "de": "Cloud-Importe"
   },
+  "MessageImportIndexJson": {
+    "en": "Import Index list",
+    "nl": "Import index lijst",
+    "de": "Import-Index Liste"
+  },
+  "MessageImportIndexJsonDescription": {
+    "en": "Import or export import-index data as JSON.",
+    "nl": "Importeer of exporteer import-indexgegevens als JSON.",
+    "de": "Importieren oder exportieren Sie Import-Index-Daten als JSON."
+  },
+  "MessageImportIndexJsonAdminOnly": {
+    "en": "Administrator access is required for these actions.",
+    "nl": "Voor deze acties is beheerderstoegang vereist.",
+    "de": "Administratorzugriff ist für diese Aktionen erforderlich."
+  },
+  "MessageImportIndexJsonSelectFile": {
+    "en": "Select JSON file",
+    "nl": "Selecteer JSON-bestand",
+    "de": "JSON-Datei auswählen"
+  },
+  "MessageImportIndexJsonNoFileSelected": {
+    "en": "No file selected",
+    "nl": "Geen bestand geselecteerd",
+    "de": "Keine Datei ausgewählt"
+  },
+  "MessageImportIndexJsonImport": {
+    "en": "Import JSON",
+    "nl": "JSON importeren",
+    "de": "JSON importieren"
+  },
+  "MessageImportIndexJsonImporting": {
+    "en": "Importing...",
+    "nl": "Importeren...",
+    "de": "Import wird ausgeführt..."
+  },
+  "MessageImportIndexJsonExport": {
+    "en": "Export JSON",
+    "nl": "JSON exporteren",
+    "de": "JSON exportieren"
+  },
+  "MessageImportIndexJsonExporting": {
+    "en": "Exporting...",
+    "nl": "Exporteren...",
+    "de": "Export wird ausgeführt..."
+  },
+  "MessageImportIndexJsonImportSuccess": {
+    "en": "Import completed",
+    "nl": "Import voltooid",
+    "de": "Import abgeschlossen"
+  },
+  "MessageImportIndexJsonImportFail": {
+    "en": "Import failed",
+    "nl": "Import mislukt",
+    "de": "Import fehlgeschlagen"
+  },
+  "MessageImportIndexJsonExportSuccess": {
+    "en": "Export downloaded",
+    "nl": "Export gedownload",
+    "de": "Export heruntergeladen"
+  },
+  "MessageImportIndexJsonExportFail": {
+    "en": "Export failed",
+    "nl": "Export mislukt",
+    "de": "Export fehlgeschlagen"
+  },
+  "MessageImportIndexJsonInvalidJson": {
+    "en": "Selected file does not contain valid JSON",
+    "nl": "Geselecteerd bestand bevat geen geldige JSON",
+    "de": "Die ausgewählte Datei enthält kein gültiges JSON"
+  },
   "MessageCloudImportStatusLabel": {
     "en": "Status",
     "nl": "Status",

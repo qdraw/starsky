@@ -6,11 +6,15 @@ import Preloader from "../preloader/preloader";
 import { UploadFiles } from "./upload-files";
 
 interface IDropAreaProps {
-  endpoint: string;
+  endpoint?: string;
   folderPath?: string;
   enableInputButton?: boolean;
   enableDragAndDrop?: boolean;
   className?: string;
+  inputButtonLabel?: string;
+  accept?: string;
+  inputDisabled?: boolean;
+  onFilesSelected?(files: FileList): void;
   callback?(result: Array<IFileIndexItem>): void;
 }
 
@@ -38,6 +42,9 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const [dragTarget, setDragTarget] = useState(document.createElement("span") as Element);
   const [isLoading, setIsLoading] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState("");
+  const [isCurrentTabVisible, setIsCurrentTabVisible] = useState(
+    document.visibilityState === "visible"
+  );
 
   /**
    * on selecting a file
@@ -47,6 +54,15 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     const {
       target: { files }
     } = event;
+
+    if (props.onFilesSelected) {
+      props.onFilesSelected(files);
+      return;
+    }
+
+    if (!props.endpoint) {
+      return;
+    }
 
     new UploadFiles(
       setIsLoading,
@@ -70,6 +86,15 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     const {
       dataTransfer: { files }
     } = event;
+
+    if (props.onFilesSelected) {
+      props.onFilesSelected(files);
+      return;
+    }
+
+    if (!props.endpoint) {
+      return;
+    }
 
     new UploadFiles(
       setIsLoading,
@@ -123,7 +148,24 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   };
 
   useEffect(() => {
-    if (!props.enableDragAndDrop) return;
+    const onVisibilityChange = () => {
+      const nextVisibility = document.visibilityState === "visible";
+      setIsCurrentTabVisible(nextVisibility);
+
+      // Reset drag state when the tab is not active.
+      if (!nextVisibility) {
+        setDragActive(false);
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!props.enableDragAndDrop || !isCurrentTabVisible) return;
 
     // Bind the event listener
     globalThis.addEventListener("dragenter", onDragEnter);
@@ -138,7 +180,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       globalThis.removeEventListener("dragover", onDragOver);
       globalThis.removeEventListener("drop", onDrop);
     };
-  });
+  }, [props.enableDragAndDrop, isCurrentTabVisible, dragTarget]);
 
   useEffect(() => {
     if (dragActive) {
@@ -169,11 +211,13 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
             className="droparea-file-input"
             type="file"
             data-test="droparea-file-input"
+            accept={props.accept}
+            disabled={props.inputDisabled === true}
             multiple={true}
             onChange={onChange}
           />
           <label className={props.className} htmlFor={dropAreaId}>
-            Upload
+            {props.inputButtonLabel ?? "Upload"}
           </label>
         </>
       ) : null}

@@ -8,6 +8,8 @@ import localization from "../../localization/localization.json";
 import { DocumentTitle } from "../../shared/document-title";
 import { Language } from "../../shared/language";
 import { UrlQuery } from "../../shared/url/url-query";
+import PreferencesCloudImport
+  from "../../components/organisms/preferences-cloud-import/preferences-cloud-import.tsx";
 
 export const Import: FunctionComponent = () => {
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] =
@@ -33,7 +35,7 @@ export const Import: FunctionComponent = () => {
       <MenuDefault isEnabled={true}></MenuDefault>
       <div className="content">
         <div className="content--header">{MessageImportHeader}</div>
-        <div className="content--subheader">
+        <div className="content--text">
           <DropArea
             callback={(add) => {
               setDropAreaUploadFilesList(add);
@@ -45,6 +47,7 @@ export const Import: FunctionComponent = () => {
           ></DropArea>
         </div>
       </div>
+      <PreferencesCloudImport />
     </div>
   );
 };

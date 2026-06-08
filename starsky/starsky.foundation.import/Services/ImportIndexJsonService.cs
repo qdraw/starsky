@@ -23,11 +23,10 @@ public sealed class ImportIndexJsonService(
 	ISelectorStorage selectorStorage)
 	: IImportIndexJsonService
 {
-	private readonly IStorage _iStorage =
-		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-
-	public async Task<string> ExportAsync(string outputJsonPath)
+	public async Task<string> ExportAsync(string outputJsonPath, 
+		SelectorStorage.StorageServices type = SelectorStorage.StorageServices.HostFilesystem)
 	{
+		var storage = selectorStorage.Get(type);
 		if ( string.IsNullOrWhiteSpace(outputJsonPath) )
 		{
 			throw new ArgumentException("Output path is required", nameof(outputJsonPath));
@@ -36,7 +35,7 @@ public sealed class ImportIndexJsonService(
 		var directory = Path.GetDirectoryName(outputJsonPath);
 		if ( !string.IsNullOrWhiteSpace(directory) )
 		{
-			_iStorage.CreateDirectory(directory);
+			storage.CreateDirectory(directory);
 		}
 
 		var exportModel = new ImportIndexJsonContainer
@@ -49,24 +48,26 @@ public sealed class ImportIndexJsonService(
 
 		var json = JsonSerializer.Serialize(exportModel, DefaultJsonSerializer.CamelCase);
 		await using var stream = StringToStreamHelper.StringToStream(json);
-		await _iStorage.WriteStreamAsync(stream, outputJsonPath);
+		await storage.WriteStreamAsync(stream, outputJsonPath);
 
 		return outputJsonPath;
 	}
 
-	public async Task<List<ImportIndexItem>> ImportAsync(string inputJsonPath)
+	public async Task<List<ImportIndexItem>> ImportAsync(string inputJsonPath, 
+		SelectorStorage.StorageServices type =  SelectorStorage.StorageServices.HostFilesystem)
 	{
 		if ( string.IsNullOrWhiteSpace(inputJsonPath) )
 		{
 			throw new ArgumentException("Input path is required", nameof(inputJsonPath));
 		}
+		var storage = selectorStorage.Get(type);
 
-		if ( !_iStorage.ExistFile(inputJsonPath) )
+		if ( !storage.ExistFile(inputJsonPath) )
 		{
 			throw new FileNotFoundException("ImportIndex json file not found", inputJsonPath);
 		}
 
-		await using var readStream = _iStorage.ReadStream(inputJsonPath);
+		await using var readStream = storage.ReadStream(inputJsonPath);
 		using var reader = new StreamReader(readStream);
 		var json = await reader.ReadToEndAsync();
 		ValidateStructureAndDataSections(json);
