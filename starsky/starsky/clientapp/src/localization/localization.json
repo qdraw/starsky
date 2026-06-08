@@ -110,9 +110,9 @@
     "de": "Cloud-Importe"
   },
   "MessageImportIndexJson": {
-    "en": "Import Index JSON",
-    "nl": "Import index JSON",
-    "de": "Import-Index JSON"
+    "en": "Import Index list",
+    "nl": "Import index lijst",
+    "de": "Import-Index Liste"
   },
   "MessageImportIndexJsonDescription": {
     "en": "Import or export import-index data as JSON.",

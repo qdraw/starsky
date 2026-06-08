@@ -38,6 +38,9 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const [dragTarget, setDragTarget] = useState(document.createElement("span") as Element);
   const [isLoading, setIsLoading] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState("");
+  const [isCurrentTabVisible, setIsCurrentTabVisible] = useState(
+    document.visibilityState === "visible"
+  );
 
   /**
    * on selecting a file
@@ -123,7 +126,24 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   };
 
   useEffect(() => {
-    if (!props.enableDragAndDrop) return;
+    const onVisibilityChange = () => {
+      const nextVisibility = document.visibilityState === "visible";
+      setIsCurrentTabVisible(nextVisibility);
+
+      // Reset drag state when the tab is not active.
+      if (!nextVisibility) {
+        setDragActive(false);
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!props.enableDragAndDrop || !isCurrentTabVisible) return;
 
     // Bind the event listener
     globalThis.addEventListener("dragenter", onDragEnter);
@@ -138,7 +158,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       globalThis.removeEventListener("dragover", onDragOver);
       globalThis.removeEventListener("drop", onDrop);
     };
-  });
+  }, [props.enableDragAndDrop, isCurrentTabVisible, dragTarget]);
 
   useEffect(() => {
     if (dragActive) {

@@ -14,6 +14,7 @@ describe("DropArea", () => {
 
   describe("with events", () => {
     const exampleFile = new Blob(["file contents"], { type: "text/plain" });
+    let originalVisibilityState: DocumentVisibilityState;
 
     function createDnDEvent(
       eventType: "dragenter" | "dragleave" | "dragover" | "drop"
@@ -34,11 +35,21 @@ describe("DropArea", () => {
 
     beforeEach(() => {
       globalThis.scrollTo = scrollToSpy;
+      originalVisibilityState = document.visibilityState;
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible"
+      });
     });
 
     afterEach(() => {
       // and clean your room afterwards
       scrollToSpy.mockClear();
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: originalVisibilityState
+      });
+      document.body.classList.remove("drag");
     });
 
     it("Test Drop a file", async () => {
@@ -138,6 +149,25 @@ describe("DropArea", () => {
       });
 
       expect(document.body.className).toBe("drag");
+    });
+
+    it("does not activate drag style when tab is hidden", () => {
+      render(<DropArea endpoint="/import" enableDragAndDrop={true} />);
+
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "hidden"
+      });
+
+      act(() => {
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+
+      act(() => {
+        document.dispatchEvent(createDnDEvent("dragenter"));
+      });
+
+      expect(document.body.className).toBe("");
     });
   });
 
