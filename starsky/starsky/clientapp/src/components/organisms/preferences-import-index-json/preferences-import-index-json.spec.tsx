@@ -33,7 +33,7 @@ describe("PreferencesImportIndexJson", () => {
       type: "application/json"
     });
 
-    fireEvent.change(screen.getByTestId("import-index-json-file"), {
+    fireEvent.change(screen.getByTestId("droparea-file-input"), {
       target: { files: [file] }
     });
 
@@ -71,7 +71,7 @@ describe("PreferencesImportIndexJson", () => {
       type: "application/json"
     });
 
-    fireEvent.change(screen.getByTestId("import-index-json-file"), {
+    fireEvent.change(screen.getByTestId("droparea-file-input"), {
       target: { files: [file] }
     });
 
@@ -100,7 +100,7 @@ describe("PreferencesImportIndexJson", () => {
       type: "application/json"
     });
 
-    fireEvent.change(screen.getByTestId("import-index-json-file"), {
+    fireEvent.change(screen.getByTestId("droparea-file-input"), {
       target: { files: [file] }
     });
 

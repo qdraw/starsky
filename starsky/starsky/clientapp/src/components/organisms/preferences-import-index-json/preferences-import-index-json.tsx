@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import DropArea from "../../atoms/drop-area/drop-area";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
@@ -190,20 +191,20 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
 
   return (
     <div className="preferences--import-index-json">
-      <div className="content--subheader">{messageImportIndexJson}</div>
+      <div className="content--header">{messageImportIndexJson}</div>
       <div className="content--text">
         <p>{messageDescription}</p>
         <p>{messageAdminOnly}</p>
 
-        <label htmlFor="import-index-json-file">{messageSelectFile}</label>
-        <input
-          id="import-index-json-file"
-          data-test="import-index-json-file"
-          type="file"
+        <DropArea
+          enableInputButton={true}
+          enableDragAndDrop={false}
+          className="btn btn--default"
+          inputButtonLabel={messageSelectFile}
           accept="application/json,.json"
-          disabled={isImporting || isExporting}
-          onChange={(event) => {
-            setSelectedFile(event.target.files?.[0] ?? null);
+          inputDisabled={isImporting || isExporting}
+          onFilesSelected={(files) => {
+            setSelectedFile(files?.[0] ?? null);
             setErrorMessage(null);
             setSuccessMessage(null);
           }}
@@ -223,16 +224,6 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
           {isImporting ? messageImporting : messageImport}
         </button>
 
-        <button
-          className="btn btn--default"
-          type="button"
-          data-test="import-index-json-export-button"
-          disabled={isImporting || isExporting}
-          onClick={exportJson}
-        >
-          {isExporting ? messageExporting : messageExport}
-        </button>
-
         {errorMessage ? (
           <div data-test="import-index-json-error" className="warning-box">
             {errorMessage}
@@ -245,6 +236,20 @@ const PreferencesImportIndexJson: React.FunctionComponent = () => {
           </div>
         ) : null}
       </div>
+      <div className="content--header">{messageExport}</div>
+
+      <div className="content--text">
+
+      <button
+        className="btn btn--default"
+        type="button"
+        data-test="import-index-json-export-button"
+        disabled={isImporting || isExporting}
+        onClick={exportJson}
+      >
+        {isExporting ? messageExporting : messageExport}
+      </button>
+    </div>
     </div>
   );
 };

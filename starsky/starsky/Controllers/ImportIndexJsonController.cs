@@ -58,7 +58,8 @@ public sealed class ImportIndexJsonController(
 	{
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
 		var tempPath = GetTempFileName();
-		var exportPath = await importIndexJsonService.ExportAsync(tempPath);
+		var exportPath = await importIndexJsonService.ExportAsync(tempPath, 
+			SelectorStorage.StorageServices.Temporary);
 		try
 		{
 			if ( !storage.ExistFile(exportPath) )

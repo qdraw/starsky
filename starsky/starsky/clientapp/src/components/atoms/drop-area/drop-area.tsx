@@ -6,11 +6,15 @@ import Preloader from "../preloader/preloader";
 import { UploadFiles } from "./upload-files";
 
 interface IDropAreaProps {
-  endpoint: string;
+  endpoint?: string;
   folderPath?: string;
   enableInputButton?: boolean;
   enableDragAndDrop?: boolean;
   className?: string;
+  inputButtonLabel?: string;
+  accept?: string;
+  inputDisabled?: boolean;
+  onFilesSelected?(files: FileList): void;
   callback?(result: Array<IFileIndexItem>): void;
 }
 
@@ -51,6 +55,15 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       target: { files }
     } = event;
 
+    if (props.onFilesSelected) {
+      props.onFilesSelected(files);
+      return;
+    }
+
+    if (!props.endpoint) {
+      return;
+    }
+
     new UploadFiles(
       setIsLoading,
       setNotificationStatus,
@@ -73,6 +86,15 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     const {
       dataTransfer: { files }
     } = event;
+
+    if (props.onFilesSelected) {
+      props.onFilesSelected(files);
+      return;
+    }
+
+    if (!props.endpoint) {
+      return;
+    }
 
     new UploadFiles(
       setIsLoading,
@@ -189,11 +211,13 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
             className="droparea-file-input"
             type="file"
             data-test="droparea-file-input"
+            accept={props.accept}
+            disabled={props.inputDisabled === true}
             multiple={true}
             onChange={onChange}
           />
           <label className={props.className} htmlFor={dropAreaId}>
-            Upload
+            {props.inputButtonLabel ?? "Upload"}
           </label>
         </>
       ) : null}
