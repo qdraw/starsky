@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
@@ -10,6 +10,21 @@ describe("DropArea", () => {
   it("renders", () => {
     const item = render(<DropArea endpoint="/import" />);
     expect(item).toBeTruthy();
+  });
+
+  it("does not upload selected files when endpoint is missing", () => {
+    const fetchPostSpy = jest.spyOn(FetchPost, "default");
+    const selectedFile = new File(["file contents"], "test.json", {
+      type: "application/json"
+    });
+
+    render(<DropArea enableInputButton={true} />);
+
+    fireEvent.change(screen.getByTestId("droparea-file-input"), {
+      target: { files: [selectedFile] }
+    });
+
+    expect(fetchPostSpy).not.toHaveBeenCalled();
   });
 
   describe("with events", () => {
