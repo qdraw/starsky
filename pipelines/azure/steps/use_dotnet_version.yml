@@ -1,9 +1,9 @@
 steps:
   - task: UseDotNet@2
-    displayName: 'Use .NET SDK 8.0.421'
+    displayName: 'Use .NET SDK 8.0.422'
     enabled: true
     inputs:
       packageType: sdk
-      version: 8.0.421
+      version: 8.0.422
       installationPath: $(Agent.ToolsDirectory)/dotnet
       performMultiLevelLookup: true
