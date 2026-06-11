@@ -11,7 +11,7 @@ interface IFormControlProps {
   onFocus?(event: React.ChangeEvent<HTMLDivElement>): void;
   onInput?(event: React.ChangeEvent<HTMLDivElement>): void;
   onKeyDown?(event: React.KeyboardEvent<HTMLDivElement>): void;
-  reference?: React.RefObject<HTMLDivElement | null> | undefined;
+  reference?: React.RefObject<HTMLDivElement | null>;
   name: string;
   className?: string;
   maxlength?: number;

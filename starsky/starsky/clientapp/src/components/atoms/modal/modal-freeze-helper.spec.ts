@@ -82,7 +82,7 @@ describe("modalFreezeHelper", () => {
     }));
 
     modalFreezeHelper(
-      jest.fn() as unknown as React.MutableRefObject<boolean>,
+      jest.fn() as unknown as React.RefObject<boolean>,
       "root",
       "id",
       true,
@@ -105,7 +105,7 @@ describe("modalFreezeHelper", () => {
     }));
 
     modalFreezeHelper(
-      jest.fn() as unknown as React.MutableRefObject<boolean>,
+      jest.fn() as unknown as React.RefObject<boolean>,
       "root",
       "id",
       false,

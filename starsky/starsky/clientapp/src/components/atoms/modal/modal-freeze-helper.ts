@@ -18,7 +18,7 @@ export function modalUnFreezeNotOpen(
   modalContainer: Element | null,
   rootContainer: Element | null,
   focusAfterExit: HTMLElement | undefined,
-  initialRender: React.MutableRefObject<boolean>
+  initialRender: React.RefObject<boolean>
 ) {
   if (modalContainer) toggleTabIndex("off", modalContainer);
   if (rootContainer) toggleTabIndex("on", rootContainer);
@@ -34,7 +34,7 @@ export function modalUnFreezeNotOpen(
 }
 
 export default function modalFreezeHelper(
-  initialRender: React.MutableRefObject<boolean>,
+  initialRender: React.RefObject<boolean>,
   root: string,
   id: string,
   isOpen: boolean,
