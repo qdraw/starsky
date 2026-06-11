@@ -57,7 +57,7 @@ describe("useIntersection", () => {
           rootMargin: "0px",
           threshold: 0.1
         }
-      } as unknown as React.MutableRefObject<IntersectionOptions>;
+      } as unknown as React.RefObject<IntersectionOptions>;
 
       const observer = newIntersectionObserver(ref, setIntersecting, true, optsRef, callback);
       observer.observe(ref.current!);

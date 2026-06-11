@@ -3,7 +3,7 @@ import modalInsertPortalDiv from "./modal-insert-portal-div";
 describe("modalInsertPortalDiv", () => {
   it("should add div element", () => {
     modalInsertPortalDiv(
-      { current: null } as React.MutableRefObject<HTMLDivElement | null>,
+      { current: null } as React.RefObject<HTMLDivElement | null>,
       false,
       jest.fn() as React.Dispatch<React.SetStateAction<boolean>>,
       "test-id"
@@ -20,7 +20,7 @@ describe("modalInsertPortalDiv", () => {
 
     document.body.appendChild(exampleDiv);
     modalInsertPortalDiv(
-      { current: null } as React.MutableRefObject<HTMLDivElement | null>,
+      { current: null } as React.RefObject<HTMLDivElement | null>,
       false,
       jest.fn() as React.Dispatch<React.SetStateAction<boolean>>,
       "test-id-2"
@@ -35,7 +35,7 @@ describe("modalInsertPortalDiv", () => {
   it("should setForceUpdate", () => {
     const forceUpdateSpy = jest.fn();
     modalInsertPortalDiv(
-      { current: null } as React.MutableRefObject<HTMLDivElement | null>,
+      { current: null } as React.RefObject<HTMLDivElement | null>,
       false,
       forceUpdateSpy,
       "test-id"
@@ -47,7 +47,7 @@ describe("modalInsertPortalDiv", () => {
   it("should not setForceUpdate", () => {
     const forceUpdateSpy = jest.fn();
     modalInsertPortalDiv(
-      { current: null } as React.MutableRefObject<HTMLDivElement | null>,
+      { current: null } as React.RefObject<HTMLDivElement | null>,
       true,
       forceUpdateSpy,
       "test-id"
