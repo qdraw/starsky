@@ -8,7 +8,7 @@ export default function getTextLength(children: React.ReactNode): number {
     return children.reduce((sum, child) => sum + getTextLength(child), 0);
   }
   if (React.isValidElement(children)) {
-    return getTextLength(children.props.children);
+    return getTextLength((children.props as { children: React.ReactNode }).children);
   }
   return 0;
 }

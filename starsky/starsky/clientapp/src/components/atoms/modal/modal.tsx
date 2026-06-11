@@ -1,5 +1,5 @@
 import "core-js/features/dom-collections/for-each";
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, { JSX, ReactNode, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";

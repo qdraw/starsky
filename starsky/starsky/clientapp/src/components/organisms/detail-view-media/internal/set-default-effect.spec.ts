@@ -5,26 +5,26 @@ import { SetDefaultEffect } from "./set-default-effect";
 describe("setDefaultEffect function", () => {
   let historyLocationSearch: string;
   let setDownloadPhotoApiMock: jest.Mock;
-  let videoRef: React.RefObject<HTMLVideoElement>;
-  let scrubberRef: React.RefObject<HTMLSpanElement>;
-  let progressRef: React.RefObject<HTMLProgressElement>;
-  let timeRef: React.RefObject<HTMLSpanElement>;
+  let videoRef: React.RefObject<HTMLVideoElement | null>;
+  let scrubberRef: React.RefObject<HTMLSpanElement | null>;
+  let progressRef: React.RefObject<HTMLProgressElement | null>;
+  let timeRef: React.RefObject<HTMLSpanElement | null>;
 
   beforeEach(() => {
     historyLocationSearch = "example-search";
     setDownloadPhotoApiMock = jest.fn();
     videoRef = {
       current: document.createElement("video")
-    } as React.RefObject<HTMLVideoElement>;
+    } as React.RefObject<HTMLVideoElement | null>;
     scrubberRef = {
       current: document.createElement("span")
-    } as React.RefObject<HTMLSpanElement>;
+    } as React.RefObject<HTMLSpanElement | null>;
     progressRef = {
       current: document.createElement("progress")
-    } as React.RefObject<HTMLProgressElement>;
+    } as React.RefObject<HTMLProgressElement | null>;
     timeRef = {
       current: document.createElement("span")
-    } as React.RefObject<HTMLSpanElement>;
+    } as React.RefObject<HTMLSpanElement | null>;
   });
 
   it("should not perform actions when any of the refs are falsy", () => {

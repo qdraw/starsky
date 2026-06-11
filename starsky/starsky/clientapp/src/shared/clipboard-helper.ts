@@ -11,9 +11,9 @@ export class ClipboardHelper {
   private readonly clipBoardName = "starskyClipboardData";
 
   public Copy(
-    tagsReference: React.RefObject<HTMLDivElement>,
-    descriptionReference: React.RefObject<HTMLDivElement>,
-    titleReference: React.RefObject<HTMLDivElement>
+    tagsReference: React.RefObject<HTMLDivElement | null>,
+    descriptionReference: React.RefObject<HTMLDivElement | null>,
+    titleReference: React.RefObject<HTMLDivElement | null>
   ): boolean {
     if (!tagsReference.current || !descriptionReference.current || !titleReference.current) {
       return false;

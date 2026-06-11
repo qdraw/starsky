@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { InputEventHandler, useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
@@ -11,7 +11,7 @@ interface IFormControlProps {
   onFocus?(event: React.ChangeEvent<HTMLDivElement>): void;
   onInput?(event: React.ChangeEvent<HTMLDivElement>): void;
   onKeyDown?(event: React.KeyboardEvent<HTMLDivElement>): void;
-  reference?: React.RefObject<HTMLDivElement>;
+  reference?: React.RefObject<HTMLDivElement | null> | undefined;
   name: string;
   className?: string;
   maxlength?: number;
@@ -64,7 +64,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, onFoc
           }
           new LimitLength(setChildLength, onBlur, maxlength).LimitLengthKey(event);
         }}
-        onInput={props.onInput}
+        onInput={props.onInput as unknown as InputEventHandler<HTMLDivElement>}
         onPaste={limitLengthPaste}
         spellCheck={props.spellcheck}
         ref={props.reference}

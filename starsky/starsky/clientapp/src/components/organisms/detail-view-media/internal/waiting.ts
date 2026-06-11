@@ -1,5 +1,5 @@
 export function Waiting(
-  videoRef: React.RefObject<HTMLVideoElement>,
+  videoRef: React.RefObject<HTMLVideoElement | null>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   if (!videoRef.current) return;

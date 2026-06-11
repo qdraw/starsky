@@ -74,11 +74,15 @@ function getNpxCreateCreateApp() {
 
 	const updateSpawn = spawnSync(
 		"npm",
-		["create", "-y", "vite@latest", myAppName, "--", "--template", "react-ts"],
+		["create", "vite@latest", myAppName,  "--", "--template", "react-ts", "--yes", "--no-interactive"],
 		{
 			cwd: createReactTempFolder,
-			env: process.env,
+			env: {
+			...process.env,
+			CI: "true"
+			},
 			encoding: "utf-8",
+			stdio: "inherit"
 		}
 	);
 
@@ -297,6 +301,12 @@ npmInstall('@storybook/react-vite', false, true);
 npmInstall('@testing-library/jest-dom', false, true);
 npmInstall('@testing-library/react', true, true);
 // @testing-library/user-event is skipped
+
+npmUnInstall('@types/react-dom');
+npmInstall('@types/react-dom', true, true);
+
+npmUnInstall('@types/react');
+npmInstall('@types/react', true, true);
 
 
 console.log("npm install result:");

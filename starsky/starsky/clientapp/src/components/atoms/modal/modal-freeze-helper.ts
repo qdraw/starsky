@@ -3,7 +3,7 @@ import { toggleTabIndex } from "./toggle-tab-index";
 
 export function modalFreezeOpen(
   freeze: () => void,
-  exitButton: React.RefObject<HTMLButtonElement>,
+  exitButton: React.RefObject<HTMLButtonElement | null>,
   modalContainer: Element | null,
   rootContainer: Element | null
 ) {
@@ -38,7 +38,7 @@ export default function modalFreezeHelper(
   root: string,
   id: string,
   isOpen: boolean,
-  exitButton: React.RefObject<HTMLButtonElement>,
+  exitButton: React.RefObject<HTMLButtonElement | null>,
   focusAfterExit: HTMLElement | undefined
 ) {
   const rootContainer = document.querySelector(`#${root}`);

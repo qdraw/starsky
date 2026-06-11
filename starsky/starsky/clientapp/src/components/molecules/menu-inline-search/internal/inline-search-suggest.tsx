@@ -11,7 +11,7 @@ import Navigate from "./navigate";
 export interface IInlineSearchSuggestProps {
   suggest: string[];
   setFormFocus: React.Dispatch<React.SetStateAction<boolean>>;
-  inputFormControlReference: React.RefObject<HTMLInputElement>;
+  inputFormControlReference: React.RefObject<HTMLInputElement | null>;
   featuresResult: IConnectionDefault;
   defaultText?: string;
   callback?: (query: string) => void;

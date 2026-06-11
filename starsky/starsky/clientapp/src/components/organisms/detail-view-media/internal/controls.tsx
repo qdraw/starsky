@@ -5,15 +5,15 @@ import { PlayPause } from "./play-pause";
 import { ProgressBar } from "./progress-bar";
 
 interface IControlsProps {
-  scrubberRef: React.RefObject<HTMLSpanElement>;
-  progressRef: React.RefObject<HTMLProgressElement>;
-  videoRef: React.RefObject<HTMLVideoElement>;
+  scrubberRef: React.RefObject<HTMLSpanElement | null>;
+  progressRef: React.RefObject<HTMLProgressElement | null>;
+  videoRef: React.RefObject<HTMLVideoElement | null>;
   paused: boolean;
   setPaused: React.Dispatch<React.SetStateAction<boolean>>;
   setIsError: React.Dispatch<React.SetStateAction<string>>;
   setStarted: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  timeRef: React.RefObject<HTMLSpanElement>;
+  timeRef: React.RefObject<HTMLSpanElement | null>;
 }
 
 export const Controls: React.FunctionComponent<IControlsProps> = ({

@@ -7,7 +7,7 @@ interface ITagAutocompleteProps {
   className?: string;
   contentEditable: boolean;
   spellcheck?: boolean;
-  reference?: React.RefObject<HTMLDivElement>;
+  reference?: React.RefObject<HTMLDivElement | null>;
   onInput?: (
     event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
   ) => void;

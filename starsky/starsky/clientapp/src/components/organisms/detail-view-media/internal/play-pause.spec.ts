@@ -2,7 +2,7 @@ import React, { act } from "react";
 import { PlayPause } from "./play-pause";
 
 describe("YourComponent", () => {
-  let videoRef: React.RefObject<HTMLVideoElement>;
+  let videoRef: React.RefObject<HTMLVideoElement | null>;
   let setIsErrorMock: jest.Mock;
   let setStartedMock: jest.Mock;
   let setPausedMock: jest.Mock;

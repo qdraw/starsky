@@ -4,10 +4,10 @@ import { UrlQuery } from "../../../../shared/url/url-query";
 export function SetDefaultEffect(
   historyLocationSearch: string,
   setDownloadPhotoApi: React.Dispatch<React.SetStateAction<string>>,
-  videoRef: React.RefObject<HTMLVideoElement>,
-  scrubberRef: React.RefObject<HTMLSpanElement>,
-  progressRef: React.RefObject<HTMLProgressElement>,
-  timeRef: React.RefObject<HTMLSpanElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>,
+  scrubberRef: React.RefObject<HTMLSpanElement | null>,
+  progressRef: React.RefObject<HTMLProgressElement | null>,
+  timeRef: React.RefObject<HTMLSpanElement | null>
 ) {
   const downloadApiLocal = new UrlQuery().UrlDownloadPhotoApi(
     new URLPath().encodeURI(new URLPath().getFilePath(historyLocationSearch)),

@@ -5,7 +5,7 @@ import * as toggleTabIndex from "./toggle-tab-index";
 describe("modalFreezeOpen", () => {
   it("modalFreezeOpen", () => {
     const freeze = jest.fn();
-    modalFreezeOpen(freeze, { current: null } as React.RefObject<HTMLButtonElement>, null, null);
+    modalFreezeOpen(freeze, { current: null } as React.RefObject<HTMLButtonElement | null>, null, null);
     expect(freeze).toHaveBeenCalled();
   });
 
@@ -24,7 +24,7 @@ describe("modalFreezeOpen", () => {
     const freeze = jest.fn();
     modalFreezeOpen(
       freeze,
-      { current: null } as React.RefObject<HTMLButtonElement>,
+      { current: null } as React.RefObject<HTMLButtonElement | null>,
       null,
       document.createElement("div") as HTMLElement
     );
