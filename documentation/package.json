@@ -23,7 +23,7 @@
     "update:yes": "npm run update"
   },
   "dependencies": {
-    "@cmfcmf/docusaurus-search-local": "^1.1.0",
+    "@cmfcmf/docusaurus-search-local": "^2.0.0",
     "@docusaurus/core": "3.9.2",
     "@docusaurus/preset-classic": "3.9.2",
     "@mdx-js/react": "^3.0.0",
