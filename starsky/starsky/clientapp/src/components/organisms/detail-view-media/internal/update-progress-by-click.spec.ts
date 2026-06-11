@@ -2,13 +2,13 @@ import * as GetMousePositionModule from "./get-mouse-position";
 import { UpdateProgressByClick } from "./update-progress-by-click";
 
 describe("UpdateProgressByClick function", () => {
-  let videoRef: React.RefObject<HTMLVideoElement>;
+  let videoRef: React.RefObject<HTMLVideoElement | null>;
   let getMousePositionSpy: jest.SpyInstance;
 
   beforeEach(() => {
     // Create a fake video element
     const videoElement = document.createElement("video");
-    videoRef = { current: videoElement } as React.RefObject<HTMLVideoElement>;
+    videoRef = { current: videoElement } as React.RefObject<HTMLVideoElement | null>;
 
     // Spy on the GetMousePosition function
     getMousePositionSpy = jest.spyOn(GetMousePositionModule, "GetMousePosition");
@@ -67,7 +67,7 @@ describe("UpdateProgressByClick function", () => {
     // Set videoRef to null
     videoRef = {
       current: null
-    };
+    } as React.RefObject<HTMLVideoElement | null>;
 
     // Call the function
     UpdateProgressByClick(videoRef, event);

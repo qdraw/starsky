@@ -5,7 +5,7 @@ import { UrlQuery } from "../../../../shared/url/url-query";
 function Navigate(
   history: IUseLocation,
   setFormFocus: React.Dispatch<React.SetStateAction<boolean>>,
-  inputFormControlReference: React.RefObject<HTMLInputElement>,
+  inputFormControlReference: React.RefObject<HTMLInputElement | null>,
   query: string,
   callback?: (query: string) => void
 ) {
@@ -14,7 +14,9 @@ function Navigate(
   setFormFocus(false);
 
   // force update input field after navigate to page (only the input item)
-  (inputFormControlReference.current as HTMLInputElement).value = query;
+  if (inputFormControlReference.current) {
+    inputFormControlReference.current.value = query;
+  }
 
   if (!callback) return;
   callback(query);

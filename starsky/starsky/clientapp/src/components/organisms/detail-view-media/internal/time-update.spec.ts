@@ -3,11 +3,11 @@ import * as DateModule from "../../../../shared/date";
 import { TimeUpdate } from "./time-update";
 
 describe("TimeUpdate function", () => {
-  let videoRef: React.RefObject<HTMLVideoElement>;
+  let videoRef: React.RefObject<HTMLVideoElement | null>;
   let setIsLoadingMock: jest.Mock;
-  let progressRef: React.RefObject<HTMLProgressElement>;
-  let scrubberRef: React.RefObject<HTMLSpanElement>;
-  let timeRef: React.RefObject<HTMLSpanElement>;
+  let progressRef: React.RefObject<HTMLProgressElement | null>;
+  let scrubberRef: React.RefObject<HTMLSpanElement | null>;
+  let timeRef: React.RefObject<HTMLSpanElement | null>;
   let secondsToHoursSpy: jest.SpyInstance;
 
   beforeEach(() => {
@@ -17,15 +17,15 @@ describe("TimeUpdate function", () => {
     const scrubberElement = document.createElement("span");
     const timeElement = document.createElement("span");
 
-    videoRef = { current: videoElement } as React.RefObject<HTMLVideoElement>;
+    videoRef = { current: videoElement } as React.RefObject<HTMLVideoElement | null>;
     setIsLoadingMock = jest.fn();
     progressRef = {
       current: progressElement
-    } as React.RefObject<HTMLProgressElement>;
+    } as React.RefObject<HTMLProgressElement | null>;
     scrubberRef = {
       current: scrubberElement
-    } as React.RefObject<HTMLSpanElement>;
-    timeRef = { current: timeElement } as React.RefObject<HTMLSpanElement>;
+    } as React.RefObject<HTMLSpanElement | null>;
+    timeRef = { current: timeElement } as React.RefObject<HTMLSpanElement | null>;
 
     // Mock the SecondsToHours function from the shared/date module
     secondsToHoursSpy = jest.spyOn(DateModule, "SecondsToHours");

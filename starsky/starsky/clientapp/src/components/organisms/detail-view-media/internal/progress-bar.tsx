@@ -1,9 +1,9 @@
 import { UpdateProgressByClick } from "./update-progress-by-click";
 
 interface IProgressBarProps {
-  scrubberRef: React.RefObject<HTMLSpanElement>;
-  progressRef: React.RefObject<HTMLProgressElement>;
-  videoRef: React.RefObject<HTMLVideoElement>;
+  scrubberRef: React.RefObject<HTMLSpanElement | null>;
+  progressRef: React.RefObject<HTMLProgressElement | null>;
+  videoRef: React.RefObject<HTMLVideoElement | null>;
 }
 
 export const ProgressBar: React.FunctionComponent<IProgressBarProps> = ({

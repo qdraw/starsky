@@ -1,11 +1,11 @@
 import { SecondsToHours } from "../../../../shared/date";
 
 export function TimeUpdate(
-  videoRef: React.RefObject<HTMLVideoElement>,
+  videoRef: React.RefObject<HTMLVideoElement | null>,
   setIsLoading: (value: React.SetStateAction<boolean>) => void,
-  progressRef: React.RefObject<HTMLProgressElement>,
-  scrubberRef: React.RefObject<HTMLSpanElement>,
-  timeRef: React.RefObject<HTMLSpanElement>
+  progressRef: React.RefObject<HTMLProgressElement | null>,
+  scrubberRef: React.RefObject<HTMLSpanElement | null>,
+  timeRef: React.RefObject<HTMLSpanElement | null>
 ) {
   if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
 

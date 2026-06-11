@@ -1,5 +1,5 @@
 export default function modalInsertPortalDiv(
-  modal: React.MutableRefObject<HTMLDivElement | null>,
+  modal: React.RefObject<HTMLDivElement | null>,
   hasUpdated: boolean,
   forceUpdate: React.Dispatch<React.SetStateAction<boolean>>,
   id: string

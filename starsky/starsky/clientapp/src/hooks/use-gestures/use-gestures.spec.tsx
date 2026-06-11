@@ -121,7 +121,7 @@ describe("useGestures", () => {
         sourceEvent as unknown as globalThis.TouchEvent,
         newTouches as unknown as TouchList,
         prevTouch as unknown as ICurrentTouches,
-        t as React.MutableRefObject<ICurrentTouches>
+        t as React.RefObject<ICurrentTouches>
       );
 
       expect(result.delta).toBe(20);
@@ -155,7 +155,7 @@ describe("useGestures", () => {
         sourceEvent as unknown as globalThis.TouchEvent,
         newTouches as unknown as TouchList,
         prevTouch as unknown as ICurrentTouches,
-        t as React.MutableRefObject<ICurrentTouches>
+        t as React.RefObject<ICurrentTouches>
       );
 
       expect(result.angleDeg).toBe(180);

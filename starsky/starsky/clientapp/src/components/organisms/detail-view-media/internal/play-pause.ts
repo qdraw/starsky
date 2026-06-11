@@ -1,5 +1,5 @@
 export function PlayPause(
-  videoRef: React.RefObject<HTMLVideoElement>,
+  videoRef: React.RefObject<HTMLVideoElement | null>,
   setIsError: React.Dispatch<React.SetStateAction<string>>,
   MessageVideoPlayBackError: string,
   setStarted: React.Dispatch<React.SetStateAction<boolean>>,

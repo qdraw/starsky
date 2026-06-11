@@ -15,10 +15,10 @@ export type IntersectionOptions = {
 };
 
 export const newIntersectionObserver = (
-  ref: React.RefObject<Element>,
+  ref: React.RefObject<Element | null>,
   setIntersecting: React.Dispatch<React.SetStateAction<boolean>>,
   once: boolean | undefined,
-  optsRef: React.MutableRefObject<IntersectionOptions>,
+  optsRef: React.RefObject<IntersectionOptions>,
   callback?: IntersectionChangeHandler
 ): IntersectionObserver => {
   const observer = new IntersectionObserver(
@@ -42,7 +42,7 @@ export const newIntersectionObserver = (
 };
 
 const useIntersection = (
-  ref: React.RefObject<Element>,
+  ref: React.RefObject<Element | null>,
   options: IntersectionOptions = {},
   callback?: IntersectionChangeHandler
 ): boolean => {

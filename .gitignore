@@ -277,6 +277,9 @@ paket-files/
 !**/clientapp/.vscode/launch.json
 !**/clientapp/.vscode/extensions.json
 
+# ignore
+**/clientapp/package.json.bak
+
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 **/.history
@@ -358,6 +361,7 @@ starsky-tools/docs/*/*/*.jpg
 starsky-tools/docs/*/*/*/*.jpg
 
 starsky-tools/build-tools/vite-tmp-folder/*
+starsky-tools/build-tools/test/*
 
 **/osx-x64/*
 **/osx-arm64/*
