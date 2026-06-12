@@ -1,4 +1,4 @@
-import { MutableRefObject } from "react";
+import { RefObject } from "react";
 import { ICurrentTouches } from "./ICurrentTouches.types";
 import { Pointer } from "./pointer";
 import { getAngleDeg, getDistance } from "./use-gestures";
@@ -7,7 +7,7 @@ export const getCurrentTouches = (
   originalEvent: globalThis.TouchEvent,
   touches: TouchList,
   prevTouch: ICurrentTouches | null,
-  initialTouches: MutableRefObject<ICurrentTouches>
+  initialTouches: RefObject<ICurrentTouches>
 ): ICurrentTouches => {
   const firstTouch = initialTouches.current;
 

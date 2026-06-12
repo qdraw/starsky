@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import React, { MutableRefObject, useRef } from "react";
+import React, { RefObject, useRef } from "react";
 import { mockUnobserve, triggerIntersection } from "./___tests___/intersection-observer-mock";
 import useIntersection, {
   IntersectionOptions,
@@ -36,7 +36,7 @@ describe("useIntersection", () => {
       target,
       jest.fn(),
       true,
-      tagRef as unknown as MutableRefObject<IntersectionOptions>
+      tagRef as unknown as RefObject<IntersectionOptions>
     );
     return null;
   };
