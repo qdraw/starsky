@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from "@storybook/react";
+import { StoryObj } from "@storybook/react";
 import { DropdownResult } from "./ISearableDropdownProps";
 import SearchableDropdown from "./searchable-dropdown";
 
