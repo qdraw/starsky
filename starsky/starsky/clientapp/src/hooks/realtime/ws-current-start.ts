@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction } from "react";
+import { Dispatch, RefObject, SetStateAction } from "react";
 import { IApiNotificationResponseModel } from "../../interfaces/IApiNotificationResponseModel";
 import { IFileIndexItem } from "../../interfaces/IFileIndexItem";
 import FetchGet from "../../shared/fetch/fetch-get";
@@ -62,7 +62,7 @@ export function FireOnClose(
   e: CloseEvent,
   socketConnected: boolean,
   setSocketConnected: Dispatch<SetStateAction<boolean>>,
-  isEnabled: MutableRefObject<boolean>
+  isEnabled: RefObject<boolean>
 ) {
   if (e.code === 1008 || e.code === 1009) {
     // 1008 = please login first
@@ -144,7 +144,7 @@ export function FireOnMessage(
 export default function WsCurrentStart(
   socketConnected: boolean,
   setSocketConnected: Dispatch<SetStateAction<boolean>>,
-  isEnabled: MutableRefObject<boolean>,
+  isEnabled: RefObject<boolean>,
   setKeepAliveTime: Dispatch<SetStateAction<Date>>,
   InsertNewWebSocketService: () => WebSocketService,
   keepAliveServerTime: string,
