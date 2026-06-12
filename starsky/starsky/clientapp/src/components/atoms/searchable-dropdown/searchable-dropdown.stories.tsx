@@ -116,7 +116,7 @@ export const WithStrings: Story = {
   args: {
     fetchResults: mockFetchStrings,
     placeholder: "Search fruits (strings)...",
-    onSelect: (value) => console.log("Selected (string value):", value)
+    onSelect: (value: string) => console.log("Selected (string value):", value)
   }
 };
 
@@ -124,7 +124,7 @@ export const WithObjects: Story = {
   args: {
     fetchResults: mockFetchObjects,
     placeholder: "Search fruits (objects)...",
-    onSelect: (value) => console.log("Selected (object id):", value)
+    onSelect: (value: string) => console.log("Selected (object id):", value)
   }
 };
 export const WithDefaultItems: Story = {
@@ -136,7 +136,7 @@ export const WithDefaultItems: Story = {
       { label: "Settings", value: "settings" },
       { label: "About", value: "about" }
     ],
-    onSelect: (value) => console.log("Selected:", value)
+    onSelect: (value: string) => console.log("Selected:", value)
   }
 };
 
@@ -145,6 +145,6 @@ export const WithCustomClassName: Story = {
     fetchResults: mockFetchStrings,
     placeholder: "Custom styled dropdown...",
     className: "custom-dropdown",
-    onSelect: (value) => console.log("Selected:", value)
+    onSelect: (value: string) => console.log("Selected:", value)
   }
 };

@@ -1,7 +1,6 @@
 import { Meta } from "@storybook/react-vite";
-import { action } from "storybook/actions";
-import MenuOptionRotateImage90 from "./menu-option-rotate-image-90.tsx";
 import { IDetailView } from "../../../interfaces/IDetailView.ts";
+import MenuOptionRotateImage90 from "./menu-option-rotate-image-90.tsx";
 
 export default {
   component: MenuOptionRotateImage90,
@@ -18,8 +17,8 @@ export default {
 const Template = () => (
   <MenuOptionRotateImage90
     state={{} as IDetailView}
-    setIsLoading={action("setIsLoading")}
-    dispatch={() => {}}
+    setIsLoading={() => console.log("setIsLoading")}
+    dispatch={() => console.log("dispatch")}
     isMarkedAsDeleted={false}
     isReadOnly={false}
   />

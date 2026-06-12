@@ -1,4 +1,4 @@
-import { FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
+import { FunctionComponent, SubmitEvent, useEffect, useRef, useState } from "react";
 import { DropdownResult, ISearchableDropdownProps } from "./ISearableDropdownProps";
 
 const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
@@ -115,7 +115,7 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
     onSelect?.(selectValue, displayText);
   };
 
-  const handleFormSubmit = (e: FormEvent) => {
+  const handleFormSubmit = (e: SubmitEvent) => {
     e.preventDefault();
     if (selectedIndex >= 0) {
       if (results.length > 0) {

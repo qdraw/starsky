@@ -1,4 +1,4 @@
-import { FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
+import { FunctionComponent, SubmitEvent, useEffect, useRef, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useLocation from "../../../hooks/use-location/use-location";
 import { UrlQuery } from "../../../shared/url/url-query";
@@ -42,7 +42,7 @@ const MenuInlineSearch: FunctionComponent<IMenuSearchBarProps> = (props) => {
   }, [responseObject]);
 
   /** Submit the form */
-  function onFormSubmit(e: FormEvent) {
+  function onFormSubmit(e: SubmitEvent) {
     e.preventDefault();
     Navigate(history, setFormFocus, inputFormControlReference, query, props.callback);
   }
