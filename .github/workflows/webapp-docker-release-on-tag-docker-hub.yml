@@ -52,7 +52,7 @@ jobs:
 
       - name: Build and push ${{ steps.pushtags.outputs.tag }}
         id: docker_build
-        uses: docker/build-push-action@e6ed27f63f1dfc978c8eba9ee1663c3d5e396880
+        uses: docker/build-push-action@c269a24fa28c26bf87ecef8c9ec22746dd962204
         with:
           context: ./starsky
           platforms: linux/amd64,linux/arm64,linux/arm/v7
