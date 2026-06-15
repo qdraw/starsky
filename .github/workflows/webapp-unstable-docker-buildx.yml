@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
         
       - name: Log in to Github Container registry
-        uses: docker/login-action@d43e1c853e1fb3780e2a1187b33970c59f58c314
+        uses: docker/login-action@4a8376e001c7725687f0624d1c3698a3f6ab337e
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -51,7 +51,7 @@ jobs:
 
       - name: Extract metadata Github Actions (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@a7807070e67ad478bd5f672f499303a151742e53
+        uses: docker/metadata-action@deaa0dee567db6b95038c14152b037af85a8fe3b
         with:
           images: |
             ghcr.io/${{ github.repository }}-unstable-nightly
