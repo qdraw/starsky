@@ -350,6 +350,37 @@ public sealed class AppSettingsCompareHelperTest
 	}
 
 	[TestMethod]
+	public void AppSettingsImageClassificationFields()
+	{
+		var source = new AppSettings
+		{
+			UseImageClassificationOnStartup = false,
+			OllamaModel = "gemma3:4b",
+			OllamaExecutablePath = "",
+			ImageClassificationBatchSize = 25
+		};
+
+		var to = new AppSettings
+		{
+			UseImageClassificationOnStartup = true,
+			OllamaModel = "llava:13b",
+			OllamaExecutablePath = "/opt/ollama/ollama",
+			ImageClassificationBatchSize = 64
+		};
+
+		var compare = AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.IsTrue(source.UseImageClassificationOnStartup.GetValueOrDefault());
+		Assert.AreEqual("llava:13b", source.OllamaModel);
+		Assert.AreEqual("/opt/ollama/ollama", source.OllamaExecutablePath);
+		Assert.AreEqual(64, source.ImageClassificationBatchSize);
+		Assert.Contains("useimageclassificationonstartup", compare);
+		Assert.Contains("ollamamodel", compare);
+		Assert.Contains("ollamaexecutablepath", compare);
+		Assert.Contains("imageclassificationbatchsize", compare);
+	}
+
+	[TestMethod]
 	public void StringCompare()
 	{
 		var source = new AppSettings

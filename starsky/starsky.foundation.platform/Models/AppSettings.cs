@@ -93,7 +93,12 @@ public sealed class AppSettings
 		/// <summary>
 		///     Mount watcher
 		/// </summary>
-		MountWatcher = 12
+		MountWatcher = 12,
+
+		/// <summary>
+		///     Image classification queue worker CLI
+		/// </summary>
+		ImageClassification = 13
 	}
 
 	/// <summary>
@@ -794,6 +799,30 @@ public sealed class AppSettings
 	/// </summary>
 	[PackageTelemetry]
 	public string? FfmpegPath { get; set; }
+
+	/// <summary>
+	///     Run image classification job on startup
+	/// </summary>
+	[PackageTelemetry]
+	public bool? UseImageClassificationOnStartup { get; set; } = false;
+
+	/// <summary>
+	///     Ollama model identifier for image classification
+	/// </summary>
+	[PackageTelemetry]
+	public string OllamaModel { get; set; } = "gemma3:4b";
+
+	/// <summary>
+	///     Optional executable path to the Ollama binary
+	/// </summary>
+	[PackageTelemetry]
+	public string OllamaExecutablePath { get; set; } = string.Empty;
+
+	/// <summary>
+	///     Default batch size for image classification workers
+	/// </summary>
+	[PackageTelemetry]
+	public int ImageClassificationBatchSize { get; set; } = 25;
 
 	/// <summary>
 	///     Cloud import settings for automatic import from cloud storage

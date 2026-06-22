@@ -26,6 +26,8 @@ files=(
   "pm2-warmup.sh"
   "service-deploy-systemd.sh",
   "github-artifacts-download.sh"
+  "download-mirror.sh"
+  "ollama-dependencies-download.sh"
   "starsky"
 )
 

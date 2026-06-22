@@ -168,6 +168,8 @@ if [[ -f starsky.dll ]]; then
         if [[ $ENTRY != "appsettings"* 
         && $ENTRY != "pm2-"*
         && $ENTRY != "github-artifacts-download.sh"
+        && $ENTRY != "download-mirror.sh"
+        && $ENTRY != "ollama-dependencies-download.sh"
         && $ENTRY != "service-"*
         && $ENTRY != "thumbnailTempFolder"
         && $ENTRY != "temp"
@@ -252,6 +254,8 @@ files=(
   "pm2-warmup.sh"
   "service-deploy-systemd.sh",
   "github-artifacts-download.sh"
+  "download-mirror.sh"
+  "ollama-dependencies-download.sh"
   "starsky"
 )
 
