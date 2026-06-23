@@ -25,7 +25,7 @@
     box-shadow ease-in-out 0.15s,
     background-color ease-in-out 0.15s;
   font-family: "Gloriola Std", sans-serif;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* for safari you should not break words in a single line*/
