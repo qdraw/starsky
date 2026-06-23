@@ -310,7 +310,7 @@ describe("AddContextMenu", () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     const menus = document.querySelectorAll(".leaflet-context-menu");
-    expect(menus.length).toBe(1);
+    expect(menus).toHaveLength(1);
   });
 
   it("should copy coordinates and call setNotificationStatus when copy-coordinates is clicked", async () => {
@@ -419,7 +419,7 @@ describe("AddContextMenu", () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // There should be one menu
-    expect(document.querySelectorAll(".leaflet-context-menu").length).toBe(1);
+    expect(document.querySelectorAll(".leaflet-context-menu")).toHaveLength(1);
 
     // Simulate second right-click event
     const event2 = {
@@ -430,6 +430,6 @@ describe("AddContextMenu", () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // There should still be only one menu
-    expect(document.querySelectorAll(".leaflet-context-menu").length).toBe(1);
+    expect(document.querySelectorAll(".leaflet-context-menu")).toHaveLength(1);
   });
 });

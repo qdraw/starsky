@@ -109,7 +109,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";
@@ -149,7 +149,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";
@@ -193,7 +193,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";
@@ -234,7 +234,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";
@@ -296,7 +296,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";
@@ -356,7 +356,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";

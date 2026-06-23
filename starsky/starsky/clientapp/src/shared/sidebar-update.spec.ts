@@ -84,7 +84,7 @@ describe("url-path", () => {
         } as unknown as React.ChangeEvent<HTMLInputElement>,
         {} as ISidebarUpdate
       );
-      expect(result).toStrictEqual(null);
+      expect(result).toBeNull();
     });
 
     it("no text should return empty object", () => {

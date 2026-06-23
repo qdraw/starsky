@@ -204,6 +204,6 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
 
     const errorMessage2 = screen.queryByTestId("notification-spy")?.innerHTML;
 
-    expect(errorMessage2).toBe(undefined);
+    expect(errorMessage2).toBeUndefined();
   });
 });

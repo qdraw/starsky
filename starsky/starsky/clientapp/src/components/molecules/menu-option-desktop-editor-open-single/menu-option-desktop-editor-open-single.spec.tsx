@@ -331,7 +331,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
 
       const errorMessage2 = screen.queryByTestId("notification-spy-button")?.innerHTML;
 
-      expect(errorMessage2).toBe(undefined);
+      expect(errorMessage2).toBeUndefined();
     });
     container.unmount();
   });

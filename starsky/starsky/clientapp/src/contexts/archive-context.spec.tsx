@@ -60,7 +60,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(0);
+    expect(result.fileIndexItems).toHaveLength(0);
   });
 
   it("rename-folder - path should be changed", () => {
@@ -100,7 +100,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
     expect(result.fileIndexItems[0].filePath).toBe("/test.jpg");
   });
 
@@ -189,7 +189,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
     expect(result.fileIndexItems[0].filePath).toBe("/test.jpg");
   });
 
@@ -215,7 +215,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(2);
+    expect(result.fileIndexItems).toHaveLength(2);
     expect(result.fileIndexItems[0].filePath).toBe("/a.jpg");
     expect(result.fileIndexItems[1].filePath).toBe("/__first.mp4");
   });
@@ -243,7 +243,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(2);
+    expect(result.fileIndexItems).toHaveLength(2);
     expect(result.fileIndexItems[0].filePath).toBe("/a.jpg");
     expect(result.fileIndexItems[1].filePath).toBe("/__first.mp4");
   });
@@ -270,7 +270,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(2);
+    expect(result.fileIndexItems).toHaveLength(2);
     expect(result.fileIndexItems[0].filePath).toBe("/first.jpg");
     expect(result.fileIndexItems[1].filePath).toBe("/__not_first.mp4");
   });
@@ -292,7 +292,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
     expect(result.fileIndexItems[0].filePath).toBe("/test1.jpg");
   });
 
@@ -311,7 +311,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(0);
+    expect(result.fileIndexItems).toHaveLength(0);
     expect(result.colorClassUsage).toStrictEqual([]);
   });
 
@@ -323,7 +323,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(0);
+    expect(result.fileIndexItems).toHaveLength(0);
   });
 
   it("add - last colorClassUsage is removed", () => {
@@ -348,7 +348,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(0);
+    expect(result.fileIndexItems).toHaveLength(0);
     expect(result.colorClassUsage).toStrictEqual([]);
   });
 
@@ -377,7 +377,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
     expect(result.fileIndexItems[0]).toBe(add[0]);
   });
 
@@ -403,7 +403,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(0);
+    expect(result.fileIndexItems).toHaveLength(0);
   });
 
   it("add - add xmp file when collections is false", () => {
@@ -428,7 +428,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
     expect(result.fileIndexItems[0]).toBe(add[0]);
   });
 
@@ -454,7 +454,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(0);
+    expect(result.fileIndexItems).toHaveLength(0);
   });
 
   it("add - add meta_json file when collections is false", () => {
@@ -479,7 +479,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
     expect(result.fileIndexItems[0]).toBe(add[0]);
   });
 
@@ -673,7 +673,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(2);
+    expect(result.fileIndexItems).toHaveLength(2);
     expect(result.fileIndexItems[0].filePath).toBe("/CLIP_2/C0802.MP4");
     expect(result.fileIndexItems[1].filePath).toBe("/CLIP_2/C0803.MP4");
   });
@@ -704,7 +704,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(2);
+    expect(result.fileIndexItems).toHaveLength(2);
     expect(result.fileIndexItems[0].tags).toBe("tags");
     expect(result.fileIndexItems[0].fileHash).toBe("1");
     expect(result.fileIndexItems[0].colorClass).toBe(1);
@@ -734,7 +734,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
     expect(result.fileIndexItems[0].tags).toBe("tags1, tags");
     expect(result.fileIndexItems[0].description).toBe("description1description");
     expect(result.fileIndexItems[0].title).toBe("title1title");
@@ -770,7 +770,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.colorClassUsage.length).toBe(2);
+    expect(result.colorClassUsage).toHaveLength(2);
     expect(result.colorClassUsage[0]).toBe(1);
     expect(result.colorClassUsage[1]).toBe(2);
   });
@@ -804,7 +804,7 @@ describe("ArchiveContext", () => {
 
     const result = archiveReducer(state, action);
 
-    expect(result.colorClassUsage.length).toBe(1);
+    expect(result.colorClassUsage).toHaveLength(1);
     expect(result.colorClassUsage[0]).toBe(2);
   });
 
@@ -881,7 +881,7 @@ describe("ArchiveContext", () => {
     const action = { type: "add", add } as ArchiveAction;
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(4);
+    expect(result.fileIndexItems).toHaveLength(4);
     expect(result.fileIndexItems).toStrictEqual([
       {
         fileName: "test0.jpg",
@@ -935,7 +935,7 @@ describe("ArchiveContext", () => {
     const action = { type: "add", add } as ArchiveAction;
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
     expect(result.fileIndexItems).toStrictEqual([
       {
         fileName: "test0.jpg",
@@ -981,7 +981,7 @@ describe("ArchiveContext", () => {
 
     console.log("<--");
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
     expect(result.fileIndexItems).toStrictEqual([
       {
         fileName: "test1.jpg",
@@ -1024,7 +1024,7 @@ describe("ArchiveContext", () => {
 
     console.log("<--");
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
     expect(result.fileIndexItems).toStrictEqual([
       {
         fileName: "test0.jpg",
@@ -1059,7 +1059,7 @@ describe("ArchiveContext", () => {
     const action = { type: "add", add } as ArchiveAction;
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(2);
+    expect(result.fileIndexItems).toHaveLength(2);
 
     expect(result.fileIndexItems[0].fileName).toBe("__20180101170001.jpg");
 
@@ -1096,7 +1096,7 @@ describe("ArchiveContext", () => {
     const action = { type: "add", add } as ArchiveAction;
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(0);
+    expect(result.fileIndexItems).toHaveLength(0);
   });
 
   it("add -- duplicate", () => {
@@ -1123,7 +1123,7 @@ describe("ArchiveContext", () => {
     const action = { type: "add", add } as ArchiveAction;
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
 
     expect(result.fileIndexItems[0].fileName).toBe("2018.01.01.17.00.01.jpg");
 
@@ -1152,7 +1152,7 @@ describe("ArchiveContext", () => {
     const action = { type: "add", add: state.fileIndexItems[0] as unknown } as ArchiveAction;
     const result = archiveReducer(state, action);
 
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
   });
 
   it("add -- duplicate (in collections mode true)", () => {
@@ -1196,7 +1196,7 @@ describe("ArchiveContext", () => {
     );
 
     // the filter does not filter in jest, but it works in the browser
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
   });
 
   it("add -- duplicate (in collections mode false)", () => {
@@ -1241,6 +1241,6 @@ describe("ArchiveContext", () => {
     );
 
     // the filter does not filter in jest, but it works in the browser
-    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toHaveLength(1);
   });
 });

@@ -11,15 +11,15 @@ import FileHashImage from "./file-hash-image";
 import * as PanAndZoomImage from "./pan-and-zoom-image";
 
 describe("FileHashImage", () => {
-  it("renders", () => {
-    const item = render(<FileHashImage fileHash={""} />);
-    expect(item).toBeTruthy();
-  });
-
   beforeEach(() => {
     jest
       .spyOn(DetectAutomaticRotation, "default")
       .mockImplementationOnce(() => Promise.resolve(true));
+  });
+
+  it("renders", () => {
+    const item = render(<FileHashImage fileHash={""} />);
+    expect(item).toBeTruthy();
   });
 
   function createPanZoomObjectWheelCallback(): (props: {

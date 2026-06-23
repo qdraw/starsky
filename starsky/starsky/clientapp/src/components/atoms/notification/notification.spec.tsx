@@ -76,6 +76,10 @@ describe("ItemListView", () => {
 });
 
 describe("Notification autoRemoveTimeout", () => {
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it("should auto-remove after the specified timeout", () => {
     jest.useFakeTimers();
 
@@ -93,10 +97,6 @@ describe("Notification autoRemoveTimeout", () => {
     });
     // Callback should be called after timeout
     expect(callback).toHaveBeenCalled();
-  });
-
-  afterAll(() => {
-    jest.useRealTimers();
   });
 
   it("should NOT auto-remove if autoRemoveTimeout is -1", () => {

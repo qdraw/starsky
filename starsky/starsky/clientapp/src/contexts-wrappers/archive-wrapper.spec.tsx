@@ -303,7 +303,7 @@ describe("ArchiveContextWrapper", () => {
         }
       ] as IFileIndexItem[];
       const result = filterArchiveFromEvent(list, "/");
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
     });
 
     it("should not include parent folder", () => {
@@ -318,7 +318,7 @@ describe("ArchiveContextWrapper", () => {
         }
       ] as IFileIndexItem[];
       const result = filterArchiveFromEvent(list, "/");
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
     });
 
     it("should not include parent folder [undefined]", () => {
@@ -333,7 +333,7 @@ describe("ArchiveContextWrapper", () => {
         }
       ] as IFileIndexItem[];
       const result = filterArchiveFromEvent(list, undefined);
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
     });
   });
 });
