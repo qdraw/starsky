@@ -75,7 +75,7 @@ describe("Search", () => {
 
       const searchPagination = screen.queryAllByTestId("search-pagination");
 
-      expect(searchPagination.length).toEqual(2);
+      expect(searchPagination).toHaveLength(2);
       component.unmount();
     });
   });

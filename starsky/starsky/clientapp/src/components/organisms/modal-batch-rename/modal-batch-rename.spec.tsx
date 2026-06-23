@@ -713,14 +713,14 @@ describe("ModalBatchRename", () => {
         expect(previewItem).toBeTruthy();
 
         const previewTarget = container.querySelectorAll(".preview-target");
-        expect(previewTarget.length).toBe(expectedTargetCount);
+        expect(previewTarget).toHaveLength(expectedTargetCount);
         expectedTargetNames.forEach((name, idx) => {
           expect(previewTarget[idx]?.textContent).toBe(name);
         });
 
         if (error) {
           const errorBox = container.querySelectorAll(".preview-item--error");
-          expect(errorBox.length).toBe(expectedErrorCount);
+          expect(errorBox).toHaveLength(expectedErrorCount);
           expect(errorBox[0].querySelector(".preview-error-message")?.textContent).toBe(
             errorMessage
           );

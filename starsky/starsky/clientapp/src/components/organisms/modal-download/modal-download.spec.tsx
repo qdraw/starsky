@@ -24,8 +24,6 @@ describe("ModalDownload", () => {
     expect(item).toBeTruthy();
   });
 
-  beforeEach(() => {});
-
   it("Single File", () => {
     // use ==> import * as useFetch from '../hooks/use-fetch';
     const mockGetIConnectionDefault = {

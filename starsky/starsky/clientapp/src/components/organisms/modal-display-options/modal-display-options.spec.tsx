@@ -114,7 +114,7 @@ describe("ModalDisplayOptions", () => {
           await toTrueButton?.click();
         });
 
-        expect(localStorage.getItem("use-sockets")).toBe(null);
+        expect(localStorage.getItem("use-sockets")).toBeNull();
       });
 
       it("sort - change to imageFormat", async () => {

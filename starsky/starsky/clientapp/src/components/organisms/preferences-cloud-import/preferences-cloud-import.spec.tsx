@@ -38,7 +38,7 @@ describe("PreferencesCloudImport", () => {
     component.unmount();
   });
 
-  it("should disable sync when a sync is in progress", async () => {
+  it("should disable sync when a sync is in progress 2", async () => {
     jest.spyOn(FetchGet, "default").mockImplementationOnce(() =>
       Promise.resolve({
         statusCode: 200,
@@ -181,7 +181,7 @@ describe("PreferencesCloudImport", () => {
     component.unmount();
   });
 
-  it("should disable sync when a sync is in progress", async () => {
+  it("should disable sync when a sync is in progress 1", async () => {
     jest.spyOn(FetchGet, "default").mockImplementation(() =>
       Promise.resolve({
         statusCode: 500,

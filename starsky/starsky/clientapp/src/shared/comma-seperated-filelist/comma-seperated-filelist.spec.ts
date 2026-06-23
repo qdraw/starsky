@@ -40,12 +40,12 @@ describe("CommaSeperatedFileList", () => {
     expect(result).toBe("test, without extension");
   });
 
-  test("should handle mixed inputs with and without dots", () => {
+  test("should handle mixed inputs with and without dots 1", () => {
     const result = comma.CommaSpaceLastDot(["example.test", "another", "final.test"]);
     expect(result).toBe("test, without extension");
   });
 
-  test("should handle mixed inputs with and without dots", () => {
+  test("should handle mixed inputs with and without dots 2", () => {
     const result = comma.CommaSpaceLastDot([
       "example.test",
       "/collection/20241106_155823_DSC00339",

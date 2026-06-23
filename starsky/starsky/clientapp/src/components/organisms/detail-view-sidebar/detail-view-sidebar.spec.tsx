@@ -18,6 +18,10 @@ import * as ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
 import DetailViewSidebar from "./detail-view-sidebar";
 
 describe("DetailViewSidebar", () => {
+  beforeEach(() => {
+    jest.spyOn(console, "error").mockImplementationOnce(() => {});
+  });
+
   it("renders (without state component)", () => {
     const item = render(
       <DetailViewSidebar
@@ -28,10 +32,6 @@ describe("DetailViewSidebar", () => {
       ></DetailViewSidebar>
     );
     expect(item).toBeTruthy();
-  });
-
-  beforeEach(() => {
-    jest.spyOn(console, "error").mockImplementationOnce(() => {});
   });
 
   it("test warning (without state component)", () => {

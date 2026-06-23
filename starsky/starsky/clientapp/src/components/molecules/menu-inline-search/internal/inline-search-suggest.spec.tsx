@@ -114,7 +114,7 @@ describe("inline-search-suggest", () => {
           callback={jest.fn()}
         />
       );
-      expect(queryAllByTestId(/^menu-inline-search-suggest-/).length).toBe(9);
+      expect(queryAllByTestId(/^menu-inline-search-suggest-/)).toHaveLength(9);
     });
 
     it("renders all suggestions when there are less than 9", () => {
@@ -128,7 +128,7 @@ describe("inline-search-suggest", () => {
           callback={jest.fn()}
         />
       );
-      expect(queryAllByTestId(/^menu-inline-search-suggest-/).length).toBe(3);
+      expect(queryAllByTestId(/^menu-inline-search-suggest-/)).toHaveLength(3);
     });
   });
 });

@@ -38,7 +38,7 @@ describe("DetailViewInfoLocation", () => {
     );
 
     const modalObject1 = screen.queryByTestId("modal-geo-tmp");
-    expect(modalObject1).toBe(null);
+    expect(modalObject1).toBeNull();
 
     await act(async () => {
       (await screen.findByTestId("detailview-info-location-open-modal")).click();
