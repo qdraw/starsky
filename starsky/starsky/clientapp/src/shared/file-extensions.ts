@@ -41,21 +41,23 @@ export class FileExtensions {
    * @param filePath filepath
    * @see https://stackoverflow.com/a/1130024
    */
-  public GetParentPath(filePath: string) {
-    if (!filePath) return "/";
+  public GetParentPath(filePath: string): string {
+    if (!filePath) {
+      return "/";
+    }
 
-    const parentRegex = /.+(?=\/[^/]+$)/;
-
-    // Remove slash from end
-    if (filePath.length >= 2 && filePath.endsWith("/")) {
+    // Remove trailing slash (except for root "/")
+    if (filePath.length > 1 && filePath.endsWith("/")) {
       filePath = filePath.slice(0, -1);
     }
 
-    const parentMatchArray = parentRegex.exec(filePath);
+    const lastSlash = filePath.lastIndexOf("/");
 
-    if (!parentMatchArray) return "/";
+    if (lastSlash <= 0) {
+      return "/";
+    }
 
-    return parentMatchArray[0];
+    return filePath.slice(0, lastSlash);
   }
 
   /**
