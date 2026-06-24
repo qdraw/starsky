@@ -22,6 +22,14 @@ public class ImageOptimisationBinariesContainer
 		BaseUrls = [];
 	}
 
+	/// <summary>
+	///     Makes a container for ImageOptimisation results
+	/// </summary>
+	/// <param name="apiResultValue">API results, must be valid JSON</param>
+	/// <param name="indexUrl">where from</param>
+	/// <param name="baseUrls">base domain</param>
+	/// <param name="success">is success</param>
+	/// <exception cref="JsonException">if apiResultValue is invalid</exception>
 	public ImageOptimisationBinariesContainer(string apiResultValue, Uri? indexUrl,
 		List<Uri> baseUrls, bool success)
 	{
@@ -43,6 +51,7 @@ public class ImageOptimisationBinariesContainer
 			return null;
 		}
 
+		// Can have a JsonException if input is invalid
 		return JsonSerializer.Deserialize<ImageOptimisationBinariesIndex>(apiResultValue,
 			DefaultJsonSerializer.CamelCase);
 	}

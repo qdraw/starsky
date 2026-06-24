@@ -119,4 +119,46 @@ public class ImageOptimisationToolDownloadIndexTests
 		Assert.IsFalse(result.Success);
 		Assert.IsNull(result.Data);
 	}
+
+	[TestMethod]
+	public async Task DownloadIndex_ContinuesToNextUrl_WhenJsonParsingFails()
+	{
+		var payload = JsonSerializer.Serialize(new ImageOptimisationBinariesIndex
+		{
+			Binaries =
+			[
+				new ImageOptimisationBinaryIndex
+				{
+					Architecture = "linux-x64",
+					FileName = "mozjpeg-linux-x64.zip",
+					Sha256 = "abc"
+				}
+			]
+		}, DefaultJsonSerializer.CamelCase);
+
+		var first = new Uri("https://starsky-dependencies.netlify.app/mozjpeg/index.json");
+		var second = new Uri("https://qdraw.nl/special/mirror/mozjpeg/index.json");
+		var http = new FakeIHttpClientHelper(new FakeIStorage(),
+			new Dictionary<string, KeyValuePair<bool, string>>
+			{
+				{ first.ToString(), new KeyValuePair<bool, string>(true, "invalid json {") },
+				{ second.ToString(), new KeyValuePair<bool, string>(true, payload) }
+			});
+		var sut = new ImageOptimisationToolDownloadIndex(http, new FakeIWebLogger());
+
+		var result = await sut.DownloadIndex(new ImageOptimisationToolDownloadOptions
+		{
+			ToolName = "mozjpeg",
+			IndexUrls = [first, second],
+			BaseUrls =
+			[
+				new Uri("https://starsky-dependencies.netlify.app/mozjpeg/"),
+				new Uri("https://qdraw.nl/special/mirror/mozjpeg/")
+			]
+		});
+
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(second, result.IndexUrl);
+		Assert.IsNotNull(result.Data);
+	}
 }
