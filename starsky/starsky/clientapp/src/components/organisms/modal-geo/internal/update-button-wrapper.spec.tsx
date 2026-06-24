@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { fireEvent, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { IGeoLocationModel } from "../../../../interfaces/IGeoLocationModel";
 import localization from "../../../../localization/localization.json";
 import { Language, SupportedLanguages } from "../../../../shared/language";

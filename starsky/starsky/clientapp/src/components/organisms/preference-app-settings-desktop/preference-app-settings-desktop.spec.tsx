@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { ChangeEvent } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { IAppSettings } from "../../../interfaces/IAppSettings";

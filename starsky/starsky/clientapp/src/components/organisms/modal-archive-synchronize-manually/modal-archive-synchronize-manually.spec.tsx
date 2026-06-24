@@ -1,5 +1,5 @@
-import { render, RenderResult } from "@testing-library/react";
 import { waitFor } from "@testing-library/dom";
+import { render, RenderResult } from "@testing-library/react";
 import { act } from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { CacheControl } from "../../../shared/fetch/cache-control.ts";

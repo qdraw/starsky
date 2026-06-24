@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { act } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";

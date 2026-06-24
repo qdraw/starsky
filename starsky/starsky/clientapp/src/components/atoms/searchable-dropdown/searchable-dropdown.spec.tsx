@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import SearchableDropdown from "./searchable-dropdown";
 
 describe("SearchableDropdown", () => {
@@ -30,7 +30,7 @@ describe("SearchableDropdown", () => {
     );
 
     const input = getByTestId("searchable-dropdown-input");
-    fireEvent.focus(input);
+    fireEvent.focusIn(input);
 
     await waitFor(() => {
       expect(screen.getByTestId("searchable-dropdown-list")).toBeInTheDocument();
@@ -143,7 +143,7 @@ describe("SearchableDropdown", () => {
     );
 
     const input = getByTestId("searchable-dropdown-input");
-    fireEvent.focus(input);
+    fireEvent.focusIn(input);
 
     await waitFor(() => {
       expect(queryByTestId("searchable-dropdown-item-item1")).toBeInTheDocument();
@@ -290,7 +290,7 @@ describe("SearchableDropdown", () => {
     const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
 
     // Focus to show default items
-    fireEvent.focus(input);
+    fireEvent.focusIn(input);
 
     await waitFor(() => {
       expect(screen.getByTestId("searchable-dropdown-item-default1")).toBeInTheDocument();
@@ -362,7 +362,7 @@ describe("SearchableDropdown", () => {
       );
 
       const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
-      fireEvent.focus(input);
+      fireEvent.focusIn(input);
 
       await waitFor(() => {
         expect(screen.getByTestId("searchable-dropdown-item-default1")).toBeInTheDocument();

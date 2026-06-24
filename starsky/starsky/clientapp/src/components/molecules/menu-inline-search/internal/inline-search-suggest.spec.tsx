@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { IConnectionDefault } from "../../../../interfaces/IConnectionDefault";
 import InlineSearchSuggest, { IInlineSearchSuggestProps } from "./inline-search-suggest";
 

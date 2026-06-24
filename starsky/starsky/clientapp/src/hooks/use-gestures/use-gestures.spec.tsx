@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { createEvent, fireEvent } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import React, { act, useRef, useState } from "react";
 import { mountReactHook } from "../___tests___/test-hook";
 import * as callHandler from "./call-handler";

@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import React from "react";
 import TagAutocomplete, { setCaretToEnd } from "./tag-autocomplete";
 
@@ -121,7 +121,7 @@ describe("TagAutocomplete", () => {
     await waitFor(() => {
       expect(screen.queryByTestId("tag-suggest-list")).toBeTruthy();
     });
-    fireEvent.blur(input);
+    fireEvent.focusOut(input);
     await waitFor(() => {
       expect(screen.queryByTestId("tag-suggest-list")).toBeNull();
     });

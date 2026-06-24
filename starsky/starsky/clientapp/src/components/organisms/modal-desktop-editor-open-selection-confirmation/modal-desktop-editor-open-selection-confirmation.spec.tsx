@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { createEvent, fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch/fetch-post";

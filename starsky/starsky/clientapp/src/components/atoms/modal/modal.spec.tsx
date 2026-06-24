@@ -1,5 +1,5 @@
-import { render, RenderResult } from "@testing-library/react";
 import { fireEvent, screen } from "@testing-library/dom";
+import { render, RenderResult } from "@testing-library/react";
 import Modal from "./modal";
 
 describe("Modal", () => {

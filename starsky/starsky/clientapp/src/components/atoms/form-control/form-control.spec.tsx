@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { createEvent, fireEvent, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { act } from "react";
 import FormControl from "./form-control";
 

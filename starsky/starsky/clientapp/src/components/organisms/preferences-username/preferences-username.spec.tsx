@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import localization from "../../../localization/localization.json";

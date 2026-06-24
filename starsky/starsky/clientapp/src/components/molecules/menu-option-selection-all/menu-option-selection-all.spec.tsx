@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { MenuOptionSelectionAll } from "./menu-option-selection-all";
 

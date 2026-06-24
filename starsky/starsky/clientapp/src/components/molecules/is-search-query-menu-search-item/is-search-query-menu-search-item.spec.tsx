@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../interfaces/IDetailView";

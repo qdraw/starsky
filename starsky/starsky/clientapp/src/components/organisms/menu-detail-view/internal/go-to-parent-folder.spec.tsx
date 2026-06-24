@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { IUseLocation } from "../../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../../interfaces/IDetailView";
 import { GoToParentFolder } from "./go-to-parent-folder";

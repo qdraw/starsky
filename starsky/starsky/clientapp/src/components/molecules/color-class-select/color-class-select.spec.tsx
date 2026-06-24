@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { act } from "react";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";

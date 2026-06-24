@@ -1,9 +1,9 @@
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import { render } from "@testing-library/react";
-import { fireEvent, screen } from "@testing-library/dom";
 import Tooltip from "./tooltip";
 
 describe("Tooltip component", () => {
-  it("renders tooltip text on hover", () => {
+  it("renders tooltip text on hover", async () => {
     const text = "This is a tooltip";
     const component = render(
       <Tooltip text={text} left={false}>
@@ -14,16 +14,20 @@ describe("Tooltip component", () => {
     // Tooltip should not be visible initially
     expect(screen.queryByTestId("tooltip")).toBeFalsy();
 
-    // Hover over the button to display the tooltip
-    fireEvent.mouseEnter(screen.getByText("Hover me"));
+    // Use mouseOver to trigger React onMouseEnter in jsdom
+    fireEvent.mouseOver(screen.getByText("Hover me"));
 
     // Tooltip should now be visible
-    expect(screen.getByTestId("tooltip")).toBeTruthy();
-    expect(screen.getByText(text)).toBeTruthy();
+    await waitFor(() => {
+      expect(screen.getByTestId("tooltip")).toBeTruthy();
+      expect(screen.getByText(text)).toBeTruthy();
+    });
 
     // Move mouse away to hide the tooltip
-    fireEvent.mouseLeave(screen.getByText("Hover me"));
-    expect(screen.queryByTestId("tooltip")).toBeFalsy();
+    fireEvent.mouseOut(screen.getByText("Hover me"));
+    await waitFor(() => {
+      expect(screen.queryByTestId("tooltip")).toBeFalsy();
+    });
     component.unmount();
   });
 

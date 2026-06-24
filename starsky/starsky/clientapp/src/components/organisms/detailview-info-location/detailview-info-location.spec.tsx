@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import * as useLocation from "../../../hooks/use-location/use-location";
 
 import React, { act } from "react";

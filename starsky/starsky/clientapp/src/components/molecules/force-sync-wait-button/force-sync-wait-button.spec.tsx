@@ -1,6 +1,6 @@
+import { screen, waitFor } from "@testing-library/dom";
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
-import { screen, waitFor } from "@testing-library/dom";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
 import * as FetchGet from "../../../shared/fetch/fetch-get";

@@ -1,5 +1,5 @@
+import { fireEvent, screen } from "@testing-library/dom";
 import { render } from "@testing-library/react";
-import { screen, fireEvent } from "@testing-library/dom";
 import { SelectMenuItem } from "./select-menu-item";
 
 describe("SelectMenuItem Component", () => {

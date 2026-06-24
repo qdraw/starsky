@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import localization from "../../../localization/localization.json";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
