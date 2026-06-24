@@ -1,4 +1,5 @@
-import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { createEvent, fireEvent, screen } from "@testing-library/dom";
 import React, { act } from "react";
 import { IArchive, newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";

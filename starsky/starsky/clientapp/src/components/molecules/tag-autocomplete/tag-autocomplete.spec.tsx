@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import React from "react";
 import TagAutocomplete, { setCaretToEnd } from "./tag-autocomplete";
 

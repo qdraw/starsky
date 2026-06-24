@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/dom";
 import L, { LatLng } from "leaflet";
 import { act } from "react";
 import * as Modal from "../../atoms/modal/modal";

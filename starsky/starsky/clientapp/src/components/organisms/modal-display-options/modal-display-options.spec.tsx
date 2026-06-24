@@ -1,4 +1,5 @@
-import { fireEvent, render, RenderResult } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
 import { act } from "react";
 import { Router } from "../../../router-app/router-app";
 import * as Modal from "../../atoms/modal/modal";

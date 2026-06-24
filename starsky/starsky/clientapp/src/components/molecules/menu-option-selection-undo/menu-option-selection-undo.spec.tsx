@@ -1,4 +1,5 @@
-import { fireEvent, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { MenuOptionSelectionUndo } from "./menu-option-selection-undo";
 

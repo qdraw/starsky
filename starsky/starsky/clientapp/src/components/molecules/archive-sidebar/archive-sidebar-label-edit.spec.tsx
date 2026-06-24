@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { screen } from "@testing-library/dom";
 import React, { act } from "react";
 import ArchiveSidebarLabelEdit from "./archive-sidebar-label-edit";
 

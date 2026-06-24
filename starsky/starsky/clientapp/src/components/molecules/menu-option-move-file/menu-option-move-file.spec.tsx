@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/dom";
 import React from "react";
 import * as ModalMoveFile from "../../organisms/modal-move-file/modal-move-file";
 import MenuOptionMoveFile from "./menu-option-move-file";

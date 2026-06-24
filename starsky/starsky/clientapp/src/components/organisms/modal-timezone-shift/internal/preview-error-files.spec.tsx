@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { screen } from "@testing-library/dom";
 import { IFileIndexItem } from "../../../../interfaces/IFileIndexItem";
 import { IExifTimezoneCorrectionResult } from "../../../../interfaces/ITimezone";
 import { PreviewErrorFiles } from "./preview-error-files";

@@ -1,4 +1,5 @@
-import { createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { createEvent, fireEvent, screen, waitFor } from "@testing-library/dom";
 import * as useIntersection from "../../../hooks/use-intersection-observer";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
 import { UrlQuery } from "../../../shared/url/url-query";

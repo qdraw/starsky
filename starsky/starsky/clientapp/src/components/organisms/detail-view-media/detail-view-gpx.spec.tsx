@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { render, screen, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/dom";
 import L from "leaflet";
 import { act } from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";

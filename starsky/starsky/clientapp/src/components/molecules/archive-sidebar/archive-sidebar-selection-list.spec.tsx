@@ -1,4 +1,5 @@
-import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { createEvent, fireEvent, screen } from "@testing-library/dom";
 import { act } from "react";
 import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";

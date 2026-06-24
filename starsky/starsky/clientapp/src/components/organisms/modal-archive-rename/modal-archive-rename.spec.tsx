@@ -1,4 +1,5 @@
-import { createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { createEvent, fireEvent, screen, waitFor } from "@testing-library/dom";
 import { act } from "react";
 import * as useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";

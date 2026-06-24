@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/dom";
 import { LanguageLocalizationExample } from "../../../interfaces/ILanguageLocalization.ts";
 import MenuOptionModal from "./menu-option-modal.tsx";
 

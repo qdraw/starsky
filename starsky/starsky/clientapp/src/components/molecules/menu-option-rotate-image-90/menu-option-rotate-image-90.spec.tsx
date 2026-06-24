@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import { act } from "react";
 import { IDetailView } from "../../../interfaces/IDetailView.ts";
 import MenuOptionRotateImage90 from "./menu-option-rotate-image-90.tsx";

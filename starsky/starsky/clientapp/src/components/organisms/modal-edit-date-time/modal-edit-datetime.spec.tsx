@@ -1,4 +1,5 @@
-import { createEvent, fireEvent, render, RenderResult, screen } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
+import { createEvent, fireEvent, screen } from "@testing-library/dom";
 import { act } from "react";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";

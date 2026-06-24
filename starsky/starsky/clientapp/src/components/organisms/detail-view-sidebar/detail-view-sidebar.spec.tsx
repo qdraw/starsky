@@ -1,4 +1,5 @@
-import { fireEvent, render, RenderResult, screen, waitFor } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import { act, JSX } from "react";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";

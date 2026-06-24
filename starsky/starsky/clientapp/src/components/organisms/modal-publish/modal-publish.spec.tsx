@@ -1,4 +1,5 @@
-import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { createEvent, fireEvent, screen } from "@testing-library/dom";
 import React, { act } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
