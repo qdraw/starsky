@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { IFileIndexItem, newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ListImageChildItem from "./list-image-child-item";
 

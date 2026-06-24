@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import * as PreferencesAppSettings from "../../components/organisms/preferences-app-settings/preferences-app-settings";
 import * as PreferencesCloudImport from "../../components/organisms/preferences-cloud-import/preferences-cloud-import";

@@ -1,4 +1,5 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import React, { act } from "react";
 import { ProgressBar } from "./progress-bar";
 import * as UpdateProgressByClick from "./update-progress-by-click";

@@ -49,7 +49,7 @@ jobs:
 
     - name: Install Dependencies
       working-directory: ./starsky/starsky/clientapp
-      run: npm ci --no-progress --prefer-offline --legacy-peer-deps --no-fund
+      run: npm ci --no-progress --prefer-offline --no-fund
       
     - name: NpmBuild
       working-directory: ./starsky/starsky/clientapp

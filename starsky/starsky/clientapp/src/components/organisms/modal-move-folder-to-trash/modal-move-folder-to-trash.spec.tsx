@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { act } from "react";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import * as useLocation from "../../../hooks/use-location/use-location";

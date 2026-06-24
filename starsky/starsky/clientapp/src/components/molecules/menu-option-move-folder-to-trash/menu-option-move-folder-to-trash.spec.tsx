@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { act } from "react";
 import localization from "../../../localization/localization.json";
 import * as Modal from "../../atoms/modal/modal";

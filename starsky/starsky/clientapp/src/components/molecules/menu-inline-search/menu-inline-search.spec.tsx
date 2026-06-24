@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import * as useFetch from "../../../hooks/use-fetch";
