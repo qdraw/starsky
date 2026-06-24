@@ -31,11 +31,11 @@ public class ImageOptimisationToolDownloadIndex(
 			}
 			catch ( JsonException e )
 			{
+				// When one of the two fails it continue to the next
 				logger.LogError(
 					$"[ImageOptimisationToolDownloadIndex] " +
 					$"Failed to parse index for {options.ToolName} " +
 					$"from {indexUrl}. Error: {e.Message}");
-				throw;
 			}
 		}
 
