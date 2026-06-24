@@ -43,6 +43,7 @@ public class ImageOptimisationBinariesContainer
 			return null;
 		}
 
+		// Can have a JsonException if input is invalid
 		return JsonSerializer.Deserialize<ImageOptimisationBinariesIndex>(apiResultValue,
 			DefaultJsonSerializer.CamelCase);
 	}
