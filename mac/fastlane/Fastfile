@@ -1,0 +1,41 @@
+default_platform(:mac)
+
+platform :mac do
+
+  # -----------------------
+  # BUILD
+  # -----------------------
+  lane :build do
+    build_app(
+      scheme: "Starsky",
+      configuration: "Release",
+      export_method: "developer-id",
+      clean: true
+    )
+  end
+
+  # -----------------------
+  # NOTARIZE
+  # -----------------------
+  lane :notarize do
+    zip_path = "./build/starsky.zip"
+
+    sh("ditto -c -k --sequesterRsrc --keepParent ./build/Starsky.app #{zip_path}")
+
+    notarize(
+      package: zip_path,
+      bundle_id: "nl.qdraw.starsky"
+    )
+
+    sh("xcrun stapler staple ./build/Starsky.app")
+  end
+
+  # -----------------------
+  # FULL RELEASE PIPELINE
+  # -----------------------
+  lane :release do
+    build
+    notarize
+  end
+
+end
