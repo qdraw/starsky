@@ -40,7 +40,7 @@ describe("DetailViewGpx", () => {
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
       const div = document.createElement("div");
-      (window as any).domNode = div;
+      window.domNode = div;
       document.body.appendChild(div);
 
       const gpx = render(<DetailViewGpx></DetailViewGpx>);
@@ -78,7 +78,7 @@ describe("DetailViewGpx", () => {
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
       const div = document.createElement("div");
-      (window as unknown as { domNode: HTMLDivElement }).domNode = div;
+      window.domNode = div;
       document.body.appendChild(div);
 
       const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
@@ -182,7 +182,7 @@ describe("DetailViewGpx", () => {
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
       const div = document.createElement("div");
-      (window as any).domNode = div;
+      window.domNode = div;
       document.body.appendChild(div);
 
       const zoomOut = jest.fn();
@@ -311,7 +311,7 @@ describe("DetailViewGpx", () => {
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
       const div = document.createElement("div");
-      (window as unknown as { domNode: HTMLDivElement }).domNode = div;
+      window.domNode = div;
       document.body.appendChild(div);
 
       const setViewSpy = jest.fn();

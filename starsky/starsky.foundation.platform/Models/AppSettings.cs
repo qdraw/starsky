@@ -223,6 +223,8 @@ public sealed class AppSettings
 		}
 	}
 
+	public string StorageFolderToken { get; set; }
+
 	/// <summary>
 	///     Allow overwriting this name in AppSettingsController
 	/// </summary>

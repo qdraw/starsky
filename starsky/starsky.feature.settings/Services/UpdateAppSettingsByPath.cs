@@ -2,7 +2,9 @@ using System.Text.Json;
 using starsky.feature.settings.Interfaces;
 using starsky.feature.settings.Models;
 using starsky.foundation.injection;
+using starsky.foundation.native.FileSystem;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -16,12 +18,15 @@ public class UpdateAppSettingsByPath : IUpdateAppSettingsByPath
 {
 	private readonly AppSettings _appSettings;
 	private readonly IStorage _hostStorage;
+	private readonly IWebLogger _logger;
 
-	public UpdateAppSettingsByPath(AppSettings appSettings, ISelectorStorage selectorStorage)
+	public UpdateAppSettingsByPath(AppSettings appSettings,
+		ISelectorStorage selectorStorage, IWebLogger logger)
 	{
 		_appSettings = appSettings;
 		_hostStorage =
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+		_logger = logger;
 	}
 
 	public async Task<UpdateAppSettingsStatusModel> UpdateAppSettingsAsync(
@@ -38,6 +43,10 @@ public class UpdateAppSettingsByPath : IUpdateAppSettingsByPath
 						"There is an Environment variable set so you can't update it here"
 				};
 			}
+
+			_ = new MacOsSecurityScopedBookmark(_logger).TryStartAccessFromToken(
+				appSettingTransferObject.StorageFolder!,
+				appSettingTransferObject.StorageFolderToken);
 
 			if ( !_hostStorage.ExistFolder(appSettingTransferObject.StorageFolder) )
 			{
