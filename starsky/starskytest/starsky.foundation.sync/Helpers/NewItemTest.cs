@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -23,6 +24,9 @@ public class NewItemTest
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, newItem.Status);
 
 		Assert.AreEqual(100, newItem.Size);
+		Assert.IsTrue(newItem.InstanceId!.StartsWith("xmp.iid:", StringComparison.Ordinal));
+		Assert.IsTrue(Guid.TryParse(newItem.InstanceId.Replace("xmp.iid:", string.Empty),
+			out _));
 	}
 
 	[TestMethod]
@@ -37,8 +41,11 @@ public class NewItemTest
 						Tags = "test, fake read meta", LastChanged = new List<string>()
 					}, 100);
 
-		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, newItem.Status);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, newItem.Status);
 
 		Assert.AreEqual(100, newItem.Size);
+		Assert.IsTrue(newItem.InstanceId!.StartsWith("xmp.iid:", StringComparison.Ordinal));
+		Assert.IsTrue(Guid.TryParse(newItem.InstanceId.Replace("xmp.iid:", string.Empty),
+			out _));
 	}
 }

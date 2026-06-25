@@ -124,7 +124,9 @@ public class NewUpdateItemWrapper
 			_logger.LogDebug($"[SyncSingleFile] Trigger Update Item {subPath}");
 		}
 
-		var updateItem = await _newItem.PrepareUpdateFileItemAsync(dbItem, size);
+		var updateItem = await _newItem.PrepareUpdateFileItemAsync(dbItem, size,
+			_appSettings.ExifToolImportSkipAddInstanceId);
+
 		if ( updateItem.Status == FileIndexItem.ExifStatus.OkAndSame )
 		{
 			return updateItem;

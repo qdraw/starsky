@@ -102,6 +102,21 @@ public sealed class XmpReadHelperTest
 	}
 
 	[TestMethod]
+	public void XmpReadHelperTest_GetData_InstanceId()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:xmpMM='http://ns.adobe.com/xap/1.0/mm/'>" +
+		                       "<xmpMM:InstanceID>xmp.iid:39f38ca4-9d79-415d-a494-b2be6b7e6f8c</xmpMM:InstanceID>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual("xmp.iid:39f38ca4-9d79-415d-a494-b2be6b7e6f8c", data.InstanceId);
+	}
+
+	[TestMethod]
 	public async Task XmpReadHelperTest_XmpGetSidecarFile_WithFakeStorage()
 	{
 		// convert string to stream
