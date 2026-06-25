@@ -3,6 +3,7 @@ import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { newIArchive } from "../interfaces/IArchive";
 import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
+import { Router } from "../router-app/router-app";
 import Search from "./search";
 
 describe("Search", () => {
@@ -13,6 +14,19 @@ describe("Search", () => {
   it("renders", () => {
     const item = render(<Search {...newIArchive()} />);
     expect(item).toBeTruthy();
+  });
+
+  it("returns guard when color class usage is missing", () => {
+    const archive = newIArchive();
+    const container = render(<Search {...archive} colorClassUsage={undefined as never} />);
+    expect(container.container.textContent).toBe("(Search) no colorClassUsage");
+  });
+
+  it("renders collapsed layout when sidebar query is true", () => {
+    Router.navigate("/?sidebar=true");
+    const container = render(<Search {...newIArchive()} colorClassUsage={[]} fileIndexItems={[]} />);
+    expect(container.container.querySelector(".archive.collapsed")).toBeTruthy();
+    container.unmount();
   });
 
   describe("Results count", () => {
@@ -72,11 +86,30 @@ describe("Search", () => {
           />
         </BrowserRouter>
       );
-      console.log(component.container.innerHTML);
 
       const searchPagination = screen.queryAllByTestId("search-pagination");
 
       expect(searchPagination).toHaveLength(2);
+      component.unmount();
+    });
+
+    it("updates url when shared filter changes", () => {
+      const navigateSpy = jest.spyOn(Router, "navigate").mockImplementation(jest.fn());
+      const component = render(
+        <Search
+          {...newIArchive()}
+          collectionsCount={1}
+          fileIndexItems={[]}
+          pageNumber={0}
+          colorClassUsage={[]}
+        />
+      );
+
+      screen.getByTestId("shared-filter-toggle").click();
+
+      expect(navigateSpy).toHaveBeenCalled();
+
+      navigateSpy.mockRestore();
       component.unmount();
     });
   });

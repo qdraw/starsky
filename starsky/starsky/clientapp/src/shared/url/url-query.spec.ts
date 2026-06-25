@@ -26,6 +26,17 @@ describe("url-query", () => {
     expect(result).toContain("test");
   });
 
+  it("UrlQueryServerApi includes structured filters", () => {
+    const result = urlQuery.UrlQueryServerApi(
+      "?f=test&imageFormat=jpg&camera=Canon&keywords=tag1,tag2&dateFrom=2026-04-01&dateTo=2026-04-30"
+    );
+    expect(result).toContain("imageFormat=jpg");
+    expect(result).toContain("camera=Canon");
+    expect(result).toContain("keywords=tag1,tag2");
+    expect(result).toContain("dateFrom=2026-04-01");
+    expect(result).toContain("dateTo=2026-04-30");
+  });
+
   it("UrlQueryServerApi sort", () => {
     const result = urlQuery.UrlQueryServerApi("?sort=fileName");
     expect(result).toContain("sort");
@@ -131,6 +142,79 @@ describe("url-query", () => {
     const result = urlQuery.UrlSearchTrashApi();
     expect(result).toContain("trash");
   });
+
+  it("UrlSearchSuggestCameraApi", () => {
+    const result = urlQuery.UrlSearchSuggestCameraApi("can");
+    expect(result).toContain("/api/suggest/camera");
+    expect(result).toContain("t=can");
+  });
+
+  describe("BuildSearchQueryFromUrl", () => {
+    it("compose free text and structured filters", () => {
+      const result = urlQuery.BuildSearchQueryFromUrl({
+        t: "sunset",
+        imageFormat: "jpg",
+        camera: "Canon EOS",
+        keywords: ["holiday", "beach"],
+        dateFrom: "2026-04-01",
+        dateTo: "2026-04-30"
+      });
+
+      expect(result).toContain("sunset");
+      expect(result).toContain("-ImageFormat=jpg");
+      expect(result).toContain('-Make="Canon EOS"');
+      expect(result).toContain('-Tags="holiday"');
+      expect(result).toContain('-Tags="beach"');
+      expect(result).toContain("-DateTime>2026-04-01T00:00:00");
+      expect(result).toContain("-DateTime<2026-04-30T23:59:59");
+    });
+
+    it("compose raw file type token", () => {
+      const result = urlQuery.BuildSearchQueryFromUrl({ imageFormat: "RAW" });
+      expect(result).toContain('-ImageFormat="arw,dng,nef,raf,cr2,cr3,orf,rw2,pef,x3f"');
+    });
+
+    it("returns undefined when query and filters are empty", () => {
+      const result = urlQuery.BuildSearchQueryFromUrl({
+        t: "   ",
+        camera: "   ",
+        keywords: ["   "],
+        dateFrom: "   ",
+        dateTo: "   "
+      });
+
+      expect(result).toBeUndefined();
+    });
+
+    it("trims structured filter values before composing", () => {
+      const result = urlQuery.BuildSearchQueryFromUrl({
+        camera: "  Canon  ",
+        keywords: ["  travel  ", " "],
+        dateFrom: " 2026-04-01 ",
+        dateTo: " 2026-04-30 "
+      });
+
+      expect(result).toContain('-Make="Canon"');
+      expect(result).toContain('-Tags="travel"');
+      expect(result).toContain("-DateTime>2026-04-01T00:00:00");
+      expect(result).toContain("-DateTime<2026-04-30T23:59:59");
+    });
+  });
+
+  describe("HasStructuredFilters", () => {
+    it("true", () => {
+      expect(urlQuery.HasStructuredFilters({ dateFrom: "2026-04-01" })).toBeTruthy();
+    });
+
+    it("false", () => {
+      expect(urlQuery.HasStructuredFilters({ t: "only-free-text" })).toBeFalsy();
+    });
+
+    it("false for whitespace-only structured values", () => {
+      expect(urlQuery.HasStructuredFilters({ camera: "   ", keywords: ["  "] })).toBeFalsy();
+    });
+  });
+
   it("UrlQuerySearchApi should contain test", () => {
     const result = urlQuery.UrlQuerySearchApi("test");
     expect(result).toContain("test");
@@ -139,6 +223,24 @@ describe("url-query", () => {
   it("UrlLoginApi", () => {
     const result = urlQuery.UrlLoginApi();
     expect(result).toContain("login");
+  });
+
+  it("UrlAccountRegisterApi", () => {
+    const result = urlQuery.UrlAccountRegisterApi();
+    expect(result).toContain("/api/account/register");
+  });
+
+  it("UrlAccountRegisterPage", () => {
+    const result = urlQuery.UrlAccountRegisterPage();
+    expect(result).toContain("/account/register");
+  });
+
+  it("UrlSearchRelativeApi", () => {
+    const result = urlQuery.UrlSearchRelativeApi("/test+folder", "sun", 2);
+    expect(result).toContain("/api/search/relative-objects");
+    expect(result).toContain("f=/test%2Bfolder");
+    expect(result).toContain("t=sun");
+    expect(result).toContain("p=2");
   });
 
   it("UrlLogoutApi", () => {
@@ -231,6 +333,85 @@ describe("url-query", () => {
       const test = urlQuery.UrlGeoStatus("parm");
       expect(test).toContain("/geo/status");
       expect(test).toContain("parm");
+    });
+  });
+
+  describe("Additional UrlQuery methods", () => {
+    it("UrlRealtime on http", () => {
+      const test = urlQuery.UrlRealtime();
+      expect(test).toContain("ws://");
+      expect(test).toContain("/realtime");
+    });
+
+    it("UrlBatchRenamePreview", () => {
+      expect(urlQuery.UrlBatchRenamePreview()).toContain("/api/batch-rename/preview");
+    });
+
+    it("UrlBatchRenameExecute", () => {
+      expect(urlQuery.UrlBatchRenameExecute()).toContain("/api/batch-rename/execute");
+    });
+
+    it("DocsGettingStartedFirstSteps", () => {
+      expect(urlQuery.DocsGettingStartedFirstSteps()).toContain("getting-started/first-steps");
+    });
+
+    it("UrlTimezonePreview", () => {
+      expect(urlQuery.UrlTimezonePreview()).toContain("/api/meta-time-correct/timezone-preview");
+    });
+
+    it("UrlTimezoneExecute", () => {
+      expect(urlQuery.UrlTimezoneExecute()).toContain("/api/meta-time-correct/timezone-execute");
+    });
+
+    it("UrlOffsetPreview", () => {
+      expect(urlQuery.UrlOffsetPreview()).toContain("/api/meta-time-correct/offset-preview");
+    });
+
+    it("UrlOffsetExecute", () => {
+      expect(urlQuery.UrlOffsetExecute()).toContain("/api/meta-time-correct/offset-execute");
+    });
+
+    it("UrlBatchRenameOffsetPreview", () => {
+      expect(urlQuery.UrlBatchRenameOffsetPreview()).toContain(
+        "/api/batch-rename-datetime/offset-preview"
+      );
+    });
+
+    it("UrlBatchRenameOffsetExecute", () => {
+      expect(urlQuery.UrlBatchRenameOffsetExecute()).toContain(
+        "/api/batch-rename-datetime/offset-execute"
+      );
+    });
+
+    it("UrlBatchRenameTimezonePreview", () => {
+      expect(urlQuery.UrlBatchRenameTimezonePreview()).toContain(
+        "/api/batch-rename-datetime/timezone-preview"
+      );
+    });
+
+    it("UrlBatchRenameTimezoneExecute", () => {
+      expect(urlQuery.UrlBatchRenameTimezoneExecute()).toContain(
+        "/api/batch-rename-datetime/timezone-execute"
+      );
+    });
+
+    it("UrlGeoLocationNameCityTimezone", () => {
+      const test = urlQuery.UrlGeoLocationNameCityTimezone("2026-04-01 10:00", "New York");
+      expect(test).toContain("/api/geo-location-name/city-timezone");
+      expect(test).toContain("dateTime=2026-04-01%2010%3A00");
+      expect(test).toContain("city=New%20York");
+    });
+
+    it("UrlGeoLocationNameCity", () => {
+      const test = urlQuery.UrlGeoLocationNameCity("New York");
+      expect(test).toContain("/api/geo-location-name/city?city=New%20York");
+    });
+
+    it("UrlGeoReverseNominatim", () => {
+      const test = urlQuery.UrlGeoReverseNominatim(51.5, 4.3);
+      expect(test).toContain("/api/geo-reverse-nominatim");
+      expect(test).toContain("lat=51.5");
+      expect(test).toContain("lon=4.3");
     });
   });
 

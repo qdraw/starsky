@@ -1,4 +1,5 @@
 import { IFileIndexItem, newIFileIndexItemArray } from "../../interfaces/IFileIndexItem";
+import { PageType } from "../../interfaces/IDetailView";
 import { URLPath } from "./url-path";
 
 describe("url-path", () => {
@@ -77,6 +78,42 @@ describe("url-path", () => {
     it("t", () => {
       const test = urlPath.StringToIUrl("?t=test");
       expect(test.t).toBe("test");
+    });
+    it("imageFormat", () => {
+      const test = urlPath.StringToIUrl("?imageFormat=jpg");
+      expect(test.imageFormat).toBe("jpg");
+    });
+    it("camera", () => {
+      const test = urlPath.StringToIUrl("?camera=Canon%20R5");
+      expect(test.camera).toBe("Canon R5");
+    });
+    it("keywords", () => {
+      const test = urlPath.StringToIUrl("?keywords=tag1,tag2");
+      expect(test.keywords).toStrictEqual(["tag1", "tag2"]);
+    });
+    it("keywords empty", () => {
+      const test = urlPath.StringToIUrl("?keywords=");
+      expect(test.keywords).toStrictEqual([]);
+    });
+    it("keywords single", () => {
+      const test = urlPath.StringToIUrl("?keywords=tag1");
+      expect(test.keywords).toStrictEqual(["tag1"]);
+    });
+    it("dateFrom", () => {
+      const test = urlPath.StringToIUrl("?dateFrom=2026-04-01");
+      expect(test.dateFrom).toBe("2026-04-01");
+    });
+    it("dateTo", () => {
+      const test = urlPath.StringToIUrl("?dateTo=2026-04-30");
+      expect(test.dateTo).toBe("2026-04-30");
+    });
+    it("filtersOpen true", () => {
+      const test = urlPath.StringToIUrl("?filtersOpen=true");
+      expect(test.filtersOpen).toStrictEqual(true);
+    });
+    it("filtersOpen false", () => {
+      const test = urlPath.StringToIUrl("?filtersOpen=false");
+      expect(test.filtersOpen).toStrictEqual(false);
     });
     it("p null", () => {
       const test = urlPath.StringToIUrl("?p=NaN");
@@ -222,6 +259,19 @@ describe("url-path", () => {
     });
   });
 
+  describe("GetAllSelection", () => {
+    it("adds missing file names", () => {
+      const selection = ["a.jpg"];
+      const list = [
+        { fileName: "a.jpg" } as IFileIndexItem,
+        { fileName: "b.jpg" } as IFileIndexItem
+      ];
+
+      const test = urlPath.GetAllSelection(selection, list);
+      expect(test).toStrictEqual(["a.jpg", "b.jpg"]);
+    });
+  });
+
   describe("ArrayToCommaSeparatedString", () => {
     it("default", () => {
       const test = urlPath.ArrayToCommaSeparatedString([]);
@@ -322,6 +372,23 @@ describe("url-path", () => {
     it("/test", () => {
       const encoded = new URLPath().StartOnSlash("/test");
       expect(encoded).toBe("/test");
+    });
+  });
+
+  describe("IsCollections", () => {
+    it("returns false for search page", () => {
+      const test = urlPath.IsCollections(PageType.Search, "?collections=true");
+      expect(test).toBeFalsy();
+    });
+
+    it("returns false when collections is false", () => {
+      const test = urlPath.IsCollections(PageType.Index, "?collections=false");
+      expect(test).toBeFalsy();
+    });
+
+    it("returns true by default", () => {
+      const test = urlPath.IsCollections(PageType.Index, "?f=/");
+      expect(test).toBeTruthy();
     });
   });
 });

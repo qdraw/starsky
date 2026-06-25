@@ -45,6 +45,32 @@ public sealed class SearchSuggestController : Controller
 	}
 
 	/// <summary>
+	///     Gets camera suggestion values based on MakeModel
+	/// </summary>
+	/// <param name="t">camera query</param>
+	/// <returns>camera suggestions</returns>
+	[HttpGet("/api/suggest/camera")]
+	[ProducesResponseType(typeof(List<string>), 200)]
+	[Produces("application/json")]
+	[Authorize]
+	public async Task<IActionResult> Camera(string t)
+	{
+		if ( string.IsNullOrWhiteSpace(t) )
+		{
+			CacheControlOverwrite.SetExpiresResponseHeaders(Request);
+			return Json(new List<string>());
+		}
+
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest("Model invalid");
+		}
+
+		var model = await _suggest.SearchCameraSuggest(t);
+		return Json(model);
+	}
+
+	/// <summary>
 	///     Show all items in the search suggest cache
 	/// </summary>
 	/// <returns>a keyList with search suggestions</returns>

@@ -45,6 +45,24 @@ export class URLPath {
         case "t": // used for search queries
           urlObject.t = key[1];
           break;
+        case "imageformat":
+          urlObject.imageFormat = key[1];
+          break;
+        case "camera":
+          urlObject.camera = key[1];
+          break;
+        case "keywords":
+          urlObject.keywords = this.getStringArrayFromCommaSeparatedString(key[1]);
+          break;
+        case "datefrom":
+          urlObject.dateFrom = key[1];
+          break;
+        case "dateto":
+          urlObject.dateTo = key[1];
+          break;
+        case "filtersopen":
+          urlObject.filtersOpen = key[1] === "true";
+          break;
         case "p": // used for search pagination
           this.parsePagination(key, urlObject);
           break;

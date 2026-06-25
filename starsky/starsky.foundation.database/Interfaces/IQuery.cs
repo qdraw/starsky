@@ -53,14 +53,24 @@ public interface IQuery
 		string subPath = "/",
 		List<ColorClassParser.Color>? colorClassActiveList = null,
 		bool enableCollections = true,
-		bool hideDeleted = true);
+			bool hideDeleted = true,
+			string? imageFormat = null,
+			string? camera = null,
+			string? keywords = null,
+			string? dateFrom = null,
+			string? dateTo = null);
 
 	// To make an object without any query
 	IEnumerable<FileIndexItem> DisplayFileFolders(
 		List<FileIndexItem> fileIndexItems,
 		List<ColorClassParser.Color>? colorClassActiveList = null,
 		bool enableCollections = true,
-		bool hideDeleted = true);
+		bool hideDeleted = true,
+		string? imageFormat = null,
+		string? camera = null,
+		string? keywords = null,
+		string? dateFrom = null,
+		string? dateTo = null);
 
 	/// <summary>
 	///     to do the query and return object

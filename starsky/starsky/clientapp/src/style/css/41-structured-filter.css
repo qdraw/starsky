@@ -1,0 +1,79 @@
+.structured-filter {
+  margin: 6px 0 12px;
+  padding: 10px;
+  border-bottom: 4px solid #263238;
+  background: #eceff1;
+}
+
+.structured-filter--collapsed {
+  background: transparent;
+  border-bottom: 0;
+  padding: 0;
+}
+
+.structured-filter__header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.structured-filter__grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.structured-filter__group label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.structured-filter__chips {
+  display: flex;
+  gap: 8px;
+}
+
+.structured-filter__chips .btn.active {
+  border-bottom: 3px solid #283593;
+}
+
+.structured-filter__dates {
+  display: flex;
+  gap: 8px;
+}
+
+.structured-filter__dates input {
+  min-height: 35px;
+  border: 0;
+  border-bottom: 4px solid #263238;
+  padding: 6px 8px;
+  width: 100%;
+}
+
+.structured-filter__group .tag-autocomplete .form-control {
+  min-height: 40px;
+}
+
+.structured-filter__active-message {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .structured-filter {
+    background: #37474f;
+    border-bottom-color: #90a4ae;
+  }
+
+  .structured-filter__chips .btn.active {
+    border-bottom-color: #90caf9;
+  }
+
+  .structured-filter__dates input {
+    background: #263238;
+    color: #fff;
+    border-bottom-color: #90a4ae;
+  }
+}
