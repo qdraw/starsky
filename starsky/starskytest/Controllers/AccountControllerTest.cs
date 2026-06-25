@@ -906,5 +906,75 @@ public sealed class AccountControllerTest
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
+	[TestMethod]
+	[DataRow("okta-main")]
+	[DataRow("Okta")]
+	public void ExternalAuthChallenge_WhenProviderEnabled_ReturnsNotImplemented(string provider)
+	{
+		var appSettings = new AppSettings
+		{
+			ExternalAuth = new ExternalAuthSettings
+			{
+				Enabled = true,
+				Providers =
+				[
+					new ExternalAuthProviderSettings
+					{
+						Id = "okta-main",
+						Provider = "Okta",
+						Enabled = true
+					}
+				]
+			}
+		};
+
+		var controller = new AccountController(_userManager, appSettings, _antiForgery,
+			_selectorStorage)
+		{
+			ControllerContext = { HttpContext = new DefaultHttpContext() }
+		};
+
+		var result = controller.ExternalAuthChallenge(provider) as JsonResult;
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual(501, controller.Response.StatusCode);
+	}
+
+	[TestMethod]
+	public void ExternalAuthChallenge_WhenProviderDisabled_ReturnsNotFound()
+	{
+		var controller = new AccountController(_userManager,
+			new AppSettings { ExternalAuth = new ExternalAuthSettings { Enabled = false } },
+			_antiForgery, _selectorStorage)
+		{
+			ControllerContext = { HttpContext = new DefaultHttpContext() }
+		};
+
+		var result = controller.ExternalAuthChallenge("okta-main");
+
+		Assert.IsInstanceOfType<NotFoundObjectResult>(result);
+	}
+
+	[TestMethod]
+	public void ExternalAuthLink_WhenNotAuthenticated_ReturnsUnauthorized()
+	{
+		var controller = new AccountController(_userManager,
+			new AppSettings
+			{
+				ExternalAuth = new ExternalAuthSettings
+				{
+					Enabled = true,
+					Providers = [ new ExternalAuthProviderSettings { Id = "okta-main", Enabled = true } ]
+				}
+			}, _antiForgery, _selectorStorage)
+		{
+			ControllerContext = { HttpContext = new DefaultHttpContext() }
+		};
+
+		var result = controller.ExternalAuthLink("okta-main");
+
+		Assert.IsInstanceOfType<UnauthorizedObjectResult>(result);
+	}
+
 	public TestContext TestContext { get; set; }
 }

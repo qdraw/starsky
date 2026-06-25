@@ -154,6 +154,22 @@ export class UrlQuery {
     return `${this.prefix}/api/account/permissions`;
   };
 
+  public UrlExternalAuthChallenge = (provider: string): string => {
+    return `${this.prefix}/api/account/external-auth/challenge/${encodeURIComponent(provider)}`;
+  };
+
+  public UrlExternalAuthCallback = (provider: string): string => {
+    return `${this.prefix}/api/account/external-auth/callback/${encodeURIComponent(provider)}`;
+  };
+
+  public UrlExternalAuthLink = (provider: string): string => {
+    return `${this.prefix}/api/account/external-auth/link/${encodeURIComponent(provider)}`;
+  };
+
+  public UrlExternalAuthUnlink = (provider: string): string => {
+    return `${this.prefix}/api/account/external-auth/unlink/${encodeURIComponent(provider)}`;
+  };
+
   public KeyAccountPermissionAppSettingsWrite = (): string => {
     return "AppSettingsWrite";
   };
