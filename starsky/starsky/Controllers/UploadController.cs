@@ -15,6 +15,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
+using starsky.foundation.import.Services;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -39,6 +40,7 @@ public sealed class UploadController : Controller
 	private readonly IWebLogger _logger;
 	private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 	private readonly IMetaUpdateStatusThumbnailService _metaUpdateStatusThumbnailService;
+	private readonly IChunkUploadSessionStore _chunkUploadSessionStore;
 	private readonly IQuery _query;
 	private readonly IRealtimeConnectionsService _realtimeService;
 	private readonly ISelectorStorage _selectorStorage;
@@ -49,7 +51,8 @@ public sealed class UploadController : Controller
 		ISelectorStorage selectorStorage, IQuery query,
 		IRealtimeConnectionsService realtimeService, IWebLogger logger,
 		IMetaExifThumbnailService metaExifThumbnailService,
-		IMetaUpdateStatusThumbnailService metaUpdateStatusThumbnailService)
+		IMetaUpdateStatusThumbnailService metaUpdateStatusThumbnailService,
+		IChunkUploadSessionStore? chunkUploadSessionStore = null)
 	{
 		_appSettings = appSettings;
 		_import = import;
@@ -62,6 +65,123 @@ public sealed class UploadController : Controller
 		_metaExifThumbnailService = metaExifThumbnailService;
 		_metaUpdateStatusThumbnailService =
 			metaUpdateStatusThumbnailService;
+		_chunkUploadSessionStore = chunkUploadSessionStore ?? new InMemoryChunkUploadSessionStore();
+	}
+
+	[HttpPost("/api/upload/chunk/init")]
+	[ProducesResponseType(typeof(ChunkUploadInitResultModel), 200)]
+	[ProducesResponseType(typeof(string), 400)]
+	public IActionResult UploadChunkInit(string fileName, int totalChunks, long totalSize)
+	{
+		if ( string.IsNullOrWhiteSpace(fileName) || totalChunks <= 0 || totalSize <= 0 )
+		{
+			return BadRequest("invalid init payload");
+		}
+
+		var to = Request.Headers["to"].ToString();
+		if ( string.IsNullOrWhiteSpace(to) )
+		{
+			return BadRequest("missing 'to' header");
+		}
+
+		var parentDirectory = GetParentDirectoryFromRequestHeader();
+		if ( parentDirectory == null )
+		{
+			return NotFound(new ImportIndexItem { Status = ImportStatus.ParentDirectoryNotFound });
+		}
+
+		var safeFileName = Path.GetFileName(fileName);
+		var result = _chunkUploadSessionStore.Create(safeFileName, parentDirectory,
+			totalChunks, totalSize);
+		return Json(result);
+	}
+
+	[HttpPut("/api/upload/chunk/{uploadId}")]
+	[RequestSizeLimit(120_000_000)]
+	[ProducesResponseType(typeof(ChunkUploadStatusModel), 200)]
+	[ProducesResponseType(typeof(string), 400)]
+	[ProducesResponseType(typeof(string), 404)]
+	public async Task<IActionResult> UploadChunkPart(string uploadId, int chunkIndex)
+	{
+		using var memoryStream = new MemoryStream();
+		await Request.Body.CopyToAsync(memoryStream);
+		var chunkData = memoryStream.ToArray();
+
+		if ( chunkData.Length == 0 )
+		{
+			return BadRequest("chunk is empty");
+		}
+
+		if ( !_chunkUploadSessionStore.AddChunk(uploadId, chunkIndex, chunkData,
+			     out var errorMessage) )
+		{
+			if ( errorMessage == "upload session not found" )
+			{
+				return NotFound(errorMessage);
+			}
+
+			return BadRequest(errorMessage);
+		}
+
+		var status = _chunkUploadSessionStore.GetStatus(uploadId);
+		return Json(status);
+	}
+
+	[HttpGet("/api/upload/chunk/{uploadId}/status")]
+	[ProducesResponseType(typeof(ChunkUploadStatusModel), 200)]
+	[ProducesResponseType(typeof(string), 404)]
+	public IActionResult UploadChunkStatus(string uploadId)
+	{
+		var status = _chunkUploadSessionStore.GetStatus(uploadId);
+		if ( status == null )
+		{
+			return NotFound("upload session not found");
+		}
+
+		return Json(status);
+	}
+
+	[HttpDelete("/api/upload/chunk/{uploadId}")]
+	public IActionResult DeleteUploadChunk(string uploadId)
+	{
+		_chunkUploadSessionStore.Delete(uploadId);
+		return NoContent();
+	}
+
+	[HttpPost("/api/upload/chunk/{uploadId}/complete")]
+	[ProducesResponseType(typeof(List<ImportIndexItem>), 200)]
+	[ProducesResponseType(typeof(string), 400)]
+	[ProducesResponseType(typeof(string), 404)]
+	public async Task<IActionResult> CompleteUploadChunk(string uploadId)
+	{
+		var status = _chunkUploadSessionStore.GetStatus(uploadId);
+		if ( status == null )
+		{
+			return NotFound("upload session not found");
+		}
+
+		if ( !_chunkUploadSessionStore.TryAssemble(uploadId, out var payload,
+			     out var errorMessage) )
+		{
+			return BadRequest(errorMessage);
+		}
+
+		var tempImportPath = Path.Combine(_appSettings.TempFolder, "chunk-upload",
+			uploadId + "-" + status.FileName);
+		_iHostStorage.CreateDirectory(Path.Combine(_appSettings.TempFolder, "chunk-upload"));
+
+		var writeStatus = await _iHostStorage.WriteStreamAsync(new MemoryStream(payload),
+			tempImportPath);
+		if ( !writeStatus )
+		{
+			return BadRequest("unable to persist assembled file");
+		}
+
+		var fileIndexResultsList = await ProcessUploadTempImportPaths(
+			new List<string> { tempImportPath }, status.ParentDirectory, status.FileName);
+
+		_chunkUploadSessionStore.Delete(uploadId);
+		return Json(fileIndexResultsList);
 	}
 
 	/// <summary>
@@ -105,7 +225,14 @@ public sealed class UploadController : Controller
 		}
 
 		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
+		var fileIndexResultsList = await ProcessUploadTempImportPaths(tempImportPaths,
+			parentDirectory);
+		return Json(fileIndexResultsList);
+	}
 
+	private async Task<List<ImportIndexItem>> ProcessUploadTempImportPaths(
+		List<string> tempImportPaths, string parentDirectory, string? forcedFileName = null)
+	{
 		var fileIndexResultsList = await _import.Preflight(tempImportPaths,
 			new ImportSettingsModel { IndexMode = false });
 		// fail/pass, right type, string=subPath, string?2= error reason
@@ -120,7 +247,7 @@ public sealed class UploadController : Controller
 
 			var tempFileStream = _iHostStorage.ReadStream(tempImportPaths[i]);
 
-			var fileName = Path.GetFileName(tempImportPaths[i]);
+			var fileName = forcedFileName ?? Path.GetFileName(tempImportPaths[i]);
 
 			// subPath is always unix style
 			var subPath = PathHelper.AddSlash(parentDirectory) + fileName;
@@ -183,7 +310,7 @@ public sealed class UploadController : Controller
 			Response.StatusCode = 415;
 		}
 
-		return Json(fileIndexResultsList);
+		return fileIndexResultsList;
 	}
 
 	/// <summary>
