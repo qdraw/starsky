@@ -58,6 +58,6 @@
   "Microsoft.NET.Test.Sdk 18.6.0",
   "MSTest.TestAdapter 4.2.3",
   "MSTest.TestFramework 4.2.3",
-  "Verify.MSTest 31.16.3",
-  "coverlet.collector 10.0.0"
+  "Verify.MSTest 31.20.0",
+  "coverlet.collector 10.0.1"
 ]
