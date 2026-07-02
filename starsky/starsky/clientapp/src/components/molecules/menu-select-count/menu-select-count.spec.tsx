@@ -1,4 +1,5 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { MenuSelectCount } from "./menu-select-count";
 
 describe("MenuOptionSelectionAll", () => {

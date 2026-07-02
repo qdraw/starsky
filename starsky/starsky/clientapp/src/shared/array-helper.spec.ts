@@ -31,6 +31,6 @@ describe("ArrayHelper", () => {
       { name: "Nancy", age: 2 }
     ];
     const unique = arrayHelper.UniqueResults(family, "name");
-    expect(unique.length).toBe(1);
+    expect(unique).toHaveLength(1);
   });
 });

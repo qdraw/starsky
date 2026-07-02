@@ -10,7 +10,7 @@ describe("updateGeoLocation", () => {
   it("no location null result", async () => {
     const setErrorSpy = jest.fn();
     const result = await UpdateGeoLocation("", "/", null, setErrorSpy, jest.fn(), true);
-    expect(result).toBe(null);
+    expect(result).toBeNull();
   });
 
   it("update failed", async () => {

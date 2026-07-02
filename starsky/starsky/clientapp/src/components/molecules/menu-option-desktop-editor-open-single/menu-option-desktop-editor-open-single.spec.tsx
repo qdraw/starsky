@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -331,7 +332,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
 
       const errorMessage2 = screen.queryByTestId("notification-spy-button")?.innerHTML;
 
-      expect(errorMessage2).toBe(undefined);
+      expect(errorMessage2).toBeUndefined();
     });
     container.unmount();
   });

@@ -5,7 +5,7 @@ describe("SelectCheckIfActive", () => {
   describe("IsActive", () => {
     it("select is null", () => {
       const result = new SelectCheckIfActive().IsActive(undefined, [1], []);
-      expect(result.length).toBe(0);
+      expect(result).toHaveLength(0);
     });
 
     it("filter nr 2 out", () => {
@@ -18,7 +18,7 @@ describe("SelectCheckIfActive", () => {
         ]
       );
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0]).toBe("test1.jpg");
     });
 
@@ -32,7 +32,7 @@ describe("SelectCheckIfActive", () => {
         ]
       );
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0]).toBe("test2.jpg");
     });
   });

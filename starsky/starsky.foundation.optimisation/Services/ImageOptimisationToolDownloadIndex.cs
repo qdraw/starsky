@@ -1,3 +1,4 @@
+using System.Text.Json;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.optimisation.Interfaces;
@@ -7,7 +8,9 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.foundation.optimisation.Services;
 
 [Service(typeof(IImageOptimisationToolDownloadIndex), InjectionLifetime = InjectionLifetime.Scoped)]
-public class ImageOptimisationToolDownloadIndex(IHttpClientHelper httpClientHelper, IWebLogger logger)
+public class ImageOptimisationToolDownloadIndex(
+	IHttpClientHelper httpClientHelper,
+	IWebLogger logger)
 	: IImageOptimisationToolDownloadIndex
 {
 	public async Task<ImageOptimisationBinariesContainer> DownloadIndex(
@@ -21,11 +24,23 @@ public class ImageOptimisationToolDownloadIndex(IHttpClientHelper httpClientHelp
 				continue;
 			}
 
-			return new ImageOptimisationBinariesContainer(apiResult.Value, indexUrl,
-				options.BaseUrls, true);
+			try
+			{
+				return new ImageOptimisationBinariesContainer(apiResult.Value, indexUrl,
+					options.BaseUrls, true);
+			}
+			catch ( JsonException e )
+			{
+				// When one of the two fails it continue to the next
+				logger.LogError(
+					$"[ImageOptimisationToolDownloadIndex] " +
+					$"Failed to parse index for {options.ToolName} " +
+					$"from {indexUrl}. Error: {e.Message}");
+			}
 		}
 
-		logger.LogError($"[ImageOptimisationToolDownloadIndex] Index not found for {options.ToolName}");
+		logger.LogError(
+			$"[ImageOptimisationToolDownloadIndex] Index not found for {options.ToolName}");
 		return new ImageOptimisationBinariesContainer(string.Empty, null, [], false);
 	}
 }

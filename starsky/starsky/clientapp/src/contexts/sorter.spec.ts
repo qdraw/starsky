@@ -15,7 +15,7 @@ describe("sorter", () => {
 
     const resultList = sorter(list, null as unknown as SortType);
 
-    expect(resultList.length).toBe(0);
+    expect(resultList).toHaveLength(0);
   });
 
   it("sort on filename", () => {

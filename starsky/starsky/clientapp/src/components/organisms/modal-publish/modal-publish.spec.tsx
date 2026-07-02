@@ -1,4 +1,5 @@
-import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { createEvent, fireEvent, screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import React, { act } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
@@ -87,7 +88,7 @@ describe("ModalPublish", () => {
       .queryAllByTestId("form-control")
       .find((p) => p.getAttribute("data-name") === "item-name");
     const tags = formControls as HTMLElement[][0];
-    expect(tags).not.toBe(undefined);
+    expect(tags).toBeDefined();
 
     // update component + now press a key
     tags.textContent = "a";
@@ -217,7 +218,7 @@ describe("ModalPublish", () => {
       .queryAllByTestId("form-control")
       .find((p) => p.getAttribute("data-name") === "item-name");
     const tags = formControls as HTMLElement[][0];
-    expect(tags).not.toBe(undefined);
+    expect(tags).toBeDefined();
 
     // update component + now press a key
     tags.textContent = "a";
@@ -289,7 +290,7 @@ describe("ModalPublish", () => {
       .queryAllByTestId("form-control")
       .find((p) => p.getAttribute("data-name") === "item-name");
     const tags = formControls as HTMLElement[][0];
-    expect(tags).not.toBe(undefined);
+    expect(tags).toBeDefined();
 
     // update component + now press a key
     tags.textContent = "a";
@@ -393,7 +394,7 @@ describe("ModalPublish", () => {
       .queryAllByTestId("form-control")
       .find((p) => p.getAttribute("data-name") === "item-name");
     const tags = formControls as HTMLElement[][0];
-    expect(tags).not.toBe(undefined);
+    expect(tags).toBeDefined();
 
     // update component + now press a key
     await act(async () => {

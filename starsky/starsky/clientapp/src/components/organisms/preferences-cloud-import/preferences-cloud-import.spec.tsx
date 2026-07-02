@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import localization from "../../../localization/localization.json";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
@@ -38,7 +39,7 @@ describe("PreferencesCloudImport", () => {
     component.unmount();
   });
 
-  it("should disable sync when a sync is in progress", async () => {
+  it("should disable sync when a sync is in progress 2", async () => {
     jest.spyOn(FetchGet, "default").mockImplementationOnce(() =>
       Promise.resolve({
         statusCode: 200,
@@ -181,7 +182,7 @@ describe("PreferencesCloudImport", () => {
     component.unmount();
   });
 
-  it("should disable sync when a sync is in progress", async () => {
+  it("should disable sync when a sync is in progress 1", async () => {
     jest.spyOn(FetchGet, "default").mockImplementation(() =>
       Promise.resolve({
         statusCode: 500,

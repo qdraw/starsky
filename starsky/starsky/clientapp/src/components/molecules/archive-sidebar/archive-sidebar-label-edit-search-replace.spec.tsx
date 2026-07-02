@@ -1,4 +1,5 @@
-import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { createEvent, fireEvent, screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import React, { act } from "react";
 import * as AppContext from "../../../contexts/archive-context";
 import { IArchive } from "../../../interfaces/IArchive";
@@ -109,7 +110,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";
@@ -149,7 +150,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";
@@ -193,7 +194,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";
@@ -234,7 +235,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";
@@ -296,7 +297,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";
@@ -356,7 +357,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
-      expect(tags).not.toBe(undefined);
+      expect(tags).toBeDefined();
 
       // update component + now press a key
       tags.textContent = "a";

@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import * as useLocation from "../../../hooks/use-location/use-location";
 
 import React, { act } from "react";
@@ -38,7 +39,7 @@ describe("DetailViewInfoLocation", () => {
     );
 
     const modalObject1 = screen.queryByTestId("modal-geo-tmp");
-    expect(modalObject1).toBe(null);
+    expect(modalObject1).toBeNull();
 
     await act(async () => {
       (await screen.findByTestId("detailview-info-location-open-modal")).click();

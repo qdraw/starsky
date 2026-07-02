@@ -1,4 +1,5 @@
-import { fireEvent, render, RenderResult, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/dom";
+import { render, RenderResult } from "@testing-library/react";
 import { act } from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch/fetch-post";

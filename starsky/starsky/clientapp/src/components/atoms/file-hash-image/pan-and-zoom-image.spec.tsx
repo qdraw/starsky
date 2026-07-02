@@ -1,4 +1,5 @@
-import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { createEvent, fireEvent, screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import React, { act } from "react";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import { OnMoveMouseTouchAction } from "./on-move-mouse-touch-action";

@@ -109,7 +109,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		}
 		catch ( Exception exception )
 		{
-			_logger.LogError($"[ReadString] HttpClientHelper > Exception {exception.Message}",
+			_logger.LogError($"[ReadString] HttpClientHelper {sourceHttpUrl} > Exception {exception.Message}",
 				exception);
 			return new KeyValuePair<bool, string>(false, exception.Message);
 		}
@@ -149,7 +149,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		}
 		catch ( Exception exception )
 		{
-			_logger.LogError("[PostString] HttpClientHelper > Exception ", exception);
+			_logger.LogError($"[PostString] HttpClientHelper {sourceHttpUrl} > Exception ", exception);
 			return new KeyValuePair<bool, string>(false, exception.Message);
 		}
 	}
@@ -215,7 +215,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 				_logger.LogError(innerException, $"[Download] InnerException: {exception.Message}");
 			}
 
-			_logger.LogError(exception, $"[Download] Exception: {exception.Message}");
+			_logger.LogError(exception, $"[Download] Exception: {sourceUri} " +
+			                            $"{exception.Message}");
 			return false;
 		}
 	}

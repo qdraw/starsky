@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { act, JSX } from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView, PageType } from "../../../interfaces/IDetailView";
@@ -11,15 +12,15 @@ import FileHashImage from "./file-hash-image";
 import * as PanAndZoomImage from "./pan-and-zoom-image";
 
 describe("FileHashImage", () => {
-  it("renders", () => {
-    const item = render(<FileHashImage fileHash={""} />);
-    expect(item).toBeTruthy();
-  });
-
   beforeEach(() => {
     jest
       .spyOn(DetectAutomaticRotation, "default")
       .mockImplementationOnce(() => Promise.resolve(true));
+  });
+
+  it("renders", () => {
+    const item = render(<FileHashImage fileHash={""} />);
+    expect(item).toBeTruthy();
   });
 
   function createPanZoomObjectWheelCallback(): (props: {

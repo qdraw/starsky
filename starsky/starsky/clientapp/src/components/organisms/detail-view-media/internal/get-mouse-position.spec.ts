@@ -26,7 +26,7 @@ describe("GetMousePosition function", () => {
 
     const result = GetMousePosition(event);
 
-    expect(result).toBe(NaN);
+    expect(result).toBeNaN();
   });
 
   it("should return 0 when offsetParent is falsy", () => {
@@ -38,7 +38,7 @@ describe("GetMousePosition function", () => {
 
     const result = GetMousePosition(event);
 
-    expect(result).toBe(NaN);
+    expect(result).toBeNaN();
   });
 
   it("should return 0.5 when offsetParent offsetLeft is falsy", () => {
@@ -72,7 +72,7 @@ describe("GetMousePosition function", () => {
 
     const result = GetMousePosition(event);
 
-    expect(result).toBe(NaN);
+    expect(result).toBeNaN();
   });
 
   it("should return 0.6 when offsetParent offsetLeft is negative", () => {

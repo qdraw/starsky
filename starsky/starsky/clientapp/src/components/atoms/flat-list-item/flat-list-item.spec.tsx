@@ -16,7 +16,7 @@ describe("FlatListItem", () => {
 
     const nameComponents = component.container.getElementsByClassName("name");
 
-    expect(nameComponents.length).toBe(1);
+    expect(nameComponents).toHaveLength(1);
     expect(nameComponents[0].innerHTML).toBe("test");
   });
 
@@ -26,7 +26,7 @@ describe("FlatListItem", () => {
 
     const nameComponents = component.container.getElementsByClassName("lastedited");
 
-    expect(nameComponents.length).toBe(1);
+    expect(nameComponents).toHaveLength(1);
     expect(nameComponents[0].innerHTML).toBe("30-1-2021 16:26:43");
   });
 
@@ -36,7 +36,7 @@ describe("FlatListItem", () => {
 
     const nameComponents = component.container.getElementsByClassName("size");
 
-    expect(nameComponents.length).toBe(1);
+    expect(nameComponents).toHaveLength(1);
     expect(nameComponents[0].innerHTML).toBe("--");
   });
 
@@ -46,7 +46,7 @@ describe("FlatListItem", () => {
 
     const nameComponents = component.container.getElementsByClassName("size");
 
-    expect(nameComponents.length).toBe(1);
+    expect(nameComponents).toHaveLength(1);
     expect(nameComponents[0].innerHTML).toBe("10 Bytes");
   });
 
@@ -56,7 +56,7 @@ describe("FlatListItem", () => {
 
     const nameComponents = component.container.getElementsByClassName("imageformat");
 
-    expect(nameComponents.length).toBe(1);
+    expect(nameComponents).toHaveLength(1);
     expect(nameComponents[0].innerHTML).toBe("--");
   });
 
@@ -66,7 +66,7 @@ describe("FlatListItem", () => {
 
     const nameComponents = component.container.getElementsByClassName("imageformat");
 
-    expect(nameComponents.length).toBe(1);
+    expect(nameComponents).toHaveLength(1);
     expect(nameComponents[0].innerHTML).toBe("jpg");
   });
 });

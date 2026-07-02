@@ -150,7 +150,7 @@ describe("url-path", () => {
       const first = urlPath.toggleSelection("test.jpg", "");
       const test = urlPath.toggleSelection("test.jpg", urlPath.IUrlToString(first));
       if (test.select === undefined) throw Error("select is null");
-      expect(test.select.length).toStrictEqual(0);
+      expect(test.select).toHaveLength(0);
     });
   });
   describe("getSelect", () => {
@@ -207,7 +207,7 @@ describe("url-path", () => {
       } as IFileIndexItem);
       const test = urlPath.MergeSelectFileIndexItem(["test.jpg"], list);
       expect(test[0]).toStrictEqual("/test/test.jpg");
-      expect(test.length).toStrictEqual(1);
+      expect(test).toHaveLength(1);
     });
 
     it("home - item already exist", () => {
@@ -218,7 +218,7 @@ describe("url-path", () => {
       } as IFileIndexItem);
       const test = urlPath.MergeSelectFileIndexItem(["test.jpg"], list);
       expect(test[0]).toStrictEqual("/test.jpg");
-      expect(test.length).toStrictEqual(1);
+      expect(test).toHaveLength(1);
     });
   });
 

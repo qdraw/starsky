@@ -101,7 +101,7 @@ describe("fetch-post", () => {
       },
       method: "post"
     });
-    expect(result.data).toStrictEqual(null);
+    expect(result.data).toBeNull();
     expect(result.statusCode).toStrictEqual(999);
   });
 });

@@ -90,7 +90,7 @@ describe("AspectRatio", () => {
     const ratio = aspectRatio.ratio(width, height, true);
 
     expect(gcd).toBe(16);
-    expect(ratio).toBe(null);
+    expect(ratio).toBeNull();
   });
 
   it("4240 × 2832 (no-filter)", () => {
@@ -110,6 +110,6 @@ describe("AspectRatio", () => {
     const ratio = aspectRatio.ratio(width, height);
 
     expect(gcd).toBe(1);
-    expect(ratio).toBe(null);
+    expect(ratio).toBeNull();
   });
 });

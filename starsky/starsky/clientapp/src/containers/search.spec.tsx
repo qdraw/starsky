@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { newIArchive } from "../interfaces/IArchive";
 import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
@@ -75,7 +76,7 @@ describe("Search", () => {
 
       const searchPagination = screen.queryAllByTestId("search-pagination");
 
-      expect(searchPagination.length).toEqual(2);
+      expect(searchPagination).toHaveLength(2);
       component.unmount();
     });
   });

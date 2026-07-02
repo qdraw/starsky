@@ -73,6 +73,11 @@ describe("keyboard", () => {
   });
 
   describe("GetParentPath", () => {
+    it("empty path", () => {
+      const result = fileExt.GetParentPath("");
+      expect(result).toBe("/");
+    });
+
     it("get parent path #1", () => {
       const result = fileExt.GetParentPath("/__starsky/test/");
       expect(result).toBe("/__starsky");

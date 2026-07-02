@@ -1,4 +1,5 @@
-import { fireEvent, render, RenderResult } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
+import { render, RenderResult } from "@testing-library/react";
 import { act, JSX, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import * as FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";

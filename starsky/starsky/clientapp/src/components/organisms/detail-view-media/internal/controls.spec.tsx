@@ -1,4 +1,5 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import React, { act } from "react";
 import { Controls } from "./controls";
 import * as PlayPauseModule from "./play-pause"; // Import the entire module to spy on its methods

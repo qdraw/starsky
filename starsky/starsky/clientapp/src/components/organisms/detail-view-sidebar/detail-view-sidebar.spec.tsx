@@ -1,4 +1,5 @@
-import { fireEvent, render, RenderResult, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render, RenderResult } from "@testing-library/react";
 import { act, JSX } from "react";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
@@ -18,6 +19,10 @@ import * as ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
 import DetailViewSidebar from "./detail-view-sidebar";
 
 describe("DetailViewSidebar", () => {
+  beforeEach(() => {
+    jest.spyOn(console, "error").mockImplementationOnce(() => {});
+  });
+
   it("renders (without state component)", () => {
     const item = render(
       <DetailViewSidebar
@@ -28,10 +33,6 @@ describe("DetailViewSidebar", () => {
       ></DetailViewSidebar>
     );
     expect(item).toBeTruthy();
-  });
-
-  beforeEach(() => {
-    jest.spyOn(console, "error").mockImplementationOnce(() => {});
   });
 
   it("test warning (without state component)", () => {
@@ -255,7 +256,8 @@ describe("DetailViewSidebar", () => {
         tagsField!.innerHTML = "a";
       });
 
-      fireEvent.blur(tagsField!, { currentTarget: tagsField });
+      fireEvent.focusIn(tagsField!);
+      fireEvent.focusOut(tagsField!);
 
       await waitFor(() => expect(fetchPostSpy).toHaveBeenCalled());
 
@@ -290,7 +292,8 @@ describe("DetailViewSidebar", () => {
         tagsField.innerHTML = "";
       });
 
-      fireEvent.blur(tagsField, { currentTarget: tagsField });
+      fireEvent.focusIn(tagsField);
+      fireEvent.focusOut(tagsField);
 
       expect(fetchPostSpy).toHaveBeenCalled();
 
@@ -331,7 +334,8 @@ describe("DetailViewSidebar", () => {
         tagsField.innerHTML = "a";
       });
 
-      fireEvent.blur(tagsField, { currentTarget: tagsField });
+      fireEvent.focusIn(tagsField);
+      fireEvent.focusOut(tagsField);
 
       await waitFor(() => expect(clearSearchCacheSpy).toHaveBeenCalled());
 

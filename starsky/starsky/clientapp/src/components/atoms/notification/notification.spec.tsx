@@ -1,4 +1,5 @@
-import { act, render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/dom";
+import { act, render } from "@testing-library/react";
 import { PortalId } from "../portal/portal";
 import Notification, { NotificationType } from "./notification";
 
@@ -76,6 +77,10 @@ describe("ItemListView", () => {
 });
 
 describe("Notification autoRemoveTimeout", () => {
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it("should auto-remove after the specified timeout", () => {
     jest.useFakeTimers();
 
@@ -93,10 +98,6 @@ describe("Notification autoRemoveTimeout", () => {
     });
     // Callback should be called after timeout
     expect(callback).toHaveBeenCalled();
-  });
-
-  afterAll(() => {
-    jest.useRealTimers();
   });
 
   it("should NOT auto-remove if autoRemoveTimeout is -1", () => {
