@@ -2,7 +2,7 @@ using Microsoft.UI.Xaml;
 
 namespace Starsky.Windows;
 
-public partial class App : Application
+public partial class App
 {
     private Services.AppController? _controller;
 

@@ -3,12 +3,10 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Text;
 using Microsoft.Web.WebView2.Core;
 using Starsky.Windows.Services;
-using System.Collections.Generic;
-using System.IO;
 
 namespace Starsky.Windows;
 
-public sealed partial class MainWindow : Window
+public sealed partial class MainWindow
 {
     private sealed class BrowserTab
     {
@@ -404,28 +402,34 @@ public sealed partial class MainWindow : Window
 
     private async void OnNewWindowRequested(CoreWebView2 sender, CoreWebView2NewWindowRequestedEventArgs args)
     {
-        using var deferral = args.GetDeferral();
-        try
-        {
-            if (string.IsNullOrWhiteSpace(args.Uri))
-            {
-                return;
-            }
+	    try
+	    {
+		    using var deferral = args.GetDeferral();
+		    try
+		    {
+			    if (string.IsNullOrWhiteSpace(args.Uri))
+			    {
+				    return;
+			    }
 
-            args.Handled = true;
-            if (!_controller.IsNavigationAllowed(args.Uri))
-            {
-                await _controller.ExternalOpen.OpenUriAsync(args.Uri);
-                return;
-            }
+			    args.Handled = true;
+			    if (!_controller.IsNavigationAllowed(args.Uri))
+			    {
+				    await _controller.ExternalOpen.OpenUriAsync(args.Uri);
+				    return;
+			    }
 
-            await OpenTabAsync(args.Uri, selectTab: true, treatAsRoute: false);
-        }
-        catch (Exception exception)
-        {
-            _controller.Logger.Error("OnNewWindowRequested failed", exception);
-            _controller.ShowError(exception.ToString());
-        }
+			    await OpenTabAsync(args.Uri, selectTab: true, treatAsRoute: false);
+		    }
+		    catch (Exception exception)
+		    {
+			    _controller.Logger.Error("OnNewWindowRequested failed", exception);
+			    _controller.ShowError(exception.ToString());
+		    }
+	    }
+	    catch (Exception)
+	    {
+	    }
     }
 
     private void OnNavigationStarting(WebView2 sender, CoreWebView2NavigationStartingEventArgs args)

@@ -8,9 +8,9 @@ public sealed class AppPaths
 
     public string LogsPath => Path.Combine(BaseAppDataPath, "logs");
 
-    public string SettingsFilePath => Path.Combine(BaseAppDataPath, "windows-settings.json");
+    public string SettingsFilePath => Path.Combine(BaseAppDataPath, "starsky-settings.json");
 
-    public string TempFolderPath => Path.Combine(Path.GetTempPath(), "windows");
+    public string TempFolderPath => Path.Combine(Path.GetTempPath(), "starsky");
 
     public string TempWorkspacePath => Path.Combine(BaseAppDataPath, "edit-workspace");
 
