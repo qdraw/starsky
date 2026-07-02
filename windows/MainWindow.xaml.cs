@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
 using Starsky.Windows.Services;
+using System.IO;
 
 namespace Starsky.Windows;
 
@@ -92,6 +93,139 @@ public sealed partial class MainWindow : Window
         finally
         {
             _initializeGate.Release();
+        }
+    }
+
+    private async void NewWindow_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await _controller.OpenMainWindowAsync();
+        }
+        catch (Exception exception)
+        {
+            _controller.Logger.Error("NewWindow_Click failed", exception);
+            _controller.ShowError(exception.ToString());
+        }
+    }
+
+    private async void EditFile_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await _controller.EditCurrentFileAsync(this);
+        }
+        catch (Exception exception)
+        {
+            _controller.Logger.Error("EditFile_Click failed", exception);
+            _controller.ShowError(exception.ToString());
+        }
+    }
+
+    private async void ConnectionSettings_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await _controller.OpenSettingsWindowAsync();
+        }
+        catch (Exception exception)
+        {
+            _controller.Logger.Error("ConnectionSettings_Click failed", exception);
+            _controller.ShowError(exception.ToString());
+        }
+    }
+
+    private async void AppSettingsShortcut_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var settingsPath = _controller.Paths.BackendAppSettingsLocalPath;
+            _controller.Logger.Info($"AppSettingsShortcut_Click: opening {settingsPath}");
+            if (File.Exists(settingsPath))
+            {
+                await _controller.ExternalOpen.OpenFileAsync(settingsPath);
+            }
+            else
+            {
+                _controller.ShowError($"Settings file not found at: {settingsPath}");
+            }
+        }
+        catch (Exception exception)
+        {
+            _controller.Logger.Error("AppSettingsShortcut_Click failed", exception);
+            _controller.ShowError(exception.ToString());
+        }
+    }
+
+    private void Refresh_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (BrowserView.CoreWebView2 is not null)
+            {
+                BrowserView.CoreWebView2.Reload();
+            }
+        }
+        catch (Exception exception)
+        {
+            _controller.Logger.Error("Refresh_Click failed", exception);
+            _controller.ShowError(exception.ToString());
+        }
+    }
+
+    private async void DevTools_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await InitializeAsync();
+            if (BrowserView.CoreWebView2 is not null)
+            {
+                BrowserView.CoreWebView2.OpenDevToolsWindow();
+            }
+        }
+        catch (Exception exception)
+        {
+            _controller.Logger.Error("DevTools_Click failed", exception);
+            _controller.ShowError(exception.ToString());
+        }
+    }
+
+    private async void OpenInBrowser_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await _controller.OpenCurrentPageInBrowserAsync(this);
+        }
+        catch (Exception exception)
+        {
+            _controller.Logger.Error("OpenInBrowser_Click failed", exception);
+            _controller.ShowError(exception.ToString());
+        }
+    }
+
+    private async void Documentation_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await _controller.OpenDocumentationAsync();
+        }
+        catch (Exception exception)
+        {
+            _controller.Logger.Error("Documentation_Click failed", exception);
+            _controller.ShowError(exception.ToString());
+        }
+    }
+
+    private async void ReleaseOverview_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await _controller.OpenReleasesAsync();
+        }
+        catch (Exception exception)
+        {
+            _controller.Logger.Error("ReleaseOverview_Click failed", exception);
+            _controller.ShowError(exception.ToString());
         }
     }
 
