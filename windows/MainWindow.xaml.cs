@@ -1,16 +1,28 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Text;
 using Microsoft.Web.WebView2.Core;
 using Starsky.Windows.Services;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Starsky.Windows;
 
 public sealed partial class MainWindow : Window
 {
+    private sealed class BrowserTab
+    {
+        public required Border TabBorder { get; init; }
+        public required TextBlock TitleText { get; init; }
+        public required Button CloseButton { get; init; }
+        public required WebView2 Browser { get; init; }
+    }
+
     private readonly AppController _controller;
     private readonly string _initialRoute;
     private readonly SemaphoreSlim _initializeGate = new(1, 1);
+    private readonly List<BrowserTab> _tabs = new();
+    private BrowserTab? _activeTab;
     private bool _forceClose;
     private bool _isInitialized;
     private string? _currentUri;
@@ -24,10 +36,20 @@ public sealed partial class MainWindow : Window
         _controller.Logger.Info("MainWindow ctor: InitializeComponent start");
         InitializeComponent();
         _controller.Logger.Info("MainWindow ctor: InitializeComponent done");
-        BrowserView.NavigationStarting += OnNavigationStarting;
-        BrowserView.NavigationCompleted += OnNavigationCompleted;
         Closed += OnClosed;
     }
+
+    private WebView2? ActiveBrowser => _activeTab?.Browser;
+
+    // Tab styling helpers
+    private static readonly Microsoft.UI.Xaml.Media.SolidColorBrush ActiveTabBgBrush =
+        new(Microsoft.UI.ColorHelper.FromArgb(255, 243, 243, 243));
+    private static readonly Microsoft.UI.Xaml.Media.SolidColorBrush InactiveTabBgBrush =
+        new(Microsoft.UI.ColorHelper.FromArgb(255, 225, 228, 232));
+    private static readonly Microsoft.UI.Xaml.Media.SolidColorBrush ActiveIndicatorBrush =
+        new(Microsoft.UI.ColorHelper.FromArgb(255, 0, 120, 215));
+    private static readonly Microsoft.UI.Xaml.Media.SolidColorBrush TransparentBrush =
+        new(Microsoft.UI.ColorHelper.FromArgb(0, 0, 0, 0));
 
     public void ForceClose()
     {
@@ -40,13 +62,14 @@ public sealed partial class MainWindow : Window
     public async Task ReloadAsync()
     {
         await InitializeAsync();
-        BrowserView.CoreWebView2?.Reload();
+        ActiveBrowser?.CoreWebView2?.Reload();
     }
 
     public async Task ForwardShortcutAsync(string key, bool ctrl, bool shift)
     {
         await InitializeAsync();
-        if (BrowserView.CoreWebView2 is null)
+        var activeBrowser = ActiveBrowser;
+        if (activeBrowser?.CoreWebView2 is null)
         {
             return;
         }
@@ -64,7 +87,7 @@ public sealed partial class MainWindow : Window
             document.dispatchEvent(new KeyboardEvent('keyup', options));
         }})();";
 
-        await BrowserView.CoreWebView2.ExecuteScriptAsync(script);
+        await activeBrowser.CoreWebView2.ExecuteScriptAsync(script);
     }
 
     public async Task InitializeAsync()
@@ -82,12 +105,7 @@ public sealed partial class MainWindow : Window
                 return;
             }
 
-            await BrowserView.EnsureCoreWebView2Async();
-
-            var navigationTarget = AppController.CombineBaseUriAndRoute(_controller.EffectiveBaseUri, _initialRoute);
-            _controller.Logger.Info($"MainWindow.InitializeAsync: navigating to {navigationTarget}");
-            _currentUri = navigationTarget;
-            BrowserView.Source = new Uri(navigationTarget);
+            await OpenTabAsync(_initialRoute, selectTab: true, treatAsRoute: true);
             _isInitialized = true;
         }
         finally
@@ -100,7 +118,7 @@ public sealed partial class MainWindow : Window
     {
         try
         {
-            await _controller.OpenMainWindowAsync();
+            await OpenTabAsync("?f=/", selectTab: true, treatAsRoute: true);
         }
         catch (Exception exception)
         {
@@ -161,9 +179,9 @@ public sealed partial class MainWindow : Window
     {
         try
         {
-            if (BrowserView.CoreWebView2 is not null)
+            if (ActiveBrowser?.CoreWebView2 is not null)
             {
-                BrowserView.CoreWebView2.Reload();
+                ActiveBrowser.CoreWebView2.Reload();
             }
         }
         catch (Exception exception)
@@ -178,9 +196,9 @@ public sealed partial class MainWindow : Window
         try
         {
             await InitializeAsync();
-            if (BrowserView.CoreWebView2 is not null)
+            if (ActiveBrowser?.CoreWebView2 is not null)
             {
-                BrowserView.CoreWebView2.OpenDevToolsWindow();
+                ActiveBrowser.CoreWebView2.OpenDevToolsWindow();
             }
         }
         catch (Exception exception)
@@ -229,6 +247,197 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    private async Task OpenTabAsync(string routeOrUri, bool selectTab, bool treatAsRoute)
+    {
+        var browser = new WebView2();
+        browser.NavigationStarting += OnNavigationStarting;
+        browser.NavigationCompleted += OnNavigationCompleted;
+        browser.Visibility = Visibility.Collapsed;
+
+        // Title text block
+        var titleText = new TextBlock
+        {
+            Text = "New Tab",
+            VerticalAlignment = VerticalAlignment.Center,
+            FontSize = 12,
+            MaxWidth = 180,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            Margin = new Thickness(10, 0, 6, 0),
+        };
+
+        // Close button (×)
+        var closeButton = new Button
+        {
+            Content = "✕",
+            Padding = new Thickness(4, 0, 4, 0),
+            MinWidth = 20,
+            MinHeight = 20,
+            FontSize = 10,
+            Background = TransparentBrush,
+            BorderBrush = TransparentBrush,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(0, 0, 6, 0),
+        };
+
+        // Inner row: [title] [×]
+        var row = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        row.Children.Add(titleText);
+        row.Children.Add(closeButton);
+
+        // Active indicator bar at bottom
+        var indicator = new Border
+        {
+            Height = 3,
+            CornerRadius = new CornerRadius(2, 2, 0, 0),
+            Background = TransparentBrush,
+            VerticalAlignment = VerticalAlignment.Bottom,
+        };
+
+        // Tab outer stack: [row] [indicator]
+        var tabStack = new StackPanel { Orientation = Orientation.Vertical };
+        tabStack.Children.Add(row);
+        tabStack.Children.Add(indicator);
+
+        // Outer border gives the tab its background + right separator
+        var tabBorder = new Border
+        {
+            Child = tabStack,
+            Background = InactiveTabBgBrush,
+            BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(60, 0, 0, 0)),
+            BorderThickness = new Thickness(0, 0, 1, 0),
+            MinWidth = 80,
+            Padding = new Thickness(0, 4, 0, 0),
+        };
+
+        var tab = new BrowserTab
+        {
+            TabBorder = tabBorder,
+            TitleText = titleText,
+            CloseButton = closeButton,
+            Browser = browser,
+        };
+
+        // Click anywhere on the tab border to activate
+        tabBorder.Tapped += (_, _) => ActivateTab(tab);
+        closeButton.Click += (_, _) => CloseTab(tab);
+
+        BrowserHost.Children.Add(browser);
+        TabStripPanel.Children.Add(tabBorder);
+        _tabs.Add(tab);
+
+        if (_tabs.Count == 1)
+        {
+            closeButton.Visibility = Visibility.Collapsed;
+        }
+
+        await browser.EnsureCoreWebView2Async();
+        browser.CoreWebView2.NewWindowRequested += OnNewWindowRequested;
+
+        var navigationTarget = treatAsRoute || !Uri.TryCreate(routeOrUri, UriKind.Absolute, out _)
+            ? AppController.CombineBaseUriAndRoute(_controller.EffectiveBaseUri, routeOrUri)
+            : routeOrUri;
+
+        _controller.Logger.Info($"MainWindow.InitializeAsync: navigating to {navigationTarget}");
+        browser.Source = new Uri(navigationTarget);
+
+        if (selectTab || _activeTab is null)
+        {
+            ActivateTab(tab);
+        }
+
+        if (_tabs.Count > 1)
+        {
+            foreach (var entry in _tabs)
+            {
+                entry.CloseButton.Visibility = Visibility.Visible;
+            }
+        }
+    }
+
+    private void ApplyTabStyle(BrowserTab tab, bool isActive)
+    {
+        tab.TabBorder.Background = isActive ? ActiveTabBgBrush : InactiveTabBgBrush;
+
+        // Find the indicator border (last child of the tabStack)
+        if (tab.TabBorder.Child is StackPanel tabStack && tabStack.Children.Last() is Border indicator)
+        {
+            indicator.Background = isActive ? ActiveIndicatorBrush : TransparentBrush;
+        }
+
+        tab.TitleText.FontWeight = isActive ? FontWeights.SemiBold : FontWeights.Normal;
+    }
+
+    private void ActivateTab(BrowserTab tab)
+    {
+        _activeTab = tab;
+        foreach (var entry in _tabs)
+        {
+            var isActive = ReferenceEquals(entry, tab);
+            entry.Browser.Visibility = isActive ? Visibility.Visible : Visibility.Collapsed;
+            ApplyTabStyle(entry, isActive);
+        }
+
+        if (tab.Browser.Source is not null)
+        {
+            _currentUri = tab.Browser.Source.AbsoluteUri;
+        }
+    }
+
+    private void CloseTab(BrowserTab tab)
+    {
+        if (_tabs.Count <= 1)
+        {
+            return;
+        }
+
+        tab.Browser.NavigationStarting -= OnNavigationStarting;
+        tab.Browser.NavigationCompleted -= OnNavigationCompleted;
+        if (tab.Browser.CoreWebView2 is not null)
+        {
+            tab.Browser.CoreWebView2.NewWindowRequested -= OnNewWindowRequested;
+        }
+
+        BrowserHost.Children.Remove(tab.Browser);
+        TabStripPanel.Children.Remove(tab.TabBorder);
+        _tabs.Remove(tab);
+
+        if (_tabs.Count == 1)
+        {
+            _tabs[0].CloseButton.Visibility = Visibility.Collapsed;
+        }
+
+        if (ReferenceEquals(_activeTab, tab) && _tabs.Count > 0)
+        {
+            ActivateTab(_tabs[^1]);
+        }
+    }
+
+    private async void OnNewWindowRequested(CoreWebView2 sender, CoreWebView2NewWindowRequestedEventArgs args)
+    {
+        using var deferral = args.GetDeferral();
+        try
+        {
+            if (string.IsNullOrWhiteSpace(args.Uri))
+            {
+                return;
+            }
+
+            args.Handled = true;
+            if (!_controller.IsNavigationAllowed(args.Uri))
+            {
+                await _controller.ExternalOpen.OpenUriAsync(args.Uri);
+                return;
+            }
+
+            await OpenTabAsync(args.Uri, selectTab: true, treatAsRoute: false);
+        }
+        catch (Exception exception)
+        {
+            _controller.Logger.Error("OnNewWindowRequested failed", exception);
+            _controller.ShowError(exception.ToString());
+        }
+    }
+
     private void OnNavigationStarting(WebView2 sender, CoreWebView2NavigationStartingEventArgs args)
     {
         if (string.IsNullOrWhiteSpace(args.Uri))
@@ -249,7 +458,27 @@ public sealed partial class MainWindow : Window
     {
         if (sender.Source is not null)
         {
-            _currentUri = sender.Source.AbsoluteUri;
+            if (ReferenceEquals(sender, ActiveBrowser))
+            {
+                _currentUri = sender.Source.AbsoluteUri;
+            }
+
+            foreach (var tab in _tabs)
+            {
+                if (!ReferenceEquals(tab.Browser, sender))
+                {
+                    continue;
+                }
+
+                var title = sender.CoreWebView2?.DocumentTitle;
+                if (string.IsNullOrWhiteSpace(title))
+                {
+                    title = sender.Source.Host;
+                }
+
+                tab.TitleText.Text = title;
+                break;
+            }
         }
 
         if (!args.IsSuccess)
@@ -261,8 +490,16 @@ public sealed partial class MainWindow : Window
     private async void OnClosed(object sender, WindowEventArgs args)
     {
         _controller.Logger.Info($"MainWindow.OnClosed fired. forceClose={_forceClose}");
-        BrowserView.NavigationStarting -= OnNavigationStarting;
-        BrowserView.NavigationCompleted -= OnNavigationCompleted;
+        foreach (var tab in _tabs)
+        {
+            tab.Browser.NavigationStarting -= OnNavigationStarting;
+            tab.Browser.NavigationCompleted -= OnNavigationCompleted;
+            if (tab.Browser.CoreWebView2 is not null)
+            {
+                tab.Browser.CoreWebView2.NewWindowRequested -= OnNewWindowRequested;
+            }
+        }
+
         if (!_forceClose)
         {
             await _controller.PersistMainWindowStateAsync(this, _initialRoute);
