@@ -153,28 +153,6 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void AppSettingsShortcut_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            var settingsPath = _controller.Paths.BackendAppSettingsLocalPath;
-            _controller.Logger.Info($"AppSettingsShortcut_Click: opening {settingsPath}");
-            if (File.Exists(settingsPath))
-            {
-                await _controller.ExternalOpen.OpenFileAsync(settingsPath);
-            }
-            else
-            {
-                _controller.ShowError($"Settings file not found at: {settingsPath}");
-            }
-        }
-        catch (Exception exception)
-        {
-            _controller.Logger.Error("AppSettingsShortcut_Click failed", exception);
-            _controller.ShowError(exception.ToString());
-        }
-    }
-
     private void Refresh_Click(object sender, RoutedEventArgs e)
     {
         try
@@ -332,6 +310,18 @@ public sealed partial class MainWindow : Window
 
         await browser.EnsureCoreWebView2Async();
         browser.CoreWebView2.NewWindowRequested += OnNewWindowRequested;
+        browser.CoreWebView2.DocumentTitleChanged += (_, _) =>
+        {
+            var title = browser.CoreWebView2.DocumentTitle
+	            .Replace("- Starsky App", string.Empty);
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                return;
+            }
+
+            // Must dispatch to UI thread
+            DispatcherQueue.TryEnqueue(() => tab.TitleText.Text = title);
+        };
 
         var navigationTarget = treatAsRoute || !Uri.TryCreate(routeOrUri, UriKind.Absolute, out _)
             ? AppController.CombineBaseUriAndRoute(_controller.EffectiveBaseUri, routeOrUri)
@@ -463,6 +453,7 @@ public sealed partial class MainWindow : Window
                 _currentUri = sender.Source.AbsoluteUri;
             }
 
+            // Update tab title as fallback (DocumentTitleChanged handles the real title)
             foreach (var tab in _tabs)
             {
                 if (!ReferenceEquals(tab.Browser, sender))
@@ -470,13 +461,11 @@ public sealed partial class MainWindow : Window
                     continue;
                 }
 
-                var title = sender.CoreWebView2?.DocumentTitle;
-                if (string.IsNullOrWhiteSpace(title))
+                if (string.IsNullOrWhiteSpace(tab.TitleText.Text) || tab.TitleText.Text == "New Tab")
                 {
-                    title = sender.Source.Host;
+                    tab.TitleText.Text = sender.Source.Host;
                 }
 
-                tab.TitleText.Text = title;
                 break;
             }
         }

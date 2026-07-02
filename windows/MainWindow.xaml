@@ -38,7 +38,6 @@
                     <Button.Flyout>
                         <MenuFlyout Placement="BottomEdgeAlignedLeft">
                             <MenuFlyoutItem Text="Connection Settings" Click="ConnectionSettings_Click" />
-                            <MenuFlyoutItem Text="App Settings Shortcut" Click="AppSettingsShortcut_Click" />
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>
