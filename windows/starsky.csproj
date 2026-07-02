@@ -32,6 +32,12 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250205002" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="starsky.Tests\**\*.cs" />
+    <EmbeddedResource Remove="starsky.Tests\**\*" />
+    <None Remove="starsky.Tests\**\*" />
+  </ItemGroup>
+
   <Target Name="CopyLocalStarskyRuntime" AfterTargets="Build">
     <PropertyGroup>
       <_StarskyRuntimePreferred>$(MSBuildProjectDirectory)\..\starsky\starsky-win-x64</_StarskyRuntimePreferred>
