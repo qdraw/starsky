@@ -63,6 +63,6 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
       with:
-        name: starsky-windows-desktop-win-x64
+        name: starsky-win-x64-desktop
         path: windows/publish/win-x64/
         if-no-files-found: error

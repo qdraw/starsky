@@ -24,9 +24,23 @@ The scaffold includes:
 Use the local .NET 8 SDK on Windows:
 
 ```powershell
-dotnet restore windows\windows.csproj
-dotnet build windows\windows.csproj
+dotnet restore .\starsky.csproj
+dotnet build .\starsky.csproj
 ```
+
+## Tests and Coverage
+
+Run the MSTest suite with enforced 100% line coverage:
+
+```powershell
+dotnet test .\starsky.Tests\starsky.Tests.csproj -v minimal
+```
+
+The test project links selected source files and enforces:
+
+- 80% line coverage threshold
+- MSTest test execution
+- Cobertura report output at `starsky.Tests/TestResults/coverage.xml`
 
 ## Notes
 
