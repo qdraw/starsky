@@ -92,7 +92,19 @@ public sealed class AppController
             await RestoreMainWindowsAsync();
             Logger.Info("Main windows restored");
 
-            _ = ScheduleUpdateCheckAsync();
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    Logger.Info("ScheduleUpdateCheckAsync queued");
+                    await ScheduleUpdateCheckAsync();
+                    Logger.Info("ScheduleUpdateCheckAsync completed");
+                }
+                catch (Exception exception)
+                {
+                    Logger.Error("ScheduleUpdateCheckAsync failed", exception);
+                }
+            });
         }
         catch (Exception exception)
         {
@@ -109,21 +121,57 @@ public sealed class AppController
             ? Settings.MainWindows.ToList()
             : new List<WindowStateInfo> { new() };
 
+        Logger.Info($"RestoreMainWindowsAsync started with {windows.Count} window state(s)");
+
         for (var i = 0; i < windows.Count; i++)
         {
-            await OpenMainWindowAsync(windows[i], i * 20);
+            try
+            {
+                var state = windows[i];
+                Logger.Info($"Restoring window #{i + 1}: route='{state.Route}', x={state.X}, y={state.Y}, w={state.Width}, h={state.Height}");
+                await OpenMainWindowAsync(windows[i], i * 20);
+                Logger.Info($"Window #{i + 1} restored");
+            }
+            catch (Exception exception)
+            {
+                Logger.Error($"Failed to restore window #{i + 1}. Falling back to defaults for the next window.", exception);
+            }
+        }
+
+        if (_mainWindows.Count == 0)
+        {
+            Logger.Warn("No windows restored from settings. Opening a default window.");
+            await OpenMainWindowAsync(new WindowStateInfo { Route = "?f=/" });
         }
     }
 
     public async Task<MainWindow> OpenMainWindowAsync(WindowStateInfo? state = null, int offset = 0)
     {
-        var mainWindow = new MainWindow(this, state?.Route ?? "?f=/");
-        _mainWindows.Add(mainWindow);
-        _trackedMainWindows[mainWindow] = state ?? new WindowStateInfo();
-        mainWindow.Activate();
-        WindowPlacementHelper.Apply(mainWindow, state, offset);
-        await mainWindow.InitializeAsync();
+        Logger.Info("OpenMainWindowAsync: creating MainWindow instance");
+        var mainWindow = await _dispatcherQueue.EnqueueAsync(() =>
+        {
+            var window = new MainWindow(this, state?.Route ?? "?f=/");
+            _mainWindows.Add(window);
+            _trackedMainWindows[window] = state ?? new WindowStateInfo();
+            Logger.Info("OpenMainWindowAsync: activating MainWindow");
+            window.Activate();
+
+            try
+            {
+                Logger.Info("OpenMainWindowAsync: applying saved window placement");
+                WindowPlacementHelper.Apply(window, state, offset);
+            }
+            catch (Exception exception)
+            {
+                Logger.Warn($"Applying saved window placement failed. Using default placement instead. {exception.Message}");
+            }
+
+            return window;
+        });
+
+        Logger.Info("OpenMainWindowAsync: completed static shell setup");
         await PersistMainWindowsAsync();
+        Logger.Info("OpenMainWindowAsync: completed");
         return mainWindow;
     }
 
@@ -288,6 +336,7 @@ public sealed class AppController
     {
         _mainWindows.Remove(window);
         _trackedMainWindows.TryRemove(window, out _);
+        Logger.Info($"RemoveMainWindow: remaining main windows={_mainWindows.Count}, settings windows={_settingsWindows.Count}");
         _ = PersistMainWindowsAsync();
         TryExitWhenAllWindowsAreClosed();
     }
@@ -430,6 +479,7 @@ public sealed class AppController
 
     private void TryExitWhenAllWindowsAreClosed()
     {
+        Logger.Info($"TryExitWhenAllWindowsAreClosed check: main={_mainWindows.Count}, settings={_settingsWindows.Count}, updateWarning={_updateWarningWindow is not null}");
         if (_mainWindows.Count > 0 || _settingsWindows.Count > 0 || _updateWarningWindow is not null)
         {
             return;

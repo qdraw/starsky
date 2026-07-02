@@ -10,6 +10,8 @@ public partial class App : Application
     {
         InitializeComponent();
         UnhandledException += OnUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
+        TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
     }
 
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
@@ -25,5 +27,27 @@ public partial class App : Application
         _controller?.Logger.Error("Unhandled exception", e.Exception);
         _controller?.ShowError(e.Exception.ToString());
         e.Handled = true;
+    }
+
+    private void OnCurrentDomainUnhandledException(object sender, System.UnhandledExceptionEventArgs e)
+    {
+        if (_controller is null)
+        {
+            return;
+        }
+
+        if (e.ExceptionObject is Exception exception)
+        {
+            _controller.Logger.Error($"AppDomain unhandled exception. IsTerminating={e.IsTerminating}", exception);
+            return;
+        }
+
+        _controller.Logger.Error($"AppDomain unhandled non-exception object. IsTerminating={e.IsTerminating}");
+    }
+
+    private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+    {
+        _controller?.Logger.Error("Unobserved task exception", e.Exception);
+        e.SetObserved();
     }
 }

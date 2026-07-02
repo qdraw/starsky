@@ -110,7 +110,9 @@ public sealed class BackendProcessService
 
         process.Exited += async (_, _) =>
         {
-            _logger.Warn("Starsky backend exited");
+            var exitCode = process.ExitCode;
+            _logger.Warn($"Starsky backend exited with code {exitCode} (0x{unchecked((uint)exitCode):X8})");
+            _process = null;
             if (_shuttingDown)
             {
                 return;

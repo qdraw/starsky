@@ -21,4 +21,39 @@ public static class DispatcherQueueExtensions
         });
         return completion.Task;
     }
+
+    public static Task<T> EnqueueAsync<T>(this DispatcherQueue dispatcherQueue, Func<T> action)
+    {
+        var completion = new TaskCompletionSource<T>();
+        dispatcherQueue.TryEnqueue(() =>
+        {
+            try
+            {
+                completion.SetResult(action());
+            }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+            }
+        });
+        return completion.Task;
+    }
+
+    public static Task EnqueueAsync(this DispatcherQueue dispatcherQueue, Func<Task> action)
+    {
+        var completion = new TaskCompletionSource();
+        dispatcherQueue.TryEnqueue(async () =>
+        {
+            try
+            {
+                await action();
+                completion.SetResult();
+            }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+            }
+        });
+        return completion.Task;
+    }
 }
