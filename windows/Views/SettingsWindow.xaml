@@ -1,0 +1,30 @@
+<Window
+    x:Class="Starsky.Windows.Views.SettingsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel x:Name="RootPanel" Loaded="RootPanel_OnLoaded" Spacing="16" Padding="20">
+            <TextBlock Text="Local Application Settings" FontSize="24" FontWeight="SemiBold" />
+            <TextBlock Text="Connect app to Remote or keep local" />
+
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <RadioButton x:Name="LocalRadioButton" Content="Local" Checked="LocalRadioButton_OnChecked" />
+                <RadioButton x:Name="RemoteRadioButton" Content="Remote" Checked="RemoteRadioButton_OnChecked" />
+            </StackPanel>
+
+            <StackPanel Spacing="8">
+                <TextBlock Text="Url:" />
+                <TextBox x:Name="RemoteUrlTextBox" LostFocus="RemoteUrlTextBox_OnLostFocus" KeyDown="RemoteUrlTextBox_OnKeyDown" />
+                <TextBlock x:Name="RemoteStatusTextBlock" Text="Do enter the main domain starsky is running on" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <StackPanel Spacing="8">
+                <TextBlock Text="Check for updates" FontSize="18" FontWeight="SemiBold" />
+                <ToggleSwitch x:Name="UpdatePolicyToggle" Header="Enabled" Toggled="UpdatePolicyToggle_OnToggled" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

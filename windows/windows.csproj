@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <RootNamespace>Starsky.Windows</RootNamespace>
+    <AssemblyName>windows</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>false</EnableMsixTooling>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>true</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>12.0</LangVersion>
+    <Version>0.1.0</Version>
+    <EnableCoreMrtTooling>false</EnableCoreMrtTooling>
+    <AppxGeneratePriEnabled>false</AppxGeneratePriEnabled>
+    <AppxGeneratePrisForPortableLibrariesEnabled>false</AppxGeneratePrisForPortableLibrariesEnabled>
+    <AppxGetPackagePropertiesEnabled>false</AppxGetPackagePropertiesEnabled>
+    <IncludeProjectPriFile>false</IncludeProjectPriFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3351.48" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250205002" />
+  </ItemGroup>
+
+  <Target Name="CopyLocalStarskyRuntime" AfterTargets="Build">
+    <PropertyGroup>
+      <_StarskyRuntimePreferred>$(MSBuildProjectDirectory)\..\starsky\starsky-win-x64</_StarskyRuntimePreferred>
+      <_StarskyRuntimeFallback>$(MSBuildProjectDirectory)\..\starsky\win-x64</_StarskyRuntimeFallback>
+      <_StarskyRuntimeSource Condition="Exists('$(_StarskyRuntimePreferred)')">$(_StarskyRuntimePreferred)</_StarskyRuntimeSource>
+      <_StarskyRuntimeSource Condition="'$(_StarskyRuntimeSource)' == '' and Exists('$(_StarskyRuntimeFallback)')">$(_StarskyRuntimeFallback)</_StarskyRuntimeSource>
+      <_StarskyRuntimeTarget>$(TargetDir)runtime-starsky-win-x64</_StarskyRuntimeTarget>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(_StarskyRuntimeSource)' != ''">
+      <_StarskyRuntimeFiles Include="$(_StarskyRuntimeSource)\**\*" />
+    </ItemGroup>
+
+    <MakeDir Condition="'$(_StarskyRuntimeSource)' != ''" Directories="$(_StarskyRuntimeTarget)" />
+    <Copy
+      Condition="'$(_StarskyRuntimeSource)' != ''"
+      SourceFiles="@(_StarskyRuntimeFiles)"
+      DestinationFiles="@(_StarskyRuntimeFiles->'$(_StarskyRuntimeTarget)\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
+</Project>
