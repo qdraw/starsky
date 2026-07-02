@@ -47,7 +47,7 @@ jobs:
     - name: Test
       shell: pwsh
       working-directory: ./windows
-      run: dotnet test starsky.Tests/starsky.Tests.csproj --configuration Release --no-build --verbosity normal
+      run: dotnet test starsky.Tests/starsky.Tests.csproj --configuration Release --verbosity normal
 
     - name: Publish (Release)
       shell: pwsh

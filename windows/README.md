@@ -33,12 +33,13 @@ dotnet build .\starsky.csproj
 Run the MSTest suite with enforced 100% line coverage:
 
 ```powershell
+dotnet build .\starsky.csproj
 dotnet test .\starsky.Tests\starsky.Tests.csproj -v minimal
 ```
 
-The test project links selected source files and enforces:
+The test project runs against the built main app module (`starsky.dll`) and enforces:
 
-- 80% line coverage threshold
+- 100% line coverage threshold
 - MSTest test execution
 - Cobertura report output at `starsky.Tests/TestResults/coverage.xml`
 

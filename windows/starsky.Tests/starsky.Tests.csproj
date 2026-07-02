@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <CollectCoverage>true</CollectCoverage>
-    <IncludeTestAssembly>true</IncludeTestAssembly>
-    <ExcludeByFile>**/*Tests.cs,**/TestHelpers/*.cs,**/Services/AppPaths.cs,**/Microsoft.NET.Test.Sdk.Program.cs</ExcludeByFile>
+    <Include>[starsky]Starsky.Windows.Models.*,[starsky]Starsky.Windows.Services.BackendApiClient,[starsky]Starsky.Windows.Services.FileWorkspaceService</Include>
     <CoverletOutputFormat>cobertura</CoverletOutputFormat>
     <CoverletOutput>$(MSBuildProjectDirectory)\TestResults\coverage.xml</CoverletOutput>
     <Threshold>80</Threshold>
@@ -23,9 +22,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Models\*.cs" Link="Sut\Models\%(Filename)%(Extension)" />
-    <Compile Include="..\Services\AppPaths.cs" Link="Sut\Services\AppPaths.cs" />
-    <Compile Include="..\Services\BackendApiClient.cs" Link="Sut\Services\BackendApiClient.cs" />
-    <Compile Include="..\Services\FileWorkspaceService.cs" Link="Sut\Services\FileWorkspaceService.cs" />
+    <Reference Include="starsky">
+      <HintPath>..\bin\Debug\net8.0-windows10.0.19041.0\win-x64\starsky.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\bin\Debug\net8.0-windows10.0.19041.0\win-x64\*.dll">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\bin\Debug\net8.0-windows10.0.19041.0\win-x64\*.json">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\bin\Debug\net8.0-windows10.0.19041.0\win-x64\*.pri">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
+
+
