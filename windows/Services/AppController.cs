@@ -170,6 +170,8 @@ public sealed class AppController
         });
 
         Logger.Info("OpenMainWindowAsync: completed static shell setup");
+        await _dispatcherQueue.EnqueueAsync(() => mainWindow.InitializeAsync());
+        Logger.Info("OpenMainWindowAsync: webview initialized");
         await PersistMainWindowsAsync();
         Logger.Info("OpenMainWindowAsync: completed");
         return mainWindow;
