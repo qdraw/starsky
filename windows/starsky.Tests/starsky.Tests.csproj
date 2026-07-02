@@ -22,26 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="starsky">
-      <HintPath>..\bin\Debug\net8.0-windows10.0.19041.0\win-x64\starsky.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="..\bin\Debug\net8.0-windows10.0.19041.0\win-x64\*.dll">
-      <Link>%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\bin\Debug\net8.0-windows10.0.19041.0\win-x64\*.json">
-      <Link>%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\bin\Debug\net8.0-windows10.0.19041.0\win-x64\*.pri">
-      <Link>%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\starsky.csproj" />
   </ItemGroup>
 </Project>
+
 
 
