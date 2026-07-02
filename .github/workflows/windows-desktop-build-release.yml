@@ -37,7 +37,7 @@ jobs:
     - name: Restore
       shell: pwsh
       working-directory: ./windows
-      run: dotnet restore starsky.slnx
+      run: dotnet restore starsky.csproj
 
     - name: Build (Release)
       shell: pwsh
