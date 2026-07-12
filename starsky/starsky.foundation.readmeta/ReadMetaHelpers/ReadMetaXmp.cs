@@ -352,6 +352,12 @@ public sealed class ReadMetaXmp
 			{
 				item.Software = software;
 			}
+
+			var instanceId = GetContentNameSpace(property, "xmpMM:InstanceID");
+			if ( instanceId != null )
+			{
+				item.InstanceId = instanceId;
+			}
 		}
 
 		return item;

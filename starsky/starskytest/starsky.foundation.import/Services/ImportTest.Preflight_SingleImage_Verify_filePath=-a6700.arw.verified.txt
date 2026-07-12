@@ -13,6 +13,7 @@
       ParentDirectory: /2025/05/2025_05_15,
       IsDirectory: false,
       Tags: t,
+      InstanceId: xmp.iid:b6bff469-2091-40d6-ba03-f5bb9feb0801,
       Status: Ok,
       Description: ,
       Title: ,

@@ -15,6 +15,18 @@ namespace starskytest.starsky.foundation.import.Helpers;
 public sealed class UpdateImportTransformationsTest
 {
 	[TestMethod]
+	public void AddInstanceIdToComparedNamesList_Contain()
+	{
+		var item = new FileIndexItem("/test.jpg");
+		var list = UpdateImportTransformations.AddInstanceIdToComparedNamesList(
+			new List<string>(), item);
+
+		Assert.HasCount(1, list);
+		Assert.AreEqual(nameof(FileIndexItem.InstanceId).ToLowerInvariant(), list[0]);
+		Assert.IsFalse(string.IsNullOrWhiteSpace(item.InstanceId));
+	}
+
+	[TestMethod]
 	public async Task UpdateTransformations_ShouldUpdate_ColorClass_IndexModeOn()
 	{
 		var storage = new FakeIStorage(

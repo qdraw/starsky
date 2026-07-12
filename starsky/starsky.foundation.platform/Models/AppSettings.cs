@@ -418,6 +418,11 @@ public sealed class AppSettings
 	public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
 
 	/// <summary>
+	/// Default is to add an InstanceId to the imported file
+	/// </summary>
+	public bool ExifToolImportSkipAddInstanceId { get; set; }
+
+	/// <summary>
 	///     fallback in constructor
 	///     use env variable: app__ReadOnlyFolders__0 - value
 	/// </summary>

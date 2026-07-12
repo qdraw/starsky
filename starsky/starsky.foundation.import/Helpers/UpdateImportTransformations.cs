@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode;
@@ -148,6 +149,25 @@ public class UpdateImportTransformations
 	internal static List<string> AddColorClassToComparedNamesList(List<string> list)
 	{
 		list.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant());
+		return list;
+	}
+
+	/// <summary>
+	/// This 
+	/// </summary>
+	/// <param name="list"></param>
+	/// <param name="fileIndexItem"></param>
+	/// <returns></returns>
+	internal static List<string> AddInstanceIdToComparedNamesList(List<string> list,
+		FileIndexItem fileIndexItem)
+	{
+		if ( !string.IsNullOrWhiteSpace(fileIndexItem.InstanceId) )
+		{
+			return list;
+		}
+
+		fileIndexItem.InstanceId = InstanceId.CreateNewInstanceId();
+		list.Add(nameof(FileIndexItem.InstanceId).ToLowerInvariant());
 		return list;
 	}
 

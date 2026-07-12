@@ -120,9 +120,21 @@ public sealed class ReadMetaExif
 		SetArrayBasedItemSerial(allExifItems, item);
 		SetArrayBasedItemsSoftwareStabilization(allExifItems, item);
 		SetArrayBasedItemsArtist(allExifItems, item);
+		SetArrayBasedItemsInstanceId(allExifItems, item);
 		SetArrayBasedItemsAiClassification(allExifItems, item);
 
 		return item;
+	}
+
+	private static void SetArrayBasedItemsInstanceId(List<Directory> allExifItems,
+		FileIndexItem item)
+	{
+		var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+		var instanceId = GetXmpData(xmpDirectory, "xmpMM:InstanceID");
+		if ( !string.IsNullOrWhiteSpace(instanceId) )
+		{
+			item.InstanceId = instanceId;
+		}
 	}
 
 	private static void SetArrayBasedItemsAiClassification(List<Directory> allExifItems,

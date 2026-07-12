@@ -104,6 +104,7 @@ public sealed class ExifToolCmdHelper
 		// When change update metadata.md
 
 		command = UpdateKeywordsCommand(command, comparedNames, updateModel);
+		command = UpdateInstanceIdCommand(command, comparedNames, updateModel);
 		command = UpdateDescriptionCommand(command, comparedNames, updateModel);
 		command = UpdateTitleCommand(command, comparedNames, updateModel);
 		command = UpdateColorClassCommand(command, comparedNames, updateModel);
@@ -453,6 +454,21 @@ public sealed class ExifToolCmdHelper
 		var tags = updateModel.Tags.QuotesCommandLineEscape();
 		command += " -sep \", \" \"-xmp:subject\"=\"" + tags
 		                                              + $" \" -Keywords=\"{tags}\""; // space before
+
+		return command;
+	}
+
+	private static string UpdateInstanceIdCommand(string command, List<string> comparedNames,
+		FileIndexItem updateModel)
+	{
+		if ( !comparedNames.Contains(nameof(FileIndexItem.InstanceId).ToLowerInvariant()) ||
+		     string.IsNullOrWhiteSpace(updateModel.InstanceId) )
+		{
+			return command;
+		}
+
+		var instanceId = updateModel.InstanceId.QuotesCommandLineEscape();
+		command += $" -XMP-xmpMM:InstanceID=\"{instanceId}\" ";
 
 		return command;
 	}
