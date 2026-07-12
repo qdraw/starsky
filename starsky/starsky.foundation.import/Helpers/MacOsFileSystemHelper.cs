@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
-using starsky.foundation.native.FileSystem;
+using starsky.foundation.native.DiskFileSystemType;
 using starsky.foundation.platform.Architecture;
 
 namespace starsky.foundation.import.Helpers;

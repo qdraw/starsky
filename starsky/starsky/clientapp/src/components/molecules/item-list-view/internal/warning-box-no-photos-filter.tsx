@@ -51,7 +51,7 @@ export const WarningBoxNoPhotosFilter: React.FunctionComponent<IWarningBoxNoPhot
       warningBox = (
         <a
           className="warning-box"
-          href={new UrlQuery().UrlPreferencesPage()}
+          href={new UrlQuery().UrlPreferencesPage() + "?tab=app"}
           data-test="list-view-no-photos-in-folder"
         >
           {MessageNewUserNoPhotosInFolder}{" "}

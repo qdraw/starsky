@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace starsky.foundation.native.FileSystem;
+namespace starsky.foundation.native.DiskFileSystemType;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public static class MacOsNativeMethods

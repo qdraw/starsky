@@ -38,7 +38,7 @@ describe("Keyboard.setCaretToEnd", () => {
       anchorNode: null,
       anchorOffset: 0
     } as unknown as Selection;
-    (window as unknown as { getSelection: () => Selection }).getSelection = () => mockSelection;
+    jest.spyOn(window, "getSelection").mockImplementation(() => mockSelection);
 
     // Create a contenteditable div and add to DOM
     const mockDiv = document.createElement("div");

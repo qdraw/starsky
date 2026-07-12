@@ -48,7 +48,8 @@ public sealed class AppSettingsControllerTest
 		var appSettings = new AppSettings();
 		var storage = new FakeIStorage(new List<string> { "/" });
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage),
+				new FakeIWebLogger()));
 
 		var actionResult =
 			await controller.UpdateAppSettings(new AppSettingsTransferObject { Verbose = true })
@@ -68,7 +69,7 @@ public sealed class AppSettingsControllerTest
 				new FakeIStorage(new List<string>
 				{
 					$"{Path.DirectorySeparatorChar}{testFolder}"
-				}))));
+				})), new FakeIWebLogger()));
 
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
@@ -129,7 +130,8 @@ public sealed class AppSettingsControllerTest
 				$"{Path.DirectorySeparatorChar}temp{Path.DirectorySeparatorChar}appsettings.json"
 		};
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage),
+				new FakeIWebLogger()));
 		await controller.UpdateAppSettings(
 			new AppSettingsTransferObject { Verbose = true, StorageFolder = testFolder });
 
@@ -148,7 +150,8 @@ public sealed class AppSettingsControllerTest
 		var appSettings = new AppSettings();
 		var storage = new FakeIStorage(new List<string> { "/" });
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage),
+				new FakeIWebLogger()));
 
 		var actionResult =
 			await controller.UpdateAppSettings(
@@ -163,7 +166,8 @@ public sealed class AppSettingsControllerTest
 		var appSettings = new AppSettings();
 		var storage = new FakeIStorage(new List<string> { "/" });
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage),
+				new FakeIWebLogger()));
 
 		var actionResult =
 			await controller.UpdateAppSettings(
@@ -178,7 +182,8 @@ public sealed class AppSettingsControllerTest
 		var appSettings = new AppSettings();
 		var storage = new FakeIStorage(new List<string> { "/" });
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage),
+				new FakeIWebLogger()));
 
 		var actionResult =
 			await controller.UpdateAppSettings(new AppSettingsTransferObject { Verbose = true })
@@ -194,7 +199,8 @@ public sealed class AppSettingsControllerTest
 		// Arrange
 		var appSettings = new AppSettings();
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(new FakeIStorage())));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(new FakeIStorage()),
+				new FakeIWebLogger()));
 
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 

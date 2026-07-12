@@ -105,7 +105,7 @@ describe("ItemListView", () => {
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
       const div = document.createElement("div");
-      (window as unknown as { domNode: HTMLElement }).domNode = div;
+      window.domNode = div;
       document.body.appendChild(div);
 
       const useLocationMock = {
