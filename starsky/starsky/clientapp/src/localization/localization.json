@@ -1449,6 +1449,36 @@
     "nl": "Voltooien",
     "de": "Fertig"
   },
+  "MessageFilters": {
+    "en": "Filters",
+    "nl": "Filters",
+    "de": "Filter"
+  },
+  "MessageShowFilters": {
+    "en": "Show filters",
+    "nl": "Toon filters",
+    "de": "Filter anzeigen"
+  },
+  "MessageHideFilters": {
+    "en": "Hide filters",
+    "nl": "Verberg filters",
+    "de": "Filter ausblenden"
+  },
+  "MessageFileType": {
+    "en": "File type",
+    "nl": "Bestandstype",
+    "de": "Dateityp"
+  },
+  "MessageCamera": {
+    "en": "Camera",
+    "nl": "Camera",
+    "de": "Kamera"
+  },
+  "MessageKeywords": {
+    "en": "Keywords",
+    "nl": "Trefwoorden",
+    "de": "Schlagworte"
+  },
   "temp1": {
     "en": ".",
     "nl": ".",

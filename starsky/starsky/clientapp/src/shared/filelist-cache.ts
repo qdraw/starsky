@@ -112,7 +112,12 @@ export class FileListCache {
       `c${urlObject.colorClass};l${urlObject.collections}` +
       // should have f:
       `f:${urlObject.f}` +
-      `;s${urlObject.sort ?? SortType.fileName}`
+      `;s${urlObject.sort ?? SortType.fileName}` +
+      `;if${urlObject.imageFormat ?? ""}` +
+      `;cm${urlObject.camera ?? ""}` +
+      `;kw${urlObject.keywords?.join(",") ?? ""}` +
+      `;df${urlObject.dateFrom ?? ""}` +
+      `;dt${urlObject.dateTo ?? ""}`
     );
   }
 

@@ -122,6 +122,52 @@ export class UrlQuery {
     return `${this.prefix}/api/suggest/?t=${query}&system=${system}`;
   }
 
+  public UrlSearchSuggestCameraApi(query: string): string {
+    return `${this.prefix}/api/suggest/camera?t=${query}`;
+  }
+
+  public BuildSearchQueryFromUrl(url: IUrl): string | undefined {
+    const tokens = this.GetStructuredSearchTokens(url);
+    const freeText = (url.t ?? "").trim();
+    const composed = [freeText, ...tokens].filter((item) => item.length >= 1).join(" ").trim();
+    return composed.length >= 1 ? composed : undefined;
+  }
+
+  public HasStructuredFilters(url: IUrl): boolean {
+    return this.GetStructuredSearchTokens(url).length >= 1;
+  }
+
+  private GetStructuredSearchTokens(url: IUrl): string[] {
+    const result: string[] = [];
+
+    if (url.imageFormat) {
+      if (url.imageFormat.toLowerCase() === "raw") {
+        result.push('-ImageFormat="arw,dng,nef,raf,cr2,cr3,orf,rw2,pef,x3f"');
+      } else {
+        result.push(`-ImageFormat=${url.imageFormat.toLowerCase()}`);
+      }
+    }
+
+    if (url.camera?.trim()) {
+      result.push(`-Make="${url.camera.trim()}"`);
+    }
+
+    const keywords = (url.keywords ?? []).map((item) => item.trim()).filter((item) => item);
+    for (const keyword of keywords) {
+      result.push(`-Tags="${keyword}"`);
+    }
+
+    if (url.dateFrom?.trim()) {
+      result.push(`-DateTime>${url.dateFrom.trim()}T00:00:00`);
+    }
+
+    if (url.dateTo?.trim()) {
+      result.push(`-DateTime<${url.dateTo.trim()}T23:59:59`);
+    }
+
+    return result;
+  }
+
   public UrlSearchRemoveCacheApi(): string {
     return `${this.prefix}/api/search/remove-cache`;
   }
@@ -195,6 +241,21 @@ export class UrlQuery {
     }
     if (requested.colorClass) {
       urlObject.colorClass = requested.colorClass;
+    }
+    if (requested.imageFormat) {
+      urlObject.imageFormat = requested.imageFormat;
+    }
+    if (requested.camera) {
+      urlObject.camera = requested.camera;
+    }
+    if (requested.keywords) {
+      urlObject.keywords = requested.keywords;
+    }
+    if (requested.dateFrom) {
+      urlObject.dateFrom = requested.dateFrom;
+    }
+    if (requested.dateTo) {
+      urlObject.dateTo = requested.dateTo;
     }
     if (requested.collections === false) {
       urlObject.collections = requested.collections;

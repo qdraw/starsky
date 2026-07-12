@@ -226,6 +226,15 @@ function setRouter(app, isStoryBook = false) {
 		return res.json([]);
 	});
 
+	app.get(prefix + "/api/suggest/camera", (req, res) => {
+		res.setHeader("Cache-Control", "public, max-age=0");
+		res.setHeader("Expires", 0);
+		if (req.query.t && req.query.t.toLowerCase().includes("can")) {
+			return res.json(["Canon EOS R5", "Canon EOS 5D"]);
+		}
+		return res.json([]);
+	});
+
 	app.get(prefix + "/api/env", (req, res) => {
 		return res.json(apiEnvIndex);
 	});

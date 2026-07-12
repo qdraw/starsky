@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import ItemListView from "../components/molecules/item-list-view/item-list-view";
 import MenuSearchBar from "../components/molecules/menu-inline-search/menu-inline-search";
+import SharedStructuredFilter from "../components/molecules/shared-structured-filter/shared-structured-filter";
 import SearchPagination from "../components/molecules/search-pagination/search-pagination";
 import ArchiveSidebar from "../components/organisms/archive-sidebar/archive-sidebar";
 import useGlobalSettings from "../hooks/use-global-settings";
@@ -36,6 +37,8 @@ function Search(archive: Readonly<IArchiveProps>) {
     setQuery(new URLPath().StringToIUrl(history.location.search).t);
   }, [history.location.search]);
 
+  const urlObject = new URLPath().StringToIUrl(history.location.search);
+
   if (!archive) return <>(Search) no archive</>;
   if (!archive.colorClassUsage) return <>(Search) no colorClassUsage</>;
 
@@ -48,6 +51,14 @@ function Search(archive: Readonly<IArchiveProps>) {
           <div className="search-header">
             <MenuSearchBar defaultText={query} />
           </div>
+
+          <SharedStructuredFilter
+            urlObject={urlObject}
+            onChange={(nextUrl) => {
+              history.navigate(new URLPath().IUrlToString(nextUrl), { replace: true });
+            }}
+          />
+
           <div className="content--header" data-test="search-content-header">
             {archive.collectionsCount ? null : MessageNoResult}
             {archive.collectionsCount && archive.pageNumber === 0 ? (

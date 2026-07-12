@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,6 +60,27 @@ public sealed class IndexControllerTest
 				FileName = "homecontrollertest", ParentDirectory = "", IsDirectory = true
 			});
 		}
+	}
+
+	private async Task InsertStructuredFilterData()
+	{
+		var fileSubPath = ( await _query.GetSubPathsByHashAsync("home-structured-filter-hash") )
+			.FirstOrDefault();
+		if ( !string.IsNullOrEmpty(fileSubPath) )
+		{
+			return;
+		}
+
+		await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "structured.jpg",
+			ParentDirectory = "/homecontrollertest",
+			FileHash = "home-structured-filter-hash",
+			Tags = "holiday,beach",
+			MakeModel = "Canon EOS R5",
+			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
+			DateTime = new DateTime(2026, 4, 10)
+		});
 	}
 
 	[TestMethod]
@@ -154,5 +176,32 @@ public sealed class IndexControllerTest
 		Assert.IsNotNull(actionResult);
 		var jsonCollection = actionResult.Value as ArchiveViewModel;
 		Assert.AreEqual(0, jsonCollection?.FileIndexItems.Count());
+	}
+
+	[TestMethod]
+	public async Task Index_ArchiveStructuredFilters()
+	{
+		await InsertSearchData();
+		await InsertStructuredFilterData();
+
+		var controller = new IndexController(_query, new AppSettings());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		var actionResult = controller.Index(
+			"/homecontrollertest",
+			null,
+			true,
+			true,
+			SortType.FileName,
+			"jpg",
+			"Canon",
+			"holiday",
+			"2026-04-01",
+			"2026-04-30") as JsonResult;
+
+		Assert.IsNotNull(actionResult);
+		var jsonCollection = actionResult.Value as ArchiveViewModel;
+		Assert.AreEqual("home-structured-filter-hash", jsonCollection?
+			.FileIndexItems.FirstOrDefault()?.FileHash);
 	}
 }

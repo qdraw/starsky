@@ -175,6 +175,26 @@ public class SearchSuggestionsService : ISearchSuggest
 		return results;
 	}
 
+	public async Task<IEnumerable<string>> SearchCameraSuggest(string query)
+	{
+		if ( string.IsNullOrWhiteSpace(query) )
+		{
+			return new List<string>();
+		}
+
+		var queryTrim = query.Trim();
+
+		return await _context.FileIndex
+			.AsNoTracking()
+			.Where(p => !string.IsNullOrEmpty(p.MakeModel))
+			.Where(p => p.MakeModel!.Contains(queryTrim))
+			.Select(p => p.MakeModel!)
+			.Distinct()
+			.OrderBy(p => p)
+			.Take(MaxResult)
+			.ToListAsync();
+	}
+
 	private static IEnumerable<string> SystemResults()
 	{
 		return
