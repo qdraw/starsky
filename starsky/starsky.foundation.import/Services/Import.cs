@@ -25,6 +25,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
@@ -450,6 +451,18 @@ public class Import : IImport
 		var fileIndexItem =
 			await _readMetaHost.ReadExifAndXmpFromFileAsync(inputFileFullPath.Key);
 
+		// Read JSON sidecar (.starsky.filename.ext.json) if it exists alongside the source file
+		if ( ExistJsonSidecarForThisFile(inputFileFullPath.Key) )
+		{
+			var jsonSourcePath = GetJsonSidecarSourcePath(inputFileFullPath.Key);
+			var jsonContainer = await new DeserializeJson(_filesystemStorage)
+				.ReadAsync<MetadataContainer>(jsonSourcePath);
+			if ( jsonContainer?.Item != null )
+			{
+				FileIndexCompareHelper.Compare(fileIndexItem!, jsonContainer.Item);
+			}
+		}
+
 		// Parse the filename and create a new importIndexItem object
 		// Prepare transformations here
 		var importIndexItem = _objectCreateIndexItemService.CreateObjectIndexItem(inputFileFullPath,
@@ -584,6 +597,17 @@ public class Import : IImport
 			var destinationXmpFullPath =
 				ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
 			_filesystemStorage.FileCopy(xmpSourceFullFilePath, destinationXmpFullPath);
+		}
+
+		// Copy the JSON sidecar file (.starsky.filename.ext.json) if it exists alongside the source
+		if ( ExistJsonSidecarForThisFile(importIndexItem.SourceFullFilePath) )
+		{
+			var jsonSourcePath = GetJsonSidecarSourcePath(importIndexItem.SourceFullFilePath);
+			var jsonDestSubPath = JsonSidecarLocation.JsonLocation(
+				importIndexItem.FileIndexItem!.ParentDirectory!,
+				importIndexItem.FileIndexItem.FileName!);
+			var jsonStream = _filesystemStorage.ReadStream(jsonSourcePath);
+			await _subPathStorage.WriteStreamAsync(jsonStream, jsonDestSubPath);
 		}
 
 		// ExifCopy / XMPSync
@@ -749,6 +773,46 @@ public class Import : IImport
 		return ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem
 			       .SourceFullFilePath) &&
 		       _filesystemStorage.ExistFile(xmpSourceFullFilePath);
+	}
+
+	/// <summary>
+	///     Get the JSON sidecar path for a source file.
+	///     Works for both unix-style (/path/to/file.jpg) and Windows-style (C:\path\to\file.jpg) paths.
+	/// </summary>
+	/// <param name="sourceFullFilePath">full OS path to the source file</param>
+	/// <returns>full OS path to the JSON sidecar file (.starsky.filename.ext.json)</returns>
+	internal static string GetJsonSidecarSourcePath(string sourceFullFilePath)
+	{
+		if ( string.IsNullOrEmpty(sourceFullFilePath) )
+		{
+			return string.Empty;
+		}
+
+		var lastSep = sourceFullFilePath.LastIndexOfAny(['/', '\\']);
+		if ( lastSep < 0 )
+		{
+			return ".starsky." + sourceFullFilePath + ".json";
+		}
+
+		var dir = sourceFullFilePath.Substring(0, lastSep + 1);
+		var fileName = sourceFullFilePath.Substring(lastSep + 1);
+		return dir + ".starsky." + fileName + ".json";
+	}
+
+	/// <summary>
+	///     Check if a JSON sidecar file (.starsky.filename.ext.json) exists for the given source file
+	/// </summary>
+	/// <param name="sourceFullFilePath">full OS path to source file</param>
+	/// <returns>true when JSON sidecar exists</returns>
+	internal bool ExistJsonSidecarForThisFile(string sourceFullFilePath)
+	{
+		if ( string.IsNullOrEmpty(sourceFullFilePath) )
+		{
+			return false;
+		}
+
+		var jsonPath = GetJsonSidecarSourcePath(sourceFullFilePath);
+		return _filesystemStorage.ExistFile(jsonPath);
 	}
 
 	/// <summary>

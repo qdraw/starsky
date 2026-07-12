@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
@@ -5,6 +6,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 
@@ -64,7 +66,9 @@ public sealed class NewItem
 		updatedDatabaseItem!.ImageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 		await stream.DisposeAsync();
 
-		// future: read Json sidecar
+		// Read JSON sidecar (.starsky.filename.ext.json) and merge with EXIF/XMP data
+		await ReadAndApplyJsonSidecarAsync(filePath, updatedDatabaseItem);
+
 		await SetFileHashStatus(filePath, fileHash, updatedDatabaseItem);
 		updatedDatabaseItem.SetAddToDatabase();
 		var info = _subPathStorage.Info(filePath);
@@ -87,6 +91,10 @@ public sealed class NewItem
 	public async Task<FileIndexItem> PrepareUpdateFileItemAsync(FileIndexItem dbItem, long size)
 	{
 		var metaDataItem = await _readMeta.ReadExifAndXmpFromFileAsync(dbItem.FilePath!);
+
+		// Read JSON sidecar (.starsky.filename.ext.json) and merge with EXIF/XMP data
+		await ReadAndApplyJsonSidecarAsync(dbItem.FilePath!, metaDataItem!);
+
 		var compare = FileIndexCompareHelper.Compare(dbItem, metaDataItem);
 		dbItem.Size = size;
 		await SetFileHashStatus(dbItem.FilePath!, dbItem.FileHash!, dbItem);
@@ -97,6 +105,50 @@ public sealed class NewItem
 		}
 
 		return dbItem;
+	}
+
+	/// <summary>
+	///     Read the JSON sidecar file (.starsky.filename.ext.json) if present
+	///     and merge its data onto the given FileIndexItem using FileIndexCompareHelper.
+	///     JSON sidecar values take precedence over EXIF/XMP values.
+	/// </summary>
+	/// <param name="filePath">subPath of the file (e.g. /path/to/image.jpg)</param>
+	/// <param name="fileIndexItem">item to enrich with JSON sidecar data</param>
+	private async Task ReadAndApplyJsonSidecarAsync(string filePath, FileIndexItem fileIndexItem)
+	{
+		// Guard: JsonSidecarLocation requires a non-empty filename component (e.g. filePath "/" has none)
+		var fileName = PathHelper.GetFileName(filePath);
+		if ( string.IsNullOrEmpty(fileName) )
+		{
+			return;
+		}
+
+		var jsonSubPath = JsonSidecarLocation.JsonLocation(filePath);
+
+		if ( !_subPathStorage.ExistFile(jsonSubPath) )
+		{
+			return;
+		}
+
+		MetadataContainer? container;
+		try
+		{
+			container = await new DeserializeJson(_subPathStorage)
+				.ReadAsync<MetadataContainer>(jsonSubPath);
+		}
+		catch ( Exception ex )
+		{
+			_logger.LogError($"[NewItem] Failed to read JSON sidecar {jsonSubPath}: {ex.Message}",
+				ex);
+			return;
+		}
+
+		if ( container?.Item == null )
+		{
+			return;
+		}
+
+		FileIndexCompareHelper.Compare(fileIndexItem, container.Item);
 	}
 
 	/// <summary>
