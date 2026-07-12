@@ -28,6 +28,59 @@
   margin-bottom: 10px;
 }
 
+.folder-picker-input {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.folder-picker-input__display {
+  flex: 1;
+  min-height: 40px;
+  padding: 6px 12px;
+  font-size: 16px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  border: 0 solid #000;
+  border-bottom: 5px solid #263238;
+  box-shadow: inset 0 1px 4px #cfd8dc;
+  font-family: "Gloriola Std", sans-serif;
+  word-break: break-word;
+}
+
+.folder-picker-input__button {
+  min-width: 105px;
+  padding: 6px 10px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  cursor: pointer;
+  color: #263238;
+  background-color: #fff;
+  border: 1px solid #263238;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.folder-picker-input__button:hover:enabled {
+  background-color: #eceff1;
+}
+
+.folder-picker-input__button:focus-visible {
+  outline: 2px solid #283593;
+  outline-offset: 1px;
+}
+
+@media screen and (max-width: 600px) {
+  .folder-picker-input {
+    flex-direction: column;
+  }
+
+  .folder-picker-input__button {
+    width: 100%;
+  }
+}
+
 .preferences-tabs {
   display: flex;
   gap: 10px;
@@ -64,6 +117,23 @@
 }
 
 @media (prefers-color-scheme: dark) {
+  .folder-picker-input__display {
+    color: #fff;
+    background-color: #37474f;
+    border-bottom-color: #90a4ae;
+    box-shadow: inset 0 1px 4px #263238;
+  }
+
+  .folder-picker-input__button {
+    color: #fff;
+    background-color: #455a64;
+    border-color: #90a4ae;
+  }
+
+  .folder-picker-input__button:hover:enabled {
+    background-color: #546e7a;
+  }
+
   .preferences-cloud-import-provider {
     border-color: #78909c;
   }

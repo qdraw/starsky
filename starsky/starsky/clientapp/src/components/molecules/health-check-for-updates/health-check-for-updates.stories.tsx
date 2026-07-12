@@ -5,7 +5,7 @@ export default {
 };
 
 export const Default = () => {
-  (window as unknown as { isElectron: unknown }).isElectron = undefined;
+  window.isElectron = undefined;
   return (
     <>
       <button
@@ -25,7 +25,7 @@ export const Default = () => {
 Default.storyName = "default";
 
 export const Electron = () => {
-  (window as unknown as { isElectron: boolean }).isElectron = true;
+  window.isElectron = true;
   return (
     <>
       <b>

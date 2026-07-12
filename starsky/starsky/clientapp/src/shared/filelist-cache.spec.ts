@@ -112,7 +112,7 @@ describe("FileListCache", () => {
         fileIndexItems: [detailView.fileIndexItem]
       });
 
-      if ((window as unknown as { debug: boolean }).debug) {
+      if (window.debug) {
         // only for debugging
         for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
           const item = new FileListCache().ParseJson(
