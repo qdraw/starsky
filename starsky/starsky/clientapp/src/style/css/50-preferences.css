@@ -28,6 +28,45 @@
   margin-bottom: 10px;
 }
 
+.preferences-publish-profiles-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.preferences-publish-profiles-selector,
+.preferences-publish-profiles-profile {
+  margin-top: 10px;
+}
+
+.preferences-publish-profiles-selector label,
+.preferences-publish-profiles-profile label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.preferences-publish-profiles-item {
+  border: 1px solid #cfd8dc;
+  border-radius: 3px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.preferences-publish-profiles-grid {
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) 1fr;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.preferences-publish-profiles-items-header {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
 .preferences-tabs {
   display: flex;
   gap: 10px;
@@ -52,6 +91,10 @@
 }
 
 @media screen and (max-width: 600px) {
+  .preferences-publish-profiles-grid {
+    grid-template-columns: 1fr;
+  }
+
   .preferences-tabs {
     gap: 6px;
     padding-left: 10px;
@@ -65,6 +108,10 @@
 
 @media (prefers-color-scheme: dark) {
   .preferences-cloud-import-provider {
+    border-color: #78909c;
+  }
+
+  .preferences-publish-profiles-item {
     border-color: #78909c;
   }
 

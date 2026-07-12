@@ -355,6 +355,10 @@ export class UrlQuery {
     return `${this.prefix}/api/env/features?v=` + packageJson.version;
   };
 
+  public UrlApiTemplateContentTypes = (): string => {
+    return `${this.prefix}/api/env/template-content-types`;
+  };
+
   public UrlApiDesktopEditorOpenAmountConfirmationChecker = (): string => {
     return `${this.prefix}/api/desktop-editor/amount-confirmation`;
   };
