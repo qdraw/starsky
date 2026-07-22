@@ -1,7 +1,7 @@
-import React, {memo} from "react";
+import React, { memo } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import {ILanguageLocalization} from "../../../interfaces/ILanguageLocalization";
-import {Language} from "../../../shared/language";
+import { ILanguageLocalization } from "../../../interfaces/ILanguageLocalization";
+import { Language } from "../../../shared/language";
 
 interface IMenuOptionProps {
   isReadOnly: boolean;
@@ -12,7 +12,7 @@ interface IMenuOptionProps {
 }
 
 const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
-  ({localization, onClickKeydown, testName, isReadOnly = true, children = undefined}) => {
+  ({ localization, onClickKeydown, testName, isReadOnly = true, children = undefined }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
     const message = localization ? language.key(localization) : "";

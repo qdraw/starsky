@@ -12,10 +12,10 @@ type HamburgerMenuPropTypes = {
  * @param param0 type HamburgerMenuPropTypes
  */
 const HamburgerMenuToggle: React.FunctionComponent<HamburgerMenuPropTypes> = ({
-                                                                                select,
-                                                                                hamburgerMenu,
-                                                                                setHamburgerMenu
-                                                                              }) => {
+  select,
+  hamburgerMenu,
+  setHamburgerMenu
+}) => {
   const className = hamburgerMenu ? "hamburger open" : "hamburger";
   return (
     <>
@@ -27,9 +27,9 @@ const HamburgerMenuToggle: React.FunctionComponent<HamburgerMenuPropTypes> = ({
           onClick={() => setHamburgerMenu(!hamburgerMenu)}
         >
           <div aria-hidden="true" className={className}>
-            <i/>
-            <i/>
-            <i/>
+            <i />
+            <i />
+            <i />
           </div>
           <div className="text">Menu</div>
         </button>

@@ -1,17 +1,17 @@
-import {fireEvent, screen, waitFor} from "@testing-library/dom";
-import {act, render} from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { act, render } from "@testing-library/react";
 import React from "react";
-import {MemoryRouter} from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import * as useFetch from "../../../hooks/use-fetch";
-import {IConnectionDefault, newIConnectionDefault} from "../../../interfaces/IConnectionDefault";
-import {IEnvFeatures} from "../../../interfaces/IEnvFeatures";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
 import * as ArrowKeyDown from "./internal/arrow-key-down";
 import * as InlineSearchSuggest from "./internal/inline-search-suggest";
 import MenuInlineSearch from "./menu-inline-search";
 
 describe("menu-inline-search", () => {
   it("renders", () => {
-    const item = render(<MenuInlineSearch/>);
+    const item = render(<MenuInlineSearch />);
     expect(item).toBeTruthy();
   });
 
@@ -30,7 +30,7 @@ describe("menu-inline-search", () => {
         .mockImplementationOnce(() => successResponse)
         .mockImplementationOnce(() => successResponse);
 
-      const menuBar = render(<MenuInlineSearch/>);
+      const menuBar = render(<MenuInlineSearch />);
 
       // default
       expect(menuBar.container.querySelector("label")?.classList).toContain("icon-addon--search");
@@ -62,7 +62,7 @@ describe("menu-inline-search", () => {
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
-      const menuBar = render(<MenuInlineSearch/>);
+      const menuBar = render(<MenuInlineSearch />);
 
       const input = screen.getByTestId("menu-inline-search") as HTMLInputElement;
 
@@ -78,9 +78,7 @@ describe("menu-inline-search", () => {
         input.blur();
       });
 
-      expect(menuBar.container.querySelector("label")?.classList).toContain(
-        "icon-addon--search"
-      );
+      expect(menuBar.container.querySelector("label")?.classList).toContain("icon-addon--search");
 
       menuBar.unmount();
     });
@@ -113,7 +111,7 @@ describe("menu-inline-search", () => {
         .mockImplementationOnce(() => newIConnectionDefault());
 
       const callback = jest.fn();
-      const menuBar = render(<MenuInlineSearch defaultText={"tes"} callback={callback}/>);
+      const menuBar = render(<MenuInlineSearch defaultText={"tes"} callback={callback} />);
 
       expect(screen.getByTestId("default-menu-item-trash")).toBeTruthy();
       expect(screen.getByTestId("default-menu-item-logout")).toBeTruthy();
@@ -146,7 +144,7 @@ describe("menu-inline-search", () => {
       const callback = jest.fn();
       const menuBar = render(
         <MemoryRouter>
-          <MenuInlineSearch defaultText={"tes"} callback={callback}/>
+          <MenuInlineSearch defaultText={"tes"} callback={callback} />
         </MemoryRouter>
       );
 
@@ -155,7 +153,7 @@ describe("menu-inline-search", () => {
         {
           callback: callback,
           defaultText: "tes",
-          featuresResult: {data: ["suggest1", "suggest2"], statusCode: 200},
+          featuresResult: { data: ["suggest1", "suggest2"], statusCode: 200 },
           inputFormControlReference: expect.any(Object),
           setFormFocus: expect.any(Function),
           suggest: []
@@ -180,15 +178,15 @@ describe("menu-inline-search", () => {
         .mockImplementationOnce(() => newIConnectionDefault());
 
       const callback = jest.fn();
-      const menuBar = render(<MenuInlineSearch defaultText={"tes"} callback={callback}/>);
+      const menuBar = render(<MenuInlineSearch defaultText={"tes"} callback={callback} />);
 
       const input = screen.queryByTestId("menu-inline-search") as HTMLInputElement;
 
       expect(input).not.toBeNull();
 
-      fireEvent.change(input, {target: {value: "test"}});
+      fireEvent.change(input, { target: { value: "test" } });
       // and change it back
-      fireEvent.change(input, {target: {value: ""}});
+      fireEvent.change(input, { target: { value: "" } });
 
       const results = menuBar.container.querySelector(".menu-item--default");
 
@@ -213,16 +211,15 @@ describe("menu-inline-search", () => {
         .mockImplementationOnce(() => newIConnectionDefault());
 
       const callback = jest.fn();
-      const menuBar = render(<MenuInlineSearch defaultText={"tes"} callback={callback}/>);
+      const menuBar = render(<MenuInlineSearch defaultText={"tes"} callback={callback} />);
 
-      const arrowKeyDownSpy = jest.spyOn(ArrowKeyDown, "default").mockImplementationOnce(() => {
-      });
+      const arrowKeyDownSpy = jest.spyOn(ArrowKeyDown, "default").mockImplementationOnce(() => {});
 
       const input = screen.queryByTestId("menu-inline-search") as HTMLInputElement;
 
       expect(input).not.toBeNull();
 
-      fireEvent.keyDown(input, {target: {value: "test"}});
+      fireEvent.keyDown(input, { target: { value: "test" } });
 
       expect(arrowKeyDownSpy).toHaveBeenCalled();
 
@@ -245,7 +242,7 @@ describe("menu-inline-search", () => {
       const callback = jest.fn();
       const component = render(
         <MemoryRouter>
-          <MenuInlineSearch defaultText={"tes"} callback={callback}/>
+          <MenuInlineSearch defaultText={"tes"} callback={callback} />
         </MemoryRouter>
       );
 
@@ -253,7 +250,7 @@ describe("menu-inline-search", () => {
       expect(input).not.toBeNull();
 
       // Simulate typing to trigger suggestions
-      fireEvent.change(input, {target: {value: "sug"}});
+      fireEvent.change(input, { target: { value: "sug" } });
       // Wait for suggestions to populate
       await waitFor(() => {
         expect(input.value).toBe("sug");
@@ -261,7 +258,7 @@ describe("menu-inline-search", () => {
 
       // Simulate arrow down to highlight first suggestion
       act(() => {
-        fireEvent.keyDown(input, {key: "ArrowDown"});
+        fireEvent.keyDown(input, { key: "ArrowDown" });
       });
 
       act(() => {
@@ -270,7 +267,7 @@ describe("menu-inline-search", () => {
 
       component.rerender(
         <MemoryRouter>
-          <MenuInlineSearch defaultText={"tes"} callback={callback}/>
+          <MenuInlineSearch defaultText={"tes"} callback={callback} />
         </MemoryRouter>
       );
 

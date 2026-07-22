@@ -1,31 +1,24 @@
-import React, {useEffect, useState} from "react";
-import {ArchiveAction, defaultStateFallback} from "../../../contexts/archive-context";
+import React, { useEffect, useState } from "react";
+import { ArchiveAction, defaultStateFallback } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location/use-location";
-import {IArchiveProps} from "../../../interfaces/IArchiveProps";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
-import {Language} from "../../../shared/language";
-import {
-  GetArchiveSearchMenuHeaderClass
-} from "../../../shared/menu/get-archive-search-menu-header-class";
-import {Select} from "../../../shared/select";
-import {Sidebar} from "../../../shared/sidebar";
-import {URLPath} from "../../../shared/url/url-path";
+import { Language } from "../../../shared/language";
+import { GetArchiveSearchMenuHeaderClass } from "../../../shared/menu/get-archive-search-menu-header-class";
+import { Select } from "../../../shared/select";
+import { Sidebar } from "../../../shared/sidebar";
+import { URLPath } from "../../../shared/url/url-path";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
-import MenuOptionMoveToTrash
-  from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
-import {
-  MenuOptionSelectionAll
-} from "../../molecules/menu-option-selection-all/menu-option-selection-all";
-import {
-  MenuOptionSelectionUndo
-} from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
-import {MenuSelectCount} from "../../molecules/menu-select-count/menu-select-count";
-import {MenuSelectFurther} from "../../molecules/menu-select-further/menu-select-further";
+import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
+import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
+import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
+import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
+import { MenuSelectFurther } from "../../molecules/menu-select-further/menu-select-further";
 import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
@@ -35,7 +28,7 @@ interface IMenuSearchProps {
   dispatch: React.Dispatch<ArchiveAction>;
 }
 
-const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({state, dispatch}) => {
+const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch }) => {
   state = defaultStateFallback(state);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
@@ -62,7 +55,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({state, dispatch}
   const undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
 
   // Command + A for mac os || Ctrl + A for windows
-  useHotKeys({key: "a", ctrlKeyOrMetaKey: true}, allSelection, []);
+  useHotKeys({ key: "a", ctrlKeyOrMetaKey: true }, allSelection, []);
 
   // Sidebar
   const [sidebar, setSidebar] = React.useState(
@@ -109,7 +102,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({state, dispatch}
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection}/>
+          <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection} />
 
           {/* the select button with checkbox*/}
           {select ? null : (
@@ -151,13 +144,13 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({state, dispatch}
 
           {/* More menu - When in normal state */}
           {select ? null : (
-            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}/>
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu} />
           )}
 
           {/* More menu - In the select context there are more options */}
           {select?.length === 0 ? (
             <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
-              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection}/>
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
             </MoreMenu>
           ) : null}
 
@@ -170,7 +163,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({state, dispatch}
                 undoSelection={undoSelection}
               />
 
-              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection}/>
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
 
               <MenuOptionModal
                 isReadOnly={false}
@@ -197,12 +190,12 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({state, dispatch}
           ) : null}
 
           <NavContainer hamburgerMenu={hamburgerMenu}>
-            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}/>
+            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
           </NavContainer>
         </div>
       </header>
 
-      <MenuSelectFurther select={select} toggleLabels={toggleLabels}/>
+      <MenuSelectFurther select={select} toggleLabels={toggleLabels} />
     </>
   );
 };

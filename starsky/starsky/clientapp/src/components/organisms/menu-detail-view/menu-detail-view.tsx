@@ -1,40 +1,34 @@
-import React, {useEffect, useState} from "react";
-import {DetailViewAction} from "../../../contexts/detailview-context";
+import React, { useEffect, useState } from "react";
+import { DetailViewAction } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../../hooks/use-location/use-location";
-import {IDetailView} from "../../../interfaces/IDetailView";
-import {IExifStatus} from "../../../interfaces/IExifStatus";
-import {IFileIndexItem} from "../../../interfaces/IFileIndexItem";
+import { IDetailView } from "../../../interfaces/IDetailView";
+import { IExifStatus } from "../../../interfaces/IExifStatus";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
-import {
-  CommaSeperatedFileList
-} from "../../../shared/comma-seperated-filelist/comma-seperated-filelist";
-import {IsEditedNow} from "../../../shared/date";
+import { CommaSeperatedFileList } from "../../../shared/comma-seperated-filelist/comma-seperated-filelist";
+import { IsEditedNow } from "../../../shared/date";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import {FileListCache} from "../../../shared/filelist-cache";
-import {Keyboard} from "../../../shared/keyboard/keyboard.ts";
-import {Language} from "../../../shared/language";
-import {ClearSearchCache} from "../../../shared/search/clear-search-cache";
-import {URLPath} from "../../../shared/url/url-path.ts";
-import {UrlQuery} from "../../../shared/url/url-query.ts";
+import { FileListCache } from "../../../shared/filelist-cache";
+import { Keyboard } from "../../../shared/keyboard/keyboard.ts";
+import { Language } from "../../../shared/language";
+import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
+import { URLPath } from "../../../shared/url/url-path.ts";
+import { UrlQuery } from "../../../shared/url/url-query.ts";
 import Link from "../../atoms/link/link";
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
-import IsSearchQueryMenuSearchItem
-  from "../../molecules/is-search-query-menu-search-item/is-search-query-menu-search-item";
-import MenuOptionDesktopEditorOpenSingle
-  from "../../molecules/menu-option-desktop-editor-open-single/menu-option-desktop-editor-open-single.tsx";
+import IsSearchQueryMenuSearchItem from "../../molecules/is-search-query-menu-search-item/is-search-query-menu-search-item";
+import MenuOptionDesktopEditorOpenSingle from "../../molecules/menu-option-desktop-editor-open-single/menu-option-desktop-editor-open-single.tsx";
 import MenuOptionMoveFile from "../../molecules/menu-option-move-file/menu-option-move-file.tsx";
-import MenuOptionRotateImage90
-  from "../../molecules/menu-option-rotate-image-90/menu-option-rotate-image-90.tsx";
-import ModalDetailviewRenameFile
-  from "../modal-detailview-rename-file/modal-detailview-rename-file";
+import MenuOptionRotateImage90 from "../../molecules/menu-option-rotate-image-90/menu-option-rotate-image-90.tsx";
+import ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-detailview-rename-file";
 import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
-import {GoToParentFolder} from "./internal/go-to-parent-folder";
+import { GoToParentFolder } from "./internal/go-to-parent-folder";
 
 interface MenuDetailViewProps {
   state: IDetailView;
@@ -53,7 +47,7 @@ function GetHeaderClass(isDetails: boolean | undefined, isMarkedAsDeleted: boole
   }
 }
 
-const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({state, dispatch}) => {
+const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, dispatch }) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -104,7 +98,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({state, di
     urlObject.details = !details;
     setDetails(urlObject.details);
     setIsRecentEdited(false); // disable to avoid animation
-    history.navigate(new URLPath().IUrlToString(urlObject), {replace: true});
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
   const [isMarkedAsDeleted, setIsMarkedAsDeleted] = React.useState(
@@ -166,7 +160,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({state, di
         setIsLoading(false);
         return;
       }
-      dispatch({type: "remove", tags: "!delete!"});
+      dispatch({ type: "remove", tags: "!delete!" });
       dispatch({
         type: "update",
         filePath: subPath,
@@ -221,7 +215,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({state, di
 
   return (
     <>
-      {isLoading ? <Preloader isWhite={false} isOverlay={true}/> : ""}
+      {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
 
       {/* allowed in readonly to download */}
       {isModalDownloadOpen && state && !isSourceMissing ? (
@@ -254,7 +248,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({state, di
             <Link
               className="item item--first item--close"
               data-test="menu-detail-view-close"
-              state={{filePath: state.fileIndexItem.filePath}}
+              state={{ filePath: state.fileIndexItem.filePath }}
               onClick={(event) => {
                 // Command (mac) or ctrl click means open new window
                 // event.button = is only trigged in safari
@@ -296,7 +290,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({state, di
           </button>
 
           <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
-            <GoToParentFolder isSearchQuery={isSearchQuery} history={history} state={state}/>
+            <GoToParentFolder isSearchQuery={isSearchQuery} history={history} state={state} />
             <MenuOptionModal
               // Export or Download
               isReadOnly={isSourceMissing}
@@ -336,7 +330,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({state, di
               state.fileIndexItem.collectionPaths &&
               state.fileIndexItem.collectionPaths?.length >= 2 ? (
                 <em data-test="trash-including">
-                  <br/>
+                  <br />
                   {MessageIncludingColonWord}
                   {new CommaSeperatedFileList().CommaSpaceLastDot(
                     state.fileIndexItem.collectionPaths,

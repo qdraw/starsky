@@ -1,14 +1,14 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
 import localization from "../../../localization/localization.json";
-import {ExportIntervalUpdate} from "../../../shared/export/export-interval-update";
+import { ExportIntervalUpdate } from "../../../shared/export/export-interval-update";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import {FileExtensions} from "../../../shared/file-extensions";
-import {Language} from "../../../shared/language";
-import {URLPath} from "../../../shared/url/url-path";
-import {UrlQuery} from "../../../shared/url/url-query";
+import { FileExtensions } from "../../../shared/file-extensions";
+import { Language } from "../../../shared/language";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
 
 interface IModalExportProps {
@@ -181,7 +181,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
 
         {isProcessing === ProcessingState.ready ? (
           <>
-            {language.token(MessageExportReady, ["{createZipKey}"], [createZipKey])} <br/>
+            {language.token(MessageExportReady, ["{createZipKey}"], [createZipKey])} <br />
             <a
               className="btn btn--default"
               href={new UrlQuery().UrlExportZipApi(createZipKey, false)}

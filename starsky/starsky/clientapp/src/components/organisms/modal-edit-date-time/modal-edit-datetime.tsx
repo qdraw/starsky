@@ -1,6 +1,6 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import {IFileIndexItem} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import {
   isValidDate,
@@ -15,8 +15,8 @@ import {
   parseTimeSeconds
 } from "../../../shared/date";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import {Language} from "../../../shared/language";
-import {UrlQuery} from "../../../shared/url/url-query";
+import { Language } from "../../../shared/language";
+import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
@@ -113,7 +113,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) 
           <b>{MessageModalDatetime}</b>
           {isValidDate(getDates()) ? (
             <>
-              <br/>
+              <br />
               {parseDate(getDates(), settings.language)} {parseTime(getDates())}{" "}
             </>
           ) : null}

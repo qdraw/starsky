@@ -1,10 +1,10 @@
-import {FunctionComponent} from "react";
+import { FunctionComponent } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import {IExifStatus} from "../../../interfaces/IExifStatus";
-import {IFileIndexItem} from "../../../interfaces/IFileIndexItem";
+import { IExifStatus } from "../../../interfaces/IExifStatus";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
-import {Language} from "../../../shared/language";
-import {GetBoxClassName} from "./internal/get-box-class-name.ts";
+import { Language } from "../../../shared/language";
+import { GetBoxClassName } from "./internal/get-box-class-name.ts";
 
 interface ItemListProps {
   fileIndexItems: IFileIndexItem[];

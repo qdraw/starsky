@@ -1,10 +1,10 @@
-import React, {memo} from "react";
-import {DetailViewAction} from "../../../contexts/detailview-context";
+import React, { memo } from "react";
+import { DetailViewAction } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import {IFileIndexItem} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
-import {isValidDate, parseDate, parseTime} from "../../../shared/date";
-import {Language} from "../../../shared/language";
+import { isValidDate, parseDate, parseTime } from "../../../shared/date";
+import { Language } from "../../../shared/language";
 import ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
 
 interface IDetailViewInfoDateTimeProps {
@@ -15,7 +15,7 @@ interface IDetailViewInfoDateTimeProps {
 }
 
 const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimeProps> = memo(
-  ({fileIndexItem, isFormEnabled, setFileIndexItem, dispatch}) => {
+  ({ fileIndexItem, isFormEnabled, setFileIndexItem, dispatch }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
     const MessageCreationDate = language.key(localization.MessageCreationDate);
@@ -60,8 +60,8 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
           type="button"
           onClick={() => setModalDatetimeOpen(true)}
         >
-          {isFormEnabled ? <div className="icon icon--right icon--edit"/> : null}
-          <div className="icon icon--date"/>
+          {isFormEnabled ? <div className="icon icon--right icon--edit" /> : null}
+          <div className="icon icon--date" />
           {isValidDate(fileIndexItem.dateTime) ? (
             <>
               <b>{parseDate(fileIndexItem.dateTime, settings.language)}</b>

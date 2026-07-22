@@ -1,9 +1,9 @@
 import "core-js/features/dom-collections/for-each";
-import React, {JSX, ReactNode, useEffect, useRef, useState} from "react";
+import React, { JSX, ReactNode, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
-import {Language} from "../../../shared/language";
+import { Language } from "../../../shared/language";
 import modalFreezeHelper from "./modal-freeze-helper";
 import modalInsertPortalDiv from "./modal-insert-portal-div";
 
@@ -41,15 +41,15 @@ function ifModalOpenHandleExit(
 }
 
 export default function Modal({
-                                children,
-                                id = "modal-root",
-                                root = "root",
-                                isOpen,
-                                handleExit,
-                                focusAfterExit,
-                                className = "",
-                                dataTest = "modal-bg"
-                              }: ModalPropTypes): JSX.Element | null {
+  children,
+  id = "modal-root",
+  root = "root",
+  isOpen,
+  handleExit,
+  focusAfterExit,
+  className = "",
+  dataTest = "modal-bg"
+}: ModalPropTypes): JSX.Element | null {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageCloseDialog = language.key(localization.MessageCloseDialog);

@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {UrlQuery} from "../../../shared/url/url-query";
+import React, { useEffect, useState } from "react";
+import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 
 interface ITagAutocompleteProps {
@@ -124,7 +124,7 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
     const timeout = setTimeout(() => {
       const url = `${new UrlQuery().UrlSearchSuggestApi(encodeURIComponent(query), false)}`;
 
-      fetch(url, {signal: controller.signal})
+      fetch(url, { signal: controller.signal })
         .then((response) => response.json())
         .then((data) => {
           if (Array.isArray(data)) {

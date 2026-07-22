@@ -1,5 +1,5 @@
-import {fireEvent, screen, waitFor} from "@testing-library/dom";
-import {render} from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import Tooltip from "./tooltip";
 
 describe("Tooltip component", () => {
@@ -35,7 +35,7 @@ describe("Tooltip component", () => {
     it("renders tooltip text on click", () => {
       const text = "This is a tooltip";
 
-      const {unmount} = render(
+      const { unmount } = render(
         <Tooltip text={text} left={false}>
           Click me
         </Tooltip>

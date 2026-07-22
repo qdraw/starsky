@@ -1,8 +1,8 @@
-import React, {memo, useEffect} from "react";
+import React, { memo, useEffect } from "react";
 import useLocation from "../../../hooks/use-location/use-location";
-import {IFileIndexItem} from "../../../interfaces/IFileIndexItem";
-import {URLPath} from "../../../shared/url/url-path";
-import {UrlQuery} from "../../../shared/url/url-query";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Link from "../../atoms/link/link";
 import Preloader from "../../atoms/preloader/preloader";
 
@@ -19,7 +19,7 @@ interface IListImageBox {
 }
 
 const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = memo(
-  ({item, className: propsClassName, onSelectionCallback, children}) => {
+  ({ item, className: propsClassName, onSelectionCallback, children }) => {
     item.isDirectory ??= false;
 
     const className = propsClassName ?? "list-image-box";
@@ -46,7 +46,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
       setSelect(urlObject.select);
     }
 
-    const preloader = <Preloader isOverlay={true} isWhite={false}/>;
+    const preloader = <Preloader isOverlay={true} isWhite={false} />;
     const [preloaderState, setPreloaderState] = React.useState(false);
 
     function preloaderStateOnClick(event: React.MouseEvent) {
@@ -77,9 +77,9 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
             className={
               select.includes(item.fileName)
                 ? "box-content box-content--selected colorclass--" +
-                item.colorClass +
-                " isDirectory-" +
-                item.isDirectory
+                  item.colorClass +
+                  " isDirectory-" +
+                  item.isDirectory
                 : "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory
             }
           >

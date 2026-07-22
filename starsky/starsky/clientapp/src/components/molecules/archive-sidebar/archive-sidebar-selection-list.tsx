@@ -1,12 +1,12 @@
-import React, {memo, useEffect} from "react";
+import React, { memo, useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
-import {IArchiveProps} from "../../../interfaces/IArchiveProps";
-import {IFileIndexItem} from "../../../interfaces/IFileIndexItem";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
-import {Language} from "../../../shared/language";
-import {Select} from "../../../shared/select";
-import {URLPath} from "../../../shared/url/url-path";
+import { Language } from "../../../shared/language";
+import { Select } from "../../../shared/select";
+import { URLPath } from "../../../shared/url/url-path";
 
 interface IDetailViewSidebarSelectionListProps {
   fileIndexItems: Array<IFileIndexItem>;
@@ -65,25 +65,25 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
           )}
           {select
             ? select.map(
-              (
-                item // item is filename
-              ) => (
-                <li key={item}>
-                  <button
-                    type="button"
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        toggleSelection(item);
-                      }
-                    }}
-                    onClick={() => toggleSelection(item)}
-                    className="close"
-                    title={item}
-                  />
-                  <span>{item}</span>
-                </li>
+                (
+                  item // item is filename
+                ) => (
+                  <li key={item}>
+                    <button
+                      type="button"
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          toggleSelection(item);
+                        }
+                      }}
+                      onClick={() => toggleSelection(item)}
+                      className="close"
+                      title={item}
+                    />
+                    <span>{item}</span>
+                  </li>
+                )
               )
-            )
             : ""}
         </ul>
       </div>

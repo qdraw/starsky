@@ -1,11 +1,11 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import useGlobalSettings from "../../../../hooks/use-global-settings";
 import useLocation from "../../../../hooks/use-location/use-location";
-import {IConnectionDefault} from "../../../../interfaces/IConnectionDefault";
-import {IEnvFeatures} from "../../../../interfaces/IEnvFeatures";
+import { IConnectionDefault } from "../../../../interfaces/IConnectionDefault";
+import { IEnvFeatures } from "../../../../interfaces/IEnvFeatures";
 import localization from "../../../../localization/localization.json";
-import {Language} from "../../../../shared/language";
-import {UrlQuery} from "../../../../shared/url/url-query";
+import { Language } from "../../../../shared/language";
+import { UrlQuery } from "../../../../shared/url/url-query";
 import Navigate from "./navigate";
 
 export interface IInlineSearchSuggestProps {
@@ -76,16 +76,16 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
     <>
       {props.suggest?.length === 0
         ? defaultMenu.map((value) => {
-          return (
-            <li
-              className="menu-item menu-item--default"
-              key={value.name}
-              data-test={`default-menu-item-${value.key}`}
-            >
-              <a href={value.url}>{value.name}</a>{" "}
-            </li>
-          );
-        })
+            return (
+              <li
+                className="menu-item menu-item--default"
+                key={value.name}
+                data-test={`default-menu-item-${value.key}`}
+              >
+                <a href={value.url}>{value.name}</a>{" "}
+              </li>
+            );
+          })
         : null}
       {props.suggest?.map((query, index) =>
         index <= 8 ? (

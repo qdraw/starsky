@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 interface TooltipProps {
   text: string;
@@ -6,7 +6,7 @@ interface TooltipProps {
   left: boolean;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({text, children, left}) => {
+const Tooltip: React.FC<TooltipProps> = ({ text, children, left }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   const handleMouseEnter = () => {

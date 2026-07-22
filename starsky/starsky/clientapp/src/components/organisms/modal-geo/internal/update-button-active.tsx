@@ -27,6 +27,7 @@ export const UpdateButtonActive: React.FunctionComponent<IUpdateButtonActiveProp
 }) => {
   return (
     <button
+      type="button"
       onClick={async () => {
         const model = await UpdateGeoLocation(
           parentDirectory,

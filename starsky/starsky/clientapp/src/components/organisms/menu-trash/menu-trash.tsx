@@ -1,30 +1,26 @@
-import React, {useEffect} from "react";
-import {ArchiveAction} from "../../../contexts/archive-context";
+import React, { useEffect } from "react";
+import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location/use-location";
-import {IArchiveProps} from "../../../interfaces/IArchiveProps";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import {FileListCache} from "../../../shared/filelist-cache";
-import {Language} from "../../../shared/language";
-import {ClearSearchCache} from "../../../shared/search/clear-search-cache";
-import {Select} from "../../../shared/select";
-import {URLPath} from "../../../shared/url/url-path.ts";
-import {UrlQuery} from "../../../shared/url/url-query.ts";
+import { FileListCache } from "../../../shared/filelist-cache";
+import { Language } from "../../../shared/language";
+import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
+import { Select } from "../../../shared/select";
+import { URLPath } from "../../../shared/url/url-path.ts";
+import { UrlQuery } from "../../../shared/url/url-query.ts";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal.tsx";
 import MenuOption from "../../atoms/menu-option/menu-option.tsx";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
-import {
-  MenuOptionSelectionAll
-} from "../../molecules/menu-option-selection-all/menu-option-selection-all";
-import {
-  MenuOptionSelectionUndo
-} from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
-import {MenuSelectCount} from "../../molecules/menu-select-count/menu-select-count";
+import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
+import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
+import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import ModalForceDelete from "../modal-force-delete/modal-force-delete";
 import NavContainer from "../nav-container/nav-container";
 
@@ -33,7 +29,7 @@ interface IMenuTrashProps {
   dispatch: React.Dispatch<ArchiveAction>;
 }
 
-const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({state, dispatch}) => {
+const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({ state, dispatch }) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 
@@ -60,7 +56,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({state, dispatch}) 
     new Select(select, setSelect, state, history).removeSidebarSelection();
 
   // Command + A for mac os || Ctrl + A for windows
-  useHotKeys({key: "a", ctrlKeyOrMetaKey: true}, allSelection, []);
+  useHotKeys({ key: "a", ctrlKeyOrMetaKey: true }, allSelection, []);
 
   function undoTrash() {
     if (!select) return;
@@ -83,7 +79,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({state, dispatch}) 
 
     // to replace
     FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then(() => {
-      dispatch({type: "remove", toRemoveFileList: toUndoTrashList});
+      dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
       ClearSearchCache(history.location.search);
       setIsLoading(false);
       new FileListCache().CacheCleanEverything();
@@ -94,7 +90,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({state, dispatch}) 
 
   return (
     <>
-      {isLoading ? <Preloader isOverlay={true}/> : null}
+      {isLoading ? <Preloader isOverlay={true} /> : null}
       {isModalDeleteOpen ? (
         <ModalForceDelete
           setSelect={setSelect}
@@ -115,7 +111,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({state, dispatch}) 
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection}/>
+          <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection} />
 
           {!select && state.fileIndexItems.length >= 1 ? (
             <button
@@ -142,13 +138,13 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({state, dispatch}) 
 
           {/* More menu - When in normal state */}
           {select ? null : (
-            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}/>
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu} />
           )}
 
           {/* More menu - In the select context there are more options */}
           {select?.length === 0 ? (
             <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
-              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection}/>
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
             </MoreMenu>
           ) : null}
 
@@ -161,7 +157,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({state, dispatch}) 
                 undoSelection={undoSelection}
               />
 
-              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection}/>
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
 
               <MenuOption
                 isReadOnly={false}
@@ -181,7 +177,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({state, dispatch}) 
           ) : null}
 
           <NavContainer hamburgerMenu={hamburgerMenu}>
-            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}/>
+            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
           </NavContainer>
         </div>
       </header>

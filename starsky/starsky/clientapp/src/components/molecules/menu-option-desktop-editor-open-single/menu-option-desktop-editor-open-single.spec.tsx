@@ -1,13 +1,13 @@
-import {fireEvent, screen, waitFor} from "@testing-library/dom";
-import {render} from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { render } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import {IConnectionDefault} from "../../../interfaces/IConnectionDefault";
-import {IEnvFeatures} from "../../../interfaces/IEnvFeatures";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
 import localization from "../../../localization/localization.json";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
-import {Language} from "../../../shared/language";
-import {UrlQuery} from "../../../shared/url/url-query";
+import { Language } from "../../../shared/language";
+import { UrlQuery } from "../../../shared/url/url-query";
 import * as Notification from "../../atoms/notification/notification";
 import MenuOptionDesktopEditorOpenSingle, {
   OpenDesktopSingle
@@ -27,13 +27,13 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
   });
 
   const displayTextTheoryData = [
-    {isDirectory: true, expectedText: localization.MessageDesktopEditorOpenSingleFolder.en},
-    {isDirectory: false, expectedText: localization.MessageDesktopEditorOpenSingleFile.en}
+    { isDirectory: true, expectedText: localization.MessageDesktopEditorOpenSingleFolder.en },
+    { isDirectory: false, expectedText: localization.MessageDesktopEditorOpenSingleFile.en }
   ];
 
   test.each(displayTextTheoryData)(
     "should render text correctly for isDirectory=$isDirectory",
-    ({isDirectory, expectedText}) => {
+    ({ isDirectory, expectedText }) => {
       const mockGetIConnectionDefaultFeatureToggle = {
         statusCode: 200,
         data: {
@@ -135,7 +135,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       />
     );
 
-    fireEvent.keyDown(document.body, {key: "e", ctrlKey: true});
+    fireEvent.keyDown(document.body, { key: "e", ctrlKey: true });
 
     await waitFor(() => {
       expect(fetchPostSpy).toHaveBeenCalled();
@@ -267,13 +267,11 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       .mockReset()
       .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle);
 
-    const notificationSpy = jest
-      .spyOn(Notification, "default")
-      .mockImplementationOnce((event) => (
-        <button data-test="notification-spy-button" onClick={event.callback}>
-          {event.children}
-        </button>
-      ));
+    const notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce((event) => (
+      <button data-test="notification-spy-button" onClick={event.callback}>
+        {event.children}
+      </button>
+    ));
 
     const mockIConnectionDefaultResolve: Promise<IConnectionDefault> = Promise.resolve({
       data: null,

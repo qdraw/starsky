@@ -1,15 +1,15 @@
-import {useState} from "react";
-import {ArchiveAction} from "../../../contexts/archive-context";
+import { useState } from "react";
+import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import {IArchiveProps} from "../../../interfaces/IArchiveProps";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
-import {CastToInterface} from "../../../shared/cast-to-interface";
+import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import {FileExtensions} from "../../../shared/file-extensions";
-import {FileListCache} from "../../../shared/filelist-cache";
-import {Language} from "../../../shared/language";
-import {UrlQuery} from "../../../shared/url/url-query";
+import { FileExtensions } from "../../../shared/file-extensions";
+import { FileListCache } from "../../../shared/filelist-cache";
+import { Language } from "../../../shared/language";
+import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
@@ -21,10 +21,10 @@ interface IModalRenameFileProps {
 }
 
 const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
-                                                                             state,
-                                                                             dispatch,
-                                                                             ...props
-                                                                           }) => {
+  state,
+  dispatch,
+  ...props
+}) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -95,11 +95,11 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
     }
 
     // Force update
-    const connectionResult = await FetchGet(new UrlQuery().UrlIndexServerApi({f: state.subPath}));
+    const connectionResult = await FetchGet(new UrlQuery().UrlIndexServerApi({ f: state.subPath }));
     const forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
     const payload = forceSyncResult.data as IArchiveProps;
     if (payload.fileIndexItems) {
-      dispatch({type: "force-reset", payload});
+      dispatch({ type: "force-reset", payload });
     }
 
     new FileListCache().CacheCleanEverything();

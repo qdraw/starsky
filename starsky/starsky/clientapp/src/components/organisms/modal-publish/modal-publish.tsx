@@ -79,8 +79,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   }
 
   const allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), "get").data as
-    | { key: string; value: string }[]
-    | null;
+    { key: string; value: string }[] | null;
 
   useEffect(() => {
     // set the default option
@@ -175,6 +174,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
             ) : null}
 
             <button
+              type="button"
               disabled={!itemName || !publishProfileName}
               onClick={postZip}
               className="btn btn--default"
@@ -193,6 +193,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
           <>
             {MessageGenericExportFail} <br />
             <button
+              type="button"
               onClick={() => setIsProcessing(ProcessingState.default)}
               className="btn btn--info"
               data-test="publish-retry-export-fail"

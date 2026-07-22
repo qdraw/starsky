@@ -1,21 +1,21 @@
-import React, {useEffect, useState} from "react";
-import {ArchiveContext} from "../../../contexts/archive-context";
+import React, { useEffect, useState } from "react";
+import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
-import {IConnectionDefault} from "../../../interfaces/IConnectionDefault";
-import {IExifStatus} from "../../../interfaces/IExifStatus";
-import {ISidebarGenericUpdate, ISidebarUpdate} from "../../../interfaces/ISidebarUpdate";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import { IExifStatus } from "../../../interfaces/IExifStatus";
+import { ISidebarGenericUpdate, ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
 import localization from "../../../localization/localization.json";
-import {CastToInterface} from "../../../shared/cast-to-interface";
+import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import {FileListCache} from "../../../shared/filelist-cache";
-import {Language} from "../../../shared/language";
-import {ClearSearchCache} from "../../../shared/search/clear-search-cache";
-import {SidebarUpdate} from "../../../shared/sidebar-update";
-import {URLPath} from "../../../shared/url/url-path";
-import {UrlQuery} from "../../../shared/url/url-query";
+import { FileListCache } from "../../../shared/filelist-cache";
+import { Language } from "../../../shared/language";
+import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
+import { SidebarUpdate } from "../../../shared/sidebar-update";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
-import Notification, {NotificationType} from "../../atoms/notification/notification";
+import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
 
 const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
@@ -35,7 +35,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
   const history = useLocation();
   // eslint-disable-next-line prefer-const
-  let {state, dispatch} = React.useContext(ArchiveContext);
+  let { state, dispatch } = React.useContext(ArchiveContext);
 
   // state without any context
   state = new CastToInterface().UndefinedIArchiveReadonly(state);
@@ -162,7 +162,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         </Notification>
       )}
 
-      {isLoading ? <Preloader isWhite={false} isOverlay={false}/> : ""}
+      {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
 
       <h4>{MessageTagsWithColon}</h4>
       <FormControl

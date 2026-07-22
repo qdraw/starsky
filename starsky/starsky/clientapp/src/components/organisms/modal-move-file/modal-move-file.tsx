@@ -140,6 +140,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
             <ul>
               <li className={"box parent"}>
                 <button
+                  type="button"
                   data-test="parent"
                   onClick={() => {
                     setCurrentFolderPath(new FileExtensions().GetParentPath(currentFolderPath));
@@ -172,6 +173,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
             </div>
           )}
           <button
+            type="button"
             disabled={
               currentFolderPath === props.parentDirectory ||
               usesFileList.pageType === PageType.Loading

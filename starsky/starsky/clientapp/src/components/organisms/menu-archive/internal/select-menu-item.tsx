@@ -1,7 +1,7 @@
 import React from "react";
 import useGlobalSettings from "../../../../hooks/use-global-settings.ts";
 import localization from "../../../../localization/localization.json";
-import {Language} from "../../../../shared/language.ts";
+import { Language } from "../../../../shared/language.ts";
 
 interface ISelectMenuItemProps {
   select?: string[];
@@ -10,10 +10,10 @@ interface ISelectMenuItemProps {
 }
 
 export const SelectMenuItem: React.FunctionComponent<ISelectMenuItemProps> = ({
-                                                                                select,
-                                                                                removeSidebarSelection,
-                                                                                toggleLabels
-                                                                              }) => {
+  select,
+  removeSidebarSelection,
+  toggleLabels
+}) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 

@@ -1,8 +1,8 @@
-import {ArchiveAction} from "../../../../contexts/archive-context";
-import {IArchiveProps} from "../../../../interfaces/IArchiveProps";
-import {IFileIndexItem} from "../../../../interfaces/IFileIndexItem";
-import {FileListCache} from "../../../../shared/filelist-cache";
-import {UrlQuery} from "../../../../shared/url/url-query";
+import { ArchiveAction } from "../../../../contexts/archive-context";
+import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
+import { IFileIndexItem } from "../../../../interfaces/IFileIndexItem";
+import { FileListCache } from "../../../../shared/filelist-cache";
+import { UrlQuery } from "../../../../shared/url/url-query";
 import DropArea from "../../../atoms/drop-area/drop-area";
 
 interface IUploadMenuItemProps {
@@ -13,11 +13,11 @@ interface IUploadMenuItemProps {
 }
 
 export const UploadMenuItem: React.FunctionComponent<IUploadMenuItemProps> = ({
-                                                                                readOnly,
-                                                                                setDropAreaUploadFilesList,
-                                                                                dispatch,
-                                                                                state
-                                                                              }) => {
+  readOnly,
+  setDropAreaUploadFilesList,
+  dispatch,
+  state
+}) => {
   if (readOnly)
     return (
       <li data-test="upload" className="menu-option disabled">
@@ -30,7 +30,7 @@ export const UploadMenuItem: React.FunctionComponent<IUploadMenuItemProps> = ({
         callback={(add) => {
           new FileListCache().CacheCleanEverything();
           setDropAreaUploadFilesList(add);
-          dispatch({type: "add", add});
+          dispatch({ type: "add", add });
         }}
         endpoint={new UrlQuery().UrlUploadApi()}
         folderPath={state.subPath}
