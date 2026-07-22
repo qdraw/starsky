@@ -133,8 +133,7 @@ public class EnumListConverterTests
 		var result =
 			converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
 
-		CollectionAssert.AreEqual(new List<ValueType> { ValueType.Value1, ValueType.Value2 },
-			result);
+		Assert.AreSequenceEqual(new List<ValueType> { ValueType.Value1, ValueType.Value2 }, result);
 	}
 
 	[TestMethod]

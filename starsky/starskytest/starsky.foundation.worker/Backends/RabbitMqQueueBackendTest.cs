@@ -97,7 +97,7 @@ public sealed class RabbitMqQueueBackendTest
 		var dequeued = await backend.DequeueJobAsync(CancellationToken.None);
 
 		Assert.AreEqual("Rabbit.v1", dequeued.JobType);
-		CollectionAssert.AreEqual(new List<ulong> { 100 }, adapter.Acked.ToList());
+		Assert.AreSequenceEqual(new List<ulong> { 100 }, adapter.Acked.ToList());
 		Assert.IsEmpty(adapter.Nacked);
 	}
 
@@ -122,9 +122,8 @@ public sealed class RabbitMqQueueBackendTest
 		var dequeued = await backend.DequeueJobAsync(CancellationToken.None);
 
 		Assert.AreEqual("Rabbit.v1", dequeued.JobType);
-		CollectionAssert.AreEqual(new List<ulong> { 10 },
-			adapter.Nacked.Select(p => p.DeliveryTag).ToList());
-		CollectionAssert.AreEqual(new List<ulong> { 11 }, adapter.Acked.ToList());
+		Assert.AreSequenceEqual(new List<ulong> { 10 }, adapter.Nacked.Select(p => p.DeliveryTag).ToList());
+		Assert.AreSequenceEqual(new List<ulong> { 11 }, adapter.Acked.ToList());
 		Assert.Contains(p =>
 			( p.Item2 ?? string.Empty ).Contains("Invalid message payload"), logger.TrackedExceptions);
 	}
@@ -150,9 +149,8 @@ public sealed class RabbitMqQueueBackendTest
 		var dequeued = await backend.DequeueJobAsync(CancellationToken.None);
 
 		Assert.AreEqual("Rabbit.v1", dequeued.JobType);
-		CollectionAssert.AreEqual(new List<ulong> { 20 },
-			adapter.Nacked.Select(p => p.DeliveryTag).ToList());
-		CollectionAssert.AreEqual(new List<ulong> { 21 }, adapter.Acked.ToList());
+		Assert.AreSequenceEqual(new List<ulong> { 20 }, adapter.Nacked.Select(p => p.DeliveryTag).ToList());
+		Assert.AreSequenceEqual(new List<ulong> { 21 }, adapter.Acked.ToList());
 	}
 
 	[TestMethod]
@@ -218,7 +216,7 @@ public sealed class RabbitMqQueueBackendTest
 		Assert.AreEqual("Rabbit.v1", dequeued.JobType);
 		Assert.IsTrue(adapter.GetWasCalledTwice,
 			"TryGet should have been called at least twice (first empty, then with message)");
-		CollectionAssert.AreEqual(new List<ulong> { 100 }, adapter.Acked.ToList());
+		Assert.AreSequenceEqual(new List<ulong> { 100 }, adapter.Acked.ToList());
 	}
 
 	[TestMethod]

@@ -23,6 +23,7 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
           <li className={isReadOnly ? "menu-option disabled" : "menu-option"}>
             <button
               data-test={testName}
+              type="button"
               onClick={onClickKeydown}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {

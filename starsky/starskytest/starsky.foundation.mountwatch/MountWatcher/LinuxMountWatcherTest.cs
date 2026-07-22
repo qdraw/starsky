@@ -93,7 +93,7 @@ public sealed class LinuxMountWatcherTest
 
 		var volumes = watcher.GetMountedVolumes();
 
-		CollectionAssert.AreEqual(
+		Assert.AreSequenceEqual(
 			new List<string> { "/media/usb", "/mnt/share", "/home/dion/drive" }, volumes);
 	}
 
@@ -193,7 +193,7 @@ public sealed class LinuxMountWatcherTest
 		var result = watcher.TryRunUdevWatcher();
 
 		Assert.IsTrue(result);
-		CollectionAssert.AreEqual(new List<string> { "/media/usb" }, mountEvents);
+		Assert.AreSequenceEqual(new List<string> { "/media/usb" }, mountEvents);
 		Assert.AreEqual(1, system.DeviceUnrefCalls);
 	}
 
@@ -317,7 +317,7 @@ public sealed class LinuxMountWatcherTest
 			"sdb1 /mnt/drive ext4 rw 0 0"
 		]);
 
-		CollectionAssert.AreEqual(new List<string> { "/mnt/drive" }, parsed);
+		Assert.AreSequenceEqual(new List<string> { "/mnt/drive" }, parsed);
 	}
 
 	[TestMethod]

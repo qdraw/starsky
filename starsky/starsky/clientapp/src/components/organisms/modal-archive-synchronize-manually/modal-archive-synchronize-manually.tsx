@@ -124,6 +124,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
           ></ForceSyncWaitButton>
           <button
             className="btn btn--default"
+            type="button"
             data-test="remove-cache"
             onClick={() =>
               RemoveCache(
@@ -138,6 +139,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
             {MessageRemoveCache}
           </button>
           <button
+            type="button"
             className="btn btn--info btn--percentage"
             data-test="geo-sync"
             onClick={() => geoSync()}
@@ -146,6 +148,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
           </button>
           <p>{MessageGeoSyncExplainer}</p>
           <button
+            type="button"
             className="btn btn--info"
             data-test="thumbnail-generation"
             onClick={() => manualThumbnailSync()}

@@ -52,7 +52,7 @@ public sealed class MacMountWatcherTest
 			"/Volumes/SD_CARD"
 		]);
 
-		CollectionAssert.AreEqual(new List<string> { "/Volumes/SD_CARD" }, detected);
+		Assert.AreSequenceEqual(new List<string> { "/Volumes/SD_CARD" }, detected);
 	}
 
 	[TestMethod]
@@ -65,7 +65,7 @@ public sealed class MacMountWatcherTest
 			"/Volumes/CAMERA"
 		]);
 
-		CollectionAssert.AreEqual(new List<string> { "/Volumes/CAMERA" }, detected);
+		Assert.AreSequenceEqual(new List<string> { "/Volumes/CAMERA" }, detected);
 	}
 
 	[TestMethod]
@@ -79,8 +79,8 @@ public sealed class MacMountWatcherTest
 			"/Volumes/CAMERA"
 		]);
 
-		CollectionAssert.AreEqual(new List<string> { "/Volumes/CAMERA" }, first);
-		CollectionAssert.AreEqual(new List<string>(), second);
+		Assert.AreSequenceEqual(new List<string> { "/Volumes/CAMERA" }, first);
+		Assert.AreSequenceEqual(new List<string>(), second);
 	}
 
 	[TestMethod]
@@ -99,7 +99,7 @@ public sealed class MacMountWatcherTest
 			"/Volumes/CAMERA"
 		]);
 
-		CollectionAssert.AreEqual(new List<string> { "/Volumes/CAMERA" }, detectedAgain);
+		Assert.AreSequenceEqual(new List<string> { "/Volumes/CAMERA" }, detectedAgain);
 	}
 
 	[TestMethod]
@@ -120,9 +120,9 @@ public sealed class MacMountWatcherTest
 			"/Volumes/SD_CARD"
 		]);
 
-		CollectionAssert.AreEqual(new List<string> { "/Volumes/SD_CARD" }, first);
-		CollectionAssert.AreEqual(new List<string>(), afterEject);
-		CollectionAssert.AreEqual(new List<string> { "/Volumes/SD_CARD" }, reinsert);
+		Assert.AreSequenceEqual(new List<string> { "/Volumes/SD_CARD" }, first);
+		Assert.AreSequenceEqual(new List<string>(), afterEject);
+		Assert.AreSequenceEqual(new List<string> { "/Volumes/SD_CARD" }, reinsert);
 	}
 
 	// Tests with IStorage abstraction and dependency injection
@@ -235,7 +235,7 @@ public sealed class MacMountWatcherTest
 		});
 
 		// Assert - only new drive should be detected
-		CollectionAssert.AreEqual(new List<string> { "/Volumes/NewDrive" }, result);
+		Assert.AreSequenceEqual(new List<string> { "/Volumes/NewDrive" }, result);
 	}
 
 	[TestMethod]
@@ -502,8 +502,8 @@ public sealed class MacMountWatcherBackupLoopTests
 		await Task.WhenAny(task, Task.Delay(500, TestContext.CancellationToken));
 
 		Assert.AreEqual(tcs.Task, completed, "Timed out waiting for mounts to be detected");
-		CollectionAssert.AreEquivalent(
-			new List<string> { "/Volumes/SD_CARD", "/Volumes/NEW_DRIVE" }, detected);
+		Assert.AreSequenceEqual(
+			new List<string> { "/Volumes/SD_CARD", "/Volumes/NEW_DRIVE" }, detected, Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
 	}
 
 	[TestMethod]

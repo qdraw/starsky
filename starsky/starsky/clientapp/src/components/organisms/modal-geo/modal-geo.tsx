@@ -159,6 +159,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
         <div className="content-geo" data-test="content-geo" ref={mapReference}></div>
         <div className="modal modal-button-bar content-geo-button-bar">
           <button
+            type="button"
             data-test="force-cancel"
             onClick={() => props.handleExit(null)}
             className="btn btn--info"

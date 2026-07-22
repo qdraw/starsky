@@ -115,8 +115,7 @@ public class CloudImportSettingsTest
 		{
 			Extensions = [".jpg", ".png", "gif", ".JPG"]
 		};
-		CollectionAssert.AreEquivalent(
-			new List<string> { "jpg", "png", "gif", "JPG" },
-			provider.Extensions);
+		Assert.AreSequenceEqual(
+			new List<string> { "jpg", "png", "gif", "JPG" }, provider.Extensions, Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
 	}
 }

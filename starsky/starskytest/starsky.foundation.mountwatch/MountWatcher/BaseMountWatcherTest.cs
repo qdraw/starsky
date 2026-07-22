@@ -75,7 +75,7 @@ public sealed class BaseMountWatcherTest
 			$"Timed out waiting for mount detection. GetMountedVolumesCallCount={sut.GetMountedVolumesCallCount}");
 		lock ( detectedLock )
 		{
-			CollectionAssert.AreEqual(new List<string> { "/mnt/camera" }, detected);
+			Assert.AreSequenceEqual(new List<string> { "/mnt/camera" }, detected);
 		}
 	}
 

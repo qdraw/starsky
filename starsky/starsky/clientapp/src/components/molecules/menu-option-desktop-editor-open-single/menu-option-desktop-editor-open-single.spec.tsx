@@ -287,7 +287,6 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
     const collections = true;
     const isReadOnly = false;
 
-    // Get language keys
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
     const MessageDesktopEditorUnableToOpen = language.key(
@@ -315,7 +314,6 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
     );
 
     await waitFor(() => {
-      expect(notificationSpy).toHaveBeenCalled();
       expect(notificationSpy).toHaveBeenCalledWith(
         {
           callback: expect.anything(),
@@ -325,15 +323,15 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
         undefined
       );
 
-      const errorMessage1 = screen.queryByTestId("notification-spy-button")?.innerHTML;
-      expect(errorMessage1).toBe(MessageDesktopEditorUnableToOpen);
-
-      fireEvent.click(screen.getByTestId("notification-spy-button"));
-
-      const errorMessage2 = screen.queryByTestId("notification-spy-button")?.innerHTML;
-
-      expect(errorMessage2).toBeUndefined();
+      expect(screen.getByTestId("notification-spy-button")).toHaveTextContent(
+        MessageDesktopEditorUnableToOpen
+      );
     });
+
+    fireEvent.click(screen.getByTestId("notification-spy-button"));
+
+    expect(screen.queryByTestId("notification-spy-button")).not.toBeInTheDocument();
+
     container.unmount();
   });
 

@@ -23,7 +23,7 @@ public class EnumerableExtensionsTest
 
 		var list = results?.ToList();
 		Assert.IsNotNull(list);
-		CollectionAssert.AreEquivalent(new List<int> { 2, 4, 6 }, list);
+		Assert.AreSequenceEqual(new List<int> { 2, 4, 6 }, list, Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
 		Assert.HasCount(3, list);
 	}
 

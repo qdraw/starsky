@@ -174,6 +174,7 @@ export function TimezoneMode({ ...props }: Readonly<IRenderTimezoneModeProps>) {
             {language.key(localization.MessageBack)}
           </button>
           <button
+            type="button"
             className="btn btn--default"
             onClick={async () => {
               // Execute shift first, then navigate to rename step

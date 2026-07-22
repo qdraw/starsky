@@ -151,6 +151,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
         {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? (
           <>
             <button
+              type="button"
               onClick={() => {
                 postZip(false);
               }}

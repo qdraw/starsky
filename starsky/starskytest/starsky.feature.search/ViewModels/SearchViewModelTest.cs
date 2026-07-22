@@ -382,6 +382,6 @@ public sealed class SearchViewModelTest
 			SearchViewModel.PropertySearch(model, property!, searchForQuery, searchType);
 
 		// Assert
-		CollectionAssert.AreEqual(model.FileIndexItems, result.FileIndexItems);
+		Assert.AreSequenceEqual(model.FileIndexItems, result.FileIndexItems);
 	}
 }

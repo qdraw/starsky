@@ -250,7 +250,7 @@ public class DropboxCloudImportClientTest
 			Assert.IsTrue(File.Exists(resultPath));
 			var writtenContent =
 				await File.ReadAllBytesAsync(resultPath, TestContext.CancellationToken);
-			CollectionAssert.AreEqual(fileContent, writtenContent);
+			Assert.AreSequenceEqual(fileContent, writtenContent);
 		}
 		finally
 		{

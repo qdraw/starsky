@@ -274,6 +274,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
 
           {/* not more menu */}
           <button
+            type="button"
             className="item item--labels"
             data-test="menu-detail-view-labels"
             onClick={() => {
@@ -368,6 +369,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
       {details ? (
         <div className="header header--sidebar">
           <button
+            type="button"
             className="item item--close"
             data-test="menu-detail-view-close-details"
             onClick={() => {

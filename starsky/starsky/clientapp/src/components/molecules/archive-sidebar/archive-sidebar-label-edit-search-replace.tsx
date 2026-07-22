@@ -230,13 +230,14 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       {inputEnabled && select.length !== 0 ? (
         <button
           className="btn btn--default"
+          type="button"
           data-test="replace-button"
           onClick={() => pushSearchAndReplace()}
         >
           {MessageSearchAndReplaceNameLong}
         </button>
       ) : (
-        <button disabled className="btn btn--default disabled">
+        <button type={"button"} disabled className="btn btn--default disabled">
           {MessageSearchAndReplaceNameLong}
         </button>
       )}

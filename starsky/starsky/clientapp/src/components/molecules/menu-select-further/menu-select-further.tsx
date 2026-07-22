@@ -21,6 +21,7 @@ export const MenuSelectFurther: React.FunctionComponent<IMenuSelectFurtherProps>
         <div className="header header--sidebar header--border-left">
           <button
             className="item item--continue"
+            type="button"
             data-test="select-further"
             onClick={() => {
               toggleLabels(false);

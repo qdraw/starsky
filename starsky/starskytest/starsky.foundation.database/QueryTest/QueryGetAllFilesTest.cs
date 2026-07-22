@@ -98,8 +98,7 @@ public sealed class QueryGetAllFilesTest
 
 		var getAllResult = await _query.GetAllFilesAsync("/basic");
 
-		CollectionAssert.AreEqual(getAllFilesExpectedResult.Select(p => p.FilePath).ToList(),
-			getAllResult.Select(p => p.FilePath).ToList());
+		Assert.AreSequenceEqual(getAllFilesExpectedResult.Select(p => p.FilePath).ToList(), getAllResult.Select(p => p.FilePath).ToList());
 	}
 
 	[TestMethod]
@@ -143,9 +142,8 @@ public sealed class QueryGetAllFilesTest
 
 		var getAllResultSubfolder = await _query.GetAllFilesAsync("/basic/subfolder");
 
-		CollectionAssert.AreEqual(
-			getAllFilesSubFolderExpectedResult.Select(p => p.FilePath).ToList(),
-			getAllResultSubfolder.Select(p => p.FilePath).ToList());
+		Assert.AreSequenceEqual(
+			getAllFilesSubFolderExpectedResult.Select(p => p.FilePath).ToList(), getAllResultSubfolder.Select(p => p.FilePath).ToList());
 	}
 
 	[TestMethod]

@@ -18,6 +18,7 @@ const ApplicationException: FunctionComponent = () => {
       </div>
       <div className="content--subheader fade-in">
         <button
+          type={"button"}
           data-test="reload"
           className="btn btn--default"
           onClick={() => globalThis.location.reload()}

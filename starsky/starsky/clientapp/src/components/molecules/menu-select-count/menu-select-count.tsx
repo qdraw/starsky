@@ -21,6 +21,7 @@ export const MenuSelectCount: React.FunctionComponent<IMenuSelectCountProps> = (
     <>
       {select?.length === 0 ? (
         <button
+          type="button"
           data-test="selected-0"
           onClick={() => {
             removeSidebarSelection();
@@ -39,6 +40,7 @@ export const MenuSelectCount: React.FunctionComponent<IMenuSelectCountProps> = (
       {select && select.length >= 1 ? (
         <button
           data-test={`selected-${select.length}`}
+          type="button"
           onClick={() => {
             removeSidebarSelection();
           }}

@@ -47,7 +47,7 @@ public sealed class AppSettingsTest
 	public void AppSettingsProviderTest_ReadOnlyFoldersTest()
 	{
 		_appSettings.ReadOnlyFolders = new List<string> { "test" };
-		CollectionAssert.AreEqual(new List<string> { "test" }, _appSettings.ReadOnlyFolders);
+		Assert.AreSequenceEqual(new List<string> { "test" }, _appSettings.ReadOnlyFolders);
 	}
 
 
@@ -232,7 +232,7 @@ public sealed class AppSettingsTest
 		var output = appSettings.RenameListItemsToDbStyle(inputList);
 		// list of files names that are starting with a filename (and not an / or \)
 
-		CollectionAssert.AreEqual(expectedOutputList, output);
+		Assert.AreSequenceEqual(expectedOutputList, output);
 	}
 
 	[TestMethod]

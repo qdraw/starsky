@@ -27,6 +27,7 @@ export const SelectMenuItem: React.FunctionComponent<ISelectMenuItemProps> = ({
         <button
           className="item item--labels"
           data-test="menu-archive-labels"
+          type="button"
           onClick={() => toggleLabels()}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
@@ -38,6 +39,7 @@ export const SelectMenuItem: React.FunctionComponent<ISelectMenuItemProps> = ({
         </button>
       ) : (
         <button
+          type="button"
           className="item item--select"
           data-test="menu-item-select"
           onClick={() => {

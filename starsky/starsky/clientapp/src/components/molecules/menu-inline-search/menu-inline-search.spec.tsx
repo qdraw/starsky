@@ -53,11 +53,8 @@ describe("menu-inline-search", () => {
     });
 
     it("menu searchBar - blur", async () => {
-      console.log("menu searchBar - blur");
-
       jest.spyOn(React, "useEffect").mockReset();
 
-      // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
         .mockReset()
@@ -65,31 +62,23 @@ describe("menu-inline-search", () => {
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
-      let menuBar = render(<></>);
-      act(() => {
-        menuBar = render(<MenuInlineSearch />);
-      });
+      const menuBar = render(<MenuInlineSearch />);
 
-      const input = screen.queryByTestId("menu-inline-search") as HTMLInputElement;
-
-      expect(input).not.toBeNull();
+      const input = screen.getByTestId("menu-inline-search") as HTMLInputElement;
 
       act(() => {
         input.focus();
       });
 
-      expect(menuBar?.container.querySelector("label")?.classList).toContain(
+      expect(menuBar.container.querySelector("label")?.classList).toContain(
         "icon-addon--search-focus"
       );
 
-      // go to blur
       act(() => {
         input.blur();
       });
 
       expect(menuBar.container.querySelector("label")?.classList).toContain("icon-addon--search");
-
-      expect(menuBar.findByTestId("menu-inline-search-search-icon")).toBeTruthy();
 
       menuBar.unmount();
     });

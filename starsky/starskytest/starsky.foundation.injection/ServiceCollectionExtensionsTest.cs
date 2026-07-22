@@ -177,7 +177,7 @@ public class ServiceCollectionExtensionsTest
 		var result =
 			ServiceCollectionExtensions.GetExportedTypes(
 				new AssemblyTestClass(new NotSupportedException()));
-		Assert.AreEqual(Type.EmptyTypes, result);
+		Assert.AreSequenceEqual(Type.EmptyTypes, result);
 	}
 
 	[TestMethod]
@@ -186,7 +186,7 @@ public class ServiceCollectionExtensionsTest
 		var result =
 			ServiceCollectionExtensions.GetExportedTypes(
 				new AssemblyTestClass(new FileLoadException()));
-		Assert.AreEqual(Type.EmptyTypes, result);
+		Assert.AreSequenceEqual(Type.EmptyTypes, result);
 	}
 
 	[TestMethod]

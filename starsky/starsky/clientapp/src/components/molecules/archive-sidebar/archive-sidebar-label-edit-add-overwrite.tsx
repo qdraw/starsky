@@ -185,20 +185,30 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       ></FormControl>
 
       {inputEnabled && select.length !== 0 ? (
-        <button className="btn btn--info" data-test="overwrite" onClick={() => pushUpdate(false)}>
+        <button
+          type={"button"}
+          className="btn btn--info"
+          data-test="overwrite"
+          onClick={() => pushUpdate(false)}
+        >
           {MessageOverwriteName}
         </button>
       ) : (
-        <button disabled className="btn btn--info disabled">
+        <button type={"button"} disabled className="btn btn--info disabled">
           {MessageOverwriteName}
         </button>
       )}
       {inputEnabled && select.length !== 0 ? (
-        <button data-test="add" className="btn btn--default" onClick={() => pushUpdate(true)}>
+        <button
+          type={"button"}
+          data-test="add"
+          className="btn btn--default"
+          onClick={() => pushUpdate(true)}
+        >
           {MessageAddName}
         </button>
       ) : (
-        <button disabled className="btn btn--default disabled">
+        <button type={"button"} disabled className="btn btn--default disabled">
           {MessageAddName}
         </button>
       )}

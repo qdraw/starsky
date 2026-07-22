@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -249,6 +250,7 @@ public class ParseDateTimeFromFileNameHelperTests
 	}
 
 	[TestMethod]
+	[SuppressMessage("Design", "MSTEST0032:Assertion condition is always true")]
 	public void ImportIndexItemParse_Structure_Fallback()
 	{
 		_appSettings.Structure = new AppSettingsStructureModel();

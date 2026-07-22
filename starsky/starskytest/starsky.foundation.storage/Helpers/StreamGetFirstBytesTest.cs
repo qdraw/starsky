@@ -36,7 +36,7 @@ public class StreamGetFirstBytesTest
 
 		// Assert
 		var resultData = resultStream.ToArray();
-		CollectionAssert.AreEqual(new byte[] { 1, 2, 3, 4, 5 }, resultData);
+		Assert.AreSequenceEqual(new byte[] { 1, 2, 3, 4, 5 }, resultData);
 	}
 
 	[TestMethod]
@@ -92,7 +92,7 @@ public class StreamGetFirstBytesTest
 			CancellationToken.None);
 
 		// Assert
-		CollectionAssert.AreEqual(originalContent, resultContent);
+		Assert.AreSequenceEqual(originalContent, resultContent);
 	}
 
 	[TestMethod]
@@ -125,7 +125,7 @@ public class StreamGetFirstBytesTest
 
 		// Assert
 		var resultData = resultStream.ToArray();
-		CollectionAssert.AreEqual(new byte[] { 1, 2, 3, 4, 5 }, resultData);
+		Assert.AreSequenceEqual(new byte[] { 1, 2, 3, 4, 5 }, resultData);
 	}
 
 	[TestMethod]
@@ -183,7 +183,7 @@ public class StreamGetFirstBytesTest
 		resultStream.Read(resultContent, 0, resultContent.Length);
 
 		// Assert
-		CollectionAssert.AreEqual(originalContent, resultContent);
+		Assert.AreSequenceEqual(originalContent, resultContent);
 	}
 
 	public TestContext TestContext { get; set; }

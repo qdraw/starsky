@@ -166,6 +166,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
           )}
 
           <button
+            type="button"
             disabled={
               state.fileIndexItem.fileName === fileName ||
               !isFormEnabled ||

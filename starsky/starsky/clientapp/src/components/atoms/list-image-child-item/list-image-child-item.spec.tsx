@@ -23,11 +23,13 @@ describe("FlatListItem", () => {
 
   it("check if tags exist", () => {
     const data = { tags: "test" } as IFileIndexItem;
-    const component = render(<ListImageChildItem {...data} />);
 
-    expect(screen.queryAllByTestId("list-image-tags")).toBeTruthy();
-    expect(screen.queryAllByTestId("list-image-tags")[0].innerHTML).toBe("test");
+    const { unmount } = render(<ListImageChildItem {...data} />);
 
-    component.unmount();
+    const tags = screen.getByTestId("list-image-tags");
+
+    expect(tags).toHaveTextContent("test");
+
+    unmount();
   });
 });

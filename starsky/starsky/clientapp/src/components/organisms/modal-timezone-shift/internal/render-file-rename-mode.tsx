@@ -227,11 +227,12 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
 
         <div className="modal-buttons">
           {/* DO NOT Implement handleback because then you re-apply the excute-shift */}
-          <button className="btn btn--info" disabled={true}>
+          <button type="button" className="btn btn--info" disabled={true}>
             {language.key(localization.MessageBack)}
           </button>
           {/* // you can continue if errors exist but not loading or executing */}
           <button
+            type="button"
             className="btn btn--default"
             data-test="execute-rename-button"
             onClick={handleExecuteRename}
@@ -244,8 +245,3 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
     </>
   );
 };
-
-// Legacy function export for backwards compatibility
-export function renderFileRenameMode(props: IRenderFileRenameModeProps) {
-  return <FileRenameMode {...props} />;
-}

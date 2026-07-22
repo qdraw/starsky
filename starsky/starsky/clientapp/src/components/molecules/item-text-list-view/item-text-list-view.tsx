@@ -8,6 +8,7 @@ import { GetBoxClassName } from "./internal/get-box-class-name.ts";
 
 interface ItemListProps {
   fileIndexItems: IFileIndexItem[];
+
   callback?(path: string): void;
 }
 
@@ -42,6 +43,7 @@ const ItemTextListView: FunctionComponent<ItemListProps> = (props) => {
             {item.isDirectory ? (
               <button
                 data-test={"btn-" + item.fileName}
+                type={"button"}
                 onClick={() => {
                   if (!props.callback) return;
                   props.callback(item.filePath);

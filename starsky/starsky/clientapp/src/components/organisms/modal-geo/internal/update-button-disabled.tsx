@@ -13,7 +13,7 @@ export const UpdateButtonDisabled: React.FunctionComponent<IUpdateButtonActivePr
   language
 }) => {
   return (
-    <button className="btn btn--default" disabled={true}>
+    <button type="button" className="btn btn--default" disabled={true}>
       {/* disabled */}
       {!latitude && !longitude
         ? language.key(localization.MessageAddLocation)

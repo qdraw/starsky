@@ -84,13 +84,18 @@ describe("TagAutocomplete", () => {
 
   it("handles arrow navigation and enter selection", async () => {
     const onInput = jest.fn();
+
     setup({ onInput });
+
     const input = screen.getByTestId("form-control");
+
     fireEvent.focus(input);
     fireEvent.input(input, { target: { textContent: "tag" } });
+
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    fireEvent.keyDown(input, { key: "Enter" });
+
     await waitFor(() => {
-      fireEvent.keyDown(input, { key: "ArrowDown" });
-      fireEvent.keyDown(input, { key: "Enter" });
       expect(onInput).toHaveBeenCalled();
     });
   });

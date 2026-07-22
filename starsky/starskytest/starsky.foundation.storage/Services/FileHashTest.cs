@@ -25,7 +25,7 @@ public sealed class FileHashTest : VerifyBase
 		var input2 = FileHash.GenerateRandomBytes(10);
 		var test2 = FileHash.GenerateRandomBytes(0);
 		Assert.HasCount(1, test2);
-		Assert.AreNotEqual(input1, input2);
+		Assert.AreNotSequenceEqual(input1, input2);
 	}
 
 	[TestMethod]

@@ -115,6 +115,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({ state, dispatch }
 
           {!select && state.fileIndexItems.length >= 1 ? (
             <button
+              type="button"
               data-test="menu-trash-item-select"
               className="item item--select"
               onClick={() => {
