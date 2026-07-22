@@ -12,30 +12,26 @@ describe("useGlobalSettings", () => {
       hook = setupComponent.componentHook as IGlobalSettings;
     }
 
-    it("get default language", () => {
-      runHook();
-      expect(hook.language).toBe(SupportedLanguages.en);
-    });
-
-    it.each(["nl", "nl-NL", "nl-BE"])("get dutch language %s", (language) => {
+    it.each([
+      { language: "en-US", expected: SupportedLanguages.en },
+      { language: "nl", expected: SupportedLanguages.nl },
+      { language: "nl-NL", expected: SupportedLanguages.nl },
+      { language: "nl-BE", expected: SupportedLanguages.nl },
+      { language: "de", expected: SupportedLanguages.de },
+      { language: "de-DE", expected: SupportedLanguages.de },
+      { language: "de-AT", expected: SupportedLanguages.de },
+      { language: "de-BE", expected: SupportedLanguages.de },
+      { language: "de-CH", expected: SupportedLanguages.de },
+      { language: "de-IT", expected: SupportedLanguages.de },
+      { language: "de-LI", expected: SupportedLanguages.de },
+      { language: "de-LU", expected: SupportedLanguages.de }
+    ])("get language $language", ({ language, expected }) => {
       const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue(language);
 
       runHook();
 
-      expect(hook.language).toBe(SupportedLanguages.nl);
+      expect(hook.language).toBe(expected);
     });
-
-    it.each(["de", "de-DE", "de-AT", "de-BE", "de-CH", "de-IT", "de-LI", "de-LU"])(
-      "get german language %s",
-      (language) => {
-        const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-        languageGetter.mockReturnValue(language);
-
-        runHook();
-
-        expect(hook.language).toBe(SupportedLanguages.de);
-      }
-    );
   });
 });
