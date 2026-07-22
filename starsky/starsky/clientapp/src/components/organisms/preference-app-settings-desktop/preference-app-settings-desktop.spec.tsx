@@ -26,7 +26,7 @@ describe("PreferencesAppSettingsDesktop", () => {
     expect(switchButtonSpy).toHaveBeenCalled();
   });
 
-  it("should render MessageSwitchButtonDesktopApplicationDescription when appSettings.useLocalDesktop is true", () => {
+  it("should render MessageSwitchButtonDesktopApplicationDescription when appSettings.useLocalDesktop is true", async () => {
     const mockGetIConnectionDefaultAppSettings = {
       statusCode: 200,
       data: {
@@ -47,9 +47,11 @@ describe("PreferencesAppSettingsDesktop", () => {
 
     const component = render(<PreferencesAppSettingsDesktop />);
 
-    expect(
-      screen.findByTestId("preference-app-settings-desktop-use-local-desktop-true")
-    ).toBeTruthy();
+    const useLocalDesktopTrueMessage = await screen.findByTestId(
+      "preference-app-settings-desktop-use-local-desktop-true"
+    );
+
+    expect(useLocalDesktopTrueMessage).toBeTruthy();
 
     expect(useFetchSpy).toHaveBeenCalled();
     expect(useFetchSpy).toHaveBeenCalledTimes(2);
@@ -57,7 +59,7 @@ describe("PreferencesAppSettingsDesktop", () => {
     component.unmount();
   });
 
-  it("should render MessageSwitchButtonDesktopApplicationDescription when appSettings.useLocalDesktop is false", () => {
+  it("should render MessageSwitchButtonDesktopApplicationDescription when appSettings.useLocalDesktop is false", async () => {
     const mockGetIConnectionDefaultAppSettings = {
       statusCode: 200,
       data: {
@@ -78,9 +80,11 @@ describe("PreferencesAppSettingsDesktop", () => {
 
     const component = render(<PreferencesAppSettingsDesktop />);
 
-    expect(
-      screen.findByTestId("preference-app-settings-desktop-use-local-desktop-false")
-    ).toBeTruthy();
+    const useLocalDesktopFalseMessage = await screen.findByTestId(
+      "preference-app-settings-desktop-use-local-desktop-false"
+    );
+
+    expect(useLocalDesktopFalseMessage).toBeTruthy();
 
     expect(useFetchSpy).toHaveBeenCalled();
     expect(useFetchSpy).toHaveBeenCalledTimes(2);
