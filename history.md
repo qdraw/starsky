@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.21 - _(Unreleased)_ - 2026-?-? {#v0.7.21}
 
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.423 (Runtime: 8.0.29) (PR #3151)
 - [x] (Fixed) _Front-end_ Code quality improvements (PR #3119 #3118)
 
 ## version 0.7.20 - 2026-06-10 {#v0.7.20}
