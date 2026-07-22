@@ -26,76 +26,26 @@ describe("PreferencesAppSettingsDesktop", () => {
     expect(switchButtonSpy).toHaveBeenCalled();
   });
 
-  it("should render MessageSwitchButtonDesktopApplicationDescription when appSettings.useLocalDesktop is true", async () => {
-    const mockGetIConnectionDefaultAppSettings = {
-      statusCode: 200,
-      data: {
+  it.each([
+    {
+      description: "render useLocalDesktop true message",
+      appSettings: {
         useLocalDesktop: true,
         defaultDesktopEditor: []
-      }
-    } as IConnectionDefault;
-
-    const mockGetIConnectionDefaultPermissions = {
-      statusCode: 200,
-      data: null
-    } as IConnectionDefault;
-    const useFetchSpy = jest
-      .spyOn(useFetch, "default")
-      .mockReset()
-      .mockImplementationOnce(() => mockGetIConnectionDefaultAppSettings)
-      .mockImplementationOnce(() => mockGetIConnectionDefaultPermissions);
-
-    const component = render(<PreferencesAppSettingsDesktop />);
-
-    const useLocalDesktopTrueMessage = await screen.findByTestId(
-      "preference-app-settings-desktop-use-local-desktop-true"
-    );
-
-    expect(useLocalDesktopTrueMessage).toBeTruthy();
-
-    expect(useFetchSpy).toHaveBeenCalled();
-    expect(useFetchSpy).toHaveBeenCalledTimes(2);
-
-    component.unmount();
-  });
-
-  it("should render MessageSwitchButtonDesktopApplicationDescription when appSettings.useLocalDesktop is false", async () => {
-    const mockGetIConnectionDefaultAppSettings = {
-      statusCode: 200,
-      data: {
+      },
+      expectedTestId: "preference-app-settings-desktop-use-local-desktop-true"
+    },
+    {
+      description: "render useLocalDesktop false message",
+      appSettings: {
         useLocalDesktop: false,
         defaultDesktopEditor: []
-      }
-    } as IConnectionDefault;
-
-    const mockGetIConnectionDefaultPermissions = {
-      statusCode: 200,
-      data: null
-    } as IConnectionDefault;
-    const useFetchSpy = jest
-      .spyOn(useFetch, "default")
-      .mockReset()
-      .mockImplementationOnce(() => mockGetIConnectionDefaultAppSettings)
-      .mockImplementationOnce(() => mockGetIConnectionDefaultPermissions);
-
-    const component = render(<PreferencesAppSettingsDesktop />);
-
-    const useLocalDesktopFalseMessage = await screen.findByTestId(
-      "preference-app-settings-desktop-use-local-desktop-false"
-    );
-
-    expect(useLocalDesktopFalseMessage).toBeTruthy();
-
-    expect(useFetchSpy).toHaveBeenCalled();
-    expect(useFetchSpy).toHaveBeenCalledTimes(2);
-
-    component.unmount();
-  });
-
-  it("get application path from useFetch and display", () => {
-    const mockGetIConnectionDefaultAppSettings = {
-      statusCode: 200,
-      data: {
+      },
+      expectedTestId: "preference-app-settings-desktop-use-local-desktop-false"
+    },
+    {
+      description: "display application path from useFetch",
+      appSettings: {
         useLocalDesktop: true,
         defaultDesktopEditor: [
           {
@@ -103,12 +53,20 @@ describe("PreferencesAppSettingsDesktop", () => {
             imageFormats: [ImageFormat.tiff]
           }
         ]
-      } as unknown as IAppSettings
+      } as unknown as IAppSettings,
+      expectedApplicationPath: "/test"
+    }
+  ])("should $description", async ({ appSettings, expectedTestId, expectedApplicationPath }) => {
+    const mockGetIConnectionDefaultAppSettings = {
+      statusCode: 200,
+      data: appSettings
     } as IConnectionDefault;
 
-    const formControlSpy = jest.spyOn(FormControl, "default").mockImplementationOnce(() => {
-      return <></>;
-    });
+    const formControlSpy = expectedApplicationPath
+      ? jest.spyOn(FormControl, "default").mockImplementationOnce(() => {
+          return <></>;
+        })
+      : undefined;
 
     const mockGetIConnectionDefaultPermissions = {
       statusCode: 200,
@@ -122,17 +80,25 @@ describe("PreferencesAppSettingsDesktop", () => {
 
     const component = render(<PreferencesAppSettingsDesktop />);
 
-    expect(formControlSpy).toHaveBeenCalled();
-    expect(formControlSpy).toHaveBeenCalledWith(
-      {
-        children: "/test",
-        contentEditable: false,
-        name: "tags",
-        onBlur: expect.anything(),
-        spellcheck: true
-      },
-      undefined
-    );
+    if (expectedTestId) {
+      await waitFor(() => {
+        expect(screen.getByTestId(expectedTestId)).toBeTruthy();
+      });
+    }
+
+    if (expectedApplicationPath) {
+      expect(formControlSpy).toHaveBeenCalled();
+      expect(formControlSpy).toHaveBeenCalledWith(
+        {
+          children: expectedApplicationPath,
+          contentEditable: false,
+          name: "tags",
+          onBlur: expect.anything(),
+          spellcheck: true
+        },
+        undefined
+      );
+    }
 
     expect(useFetchSpy).toHaveBeenCalled();
     expect(useFetchSpy).toHaveBeenCalledTimes(2);
