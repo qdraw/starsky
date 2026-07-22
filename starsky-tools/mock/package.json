@@ -1,6 +1,6 @@
 {
   "name": "mock",
-  "version": "0.7.20",
+  "version": "0.7.21",
   "description": "",
   "main": "mock.js",
   "scripts": {
