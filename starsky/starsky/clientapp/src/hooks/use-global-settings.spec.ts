@@ -17,27 +17,9 @@ describe("useGlobalSettings", () => {
       expect(hook.language).toBe(SupportedLanguages.en);
     });
 
-    it("get dutch language nl", () => {
+    it.each(["nl", "nl-NL", "nl-BE"])("get dutch language %s", (language) => {
       const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("nl");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.nl);
-    });
-
-    it("get dutch language nl-NL", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("nl-NL");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.nl);
-    });
-
-    it("get dutch language nl-BE", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("nl-BE");
+      languageGetter.mockReturnValue(language);
 
       runHook();
 
