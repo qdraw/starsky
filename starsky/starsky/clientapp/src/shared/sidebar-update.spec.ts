@@ -65,6 +65,7 @@ describe("url-path", () => {
       );
       expect(result).toStrictEqual({ replaceTitle: "test" });
     });
+
   });
   describe("Change", () => {
     it("no field name should return null", () => {
@@ -116,11 +117,20 @@ describe("url-path", () => {
       expect(result).toBeFalsy();
     });
 
-    it.each([
-      { description: "tags input", input: { tags: "t" } as ISidebarUpdate },
-      { description: "title input", input: { title: "t" } as ISidebarUpdate },
-      { description: "description input", input: { description: "t" } as ISidebarUpdate }
-    ])("$description", ({ input }) => {
+    it("tags input", () => {
+      const input = { tags: "t" } as ISidebarUpdate;
+      const result = sidebarUpdate.IsFormUsed(input);
+      expect(result).toBeTruthy();
+    });
+
+    it("title input", () => {
+      const input = { title: "t" } as ISidebarUpdate;
+      const result = sidebarUpdate.IsFormUsed(input);
+      expect(result).toBeTruthy();
+    });
+
+    it("description input", () => {
+      const input = { description: "t" } as ISidebarUpdate;
       const result = sidebarUpdate.IsFormUsed(input);
       expect(result).toBeTruthy();
     });
