@@ -26,76 +26,16 @@ describe("useGlobalSettings", () => {
       expect(hook.language).toBe(SupportedLanguages.nl);
     });
 
-    it("get german language de", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de");
+    it.each(["de", "de-DE", "de-AT", "de-BE", "de-CH", "de-IT", "de-LI", "de-LU"])(
+      "get german language %s",
+      (language) => {
+        const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
+        languageGetter.mockReturnValue(language);
 
-      runHook();
+        runHook();
 
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-de", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-DE");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-AT", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-AT");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-BE", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-BE");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-CH", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-CH");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-IT", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-IT");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-LI", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-LI");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-LU", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-LU");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
+        expect(hook.language).toBe(SupportedLanguages.de);
+      }
+    );
   });
 });
