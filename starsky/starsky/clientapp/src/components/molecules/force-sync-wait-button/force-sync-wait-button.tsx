@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { ArchiveAction } from "../../../contexts/archive-context";
+import React, {useEffect, useState} from "react";
+import {ArchiveAction} from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import { IArchiveProps } from "../../../interfaces/IArchiveProps";
-import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import {IArchiveProps} from "../../../interfaces/IArchiveProps";
+import {IConnectionDefault} from "../../../interfaces/IConnectionDefault";
 import localization from "../../../localization/localization.json";
-import { CastToInterface } from "../../../shared/cast-to-interface";
+import {CastToInterface} from "../../../shared/cast-to-interface";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import { FileListCache } from "../../../shared/filelist-cache";
-import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url/url-path";
-import { UrlQuery } from "../../../shared/url/url-query";
+import {FileListCache} from "../../../shared/filelist-cache";
+import {Language} from "../../../shared/language";
+import {URLPath} from "../../../shared/url/url-path";
+import {UrlQuery} from "../../../shared/url/url-query";
 import Preloader from "../../atoms/preloader/preloader";
 
 type ForceSyncWaitButtonPropTypes = {
@@ -37,11 +37,11 @@ const ForceSyncWaitTime = 5000;
  * @param param0 where to fetch to, dispatch and callback to close
  */
 export async function ForceSyncRequestNewContent({
-  historyLocationSearch,
-  dispatch,
-  callback,
-  setIsLoading
-}: ForceSyncRequestNewContentPropTypes): Promise<void> {
+                                                   historyLocationSearch,
+                                                   dispatch,
+                                                   callback,
+                                                   setIsLoading
+                                                 }: ForceSyncRequestNewContentPropTypes): Promise<void> {
   const url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl(historyLocationSearch));
   FetchGet(url).then((connectionResult) => {
     if (connectionResult.statusCode !== 200) {
@@ -53,7 +53,7 @@ export async function ForceSyncRequestNewContent({
     const forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
     const payload = forceSyncResult.data as IArchiveProps;
     if (payload.fileIndexItems) {
-      dispatch({ type: "force-reset", payload });
+      dispatch({type: "force-reset", payload});
     }
     setIsLoading(false);
     callback();
@@ -61,14 +61,14 @@ export async function ForceSyncRequestNewContent({
 }
 
 const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes> = ({
-  propsParentFolder,
-  historyLocationSearch,
-  callback,
-  dispatch,
-  isShortLabel = false,
-  className = "btn btn--default",
-  dataTest = "force-sync"
-}) => {
+                                                                                      propsParentFolder,
+                                                                                      historyLocationSearch,
+                                                                                      callback,
+                                                                                      dispatch,
+                                                                                      isShortLabel = false,
+                                                                                      className = "btn btn--default",
+                                                                                      dataTest = "force-sync"
+                                                                                    }) => {
   function forceSync(): Promise<IConnectionDefault> {
     const parentFolder = propsParentFolder ?? "/";
     setIsLoading(true);
@@ -119,8 +119,9 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
 
   return (
     <>
-      {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
-      <button className={className} data-test={dataTest} onClick={() => startForceSync()}>
+      {isLoading ? <Preloader isWhite={false} isOverlay={true}/> : ""}
+      <button type={"button"} className={className} data-test={dataTest}
+              onClick={() => startForceSync()}>
         {label}
       </button>
     </>

@@ -1,22 +1,22 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { ArchiveContext } from "../../../contexts/archive-context";
+import React, {useContext, useEffect, useRef, useState} from "react";
+import {ArchiveContext} from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../../hooks/use-location/use-location";
-import { IExifStatus } from "../../../interfaces/IExifStatus";
-import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
+import {IExifStatus} from "../../../interfaces/IExifStatus";
+import {ISidebarUpdate} from "../../../interfaces/ISidebarUpdate";
 import localization from "../../../localization/localization.json";
-import { CastToInterface } from "../../../shared/cast-to-interface";
+import {CastToInterface} from "../../../shared/cast-to-interface";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import { FileListCache } from "../../../shared/filelist-cache";
-import { Keyboard } from "../../../shared/keyboard/keyboard";
-import { Language } from "../../../shared/language";
-import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
-import { SidebarUpdate } from "../../../shared/sidebar-update";
-import { URLPath } from "../../../shared/url/url-path";
-import { UrlQuery } from "../../../shared/url/url-query";
+import {FileListCache} from "../../../shared/filelist-cache";
+import {Keyboard} from "../../../shared/keyboard/keyboard";
+import {Language} from "../../../shared/language";
+import {ClearSearchCache} from "../../../shared/search/clear-search-cache";
+import {SidebarUpdate} from "../../../shared/sidebar-update";
+import {URLPath} from "../../../shared/url/url-path";
+import {UrlQuery} from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
-import Notification, { NotificationType } from "../../atoms/notification/notification";
+import Notification, {NotificationType} from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
 import Tooltip from "../../atoms/tooltip/tooltip";
 import TagAutocomplete from "../tag-autocomplete/tag-autocomplete";
@@ -38,7 +38,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
 
   const history = useLocation();
   // eslint-disable-next-line prefer-const
-  let { state, dispatch } = useContext(ArchiveContext);
+  let {state, dispatch} = useContext(ArchiveContext);
 
   // state without any context
   state = new CastToInterface().UndefinedIArchiveReadonly(state);
@@ -152,7 +152,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         </Notification>
       )}
 
-      {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
+      {isLoading ? <Preloader isWhite={false} isOverlay={false}/> : ""}
 
       <h4>
         {MessageTagsWithColon}
@@ -185,20 +185,22 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       ></FormControl>
 
       {inputEnabled && select.length !== 0 ? (
-        <button className="btn btn--info" data-test="overwrite" onClick={() => pushUpdate(false)}>
+        <button type={"button"} className="btn btn--info" data-test="overwrite"
+                onClick={() => pushUpdate(false)}>
           {MessageOverwriteName}
         </button>
       ) : (
-        <button disabled className="btn btn--info disabled">
+        <button type={"button"} disabled className="btn btn--info disabled">
           {MessageOverwriteName}
         </button>
       )}
       {inputEnabled && select.length !== 0 ? (
-        <button data-test="add" className="btn btn--default" onClick={() => pushUpdate(true)}>
+        <button type={"button"} data-test="add" className="btn btn--default"
+                onClick={() => pushUpdate(true)}>
           {MessageAddName}
         </button>
       ) : (
-        <button disabled className="btn btn--default disabled">
+        <button type={"button"} disabled className="btn btn--default disabled">
           {MessageAddName}
         </button>
       )}

@@ -1,20 +1,21 @@
-import { useState } from "react";
+import {useState} from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import {IArchiveProps} from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url/url-path";
-import { UrlQuery } from "../../../shared/url/url-query";
+import {Language} from "../../../shared/language";
+import {URLPath} from "../../../shared/url/url-path";
+import {UrlQuery} from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
 
 interface IModalDesktopEditorOpenConfirmationProps {
   isOpen: boolean;
   select: Array<string> | undefined;
-  handleExit(): void;
   state: IArchiveProps;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   isCollections: boolean;
+
+  handleExit(): void;
 }
 
 export async function OpenDesktop(
@@ -43,7 +44,7 @@ export async function OpenDesktop(
 
 const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
   IModalDesktopEditorOpenConfirmationProps
-> = ({ select, handleExit, isOpen, state, isCollections }) => {
+> = ({select, handleExit, isOpen, state, isCollections}) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -80,7 +81,7 @@ const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
           <p>{MessageDesktopEditorConfirmationIntroText}</p>
           {isError ? (
             <>
-              <br />
+              <br/>
               <div data-test="editor-open-error" className="warning-box">
                 {isError}
               </div>
@@ -88,6 +89,7 @@ const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
           ) : null}
 
           <button
+            type="button"
             data-test="editor-open-confirmation-no"
             onClick={() => handleExit()}
             className="btn btn--info"
@@ -95,6 +97,7 @@ const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
             {MessageCancel}
           </button>
           <button
+            type="button"
             onClick={() => {
               OpenDesktop(
                 select ?? [],

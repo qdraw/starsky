@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import Portal, { PortalId } from "../portal/portal";
+import {useEffect} from "react";
+import Portal, {PortalId} from "../portal/portal";
 
 type NotificationPropTypes = {
   children?: React.ReactNode;
@@ -19,11 +19,11 @@ export enum NotificationType {
 }
 
 const Notification: React.FunctionComponent<NotificationPropTypes> = ({
-  children,
-  type,
-  callback,
-  autoRemoveTimeout = -1
-}) => {
+                                                                        children,
+                                                                        type,
+                                                                        callback,
+                                                                        autoRemoveTimeout = -1
+                                                                      }) => {
   useEffect(() => {
     if (autoRemoveTimeout <= 0) {
       return;
@@ -48,11 +48,12 @@ const Notification: React.FunctionComponent<NotificationPropTypes> = ({
   return (
     <Portal>
       <div className={`notification notification--${type}`}>
-        <div className="icon icon--error" />
+        <div className="icon icon--error"/>
         <div data-test="notification-content" className="content">
           {children}
         </div>
-        <button data-test="notification-close" className="icon icon--close" onClick={close} />
+        <button type={"button"} data-test="notification-close" className="icon icon--close"
+                onClick={close}/>
       </div>
     </Portal>
   );

@@ -1,19 +1,20 @@
-import { fireEvent, screen, waitFor } from "@testing-library/dom";
-import { render } from "@testing-library/react";
+import {fireEvent, screen, waitFor} from "@testing-library/dom";
+import {render} from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
-import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
+import {IConnectionDefault} from "../../../interfaces/IConnectionDefault";
+import {IEnvFeatures} from "../../../interfaces/IEnvFeatures";
 import localization from "../../../localization/localization.json";
-import { Language } from "../../../shared/language";
+import {Language} from "../../../shared/language";
 import * as Notification from "../../atoms/notification/notification";
-import MenuOptionDesktopEditorOpenSelectionNoSelectWarning from "./menu-option-desktop-editor-open-selection-no-select-warning";
+import MenuOptionDesktopEditorOpenSelectionNoSelectWarning
+  from "./menu-option-desktop-editor-open-selection-no-select-warning";
 
 describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
   it("should render without crashing", () => {
     const item = render(
-      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false} />
+      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false}/>
     );
 
     expect(item).toBeTruthy();
@@ -24,9 +25,9 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
       return <p data-test="notification-spy">{event.children}</p>;
     });
 
-    render(<MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false} />);
+    render(<MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false}/>);
 
-    fireEvent.keyDown(window, { key: "e", ctrlKey: true });
+    fireEvent.keyDown(window, {key: "e", ctrlKey: true});
 
     waitFor(() => {
       expect(notificationSpy).toHaveBeenCalledTimes(1);
@@ -41,22 +42,22 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
     });
 
     render(
-      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={["item"]} isReadOnly={false} />
+      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={["item"]} isReadOnly={false}/>
     );
-    fireEvent.keyDown(window, { key: "e", ctrlKey: true });
+    fireEvent.keyDown(window, {key: "e", ctrlKey: true});
     expect(notificationSpy).toHaveBeenCalledTimes(0);
 
     expect(screen.queryByTestId("notification-spy")).toBeFalsy();
   });
 
   it("should not show error notification when read-only mode is enabled", () => {
-    render(<MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={true} />);
+    render(<MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={true}/>);
 
     const notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce((event) => {
       return <p data-test="notification-spy">{event.children}</p>;
     });
 
-    fireEvent.keyDown(window, { key: "e", ctrlKey: true });
+    fireEvent.keyDown(window, {key: "e", ctrlKey: true});
     expect(notificationSpy).toHaveBeenCalledTimes(0);
 
     expect(screen.queryByTestId("notification-spy")).toBeFalsy();
@@ -80,10 +81,10 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
     });
 
     const component = render(
-      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false} />
+      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false}/>
     );
 
-    fireEvent.keyDown(component.container, { key: "e", ctrlKey: true });
+    fireEvent.keyDown(component.container, {key: "e", ctrlKey: true});
 
     expect(screen.queryByTestId("notification-spy")).toBeFalsy();
 
@@ -106,9 +107,11 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle)
       .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle);
 
-    const notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce((event) => {
-      return <p data-test="notification-spy">{event.children}</p>;
-    });
+    const notificationSpy = jest
+      .spyOn(Notification, "default")
+      .mockImplementationOnce((event) => {
+        return <p data-test="notification-spy">{event.children}</p>;
+      });
 
     const useHotKeysSpy = jest
       .spyOn(useHotKeys, "default")
@@ -121,25 +124,26 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
 
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageItemSelectionRequired = language.key(localization.MessageItemSelectionAdvised);
-
-    const component = render(
-      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false} />
+    const MessageItemSelectionRequired = language.key(
+      localization.MessageItemSelectionAdvised
     );
 
-    fireEvent.keyDown(component.container, { key: "e", ctrlKey: true });
+    const component = render(
+      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning
+        select={[]}
+        isReadOnly={false}
+      />
+    );
 
-    expect(screen.queryByTestId("notification-spy")).toBeTruthy();
+    fireEvent.keyDown(component.container, {key: "e", ctrlKey: true});
 
-    const errorMessage = screen.queryByTestId("notification-spy")?.innerHTML;
+    const notification = screen.getByTestId("notification-spy");
 
-    expect(errorMessage).toBe(MessageItemSelectionRequired);
-
-    expect(screen.queryByTestId("notification-spy")?.innerHTML).toBeTruthy();
+    expect(notification).toBeInTheDocument();
+    expect(notification).toHaveTextContent(MessageItemSelectionRequired);
 
     expect(notificationSpy).toHaveBeenCalledTimes(1);
     expect(useHotKeysSpy).toHaveBeenCalledTimes(2);
-
     expect(useFetchSpy).toHaveBeenCalled();
   });
 
@@ -180,31 +184,30 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
 
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageItemSelectionRequired = language.key(localization.MessageItemSelectionAdvised);
-
-    const component = render(
-      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false} />
+    const MessageItemSelectionRequired = language.key(
+      localization.MessageItemSelectionAdvised
     );
 
-    fireEvent.keyDown(component.container, { key: "e", ctrlKey: true });
+    const component = render(
+      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning
+        select={[]}
+        isReadOnly={false}
+      />
+    );
 
-    expect(screen.queryByTestId("notification-spy")).toBeTruthy();
+    fireEvent.keyDown(component.container, {key: "e", ctrlKey: true});
 
-    const errorMessage = screen.queryByTestId("notification-spy")?.innerHTML;
+    const notification = screen.getByTestId("notification-spy");
 
-    expect(errorMessage).toBe(MessageItemSelectionRequired);
-
-    expect(screen.queryByTestId("notification-spy")?.innerHTML).toBeTruthy();
+    expect(notification).toBeInTheDocument();
+    expect(notification).toHaveTextContent(MessageItemSelectionRequired);
 
     expect(notificationSpy).toHaveBeenCalledTimes(1);
     expect(useHotKeysSpy).toHaveBeenCalledTimes(2);
-
     expect(useFetchSpy).toHaveBeenCalled();
 
     fireEvent.click(screen.getByTestId("notification-spy-button"));
 
-    const errorMessage2 = screen.queryByTestId("notification-spy")?.innerHTML;
-
-    expect(errorMessage2).toBeUndefined();
+    expect(screen.queryByTestId("notification-spy")).not.toBeInTheDocument();
   });
 });

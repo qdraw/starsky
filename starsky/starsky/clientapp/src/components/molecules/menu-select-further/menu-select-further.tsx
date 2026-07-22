@@ -1,6 +1,6 @@
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
-import { Language } from "../../../shared/language";
+import {Language} from "../../../shared/language";
 
 interface IMenuSelectFurtherProps {
   select?: string[];
@@ -8,9 +8,9 @@ interface IMenuSelectFurtherProps {
 }
 
 export const MenuSelectFurther: React.FunctionComponent<IMenuSelectFurtherProps> = ({
-  select,
-  toggleLabels
-}) => {
+                                                                                      select,
+                                                                                      toggleLabels
+                                                                                    }) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageSelectFurther = language.key(localization.MessageSelectFurther);
@@ -21,6 +21,7 @@ export const MenuSelectFurther: React.FunctionComponent<IMenuSelectFurtherProps>
         <div className="header header--sidebar header--border-left">
           <button
             className="item item--continue"
+            type="button"
             data-test="select-further"
             onClick={() => {
               toggleLabels(false);

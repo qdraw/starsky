@@ -1,15 +1,19 @@
 import L from "leaflet";
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import useLocation from "../../../hooks/use-location/use-location";
-import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import { Coordinates } from "../../../shared/coordinates-position.types";
+import {IConnectionDefault} from "../../../interfaces/IConnectionDefault";
+import {Coordinates} from "../../../shared/coordinates-position.types";
 import FetchXml from "../../../shared/fetch/fetch-xml";
-import { Geo } from "../../../shared/geo";
-import { LeafletEmptyImageUrlGridLayer } from "../../../shared/leaflet/leaflet-modify-empty-image-url-gridlayer";
-import { LeafletEmptyImageUrlTileLayer } from "../../../shared/leaflet/leaflet-modify-empty-image-url-tilelayer";
-import { TileLayerAttribution, TileLayerLocation } from "../../../shared/tile-layer-location.const";
-import { URLPath } from "../../../shared/url/url-path";
-import { UrlQuery } from "../../../shared/url/url-query";
+import {Geo} from "../../../shared/geo";
+import {
+  LeafletEmptyImageUrlGridLayer
+} from "../../../shared/leaflet/leaflet-modify-empty-image-url-gridlayer";
+import {
+  LeafletEmptyImageUrlTileLayer
+} from "../../../shared/leaflet/leaflet-modify-empty-image-url-tilelayer";
+import {TileLayerAttribution, TileLayerLocation} from "../../../shared/tile-layer-location.const";
+import {URLPath} from "../../../shared/url/url-path";
+import {UrlQuery} from "../../../shared/url/url-query";
 import MarkerBlueSvg from "../../../style/images/fa-map-marker-blue.svg";
 import MarkerShadowPng from "../../../style/images/marker-shadow.png";
 import CurrentLocationButton from "../../atoms/current-location-button/current-location-button";
@@ -82,13 +86,13 @@ const DetailViewGpx: React.FC = () => {
     const firstTrack = tracks[0];
     const lastTrack = tracks.at(-1);
 
-    L.marker(tracks[0], { title: "gpx", icon: blueIcon }).addTo(map);
+    L.marker(tracks[0], {title: "gpx", icon: blueIcon}).addTo(map);
 
     if (lastTrack && new Geo().Distance(firstTrack, lastTrack) >= 500) {
-      L.marker(lastTrack, { icon: blueIcon }).addTo(map);
+      L.marker(lastTrack, {icon: blueIcon}).addTo(map);
     }
 
-    L.polyline(tracks, { color: "#455A64", fill: false }).addTo(map);
+    L.polyline(tracks, {color: "#455A64", fill: false}).addTo(map);
     setMapState(map);
   }
 
@@ -157,12 +161,13 @@ const DetailViewGpx: React.FC = () => {
 
   return (
     <>
-      {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
-      <div className="main main--error main--gpx" ref={mapReference} />
+      {isLoading ? <Preloader isWhite={false} isOverlay={false}/> : ""}
+      <div className="main main--error main--gpx" ref={mapReference}/>
       <div className="gpx-controls">
         <div className="gpx-controls--button">
           <button
             data-test="lock"
+            type="button"
             className={isMapLocked ? "icon icon--lock" : "icon icon--lock_open"}
             onClick={unLockLockToggle}
           >
@@ -170,12 +175,14 @@ const DetailViewGpx: React.FC = () => {
           </button>
         </div>
         <div className="gpx-controls--button">
-          <button data-test="zoom_in" className="icon icon--zoom_in" onClick={zoomIn}>
+          <button type={"button"} data-test="zoom_in" className="icon icon--zoom_in"
+                  onClick={zoomIn}>
             Zoom in
           </button>
         </div>
         <div className="gpx-controls--button">
-          <button data-test="zoom_out" className="icon icon--zoom_out" onClick={zoomOut}>
+          <button type={"button"} data-test="zoom_out" className="icon icon--zoom_out"
+                  onClick={zoomOut}>
             Zoom out
           </button>
         </div>

@@ -1,6 +1,6 @@
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
-import { Language } from "../../../shared/language";
+import {Language} from "../../../shared/language";
 
 interface IMenuSelectCountProps {
   select?: string[];
@@ -8,9 +8,9 @@ interface IMenuSelectCountProps {
 }
 
 export const MenuSelectCount: React.FunctionComponent<IMenuSelectCountProps> = ({
-  select,
-  removeSidebarSelection
-}) => {
+                                                                                  select,
+                                                                                  removeSidebarSelection
+                                                                                }) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageNoneSelected = language.key(localization.MessageNoneSelected);
@@ -21,6 +21,7 @@ export const MenuSelectCount: React.FunctionComponent<IMenuSelectCountProps> = (
     <>
       {select?.length === 0 ? (
         <button
+          type="button"
           data-test="selected-0"
           onClick={() => {
             removeSidebarSelection();
@@ -39,6 +40,7 @@ export const MenuSelectCount: React.FunctionComponent<IMenuSelectCountProps> = (
       {select && select.length >= 1 ? (
         <button
           data-test={`selected-${select.length}`}
+          type="button"
           onClick={() => {
             removeSidebarSelection();
           }}

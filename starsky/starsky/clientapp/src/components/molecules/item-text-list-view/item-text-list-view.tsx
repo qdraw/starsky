@@ -1,13 +1,14 @@
-import { FunctionComponent } from "react";
+import {FunctionComponent} from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import { IExifStatus } from "../../../interfaces/IExifStatus";
-import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import {IExifStatus} from "../../../interfaces/IExifStatus";
+import {IFileIndexItem} from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
-import { Language } from "../../../shared/language";
-import { GetBoxClassName } from "./internal/get-box-class-name.ts";
+import {Language} from "../../../shared/language";
+import {GetBoxClassName} from "./internal/get-box-class-name.ts";
 
 interface ItemListProps {
   fileIndexItems: IFileIndexItem[];
+
   callback?(path: string): void;
 }
 
@@ -42,6 +43,7 @@ const ItemTextListView: FunctionComponent<ItemListProps> = (props) => {
             {item.isDirectory ? (
               <button
                 data-test={"btn-" + item.fileName}
+                type={"button"}
                 onClick={() => {
                   if (!props.callback) return;
                   props.callback(item.filePath);

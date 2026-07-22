@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
-import { Orientation } from "../../../interfaces/IFileIndexItem";
-import { OnLoadMouseAction } from "./on-load-mouse-action";
-import { OnMouseDownMouseAction } from "./on-mouse-down-mouse-action";
-import { OnMoveMouseTouchAction } from "./on-move-mouse-touch-action";
-import { OnWheelMouseAction } from "./on-wheel-mouse-action";
+import {Orientation} from "../../../interfaces/IFileIndexItem";
+import {OnLoadMouseAction} from "./on-load-mouse-action";
+import {OnMouseDownMouseAction} from "./on-mouse-down-mouse-action";
+import {OnMoveMouseTouchAction} from "./on-move-mouse-touch-action";
+import {OnWheelMouseAction} from "./on-wheel-mouse-action";
 
 export interface IPanAndZoomImage {
   src: string;
@@ -34,7 +34,7 @@ export type PositionObject = {
  * @see: jkettmann.com/jr-to-sr-refactoring-react-pan-and-zoom-image-component
  * @param param0:  IPanAndZoomImage
  */
-const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
+const PanAndZoomImage = ({src, id, alt, ...props}: IPanAndZoomImage) => {
   const [panning, setPanning] = useState(false);
   const [image, setImage] = useState({} as ImageObject);
 
@@ -104,11 +104,11 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
   }
 
   // zoom in
-  useHotKeys({ key: "=", ctrlKeyOrMetaKey: true }, zoomIn, []);
+  useHotKeys({key: "=", ctrlKeyOrMetaKey: true}, zoomIn, []);
   // zoom out
-  useHotKeys({ key: "-", ctrlKeyOrMetaKey: true }, zoomOut, []);
+  useHotKeys({key: "-", ctrlKeyOrMetaKey: true}, zoomOut, []);
   // and reset
-  useHotKeys({ key: "0", ctrlKeyOrMetaKey: true }, reset, []);
+  useHotKeys({key: "0", ctrlKeyOrMetaKey: true}, reset, []);
 
   let className = "pan-zoom-image-container";
   if (position.z !== 1) {
@@ -118,6 +118,7 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
   return (
     <>
       <button
+        type="button"
         className={className}
         data-test="pan-zoom-image"
         ref={containerRef}
@@ -171,6 +172,7 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
         <div className="gpx-controls--button">
           <button
             title={"Zoom out"}
+            type={"button"}
             data-test="zoom_out"
             className="icon icon--zoom_out"
             onClick={() => zoomOut()}
@@ -182,6 +184,7 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
           <button
             disabled={position.z === 1}
             data-test="zoom_reset"
+            type={"button"}
             title={"Reset zoom"}
             className={"icon icon--zoom_reset"}
             onClick={() => reset()}

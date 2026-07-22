@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { UrlQuery } from "../../../shared/url/url-query";
+import React, {useEffect, useState} from "react";
+import {UrlQuery} from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 
 interface ITagAutocompleteProps {
@@ -12,9 +12,10 @@ interface ITagAutocompleteProps {
     event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
   ) => void;
   children?: React.ReactNode;
-  onBlur?(event: React.ChangeEvent<HTMLDivElement>): void;
   maxlength?: number;
   "data-test"?: string;
+
+  onBlur?(event: React.ChangeEvent<HTMLDivElement>): void;
 }
 
 function normalizeTagText(value: string): string {
@@ -123,7 +124,7 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
     const timeout = setTimeout(() => {
       const url = `${new UrlQuery().UrlSearchSuggestApi(encodeURIComponent(query), false)}`;
 
-      fetch(url, { signal: controller.signal })
+      fetch(url, {signal: controller.signal})
         .then((response) => response.json())
         .then((data) => {
           if (Array.isArray(data)) {
@@ -169,6 +170,7 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
           {tagSuggest.map((suggestion, index) => (
             <button
               key={suggestion}
+              type="button"
               data-selected={index === tagKeyDownIndex}
               className={
                 index === tagKeyDownIndex

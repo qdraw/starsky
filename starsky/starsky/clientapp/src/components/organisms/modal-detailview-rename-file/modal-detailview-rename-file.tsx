@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
+import React, {useEffect} from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
-import { IDetailView, newDetailView } from "../../../interfaces/IDetailView";
-import { IExifStatus } from "../../../interfaces/IExifStatus";
-import { newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import {IDetailView, newDetailView} from "../../../interfaces/IDetailView";
+import {IExifStatus} from "../../../interfaces/IExifStatus";
+import {newIFileIndexItem} from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import { FileExtensions } from "../../../shared/file-extensions";
-import { FileListCache } from "../../../shared/filelist-cache";
-import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url/url-query";
+import {FileExtensions} from "../../../shared/file-extensions";
+import {FileListCache} from "../../../shared/filelist-cache";
+import {Language} from "../../../shared/language";
+import {UrlQuery} from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
@@ -20,9 +20,9 @@ interface IModalRenameFileProps {
 }
 
 const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = ({
-  state,
-  ...props
-}) => {
+                                                                                     state,
+                                                                                     ...props
+                                                                                   }) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -135,7 +135,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
       filePathAfterChange
     );
 
-    history.navigate(replacePath, { replace: true });
+    history.navigate(replacePath, {replace: true});
 
     // Close window
     props.handleExit();
@@ -166,6 +166,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
           )}
 
           <button
+            type="button"
             disabled={
               state.fileIndexItem.fileName === fileName ||
               !isFormEnabled ||

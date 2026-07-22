@@ -1,13 +1,13 @@
-import { screen } from "@testing-library/dom";
-import { render } from "@testing-library/react";
-import { act, JSX } from "react";
-import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import { IDetailView, PageType } from "../../../interfaces/IDetailView";
-import { IExifStatus } from "../../../interfaces/IExifStatus";
-import { Orientation } from "../../../interfaces/IFileIndexItem";
+import {screen} from "@testing-library/dom";
+import {render} from "@testing-library/react";
+import {act, JSX} from "react";
+import {IConnectionDefault} from "../../../interfaces/IConnectionDefault";
+import {IDetailView, PageType} from "../../../interfaces/IDetailView";
+import {IExifStatus} from "../../../interfaces/IExifStatus";
+import {Orientation} from "../../../interfaces/IFileIndexItem";
 import * as DetectAutomaticRotation from "../../../shared/detect-automatic-rotation";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
-import { UrlQuery } from "../../../shared/url/url-query";
+import {UrlQuery} from "../../../shared/url/url-query";
 import FileHashImage from "./file-hash-image";
 import * as PanAndZoomImage from "./pan-and-zoom-image";
 
@@ -19,7 +19,7 @@ describe("FileHashImage", () => {
   });
 
   it("renders", () => {
-    const item = render(<FileHashImage fileHash={""} />);
+    const item = render(<FileHashImage fileHash={""}/>);
     expect(item).toBeTruthy();
   });
 
@@ -30,8 +30,9 @@ describe("FileHashImage", () => {
     return (props: { src: string; onWheelCallback: (z: number) => void }) => {
       return (
         <>
-          <img src={props.src} alt="test" />
-          <button onClick={() => props.onWheelCallback(1)}></button>
+          <img src={props.src} alt="test"/>
+          <button type="button"
+                  onClick={() => props.onWheelCallback(1)}></button>
         </>
       );
     };
@@ -44,7 +45,7 @@ describe("FileHashImage", () => {
     return (props: { src: string; onResetCallback: (z: number) => void }) => {
       return (
         <>
-          <img src={props.src} alt="test" />
+          <img src={props.src} alt="test"/>
           <button onClick={() => props.onResetCallback(1)}></button>
         </>
       );
@@ -81,7 +82,7 @@ describe("FileHashImage", () => {
 
     // need to await here
     const component = await render(
-      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal} />
+      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal}/>
     );
     expect(detectRotationSpy).toHaveBeenCalled();
 
@@ -119,7 +120,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const component = render(
-      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal} />
+      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal}/>
     );
 
     // need to await here
@@ -146,7 +147,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const component = render(
-      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal} />
+      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal}/>
     );
 
     // need to await here
@@ -173,7 +174,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(panZoomObject);
 
     const component = render(
-      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal} id={"fallbackPath"} />
+      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal} id={"fallbackPath"}/>
     );
 
     const button = screen.getAllByRole("button")[0] as HTMLButtonElement;
@@ -235,7 +236,7 @@ describe("FileHashImage", () => {
     jest.spyOn(PanAndZoomImage, "default").mockImplementationOnce(panZoomObject);
 
     const component = render(
-      <FileHashImage fileHash="hash" id="/test.jpg" orientation={Orientation.Horizontal} />
+      <FileHashImage fileHash="hash" id="/test.jpg" orientation={Orientation.Horizontal}/>
     );
 
     // there is one problem with this test, is assumes the default value
@@ -244,7 +245,7 @@ describe("FileHashImage", () => {
     const img = screen.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
-        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true)
+      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true)
     );
 
     component.unmount();
@@ -282,7 +283,7 @@ describe("FileHashImage", () => {
     const img = screen.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
-        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true)
+      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true)
     );
 
     expect(onResetCallbackSpy).toHaveBeenCalled();
@@ -306,8 +307,8 @@ describe("FileHashImage", () => {
     const img = screen.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
-        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true) +
-        "&v=token%20value"
+      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true) +
+      "&v=token%20value"
     );
 
     component.unmount();
@@ -341,8 +342,8 @@ describe("FileHashImage", () => {
     const img = screen.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
-        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true) +
-        "&v=token-2"
+      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true) +
+      "&v=token-2"
     );
 
     component.unmount();

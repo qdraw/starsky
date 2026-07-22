@@ -1,7 +1,7 @@
 import React from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
-import { Language } from "../../../shared/language";
+import {Language} from "../../../shared/language";
 
 type MoreMenuPropTypes = {
   children?: React.ReactNode;
@@ -10,10 +10,10 @@ type MoreMenuPropTypes = {
 };
 
 const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
-  children,
-  enableMoreMenu,
-  setEnableMoreMenu
-}) => {
+                                                                children,
+                                                                enableMoreMenu,
+                                                                setEnableMoreMenu
+                                                              }) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageMore = language.key(localization.MessageMore);
@@ -24,6 +24,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
     <>
       <button
         data-test="menu-menu-button"
+        type="button"
         className={children ? "item item--more" : "item item--more disabled"}
         onClick={() => {
           setEnableMoreMenu(true);

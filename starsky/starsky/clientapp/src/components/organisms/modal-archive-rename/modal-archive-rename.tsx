@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { ArchiveAction } from "../../../contexts/archive-context";
+import {useState} from "react";
+import {ArchiveAction} from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import { FileExtensions } from "../../../shared/file-extensions";
-import { FileListCache } from "../../../shared/filelist-cache";
-import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url/url-query";
+import {FileExtensions} from "../../../shared/file-extensions";
+import {FileListCache} from "../../../shared/filelist-cache";
+import {Language} from "../../../shared/language";
+import {UrlQuery} from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
@@ -120,7 +120,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
       filePathAfterChange
     );
 
-    history.navigate(replacePath, { replace: true });
+    history.navigate(replacePath, {replace: true});
 
     // Close window
     props.handleExit(filePathAfterChange);
@@ -155,6 +155,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
           )}
 
           <button
+            type="button"
             disabled={
               new FileExtensions().GetFileName(props.subPath) === folderName || !!error || isLoading
             }

@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Coordinates, Position } from "../../../shared/coordinates-position.types";
+import React, {useState} from "react";
+import {Coordinates, Position} from "../../../shared/coordinates-position.types";
 
 export type CurrentLocationButtonPropTypes = {
   callback?(coords: Coordinates): void;
 };
 
 const CurrentLocationButton: React.FunctionComponent<CurrentLocationButtonPropTypes> = ({
-  callback
-}) => {
+                                                                                          callback
+                                                                                        }) => {
   function currentPositionSuccess(position: Position) {
     setError(false);
     if (!callback) return;
@@ -31,6 +31,7 @@ const CurrentLocationButton: React.FunctionComponent<CurrentLocationButtonPropTy
 
   return (
     <button
+      type="button"
       data-test="current-location-button"
       className={
         error
