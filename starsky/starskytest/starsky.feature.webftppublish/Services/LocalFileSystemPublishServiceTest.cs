@@ -757,12 +757,12 @@ public class LocalFileSystemPublishServiceTest
 		// assert
 		if ( copyAllContent )
 		{
-			CollectionAssert.AreEquivalent(copyContent.ToList(), result);
+			Assert.AreSequenceEqual([.. copyContent], result, Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
 		}
 		else
 		{
 			var expected = copyContent.Where(p => p.Value).ToList();
-			CollectionAssert.AreEquivalent(expected, result);
+			Assert.AreSequenceEqual(expected, result, Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
 		}
 	}
 }

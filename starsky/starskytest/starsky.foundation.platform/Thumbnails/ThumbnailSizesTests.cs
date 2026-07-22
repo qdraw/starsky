@@ -23,7 +23,7 @@ public class ThumbnailSizesTests
 		var result = ThumbnailSizes.GetLargeToSmallSizes();
 
 		// Assert
-		CollectionAssert.AreEqual(expectedSizes, result);
+		Assert.AreSequenceEqual(expectedSizes, result);
 	}
 
 	[TestMethod]
@@ -39,7 +39,7 @@ public class ThumbnailSizesTests
 		var result = ThumbnailSizes.GetLargeToSmallSizes(ThumbnailGenerationType.SkipExtraLarge);
 
 		// Assert
-		CollectionAssert.AreEqual(expectedSizes, result);
+		Assert.AreSequenceEqual(expectedSizes, result);
 	}
 
 	[TestMethod]
@@ -52,6 +52,6 @@ public class ThumbnailSizesTests
 		var result = ThumbnailSizes.GetLargeToSmallSizes(ThumbnailGenerationType.SmallOnly);
 
 		// Assert
-		CollectionAssert.AreEqual(expectedSizes, result);
+		Assert.AreSequenceEqual(expectedSizes, result);
 	}
 }

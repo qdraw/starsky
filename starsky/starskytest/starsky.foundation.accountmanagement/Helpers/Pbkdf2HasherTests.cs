@@ -147,6 +147,6 @@ public class Pbkdf2HasherTests
 		var salt2 = Pbkdf2Hasher.GenerateRandomSalt();
 
 		// Assert NOT EQ
-		Assert.AreNotEqual(salt1, salt2); // Check that the two salts are different
+		Assert.AreNotSequenceEqual(salt1, salt2); // Check that the two salts are different
 	}
 }

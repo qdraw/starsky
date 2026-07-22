@@ -538,7 +538,7 @@ public sealed class StorageTemporaryFilesystemTests
 			var result = sut.ReadAllLines(dbPath);
 
 			// Assert
-			CollectionAssert.AreEqual(expected, result);
+			Assert.AreSequenceEqual(expected, result);
 		}
 		finally
 		{

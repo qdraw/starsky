@@ -111,6 +111,9 @@ dotnet_diagnostic.MSTEST0054.severity = none
 # MSTEST0051: Assert.Throws should contain only a single statement/expression
 dotnet_diagnostic.MSTEST0051.severity = warning
 
+# MSTEST0068: Use 'Assert' instead of 'CollectionAssert'
+dotnet_diagnostic.MSTEST0068.severity = warning
+
 # Seal internal types
 dotnet_diagnostic.CA1852.severity = warning
 

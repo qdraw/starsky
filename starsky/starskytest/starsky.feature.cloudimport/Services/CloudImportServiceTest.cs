@@ -786,6 +786,6 @@ public class CloudImportServiceTest
 		var providerSettings = new CloudImportProviderSettings { Extensions = extensions };
 		var result = CloudImportService.FilterExtensions(files, providerSettings);
 		var resultNames = result.Select(f => f.Name).ToList();
-		CollectionAssert.AreEquivalent(expected, resultNames);
+		Assert.AreSequenceEqual(expected, resultNames, Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
 	}
 }

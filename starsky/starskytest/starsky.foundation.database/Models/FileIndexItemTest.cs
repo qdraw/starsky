@@ -149,7 +149,7 @@ public sealed class FileIndexItemTest
 			ColorClassParser.Color.Trash, ColorClassParser.Color.Extras
 		};
 		var output = FileIndexItem.GetColorClassList(input);
-		CollectionAssert.AreEqual(eightSeven, output);
+		Assert.AreSequenceEqual(eightSeven, output);
 	}
 
 	[TestMethod]

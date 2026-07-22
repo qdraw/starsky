@@ -504,7 +504,7 @@ public sealed class StorageHostFullPathFilesystemTest
 			}
 
 			// Assert
-			CollectionAssert.AreEqual(lines, result);
+			Assert.AreSequenceEqual(lines, result);
 		}
 		finally
 		{
@@ -570,7 +570,7 @@ public sealed class StorageHostFullPathFilesystemTest
 			var result = storage.ReadAllLines(tempFile);
 
 			// Assert
-			CollectionAssert.AreEqual(lines, result);
+			Assert.AreSequenceEqual(lines, result);
 		}
 		finally
 		{

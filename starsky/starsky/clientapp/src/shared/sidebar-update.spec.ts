@@ -10,8 +10,13 @@ describe("url-path", () => {
       expect(result).toStrictEqual({});
     });
 
-    it("no value", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate("field", "", {} as ISidebarUpdate);
+    it.each([
+      { fieldName: "field", description: "no value" },
+      { fieldName: "replace-title", description: "send empty string replace-title" },
+      { fieldName: "tags", description: "send empty string tags" },
+      { fieldName: "test", description: "send empty string non existing tag" }
+    ])("$description", ({ fieldName }) => {
+      const result = sidebarUpdate.CastToISideBarUpdate(fieldName, "", {} as ISidebarUpdate);
       expect(result).toStrictEqual({});
     });
 
@@ -61,20 +66,6 @@ describe("url-path", () => {
       expect(result).toStrictEqual({ replaceTitle: "test" });
     });
 
-    it("send empty string replace-title", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate("replace-title", "", {} as ISidebarUpdate);
-      expect(result).toStrictEqual({});
-    });
-
-    it("send empty string tags", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate("tags", "", {} as ISidebarUpdate);
-      expect(result).toStrictEqual({});
-    });
-
-    it("send empty string non existing tag", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate("test", "", {} as ISidebarUpdate);
-      expect(result).toStrictEqual({});
-    });
   });
   describe("Change", () => {
     it("no field name should return null", () => {

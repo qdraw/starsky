@@ -70,7 +70,7 @@ public sealed class SearchSuggestControllerTest
 		var controller = new SearchSuggestController(_searchSuggest);
 		var result = await controller.Suggest("e") as JsonResult;
 		var list = result!.Value as List<string>;
-		CollectionAssert.AreEqual(new List<string> { "enter", "exit" }, list);
+		Assert.AreSequenceEqual(new List<string> { "enter", "exit" }, list);
 	}
 
 	[TestMethod]
@@ -114,7 +114,7 @@ public sealed class SearchSuggestControllerTest
 		var controller = new SearchSuggestController(_searchSuggest);
 		var result = await controller.Suggest("l") as JsonResult; // search for live
 		var list = result!.Value as List<string>;
-		CollectionAssert.AreEqual(new List<string>(), list);
+		Assert.AreSequenceEqual(new List<string>(), list);
 	}
 
 	[TestMethod]
@@ -130,7 +130,7 @@ public sealed class SearchSuggestControllerTest
 			new("enter", 10), new("sandman", 10), new("exit", 10)
 		};
 
-		CollectionAssert.AreEqual(expected, list);
+		Assert.AreSequenceEqual(expected, list);
 	}
 
 	[TestMethod]
@@ -151,6 +151,6 @@ public sealed class SearchSuggestControllerTest
 		{
 			new("enter", 10), new("sandman", 10), new("exit", 10)
 		};
-		CollectionAssert.AreEqual(expected, keyValuePairs);
+		Assert.AreSequenceEqual(expected, keyValuePairs);
 	}
 }

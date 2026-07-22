@@ -259,7 +259,7 @@ public class ShellThumbnailExtractionWindowsTest
 			ShellThumbnailExtractionWindows.FlipImage(bmp, pixelBytes, pixelBytes.Length);
 
 		// Assert
-		CollectionAssert.AreEqual(expectedFlippedBytes, flippedBytes);
+		Assert.AreSequenceEqual(expectedFlippedBytes, flippedBytes);
 	}
 
 	[TestMethod]
