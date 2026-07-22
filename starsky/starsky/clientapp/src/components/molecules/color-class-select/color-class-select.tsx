@@ -13,8 +13,9 @@ export interface IColorClassSelectProps {
   isEnabled: boolean;
   filePath: string;
   clearAfter?: boolean;
-  onToggle(value: number): void;
   collections: boolean;
+
+  onToggle(value: number): void;
 }
 
 /**
@@ -71,6 +72,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (props
       >
         {colorContent.map((item, index) => (
           <button
+            type="button"
             key={item}
             data-test={"color-class-select-" + index}
             onClick={() => {
