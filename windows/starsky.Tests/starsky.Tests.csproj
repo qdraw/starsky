@@ -24,7 +24,38 @@
   <ItemGroup>
     <ProjectReference Include="..\starsky.csproj" />
   </ItemGroup>
+
+  <!-- Inline C# task: removes Windows App SDK 2.2.0 locale dirs from test output -->
+  <UsingTask TaskName="RemoveLocaleDirectoriesTest"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <TargetDir ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          var localePattern = new System.Text.RegularExpressions.Regex(
+              @"^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)+$",
+              System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+          foreach (var dir in System.IO.Directory.GetDirectories(TargetDir))
+          {
+            var name = System.IO.Path.GetFileName(dir);
+            if (localePattern.IsMatch(name) &&
+                !string.Equals(name, "en-us", System.StringComparison.OrdinalIgnoreCase))
+            {
+              System.IO.Directory.Delete(dir, true);
+              Log.LogMessage(MessageImportance.Normal, "Removed locale directory: " + name);
+            }
+          }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="RemoveUnusedLanguageResourcesTest" AfterTargets="Build">
+    <!-- Addresses Windows App SDK 2.2.0 locale dirs propagating into test output via ProjectReference -->
+    <RemoveLocaleDirectoriesTest TargetDir="$(TargetDir)" />
+  </Target>
+
 </Project>
-
-
-

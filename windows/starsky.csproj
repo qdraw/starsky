@@ -25,6 +25,8 @@
     <AppxGetPackagePropertiesEnabled>false</AppxGetPackagePropertiesEnabled>
     <IncludeProjectPriFile>false</IncludeProjectPriFile>
     <PackageId>starsky</PackageId>
+    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+    <GenerateResourceOverrideCultures>en-US</GenerateResourceOverrideCultures>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,7 +40,41 @@
     <None Remove="starsky.Tests\**\*" />
   </ItemGroup>
 
-  <Target Name="CopyLocalStarskyRuntime" AfterTargets="Build">
+  <!-- Inline C# task: reliably removes locale dirs without PowerShell escaping issues -->
+  <UsingTask TaskName="RemoveLocaleDirectories"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <TargetDir ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          var localePattern = new System.Text.RegularExpressions.Regex(
+              @"^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)+$",
+              System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+          foreach (var dir in System.IO.Directory.GetDirectories(TargetDir))
+          {
+            var name = System.IO.Path.GetFileName(dir);
+            if (localePattern.IsMatch(name) &&
+                !string.Equals(name, "en-us", System.StringComparison.OrdinalIgnoreCase))
+            {
+              System.IO.Directory.Delete(dir, true);
+              Log.LogMessage(MessageImportance.Normal, "Removed locale directory: " + name);
+            }
+          }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="RemoveUnusedLanguageResources" AfterTargets="CopyFilesToOutputDirectory">
+    <!-- Remove all locale-specific directories except English (en-us). -->
+    <!-- Addresses Windows App SDK 2.2.0 creating 80+ locale directories. -->
+    <RemoveLocaleDirectories TargetDir="$(TargetDir)" />
+  </Target>
+
+  <Target Name="CopyLocalStarskyRuntime" AfterTargets="RemoveUnusedLanguageResources">
     <PropertyGroup>
       <_StarskyRuntimePreferred>$(MSBuildProjectDirectory)\..\starsky\starsky-win-x64</_StarskyRuntimePreferred>
       <_StarskyRuntimeFallback>$(MSBuildProjectDirectory)\..\starsky\win-x64</_StarskyRuntimeFallback>
