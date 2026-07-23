@@ -51,18 +51,12 @@ describe("keyboard", () => {
       expect(result).toBeTruthy();
     });
 
-    it("non valid directory name to short", () => {
-      const result = fileExt.IsValidDirectoryName("d");
-      expect(result).toBeFalsy();
-    });
-
-    it("non valid directory name string.empty", () => {
-      const result = fileExt.IsValidDirectoryName("");
-      expect(result).toBeFalsy();
-    });
-
-    it("non valid directory name", () => {
-      const result = fileExt.IsValidDirectoryName(".èjpg");
+    it.each([
+      { description: "non valid directory name to short", input: "d" },
+      { description: "non valid directory name string.empty", input: "" },
+      { description: "non valid directory name", input: ".èjpg" }
+    ])("$description", ({ input }) => {
+      const result = fileExt.IsValidDirectoryName(input);
       expect(result).toBeFalsy();
     });
 
@@ -78,17 +72,13 @@ describe("keyboard", () => {
       expect(result).toBe("/");
     });
 
-    it("get parent path #1", () => {
-      const result = fileExt.GetParentPath("/__starsky/test/");
-      expect(result).toBe("/__starsky");
-    });
-    it("get parent path #2", () => {
-      const result = fileExt.GetParentPath("/__starsky/test");
-      expect(result).toBe("/__starsky");
-    });
-    it("get parent path #3", () => {
-      const result = fileExt.GetParentPath("/__starsky");
-      expect(result).toBe("/");
+    it.each([
+      { description: "get parent path #1", input: "/__starsky/test/", expected: "/__starsky" },
+      { description: "get parent path #2", input: "/__starsky/test", expected: "/__starsky" },
+      { description: "get parent path #3", input: "/__starsky", expected: "/" }
+    ])("$description", ({ input, expected }) => {
+      const result = fileExt.GetParentPath(input);
+      expect(result).toBe(expected);
     });
     it("get parent path #4", () => {
       const result = fileExt.GetParentPath("/");

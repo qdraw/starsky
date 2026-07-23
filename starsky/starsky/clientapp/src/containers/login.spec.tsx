@@ -33,7 +33,7 @@ describe("Login", () => {
     expect(useFetchSpy).toHaveBeenCalled();
     expect(useFetchSpy).toHaveBeenCalledWith(new UrlQuery().UrlAccountStatus(), "get");
 
-    const err = screen.queryByTestId("logout-content");
+    const err = screen.getByTestId("logout-content");
     expect(err).toBeTruthy();
 
     act(() => {
@@ -61,7 +61,7 @@ describe("Login", () => {
     expect(useFetchSpy).toHaveBeenCalled();
     expect(useFetchSpy).toHaveBeenCalledWith(new UrlQuery().UrlAccountStatus(), "get");
 
-    const err = screen.queryByTestId("message-database-connection");
+    const err = screen.getByTestId("message-database-connection");
     expect(err).toBeTruthy();
 
     act(() => {
@@ -88,7 +88,7 @@ describe("Login", () => {
 
     expect(useFetchSpy).toHaveBeenCalled();
     expect(screen.getByTestId("logout")).toBeTruthy();
-    expect(screen.queryAllByTestId("stayLoggedin")).toBeTruthy();
+    expect(screen.getAllByTestId("stayLoggedin").length).toBeGreaterThan(0);
 
     // no prefix (starsky in url)
     expect((screen.queryByTestId("logout") as HTMLAnchorElement).href).toBe(
@@ -123,7 +123,7 @@ describe("Login", () => {
 
     expect(useFetchSpy).toHaveBeenCalled();
     expect(screen.getByTestId("logout")).toBeTruthy();
-    expect(login.queryAllByTestId("stayLoggedin")).toBeTruthy();
+    expect(login.getAllByTestId("stayLoggedin").length).toBeGreaterThan(0);
 
     // including starsky prefix
     expect((screen.getByTestId("logout") as HTMLAnchorElement).href).toBe(

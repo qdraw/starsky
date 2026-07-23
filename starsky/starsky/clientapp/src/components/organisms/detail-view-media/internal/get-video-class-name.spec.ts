@@ -1,30 +1,28 @@
 import { GetVideoClassName } from "./get-video-class-name";
 
 describe("GetVideoClassName function", () => {
-  it('should return "video play" when paused and started', () => {
-    const isPaused = true;
-    const isStarted = true;
-
+  it.each([
+    {
+      description: 'return "video play" when paused and started',
+      isPaused: true,
+      isStarted: true,
+      expected: "video play"
+    },
+    {
+      description: 'return "video first" when paused and not started',
+      isPaused: true,
+      isStarted: false,
+      expected: "video first"
+    },
+    {
+      description: 'return "video pause" when not paused',
+      isPaused: false,
+      isStarted: true,
+      expected: "video pause"
+    }
+  ])("should $description", ({ isPaused, isStarted, expected }) => {
     const result = GetVideoClassName(isPaused, isStarted);
 
-    expect(result).toBe("video play");
-  });
-
-  it('should return "video first" when paused and not started', () => {
-    const isPaused = true;
-    const isStarted = false;
-
-    const result = GetVideoClassName(isPaused, isStarted);
-
-    expect(result).toBe("video first");
-  });
-
-  it('should return "video pause" when not paused', () => {
-    const isPaused = false;
-    const isStarted = true;
-
-    const result = GetVideoClassName(isPaused, isStarted);
-
-    expect(result).toBe("video pause");
+    expect(result).toBe(expected);
   });
 });

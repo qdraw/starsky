@@ -213,27 +213,15 @@ describe("UseFileList", () => {
       expect(pageHelper).toBeFalsy();
     });
 
-    it("setPageTypeHelper - pageType not found false", () => {
-      const { hook } = mounter("/test.jpg");
-
-      const pageHelper = hook.setPageTypeHelper({ pageType: "NotFound" } as unknown as IDetailView);
-      expect(pageHelper).toBeFalsy();
-    });
-
-    it("setPageTypeHelper - pageType ApplicationException false", () => {
+    it.each([
+      { description: "pageType not found", pageType: "NotFound" },
+      { description: "pageType ApplicationException", pageType: "ApplicationException" },
+      { description: "pageType DifferentType", pageType: "DifferentType" }
+    ])("setPageTypeHelper - $description false", ({ pageType }) => {
       const { hook } = mounter("/test.jpg");
 
       const pageHelper = hook.setPageTypeHelper({
-        pageType: "ApplicationException"
-      } as unknown as IDetailView);
-      expect(pageHelper).toBeFalsy();
-    });
-
-    it("setPageTypeHelper - pageType DifferentType false", () => {
-      const { hook } = mounter("/test.jpg");
-
-      const pageHelper = hook.setPageTypeHelper({
-        pageType: "DifferentType"
+        pageType
       } as unknown as IDetailView);
       expect(pageHelper).toBeFalsy();
     });

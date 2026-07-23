@@ -70,7 +70,7 @@ public sealed class RabbitMqChannelAdapterTest
 		adapter.Publish("queue", body, true);
 
 		Assert.AreEqual("queue", fakeClient.LastPublishedQueueName);
-		CollectionAssert.AreEqual(body, fakeClient.LastPublishedBody!);
+		Assert.AreSequenceEqual(body, fakeClient.LastPublishedBody!);
 		Assert.IsTrue(fakeClient.LastPublishedPersistent);
 	}
 
