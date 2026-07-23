@@ -161,6 +161,7 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
       <div className="gpx-controls">
         <div className="gpx-controls--button">
           <button
+            type="button"
             data-test="zoom_in"
             title={"Zoom in"}
             className="icon icon--zoom_in"

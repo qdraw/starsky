@@ -162,6 +162,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
             </button>
 
             <button
+              type="button"
               onClick={() => {
                 postZip(true);
               }}
