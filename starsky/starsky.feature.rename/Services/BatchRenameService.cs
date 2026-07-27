@@ -177,7 +177,7 @@ public class BatchRenameService(
 					results, fileIndexItems, detailView);
 
 				// Reset Cache for the item that is renamed
-				query.ResetItemByHash(detailView.FileIndexItem!.FileHash!);
+				query.ResetItemByHash(detailView.FileIndexItem.FileHash!);
 			}
 			catch ( Exception )
 			{

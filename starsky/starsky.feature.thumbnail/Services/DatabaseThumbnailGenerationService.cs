@@ -144,7 +144,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 
 			var generationResultModels = (
 				await _thumbnailService.GenerateThumbnail(fileIndexItem
-					.FilePath!, fileIndexItem.FileHash!) ).ToList();
+					.FilePath, fileIndexItem.FileHash!) ).ToList();
 
 			_bgTaskQueue.ThrowExceptionIfCpuUsageIsToHigh("WorkThumbnailGeneration");
 
