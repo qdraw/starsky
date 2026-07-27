@@ -53,7 +53,7 @@ public class MetaInfo : IMetaInfo
 
 			if ( !_iStorage.ExistFile(detailView.FileIndexItem.FilePath!) )
 			{
-				StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem!,
+				StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem,
 					FileIndexItem.ExifStatus.NotFoundSourceMissing,
 					fileIndexResultsList);
 				continue;
@@ -61,9 +61,9 @@ public class MetaInfo : IMetaInfo
 
 			// Check if extension is supported for ExtensionExifToolSupportedList
 			// Not all files are able to write with exifTool
-			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem!
+			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem
 				     .FileName)
-			     && !ExtensionRolesHelper.IsExtensionSidecar(detailView.FileIndexItem!.FileName) )
+			     && !ExtensionRolesHelper.IsExtensionSidecar(detailView.FileIndexItem.FileName) )
 			{
 				StatusCodesHelper.ReturnExifStatusError(
 					await new FileIndexItemJsonParser(_iStorage)

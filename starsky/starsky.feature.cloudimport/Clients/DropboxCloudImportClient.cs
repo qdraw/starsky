@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using starsky.feature.cloudimport.Clients.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -23,6 +24,9 @@ public class DropboxCloudImportClient(
 			p.Provider.Equals("Dropbox", StringComparison.OrdinalIgnoreCase) &&
 			!string.IsNullOrWhiteSpace(p.Credentials.RefreshToken)) == true;
 
+	[SuppressMessage("Sonar",
+		"S8969: Null-forgiving operators should not be redundant",
+		Justification = "_client is checked in EnsureClient")]
 	public async Task<List<CloudFile>> ListFilesAsync(string remoteFolder)
 	{
 		EnsureClient();
@@ -74,6 +78,9 @@ public class DropboxCloudImportClient(
 		}
 	}
 
+	[SuppressMessage("Sonar",
+		"S8969: Null-forgiving operators should not be redundant",
+		Justification = "_client is checked in EnsureClient")]
 	public async Task<string> DownloadFileAsync(CloudFile file, string localFolder)
 	{
 		EnsureClient();
@@ -81,7 +88,7 @@ public class DropboxCloudImportClient(
 		try
 		{
 			var localPath = Path.Combine(localFolder, file.Name);
-
+			
 			using var response = await _client!.DownloadAsync(file.Path);
 			var content = await response.GetContentAsByteArrayAsync();
 
@@ -103,7 +110,7 @@ public class DropboxCloudImportClient(
 
 		try
 		{
-			await _client!.DeleteV2Async(file.Path);
+			await _client?.DeleteV2Async(file.Path)!;
 			logger.LogDebug($"Deleted file from Dropbox: {file.Name}");
 			return true;
 		}
@@ -119,7 +126,7 @@ public class DropboxCloudImportClient(
 		try
 		{
 			EnsureClient();
-			var result = await _client!.ListFolderAsync(string.Empty);
+			var result = await _client?.ListFolderAsync(string.Empty)!;
 			logger.LogDebug(
 				$"Successfully connected to Dropbox that has {result.Entries.Count} files");
 			return true;

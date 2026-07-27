@@ -9,8 +9,8 @@ namespace starsky.foundation.worker.CpuEventListener;
 [Service(typeof(ICpuUsageListener), InjectionLifetime = InjectionLifetime.Singleton)]
 public sealed class CpuUsageListener : EventListener, ICpuUsageListener
 {
+	public bool IsReady { get; private set; }
 	public double CpuUsageMean { get; private set; }
-	public bool IsReady { get; private set; } = false;
 
 	protected override void OnEventSourceCreated(EventSource eventSource)
 	{
@@ -18,7 +18,7 @@ public sealed class CpuUsageListener : EventListener, ICpuUsageListener
 		{
 			EnableEvents(eventSource, EventLevel.LogAlways,
 				EventKeywords.All,
-				new Dictionary<string, string> { { "EventCounterIntervalSec", "15" } }!);
+				new Dictionary<string, string?> { { "EventCounterIntervalSec", "15" } });
 		}
 	}
 
@@ -32,15 +32,15 @@ public sealed class CpuUsageListener : EventListener, ICpuUsageListener
 		ReadOnlyCollection<object?>? eventDataPayload)
 	{
 		if ( eventDataEventName != "EventCounters" || eventDataPayload == null ||
-			 eventDataPayload.Count == 0 )
+		     eventDataPayload.Count == 0 )
 		{
 			return;
 		}
 
 		if ( eventDataPayload[0] is not IDictionary<string, object>
-				 eventPayload ||
-			 !eventPayload.TryGetValue("Name", out var nameData) ||
-			 nameData is not ( "cpu-usage" ) )
+			     eventPayload ||
+		     !eventPayload.TryGetValue("Name", out var nameData) ||
+		     nameData is not "cpu-usage" )
 		{
 			return;
 		}

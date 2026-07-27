@@ -63,10 +63,10 @@ public sealed class SyncFolder
 				var allResults = new List<FileIndexItem>();
 				var queryFactory = new QueryFactory(_setupDatabaseTypes,
 					_query, _memoryCache, _appSettings, _serviceScopeFactory, _logger);
-				var query = queryFactory.Query();
+				var query = queryFactory.Query()!;
 
 				// get only direct child files and folders and NOT recursive
-				var fileIndexItems = await query!.GetAllObjectsAsync(subPath);
+				var fileIndexItems = await query.GetAllObjectsAsync(subPath);
 				fileIndexItems = await new Duplicate(query).RemoveDuplicateAsync(fileIndexItems);
 
 				// And check files within this folder
@@ -139,14 +139,14 @@ public sealed class SyncFolder
 	{
 		var subPaths = _subPathStorage.GetDirectoryRecursive(inputSubPath).ToList();
 		var filteredSubPaths = subPaths.Where(p =>
+		{
+			if ( childDirectoriesAfter is not { Year: > 2000 } )
 			{
-				if ( childDirectoriesAfter is not { Year: > 2000 } )
-				{
-					return true;
-				}
+				return true;
+			}
 
-				return p.Value >= childDirectoriesAfter;
-			});
+			return p.Value >= childDirectoriesAfter;
+		});
 
 		var result = filteredSubPaths.Select(p => p.Key).ToList();
 
@@ -175,7 +175,6 @@ public sealed class SyncFolder
 		List<string> subPaths,
 		List<FileIndexItem> folderList)
 	{
-
 		var newItems = new List<FileIndexItem>();
 		foreach ( var path in subPaths.Where(path =>
 			         folderList.TrueForAll(p => p.FilePath != path) &&

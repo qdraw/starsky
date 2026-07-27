@@ -17,7 +17,7 @@ namespace starsky.foundation.accountmanagement.Middleware;
 /// <summary>
 ///     Auto login when use is on localhost
 /// </summary>
-public sealed class NoAccountMiddleware
+public sealed class NoAccountMiddleware(RequestDelegate next, AppSettings? appSettings = null)
 {
 	/// <summary>
 	///     Default email address or Default User
@@ -25,15 +25,6 @@ public sealed class NoAccountMiddleware
 	internal const string Identifier = "mail@localhost";
 
 	private const string CredentialType = "email";
-	private readonly AppSettings? _appSettings;
-
-	private readonly RequestDelegate _next;
-
-	public NoAccountMiddleware(RequestDelegate next, AppSettings? appSettings = null)
-	{
-		_next = next;
-		_appSettings = appSettings;
-	}
 
 	/// <summary>
 	///     Enable: app__NoAccountLocalhost
@@ -42,18 +33,18 @@ public sealed class NoAccountMiddleware
 	public async Task Invoke(HttpContext context)
 	{
 		var isHostAllowed = IsLocalhost.IsHostLocalHost(context.Connection.LocalIpAddress,
-								context.Connection.RemoteIpAddress) ||
-							_appSettings?.DemoUnsafeDeleteStorageFolder == true;
+			                    context.Connection.RemoteIpAddress) ||
+		                    appSettings?.DemoUnsafeDeleteStorageFolder == true;
 
 		var isApiCall = context.Request.Path.HasValue &&
-						( context.Request.Path.Value.StartsWith("/api") ||
-						  context.Request.Path.Value.StartsWith("/realtime") );
+		                ( context.Request.Path.Value.StartsWith("/api") ||
+		                  context.Request.Path.Value.StartsWith("/realtime") );
 
 		var isFromLogoutCall = context.Request.QueryString.HasValue &&
-							   context.Request.QueryString.Value!.Contains("fromLogout");
+		                       context.Request.QueryString.Value.Contains("fromLogout");
 
 		if ( isHostAllowed && context.User.Identity?.IsAuthenticated == false && !isApiCall &&
-			 !isFromLogoutCall )
+		     !isFromLogoutCall )
 		{
 			var userManager =
 				( IUserManager ) context.RequestServices.GetRequiredService(typeof(IUserManager));
@@ -61,7 +52,7 @@ public sealed class NoAccountMiddleware
 			await userManager.SignIn(context, user, true);
 		}
 
-		await _next.Invoke(context);
+		await next.Invoke(context);
 	}
 
 	internal static async Task<User?> CreateOrUpdateNewUsers(IUserManager userManager)

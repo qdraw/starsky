@@ -51,7 +51,7 @@ public sealed class ThumbnailCli
 		if ( getSubPathRelative != null )
 		{
 			subPath = new StructureService(_selectorStorage, _appSettings, _logger)
-				.ParseSubfolders(getSubPathRelative)!;
+				.ParseSubfolders(getSubPathRelative);
 		}
 
 		if ( ArgsHelper.GetThumbnail(args) )

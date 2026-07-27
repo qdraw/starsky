@@ -45,13 +45,13 @@ public partial class Query
 		{
 			var scope = new InjectServiceScope(_scopeFactory);
 			return await scope.ExecuteAsync(async dbContext =>
-				FormatOk(( await GetAllObjectsQuery(dbContext, filePaths)?.ToListAsync()! )!));
+				FormatOk(await GetAllObjectsQuery(dbContext, filePaths).ToListAsync()));
 		}
 
 		try
 		{
-			return FormatOk(( await GetAllObjectsQuery(_context, filePaths)!
-				.ToListAsync() )!);
+			return FormatOk(await GetAllObjectsQuery(_context, filePaths)
+				.ToListAsync());
 		}
 		catch ( ObjectDisposedException )
 		{
@@ -76,7 +76,7 @@ public partial class Query
 	/// <param name="context">database context</param>
 	/// <param name="filePathList">list of paths</param>
 	/// <returns></returns>
-	private static IOrderedQueryable<FileIndexItem>? GetAllObjectsQuery(
+	private static IOrderedQueryable<FileIndexItem> GetAllObjectsQuery(
 		ApplicationDbContext context, List<string> filePathList)
 	{
 		var predicates = new List<Expression<Func<FileIndexItem, bool>>>();

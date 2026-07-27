@@ -109,7 +109,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		}
 		catch ( Exception exception )
 		{
-			_logger.LogError($"[ReadString] HttpClientHelper {sourceHttpUrl} > Exception {exception.Message}",
+			_logger.LogError(
+				$"[ReadString] HttpClientHelper {sourceHttpUrl} > Exception {exception.Message}",
 				exception);
 			return new KeyValuePair<bool, string>(false, exception.Message);
 		}
@@ -149,7 +150,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		}
 		catch ( Exception exception )
 		{
-			_logger.LogError($"[PostString] HttpClientHelper {sourceHttpUrl} > Exception ", exception);
+			_logger.LogError($"[PostString] HttpClientHelper {sourceHttpUrl} > Exception ",
+				exception);
 			return new KeyValuePair<bool, string>(false, exception.Message);
 		}
 	}
@@ -199,7 +201,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 				return false;
 			}
 
-			await _storage!.WriteStreamAsync(streamToReadFrom, fullLocalPath);
+			await _storage.WriteStreamAsync(streamToReadFrom, fullLocalPath);
 			return true;
 		}
 

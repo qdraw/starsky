@@ -78,8 +78,8 @@ public sealed class SyncRemove
 				var queryFactory = new QueryFactory(_setupDatabaseTypes,
 					_query, _memoryCache, _appSettings,
 					_serviceScopeFactory, _logger);
-				var query = queryFactory.Query();
-				await query!.RemoveItemAsync(item);
+				var query = queryFactory.Query()!;
+				await query.RemoveItemAsync(item);
 				item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
 				// only dispose inside parallelism loop
 				await query.DisposeAsync();

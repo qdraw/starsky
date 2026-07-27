@@ -37,7 +37,8 @@ public class FileItemsQueryHelpers(IQuery query, IWebLogger logger)
 					continue;
 				}
 
-				foreach ( var collectionPath in detailView.FileIndexItem!.CollectionPaths.Where(p =>
+				foreach ( var collectionPath in
+				         detailView.FileIndexItem.CollectionPaths.Where(p =>
 					         p != filePath) )
 				{
 					if ( fileItems.ContainsKey(collectionPath) )
