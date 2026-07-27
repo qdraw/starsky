@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
@@ -77,7 +78,7 @@ public sealed class ImportQuery : IImportQuery
 
 		if ( _scopeFactory == null )
 		{
-			return await _dbContext!.ImportIndex.CountAsync(p => p.FileHash == fileHashCode) != 0;
+			return await _dbContext?.ImportIndex.CountAsync(p => p.FileHash == fileHashCode)! != 0;
 		}
 
 		var scope = new InjectServiceScope(_scopeFactory);
@@ -92,6 +93,9 @@ public sealed class ImportQuery : IImportQuery
 	/// <param name="updateStatusContent">import database item</param>
 	/// <param name="writeConsole">add icon to console</param>
 	/// <returns>fail or success</returns>
+	[SuppressMessage("Sonar",
+		"S8969: Null-forgiving operators should not be redundant",
+		Justification = "dbContext cant be null if scope factory is used")]
 	public async Task<bool> AddAsync(ImportIndexItem updateStatusContent,
 		bool writeConsole = true)
 	{
@@ -162,7 +166,7 @@ public sealed class ImportQuery : IImportQuery
 	{
 		if ( _scopeFactory == null )
 		{
-			await _dbContext!.ImportIndex.AddRangeAsync(importIndexItemList);
+			await _dbContext?.ImportIndex.AddRangeAsync(importIndexItemList)!;
 			await _dbContext.SaveChangesAsync();
 			_console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
 			return importIndexItemList;
@@ -220,6 +224,7 @@ public sealed class ImportQuery : IImportQuery
 			{
 				return false;
 			}
+
 			var scope = new InjectServiceScope(_scopeFactory);
 			return await scope.ExecuteAsync(async context1 =>
 				await LocalRemoveQuery(context1)
@@ -238,7 +243,7 @@ public sealed class ImportQuery : IImportQuery
 			}
 
 			// keep conditional marker for test
-			context.ImportIndex?.Remove(importIndexItem);
+			context.ImportIndex.Remove(importIndexItem);
 			await context.SaveChangesAsync();
 			return true;
 		}

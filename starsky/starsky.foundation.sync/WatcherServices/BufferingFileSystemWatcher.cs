@@ -367,7 +367,7 @@ public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWr
 			{
 				BufferingFileSystemWatcher_Error(this, new ErrorEventArgs(ex));
 			}
-		});
+		}, _cancellationTokenSource.Token);
 	}
 
 	internal void NotifyExistingFiles()

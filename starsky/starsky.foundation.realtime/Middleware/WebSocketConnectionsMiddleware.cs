@@ -54,14 +54,14 @@ public sealed class WebSocketConnectionsMiddleware
 				async void OnWebSocketConnectionOnNewConnection(object? sender,
 					EventArgs message)
 				{
-					await Task.Delay(150);
+					await Task.Delay(150, context.RequestAborted);
 					try
 					{
 						var welcomeMessage = new ApiNotificationResponseModel<HeartbeatModel>(
 							new HeartbeatModel(null)) { Type = ApiNotificationType.Welcome };
 						await webSocketConnection.SendAsync(JsonSerializer.Serialize(
 							welcomeMessage,
-							DefaultJsonSerializer.CamelCaseNoEnters), CancellationToken.None);
+							DefaultJsonSerializer.CamelCaseNoEnters), context.RequestAborted);
 					}
 					catch ( WebSocketException )
 					{
