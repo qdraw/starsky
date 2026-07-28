@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="starsky.csproj" />
+  <Project Path="starsky.Tests\starsky.Tests.csproj" />
+</Solution>

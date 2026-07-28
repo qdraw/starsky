@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <CollectCoverage>true</CollectCoverage>
+    <Include>[starsky]Starsky.Windows.Models.*,[starsky]Starsky.Windows.Services.BackendApiClient,[starsky]Starsky.Windows.Services.FileWorkspaceService</Include>
+    <CoverletOutputFormat>cobertura</CoverletOutputFormat>
+    <CoverletOutput>$(MSBuildProjectDirectory)\TestResults\coverage.xml</CoverletOutput>
+    <Threshold>80</Threshold>
+    <ThresholdType>line</ThresholdType>
+    <ThresholdStat>total</ThresholdStat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="6.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.6.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\starsky.csproj" />
+  </ItemGroup>
+
+  <!-- Inline C# task: removes Windows App SDK 2.2.0 locale dirs from test output -->
+  <UsingTask TaskName="RemoveLocaleDirectoriesTest"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <TargetDir ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          var localePattern = new System.Text.RegularExpressions.Regex(
+              @"^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)+$",
+              System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+          foreach (var dir in System.IO.Directory.GetDirectories(TargetDir))
+          {
+            var name = System.IO.Path.GetFileName(dir);
+            if (localePattern.IsMatch(name) &&
+                !string.Equals(name, "en-us", System.StringComparison.OrdinalIgnoreCase))
+            {
+              System.IO.Directory.Delete(dir, true);
+              Log.LogMessage(MessageImportance.Normal, "Removed locale directory: " + name);
+            }
+          }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="RemoveUnusedLanguageResourcesTest" AfterTargets="Build">
+    <!-- Addresses Windows App SDK 2.2.0 locale dirs propagating into test output via ProjectReference -->
+    <RemoveLocaleDirectoriesTest TargetDir="$(TargetDir)" />
+  </Target>
+
+</Project>

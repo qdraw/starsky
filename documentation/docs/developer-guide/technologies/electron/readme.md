@@ -13,6 +13,10 @@ Electron is maintained on GitHub and an active community of contributors.
 In this project we use Electron to build the desktop application.
 This desktop application is a wrapper around the web application.
 
+## Desktop specification
+
+For a full functional description of the current desktop app behavior, see [Starsky Desktop Functional Specification](./starskydesktop-functional-spec.md).
+
 ## NodeJS
 
 See [NodeJS](../nodejs/readme.md) for more details about the requirements

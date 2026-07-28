@@ -1,0 +1,13 @@
+<Window
+    x:Class="Starsky.Windows.Views.UpdateWarningWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Padding="20" Spacing="12">
+        <TextBlock Text="The current version is outdated" FontSize="24" FontWeight="SemiBold" />
+        <TextBlock Text="To update, go to Help -> Release Overview and download a new release." TextWrapping="Wrap" />
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Content="Release Overview" Click="ReleaseOverview_Click" />
+            <Button Content="Close Window" Click="CloseWindow_Click" />
+        </StackPanel>
+    </StackPanel>
+</Window>

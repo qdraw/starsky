@@ -1,0 +1,97 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <RootNamespace>Starsky.Windows</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>false</EnableMsixTooling>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>true</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>12.0</LangVersion>
+    <Version>0.1.0</Version>
+    <EnableCoreMrtTooling>false</EnableCoreMrtTooling>
+    <AppxGeneratePriEnabled>false</AppxGeneratePriEnabled>
+    <AppxGeneratePrisForPortableLibrariesEnabled>false</AppxGeneratePrisForPortableLibrariesEnabled>
+    <AppxGetPackagePropertiesEnabled>false</AppxGetPackagePropertiesEnabled>
+    <IncludeProjectPriFile>false</IncludeProjectPriFile>
+    <PackageId>starsky</PackageId>
+    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+    <GenerateResourceOverrideCultures>en-US</GenerateResourceOverrideCultures>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="starsky.Tests\**\*.cs" />
+    <EmbeddedResource Remove="starsky.Tests\**\*" />
+    <None Remove="starsky.Tests\**\*" />
+  </ItemGroup>
+
+  <!-- Inline C# task: reliably removes locale dirs without PowerShell escaping issues -->
+  <UsingTask TaskName="RemoveLocaleDirectories"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <TargetDir ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          var localePattern = new System.Text.RegularExpressions.Regex(
+              @"^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)+$",
+              System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+          foreach (var dir in System.IO.Directory.GetDirectories(TargetDir))
+          {
+            var name = System.IO.Path.GetFileName(dir);
+            if (localePattern.IsMatch(name) &&
+                !string.Equals(name, "en-us", System.StringComparison.OrdinalIgnoreCase))
+            {
+              System.IO.Directory.Delete(dir, true);
+              Log.LogMessage(MessageImportance.Normal, "Removed locale directory: " + name);
+            }
+          }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="RemoveUnusedLanguageResources" AfterTargets="CopyFilesToOutputDirectory">
+    <!-- Remove all locale-specific directories except English (en-us). -->
+    <!-- Addresses Windows App SDK 2.2.0 creating 80+ locale directories. -->
+    <RemoveLocaleDirectories TargetDir="$(TargetDir)" />
+  </Target>
+
+  <Target Name="CopyLocalStarskyRuntime" AfterTargets="RemoveUnusedLanguageResources">
+    <PropertyGroup>
+      <_StarskyRuntimePreferred>$(MSBuildProjectDirectory)\..\starsky\starsky-win-x64</_StarskyRuntimePreferred>
+      <_StarskyRuntimeFallback>$(MSBuildProjectDirectory)\..\starsky\win-x64</_StarskyRuntimeFallback>
+      <_StarskyRuntimeSource Condition="Exists('$(_StarskyRuntimePreferred)')">$(_StarskyRuntimePreferred)</_StarskyRuntimeSource>
+      <_StarskyRuntimeSource Condition="'$(_StarskyRuntimeSource)' == '' and Exists('$(_StarskyRuntimeFallback)')">$(_StarskyRuntimeFallback)</_StarskyRuntimeSource>
+      <_StarskyRuntimeTarget>$(TargetDir)runtime-starsky-win-x64</_StarskyRuntimeTarget>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(_StarskyRuntimeSource)' != ''">
+      <_StarskyRuntimeFiles Include="$(_StarskyRuntimeSource)\**\*" />
+    </ItemGroup>
+
+    <MakeDir Condition="'$(_StarskyRuntimeSource)' != ''" Directories="$(_StarskyRuntimeTarget)" />
+    <Copy
+      Condition="'$(_StarskyRuntimeSource)' != ''"
+      SourceFiles="@(_StarskyRuntimeFiles)"
+      DestinationFiles="@(_StarskyRuntimeFiles->'$(_StarskyRuntimeTarget)\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
+</Project>
