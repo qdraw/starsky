@@ -85,7 +85,7 @@ const MenuInlineSearch: FunctionComponent<IMenuSearchBarProps> = (props) => {
 
   return (
     <div className="menu-inline-search">
-      <button className={formFocus ? "" : "blur"} onFocus={() => setFormFocus(true)}>
+      <button type="button" className={formFocus ? "" : "blur"} onFocus={() => setFormFocus(true)}>
         <ul>
           <li className="menu-item menu-item--half-extra">
             <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>

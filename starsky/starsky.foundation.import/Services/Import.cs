@@ -300,8 +300,8 @@ public class Import : IImport
 			for ( var i = 0; i < MaxTryGetDestinationPath; i++ )
 			{
 				updatedFilePath = AppendIndexerToFilePath(
-					importIndexItem.FileIndexItem!.ParentDirectory!,
-					importIndexItem.FileIndexItem!.FileName!, indexer);
+					importIndexItem.FileIndexItem.ParentDirectory!,
+					importIndexItem.FileIndexItem.FileName!, indexer);
 
 				var currentDirectoryContent =
 					directoriesContent[importIndexItem.FileIndexItem.ParentDirectory!];
@@ -321,7 +321,7 @@ public class Import : IImport
 				throw new AggregateException($"tried after {MaxTryGetDestinationPath} times");
 			}
 
-			importIndexItem.FileIndexItem!.FilePath = updatedFilePath;
+			importIndexItem.FileIndexItem.FilePath = updatedFilePath;
 			importIndexItem.FileIndexItem.FileName = PathHelper.GetFileName(updatedFilePath);
 			importIndexItem.FilePath = updatedFilePath;
 		}
@@ -432,7 +432,7 @@ public class Import : IImport
 		}
 
 		if ( importSettings.IndexMode &&
-		     await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
+		     await _importQuery?.IsHashInImportDbAsync(hashList.Key)! )
 		{
 			ConsoleIfVerbose($"🤷 Ignored, exist already {inputFileFullPath.Key}");
 			return new ImportIndexItem
@@ -497,7 +497,7 @@ public class Import : IImport
 			importIndexItem.FileIndexItem.ImageFormat,
 			settings.Origin);
 
-		importIndexItem.FileIndexItem!.ParentDirectory =
+		importIndexItem.FileIndexItem.ParentDirectory =
 			structureService.ParseSubfolders(inputModel);
 		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(inputModel);
 		importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
@@ -774,14 +774,14 @@ public class Import : IImport
 		var queryFactory = new QueryFactory(
 			new SetupDatabaseTypes(_appSettings), _query,
 			_memoryCache, _appSettings, _serviceScopeFactory, _logger);
-		var query = queryFactory.Query();
-		await query!.AddItemAsync(importIndexItem.FileIndexItem!);
+		var query = queryFactory.Query()!;
+		await query.AddItemAsync(importIndexItem.FileIndexItem!);
 		await query.DisposeAsync();
 
 		// Add to import db, to avoid duplicate input
 		var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings),
-			_importQuery, _console, _logger).ImportQuery();
-		await importQuery!.AddAsync(importIndexItem,
+			_importQuery, _console, _logger).ImportQuery()!;
+		await importQuery.AddAsync(importIndexItem,
 			importSettings.IsConsoleOutputModeDefault());
 	}
 
@@ -808,14 +808,14 @@ public class Import : IImport
 		var queryFactory = new QueryFactory(
 			new SetupDatabaseTypes(_appSettings), _query,
 			_memoryCache, _appSettings, _serviceScopeFactory, _logger);
-		var query = queryFactory.Query();
-		await query!.RemoveItemAsync(importIndexItem.FileIndexItem!);
+		var query = queryFactory.Query()!;
+		await query.RemoveItemAsync(importIndexItem.FileIndexItem!);
 		await query.DisposeAsync();
 
 		// Remove from import db
 		var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings),
-			_importQuery, _console, _logger).ImportQuery();
-		await importQuery!.RemoveItemAsync(importIndexItem);
+			_importQuery, _console, _logger).ImportQuery()!;
+		await importQuery.RemoveItemAsync(importIndexItem);
 	}
 
 	/// <summary>

@@ -82,10 +82,16 @@ const ModalMoveFolderToTrash: React.FunctionComponent<IModalMoveFolderToTrashPro
         <div className="modal content--text">
           {MessageMoveFolderIntoTrashIntroText}
           <br />
-          <button data-test="force-cancel" onClick={() => handleExit()} className="btn btn--info">
+          <button
+            type="button"
+            data-test="force-cancel"
+            onClick={() => handleExit()}
+            className="btn btn--info"
+          >
             {MessageCancel}
           </button>
           <button
+            type="button"
             onClick={() => {
               handleExit();
               moveFolderIntoTrash();

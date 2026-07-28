@@ -121,7 +121,7 @@ public sealed class ReadMeta : IReadMeta
 
 		_cache.Set(queryReadMetaCacheName, objectExifToolModel,
 			new TimeSpan(0, 1, 0));
-		return ( FileIndexItem? ) objectExifToolModel!;
+		return ( FileIndexItem? ) objectExifToolModel;
 	}
 
 	/// <summary>

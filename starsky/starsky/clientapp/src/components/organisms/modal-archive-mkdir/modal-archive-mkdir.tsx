@@ -136,6 +136,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
           )}
 
           <button
+            type="button"
             disabled={!isFormEnabled || isLoading || !buttonState}
             className="btn btn--default"
             data-test="modal-archive-mkdir-btn-default"

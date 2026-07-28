@@ -22,6 +22,7 @@ const HamburgerMenuToggle: React.FunctionComponent<HamburgerMenuPropTypes> = ({
       {select ? null : (
         <button
           data-test="hamburger"
+          type="button"
           className="hamburger-menu-toggle hamburger__container"
           onClick={() => setHamburgerMenu(!hamburgerMenu)}
         >

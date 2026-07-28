@@ -214,7 +214,7 @@ public sealed class ThumbnailCleanerTest
 			new List<string>(input!)).ToList();
 
 		// Assert
-		CollectionAssert.AreEqual(expected, result);
+		Assert.AreSequenceEqual(expected, result);
 	}
 
 	[TestMethod]

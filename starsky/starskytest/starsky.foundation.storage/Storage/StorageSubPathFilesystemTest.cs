@@ -312,7 +312,7 @@ public sealed class StorageSubPathFilesystemTest
 			}
 
 			// Assert
-			CollectionAssert.AreEqual(lines, result);
+			Assert.AreSequenceEqual(lines, result);
 		}
 		finally
 		{
@@ -337,7 +337,7 @@ public sealed class StorageSubPathFilesystemTest
 		{
 			// The storage instance in this test class uses CreateAnImage.BasePath as StorageFolder
 			var result = _storage.ReadAllLines(dbPath);
-			CollectionAssert.AreEqual(lines, result);
+			Assert.AreSequenceEqual(lines, result);
 		}
 		finally
 		{

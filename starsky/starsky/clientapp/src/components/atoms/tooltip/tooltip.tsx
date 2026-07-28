@@ -20,6 +20,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children, left }) => {
   return (
     <button
       className={left ? "tooltip-container left" : "tooltip-container"}
+      type="button"
       onMouseEnter={handleMouseEnter}
       onClick={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

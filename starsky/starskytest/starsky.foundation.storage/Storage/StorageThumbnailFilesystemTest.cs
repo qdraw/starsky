@@ -182,7 +182,7 @@ public sealed class StorageThumbnailFilesystemTest
 			var result = _thumbnailStorage.ReadAllLines(fileName);
 
 			// Assert
-			CollectionAssert.AreEqual(expected, result);
+			Assert.AreSequenceEqual(expected, result);
 		}
 		finally
 		{

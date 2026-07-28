@@ -915,7 +915,7 @@ public sealed class UserManager : IUserManager
 				continue;
 			}
 
-			claims.Add(new Claim("Permission", permission.Code!));
+			claims.Add(new Claim("Permission", permission.Code));
 		}
 
 		return claims;

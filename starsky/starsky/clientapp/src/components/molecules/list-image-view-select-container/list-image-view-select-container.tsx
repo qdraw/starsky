@@ -65,6 +65,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
           data-test="list-image-view-select-container"
         >
           <button
+            type="button"
             onClick={(event) => {
               // multiple select using the shift key
               if (!event.shiftKey) {

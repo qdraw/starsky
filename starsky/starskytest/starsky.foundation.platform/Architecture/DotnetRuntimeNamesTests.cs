@@ -33,7 +33,7 @@ public class DotnetRuntimeNamesTests
 		var result = DotnetRuntimeNames.GetArchitecturesNoGenericAndFallback(architectures);
 
 		// Assert
-		CollectionAssert.AreEqual(new List<string>(), result.ToList());
+		Assert.AreSequenceEqual(new List<string>(), result.ToList());
 	}
 
 	[TestMethod]
@@ -49,7 +49,7 @@ public class DotnetRuntimeNamesTests
 		var result = DotnetRuntimeNames.GetArchitecturesNoGenericAndFallback(architectures);
 
 		// Assert
-		CollectionAssert.AreEqual(new List<string> { "win-x64", "linux-arm64" }, result.ToList());
+		Assert.AreSequenceEqual(new List<string> { "win-x64", "linux-arm64" }, result.ToList());
 	}
 
 	[TestMethod]
@@ -62,6 +62,6 @@ public class DotnetRuntimeNamesTests
 		var result = DotnetRuntimeNames.GetArchitecturesNoGenericAndFallback(architectures);
 
 		// Assert
-		CollectionAssert.AreEqual(architectures, result.ToList());
+		Assert.AreSequenceEqual(architectures, result.ToList());
 	}
 }

@@ -120,7 +120,12 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
   return (
     <>
       {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
-      <button className={className} data-test={dataTest} onClick={() => startForceSync()}>
+      <button
+        type={"button"}
+        className={className}
+        data-test={dataTest}
+        onClick={() => startForceSync()}
+      >
         {label}
       </button>
     </>

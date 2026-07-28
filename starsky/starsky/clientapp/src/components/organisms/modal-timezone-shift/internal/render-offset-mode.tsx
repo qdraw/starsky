@@ -262,10 +262,11 @@ export function OffsetMode({ ...props }: Readonly<IRenderOffsetModeProps>) {
         </div>
 
         <div className="modal-buttons">
-          <button className="btn btn--info" onClick={handleBack}>
+          <button type="button" className="btn btn--info" onClick={handleBack}>
             {language.key(localization.MessageBack)}
           </button>
           <button
+            type="button"
             className="btn btn--default"
             onClick={async () => {
               setIsLoadingPreview(true);

@@ -24,6 +24,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
     <>
       <button
         data-test="menu-menu-button"
+        type="button"
         className={children ? "item item--more" : "item item--more disabled"}
         onClick={() => {
           setEnableMoreMenu(true);

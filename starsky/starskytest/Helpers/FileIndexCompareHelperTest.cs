@@ -384,7 +384,7 @@ public sealed class FileIndexCompareHelperTest
 		var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
 
 		// Assert
-		CollectionAssert.DoesNotContain(result, "ColorClass");
+		Assert.DoesNotContain("ColorClass", result);
 	}
 
 	[TestMethod]
@@ -399,7 +399,7 @@ public sealed class FileIndexCompareHelperTest
 		var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
 
 		// Assert
-		CollectionAssert.DoesNotContain(result, "DateTime");
+		Assert.DoesNotContain("DateTime", result);
 	}
 
 	[TestMethod]
@@ -414,7 +414,7 @@ public sealed class FileIndexCompareHelperTest
 		var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
 
 		// Assert
-		CollectionAssert.DoesNotContain(result, "Orientation");
+		Assert.DoesNotContain("Orientation", result);
 	}
 
 	[TestMethod]
@@ -429,7 +429,7 @@ public sealed class FileIndexCompareHelperTest
 		var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
 
 		// Assert
-		CollectionAssert.DoesNotContain(result, "ImageStabilisation");
+		Assert.DoesNotContain("ImageStabilisation", result);
 	}
 
 	[TestMethod]
@@ -444,7 +444,7 @@ public sealed class FileIndexCompareHelperTest
 		var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
 
 		// Assert
-		CollectionAssert.DoesNotContain(result, "Aperture");
+		Assert.DoesNotContain("Aperture", result);
 	}
 
 	[TestMethod]
@@ -459,7 +459,7 @@ public sealed class FileIndexCompareHelperTest
 		var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
 
 		// Assert
-		CollectionAssert.DoesNotContain(result, "IsoSpeed");
+		Assert.DoesNotContain("IsoSpeed", result);
 	}
 
 	[TestMethod]
@@ -474,7 +474,7 @@ public sealed class FileIndexCompareHelperTest
 		var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
 
 		// Assert
-		CollectionAssert.DoesNotContain(result, "ImageFormat");
+		Assert.DoesNotContain("ImageFormat", result);
 	}
 
 	[TestMethod]

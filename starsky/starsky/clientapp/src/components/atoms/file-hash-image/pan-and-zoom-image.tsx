@@ -118,6 +118,7 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
   return (
     <>
       <button
+        type="button"
         className={className}
         data-test="pan-zoom-image"
         ref={containerRef}
@@ -160,6 +161,7 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
       <div className="gpx-controls">
         <div className="gpx-controls--button">
           <button
+            type="button"
             data-test="zoom_in"
             title={"Zoom in"}
             className="icon icon--zoom_in"
@@ -171,6 +173,7 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
         <div className="gpx-controls--button">
           <button
             title={"Zoom out"}
+            type={"button"}
             data-test="zoom_out"
             className="icon icon--zoom_out"
             onClick={() => zoomOut()}
@@ -182,6 +185,7 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
           <button
             disabled={position.z === 1}
             data-test="zoom_reset"
+            type={"button"}
             title={"Reset zoom"}
             className={"icon icon--zoom_reset"}
             onClick={() => reset()}

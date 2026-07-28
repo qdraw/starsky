@@ -110,7 +110,7 @@ public class DeleteItem(IQuery query, AppSettings appSettings, ISelectorStorage 
 			detailViewItem.FileIndexItem!.Status = FileIndexItem.ExifStatus.Ok;
 
 			// remove thumbnail from disk
-			_thumbnailStorage.FileDelete(detailViewItem.FileIndexItem!.FileHash!);
+			_thumbnailStorage.FileDelete(detailViewItem.FileIndexItem.FileHash!);
 			fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
 
 			// remove item from db
@@ -178,7 +178,7 @@ public class DeleteItem(IQuery query, AppSettings appSettings, ISelectorStorage 
 
 	private void RemoveJsonSideCarFile(DetailView detailViewItem)
 	{
-		// remove the json sidecar file (if exist)
+		// remove the JSON sidecar file (if exist)
 		var jsonSubPath = JsonSidecarLocation.JsonLocation(detailViewItem
 			.FileIndexItem!.ParentDirectory!, detailViewItem
 			.FileIndexItem.FileName!);
@@ -189,7 +189,7 @@ public class DeleteItem(IQuery query, AppSettings appSettings, ISelectorStorage 
 	{
 		if ( detailViewItem.FileIndexItem!.IsDirectory == true )
 		{
-			_iStorage.FolderDelete(detailViewItem.FileIndexItem!.FilePath!);
+			_iStorage.FolderDelete(detailViewItem.FileIndexItem.FilePath!);
 			return;
 		}
 

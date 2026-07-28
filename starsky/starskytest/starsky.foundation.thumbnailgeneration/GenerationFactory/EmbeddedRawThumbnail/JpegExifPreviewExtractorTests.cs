@@ -321,7 +321,7 @@ public class JpegExifPreviewExtractorTests
 		var buf = new byte[preview.Length];
 		var r = await written.ReadAsync(buf, TestContext.CancellationToken);
 		Assert.AreEqual(preview.Length, r);
-		CollectionAssert.AreEqual(preview, buf);
+		Assert.AreSequenceEqual(preview, buf);
 	}
 
 	[TestMethod]

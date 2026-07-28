@@ -31,7 +31,7 @@ describe("FileHashImage", () => {
       return (
         <>
           <img src={props.src} alt="test" />
-          <button onClick={() => props.onWheelCallback(1)}></button>
+          <button type="button" onClick={() => props.onWheelCallback(1)}></button>
         </>
       );
     };

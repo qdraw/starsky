@@ -84,6 +84,7 @@ export default function Modal({
         <div className={`modal-content ${isOpen ? " modal-content--show" : ""}`}>
           <div className="modal-close-bar">
             <button
+              type="button"
               className={`modal-exit-button ${isOpen ? " modal-exit-button--showing" : ""}`}
               ref={exitButton}
               data-test="modal-exit-button"

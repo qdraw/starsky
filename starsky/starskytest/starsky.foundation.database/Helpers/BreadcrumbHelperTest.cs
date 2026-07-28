@@ -19,7 +19,7 @@ public sealed class BreadcrumbHelperTest
 		var breadcrumbExample = Breadcrumbs.BreadcrumbHelper("/");
 
 		var breadcrumblist = new List<string> { "/" };
-		CollectionAssert.AreEqual(breadcrumbExample, breadcrumblist);
+		Assert.AreSequenceEqual(breadcrumbExample, breadcrumblist);
 	}
 
 	[TestMethod]
@@ -28,7 +28,7 @@ public sealed class BreadcrumbHelperTest
 		var breadcrumbExample = Breadcrumbs.BreadcrumbHelper(string.Empty);
 
 		var breadcrumblist = new List<string> { "/" };
-		CollectionAssert.AreEqual(breadcrumbExample, breadcrumblist);
+		Assert.AreSequenceEqual(breadcrumbExample, breadcrumblist);
 	}
 
 	[ExcludeFromCoverage]
@@ -37,7 +37,7 @@ public sealed class BreadcrumbHelperTest
 	{
 		var breadcrumbExample = Breadcrumbs.BreadcrumbHelper("/2018/2.jpg");
 		var breadcrumblist = new List<string> { "/", "/2018" };
-		CollectionAssert.AreEqual(breadcrumbExample, breadcrumblist);
+		Assert.AreSequenceEqual(breadcrumbExample, breadcrumblist);
 	}
 
 	[ExcludeFromCoverage]
@@ -46,7 +46,7 @@ public sealed class BreadcrumbHelperTest
 	{
 		var breadcrumbExample = Breadcrumbs.BreadcrumbHelper(null);
 		var breadcrumblist = new List<string>();
-		CollectionAssert.AreEqual(breadcrumbExample, breadcrumblist);
+		Assert.AreSequenceEqual(breadcrumbExample, breadcrumblist);
 	}
 
 	[TestMethod]

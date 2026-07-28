@@ -63,7 +63,7 @@ public sealed class WindowsMountWatcherTest
 
 		var newMounts = watcher.DetectNewMounts(new List<string> { "C:\\", "E:\\" });
 
-		CollectionAssert.AreEqual(new List<string> { "E:\\" }, newMounts.ToList());
+		Assert.AreSequenceEqual(new List<string> { "E:\\" }, newMounts.ToList());
 	}
 
 	[TestMethod]
@@ -76,7 +76,7 @@ public sealed class WindowsMountWatcherTest
 		var reinsertedSnapshot = watcher.DetectNewMounts(new List<string> { "C:\\", "E:\\" });
 
 		Assert.IsEmpty(removedSnapshot);
-		CollectionAssert.AreEqual(new List<string> { "E:\\" }, reinsertedSnapshot.ToList());
+		Assert.AreSequenceEqual(new List<string> { "E:\\" }, reinsertedSnapshot.ToList());
 	}
 
 	[TestMethod]
@@ -167,7 +167,7 @@ public sealed class WindowsMountWatcherTest
 
 		var newMounts = watcher.DetectNewMounts(new List<string> { "C:\\", "e:\\" });
 
-		CollectionAssert.AreEqual(new List<string> { "e:\\" }, newMounts.ToList());
+		Assert.AreSequenceEqual(new List<string> { "e:\\" }, newMounts.ToList());
 	}
 
 	[TestMethod]
@@ -192,7 +192,7 @@ public sealed class WindowsMountWatcherTest
 
 		var mounts = watcher.DetectNewMounts(new List<string> { "C:\\", "E:\\" });
 		// since we removed and then detect with same mounts, E:\ should be reported as new
-		CollectionAssert.AreEqual(new List<string> { "E:\\" }, mounts.ToList());
+		Assert.AreSequenceEqual(new List<string> { "E:\\" }, mounts.ToList());
 		Assert.IsTrue(result);
 	}
 
@@ -215,7 +215,7 @@ public sealed class WindowsMountWatcherTest
 
 		var mounts = watcher.DetectNewMounts(
 			new List<string> { "C:\\", "E:\\" });
-		CollectionAssert.AreEqual(new List<string> { "E:\\" }, mounts.ToList());
+		Assert.AreSequenceEqual(new List<string> { "E:\\" }, mounts.ToList());
 		Assert.IsFalse(result);
 	}
 

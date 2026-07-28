@@ -12,108 +12,26 @@ describe("useGlobalSettings", () => {
       hook = setupComponent.componentHook as IGlobalSettings;
     }
 
-    it("get default language", () => {
-      runHook();
-      expect(hook.language).toBe(SupportedLanguages.en);
-    });
-
-    it("get dutch language nl", () => {
+    it.each([
+      { language: "en-US", expected: SupportedLanguages.en },
+      { language: "nl", expected: SupportedLanguages.nl },
+      { language: "nl-NL", expected: SupportedLanguages.nl },
+      { language: "nl-BE", expected: SupportedLanguages.nl },
+      { language: "de", expected: SupportedLanguages.de },
+      { language: "de-DE", expected: SupportedLanguages.de },
+      { language: "de-AT", expected: SupportedLanguages.de },
+      { language: "de-BE", expected: SupportedLanguages.de },
+      { language: "de-CH", expected: SupportedLanguages.de },
+      { language: "de-IT", expected: SupportedLanguages.de },
+      { language: "de-LI", expected: SupportedLanguages.de },
+      { language: "de-LU", expected: SupportedLanguages.de }
+    ])("get language $language", ({ language, expected }) => {
       const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("nl");
+      languageGetter.mockReturnValue(language);
 
       runHook();
 
-      expect(hook.language).toBe(SupportedLanguages.nl);
-    });
-
-    it("get dutch language nl-NL", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("nl-NL");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.nl);
-    });
-
-    it("get dutch language nl-BE", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("nl-BE");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.nl);
-    });
-
-    it("get german language de", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-de", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-DE");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-AT", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-AT");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-BE", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-BE");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-CH", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-CH");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-IT", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-IT");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-LI", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-LI");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
-    });
-
-    it("get german language de-LU", () => {
-      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
-      languageGetter.mockReturnValue("de-LU");
-
-      runHook();
-
-      expect(hook.language).toBe(SupportedLanguages.de);
+      expect(hook.language).toBe(expected);
     });
   });
 });

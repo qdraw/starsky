@@ -325,6 +325,7 @@ const DetailView: FC<IDetailView> = () => {
 
           {relativeObjects.nextFilePath ? (
             <button
+              type="button"
               onClick={() =>
                 new PrevNext(
                   relativeObjects,
@@ -358,6 +359,7 @@ const DetailView: FC<IDetailView> = () => {
 
           {relativeObjects.prevFilePath ? (
             <button
+              type="button"
               onClick={() =>
                 new PrevNext(
                   relativeObjects,
@@ -378,7 +380,7 @@ const DetailView: FC<IDetailView> = () => {
                     history,
                     setRelativeObjects,
                     setIsLoading
-                  ).next();
+                  ).prev();
               }}
               data-test="detailview-prev"
               className="nextprev nextprev--prev"

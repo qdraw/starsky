@@ -129,17 +129,13 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
 
     fireEvent.keyDown(component.container, { key: "e", ctrlKey: true });
 
-    expect(screen.queryByTestId("notification-spy")).toBeTruthy();
+    const notification = screen.getByTestId("notification-spy");
 
-    const errorMessage = screen.queryByTestId("notification-spy")?.innerHTML;
-
-    expect(errorMessage).toBe(MessageItemSelectionRequired);
-
-    expect(screen.queryByTestId("notification-spy")?.innerHTML).toBeTruthy();
+    expect(notification).toBeInTheDocument();
+    expect(notification).toHaveTextContent(MessageItemSelectionRequired);
 
     expect(notificationSpy).toHaveBeenCalledTimes(1);
     expect(useHotKeysSpy).toHaveBeenCalledTimes(2);
-
     expect(useFetchSpy).toHaveBeenCalled();
   });
 
@@ -188,23 +184,17 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
 
     fireEvent.keyDown(component.container, { key: "e", ctrlKey: true });
 
-    expect(screen.queryByTestId("notification-spy")).toBeTruthy();
+    const notification = screen.getByTestId("notification-spy");
 
-    const errorMessage = screen.queryByTestId("notification-spy")?.innerHTML;
-
-    expect(errorMessage).toBe(MessageItemSelectionRequired);
-
-    expect(screen.queryByTestId("notification-spy")?.innerHTML).toBeTruthy();
+    expect(notification).toBeInTheDocument();
+    expect(notification).toHaveTextContent(MessageItemSelectionRequired);
 
     expect(notificationSpy).toHaveBeenCalledTimes(1);
     expect(useHotKeysSpy).toHaveBeenCalledTimes(2);
-
     expect(useFetchSpy).toHaveBeenCalled();
 
     fireEvent.click(screen.getByTestId("notification-spy-button"));
 
-    const errorMessage2 = screen.queryByTestId("notification-spy")?.innerHTML;
-
-    expect(errorMessage2).toBeUndefined();
+    expect(screen.queryByTestId("notification-spy")).not.toBeInTheDocument();
   });
 });

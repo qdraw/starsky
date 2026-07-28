@@ -155,6 +155,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
           )}
 
           <button
+            type="button"
             disabled={
               new FileExtensions().GetFileName(props.subPath) === folderName || !!error || isLoading
             }

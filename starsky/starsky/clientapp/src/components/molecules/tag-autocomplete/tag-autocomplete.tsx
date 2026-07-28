@@ -12,9 +12,10 @@ interface ITagAutocompleteProps {
     event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
   ) => void;
   children?: React.ReactNode;
-  onBlur?(event: React.ChangeEvent<HTMLDivElement>): void;
   maxlength?: number;
   "data-test"?: string;
+
+  onBlur?(event: React.ChangeEvent<HTMLDivElement>): void;
 }
 
 function normalizeTagText(value: string): string {
@@ -169,6 +170,7 @@ const TagAutocomplete: React.FunctionComponent<ITagAutocompleteProps> = (props) 
           {tagSuggest.map((suggestion, index) => (
             <button
               key={suggestion}
+              type="button"
               data-selected={index === tagKeyDownIndex}
               className={
                 index === tagKeyDownIndex

@@ -30,7 +30,7 @@ describe("useOffsetState", () => {
   });
 
   describe("getOffset", () => {
-    describe.each([
+    it.each([
       {
         scenario: "all zeros initially",
         setup: [],
@@ -90,7 +90,7 @@ describe("useOffsetState", () => {
       expect(offset).toEqual(expected);
     });
 
-    describe.each([
+    it.each([
       {
         field: "years",
         setter: "setOffsetYears",

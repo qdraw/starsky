@@ -107,6 +107,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
           {/* the select button with checkbox*/}
           {select ? null : (
             <button
+              type="button"
               className={
                 state.fileIndexItems.length >= 1
                   ? "item item--select"
@@ -128,6 +129,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
           {/* when selected */}
           {select ? (
             <button
+              type="button"
               className={"item item--labels"}
               onClick={() => toggleLabels()}
               onKeyDown={(event) => {

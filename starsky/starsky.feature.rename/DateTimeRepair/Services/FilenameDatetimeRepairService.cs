@@ -212,7 +212,7 @@ public class FilenameDatetimeRepairService(
 				}
 
 				// Reset Cache for the item that is renamed
-				query.ResetItemByHash(mapping.FileIndexItem!.FileHash!);
+				query.ResetItemByHash(mapping.FileIndexItem.FileHash!);
 
 				logger.LogInformation(
 					$"[FilenameDatetimeRepair] Renamed: " +

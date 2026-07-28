@@ -96,6 +96,7 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
             className="menu-item menu-item--results"
           >
             <button
+              type="button"
               onClick={() =>
                 Navigate(
                   history,

@@ -163,6 +163,7 @@ const DetailViewGpx: React.FC = () => {
         <div className="gpx-controls--button">
           <button
             data-test="lock"
+            type="button"
             className={isMapLocked ? "icon icon--lock" : "icon icon--lock_open"}
             onClick={unLockLockToggle}
           >
@@ -170,12 +171,22 @@ const DetailViewGpx: React.FC = () => {
           </button>
         </div>
         <div className="gpx-controls--button">
-          <button data-test="zoom_in" className="icon icon--zoom_in" onClick={zoomIn}>
+          <button
+            type={"button"}
+            data-test="zoom_in"
+            className="icon icon--zoom_in"
+            onClick={zoomIn}
+          >
             Zoom in
           </button>
         </div>
         <div className="gpx-controls--button">
-          <button data-test="zoom_out" className="icon icon--zoom_out" onClick={zoomOut}>
+          <button
+            type={"button"}
+            data-test="zoom_out"
+            className="icon icon--zoom_out"
+            onClick={zoomOut}
+          >
             Zoom out
           </button>
         </div>

@@ -108,7 +108,7 @@ public sealed class UdevWatcherTest
 		var result = watcher.TryRunUdevWatcher();
 
 		Assert.IsTrue(result);
-		CollectionAssert.AreEqual(new List<string> { "/media/usb" }, mountEvents);
+		Assert.AreSequenceEqual(new List<string> { "/media/usb" }, mountEvents);
 		Assert.AreEqual(1, system.DeviceUnrefCalls);
 	}
 

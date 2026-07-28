@@ -219,6 +219,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) 
           )}
 
           <button
+            type="button"
             disabled={!isValidDate(getDates())}
             className="btn btn--default"
             onClick={updateDateTime}

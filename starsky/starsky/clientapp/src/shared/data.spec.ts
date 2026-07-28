@@ -16,264 +16,229 @@ import { SupportedLanguages } from "./language";
 
 describe("date", () => {
   describe("parseDate", () => {
-    it("undefined", () => {
-      const result = parseDate("", SupportedLanguages.nl);
-      expect(result).toBeFalsy();
-    });
-
-    it("utc time (ends with Z)", () => {
-      const result = parseDate("2020-04-28T10:44:11Z", SupportedLanguages.nl);
-      //                   NOT Invalid!
-      expect(result).not.toBe("Invalid Date");
-    });
-
-    it("Timezone time", () => {
-      const result = parseDate("2020-04-28T10:44:43.123456+01:00", SupportedLanguages.nl);
-      expect(result).toBe("dinsdag 28 april 2020");
-    });
-
-    it("wrong format", () => {
-      const result = parseDate("2020-30", SupportedLanguages.nl);
-      expect(result).toBe("Invalid Date");
-    });
-
-    it("right formatted (nl)", () => {
-      const result = parseDate("2020-01-01T01:01:01", SupportedLanguages.nl);
-      expect(result).toContain("2020");
+    it.each([
+      {
+        description: "undefined",
+        input: "",
+        assertion: (result: string) => expect(result).toBeFalsy()
+      },
+      {
+        description: "utc time (ends with Z)",
+        input: "2020-04-28T10:44:11Z",
+        assertion: (result: string) => expect(result).not.toBe("Invalid Date")
+      },
+      {
+        description: "Timezone time",
+        input: "2020-04-28T10:44:43.123456+01:00",
+        assertion: (result: string) => expect(result).toBe("dinsdag 28 april 2020")
+      },
+      {
+        description: "wrong format",
+        input: "2020-30",
+        assertion: (result: string) => expect(result).toBe("Invalid Date")
+      },
+      {
+        description: "right formatted (nl)",
+        input: "2020-01-01T01:01:01",
+        assertion: (result: string) => expect(result).toContain("2020")
+      }
+    ])("$description", ({ input, assertion }) => {
+      const result = parseDate(input, SupportedLanguages.nl);
+      assertion(result);
     });
   });
 
   describe("parseTime", () => {
-    it("undefined", () => {
-      const result = parseTime("");
-      expect(result).toBeFalsy();
-    });
-
-    it("wrong format", () => {
-      const result = parseTime("2020-30");
-      expect(result).toBe("");
-    });
-
-    it("right formatted (nl)", () => {
-      const result = parseTime("2020-01-01T01:01:01");
-      expect(result).toBe("01:01:01");
-    });
-
-    it("Timezone time (parseTime)", () => {
-      const result = parseTime("2020-04-28T10:44:43.123456+01:00");
-      expect(result).toBe("09:44:43");
-    });
-
-    it("right formatted summer time (nl)", () => {
-      const result = parseTime("2020-04-10T23:40:33");
-      expect(result).toBe("23:40:33");
+    it.each([
+      { description: "undefined", input: "", expected: "" },
+      { description: "wrong format", input: "2020-30", expected: "" },
+      { description: "right formatted (nl)", input: "2020-01-01T01:01:01", expected: "01:01:01" },
+      {
+        description: "Timezone time (parseTime)",
+        input: "2020-04-28T10:44:43.123456+01:00",
+        expected: "09:44:43"
+      },
+      {
+        description: "right formatted summer time (nl)",
+        input: "2020-04-10T23:40:33",
+        expected: "23:40:33"
+      }
+    ])("$description", ({ input, expected }) => {
+      const result = parseTime(input);
+      expect(result).toBe(expected);
     });
   });
 
   describe("parseTimeHour", () => {
-    it("undefined", () => {
-      const result = parseTimeHour("");
-      expect(result).toBeUndefined();
-    });
-
-    it("wrong format", () => {
-      const result = parseTimeHour("2020-30");
-      expect(result).toBeUndefined();
-    });
-
-    it("right formatted (nl)", () => {
-      const result = parseTimeHour("2020-01-01T01:01:01");
-      expect(result).toBe(1);
-    });
-
-    it("Timezone time (parseTimeHour)", () => {
-      const result = parseTimeHour("2020-04-28T10:44:43.123456+01:00");
-      expect(result).toBe(9);
-    });
-
-    it("right formatted summer time (nl)", () => {
-      const result = parseTimeHour("2020-04-10T23:40:33");
-      expect(result).toBe(23);
+    it.each([
+      { description: "undefined", input: "", expected: undefined },
+      { description: "wrong format", input: "2020-30", expected: undefined },
+      { description: "right formatted (nl)", input: "2020-01-01T01:01:01", expected: 1 },
+      {
+        description: "Timezone time (parseTimeHour)",
+        input: "2020-04-28T10:44:43.123456+01:00",
+        expected: 9
+      },
+      {
+        description: "right formatted summer time (nl)",
+        input: "2020-04-10T23:40:33",
+        expected: 23
+      }
+    ])("$description", ({ input, expected }) => {
+      const result = parseTimeHour(input);
+      expect(result).toBe(expected);
     });
   });
 
   describe("parseTimeMinute", () => {
-    it("undefined", () => {
-      const result = parseTimeMinute("");
-      expect(result).toBeUndefined();
-    });
-
-    it("wrong format", () => {
-      const result = parseTimeMinute("2020-30");
-      expect(result).toBeUndefined();
-    });
-
-    it("right formatted (nl)", () => {
-      const result = parseTimeMinute("2020-01-01T01:01:01");
-      expect(result).toBe(1);
-    });
-
-    it("Timezone time (parseTimeSeconds)", () => {
-      const result = parseTimeMinute("2020-04-28T10:44:43.123456+01:00");
-      expect(result).toBe(44);
-    });
-
-    it("right formatted summer time (nl)", () => {
-      const result = parseTimeMinute("2020-04-10T23:40:33");
-      expect(result).toBe(40);
+    it.each([
+      { description: "undefined", input: "", expected: undefined },
+      { description: "wrong format", input: "2020-30", expected: undefined },
+      { description: "right formatted (nl)", input: "2020-01-01T01:01:01", expected: 1 },
+      {
+        description: "Timezone time (parseTimeSeconds)",
+        input: "2020-04-28T10:44:43.123456+01:00",
+        expected: 44
+      },
+      {
+        description: "right formatted summer time (nl)",
+        input: "2020-04-10T23:40:33",
+        expected: 40
+      }
+    ])("$description", ({ input, expected }) => {
+      const result = parseTimeMinute(input);
+      expect(result).toBe(expected);
     });
   });
 
   describe("parseTimeSeconds", () => {
-    it("undefined", () => {
-      const result = parseTimeSeconds("");
-      expect(result).toBeUndefined();
-    });
-
-    it("wrong format", () => {
-      const result = parseTimeSeconds("2020-30");
-      expect(result).toBeUndefined();
-    });
-
-    it("right formatted (nl)", () => {
-      const result = parseTimeSeconds("2020-01-01T01:01:01");
-      expect(result).toBe(1);
-    });
-
-    it("Timezone time (parseTimeSeconds)", () => {
-      const result = parseTimeSeconds("2020-04-28T10:44:43.123456+01:00");
-      expect(result).toBe(43);
-    });
-
-    it("right formatted summer time (nl)", () => {
-      const result = parseTimeSeconds("2020-04-10T23:40:33");
-      expect(result).toBe(33);
+    it.each([
+      { description: "undefined", input: "", expected: undefined },
+      { description: "wrong format", input: "2020-30", expected: undefined },
+      { description: "right formatted (nl)", input: "2020-01-01T01:01:01", expected: 1 },
+      {
+        description: "Timezone time (parseTimeSeconds)",
+        input: "2020-04-28T10:44:43.123456+01:00",
+        expected: 43
+      },
+      {
+        description: "right formatted summer time (nl)",
+        input: "2020-04-10T23:40:33",
+        expected: 33
+      }
+    ])("$description", ({ input, expected }) => {
+      const result = parseTimeSeconds(input);
+      expect(result).toBe(expected);
     });
   });
 
   describe("parseDateDate", () => {
-    it("undefined", () => {
-      const result = parseDateDate("");
-      expect(result).toBeUndefined();
-    });
-
-    it("wrong format", () => {
-      const result = parseDateDate("2020-30");
-      expect(result).toBeUndefined();
-    });
-
-    it("right formatted (nl)", () => {
-      const result = parseDateDate("2020-01-01T01:01:01");
-      expect(result).toBe(1);
-    });
-
-    it("Timezone time (parseDateDate)", () => {
-      const result = parseDateDate("2020-04-28T10:44:43.123456+01:00");
-      expect(result).toBe(28);
-    });
-
-    it("right formatted summer time (nl)", () => {
-      const result = parseDateDate("2020-04-10T23:40:33");
-      expect(result).toBe(10);
+    it.each([
+      { description: "undefined", input: "", expected: undefined },
+      { description: "wrong format", input: "2020-30", expected: undefined },
+      { description: "right formatted (nl)", input: "2020-01-01T01:01:01", expected: 1 },
+      {
+        description: "Timezone time (parseDateDate)",
+        input: "2020-04-28T10:44:43.123456+01:00",
+        expected: 28
+      },
+      {
+        description: "right formatted summer time (nl)",
+        input: "2020-04-10T23:40:33",
+        expected: 10
+      }
+    ])("$description", ({ input, expected }) => {
+      const result = parseDateDate(input);
+      expect(result).toBe(expected);
     });
   });
 
   describe("parseDateMonth", () => {
-    it("undefined", () => {
-      const result = parseDateMonth("");
-      expect(result).toBeUndefined();
-    });
-
-    it("wrong format", () => {
-      const result = parseDateMonth("2020-30");
-      expect(result).toBeUndefined();
-    });
-
-    it("right formatted (nl)", () => {
-      const result = parseDateMonth("2020-01-01T01:01:01");
-      expect(result).toBe(1);
-    });
-
-    it("Timezone time (parseDateMonth)", () => {
-      const result = parseDateMonth("2020-04-28T10:44:43.123456+01:00");
-      expect(result).toBe(4);
-    });
-
-    it("right formatted summer time (nl)", () => {
-      const result = parseDateMonth("2020-12-10T23:40:33");
-      expect(result).toBe(12);
+    it.each([
+      { description: "undefined", input: "", expected: undefined },
+      { description: "wrong format", input: "2020-30", expected: undefined },
+      { description: "right formatted (nl)", input: "2020-01-01T01:01:01", expected: 1 },
+      {
+        description: "Timezone time (parseDateMonth)",
+        input: "2020-04-28T10:44:43.123456+01:00",
+        expected: 4
+      },
+      {
+        description: "right formatted summer time (nl)",
+        input: "2020-12-10T23:40:33",
+        expected: 12
+      }
+    ])("$description", ({ input, expected }) => {
+      const result = parseDateMonth(input);
+      expect(result).toBe(expected);
     });
   });
 
   describe("parseDateYear", () => {
-    it("undefined", () => {
-      const result = parseDateYear("");
-      expect(result).toBeUndefined();
-    });
-
-    it("wrong format", () => {
-      const result = parseDateYear("2020-30");
-      expect(result).toBeUndefined();
-    });
-
-    it("right formatted (nl)", () => {
-      const result = parseDateYear("2020-01-01T01:01:01");
-      expect(result).toBe(2020);
-    });
-
-    it("Timezone time (parseDateYear)", () => {
-      const result = parseDateYear("2020-04-28T10:44:43.123456+01:00");
-      expect(result).toBe(2020);
-    });
-
-    it("right formatted summer time (nl)", () => {
-      const result = parseDateYear("2020-12-10T23:40:33");
-      expect(result).toBe(2020);
+    it.each([
+      { description: "undefined", input: "", expected: undefined },
+      { description: "wrong format", input: "2020-30", expected: undefined },
+      { description: "right formatted (nl)", input: "2020-01-01T01:01:01", expected: 2020 },
+      {
+        description: "Timezone time (parseDateYear)",
+        input: "2020-04-28T10:44:43.123456+01:00",
+        expected: 2020
+      },
+      {
+        description: "right formatted summer time (nl)",
+        input: "2020-12-10T23:40:33",
+        expected: 2020
+      }
+    ])("$description", ({ input, expected }) => {
+      const result = parseDateYear(input);
+      expect(result).toBe(expected);
     });
   });
 
   describe("isValidDate", () => {
-    it("undefined", () => {
-      const result = isValidDate(undefined);
-      expect(result).toBeFalsy();
-    });
-
-    it("YYYY-MM-DD", () => {
-      const result = isValidDate("2019-10-12");
-      expect(result).toBeTruthy();
-    });
-
-    it("YYYY-MM-DD hh:mm:ss", () => {
-      const result = isValidDate("2019-10-12 14:12:00");
-      expect(result).toBeTruthy();
-    });
-
-    it("Timezone time (isValidDate)", () => {
-      const result = isValidDate("2020-04-28T10:44:43.123456+01:00");
-      expect(result).toBe(true);
+    it.each([
+      { description: "undefined", input: undefined, expected: false },
+      { description: "YYYY-MM-DD", input: "2019-10-12", expected: true },
+      { description: "YYYY-MM-DD hh:mm:ss", input: "2019-10-12 14:12:00", expected: true },
+      {
+        description: "Timezone time (isValidDate)",
+        input: "2020-04-28T10:44:43.123456+01:00",
+        expected: true
+      }
+    ])("$description", ({ input, expected }) => {
+      const result = isValidDate(input);
+      expect(result).toBe(expected);
     });
   });
 
   describe("parseRelativeDate", () => {
-    it("undefined", () => {
-      const result = parseRelativeDate(undefined, SupportedLanguages.en);
-      expect(result).toBe("");
-    });
-
-    it("random", () => {
-      const result = parseRelativeDate("dd", SupportedLanguages.en);
-      expect(result).toBe("");
-    });
-
-    it("non valid date", () => {
-      const result = parseRelativeDate("2019-02-40T01:00:00+00:00", SupportedLanguages.en);
-      expect(result).toBe("");
-    });
-
-    it("Timezone time (isValidDate)", () => {
-      const result = parseRelativeDate("2020-04-28T10:44:43.123456+01:00", SupportedLanguages.en);
-      expect(result).toContain("Tuesday"); // with or without comma
-      expect(result).toContain("28 April 2020");
+    it.each([
+      {
+        description: "undefined",
+        input: undefined,
+        assertion: (result: string) => expect(result).toBe("")
+      },
+      {
+        description: "random",
+        input: "dd",
+        assertion: (result: string) => expect(result).toBe("")
+      },
+      {
+        description: "non valid date",
+        input: "2019-02-40T01:00:00+00:00",
+        assertion: (result: string) => expect(result).toBe("")
+      },
+      {
+        description: "Timezone time (isValidDate)",
+        input: "2020-04-28T10:44:43.123456+01:00",
+        assertion: (result: string) => {
+          expect(result).toContain("Tuesday"); // with or without comma
+          expect(result).toContain("28 April 2020");
+        }
+      }
+    ])("$description", ({ input, assertion }) => {
+      const result = parseRelativeDate(input, SupportedLanguages.en);
+      assertion(result);
     });
 
     it("yesterday", () => {
@@ -341,21 +306,14 @@ describe("date", () => {
   });
 
   describe("SecondsToHours", () => {
-    it("3:01", () => {
-      const result = SecondsToHours(60 * 3 + 1);
-      expect(result).toBe("3:01"); // 3 minutes and one second
-    });
-    it("3:11", () => {
-      const result = SecondsToHours(60 * 3 + 11);
-      expect(result).toBe("3:11"); // 3 minutes and 11 seconds
-    });
-    it("1:00:00", () => {
-      const result = SecondsToHours(3600);
-      expect(result).toBe("1:00:00"); // 1 hour
-    });
-    it("NaN", () => {
-      const result = SecondsToHours(NaN);
-      expect(result).toBe("0:00"); // return 0 when its NaN
+    it.each([
+      { description: "3:01", input: 60 * 3 + 1, expected: "3:01" },
+      { description: "3:11", input: 60 * 3 + 11, expected: "3:11" },
+      { description: "1:00:00", input: 3600, expected: "1:00:00" },
+      { description: "NaN", input: NaN, expected: "0:00" }
+    ])("$description", ({ input, expected }) => {
+      const result = SecondsToHours(input);
+      expect(result).toBe(expected);
     });
   });
 });

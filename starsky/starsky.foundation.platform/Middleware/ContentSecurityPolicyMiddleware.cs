@@ -84,7 +84,7 @@ public sealed class ContentSecurityPolicyMiddleware
 		if ( string.IsNullOrEmpty(httpContext.Response.Headers["Referrer-Policy"]) )
 		{
 			httpContext.Response.Headers
-				.Append("Referrer-Policy", "no-referrer");
+				.Append("Referrer-Policy", "strict-origin-when-cross-origin");
 		}
 
 		if ( string.IsNullOrEmpty(httpContext.Response.Headers.XFrameOptions) )

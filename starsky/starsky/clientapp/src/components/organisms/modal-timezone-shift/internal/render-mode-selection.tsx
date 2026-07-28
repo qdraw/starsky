@@ -69,6 +69,7 @@ export function ModeSelection({
 
         <div className="modal-buttons">
           <button
+            type="button"
             className="btn btn--default"
             data-test="modal-timezone-button-cancel"
             onClick={handleExit}

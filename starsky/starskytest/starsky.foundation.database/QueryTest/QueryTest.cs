@@ -316,8 +316,7 @@ public sealed class QueryTest
 
 		Assert.HasCount(getAllRecursive123.Count, getAllRecursiveExpectedResult123);
 
-		CollectionAssert.AreEqual(getAllRecursive123.Select(p => p.FileHash).ToList(),
-			getAllRecursiveExpectedResult123.Select(p => p.FileHash).ToList());
+		Assert.AreSequenceEqual(getAllRecursive123.Select(p => p.FileHash).ToList(), getAllRecursiveExpectedResult123.Select(p => p.FileHash).ToList());
 
 		await _query.RemoveItemAsync(getAllRecursive123);
 	}
@@ -667,7 +666,7 @@ public sealed class QueryTest
 
 		var expectedOutput = new List<string> { "/", "/bread" };
 		var output = _query.SingleItem("/bread/hi3.jpg")?.Breadcrumb;
-		CollectionAssert.AreEqual(expectedOutput, output);
+		Assert.AreSequenceEqual(expectedOutput, output);
 	}
 
 	[TestMethod]

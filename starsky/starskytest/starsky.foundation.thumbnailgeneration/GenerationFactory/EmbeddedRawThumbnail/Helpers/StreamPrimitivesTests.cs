@@ -112,7 +112,7 @@ public class StreamPrimitivesTests
 		var list = new List<uint>();
 		StreamPrimitives.ReadIndirectOffsets(ms, ( uint ) offset, 4, ( uint ) values.Length, true,
 			list);
-		CollectionAssert.AreEqual(new List<uint>(values), list);
+		Assert.AreSequenceEqual(new List<uint>(values), list);
 	}
 
 	[TestMethod]
@@ -135,7 +135,7 @@ public class StreamPrimitivesTests
 		var list = new List<uint>();
 		StreamPrimitives.ReadIndirectOffsets(ms, ( uint ) offset, 4, ( uint ) values.Length, false,
 			list);
-		CollectionAssert.AreEqual(new List<uint>(values), list);
+		Assert.AreSequenceEqual(new List<uint>(values), list);
 	}
 
 	[TestMethod]

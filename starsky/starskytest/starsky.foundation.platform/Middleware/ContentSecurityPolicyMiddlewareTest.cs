@@ -122,7 +122,7 @@ public sealed class ContentSecurityPolicyMiddlewareTest
 
 		// test
 		var referrerPolicy = httpContext.Response.Headers["Referrer-Policy"].ToString();
-		Assert.AreEqual("no-referrer", referrerPolicy);
+		Assert.AreEqual("strict-origin-when-cross-origin", referrerPolicy);
 
 		var frameOptions = httpContext.Response.Headers.XFrameOptions.ToString();
 		Assert.AreEqual("DENY", frameOptions);

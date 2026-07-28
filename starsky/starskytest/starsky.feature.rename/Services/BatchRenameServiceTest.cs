@@ -118,8 +118,7 @@ public class BatchRenameServiceTest
 		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 		var result = service.PreviewBatchRename(filePaths,
 			tokenPattern);
-		CollectionAssert.AreEqual(new List<string> { _fileInExist.FilePath! },
-			result.Select(x => x.SourceFilePath).ToList());
+		Assert.AreSequenceEqual(new List<string> { _fileInExist.FilePath! }, result.Select(x => x.SourceFilePath).ToList());
 		Assert.IsFalse(result[0].HasError);
 		Assert.EndsWith(".jpg", result[0].TargetFilePath);
 		await RemoveFoldersAndFilesInDatabase();
@@ -137,8 +136,7 @@ public class BatchRenameServiceTest
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
 		var result = service.PreviewBatchRename(filePaths,
 			tokenPattern);
-		CollectionAssert.AreEqual(new List<string> { _fileInRoot.FilePath! },
-			result.Select(x => x.SourceFilePath).ToList());
+		Assert.AreSequenceEqual(new List<string> { _fileInRoot.FilePath! }, result.Select(x => x.SourceFilePath).ToList());
 		Assert.IsFalse(result[0].HasError);
 		Assert.EndsWith(".jpg", result[0].TargetFilePath);
 		await RemoveFoldersAndFilesInDatabase();
@@ -155,8 +153,7 @@ public class BatchRenameServiceTest
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
 		var result = service.PreviewBatchRename([_folderExist.FilePath!],
 			tokenPattern);
-		CollectionAssert.AreEqual(new List<string> { _folderExist.FilePath! },
-			result.Select(x => x.SourceFilePath).ToList());
+		Assert.AreSequenceEqual(new List<string> { _folderExist.FilePath! }, result.Select(x => x.SourceFilePath).ToList());
 		Assert.IsTrue(result[0].HasError);
 		Assert.AreEqual("Is a directory", result[0].ErrorMessage);
 		await RemoveFoldersAndFilesInDatabase();
@@ -177,8 +174,7 @@ public class BatchRenameServiceTest
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
 		var result = service.PreviewBatchRename(filePaths,
 			tokenPattern);
-		CollectionAssert.AreEqual(new List<string> { _fileInRoot.FilePath! },
-			result.Select(x => x.SourceFilePath).ToList());
+		Assert.AreSequenceEqual(new List<string> { _fileInRoot.FilePath! }, result.Select(x => x.SourceFilePath).ToList());
 		Assert.IsFalse(result[0].HasError);
 		Assert.EndsWith(".jpg", result[0].TargetFilePath);
 		await RemoveFoldersAndFilesInDatabase();
@@ -195,7 +191,7 @@ public class BatchRenameServiceTest
 		var filePaths = new List<string> { _fileInExist.FilePath! };
 		const string tokenPattern = "{invalidtoken}";
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
-		CollectionAssert.AllItemsAreNotNull(result);
+		Assert.AreAllNotNull(result);
 		Assert.Contains(x => x.HasError, result);
 		Assert.Contains("Invalid pattern", result[0].ErrorMessage!);
 		await RemoveFoldersAndFilesInDatabase();
@@ -211,7 +207,7 @@ public class BatchRenameServiceTest
 		var filePaths = new List<string> { "/notfound.jpg" };
 		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
-		CollectionAssert.AllItemsAreNotNull(result);
+		Assert.AreAllNotNull(result);
 		Assert.Contains(x => x.HasError, result);
 		Assert.AreEqual("File not found in database", result[0].ErrorMessage);
 	}
@@ -225,7 +221,7 @@ public class BatchRenameServiceTest
 		var filePaths = new List<string>();
 		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
-		CollectionAssert.AllItemsAreNotNull(result);
+		Assert.AreAllNotNull(result);
 		Assert.IsEmpty(result);
 	}
 

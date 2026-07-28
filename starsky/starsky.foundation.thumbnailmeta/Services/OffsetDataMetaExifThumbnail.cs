@@ -21,16 +21,11 @@ using Directory = MetadataExtractor.Directory;
 namespace starsky.foundation.thumbnailmeta.Services;
 
 [Service(typeof(IOffsetDataMetaExifThumbnail), InjectionLifetime = InjectionLifetime.Scoped)]
-public sealed class OffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
+public sealed class OffsetDataMetaExifThumbnail(ISelectorStorage selectorStorage, IWebLogger logger)
+	: IOffsetDataMetaExifThumbnail
 {
-	private readonly IStorage _iStorage;
-	private readonly IWebLogger _logger;
-
-	public OffsetDataMetaExifThumbnail(ISelectorStorage selectorStorage, IWebLogger logger)
-	{
-		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-		_logger = logger;
-	}
+	private readonly IStorage _iStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
 	public (ExifThumbnailDirectory?, int, int, ImageRotation.Rotation)
 		GetExifMetaDirectories(string subPath)
@@ -51,7 +46,7 @@ public sealed class OffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
 			};
 		}
 
-		var thumbnailOffset = long.Parse(exifThumbnailDir!.GetDescription(
+		var thumbnailOffset = long.Parse(exifThumbnailDir.GetDescription(
 			ExifThumbnailDirectory.TagThumbnailOffset)!.Split(' ')[0]);
 		const int maxIssue35Offset = 12;
 		var thumbnailLength = int.Parse(exifThumbnailDir.GetDescription(
@@ -65,14 +60,14 @@ public sealed class OffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
 			var actualRead = imageStream.Read(thumbnail, 0, thumbnailLength);
 			if ( actualRead != thumbnailLength )
 			{
-				_logger.LogError("[ParseOffsetData] ReadStream: actualRead != maxRead");
+				logger.LogError("[ParseOffsetData] ReadStream: actualRead != maxRead");
 			}
 		}
 
 		// work around Metadata Extractor issue #35
 		if ( thumbnailLength <= maxIssue35Offset + 1 )
 		{
-			_logger.LogInformation(
+			logger.LogInformation(
 				$"[ParseOffsetData] thumbnailLength : {thumbnailLength} {maxIssue35Offset + 1}");
 			return new OffsetModel
 			{
@@ -161,7 +156,7 @@ public sealed class OffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
 
 		if ( !heightParseResult || !widthParseResult || height == 0 || width == 0 )
 		{
-			_logger.LogInformation(
+			logger.LogInformation(
 				$"[ParseMetaThumbnail] ${reference} has no height or width {width}x{height} ");
 		}
 

@@ -114,7 +114,7 @@ public sealed class SyncWatcherConnector
 		{
 			// from path sync
 			var path = _appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath);
-			await _synchronize!.Sync(path);
+			await _synchronize?.Sync(path)!;
 
 			syncData.Add(
 				new FileIndexItem(_appSettings.FullPathStorageFolderToDatabaseStyle(fullFilePath))
@@ -131,8 +131,8 @@ public sealed class SyncWatcherConnector
 		else
 		{
 			syncData =
-				await _synchronize!.Sync(
-					_appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath));
+				await _synchronize?.Sync(
+					_appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath))!;
 		}
 
 		var filtered = FilterBefore(syncData);
@@ -179,9 +179,9 @@ public sealed class SyncWatcherConnector
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filtered,
 				ApiNotificationType.SyncWatcherConnector);
-		await _connectionsService!.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
-			DefaultJsonSerializer.CamelCaseNoEnters), CancellationToken.None);
-		await _notificationQuery!.AddNotification(webSocketResponse);
+		await _connectionsService?.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
+			DefaultJsonSerializer.CamelCaseNoEnters), CancellationToken.None)!;
+		await _notificationQuery?.AddNotification(webSocketResponse)!;
 	}
 
 	internal static List<FileIndexItem> FilterBefore(

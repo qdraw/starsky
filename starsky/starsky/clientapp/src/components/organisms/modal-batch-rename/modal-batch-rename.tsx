@@ -244,6 +244,7 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
               {/* Action buttons */}
               <div className="batch-rename-button-group">
                 <button
+                  type="button"
                   onClick={executeBatchRename}
                   disabled={isLoading || preview.some((item) => item.hasError)}
                   className="btn btn--default"
@@ -254,6 +255,7 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
             </>
           ) : (
             <button
+              type="button"
               onClick={generatePreview}
               disabled={isPreviewLoading || !pattern.trim()}
               data-test="button-batch-rename-generate-preview"

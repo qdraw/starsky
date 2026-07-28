@@ -57,6 +57,7 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
           className="box"
           disabled={!isFormEnabled}
           data-test="dateTime"
+          type="button"
           onClick={() => setModalDatetimeOpen(true)}
         >
           {isFormEnabled ? <div className="icon icon--right icon--edit" /> : null}

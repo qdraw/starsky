@@ -11,10 +11,11 @@ import Modal from "../../atoms/modal/modal";
 interface IModalDesktopEditorOpenConfirmationProps {
   isOpen: boolean;
   select: Array<string> | undefined;
-  handleExit(): void;
   state: IArchiveProps;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   isCollections: boolean;
+
+  handleExit(): void;
 }
 
 export async function OpenDesktop(
@@ -88,6 +89,7 @@ const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
           ) : null}
 
           <button
+            type="button"
             data-test="editor-open-confirmation-no"
             onClick={() => handleExit()}
             className="btn btn--info"
@@ -95,6 +97,7 @@ const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
             {MessageCancel}
           </button>
           <button
+            type="button"
             onClick={() => {
               OpenDesktop(
                 select ?? [],
