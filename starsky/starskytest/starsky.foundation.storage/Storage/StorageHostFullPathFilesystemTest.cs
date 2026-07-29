@@ -717,6 +717,150 @@ public sealed class StorageHostFullPathFilesystemTest
 		}
 	}
 
+	[TestMethod]
+	public void CreateDirectory_Success_ReturnsTrue()
+	{
+		var logger = new FakeIWebLogger();
+		var hostStorage = new StorageHostFullPathFilesystem(logger);
+		var testPath = Path.Combine(new CreateAnImage().BasePath, 
+			"CreateDirectory_Success_ReturnsTrue_" + Guid.NewGuid());
+		
+		try
+		{
+			var result = hostStorage.CreateDirectory(testPath);
+			
+			Assert.IsTrue(result);
+			Assert.IsTrue(Directory.Exists(testPath));
+			Assert.IsEmpty(logger.TrackedErrors);
+		}
+		finally
+		{
+			hostStorage.FolderDelete(testPath);
+		}
+	}
+
+	[TestMethod]
+	public void CreateDirectory_ExistingPath_ReturnsTrue()
+	{
+		var logger = new FakeIWebLogger();
+		var hostStorage = new StorageHostFullPathFilesystem(logger);
+		var testPath = Path.Combine(new CreateAnImage().BasePath, 
+			"CreateDirectory_Existing_" + Guid.NewGuid());
+		
+		try
+		{
+			hostStorage.CreateDirectory(testPath);
+			
+			var result = hostStorage.CreateDirectory(testPath);
+			
+			Assert.IsTrue(result);
+			Assert.IsTrue(Directory.Exists(testPath));
+			Assert.IsEmpty(logger.TrackedErrors);
+		}
+		finally
+		{
+			hostStorage.FolderDelete(testPath);
+		}
+	}
+
+	[TestMethod]
+	public void CreateDirectory_IOException_ReturnsFalse_AndLogs()
+	{
+		var logger = new FakeIWebLogger();
+		var hostStorage = new StorageHostFullPathFilesystem(logger);
+		
+		if ( !new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("Test requires Windows to simulate IOException");
+			return;
+		}
+		
+		var invalidPath = "\\\\invalid-path-*-?-<>-:|\\test";
+		
+		var result = hostStorage.CreateDirectory(invalidPath);
+		
+		Assert.IsFalse(result);
+		var lastError = logger.TrackedErrors.LastOrDefault();
+		Assert.IsNotNull(lastError);
+		Assert.IsTrue(lastError.Item2.Contains("[CreateDirectory] IOException caught"));
+		Assert.IsTrue(lastError.Item2.Contains(invalidPath));
+	}
+
+	[TestMethod]
+	public void CreateDirectory_NestedDirectories_Success()
+	{
+		var logger = new FakeIWebLogger();
+		var hostStorage = new StorageHostFullPathFilesystem(logger);
+		var basePath = Path.Combine(new CreateAnImage().BasePath, 
+			"CreateDirectory_Nested_" + Guid.NewGuid());
+		var nestedPath = Path.Combine(basePath, "level1", "level2", "level3");
+		
+		try
+		{
+			var result = hostStorage.CreateDirectory(nestedPath);
+			
+			Assert.IsTrue(result);
+			Assert.IsTrue(Directory.Exists(nestedPath));
+			Assert.IsEmpty(logger.TrackedErrors);
+		}
+		finally
+		{
+			hostStorage.FolderDelete(basePath);
+		}
+	}
+
+	[TestMethod]
+	public void CreateDirectory_LogsError_OnUnauthorizedAccessException()
+	{
+		var logger = new FakeIWebLogger();
+		var hostStorage = new StorageHostFullPathFilesystem(logger);
+		
+		if ( new AppSettings().IsWindows )
+		{
+			var systemPath = "C:\\Windows\\System32\\privileged-test-" + Guid.NewGuid();
+			
+			try
+			{
+				var result = hostStorage.CreateDirectory(systemPath);
+				
+				if ( !result )
+				{
+					var lastError = logger.TrackedErrors.LastOrDefault();
+					if ( lastError?.Item2 != null )
+					{
+						Assert.IsTrue(lastError.Item2.Contains("[CreateDirectory]"));
+					}
+				}
+			}
+			catch ( UnauthorizedAccessException )
+			{
+				// Expected behavior on some systems
+			}
+		}
+		else
+		{
+			var restrictedPath = "/root/test-" + Guid.NewGuid();
+			
+			try
+			{
+				var result = hostStorage.CreateDirectory(restrictedPath);
+				
+				if ( !result )
+				{
+					var lastError = logger.TrackedErrors.LastOrDefault();
+					if ( lastError?.Item2 != null )
+					{
+						Assert.IsTrue(lastError.Item2.Contains("[CreateDirectory]"));
+					}
+				}
+			}
+			catch ( UnauthorizedAccessException )
+			{
+				// Expected behavior
+			}
+		}
+	}
+
 	private sealed class ThrowingStream : MemoryStream
 	{
 		public override Task CopyToAsync(Stream destination, int bufferSize,
