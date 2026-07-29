@@ -62,6 +62,12 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 
 	public bool CreateDirectory(string path)
 	{
+		// Fail if a file exists at this path (consistent behavior across platforms)
+		if ( File.Exists(path) )
+		{
+			return false;
+		}
+		
 		try
 		{
 			Directory.CreateDirectory(path);
