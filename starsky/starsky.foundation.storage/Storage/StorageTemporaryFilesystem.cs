@@ -178,6 +178,13 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	public bool CreateDirectory(string path)
 	{
 		var inputFileFullPath = _appSettings.DatabasePathToTempFolderFilePath(path);
+		
+		// Fail if a file exists at this path (consistent behavior across platforms)
+		if ( File.Exists(inputFileFullPath) )
+		{
+			return false;
+		}
+		
 		try
 		{
 			Directory.CreateDirectory(inputFileFullPath);
