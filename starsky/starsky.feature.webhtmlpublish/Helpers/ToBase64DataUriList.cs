@@ -20,7 +20,7 @@ public class ToBase64DataUriList(IThumbnailService thumbnailService)
 		for ( var i = 0; i < fileIndexList.Count; i++ )
 		{
 			var item = fileIndexList[i];
-			const ThumbnailImageFormat format = ThumbnailImageFormat.png;
+			const ThumbnailImageFormat format = ThumbnailImageFormat.webp;
 
 			var (stream, status) = await thumbnailService.GenerateThumbnail(item.FilePath!,
 				item.FileHash!,
@@ -29,10 +29,9 @@ public class ToBase64DataUriList(IThumbnailService thumbnailService)
 
 			if ( !status.Success || stream == null )
 			{
-				// blank 1px x 1px image
+				// blank 1px x 1px WebP image (smaller & consistent across platforms)
 				base64ImageArray[i] =
-					"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA" +
-					"C1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+					"data:image/webp;base64,UklGRiYAAABXRUJQVlA4IBIAAAAwAQCdASoBAAEAQAcJaQCdLoAA3AA=";
 				// no need to dispose here
 				continue;
 			}

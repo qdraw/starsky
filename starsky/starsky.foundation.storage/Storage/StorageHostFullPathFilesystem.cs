@@ -67,6 +67,12 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			Directory.CreateDirectory(path);
 			return true;
 		}
+		catch ( UnauthorizedAccessException exception )
+		{
+			_logger.LogError($"[CreateDirectory] IOException caught, " +
+			                 $"{path}", exception);
+			return false;
+		}
 		catch ( IOException exception )
 		{
 			_logger.LogError($"[CreateDirectory] IOException caught, " +

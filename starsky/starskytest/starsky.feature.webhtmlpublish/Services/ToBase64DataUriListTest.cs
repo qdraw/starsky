@@ -42,7 +42,7 @@ public sealed class ToBase64DataUriListTest
 		var result = await new ToBase64DataUriList(thumbnailService)
 			.Create(
 				[new FileIndexItem("/test.jpg")]);
-		Assert.Contains("data:image/png;base64,", result[0]);
+		Assert.Contains("data:image/webp;base64,", result[0]);
 	}
 
 	[TestMethod]
@@ -56,8 +56,7 @@ public sealed class ToBase64DataUriListTest
 		var result = await new ToBase64DataUriList(thumbnailService)
 			.Create(
 				[new FileIndexItem("/test.jpg")]);
-		// to fallback image (1px x 1px)
-		Assert.AreEqual("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA" +
-		                "C1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", result[0]);
+		// to fallback image (1px x 1px WebP)
+		Assert.AreEqual("data:image/webp;base64,UklGRiYAAABXRUJQVlA4IBIAAAAwAQCdASoBAAEAQAcJaQCdLoAA3AA=", result[0]);
 	}
 }
