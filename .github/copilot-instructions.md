@@ -17,7 +17,7 @@ When writing tests use `[TestMethod]` and `[DataRow]` to cover multiple scenario
 
 Be concise.
 
-Do not commit to master/main, always create a branch and create a pull request. The branch name should be descriptive of the change.
+Do not commit in any branch
 
 If I say "review": Review the code. When reviewing, start with a list of what needs to improve, then separately compliment on the good stuff. We don't use try catch, errors are caught on a higher level.
 
