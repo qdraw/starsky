@@ -31,7 +31,7 @@ RUN for i in 1 2 3; do \
     echo "react done"
 
 # Stage 2 .NET Build
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 
@@ -75,7 +75,7 @@ RUN \
         -v
 
 # Stage 3 Runtime Image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS release
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS release
 WORKDIR /app
 ARG TOOLS=false
 
