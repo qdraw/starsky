@@ -648,6 +648,11 @@ public sealed class QueryUpdateItemError
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IUpdateEntry SharedIdentityEntry { get; }
 #pragma warning restore 8618
+
+		public bool IsModified(IComplexProperty property) => throw new NotImplementedException();
+		public bool HasExplicitValue(IProperty property) => throw new NotImplementedException();
+		public bool HasStoreGeneratedValue(IProperty property) => throw new NotImplementedException();
+		public bool CanHaveOriginalValue(IPropertyBase propertyBase) => throw new NotImplementedException();
 	}
 
 	private sealed class UpdateEntryEntityEntryProxy : IUpdateEntry
@@ -726,6 +731,26 @@ public sealed class QueryUpdateItemError
 		}
 
 		public bool IsConceptualNull(IProperty property)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsModified(IComplexProperty property)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool HasExplicitValue(IProperty property)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool HasStoreGeneratedValue(IProperty property)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool CanHaveOriginalValue(IPropertyBase propertyBase)
 		{
 			throw new NotImplementedException();
 		}
@@ -912,6 +937,12 @@ public sealed class QueryUpdateItemError
 		}
 
 		public override object? this[IProperty property]
+		{
+			get => throw new NotImplementedException();
+			set => throw new NotImplementedException();
+		}
+
+		public override System.Collections.IList? this[IComplexProperty property]
 		{
 			get => throw new NotImplementedException();
 			set => throw new NotImplementedException();
