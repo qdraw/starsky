@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
@@ -170,7 +171,7 @@ public sealed class RabbitMqQueueBackendTest
 	public void Count_OperationInterrupted_ReturnsZeroAndLogsWarning()
 	{
 		var (backend, adapter, logger) = CreateBackend();
-		var shutdownArgs = new ShutdownEventArgs(ShutdownInitiator.Library, 541, "shutdown");
+		var shutdownArgs = new ShutdownEventArgs(ShutdownInitiator.Library, 541, "shutdown", CancellationToken.None);
 		adapter.GetMessageCountException = new OperationInterruptedException(shutdownArgs);
 
 		var count = backend.Count();
