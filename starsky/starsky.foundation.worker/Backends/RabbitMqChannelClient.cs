@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using RabbitMQ.Client;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Backends.Interfaces;
@@ -9,8 +10,8 @@ namespace starsky.foundation.worker.Backends;
 [ExcludeFromCodeCoverage]
 internal sealed class RabbitMqChannelClient : IRabbitMqChannelClient
 {
+	private readonly IChannel _channel;
 	private readonly IConnection _connection;
-	private readonly IModel _channel;
 
 	public RabbitMqChannelClient(AppSettingsRabbitMqModel settings, string queueName)
 	{
@@ -20,34 +21,40 @@ internal sealed class RabbitMqChannelClient : IRabbitMqChannelClient
 			Port = settings.Port,
 			UserName = settings.Username,
 			Password = settings.Password,
-			VirtualHost = settings.VirtualHost,
-			DispatchConsumersAsync = true
+			VirtualHost = settings.VirtualHost
 		};
 
-		_connection = factory.CreateConnection();
-		_channel = _connection.CreateModel();
-		_channel.QueueDeclare(queueName, true, false,
-			false, null);
+		_connection = factory.CreateConnectionAsync(CancellationToken.None).GetAwaiter()
+			.GetResult();
+		_channel = _connection.CreateChannelAsync(cancellationToken: CancellationToken.None)
+			.GetAwaiter()
+			.GetResult();
+		_channel.QueueDeclareAsync(queueName, true, false,
+			false, null, false, false, CancellationToken.None).GetAwaiter().GetResult();
 	}
 
 	public bool IsOpen => _connection.IsOpen && _channel.IsOpen;
 
 	public int GetMessageCount(string queueName)
 	{
-		var state = _channel.QueueDeclarePassive(queueName);
+		var state = _channel.QueueDeclarePassiveAsync(queueName, CancellationToken.None)
+			.GetAwaiter()
+			.GetResult();
 		return ( int ) state.MessageCount;
 	}
 
 	public void Publish(string queueName, byte[] body, bool persistent)
 	{
-		var properties = _channel.CreateBasicProperties();
-		properties.Persistent = persistent;
-		_channel.BasicPublish(string.Empty, queueName, properties, body);
+		var properties = new BasicProperties { Persistent = persistent };
+		_channel.BasicPublishAsync(string.Empty, queueName, false, properties, body,
+				CancellationToken.None)
+			.GetAwaiter().GetResult();
 	}
 
 	public RabbitMqGetResult? TryGet(string queueName)
 	{
-		var result = _channel.BasicGet(queueName, false);
+		var result = _channel.BasicGetAsync(queueName, false, CancellationToken.None).GetAwaiter()
+			.GetResult();
 		if ( result == null )
 		{
 			return null;
@@ -61,12 +68,13 @@ internal sealed class RabbitMqChannelClient : IRabbitMqChannelClient
 
 	public void Ack(ulong deliveryTag)
 	{
-		_channel.BasicAck(deliveryTag, false);
+		_channel.BasicAckAsync(deliveryTag, false, CancellationToken.None).GetAwaiter().GetResult();
 	}
 
 	public void Nack(ulong deliveryTag, bool requeue)
 	{
-		_channel.BasicNack(deliveryTag, false, requeue);
+		_channel.BasicNackAsync(deliveryTag, false, requeue, CancellationToken.None).GetAwaiter()
+			.GetResult();
 	}
 
 	public void Dispose()
