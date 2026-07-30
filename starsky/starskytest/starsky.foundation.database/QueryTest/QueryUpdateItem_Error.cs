@@ -932,6 +932,11 @@ public sealed class QueryUpdateItemError
 			throw new NotImplementedException();
 		}
 
+		public override void SetValues<TProperty>(IDictionary<string, TProperty> propertyValues)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override PropertyValues Clone()
 		{
 			throw new NotImplementedException();
