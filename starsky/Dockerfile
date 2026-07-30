@@ -88,8 +88,16 @@ RUN if [ "$TOOLS" = "true" ]; then \
 else \
     echo "no tools for debug" ;\
 fi && \
-  if ! getent group starsky >/dev/null; then groupadd --gid 1000 starsky; fi && \
-  if ! id -u starsky >/dev/null 2>&1; then useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky; fi
+  if ! getent group starsky >/dev/null; then \
+    if getent group 1000 >/dev/null; then groupadd starsky; else groupadd --gid 1000 starsky; fi; \
+  fi && \
+  if ! id -u starsky >/dev/null 2>&1; then \
+    if getent passwd 1000 >/dev/null; then \
+      useradd --gid starsky --shell /bin/bash --create-home starsky; \
+    else \
+      useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky; \
+    fi; \
+  fi
  
 # Copy dlls
 COPY --chown=starsky:starsky --from=build-env /app/generic-netcore /app
