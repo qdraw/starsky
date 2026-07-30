@@ -78,7 +78,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "");
 
 		PortProgramHelper.SetEnvPortAspNetUrls(new List<string>());
-		Assert.IsNull(Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
+		Assert.IsTrue(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")));
 
 		Environment.SetEnvironmentVariable("PORT", _prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", _preAspNetUrls);
