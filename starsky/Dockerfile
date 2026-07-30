@@ -82,15 +82,14 @@ ARG TOOLS=false
 # # for debugging
 RUN if [ "$TOOLS" = "true" ]; then \
     apt-get update ;\
-    apt-get upgrade -y ;\
-    apt-get install --no-install-recommends --no-install-suggests -y curl nano;\
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --no-install-suggests -y curl nano ;\
     apt-get clean ;\
     rm -rf /var/lib/apt/lists/* ;\
 else \
     echo "no tools for debug" ;\
 fi && \
-  groupadd --gid 1000 starsky \
-    && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky 
+  if ! getent group starsky >/dev/null; then groupadd --gid 1000 starsky; fi && \
+  if ! id -u starsky >/dev/null 2>&1; then useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky; fi
  
 # Copy dlls
 COPY --chown=starsky:starsky --from=build-env /app/generic-netcore /app
