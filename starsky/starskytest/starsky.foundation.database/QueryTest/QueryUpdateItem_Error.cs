@@ -8,6 +8,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Update;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,6 +47,20 @@ public sealed class QueryUpdateItemError
 			options.UseInMemoryDatabase(nameof(QueryTest)));
 		var serviceProvider = services.BuildServiceProvider();
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	}
+
+	/// <summary>
+	///     EF Core's PropertyValues constructor now dereferences the InternalEntityEntry
+	///     immediately, so FakePropertyValues needs a real tracked entry instead of null
+	/// </summary>
+	private static InternalEntityEntry CreateInternalEntityEntry()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(Guid.NewGuid().ToString())
+			.Options;
+		using var context = new ApplicationDbContext(options);
+		var entry = context.Add(new FileIndexItem("/fake-property-values.jpg"));
+		return ( ( IInfrastructure<InternalEntityEntry> ) entry ).Instance;
 	}
 
 	[TestMethod]
@@ -256,8 +271,9 @@ public sealed class QueryUpdateItemError
 	[TestMethod]
 	public void SolveConcurrencyException_should_callDelegate()
 	{
+		var internalEntry = CreateInternalEntityEntry();
 		SolveConcurrency.SolveConcurrencyException(new FileIndexItem(),
-			new FakePropertyValues(null!), new FakePropertyValues(null!),
+			new FakePropertyValues(internalEntry), new FakePropertyValues(internalEntry),
 			"", _ => IsWrittenConcurrencyException = true);
 
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -266,9 +282,10 @@ public sealed class QueryUpdateItemError
 	[TestMethod]
 	public void Query_UpdateItem_NotSupportedException()
 	{
+		var internalEntry = CreateInternalEntityEntry();
 		Assert.ThrowsExactly<NotSupportedException>(() =>
 			SolveConcurrency.SolveConcurrencyException(null!,
-				new FakePropertyValues(null!), new FakePropertyValues(null!),
+				new FakePropertyValues(internalEntry), new FakePropertyValues(internalEntry),
 				"", _ => IsWrittenConcurrencyException = true));
 	}
 

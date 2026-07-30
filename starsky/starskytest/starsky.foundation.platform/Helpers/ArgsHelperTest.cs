@@ -361,7 +361,7 @@ public sealed class ArgsHelperTest
 		// Reset Environment after use
 		foreach ( var t in envNameList )
 		{
-			Environment.SetEnvironmentVariable(t, string.Empty);
+			Environment.SetEnvironmentVariable(t, null);
 		}
 	}
 
@@ -389,7 +389,7 @@ public sealed class ArgsHelperTest
 		// Reset Environment after use
 		foreach ( var t in envNameList )
 		{
-			Environment.SetEnvironmentVariable(t, string.Empty);
+			Environment.SetEnvironmentVariable(t, null);
 		}
 	}
 

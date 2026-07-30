@@ -1,8 +1,11 @@
 using System.Linq;
+using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.WatcherServices;
+using starskytest.ExtensionMethods;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.WatcherServices;
@@ -11,24 +14,32 @@ namespace starskytest.starsky.foundation.sync.WatcherServices;
 public sealed class DiskWatcherBackgroundServiceTest
 {
 	[TestMethod]
-	public void StartAsync_Enabled()
+	public async Task StartAsync_Enabled()
 	{
 		var diskWatcher = new FakeDiskWatcher();
 		var appSettings = new AppSettings { UseDiskWatcher = true };
-		new DiskWatcherBackgroundService(diskWatcher, appSettings, new FakeIWebLogger())
-			.StartAsync(CancellationToken
-				.None);
+		var service =
+			new DiskWatcherBackgroundService(diskWatcher, appSettings, new FakeIWebLogger());
+
+		var dynMethod = service.GetType().GetMethod("ExecuteAsync",
+			BindingFlags.NonPublic | BindingFlags.Instance)!;
+		await dynMethod.InvokeAsync(service, CancellationToken.None);
+
 		Assert.AreEqual(appSettings.StorageFolder, diskWatcher.AddedItems.FirstOrDefault());
 	}
 
 	[TestMethod]
-	public void StartAsync_FeatureToggleDisabled()
+	public async Task StartAsync_FeatureToggleDisabled()
 	{
 		var diskWatcher = new FakeDiskWatcher();
 		var appSettings = new AppSettings { UseDiskWatcher = false };
-		new DiskWatcherBackgroundService(diskWatcher, appSettings, new FakeIWebLogger())
-			.StartAsync(CancellationToken
-				.None);
+		var service =
+			new DiskWatcherBackgroundService(diskWatcher, appSettings, new FakeIWebLogger());
+
+		var dynMethod = service.GetType().GetMethod("ExecuteAsync",
+			BindingFlags.NonPublic | BindingFlags.Instance)!;
+		await dynMethod.InvokeAsync(service, CancellationToken.None);
+
 		Assert.IsEmpty(diskWatcher.AddedItems);
 	}
 }
