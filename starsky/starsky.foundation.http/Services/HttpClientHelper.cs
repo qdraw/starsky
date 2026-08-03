@@ -36,7 +36,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		"api.github.com",
 		"starsky-dependencies.netlify.app",
 		"api.dropbox.com",
-		"nominatim.openstreetmap.org"
+		"nominatim.openstreetmap.org",
+		"overpass-api.de"
 	];
 
 	/// <summary>
