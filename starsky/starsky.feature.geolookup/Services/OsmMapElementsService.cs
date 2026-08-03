@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
@@ -16,9 +15,13 @@ namespace starsky.feature.geolookup.Services;
 public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMapElementsService
 {
 	private const string HttpsPrefix = "https://";
-	private const string OverpassBaseUrl = "overpass-api.de/api/interpreter";
-	private const int NearbyRadiusInMeters = 30;
+	private static readonly string[] OverpassBaseUrls =
+	[
+		"overpass.osm.ch/api/interpreter"
+	];
+	private const double NearbyRadiusInMeters = 33.75;
 	private const int MaxItemsPerSection = 8;
+	private const string ErrorMessage = "Failed to parse OSM map elements response";
 
 	private static readonly string[] DescriptorTagKeys =
 	[
@@ -35,65 +38,121 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 			return new OsmMapElementsResult { Error = "Non-valid location" };
 		}
 
-		const string errorMessage = "Failed to parse OSM map elements response";
-		var url = BuildUrl(latitude, longitude);
+		string? lastError = null;
+
+		foreach ( var baseUrl in OverpassBaseUrls )
+		{
+			var nearbyResponse = await QueryElementsAsync(baseUrl, BuildNearbyQuery(latitude, longitude));
+			var enclosingResponse = await QueryElementsAsync(baseUrl, BuildEnclosingQuery(latitude, longitude));
+
+			if ( !string.IsNullOrWhiteSpace(nearbyResponse.Error) )
+			{
+				lastError = ChoosePreferredError(lastError, nearbyResponse.Error);
+			}
+
+			if ( !string.IsNullOrWhiteSpace(enclosingResponse.Error) )
+			{
+				lastError = ChoosePreferredError(lastError, enclosingResponse.Error);
+			}
+
+			var nearbyObjects = nearbyResponse.Elements
+				.Select(element => ToMapElementItem(element, latitude, longitude))
+				.Where(item => item != null)
+				.Cast<OsmMapElementItem>()
+				.OrderBy(item => item.DistanceMeters ?? double.MaxValue)
+				.GroupBy(item => item.CopyText)
+				.Select(group => group.First())
+				.Take(MaxItemsPerSection)
+				.ToList();
+
+			var enclosingObjects = enclosingResponse.Elements
+				.Select(element => ToMapElementItem(element, latitude, longitude))
+				.Where(item => item != null)
+				.Cast<OsmMapElementItem>()
+				.GroupBy(item => item.CopyText)
+				.Select(group => group.First())
+				.Take(MaxItemsPerSection)
+				.ToList();
+
+			if ( nearbyObjects.Count > 0 || enclosingObjects.Count > 0 )
+			{
+				return new OsmMapElementsResult
+				{
+					NearbyObjects = nearbyObjects,
+					EnclosingObjects = enclosingObjects
+				};
+			}
+		}
+
+		if ( !string.IsNullOrWhiteSpace(lastError) )
+		{
+			return new OsmMapElementsResult { Error = lastError };
+		}
+
+		return new OsmMapElementsResult();
+	}
+
+	private async Task<ParsedOverpassResponse> QueryElementsAsync(string baseUrl, string query)
+	{
+		var url = BuildUrl(baseUrl, query);
 		var response = await httpClientHelper.ReadString(url);
 		if ( !response.Key || string.IsNullOrWhiteSpace(response.Value) )
 		{
-			return new OsmMapElementsResult { Error = errorMessage };
+			return new ParsedOverpassResponse([], ErrorMessage);
 		}
 
 		try
 		{
 			var overpassResponse = JsonSerializer.Deserialize<OverpassResponse>(response.Value);
-			if ( overpassResponse?.Elements == null )
+			if ( overpassResponse?.Elements != null )
 			{
-				return new OsmMapElementsResult { Error = errorMessage };
+				return new ParsedOverpassResponse(overpassResponse.Elements, null);
 			}
 
-			return new OsmMapElementsResult
+			using var json = JsonDocument.Parse(response.Value);
+			if ( json.RootElement.TryGetProperty("remark", out var remark) &&
+			     remark.ValueKind == JsonValueKind.String )
 			{
-				NearbyObjects = overpassResponse.Elements
-					.Where(element => element.Type != "area")
-					.Select(element => ToMapElementItem(element, latitude, longitude))
-					.Where(item => item != null)
-					.Cast<OsmMapElementItem>()
-					.OrderBy(item => item.DistanceMeters ?? double.MaxValue)
-					.GroupBy(item => item.CopyText)
-					.Select(group => group.First())
-					.Take(MaxItemsPerSection)
-					.ToList(),
-				EnclosingObjects = overpassResponse.Elements
-					.Where(element => element.Type == "area")
-					.Select(element => ToMapElementItem(element, latitude, longitude))
-					.Where(item => item != null)
-					.Cast<OsmMapElementItem>()
-					.GroupBy(item => item.CopyText)
-					.Select(group => group.First())
-					.Take(MaxItemsPerSection)
-					.ToList()
-			};
+				return new ParsedOverpassResponse([], remark.GetString());
+			}
+
+			return new ParsedOverpassResponse([], null);
 		}
 		catch
 		{
-			return new OsmMapElementsResult { Error = errorMessage };
+			return new ParsedOverpassResponse([], ErrorMessage);
 		}
 	}
 
-	private static string BuildUrl(double latitude, double longitude)
+	private static string BuildNearbyQuery(double latitude, double longitude)
 	{
-		var query = "[out:json][timeout:25];" +
-		            "(" +
-		            $"node(around:{NearbyRadiusInMeters},{latitude.ToString(CultureInfo.InvariantCulture)},{longitude.ToString(CultureInfo.InvariantCulture)});" +
-		            $"way(around:{NearbyRadiusInMeters},{latitude.ToString(CultureInfo.InvariantCulture)},{longitude.ToString(CultureInfo.InvariantCulture)});" +
-		            $"relation(around:{NearbyRadiusInMeters},{latitude.ToString(CultureInfo.InvariantCulture)},{longitude.ToString(CultureInfo.InvariantCulture)});" +
-		            ");" +
-		            "out center tags qt;" +
-		            $"is_in({latitude.ToString(CultureInfo.InvariantCulture)},{longitude.ToString(CultureInfo.InvariantCulture)})->.containing;" +
-		            "area.containing;" +
-		            "out tags qt;";
+		var lat = latitude.ToString(CultureInfo.InvariantCulture);
+		var lon = longitude.ToString(CultureInfo.InvariantCulture);
 
-		return $"{HttpsPrefix}{OverpassBaseUrl}?data={Uri.EscapeDataString(query)}";
+		return "[timeout:10][out:json];" +
+		       "(" +
+		       $"node(around:{NearbyRadiusInMeters.ToString(CultureInfo.InvariantCulture)},{lat},{lon});" +
+		       $"way(around:{NearbyRadiusInMeters.ToString(CultureInfo.InvariantCulture)},{lat},{lon});" +
+		       $"relation(around:{NearbyRadiusInMeters.ToString(CultureInfo.InvariantCulture)},{lat},{lon});" +
+		       ");" +
+		       "out center tags qt;";
+	}
+
+	private static string BuildEnclosingQuery(double latitude, double longitude)
+	{
+		var lat = latitude.ToString(CultureInfo.InvariantCulture);
+		var lon = longitude.ToString(CultureInfo.InvariantCulture);
+
+		return "[timeout:10][out:json];" +
+		       $"is_in({lat},{lon})->.a;" +
+		       "way(pivot.a);" +
+		       "relation(pivot.a);" +
+		       "out center tags qt;";
+	}
+
+	private static string BuildUrl(string baseUrl, string query)
+	{
+		return $"{HttpsPrefix}{baseUrl}?data={Uri.EscapeDataString(query)}";
 	}
 
 	private static OsmMapElementItem? ToMapElementItem(OverpassElement element, double latitude,
@@ -171,5 +230,29 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 		return string.Join(" ", value
 			.Split('_', StringSplitOptions.RemoveEmptyEntries)
 			.Select(part => char.ToUpperInvariant(part[0]) + part[1..]));
+	}
+
+	private sealed record ParsedOverpassResponse(
+		System.Collections.Generic.List<OverpassElement> Elements,
+		string? Error);
+
+	private static string? ChoosePreferredError(string? existingError, string? candidateError)
+	{
+		if ( string.IsNullOrWhiteSpace(candidateError) )
+		{
+			return existingError;
+		}
+
+		if ( string.IsNullOrWhiteSpace(existingError) )
+		{
+			return candidateError;
+		}
+
+		if ( existingError == ErrorMessage && candidateError != ErrorMessage )
+		{
+			return candidateError;
+		}
+
+		return existingError;
 	}
 }

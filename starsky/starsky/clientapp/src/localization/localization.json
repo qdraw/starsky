@@ -1389,6 +1389,31 @@
     "nl": "Adres laden...",
     "de": "Adresse wird geladen..."
   },
+  "MessageNearbyObjects": {
+    "en": "Nearby objects",
+    "nl": "Objecten in de buurt",
+    "de": "Objekte in der Nähe"
+  },
+  "MessageNoNearbyObjects": {
+    "en": "No nearby objects",
+    "nl": "Geen objecten in de buurt",
+    "de": "Keine Objekte in der Nähe"
+  },
+  "MessageEnclosingObjects": {
+    "en": "Enclosing objects",
+    "nl": "Omsluitende objecten",
+    "de": "Umschließende Objekte"
+  },
+  "MessageNoEnclosingObjects": {
+    "en": "No enclosing objects",
+    "nl": "Geen omsluitende objecten",
+    "de": "Keine umschließenden Objekte"
+  },
+  "MessageMapElementCopied": {
+    "en": "Map element copied!",
+    "nl": "Kaartobject gekopieerd!",
+    "de": "Kartenobjekt kopiert!"
+  },
   "MessageSearchOrSelect": {
     "en": "Search or select...",
     "nl": "Zoek of selecteer...",
