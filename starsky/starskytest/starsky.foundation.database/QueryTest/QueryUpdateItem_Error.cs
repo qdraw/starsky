@@ -53,6 +53,7 @@ public sealed class QueryUpdateItemError
 	///     EF Core's PropertyValues constructor now dereferences the InternalEntityEntry
 	///     immediately, so FakePropertyValues needs a real tracked entry instead of null
 	/// </summary>
+#pragma warning disable EF1001
 	private static InternalEntityEntry CreateInternalEntityEntry()
 	{
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -62,6 +63,7 @@ public sealed class QueryUpdateItemError
 		var entry = context.Add(new FileIndexItem("/fake-property-values.jpg"));
 		return ( ( IInfrastructure<InternalEntityEntry> ) entry ).Instance;
 	}
+#pragma warning restore EF1001
 
 	[TestMethod]
 	public async Task Query_UpdateItem_DbUpdateConcurrencyException()
@@ -271,7 +273,9 @@ public sealed class QueryUpdateItemError
 	[TestMethod]
 	public void SolveConcurrencyException_should_callDelegate()
 	{
+#pragma warning disable EF1001
 		var internalEntry = CreateInternalEntityEntry();
+#pragma warning restore EF1001
 		SolveConcurrency.SolveConcurrencyException(new FileIndexItem(),
 			new FakePropertyValues(internalEntry), new FakePropertyValues(internalEntry),
 			"", _ => IsWrittenConcurrencyException = true);
@@ -282,7 +286,9 @@ public sealed class QueryUpdateItemError
 	[TestMethod]
 	public void Query_UpdateItem_NotSupportedException()
 	{
+#pragma warning disable EF1001
 		var internalEntry = CreateInternalEntityEntry();
+#pragma warning restore EF1001
 		Assert.ThrowsExactly<NotSupportedException>(() =>
 			SolveConcurrency.SolveConcurrencyException(null!,
 				new FakePropertyValues(internalEntry), new FakePropertyValues(internalEntry),
