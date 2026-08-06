@@ -437,8 +437,9 @@ public class FakeIQuery : IQuery
 
 	public List<FileIndexItem> GetAllRecursive(string subPath = "")
 	{
+		var filterPath = PathHelper.RemoveLatestSlash(subPath);
 		var result = _content.Where
-				(p => p.ParentDirectory!.StartsWith(subPath))
+				(p => p.ParentDirectory != null && p.ParentDirectory.StartsWith(filterPath))
 			.OrderBy(r => r.FileName).ToList();
 		foreach ( var item in result )
 		{
