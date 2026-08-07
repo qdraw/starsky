@@ -48,7 +48,7 @@ internal sealed class RabbitMqChannelClient : IRabbitMqChannelClient
 		var properties = new BasicProperties { Persistent = persistent };
 		_channel.BasicPublishAsync(string.Empty, queueName, false, properties, body,
 				CancellationToken.None)
-			.GetAwaiter().GetResult();
+			.AsTask().GetAwaiter().GetResult();
 	}
 
 	public RabbitMqGetResult? TryGet(string queueName)
@@ -68,13 +68,14 @@ internal sealed class RabbitMqChannelClient : IRabbitMqChannelClient
 
 	public void Ack(ulong deliveryTag)
 	{
-		_channel.BasicAckAsync(deliveryTag, false, CancellationToken.None).GetAwaiter().GetResult();
+		_channel.BasicAckAsync(deliveryTag, false, CancellationToken.None).AsTask().GetAwaiter()
+			.GetResult();
 	}
 
 	public void Nack(ulong deliveryTag, bool requeue)
 	{
-		_channel.BasicNackAsync(deliveryTag, false, requeue, CancellationToken.None).GetAwaiter()
-			.GetResult();
+		_channel.BasicNackAsync(deliveryTag, false, requeue, CancellationToken.None).AsTask()
+			.GetAwaiter().GetResult();
 	}
 
 	public void Dispose()
