@@ -4,9 +4,11 @@ import { ILanguageLocalization } from "../../../../interfaces/ILanguageLocalizat
 import { Language } from "../../../../shared/language";
 import { AddContextMenu } from "./add-context-menu";
 import * as nominatimModule from "./fetch-address-from-nominatim";
+import * as mapElementsModule from "./fetch-osm-map-elements";
 
 // Mock the fetch-address-from-nominatim module
 jest.mock("./fetch-address-from-nominatim");
+jest.mock("./fetch-osm-map-elements");
 
 interface ILanguageMock {
   key: (obj: ILanguageLocalization) => string;
@@ -22,6 +24,11 @@ interface ILocalizationMock {
   MessageStreetNameCopied: ILanguageLocalization;
   MessageNoStreetFound: ILanguageLocalization;
   MessageLoadingAddress: ILanguageLocalization;
+  MessageNearbyObjects: ILanguageLocalization;
+  MessageNoNearbyObjects: ILanguageLocalization;
+  MessageEnclosingObjects: ILanguageLocalization;
+  MessageNoEnclosingObjects: ILanguageLocalization;
+  MessageMapElementCopied: ILanguageLocalization;
   [key: string]: ILanguageLocalization;
 }
 
@@ -87,8 +94,38 @@ describe("AddContextMenu", () => {
         en: "Loading address...",
         nl: "Adres laden...",
         de: "Adresse wird geladen..."
+      },
+      MessageNearbyObjects: {
+        en: "Nearby objects",
+        nl: "Objecten in de buurt",
+        de: "Objekte in der Nähe"
+      },
+      MessageNoNearbyObjects: {
+        en: "No nearby objects",
+        nl: "Geen objecten in de buurt",
+        de: "Keine Objekte in der Nähe"
+      },
+      MessageEnclosingObjects: {
+        en: "Enclosing objects",
+        nl: "Omsluitende objecten",
+        de: "Umschließende Objekte"
+      },
+      MessageNoEnclosingObjects: {
+        en: "No enclosing objects",
+        nl: "Geen omsluitende objecten",
+        de: "Keine umschließenden Objekte"
+      },
+      MessageMapElementCopied: {
+        en: "Map element copied!",
+        nl: "Kaartobject gekopieerd!",
+        de: "Kartenobjekt kopiert!"
       }
     };
+
+    (mapElementsModule.FetchMapElementsFromOsm as jest.Mock).mockResolvedValue({
+      nearbyObjects: [],
+      enclosingObjects: []
+    });
 
     // Mock clipboard API
     Object.assign(navigator, {
@@ -431,5 +468,66 @@ describe("AddContextMenu", () => {
 
     // There should still be only one menu
     expect(document.querySelectorAll(".leaflet-context-menu")).toHaveLength(1);
+  });
+
+  it("should render nearby and enclosing sections when map elements are available", async () => {
+    (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(null);
+    (mapElementsModule.FetchMapElementsFromOsm as jest.Mock).mockResolvedValue({
+      nearbyObjects: [{ label: "Cafe", description: "amenity=cafe", copyText: "Cafe" }],
+      enclosingObjects: [{ label: "City Park", description: "leisure=park", copyText: "City Park" }]
+    });
+
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus: jest.fn()
+    });
+
+    map.fire("contextmenu", {
+      latlng: L.latLng(52.52, 13.405),
+      containerPoint: L.point(100, 100)
+    } as L.LeafletMouseEvent);
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const contextMenu = document.querySelector(".leaflet-context-menu");
+    expect(contextMenu?.textContent).toContain("Nearby objects");
+    expect(contextMenu?.textContent).toContain("Enclosing objects");
+    expect(contextMenu?.textContent).toContain("Cafe");
+    expect(contextMenu?.textContent).toContain("City Park");
+  });
+
+  it("should copy map element text and notify when map element is clicked", async () => {
+    (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(null);
+    (mapElementsModule.FetchMapElementsFromOsm as jest.Mock).mockResolvedValue({
+      nearbyObjects: [{ label: "Bakery", description: "shop=bakery", copyText: "Bakery" }],
+      enclosingObjects: []
+    });
+
+    const setNotificationStatus = jest.fn();
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus
+    });
+
+    map.fire("contextmenu", {
+      latlng: L.latLng(52.52, 13.405),
+      containerPoint: L.point(100, 100)
+    } as L.LeafletMouseEvent);
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const mapItem = document.querySelector('[data-action="copy-osm-item"]') as HTMLElement;
+    expect(mapItem).toBeTruthy();
+    mapItem.click();
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("Bakery");
+
+    await waitFor(() => {
+      expect(setNotificationStatus).toHaveBeenCalledWith("Map element copied!");
+    });
   });
 });
