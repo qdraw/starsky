@@ -30,7 +30,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2
         with:
-          dotnet-version: 8.0.423
+          dotnet-version: 10.0.302
 
       - name: Build --no-unit-test linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
         shell: bash
@@ -330,16 +330,16 @@ jobs:
           body: |
             ## Desktop app versions:
             _When you are not sure pick the Desktop App_
-            - starsky-mac-x64-desktop.dmg - __Starsky Desktop App for Intel, Mac OS *12.0* or newer__
-            - starsky-mac-arm64-desktop.dmg - __Starsky Desktop App for Apple silicon, Mac OS *12.0* or newer__            
-            - starsky-win-x64-desktop.exe - __Starsky Desktop App for Windows 10 1607+ or Windows 11 22000+ (Intel 64 bits)__
+            - starsky-mac-x64-desktop.dmg - __Starsky Desktop App for Intel, Mac OS *13.0* or newer__
+            - starsky-mac-arm64-desktop.dmg - __Starsky Desktop App for Apple silicon, Mac OS *13.0* or newer__            
+            - starsky-win-x64-desktop.exe - __Starsky Desktop App for Windows 10 1809+ or Windows 11 (21H2) 22000+ (Intel 64 bits)__
 
             ## Server versions:
             - starsky-linux-arm.zip - Starsky as Web Application (start from command line) only for Raspberry Pi's
             - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's 
-            - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *12.0* or newer
-            - starsky-osx-arm64.zip - Starsky as Web Application (start from command line) only for Apple Silicon (newer then end of 2020) Mac OS *12* or newer
-            - starsky-win-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1607+ or 11 22000+ (Intel 64 bits)
+            - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *13.0* or newer
+            - starsky-osx-arm64.zip - Starsky as Web Application (start from command line) only for Apple Silicon (newer then end of 2020) Mac OS *13* or newer
+            - starsky-win-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1809+ or 11 (21H2) 22000+ (Intel 64 bits)
 
             ## Getting started
             [Read about the first steps](https://docs.qdraw.nl/docs/getting-started/first-steps)
