@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
@@ -17,17 +18,29 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 	private const string HttpsPrefix = "https://";
 	private static readonly string[] OverpassBaseUrls =
 	[
-		"overpass.osm.ch/api/interpreter"
+		"overpass-api.de/api/interpreter",
+		"z.overpass-api.de/api/interpreter",
+		"lz4.overpass-api.de/api/interpreter"
 	];
-	private const double NearbyRadiusInMeters = 33.75;
+	private const double NearbyRadiusInMeters = 20.0;
 	private const int MaxItemsPerSection = 8;
 	private const string ErrorMessage = "Failed to parse OSM map elements response";
 
 	private static readonly string[] DescriptorTagKeys =
 	[
 		"amenity", "shop", "tourism", "historic", "leisure", "man_made", "building",
-		"highway", "natural", "landuse", "boundary", "place"
+		"highway", "waterway", "railway", "natural", "landuse", "boundary", "place"
 	];
+
+	private static readonly Dictionary<string, int> NearbyPriority = new()
+	{
+		{ "waterway", 1 },
+		{ "highway", 2 },
+		{ "railway", 3 },
+		{ "building", 4 },
+		{ "leisure", 5 },
+		{ "amenity", 6 }
+	};
 
 	private static readonly string[] NameTagKeys = ["name", "official_name", "brand", "operator", "ref"];
 
@@ -39,18 +52,27 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 		}
 
 		string? lastError = null;
+		var hadValidResponse = false;
 
 		foreach ( var baseUrl in OverpassBaseUrls )
 		{
 			var nearbyResponse = await QueryElementsAsync(baseUrl, BuildNearbyQuery(latitude, longitude));
 			var enclosingResponse = await QueryElementsAsync(baseUrl, BuildEnclosingQuery(latitude, longitude));
 
-			if ( !string.IsNullOrWhiteSpace(nearbyResponse.Error) )
+			if ( string.IsNullOrWhiteSpace(nearbyResponse.Error) )
+			{
+				hadValidResponse = true;
+			}
+			else
 			{
 				lastError = ChoosePreferredError(lastError, nearbyResponse.Error);
 			}
 
-			if ( !string.IsNullOrWhiteSpace(enclosingResponse.Error) )
+			if ( string.IsNullOrWhiteSpace(enclosingResponse.Error) )
+			{
+				hadValidResponse = true;
+			}
+			else
 			{
 				lastError = ChoosePreferredError(lastError, enclosingResponse.Error);
 			}
@@ -59,7 +81,8 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 				.Select(element => ToMapElementItem(element, latitude, longitude))
 				.Where(item => item != null)
 				.Cast<OsmMapElementItem>()
-				.OrderBy(item => item.DistanceMeters ?? double.MaxValue)
+				.OrderBy(item => GetNearbyPriority(item.Category))
+				.ThenBy(item => item.DistanceMeters ?? double.MaxValue)
 				.GroupBy(item => item.CopyText)
 				.Select(group => group.First())
 				.Take(MaxItemsPerSection)
@@ -69,6 +92,7 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 				.Select(element => ToMapElementItem(element, latitude, longitude))
 				.Where(item => item != null)
 				.Cast<OsmMapElementItem>()
+				.OrderBy(item => item.DistanceMeters ?? double.MaxValue)
 				.GroupBy(item => item.CopyText)
 				.Select(group => group.First())
 				.Take(MaxItemsPerSection)
@@ -84,7 +108,7 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 			}
 		}
 
-		if ( !string.IsNullOrWhiteSpace(lastError) )
+		if ( !hadValidResponse && !string.IsNullOrWhiteSpace(lastError) )
 		{
 			return new OsmMapElementsResult { Error = lastError };
 		}
@@ -128,12 +152,13 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 	{
 		var lat = latitude.ToString(CultureInfo.InvariantCulture);
 		var lon = longitude.ToString(CultureInfo.InvariantCulture);
+		var radius = NearbyRadiusInMeters.ToString(CultureInfo.InvariantCulture);
 
 		return "[timeout:10][out:json];" +
 		       "(" +
-		       $"node(around:{NearbyRadiusInMeters.ToString(CultureInfo.InvariantCulture)},{lat},{lon});" +
-		       $"way(around:{NearbyRadiusInMeters.ToString(CultureInfo.InvariantCulture)},{lat},{lon});" +
-		       $"relation(around:{NearbyRadiusInMeters.ToString(CultureInfo.InvariantCulture)},{lat},{lon});" +
+		       $"node(around:{radius},{lat},{lon});" +
+		       $"way(around:{radius},{lat},{lon});" +
+		       $"relation(around:{radius},{lat},{lon});" +
 		       ");" +
 		       "out center tags qt;";
 	}
@@ -145,8 +170,10 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 
 		return "[timeout:10][out:json];" +
 		       $"is_in({lat},{lon})->.a;" +
+		       "(" +
 		       "way(pivot.a);" +
 		       "relation(pivot.a);" +
+		       ");" +
 		       "out center tags qt;";
 	}
 
@@ -224,6 +251,9 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 	{
 		return degrees * Math.PI / 180;
 	}
+
+	private static int GetNearbyPriority(string? category) =>
+		category != null && NearbyPriority.TryGetValue(category, out var p) ? p : int.MaxValue;
 
 	private static string Beautify(string value)
 	{

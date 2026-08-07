@@ -38,7 +38,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		"api.dropbox.com",
 		"nominatim.openstreetmap.org",
 		"overpass-api.de",
-		"overpass.osm.ch"
+		"z.overpass-api.de",
+		"lz4.overpass-api.de"
 	];
 
 	/// <summary>
