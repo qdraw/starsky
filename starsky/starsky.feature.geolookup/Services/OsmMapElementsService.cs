@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
@@ -118,8 +120,12 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 
 	private async Task<ParsedOverpassResponse> QueryElementsAsync(string baseUrl, string query)
 	{
-		var url = BuildUrl(baseUrl, query);
-		var response = await httpClientHelper.ReadString(url);
+		var url = $"{HttpsPrefix}{baseUrl}";
+		var content = new StringContent(
+			$"data={Uri.EscapeDataString(query)}",
+			Encoding.UTF8,
+			"application/x-www-form-urlencoded");
+		var response = await httpClientHelper.PostString(url, content);
 		if ( !response.Key || string.IsNullOrWhiteSpace(response.Value) )
 		{
 			return new ParsedOverpassResponse([], ErrorMessage);
@@ -175,11 +181,6 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 		       "relation(pivot.a);" +
 		       ");" +
 		       "out center tags qt;";
-	}
-
-	private static string BuildUrl(string baseUrl, string query)
-	{
-		return $"{HttpsPrefix}{baseUrl}?data={Uri.EscapeDataString(query)}";
 	}
 
 	private static OsmMapElementItem? ToMapElementItem(OverpassElement element, double latitude,
