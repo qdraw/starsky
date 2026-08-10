@@ -21,7 +21,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -43,7 +43,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -65,7 +65,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var httpClientHelper =
 			new HttpClientHelper(httpProvider, new FakeIStorage(), new FakeIWebLogger());
@@ -80,7 +80,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -102,7 +102,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -133,7 +133,7 @@ public sealed class HttpClientHelperTest
 		var fakeHttpMessageHandler =
 			new FakeHttpMessageHandler(new HttpRequestException("should fail"));
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -162,7 +162,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -186,7 +186,7 @@ public sealed class HttpClientHelperTest
 		var fakeHttpMessageHandler =
 			new FakeHttpMessageHandler(new HttpRequestException("should fail"));
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -205,7 +205,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -226,7 +226,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -246,7 +246,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -268,7 +268,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -295,7 +295,7 @@ public sealed class HttpClientHelperTest
 		var fakeHttpMessageHandler =
 			new FakeHttpMessageHandler(new HttpRequestException("should fail"));
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -315,7 +315,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -337,7 +337,7 @@ public sealed class HttpClientHelperTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
