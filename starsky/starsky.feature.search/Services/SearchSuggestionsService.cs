@@ -63,6 +63,11 @@ public class SearchSuggestionsService : ISearchSuggest
 				               .TagWith("Inflate SearchSuggestionsService")
 				               .AsAsyncEnumerable() )
 			{
+				if ( string.IsNullOrEmpty(tagsString) )
+				{
+					continue;
+				}
+
 				foreach ( var keyword in HashSetHelper.StringToHashSet(tagsString.Trim()) )
 				{
 					suggestions.TryGetValue(keyword, out var count);
