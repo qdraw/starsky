@@ -51,21 +51,28 @@ public sealed class WebSocketConnectionsMiddleware
 				var webSocketConnection =
 					new WebSocketConnection(webSocket, _logger, _options.ReceivePayloadBufferSize);
 
+				// Capture before the HttpContext can be disposed by the pipeline.
+				var requestAborted = context.RequestAborted;
+
 				async void OnWebSocketConnectionOnNewConnection(object? sender,
 					EventArgs message)
 				{
-					await Task.Delay(150, context.RequestAborted);
 					try
 					{
+						await Task.Delay(150, requestAborted);
 						var welcomeMessage = new ApiNotificationResponseModel<HeartbeatModel>(
 							new HeartbeatModel(null)) { Type = ApiNotificationType.Welcome };
 						await webSocketConnection.SendAsync(JsonSerializer.Serialize(
 							welcomeMessage,
-							DefaultJsonSerializer.CamelCaseNoEnters), context.RequestAborted);
+							DefaultJsonSerializer.CamelCaseNoEnters), requestAborted);
 					}
 					catch ( WebSocketException )
 					{
 						// if the client is closing the socket the wrong way
+					}
+					catch ( OperationCanceledException )
+					{
+						// client disconnected before the welcome message could be sent
 					}
 				}
 
