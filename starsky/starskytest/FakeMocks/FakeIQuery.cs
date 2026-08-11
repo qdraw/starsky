@@ -19,6 +19,7 @@ namespace starskytest.FakeMocks;
 public class FakeIQuery : IQuery
 {
 	private readonly List<FileIndexItem> _content = new();
+	private readonly object _contentLock = new object();
 	private List<FileIndexItem> _fakeCachedContent = new();
 
 	public FakeIQuery(List<FileIndexItem>? content = null,
@@ -176,19 +177,14 @@ public class FakeIQuery : IQuery
 		return GetObjectsByFilePathAsync(filePathList);
 	}
 
-	public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
+	public Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 	{
-		try
+		lock ( _contentLock )
 		{
-			_content.Remove(updateStatusContent);
-		}
-		catch ( ArgumentOutOfRangeException )
-		{
-			await Task.Delay(new Random().Next(1, 5));
 			_content.Remove(updateStatusContent);
 		}
 
-		return updateStatusContent;
+		return Task.FromResult(updateStatusContent);
 	}
 
 	public async Task<List<FileIndexItem>> RemoveItemAsync(
@@ -284,18 +280,14 @@ public class FakeIQuery : IQuery
 		return result;
 	}
 
-	public async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
+	public Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 	{
-		_content.Add(fileIndexItem);
-		await Task.Delay(new Random().Next(1, 5));
-		if ( _content.Find(p =>
-			    p.FilePath == fileIndexItem.FilePath) != null )
+		lock ( _contentLock )
 		{
-			return fileIndexItem;
+			_content.Add(fileIndexItem);
 		}
 
-		_content.Add(fileIndexItem);
-		return fileIndexItem;
+		return Task.FromResult(fileIndexItem);
 	}
 
 	public Task<bool> ExistsAsync(string filePath)
@@ -437,7 +429,13 @@ public class FakeIQuery : IQuery
 
 	public List<FileIndexItem> GetAllRecursive(string subPath = "")
 	{
-		var result = _content.Where
+		List<FileIndexItem> snapshot;
+		lock ( _contentLock )
+		{
+			snapshot = _content.ToList();
+		}
+
+		var result = snapshot.Where
 				(p => p.ParentDirectory != null && p.ParentDirectory.StartsWith(subPath))
 			.OrderBy(r => r.FileName).ToList();
 		foreach ( var item in result )
@@ -483,7 +481,11 @@ public class FakeIQuery : IQuery
 
 	public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
 	{
-		_content.Remove(updateStatusContent);
+		lock ( _contentLock )
+		{
+			_content.Remove(updateStatusContent);
+		}
+
 		return updateStatusContent;
 	}
 
@@ -494,21 +496,29 @@ public class FakeIQuery : IQuery
 
 	public FileIndexItem AddItem(FileIndexItem updateStatusContent)
 	{
-		_content.Add(updateStatusContent);
+		lock ( _contentLock )
+		{
+			_content.Add(updateStatusContent);
+		}
+
 		return updateStatusContent;
 	}
 
 	public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
 	{
-		var item = _content.Find(p =>
-			p.FilePath == updateStatusContent.FilePath);
-		if ( item == null )
+		lock ( _contentLock )
 		{
-			return updateStatusContent;
+			var item = _content.Find(p =>
+				p.FilePath == updateStatusContent.FilePath);
+			if ( item == null )
+			{
+				return updateStatusContent;
+			}
+
+			var index = _content.IndexOf(item);
+			_content[index] = updateStatusContent;
 		}
 
-		var index = _content.IndexOf(item);
-		_content[index] = updateStatusContent;
 		return updateStatusContent;
 	}
 
