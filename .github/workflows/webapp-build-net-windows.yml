@@ -38,7 +38,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2
       with:
-        dotnet-version: 8.0.423
+        dotnet-version: 8.0.424
         
     - name: Build (Windows)
       shell: pwsh
