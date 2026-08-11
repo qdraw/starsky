@@ -140,7 +140,7 @@ public sealed class ExifToolDownloadTest
 		{
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 			{
-				"https://exiftool.org/exiftool-11.99_64.zip",
+				"https://sourceforge.net/projects/exiftool/files/exiftool-11.99_64.zip/download",
 				new ByteArrayContent([.. CreateAnExifToolWindows.Bytes])
 			},
 			{
@@ -448,7 +448,7 @@ public sealed class ExifToolDownloadTest
 		{
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 			{
-				"https://exiftool.org/exiftool-11.99_64.zip",
+				"https://sourceforge.net/projects/exiftool/files/exiftool-11.99_64.zip/download",
 				new ByteArrayContent([.. CreateAnExifToolWindows.Bytes])
 			},
 			{
@@ -471,7 +471,7 @@ public sealed class ExifToolDownloadTest
 		{
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 			{
-				"https://exiftool.org/exiftool-11.99_64.zip",
+				"https://sourceforge.net/projects/exiftool/files/exiftool-11.99_64.zip/download",
 				new ByteArrayContent([.. CreateAnExifToolWindows.Bytes])
 			}
 		});
@@ -647,7 +647,7 @@ public sealed class ExifToolDownloadTest
 		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 		{
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
-			{ "https://exiftool.org/exiftool-11.99_64.zip", new StringContent("FAIL") }
+			{ "https://sourceforge.net/projects/exiftool/files/exiftool-11.99_64.zip/download", new StringContent("FAIL") }
 		});
 		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
 			new FakeIWebLogger());
@@ -751,7 +751,7 @@ public sealed class ExifToolDownloadTest
 		{
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 			{ "https://qdraw.nl/special/mirror/exiftool/checksums.txt", new StringContent("") },
-			{ "https://exiftool.org/exiftool-11.99_64.zip", new StringContent("FAIL") }
+			{ "https://sourceforge.net/projects/exiftool/files/exiftool-11.99_64.zip/download", new StringContent("FAIL") }
 		});
 		var logger = new FakeIWebLogger();
 		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,

@@ -33,6 +33,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		"locker.ifttt.com",
 		"download.geonames.org",
 		"exiftool.org",
+		"sourceforge.net",
 		"api.github.com",
 		"starsky-dependencies.netlify.app",
 		"api.dropbox.com",
