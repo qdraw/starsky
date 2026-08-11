@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.7.22 - _(Unreleased)_ - 2026-?-? {#v0.7.22}
 
 - [x] (Changed) _Back-end_ Switch TinyIcon format from PNG to WebP for better compression (PR #3188)
+- [x] (Fixed) _Back-end_ StackCollections drops non-thumbnail collections (PR #3196)
 
 ## version 0.7.21 - 2026-07-22 {#v0.7.21}
 

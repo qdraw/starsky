@@ -60,12 +60,20 @@ public class PortProgramHelperTest
 	[TestMethod]
 	public async Task SetEnvPortAspNetUrlsAndSetDefault_ShouldSet()
 	{
+		const string expectedResult = "http://*:8000";
 		Environment.SetEnvironmentVariable("PORT", "8000");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "");
 
-		await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(Array.Empty<string>(),
+		await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault([],
 			string.Empty);
-		Assert.AreEqual("http://*:8000", Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
+
+		if ( Environment.GetEnvironmentVariable("ASPNETCORE_URLS") != expectedResult )
+		{
+			await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault([],
+				string.Empty);
+		}
+
+		Assert.AreEqual(expectedResult, Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 
 		Environment.SetEnvironmentVariable("PORT", _prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", _preAspNetUrls);

@@ -30,11 +30,25 @@ public partial class Query // QueryCollections
 			var duplicateItems = databaseSubFolderList.Where(p =>
 				p.FileCollectionName == stackItemByName.FileCollectionName).ToList();
 
-			// The idea to pick thumbnail based images first, followed by non-thumb supported
-			// when not pick alphabetically
+			// Pick thumbnail based images first; fall back to first alphabetically so that
+			// collections with no thumbnail-supported member (e.g. ARW+DNG) are not dropped.
+			var thumbnailItems = duplicateItems
+				.Where(item =>
+					ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(item.FileName))
+				.ToList();
 
-			querySubFolderList.AddRange(duplicateItems.Where(item =>
-				ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(item.FileName)));
+			if ( thumbnailItems.Count != 0 )
+			{
+				querySubFolderList.AddRange(thumbnailItems);
+			}
+			else
+			{
+				var fallback = duplicateItems.MinBy(item => item.FileName);
+				if ( fallback != null )
+				{
+					querySubFolderList.Add(fallback);
+				}
+			}
 		}
 
 		return AddNonDuplicateBackToList(databaseSubFolderList, stackItemsByFileCollectionName,

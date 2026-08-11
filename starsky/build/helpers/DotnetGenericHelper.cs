@@ -82,9 +82,7 @@ public static class DotnetGenericHelper
 		}
 		catch ( Exception exception )
 		{
-			Log.Information("--");
-			Log.Information(exception.Message);
-			Log.Information("-- continue");
+			Log.Information(exception, "-- {ExceptionMessage} -- continue", exception.Message);
 		}
 
 		Environment.SetEnvironmentVariable("app__DependenciesFolder", string.Empty);

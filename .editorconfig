@@ -167,3 +167,7 @@ dotnet_diagnostic.MSTEST0061.severity = warning
 
 # MSTEST0058: Do not use asserts in catch blocks because they may not fail the test if no exception is thrown
 dotnet_diagnostic.MSTEST0058.severity = warning
+
+# S2068: false positive — "guest" is the well-known default RabbitMQ credential in this template config
+[*appsettings.default.json]
+dotnet_diagnostic.S2068.severity = none
