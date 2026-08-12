@@ -323,7 +323,7 @@ public sealed class MetaReplaceControllerTest
 		var result = await controller.Replace(null!, null!, null!, null!);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]

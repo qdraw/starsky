@@ -1108,7 +1108,7 @@ public sealed class ReadMetaExif
 	}
 
 	private static int GetImageWidthHeightMaxCount(string dirName,
-		ICollection<Directory> allExifItems)
+		List<Directory> allExifItems)
 	{
 		var maxCount = 6;
 		if ( dirName == "Exif SubIFD" )

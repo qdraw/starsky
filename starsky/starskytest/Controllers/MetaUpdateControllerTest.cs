@@ -341,6 +341,6 @@ public sealed class MetaUpdateControllerTest
 		var result = await controller.UpdateAsync(new FileIndexItem(), string.Empty, true) as
 			BadRequestObjectResult;
 
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 }

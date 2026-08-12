@@ -30,7 +30,7 @@ public class BatchRenameControllerTest
 		var result = controller.PreviewBatchRename(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		Assert.IsInstanceOfType<OkObjectResult>(result.Result);
 	}
 
 	[TestMethod]
@@ -48,7 +48,7 @@ public class BatchRenameControllerTest
 		var result = controller.PreviewBatchRename(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result.Result);
 	}
 
 	[TestMethod]
@@ -71,6 +71,6 @@ public class BatchRenameControllerTest
 		var result = await controller.ExecuteBatchRenameAsync(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		Assert.IsInstanceOfType<OkObjectResult>(result.Result);
 	}
 }

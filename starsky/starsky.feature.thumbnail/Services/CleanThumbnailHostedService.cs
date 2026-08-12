@@ -20,8 +20,8 @@ public class CleanThumbnailHostedService(
 	IHostApplicationLifetime hostApplicationLifetime)
 	: IHostedService
 {
+	private CancellationTokenRegistration? _applicationStartedRegistration;
 	private CancellationTokenSource? _runCancellationTokenSource;
-	private IDisposable? _applicationStartedRegistration;
 	private Task? _runningTask;
 	internal TimeSpan StartupDelay { get; set; } = TimeSpan.FromMinutes(15);
 

@@ -292,7 +292,7 @@ public class MacOsFileSystemHelperTest
 		}
 
 		Assert.IsNotNull(caughtEx);
-		Assert.IsInstanceOfType(caughtEx, typeof(InvalidOperationException));
+		Assert.IsInstanceOfType<InvalidOperationException>(caughtEx);
 	}
 
 	[TestMethod]

@@ -186,7 +186,7 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalAsync(
 		ApplicationDbContext dbContext,
-		IReadOnlyCollection<ThumbnailResultDataTransferModel> thumbnailItems)
+		List<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
 		if ( thumbnailItems.Count == 0 )
 		{

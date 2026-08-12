@@ -55,7 +55,7 @@ public class GeoReverseNominatimControllerTest
 		var controller = new GeoReverseNominatimController(new FakeINominatimProxyService());
 		controller.ModelState.AddModelError("lat", "Required");
 		var result = await controller.GeoReverseLookup(0, 0);
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]

@@ -162,7 +162,7 @@ public static class WindowsShellTrashBindingHelper
 	internal static (int?, string?, SHQUERYRBINFO) SHQueryRecycleBinWrapper(
 		string drivePath = @"C:\")
 	{
-		var pSHQueryRBInfo = new SHQUERYRBINFO { cbSize = Marshal.SizeOf(typeof(SHQUERYRBINFO)) };
+		var pSHQueryRBInfo = new SHQUERYRBINFO { cbSize = Marshal.SizeOf<SHQUERYRBINFO>() };
 
 		int? hResult;
 		string? info = null;
