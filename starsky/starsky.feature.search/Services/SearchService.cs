@@ -392,7 +392,7 @@ public class SearchService : ISearch
 	}
 
 	private static Expression<Func<FileIndexItem, bool>> PredicateExecution(
-		IReadOnlyList<Expression<Func<FileIndexItem, bool>>> predicates,
+		List<Expression<Func<FileIndexItem, bool>>> predicates,
 		SearchViewModel model)
 	{
 		var predicate = PredicateBuilder.False<FileIndexItem>();

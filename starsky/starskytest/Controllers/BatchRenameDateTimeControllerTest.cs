@@ -46,7 +46,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var result = controller.PreviewTimezoneDatetimeRepair(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		Assert.IsInstanceOfType<OkObjectResult>(result.Result);
 		var okResult = result.Result as OkObjectResult;
 		var mappings = okResult?.Value as List<FilenameDatetimeRepairMapping>;
 		Assert.IsNotNull(mappings);
@@ -90,7 +90,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		Assert.IsInstanceOfType<OkObjectResult>(result.Result);
 		var okResult = result.Result as OkObjectResult;
 		var mappings = okResult?.Value as List<FilenameDatetimeRepairMapping>;
 		Assert.IsNotNull(mappings);
@@ -118,7 +118,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var result = controller.PreviewTimezoneDatetimeRepair(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result.Result);
 	}
 
 	[TestMethod]
@@ -154,7 +154,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var result = await controller.ExecuteTimezoneDatetimeRepairAsync(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		Assert.IsInstanceOfType<OkObjectResult>(result.Result);
 		var okResult = result.Result as OkObjectResult;
 		var fileItems = okResult?.Value as List<FileIndexItem>;
 		Assert.IsNotNull(fileItems);
@@ -204,7 +204,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var result = await controller.ExecuteCustomOffsetDatetimeRepairAsync(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		Assert.IsInstanceOfType<OkObjectResult>(result.Result);
 		var okResult = result.Result as OkObjectResult;
 		var fileItems = okResult?.Value as List<FileIndexItem>;
 		Assert.IsNotNull(fileItems);
@@ -241,7 +241,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var result = await controller.ExecuteCustomOffsetDatetimeRepairAsync(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result.Result);
 	}
 
 	private static BatchRenameDateTimeController CreateController()
@@ -292,7 +292,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var result = await controller.ExecuteCustomOffsetDatetimeRepairAsync(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		Assert.IsInstanceOfType<OkObjectResult>(result.Result);
 		var okResult = result.Result as OkObjectResult;
 		var fileItems = okResult?.Value as List<FileIndexItem>;
 		Assert.IsNotNull(fileItems);
@@ -316,7 +316,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 			Collections = false
 		};
 		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
-		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result.Result);
 		var badRequestResult = result.Result as BadRequestObjectResult;
 		Assert.AreEqual("Model is not valid", badRequestResult!.Value);
 	}
@@ -330,7 +330,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 			FilePaths = ["/test/file.jpg"], CorrectionRequest = null!, Collections = false
 		};
 		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
-		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result.Result);
 		var badRequestResult = result.Result as BadRequestObjectResult;
 		Assert.AreEqual("Model is not valid", badRequestResult!.Value);
 	}
@@ -346,7 +346,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 			Collections = false
 		};
 		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
-		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		Assert.IsInstanceOfType<OkObjectResult>(result.Result);
 	}
 	
 	[TestMethod]
@@ -360,7 +360,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 			Collections = false
 		};
 		var result = await controller.ExecuteTimezoneDatetimeRepairAsync(request);
-		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result.Result);
 		var badRequestResult = result.Result as BadRequestObjectResult;
 		Assert.AreEqual("Model is not valid", badRequestResult!.Value);
 	}

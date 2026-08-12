@@ -37,8 +37,7 @@ public static class SonarQube
 		"https://api.nuget.org/v3-flatcontainer/dotnet-sonarscanner/index.json";
 
 	private const string GitCommand = "git";
-	// TODO revert to master
-	private const string DefaultBranchName = "feature/202607-net-10";
+	private const string DefaultBranchName = "master";
 
 	public static void InstallSonarTool(bool noUnitTest, bool noSonar)
 	{

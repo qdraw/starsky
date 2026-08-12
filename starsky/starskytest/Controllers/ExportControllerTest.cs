@@ -472,7 +472,7 @@ public sealed class ExportControllerTest
 		var result = exportController.Status(f);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(JsonResult));
+		Assert.IsInstanceOfType<JsonResult>(result);
 		var jsonResult = ( JsonResult ) result;
 		Assert.AreEqual("Not Ready", jsonResult.Value);
 		Assert.AreEqual(206, httpContext.Response.StatusCode);
@@ -512,7 +512,7 @@ public sealed class ExportControllerTest
 		var result = exportController.Status(f, json);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(JsonResult));
+		Assert.IsInstanceOfType<JsonResult>(result);
 		var jsonResult = ( JsonResult ) result;
 		Assert.AreEqual("OK", jsonResult.Value);
 	}
@@ -535,7 +535,7 @@ public sealed class ExportControllerTest
 		var result = exportController.Status(f);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(FileResult));
+		Assert.IsInstanceOfType<FileResult>(result);
 		var fileResult = ( FileResult ) result;
 		Assert.AreEqual("application/octet-stream", fileResult.ContentType);
 	}

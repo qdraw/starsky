@@ -35,6 +35,6 @@ public sealed class ErrorControllerTest
 		var actionResult = controller.Error();
 
 		// Assert
-		Assert.IsInstanceOfType(actionResult, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(actionResult);
 	}
 }

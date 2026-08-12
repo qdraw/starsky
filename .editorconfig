@@ -121,6 +121,12 @@ dotnet_diagnostic.CA1852.severity = warning
 # but does not override memory-based 'ReadAsync'
 dotnet_diagnostic.CA1844.severity = warning
 
+# CA1859: Change type of parameter from for improved performance
+dotnet_diagnostic.CA1859.severity = warning
+
+# CA2263: Prefer the generic overload instead
+dotnet_diagnostic.CA2263.severity = warning
+
 # CA1860: Prefer comparing 'Count' to 0 rather than using 'Any()', 
 # both for clarity and for performance
 dotnet_diagnostic.CA1860.severity = warning
@@ -153,7 +159,12 @@ dotnet_diagnostic.IDE0005.severity = warning
 dotnet_diagnostic.IDE0007.severity = warning
 
 dotnet_diagnostic.IDE0028.severity = silent #  IDE0028 = Simplify collection initialization
+
+dotnet_diagnostic.IDE0130.severity = warning # Namespace does not match folder structure
+
 dotnet_diagnostic.IDE0051.severity = silent # Private member is unused
+
+dotnet_diagnostic.IDE0305.severity = silent # IDE0305: Collection initialization can be simplified
 
 # CS4014: Because this call is not awaited, execution of the current method continues before the call is completed.
 # Consider applying the 'await' operator to the result of the call.

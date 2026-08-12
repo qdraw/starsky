@@ -224,7 +224,7 @@ public partial class TheSolutionShould
 		return projectName.Split('.')[2] == referencedProject.Split('.')[2];
 	}
 
-	private static void AssertLayerReferences(IReadOnlyCollection<string> invalidReferences,
+	private static void AssertLayerReferences(List<string> invalidReferences,
 		string layer)
 	{
 		Assert.IsEmpty(invalidReferences,

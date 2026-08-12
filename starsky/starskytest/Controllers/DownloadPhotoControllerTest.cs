@@ -112,7 +112,7 @@ public sealed class DownloadPhotoControllerTest
 		var actionResult = controller.DownloadSidecar(null!);
 
 		// Assert
-		Assert.IsInstanceOfType(actionResult, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(actionResult);
 	}
 
 	[TestMethod]
@@ -224,7 +224,7 @@ public sealed class DownloadPhotoControllerTest
 		var actionResult = await controller.DownloadPhoto(null!);
 
 		// Assert
-		Assert.IsInstanceOfType(actionResult, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(actionResult);
 	}
 
 	[TestMethod]
