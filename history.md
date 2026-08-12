@@ -1774,7 +1774,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 
 ## version 0.1.15 - 2020-02-06
 
-- [x] (bugfix) _Front-end_ Drag'n drop is now only with files
+- [x] (bugfix) _Front-end_ Drag’n’drop is now only with files
 - [x] (version) _Back-end_ _Legacy starsky.netFramework_ 0.1.15 release included
 - [x] (version) _Back-end_ _dependencies_ Microsoft.EntityFrameworkCore,
   Microsoft.Extensions.Configuration to 3.1.1
