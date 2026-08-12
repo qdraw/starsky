@@ -549,10 +549,8 @@ public class FakeIStorage : IStorage
 		}
 
 		// unescaped: (\/|\\)\w+.[a-z]{1,4}$
-		return Regex.Match(filePath,
-				$"^{Regex.Escape(parentFolder)}" +
-				"(\\/|\\\\)\\w+.[a-z]{1,4}$")
-			.Success;
+		return Regex.IsMatch(filePath, $"^{Regex.Escape(parentFolder)}" +
+		                               "(\\/|\\\\)\\w+.[a-z]{1,4}$");
 	}
 
 	public DateTime SetLastWriteTime(string path, DateTime? dateTime = null)

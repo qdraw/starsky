@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.rename.Helpers;
 using starsky.feature.rename.Models;
-using starsky.feature.rename.RelatedFilePaths;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;

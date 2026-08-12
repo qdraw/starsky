@@ -192,7 +192,7 @@ public sealed class Startup
 				ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 			// https://medium.com/@laimis/couple-issues-with-https-redirect-asp-net-core-7021cf383e00
 			// Without the explicit Clear() call, it continued to do the infinite redirect.
-			options.KnownNetworks.Clear();
+			options.KnownIPNetworks.Clear();
 			options.KnownProxies.Clear();
 		});
 	}

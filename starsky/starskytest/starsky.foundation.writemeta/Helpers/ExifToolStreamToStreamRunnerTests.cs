@@ -90,7 +90,7 @@ public class ExifToolStreamToStreamRunnerTests
 		var streamResult = await runner.RunProcessAsync(new MemoryStream([]),
 			string.Empty, "test / unit test");
 
-		var t = await StreamToStringHelper.StreamToStringAsync(streamResult, false);
+		await StreamToStringHelper.StreamToStringAsync(streamResult, false);
 
 		Assert.AreEqual(0, streamResult.Length);
 

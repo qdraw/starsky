@@ -11,11 +11,11 @@ namespace starsky.foundation.storage.Storage;
 /// </summary>
 public static partial class ThumbnailNameHelper
 {
-	public static readonly ThumbnailSize[] AllThumbnailSizes = new[]
-	{
+	public static readonly ThumbnailSize[] AllThumbnailSizes =
+	[
 		ThumbnailSize.TinyMeta, ThumbnailSize.ExtraLarge, ThumbnailSize.Small,
 		ThumbnailSize.Large
-	};
+	];
 
 	public static int GetSize(ThumbnailSize size)
 	{

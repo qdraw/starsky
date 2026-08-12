@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,6 +16,18 @@ namespace starskytest.starsky.foundation.platform.JsonConverter;
 [SuppressMessage("Performance", "CA1869:Cache and reuse \'JsonSerializerOptions\' instances")]
 public sealed class JsonTimeSpanConverterTests
 {
+	[TestMethod]
+	[DataRow(typeof(TimeSpan), true)]
+	[DataRow(typeof(TimeSpan?), true)]
+	[DataRow(typeof(int?), false)]
+	[DataRow(typeof(string), false)]
+	public void CanConvert_ReturnsExpected(Type typeToConvert, bool expected)
+	{
+		var factory = new JsonTimeSpanConverter();
+
+		Assert.AreEqual(expected, factory.CanConvert(typeToConvert));
+	}
+
 	[TestMethod]
 	public void TimeSpanSerializationTest()
 	{
@@ -34,6 +48,28 @@ public sealed class JsonTimeSpanConverterTests
 		json = JsonSerializer.Serialize(new NullableTestClass());
 
 		Assert.AreEqual(@"{""TimeSpan"":null}", json);
+	}
+
+	[TestMethod]
+	[DataRow(null, @"null")]
+	[DataRow(0, @"""00:00:00""")]
+	public void NullableTimeSpanWriteTest(object? value, string expectedJson)
+	{
+		var options = new JsonSerializerOptions();
+		var converter =
+			(JsonConverter<TimeSpan?>)new JsonTimeSpanConverter().CreateConverter(
+				typeof(TimeSpan?),
+				options);
+
+		TimeSpan? timeSpan = value is null ? null : new TimeSpan((int)value, 0, 0);
+
+		using var stream = new MemoryStream();
+		using var writer = new Utf8JsonWriter(stream);
+
+		converter.Write(writer, timeSpan, options);
+		writer.Flush();
+
+		Assert.AreEqual(expectedJson, Encoding.UTF8.GetString(stream.ToArray()));
 	}
 
 	[TestMethod]
