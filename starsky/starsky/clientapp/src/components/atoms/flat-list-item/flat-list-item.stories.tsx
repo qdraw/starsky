@@ -76,7 +76,7 @@ export const Default = () => {
       filePath: "/1_day_ago.jpg",
       isDirectory: false,
       imageFormat: ImageFormat.jpg,
-      lastEdited: new Date(new Date().valueOf() - 1 * 86400000).toISOString(),
+      lastEdited: new Date(Date.now() - 86400000).toISOString(),
       size: 43994
     },
     {
@@ -84,7 +84,7 @@ export const Default = () => {
       filePath: "/1_hour_ago.jpg",
       isDirectory: false,
       imageFormat: ImageFormat.jpg,
-      lastEdited: new Date(new Date().valueOf() - 1 * 3600000).toISOString(),
+      lastEdited: new Date(Date.now() - 86400000).toISOString(),
       size: 43994
     },
     {
@@ -92,7 +92,7 @@ export const Default = () => {
       filePath: "/6_minutes_ago.jpg",
       isDirectory: false,
       imageFormat: ImageFormat.jpg,
-      lastEdited: new Date(new Date().valueOf() - 1 * 360000).toISOString(),
+      lastEdited: new Date(Date.now() - 86400000).toISOString(),
       size: 43994
     }
   ] as IFileIndexItem[];

@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.video.GetDependencies;
 using starsky.foundation.video.GetDependencies.Interfaces;
+using starskytest.ExtensionMethods;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.video.GetDependencies;
@@ -37,7 +39,11 @@ public sealed class FfMpegDownloadBackgroundServiceTests
 	public async Task StartAsync()
 	{
 		var cancelToken = CancellationToken.None;
-		await new FfMpegDownloadBackgroundService(_serviceScopeFactory).StartAsync(cancelToken);
+		var service = new FfMpegDownloadBackgroundService(_serviceScopeFactory);
+
+		var dynMethod = service.GetType().GetMethod("ExecuteAsync",
+			BindingFlags.NonPublic | BindingFlags.Instance)!;
+		await dynMethod.InvokeAsync(service, cancelToken);
 
 		var ffMpegDownloadIndex =
 			_serviceScopeFactory.CreateScope().ServiceProvider

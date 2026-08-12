@@ -277,6 +277,11 @@ public sealed class NotificationQueryErrorTest
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IUpdateEntry SharedIdentityEntry { get; }
 #pragma warning restore 8618
+
+		public bool IsModified(IComplexProperty property) => throw new NotImplementedException();
+		public bool HasExplicitValue(IProperty property) => throw new NotImplementedException();
+		public bool HasStoreGeneratedValue(IProperty property) => throw new NotImplementedException();
+		public bool CanHaveOriginalValue(IPropertyBase propertyBase) => throw new NotImplementedException();
 	}
 
 	private sealed class DbUpdateExceptionApplicationDbContext(DbContextOptions options)

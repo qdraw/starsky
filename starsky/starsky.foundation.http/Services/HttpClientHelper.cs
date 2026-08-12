@@ -33,6 +33,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		"locker.ifttt.com",
 		"download.geonames.org",
 		"exiftool.org",
+		"sourceforge.net",
 		"api.github.com",
 		"starsky-dependencies.netlify.app",
 		"api.dropbox.com",
@@ -99,12 +100,19 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		try
 		{
 			using ( var response = await _httpProvider.GetAsync(sourceHttpUrl.ToString()) )
-			using ( var streamToReadFrom = await response.Content.ReadAsStreamAsync() )
 			{
-				var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
-				var result = await reader.ReadToEndAsync();
-				return new KeyValuePair<bool, string>(response.StatusCode == HttpStatusCode.OK,
-					result);
+				if ( response?.Content == null )
+				{
+					return new KeyValuePair<bool, string>(false, string.Empty);
+				}
+
+				using ( var streamToReadFrom = await response.Content.ReadAsStreamAsync() )
+				{
+					var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
+					var result = await reader.ReadToEndAsync();
+					return new KeyValuePair<bool, string>(response.StatusCode == HttpStatusCode.OK,
+						result);
+				}
 			}
 		}
 		catch ( Exception exception )

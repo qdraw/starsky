@@ -195,7 +195,7 @@ public sealed class ImportControllerTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -219,7 +219,7 @@ public sealed class ImportControllerTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();

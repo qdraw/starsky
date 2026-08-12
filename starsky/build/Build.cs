@@ -145,8 +145,8 @@ public sealed class Build : NukeBuild
 	/// <summary>
 	///     Solution .sln file
 	/// </summary>
-	[Solution(SuppressBuildProjectCheck = true)]
-	readonly Solution Solution = new();
+	[Solution]
+	readonly Solution Solution = null!;
 
 	Target Client => p => p
 		.Executes(() =>

@@ -25,4 +25,10 @@ Object.defineProperty(global, "IntersectionObserver", {
 
 globalThis.scrollTo = jest.fn();
 
+Object.defineProperty(global.crypto, "randomUUID", {
+  value: jest.fn(() => "123e4567-e89b-12d3-a456-426614174000"),
+  writable: true,
+  configurable: true
+});
+
 configure({ testIdAttribute: "data-test" });

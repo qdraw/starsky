@@ -18,7 +18,7 @@ public sealed class HttpProviderTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var result = httpProvider.PostAsync("http://test",
 			new StringContent(string.Empty));
@@ -32,7 +32,7 @@ public sealed class HttpProviderTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var request = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>());
 		var result = httpProvider.PostAsync("http://test", request);
@@ -49,7 +49,7 @@ public sealed class HttpProviderTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var result = await httpProvider.PostAsync("http://test", null);
 
@@ -61,7 +61,7 @@ public sealed class HttpProviderTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var result = await httpProvider.PostAsync(
 			"https://download.geonames.org", new StringContent(string.Empty));
@@ -74,7 +74,7 @@ public sealed class HttpProviderTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var result = await httpProvider.PostAsync(
 			"http://test", new StringContent(string.Empty),

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -50,16 +49,6 @@ public sealed class AccountControllerTest
 		var services = new ServiceCollection();
 		services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-		// For URLS
-		services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-		services.AddScoped<IUrlHelper>(factory =>
-		{
-			var actionContext = factory.GetRequiredService<IActionContextAccessor>()
-				.ActionContext;
-			return new UrlHelper(actionContext!);
-		});
-
-
 		services.AddOptions();
 		services
 			.AddDbContext<ApplicationDbContext>(b =>
@@ -81,6 +70,13 @@ public sealed class AccountControllerTest
 		var context = new DefaultHttpContext();
 		services.AddSingleton<IHttpContextAccessor>(
 			new HttpContextAccessor { HttpContext = context });
+
+		// For URLS
+		services.AddScoped<IUrlHelper>(_ =>
+		{
+			var actionContext = new ActionContext(context, new RouteData(), new ActionDescriptor());
+			return new UrlHelper(actionContext);
+		});
 
 		_serviceProvider = services.BuildServiceProvider();
 

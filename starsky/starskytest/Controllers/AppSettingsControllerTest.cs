@@ -121,7 +121,8 @@ public sealed class AppSettingsControllerTest
 	{
 		const string testFolder = "test-update-json-check";
 		var storage = new FakeIStorage(new List<string> { testFolder });
-		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+		var before = Environment.GetEnvironmentVariable("app__storageFolder");
+		Environment.SetEnvironmentVariable("app__storageFolder", null);
 
 		var appSettings = new AppSettings
 		{
@@ -132,6 +133,8 @@ public sealed class AppSettingsControllerTest
 			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
 		await controller.UpdateAppSettings(
 			new AppSettingsTransferObject { Verbose = true, StorageFolder = testFolder });
+
+		Environment.SetEnvironmentVariable("app__storageFolder", before);
 
 		Assert.IsTrue(storage.ExistFile(appSettings.AppSettingsPath));
 

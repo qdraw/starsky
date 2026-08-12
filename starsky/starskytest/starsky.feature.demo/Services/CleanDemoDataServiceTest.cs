@@ -62,7 +62,7 @@ public class CleanDemoDataServiceTest
 	[Timeout(1000, CooperativeCancellation = true)]
 	public void CleanDemoDataService_ExecuteAsync_StartAsync_Test()
 	{
-		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+		Environment.SetEnvironmentVariable("app__storageFolder", null);
 		var service = new CleanDemoDataService(_serviceScopeFactory);
 
 		var source = new CancellationTokenSource();
@@ -87,7 +87,7 @@ public class CleanDemoDataServiceTest
 	public async Task RunAsync_MissingEnvVariable()
 	{
 		_appSettings.DemoUnsafeDeleteStorageFolder = true;
-		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+		Environment.SetEnvironmentVariable("app__storageFolder", null);
 
 		var result = await new CleanDemoDataService(_serviceScopeFactory).RunAsync();
 		Assert.IsNull(result);
@@ -100,7 +100,7 @@ public class CleanDemoDataServiceTest
 		Environment.SetEnvironmentVariable("app__storageFolder", "/tmp");
 
 		var result = await new CleanDemoDataService(_serviceScopeFactory).RunAsync();
-		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+		Environment.SetEnvironmentVariable("app__storageFolder", null);
 
 		Assert.IsFalse(result);
 	}
@@ -113,7 +113,7 @@ public class CleanDemoDataServiceTest
 		Environment.SetEnvironmentVariable("app__storageFolder", "/tmp");
 
 		var result = await new CleanDemoDataService(_serviceScopeFactory).RunAsync();
-		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+		Environment.SetEnvironmentVariable("app__storageFolder", null);
 
 		Assert.IsFalse(result);
 	}
@@ -131,7 +131,7 @@ public class CleanDemoDataServiceTest
 
 		Environment.SetEnvironmentVariable("app__storageFolder", "/tmp");
 		var result = await new CleanDemoDataService(_serviceScopeFactory).RunAsync();
-		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+		Environment.SetEnvironmentVariable("app__storageFolder", null);
 
 		Assert.IsTrue(result);
 		Assert.AreEqual(_fakeProvider?.UrlCalled.FirstOrDefault(),

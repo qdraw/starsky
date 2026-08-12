@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{34d46dc0-f965-46bf-9178-b83a9a6627e7}</ProjectGuid>
-        <Version>0.7.22</Version>
+        <Version>0.8.0-beta.0</Version>
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.feature.demo</RootNamespace>
         <ImplicitUsings>disable</ImplicitUsings>

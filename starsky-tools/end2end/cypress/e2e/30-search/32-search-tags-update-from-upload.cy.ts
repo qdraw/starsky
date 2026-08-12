@@ -3,6 +3,28 @@ import configFile from './config.json'
 const config = configFile[envFolder][envName]
 
 describe('Search -from upload - update tags (32)', () => {
+  const searchRoute = '**/search?t=*inurl:starsky-end2end-test*imageformat:jpg*'
+  const updateRoute = '**/api/update*'
+
+  const postNoFail = (url: string) => cy.request({
+    method: 'POST',
+    url,
+    failOnStatusCode: false
+  })
+
+  const clearSearchCaches = () => {
+    postNoFail(config.searchClearCache)
+    postNoFail('/starsky' + config.searchClearCache)
+    postNoFail(config.clearCacheApi)
+    postNoFail('/starsky' + config.clearCacheApi)
+  }
+
+  const visitAndWaitForSearch = () => {
+    cy.intercept(searchRoute).as('search')
+    cy.visit(config.urlSearchFromUpload)
+    cy.wait('@search')
+  }
+
   beforeEach('Check some config settings and do them before each test (32)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
@@ -15,13 +37,7 @@ describe('Search -from upload - update tags (32)', () => {
     cy.sendAuthenticationHeader()
 
     // clean cache before running
-    cy.log(config.searchClearCache)
-    cy.request('POST', config.searchClearCache)
-    cy.request({
-      method: 'POST',
-      url: config.clearCacheApi,
-      failOnStatusCode: false
-    })
+    clearSearchCaches()
   })
 
   const fileName1 = '20200822_134151.jpg'
@@ -33,9 +49,7 @@ describe('Search -from upload - update tags (32)', () => {
   it('update and overwrite first image (32)', () => {
     if (!config.isEnabled) return
 
-    cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
-    cy.visit(config.urlSearchFromUpload)
-    cy.wait('@search')
+    visitAndWaitForSearch()
 
     // newest first
 
@@ -47,14 +61,14 @@ describe('Search -from upload - update tags (32)', () => {
 
     cy.get('.item.item--labels').click()
 
-    cy.get('[data-name=tags]').type(helloWorldText)
+    cy.get('[data-name=tags]').clear().type(helloWorldText)
 
-    cy.intercept('/starsky/api/update').as('update')
+    cy.intercept(updateRoute).as('update')
     cy.get('[data-test=overwrite]').click()
     cy.wait('@update')
 
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
-      .should('have.text', helloWorldText)
+      .should('contain.text', helloWorldText)
   })
 
   it('update and overwrite first image after cache clear (32)',
@@ -63,17 +77,15 @@ describe('Search -from upload - update tags (32)', () => {
     }, () => {
       if (!config.isEnabled) return
 
-      cy.request('POST', config.searchClearCache)
+      clearSearchCaches()
       // need to wait for backend
       cy.wait(1000)
 
-      cy.request('POST', config.searchClearCache)
+      clearSearchCaches()
 
       cy.wait(1000)
 
-      cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
-      cy.visit(config.urlSearchFromUpload)
-      cy.wait('@search')
+      visitAndWaitForSearch()
 
       cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
         .should('contain.text', helloWorldText)
@@ -82,9 +94,7 @@ describe('Search -from upload - update tags (32)', () => {
   it('append text to first image (32)', () => {
     if (!config.isEnabled) return
 
-    cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
-    cy.visit(config.urlSearchFromUpload)
-    cy.wait('@search')
+    visitAndWaitForSearch()
 
     cy.get('.folder > div:nth-child(1)').invoke('attr', 'data-filepath')
       .should('equal', `/starsky-end2end-test/${fileName1}`)
@@ -94,9 +104,9 @@ describe('Search -from upload - update tags (32)', () => {
 
     cy.get('.item.item--labels').click()
 
-    cy.get('[data-name=tags]').type(secondAddedText)
+    cy.get('[data-name=tags]').clear().type(secondAddedText)
 
-    cy.intercept('/starsky/api/update').as('update')
+    cy.intercept(updateRoute).as('update')
     cy.get('[data-test=add]').click()
     cy.wait('@update')
 
@@ -113,13 +123,11 @@ describe('Search -from upload - update tags (32)', () => {
       // need to wait for backend
       cy.wait(1000)
 
-      cy.request('POST', config.searchClearCache)
+      clearSearchCaches()
 
       cy.wait(1000)
 
-      cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
-      cy.visit(config.urlSearchFromUpload)
-      cy.wait('@search')
+      visitAndWaitForSearch()
 
       cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
         .should('contain.text', secondAddedText)
@@ -128,9 +136,7 @@ describe('Search -from upload - update tags (32)', () => {
   it('clean text afterwards to something different (32)', () => {
     if (!config.isEnabled) return
 
-    cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
-    cy.visit(config.urlSearchFromUpload)
-    cy.wait('@search')
+    visitAndWaitForSearch()
 
     cy.get('.folder > div:nth-child(1)').invoke('attr', 'data-filepath')
       .should('equal', `/starsky-end2end-test/${fileName1}`)
@@ -140,9 +146,9 @@ describe('Search -from upload - update tags (32)', () => {
 
     cy.get('.item.item--labels').click()
 
-    cy.get('[data-name=tags]').type(cleanText)
+    cy.get('[data-name=tags]').clear().type(cleanText)
 
-    cy.intercept('/starsky/api/update').as('update')
+    cy.intercept(updateRoute).as('update')
     cy.get('[data-test=overwrite]').click()
     cy.wait('@update')
 

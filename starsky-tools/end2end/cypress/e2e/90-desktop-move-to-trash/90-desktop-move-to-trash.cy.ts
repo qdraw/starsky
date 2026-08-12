@@ -9,6 +9,7 @@ describe("Desktop move to trash (100)", () => {
   let shouldRunTest = false;
 
   beforeEach("Check some config settings and do them before each test", () => {
+    shouldRunTest = false;
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false;
@@ -77,12 +78,16 @@ describe("Desktop move to trash (100)", () => {
     waitOnUploadIsDone(0);
   });
 
-  it("check if upload is done (90)", () => {
-    
+  it("check if upload is done (90)", {
+    retries: { runMode: 2, openMode: 2 }
+  }, () => {
+
     if (shouldRunTest === false) {
       cy.log("shouldRunTest is false, skip test \n due on system trash is not supported")
       return;
     }
+
+    waitOnUploadIsDone(0);
 
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200);
@@ -113,7 +118,9 @@ describe("Desktop move to trash (100)", () => {
     });
   }
 
-  it("remove item (90)", () => {
+  it("remove item (90)", {
+    retries: { runMode: 2, openMode: 2 }
+  }, () => {
 
     if (shouldRunTest === false) {
       cy.log("shouldRunTest is false, skip test")

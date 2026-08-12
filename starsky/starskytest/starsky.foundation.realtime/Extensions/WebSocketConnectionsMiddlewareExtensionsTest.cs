@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,31 +18,21 @@ public sealed class WebSocketConnectionsMiddlewareExtensionsTest
 	[TestMethod]
 	public async Task CreateDefaultBuilder_TestAppWebSocket_NotFailing()
 	{
-		var host = WebHost.CreateDefaultBuilder()
-			.UseUrls("http://localhost:9824")
-			.ConfigureServices(services =>
-			{
-				services
-					.AddSingleton<IWebLogger,
-						FakeIWebLogger>();
-				services
-					.AddSingleton<IWebSocketConnectionsService,
-						FakeIWebSocketConnectionsService>();
-			})
-			.Configure(app =>
-			{
-				app.MapWebSocketConnections("/test", new WebSocketConnectionsOptions(), false);
-				app.MapWebSocketConnections("/test1", new WebSocketConnectionsOptions());
-			})
-			.Build();
+		var builder = WebApplication.CreateBuilder();
+		builder.WebHost.UseUrls("http://localhost:9824");
+		builder.Services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		builder.Services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+		var app = builder.Build();
+		app.MapWebSocketConnections("/test", new WebSocketConnectionsOptions(), false);
+		app.MapWebSocketConnections("/test1", new WebSocketConnectionsOptions());
 
-		await host.StartAsync(TestContext.CancellationTokenSource.Token);
+		await app.StartAsync(TestContext.CancellationTokenSource.Token);
 
 		// it should not fail
-		var fakeService = host.Services.GetService<IWebSocketConnectionsService>();
+		var fakeService = app.Services.GetService<IWebSocketConnectionsService>();
 		Assert.IsNotNull(fakeService);
 
-		await host.StopAsync(TestContext.CancellationTokenSource.Token);
+		await app.StopAsync(TestContext.CancellationTokenSource.Token);
 	}
 
 	[TestMethod]
