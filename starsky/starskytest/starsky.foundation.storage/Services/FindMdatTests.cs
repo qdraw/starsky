@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Services;
 
-namespace starskytest.FindMdatTests;
+namespace starskytest.starsky.foundation.storage.Services;
 
 [TestClass]
 public class FindMdatTests

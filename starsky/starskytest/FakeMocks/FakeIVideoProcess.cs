@@ -7,6 +7,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.video.Process;
 using starsky.foundation.video.Process.Interfaces;
+using starsky.foundation.video.Process.Types;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.FakeMocks;

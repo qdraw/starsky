@@ -560,7 +560,7 @@ public sealed class ThumbnailControllerTest
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		// Act: call with a filePath that is raw (.dng exists in ArrangeStorage)
-		var result = await controller.ByZoomFactorAsync("test_dng", 1, "/test.dng");
+		await controller.ByZoomFactorAsync("test_dng", 1, "/test.dng");
 
 		// Assert the manual job called with filePath
 		Assert.IsTrue(manual.WasCreateJobCalled,

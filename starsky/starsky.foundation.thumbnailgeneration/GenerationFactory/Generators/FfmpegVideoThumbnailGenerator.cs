@@ -11,8 +11,8 @@ using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
-using starsky.foundation.video.Process;
 using starsky.foundation.video.Process.Interfaces;
+using starsky.foundation.video.Process.Types;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Generators;
 

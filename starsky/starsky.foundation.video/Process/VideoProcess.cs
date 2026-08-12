@@ -6,6 +6,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.video.GetDependencies.Interfaces;
 using starsky.foundation.video.GetDependencies.Models;
 using starsky.foundation.video.Process.Interfaces;
+using starsky.foundation.video.Process.Types;
 
 namespace starsky.foundation.video.Process;
 
