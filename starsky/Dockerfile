@@ -50,7 +50,7 @@ RUN /bin/bash -c "\
             '<PropertyGroup>' \
             '<OutputType>Exe</OutputType>' \
             '<ImplicitUsings>enable</ImplicitUsings>' \
-            '<TargetFramework>net8.0</TargetFramework>' \
+            '<TargetFramework>net10.0</TargetFramework>' \
             '</PropertyGroup>' \
             '</Project>' > /documentation/documentation.csproj ; \
         echo '<?xml version=\"1.0\" encoding=\"utf-8\"?>' \

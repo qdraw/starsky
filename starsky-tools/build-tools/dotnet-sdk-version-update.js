@@ -782,7 +782,7 @@ async function updateNugetPackageVersions(filePathList) {
 
 async function updateSingleNugetPackageVersion(filePath) {
 	let usedTargetFrameworkMonikers = [];
-	// '///starsky/starsky.foundation.consoletelemetry/starsky.foundation.consoletelemetry.csproj': [ 'net8.0', 'netstandard2.0', 'netstandard2.1' ],
+	// '///starsky/starsky.foundation.consoletelemetry/starsky.foundation.consoletelemetry.csproj': [ 'net10.0', 'netstandard2.0', 'netstandard2.1' ],
 
 	if (filePath.endsWith(".csproj")) {
 		let buffer = await readFile(filePath);

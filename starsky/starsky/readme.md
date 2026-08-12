@@ -29,26 +29,25 @@
 
 ### Structure configuration:
 
-When setup Starksy there are two options to configure the installation.
-There is a list of required settings. First the `appsettings.json` is loaded and the environment
-variables are overwriting features.
-The command line arguments are shortcuts to set an in-app environment variable.
+When setup Starksy there are two options to configure the installation. There is a list of required
+settings. First the `appsettings.json` is loaded and the environment variables are overwriting
+features. The command line arguments are shortcuts to set an in-app environment variable.
 
 ### The order of reading settings
 
 You could use machine specific configuration files: appsettings.machinename.json _(and replace
 machinename with your computer name in lowercase)_
 
-1. You can use `appsettings.json` inside the application folder to set base settings.
-   The order of this files is used to get the values from the appsettings
-    - `/bin/Debug/net8.0/appsettings.patch.json`
-    - `/bin/Debug/net8.0/appsettings.default.json`
-    - `/bin/Debug/net8.0/appsettings.computername.patch.json`
-    - `/bin/Debug/net8.0/appsettings.json`
-    - `/bin/Debug/net8.0/appsettings.computername.json`
+1. You can use `appsettings.json` inside the application folder to set base settings. The order of
+   these files is used to get the values from the appsettings
+    - `/bin/Debug/net10.0/appsettings.patch.json`
+    - `/bin/Debug/net10.0/appsettings.default.json`
+    - `/bin/Debug/net10.0/appsettings.computername.patch.json`
+    - `/bin/Debug/net10.0/appsettings.json`
+    - `/bin/Debug/net10.0/appsettings.computername.json`
 
-2. Use Environment variables to overwrite those base settings
-   For `ThumbnailTempFolder` use `app__ThumbnailTempFolder`
+2. Use Environment variables to overwrite those base settings For `ThumbnailTempFolder` use
+   `app__ThumbnailTempFolder`
    ([source](https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916))  
    Dictionaries can be used this way: `app__accountRolesByEmailRegisterOverwrite__test@mail.be`
 3. Command line arguments in the Cli applications to set in-app environment variables
@@ -60,12 +59,12 @@ machinename with your computer name in lowercase)_
 
 ### Recommend settings {#recommend-settings}
 
-1. `ThumbnailTempFolder` - For storing thumbnails (
-   default: `./bin/Debug/net8.0/thumbnailTempFolder`)
-2. `StorageFolder` - For the main photo directory (default: `./bin/Debug/net8.0/storageFolder`)
+1. `ThumbnailTempFolder` - For storing thumbnails (default:
+   `./bin/Debug/net10.0/thumbnailTempFolder`)
+2. `StorageFolder` - For the main photo directory (default: `./bin/Debug/net10.0/storageFolder`)
 3. `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
-4. `DatabaseConnection` - The connection-string to the database (
-   default: `./bin/Debug/net8.0/data.db`)
+4. `DatabaseConnection` - The connection-string to the database (default:
+   `./bin/Debug/net10.0/data.db`)
 5. `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your
    local timezone)
 
@@ -83,7 +82,7 @@ machinename with your computer name in lowercase)_
    default false)_
 7. `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
 8. `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
-9. `Verbose` - show more console logging  _(default false)_
+9. `Verbose` - show more console logging _(default false)_
 10. `WebFtp` - ftp path, this is used by starskyWebFtpCli
 11. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish
     button
@@ -92,8 +91,7 @@ machinename with your computer name in lowercase)_
 14. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User
     or Administrator _(default User)_
 15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to
-    production.
-    This toggle is always disabled in debug/develop mode _(default false)_
+    production. This toggle is always disabled in debug/develop mode _(default false)_
 16. `httpsOn` Set all cookies in https Mode. You should enable before going to production. _(default
     false)_
 17. `Name` Name of the application, does not have much effect _(default Starsky)_
@@ -105,13 +103,13 @@ machinename with your computer name in lowercase)_
 22. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
 23. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style
     and startsWith _default list with: /lost+found_
-24. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
+24. `ImportIgnore` ImportIgnore filter _default list with: "lost+found" ".Trashes"_
 25. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
 26. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
 27. `EnablePackageTelemetry` Telemetry is send for service improvement _default true_
 28. `EnablePackageTelemetryDebug` Debug Telemetry _default false_
-29. `AddSwaggerExportExitAfter` Quit application after exporting swagger files, should
-    have `AddSwagger` and `AddSwaggerExport` enabled _default false_
+29. `AddSwaggerExportExitAfter` Quit application after exporting swagger files, should have
+    `AddSwagger` and `AddSwaggerExport` enabled _default false_
 30. `NoAccountLocalhost` No login needed when on localhost, used in Desktop App
 31. `VideoUseLocalTime` Use localtime by Camera make and model instead of UTC
 32. `SyncOnStartup` Sync Database on changes since latest start _default true_
@@ -129,14 +127,14 @@ machinename with your computer name in lowercase)_
     _default false_ _in app true_
 39. `DefaultDesktopEditor` List of Properties that contain the default editor by imageFormat
     _default none_
-40. `ThumbnailCleanupSkipOnStartup` Skip the cleanup of the thumbnail folder on startup
-    _default false_
+40. `ThumbnailCleanupSkipOnStartup` Skip the cleanup of the thumbnail folder on startup _default
+    false_
 41. `CpuUsageMaxPercentage` - Maximum CPU usage percentage for background tasks (default 75).
 42. `FfmpegSkipDownloadOnStartup` - Skip downloading FFmpeg on startup (default false).
 43. `FfmpegSkipPreflightCheck` - Skip preflight checks for FFmpeg (default false).
 44. `FfmpegPath` - Path to the FFmpeg executable.
-45. `SyncAlwaysUpdateLastEditedTime` - Update the last edited time in the database during sync (
-    default true).
+45. `SyncAlwaysUpdateLastEditedTime` - Update the last edited time in the database during sync
+    (default true).
 46. `UseSystemTrash` - Use the system trash for file deletions if supported (default null).
 47. `Queue` - Configure background queues per queue name. Use `InMemory`, `Database` or `RabbitMq`.
     Existing queues stay `InMemory` by default. `Queue.Default` is the fallback,
@@ -277,9 +275,8 @@ In versions older than 0.7.0 the `Structure` was set to: This changed is changed
 
 ### Warmup script
 
-The default behavior of .NET is to load everything first.
-To be sure that the application is warm before someone arrives, please
-check `tools/starsky-warmup.sh`.
+The default behavior of .NET is to load everything first. To be sure that the application is warm
+before someone arrives, please check `tools/starsky-warmup.sh`.
 
 ### Search Docs
 
@@ -349,9 +346,9 @@ and in the documentation there is a API chapter
 
 ### Swagger / OpenAPI
 
-Swagger is an open-source software framework backed by a large ecosystem
-of tools that helps developers design, build, document, and consume RESTful Web services.
-There is an swagger definition. You could enable this by setting the following values:
+Swagger is an open-source software framework backed by a large ecosystem of tools that helps
+developers design, build, document, and consume RESTful Web services. There is an swagger
+definition. You could enable this by setting the following values:
 
 By default this feature is disabled, please use the `AddSwagger` definition in the AppSettings or
 use the following environment variable:
@@ -403,8 +400,8 @@ Health issues are also reported to Open Telemetry This only is when a valid key 
 
 #### DiskWatcher in combination with child folders that have no access
 
-When using `useDiskwatcher: true` and there are child folders that are not allowed to read
-For example the `lost+found` folder
+When using `useDiskwatcher: true` and there are child folders that are not allowed to read For
+example the `lost+found` folder
 
 ```
 drwx------ 2 root root  16K Apr 16  2018 lost+found

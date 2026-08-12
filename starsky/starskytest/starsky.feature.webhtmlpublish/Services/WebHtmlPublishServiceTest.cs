@@ -719,7 +719,7 @@ public sealed class WebHtmlPublishServiceTest
 			"output_test_1234")));
 
 		// This test creates a .done file in the temp folder
-		// git/starsky/starsky/starsky/bin/Debug/net8.0/temp/output_test_1234.done
+		// git/starsky/starsky/starsky/bin/Debug/net10.0/temp/output_test_1234.done
 
 		Assert.IsTrue(storage.ExistFile(Path.Combine(outputFolderPath, "output_test_1234.zip")));
 

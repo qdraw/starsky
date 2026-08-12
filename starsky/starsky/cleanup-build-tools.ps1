@@ -2,7 +2,7 @@
 
 param(
     [Parameter(Mandatory=$false)][switch]$help,
-    [Parameter(Mandatory=$false)][string]$netMoniker='net8.0',
+    [Parameter(Mandatory=$false)][string]$netMoniker='net10.0',
     [Parameter(Mandatory=$false)][string]$solutionName='starsky.sln'
 )
 
