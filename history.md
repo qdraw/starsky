@@ -42,7 +42,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.8.0-beta.0 - _(Unreleased)_ 2024-?-11 {#v0.8.0-beta.0}
 
-- nothing yet
+- [x] (Changed) _Back-end_ Code quality .NET 10 (PR #3205)
+- [x] (Changed) _Back-end_ Upgrade to .NET 10 - SDK 8.0.400 (Runtime: 10.0.11) (PR #3204)
+- [x] (Changed) _Back-end_ Upgrade to .NET 10 (PR #3201)
 
 ## version 0.7.22 - 2026-08-12 {#v0.7.22}
 
@@ -1773,7 +1775,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 
 ## version 0.1.15 - 2020-02-06
 
-- [x] (bugfix) _Front-end_ Drag'n drop is now only with files
+- [x] (bugfix) _Front-end_ Drag’n’drop is now only with files
 - [x] (version) _Back-end_ _Legacy starsky.netFramework_ 0.1.15 release included
 - [x] (version) _Back-end_ _dependencies_ Microsoft.EntityFrameworkCore,
   Microsoft.Extensions.Configuration to 3.1.1
