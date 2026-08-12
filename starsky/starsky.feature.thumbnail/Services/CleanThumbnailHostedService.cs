@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,9 +55,12 @@ public class CleanThumbnailHostedService(
 		return Task.CompletedTask;
 	}
 
+	[SuppressMessage("ReSharper", "MethodHasAsyncOverload")]
+	[SuppressMessage("Usage", "S6966: Await DisposeAsync instead")]
 	public async Task StopAsync(CancellationToken cancellationToken)
 	{
 		_applicationStartedRegistration?.Dispose();
+
 		if ( _runCancellationTokenSource != null )
 		{
 			await _runCancellationTokenSource.CancelAsync();
