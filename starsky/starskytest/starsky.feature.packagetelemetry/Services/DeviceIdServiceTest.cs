@@ -45,14 +45,11 @@ public class DeviceIdServiceTest
 		var deviceService = new DeviceIdService(new FakeSelectorStorage(),
 			new FakeISettingsService
 			{
-				Items = new List<SettingsItem>
-				{
-					new()
-					{
-						Key = SettingsType.DeviceId.ToString(),
-						Value = "fallBackFromDatabase"
-					}
-				}
+				Items =
+				[
+
+					new() { Key = SettingsType.DeviceId.ToString(), Value = "fallBackFromDatabase" }
+				]
 			});
 		var id = await deviceService.DeviceId(null);
 		Assert.IsNotNull(id);
@@ -65,14 +62,11 @@ public class DeviceIdServiceTest
 		var deviceService = new DeviceIdService(new FakeSelectorStorage(),
 			new FakeISettingsService
 			{
-				Items = new List<SettingsItem>
-				{
-					new()
-					{
-						Key = SettingsType.DeviceId.ToString(),
-						Value = "fallBackFromDatabase"
-					}
-				}
+				Items =
+				[
+
+					new() { Key = SettingsType.DeviceId.ToString(), Value = "fallBackFromDatabase" }
+				]
 			});
 		var id = await deviceService.DeviceId(OSPlatform.Create("test"));
 		Assert.IsNotNull(id);
@@ -85,14 +79,11 @@ public class DeviceIdServiceTest
 		var deviceService = new DeviceIdService(new FakeSelectorStorage(),
 			new FakeISettingsService
 			{
-				Items = new List<SettingsItem>
-				{
-					new()
-					{
-						Key = SettingsType.DeviceId.ToString(),
-						Value = "fallBackFromDatabase"
-					}
-				}
+				Items =
+				[
+
+					new() { Key = SettingsType.DeviceId.ToString(), Value = "fallBackFromDatabase" }
+				]
 			});
 		var id = await deviceService.DeviceId(OSPlatform.Linux);
 		Assert.IsNotNull(id);
@@ -102,7 +93,7 @@ public class DeviceIdServiceTest
 	[TestMethod]
 	public async Task DeviceId_Linux_BsdHostIdPath()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var storageSelector = new FakeSelectorStorage(storage);
 		var deviceService = new DeviceIdService(storageSelector, new FakeISettingsService());
 		await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("test-id"),
@@ -115,7 +106,7 @@ public class DeviceIdServiceTest
 	[TestMethod]
 	public async Task DeviceId_Linux_MachineIdPath2()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var storageSelector = new FakeSelectorStorage(storage);
 		var deviceService = new DeviceIdService(storageSelector,
 			new FakeISettingsService());
@@ -131,7 +122,7 @@ public class DeviceIdServiceTest
 	[TestMethod]
 	public async Task DeviceId_Linux_DbusMachineIdPath()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var storageSelector = new FakeSelectorStorage(storage);
 		var deviceService = new DeviceIdService(storageSelector, new FakeISettingsService());
 		await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("should-not-use"),
@@ -149,7 +140,7 @@ public class DeviceIdServiceTest
 	[TestMethod]
 	public async Task DeviceId_Bsd_DbusMachineIdPath()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var storageSelector = new FakeSelectorStorage(storage);
 		var deviceService = new DeviceIdService(storageSelector,
 			new FakeISettingsService());
@@ -183,19 +174,16 @@ public class DeviceIdServiceTest
 			return;
 		}
 
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var storageSelector = new FakeSelectorStorage(storage);
 		var deviceService = new DeviceIdService(storageSelector,
 			new FakeISettingsService
 			{
-				Items = new List<SettingsItem>
-				{
-					new()
-					{
-						Key = SettingsType.DeviceId.ToString(),
-						Value = "fallBackFromDatabase"
-					}
-				}
+				Items =
+				[
+
+					new() { Key = SettingsType.DeviceId.ToString(), Value = "fallBackFromDatabase" }
+				]
 			}) { IoReg = "ls" };
 		var id = await deviceService.DeviceId(OSPlatform.OSX);
 		Assert.AreEqual("fallBackFromDatabase", id);
@@ -210,7 +198,7 @@ public class DeviceIdServiceTest
 			return;
 		}
 
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var storageSelector = new FakeSelectorStorage(storage);
 		var deviceService = new DeviceIdService(storageSelector,
 			new FakeISettingsService());
@@ -258,7 +246,7 @@ public class DeviceIdServiceTest
 			return;
 		}
 
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var storageSelector = new FakeSelectorStorage(storage);
 		var deviceService = new DeviceIdService(storageSelector,
 			new FakeISettingsService());
@@ -306,7 +294,7 @@ public class DeviceIdServiceTest
 			return;
 		}
 
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var storageSelector = new FakeSelectorStorage(storage);
 		var deviceService = new DeviceIdService(storageSelector,
 			new FakeISettingsService()) { IoReg = "ls" };

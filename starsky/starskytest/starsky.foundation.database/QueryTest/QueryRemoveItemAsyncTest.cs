@@ -62,7 +62,7 @@ public class QueryRemoveItemAsyncTest
 			await _query.AddItemAsync(
 				new FileIndexItem("/QueryRemoveItemAsyncTest_AddOneItem_List_2"));
 
-		await _query.RemoveItemAsync(new List<FileIndexItem> { result1, result2 });
+		await _query.RemoveItemAsync([result1, result2]);
 
 		Assert.IsNull(_query.GetObjectByFilePath("/QueryRemoveItemAsyncTest_AddOneItem_List_1"));
 		Assert.IsNull(_query.GetObjectByFilePath("/QueryRemoveItemAsyncTest_AddOneItem_List_2"));

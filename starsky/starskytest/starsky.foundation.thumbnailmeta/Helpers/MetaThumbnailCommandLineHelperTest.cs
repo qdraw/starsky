@@ -20,7 +20,7 @@ public sealed class MetaThumbnailCommandLineHelperTest
 			new AppSettings(), console, new FakeIMetaExifThumbnailService(),
 			new FakeIMetaUpdateStatusThumbnailService(), new FakeIWebLogger());
 
-		await metaCli.CommandLineAsync(new List<string> { "-h" }.ToArray());
+		await metaCli.CommandLineAsync(["-h"]);
 
 		Assert.Contains("Help", console.WrittenLines[0]);
 	}
@@ -34,7 +34,7 @@ public sealed class MetaThumbnailCommandLineHelperTest
 			new AppSettings(), console, fakeMetaThumb,
 			new FakeIMetaUpdateStatusThumbnailService(), new FakeIWebLogger());
 
-		await metaCli.CommandLineAsync(new List<string> { "-p", "/test" }.ToArray());
+		await metaCli.CommandLineAsync(["-p", "/test"]);
 
 		Assert.AreEqual("/test", fakeMetaThumb.Input[0].Item1);
 
@@ -50,7 +50,7 @@ public sealed class MetaThumbnailCommandLineHelperTest
 			new AppSettings(), console, fakeMetaThumb,
 			new FakeIMetaUpdateStatusThumbnailService(), new FakeIWebLogger());
 
-		await metaCli.CommandLineAsync(new List<string> { "-g", "0" }.ToArray());
+		await metaCli.CommandLineAsync(["-g", "0"]);
 
 		var inputDate = fakeMetaThumb.Input[0].Item1;
 		var currentYear = DateTime.Now.Year.ToString();

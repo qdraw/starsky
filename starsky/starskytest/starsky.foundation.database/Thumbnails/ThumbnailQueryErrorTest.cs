@@ -274,10 +274,9 @@ public class ThumbnailQueryErrorTest
 				"Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)");
 
 			var instance =
-				( MySqlException ) ctor?.Invoke(new object[]
-				{
+				( MySqlException ) ctor?.Invoke([
 					key, "test", message, new Exception()
-				})!;
+				])!;
 			return instance;
 		}
 	}

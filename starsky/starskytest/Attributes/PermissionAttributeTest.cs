@@ -18,8 +18,7 @@ public sealed class PermissionAttributeTest
 	public void NotLoggedIn()
 	{
 		var permissionAttribute = new PermissionAttribute(
-			new List<UserManager.AppPermissions> { UserManager.AppPermissions.AppSettingsWrite }
-				.ToArray());
+			[UserManager.AppPermissions.AppSettingsWrite]);
 
 		var authorizationFilterContext = new AuthorizationFilterContext(
 			new ActionContext(new DefaultHttpContext(), new RouteData(), new ActionDescriptor()),
@@ -35,13 +34,12 @@ public sealed class PermissionAttributeTest
 	public void PermissionClaimMissing()
 	{
 		var permissionAttribute = new PermissionAttribute(
-			new List<UserManager.AppPermissions> { UserManager.AppPermissions.AppSettingsWrite }
-				.ToArray());
+			[UserManager.AppPermissions.AppSettingsWrite]);
 
 		var httpContext = new DefaultHttpContext
 		{
 			User = new ClaimsPrincipal(new ClaimsIdentity(
-				new[] { new Claim(ClaimTypes.Name, "username") }, "someAuthTypeName"))
+				[new Claim(ClaimTypes.Name, "username")], "someAuthTypeName"))
 		};
 
 		var authorizationFilterContext = new AuthorizationFilterContext(
@@ -58,17 +56,15 @@ public sealed class PermissionAttributeTest
 	public void PermissionClaimExist()
 	{
 		var permissionAttribute = new PermissionAttribute(
-			new List<UserManager.AppPermissions> { UserManager.AppPermissions.AppSettingsWrite }
-				.ToArray());
+			[UserManager.AppPermissions.AppSettingsWrite]);
 
 		var httpContext = new DefaultHttpContext
 		{
 			User = new ClaimsPrincipal(new ClaimsIdentity(
-				new[]
-				{
-					new Claim("Permission",
+			[
+				new Claim("Permission",
 						UserManager.AppPermissions.AppSettingsWrite.ToString())
-				}))
+			]))
 		};
 
 		var authorizationFilterContext = new AuthorizationFilterContext(

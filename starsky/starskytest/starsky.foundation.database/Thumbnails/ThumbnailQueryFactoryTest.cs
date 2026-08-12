@@ -56,10 +56,9 @@ public sealed class ThumbnailQueryFactoryTest
 	[TestMethod]
 	public async Task QueryFactoryTest_FakeIQueryReturn()
 	{
-		var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
-		{
+		var fakeIQuery = new FakeIThumbnailQuery([
 			new("test3", null, null, null, null)
-		});
+		]);
 
 		var queryFactory = new ThumbnailQueryFactory(null, null, fakeIQuery,
 			new FakeIWebLogger(), new FakeMemoryCache());
@@ -75,10 +74,9 @@ public sealed class ThumbnailQueryFactoryTest
 	[TestMethod]
 	public async Task QueryFactoryTest_FakeIQuery_IgnoreNoItemsInList()
 	{
-		var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
-		{
+		var fakeIQuery = new FakeIThumbnailQuery([
 			new("test5", null, null, null, null)
-		});
+		]);
 
 		var queryFactory = new ThumbnailQueryFactory(null, null, fakeIQuery,
 			new FakeIWebLogger(), new FakeMemoryCache());

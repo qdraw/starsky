@@ -168,8 +168,8 @@ public sealed class RenameServiceTest
 		Assert.IsNotNull(_fileInExist.FilePath);
 		Assert.IsNotNull(_parentFolder.FilePath);
 
-		var iStorage = new FakeIStorage(new List<string> { _folderExist.FilePath! },
-			new List<string> { _fileInExist.FilePath! });
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+			[_fileInExist.FilePath!]);
 
 		var renameFs1 = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(_fileInExist.FilePath!, _folderExist.FilePath + "/test2.jpg");
@@ -238,8 +238,8 @@ public sealed class RenameServiceTest
 	{
 		await CreateFoldersAndFilesInDatabase();
 
-		var iStorage = new FakeIStorage(new List<string> { _folderExist.FilePath! },
-			new List<string> { _fileInExist.FilePath! });
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+			[_fileInExist.FilePath!]);
 
 		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(_fileInExist.FilePath!, _folderExist.FilePath + "/test2___");
@@ -524,8 +524,8 @@ public sealed class RenameServiceTest
 		var itemInChildFolderPath = "/child_folder/test_01.jpg";
 		await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath));
 		await _query.AddParentItemsAsync(itemInChildFolderPath);
-		var iStorage = new FakeIStorage(new List<string> { "/", "/child_folder" },
-			new List<string> { "/child_folder/test_01.jpg" });
+		var iStorage = new FakeIStorage(["/", "/child_folder"],
+			["/child_folder/test_01.jpg"]);
 
 		var renameFs =
 			await new RenameService(_query, iStorage, new FakeIWebLogger()).Rename(
@@ -552,8 +552,8 @@ public sealed class RenameServiceTest
 		await _query.AddParentItemsAsync(itemInChildFolderPath);
 
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2" },
-			new List<string> { "/child_folder/test_10.jpg", "/child_folder/test_10.png" });
+			["/", "/child_folder", "/child_folder2"],
+			["/child_folder/test_10.jpg", "/child_folder/test_10.png"]);
 
 		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(itemInChildFolderPath, "/child_folder2");
@@ -584,8 +584,8 @@ public sealed class RenameServiceTest
 		await _query.AddParentItemsAsync(fromItemDng);
 
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2" },
-			new List<string> { fromItemJpg, fromItemDng });
+			["/", "/child_folder", "/child_folder2"],
+			[fromItemJpg, fromItemDng]);
 
 		// only say: fromItemJpg > toItemJpg
 		var renameFs1 = await new RenameService(_query, iStorage, new FakeIWebLogger())
@@ -630,8 +630,8 @@ public sealed class RenameServiceTest
 
 		await _query.AddParentItemsAsync(itemInChildFolderPath1);
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2" },
-			new List<string> { itemInChildFolderPath1, collectionItemPath1 });
+			["/", "/child_folder", "/child_folder2"],
+			[itemInChildFolderPath1, collectionItemPath1]);
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
 			new RenameService(_query, iStorage, new FakeIWebLogger())
@@ -670,8 +670,8 @@ public sealed class RenameServiceTest
 
 		await _query.AddParentItemsAsync(itemInChildFolderPath1);
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2" },
-			new List<string> { itemInChildFolderPath1, collectionItemPath1 });
+			["/", "/child_folder", "/child_folder2"],
+			[itemInChildFolderPath1, collectionItemPath1]);
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
 			new RenameService(_query, iStorage, new FakeIWebLogger())
@@ -710,8 +710,8 @@ public sealed class RenameServiceTest
 
 		await _query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2" },
-			new List<string> { itemInChildFolderPath1, collectionItemPath1 });
+			["/", "/child_folder", "/child_folder2"],
+			[itemInChildFolderPath1, collectionItemPath1]);
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
 			new RenameService(_query, iStorage, new FakeIWebLogger())
@@ -748,8 +748,8 @@ public sealed class RenameServiceTest
 		await _query.AddParentItemsAsync(item1Dng);
 
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2" },
-			new List<string> { item1Dng, item1SideCar }); // item1
+			["/", "/child_folder", "/child_folder2"],
+			[item1Dng, item1SideCar]); // item1
 
 		// Move DNG to different folder
 		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
@@ -774,8 +774,8 @@ public sealed class RenameServiceTest
 		await _query.AddParentItemsAsync(item1);
 
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2" },
-			new List<string> { item1, item1SideCar });
+			["/", "/child_folder", "/child_folder2"],
+			[item1, item1SideCar]);
 
 		// Move Jpg to different folder but the xmp should be ignored
 		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
@@ -802,8 +802,8 @@ public sealed class RenameServiceTest
 
 		await _query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2" },
-			new List<string> { itemInChildFolderPath1, collectionItemPath1 });
+			["/", "/child_folder", "/child_folder2"],
+			[itemInChildFolderPath1, collectionItemPath1]);
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
 			new RenameService(_query, iStorage, new FakeIWebLogger())
@@ -848,14 +848,13 @@ public sealed class RenameServiceTest
 
 		await _query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2", "/other" },
-			new List<string>
-			{
+			["/", "/child_folder", "/child_folder2", "/other"],
+			[
 				itemInChildFolderPath1,
 				collectionItemPath1,
 				itemInChildFolderPath2,
 				collectionItemPath2
-			});
+			]);
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
 			new RenameService(_query, iStorage, new FakeIWebLogger())
@@ -917,14 +916,13 @@ public sealed class RenameServiceTest
 
 		await _query.AddParentItemsAsync(itemInChildFolderPath1);
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2", "/other" },
-			new List<string>
-			{
+			["/", "/child_folder", "/child_folder2", "/other"],
+			[
 				itemInChildFolderPath1,
 				collectionItemPath1,
 				itemInChildFolderPath2,
 				collectionItemPath2
-			});
+			]);
 
 		// Collections disabled!
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
@@ -976,8 +974,8 @@ public sealed class RenameServiceTest
 		await _query.AddParentItemsAsync(itemInChildFolderPath1);
 
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/child_folder", "/child_folder2", "/other" },
-			new List<string> { itemInChildFolderPath1, collectionItemPath1 });
+			["/", "/child_folder", "/child_folder2", "/other"],
+			[itemInChildFolderPath1, collectionItemPath1]);
 
 		// nr 2 is does not exist in the database
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
@@ -1003,7 +1001,7 @@ public sealed class RenameServiceTest
 	[TestMethod]
 	public async Task Rename_FolderToExistingFolderInDatabaseButNotOnDisk()
 	{
-		var iStorage = new FakeIStorage(new List<string> { "/", "/source_folder" });
+		var iStorage = new FakeIStorage(["/", "/source_folder"]);
 
 		await _query.AddItemAsync(
 			new FileIndexItem("/source_folder") { IsDirectory = true });
@@ -1039,8 +1037,8 @@ public sealed class RenameServiceTest
 	public async Task Rename_FolderToExistingFolder_With_Child_Items_InDatabaseButNotOnDisk()
 	{
 		var iStorage = new FakeIStorage(
-			new List<string> { "/", "/source_folder_2" },
-			new List<string> { "/source_folder_2/test.jpg" }
+			["/", "/source_folder_2"],
+			["/source_folder_2/test.jpg"]
 		);
 
 		await _query.AddItemAsync(
@@ -1099,10 +1097,10 @@ public sealed class RenameServiceTest
 		const string beforePath = "/test/case_sensitive.jpg";
 		const string afterPath = "/test/Case_Sensitive.jpg";
 
-		var storage = new FakeIStorage(new List<string> { "/exist", beforePath });
+		var storage = new FakeIStorage(["/exist", beforePath]);
 		var query =
 			new FakeIQuery(
-				new List<FileIndexItem> { new(beforePath) });
+				[new(beforePath)]);
 
 		var renameService = new RenameService(query, storage, new FakeIWebLogger());
 

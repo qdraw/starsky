@@ -200,7 +200,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("PORT", "");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "");
 
-		PortProgramHelper.SetDefaultAspNetCoreUrls(Array.Empty<string>());
+		PortProgramHelper.SetDefaultAspNetCoreUrls([]);
 
 		// should set to default
 		Assert.AreEqual("http://localhost:4000;https://localhost:4001",

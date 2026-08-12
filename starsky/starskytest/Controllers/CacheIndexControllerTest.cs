@@ -227,15 +227,15 @@ public sealed class CacheIndexControllerTest
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		_query.AddCacheParentItem("/list-cache",
-			new List<FileIndexItem>
+		[
+
+			new()
 			{
-				new()
-				{
-					FileName = "cacheDeleteTest2",
-					ParentDirectory = "/list-cache",
-					IsDirectory = true
-				}
-			});
+				FileName = "cacheDeleteTest2",
+				ParentDirectory = "/list-cache",
+				IsDirectory = true
+			}
+		]);
 
 		// Act, remove content from cache
 		var actionResult = controller.ListCache("/list-cache") as JsonResult;

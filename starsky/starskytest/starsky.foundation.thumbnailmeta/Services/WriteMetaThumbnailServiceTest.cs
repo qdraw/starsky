@@ -20,7 +20,7 @@ public sealed class WriteMetaThumbnailServiceTest
 	public async Task WriteAndCropFile_Fail_BufferNull()
 	{
 		var storage = new FakeIStorage([],
-			new List<string> { "/test.jpg" }, []);
+			["/test.jpg"], []);
 		var service = new WriteMetaThumbnailService(new FakeSelectorStorage(storage),
 			new FakeIWebLogger(), new AppSettings());
 		var result = await service.WriteAndCropFile("/test.jpg",
@@ -32,7 +32,7 @@ public sealed class WriteMetaThumbnailServiceTest
 	[TestMethod]
 	public async Task WriteAndCropFile_Fail_ImageCantBeLoaded()
 	{
-		var storage = new FakeIStorage(new List<string>(),
+		var storage = new FakeIStorage([],
 			["/test.jpg"], []); // instead of new byte[0][]
 		var service = new WriteMetaThumbnailService(new FakeSelectorStorage(storage),
 			new FakeIWebLogger(), new AppSettings());

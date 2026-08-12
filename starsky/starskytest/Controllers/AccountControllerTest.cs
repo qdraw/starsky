@@ -200,22 +200,22 @@ public sealed class AccountControllerTest
 	public async Task LoginPost_RejectStatusCode_noData()
 	{
 		var controller = new AccountController(new FakeIUserManger(new UserOverviewModel(
-			new List<User>
+		[
+
+			new()
 			{
-				new()
+				Credentials = new List<Credential>
 				{
-					Credentials = new List<Credential>
+					new()
 					{
-						new()
-						{
-							Identifier = "test",
-							Secret =
-								"test", // this is the password - in real world this is hashed and salted
-							Extra = string.Empty // in mock no salt is error case
-						}
+						Identifier = "test",
+						Secret =
+							"test", // this is the password - in real world this is hashed and salted
+						Extra = string.Empty // in mock no salt is error case
 					}
 				}
-			})), _appSettings, _antiForgery, _selectorStorage);
+			}
+		])), _appSettings, _antiForgery, _selectorStorage);
 		controller.ControllerContext.HttpContext = new DefaultHttpContext
 		{
 			User = new ClaimsPrincipal()
@@ -475,7 +475,7 @@ public sealed class AccountControllerTest
 	public async Task Register_RejectDueNotLogin_AlreadyAccounts()
 	{
 		var controller = new AccountController(
-			new FakeIUserManger(new UserOverviewModel(new List<User> { new() })),
+			new FakeIUserManger(new UserOverviewModel([new()])),
 			_appSettings, _antiForgery, _selectorStorage)
 		{
 			ControllerContext =
@@ -690,7 +690,7 @@ public sealed class AccountControllerTest
 	public async Task RegisterStatus_RejectDueNotLogin_AlreadyAccounts()
 	{
 		var controller = new AccountController(
-			new FakeIUserManger(new UserOverviewModel(new List<User> { new() })),
+			new FakeIUserManger(new UserOverviewModel([new()])),
 			_appSettings, _antiForgery, _selectorStorage)
 		{
 			ControllerContext =

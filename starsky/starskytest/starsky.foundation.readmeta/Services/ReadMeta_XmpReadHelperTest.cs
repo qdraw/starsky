@@ -108,8 +108,8 @@ public sealed class XmpReadHelperTest
 		var xmpByteArray = Encoding.UTF8.GetBytes(Input);
 
 
-		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.arw", "/test.xmp" },
+		var fakeIStorage = new FakeIStorage(["/"],
+			["/test.arw", "/test.xmp"],
 			new List<byte[]> { null!, xmpByteArray });
 		var fileIndexItem = new FileIndexItem { ParentDirectory = "/", FileName = "test.arw" };
 
@@ -152,8 +152,8 @@ public sealed class XmpReadHelperTest
 		var xmpByteArray = Encoding.UTF8.GetBytes(Input);
 
 
-		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.arw", "/test.xmp" },
+		var fakeIStorage = new FakeIStorage(["/"],
+			["/test.arw", "/test.xmp"],
 			new List<byte[]> { null!, xmpByteArray });
 		var fileIndexItem = new FileIndexItem
 		{
@@ -243,8 +243,8 @@ public sealed class XmpReadHelperTest
 
 		var xmpByteArray = Encoding.UTF8.GetBytes(xmpData);
 
-		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.arw", "/test.xmp" },
+		var fakeIStorage = new FakeIStorage(["/"],
+			["/test.arw", "/test.xmp"],
 			new List<byte[]> { null!, xmpByteArray });
 
 		var readMetaXmp = new ReadMetaXmp(fakeIStorage, new FakeIWebLogger());

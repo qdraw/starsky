@@ -17,16 +17,15 @@ public class ExportServiceTest
 	public async Task Export_Folder()
 	{
 		var exportService = new ExportService(
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test") { IsDirectory = true }, new("/test/test.jpg")
-			}), new AppSettings(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/test" },
-				new List<string> { "/test/test.jpg" })), new FakeIWebLogger(),
+			]), new AppSettings(),
+			new FakeSelectorStorage(new FakeIStorage(["/test"],
+				["/test/test.jpg"])), new FakeIWebLogger(),
 			new FakeIThumbnailService());
 
 		var (_, fileIndexResultsList) =
-			await exportService.PreflightAsync(new List<string> { "/test" }.ToArray());
+			await exportService.PreflightAsync(["/test"]);
 
 		Assert.HasCount(1, fileIndexResultsList);
 	}
@@ -35,18 +34,17 @@ public class ExportServiceTest
 	public async Task Export_Folder_StackCollection_True()
 	{
 		var exportService = new ExportService(
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test") { IsDirectory = true },
 				new("/test/test.jpg"),
 				new("/test/test.dng")
-			}), new AppSettings(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/test" },
-				new List<string> { "/test/test.jpg", "/test/test.dng" })), new FakeIWebLogger(),
+			]), new AppSettings(),
+			new FakeSelectorStorage(new FakeIStorage(["/test"],
+				["/test/test.jpg", "/test/test.dng"])), new FakeIWebLogger(),
 			new FakeIThumbnailService());
 
 		var (_, fileIndexResultsList) =
-			await exportService.PreflightAsync(new List<string> { "/test/test.jpg" }.ToArray());
+			await exportService.PreflightAsync(["/test/test.jpg"]);
 
 		Assert.HasCount(3, fileIndexResultsList);
 		Assert.ContainsSingle(p => p.FilePath == "/test/test.jpg", fileIndexResultsList);
@@ -58,18 +56,17 @@ public class ExportServiceTest
 	public async Task Export_Folder_StackCollection_False()
 	{
 		var exportService = new ExportService(
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test") { IsDirectory = true },
 				new("/test/test.jpg"),
 				new("/test/test.dng")
-			}), new AppSettings(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/test" },
-				new List<string> { "/test/test.jpg", "/test/test.dng" })), new FakeIWebLogger(),
+			]), new AppSettings(),
+			new FakeSelectorStorage(new FakeIStorage(["/test"],
+				["/test/test.jpg", "/test/test.dng"])), new FakeIWebLogger(),
 			new FakeIThumbnailService());
 
 		var (_, fileIndexResultsList) =
-			await exportService.PreflightAsync(new List<string> { "/test/test.jpg" }.ToArray(),
+			await exportService.PreflightAsync(["/test/test.jpg"],
 				false);
 
 		Assert.HasCount(1, fileIndexResultsList);
@@ -81,18 +78,17 @@ public class ExportServiceTest
 	public async Task Export_Ignore_Deleted_FolderFile()
 	{
 		var exportService = new ExportService(
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test") { IsDirectory = true },
 				new("/test/test.jpg") { Status = FileIndexItem.ExifStatus.Deleted }
-			}), new AppSettings(),
+			]), new AppSettings(),
 			// file not included in storage
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/test" })),
+			new FakeSelectorStorage(new FakeIStorage(["/test"])),
 			new FakeIWebLogger(),
 			new FakeIThumbnailService());
 
 		var (_, fileIndexResultsList) =
-			await exportService.PreflightAsync(new List<string> { "/test" }.ToArray());
+			await exportService.PreflightAsync(["/test"]);
 
 		Assert.IsEmpty(fileIndexResultsList);
 	}
@@ -101,18 +97,17 @@ public class ExportServiceTest
 	public async Task Export_Ignore_Deleted_Folder()
 	{
 		var exportService = new ExportService(
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test") { IsDirectory = true },
 				new("/test/test.jpg") { Status = FileIndexItem.ExifStatus.Deleted }
-			}), new AppSettings(),
+			]), new AppSettings(),
 			// file not included in storage
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/test" })),
+			new FakeSelectorStorage(new FakeIStorage(["/test"])),
 			new FakeIWebLogger(),
 			new FakeIThumbnailService());
 
 		var (_, fileIndexResultsList) =
-			await exportService.PreflightAsync(new List<string> { "/test/test.jpg" }.ToArray());
+			await exportService.PreflightAsync(["/test/test.jpg"]);
 
 		Assert.AreEqual(0,
 			fileIndexResultsList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok));
@@ -126,7 +121,7 @@ public class ExportServiceTest
 		var exportService = new ExportService(new FakeIQuery(), new AppSettings(),
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
 		var (_, fileIndexResultsList) =
-			await exportService.PreflightAsync(new List<string> { "/test" }.ToArray());
+			await exportService.PreflightAsync(["/test"]);
 		Assert.HasCount(1, fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,
 			fileIndexResultsList[0].Status);
@@ -138,7 +133,7 @@ public class ExportServiceTest
 		var exportService = new ExportService(new FakeIQuery(), new AppSettings(),
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
 		var (zipHash, _) =
-			await exportService.PreflightAsync(new List<string> { "/test" }.ToArray(), false, true);
+			await exportService.PreflightAsync(["/test"], false, true);
 
 		Assert.StartsWith("TN", zipHash);
 	}
@@ -149,7 +144,7 @@ public class ExportServiceTest
 		var exportService = new ExportService(new FakeIQuery(), new AppSettings(),
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
 		var (zipHash, _) =
-			await exportService.PreflightAsync(new List<string> { "/test" }.ToArray(), false);
+			await exportService.PreflightAsync(["/test"], false);
 
 		Assert.StartsWith("SR", zipHash);
 	}

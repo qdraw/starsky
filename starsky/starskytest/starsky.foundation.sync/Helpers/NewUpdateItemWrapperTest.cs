@@ -32,8 +32,8 @@ public class NewUpdateItemWrapperTest
 	public async Task NewItem_Single_Ok_AddParentItem()
 	{
 		var fakeQuery = new FakeIQuery();
-		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
-			new List<string> { "/sub/test8495.jpg" },
+		var storage = new FakeIStorage(["/", "/sub"],
+			["/sub/test8495.jpg"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 
 		var updateItem = new NewUpdateItemWrapper(fakeQuery, storage, new AppSettings(), null,
@@ -59,18 +59,17 @@ public class NewUpdateItemWrapperTest
 	public async Task NewItem_List_Ok_AddParentItem()
 	{
 		var fakeQuery = new FakeIQuery();
-		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
-			new List<string> { "/sub/test8495.jpg" },
+		var storage = new FakeIStorage(["/", "/sub"],
+			["/sub/test8495.jpg"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 
 		var updateItem = new NewUpdateItemWrapper(fakeQuery, storage, new AppSettings(), null,
 			new FakeIWebLogger());
 
 		var syncResult = await updateItem.NewItem(
-			new List<FileIndexItem>
-			{
-				new("/sub/test8495.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			}, true); // <- - - - add parent item is True
+		[
+			new("/sub/test8495.jpg") { Status = FileIndexItem.ExifStatus.Ok }
+		], true); // <- - - - add parent item is True
 
 		Assert.IsNotNull(syncResult);
 		var dbResult = await fakeQuery.GetAllRecursiveAsync();
@@ -88,18 +87,17 @@ public class NewUpdateItemWrapperTest
 	public async Task NewItem_List_Ok_Ignore_AddParentItem()
 	{
 		var fakeQuery = new FakeIQuery();
-		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
-			new List<string> { "/sub/test8495.jpg" },
+		var storage = new FakeIStorage(["/", "/sub"],
+			["/sub/test8495.jpg"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 
 		var updateItem = new NewUpdateItemWrapper(fakeQuery, storage, new AppSettings(), null,
 			new FakeIWebLogger());
 
 		var syncResult = await updateItem.NewItem(
-			new List<FileIndexItem>
-			{
-				new("/sub/test8495.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			}, false); // <- - - - add parent item is FALSE
+		[
+			new("/sub/test8495.jpg") { Status = FileIndexItem.ExifStatus.Ok }
+		], false); // <- - - - add parent item is FALSE
 
 		Assert.IsNotNull(syncResult);
 		var dbResult = await fakeQuery.GetAllRecursiveAsync();
@@ -126,9 +124,9 @@ public class NewUpdateItemWrapperTest
 			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
 		};
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
-		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
-			new List<string> { "/test.jpg" },
+		var fakeQuery = new FakeIQuery([item]);
+		var storage = new FakeIStorage(["/", "/sub"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 
 		var updateItem = new NewUpdateItemWrapper(fakeQuery, storage, new AppSettings(), null,
@@ -153,9 +151,9 @@ public class NewUpdateItemWrapperTest
 			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
 		};
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
-		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
-			new List<string> { "/test.jpg" },
+		var fakeQuery = new FakeIQuery([item]);
+		var storage = new FakeIStorage(["/", "/sub"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 
 		var dbParentResultBefore = await fakeQuery.GetObjectByFilePathAsync("/");

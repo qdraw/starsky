@@ -67,7 +67,7 @@ public sealed class ExifToolTest
 	{
 		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+		var fakeStorage = new FakeIStorage(["/"],
 			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
@@ -99,7 +99,7 @@ public sealed class ExifToolTest
 	{
 		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+		var fakeStorage = new FakeIStorage(["/"],
 			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
@@ -115,8 +115,8 @@ public sealed class ExifToolTest
 	{
 		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var result =
@@ -131,8 +131,8 @@ public sealed class ExifToolTest
 	{
 		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var stream = new MemoryStream();

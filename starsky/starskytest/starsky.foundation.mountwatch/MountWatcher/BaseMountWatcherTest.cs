@@ -33,9 +33,9 @@ public sealed class BaseMountWatcherTest
 		var sut = new TestBaseMountWatcher
 		{
 			Snapshots = new Queue<List<string>>([
-				new List<string>(),
-				new List<string> { "/mnt/camera" },
-				new List<string>()
+				[],
+				["/mnt/camera"],
+				[]
 			])
 		};
 		var detected = new List<string>();
@@ -86,7 +86,7 @@ public sealed class BaseMountWatcherTest
 		var sut = new TestBaseMountWatcher
 		{
 			Snapshots = new Queue<List<string>>([
-				new List<string>()
+				[]
 			]),
 			ThrowOnReadNumber = 2
 		};

@@ -1038,7 +1038,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		var logger = new FakeIWebLogger();
 		var selectorStorage = new FakeSelectorStorage(new FakeIStorage([
 				"/"
-			], [InputDngSubPath], ["EXCEPTION"u8.ToArray()],
+			], [InputDngSubPath], [[.. "EXCEPTION"u8]],
 			[], [], new Exception()));
 		var extractor = new TiffEmbeddedPreviewExtractor(logger, selectorStorage);
 
@@ -1089,7 +1089,7 @@ public class TiffEmbeddedPreviewExtractorTests
 	public void TryParseTiffHeader_WithTooShortStream_ReturnsFalse()
 	{
 		// Arrange: Stream with only 4 bytes (needs 8)
-		using var ms = new MemoryStream("II*\0"u8.ToArray());
+		using var ms = new MemoryStream([.. "II*\0"u8]);
 
 		// Act
 		var result = TiffEmbeddedPreviewExtractor.TryParseTiffHeader(ms, out _, out _);
@@ -1227,7 +1227,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		{
 			RawFlavor = RawFlavor.Unknown,
 			Previews = [],
-			Visited = new HashSet<uint> { 8 },
+			Visited = [8],
 			ReferenceInfo = "test"
 		};
 		using var ms = new MemoryStream(new byte[512]);
@@ -1248,7 +1248,7 @@ public class TiffEmbeddedPreviewExtractorTests
 		{
 			RawFlavor = RawFlavor.Unknown,
 			Previews = [],
-			Visited = new HashSet<uint>(Enumerable.Range(0, 64).Select(i => ( uint ) i)),
+			Visited = [.. Enumerable.Range(0, 64).Select(i => ( uint ) i)],
 			ReferenceInfo = "test"
 		};
 		using var ms = new MemoryStream(new byte[512]);

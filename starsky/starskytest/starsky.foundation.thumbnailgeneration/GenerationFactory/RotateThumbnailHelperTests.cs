@@ -21,8 +21,8 @@ public class RotateThumbnailHelperTests
 
 	public RotateThumbnailHelperTests()
 	{
-		_fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "corrupt", "test" },
+		_fakeIStorage = new FakeIStorage(["/"],
+			["corrupt", "test"],
 			new List<byte[]?> { Array.Empty<byte>(), CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(_fakeIStorage);
 		var appSettings = new AppSettings();

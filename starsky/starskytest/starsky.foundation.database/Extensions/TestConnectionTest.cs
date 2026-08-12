@@ -68,10 +68,9 @@ public sealed class TestConnectionTest
 					                                       BindingFlags.InvokeMethod)
 						.FirstOrDefault();
 				var instance =
-					( MySqlException ) ctor!.Invoke(new object[]
-					{
+					( MySqlException ) ctor!.Invoke([
 						info, new StreamingContext(StreamingContextStates.All)
-					});
+					]);
 #pragma warning restore SYSLIB0050
 
 				throw instance;

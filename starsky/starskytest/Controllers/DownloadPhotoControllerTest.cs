@@ -413,8 +413,8 @@ public sealed class DownloadPhotoControllerTest
 		var fileHash = "FAKEHASH123";
 
 		// subpath storage has the source file
-		var subPathStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { filePath },
+		var subPathStorage = new FakeIStorage(["/"],
+			[filePath],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		// thumbnail storage only has small and meta but NOT large
@@ -431,10 +431,9 @@ public sealed class DownloadPhotoControllerTest
 			new FakeIStorage(), new FakeIStorage());
 
 		// Query contains the FileIndexItem with a FileHash
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new(filePath) { FileHash = fileHash, IsDirectory = false }
-		});
+		]);
 
 		var fakeLogger = new FakeIWebLogger();
 

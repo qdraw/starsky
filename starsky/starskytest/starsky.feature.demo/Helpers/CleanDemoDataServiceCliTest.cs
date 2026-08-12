@@ -51,10 +51,11 @@ public class CleanDemoDataServiceCliTest
 	[TestMethod]
 	public async Task SeedCli_IsDownloading()
 	{
-		var appSettings = new AppSettings{DemoData = new List<AppSettingsKeyValue>
-		{
-			new AppSettingsKeyValue{Key = "https://qdraw.nl/_settings.json", Value = "1"}
-		}};
+		var appSettings = new AppSettings{DemoData =
+			[
+				new AppSettingsKeyValue { Key = "https://qdraw.nl/_settings.json", Value = "1" }
+			]
+		};
 
 		var content = "{" +
 		              "\"Copy\": {" +
@@ -72,7 +73,7 @@ public class CleanDemoDataServiceCliTest
 		var service = new CleanDemoDataServiceCli(appSettings, httpClientHelper,
 			_selectorStorage, _logger!, _console, new FakeISynchronize());
 		
-		await service.SeedCli(System.Array.Empty<string>());
+		await service.SeedCli([]);
 		
 		var c1 = fakeIHttpClientHelper.UrlCalled.Count(p => p == "https://qdraw.nl/_settings.json");
 		Assert.AreEqual(1,c1);

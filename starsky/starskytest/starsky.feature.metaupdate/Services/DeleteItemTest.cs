@@ -28,7 +28,7 @@ public sealed class DeleteItemTest
 	{
 		var selectorStorage = new FakeSelectorStorage(new FakeIStorage());
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem> { new("/exist-in-db.jpg") });
+			new FakeIQuery([new("/exist-in-db.jpg")]);
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/exist-in-db.jpg", true);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -38,14 +38,14 @@ public sealed class DeleteItemTest
 	[TestMethod]
 	public async Task Delete_ReadOnly_Ignored()
 	{
-		var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/readonly/test.jpg" },
+		var selectorStorage = new FakeSelectorStorage(new FakeIStorage(["/"],
+			["/readonly/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }));
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem> { new("/readonly/test.jpg") });
+			new FakeIQuery([new("/readonly/test.jpg")]);
 		var deleteItem = new DeleteItem(fakeQuery,
-			new AppSettings { ReadOnlyFolders = new List<string> { "/readonly" } },
+			new AppSettings { ReadOnlyFolders = ["/readonly"] },
 			selectorStorage);
 		var result = await deleteItem.DeleteAsync("/readonly/test.jpg", true);
 
@@ -56,12 +56,12 @@ public sealed class DeleteItemTest
 	[TestMethod]
 	public async Task Delete_StatusNotDeleted_Ignored()
 	{
-		var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var selectorStorage = new FakeSelectorStorage(new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }));
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem> { new("/test.jpg") });
+			new FakeIQuery([new("/test.jpg")]);
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test.jpg", true);
 
@@ -72,16 +72,15 @@ public sealed class DeleteItemTest
 	[TestMethod]
 	public async Task Delete_IsFileRemoved()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test.jpg") { Tags = TrashKeyword.TrashKeywordString }
-			});
+			]);
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test.jpg", true);
 
@@ -96,18 +95,17 @@ public sealed class DeleteItemTest
 	[TestMethod]
 	public async Task Delete_IsFileRemoved_WithCollection()
 	{
-		var storage = new FakeIStorage(new List<string> { "/", "/dir" },
-			new List<string> { "/dir/test.jpg" },
+		var storage = new FakeIStorage(["/", "/dir"],
+			["/dir/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem>
-				{
+			new FakeIQuery([
 					new("/dir") { IsDirectory = true, Tags = TrashKeyword.TrashKeywordString },
 					new("/dir/test.jpg") { Tags = TrashKeyword.TrashKeywordString },
 					new("/dir/test.dng") { Tags = TrashKeyword.TrashKeywordString }
-				}
+				]
 			);
 
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
@@ -129,16 +127,15 @@ public sealed class DeleteItemTest
 	[TestMethod]
 	public async Task Delete_IsJsonSideCarFileRemoved()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg", "/.starsky.test.jpg.json" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg", "/.starsky.test.jpg.json"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test.jpg") { Tags = TrashKeyword.TrashKeywordString }
-			});
+			]);
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test.jpg", true);
 
@@ -151,16 +148,15 @@ public sealed class DeleteItemTest
 	[TestMethod]
 	public async Task Delete_IsXmpSideCarFileRemoved()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+		var storage = new FakeIStorage(["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test.dng") { Tags = TrashKeyword.TrashKeywordString }
-			});
+			]);
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test.dng", true);
 
@@ -173,16 +169,15 @@ public sealed class DeleteItemTest
 	[TestMethod]
 	public async Task Delete_IsFolderRemoved()
 	{
-		var storage = new FakeIStorage(new List<string> { "/test", "/" },
-			new List<string>(),
+		var storage = new FakeIStorage(["/test", "/"],
+			[],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test") { IsDirectory = true, Tags = TrashKeyword.TrashKeywordString }
-			});
+			]);
 
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test", true);
@@ -198,18 +193,17 @@ public sealed class DeleteItemTest
 	public async Task Delete_IsFolderRemoved_IncludingChildFolders()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/test", "/", "/test/child_folder" },
-			new List<string> { "/test/child_folder/i.jpg" },
+			["/test", "/", "/test/child_folder"],
+			["/test/child_folder/i.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test") { IsDirectory = true, Tags = TrashKeyword.TrashKeywordString },
 				new("/test/child_folder") { IsDirectory = true },
 				new("/test/child_folder/2") { IsDirectory = true }
-			});
+			]);
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test", true);
 
@@ -226,18 +220,17 @@ public sealed class DeleteItemTest
 	[TestMethod]
 	public async Task Delete_DirectoryWithChildItems_CollectionsOn()
 	{
-		var storage = new FakeIStorage(new List<string> { "/test", "/" },
-			new List<string> { "/test/image.jpg", "/test/image.dng" },
+		var storage = new FakeIStorage(["/test", "/"],
+			["/test/image.jpg", "/test/image.dng"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test") { IsDirectory = true, Tags = TrashKeyword.TrashKeywordString },
 				new("/test/image.jpg"),
 				new("/test/image.dng")
-			});
+			]);
 
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test", true);
@@ -254,18 +247,17 @@ public sealed class DeleteItemTest
 	[TestMethod]
 	public async Task Delete_DirectoryWithChildItems_CollectionsOff()
 	{
-		var storage = new FakeIStorage(new List<string> { "/test", "/" },
-			new List<string> { "/test/image.jpg", "/test/image.dng" },
+		var storage = new FakeIStorage(["/test", "/"],
+			["/test/image.jpg", "/test/image.dng"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test") { IsDirectory = true, Tags = TrashKeyword.TrashKeywordString },
 				new("/test/image.jpg"),
 				new("/test/image.dng")
-			});
+			]);
 
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test", false);
@@ -284,18 +276,17 @@ public sealed class DeleteItemTest
 	public async Task Delete_ChildDirectories()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/test", "/", "/test/child", "/test/child/child" },
-			new List<string>(),
+			["/test", "/", "/test/child", "/test/child/child"],
+			[],
 			new List<byte[]>());
 		var selectorStorage = new FakeSelectorStorage(storage);
 
 		var fakeQuery =
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test") { IsDirectory = true, Tags = TrashKeyword.TrashKeywordString },
 				new("/test/child") { IsDirectory = true },
 				new("/test/child/child") { IsDirectory = true }
-			});
+			]);
 
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test", false);

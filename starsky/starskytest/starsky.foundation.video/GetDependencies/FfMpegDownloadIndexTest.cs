@@ -22,27 +22,15 @@ public class FfMpegDownloadIndexTest
 	{
 		_example = new FfmpegBinariesIndex
 		{
-			Binaries = new List<BinaryIndex>
-			{
-				new()
-				{
-					Architecture = "win-x64",
-					FileName = "test.zip",
-					Sha256 = "test-sha256"
-				},
-				new()
-				{
-					Architecture = "osx-x64",
-					FileName = "test.zip",
-					Sha256 = "test-sha256"
-				},
-				new()
-				{
-					Architecture = "linux-x64",
-					FileName = "test.zip",
-					Sha256 = "test-sha256"
-				}
-			}
+			Binaries =
+			[
+
+				new() { Architecture = "win-x64", FileName = "test.zip", Sha256 = "test-sha256" },
+
+				new() { Architecture = "osx-x64", FileName = "test.zip", Sha256 = "test-sha256" },
+
+				new() { Architecture = "linux-x64", FileName = "test.zip", Sha256 = "test-sha256" }
+			]
 		};
 
 		_httpClientHelperFirstSource =

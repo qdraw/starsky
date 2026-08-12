@@ -30,7 +30,7 @@ public class LinuxCameraStorageDiscoveryTest
 	{
 		// Arrange - simulate /media directory with mounted USB drive
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/media", "/media/usb-drive", "/media/usb-drive/DCIM" });
+			["/media", "/media/usb-drive", "/media/usb-drive/DCIM"]);
 
 		var logger = new FakeIWebLogger();
 		var discovery = new LinuxCameraStorageDiscovery(fakeStorage, logger);
@@ -47,16 +47,15 @@ public class LinuxCameraStorageDiscoveryTest
 	{
 		// Arrange - simulate multiple mount point paths
 		var fakeStorage = new FakeIStorage(
-			new List<string>
-			{
-				"/media",
-				"/media/device1",
-				"/mnt",
-				"/mnt/device2",
-				"/run/media",
-				"/run/media/user",
-				"/run/media/user/device3"
-			});
+		[
+			"/media",
+			"/media/device1",
+			"/mnt",
+			"/mnt/device2",
+			"/run/media",
+			"/run/media/user",
+			"/run/media/user/device3"
+		]);
 
 		var logger = new FakeIWebLogger();
 		var discovery = new LinuxCameraStorageDiscovery(fakeStorage, logger);
@@ -75,13 +74,12 @@ public class LinuxCameraStorageDiscoveryTest
 	{
 		// Arrange - create deeply nested structure
 		var fakeStorage = new FakeIStorage(
-			new List<string>
-			{
-				"/media",
-				"/media/level1",
-				"/media/level1/level2",
-				"/media/level1/level2/level3" // This is 3 levels deep, should not be scanned (max depth is 2)
-			});
+		[
+			"/media",
+			"/media/level1",
+			"/media/level1/level2",
+			"/media/level1/level2/level3" // This is 3 levels deep, should not be scanned (max depth is 2)
+		]);
 
 		var logger = new FakeIWebLogger();
 		var discovery = new LinuxCameraStorageDiscovery(fakeStorage, logger);
@@ -100,12 +98,11 @@ public class LinuxCameraStorageDiscoveryTest
 	{
 		// Arrange - this test verifies that UnauthorizedAccessException is handled gracefully
 		var fakeStorage = new FakeIStorage(
-			new List<string>
-			{
-				"/media", "/media/accessible-device"
-				// /media/inaccessible would throw but FakeIStorage doesn't actually throw
-				// This test ensures the code structure handles it
-			});
+		[
+			"/media",
+			"/media/accessible-device" // /media/inaccessible would throw but FakeIStorage doesn't actually throw
+			// This test ensures the code structure handles it
+		]);
 
 		var logger = new FakeIWebLogger();
 		var discovery = new LinuxCameraStorageDiscovery(fakeStorage, logger);

@@ -17,10 +17,10 @@ public class OpenEditorPreflightTests
 	public async Task PreflightAsync_NoAppPath()
 	{
 		// Arrange
-		var queryStub = new FakeIQuery(new List<FileIndexItem> { new FileIndexItem("/test.jpg") });
+		var queryStub = new FakeIQuery([new FileIndexItem("/test.jpg")]);
 		var appSettingsStub = new AppSettings();
-		var storageStub = new FakeIStorage(new List<string>(),
-			new List<string> { "/test.jpg" });
+		var storageStub = new FakeIStorage([],
+			["/test.jpg"]);
 
 		var inputFilePaths = new List<string> { "/test.jpg" };
 		const bool collections = false;
@@ -42,29 +42,27 @@ public class OpenEditorPreflightTests
 	public async Task PreflightAsync_AppPathSet_ButNotFound()
 	{
 		// Arrange
-		var queryStub = new FakeIQuery(new List<FileIndexItem>
-		{
-			new FileIndexItem("/test.jpg")
-			{
-				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
-			}
-		});
+		var queryStub = new FakeIQuery([
+
+			new FileIndexItem("/test.jpg") { ImageFormat = ExtensionRolesHelper.ImageFormat.jpg }
+		]);
 		var appSettingsStub = new AppSettings
 		{
-			DefaultDesktopEditor = new List<AppSettingsDefaultEditorApplication>
-			{
+			DefaultDesktopEditor =
+			[
+
 				new AppSettingsDefaultEditorApplication
 				{
 					ApplicationPath = "/app/test",
-					ImageFormats = new List<ExtensionRolesHelper.ImageFormat>
-					{
+					ImageFormats =
+					[
 						ExtensionRolesHelper.ImageFormat.jpg
-					}
+					]
 				}
-			}
+			]
 		};
-		var storageStub = new FakeIStorage(new List<string>(),
-			new List<string> { "/test.jpg" });
+		var storageStub = new FakeIStorage([],
+			["/test.jpg"]);
 
 		var inputFilePaths = new List<string> { "/test.jpg" };
 		const bool collections = false;
@@ -86,31 +84,29 @@ public class OpenEditorPreflightTests
 	public async Task PreflightAsync_AppPathSet()
 	{
 		// Arrange
-		var queryStub = new FakeIQuery(new List<FileIndexItem>
-		{
-			new FileIndexItem("/test.jpg")
-			{
-				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
-			}
-		});
+		var queryStub = new FakeIQuery([
+
+			new FileIndexItem("/test.jpg") { ImageFormat = ExtensionRolesHelper.ImageFormat.jpg }
+		]);
 		var appSettingsStub = new AppSettings
 		{
-			DefaultDesktopEditor = new List<AppSettingsDefaultEditorApplication>
-			{
+			DefaultDesktopEditor =
+			[
+
 				new AppSettingsDefaultEditorApplication
 				{
 					ApplicationPath = "/app/test",
-					ImageFormats = new List<ExtensionRolesHelper.ImageFormat>
-					{
+					ImageFormats =
+					[
 						ExtensionRolesHelper.ImageFormat.jpg
-					}
+					]
 				}
-			}
+			]
 		};
 
 		// set a folder in the storage for app path location
-		var storageStub = new FakeIStorage(new List<string> { "/app/test" },
-			new List<string> { "/test.jpg" });
+		var storageStub = new FakeIStorage(["/app/test"],
+			["/test.jpg"]);
 
 		var inputFilePaths = new List<string> { "/test.jpg" };
 		const bool collections = false;
@@ -133,7 +129,7 @@ public class OpenEditorPreflightTests
 	public async Task GetObjectsToOpenFromDatabase_NotFound()
 	{
 		// Arrange
-		var queryStub = new FakeIQuery(new List<FileIndexItem> { new FileIndexItem("/test.jpg") });
+		var queryStub = new FakeIQuery([new FileIndexItem("/test.jpg")]);
 		var appSettingsStub = new AppSettings();
 		var storageStub = new FakeIStorage();
 
@@ -158,14 +154,14 @@ public class OpenEditorPreflightTests
 	{
 		// Arrange
 		var queryStub =
-			new FakeIQuery(new List<FileIndexItem> { new FileIndexItem("/readonly/test.jpg") });
+			new FakeIQuery([new FileIndexItem("/readonly/test.jpg")]);
 		var appSettingsStub = new AppSettings
 		{
-			ReadOnlyFolders = new List<string> { "/readonly" }
+			ReadOnlyFolders = ["/readonly"]
 		};
 		var storageStub =
-			new FakeIStorage(new List<string>(),
-				new List<string> { "/readonly/test.jpg" });
+			new FakeIStorage([],
+				["/readonly/test.jpg"]);
 
 		// Assuming you have appropriate setup for your test case
 		var inputFilePaths = new List<string> { "/readonly/test.jpg" };
@@ -187,16 +183,13 @@ public class OpenEditorPreflightTests
 	public async Task GetObjectsToOpenFromDatabase_SkipXmpSidecar()
 	{
 		// Arrange
-		var queryStub = new FakeIQuery(new List<FileIndexItem>
-		{
-			new FileIndexItem("/test.xmp")
-			{
-				ImageFormat = ExtensionRolesHelper.ImageFormat.xmp
-			}
-		});
+		var queryStub = new FakeIQuery([
+
+			new FileIndexItem("/test.xmp") { ImageFormat = ExtensionRolesHelper.ImageFormat.xmp }
+		]);
 		var appSettingsStub = new AppSettings();
-		var storageStub = new FakeIStorage(new List<string>(),
-			new List<string> { "/test.xmp" });
+		var storageStub = new FakeIStorage([],
+			["/test.xmp"]);
 
 		// Assuming you have appropriate setup for your test case
 		var inputFilePaths = new List<string> { "/test.xmp" };
@@ -216,17 +209,17 @@ public class OpenEditorPreflightTests
 	public async Task GetObjectsToOpenFromDatabase_ChangeDefaultToOkStatus()
 	{
 		// Arrange
-		var queryStub = new FakeIQuery(new List<FileIndexItem>
-		{
+		var queryStub = new FakeIQuery([
+
 			new FileIndexItem("/test.mp4")
 			{
 				ImageFormat = ExtensionRolesHelper.ImageFormat.mp4,
 				Status = FileIndexItem.ExifStatus.Default // difference here!
 			}
-		});
+		]);
 		var appSettingsStub = new AppSettings();
-		var storageStub = new FakeIStorage(new List<string>(),
-			new List<string> { "/test.mp4" });
+		var storageStub = new FakeIStorage([],
+			["/test.mp4"]);
 
 		// Assuming you have appropriate setup for your test case
 		var inputFilePaths = new List<string> { "/test.mp4" };
@@ -249,22 +242,23 @@ public class OpenEditorPreflightTests
 	public async Task GetObjectsToOpenFromDatabase_Duplicates()
 	{
 		// Arrange
-		var queryStub = new FakeIQuery(new List<FileIndexItem>
-		{
+		var queryStub = new FakeIQuery([
+
 			new FileIndexItem("/test.mp4")
 			{
 				ImageFormat = ExtensionRolesHelper.ImageFormat.mp4,
 				Status = FileIndexItem.ExifStatus.Ok
 			},
+
 			new FileIndexItem("/test.mp4")
 			{
 				ImageFormat = ExtensionRolesHelper.ImageFormat.mp4,
 				Status = FileIndexItem.ExifStatus.Ok // yes duplicates
 			}
-		});
+		]);
 		var appSettingsStub = new AppSettings();
-		var storageStub = new FakeIStorage(new List<string>(),
-			new List<string> { "/test.mp4" });
+		var storageStub = new FakeIStorage([],
+			["/test.mp4"]);
 
 		// Assuming you have appropriate setup for your test case
 		var inputFilePaths = new List<string> { "/test.mp4" };
@@ -287,17 +281,17 @@ public class OpenEditorPreflightTests
 	public async Task GetObjectsToOpenFromDatabase_ChangeOkAndSameToOkStatus()
 	{
 		// Arrange
-		var queryStub = new FakeIQuery(new List<FileIndexItem>
-		{
+		var queryStub = new FakeIQuery([
+
 			new FileIndexItem("/test.mp4")
 			{
 				ImageFormat = ExtensionRolesHelper.ImageFormat.mp4,
 				Status = FileIndexItem.ExifStatus.OkAndSame // difference here!
 			}
-		});
+		]);
 		var appSettingsStub = new AppSettings();
-		var storageStub = new FakeIStorage(new List<string>(),
-			new List<string> { "/test.mp4" });
+		var storageStub = new FakeIStorage([],
+			["/test.mp4"]);
 
 		// Assuming you have appropriate setup for your test case
 		var inputFilePaths = new List<string> { "/test.mp4" };

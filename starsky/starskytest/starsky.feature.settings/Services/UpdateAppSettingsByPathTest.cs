@@ -27,7 +27,7 @@ public class UpdateAppSettingsByPathTests
 		var testFolderPath = Path.DirectorySeparatorChar + "test-update-appSettings-by-path" +
 		                     Path.DirectorySeparatorChar;
 
-		var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
+		var storage = new FakeIStorage(["/", testFolderPath]);
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var updateAppSettingsByPath =
 			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
@@ -58,7 +58,7 @@ public class UpdateAppSettingsByPathTests
 		var testFolderPath = Path.DirectorySeparatorChar + "test-update-appSettings-by-path" +
 		                     Path.DirectorySeparatorChar;
 
-		var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
+		var storage = new FakeIStorage(["/", testFolderPath]);
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings();
 		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
@@ -124,7 +124,7 @@ public class UpdateAppSettingsByPathTests
 
 		// Arrange
 		var selectorStorage =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
+			new FakeSelectorStorage(new FakeIStorage(["/"]));
 		var updateAppSettingsByPath =
 			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
 		var appSettingTransferObject = new AppSettingsTransferObject { StorageFolder = "/" };
@@ -153,7 +153,7 @@ public class UpdateAppSettingsByPathTests
 		var testFolderPath = Path.DirectorySeparatorChar + "test-update-appSettings-by-path" +
 		                     Path.DirectorySeparatorChar;
 
-		var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
+		var storage = new FakeIStorage(["/", testFolderPath]);
 		var appSettings = new AppSettings();
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);

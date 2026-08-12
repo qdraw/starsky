@@ -48,8 +48,8 @@ public sealed class ReadMetaTest
 		var xmpByteArray = Encoding.UTF8.GetBytes(xmpString);
 
 
-		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.arw", "/test.xmp" },
+		var fakeIStorage = new FakeIStorage(["/"],
+			["/test.arw", "/test.xmp"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), xmpByteArray });
 
 		var data = await new ReadMeta(fakeIStorage, new AppSettings(),
@@ -228,8 +228,8 @@ public sealed class ReadMetaTest
 	[TestMethod]
 	public async Task CorruptXmpFile_SoIgnore()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+		var storage = new FakeIStorage(["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), Array.Empty<byte>() });
 		var readMeta = new ReadMeta(storage, new AppSettings(), null!, new FakeIWebLogger());
 
@@ -242,8 +242,8 @@ public sealed class ReadMetaTest
 	[TestMethod]
 	public async Task ShouldPickXmpFile()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+		var storage = new FakeIStorage(["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 		var readMeta = new ReadMeta(storage, new AppSettings(), null!, new FakeIWebLogger());
 
@@ -273,7 +273,7 @@ public sealed class ReadMetaTest
 		var list = isNullOrEmptyList ? new List<string>() : null;
 		var result =
 			await readMetaSubPathStorage.ReadExifAndXmpFromFileAddFilePathHashAsync(
-				new List<string> { "/test.jpg" }, list);
+				["/test.jpg"], list);
 
 		Assert.HasCount(1, result);
 		Assert.AreEqual(expectedHash, result[0].FileHash);
@@ -291,7 +291,7 @@ public sealed class ReadMetaTest
 
 		var result =
 			await readMetaSubPathStorage.ReadExifAndXmpFromFileAddFilePathHashAsync(
-				new List<string> { "/test.jpg" }, ["test_hash"]);
+				["/test.jpg"], ["test_hash"]);
 
 		// should get the hash from the list
 		Assert.HasCount(1, result);

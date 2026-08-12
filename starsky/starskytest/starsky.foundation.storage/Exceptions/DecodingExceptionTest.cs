@@ -35,10 +35,9 @@ public sealed class DecodingExceptionTest
 
 		// Act & Assert (single expression in lambda per MSTEST0051)
 		var ex = Assert.ThrowsExactly<DecodingException>(() =>
-			throw ( DecodingException ) ctor.Invoke(new object[]
-			{
+			throw ( DecodingException ) ctor.Invoke([
 				info, new StreamingContext(StreamingContextStates.All)
-			}));
+			]));
 #pragma warning restore SYSLIB0050
 
 		// Optionally verify the exception message or other properties
