@@ -11,26 +11,18 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Helpers;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.realtime.Model;
+#pragma warning disable CS9113 // Parameter is unread.
 
 namespace starsky.foundation.realtime.Middleware;
 
-public sealed class WebSocketConnectionsMiddleware
+public sealed class WebSocketConnectionsMiddleware(RequestDelegate _,
+	WebSocketConnectionsOptions options,
+	IWebSocketConnectionsService connectionsService, IWebLogger logger)
 {
-	private readonly IWebSocketConnectionsService _connectionsService;
-	private readonly IWebLogger _logger;
-	private readonly WebSocketConnectionsOptions _options;
-
-
-	public WebSocketConnectionsMiddleware(RequestDelegate _,
-		WebSocketConnectionsOptions options,
-		IWebSocketConnectionsService connectionsService, IWebLogger logger)
-	{
-		_options = options ?? throw new ArgumentNullException(nameof(options));
-		_connectionsService = connectionsService ??
-		                      throw new ArgumentNullException(nameof(connectionsService));
-		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
-	}
-
+	private readonly IWebSocketConnectionsService _connectionsService = connectionsService ??
+							  throw new ArgumentNullException(nameof(connectionsService));
+	private readonly IWebLogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+	private readonly WebSocketConnectionsOptions _options = options ?? throw new ArgumentNullException(nameof(options));
 
 	public async Task Invoke(HttpContext context)
 	{
@@ -66,8 +58,8 @@ public sealed class WebSocketConnectionsMiddleware
 
 		// Capture before the HttpContext can be disposed by the pipeline.
 		var requestAborted = context.RequestAborted;
-		webSocketConnection.NewConnection += (_, _) =>
-			SendWelcomeMessageAsync(webSocketConnection, requestAborted);
+		webSocketConnection.NewConnection += async (_, _) =>
+			await SendWelcomeMessageAsync(webSocketConnection, requestAborted);
 
 		_connectionsService.AddConnection(webSocketConnection);
 		await webSocketConnection.ReceiveMessagesUntilCloseAsync();
@@ -75,7 +67,7 @@ public sealed class WebSocketConnectionsMiddleware
 		_connectionsService.RemoveConnection(webSocketConnection.Id);
 	}
 
-	private static async void SendWelcomeMessageAsync(WebSocketConnection webSocketConnection,
+	private static async Task SendWelcomeMessageAsync(WebSocketConnection webSocketConnection,
 		CancellationToken requestAborted)
 	{
 		try
