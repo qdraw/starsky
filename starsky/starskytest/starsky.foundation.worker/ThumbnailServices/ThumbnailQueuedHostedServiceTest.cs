@@ -298,7 +298,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		// use reflection to hit protected method
 		var method = service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
 		Assert.IsNotNull(method);
-		method.Invoke(service, new object[] { cancelTokenSource.Token });
+		method.Invoke(service, [cancelTokenSource.Token]);
 		// should stop and not hit timeout
 	}
 

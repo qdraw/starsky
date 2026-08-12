@@ -279,10 +279,9 @@ public class QueryGetNextPrevInFolderTest
 				) ?? throw new InvalidOperationException("Constructor not found.");
 
 				var exceptionInstance =
-					( MySqlProtocolException ) constructor.Invoke(new object[]
-					{
+					( MySqlProtocolException ) constructor.Invoke([
 						"Test exception"
-					});
+					]);
 				throw exceptionInstance;
 			}
 		}

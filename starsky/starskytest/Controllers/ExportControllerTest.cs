@@ -313,14 +313,13 @@ public sealed class ExportControllerTest
 	[TestMethod]
 	public async Task ExportControllerTest__ThumbFalse_AddXmpFile_CreateListToExport()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				_appSettings.DatabasePathToFilePath("/test.dng"),
-				_appSettings.DatabasePathToFilePath("/test.xmp"),
-				"/test.dng",
-				"/test.xmp"
-			});
+		var storage = new FakeIStorage(["/"],
+		[
+			_appSettings.DatabasePathToFilePath("/test.dng"),
+			_appSettings.DatabasePathToFilePath("/test.xmp"),
+			"/test.dng",
+			"/test.xmp"
+		]);
 
 		var selectorStorage = new FakeSelectorStorage(storage);
 
@@ -522,8 +521,8 @@ public sealed class ExportControllerTest
 	{
 		// Arrange
 		const string f = "TNA995920129";
-		var fakeStorage = new FakeIStorage(new List<string>(),
-			new List<string> { f }, new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
+		var fakeStorage = new FakeIStorage([],
+			[f], new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 
 		var fakeExportService =
 			new FakeIExport(new Dictionary<string, bool> { { f, true } });

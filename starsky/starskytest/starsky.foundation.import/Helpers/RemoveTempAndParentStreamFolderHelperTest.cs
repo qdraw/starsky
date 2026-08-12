@@ -21,7 +21,7 @@ public class RemoveTempAndParentStreamFolderHelperTest
 			rootFolder = "C:\\";
 		}
 
-		var storage = new FakeIStorage(new List<string>{rootFolder});
+		var storage = new FakeIStorage([rootFolder]);
 		new RemoveTempAndParentStreamFolderHelper(storage, appSettings).RemoveTempAndParentStreamFolder(rootFolder);
 		
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, storage.Info(rootFolder).IsFolderOrFile);
@@ -32,7 +32,7 @@ public class RemoveTempAndParentStreamFolderHelperTest
 	{
 		var appSettings = new AppSettings();
 
-		var storage = new FakeIStorage(new List<string>{"/test", "/test/stream/"});
+		var storage = new FakeIStorage(["/test", "/test/stream/"]);
 		new RemoveTempAndParentStreamFolderHelper(storage, appSettings).RemoveTempAndParentStreamFolder("/test/stream/");
 		
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, storage.Info("/test/stream").IsFolderOrFile);
@@ -44,8 +44,9 @@ public class RemoveTempAndParentStreamFolderHelperTest
 	{
 		var appSettings = new AppSettings();
 
-		var storage = new FakeIStorage(new List<string>{"/test", "/test/stream/"});
-		new RemoveTempAndParentStreamFolderHelper(storage, appSettings).RemoveTempAndParentStreamFolder(new List<string>{"/test/stream/"});
+		var storage = new FakeIStorage(["/test", "/test/stream/"]);
+		new RemoveTempAndParentStreamFolderHelper(storage, appSettings).RemoveTempAndParentStreamFolder(
+			["/test/stream/"]);
 		
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, storage.Info("/test/stream").IsFolderOrFile);
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, storage.Info("/test").IsFolderOrFile);

@@ -93,7 +93,7 @@ public sealed class PackageTelemetryBackgroundServiceTest
 			.GetService<IHttpProvider>();
 
 		var fakeHttpProvider1 = httpProvider1 as FakeIHttpProvider;
-		fakeHttpProvider1!.UrlCalled = new List<string>();
+		fakeHttpProvider1!.UrlCalled = [];
 
 		var service = new PackageTelemetryBackgroundService(_serviceScopeFactory);
 
@@ -108,7 +108,7 @@ public sealed class PackageTelemetryBackgroundServiceTest
 			throw new Exception("missing ExecuteAsync");
 		}
 
-		dynMethod.Invoke(service, new object[] { token });
+		dynMethod.Invoke(service, [token]);
 
 		var httpProvider = _serviceScopeFactory.CreateScope().ServiceProvider
 			.GetService<IHttpProvider>();

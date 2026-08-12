@@ -136,7 +136,7 @@ public sealed class GeoFolderReverseLookupTest
 		propertyObject!.SetValue(item, null, null);
 		var sut = new GeoFolderReverseLookup(CreateReverseGeoCodeService());
 		var result = await sut
-			.LoopFolderLookup(new List<FileIndexItem> { item }, false);
+			.LoopFolderLookup([item], false);
 
 		Assert.IsEmpty(result);
 	}

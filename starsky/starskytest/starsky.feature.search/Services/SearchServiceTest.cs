@@ -815,7 +815,7 @@ public sealed class SearchServiceTest
 					"search-t", new SearchViewModel
 					{
 						FileIndexItems =
-							new List<FileIndexItem> { new() { Tags = "t" } }
+							[new() { Tags = "t" }]
 					}
 				}
 			});
@@ -1070,12 +1070,12 @@ public sealed class SearchServiceTest
 		var model = new SearchViewModel
 		{
 			SearchIn = { "tags" },
-			FileIndexItems = new List<FileIndexItem>
-			{
+			FileIndexItems =
+			[
 				new() { Tags = "lelystadcentrum" },
 				new() { Tags = "lelystadcentrum2" },
 				new() { Tags = "else" }
-			}
+			]
 		};
 		model.SetAddSearchFor("lelystadcentrum");
 
@@ -1100,12 +1100,12 @@ public sealed class SearchServiceTest
 		var model = new SearchViewModel
 		{
 			SearchIn = { "software" },
-			FileIndexItems = new List<FileIndexItem>
-			{
+			FileIndexItems =
+			[
 				new() { Tags = "software:test123" },
 				new() { Tags = "software:test123" },
 				new() { Tags = "lelystadcentrum", Software = "test123" }
-			}
+			]
 		};
 
 		model.SetAddSearchFor("test1");
@@ -1121,24 +1121,27 @@ public sealed class SearchServiceTest
 		var model = new SearchViewModel
 		{
 			SearchIn = { "tags" },
-			FileIndexItems = new List<FileIndexItem>
-			{
+			FileIndexItems =
+			[
+
 				new()
 				{
 					Tags = "lelystadcentrum",
 					ImageFormat = ExtensionRolesHelper.ImageFormat.tiff // NOT right format
 				},
+
 				new()
 				{
 					Tags = "lelystadcentrum2", // return this one
 					ImageFormat = ExtensionRolesHelper.ImageFormat.bmp
 				},
+
 				new()
 				{
 					Tags = "else", //<= out of query
 					ImageFormat = ExtensionRolesHelper.ImageFormat.bmp
 				}
-			}
+			]
 		};
 		model.SetAddSearchFor("lelystadcentrum");
 		model.SetAddSearchForOptions("=");

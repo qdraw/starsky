@@ -30,12 +30,12 @@ public class FakeUserManagerActiveUsers : IUserManager
 	public Credential Credentials { get; set; }
 	public Role? Role { get; set; }
 
-	public List<User> Users { get; set; } = new();
+	public List<User> Users { get; set; } = [];
 
 	public Task<UserOverviewModel> AllUsersAsync()
 	{
 		// null can be for testing
-		return Task.FromResult(new UserOverviewModel(new List<User> { CurrentUser! }));
+		return Task.FromResult(new UserOverviewModel([CurrentUser!]));
 	}
 
 	public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,

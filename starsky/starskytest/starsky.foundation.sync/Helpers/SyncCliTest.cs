@@ -41,10 +41,10 @@ public sealed class SyncCliTest
 	[TestMethod]
 	public async Task Sync_NoArgs_ShouldNotSee_NotFound()
 	{
-		var fakeSync = new FakeISynchronize(new List<FileIndexItem> { new("/") });
+		var fakeSync = new FakeISynchronize([new("/")]);
 		var console = new FakeConsoleWrapper();
 		await new SyncCli(fakeSync, new AppSettings(), console,
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" })),
+			new FakeSelectorStorage(new FakeIStorage(["/"])),
 			new FakeIWebLogger()).Sync(
 			[""]);
 

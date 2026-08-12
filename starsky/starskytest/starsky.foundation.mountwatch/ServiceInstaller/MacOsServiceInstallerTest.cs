@@ -140,7 +140,7 @@ public sealed class MacOsServiceInstallerTest
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage(
-			outputSubPathFiles: new List<string> { GetMacOsPlistPath() });
+			outputSubPathFiles: [GetMacOsPlistPath()]);
 		var launchctlCalls = new List<string>();
 
 		var sut = new MacOsServiceInstaller(logger, storage,

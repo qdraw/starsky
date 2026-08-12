@@ -56,10 +56,9 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 
 		async Task Add()
 		{
-			await _query.AddRangeAsync(new List<FileIndexItem>
-			{
+			await _query.AddRangeAsync([
 				new("/single_item1_async.jpg"), new("/single_item2_async.jpg")
-			});
+			]);
 		}
 	}
 
@@ -75,7 +74,7 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 		await _query.AddRangeAsync(addedItems);
 
 		var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-			new List<string> { filePathToSearchFor });
+			[filePathToSearchFor]);
 
 		Assert.HasCount(1, result);
 		Assert.AreEqual(filePathToSearchFor, result[0].FilePath);
@@ -86,10 +85,10 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 	[TestMethod]
 	public async Task GetObjectsByFilePathCollectionAsync_SingleItem_LookAlikeStartsWithName()
 	{
-		await _query.AddRangeAsync(new List<FileIndexItem> { new("/3.jpg"), new("/3020.jpg") });
+		await _query.AddRangeAsync([new("/3.jpg"), new("/3020.jpg")]);
 
 		var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-			new List<string> { "/3.jpg" });
+			["/3.jpg"]);
 
 		Assert.ContainsSingle(p => p.FileName?.StartsWith('3') == true, result);
 		var threeJpg =
@@ -108,10 +107,10 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 	[TestMethod]
 	public async Task GetObjectsByFilePathCollectionAsync_SingleItem_NoExtension()
 	{
-		await _query.AddRangeAsync(new List<FileIndexItem> { new("/2"), new("/2020") });
+		await _query.AddRangeAsync([new("/2"), new("/2020")]);
 
 		var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-			new List<string> { "/2" });
+			["/2"]);
 
 		Assert.HasCount(1, result);
 		Assert.AreEqual("/2", result[0].FilePath);
@@ -129,18 +128,18 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 
 		async Task Add()
 		{
-			await _query.AddRangeAsync(new List<FileIndexItem> { new(subPath), new(subPath) });
+			await _query.AddRangeAsync([new(subPath), new(subPath)]);
 		}
 
 		await Add();
 
 		var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-			new List<string> { subPath });
+			[subPath]);
 		if ( result.Count != 2 )
 		{
 			await Add();
 			result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-				new List<string> { subPath });
+				[subPath]);
 		}
 
 		Assert.HasCount(2, result);
@@ -156,26 +155,24 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 	{
 		async Task AddExampleRange()
 		{
-			await _query.AddRangeAsync(new List<FileIndexItem>
-			{
+			await _query.AddRangeAsync([
 				new("/test__multiple_item"), // <= should never match this one
 				new("/test__multiple_item_0.jpg"),
 				new("/test__multiple_item_1.jpg"),
 				new("/test__multiple_item_2.jpg"),
 				new("/test__multiple_item_3.jpg")
-			});
+			]);
 		}
 
 		async Task<List<FileIndexItem>> ExampleQuery()
 		{
 			return await _query.GetObjectsByFilePathCollectionQueryAsync(
-				new List<string>
-				{
-					"/test__multiple_item_0.jpg",
-					"/test__multiple_item_1.jpg",
-					"/test__multiple_item_2.jpg",
-					"/test__multiple_item_3.jpg"
-				});
+			[
+				"/test__multiple_item_0.jpg",
+				"/test__multiple_item_1.jpg",
+				"/test__multiple_item_2.jpg",
+				"/test__multiple_item_3.jpg"
+			]);
 		}
 
 
@@ -216,13 +213,12 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 	[TestMethod]
 	public async Task GetObjectsByFilePathCollectionAsync_TwoItems()
 	{
-		await _query.AddRangeAsync(new List<FileIndexItem>
-		{
+		await _query.AddRangeAsync([
 			new("/two_item_0.jpg"), new("/two_item_1.jpg")
-		});
+		]);
 
 		var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-			new List<string> { "/two_item_0.jpg", "/two_item_1.jpg" });
+			["/two_item_0.jpg", "/two_item_1.jpg"]);
 
 		Assert.HasCount(2, result);
 
@@ -237,10 +233,9 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 	[TestMethod]
 	public async Task GetObjectsByFilePathAsync_Collection_SingleItem_Disposed()
 	{
-		await _query.AddRangeAsync(new List<FileIndexItem>
-		{
+		await _query.AddRangeAsync([
 			new("/disposed2/single_item_disposed_1.jpg")
-		});
+		]);
 
 		// get context
 		var serviceScopeFactory = CreateNewScope();
@@ -252,10 +247,9 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 
 		var result = await new Query(dbContextDisposed,
 				new AppSettings(), serviceScopeFactory, new FakeIWebLogger(), new FakeMemoryCache())
-			.GetObjectsByFilePathCollectionQueryAsync(new List<string>
-			{
+			.GetObjectsByFilePathCollectionQueryAsync([
 				"/disposed2/single_item_disposed_1.jpg"
-			});
+			]);
 
 		Assert.HasCount(1, result);
 		Assert.AreEqual("/disposed2/single_item_disposed_1.jpg", result[0].FilePath);

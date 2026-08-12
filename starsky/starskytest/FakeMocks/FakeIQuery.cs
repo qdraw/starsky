@@ -18,9 +18,9 @@ namespace starskytest.FakeMocks;
 
 public class FakeIQuery : IQuery
 {
-	private readonly List<FileIndexItem> _content = new();
+	private readonly List<FileIndexItem> _content = [];
 	private readonly object _contentLock = new object();
-	private List<FileIndexItem> _fakeCachedContent = new();
+	private List<FileIndexItem> _fakeCachedContent = [];
 
 	public FakeIQuery(List<FileIndexItem>? content = null,
 		List<FileIndexItem>? fakeCachedContent = null)
@@ -31,7 +31,7 @@ public class FakeIQuery : IQuery
 		}
 
 		_content = content;
-		_fakeCachedContent = fakeCachedContent ?? new List<FileIndexItem>();
+		_fakeCachedContent = fakeCachedContent ?? [];
 	}
 
 	[SuppressMessage("Style", "IDE0060:Remove unused parameter")]
@@ -110,14 +110,15 @@ public class FakeIQuery : IQuery
 		}
 
 		fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-		fileIndexItem.CollectionPaths = new List<string> { singleItemDbPath };
+		fileIndexItem.CollectionPaths = [singleItemDbPath];
 		if ( enableCollections )
 		{
-			fileIndexItem.CollectionPaths = new List<string>();
-			fileIndexItem.CollectionPaths.AddRange(
-				_content.Where(p => p.FileCollectionName == fileIndexItem.FileCollectionName)
+			fileIndexItem.CollectionPaths =
+			[
+
+				.. _content.Where(p => p.FileCollectionName == fileIndexItem.FileCollectionName)
 					.Select(p => p.FilePath!)
-			);
+			];
 		}
 
 		return new DetailView
@@ -157,7 +158,7 @@ public class FakeIQuery : IQuery
 	public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath,
 		bool collections)
 	{
-		return await GetObjectsByFilePathAsync(new List<string> { inputFilePath }, collections);
+		return await GetObjectsByFilePathAsync([inputFilePath], collections);
 	}
 
 	public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths,
@@ -166,10 +167,10 @@ public class FakeIQuery : IQuery
 		if ( collections )
 		{
 			return GetObjectsByFilePathCollectionAsync(
-				inputFilePaths.ToList());
+				[.. inputFilePaths]);
 		}
 
-		return GetObjectsByFilePathAsync(inputFilePaths.ToList());
+		return GetObjectsByFilePathAsync([.. inputFilePaths]);
 	}
 
 	public Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(List<string> filePathList)
@@ -330,7 +331,7 @@ public class FakeIQuery : IQuery
 		"NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract")]
 	public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
 	{
-		_fakeCachedContent ??= new List<FileIndexItem>();
+		_fakeCachedContent ??= [];
 		_fakeCachedContent.AddRange(items);
 		return true;
 	}
@@ -349,7 +350,7 @@ public class FakeIQuery : IQuery
 	{
 		if ( _fakeCachedContent == null )
 		{
-			return new Tuple<bool, List<FileIndexItem>>(false, new List<FileIndexItem>());
+			return new Tuple<bool, List<FileIndexItem>>(false, []);
 		}
 
 		var res =
@@ -410,7 +411,7 @@ public class FakeIQuery : IQuery
 
 	public List<FileIndexItem> GetAllFolders()
 	{
-		return _content.Where(p => p.IsDirectory == true).ToList();
+		return [.. _content.Where(p => p.IsDirectory == true)];
 	}
 
 	[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
@@ -418,12 +419,11 @@ public class FakeIQuery : IQuery
 	{
 		try
 		{
-			return _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false)
-				.ToList();
+			return [.. _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false)];
 		}
 		catch ( Exception )
 		{
-			return new List<FileIndexItem>();
+			return [];
 		}
 	}
 
@@ -432,7 +432,7 @@ public class FakeIQuery : IQuery
 		List<FileIndexItem> snapshot;
 		lock ( _contentLock )
 		{
-			snapshot = _content.ToList();
+			snapshot = [.. _content];
 		}
 
 		var result = snapshot.Where

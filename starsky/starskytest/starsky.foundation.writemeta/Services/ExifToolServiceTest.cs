@@ -56,8 +56,8 @@ public class ExifToolServiceTest
 
 	private static async Task WriteTagsAndRenameThumbnailAsyncUnixPrivateTest()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/image.jpg" },
+		var storage = new FakeIStorage(["/"],
+			["/image.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		CreateFile();
@@ -103,8 +103,8 @@ public class ExifToolServiceTest
 
 		// Arrange
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/image.jpg" },
+			["/"],
+			["/image.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 

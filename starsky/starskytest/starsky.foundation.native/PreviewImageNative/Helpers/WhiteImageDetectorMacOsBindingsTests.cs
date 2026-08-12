@@ -72,10 +72,11 @@ public class WhiteImageDetectorMacOsBindingsTests
 		const int height = 2;
 		const int bytesPerRow = 8;
 		const int bytesPerPixel = 4;
-		byte[] pixelData = {
+		byte[] pixelData =
+		[
 			255, 255, 255, 0, 255, 255, 255, 0, // Row 1
 			255, 255, 255, 0, 255, 255, 255, 0  // Row 2
-		};
+		];
 
 		// Act
 		var result = WhiteImageDetectorMacOsBindings.IsPixelDataWhite(
@@ -93,10 +94,11 @@ public class WhiteImageDetectorMacOsBindingsTests
 		const int height = 2;
 		const int bytesPerRow = 8;
 		const int bytesPerPixel = 4;
-		byte[] pixelData = {
+		byte[] pixelData =
+		[
 			255, 255, 255, 0, 255, 255, 255, 0, // Row 1
 			255, 255, 255, 0, 0, 0, 0, 0        // Row 2 (non-white pixel)
-		};
+		];
 
 		// Act
 		var result = WhiteImageDetectorMacOsBindings.IsPixelDataWhite(

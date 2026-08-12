@@ -9,7 +9,7 @@ namespace starskytest.starsky.foundation.storage.Helpers;
 [TestClass]
 public class CheckSha256HelperTest
 {
-	private readonly FakeIStorage _fakeIStorage = new(new List<string> { "/" },
+	private readonly FakeIStorage _fakeIStorage = new(["/"],
 		["/exiftool.exe"],
 		[[.. CreateAnExifToolTarGz.Bytes]]);
 

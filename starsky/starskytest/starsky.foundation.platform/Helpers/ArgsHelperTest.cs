@@ -54,7 +54,7 @@ public sealed class ArgsHelperTest
 		Assert.IsTrue(ArgsHelper.NeedVerbose(args));
 
 		// Bool parse check
-		args = new List<string> { "-v", "true" }.ToArray();
+		args = ["-v", "true"];
 		Assert.IsTrue(ArgsHelper.NeedVerbose(args));
 	}
 
@@ -86,7 +86,7 @@ public sealed class ArgsHelperTest
 		Assert.IsTrue(ArgsHelper.NeedCleanup(args));
 
 		// Bool parse check
-		args = new List<string> { "-x", "true" }.ToArray();
+		args = ["-x", "true"];
 		Assert.IsTrue(ArgsHelper.NeedCleanup(args));
 	}
 
@@ -109,7 +109,7 @@ public sealed class ArgsHelperTest
 		Assert.IsTrue(ArgsHelper.NeedHelp(args));
 
 		// Bool parse cheArgsHelper_GetPath_CurrentDirectory_Test
-		args = new List<string> { "-h", "true" }.ToArray();
+		args = ["-h", "true"];
 		Assert.IsTrue(ArgsHelper.NeedHelp(args));
 	}
 
@@ -310,7 +310,7 @@ public sealed class ArgsHelperTest
 		Assert.IsTrue(ArgsHelper.GetMove(args));
 
 		// Bool parse check
-		args = new List<string> { "-m", "true" }.ToArray();
+		args = ["-m", "true"];
 		Assert.IsTrue(ArgsHelper.GetMove(args));
 	}
 
@@ -330,10 +330,10 @@ public sealed class ArgsHelperTest
 		Assert.IsTrue(ArgsHelper.GetAll(args));
 
 		// Bool parse check
-		args = new List<string> { "-a", "false" }.ToArray();
+		args = ["-a", "false"];
 		Assert.IsFalse(ArgsHelper.GetAll(args));
 
-		args = new List<string>().ToArray();
+		args = [];
 		Assert.IsFalse(ArgsHelper.GetAll(args));
 	}
 

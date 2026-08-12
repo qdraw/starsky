@@ -13,7 +13,7 @@ public sealed class SyncIgnoreCheckTest
 	[TestMethod]
 	public void With_No_config()
 	{
-		var result = new SyncIgnoreCheck(new AppSettings { SyncIgnore = new List<string>() },
+		var result = new SyncIgnoreCheck(new AppSettings { SyncIgnore = [] },
 			new ConsoleWrapper()).Filter(
 			"/test");
 		Assert.IsFalse(result);
@@ -23,7 +23,7 @@ public sealed class SyncIgnoreCheckTest
 	public void ShouldIgnoreThisFolder()
 	{
 		var result =
-			new SyncIgnoreCheck(new AppSettings { SyncIgnore = new List<string> { "/lost+found" } },
+			new SyncIgnoreCheck(new AppSettings { SyncIgnore = ["/lost+found"] },
 				new ConsoleWrapper()).Filter(
 				"/test");
 		Assert.IsFalse(result);
@@ -33,7 +33,7 @@ public sealed class SyncIgnoreCheckTest
 	public void DirectHit()
 	{
 		var result =
-			new SyncIgnoreCheck(new AppSettings { SyncIgnore = new List<string> { "/lost+found" } },
+			new SyncIgnoreCheck(new AppSettings { SyncIgnore = ["/lost+found"] },
 				new ConsoleWrapper()).Filter(
 				"/lost+found");
 		Assert.IsTrue(result);
@@ -43,7 +43,7 @@ public sealed class SyncIgnoreCheckTest
 	public void ChildItemHit()
 	{
 		var result =
-			new SyncIgnoreCheck(new AppSettings { SyncIgnore = new List<string> { "/lost+found" } },
+			new SyncIgnoreCheck(new AppSettings { SyncIgnore = ["/lost+found"] },
 				new ConsoleWrapper()).Filter(
 				"/lost+found/test.jpg");
 		Assert.IsTrue(result);
@@ -54,7 +54,7 @@ public sealed class SyncIgnoreCheckTest
 	{
 		var fakeConsole = new FakeConsoleWrapper();
 		new SyncIgnoreCheck(
-			new AppSettings { Verbose = true, SyncIgnore = new List<string> { "/lost+found" } },
+			new AppSettings { Verbose = true, SyncIgnore = ["/lost+found"] },
 			fakeConsole).Filter(
 			"/test");
 		Assert.IsEmpty(fakeConsole.WrittenLines);
@@ -65,7 +65,7 @@ public sealed class SyncIgnoreCheckTest
 	{
 		var fakeConsole = new FakeConsoleWrapper();
 		new SyncIgnoreCheck(
-			new AppSettings { SyncIgnore = new List<string> { "/lost+found" }, Verbose = true },
+			new AppSettings { SyncIgnore = ["/lost+found"], Verbose = true },
 			fakeConsole).Filter(
 			"/lost+found");
 		Assert.HasCount(1, fakeConsole.WrittenLines);

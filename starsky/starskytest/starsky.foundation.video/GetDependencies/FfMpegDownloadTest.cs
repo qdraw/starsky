@@ -232,7 +232,7 @@ public class FfMpegDownloadTest
 				new FakeIFfMpegDownloadIndex(new FfmpegBinariesContainer
 				{
 					Success = true,
-					Data = new FfmpegBinariesIndex { Binaries = new List<BinaryIndex>() }
+					Data = new FfmpegBinariesIndex { Binaries = [] }
 				}), new FakeIFfMpegDownloadBinaries(),
 				new FakeIFfMpegPrepareBeforeRunning(isPrepareBeforeRunning),
 				new FakeIFfMpegPreflightRunCheck(tryRun ? storage : null,
@@ -267,7 +267,7 @@ public class FfMpegDownloadTest
 				{
 					Success = true,
 					Data = _exampleFfmpegBinariesIndex,
-					BaseUrls = new List<Uri> { new("https://qdraw.nl/") }
+					BaseUrls = [new("https://qdraw.nl/")]
 				}),
 				new FfMpegDownloadBinaries(new FakeSelectorStorage(storage), _httpClientHelper,
 					appSettings, logger, new Zipper(new FakeIWebLogger())),
@@ -293,7 +293,7 @@ public class FfMpegDownloadTest
 					Success = true,
 					Data = CreateExampleFile(
 						"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
-					BaseUrls = new List<Uri> { new("https://qdraw.nl/") }
+					BaseUrls = [new("https://qdraw.nl/")]
 				}),
 				new FfMpegDownloadBinaries(new FakeSelectorStorage(storage), _httpClientHelper,
 					appSettings, logger, new Zipper(new FakeIWebLogger())),
@@ -311,14 +311,14 @@ public class FfMpegDownloadTest
 		var appSettings = new AppSettings { DependenciesFolder = DependencyFolderName };
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage(["/"],
-			new List<string> { $"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip" },
+			[$"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip"],
 			new List<byte[]?> { new CreateAnZipfileFakeFfMpeg().Bytes.ToArray() });
 
-		var zipper = new FakeIZipper(new List<Tuple<string, byte[]>>
-		{
+		var zipper = new FakeIZipper([
+
 			new($"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip",
 				[.. new CreateAnZipfileFakeFfMpeg().Bytes])
-		}, storage);
+		], storage);
 
 		var ffmpegDownload =
 			new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
@@ -328,7 +328,7 @@ public class FfMpegDownloadTest
 					Success = true,
 					Data = CreateExampleFile(
 						"31852c0b33f35ff16e96d53be370ce86df92db6d4633ab0a8dae38acbf393ead"),
-					BaseUrls = new List<Uri> { new("https://qdraw.nl/") }
+					BaseUrls = [new("https://qdraw.nl/")]
 				}), new FfMpegDownloadBinaries(new FakeSelectorStorage(storage), _httpClientHelper,
 					appSettings, logger, zipper),
 				new FfMpegPrepareBeforeRunning(new FakeSelectorStorage(storage),
@@ -353,20 +353,19 @@ public class FfMpegDownloadTest
 		var appSettings = new AppSettings { DependenciesFolder = DependencyFolderName };
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage(["/"],
-			new List<string>
-			{
+			[
 				$"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip", "/bin/chmod"
-			},
+			],
 			new List<byte[]?>
 			{
 				new CreateAnZipfileFakeFfMpeg().Bytes.ToArray(),
 				CreateAnZipFileMacOs.Bytes.ToArray()
 			});
-		var zipper = new FakeIZipper(new List<Tuple<string, byte[]>>
-		{
+		var zipper = new FakeIZipper([
+
 			new($"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip",
 				[.. new CreateAnZipfileFakeFfMpeg().Bytes.ToArray()])
-		}, storage);
+		], storage);
 
 		const string hash = "31852c0b33f35ff16e96d53be370ce86df92db6d4633ab0a8dae38acbf393ead";
 
@@ -377,7 +376,7 @@ public class FfMpegDownloadTest
 				{
 					Success = true,
 					Data = CreateExampleFile(hash),
-					BaseUrls = new List<Uri> { new("https://qdraw.nl/") }
+					BaseUrls = [new("https://qdraw.nl/")]
 				}), new FfMpegDownloadBinaries(new FakeSelectorStorage(storage),
 					_httpClientHelper,
 					appSettings, logger, zipper), new FfMpegPrepareBeforeRunning(
@@ -402,20 +401,19 @@ public class FfMpegDownloadTest
 		var appSettings = new AppSettings { DependenciesFolder = DependencyFolderName };
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage(["/"],
-			new List<string>
-			{
+			[
 				$"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip", "/bin/chmod"
-			},
+			],
 			new List<byte[]?>
 			{
 				new CreateAnZipfileFakeFfMpeg().Bytes.ToArray(),
 				CreateAnZipFileMacOs.Bytes.ToArray()
 			});
-		var zipper = new FakeIZipper(new List<Tuple<string, byte[]>>
-		{
+		var zipper = new FakeIZipper([
+
 			new($"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip",
 				[.. new CreateAnZipfileFakeFfMpeg().Bytes.ToArray()])
-		}, storage);
+		], storage);
 
 		const string hash = "31852c0b33f35ff16e96d53be370ce86df92db6d4633ab0a8dae38acbf393ead";
 
@@ -426,7 +424,7 @@ public class FfMpegDownloadTest
 				{
 					Success = true,
 					Data = CreateExampleFile(hash),
-					BaseUrls = new List<Uri> { new("https://qdraw.nl/") }
+					BaseUrls = [new("https://qdraw.nl/")]
 				}), new FfMpegDownloadBinaries(new FakeSelectorStorage(storage),
 					_httpClientHelper,
 					appSettings, logger, zipper), new FfMpegPrepareBeforeRunning(
@@ -491,8 +489,8 @@ public class FfMpegDownloadTest
 		};
 
 		var logger = new FakeIWebLogger();
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string> { "/usr/local/bin/ffmpeg" });
+		var storage = new FakeIStorage([],
+			["/usr/local/bin/ffmpeg"]);
 
 		var ffmpegDownload = new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
 			logger,

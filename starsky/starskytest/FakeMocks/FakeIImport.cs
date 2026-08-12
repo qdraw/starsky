@@ -20,14 +20,14 @@ public class FakeIImport : IImport
 		_selectorStorage = selectorStorage;
 	}
 
-	public List<ImportIndexItem> HistoryList { get; set; } = new();
+	public List<ImportIndexItem> HistoryList { get; set; } = [];
 
-	public List<ImportIndexItem> PreflightList { get; set; } = new();
+	public List<ImportIndexItem> PreflightList { get; set; } = [];
 
 	public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList,
 		ImportSettingsModel importSettings)
 	{
-		var preflight = await Preflight(inputFullPathList.ToList(), importSettings);
+		var preflight = await Preflight([.. inputFullPathList], importSettings);
 		HistoryList.AddRange(preflight);
 		return preflight;
 	}
@@ -92,8 +92,8 @@ public class FakeIImport : IImport
 
 	public List<string> Import(string inputFullPathList, ImportSettingsModel importSettings)
 	{
-		HistoryList = Preflight(new List<string> { inputFullPathList }, importSettings).Result;
-		return new List<string> { inputFullPathList };
+		HistoryList = Preflight([inputFullPathList], importSettings).Result;
+		return [inputFullPathList];
 	}
 
 

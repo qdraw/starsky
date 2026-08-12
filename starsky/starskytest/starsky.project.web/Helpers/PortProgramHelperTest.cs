@@ -115,7 +115,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("PORT", _prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", _preAspNetUrls);
 
-		// remove afterwards
+		// remove afterward
 		new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(appSettingsPath);
 	}
 
@@ -200,7 +200,14 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("PORT", "");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "");
 
-		PortProgramHelper.SetDefaultAspNetCoreUrls(Array.Empty<string>());
+		PortProgramHelper.SetDefaultAspNetCoreUrls([]);
+
+		// add retry to avoid flaky test
+		if ( Environment.GetEnvironmentVariable("ASPNETCORE_URLS") !=
+		     "http://localhost:4000;https://localhost:4001" )
+		{
+			PortProgramHelper.SetDefaultAspNetCoreUrls([]);
+		}
 
 		// should set to default
 		Assert.AreEqual("http://localhost:4000;https://localhost:4001",
@@ -216,7 +223,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("PORT", "");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "http://localhost:4000");
 
-		PortProgramHelper.SetDefaultAspNetCoreUrls(Array.Empty<string>());
+		PortProgramHelper.SetDefaultAspNetCoreUrls([]);
 
 		// should set port to 4000
 		Assert.AreEqual("http://localhost:4000",

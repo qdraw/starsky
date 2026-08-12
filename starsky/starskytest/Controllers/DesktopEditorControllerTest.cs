@@ -21,8 +21,8 @@ public class DesktopEditorControllerTest
 	{
 		var controller = new DesktopEditorController(
 			new OpenEditorDesktopService(new AppSettings(),
-				new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-				new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>())));
+				new FakeIOpenApplicationNativeService([], "test"),
+				new FakeIOpenEditorPreflight([])));
 
 		controller.ControllerContext = new ControllerContext
 		{
@@ -43,8 +43,8 @@ public class DesktopEditorControllerTest
 	{
 		// Arrange
 		var controller = new DesktopEditorController(new OpenEditorDesktopService(new AppSettings(),
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>())));
+			new FakeIOpenApplicationNativeService([], "test"),
+			new FakeIOpenEditorPreflight([])));
 
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
@@ -59,8 +59,8 @@ public class DesktopEditorControllerTest
 	public async Task OpenAsync_FeatureToggleDisabled()
 	{
 		var controller = new DesktopEditorController(new OpenEditorDesktopService(new AppSettings(),
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>())));
+			new FakeIOpenApplicationNativeService([], "test"),
+			new FakeIOpenEditorPreflight([])));
 
 		controller.ControllerContext = new ControllerContext
 		{
@@ -78,8 +78,8 @@ public class DesktopEditorControllerTest
 	{
 		// Arrange
 		var controller = new DesktopEditorController(new OpenEditorDesktopService(new AppSettings(),
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>())));
+			new FakeIOpenApplicationNativeService([], "test"),
+			new FakeIOpenEditorPreflight([])));
 
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
@@ -95,8 +95,8 @@ public class DesktopEditorControllerTest
 	{
 		var controller = new DesktopEditorController(new OpenEditorDesktopService(
 			new AppSettings { UseLocalDesktop = true },
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>())));
+			new FakeIOpenApplicationNativeService([], "test"),
+			new FakeIOpenEditorPreflight([])));
 
 		controller.ControllerContext = new ControllerContext
 		{
@@ -115,8 +115,8 @@ public class DesktopEditorControllerTest
 	[TestMethod]
 	public async Task OpenAsync_HappyFlow()
 	{
-		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>
-		{
+		var preflight = new FakeIOpenEditorPreflight([
+
 			new()
 			{
 				AppPath = "test",
@@ -125,10 +125,10 @@ public class DesktopEditorControllerTest
 				SubPath = "/test.jpg",
 				FullFilePath = "/test.jpg"
 			}
-		});
+		]);
 		var controller = new DesktopEditorController(new OpenEditorDesktopService(
 			new AppSettings { UseLocalDesktop = true },
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
+			new FakeIOpenApplicationNativeService([], "test"),
 			preflight));
 
 		controller.ControllerContext = new ControllerContext

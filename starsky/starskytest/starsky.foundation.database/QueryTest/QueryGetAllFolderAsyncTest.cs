@@ -98,7 +98,7 @@ public sealed class QueryGetAllFolderAsyncTest
 		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var items = ( await query.GetFoldersAsync(
-				new List<string> { "/GetFolders_multi_01", "/GetFolders_multi_02" }) )
+				["/GetFolders_multi_01", "/GetFolders_multi_02"]) )
 			.OrderBy(p => p.FilePath).ToList();
 
 		Assert.HasCount(2, items);

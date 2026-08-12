@@ -22,9 +22,9 @@ public sealed class GeoCliTest
 	{
 		var console = new FakeConsoleWrapper();
 		var geoCli = new GeoCli(new FakeIGeoFolderReverseLookup(), new FakeIGeoLocationWrite(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string>())), new AppSettings(),
+			new FakeSelectorStorage(new FakeIStorage([])), new AppSettings(),
 			console, new FakeIGeoFileDownload(), new FakeExifToolDownload(), new FakeIWebLogger());
-		await geoCli.CommandLineAsync(new List<string> { "-p" }.ToArray());
+		await geoCli.CommandLineAsync(["-p"]);
 
 		Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("not found"));
 	}
@@ -36,7 +36,7 @@ public sealed class GeoCliTest
 			new StructureService(new FakeSelectorStorage(), new AppSettings(), new FakeIWebLogger())
 				.ParseSubfolders(0)!);
 
-		var storage = new FakeIStorage(new List<string> { "/" },
+		var storage = new FakeIStorage(["/"],
 			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
@@ -58,8 +58,8 @@ public sealed class GeoCliTest
 	[TestMethod]
 	public async Task GeoCliInput_AbsolutePath_HappyFlow()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var appSettings = new AppSettings { Verbose = true };
@@ -69,7 +69,7 @@ public sealed class GeoCliTest
 		var geoCli = new GeoCli(geoLookup, geoWrite,
 			new FakeSelectorStorage(storage), appSettings,
 			console, new FakeIGeoFileDownload(), new FakeExifToolDownload(), new FakeIWebLogger());
-		await geoCli.CommandLineAsync(new List<string> { "-p", "/test" }.ToArray());
+		await geoCli.CommandLineAsync(["-p", "/test"]);
 
 		Assert.AreEqual(appSettings.StorageFolder, "/test" + Path.DirectorySeparatorChar);
 		Assert.AreEqual(1, geoLookup.Count);
@@ -79,8 +79,8 @@ public sealed class GeoCliTest
 	[TestMethod]
 	public async Task GeoCliInput_Default_HappyFlow()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var hash =
 			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg",
@@ -93,7 +93,7 @@ public sealed class GeoCliTest
 		var geoCli = new GeoCli(geoLookup, geoWrite,
 			new FakeSelectorStorage(storage), new AppSettings(),
 			console, new FakeIGeoFileDownload(), new FakeExifToolDownload(), new FakeIWebLogger());
-		await geoCli.CommandLineAsync(new List<string> { "-p" }.ToArray());
+		await geoCli.CommandLineAsync(["-p"]);
 
 		Assert.AreEqual(1, geoLookup.Count);
 		Assert.IsTrue(storage.ExistFile($"/{hash}.jpg"));
@@ -103,8 +103,8 @@ public sealed class GeoCliTest
 	[TestMethod]
 	public async Task GeoCliInput_Default_HappyFlow_ShouldMoveFile()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg", "1" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg", "1"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
 		var hash =
 			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
@@ -113,15 +113,14 @@ public sealed class GeoCliTest
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();
-		var geoLookup = new FakeIGeoFolderReverseLookup(new List<FileIndexItem>
-		{
+		var geoLookup = new FakeIGeoFolderReverseLookup([
 			new("/test.jpg") { Latitude = 50, Longitude = 4, FileHash = "1" }
-		});
+		]);
 		var console = new FakeConsoleWrapper();
 		var geoCli = new GeoCli(geoLookup, geoWrite,
 			new FakeSelectorStorage(storage), new AppSettings(),
 			console, new FakeIGeoFileDownload(), new FakeExifToolDownload(), new FakeIWebLogger());
-		await geoCli.CommandLineAsync(new List<string> { "-p" }.ToArray());
+		await geoCli.CommandLineAsync(["-p"]);
 
 		Assert.AreEqual(1, geoLookup.Count);
 		Assert.IsTrue(storage.ExistFile($"/{hash}.jpg"));
@@ -131,8 +130,8 @@ public sealed class GeoCliTest
 	[TestMethod]
 	public async Task GeoCliInput_Default_HappyFlow_ShouldMoveFile_Verbose()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg", "1" },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg", "1"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
 		var hash =
 			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
@@ -141,15 +140,14 @@ public sealed class GeoCliTest
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();
-		var geoLookup = new FakeIGeoFolderReverseLookup(new List<FileIndexItem>
-		{
+		var geoLookup = new FakeIGeoFolderReverseLookup([
 			new("/test.jpg") { Latitude = 50, Longitude = 4, FileHash = "1" }
-		});
+		]);
 		var console = new FakeConsoleWrapper();
 		var geoCli = new GeoCli(geoLookup, geoWrite,
 			new FakeSelectorStorage(storage), new AppSettings(),
 			console, new FakeIGeoFileDownload(), new FakeExifToolDownload(), new FakeIWebLogger());
-		await geoCli.CommandLineAsync(new List<string> { "-p", "-v" }.ToArray());
+		await geoCli.CommandLineAsync(["-p", "-v"]);
 
 		Assert.AreEqual(1, geoLookup.Count);
 		Assert.IsTrue(storage.ExistFile($"/{hash}.jpg"));

@@ -15,12 +15,11 @@ public class MetaUpdateStatusThumbnailServiceTest
 		var query = new FakeIThumbnailQuery();
 		var service = new MetaUpdateStatusThumbnailService(query,
 			new FakeSelectorStorage(), new FakeIWebLogger());
-		await service.UpdateStatusThumbnail(new List<(bool, bool, string, string?)>
-		{
+		await service.UpdateStatusThumbnail([
 			( true, true, "/test.jpg", "test" ),
 			( false, true, "/false.jpg", "test1" ),
 			( false, false, "/false.mp4", "test1" )
-		});
+		]);
 
 		var thumbnailItems = await query.Get();
 		Assert.HasCount(2, thumbnailItems);

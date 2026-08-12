@@ -86,7 +86,7 @@ public sealed class WebSocketConnectionsMiddlewareTest
 		httpContext.Request.Headers.Origin = "fake";
 
 		var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null!,
-			new WebSocketConnectionsOptions { AllowedOrigins = new HashSet<string> { "google" } },
+			new WebSocketConnectionsOptions { AllowedOrigins = ["google"] },
 			new WebSocketConnectionsService(), new FakeIWebLogger());
 		await disabledWebSocketsMiddleware.Invoke(httpContext);
 

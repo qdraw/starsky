@@ -36,7 +36,7 @@ public class CpuUsageListenerTests
 
 		// Act
 		// LogAppContextSwitch
-		method?.Invoke(listener, new object[] { eventSource });
+		method?.Invoke(listener, [eventSource]);
 
 		// Assert
 		Assert.IsFalse(eventSource.IsEnabled());

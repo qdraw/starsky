@@ -26,14 +26,15 @@ public sealed class GeoIndexGpxTest
 			StorageFolder = createAnGpx.BasePath, CameraTimeZone = "Europe/Minsk"
 		};
 
-		_metaFilesDirectory = new List<FileIndexItem>
-		{
+		_metaFilesDirectory =
+		[
+
 			new()
 			{
 				FileName = createAnGpx.FileName,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
 			}
-		};
+		];
 	}
 
 	[ClassCleanup]
@@ -118,8 +119,8 @@ public sealed class GeoIndexGpxTest
 			}
 		});
 
-		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { _metaFilesDirectory[0].FilePath! },
+		var fakeIStorage = new FakeIStorage(["/"],
+			[_metaFilesDirectory[0].FilePath!],
 			new List<byte[]> { CreateAnGpx.Bytes.ToArray() });
 
 		var returnFileIndexItems = await new GeoIndexGpx(_appSettings,

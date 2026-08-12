@@ -25,8 +25,8 @@ public class ResizeThumbnailFromThumbnailImageHelperTests
 	public ResizeThumbnailFromThumbnailImageHelperTests()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { TestPath },
+			["/"],
+			[TestPath],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var selectorStorage = new FakeSelectorStorage(storage);

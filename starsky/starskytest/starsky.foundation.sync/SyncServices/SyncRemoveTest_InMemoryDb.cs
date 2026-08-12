@@ -46,12 +46,11 @@ public sealed class SyncRemoveTestInMemoryDb
 	[TestMethod]
 	public async Task Remove_Folder_With_ChildItems()
 	{
-		await _query.AddRangeAsync(new List<FileIndexItem>
-		{
+		await _query.AddRangeAsync([
 			new("/Folder_With_ChildItems") { IsDirectory = true },
 			new("/Folder_With_ChildItems/test.jpg"),
 			new("/Folder_With_ChildItems/test2.jpg")
-		});
+		]);
 
 		var syncRemove = new SyncRemove(_appSettings, _query,
 			new FakeMemoryCache(), new FakeIWebLogger(), null);

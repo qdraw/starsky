@@ -76,7 +76,7 @@ public class CleanDemoDataServiceTest
 			throw new Exception("missing ExecuteAsync");
 		}
 
-		dynMethod.Invoke(service, new object[] { token });
+		dynMethod.Invoke(service, [token]);
 
 		Assert.AreEqual(0, _logger?.TrackedExceptions.Count);
 
@@ -124,10 +124,10 @@ public class CleanDemoDataServiceTest
 		_appSettings.DemoUnsafeDeleteStorageFolder = true;
 		_appSettings.ApplicationType = AppSettings.StarskyAppType.WebController;
 
-		_appSettings.DemoData = new List<AppSettingsKeyValue>
-		{
+		_appSettings.DemoData =
+		[
 			new() { Key = "https://qdraw.nl/", Value = "1" }
-		};
+		];
 
 		Environment.SetEnvironmentVariable("app__storageFolder", "/tmp");
 		var result = await new CleanDemoDataService(_serviceScopeFactory).RunAsync();
@@ -141,7 +141,7 @@ public class CleanDemoDataServiceTest
 	[TestMethod]
 	public void CleanData_Ignore()
 	{
-		var storage = new FakeIStorage(new List<string> { "/", "/.stfolder" });
+		var storage = new FakeIStorage(["/", "/.stfolder"]);
 		CleanDemoDataService.CleanData(storage, new FakeIWebLogger());
 
 		Assert.IsTrue(storage.ExistFolder("/.stfolder"));
@@ -150,7 +150,7 @@ public class CleanDemoDataServiceTest
 	[TestMethod]
 	public void CleanData_Remove_Folder()
 	{
-		var storage = new FakeIStorage(new List<string> { "/", "/test" });
+		var storage = new FakeIStorage(["/", "/test"]);
 		CleanDemoDataService.CleanData(storage, new FakeIWebLogger());
 
 		Assert.IsFalse(storage.ExistFolder("/test"));
@@ -159,8 +159,8 @@ public class CleanDemoDataServiceTest
 	[TestMethod]
 	public void CleanData_Remove_File()
 	{
-		var storage = new FakeIStorage(new List<string> { "/", "/test", "/t2" },
-			new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/", "/test", "/t2"],
+			["/test.jpg"]);
 
 		CleanDemoDataService.CleanData(storage, new FakeIWebLogger());
 
@@ -170,8 +170,8 @@ public class CleanDemoDataServiceTest
 	[TestMethod]
 	public void CleanData_Remove_File_KeepGitIgnore()
 	{
-		var storage = new FakeIStorage(new List<string> { "/", "/test", "/t2" },
-			new List<string> { "/.gitignore", "/.gitkeep" });
+		var storage = new FakeIStorage(["/", "/test", "/t2"],
+			["/.gitignore", "/.gitkeep"]);
 
 		CleanDemoDataService.CleanData(storage, new FakeIWebLogger());
 
@@ -209,7 +209,7 @@ public class CleanDemoDataServiceTest
 		}
 
 		_fakeIWebSocketConnectionsService.FakeSendToAllAsync =
-			new List<string>();
+			[];
 		var updatedList = new List<FileIndexItem>
 		{
 			new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
@@ -253,10 +253,10 @@ public class CleanDemoDataServiceTest
 
 		var appSettings = new AppSettings
 		{
-			DemoData = new List<AppSettingsKeyValue>
-			{
+			DemoData =
+			[
 				new() { Key = "https://qdraw.nl/_settings.json", Value = "1" }
-			}
+			]
 		};
 
 		var content = "{" +
@@ -299,10 +299,10 @@ public class CleanDemoDataServiceTest
 
 		var appSettings = new AppSettings
 		{
-			DemoData = new List<AppSettingsKeyValue>
-			{
+			DemoData =
+			[
 				new() { Key = "https://qdraw.nl/_settings.json", Value = "1" }
-			}
+			]
 		};
 
 		var content = "{{{";

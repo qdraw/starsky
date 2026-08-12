@@ -186,7 +186,7 @@ public sealed class QueryUpdateItemError
 
 		var fakeQuery = new Query(new AppDbContextConcurrencyException(options), null!, null!,
 			null!);
-		await fakeQuery.UpdateItemAsync(new List<FileIndexItem> { new("test") });
+		await fakeQuery.UpdateItemAsync([new("test")]);
 
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
@@ -246,7 +246,7 @@ public sealed class QueryUpdateItemError
 
 		var fakeQuery =
 			new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
-		await fakeQuery.RemoveItemAsync(new List<FileIndexItem> { item! });
+		await fakeQuery.RemoveItemAsync([item!]);
 
 		Assert.AreEqual(1, sqLiteFailContext.Count);
 	}
@@ -312,7 +312,7 @@ public sealed class QueryUpdateItemError
 		var fakeQuery = new Query(appDbInvalidOperationException, new AppSettings(), scope,
 			new FakeIWebLogger());
 
-		await fakeQuery.UpdateItemAsync(new List<FileIndexItem>());
+		await fakeQuery.UpdateItemAsync([]);
 
 		Assert.AreEqual(1, appDbInvalidOperationException.Count);
 	}
@@ -409,7 +409,7 @@ public sealed class QueryUpdateItemError
 		var query = new Query(appDbInvalidOperationException, new AppSettings(), scope,
 			new FakeIWebLogger());
 
-		await query.RemoveItemAsync(new List<FileIndexItem> { testItem1, testItem2 });
+		await query.RemoveItemAsync([testItem1, testItem2]);
 
 		var afterResult1 = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path1, TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(afterResult1);
@@ -428,7 +428,7 @@ public sealed class QueryUpdateItemError
 
 		var fakeQuery = new Query(new AppDbContextConcurrencyException(options), null!, null!,
 			new FakeIWebLogger());
-		await fakeQuery.RemoveItemAsync(new List<FileIndexItem> { new("test") });
+		await fakeQuery.RemoveItemAsync([new("test")]);
 
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}

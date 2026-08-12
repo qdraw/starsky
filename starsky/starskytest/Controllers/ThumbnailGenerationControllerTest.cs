@@ -54,7 +54,7 @@ public sealed class ThumbnailGenerationControllerTest
 	public async Task ThumbnailGeneration_AddModelError()
 	{
 		var selectorStorage =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
+			new FakeSelectorStorage(new FakeIStorage(["/"]));
 		var controller = new ThumbnailGenerationController(selectorStorage,
 			new ManualThumbnailGenerationService(new FakeIWebLogger(),
 				new FakeIThumbnailSocketService(),

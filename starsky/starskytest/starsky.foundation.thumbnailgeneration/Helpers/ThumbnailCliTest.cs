@@ -17,7 +17,7 @@ public sealed class ThumbnailCliTest
 	public async Task Thumbnail_NoArgs_Assume_T_True()
 	{
 		var fakeConsole = new FakeConsoleWrapper();
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 		var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
 			new FakeIThumbnailService(new FakeSelectorStorage(storage)),
 			new FakeIThumbnailCleaner(),
@@ -32,7 +32,7 @@ public sealed class ThumbnailCliTest
 	public async Task Thumbnail_Enable_T_Param_AssumeHome()
 	{
 		var fakeConsole = new FakeConsoleWrapper();
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 		var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
 		var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
 			fakeIThumbnailService, new FakeIThumbnailCleaner(),
@@ -47,7 +47,7 @@ public sealed class ThumbnailCliTest
 	public async Task Thumbnail_Help()
 	{
 		var fakeConsole = new FakeConsoleWrapper();
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 		var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
 			new FakeIThumbnailService(), new FakeIThumbnailCleaner(),
 			new FakeSelectorStorage(storage), new FakeIWebLogger());
@@ -61,7 +61,7 @@ public sealed class ThumbnailCliTest
 	public async Task Thumbnail_Disable_T_Param()
 	{
 		var fakeThumbnail = new FakeIThumbnailService();
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 
 		var thumbnailService = new ThumbnailCli(new AppSettings(), new ConsoleWrapper(),
 			fakeThumbnail, new FakeIThumbnailCleaner(),
@@ -76,7 +76,7 @@ public sealed class ThumbnailCliTest
 	public async Task Thumbnail_MinusP_FullPath()
 	{
 		var fakeConsole = new FakeConsoleWrapper();
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 		var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
 		var appSettings = new AppSettings();
 		var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
@@ -94,7 +94,7 @@ public sealed class ThumbnailCliTest
 	public async Task Thumbnail_MinusS_SubPath()
 	{
 		var fakeConsole = new FakeConsoleWrapper();
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 		var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
 		var appSettings = new AppSettings();
 		var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
@@ -110,7 +110,7 @@ public sealed class ThumbnailCliTest
 	public async Task Thumbnail_MinusS_SubPath_Direct()
 	{
 		var fakeConsole = new FakeConsoleWrapper();
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 		var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
 		var appSettings = new AppSettings();
 		var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
@@ -129,7 +129,7 @@ public sealed class ThumbnailCliTest
 	public async Task Thumbnail_MinusG_Relative()
 	{
 		var fakeConsole = new FakeConsoleWrapper();
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 		var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
 		var appSettings = new AppSettings();
 		var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
@@ -149,7 +149,7 @@ public sealed class ThumbnailCliTest
 	public async Task Thumbnail_MinusX_CleanAllUnusedFiles()
 	{
 		var fakeConsole = new FakeConsoleWrapper();
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 		var fakeIThumbnailCleaner = new FakeIThumbnailCleaner();
 		var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
 			new FakeIThumbnailService(new FakeSelectorStorage(storage)), fakeIThumbnailCleaner,
