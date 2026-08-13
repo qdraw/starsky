@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -196,6 +198,7 @@ public sealed class ThumbnailCleanerTest
 	[DataRow("filehash.jpg", "anotherfile.png", "filehash", "anotherfile")]
 	[DataRow("filehash@.jpg", "anotherfile@.png", "filehash", "anotherfile")]
 	[DataRow("filehash@size.jpg", "filehash@size.png", "filehash", null)]
+	[SuppressMessage("Style", "IDE0306:Simplify collection initialization")]
 	public void GetFileNamesWithExtension_ReturnsExpectedResult(params string?[] parameters)
 	{
 		// Arrange
@@ -205,7 +208,7 @@ public sealed class ThumbnailCleanerTest
 
 		// Act
 		var result = ThumbnailCleaner.GetFileNamesWithExtension(
-			[.. input!]).ToList();
+			new List<string>(input!)).ToList();
 
 		// Assert
 		Assert.AreSequenceEqual(expected, result);
