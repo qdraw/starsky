@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;

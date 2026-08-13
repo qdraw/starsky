@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.packagetelemetry.Services;
-using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.settings.Enums;
 using starsky.foundation.storage.Helpers;

@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Structure;

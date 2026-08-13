@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Helpers;
 using starskytest.FakeCreateAn;
