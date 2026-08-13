@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
-using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
