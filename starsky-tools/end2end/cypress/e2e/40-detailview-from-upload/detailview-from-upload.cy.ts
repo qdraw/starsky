@@ -127,9 +127,7 @@ describe('DetailView (from upload) (40)', () => {
     }).then(() => {
       // and now we going back to the orginal state
       cy.intercept('POST', '**/api/update').as('cleanupUpdate')
-      cy.get(tagFileSelector).then(($el) => {
-        ($el[0] as HTMLElement).textContent = sourceTags
-      })
+      cy.get(tagFileSelector).type('{end}' + '{backspace}'.repeat(appendText.length))
       cy.get(tagFileSelector).blur()
       cy.wait('@cleanupUpdate')
     }).then(() => {
