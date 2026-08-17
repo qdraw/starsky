@@ -1,5 +1,3 @@
-@using System.Linq
-@using System.Globalization;
 @model starsky.feature.webhtmlpublish.ViewModels.WebHtmlViewModel
 
 <!doctype html>
@@ -44,7 +42,7 @@
 	@item.FileCollectionName + @append500 + @Model.Profiles.FirstOrDefault(p => p.Folder == fileFolder500)?.GetExtensionWithDot(item.FileName);
 	var filePath1000 = @Model.AppSettings.GetWebSafeReplacedName(
 	@Model.CurrentProfile.Prepend, @Model.ItemName) + @fileFolder1000 +
-	@item.FileCollectionName + @append1000 + @Model.Profiles.FirstOrDefault(p => p.Folder == fileFolder500)?.GetExtensionWithDot(item.FileName);
+	@item.FileCollectionName + @append1000 + @Model.Profiles.FirstOrDefault(p => p.Folder == fileFolder1000)?.GetExtensionWithDot(item.FileName);
 
 	var displayTitleName = !string.IsNullOrEmpty(@item.Title) ? @item.Title : @Model.ItemName;
 

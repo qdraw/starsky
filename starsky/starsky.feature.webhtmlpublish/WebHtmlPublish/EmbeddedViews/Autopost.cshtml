@@ -1,5 +1,3 @@
-@using System.Linq
-@using System.Globalization;
 @model starsky.feature.webhtmlpublish.ViewModels.WebHtmlViewModel
 
 @{
@@ -13,6 +11,7 @@ var fileFolder1000 = profile1000?.Folder ?? "1000/";
 var append1000 = profile1000?.Append ?? string.Empty;
 // ReSharper disable once StringLiteralTypo
 const string photoText = "foto";
+const string className = "blog-image";
 }
 
 
@@ -33,7 +32,7 @@ var filePath500 = @Model.AppSettings.GetWebSafeReplacedName(
 @item.FileCollectionName + @append500 + @Model.Profiles.FirstOrDefault(p => p.Folder == fileFolder500)?.GetExtensionWithDot(item.FileName);
 var filePath1000 = @Model.AppSettings.GetWebSafeReplacedName(
 @Model.CurrentProfile.Prepend, @Model.ItemName) + @fileFolder1000 +
-@item.FileCollectionName + @append1000 + @Model.Profiles.FirstOrDefault(p => p.Folder == fileFolder500)?.GetExtensionWithDot(item.FileName);
+@item.FileCollectionName + @append1000 + @Model.Profiles.FirstOrDefault(p => p.Folder == fileFolder1000)?.GetExtensionWithDot(item.FileName);
 
 var displayTitleName = !string.IsNullOrEmpty(@item.Title) ? @item.Title : @Model.ItemName;
 
