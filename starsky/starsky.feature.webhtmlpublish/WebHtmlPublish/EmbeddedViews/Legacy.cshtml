@@ -13,7 +13,7 @@ var fileFolder1000 = profile1000?.Folder ?? "1000/";
 var append1000 = profile1000?.Append ?? string.Empty;
 // ReSharper disable once StringLiteralTypo
 const string photoText = "foto";
-const string className = "blog-image";
+const string className = "lightbox[blog]";
 }
 
 
@@ -21,10 +21,8 @@ const string className = "blog-image";
 {
 var item = @Model.FileIndexItems[i];
 var count = i + 1;
-var height = Math.Round((double)@item.ImageHeight, 1)
-.ToString(CultureInfo.InvariantCulture);
-var width = Math.Round((double)@item.ImageWidth, 1)
-.ToString(CultureInfo.InvariantCulture);
+var heightRatio = Math.Round((double)@item.ImageHeight / @item.ImageWidth, 3)
+.ToString(CultureInfo.InvariantCulture); ;
 var latitude = Math.Round(@item.Latitude, 6).ToString(CultureInfo.InvariantCulture);
 var longitude = Math.Round(@item.Longitude, 6).ToString(CultureInfo.InvariantCulture);
 
@@ -38,22 +36,13 @@ var filePath1000 = @Model.AppSettings.GetWebSafeReplacedName(
 
 var displayTitleName = !string.IsNullOrEmpty(@item.Title) ? @item.Title : @Model.ItemName;
 
-<figure class="@className">
-	<img
-		src="@filePath500"
-		data-gps="@latitude,@longitude"
-		srcset="
-	      @filePath500 300w,
-	      @filePath500 500w,
-	      @filePath1000 1000w"
-		sizes="(max-width: 600px) 100vw, (max-width: 1000px) 80vw, 700px"
-		width="@height" height="@width"
-		loading="lazy"
-		decoding="async"
-		alt="@Model.ItemName ; @item.Title ; @item.Tags"
-	>
-	<figcaption>@Model.ItemName - @item.Title | @photoText @count</figcaption>
-</figure>
+<a href="@filePath1000" class="@className"
+   title="@Model.ItemName - @item.Title | @photoText @count"
+   data-gps="@latitude,@longitude" data-heightratio="@heightRatio">
+	<noscript><img src="@filePath500" alt="@item.Title"/></noscript>
+	<img src="@Model.Base64ImageArray[i]" title="@displayTitleName | @photoText @count"
+	     alt="@Model.ItemName ; @item.Title ; @item.Tags"/>
+</a>
 }
 
 

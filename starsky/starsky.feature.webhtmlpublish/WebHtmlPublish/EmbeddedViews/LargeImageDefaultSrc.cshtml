@@ -13,7 +13,6 @@ var fileFolder1000 = profile1000?.Folder ?? "1000/";
 var append1000 = profile1000?.Append ?? string.Empty;
 // ReSharper disable once StringLiteralTypo
 const string photoText = "foto";
-const string className = "blog-image";
 }
 
 
@@ -38,22 +37,11 @@ var filePath1000 = @Model.AppSettings.GetWebSafeReplacedName(
 
 var displayTitleName = !string.IsNullOrEmpty(@item.Title) ? @item.Title : @Model.ItemName;
 
-<figure class="@className">
-	<img
-		src="@filePath500"
-		data-gps="@latitude,@longitude"
-		srcset="
-	      @filePath500 300w,
-	      @filePath500 500w,
-	      @filePath1000 1000w"
-		sizes="(max-width: 600px) 100vw, (max-width: 1000px) 80vw, 700px"
-		width="@height" height="@width"
-		loading="lazy"
-		decoding="async"
-		alt="@Model.ItemName ; @item.Title ; @item.Tags"
-	>
-	<figcaption>@Model.ItemName - @item.Title | @photoText @count</figcaption>
-</figure>
+<img
+	src="@filePath1000"
+	width="@height" height="@width"
+	alt="@Model.ItemName ; @item.Title ; @item.Tags"
+>
 }
 
 

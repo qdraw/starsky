@@ -28,6 +28,9 @@
         <None Update="WebHtmlPublish\EmbeddedViews\**" CopyToOutputDirectory="PreserveNewest"/>
         <None Update="WebHtmlPublish\PublishedContent\**" CopyToOutputDirectory="PreserveNewest"/>
         <None Update="WebHtmlPublish\UserViews\**" CopyToOutputDirectory="PreserveNewest"/>
+        <None Update="WebHtmlPublish\EmbeddedViews\Legacy.cshtml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
