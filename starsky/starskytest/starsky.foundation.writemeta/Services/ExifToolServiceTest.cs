@@ -21,10 +21,13 @@ public class ExifToolServiceTest
 {
 	private static readonly string ExifToolPath =
 		Path.Join(new CreateAnImage().BasePath, "exiftool-service-test-tmp");
+
 	private static readonly string RetryExifToolPath =
 		Path.Join(new CreateAnImage().BasePath, "exiftool-service-retry-test-tmp");
+
 	private static readonly string WriteTagsRetryExifToolPath =
 		Path.Join(new CreateAnImage().BasePath, "exiftool-service-write-tags-retry-test-tmp");
+
 	private static readonly string ThumbnailRetryExifToolPath =
 		Path.Join(new CreateAnImage().BasePath, "exiftool-service-thumbnail-retry-test-tmp");
 
@@ -37,6 +40,8 @@ public class ExifToolServiceTest
 
 		CreateFile();
 	}
+
+	public TestContext TestContext { get; set; }
 
 	private static void CreateFile(string? path = null)
 	{
@@ -182,7 +187,7 @@ public class ExifToolServiceTest
 			download);
 
 		var result = await service.WriteTagsAndRenameThumbnailAsync("/image.jpg",
-			null, "");
+			null, "", TestContext.CancellationToken);
 
 		Assert.IsTrue(result.IsSuccess);
 		Assert.AreEqual(1, download.Called);
