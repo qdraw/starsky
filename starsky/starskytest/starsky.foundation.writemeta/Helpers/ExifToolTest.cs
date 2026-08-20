@@ -72,7 +72,7 @@ public sealed class ExifToolTest
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var sut = new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings,
-			new FakeIWebLogger());
+			new FakeIWebLogger(), new FakeExifToolDownload());
 
 		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 			await sut.WriteTagsAsync("/test.jpg", "-Software=\"Qdraw 2.0\""));
@@ -88,7 +88,7 @@ public sealed class ExifToolTest
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var sut = new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings,
-			new FakeIWebLogger());
+			new FakeIWebLogger(), new FakeExifToolDownload());
 
 		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 			await sut.WriteTagsAsync("/test.jpg", "-Software=\"Qdraw 2.0\""));

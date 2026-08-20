@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -21,6 +22,15 @@ public class ExifToolServiceTest
 	private static readonly string ExifToolPath =
 		Path.Join(new CreateAnImage().BasePath, "exiftool-service-test-tmp");
 
+	private static readonly string RetryExifToolPath =
+		Path.Join(new CreateAnImage().BasePath, "exiftool-service-retry-test-tmp");
+
+	private static readonly string WriteTagsRetryExifToolPath =
+		Path.Join(new CreateAnImage().BasePath, "exiftool-service-write-tags-retry-test-tmp");
+
+	private static readonly string ThumbnailRetryExifToolPath =
+		Path.Join(new CreateAnImage().BasePath, "exiftool-service-thumbnail-retry-test-tmp");
+
 	public ExifToolServiceTest()
 	{
 		if ( new AppSettings().IsWindows )
@@ -31,14 +41,30 @@ public class ExifToolServiceTest
 		CreateFile();
 	}
 
-	private static void CreateFile()
+	public TestContext TestContext { get; set; }
+
+	private static void CreateFile(string? path = null)
 	{
+		path ??= ExifToolPath;
 		var stream = StringToStreamHelper.StringToStream("#!/bin/bash\necho Fake ExifTool");
-		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(stream,
-			ExifToolPath);
+		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(stream, path);
 
 		var result = Command.Run("chmod", "+x",
-			ExifToolPath).Task.Result;
+			path).Task.Result;
+		if ( !result.Success )
+		{
+			throw new FileNotFoundException(result.StandardError);
+		}
+	}
+
+	private static void CreatePassingFile(string? path = null)
+	{
+		path ??= ExifToolPath;
+		var stream = StringToStreamHelper.StringToStream("#!/bin/bash\ncat");
+		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(stream, path);
+
+		var result = Command.Run("chmod", "+x",
+			path).Task.Result;
 		if ( !result.Success )
 		{
 			throw new FileNotFoundException(result.StandardError);
@@ -52,6 +78,21 @@ public class ExifToolServiceTest
 		{
 			File.Delete(ExifToolPath);
 		}
+
+		if ( File.Exists(RetryExifToolPath) )
+		{
+			File.Delete(RetryExifToolPath);
+		}
+
+		if ( File.Exists(WriteTagsRetryExifToolPath) )
+		{
+			File.Delete(WriteTagsRetryExifToolPath);
+		}
+
+		if ( File.Exists(ThumbnailRetryExifToolPath) )
+		{
+			File.Delete(ThumbnailRetryExifToolPath);
+		}
 	}
 
 	private static async Task WriteTagsAndRenameThumbnailAsyncUnixPrivateTest()
@@ -63,7 +104,8 @@ public class ExifToolServiceTest
 		CreateFile();
 
 		var service = new ExifToolService(new FakeSelectorStorage(storage),
-			new AppSettings { ExifToolPath = ExifToolPath }, new FakeIWebLogger());
+			new AppSettings { ExifToolPath = ExifToolPath }, new FakeIWebLogger(),
+			new FakeExifToolDownload());
 		var result = await service.WriteTagsAndRenameThumbnailAsync(
 			"/image.jpg",
 			null, "");
@@ -111,7 +153,8 @@ public class ExifToolServiceTest
 		var service = new ExifToolService(
 			new FakeSelectorStorage(storage),
 			new AppSettings { ExifToolPath = ExifToolPath },
-			new FakeIWebLogger()
+			new FakeIWebLogger(),
+			new FakeExifToolDownload()
 		);
 
 		using var cancelSource = new CancellationTokenSource();
@@ -123,5 +166,104 @@ public class ExifToolServiceTest
 		{
 			await service.WriteTagsAndRenameThumbnailAsync("/image.jpg", null, "", token);
 		});
+	}
+
+	[TestMethod]
+	public async Task WriteTagsAndRenameThumbnailAsync_RetriesAfterArgumentException__UnixOnly()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test is for Unix Only");
+			return;
+		}
+
+		var storage = new FakeIStorage(["/"],
+			["/image.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var download = new CreateExifToolOnDownload(RetryExifToolPath);
+		var service = new ExifToolService(new FakeSelectorStorage(storage),
+			new AppSettings { ExifToolPath = RetryExifToolPath }, new FakeIWebLogger(),
+			download);
+
+		var result = await service.WriteTagsAndRenameThumbnailAsync("/image.jpg",
+			null, "", TestContext.CancellationToken);
+
+		Assert.IsTrue(result.IsSuccess);
+		Assert.AreEqual(1, download.Called);
+	}
+
+	[TestMethod]
+	public async Task WriteTagsAsync_RetriesAfterArgumentException__UnixOnly()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test is for Unix Only");
+			return;
+		}
+
+		var storage = new FakeIStorage(["/"],
+			["/image.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var download = new CreateExifToolOnDownload(WriteTagsRetryExifToolPath);
+		var service = new ExifToolService(new FakeSelectorStorage(storage),
+			new AppSettings { ExifToolPath = WriteTagsRetryExifToolPath },
+			new FakeIWebLogger(), download);
+
+		var result = await service.WriteTagsAsync("/image.jpg",
+			"-Software=\"Qdraw 2.0\"");
+
+		Assert.IsTrue(result);
+		Assert.AreEqual(1, download.Called);
+	}
+
+	[TestMethod]
+	public async Task WriteTagsThumbnailAsync_RetriesAfterArgumentException__UnixOnly()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test is for Unix Only");
+			return;
+		}
+
+		var storage = new FakeIStorage(["/"],
+			["/hash.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var download = new CreateExifToolOnDownload(ThumbnailRetryExifToolPath);
+		var service = new ExifToolService(new FakeSelectorStorage(storage),
+			new AppSettings { ExifToolPath = ThumbnailRetryExifToolPath },
+			new FakeIWebLogger(), download);
+
+		var result = await service.WriteTagsThumbnailAsync("/hash.jpg",
+			"-Software=\"Qdraw 2.0\"");
+
+		Assert.IsTrue(result);
+		Assert.AreEqual(1, download.Called);
+	}
+
+	private sealed class CreateExifToolOnDownload : IExifToolDownload
+	{
+		private readonly string _exifToolPath;
+
+		public CreateExifToolOnDownload(string exifToolPath)
+		{
+			_exifToolPath = exifToolPath;
+		}
+
+		public int Called { get; private set; }
+
+		public Task<List<bool>> DownloadExifTool(List<string> architectures)
+		{
+			throw new NotImplementedException();
+		}
+
+		public async Task<bool> DownloadExifTool(bool isWindows, int minimumSize = 30)
+		{
+			Called++;
+			CreatePassingFile(_exifToolPath);
+			return await Task.FromResult(true);
+		}
 	}
 }
