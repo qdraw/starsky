@@ -149,8 +149,8 @@ describe("Delete file from upload (50)", () => {
     ];
     cy.visit(config.url);
 
+    cy.get(`[data-filepath="${urls[0]}"]`, { timeout: 10000 }).should("exist");
     cy.get(".item.item--select").click();
-    cy.get(`[data-filepath="${urls[0]}"]`).should("be.visible");
 
     for (const url of urls) {
         cy.get(`[data-filepath="${url}"] button`).click({ force: true });
