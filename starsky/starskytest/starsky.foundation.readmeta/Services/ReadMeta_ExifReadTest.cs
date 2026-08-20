@@ -48,7 +48,7 @@ public sealed class ExifReadTest
 	[TestMethod]
 	public void ExifRead_GetObjectNameNull()
 	{
-		var t = ReadMetaExif.GetObjectName(new List<Directory> { new MockDirectory(null!) });
+		var t = ReadMetaExif.GetObjectName([new MockDirectory(null!)]);
 		Assert.AreEqual(string.Empty, t);
 	}
 
@@ -57,7 +57,7 @@ public sealed class ExifReadTest
 	{
 		var dir = new IptcDirectory();
 		dir.Set(IptcDirectory.TagObjectName, "test");
-		var t = ReadMetaExif.GetObjectName(new List<Directory> { dir });
+		var t = ReadMetaExif.GetObjectName([dir]);
 		Assert.AreEqual("test", t);
 	}
 
@@ -67,7 +67,7 @@ public sealed class ExifReadTest
 	{
 		var dir = new IptcDirectory();
 		dir.Set(IptcDirectory.TagCaption, "test123");
-		var t = ReadMetaExif.GetCaptionAbstract(new List<Directory> { dir });
+		var t = ReadMetaExif.GetCaptionAbstract([dir]);
 		Assert.AreEqual("test123", t);
 	}
 
@@ -76,7 +76,7 @@ public sealed class ExifReadTest
 	{
 		var dir = new IptcDirectory();
 		dir.Set(IptcDirectory.TagKeywords, "test123");
-		var t = ReadMetaExif.GetExifKeywords(new List<Directory> { dir });
+		var t = ReadMetaExif.GetExifKeywords([dir]);
 
 		Assert.AreEqual("test123", t);
 	}
@@ -86,7 +86,7 @@ public sealed class ExifReadTest
 	{
 		var dir = new IptcDirectory();
 		dir.Set(IptcDirectory.TagKeywords, "test123;test12");
-		var t = ReadMetaExif.GetExifKeywords(new List<Directory> { dir });
+		var t = ReadMetaExif.GetExifKeywords([dir]);
 		Assert.AreEqual("test123, test12", t); //with space
 	}
 
@@ -143,7 +143,7 @@ public sealed class ExifReadTest
 				new AppSettings
 				{
 					VideoUseLocalTime =
-						new List<CameraMakeModel> { new("test", "test") },
+						[new("test", "test")],
 					CameraTimeZone = "Europe/London"
 				}, null!).GetExifDateTime(container, new CameraMakeModel("test", "test"));
 
@@ -171,7 +171,7 @@ public sealed class ExifReadTest
 				new AppSettings
 				{
 					VideoUseLocalTime =
-						new List<CameraMakeModel> { new("test", string.Empty) },
+						[new("test", string.Empty)],
 					CameraTimeZone = "Europe/London"
 				}, new FakeIWebLogger())
 			.GetExifDateTime(container, new CameraMakeModel("test", "test"));
@@ -201,7 +201,7 @@ public sealed class ExifReadTest
 			new AppSettings
 			{
 				VideoUseLocalTime =
-					new List<CameraMakeModel> { new("Apple", string.Empty) },
+					[new("Apple", string.Empty)],
 				CameraTimeZone = "Europe/London"
 			}, new FakeIWebLogger()).GetExifDateTime(container);
 
@@ -309,8 +309,8 @@ public sealed class ExifReadTest
 	public void ExifRead_ReadExifFromFileTest()
 	{
 		var newImage = CreateAnImage.Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -345,8 +345,8 @@ public sealed class ExifReadTest
 	{
 		var newImage = new CreateAnImageLongDescriptionTitle();
 		var imageBytes = newImage.Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { imageBytes });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { imageBytes });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -361,8 +361,8 @@ public sealed class ExifReadTest
 	public void ExifRead_CreateAnImageA6600Raw_ReadExifFromFileTest()
 	{
 		var newImage = new CreateAnImageA6600Raw().Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.dng" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.dng"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -398,8 +398,8 @@ public sealed class ExifReadTest
 	public void ExifRead_CreateAnImageA6700_ReadExifFromFileTest()
 	{
 		var newImage = new CreateAnImageA6700().Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -435,8 +435,8 @@ public sealed class ExifReadTest
 	public void ExifRead_CreateAnImageA330Raw_ReadExifFromFileTest()
 	{
 		var newImage = new CreateAnImageA330Raw().Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.dng" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.dng"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -472,8 +472,8 @@ public sealed class ExifReadTest
 	public void ExifRead_CreateAnImageWebP_ReadExifFromFileTest()
 	{
 		var newImage = new CreateAnImageWebP().Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.webp" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.webp"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -516,8 +516,8 @@ public sealed class ExifReadTest
 	public void ImageStabilisationOn()
 	{
 		var newImage = CreateAnImageA6600.Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -529,8 +529,8 @@ public sealed class ExifReadTest
 	public void ImageStabilisationOff()
 	{
 		var newImage = CreateAnImageA58Tamron.Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -542,8 +542,8 @@ public sealed class ExifReadTest
 	public void LocationCountryCode()
 	{
 		var newImage = CreateAnImageA6600.Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { newImage });
 
 		var logger = new FakeIWebLogger();
 		var item =
@@ -583,8 +583,8 @@ public sealed class ExifReadTest
 	public void LensModelTamRon()
 	{
 		var newImage = CreateAnImageA58Tamron.Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -596,8 +596,8 @@ public sealed class ExifReadTest
 	public void ExifRead_ReadExifFromFileTest_DeletedTag()
 	{
 		var newImage = CreateAnImageStatusDeleted.Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -609,8 +609,8 @@ public sealed class ExifReadTest
 	public void ExifRead_ReadExif_FromPngInFileXMP_FileTest()
 	{
 		var newImage = CreateAnPng.Bytes.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.png" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.png"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -649,13 +649,13 @@ public sealed class ExifReadTest
 	public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_FileTest()
 	{
 		var newImage = CreateAnQuickTimeMp4.Bytes;
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.mp4" }, new List<byte[]> { newImage.ToArray() });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.mp4"], new List<byte[]> { newImage.ToArray() });
 
 		var item = new ReadMetaExif(fakeStorage,
 			new AppSettings
 			{
-				VideoUseLocalTime = new List<CameraMakeModel> { new("Apple", "MacbookPro15,1") }
+				VideoUseLocalTime = [new("Apple", "MacbookPro15,1")]
 			}, new FakeIWebLogger()).ReadExifFromFile("/test.mp4");
 
 		var date = new DateTime(2020, 03, 29, 13, 10, 07, DateTimeKind.Local);
@@ -673,13 +673,13 @@ public sealed class ExifReadTest
 		CultureInfo.CurrentCulture = new CultureInfo("NL-nl");
 
 		var newImage = CreateAnQuickTimeMp4.Bytes;
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.mp4" }, new List<byte[]> { newImage.ToArray() });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.mp4"], new List<byte[]> { newImage.ToArray() });
 
 		var item = new ReadMetaExif(fakeStorage,
 			new AppSettings
 			{
-				VideoUseLocalTime = new List<CameraMakeModel> { new("Apple", "MacbookPro15,1") }
+				VideoUseLocalTime = [new("Apple", "MacbookPro15,1")]
 			}, new FakeIWebLogger()).ReadExifFromFile("/test.mp4");
 
 		var date = new DateTime(2020, 03, 29, 13, 10, 07, DateTimeKind.Local);
@@ -729,7 +729,7 @@ public sealed class ExifReadTest
 			new AppSettings
 			{
 				VideoUseLocalTime =
-					new List<CameraMakeModel> { new("test", "test") },
+					[new("test", "test")],
 				CameraTimeZone = "Europe/London"
 			}, new FakeIWebLogger());
 
@@ -757,7 +757,7 @@ public sealed class ExifReadTest
 		var item = new ReadMetaExif(fakeStorage,
 			new AppSettings
 			{
-				VideoUseLocalTime = new List<CameraMakeModel>(),
+				VideoUseLocalTime = [],
 				CameraTimeZone = "Europe/London"
 			}, new FakeIWebLogger());
 
@@ -786,7 +786,7 @@ public sealed class ExifReadTest
 		var item = new ReadMetaExif(fakeStorage,
 			new AppSettings
 			{
-				VideoUseLocalTime = new List<CameraMakeModel>(), CameraTimeZone = ""
+				VideoUseLocalTime = [], CameraTimeZone = ""
 			}, new FakeIWebLogger());
 
 		var dir = new QuickTimeMovieHeaderDirectory();
@@ -835,8 +835,8 @@ public sealed class ExifReadTest
 		CultureInfo.CurrentCulture = new CultureInfo("NL-nl");
 
 		var newImage = CreateAnQuickTimeMp4.BytesWithLocation.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.mp4" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.mp4"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -859,8 +859,8 @@ public sealed class ExifReadTest
 	public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_WithLocation_FileTest()
 	{
 		var newImage = CreateAnQuickTimeMp4.BytesWithLocation.ToArray();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.mp4" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.mp4"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -881,8 +881,8 @@ public sealed class ExifReadTest
 	public void ExifRead_DataParsingCorruptFailsData()
 	{
 		var newImage = CreateAnPng.Bytes.Take(200).ToArray(); // corrupt
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.png" }, new List<byte[]> { newImage });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.png"], new List<byte[]> { newImage });
 
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
@@ -895,8 +895,8 @@ public sealed class ExifReadTest
 	[TestMethod]
 	public void ExifRead_DataParsingCorruptStreamNull()
 	{
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.png" }, new List<byte[]> { null! });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.png"], new List<byte[]> { null! });
 		var item =
 			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
 				"/test.png");

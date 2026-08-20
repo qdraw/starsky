@@ -90,8 +90,8 @@ public sealed class DiskControllerTest
 
 	private async Task InsertSearchData()
 	{
-		_iStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { _createAnImage.DbPath });
+		_iStorage = new FakeIStorage(["/"],
+			[_createAnImage.DbPath]);
 		var fileHashCode =
 			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(_createAnImage
 				.DbPath, ExtensionRolesHelper.ImageFormat.jpg) ).Key;
@@ -180,8 +180,8 @@ public sealed class DiskControllerTest
 
 		var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { _createAnImage.DbPath });
+		var fakeStorage = new FakeIStorage(["/"],
+			[_createAnImage.DbPath]);
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 		var controller =
@@ -204,8 +204,8 @@ public sealed class DiskControllerTest
 
 		var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { _createAnImage.DbPath });
+		var fakeStorage = new FakeIStorage(["/"],
+			[_createAnImage.DbPath]);
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 		var controller =
@@ -232,8 +232,8 @@ public sealed class DiskControllerTest
 		var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
 		var socket = new FakeIWebSocketConnectionsService();
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { _createAnImage.DbPath });
+		var fakeStorage = new FakeIStorage(["/"],
+			[_createAnImage.DbPath]);
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 		var controller =
@@ -257,8 +257,8 @@ public sealed class DiskControllerTest
 		await InsertSearchData();
 		var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { _createAnImage.DbPath });
+		var fakeStorage = new FakeIStorage(["/"],
+			[_createAnImage.DbPath]);
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 		var controller =
@@ -297,8 +297,8 @@ public sealed class DiskControllerTest
 		var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
 		var socket = new FakeIWebSocketConnectionsService();
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { _createAnImage.DbPath });
+		var fakeStorage = new FakeIStorage(["/"],
+			[_createAnImage.DbPath]);
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 		var controller =
@@ -323,8 +323,8 @@ public sealed class DiskControllerTest
 		await InsertSearchData();
 		var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/", "/test_dir" },
-			new List<string> { _createAnImage.DbPath });
+		var fakeStorage = new FakeIStorage(["/", "/test_dir"],
+			[_createAnImage.DbPath]);
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 		var controller =
@@ -344,8 +344,8 @@ public sealed class DiskControllerTest
 	{
 		var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/", "/test_dir" },
-			new List<string> { _createAnImage.DbPath });
+		var fakeStorage = new FakeIStorage(["/", "/test_dir"],
+			[_createAnImage.DbPath]);
 		var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 		var controller =

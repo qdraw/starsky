@@ -18,8 +18,9 @@ namespace starskytest.FakeMocks;
 
 public class FakeIQuery : IQuery
 {
-	private readonly List<FileIndexItem> _content = new();
-	private List<FileIndexItem> _fakeCachedContent = new();
+	private readonly List<FileIndexItem> _content = [];
+	private readonly object _contentLock = new object();
+	private List<FileIndexItem> _fakeCachedContent = [];
 
 	public FakeIQuery(List<FileIndexItem>? content = null,
 		List<FileIndexItem>? fakeCachedContent = null)
@@ -30,7 +31,7 @@ public class FakeIQuery : IQuery
 		}
 
 		_content = content;
-		_fakeCachedContent = fakeCachedContent ?? new List<FileIndexItem>();
+		_fakeCachedContent = fakeCachedContent ?? [];
 	}
 
 	[SuppressMessage("Style", "IDE0060:Remove unused parameter")]
@@ -109,14 +110,15 @@ public class FakeIQuery : IQuery
 		}
 
 		fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-		fileIndexItem.CollectionPaths = new List<string> { singleItemDbPath };
+		fileIndexItem.CollectionPaths = [singleItemDbPath];
 		if ( enableCollections )
 		{
-			fileIndexItem.CollectionPaths = new List<string>();
-			fileIndexItem.CollectionPaths.AddRange(
-				_content.Where(p => p.FileCollectionName == fileIndexItem.FileCollectionName)
+			fileIndexItem.CollectionPaths =
+			[
+
+				.. _content.Where(p => p.FileCollectionName == fileIndexItem.FileCollectionName)
 					.Select(p => p.FilePath!)
-			);
+			];
 		}
 
 		return new DetailView
@@ -156,7 +158,7 @@ public class FakeIQuery : IQuery
 	public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath,
 		bool collections)
 	{
-		return await GetObjectsByFilePathAsync(new List<string> { inputFilePath }, collections);
+		return await GetObjectsByFilePathAsync([inputFilePath], collections);
 	}
 
 	public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths,
@@ -165,10 +167,10 @@ public class FakeIQuery : IQuery
 		if ( collections )
 		{
 			return GetObjectsByFilePathCollectionAsync(
-				inputFilePaths.ToList());
+				[.. inputFilePaths]);
 		}
 
-		return GetObjectsByFilePathAsync(inputFilePaths.ToList());
+		return GetObjectsByFilePathAsync([.. inputFilePaths]);
 	}
 
 	public Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(List<string> filePathList)
@@ -176,19 +178,14 @@ public class FakeIQuery : IQuery
 		return GetObjectsByFilePathAsync(filePathList);
 	}
 
-	public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
+	public Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 	{
-		try
+		lock ( _contentLock )
 		{
-			_content.Remove(updateStatusContent);
-		}
-		catch ( ArgumentOutOfRangeException )
-		{
-			await Task.Delay(new Random().Next(1, 5));
 			_content.Remove(updateStatusContent);
 		}
 
-		return updateStatusContent;
+		return Task.FromResult(updateStatusContent);
 	}
 
 	public async Task<List<FileIndexItem>> RemoveItemAsync(
@@ -284,18 +281,14 @@ public class FakeIQuery : IQuery
 		return result;
 	}
 
-	public async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
+	public Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 	{
-		_content.Add(fileIndexItem);
-		await Task.Delay(new Random().Next(1, 5));
-		if ( _content.Find(p =>
-			    p.FilePath == fileIndexItem.FilePath) != null )
+		lock ( _contentLock )
 		{
-			return fileIndexItem;
+			_content.Add(fileIndexItem);
 		}
 
-		_content.Add(fileIndexItem);
-		return fileIndexItem;
+		return Task.FromResult(fileIndexItem);
 	}
 
 	public Task<bool> ExistsAsync(string filePath)
@@ -338,7 +331,7 @@ public class FakeIQuery : IQuery
 		"NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract")]
 	public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
 	{
-		_fakeCachedContent ??= new List<FileIndexItem>();
+		_fakeCachedContent ??= [];
 		_fakeCachedContent.AddRange(items);
 		return true;
 	}
@@ -357,7 +350,7 @@ public class FakeIQuery : IQuery
 	{
 		if ( _fakeCachedContent == null )
 		{
-			return new Tuple<bool, List<FileIndexItem>>(false, new List<FileIndexItem>());
+			return new Tuple<bool, List<FileIndexItem>>(false, []);
 		}
 
 		var res =
@@ -418,7 +411,7 @@ public class FakeIQuery : IQuery
 
 	public List<FileIndexItem> GetAllFolders()
 	{
-		return _content.Where(p => p.IsDirectory == true).ToList();
+		return [.. _content.Where(p => p.IsDirectory == true)];
 	}
 
 	[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
@@ -426,19 +419,24 @@ public class FakeIQuery : IQuery
 	{
 		try
 		{
-			return _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false)
-				.ToList();
+			return [.. _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false)];
 		}
 		catch ( Exception )
 		{
-			return new List<FileIndexItem>();
+			return [];
 		}
 	}
 
 	public List<FileIndexItem> GetAllRecursive(string subPath = "")
 	{
-		var result = _content.Where
-				(p => p.ParentDirectory!.StartsWith(subPath))
+		List<FileIndexItem> snapshot;
+		lock ( _contentLock )
+		{
+			snapshot = [.. _content];
+		}
+
+		var result = snapshot.Where
+				(p => p.ParentDirectory != null && p.ParentDirectory.StartsWith(subPath))
 			.OrderBy(r => r.FileName).ToList();
 		foreach ( var item in result )
 		{
@@ -483,7 +481,11 @@ public class FakeIQuery : IQuery
 
 	public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
 	{
-		_content.Remove(updateStatusContent);
+		lock ( _contentLock )
+		{
+			_content.Remove(updateStatusContent);
+		}
+
 		return updateStatusContent;
 	}
 
@@ -494,21 +496,29 @@ public class FakeIQuery : IQuery
 
 	public FileIndexItem AddItem(FileIndexItem updateStatusContent)
 	{
-		_content.Add(updateStatusContent);
+		lock ( _contentLock )
+		{
+			_content.Add(updateStatusContent);
+		}
+
 		return updateStatusContent;
 	}
 
 	public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
 	{
-		var item = _content.Find(p =>
-			p.FilePath == updateStatusContent.FilePath);
-		if ( item == null )
+		lock ( _contentLock )
 		{
-			return updateStatusContent;
+			var item = _content.Find(p =>
+				p.FilePath == updateStatusContent.FilePath);
+			if ( item == null )
+			{
+				return updateStatusContent;
+			}
+
+			var index = _content.IndexOf(item);
+			_content[index] = updateStatusContent;
 		}
 
-		var index = _content.IndexOf(item);
-		_content[index] = updateStatusContent;
 		return updateStatusContent;
 	}
 

@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,20 +15,18 @@ public sealed class ContentSecurityPolicyMiddlewareTest
 	[TestMethod]
 	public async Task MiddlewareExtensionsTest_CSPBasicSetupTest()
 	{
-		var host = WebHost.CreateDefaultBuilder()
-			.UseUrls("http://localhost:5051")
-			.Configure(app =>
-			{
-				app.UseContentSecurityPolicy();
-				app.UseBasicAuthentication();
-				app.UseNoAccount(false);
-				app.UseNoAccount(true);
-				app.UseCheckIfAccountExist();
-			}).Build();
+		var builder = WebApplication.CreateBuilder();
+		builder.WebHost.UseUrls("http://localhost:5051");
+		var app = builder.Build();
+		app.UseContentSecurityPolicy();
+		app.UseBasicAuthentication();
+		app.UseNoAccount(false);
+		app.UseNoAccount(true);
+		app.UseCheckIfAccountExist();
 
-		await host.StartAsync(TestContext.CancellationTokenSource.Token);
-		await host.StopAsync(TestContext.CancellationTokenSource.Token);
-		Assert.IsNotNull(host);
+		await app.StartAsync(TestContext.CancellationTokenSource.Token);
+		await app.StopAsync(TestContext.CancellationTokenSource.Token);
+		Assert.IsNotNull(app);
 	}
 
 	[TestMethod]

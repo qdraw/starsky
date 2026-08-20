@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,8 +21,8 @@ public class CleanThumbnailHostedService(
 	IHostApplicationLifetime hostApplicationLifetime)
 	: IHostedService
 {
+	private CancellationTokenRegistration? _applicationStartedRegistration;
 	private CancellationTokenSource? _runCancellationTokenSource;
-	private IDisposable? _applicationStartedRegistration;
 	private Task? _runningTask;
 	internal TimeSpan StartupDelay { get; set; } = TimeSpan.FromMinutes(15);
 
@@ -54,9 +55,12 @@ public class CleanThumbnailHostedService(
 		return Task.CompletedTask;
 	}
 
+	[SuppressMessage("ReSharper", "MethodHasAsyncOverload")]
+	[SuppressMessage("Usage", "S6966: Await DisposeAsync instead")]
 	public async Task StopAsync(CancellationToken cancellationToken)
 	{
 		_applicationStartedRegistration?.Dispose();
+
 		if ( _runCancellationTokenSource != null )
 		{
 			await _runCancellationTokenSource.CancelAsync();

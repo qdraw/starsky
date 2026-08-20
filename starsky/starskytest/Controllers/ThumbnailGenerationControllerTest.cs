@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +53,7 @@ public sealed class ThumbnailGenerationControllerTest
 	public async Task ThumbnailGeneration_AddModelError()
 	{
 		var selectorStorage =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
+			new FakeSelectorStorage(new FakeIStorage(["/"]));
 		var controller = new ThumbnailGenerationController(selectorStorage,
 			new ManualThumbnailGenerationService(new FakeIWebLogger(),
 				new FakeIThumbnailSocketService(),

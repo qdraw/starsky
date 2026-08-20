@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySqlConnector;
@@ -17,7 +16,7 @@ public sealed class MySqlDatabaseFixesTest
 		var result =
 			await new MySqlDatabaseFixes(null,
 				new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase },
-				new FakeIWebLogger()).FixUtf8Encoding(new List<string?>());
+				new FakeIWebLogger()).FixUtf8Encoding([]);
 		Assert.IsNull(result);
 	}
 
@@ -28,7 +27,7 @@ public sealed class MySqlDatabaseFixesTest
 			"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
 		var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),
 			new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.Mysql },
-			new FakeIWebLogger()).FixUtf8Encoding(new List<string?> { "" });
+			new FakeIWebLogger()).FixUtf8Encoding([""]);
 		Assert.IsTrue(result);
 	}
 

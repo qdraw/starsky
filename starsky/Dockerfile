@@ -31,7 +31,7 @@ RUN for i in 1 2 3; do \
     echo "react done"
 
 # Stage 2 .NET Build
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 
@@ -75,22 +75,29 @@ RUN \
         -v
 
 # Stage 3 Runtime Image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS release
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS release
 WORKDIR /app
 ARG TOOLS=false
 
 # # for debugging
 RUN if [ "$TOOLS" = "true" ]; then \
     apt-get update ;\
-    apt-get upgrade -y ;\
-    apt-get install --no-install-recommends --no-install-suggests -y curl nano;\
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --no-install-suggests -y curl nano ;\
     apt-get clean ;\
     rm -rf /var/lib/apt/lists/* ;\
 else \
     echo "no tools for debug" ;\
 fi && \
-  groupadd --gid 1000 starsky \
-    && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky 
+  if ! getent group starsky >/dev/null; then \
+    if getent group 1000 >/dev/null; then groupadd starsky; else groupadd --gid 1000 starsky; fi; \
+  fi && \
+  if ! id -u starsky >/dev/null 2>&1; then \
+    if getent passwd 1000 >/dev/null; then \
+      useradd --gid starsky --shell /bin/bash --create-home starsky; \
+    else \
+      useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky; \
+    fi; \
+  fi
  
 # Copy dlls
 COPY --chown=starsky:starsky --from=build-env /app/generic-netcore /app

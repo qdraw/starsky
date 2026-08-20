@@ -36,7 +36,7 @@ public class CreateAnZipfileFakeFfMpeg
 		];
 	}
 
-	public static List<string> Content { get; set; } = new() { "ffmpeg", "ffmpeg.exe" };
+	public static List<string> Content { get; set; } = ["ffmpeg", "ffmpeg.exe"];
 
 	private static byte[] StreamToBytes(string path)
 	{

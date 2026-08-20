@@ -17,26 +17,27 @@ public class OpenEditorDesktopServiceTest
 	public async Task OpenAsync_stringInput_HappyFlow()
 	{
 		var fakeService = new FakeIOpenApplicationNativeService(
-			new List<string> { "/test.jpg" }, "test");
+			["/test.jpg"], "test");
 
 		var appSettings = new AppSettings
 		{
 			UseLocalDesktop = true,
-			DefaultDesktopEditor = new List<AppSettingsDefaultEditorApplication>
-			{
+			DefaultDesktopEditor =
+			[
+
 				new()
 				{
 					ApplicationPath = "app",
-					ImageFormats = new List<ExtensionRolesHelper.ImageFormat>
-					{
+					ImageFormats =
+					[
 						ExtensionRolesHelper.ImageFormat.jpg
-					}
+					]
 				}
-			}
+			]
 		};
 
-		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>
-		{
+		var preflight = new FakeIOpenEditorPreflight([
+
 			new()
 			{
 				AppPath = "test",
@@ -45,7 +46,7 @@ public class OpenEditorDesktopServiceTest
 				SubPath = "/test.jpg",
 				FullFilePath = "/test.jpg"
 			}
-		});
+		]);
 
 		var service =
 			new OpenEditorDesktopService(appSettings, fakeService, preflight);
@@ -65,26 +66,27 @@ public class OpenEditorDesktopServiceTest
 	public async Task OpenAsync_ListInput_HappyFlow()
 	{
 		var fakeService =
-			new FakeIOpenApplicationNativeService(new List<string> { "/test.jpg" }, "test");
+			new FakeIOpenApplicationNativeService(["/test.jpg"], "test");
 
 		var appSettings = new AppSettings
 		{
 			UseLocalDesktop = true,
-			DefaultDesktopEditor = new List<AppSettingsDefaultEditorApplication>
-			{
+			DefaultDesktopEditor =
+			[
+
 				new()
 				{
 					ApplicationPath = "app",
-					ImageFormats = new List<ExtensionRolesHelper.ImageFormat>
-					{
+					ImageFormats =
+					[
 						ExtensionRolesHelper.ImageFormat.jpg
-					}
+					]
 				}
-			}
+			]
 		};
 
-		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>
-		{
+		var preflight = new FakeIOpenEditorPreflight([
+
 			new()
 			{
 				AppPath = "test",
@@ -93,13 +95,13 @@ public class OpenEditorDesktopServiceTest
 				SubPath = "/test.jpg",
 				FullFilePath = "/test.jpg"
 			}
-		});
+		]);
 
 		var service =
 			new OpenEditorDesktopService(appSettings, fakeService, preflight);
 
 		var (success, status, list) =
-			await service.OpenAsync(new List<string> { "/test.jpg" }, true);
+			await service.OpenAsync(["/test.jpg"], true);
 
 		Assert.IsTrue(success);
 		Assert.AreEqual("Opened", status);
@@ -112,17 +114,17 @@ public class OpenEditorDesktopServiceTest
 	public async Task OpenAsync_ListInput_NoFilesSelected()
 	{
 		var fakeService =
-			new FakeIOpenApplicationNativeService(new List<string>(), string.Empty);
+			new FakeIOpenApplicationNativeService([], string.Empty);
 
 		var appSettings = new AppSettings { UseLocalDesktop = true };
 
-		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>());
+		var preflight = new FakeIOpenEditorPreflight([]);
 
 		var service =
 			new OpenEditorDesktopService(appSettings, fakeService, preflight);
 
 		var (success, status, list) =
-			await service.OpenAsync(new List<string> { "/test.jpg" }, true);
+			await service.OpenAsync(["/test.jpg"], true);
 
 		Assert.IsFalse(success);
 		Assert.AreEqual("No files selected", status);
@@ -133,17 +135,17 @@ public class OpenEditorDesktopServiceTest
 	public async Task OpenAsync_ListInput_UseLocalDesktop_Null()
 	{
 		var fakeService =
-			new FakeIOpenApplicationNativeService(new List<string>(), string.Empty);
+			new FakeIOpenApplicationNativeService([], string.Empty);
 
 		var appSettings = new AppSettings { UseLocalDesktop = false };
 
-		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>());
+		var preflight = new FakeIOpenEditorPreflight([]);
 
 		var service =
 			new OpenEditorDesktopService(appSettings, fakeService, preflight);
 
 		var (success, status, list) =
-			await service.OpenAsync(new List<string> { "/test.jpg" }, true);
+			await service.OpenAsync(["/test.jpg"], true);
 
 		Assert.IsNull(success);
 		Assert.AreEqual("UseLocalDesktop feature toggle is disabled", status);
@@ -153,17 +155,17 @@ public class OpenEditorDesktopServiceTest
 	[TestMethod]
 	public async Task OpenAsync_ListInput_UnSupportedPlatform()
 	{
-		var fakeService = new FakeIOpenApplicationNativeService(new List<string>(),
+		var fakeService = new FakeIOpenApplicationNativeService([],
 			string.Empty, false);
 
 		var appSettings = new AppSettings { UseLocalDesktop = true };
 
-		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>());
+		var preflight = new FakeIOpenEditorPreflight([]);
 
 		var service = new OpenEditorDesktopService(appSettings, fakeService, preflight);
 
 		var (success, status, list) =
-			await service.OpenAsync(new List<string> { "/test.jpg" }, true);
+			await service.OpenAsync(["/test.jpg"], true);
 
 		Assert.IsNull(success);
 		Assert.AreEqual("OpenEditor is not supported on this configuration", status);
@@ -176,8 +178,8 @@ public class OpenEditorDesktopServiceTest
 		var appSettings = new AppSettings { DesktopEditorAmountBeforeConfirmation = 5 };
 
 		var service = new OpenEditorDesktopService(appSettings,
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+			new FakeIOpenApplicationNativeService([], "test"),
+			new FakeIOpenEditorPreflight([]));
 
 		var result =
 			service.OpenAmountConfirmationChecker(
@@ -191,8 +193,8 @@ public class OpenEditorDesktopServiceTest
 		var appSettings = new AppSettings { DesktopEditorAmountBeforeConfirmation = null };
 
 		var service = new OpenEditorDesktopService(appSettings,
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+			new FakeIOpenApplicationNativeService([], "test"),
+			new FakeIOpenEditorPreflight([]));
 
 		var result =
 			service.OpenAmountConfirmationChecker(
@@ -208,8 +210,8 @@ public class OpenEditorDesktopServiceTest
 		var appSettings = new AppSettings { DesktopEditorAmountBeforeConfirmation = 4 };
 
 		var service = new OpenEditorDesktopService(appSettings,
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+			new FakeIOpenApplicationNativeService([], "test"),
+			new FakeIOpenEditorPreflight([]));
 
 		var result =
 			service.OpenAmountConfirmationChecker("/test.jpg;/test2.jpg;/test3.jpg;/test4.jpg");
@@ -225,8 +227,8 @@ public class OpenEditorDesktopServiceTest
 		};
 
 		var service = new OpenEditorDesktopService(appSettings,
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+			new FakeIOpenApplicationNativeService([], "test"),
+			new FakeIOpenEditorPreflight([]));
 
 		var result = service.OpenAmountConfirmationChecker("/test.jpg");
 		Assert.IsTrue(result);
@@ -237,8 +239,8 @@ public class OpenEditorDesktopServiceTest
 	{
 		var appSettings = new AppSettings { UseLocalDesktop = false };
 		var service = new OpenEditorDesktopService(appSettings,
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+			new FakeIOpenApplicationNativeService([], "test"),
+			new FakeIOpenEditorPreflight([]));
 		var result = service.IsEnabled();
 		Assert.IsFalse(result);
 	}
@@ -252,8 +254,8 @@ public class OpenEditorDesktopServiceTest
 		};
 		var service = new OpenEditorDesktopService(appSettings,
 			// Default is supported in mock service
-			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+			new FakeIOpenApplicationNativeService([], "test"),
+			new FakeIOpenEditorPreflight([]));
 		var result = service.IsEnabled();
 		Assert.IsTrue(result);
 	}
@@ -264,8 +266,8 @@ public class OpenEditorDesktopServiceTest
 		var appSettings = new AppSettings { UseLocalDesktop = true };
 		var service = new OpenEditorDesktopService(appSettings,
 			// Is supported false! =>
-			new FakeIOpenApplicationNativeService(new List<string>(), "test", false),
-			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+			new FakeIOpenApplicationNativeService([], "test", false),
+			new FakeIOpenEditorPreflight([]));
 		var result = service.IsEnabled();
 		Assert.IsFalse(result);
 	}

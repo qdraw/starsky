@@ -106,8 +106,8 @@ public sealed class MacOsFullDiskAccessTest
 	private sealed class ThrowingGetDirectoriesStorage : IStorage
 	{
 		private readonly FakeIStorage _inner = new(
-			outputSubPathFolders: new List<string> { "/Volumes" },
-			outputSubPathFiles: new List<string>());
+			outputSubPathFolders: ["/Volumes"],
+			outputSubPathFiles: []);
 
 		public bool IsFileReady(string path) => _inner.IsFileReady(path);
 		public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken) => _inner.ReadLinesAsync(path, cancellationToken);

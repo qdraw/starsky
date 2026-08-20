@@ -46,7 +46,7 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_ReadOnlyFoldersTest()
 	{
-		_appSettings.ReadOnlyFolders = new List<string> { "test" };
+		_appSettings.ReadOnlyFolders = ["test"];
 		Assert.AreSequenceEqual(new List<string> { "test" }, _appSettings.ReadOnlyFolders);
 	}
 
@@ -339,11 +339,9 @@ public sealed class AppSettingsTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"test",
-					new List<AppSettingsPublishProfiles>
-					{
+					"test", [
 						new() { Copy = true }, new() { Path = "value", Prepend = "value" }
-					}
+					]
 				}
 			}
 		};

@@ -11,21 +11,17 @@ namespace starsky.foundation.http.Services;
 [Service(typeof(IHttpProvider), InjectionLifetime = InjectionLifetime.Singleton)]
 public sealed class HttpProvider : IHttpProvider
 {
-	private const string UserAgent =
-		"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)";
+	internal const string HttpClientName = "starsky";
+
+	private readonly IHttpClientFactory _httpClientFactory;
 
 	/// <summary>
-	///     HttpClient object
+	///     Inject http client factory
 	/// </summary>
-	private readonly HttpClient _httpClient;
-
-	/// <summary>
-	///     Inject http client
-	/// </summary>
-	/// <param name="httpClient">c# http client</param>
-	public HttpProvider(HttpClient httpClient)
+	/// <param name="httpClientFactory">IHttpClientFactory</param>
+	public HttpProvider(IHttpClientFactory httpClientFactory)
 	{
-		_httpClient = httpClient;
+		_httpClientFactory = httpClientFactory;
 	}
 
 	/// <summary>
@@ -35,8 +31,8 @@ public sealed class HttpProvider : IHttpProvider
 	/// <returns>Task with Response</returns>
 	public Task<HttpResponseMessage> GetAsync(string requestUri)
 	{
-		_httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", UserAgent);
-		return _httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
+		return _httpClientFactory.CreateClient(HttpClientName)
+			.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
 	}
 
 	/// <summary>
@@ -58,8 +54,6 @@ public sealed class HttpProvider : IHttpProvider
 			});
 		}
 
-		_httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
-
 		var request = new HttpRequestMessage
 		{
 			Method = HttpMethod.Post, Content = content, RequestUri = new Uri(requestUri)
@@ -76,6 +70,6 @@ public sealed class HttpProvider : IHttpProvider
 				"application/x-www-form-urlencoded");
 		}
 
-		return _httpClient.SendAsync(request);
+		return _httpClientFactory.CreateClient(HttpClientName).SendAsync(request);
 	}
 }

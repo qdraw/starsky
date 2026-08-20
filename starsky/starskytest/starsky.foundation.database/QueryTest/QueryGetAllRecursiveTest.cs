@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -59,7 +58,7 @@ public sealed class QueryGetAllRecursiveTest
 			new FileIndexItem("/recursive_test/image3.jpg"));
 
 
-		var result = await _query.GetAllRecursiveAsync(new List<string> { "/recursive_test/" });
+		var result = await _query.GetAllRecursiveAsync(["/recursive_test/"]);
 
 		Assert.AreEqual("/recursive_test/image0.jpg", result[0].FilePath);
 		Assert.AreEqual("/recursive_test/image2.jpg", result[1].FilePath);
@@ -88,10 +87,9 @@ public sealed class QueryGetAllRecursiveTest
 			"Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)");
 
 		var instance =
-			( MySqlException ) ctor?.Invoke(new object[]
-			{
+			( MySqlException ) ctor?.Invoke([
 				code, "test", message, new Exception()
-			})!;
+			])!;
 		return instance;
 	}
 

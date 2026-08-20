@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{842d2080-b847-43c3-8535-e5065970dd47}</ProjectGuid>
         <RootNamespace>starsky.foundation.accountmanagement</RootNamespace>
-        <Version>0.7.21</Version>
+        <Version>0.8.0-beta.0</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
@@ -15,7 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.29" />
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
         <!--      instead of : Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0, -->
         <!--        Microsoft.AspNetCore.Authentication-->

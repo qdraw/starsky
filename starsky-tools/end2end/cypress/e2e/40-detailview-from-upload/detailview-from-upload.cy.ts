@@ -59,9 +59,11 @@ describe('DetailView (from upload) (40)', () => {
 
   it('go next to filename3 (40)', () => {
     if (!config.isEnabled) return
-    cy.visit(config.url + '/' + fileName2)
 
     cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_112430.jpg').as('index1')
+    cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_134151.jpg').as('index3')
+
+    cy.visit(config.url + '/' + fileName2)
 
     cy.get('.nextprev.nextprev--next').first()
       .click()
@@ -72,6 +74,8 @@ describe('DetailView (from upload) (40)', () => {
       .should('contain', fileName1)
 
     cy.get('.nextprev.nextprev--next').first().click()
+
+    cy.wait('@index3')
 
     cy.url()
       .should('contain', fileName3)
@@ -126,8 +130,10 @@ describe('DetailView (from upload) (40)', () => {
       cy.get(tagFileSelector).should('contain', sourceTags)
     }).then(() => {
       // and now we going back to the orginal state
-      cy.get(tagFileSelector).type('{backspace}'.repeat(appendText.length))
+      cy.intercept('POST', '**/api/update').as('cleanupUpdate')
+      cy.get(tagFileSelector).type('{end}' + '{backspace}'.repeat(appendText.length))
       cy.get(tagFileSelector).blur()
+      cy.wait('@cleanupUpdate')
     }).then(() => {
       sessionStorage.clear()
       cy.reload()

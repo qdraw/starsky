@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
@@ -56,10 +54,9 @@ public sealed class ThumbnailQueryFactoryTest
 	[TestMethod]
 	public async Task QueryFactoryTest_FakeIQueryReturn()
 	{
-		var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
-		{
+		var fakeIQuery = new FakeIThumbnailQuery([
 			new("test3", null, null, null, null)
-		});
+		]);
 
 		var queryFactory = new ThumbnailQueryFactory(null, null, fakeIQuery,
 			new FakeIWebLogger(), new FakeMemoryCache());
@@ -75,10 +72,9 @@ public sealed class ThumbnailQueryFactoryTest
 	[TestMethod]
 	public async Task QueryFactoryTest_FakeIQuery_IgnoreNoItemsInList()
 	{
-		var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
-		{
+		var fakeIQuery = new FakeIThumbnailQuery([
 			new("test5", null, null, null, null)
-		});
+		]);
 
 		var queryFactory = new ThumbnailQueryFactory(null, null, fakeIQuery,
 			new FakeIWebLogger(), new FakeMemoryCache());

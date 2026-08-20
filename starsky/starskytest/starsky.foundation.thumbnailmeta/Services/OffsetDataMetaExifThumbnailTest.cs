@@ -31,8 +31,8 @@ public sealed class OffsetDataMetaExifThumbnailTest
 	public void ParseMetaThumbnail_ParseMetaThumbnail_NoValidSize_DueWrongFormat_Png()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.png", "/test.jpg" },
+			["/"],
+			["/test.png", "/test.jpg"],
 			new List<byte[]>
 			{
 				CreateAnPng.Bytes.ToArray(), new CreateAnImageWithThumbnail().Bytes.ToArray()
@@ -59,8 +59,8 @@ public sealed class OffsetDataMetaExifThumbnailTest
 	public void ParseMetaThumbnail_CheckJpeg_Success()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.png", "/test.jpg" },
+			["/"],
+			["/test.png", "/test.jpg"],
 			new List<byte[]>
 			{
 				CreateAnPng.Bytes.ToArray(), new CreateAnImageWithThumbnail().Bytes.ToArray()
@@ -147,8 +147,8 @@ public sealed class OffsetDataMetaExifThumbnailTest
 	public void ParseOffsetData_TagThumbnailLengthWrongData()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { new CreateAnImageWithThumbnail().Bytes.ToArray() });
 
 		var (_, thumbnailDirectory) = new OffsetDataMetaExifThumbnail(
@@ -169,8 +169,8 @@ public sealed class OffsetDataMetaExifThumbnailTest
 	public void ParseOffsetData_Success()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { new CreateAnImageWithThumbnail().Bytes.ToArray() });
 
 		var (_, thumbnailDirectory) = new OffsetDataMetaExifThumbnail(

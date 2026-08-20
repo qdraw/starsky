@@ -20,6 +20,6 @@ public static partial class StructureRegexHelper
 	public static bool StructureCheck(string? structure)
 	{
 		return !string.IsNullOrEmpty(structure) &&
-		       StructureRegex().Match(structure).Success;
+		       StructureRegex().IsMatch(structure);
 	}
 }

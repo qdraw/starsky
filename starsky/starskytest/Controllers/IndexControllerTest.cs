@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -90,11 +89,10 @@ public sealed class IndexControllerTest
 	[SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
 	public void HomeControllerIndexIndexViewModel_SlashPage_Test()
 	{
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new("/") { IsDirectory = true },
 			new("/test.jpg") { Tags = "test", FileHash = "test" }
-		});
+		]);
 
 		var controller = new IndexController(fakeQuery, new AppSettings());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
@@ -107,11 +105,10 @@ public sealed class IndexControllerTest
 	[TestMethod]
 	public void HomeControllerIndexIndexViewModel_EmptyStringPage_Test()
 	{
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new("/") { IsDirectory = true },
 			new("/test.jpg") { Tags = "test", FileHash = "test" }
-		});
+		]);
 
 		var controller = new IndexController(fakeQuery, new AppSettings());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();

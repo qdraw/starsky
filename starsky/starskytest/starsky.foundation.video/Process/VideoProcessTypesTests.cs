@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using starsky.foundation.video.Process;
+using starsky.foundation.video.Process.Types;
 
 namespace starskytest.starsky.foundation.video.Process;
 

@@ -15,7 +15,7 @@ public sealed class ImportHistoryControllerTest
 
 	public ImportHistoryControllerTest()
 	{
-		_fakeImportQuery = new FakeIImportQuery(new List<string> { "/test.jpg" });
+		_fakeImportQuery = new FakeIImportQuery(["/test.jpg"]);
 	}
 
 	[TestMethod]

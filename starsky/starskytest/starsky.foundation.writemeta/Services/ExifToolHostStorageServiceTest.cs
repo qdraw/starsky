@@ -33,8 +33,8 @@ public sealed class ExifToolHostStorageServiceTest
 		// Arrange
 		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 
@@ -60,8 +60,8 @@ public sealed class ExifToolHostStorageServiceTest
 		// Arrange
 		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 
@@ -89,7 +89,7 @@ public sealed class ExifToolHostStorageServiceTest
 		}
 
 		var hostFileSystemStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-		var memoryStream = new MemoryStream(CreateAnExifToolTarGz.Bytes.ToArray());
+		var memoryStream = new MemoryStream([.. CreateAnExifToolTarGz.Bytes]);
 		var outputPath =
 			Path.Combine(_createAnImage.BasePath, "tmp-3426782387");
 		if ( hostFileSystemStorage.ExistFolder(outputPath) )
@@ -117,8 +117,8 @@ public sealed class ExifToolHostStorageServiceTest
 			ExifToolPath = Path.Combine(imageExifToolVersionFolder, "exiftool")
 		};
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var fakeLogger = new FakeIWebLogger();
@@ -161,7 +161,7 @@ public sealed class ExifToolHostStorageServiceTest
 		hostFileSystemStorage.CreateDirectory(outputPath);
 
 		var result =
-			new Zipper(new FakeIWebLogger()).ExtractZip(CreateAnExifToolWindows.Bytes.ToArray());
+			new Zipper(new FakeIWebLogger()).ExtractZip([.. CreateAnExifToolWindows.Bytes]);
 		var (_, item) = result.FirstOrDefault(p => p.Key.Contains("exiftool"));
 
 		await hostFileSystemStorage.WriteStreamAsync(new MemoryStream(item),
@@ -172,8 +172,8 @@ public sealed class ExifToolHostStorageServiceTest
 			ExifToolPath = Path.Combine(outputPath, "exiftool.exe"), Verbose = true
 		};
 
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var fakeLogger = new FakeIWebLogger();
@@ -209,8 +209,8 @@ public sealed class ExifToolHostStorageServiceTest
 		// Arrange
 		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 		var fakeStorage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using starsky.foundation.geo.GeoDownload;
 using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starskytest.ExtensionMethods;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.geolookup.Services;
@@ -35,11 +37,19 @@ public sealed class GeoFileDownloadBackgroundServiceTest
 		_logger = logger as FakeIWebLogger;
 	}
 
+	private static async Task RunExecuteAsync(BackgroundService service,
+		CancellationToken cancellationToken)
+	{
+		var dynMethod = service.GetType().GetMethod("ExecuteAsync",
+			BindingFlags.NonPublic | BindingFlags.Instance)!;
+		await dynMethod.InvokeAsync(service, cancellationToken);
+	}
+
 	[TestMethod]
 	public async Task StartAsync()
 	{
-		await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(
-			new CancellationToken());
+		await RunExecuteAsync(new GeoFileDownloadBackgroundService(_serviceScopeFactory),
+			CancellationToken.None);
 		var value = _geoFileDownload as FakeIGeoFileDownload;
 		Assert.AreEqual(1, value?.Count);
 	}
@@ -49,8 +59,8 @@ public sealed class GeoFileDownloadBackgroundServiceTest
 	{
 		var value = _geoFileDownload as FakeIGeoFileDownload;
 		value!.Count = int.MaxValue;
-		await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(
-			new CancellationToken());
+		await RunExecuteAsync(new GeoFileDownloadBackgroundService(_serviceScopeFactory),
+			CancellationToken.None);
 
 		Assert.IsTrue(_logger?.TrackedExceptions.LastOrDefault().Item2
 			?.Contains("Not allowed to write to disk"));
@@ -63,8 +73,8 @@ public sealed class GeoFileDownloadBackgroundServiceTest
 			.GetRequiredService<AppSettings>();
 		var before = appSettings.GeoFilesSkipDownloadOnStartup;
 		appSettings.GeoFilesSkipDownloadOnStartup = true;
-		await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(
-			new CancellationToken());
+		await RunExecuteAsync(new GeoFileDownloadBackgroundService(_serviceScopeFactory),
+			CancellationToken.None);
 		var value = _geoFileDownload as FakeIGeoFileDownload;
 		appSettings.GeoFilesSkipDownloadOnStartup = before;
 
@@ -78,7 +88,7 @@ public sealed class GeoFileDownloadBackgroundServiceTest
 			.GetRequiredService<AppSettings>();
 		var before = appSettings.ApplicationType;
 		appSettings.GeoFilesSkipDownloadOnStartup = true;
-		await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(
+		await RunExecuteAsync(new GeoFileDownloadBackgroundService(_serviceScopeFactory),
 			CancellationToken.None);
 		var value = _geoFileDownload as FakeIGeoFileDownload;
 		appSettings.ApplicationType = before;
@@ -97,7 +107,7 @@ public sealed class GeoFileDownloadBackgroundServiceTest
 			.GetRequiredService<AppSettings>();
 		var before = appSettings.ApplicationType;
 		appSettings.ApplicationType = appType;
-		await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(
+		await RunExecuteAsync(new GeoFileDownloadBackgroundService(_serviceScopeFactory),
 			CancellationToken.None);
 		var value = _geoFileDownload as FakeIGeoFileDownload;
 		appSettings.ApplicationType = before;

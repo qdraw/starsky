@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +36,7 @@ public class GetObjectsByFileHashAsyncTest
 	[TestMethod]
 	public async Task GetObjectsByFileHashAsyncTest_NoContent()
 	{
-		var items = await _query.GetObjectsByFileHashAsync(new List<string>());
+		var items = await _query.GetObjectsByFileHashAsync([]);
 		Assert.IsEmpty(items);
 	}
 
@@ -45,7 +44,7 @@ public class GetObjectsByFileHashAsyncTest
 	public async Task GetObjectsByFileHashAsyncTest_GetByHash()
 	{
 		await _query.AddItemAsync(new FileIndexItem { FileHash = "123456" });
-		var items = await _query.GetObjectsByFileHashAsync(new List<string> { "123456" });
+		var items = await _query.GetObjectsByFileHashAsync(["123456"]);
 
 		Assert.HasCount(1, items);
 		Assert.AreEqual("123456", items.Find(p => p.FileHash == "123456")?.FileHash);
@@ -69,7 +68,7 @@ public class GetObjectsByFileHashAsyncTest
 
 		// Act & Assert
 		await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
-			await query.GetObjectsByFileHashAsync(new List<string> { "test123" }, 1));
+			await query.GetObjectsByFileHashAsync(["test123"], 1));
 	}
 
 	[TestMethod]
@@ -91,7 +90,7 @@ public class GetObjectsByFileHashAsyncTest
 		await dbContext.DisposeAsync();
 
 		// Act
-		var result = await query.GetObjectsByFileHashAsync(new List<string> { "test123" }, 1);
+		var result = await query.GetObjectsByFileHashAsync(["test123"], 1);
 
 		// Assert
 		Assert.HasCount(1, result);

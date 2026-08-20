@@ -1,4 +1,3 @@
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 
@@ -17,7 +16,7 @@ public class Sha256Test
 	[TestMethod]
 	public void Sha256_2()
 	{
-		var result = Sha256.ComputeSha256(new byte[]{0,12,3,45,6,7,89,0});
+		var result = Sha256.ComputeSha256([0,12,3,45,6,7,89,0]);
 		Assert.AreEqual("F2730FD7B558342F73A98810589BF8B9876BEE3FFBE79C873562CD88C4AD03FA",result);
 	}
 	
@@ -38,7 +37,7 @@ public class Sha256Test
 	[TestMethod]
 	public void Sha256_NoLenght_ByteArray()
 	{
-		var result = Sha256.ComputeSha256(Array.Empty<byte>());
+		var result = Sha256.ComputeSha256([]);
 		Assert.AreEqual(string.Empty,result);
 	}
 }

@@ -167,7 +167,7 @@ public sealed class MetaReplaceControllerTest
 			FileName = "test09.jpg", ParentDirectory = "/", Tags = "7test"
 		});
 
-		await _iStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes.ToArray()),
+		await _iStorage.WriteStreamAsync(new MemoryStream([.. CreateAnImage.Bytes]),
 			"/test09.jpg");
 
 		var metaReplaceService = new MetaReplaceService(_query, _appSettings,
@@ -201,10 +201,9 @@ public sealed class MetaReplaceControllerTest
 	{
 		var fakeFakeIWebSocketConnectionsService = new FakeIRealtimeConnectionsService();
 
-		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
-		{
+		var metaReplaceService = new FakeIMetaReplaceService([
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-		});
+		]);
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
 			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
@@ -218,10 +217,9 @@ public sealed class MetaReplaceControllerTest
 	{
 		var fakeFakeIWebSocketConnectionsService = new FakeIRealtimeConnectionsService();
 
-		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
-		{
+		var metaReplaceService = new FakeIMetaReplaceService([
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.OkAndSame }
-		});
+		]);
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
 			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
@@ -235,10 +233,9 @@ public sealed class MetaReplaceControllerTest
 	{
 		var fakeFakeIWebSocketConnectionsService = new FakeIRealtimeConnectionsService();
 
-		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
-		{
+		var metaReplaceService = new FakeIMetaReplaceService([
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.DeletedAndSame }
-		});
+		]);
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
 			fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
@@ -253,10 +250,9 @@ public sealed class MetaReplaceControllerTest
 		var fakeFakeIWebSocketConnectionsService =
 			new FakeIWebSocketConnectionsService();
 
-		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
-		{
+		var metaReplaceService = new FakeIMetaReplaceService([
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.OperationNotSupported }
-		});
+		]);
 		var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
 
@@ -277,12 +273,11 @@ public sealed class MetaReplaceControllerTest
 		Assert.IsNotNull(fakeIMetaUpdateService);
 		// reset collected changes
 		fakeIMetaUpdateService.ChangedFileIndexItemNameContent =
-			new List<Dictionary<string, List<string>>>();
+			[];
 
-		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
-		{
+		var metaReplaceService = new FakeIMetaReplaceService([
 			new(createAnImage.DbPath) { Tags = "a", Status = FileIndexItem.ExifStatus.Ok }
-		});
+		]);
 
 		var scope = _serviceProvider?.GetRequiredService<IServiceScopeFactory>();
 
@@ -323,7 +318,7 @@ public sealed class MetaReplaceControllerTest
 		var result = await controller.Replace(null!, null!, null!, null!);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]
@@ -338,10 +333,9 @@ public sealed class MetaReplaceControllerTest
 		Assert.IsNotNull(fakeMetaUpdateService);
 
 		// Prepare a fake replace service that returns one item which should trigger an update
-		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
-		{
+		var metaReplaceService = new FakeIMetaReplaceService([
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-		});
+		]);
 
 		// Use FakeIUpdateBackgroundTaskQueue with the scope factory so queued jobs execute immediately
 		var controller = new MetaReplaceController(metaReplaceService,
@@ -364,10 +358,9 @@ public sealed class MetaReplaceControllerTest
 	public async Task Replace_QueuesPrecomputedPayload_ForBackgroundJob()
 	{
 		var fakeQueue = new FakeIUpdateBackgroundTaskQueue();
-		var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
-		{
+		var metaReplaceService = new FakeIMetaReplaceService([
 			new("/test09.jpg") { Status = FileIndexItem.ExifStatus.Ok, Tags = "replaced" }
-		});
+		]);
 		var controller = new MetaReplaceController(metaReplaceService,
 			fakeQueue,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger());
@@ -407,9 +400,11 @@ internal sealed class TestMetaPreflight : IMetaPreflight
 		// so tests that rely on a result list behave deterministically.
 		if ( list.Count == 0 )
 		{
-			list = inputFilePaths
-				.Select(p => new FileIndexItem(p) { Status = FileIndexItem.ExifStatus.Ok })
-				.ToList();
+			list =
+			[
+				.. inputFilePaths
+					.Select(p => new FileIndexItem(p) { Status = FileIndexItem.ExifStatus.Ok })
+			];
 		}
 
 		var changed = new Dictionary<string, List<string>>();

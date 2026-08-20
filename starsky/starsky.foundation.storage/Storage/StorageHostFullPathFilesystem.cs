@@ -62,10 +62,22 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 
 	public bool CreateDirectory(string path)
 	{
+		// Fail if a file exists at this path (consistent behavior across platforms)
+		if ( File.Exists(path) )
+		{
+			return false;
+		}
+		
 		try
 		{
 			Directory.CreateDirectory(path);
 			return true;
+		}
+		catch ( UnauthorizedAccessException exception )
+		{
+			_logger.LogError($"[CreateDirectory] IOException caught, " +
+			                 $"{path}", exception);
+			return false;
 		}
 		catch ( IOException exception )
 		{

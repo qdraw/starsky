@@ -280,7 +280,7 @@ public class RenameService(IQuery query, IStorage iStorage, IWebLogger logger)
 	/// <param name="collections">enable file collections</param>
 	/// <returns>inputFileSubPaths list, toFileSubPaths list and fileIndexResultsList</returns>
 	private Tuple<Tuple<string[], string[]>, List<FileIndexItem>> CollectionAddPreflight(
-		IReadOnlyList<string> inputFileSubPaths, IReadOnlyList<string> toFileSubPaths,
+		List<string> inputFileSubPaths, List<string> toFileSubPaths,
 		List<FileIndexItem> fileIndexResultsList, bool collections)
 	{
 		if ( !collections )
@@ -387,7 +387,7 @@ public class RenameService(IQuery query, IStorage iStorage, IWebLogger logger)
 		if ( fileIndexResultsList == null )
 		{
 			logger.LogError("RenameService.FromFolderToFolderAsync " +
-				"fileIndexResultsList is null");
+			                "fileIndexResultsList is null");
 			throw new ArgumentNullException(nameof(fileIndexResultsList),
 				"Should contain value");
 		}

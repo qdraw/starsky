@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Trash;
@@ -42,7 +41,7 @@ public class TrashServiceTest
 	[TestMethod]
 	public void TrashService_List_Trash()
 	{
-		var result = new TrashService().Trash(new List<string> { "test" });
+		var result = new TrashService().Trash(["test"]);
 
 		// This feature is not working on Linux and FreeBSD
 		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.Linux ||

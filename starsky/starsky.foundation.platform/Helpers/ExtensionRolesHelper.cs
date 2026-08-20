@@ -645,6 +645,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	[SuppressMessage("ReSharper", "MustUseReturnValue")]
 	[SuppressMessage("Sonar", "S2674: stream.Read return value isn't used")]
 	[SuppressMessage("ReSharper", "StreamReadReturnValueIgnored")]
+	[SuppressMessage("Reliability", "CA2022:Avoid inexact read with 'System.IO.Stream.Read(byte[], int, int)'")]
 	private byte[] ReadBuffer(Stream stream, int size)
 	{
 		var buffer = new byte[size];

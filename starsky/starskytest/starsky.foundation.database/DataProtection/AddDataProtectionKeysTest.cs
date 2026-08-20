@@ -38,7 +38,7 @@ public class AddDataProtectionKeysTest
 		var protector = dataProtectionProvider?.CreateProtector("test");
 
 		// Assert
-		Assert.IsInstanceOfType(protector, typeof(IDataProtector));
+		Assert.IsInstanceOfType<IDataProtector>(protector);
 	}
 
 	private sealed class FakeIXmlRepository : IXmlRepository

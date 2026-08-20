@@ -24,8 +24,8 @@ public class ImportThumbnailServiceTests
 	{
 		var sut = new ImportThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger(),
 			_appSettings);
-		var result = await sut.WriteThumbnails(new List<string>(),
-			new List<string> { "123" });
+		var result = await sut.WriteThumbnails([],
+			["123"]);
 		Assert.IsFalse(result);
 	}
 
@@ -36,8 +36,8 @@ public class ImportThumbnailServiceTests
 		var sut = new ImportThumbnailService(new FakeSelectorStorage(), logger,
 			_appSettings);
 
-		var result = await sut.WriteThumbnails(new List<string> { "123" },
-			new List<string> { "123" });
+		var result = await sut.WriteThumbnails(["123"],
+			["123"]);
 
 		Assert.IsTrue(result);
 		Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2?.Contains("not exist"));
@@ -47,14 +47,14 @@ public class ImportThumbnailServiceTests
 	public async Task WriteThumbnailsTest_ShouldMoveFile()
 	{
 		var logger = new FakeIWebLogger();
-		var storage = new FakeIStorage(new List<string>(),
-			new List<string> { "/upload/123.jpg" });
+		var storage = new FakeIStorage([],
+			["/upload/123.jpg"]);
 
 		var sut = new ImportThumbnailService(new FakeSelectorStorage(storage), logger,
 			_appSettings);
 
-		await sut.WriteThumbnails(new List<string> { "/upload/123.jpg" },
-			new List<string> { "123" });
+		await sut.WriteThumbnails(["/upload/123.jpg"],
+			["123"]);
 
 		Assert.IsFalse(storage.ExistFile("/upload/123.jpg"));
 		Assert.IsTrue(storage.ExistFile("123"));

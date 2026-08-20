@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{88e70822-ae50-4fc5-9384-a8726b70849a}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.7.21</Version>
+        <Version>0.8.0-beta.0</Version>
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.foundation.thumbnailmeta</RootNamespace>
         <ImplicitUsings>disable</ImplicitUsings>

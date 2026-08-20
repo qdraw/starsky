@@ -6,7 +6,7 @@ using starsky.feature.rename.Models;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.Controllers;
+namespace starskytest.Controllers;
 
 [TestClass]
 public class BatchRenameControllerTest
@@ -22,15 +22,14 @@ public class BatchRenameControllerTest
 			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
 		var request = new BatchRenameRequest
 		{
-			FilePaths = ["/test.jpg"],
-			Pattern = "{yyyy}{MM}{dd}_{filenamebase}.{ext}"
+			FilePaths = ["/test.jpg"], Pattern = "{yyyy}{MM}{dd}_{filenamebase}.{ext}"
 		};
 
 		// Act
 		var result = controller.PreviewBatchRename(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		Assert.IsInstanceOfType<OkObjectResult>(result.Result);
 	}
 
 	[TestMethod]
@@ -48,7 +47,7 @@ public class BatchRenameControllerTest
 		var result = controller.PreviewBatchRename(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result.Result);
 	}
 
 	[TestMethod]
@@ -71,6 +70,6 @@ public class BatchRenameControllerTest
 		var result = await controller.ExecuteBatchRenameAsync(request);
 
 		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		Assert.IsInstanceOfType<OkObjectResult>(result.Result);
 	}
 }

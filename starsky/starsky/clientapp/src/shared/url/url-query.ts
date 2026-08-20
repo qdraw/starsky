@@ -66,10 +66,15 @@ export class UrlQuery {
     return document.location.pathname.includes(this.prefix) ? `${this.prefix}/import` : `/import`;
   }
 
-  public UrlPreferencesPage(): string {
+  public UrlPreferencesPage(tab? : string): string {
+    if (!tab) {
+      return document.location.pathname.includes(this.prefix)
+        ? `${this.prefix}/preferences`
+        : `/preferences`;
+    }
     return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/preferences`
-      : `/preferences`;
+      ? `${this.prefix}/preferences/?tab=${tab}`
+      : `/preferences/?tab=${tab}`;
   }
 
   public UrlLoginPage(): string {

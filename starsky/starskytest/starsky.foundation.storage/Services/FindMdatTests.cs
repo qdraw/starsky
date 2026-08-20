@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Services;
 
-namespace starskytest.FindMdatTests;
+namespace starskytest.starsky.foundation.storage.Services;
 
 [TestClass]
 public class FindMdatTests
@@ -43,7 +43,7 @@ public class FindMdatTests
 			var payload = new byte[] { 1, 2, 3, 4, 5, 6 };
 			using var ms = new MemoryStream();
 			ms.Write(new byte[4], 0, 4); // size=0
-			ms.Write("mdat"u8.ToArray(), 0, 4);
+			ms.Write([.. "mdat"u8], 0, 4);
 			ms.Write(payload, 0, payload.Length);
 			File.WriteAllBytes(path, ms.ToArray());
 
@@ -75,7 +75,7 @@ public class FindMdatTests
 			var payload = new byte[] { 9, 8, 7, 6 };
 			using var ms = new MemoryStream();
 			ms.Write([0, 0, 0, 1], 0, 4); // size32 == 1
-			ms.Write("mdat"u8.ToArray(), 0, 4);
+			ms.Write([.. "mdat"u8], 0, 4);
 			// size64 big endian 20
 			ms.Write([0, 0, 0, 0, 0, 0, 0, 20], 0, 8);
 			ms.Write(payload, 0, payload.Length);
@@ -105,11 +105,11 @@ public class FindMdatTests
 			// second atom: mdat, size=12, payload 4
 			using var ms = new MemoryStream();
 			ms.Write([0, 0, 0, 12], 0, 4);
-			ms.Write("free"u8.ToArray(), 0, 4);
+			ms.Write([.. "free"u8], 0, 4);
 			ms.Write([1, 2, 3, 4], 0, 4);
 
 			ms.Write([0, 0, 0, 12], 0, 4);
-			ms.Write("mdat"u8.ToArray(), 0, 4);
+			ms.Write([.. "mdat"u8], 0, 4);
 			ms.Write([5, 6, 7, 8], 0, 4);
 
 			File.WriteAllBytes(path, ms.ToArray());
@@ -174,7 +174,7 @@ public class FindMdatTests
 			// with mdat and no hash
 			using var ms = new MemoryStream();
 			ms.Write(new byte[4], 0, 4); // size=0
-			ms.Write("mdat"u8.ToArray(), 0, 4);
+			ms.Write([.. "mdat"u8], 0, 4);
 			ms.Write([1, 2, 3, 4], 0, 4);
 			File.WriteAllBytes(path, ms.ToArray());
 			Assert.AreEqual(0, FindMdatProgram.Main([path]));
@@ -211,7 +211,7 @@ public class FindMdatTests
 		// construct header: size32==1, type 'mdat', size64 = ulong.MaxValue
 		using var ms = new MemoryStream();
 		ms.Write([0, 0, 0, 1], 0, 4);
-		ms.Write("mdat"u8.ToArray(), 0, 4);
+		ms.Write([.. "mdat"u8], 0, 4);
 		ms.Write([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], 0, 8);
 		ms.Position = 0;
 
@@ -231,10 +231,10 @@ public class FindMdatTests
 		Assert.IsNotNull(method);
 
 		using var ms = new MemoryStream();
-		ms.Write(new byte[] { 0, 0, 0, 1 }, 0, 4);
+		ms.Write([0, 0, 0, 1], 0, 4);
 		ms.Write(Encoding.ASCII.GetBytes("free"), 0, 4);
 		// size64 = 20
-		ms.Write(new byte[] { 0, 0, 0, 0, 0, 0, 0, 20 }, 0, 8);
+		ms.Write([0, 0, 0, 0, 0, 0, 0, 20], 0, 8);
 		ms.Position = 0;
 
 		var args = new object?[] { ms, ms.Length, 0L, null, 0L, 0, 0L };
@@ -253,10 +253,10 @@ public class FindMdatTests
 		Assert.IsNotNull(method);
 
 		using var ms = new MemoryStream();
-		ms.Write(new byte[] { 0, 0, 0, 1 }, 0, 4);
+		ms.Write([0, 0, 0, 1], 0, 4);
 		ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
 		// only 4 bytes for extended size (need 8)
-		ms.Write(new byte[] { 1, 2, 3, 4 }, 0, 4);
+		ms.Write([1, 2, 3, 4], 0, 4);
 		ms.Position = 0;
 
 		var args = new object?[] { ms, ms.Length, 0L, null, 0L, 0, 0L };
@@ -291,7 +291,7 @@ public class FindMdatTests
 		{
 			using var ms = new MemoryStream();
 			ms.Write([0, 0, 0, 4], 0, 4);
-			ms.Write("free"u8.ToArray(), 0, 4);
+			ms.Write([.. "free"u8], 0, 4);
 			File.WriteAllBytes(path, ms.ToArray());
 
 			var fi = new FileInfo(path);
@@ -339,7 +339,7 @@ public class FindMdatTests
 		// 1) Extended size == 0 -> atomSize == 0 -> FindFirstMdat should return null
 		using var ms1 = new MemoryStream();
 		ms1.Write([0, 0, 0, 1], 0, 4); // size32 == 1
-		ms1.Write("free"u8.ToArray(), 0, 4);
+		ms1.Write([.. "free"u8], 0, 4);
 		ms1.Write(new byte[8], 0, 8); // extended size == 0
 		ms1.Position = 0;
 		var res1 = FindMdat.FindFirstMdat(ms1, ms1.Length);
@@ -349,7 +349,7 @@ public class FindMdatTests
 		var ms2 = new MemoryStream();
 		// first atom size=12 (header 8 + 4 payload) but we won't include payload -> toSkip=4 but not enough data
 		ms2.Write([0, 0, 0, 12], 0, 4);
-		ms2.Write("free"u8.ToArray(), 0, 4);
+		ms2.Write([.. "free"u8], 0, 4);
 		// no payload
 		ms2.Position = 0;
 		using var s = new ThrowOnSeekStream(ms2.ToArray());
@@ -365,10 +365,10 @@ public class FindMdatTests
 		Assert.IsNotNull(method);
 
 		using var ms = new MemoryStream();
-		ms.Write(new byte[] { 0, 0, 0, 1 }, 0, 4);
+		ms.Write([0, 0, 0, 1], 0, 4);
 		ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
 		// only 4 bytes for extended size (need 8)
-		ms.Write(new byte[] { 1, 2, 3, 4 }, 0, 4);
+		ms.Write([1, 2, 3, 4], 0, 4);
 		ms.Position = 0;
 
 		var args = new object?[] { ms, ms.Length, 0L, null, 0L, 0, 0L };
@@ -412,13 +412,13 @@ public class FindMdatTests
 		{
 			// size32 = 1, type = "mdat", extended size = 4 (< headerSize 16) -> PayloadLen null
 			using var ms = new MemoryStream();
-			ms.Write(new byte[] { 0, 0, 0, 1 }, 0, 4);
+			ms.Write([0, 0, 0, 1], 0, 4);
 			ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
-			ms.Write(new byte[] { 0, 0, 0, 0, 0, 0, 0, 4 }, 0, 8);
+			ms.Write([0, 0, 0, 0, 0, 0, 0, 4], 0, 8);
 			File.WriteAllBytes(path, ms.ToArray());
 
 			// With --hash-bytes specified, Main should use hashBytes when PayloadLen is null
-			var exit = FindMdatProgram.Main(new[] { path, "--hash-bytes", "2" });
+			var exit = FindMdatProgram.Main([path, "--hash-bytes", "2"]);
 			Assert.AreEqual(0, exit);
 		}
 		finally

@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,10 +17,10 @@ public sealed class TarBalTest
 	public async Task ExtractTar()
 	{
 		// Non Gz Tar
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>());
+		var storage = new FakeIStorage(["/"],
+			[]);
 
-		var memoryStream = new MemoryStream(CreateAnExifToolTar.Bytes.ToArray());
+		var memoryStream = new MemoryStream([.. CreateAnExifToolTar.Bytes]);
 		await new TarBal(storage, new FakeIWebLogger()).ExtractTar(memoryStream, "/test",
 			CancellationToken.None);
 		Assert.IsTrue(storage.ExistFile("/test/Image-ExifTool-11.99/exiftool"));
@@ -32,10 +30,10 @@ public sealed class TarBalTest
 	public async Task ExtractTarGz()
 	{
 		// Gz Tar!
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>());
+		var storage = new FakeIStorage(["/"],
+			[]);
 
-		var memoryStream = new MemoryStream(CreateAnExifToolTarGz.Bytes.ToArray());
+		var memoryStream = new MemoryStream([.. CreateAnExifToolTarGz.Bytes]);
 		await new TarBal(storage, new FakeIWebLogger()).ExtractTarGz(memoryStream, "/test",
 			CancellationToken.None);
 		Assert.IsTrue(storage.ExistFile("/test/Image-ExifTool-11.99/exiftool"));
@@ -46,8 +44,8 @@ public sealed class TarBalTest
 	public async Task ExtractTarGz_LongerThan100Chars()
 	{
 		// Gz Tar!
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>());
+		var storage = new FakeIStorage(["/"],
+			[]);
 
 		var memoryStream = new MemoryStream(new CreateAnTagGzLongerThan100CharsFileName().Bytes);
 		await new TarBal(storage, new FakeIWebLogger()).ExtractTarGz(memoryStream, "/test",

@@ -22,13 +22,12 @@ public sealed class MetaInfoControllerTest
 	public MetaInfoControllerTest()
 	{
 		_metaInfo = new MetaInfo(new FakeIQuery(
-				new List<FileIndexItem>
-				{
-					new("/test.jpg"), new("/readonly/image.jpg"), new("/source_missing.jpg")
-				}),
-			new AppSettings { ReadOnlyFolders = new List<string> { "readonly" } },
-			new FakeSelectorStorage(new FakeIStorage(new List<string>(),
-				new List<string> { "/test.jpg", "/readonly/image.jpg" },
+			[
+				new("/test.jpg"), new("/readonly/image.jpg"), new("/source_missing.jpg")
+			]),
+			new AppSettings { ReadOnlyFolders = ["readonly"] },
+			new FakeSelectorStorage(new FakeIStorage([],
+				["/test.jpg", "/readonly/image.jpg"],
 				new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() })),
 			null!, new FakeIWebLogger());
 	}

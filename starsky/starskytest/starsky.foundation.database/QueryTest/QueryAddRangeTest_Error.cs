@@ -40,7 +40,7 @@ public class QueryAddRangeTest_Error
 
 		var fakeQuery =
 			new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
-		await fakeQuery.AddRangeAsync(new List<FileIndexItem> { new("/test22.jpg") });
+		await fakeQuery.AddRangeAsync([new("/test22.jpg")]);
 
 		Assert.AreEqual(1, sqLiteFailContext.Count);
 	}

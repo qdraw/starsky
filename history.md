@@ -16,8 +16,7 @@
       updated in the database_
     - [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md) _speed web performance by
       generating smaller images_
-    - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _internal libraries (
-      .NET)_
+    - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _internal libraries (.NET)_
     - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](starsky-tools/readme.md) _Node.js tools to add-on tasks_
 - [Starsky Desktop](starskydesktop/readme.md) _Desktop Application_
@@ -41,9 +40,17 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.22 - _(Unreleased)_ - 2026-?-? {#v0.7.22}
+## version 0.8.0-beta.0 - _(Unreleased)_ 2024-?-11 {#v0.8.0-beta.0}
 
-- nothing yet
+- [x] (Changed) _Back-end_ Code quality .NET 10 (PR #3205)
+- [x] (Changed) _Back-end_ Upgrade to .NET 10 - SDK 8.0.400 (Runtime: 10.0.11) (PR #3204)
+- [x] (Changed) _Back-end_ Upgrade to .NET 10 (PR #3201)
+
+## version 0.7.22 - 2026-08-12 {#v0.7.22}
+
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.424 (Runtime: 8.0.30) (PR #3200)
+- [x] (Changed) _Back-end_ Switch TinyIcon format from PNG to WebP for better compression (PR #3188)
+- [x] (Fixed) _Back-end_ StackCollections drops non-thumbnail collections (PR #3196)
 
 ## version 0.7.21 - 2026-07-22 {#v0.7.21}
 
@@ -157,7 +164,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Front-end_ Add tabs in preferences for different sections (PR #2772)
 - [x] (Added) _Back-end_ Allow zip with settings manifest as input for web-ftp-cli (PR #2770)
 - [x] (Fixed) _Back-end_ Add extra check for deleting folders to avoid race conditions (PR #2769)
-- [x] (Fixed) _Back-end_ On non-Windows platforms, DriveInfo.GetDrives() may give issues (PR #2764)
+- [x] (Fixed) _Back-end_ On non-Windows platforms, DriveInfo.GetDrives () may give issues (PR #2764)
 - [x] (Added) _Back-end_ Expose NominatimProxyService (PR #2761)
 - [x] (Added) _Front-end_ Add right click menu in detail view map to copy street names (PR #2735)
 - [x] (Added) _Back-end_ Make sure the inflate search cache keeps cache (PR #2754)
@@ -257,9 +264,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
   stability (PR #2434)
 - [x] (Changed) _Documentation_ Updated various docs including V2 additions, SDK references and
   formatting fixes (PRs #2420, #2432, #2433, #2436)
-- [x] (Security) _DevOps_ Added CodeQL configuration, fixed workflow permission issues, added
-  action pinning and addressed multiple code scanning alerts (PRs #2453, #2450, #2491, and related
-  alerts 1100+)
+- [x] (Security) _DevOps_ Added CodeQL configuration, fixed workflow permission issues, added action
+  pinning and addressed multiple code scanning alerts (PRs #2453, #2450, #2491, and related alerts
+  1100+)
 
 ## version 0.7.4 - 2025-10-24 {#v0.7.4}
 
@@ -469,9 +476,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.6.0-beta.3 - 2024-03-11 {#v0.6.0-beta.3}
 
-- [x] (Fixed) _Back-end_ Fix Dispose issue for WriteTagsAndRenameThumbnailAsync,
-  WriteTagsAsync (Windows) (PR #1437) (Issue #1427)
-- [x] (Changed) _Back-end_ Change all tests from AreEqual(true) to IsTrue, also for false (PR #1437)
+- [x] (Fixed) _Back-end_ Fix Dispose issue for WriteTagsAndRenameThumbnailAsync, WriteTagsAsync
+  (Windows) (PR #1437) (Issue #1427)
+- [x] (Changed) _Back-end_ Change all tests from AreEqual (true) to IsTrue, also for false (PR
+  #1437)
 - [x] (Changed) _Back-end_ Update ImageSharp (PR #1434, #1435, #1436)
 - [x] (Changed) _Back-end_ Change unit tests retry OpenDefault windows (PR #1433)
 - [x] (Changed) _Back-end_ Update Pomelo.EntityFrameworkCore.MySql, ImageSharp.Drawing,
@@ -481,7 +489,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Warnings for Sonarcloud (PR #1445)
 - [x] (Fixed) _Front-end_ Fix list item status OkAndSame is not red anymore (PR #1445)
 - [x] (Removed) _Back-end_ Unused .NET cultures (PR #1453)
-- [x] (Changed) _Back-end_ Change GetParentPath() to avoid regex due timeout (PR #1461)
+- [x] (Changed) _Back-end_ Change GetParentPath () to avoid regex due timeout (PR #1461)
 - [x] (Added) _Desktop_ Add support for Apple Silicon macOS in Desktop App (PR #1454)
 - [x] (Added) _Desktop_ SonarScanner for Desktop App (PR #1454)
 
@@ -534,8 +542,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Build project more clear info object (PR #1354)
 - [x] (Fixed) _Back-end_ Move to Serilog (\_build only) && update dotnet-sonarScan to the latest
   version (PR #1353)
-- [x] (Changed) _Docs_ Rename codecov.yml, update rules & add documentation for static code
-  analysis (PR #1352)
+- [x] (Changed) _Docs_ Rename codecov.yml, update rules & add documentation for static code analysis
+  (PR #1352)
 - [x] (Changed) _Back-end_ Code smell: optional chain expression (PR #1351)
 - [x] (Changed) _Front-end_ detail view mp4 refactor & fix video scroll click (PR #1350)
 - [x] (Fixed) _Back-end_ Swagger autogen is broken after .NET 8 upgrade (PR #1348)
@@ -561,8 +569,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Changed) _Front-end_ Accessibility focus for prev next in detailView (PR #1291)
 - [x] (Changed) _Front-end_ Move from div to button Accessibility (PR #1294)
-- [x] (Changed) _Front-end_ Version updates (PR #1295, #1296, #1297, #1298, #1299, #1300,
-  #1301, #1303)
+- [x] (Changed) _Front-end_ Version updates (PR #1295, #1296, #1297, #1298, #1299, #1300, #1301,
+  #1303)
 - [x] (Changed) _Front-end_ Code style issues (PR #1304, #1307)
 - [x] (Fixed) _Front-end_ long file names in multi select (Issue #1305 PR #1307)
 - [x] (Fixed) _Back-end_ Replace tags / info etc. with OkAndSame status (Issue #1175 PR #1308)
@@ -632,8 +640,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Code smells, improving readability (PR #1115, #1116, #1121)
 - [x] (Changed) _Back-end_ Add help info screen and test for demo CLI (PR #1117)
 - [x] (Changed) _Desktop_ Upgrade Electron packages (PR #1118, #1119)
-- [x] (Fixed) _Front-end_ Should skip xmp socket updates in collection:true archive list Issue
-  #1107 (PR #1120)
+- [x] (Fixed) _Front-end_ Should skip xmp socket updates in collection:true archive list Issue #1107
+  (PR #1120)
 - [x] (Changed) _Front-end_ Upgrade packages (PR #1122)
 - [x] (Changed) _Front-end_ skip xmp in default last week query (PR #1134)
 - [x] (Changed) _Back-end_ Multiple or queries seperated by comma (PR #1134)
@@ -646,8 +654,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Change tests for MySqlDatabaseFixes (PR #1135)
 - [x] (Fixed) _Back-end_ `api/info` gives xmp (Issue #1127) (PR #1136)
 - [x] (Changed)
-  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.408 (Runtime: 6.0.16)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.16/6.0.16.md) (
-  PR #1137)
+  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.408 (Runtime: 6.0.16)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.16/6.0.16.md)
+  (PR #1137)
 
 ## version 0.5.7-beta.0 - 2023-03-20 {#v0.5.7-beta.0}
 
@@ -667,15 +675,15 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Added) _Front-end_ Add MoreMenu remove current folder (PR #1085)
 - [x] (Changed) _Front-end_ MoreMenu refactor (PR #1085)
 - [x] (Changed) _Front-end_ Removal of Directories (PR #1085)
-- [x] (Changed) _Front-end_ Hide parts of menu in UseLocalDesktop(Ui) mode (PR #1087)
+- [x] (Changed) _Front-end_ Hide parts of menu in UseLocalDesktop (Ui) mode (PR #1087)
 - [x] (Fixed) _Front-end_ Fixed 300 eslint issues (PR #1087)
 - [x] (Changed) _Back-end_ when deleting in systemTrash mode xmp files are now deleted (PR #1088)
 - [x] (Changed) _Back-end_ test when deleting in server mode: xmp files are gone fixed (PR #1088)
 - [x] (Changed) _Back-end_ xmp database changes test (PR #1088)
 - [x] (Changed) _Back-end_ re-sync test with changed xmp (PR #1088)
 - [x] (Changed)
-  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.407 (Runtime: 6.0.15)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.15/6.0.15.md) (
-  PR #1096)
+  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.407 (Runtime: 6.0.15)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.15/6.0.15.md)
+  (PR #1096)
 - [x] (Changed) _Back-end_ Add more first bytes support to detect imageFormat (PR #1097)
 - [x] (Changed) _Front-end_ When deleting the item is going to the next or one folder below (PR
   #1097)
@@ -687,8 +695,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed) _Back-end_ Sync compare on last edited date time instead on DateTime.Now (PR #1067)
 - [x] (Fixed) _Back-end_ tar.gz longer filename support (PR #1069)
 - [x] (Changed)
-  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.406 (Runtime: 6.0.14)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.14/6.0.14.md) (
-  PR #1075)
+  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.406 (Runtime: 6.0.14)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.14/6.0.14.md)
+  (PR #1075)
 - [x] (Changed) _Docs_ Upgrade Docusaurus npm deps (PR #1074)
 - [x] (Changed) _Front-end_ Upgrade client npm deps (PR #1073)
 
@@ -711,8 +719,7 @@ _Known issues #1106, #1107 and #1108_
 
 - [x] (Added) _Back-end_ App insights metrics for internal queues (PR #1028)
 - [x] (Added) _Back-end_ no request validation and 400 status code for `/api/disk/mkdir` (PR #1030)
-- [x] (Added) _Back-end_ no request validation and 400 status code for `/api/disk/rename` (PR
-  #1030)
+- [x] (Added) _Back-end_ no request validation and 400 status code for `/api/disk/rename` (PR #1030)
 - [x] (Added) _Back-end_ no request validation and 400 status code for `/api/update` (PR #1030)
 - [x] (Changed) _Tests_ Update create directory `end2end` tests (PR #1030)
 - [x] (Changed) _Tests_ retry `end2end` test: Create Rename Dir > delete it afterward (PR #1032)
@@ -738,17 +745,16 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Added) _Back-end_ Database table that stores the status of thumbnails (PR #1020, #1013)
 - [x] (Changed) _Back-end_ Update telemetry fields (PR #1020)
 - [x] (Changed)
-  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.405 (Runtime: 6.0.13)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.13/6.0.13.md) (
-  PR #1021)
+  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.405 (Runtime: 6.0.13)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.13/6.0.13.md)
+  (PR #1021)
 - [x] (Changed) _Back-end_ Update thumbnail list on MetaUpdate (PR #1022)
-- [x] (Changed) _Back-end_ Upgrade nuget / docusaurus / client app / desktop dependencies (PR
-  #1022)
+- [x] (Changed) _Back-end_ Upgrade nuget / docusaurus / client app / desktop dependencies (PR #1022)
 - [x] (Changed) _Tests_ Upgrade cypress dependencies and fix some tests (PR #1022)
 - [x] (Changed) _Back-end_ Telemetry fallback values (PR #1022)
 - [x] (Changed) _Back-end_ Thumbnail Generation Controller refactor to service (PR #1022)
 - [x] (Fixed) _Back-end_ Thumbnail Query rename to already existing thumbnail name fix (PR #1022)
-- [x] (Fixed) _Back-end_ Thumbnail upload with `@` is allowed to match the right size version
-  e.g. `@2000` (PR #1022)
+- [x] (Fixed) _Back-end_ Thumbnail upload with `@` is allowed to match the right size version e.g.
+  `@2000` (PR #1022)
 - [x] (Changed) _Back-end_ Move `api/import/thumbnail` to separate controller, but does **not**
   change url (PR #1022)
 - [x] (Added) _Back-end_ Add Periodic Thumbnail Create service (PR #1022)
@@ -756,8 +762,8 @@ _Known issues #1106, #1107 and #1108_
 ## version 0.5.2 - 2022-12-22
 
 - [x] (Changed)
-  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.404 (Runtime: 6.0.12)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.12/6.0.12.md) (
-  PR #997)
+  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.404 (Runtime: 6.0.12)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.12/6.0.12.md)
+  (PR #997)
 - [x] (Changed) _Front-end_ Upgrade Create React App / TypeScript / storybook (PR #998)
 - [x] (Changed) _Front-end_ Geo location edit in detail view (PR #996)
 - [x] (Changed) _Front-end_ Dark-mode UI tweaks (PR #999)
@@ -790,8 +796,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Changed) _Desktop_ Save minimum size for windows (all platforms) (PR #948)
 - [x] (Changed) _Back-end_ Windows OS Camera Timezone issues and SQLite startup issues (PR #952)
 - [x] (Changed)
-  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.403 (Runtime: 6.0.11)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.11/6.0.11.md) (
-  PR #958)
+  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.403 (Runtime: 6.0.11)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.11/6.0.11.md)
+  (PR #958)
 - [x] (Changed) _Back-end_ GlobalJson for specific version .NET (PR #957)
 - [x] (Changed) _Back-end_ Get thumbnail files from raw files, now shown yet (PR #959)
 - [x] (Changed) _Desktop_ Download first to tmp file and then rename (PR #961)
@@ -828,8 +834,8 @@ _Known issues #1106, #1107 and #1108_
   Instrumentation Key (PR #920, Issue #908)
 - [x] (Added) _Back-end_ Use Country code in geo services (PR #923)
 - [x] (Changed)
-  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.402 (Runtime: 6.0.10)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.10/6.0.10.md) (
-  PR #931)
+  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.402 (Runtime: 6.0.10)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.10/6.0.10.md)
+  (PR #931)
 - [x] **(Breaking Change)** _Back-end_ Use Data Protection Keys in Database instead of on disk (PR
   #933)
 - [x] (Added) _Back-end_ Demo mode in application (PR #943, #944, #945, #946)
@@ -861,17 +867,17 @@ _Known issues #1106, #1107 and #1108_
 
 ## version 0.5.0-beta.7 - 2022-09-20
 
-- [x] (Changed) _Back-end_ _Change is overwritten in same release_ Upgrade to .NET 6 - SDK 6.0.302 (
-  Runtime: 6.0.7) (PR #838)
+- [x] (Changed) _Back-end_ _Change is overwritten in same release_ Upgrade to .NET 6 - SDK 6.0.302
+  (Runtime: 6.0.7) (PR #838)
 - [x] (Fixed) _Back-end_ Null reference exceptions on mysql (PR #789 & Issue #787)
 - [x] (Fixed) _Back-end_ Retry for InvalidOperationException when Add Item (PR #789 & Issue #802)
 - [x] (Fixed) _Back-end_ Slug should not be `---` (PR #789 & Issue #797)
 - [x] (Security) _Back-end_ Upgrade nuget packages (PR #845)
-- [x] (Changed) _Back-end_ _Change is overwritten in same release_ Upgrade to .NET 6 - SDK 6.0.400 (
-  Runtime: 6.0.8) (PR #855)
+- [x] (Changed) _Back-end_ _Change is overwritten in same release_ Upgrade to .NET 6 - SDK 6.0.400
+  (Runtime: 6.0.8) (PR #855)
 - [x] (Changed)
-  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.401 (Runtime: 6.0.9)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.9/6.0.9.md) (
-  PR #870)
+  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.401 (Runtime: 6.0.9)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.9/6.0.9.md)
+  (PR #870)
 - [x] (Issue) _Tools_ Re-enable end-to-end test in CI (2022-09-20)
 
 ## version 0.5.0-beta.6 - 2022-07-13
@@ -885,8 +891,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed) _Front-end_ Cmd or Ctrl + A in Search/Trash is selecting all items (PR #755)
 - [x] (Changed) _Tools_ Change build tool to from Cake to Nuke (PR #801, PR #791, PR #805, PR #806)
 - [x] (Changed)
-  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.301 (Runtime: 6.0.6)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.6/6.0.6.md) (
-  PR #796)
+  _Back-end_ [Upgrade to .NET 6 - SDK 6.0.301 (Runtime: 6.0.6)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.6/6.0.6.md)
+  (PR #796)
 - [x] (Changed) _Back-end_ Include exiftool, admin1CodesASCII and cities1000 in build script (PR
   #815)
 - [x] (Changed) _Back-end_ Change exiftool, admin1CodesASCII and cities1000 location to dependencies
@@ -909,8 +915,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Change) _Back-end_ Changed SHA1CryptoServiceProvider to SHA1.Create (PR #733)
 - [x] (Change) _Back-end_ For Development change http port to 4000 instead of 5000 (PR #738)
 - [x] (Changed) Back-end Upgrade to .NET 6 - SDK 6.0.300 (Runtime: 6.0.5) (PR #746)
-- [x] (Fixed) _App_ In the StarskyApp click with the middle mouse button on item gives a blank
-  page (Issue #743 / PR #743)
+- [x] (Fixed) _App_ In the StarskyApp click with the middle mouse button on item gives a blank page
+  (Issue #743 / PR #743)
 - [x] (Fixed) _App_ In the StarskyApp Reload waiting to go to app keeps hanging (Issue #737 / PR
   #743)
 
@@ -925,8 +931,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed) _Front-end_ React unit tests are now succeeding using Windows, Mac/Linux did already
   work (PR #708)
 - [x] (Fixed) _Back-end_ Reference errors for Telemetry (PR #709 / Issue #710)
-- [x] (Fixed) _Back-end_ Issue where colorClass import transform gives a wrong fileHash in
-  database (PR #709)
+- [x] (Fixed) _Back-end_ Issue where colorClass import transform gives a wrong fileHash in database
+  (PR #709)
 - [x] (Fixed) _Back-end_ Parent database items missing, added check (PR #713 / Issue #711)
 - [x] (Fixed) _Back-end_ ColorClass is not written down (bug from #709) (PR #717)
 - [x] (Breaking Change) _Back-end_ WebSocket Data Model is changed (PR #712)
@@ -964,13 +970,13 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed) _Back-end_ System.OutOfMemoryException trigger Garbage collection (PR #661 / Issue
   #660)
 - [x] (Fixed) _Back-end_ Remove Apple from VideoUseLocalTime since they use UTC (PR #661)
-- [x] (Fixed) _Back-end_ Write first tmp file in upload controller to avoid partly written stream (
-  PR #661 / Issue #662)
+- [x] (Fixed) _Back-end_ Write first tmp file in upload controller to avoid partly written stream
+  (PR #661 / Issue #662)
 - [x] (Fixed) _Back-end_ PreserveCompilationContext set for RazorLight cshtml generation
 - [x] (Fixed) _Back-end_ Fix ImageSharp default behavior for writing base64 strings (PR #665 / Issue
   #664)
-- [x] (Fixed) _Back-end_ Should not add TelemetryClient, instead re-use it to avoid memory issues (
-  PR #666)
+- [x] (Fixed) _Back-end_ Should not add TelemetryClient, instead re-use it to avoid memory issues
+  (PR #666)
 - [x] (Fixed) _Back-end_ When publish use extension of output type instead of source type (PR #666)
 - [x] (Fixed) _Back-end_ Add retry with delay for QueryGetAllObjects (PR #666)
 - [x] (Fixed) _Back-end_ Fix culture for tests and mp4/quicktime (PR #673)
@@ -1082,8 +1088,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Added) _Back-end_ Add Application Insights logging for CLI Applications (Admin, Geo, Import,
   Synchronize, Thumbnail) (PR #552)
 - [x] (Changed) _Back-end_ Add dispose on parallel jobs (PR #552)
-- [x] (Added) _Back-end_ Add index for IX_ImportIndex_FileHash and `IX_Credentials_Id_Identifier` (
-  PR #555)
+- [x] (Added) _Back-end_ Add index for IX_ImportIndex_FileHash and `IX_Credentials_Id_Identifier`
+  (PR #555)
 - [x] (Added) _Back-end_ Fix for cache ManualSync when item is removed or added its now correct
   updated (PR #555)
 - [x] (Fixed) _Front-end_ Fix for Safari 14.x and newer that after close a modal, the scroll isn't
@@ -1098,8 +1104,8 @@ _Known issues #1106, #1107 and #1108_
 
 ## version 0.4.12 - 2021-11-04
 
-- [x] (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non-valid passwords (
-  PR #443 & #445 & #446)
+- [x] (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non-valid passwords
+  (PR #443 & #445 & #446)
 - [x] (Changed) _Back-end_ Database migration for AccessFailedCount, LockoutEnabled and LockoutEnd
   in Users table (PR #443 & #445)
 - [x] (Fixed) _Back-end_ Group parts of the regex together to make the intended operator precedence
@@ -1109,11 +1115,11 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed) _Back-end_ Dispose error on index page (Issue #424 / PR #449)
 - [x] (Added) _Back-end_ Support for `-software` search (issue #441 / PR #450)
 - [x] (Added) _Back-end_ Docker compose support (PR #469)
-- [x] (Change) _Front-end_ Remove Enzeme as framework for unittests and use React testing
-  framework (PR #463)
+- [x] (Change) _Front-end_ Remove Enzeme as framework for unittests and use React testing framework
+  (PR #463)
 - [x] (Change) _Back-end_ Retry for DiskWatcher (PR #479)
-- [x] (Change) _Back-end_ Max amount of retry for DiskWatcher when folders are not accessible (
-  chown) (PR #490)
+- [x] (Change) _Back-end_ Max amount of retry for DiskWatcher when folders are not accessible
+  (chown) (PR #490)
 - [x] (Changed) _Back-end_ DiskWatcher in combination with child folders that have no access keeps a
   known issue
 - [x] (Fixed) _Back-end_ Skip folders with meta thumbnail tool when folder has no read rights (PR
@@ -1140,11 +1146,11 @@ _Known issues #1106, #1107 and #1108_
 
 - [x] (Fixed) _Back-end_ Performance change, FileIndexItem uses less memory in the application (PR
   #410)
-- [x] (Fixed) _Back-end_ Change Replace to use a single database query and update to empty string (
-  PR #412)
+- [x] (Fixed) _Back-end_ Change Replace to use a single database query and update to empty string
+  (PR #412)
 - [x] (Fixed) _Back-end_ Fix fast updating items to update the cache before update (PR #412)
-- [x] (Change) _Back-end_ Push direct to socket when update or replace to avoid undo after a
-  second (PR #412)
+- [x] (Change) _Back-end_ Push direct to socket when update or replace to avoid undo after a second
+  (PR #412)
 - [x] (Change) _Back-end_ Add 2000 px and 300 px size for thumbnails to match better with larger and
   smaller screens (PR #380)
 - [x] (Change) _Back-end_ Add Meta Thumbnail (150px) to get faster archive and search pages (PR
@@ -1169,12 +1175,12 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Changed) _Front-end_ Upgrade npm packages in clientapp (PR #421)
 - [x] (Changed) _Tools_ Upgrade npm packages in starsky-tools/thumbnail (PR #422)
 - [x] (Added) _App_ Add logging to app and write it to disk (PR #423)
-- [x] (Fixed) _Back-end_ Fix issue where sync with empty database adds a folder with only / to
-  view (PR #423)
-- [x] (Changed) _Back-end_ Enable useDiskWatcher by default, so file changes are picked up
-  directly (PR #423)
-- [x] (Added) _App_ Logs are stored by default in AppData or Application Support or .config folder (
-  PR #423)
+- [x] (Fixed) _Back-end_ Fix issue where sync with empty database adds a folder with only / to view
+  (PR #423)
+- [x] (Changed) _Back-end_ Enable useDiskWatcher by default, so file changes are picked up directly
+  (PR #423)
+- [x] (Added) _App_ Logs are stored by default in AppData or Application Support or .config folder
+  (PR #423)
 
 ## version 0.4.9 - 2021-06-17
 
@@ -1203,8 +1209,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Changed) _Back-end_ When run sync v2, only check on last edit time instead of filesize (PR
   #362 & PR #361)
 - [x] (Added) _Back-end_ Added logs to Application Insights when key is configured (PR #363)
-- [x] (Added) _Back-end_ Add manual sync for new api (/api/synchronize) and update via websockets (
-  PR #363)
+- [x] (Added) _Back-end_ Add manual sync for new api (/api/synchronize) and update via websockets
+  (PR #363)
 - [x] (Added) _Front-end_ Change manual sync to new api (/api/synchronize) (PR #363)
 - [x] (Fixed) _Front-end_ Force sync is not endless loading after socket update (Issue #371 & PR
   #375)
@@ -1228,8 +1234,8 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed) _Back-end_ Fix for SQLite exception (pull/348 issue/344)
 - [x] (Fixed) _Tools_ Make install scripts easier for the server in combination with PM2 (pull/348)
 - [x] (Fixed) _Back-end_ DbUpdateConcurrencyException save after, instead of nothing (pull #349)
-- [x] (Fixed) _Back-end_ fix issue where rename did not work in combination with useDiskWatcher (
-  issue #347 pull #349)
+- [x] (Fixed) _Back-end_ fix issue where rename did not work in combination with useDiskWatcher
+  (issue #347 pull #349)
 - [x] (Fixed) _Front-end_ input field when using safari you should not break words (pull #359)
 - [x] (Changed) _Back-end_ Geo CLI downloads now on startup dependencies (Issue #340 / pull #351)
 - [x] (Fixed) _Back-end_ Rename service should now work with useDiskWatcher:true (Issue #352 / pull
@@ -1245,8 +1251,8 @@ _Known issues #1106, #1107 and #1108_
   #313)
 - [x] (Fixed) _Front-end_ Implicit delete by updating from sockets should now not cover collection
   items with the same base name (PR #313)
-- [x] (Fixed) _Back-end_ When use DeleteItem the child directories are not stored in the database (
-  PR #314)
+- [x] (Fixed) _Back-end_ When use DeleteItem the child directories are not stored in the database
+  (PR #314)
 - [x] (Fixed) _Back-end_ Give removed items back when using `/api/rename` as status
   NotFoundSourceMissing (PR #314)
 - [x] (Fixed) _Back-end_ Don't create duplicate database items when there is already a database item
@@ -1367,14 +1373,13 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x] (Fixed) _Back-end_ Database-item is now correct updated when you move an item to the root
   folder (/)
 - [x] (Security) _App_ Update Electron to 10.1.5 (Node 12.16.x and Chromium 85.0.x)
-- [x] (Added) _Back-end_ In the rename/move API When enable Collections, these files are also
-  moved (file to folder)
+- [x] (Added) _Back-end_ In the rename/move API When enable Collections, these files are also moved
+  (file to folder)
 - [x] (Added) _Back-end_ Xmp sidecar files are moved with gif/bmp/Raw/mp4 file types
 - [x] (Added) _Back-end_ In the rename API When enable Collections, these files are also moved (file
   to delete)
 - [x] (Deprecated) _App_ The current app-settings (so only the default app/remote location) are
-  going to change.
-  if you update those could be gone. but you could set them again
+  going to change. if you update those could be gone. but you could set them again
 
 ## version 0.4.0-beta.2 - 2020-11-04
 
@@ -1394,8 +1399,7 @@ _First release on GitHub Releases_
 - [x] (Fixed) _Front-end_ Going next en prev in search detail view context is going more smooth
 - [x] (Fixed) _Back-end_ Allow websockets in CSP for Safari and old Firefox
 - [x] (Breaking change) _Back-end_ Change "/api/health/version" now It's needed to upgrade
-  StarskyApp
-  to 0.3 or newer
+  StarskyApp to 0.3 or newer
 - [x] (Added) _Back-end_ Add Sidecar API (xmp files) for getting by filepath
 - [x] (Added) _Back-end_ Uploading Sidecar API (xmp files)
 - [x] (Fixed) _Back-end_ Fix issue where rename did serve a 500 page after successful renaming
@@ -1465,8 +1469,8 @@ _In the next major release websockets are used, please note when using a reverse
 - [x] (Fixed) _Front-end_ Add loading delete and undo delete for trash page
 - [x] (Changed) _Front-end_ Upload multiple files after each other instead of in once
 - [x] (Fixed) _Front-end_ Show error status when upload fails instead of loading
-- [x] (Added) _Front-end_ Archive/Search/Trash - When in select mode you can add multiple files
-  to the selection by pressing the shift key and click
+- [x] (Added) _Front-end_ Archive/Search/Trash - When in select mode you can add multiple files to
+  the selection by pressing the shift key and click
 - [x] (Added) _Front-end_ In the search suggestion field arrow up and down keys select next / prev
 - [x] (Fixed) _Front-end_ When typing a suggestion remove the field gives you the main menu back
 - [x] (Security) _App_ update Electron to 9.3.1
@@ -1476,12 +1480,12 @@ _In the next major release websockets are used, please note when using a reverse
 - [x] (Fixed) _Front-end_ DetailView - DateTime push in DetailView has no influence on colorClass
   anymore
 - [x] (Fixed) _Front-end_ DetailView - Links to collections are always with `details=true`
-- [x] (Fixed) _Front-end_ DetailView - When pressing delete the entire clientSide cache is cleared (
-  to avoid next/prev issues)
+- [x] (Fixed) _Front-end_ DetailView - When pressing delete the entire clientSide cache is cleared
+  (to avoid next/prev issues)
 - [x] (Fixed) _Front-end_ Archive - When selecting a new colorClass this is added to the filter
 - [x] (Fixed) _Front-end_ DetailView - Safari 12 and lower does autorotate the image correct
-- [x] (Added) _CLI_ Stop with warning when running WebHtmlPublish over the same folder (checks
-  for `_settings.json`)
+- [x] (Added) _CLI_ Stop with warning when running WebHtmlPublish over the same folder (checks for
+  `_settings.json`)
 - [x] (Fixed) _Front-end_ Archive - When click on a Link in Archive, with command key it should
   ignore preloader
 - [x] (Fixed) _Front-end_ Modal Sync Manually - Folders with plus `+` in the url are synced
@@ -1497,8 +1501,8 @@ _In the next major release websockets are used, please note when using a reverse
   entire text
 - [x] (Security) _Back-end_ Upgrade .NET Core (TargetFramework) to 3.1.8 (using SDK 3.1.402)
 - [x] (Added) _CLI_ Add account creation by StarskyAdminCli
-- [x] (Added) _AppSettings.UseHttpsRedirection_ - Redirect users to https page.
-  You should enable before going to production. Always disabled in debug/develop mode
+- [x] (Added) _AppSettings.UseHttpsRedirection_ - Redirect users to https page. You should enable
+  before going to production. Always disabled in debug/develop mode
 - [x] (Added) _CLI_ Show DateTime when the Assemblies are build with the flags: `-h -v`
 
 ## version 0.3.1 - 2020-09-08
@@ -1521,8 +1525,7 @@ _In the next major release websockets are used, please note when using a reverse
   title and description)
 - [x] (Added) _Front-end_ DetailView - Show Notification dialog when Copy or Paste action happens
 - [x] (Fixed) _Front-end_ Search/DetailView - When going fast to the next/prev items this is
-  requesting
-  relativeObjects again to avoid displaying the next icon but not able to click on it
+  requesting relativeObjects again to avoid displaying the next icon but not able to click on it
 - [x] (Added) _Back-end_ Add Response compression in ASP.NET Core
 - [x] (Fixed) _Back-end_ Change Cache time to 365 days for clientapp and wwwroot
 
@@ -1540,8 +1543,8 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Added) _Front-end_ Gpx view, go to current location (no marker, only change view)
 - [x] (Security) _Frond-end_ Upgrade ClientApp CRA _(Create React App 3.4.3 2020-08-12)_
 - [x] (Fixed) _Front-end_ Add Preloader icon when pressing ColorClassSelect
-- [x] (Fixed) _Front-end_ For Archive and Search: When in select mode and navigate next to
-  the select mode is still on but there are no items selected
+- [x] (Fixed) _Front-end_ For Archive and Search: When in select mode and navigate next to the
+  select mode is still on but there are no items selected
 
 ## version 0.3.0-beta.1 - 2020-08-16
 
@@ -1759,8 +1762,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (bugfix) _Frond-end_ Add length limit length for tags
 - [x] (feature) _Back-end_ Change Password for current user (API only)
 - [x] (bugfix) _Back-end_ System.IO.EndOfStreamException: Expected to read 372 payload bytes but
-  only received 21.
-  on `/api/search?t=-Datetime>1+-Datetime<0+-ImageFormat:jpg` (Timeout issue)
+  only received 21. on `/api/search?t=-Datetime>1+-Datetime<0+-ImageFormat:jpg` (Timeout issue)
 - [x] (bugfix) Unit tests for NOT queries `/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22`
 - [x] (performance) _Back-end_ refactoring of `/api/search`
 - [x] (performance) _Back-end_ refactoring of `SearchSuggestionsService`
@@ -1773,7 +1775,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 
 ## version 0.1.15 - 2020-02-06
 
-- [x] (bugfix) _Front-end_ Drag'n drop is now only with files
+- [x] (bugfix) _Front-end_ Drag’n’drop is now only with files
 - [x] (version) _Back-end_ _Legacy starsky.netFramework_ 0.1.15 release included
 - [x] (version) _Back-end_ _dependencies_ Microsoft.EntityFrameworkCore,
   Microsoft.Extensions.Configuration to 3.1.1
@@ -1786,8 +1788,8 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 
 - [x] (bugfix) _back-end_ Security fixes in controllers
 - [x] (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
-- [x] (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2 (TargetFramework).
-  Run `./build.sh` before you start developing
+- [x] (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2 (TargetFramework). Run
+  `./build.sh` before you start developing
 - [x] (bugfix) _Front-end_ preloader when uploading
 - [x] (bugfix) _Front-end_ translations in item-list-view, item-text-list-view,
 - [x] (bugfix) _Front-end_ translations in containers/search, containers/trash, search, trash and
@@ -1825,8 +1827,8 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
   (remove thumbnail if corrupt) due public facing
 - [x] (remove) _Front-end_ search replace is no longer a beta feature, so no feature toggle
 - [x] (bugfix) _Front-end_ archive updating multiple values didn't provide the right results
-- [x] (bugfix) _Front-end_ when pressing multiple colorClass items with the value 0 (
-  colorless/no-color) these are updated
+- [x] (bugfix) _Front-end_ when pressing multiple colorClass items with the value 0
+  (colorless/no-color) these are updated
 - [x] (bugfix) _Front-end_ fix issue where force sync and clear cache didn't update the view
 - [x] (bugfix) _Front-end_ fix issue Collections toggle where not correct shown
 - [x] (feature) _API_ Add `/sync/mkdir` to create directories and sync to the db
@@ -1847,7 +1849,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (bugfix) _Front-end_ When going from Archive to Detailview and back the scrollstate is still
   the same (fixed)
 - [x] (feature) _Front-end_ Dark theme style added
-- [x] (bugfix) _Front-end_ _Chrom(e,ium)_ the location after logging in now updated (fixed)
+- [x] (bugfix) _Front-end_ _Chrom (e,ium)_ the location after logging in now updated (fixed)
 - [x] (bugfix) _CORS_ Add AllowCredentials policy for production
 - [x] (feature) _Front-end_ Next/Prev back in Detailview is now also support when searching
 - [x] (change) _Front-end_ Remove V1 from main menu
@@ -1882,8 +1884,8 @@ _Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
 - [x] Indexes are working now for MySQL at the first time run
 - [x] Upgrade to .NET Core & EF Core 3.1-preview3 (EF Core 3.0 is missing PredicateBuilder support)
 - [x] (bugfix) 23:00 o'clock/first of month `date.spec` unittest
-- [] (Add warning) (bug) for iOS Safari only when using .local domains login fails
-  (work around use ip-addresses) (update to iOS13)
+- [] (Add warning) (bug) for iOS Safari only when using .local domains login fails (work around use
+  ip-addresses) (update to iOS13)
 - [x] Update build pipeline to support multiple runtimes in 1 run
 - [x] Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 
@@ -1902,8 +1904,8 @@ _Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
 - [x] Import page (without link)
 - [x] (bug) GPX, tiff, dng files uploads are not allowed in new UI (fixed)
 - [x] (feature) Geo from Web Interface (including status) - in preview status
-- [x] (bug) Force sync and renew for directories that contain a + sign are passing the wrong
-  values (fixed)
+- [x] (bug) Force sync and renew for directories that contain a + sign are passing the wrong values
+  (fixed)
 - [x] Add unit tests for importing raw's with .xmp files
 - [x] (starsky-tools) add Dropbox import helper tool
 
@@ -2029,8 +2031,8 @@ _Version number does not match SemVer_
 - Allow CORS for DEBUG mode for localhost domains
 - **CHANGE:** Unauthorised users return 401 on /api (instead of redirect)
 - add: `/import/history` API for viewing recent uploads (today only) _subject to change_
-- **CHANGE** Database Structure: Field added in ImportDatabas
-  Update all your clients at once to avoid issues between -3 and -4
+- **CHANGE** Database Structure: Field added in ImportDatabas Update all your clients at once to
+  avoid issues between -3 and -4
 - _Legacy starsky.netFramework_ 0.1.5.4 release included
 
 ## version 0.1.5.3 - 2019-03-31

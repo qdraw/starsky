@@ -38,7 +38,7 @@ public sealed class DiskWatcherQueuedHostedServiceTest
 			                BindingFlags.NonPublic | BindingFlags.Instance) ??
 		                throw new Exception("missing ExecuteAsync");
 
-		dynMethod.Invoke(service, new object[] { token });
+		dynMethod.Invoke(service, [token]);
 
 		Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2
 			?.Contains("Queued Hosted Service"));

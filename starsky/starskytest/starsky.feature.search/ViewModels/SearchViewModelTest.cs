@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.search.ViewModels;
@@ -105,7 +104,7 @@ public sealed class SearchViewModelTest
 	[TestMethod]
 	public void SearchOperatorContinue_IgnoreNegativeValue()
 	{
-		var model = new SearchViewModel { SearchOperatorOptionsInternal = new List<bool>() };
+		var model = new SearchViewModel { SearchOperatorOptionsInternal = [] };
 		var result = model.SearchOperatorContinue(-1, 1);
 
 		Assert.IsTrue(result);
@@ -114,7 +113,7 @@ public sealed class SearchViewModelTest
 	[TestMethod]
 	public void SearchOperatorContinue_IgnoreOutOfRange()
 	{
-		var model = new SearchViewModel { SearchOperatorOptionsInternal = new List<bool>() };
+		var model = new SearchViewModel { SearchOperatorOptionsInternal = [] };
 		var result = model.SearchOperatorContinue(10, 1);
 
 		Assert.IsTrue(result);
@@ -123,7 +122,7 @@ public sealed class SearchViewModelTest
 	[TestMethod]
 	public void SearchOperatorContinue_IgnoreOutOfRange2()
 	{
-		var model = new SearchViewModel { SearchOperatorOptionsInternal = new List<bool>() };
+		var model = new SearchViewModel { SearchOperatorOptionsInternal = [] };
 		var result = model.SearchOperatorContinue(0, 1);
 
 		Assert.IsTrue(result);
@@ -212,7 +211,7 @@ public sealed class SearchViewModelTest
 		// Arrange
 		var model = new SearchViewModel
 		{
-			FileIndexItems = new List<FileIndexItem> { new("test") { LocationCity = null } }
+			FileIndexItems = [new("test") { LocationCity = null }]
 		};
 
 		var property = typeof(FileIndexItem).GetProperty(nameof(FileIndexItem.LocationCity));
@@ -235,7 +234,7 @@ public sealed class SearchViewModelTest
 		// Arrange
 		var model = new SearchViewModel
 		{
-			FileIndexItems = new List<FileIndexItem> { new("test") { LocationCity = "test" } }
+			FileIndexItems = [new("test") { LocationCity = "test" }]
 		};
 
 		var property = typeof(FileIndexItem).GetProperty(nameof(FileIndexItem.LocationCity));
@@ -257,12 +256,12 @@ public sealed class SearchViewModelTest
 	{
 		// Arrange
 		var model = new SearchViewModel();
-		model.FileIndexItems = new List<FileIndexItem>
-		{
+		model.FileIndexItems =
+		[
 			new() { IsDirectory = true },
 			new() { IsDirectory = false },
 			new() { IsDirectory = true }
-		};
+		];
 		var property = typeof(FileIndexItem).GetProperty("IsDirectory");
 		var boolIsValue = true;
 
@@ -308,7 +307,7 @@ public sealed class SearchViewModelTest
 	public void PropertySearchBoolType_WithEmptyFileIndexItems_ReturnsEmptyFileIndexItems()
 	{
 		// Arrange
-		var model = new SearchViewModel { FileIndexItems = new List<FileIndexItem>() };
+		var model = new SearchViewModel { FileIndexItems = [] };
 		var property = typeof(FileIndexItem).GetProperty("IsDirectory");
 		var boolIsValue = true;
 
@@ -325,7 +324,7 @@ public sealed class SearchViewModelTest
 	{
 		// Arrange
 		var model = new SearchViewModel();
-		model.FileIndexItems = new List<FileIndexItem> { new() { IsDirectory = true } };
+		model.FileIndexItems = [new() { IsDirectory = true }];
 		var property = typeof(FileIndexItem).GetProperty("NonExistentProperty");
 		var boolIsValue = true;
 
@@ -342,12 +341,12 @@ public sealed class SearchViewModelTest
 		// Arrange
 		var model = new SearchViewModel
 		{
-			FileIndexItems = new List<FileIndexItem>
-			{
+			FileIndexItems =
+			[
 				new() { IsDirectory = true },
 				new() { IsDirectory = false },
 				new() { IsDirectory = true }
-			}
+			]
 		};
 		var property = typeof(FileIndexItem).GetProperty("IsDirectory");
 		const string searchForQuery = "true";
@@ -368,10 +367,10 @@ public sealed class SearchViewModelTest
 	{
 		// Arrange
 		var model = new SearchViewModel();
-		model.FileIndexItems = new List<FileIndexItem>
-		{
+		model.FileIndexItems =
+		[
 			new() { IsDirectory = true }, new() { IsDirectory = false }
-		};
+		];
 		var property = typeof(FileIndexItem).GetProperty("IsDirectory");
 		const string searchForQuery = "invalid_bool_value"; // An invalid boolean string
 		const SearchViewModel.SearchForOptionType searchType =

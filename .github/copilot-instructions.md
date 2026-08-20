@@ -17,6 +17,8 @@ When writing tests use `[TestMethod]` and `[DataRow]` to cover multiple scenario
 
 Be concise.
 
+Do not commit in any branch
+
 If I say "review": Review the code. When reviewing, start with a list of what needs to improve, then separately compliment on the good stuff. We don't use try catch, errors are caught on a higher level.
 
 Always start with a summary in bullets, then full response.
