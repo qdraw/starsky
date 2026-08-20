@@ -23,6 +23,8 @@ public class ExifToolServiceTest
 		Path.Join(new CreateAnImage().BasePath, "exiftool-service-test-tmp");
 	private static readonly string RetryExifToolPath =
 		Path.Join(new CreateAnImage().BasePath, "exiftool-service-retry-test-tmp");
+	private static readonly string ThumbnailRetryExifToolPath =
+		Path.Join(new CreateAnImage().BasePath, "exiftool-service-thumbnail-retry-test-tmp");
 
 	public ExifToolServiceTest()
 	{
@@ -73,6 +75,11 @@ public class ExifToolServiceTest
 		if ( File.Exists(RetryExifToolPath) )
 		{
 			File.Delete(RetryExifToolPath);
+		}
+
+		if ( File.Exists(ThumbnailRetryExifToolPath) )
+		{
+			File.Delete(ThumbnailRetryExifToolPath);
 		}
 	}
 
@@ -171,6 +178,31 @@ public class ExifToolServiceTest
 			null, "");
 
 		Assert.IsTrue(result.IsSuccess);
+		Assert.AreEqual(1, download.Called);
+	}
+
+	[TestMethod]
+	public async Task WriteTagsThumbnailAsync_RetriesAfterArgumentException__UnixOnly()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test is for Unix Only");
+			return;
+		}
+
+		var storage = new FakeIStorage(["/"],
+			["/hash.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var download = new CreateExifToolOnDownload(ThumbnailRetryExifToolPath);
+		var service = new ExifToolService(new FakeSelectorStorage(storage),
+			new AppSettings { ExifToolPath = ThumbnailRetryExifToolPath },
+			new FakeIWebLogger(), download);
+
+		var result = await service.WriteTagsThumbnailAsync("/hash.jpg",
+			"-Software=\"Qdraw 2.0\"");
+
+		Assert.IsTrue(result);
 		Assert.AreEqual(1, download.Called);
 	}
 
