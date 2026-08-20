@@ -42,6 +42,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.8.0-beta.1 - _(Unreleased)_ 2026-?-? {#v0.8.0-beta.1}
 
+- [x] (Changed) _Back-end_ Add guard around Exiftool to auto download (PR #3223)
 - [x] (Changed) _Back-end_ Add IOException AppSettings (PR #3222)
 
 ## version 0.8.0-beta.0 - 2026-08-20 {#v0.8.0-beta.0}
