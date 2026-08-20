@@ -63,7 +63,8 @@ public class ExifToolServiceTest
 		CreateFile();
 
 		var service = new ExifToolService(new FakeSelectorStorage(storage),
-			new AppSettings { ExifToolPath = ExifToolPath }, new FakeIWebLogger());
+			new AppSettings { ExifToolPath = ExifToolPath }, new FakeIWebLogger(),
+			new FakeExifToolDownload());
 		var result = await service.WriteTagsAndRenameThumbnailAsync(
 			"/image.jpg",
 			null, "");
@@ -111,7 +112,8 @@ public class ExifToolServiceTest
 		var service = new ExifToolService(
 			new FakeSelectorStorage(storage),
 			new AppSettings { ExifToolPath = ExifToolPath },
-			new FakeIWebLogger()
+			new FakeIWebLogger(),
+			new FakeExifToolDownload()
 		);
 
 		using var cancelSource = new CancellationTokenSource();
