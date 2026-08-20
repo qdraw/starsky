@@ -61,6 +61,7 @@ describe('DetailView (from upload) (40)', () => {
     if (!config.isEnabled) return
 
     cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_112430.jpg').as('index1')
+    cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_134151.jpg').as('index3')
 
     cy.visit(config.url + '/' + fileName2)
 
@@ -73,6 +74,8 @@ describe('DetailView (from upload) (40)', () => {
       .should('contain', fileName1)
 
     cy.get('.nextprev.nextprev--next').first().click()
+
+    cy.wait('@index3')
 
     cy.url()
       .should('contain', fileName3)
