@@ -1,0 +1,9 @@
+<Project>
+  <Target Name="PrintMuiItems">
+    <Message Text="NONE: %(None.Identity)" Importance="High" Condition="'%(None.Extension)' == '.mui'" />
+    <Message Text="CONTENT: %(Content.Identity)" Importance="High" Condition="'%(Content.Extension)' == '.mui'" />
+    <Message Text="RCL: %(ReferenceCopyLocalPaths.Identity)" Importance="High" Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.mui'" />
+    <Message Text="NCL: %(NativeCopyLocalItems.Identity)" Importance="High" Condition="'%(NativeCopyLocalItems.Extension)' == '.mui'" />
+    <Message Text="RTCL: %(RuntimeTargetsCopyLocalItems.Identity)" Importance="High" Condition="'%(RuntimeTargetsCopyLocalItems.Extension)' == '.mui'" />
+  </Target>
+</Project>

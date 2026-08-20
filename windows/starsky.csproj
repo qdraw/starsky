@@ -40,6 +40,7 @@
     <None Remove="starsky.Tests\**\*" />
   </ItemGroup>
 
+
   <!-- Inline C# task: reliably removes locale dirs without PowerShell escaping issues -->
   <UsingTask TaskName="RemoveLocaleDirectories"
              TaskFactory="RoslynCodeTaskFactory"
@@ -68,9 +69,20 @@
     </Task>
   </UsingTask>
 
+  <!-- Windows App SDK adds all 86 locale .mui files as linked None items via
+       AddMicrosoftWindowsAppSDKPayloadFilesFromComponents in SelfContained.targets.
+       Strip every locale except en-US before AssignTargetPaths sees them so they
+       are invisible in Rider and never copied to the output directory. -->
+  <Target Name="FilterMuiLocalesToEnUS" AfterTargets="AddMicrosoftWindowsAppSDKPayloadFilesFromComponents">
+    <ItemGroup>
+      <None Remove="@(None)"
+             Condition="'%(Extension)' == '.mui' and
+                        $([System.String]::Copy('%(RootDir)%(Directory)').ToLower().Contains('\en-us\')) == 'False'" />
+    </ItemGroup>
+  </Target>
+
   <Target Name="RemoveUnusedLanguageResources" AfterTargets="CopyFilesToOutputDirectory">
-    <!-- Remove all locale-specific directories except English (en-us). -->
-    <!-- Addresses Windows App SDK 2.2.0 creating 80+ locale directories. -->
+    <!-- Fallback filesystem cleanup in case any locale dirs survive (e.g. from other packages). -->
     <RemoveLocaleDirectories TargetDir="$(TargetDir)" />
   </Target>
 

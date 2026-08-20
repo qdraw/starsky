@@ -1,4 +1,7 @@
 <Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
   <Project Path="starsky.csproj" />
   <Project Path="starsky.Tests\starsky.Tests.csproj" />
 </Solution>
