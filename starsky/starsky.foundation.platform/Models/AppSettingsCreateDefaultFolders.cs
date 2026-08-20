@@ -14,50 +14,68 @@ public class AppSettingsCreateDefaultFolders(
 	///     @see: https://tomasherceg.com/blog/post/
 	///     azure-app-service-cannot-create-directories-and-write-to-filesystem-when-deployed-using-azure-devops
 	/// </summary>
-	private void CreateDefaultFolders()
+	public void CreateDefaultFolders()
 	{
-		if ( !Directory.Exists(baseDirectoryProject) )
+		CreateDefaultFoldersIfNotExists(() =>
 		{
-			Directory.CreateDirectory(baseDirectoryProject);
-		}
+			if ( !Directory.Exists(baseDirectoryProject) )
+			{
+				Directory.CreateDirectory(baseDirectoryProject);
+			}
+		});
 
 		// Cache for thumbs
-		if ( !Directory.Exists(thumbnailTempFolder) )
+		CreateDefaultFoldersIfNotExists(() =>
 		{
-			Directory.CreateDirectory(thumbnailTempFolder);
-		}
+			if ( !Directory.Exists(thumbnailTempFolder) )
+			{
+				Directory.CreateDirectory(thumbnailTempFolder);
+			}
+		});
 
 		// default location to store source images. you should change this
-		if ( !Directory.Exists(storageFolder) )
+		CreateDefaultFoldersIfNotExists(() =>
 		{
-			Directory.CreateDirectory(storageFolder);
-		}
+			if ( !Directory.Exists(storageFolder) )
+			{
+				Directory.CreateDirectory(storageFolder);
+			}
+		});
 
 		// may be cleaned after restart (not implemented)
-		if ( !Directory.Exists(tempFolder) )
+		CreateDefaultFoldersIfNotExists(() =>
 		{
-			Directory.CreateDirectory(tempFolder);
-		}
+			if ( !Directory.Exists(tempFolder) )
+			{
+				Directory.CreateDirectory(tempFolder);
+			}
+		});
 
-		if ( !Directory.Exists(dependenciesFolder) )
+		CreateDefaultFoldersIfNotExists(() =>
 		{
-			Directory.CreateDirectory(dependenciesFolder);
-		}
+			if ( !Directory.Exists(dependenciesFolder) )
+			{
+				Directory.CreateDirectory(dependenciesFolder);
+			}
+		});
 	}
 
-	public void CreateDefaultFoldersIfNotExists()
+	private static void CreateDefaultFoldersIfNotExists(
+		CreateDefaultFoldersDelegate createDefaultFoldersDelegate)
 	{
 		try
 		{
-			CreateDefaultFolders();
+			createDefaultFoldersDelegate();
 		}
 		catch ( FileNotFoundException e )
 		{
 			Console.WriteLine($"> Not allowed to create default folders: {e}");
 		}
-		catch ( IOException e )
+		catch ( UnauthorizedAccessException e )
 		{
 			Console.WriteLine($"> Not allowed to create default folders: {e}");
 		}
 	}
+
+	private delegate void CreateDefaultFoldersDelegate();
 }

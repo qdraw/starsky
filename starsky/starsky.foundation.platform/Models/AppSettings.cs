@@ -119,7 +119,7 @@ public sealed class AppSettings
 
 		var helper = new AppSettingsCreateDefaultFolders(BaseDirectoryProject, ThumbnailTempFolder,
 			StorageFolder, TempFolder, DependenciesFolder);
-		helper.CreateDefaultFoldersIfNotExists();
+		helper.CreateDefaultFolders();
 
 		// Set the default write to appSettings file
 		AppSettingsPath = Path.Combine(BaseDirectoryProject, "appsettings.patch.json");
