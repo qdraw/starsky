@@ -59,9 +59,10 @@ describe('DetailView (from upload) (40)', () => {
 
   it('go next to filename3 (40)', () => {
     if (!config.isEnabled) return
-    cy.visit(config.url + '/' + fileName2)
 
     cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_112430.jpg').as('index1')
+
+    cy.visit(config.url + '/' + fileName2)
 
     cy.get('.nextprev.nextprev--next').first()
       .click()
