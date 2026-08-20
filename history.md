@@ -40,7 +40,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.8.0-beta.0 - _(Unreleased)_ 2024-?-11 {#v0.8.0-beta.0}
+## version 0.8.0-beta.1 - _(Unreleased)_ 2024-?-11 {#v0.8.0-beta.0}
+
+- [x] (Changed) _Back-end_ Add IOException AppSettings (PR #3222)
+
+## version 0.8.0-beta.0 - 2026-08-20 {#v0.8.0-beta.0}
 
 - [x] (Changed) _Back-end_ Code quality .NET 10 (PR #3205)
 - [x] (Changed) _Back-end_ Upgrade to .NET 10 - SDK 8.0.400 (Runtime: 10.0.11) (PR #3204)
