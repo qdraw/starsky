@@ -150,9 +150,10 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.url);
 
     cy.get(".item.item--select").click();
+    cy.get(`[data-filepath="${urls[0]}"]`).should("be.visible");
 
     for (const url of urls) {
-        cy.get(`[data-filepath="${url}"] button`).click();
+        cy.get(`[data-filepath="${url}"] button`).click({ force: true });
     }
     cy.get(".item.item--more").click();
     cy.get("[data-test=trash]").click();
