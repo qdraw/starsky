@@ -22,9 +22,6 @@ changed since v0.7.22:
 - **Upgrade to .NET 10**
     - Starsky's backend now runs on .NET 10 (Runtime 10.0.11, SDK 10.0.400). .NET 10 is the
       current major version and brings performance improvements across the board.
-    - **Action required:** Your hosting environment must have the .NET 10 runtime installed. If
-      you are using Docker, pull the updated image. If you run Starsky as a self-hosted service,
-      update the runtime before deploying v0.8.0.
 
 ---
 
@@ -55,10 +52,6 @@ changed since v0.7.22:
 
 ### 🛠️ Bug Fixes & Improvements
 
-- **HTML Publish: `width`/`height` attributes were swapped (PR #3217)**
-    - A bug caused the `width` and `height` attributes on published `<img>` elements to be
-      inverted. Portrait photos were described with landscape dimensions and vice versa. Fixed.
-
 - **ExifTool guard: prevent accidental auto-download (PR #3223)**
     - Added a guard in `ExifToolService` that validates the ExifTool binary before attempting to
       use it. If the binary is absent or fails a basic sanity check, Starsky logs a warning
@@ -80,9 +73,6 @@ changed since v0.7.22:
 
 ### 🗃️ Infrastructure & Tooling
 
-- **Upgraded to Cypress 20 (PR #3220)**
-    - The end-to-end test suite now runs on Cypress 20, the latest major release.
-
 - **RabbitMQ.Client updated to 7.2.2 (PR #3215)**
     - Keeps the message queue client up to date with the latest upstream patches.
 
@@ -99,7 +89,7 @@ changed since v0.7.22:
 ### ⚠️ Upgrade Notes
 
 1. **Install the .NET 10 runtime** on your server or update your Docker image before upgrading.
-   Starsky will not start on .NET 8 after this release.
+   This is only required for development, by default all binaries are self-contained
 2. If you run ExifTool in an air-gapped or restricted environment, verify the binary is in place
    before starting the service — the new guard will log a warning on startup if it cannot be
    found, rather than silently auto-downloading.
