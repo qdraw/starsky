@@ -948,7 +948,9 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string FullPathStorageFolderToDatabaseStyle(string subpath)
 	{
-		foreach ( var mapping in StorageFolderMappings.OrderByDescending(m => m.Value.Length) )
+		foreach ( var mapping in 
+		         StorageFolderMappings
+			         .OrderByDescending(m => m.Value.Length) )
 		{
 			var physicalBase = mapping.Value.TrimEnd('/', '\\');
 			if ( Path.DirectorySeparatorChar == '\\' )
@@ -962,7 +964,7 @@ public sealed class AppSettings
 				continue;
 			}
 
-			var remainder = subpath.Substring(physicalBase.Length);
+			var remainder = subpath[physicalBase.Length..];
 			var dbKey = mapping.Key.TrimEnd('/');
 			return PathHelper.PrefixDbSlash(dbKey + PathReplaceToDatabaseStyle(remainder));
 		}

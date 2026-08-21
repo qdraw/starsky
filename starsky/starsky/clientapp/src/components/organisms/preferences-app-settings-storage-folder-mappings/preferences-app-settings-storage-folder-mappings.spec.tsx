@@ -387,7 +387,7 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
   });
 
   describe("ChangeSettingMappings", () => {
-    it("should post all valid mappings as form-urlencoded", async () => {
+    it("should post all valid mappings as form-urlencoded (indexed Key/Value format)", async () => {
       const mockResult: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200,
         data: null
@@ -403,7 +403,7 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
       expect(statusCode).toBe(200);
       expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlApiAppSettings(),
-        "StorageFolderMappings%5B%2F2024%5D=%2Fdata%2Farchive%2F2024"
+        "StorageFolderMappings%5B0%5D.Key=%2F2024&StorageFolderMappings%5B0%5D.Value=%2Fdata%2Farchive%2F2024"
       );
     });
 
@@ -424,7 +424,7 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
 
       expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlApiAppSettings(),
-        "StorageFolderMappings%5B%2F2023%5D=%2Fdata%2Farchive%2F2023"
+        "StorageFolderMappings%5B0%5D.Key=%2F2023&StorageFolderMappings%5B0%5D.Value=%2Fdata%2Farchive%2F2023"
       );
     });
 

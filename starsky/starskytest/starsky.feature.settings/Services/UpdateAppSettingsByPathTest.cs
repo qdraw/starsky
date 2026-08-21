@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -28,8 +29,9 @@ public class UpdateAppSettingsByPathTests
 
 		var storage = new FakeIStorage(["/", testFolderPath]);
 		var selectorStorage = new FakeSelectorStorage(storage);
+		var diskWatcher = new FakeDiskWatcher();
 		var updateAppSettingsByPath =
-			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage, diskWatcher);
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			StorageFolder = testFolderPath, Verbose = true
@@ -60,7 +62,8 @@ public class UpdateAppSettingsByPathTests
 		var storage = new FakeIStorage(["/", testFolderPath]);
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings();
-		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
+		var diskWatcher = new FakeDiskWatcher();
+		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			StorageFolder = testFolderPath, Verbose = true
@@ -96,8 +99,9 @@ public class UpdateAppSettingsByPathTests
 
 		// Arrange
 		var selectorStorage = new FakeSelectorStorage();
+		var diskWatcher = new FakeDiskWatcher();
 		var updateAppSettingsByPath =
-			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage, diskWatcher);
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			StorageFolder = "NonExistentFolder"
@@ -124,15 +128,16 @@ public class UpdateAppSettingsByPathTests
 		// Arrange
 		var selectorStorage =
 			new FakeSelectorStorage(new FakeIStorage(["/"]));
+		var diskWatcher = new FakeDiskWatcher();
 		var updateAppSettingsByPath =
-			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage, diskWatcher);
 		var appSettingTransferObject = new AppSettingsTransferObject { StorageFolder = "/" };
 
 		// Act
 		var result =
 			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
-		// Set back to what is was before
+		// Set back to what it was before
 		Environment.SetEnvironmentVariable("app__storageFolder", before);
 
 		// Assert
@@ -155,7 +160,8 @@ public class UpdateAppSettingsByPathTests
 		var storage = new FakeIStorage(["/", testFolderPath]);
 		var appSettings = new AppSettings();
 		var selectorStorage = new FakeSelectorStorage(storage);
-		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
+		var diskWatcher = new FakeDiskWatcher();
+		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
 		var appSettingTransferObject1 = new AppSettingsTransferObject { Verbose = true };
 
 		// Act
@@ -187,7 +193,7 @@ public class UpdateAppSettingsByPathTests
 
 		Assert.IsNotNull(fileResult2);
 
-		// Set back to what is was before
+		// Set back to what it was before
 		Environment.SetEnvironmentVariable("app__storageFolder", before);
 
 		Assert.AreEqual(testFolderPath, fileResult2.App.StorageFolder);
@@ -199,8 +205,9 @@ public class UpdateAppSettingsByPathTests
 	{
 		var storage = new FakeIStorage();
 		var selectorStorage = new FakeSelectorStorage(storage);
+		var diskWatcher = new FakeDiskWatcher();
 		var updateAppSettingsByPath =
-			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage, diskWatcher);
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw,
@@ -236,5 +243,66 @@ public class UpdateAppSettingsByPathTests
 		Assert.AreEqual("/test", fileResult2.App.DefaultDesktopEditor[0].ApplicationPath);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,
 			fileResult2.App.DefaultDesktopEditor[0].ImageFormats[0]);
+	}
+
+	[TestMethod]
+	public async Task UpdateAppSettingsAsync_StorageFolderMappings_SavedToFile()
+	{
+		// Arrange
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings();
+		var diskWatcher = new FakeDiskWatcher();
+		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
+		var appSettingTransferObject = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		// Act
+		var result =
+			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+		// Assert
+		Assert.AreEqual(200, result.StatusCode);
+		Assert.AreEqual("Updated", result.Message);
+		Assert.AreEqual("/data/archive/2024", appSettings.StorageFolderMappings["/2024"]);
+
+		var fileResultString =
+			await StreamToStringHelper.StreamToStringAsync(
+				storage.ReadStream(appSettings.AppSettingsPath));
+		var fileResult = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString,
+			DefaultJsonSerializer.NoNamingPolicyBoolAsString);
+
+		Assert.IsNotNull(fileResult);
+		Assert.HasCount(1, fileResult.App.StorageFolderMappings);
+		Assert.AreEqual("/data/archive/2024", fileResult.App.StorageFolderMappings["/2024"]);
+	}
+
+	[TestMethod]
+	public async Task UpdateAppSettingsAsync_StorageFolderMappings_NotifiesDiskWatcher()
+	{
+		// Arrange
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings();
+		var diskWatcher = new FakeDiskWatcher();
+		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
+		var appSettingTransferObject = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		// Act
+		await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+		// Assert - DiskWatcher should have been notified of the new path
+		Assert.Contains("/data/archive/2024", diskWatcher.AddedItems);
 	}
 }

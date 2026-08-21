@@ -14,9 +14,12 @@ export async function ChangeSettingMappings(
   mappings: MappingRow[]
 ): Promise<number> {
   const bodyParams = new URLSearchParams();
+  let idx = 0;
   for (const { subPath, physicalPath } of mappings) {
     if (subPath && physicalPath) {
-      bodyParams.append(`StorageFolderMappings[${subPath}]`, physicalPath);
+      bodyParams.append(`StorageFolderMappings[${idx}].Key`, subPath);
+      bodyParams.append(`StorageFolderMappings[${idx}].Value`, physicalPath);
+      idx++;
     }
   }
   const result = await FetchPost(
@@ -133,10 +136,10 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent =
               name={`storageFolderMappings-subPath-${row.id}`}
               contentEditable={isEnabled}
               onBlur={(e) => handleSubPathBlur(row.id, e.target.innerText)}
-              
+              placeholder={MessageAppSettingsStorageFolderMappingsSubPath}
               spellcheck={false}
             >
-              {row.subPath || MessageAppSettingsStorageFolderMappingsSubPath}
+              {row.subPath}
             </FormControl>
             <span className="preferences--storage-folder-mapping-arrow">→</span>
             <FormControl
@@ -145,10 +148,10 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent =
               onBlur={(e) =>
                 handlePhysicalPathBlur(row.id, e.target.innerText)
               }
+              placeholder={MessageAppSettingsStorageFolderMappingsPhysicalPath}
               spellcheck={false}
             >
-              {row.physicalPath ||
-                MessageAppSettingsStorageFolderMappingsPhysicalPath}
+              {row.physicalPath}
             </FormControl>
             {isEnabled ? (
               <button
