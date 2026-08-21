@@ -1194,7 +1194,7 @@ public sealed class AppSettingsCompareHelperTest
 
 		AppSettingsCompareHelper.Compare(source, transfer);
 
-		Assert.AreEqual(0, source.StorageFolderMappings.Count);
+		Assert.IsEmpty(source.StorageFolderMappings);
 	}
 
 	[TestMethod]

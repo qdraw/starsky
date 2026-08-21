@@ -589,7 +589,8 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	public void DatabasePathToFilePath_WithMapping_RedirectsToPhysicalPath()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void DatabasePathToFilePath_WithMapping_RedirectsToPhysicalPath__UnixOnly()
 	{
 		var appSettings = new AppSettings
 		{
@@ -606,7 +607,8 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	public void DatabasePathToFilePath_WithMapping_ExactFolderMatch()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void DatabasePathToFilePath_WithMapping_ExactFolderMatch__UnixOnly()
 	{
 		var appSettings = new AppSettings
 		{
@@ -623,7 +625,8 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	public void DatabasePathToFilePath_WithMapping_NonMappedPathUsesStorageFolder()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void DatabasePathToFilePath_WithMapping_NonMappedPathUsesStorageFolder__UnixOnly()
 	{
 		var appSettings = new AppSettings
 		{
@@ -640,7 +643,8 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	public void DatabasePathToFilePath_LongerKeyWinsOverShorterKey()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void DatabasePathToFilePath_LongerKeyWinsOverShorterKey__UnixOnly()
 	{
 		var appSettings = new AppSettings
 		{
@@ -658,7 +662,8 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	public void FullPathStorageFolderToDatabaseStyle_WithMapping_ConvertsToSubPath()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void FullPathStorageFolderToDatabaseStyle_WithMapping_ConvertsToSubPath__UnixOnly()
 	{
 		var appSettings = new AppSettings
 		{
@@ -677,7 +682,8 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	public void FullPathStorageFolderToDatabaseStyle_WithMapping_ExactFolderMatch()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void FullPathStorageFolderToDatabaseStyle_WithMapping_ExactFolderMatch__UnixOnly()
 	{
 		var appSettings = new AppSettings
 		{

@@ -444,14 +444,19 @@ public class UpdateAppSettingsByPathTests
 	}
 
 	[TestMethod]
+	[DataRow("/etc")]
+	[DataRow("/bin")]
+	[DataRow("/usr/bin")]
+	[DataRow("/System")]
+	[DataRow("/private/etc")]
 	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
-	public async Task UpdateAppSettingsAsync_RestrictedStorageFolder_Returns403__UnixOnly()
+	public async Task UpdateAppSettingsAsync_RestrictedStorageFolder_Returns403__UnixOnly(string restrictedPath)
 	{
 		// Arrange
 		var before = Environment.GetEnvironmentVariable("app__storageFolder");
 		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
 
-		var storage = new FakeIStorage(["/etc"]);
+		var storage = new FakeIStorage([restrictedPath]);
 		var appSettings = new AppSettings();
 		var updateAppSettingsByPath =
 			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage),
@@ -459,7 +464,7 @@ public class UpdateAppSettingsByPathTests
 
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
-			StorageFolder = "/etc"
+			StorageFolder = restrictedPath
 		};
 
 		// Act
@@ -472,6 +477,6 @@ public class UpdateAppSettingsByPathTests
 		// Assert
 		Assert.AreEqual(403, result.StatusCode);
 		Assert.Contains("restricted system directory", result.Message);
-		Assert.Contains("/etc", result.Message);
+		Assert.Contains(restrictedPath, result.Message);
 	}
 }
