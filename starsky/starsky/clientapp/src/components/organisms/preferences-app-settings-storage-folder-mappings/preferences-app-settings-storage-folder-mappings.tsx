@@ -81,11 +81,17 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent = () 
   }, [appSettings]);
 
   async function saveAll(rows: MappingRow[]) {
-    const statusCode = await ChangeSettingMappings(rows);
-    if (statusCode === 200) {
-      setSaveError(false);
-      setChanged(true);
-    } else {
+    try {
+      const statusCode = await ChangeSettingMappings(rows);
+      if (statusCode === 200) {
+        setSaveError(false);
+        setChanged(true);
+        return;
+      }
+
+      setSaveError(true);
+      setChanged(false);
+    } catch {
       setSaveError(true);
       setChanged(false);
     }

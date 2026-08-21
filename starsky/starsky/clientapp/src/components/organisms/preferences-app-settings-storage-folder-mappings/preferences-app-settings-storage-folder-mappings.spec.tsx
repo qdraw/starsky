@@ -468,15 +468,51 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
           url.includes("permissions") ? permissions : appSettingsResponse
         );
 
-      jest.spyOn(FetchPost, "default").mockImplementation(() =>
-        Promise.resolve({ statusCode: 403, data: null } as IConnectionDefault)
-      );
+      jest
+        .spyOn(FetchPost, "default")
+        .mockImplementation(() =>
+          Promise.resolve({ statusCode: 403, data: null } as IConnectionDefault)
+        );
 
       const component = render(<PreferencesAppSettingsStorageFolderMappings />);
 
       const rows = await screen.findAllByTestId("storage-folder-mapping-row");
       const physicalPathInput = rows[0].querySelectorAll("[contenteditable]")[1];
       fireEvent.blur(physicalPathInput, { target: { innerText: "/etc/shadow" } });
+
+      await screen.findByTestId("storage-mapping-error");
+      expect(screen.queryByTestId("storage-mapping-changed")).toBeNull();
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("shows error box when saving fails with a rejected request", async () => {
+      const permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      const appSettingsResponse = {
+        statusCode: 200,
+        data: {
+          storageFolderMappings: { "/2024": "/data/archive/2024" }
+        }
+      } as unknown as IConnectionDefault;
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementation((url: string) =>
+          url.includes("permissions") ? permissions : appSettingsResponse
+        );
+
+      jest.spyOn(FetchPost, "default").mockRejectedValue(new Error("network failure"));
+
+      const component = render(<PreferencesAppSettingsStorageFolderMappings />);
+
+      const rows = await screen.findAllByTestId("storage-folder-mapping-row");
+      const physicalPathInput = rows[0].querySelectorAll("[contenteditable]")[1];
+      fireEvent.blur(physicalPathInput, { target: { innerText: "/data/new-location" } });
 
       await screen.findByTestId("storage-mapping-error");
       expect(screen.queryByTestId("storage-mapping-changed")).toBeNull();
@@ -504,9 +540,11 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
           url.includes("permissions") ? permissions : appSettingsResponse
         );
 
-      jest.spyOn(FetchPost, "default").mockImplementation(() =>
-        Promise.resolve({ statusCode: 200, data: null } as IConnectionDefault)
-      );
+      jest
+        .spyOn(FetchPost, "default")
+        .mockImplementation(() =>
+          Promise.resolve({ statusCode: 200, data: null } as IConnectionDefault)
+        );
 
       const component = render(<PreferencesAppSettingsStorageFolderMappings />);
 
