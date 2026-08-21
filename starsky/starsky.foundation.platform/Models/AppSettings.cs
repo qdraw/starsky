@@ -1074,7 +1074,18 @@ public sealed class AppSettings
 
 			var remainder = databaseFilePath[key.Length..];
 			var physicalBase = mapping.Value.TrimEnd('/', '\\');
-			return PathToFileReplacePathStyle(physicalBase + remainder);
+			var combined = PathToFileReplacePathStyle(physicalBase + remainder);
+			var canonical = Path.GetFullPath(combined);
+			var canonicalBase = Path.GetFullPath(physicalBase);
+			if ( canonical != canonicalBase &&
+			     !canonical.StartsWith(canonicalBase + Path.DirectorySeparatorChar,
+				     StringComparison.OrdinalIgnoreCase) )
+			{
+				throw new UnauthorizedAccessException(
+					$"Path traversal detected: resolved path is outside the mapped root.");
+			}
+
+			return canonical;
 		}
 
 		var filepath = StorageFolder + databaseFilePath;

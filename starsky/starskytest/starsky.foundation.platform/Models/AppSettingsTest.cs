@@ -731,4 +731,38 @@ public sealed class AppSettingsTest
 
 		Assert.AreEqual("/photo.jpg", result);
 	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void DatabasePathToFilePath_PathTraversal_ThrowsUnauthorizedAccess__UnixOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		Assert.ThrowsException<UnauthorizedAccessException>(() =>
+			appSettings.DatabasePathToFilePath("/2024/../../../etc/shadow"));
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void DatabasePathToFilePath_PathTraversal_SiblingDirectory_ThrowsUnauthorizedAccess__UnixOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		Assert.ThrowsException<UnauthorizedAccessException>(() =>
+			appSettings.DatabasePathToFilePath("/2024/../archive-sibling/secret.jpg"));
+	}
 }
