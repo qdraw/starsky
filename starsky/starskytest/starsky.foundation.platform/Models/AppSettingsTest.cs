@@ -590,38 +590,32 @@ public sealed class AppSettingsTest
 
 	[TestMethod]
 	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
-	public void DatabasePathToFilePath_WithMapping_RedirectsToPhysicalPath__UnixOnly()
+	[DataRow("/2024/photo.jpg", "/data/archive/2024/photo.jpg", "RedirectsToPhysicalPath")]
+	[DataRow("/2024", "/data/archive/2024", "ExactFolderMatch")]
+	[DataRow("/archive/2024/photo.jpg", "/data/specific-archive/2024/photo.jpg", "LongerKeyWinsOverShorterKey")]
+	public void DatabasePathToFilePath_WithMappings_UnixOnly(string dbPath, string expected, string scenario)
 	{
-		var appSettings = new AppSettings
-		{
-			StorageFolder = "/data/fotobieb",
-			StorageFolderMappings = new Dictionary<string, string>
+		var storageFolder = "/data/fotobieb";
+		var mappings = scenario == "LongerKeyWinsOverShorterKey" 
+			? new Dictionary<string, string>
+			{
+				{ "/archive", "/data/main-archive" },
+				{ "/archive/2024", "/data/specific-archive/2024" }
+			}
+			: new Dictionary<string, string>
 			{
 				{ "/2024", "/data/archive/2024" }
-			}
-		};
+			};
 
-		var result = appSettings.DatabasePathToFilePath("/2024/photo.jpg");
-
-		Assert.AreEqual("/data/archive/2024/photo.jpg", result);
-	}
-
-	[TestMethod]
-	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
-	public void DatabasePathToFilePath_WithMapping_ExactFolderMatch__UnixOnly()
-	{
 		var appSettings = new AppSettings
 		{
-			StorageFolder = "/data/fotobieb",
-			StorageFolderMappings = new Dictionary<string, string>
-			{
-				{ "/2024", "/data/archive/2024" }
-			}
+			StorageFolder = storageFolder,
+			StorageFolderMappings = mappings
 		};
 
-		var result = appSettings.DatabasePathToFilePath("/2024");
+		var result = appSettings.DatabasePathToFilePath(dbPath);
 
-		Assert.AreEqual("/data/archive/2024", result);
+		Assert.AreEqual(expected, result);
 	}
 
 	[TestMethod]
@@ -644,26 +638,9 @@ public sealed class AppSettingsTest
 
 	[TestMethod]
 	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
-	public void DatabasePathToFilePath_LongerKeyWinsOverShorterKey__UnixOnly()
-	{
-		var appSettings = new AppSettings
-		{
-			StorageFolder = "/data/fotobieb",
-			StorageFolderMappings = new Dictionary<string, string>
-			{
-				{ "/archive", "/data/main-archive" },
-				{ "/archive/2024", "/data/specific-archive/2024" }
-			}
-		};
-
-		var result = appSettings.DatabasePathToFilePath("/archive/2024/photo.jpg");
-
-		Assert.AreEqual("/data/specific-archive/2024/photo.jpg", result);
-	}
-
-	[TestMethod]
-	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
-	public void FullPathStorageFolderToDatabaseStyle_WithMapping_ConvertsToSubPath__UnixOnly()
+	[DataRow("/data/archive/2024/photo.jpg", "/2024/photo.jpg", "ConvertsToSubPath")]
+	[DataRow("/data/archive/2024", "/2024", "ExactFolderMatch")]
+	public void FullPathStorageFolderToDatabaseStyle_WithMappings_UnixOnly(string fullPath, string expected, string scenario)
 	{
 		var appSettings = new AppSettings
 		{
@@ -674,30 +651,18 @@ public sealed class AppSettingsTest
 			}
 		};
 
-		var sep = Path.DirectorySeparatorChar;
-		var result = appSettings.FullPathStorageFolderToDatabaseStyle(
-			$"/data/archive/2024{sep}photo.jpg");
-
-		Assert.AreEqual("/2024/photo.jpg", result);
-	}
-
-	[TestMethod]
-	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
-	public void FullPathStorageFolderToDatabaseStyle_WithMapping_ExactFolderMatch__UnixOnly()
-	{
-		var appSettings = new AppSettings
+		string result;
+		if (scenario == "ConvertsToSubPath")
 		{
-			StorageFolder = "/data/fotobieb",
-			StorageFolderMappings = new Dictionary<string, string>
-			{
-				{ "/2024", "/data/archive/2024" }
-			}
-		};
+			var sep = Path.DirectorySeparatorChar;
+			result = appSettings.FullPathStorageFolderToDatabaseStyle(fullPath);
+		}
+		else
+		{
+			result = appSettings.FullPathStorageFolderToDatabaseStyle(fullPath);
+		}
 
-		var result =
-			appSettings.FullPathStorageFolderToDatabaseStyle("/data/archive/2024");
-
-		Assert.AreEqual("/2024", result);
+		Assert.AreEqual(expected, result);
 	}
 
 	[TestMethod]
