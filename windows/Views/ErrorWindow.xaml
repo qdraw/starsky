@@ -1,0 +1,10 @@
+<Window
+    x:Class="Starsky.Windows.Views.ErrorWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Padding="20" Spacing="12">
+        <TextBlock Text="Desktop workflow error" FontSize="24" FontWeight="SemiBold" />
+        <TextBox x:Name="ErrorTextBox" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" Height="220" />
+        <Button Content="Close" HorizontalAlignment="Right" Click="Close_Click" />
+    </StackPanel>
+</Window>
