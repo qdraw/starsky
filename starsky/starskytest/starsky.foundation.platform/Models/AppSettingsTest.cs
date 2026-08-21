@@ -586,4 +586,128 @@ public sealed class AppSettingsTest
 
 		Assert.AreEqual(expectedResult, appSettings.AppSettingsLocalPath);
 	}
+
+	[TestMethod]
+	public void DatabasePathToFilePath_WithMapping_RedirectsToPhysicalPath()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result = appSettings.DatabasePathToFilePath("/2024/photo.jpg");
+
+		Assert.AreEqual("/data/archive/2024/photo.jpg", result);
+	}
+
+	[TestMethod]
+	public void DatabasePathToFilePath_WithMapping_ExactFolderMatch()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result = appSettings.DatabasePathToFilePath("/2024");
+
+		Assert.AreEqual("/data/archive/2024", result);
+	}
+
+	[TestMethod]
+	public void DatabasePathToFilePath_WithMapping_NonMappedPathUsesStorageFolder()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result = appSettings.DatabasePathToFilePath("/2023/photo.jpg");
+
+		Assert.Contains("fotobieb", result);
+	}
+
+	[TestMethod]
+	public void DatabasePathToFilePath_LongerKeyWinsOverShorterKey()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/archive", "/data/main-archive" },
+				{ "/archive/2024", "/data/specific-archive/2024" }
+			}
+		};
+
+		var result = appSettings.DatabasePathToFilePath("/archive/2024/photo.jpg");
+
+		Assert.AreEqual("/data/specific-archive/2024/photo.jpg", result);
+	}
+
+	[TestMethod]
+	public void FullPathStorageFolderToDatabaseStyle_WithMapping_ConvertsToSubPath()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var sep = Path.DirectorySeparatorChar;
+		var result = appSettings.FullPathStorageFolderToDatabaseStyle(
+			$"/data/archive/2024{sep}photo.jpg");
+
+		Assert.AreEqual("/2024/photo.jpg", result);
+	}
+
+	[TestMethod]
+	public void FullPathStorageFolderToDatabaseStyle_WithMapping_ExactFolderMatch()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result =
+			appSettings.FullPathStorageFolderToDatabaseStyle("/data/archive/2024");
+
+		Assert.AreEqual("/2024", result);
+	}
+
+	[TestMethod]
+	public void FullPathStorageFolderToDatabaseStyle_NonMappedPath_UsesStorageFolder()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb/",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result =
+			appSettings.FullPathStorageFolderToDatabaseStyle("/data/fotobieb/photo.jpg");
+
+		Assert.AreEqual("/photo.jpg", result);
+	}
 }

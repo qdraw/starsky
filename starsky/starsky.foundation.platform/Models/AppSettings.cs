@@ -185,6 +185,13 @@ public sealed class AppSettings
 		string.IsNullOrEmpty(
 			Environment.GetEnvironmentVariable("app__storageFolder"));
 
+	/// <summary>
+	///     Maps virtual subPaths to physical paths outside StorageFolder.
+	///     Key: subPath (e.g. "/2024"), Value: physical OS path (e.g. "/data/archive/2024").
+	///     Longer keys take precedence over shorter ones.
+	/// </summary>
+	public Dictionary<string, string> StorageFolderMappings { get; set; } = new();
+
 	[PackageTelemetry] public bool? Verbose { get; set; }
 
 	[PackageTelemetry]
@@ -941,6 +948,25 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string FullPathStorageFolderToDatabaseStyle(string subpath)
 	{
+		foreach ( var mapping in StorageFolderMappings.OrderByDescending(m => m.Value.Length) )
+		{
+			var physicalBase = mapping.Value.TrimEnd('/', '\\');
+			if ( Path.DirectorySeparatorChar == '\\' )
+			{
+				physicalBase = physicalBase.Replace('/', '\\');
+			}
+
+			if ( subpath != physicalBase &&
+			     !subpath.StartsWith(physicalBase + Path.DirectorySeparatorChar) )
+			{
+				continue;
+			}
+
+			var remainder = subpath.Substring(physicalBase.Length);
+			var dbKey = mapping.Key.TrimEnd('/');
+			return PathHelper.PrefixDbSlash(dbKey + PathReplaceToDatabaseStyle(remainder));
+		}
+
 		var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
 		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);
 
@@ -1031,11 +1057,22 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string DatabasePathToFilePath(string databaseFilePath)
 	{
+		foreach ( var mapping in StorageFolderMappings.OrderByDescending(m => m.Key.Length) )
+		{
+			var key = mapping.Key.TrimEnd('/');
+			if ( databaseFilePath != key &&
+			     !databaseFilePath.StartsWith(key + "/") )
+			{
+				continue;
+			}
+
+			var remainder = databaseFilePath.Substring(key.Length);
+			var physicalBase = mapping.Value.TrimEnd('/', '\\');
+			return PathToFileReplacePathStyle(physicalBase + remainder);
+		}
+
 		var filepath = StorageFolder + databaseFilePath;
-
-		filepath = PathToFileReplacePathStyle(filepath);
-
-		return filepath;
+		return PathToFileReplacePathStyle(filepath);
 	}
 
 	/// <summary>

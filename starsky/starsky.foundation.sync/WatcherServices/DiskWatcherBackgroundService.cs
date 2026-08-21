@@ -44,6 +44,12 @@ public sealed class DiskWatcherBackgroundService : BackgroundService
 		}
 
 		_diskWatcher.Watcher(_appSettings.StorageFolder);
+
+		foreach ( var physicalPath in _appSettings.StorageFolderMappings.Values )
+		{
+			_diskWatcher.Watcher(physicalPath);
+		}
+
 		return Task.CompletedTask;
 	}
 }
