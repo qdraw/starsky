@@ -450,7 +450,7 @@ public sealed class AppSettingsTest
 		Assert.IsFalse(appSettings.EnablePackageTelemetry);
 	}
 
-#if(DEBUG)
+#if DEBUG
 	[TestMethod]
 	public void EnablePackageTelemetry_Debug_False()
 	{
@@ -712,7 +712,7 @@ public sealed class AppSettingsTest
 
 		Assert.AreEqual("/photo.jpg", result);
 	}
-	
+
 	[TestMethod]
 	[OSCondition(OperatingSystems.Windows)]
 	public void FullPathStorageFolderToDatabaseStyle_NonMappedPath_UsesStorageFolder__WindowsOnly()
@@ -745,13 +745,14 @@ public sealed class AppSettingsTest
 			}
 		};
 
-		Assert.ThrowsException<UnauthorizedAccessException>(() =>
+		Assert.ThrowsExactly<UnauthorizedAccessException>(() =>
 			appSettings.DatabasePathToFilePath("/2024/../../../etc/shadow"));
 	}
 
 	[TestMethod]
 	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
-	public void DatabasePathToFilePath_PathTraversal_SiblingDirectory_ThrowsUnauthorizedAccess__UnixOnly()
+	public void
+		DatabasePathToFilePath_PathTraversal_SiblingDirectory_ThrowsUnauthorizedAccess__UnixOnly()
 	{
 		var appSettings = new AppSettings
 		{
@@ -762,7 +763,7 @@ public sealed class AppSettingsTest
 			}
 		};
 
-		Assert.ThrowsException<UnauthorizedAccessException>(() =>
+		Assert.ThrowsExactly<UnauthorizedAccessException>(() =>
 			appSettings.DatabasePathToFilePath("/2024/../archive-sibling/secret.jpg"));
 	}
 }

@@ -63,7 +63,8 @@ public class UpdateAppSettingsByPathTests
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings();
 		var diskWatcher = new FakeDiskWatcher();
-		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			StorageFolder = testFolderPath, Verbose = true
@@ -161,7 +162,8 @@ public class UpdateAppSettingsByPathTests
 		var appSettings = new AppSettings();
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var diskWatcher = new FakeDiskWatcher();
-		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
 		var appSettingTransferObject1 = new AppSettingsTransferObject { Verbose = true };
 
 		// Act
@@ -253,7 +255,8 @@ public class UpdateAppSettingsByPathTests
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings();
 		var diskWatcher = new FakeDiskWatcher();
-		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			StorageFolderMappings = new Dictionary<string, string>
@@ -290,7 +293,8 @@ public class UpdateAppSettingsByPathTests
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var appSettings = new AppSettings();
 		var diskWatcher = new FakeDiskWatcher();
-		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
 			StorageFolderMappings = new Dictionary<string, string>
@@ -346,56 +350,12 @@ public class UpdateAppSettingsByPathTests
 
 		var appSettingTransferObject = new AppSettingsTransferObject
 		{
-			StorageFolderMappings = new Dictionary<string, string>
-			{
-				{ "/sysroot", "/etc" }
-			}
+			StorageFolderMappings = new Dictionary<string, string> { { "/sysroot", "/etc" } }
 		};
 
 		var result =
 			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
 		Assert.AreEqual(403, result.StatusCode);
-	}
-
-	[TestMethod]
-	public void IsRestrictedPath_SafeDataPath_ReturnsFalse()
-	{
-		Assert.IsFalse(UpdateAppSettingsByPath.IsRestrictedPath("/data/photos"));
-		Assert.IsFalse(UpdateAppSettingsByPath.IsRestrictedPath("/mnt/archive/2024"));
-		Assert.IsFalse(UpdateAppSettingsByPath.IsRestrictedPath("/home/user/pictures"));
-	}
-
-	[TestMethod]
-	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
-	public void IsRestrictedPath_SystemPaths_ReturnsTrue__UnixOnly()
-	{
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/etc"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/etc/ssh"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/root"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/boot"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/sys"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/proc"));
-	}
-
-	[TestMethod]
-	[OSCondition(OperatingSystems.OSX)]
-	public void IsRestrictedPath_MacOsPaths_ReturnsTrue__MacOnly()
-	{
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/System"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/Library"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/private/etc"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/private/var"));
-	}
-
-	[TestMethod]
-	[OSCondition(OperatingSystems.Windows)]
-	public void IsRestrictedPath_WindowsPaths_ReturnsTrue__WindowsOnly()
-	{
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath(@"C:\Windows"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath(@"C:\Windows\System32"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath(@"C:\Program Files"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath(@"C:\Program Files (x86)"));
-		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath(@"C:\ProgramData"));
 	}
 }

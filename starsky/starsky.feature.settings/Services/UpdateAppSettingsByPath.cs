@@ -1,5 +1,5 @@
-using System.IO;
 using System.Text.Json;
+using starsky.feature.settings.Helpers;
 using starsky.feature.settings.Interfaces;
 using starsky.feature.settings.Models;
 using starsky.foundation.injection;
@@ -20,47 +20,9 @@ public class UpdateAppSettingsByPath(
 	IDiskWatcher diskWatcher)
 	: IUpdateAppSettingsByPath
 {
-	private readonly IStorage _hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+	private readonly IStorage _hostStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
-	// Sensitive system directories that must never be used as mapping targets.
-	// Includes both the canonical and common alias forms (e.g. macOS symlinks /etc → /private/etc).
-	internal static readonly IReadOnlyList<string> RestrictedPaths =
-	[
-		// Linux / shared Unix
-		"/bin", "/boot", "/dev", "/etc", "/lib", "/lib64",
-		"/proc", "/root", "/run", "/sbin", "/sys", "/usr/bin",
-		"/usr/sbin",
-		// macOS (canonical forms under /private)
-		"/System", "/Library",
-		"/private/etc", "/private/var", "/private/tmp",
-		// Windows
-		@"C:\Windows",
-		@"C:\Program Files",
-		@"C:\Program Files (x86)",
-		@"C:\ProgramData",
-		@"C:\System Volume Information"
-	];
-
-	internal static bool IsRestrictedPath(string physicalPath)
-	{
-		string canonical;
-		try
-		{
-			canonical = Path.GetFullPath(physicalPath.TrimEnd('/', '\\'));
-		}
-		catch
-		{
-			return true;
-		}
-
-		var comparison = Path.DirectorySeparatorChar == '\\'
-			? StringComparison.OrdinalIgnoreCase
-			: StringComparison.Ordinal;
-
-		return RestrictedPaths.Any(restricted =>
-			canonical.Equals(restricted, comparison) ||
-			canonical.StartsWith(restricted + Path.DirectorySeparatorChar, comparison));
-	}
 
 	public async Task<UpdateAppSettingsStatusModel> UpdateAppSettingsAsync(
 		AppSettingsTransferObject appSettingTransferObject)
@@ -90,12 +52,13 @@ public class UpdateAppSettingsByPath(
 
 		foreach ( var (_, physicalPath) in appSettingTransferObject.StorageFolderMappings )
 		{
-			if ( IsRestrictedPath(physicalPath) )
+			if ( RestrictedPath.IsRestrictedPath(physicalPath) )
 			{
 				return new UpdateAppSettingsStatusModel
 				{
 					StatusCode = 403,
-					Message = $"Mapping target '{physicalPath}' points to a restricted system directory"
+					Message =
+						$"Mapping target '{physicalPath}' points to a restricted system directory"
 				};
 			}
 		}
