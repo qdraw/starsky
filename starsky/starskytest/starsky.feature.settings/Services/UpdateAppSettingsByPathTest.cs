@@ -311,6 +311,90 @@ public class UpdateAppSettingsByPathTests
 	}
 
 	[TestMethod]
+	public async Task UpdateAppSettingsAsync_StorageFolderMappings_MultipleMappings_NotifiesAll()
+	{
+		// Arrange
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings();
+		var diskWatcher = new FakeDiskWatcher();
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
+		var appSettingTransferObject = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" },
+				{ "/2023", "/data/archive/2023" },
+				{ "/legacy", "/data/old" }
+			}
+		};
+
+		// Act
+		await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+		// Assert - DiskWatcher should have been notified of all new paths
+		Assert.Contains("/data/archive/2024", diskWatcher.AddedItems);
+		Assert.Contains("/data/archive/2023", diskWatcher.AddedItems);
+		Assert.Contains("/data/old", diskWatcher.AddedItems);
+	}
+
+	[TestMethod]
+	public async Task UpdateAppSettingsAsync_StorageFolderMappings_OnlyNewMappingsNotified()
+	{
+		// Arrange
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/existing", "/data/existing" }
+			}
+		};
+		var diskWatcher = new FakeDiskWatcher();
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
+		var appSettingTransferObject = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/existing", "/data/existing" }, // existing mapping, should not notify
+				{ "/new", "/data/new" } // new mapping, should notify
+			}
+		};
+
+		// Act
+		await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+		// Assert - Only new path should trigger notification
+		Assert.DoesNotContain("/data/existing", diskWatcher.AddedItems);
+		Assert.Contains("/data/new", diskWatcher.AddedItems);
+	}
+
+	[TestMethod]
+	public async Task UpdateAppSettingsAsync_StorageFolderMappings_EmptyUpdate_NoNotification()
+	{
+		// Arrange
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings();
+		var diskWatcher = new FakeDiskWatcher();
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
+		var appSettingTransferObject = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>()
+		};
+
+		// Act
+		await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+		// Assert - No notification for empty mappings
+		Assert.IsEmpty(diskWatcher.AddedItems);
+	}
+
+	[TestMethod]
 	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
 	public async Task UpdateAppSettingsAsync_RestrictedPath_Returns403__UnixOnly()
 	{
@@ -357,5 +441,37 @@ public class UpdateAppSettingsByPathTests
 			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
 		Assert.AreEqual(403, result.StatusCode);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task UpdateAppSettingsAsync_RestrictedStorageFolder_Returns403__UnixOnly()
+	{
+		// Arrange
+		var before = Environment.GetEnvironmentVariable("app__storageFolder");
+		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+
+		var storage = new FakeIStorage(["/etc"]);
+		var appSettings = new AppSettings();
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage),
+				new FakeDiskWatcher());
+
+		var appSettingTransferObject = new AppSettingsTransferObject
+		{
+			StorageFolder = "/etc"
+		};
+
+		// Act
+		var result =
+			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+		// Set back to what it was before
+		Environment.SetEnvironmentVariable("app__storageFolder", before);
+
+		// Assert
+		Assert.AreEqual(403, result.StatusCode);
+		Assert.Contains("restricted system directory", result.Message);
+		Assert.Contains("/etc", result.Message);
 	}
 }

@@ -48,6 +48,16 @@ public class UpdateAppSettingsByPath(
 						"Location of StorageFolder on disk not found"
 				};
 			}
+
+			if ( RestrictedPath.IsRestrictedPath(appSettingTransferObject.StorageFolder) )
+			{
+				return new UpdateAppSettingsStatusModel
+				{
+					StatusCode = 403,
+					Message =
+						$"Mapping target '{appSettingTransferObject.StorageFolder}' points to a restricted system directory"
+				};
+			}
 		}
 
 		foreach ( var (_, physicalPath) in appSettingTransferObject.StorageFolderMappings )
