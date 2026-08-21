@@ -73,12 +73,27 @@
        AddMicrosoftWindowsAppSDKPayloadFilesFromComponents in SelfContained.targets.
        Strip every locale except en-US before AssignTargetPaths sees them so they
        are invisible in Rider and never copied to the output directory. -->
-  <Target Name="FilterMuiLocalesToEnUS" AfterTargets="AddMicrosoftWindowsAppSDKPayloadFilesFromComponents">
+  <Target Name="FilterWindowsAppSDKLinkedNoise" AfterTargets="AddMicrosoftWindowsAppSDKPayloadFilesFromComponents">
     <ItemGroup>
+      <!-- Remove non-en-US .mui locale files -->
       <None Remove="@(None)"
              Condition="'%(Extension)' == '.mui' and
                         $([System.String]::Copy('%(RootDir)%(Directory)').ToLower().Contains('\en-us\')) == 'False'" />
+      <!-- Remove .winmd metadata files (Windows SDK + AI package) - not needed as project items -->
+      <None Remove="@(None)"
+             Condition="'%(Extension)' == '.winmd'" />
+      <!-- Capture linked SDK DLLs then remove from None so Rider doesn't show them.
+           CopyWindowsAppSDKDlls below handles the actual output copy. -->
+      <_WasSDKDlls Include="@(None)"
+                    Condition="'%(Extension)' == '.dll' and '%(Link)' != ''" />
+      <None Remove="@(_WasSDKDlls)" />
     </ItemGroup>
+  </Target>
+
+  <Target Name="CopyWindowsAppSDKDlls" AfterTargets="CopyFilesToOutputDirectory">
+    <Copy SourceFiles="@(_WasSDKDlls)"
+          DestinationFolder="$(TargetDir)"
+          SkipUnchangedFiles="true" />
   </Target>
 
   <Target Name="RemoveUnusedLanguageResources" AfterTargets="CopyFilesToOutputDirectory">
