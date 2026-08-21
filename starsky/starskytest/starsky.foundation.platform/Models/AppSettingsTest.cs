@@ -651,18 +651,9 @@ public sealed class AppSettingsTest
 			}
 		};
 
-		string result;
-		if (scenario == "ConvertsToSubPath")
-		{
-			var sep = Path.DirectorySeparatorChar;
-			result = appSettings.FullPathStorageFolderToDatabaseStyle(fullPath);
-		}
-		else
-		{
-			result = appSettings.FullPathStorageFolderToDatabaseStyle(fullPath);
-		}
+		var result = appSettings.FullPathStorageFolderToDatabaseStyle(fullPath);
 
-		Assert.AreEqual(expected, result);
+		Assert.AreEqual(expected, result, $"Failed for scenario: {scenario}");
 	}
 
 	[TestMethod]
