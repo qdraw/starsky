@@ -178,7 +178,10 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
         return appSettings;
       });
 
-      const mockResult: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
+      const mockResult: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: null
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockResult);
@@ -221,7 +224,10 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
         return appSettings;
       });
 
-      const mockResult: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
+      const mockResult: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: null
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockResult);
