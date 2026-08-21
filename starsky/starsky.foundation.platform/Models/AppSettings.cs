@@ -448,7 +448,8 @@ public sealed class AppSettings
 				return;
 			}
 
-			PublishProfilesPrivate = value.OrderBy(obj => obj.Key)
+			PublishProfilesPrivate = value
+				.OrderBy(obj => obj.Key)
 				.ToDictionary(obj => obj.Key,
 					obj => obj.Value);
 		}
@@ -780,7 +781,8 @@ public sealed class AppSettings
 		}
 
 		// when Windows 2019 is more common: TimeZoneInfo FindSystemTimeZoneById
-		// Windows 10 May 2019 https://learn.microsoft.com/en-us/dotnet/core/extensions/globalization-icu
+		// Windows 10 May 2019
+		// https://learn.microsoft.com/en-us/dotnet/core/extensions/globalization-icu
 		return TZConvert.GetTimeZoneInfo(value);
 	}
 
@@ -864,7 +866,8 @@ public sealed class AppSettings
 
 		if ( appSettings.PublishProfiles != null )
 		{
-			foreach ( var value in appSettings.PublishProfiles.SelectMany(profile =>
+			foreach ( var value in 
+			         appSettings.PublishProfiles.SelectMany(profile =>
 				         profile.Value) )
 			{
 				ReplaceAppSettingsPublishProfilesCloneToDisplay(value);
@@ -1059,7 +1062,8 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string DatabasePathToFilePath(string databaseFilePath)
 	{
-		foreach ( var mapping in StorageFolderMappings.OrderByDescending(m => m.Key.Length) )
+		foreach ( var mapping in 
+		         StorageFolderMappings.OrderByDescending(m => m.Key.Length) )
 		{
 			var key = mapping.Key.TrimEnd('/');
 			if ( databaseFilePath != key &&
@@ -1068,7 +1072,7 @@ public sealed class AppSettings
 				continue;
 			}
 
-			var remainder = databaseFilePath.Substring(key.Length);
+			var remainder = databaseFilePath[key.Length..];
 			var physicalBase = mapping.Value.TrimEnd('/', '\\');
 			return PathToFileReplacePathStyle(physicalBase + remainder);
 		}
