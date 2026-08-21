@@ -331,4 +331,27 @@ describe("FormControl", () => {
       fireEvent.keyDown(div, { key: "A", code: "KeyA" });
     }).not.toThrow();
   });
+
+  it("sets a placeholder attribute when provided", () => {
+    const { getByTestId } = render(
+      <FormControl
+        contentEditable={true}
+        name="test"
+        placeholder="Type a title"
+        data-test="form-control-test"
+      />
+    );
+
+    const div = getByTestId("form-control-test");
+    expect(div.getAttribute("data-placeholder")).toBe("Type a title");
+  });
+
+  it("does not set placeholder attribute when omitted", () => {
+    const { getByTestId } = render(
+      <FormControl contentEditable={true} name="test" data-test="form-control-test" />
+    );
+
+    const div = getByTestId("form-control-test");
+    expect(div.getAttribute("data-placeholder")).toBeNull();
+  });
 });

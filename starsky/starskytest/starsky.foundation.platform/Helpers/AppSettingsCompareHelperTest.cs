@@ -1175,4 +1175,50 @@ public sealed class AppSettingsCompareHelperTest
 
 		Assert.IsEmpty(to.CloudImport.Providers);
 	}
+
+	[TestMethod]
+	public void StorageFolderMappings_EmptyNewValue_ClearsExistingMappings()
+	{
+		var source = new AppSettings
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/archive", "/data/archive" }
+			}
+		};
+
+		var transfer = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>()
+		};
+
+		AppSettingsCompareHelper.Compare(source, transfer);
+
+		Assert.IsEmpty(source.StorageFolderMappings);
+	}
+
+	[TestMethod]
+	public void StorageFolderMappings_NewMappingReplacesPrevious()
+	{
+		var source = new AppSettings
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/old", "/data/old" }
+			}
+		};
+
+		var transfer = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/new", "/data/new" }
+			}
+		};
+
+		AppSettingsCompareHelper.Compare(source, transfer);
+
+		Assert.IsFalse(source.StorageFolderMappings.ContainsKey("/old"));
+		Assert.IsTrue(source.StorageFolderMappings.ContainsKey("/new"));
+	}
 }

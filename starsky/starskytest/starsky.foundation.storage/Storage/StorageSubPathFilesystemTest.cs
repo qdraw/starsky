@@ -517,4 +517,109 @@ public sealed class StorageSubPathFilesystemTest
 			}
 		}
 	}
+
+	[TestMethod]
+	public void GetDirectoryRecursive_WithMapping_InjectsVirtualFolder()
+	{
+		// Arrange: mapped physical dir is a real temp dir
+		var mappedPhysical = Path.Combine(Path.GetTempPath(), "starsky_test_mapped_dir_recursive");
+		Directory.CreateDirectory(mappedPhysical);
+
+		try
+		{
+			var appSettings = new AppSettings
+			{
+				StorageFolder = _newImage.BasePath,
+				StorageFolderMappings = new Dictionary<string, string>
+				{
+					{ "/mapped2024", mappedPhysical }
+				}
+			};
+			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+			var result = storage.GetDirectoryRecursive("/").Select(p => p.Key).ToList();
+
+			Assert.Contains("/mapped2024", result);
+		}
+		finally
+		{
+			Directory.Delete(mappedPhysical, true);
+		}
+	}
+
+	[TestMethod]
+	public void GetDirectories_WithMapping_InjectsVirtualFolder()
+	{
+		var mappedPhysical = Path.Combine(Path.GetTempPath(), "starsky_test_mapped_dir_list");
+		Directory.CreateDirectory(mappedPhysical);
+
+		try
+		{
+			var appSettings = new AppSettings
+			{
+				StorageFolder = _newImage.BasePath,
+				StorageFolderMappings = new Dictionary<string, string>
+				{
+					{ "/mapped2025", mappedPhysical }
+				}
+			};
+			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+			var result = storage.GetDirectories("/").ToList();
+
+			Assert.Contains("/mapped2025", result);
+		}
+		finally
+		{
+			Directory.Delete(mappedPhysical, true);
+		}
+	}
+
+	[TestMethod]
+	public void GetAllFilesInDirectoryRecursive_WithMapping_IncludesMappedFiles()
+	{
+		var mappedPhysical = Path.Combine(Path.GetTempPath(), "starsky_test_mapped_files");
+		Directory.CreateDirectory(mappedPhysical);
+		var testFile = Path.Combine(mappedPhysical, "mapped_photo.jpg");
+		File.WriteAllText(testFile, "fake");
+
+		try
+		{
+			var appSettings = new AppSettings
+			{
+				StorageFolder = _newImage.BasePath,
+				StorageFolderMappings = new Dictionary<string, string>
+				{
+					{ "/mapped2026", mappedPhysical }
+				}
+			};
+			var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+			var result = storage.GetAllFilesInDirectoryRecursive("/").ToList();
+
+			Assert.Contains("/mapped2026/mapped_photo.jpg", result);
+		}
+		finally
+		{
+			Directory.Delete(mappedPhysical, true);
+		}
+	}
+
+	[TestMethod]
+	public void GetDirectoryRecursive_WithMapping_MissingPhysicalPath_IsSkipped()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = _newImage.BasePath,
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/missing", "/this/path/does/not/exist/anywhere" }
+			}
+		};
+		var storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
+
+		var result = storage.GetDirectoryRecursive("/").Select(p => p.Key).ToList();
+
+		Assert.DoesNotContain("/missing", result);
+	}
 }

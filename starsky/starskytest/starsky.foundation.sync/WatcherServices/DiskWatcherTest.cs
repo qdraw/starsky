@@ -421,4 +421,37 @@ public sealed class DiskWatcherTest
 
 		Assert.IsFalse(fakeIFileSystemWatcher.IsDisposed);
 	}
+
+	[TestMethod]
+	public void Watcher_SecondCall_StartsAdditionalWatcher()
+	{
+		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
+		var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+		var basePath = new CreateAnImage().BasePath;
+
+		// First call uses the primary (injected) watcher
+		watcher.Watcher(basePath);
+		// Second call for a mapped path — uses a new BufferingFileSystemWatcher internally
+		watcher.Watcher(basePath);
+
+		watcher.Dispose();
+
+		// Primary watcher is still configured on the injected wrapper
+		Assert.AreEqual(basePath, fakeIFileSystemWatcher.Path);
+	}
+
+	[TestMethod]
+	public void Dispose_CleansUpAdditionalWatchers()
+	{
+		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
+		var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+		var basePath = new CreateAnImage().BasePath;
+
+		watcher.Watcher(basePath);
+		watcher.Watcher(basePath); // creates additional watcher
+
+		watcher.Dispose();
+
+		Assert.IsTrue(fakeIFileSystemWatcher.IsDisposed);
+	}
 }

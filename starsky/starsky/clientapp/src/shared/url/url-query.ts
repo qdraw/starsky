@@ -66,7 +66,7 @@ export class UrlQuery {
     return document.location.pathname.includes(this.prefix) ? `${this.prefix}/import` : `/import`;
   }
 
-  public UrlPreferencesPage(tab? : string): string {
+  public UrlPreferencesPage(tab?: string): string {
     if (!tab) {
       return document.location.pathname.includes(this.prefix)
         ? `${this.prefix}/preferences`

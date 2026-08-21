@@ -185,6 +185,13 @@ public sealed class AppSettings
 		string.IsNullOrEmpty(
 			Environment.GetEnvironmentVariable("app__storageFolder"));
 
+	/// <summary>
+	///     Maps virtual subPaths to physical paths outside StorageFolder.
+	///     Key: subPath (e.g. "/2024"), Value: physical OS path (e.g. "/data/archive/2024").
+	///     Longer keys take precedence over shorter ones.
+	/// </summary>
+	public Dictionary<string, string> StorageFolderMappings { get; set; } = new();
+
 	[PackageTelemetry] public bool? Verbose { get; set; }
 
 	[PackageTelemetry]
@@ -441,7 +448,8 @@ public sealed class AppSettings
 				return;
 			}
 
-			PublishProfilesPrivate = value.OrderBy(obj => obj.Key)
+			PublishProfilesPrivate = value
+				.OrderBy(obj => obj.Key)
 				.ToDictionary(obj => obj.Key,
 					obj => obj.Value);
 		}
@@ -773,7 +781,8 @@ public sealed class AppSettings
 		}
 
 		// when Windows 2019 is more common: TimeZoneInfo FindSystemTimeZoneById
-		// Windows 10 May 2019 https://learn.microsoft.com/en-us/dotnet/core/extensions/globalization-icu
+		// Windows 10 May 2019
+		// https://learn.microsoft.com/en-us/dotnet/core/extensions/globalization-icu
 		return TZConvert.GetTimeZoneInfo(value);
 	}
 
@@ -857,7 +866,8 @@ public sealed class AppSettings
 
 		if ( appSettings.PublishProfiles != null )
 		{
-			foreach ( var value in appSettings.PublishProfiles.SelectMany(profile =>
+			foreach ( var value in 
+			         appSettings.PublishProfiles.SelectMany(profile =>
 				         profile.Value) )
 			{
 				ReplaceAppSettingsPublishProfilesCloneToDisplay(value);
@@ -941,6 +951,27 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string FullPathStorageFolderToDatabaseStyle(string subpath)
 	{
+		foreach ( var mapping in 
+		         StorageFolderMappings
+			         .OrderByDescending(m => m.Value.Length) )
+		{
+			var physicalBase = mapping.Value.TrimEnd('/', '\\');
+			if ( Path.DirectorySeparatorChar == '\\' )
+			{
+				physicalBase = physicalBase.Replace('/', '\\');
+			}
+
+			if ( subpath != physicalBase &&
+			     !subpath.StartsWith(physicalBase + Path.DirectorySeparatorChar) )
+			{
+				continue;
+			}
+
+			var remainder = subpath[physicalBase.Length..];
+			var dbKey = mapping.Key.TrimEnd('/');
+			return PathHelper.PrefixDbSlash(dbKey + PathReplaceToDatabaseStyle(remainder));
+		}
+
 		var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
 		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);
 
@@ -1031,11 +1062,34 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string DatabasePathToFilePath(string databaseFilePath)
 	{
+		foreach ( var mapping in 
+		         StorageFolderMappings.OrderByDescending(m => m.Key.Length) )
+		{
+			var key = mapping.Key.TrimEnd('/');
+			if ( databaseFilePath != key &&
+			     !databaseFilePath.StartsWith(key + "/") )
+			{
+				continue;
+			}
+
+			var remainder = databaseFilePath[key.Length..];
+			var physicalBase = mapping.Value.TrimEnd('/', '\\');
+			var combined = PathToFileReplacePathStyle(physicalBase + remainder);
+			var canonical = Path.GetFullPath(combined);
+			var canonicalBase = Path.GetFullPath(physicalBase);
+			if ( canonical != canonicalBase &&
+			     !canonical.StartsWith(canonicalBase + Path.DirectorySeparatorChar,
+				     StringComparison.OrdinalIgnoreCase) )
+			{
+				throw new UnauthorizedAccessException(
+					$"Path traversal detected: resolved path is outside the mapped root.");
+			}
+
+			return canonical;
+		}
+
 		var filepath = StorageFolder + databaseFilePath;
-
-		filepath = PathToFileReplacePathStyle(filepath);
-
-		return filepath;
+		return PathToFileReplacePathStyle(filepath);
 	}
 
 	/// <summary>

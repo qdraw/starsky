@@ -20,5 +20,6 @@ namespace starsky.foundation.platform.Models
 		public CollectionsOpenType.RawJpegMode DesktopCollectionsOpen { get; set; } =
 			CollectionsOpenType.RawJpegMode.Default;
 
+		public Dictionary<string, string> StorageFolderMappings { get; set; } = new();
 	}
 }
