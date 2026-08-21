@@ -305,4 +305,97 @@ public class UpdateAppSettingsByPathTests
 		// Assert - DiskWatcher should have been notified of the new path
 		Assert.Contains("/data/archive/2024", diskWatcher.AddedItems);
 	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task UpdateAppSettingsAsync_RestrictedPath_Returns403__UnixOnly()
+	{
+		// Arrange
+		var storage = new FakeIStorage();
+		var appSettings = new AppSettings();
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage),
+				new FakeDiskWatcher());
+
+		var appSettingTransferObject = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/secrets", "/etc/passwd" }
+			}
+		};
+
+		// Act
+		var result =
+			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+		// Assert
+		Assert.AreEqual(403, result.StatusCode);
+		Assert.IsFalse(appSettings.StorageFolderMappings.ContainsKey("/secrets"));
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public async Task UpdateAppSettingsAsync_RestrictedRootPath_Returns403__UnixOnly()
+	{
+		var storage = new FakeIStorage();
+		var appSettings = new AppSettings();
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage),
+				new FakeDiskWatcher());
+
+		var appSettingTransferObject = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/sysroot", "/etc" }
+			}
+		};
+
+		var result =
+			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+		Assert.AreEqual(403, result.StatusCode);
+	}
+
+	[TestMethod]
+	public void IsRestrictedPath_SafeDataPath_ReturnsFalse()
+	{
+		Assert.IsFalse(UpdateAppSettingsByPath.IsRestrictedPath("/data/photos"));
+		Assert.IsFalse(UpdateAppSettingsByPath.IsRestrictedPath("/mnt/archive/2024"));
+		Assert.IsFalse(UpdateAppSettingsByPath.IsRestrictedPath("/home/user/pictures"));
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void IsRestrictedPath_SystemPaths_ReturnsTrue__UnixOnly()
+	{
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/etc"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/etc/ssh"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/root"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/boot"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/sys"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/proc"));
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.OSX)]
+	public void IsRestrictedPath_MacOsPaths_ReturnsTrue__MacOnly()
+	{
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/System"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/Library"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/private/etc"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath("/private/var"));
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Windows)]
+	public void IsRestrictedPath_WindowsPaths_ReturnsTrue__WindowsOnly()
+	{
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath(@"C:\Windows"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath(@"C:\Windows\System32"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath(@"C:\Program Files"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath(@"C:\Program Files (x86)"));
+		Assert.IsTrue(UpdateAppSettingsByPath.IsRestrictedPath(@"C:\ProgramData"));
+	}
 }
