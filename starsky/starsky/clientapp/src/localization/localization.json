@@ -514,6 +514,11 @@
     "nl": "Verwijderen",
     "de": "Entfernen"
   },
+  "MessageAppSettingsStorageFolderMappingsError": {
+    "en": "Mapping could not be saved. The physical path points to a restricted system directory.",
+    "nl": "Koppeling kon niet worden opgeslagen. Het fysieke pad verwijst naar een beperkte systeemmap.",
+    "de": "Zuordnung konnte nicht gespeichert werden. Der physische Pfad verweist auf ein eingeschränktes Systemverzeichnis."
+  },
   "MessageSwitchButtonDesktopCollectionsRawOn": {
     "en": "Raw first",
     "nl": "Raw eerst",

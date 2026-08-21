@@ -442,4 +442,80 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
       expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().UrlApiAppSettings(), "");
     });
   });
+
+  describe("error handling", () => {
+    it("shows error box when server returns 403 for a restricted path", async () => {
+      const permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      const appSettingsResponse = {
+        statusCode: 200,
+        data: {
+          storageFolderMappings: { "/2024": "/data/archive/2024" }
+        }
+      } as unknown as IConnectionDefault;
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementation((url: string) =>
+          url.includes("permissions") ? permissions : appSettingsResponse
+        );
+
+      jest.spyOn(FetchPost, "default").mockImplementation(() =>
+        Promise.resolve({ statusCode: 403, data: null } as IConnectionDefault)
+      );
+
+      const component = render(<PreferencesAppSettingsStorageFolderMappings />);
+
+      const rows = await screen.findAllByTestId("storage-folder-mapping-row");
+      const physicalPathInput = rows[0].querySelectorAll("[contenteditable]")[1];
+      fireEvent.blur(physicalPathInput, { target: { innerText: "/etc/shadow" } });
+
+      await screen.findByTestId("storage-mapping-error");
+      expect(screen.queryByTestId("storage-mapping-changed")).toBeNull();
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("does not show error box when server returns 200", async () => {
+      const permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      const appSettingsResponse = {
+        statusCode: 200,
+        data: {
+          storageFolderMappings: { "/2024": "/data/archive/2024" }
+        }
+      } as unknown as IConnectionDefault;
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementation((url: string) =>
+          url.includes("permissions") ? permissions : appSettingsResponse
+        );
+
+      jest.spyOn(FetchPost, "default").mockImplementation(() =>
+        Promise.resolve({ statusCode: 200, data: null } as IConnectionDefault)
+      );
+
+      const component = render(<PreferencesAppSettingsStorageFolderMappings />);
+
+      const rows = await screen.findAllByTestId("storage-folder-mapping-row");
+      const physicalPathInput = rows[0].querySelectorAll("[contenteditable]")[1];
+      fireEvent.blur(physicalPathInput, {
+        target: { innerText: "/data/archive/2024" }
+      });
+
+      await screen.findByTestId("storage-mapping-changed");
+      expect(screen.queryByTestId("storage-mapping-error")).toBeNull();
+
+      act(() => {
+        component.unmount();
+      });
+    });
+  });
 });

@@ -42,6 +42,9 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent = () 
   const MessageAppSettingsStorageFolderMappingsRemove = language.key(
     localization.MessageAppSettingsStorageFolderMappingsRemove
   );
+  const MessageAppSettingsStorageFolderMappingsError = language.key(
+    localization.MessageAppSettingsStorageFolderMappingsError
+  );
   const MessageChangeNeedReSync = language.key(localization.MessageChangeNeedReSync);
   const MessageReadMoreHere = language.key(localization.MessageReadMoreHere);
 
@@ -63,6 +66,7 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent = () 
   const [mappings, setMappings] = useState<MappingRow[]>([]);
   const nextId = useRef(0);
   const [changed, setChanged] = useState(false);
+  const [saveError, setSaveError] = useState(false);
 
   useEffect(() => {
     if (!appSettings?.storageFolderMappings) return;
@@ -77,8 +81,14 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent = () 
   }, [appSettings]);
 
   async function saveAll(rows: MappingRow[]) {
-    await ChangeSettingMappings(rows);
-    setChanged(true);
+    const statusCode = await ChangeSettingMappings(rows);
+    if (statusCode === 200) {
+      setSaveError(false);
+      setChanged(true);
+    } else {
+      setSaveError(true);
+      setChanged(false);
+    }
   }
 
   function handleSubPathBlur(id: number, value: string) {
@@ -154,6 +164,11 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent = () 
         >
           {MessageAppSettingsStorageFolderMappingsAdd}
         </button>
+      ) : null}
+      {saveError ? (
+        <div className="warning-box warning-box--error" data-test="storage-mapping-error">
+          {MessageAppSettingsStorageFolderMappingsError}
+        </div>
       ) : null}
       {changed ? (
         <div className="warning-box" data-test="storage-mapping-changed">
