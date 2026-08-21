@@ -99,3 +99,37 @@
     color: #fff;
   }
 }
+
+/* list of mappings */
+.preferences--storage-folder-mapping-arrow {
+  margin: 0 10px;
+}
+@media (prefers-color-scheme: dark) {
+  .preferences--storage-folder-mapping-arrow {
+    color: #fff;
+  }
+}
+
+.preferences--storage-folder-mapping-row .btn {
+  margin-left: 10px;
+}
+
+.preferences--storage-folder-mapping-row .form-control.form-control--half {
+  width: 40%;
+}
+
+@media screen and (max-width: 780px) {
+  .preferences--storage-folder-mapping-row .form-control.form-control--half {
+    width: 30%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .preferences--storage-folder-mapping-row .form-control.form-control--half {
+    width: 80%;
+  }
+  .preferences--storage-folder-mapping-row .btn {
+    margin-left: 2px;
+    margin-bottom: 15px;
+  }
+}

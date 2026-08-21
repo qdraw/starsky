@@ -65,7 +65,6 @@ describe("url-path", () => {
       );
       expect(result).toStrictEqual({ replaceTitle: "test" });
     });
-
   });
   describe("Change", () => {
     it("no field name should return null", () => {
