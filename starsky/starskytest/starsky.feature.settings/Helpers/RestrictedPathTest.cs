@@ -25,6 +25,8 @@ public class RestrictedPathTest
 		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/boot"));
 		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/sys"));
 		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/proc"));
+		// Null character in path. (Parameter 'path')
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("\0"));
 	}
 
 	[TestMethod]
