@@ -340,7 +340,8 @@ public sealed class AppSettingsTest
 			{
 				{
 					"test", [
-						new() { Copy = true }, new() { Path = "value", Prepend = "value" }
+						new AppSettingsPublishProfiles { Copy = true },
+						new AppSettingsPublishProfiles { Path = "value", Prepend = "value" }
 					]
 				}
 			}
@@ -694,7 +695,8 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	public void FullPathStorageFolderToDatabaseStyle_NonMappedPath_UsesStorageFolder()
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void FullPathStorageFolderToDatabaseStyle_NonMappedPath_UsesStorageFolder__UnixOnly()
 	{
 		var appSettings = new AppSettings
 		{
@@ -707,6 +709,25 @@ public sealed class AppSettingsTest
 
 		var result =
 			appSettings.FullPathStorageFolderToDatabaseStyle("/data/fotobieb/photo.jpg");
+
+		Assert.AreEqual("/photo.jpg", result);
+	}
+	
+	[TestMethod]
+	[OSCondition(OperatingSystems.Windows)]
+	public void FullPathStorageFolderToDatabaseStyle_NonMappedPath_UsesStorageFolder__WindowsOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = @"C:\data\fotobieb\",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result =
+			appSettings.FullPathStorageFolderToDatabaseStyle(@"C:\data\fotobieb\photo.jpg");
 
 		Assert.AreEqual("/photo.jpg", result);
 	}
