@@ -26,6 +26,16 @@
         <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <GitCommitHash Condition="'$(GitCommitHash)' == '' and '$(GITHUB_SHA)' != ''">$(GITHUB_SHA)</GitCommitHash>
+        <GitCommitHash Condition="'$(GitCommitHash)' == '' and '$(BUILD_SOURCEVERSION)' != ''">$(BUILD_SOURCEVERSION)</GitCommitHash>
+        <GitCommitHash Condition="'$(GitCommitHash)' == '' and '$(CI_COMMIT_SHA)' != ''">$(CI_COMMIT_SHA)</GitCommitHash>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(GitCommitHash)' != ''">
+        <AssemblyMetadata Include="GitCommitHash" Value="$(GitCommitHash)" />
+    </ItemGroup>
+
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>

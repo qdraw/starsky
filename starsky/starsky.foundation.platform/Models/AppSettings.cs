@@ -159,6 +159,12 @@ public sealed class AppSettings
 		DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
 
 	/// <summary>
+	///     Get the git commit hash of the current build (if available).
+	/// </summary>
+	[PackageTelemetry]
+	public string AppVersionCommitHash => GitShaAssembly.GitHash(Assembly.GetExecutingAssembly());
+
+	/// <summary>
 	///     Main Storage provider on disk
 	/// </summary>
 	public string StorageFolder
@@ -866,7 +872,7 @@ public sealed class AppSettings
 
 		if ( appSettings.PublishProfiles != null )
 		{
-			foreach ( var value in 
+			foreach ( var value in
 			         appSettings.PublishProfiles.SelectMany(profile =>
 				         profile.Value) )
 			{
@@ -951,7 +957,7 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string FullPathStorageFolderToDatabaseStyle(string subpath)
 	{
-		foreach ( var mapping in 
+		foreach ( var mapping in
 		         StorageFolderMappings
 			         .OrderByDescending(m => m.Value.Length) )
 		{
@@ -1062,7 +1068,7 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string DatabasePathToFilePath(string databaseFilePath)
 	{
-		foreach ( var mapping in 
+		foreach ( var mapping in
 		         StorageFolderMappings.OrderByDescending(m => m.Key.Length) )
 		{
 			var key = mapping.Key.TrimEnd('/');
@@ -1082,7 +1088,7 @@ public sealed class AppSettings
 				     StringComparison.OrdinalIgnoreCase) )
 			{
 				throw new UnauthorizedAccessException(
-					$"Path traversal detected: resolved path is outside the mapped root.");
+					"Path traversal detected: resolved path is outside the mapped root.");
 			}
 
 			return canonical;
