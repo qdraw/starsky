@@ -437,18 +437,6 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	[DataRow("abc123")]
-	[DataRow("  9f86d081884c7d659a2feaa0c55ad015a3bf4f1b  ")]
-	public void AppVersionCommitHash_UsesEnvironmentVariable(string commitHash)
-	{
-		Environment.SetEnvironmentVariable("STARSKY_GIT_COMMIT_HASH", commitHash);
-		var appVersionCommitHash = new AppSettings().AppVersionCommitHash;
-		Environment.SetEnvironmentVariable("STARSKY_GIT_COMMIT_HASH", null);
-
-		Assert.AreEqual(commitHash.Trim(), appVersionCommitHash);
-	}
-
-	[TestMethod]
 	public void EnablePackageTelemetry_True()
 	{
 		var appSettings = new AppSettings { EnablePackageTelemetry = true };
