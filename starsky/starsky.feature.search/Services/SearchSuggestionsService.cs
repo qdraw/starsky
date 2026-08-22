@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +17,7 @@ namespace starsky.feature.search.Services;
 public class SearchSuggestionsService : ISearchSuggest
 {
 	private const int MaxResult = 20;
+	private const int InflateBatchSize = 5000;
 	private readonly AppSettings _appSettings;
 	private readonly IMemoryCache? _cache;
 	private readonly ApplicationDbContext _context;
@@ -40,11 +40,6 @@ public class SearchSuggestionsService : ISearchSuggest
 	///     All keywords are stored lowercase
 	/// </summary>
 	/// <returns></returns>
-	[SuppressMessage("Performance",
-		"CA1827:Do not use Count() or LongCount() when Any() can be used")]
-	[SuppressMessage("Performance",
-		"S1155:Do not use Count() or LongCount() when Any() can be used",
-		Justification = "ANY is not supported by EF Core")]
 	public async Task<List<KeyValuePair<string, int>>> Inflate()
 	{
 		if ( _cache == null )
@@ -57,18 +52,46 @@ public class SearchSuggestionsService : ISearchSuggest
 			return new Dictionary<string, int>().ToList();
 		}
 
-		var allFilesList = new List<KeyValuePair<string, int>>();
+		var suggestions =
+			new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+
 		try
 		{
-			allFilesList = await _context.FileIndex
-				.AsNoTracking()
-				.Where(p => !string.IsNullOrEmpty(p.Tags))
-				.GroupBy(i => i.Tags)
-				// ReSharper disable once UseMethodAny.1
-				.Where(x => x.Count() >= 1) // .ANY is not supported by EF Core
-				.TagWith("Inflate SearchSuggestionsService")
-				.Select(val =>
-					new KeyValuePair<string, int>(val.Key!, val.Count())).ToListAsync();
+			var lastId = 0;
+			while ( true )
+			{
+				var tagBatch = await _context.FileIndex
+					.AsNoTracking()
+					.Where(p => p.Id > lastId && !string.IsNullOrEmpty(p.Tags))
+					.OrderBy(p => p.Id)
+					.Select(p => new { p.Id, p.Tags })
+					.Take(InflateBatchSize)
+					.TagWith("Inflate SearchSuggestionsService")
+					.ToListAsync();
+
+				if ( tagBatch.Count == 0 )
+				{
+					break;
+				}
+
+				foreach ( var item in tagBatch )
+				{
+					var keywordsHashSet = HashSetHelper.StringToHashSet(item.Tags!.Trim());
+					foreach ( var keyword in keywordsHashSet )
+					{
+						if ( suggestions.ContainsKey(keyword) )
+						{
+							suggestions[keyword] += 1;
+						}
+						else
+						{
+							suggestions.Add(keyword, 1);
+						}
+					}
+				}
+
+				lastId = tagBatch[^1].Id;
+			}
 		}
 		catch ( Exception exception )
 		{
@@ -78,32 +101,7 @@ public class SearchSuggestionsService : ISearchSuggest
 					$"[SearchSuggestionsService] exception catch-ed {exception.Message} {exception.StackTrace}");
 			}
 
-			return allFilesList;
-		}
-
-		var suggestions =
-			new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
-
-		foreach ( var tag in allFilesList )
-		{
-			if ( string.IsNullOrEmpty(tag.Key) )
-			{
-				continue;
-			}
-
-			var keywordsHashSet = HashSetHelper.StringToHashSet(tag.Key.Trim());
-
-			foreach ( var keyword in keywordsHashSet )
-			{
-				if ( suggestions.ContainsKey(keyword) )
-				{
-					suggestions[keyword] += tag.Value;
-				}
-				else
-				{
-					suggestions.Add(keyword, tag.Value);
-				}
-			}
+			return [];
 		}
 
 		var suggestionsFiltered = suggestions
