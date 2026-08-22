@@ -49,8 +49,15 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
     const folderPathSet = new Set(props.selectedFolderSubPaths ?? []);
     const selectedPaths = props.selectedSubPath.split(";").filter(Boolean);
+    const trimTrailingSlashes = (path: string) => {
+      let end = path.length;
+      while (end > 0 && path[end - 1] === "/") {
+        end--;
+      }
+      return path.slice(0, end);
+    };
     const targetFolderPath =
-      currentFolderPath === "/" ? "/" : currentFolderPath.replace(/\/+$/g, "");
+      currentFolderPath === "/" ? "/" : trimTrailingSlashes(currentFolderPath);
     const toPaths = selectedPaths.map((selectedPath) => {
       if (!folderPathSet.has(selectedPath)) {
         return currentFolderPath;
