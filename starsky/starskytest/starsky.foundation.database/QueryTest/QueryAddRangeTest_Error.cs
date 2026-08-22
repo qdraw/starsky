@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
@@ -18,7 +17,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.QueryTest;
 
 [TestClass]
-public class QueryAddRangeTest_Error
+public class QueryAddRangeTestError
 {
 	private static IServiceScopeFactory CreateNewScope()
 	{
@@ -85,8 +84,8 @@ public class QueryAddRangeTest_Error
 
 		await using ( var seedContext = new ApplicationDbContext(options) )
 		{
-			await seedContext.FileIndex.AddAsync(new FileIndexItem("/existing.jpg"));
-			await seedContext.SaveChangesAsync();
+			await seedContext.FileIndex.AddAsync(new FileIndexItem("/existing.jpg"), TestContext.CancellationToken);
+			await seedContext.SaveChangesAsync(TestContext.CancellationToken);
 		}
 
 		await using var failingContext = new SqliteUniqueOnceDbContext(options);
@@ -100,10 +99,10 @@ public class QueryAddRangeTest_Error
 		]);
 
 		await using var assertContext = new ApplicationDbContext(options);
-		var allItems = await assertContext.FileIndex.ToListAsync();
+		var allItems = await assertContext.FileIndex.ToListAsync(TestContext.CancellationToken);
 
-		Assert.AreEqual(1, allItems.Count(p => p.FilePath == "/existing.jpg"));
-		Assert.AreEqual(1, allItems.Count(p => p.FilePath == "/new.jpg"));
+		Assert.ContainsSingle(p => p.FilePath == "/existing.jpg", allItems);
+		Assert.ContainsSingle(p => p.FilePath == "/new.jpg", allItems);
 	}
 
 	public TestContext TestContext { get; set; }
