@@ -532,8 +532,9 @@ describe("ModalMoveFile", () => {
       .mockImplementationOnce((props) => <>{props.children}</>)
       .mockImplementationOnce((props) => <>{props.children}</>);
 
-    // Local spyOn for FetchPost
-    const fetchPostSpy = jest.spyOn(FetchPost, "default").mockResolvedValueOnce({
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementationOnce(() => {});
+
+    const resultDo = {
       statusCode: 500,
       data: [
         {
@@ -543,7 +544,13 @@ describe("ModalMoveFile", () => {
           parentDirectory: "/"
         }
       ]
-    });
+    };
+
+    // Local spyOn for FetchPost
+    const fetchPostSpy = jest
+      .spyOn(FetchPost, "default")
+      .mockReset()
+      .mockResolvedValueOnce(resultDo);
 
     const handleExit = jest.fn();
 
@@ -569,8 +576,14 @@ describe("ModalMoveFile", () => {
       moveBtn.click();
     });
 
-    expect(await screen.findByTestId("modal-move-file-warning-box")).toBeInTheDocument();
+    const warningBox = await screen.findByTestId("modal-move-file-warning-box");
+    expect(warningBox).toBeInTheDocument();
+    // error message comes from fileIndexItems[0].status
+    expect(warningBox.textContent).toBe("ServerError");
+    expect(consoleErrorSpy).toHaveBeenCalledWith(resultDo);
     expect(handleExit).not.toHaveBeenCalled();
     expect(fetchPostSpy).toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
   });
 });
