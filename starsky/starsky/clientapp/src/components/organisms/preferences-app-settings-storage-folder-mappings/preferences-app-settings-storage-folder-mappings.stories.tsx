@@ -2,7 +2,7 @@ import PreferencesAppSettingsStorageFolderMappings
   from "./preferences-app-settings-storage-folder-mappings.tsx";
 
 export default {
-  title: "preferences-app-settings-storage-folder-mappings"
+  title: "components/organisms/preferences-app-settings-storage-folder-mappings"
 };
 
 export const Default = () => {
