@@ -216,7 +216,6 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			dbContext.Thumbnails.UpdateRange(alreadyExistingThumbnailItems);
 			// not optimized for bulk operations yet
-			await dbContext.SaveChangesAsync();
 			await SaveChangesDuplicate(dbContext);
 		}
 
