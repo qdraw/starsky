@@ -5,13 +5,14 @@
 set -euo pipefail
 
 # List of binaries to download, zip, and hash
+VERSION="v4.1.1"
 BINARIES=(
-  "linux-arm|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.2/linux-armhf|mozjpeg|mozjpeg-linux-arm.zip"
-  "linux-arm64|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.2/linux-arm64|mozjpeg|mozjpeg-linux-arm64.zip"
-  "linux-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.2/linux-x64|mozjpeg|mozjpeg-linux-x64.zip"
-  "osx-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.2/macos-x64|mozjpeg|mozjpeg-osx-x64.zip"
-  "osx-arm64|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.2/macos-arm64|mozjpeg|mozjpeg-osx-arm64.zip"
-  "win-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/v0.0.2/windows-x64.exe|mozjpeg.exe|mozjpeg-win-x64.zip"
+  "linux-arm|https://github.com/qdraw/mozjpeg-binaries/releases/download/$VERSION/linux-armhf|mozjpeg|mozjpeg-linux-arm.zip"
+  "linux-arm64|https://github.com/qdraw/mozjpeg-binaries/releases/download/$VERSION/linux-arm64|mozjpeg|mozjpeg-linux-arm64.zip"
+  "linux-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/$VERSION/linux-x64|mozjpeg|mozjpeg-linux-x64.zip"
+  "osx-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/$VERSION/macos-x64|mozjpeg|mozjpeg-osx-x64.zip"  
+  "osx-arm64|https://github.com/qdraw/mozjpeg-binaries/releases/download/$VERSION/macos-arm64|mozjpeg|mozjpeg-osx-arm64.zip"
+  "win-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/$VERSION/windows-x64.exe|mozjpeg.exe|mozjpeg-win-x64.zip"
 )
 
 # Output folder setup
