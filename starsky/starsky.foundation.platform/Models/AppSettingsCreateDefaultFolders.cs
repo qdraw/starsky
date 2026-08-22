@@ -69,11 +69,11 @@ public class AppSettingsCreateDefaultFolders(
 		}
 		catch ( FileNotFoundException e )
 		{
-			Console.WriteLine($"> Not allowed to create default folders: {e}");
+			Console.WriteLine($"> Not allowed to create default folders: {e.Message}");
 		}
 		catch ( UnauthorizedAccessException e )
 		{
-			Console.WriteLine($"> Not allowed to create default folders: {e}");
+			Console.WriteLine($"> Not allowed to create default folders: {e.Message}");
 		}
 	}
 

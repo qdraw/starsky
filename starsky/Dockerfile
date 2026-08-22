@@ -113,8 +113,8 @@ COPY --chown=starsky:starsky --from=react-build /app/starsky/clientapp ./clienta
 # Create necessary directories and set ownership
 RUN mkdir -p /app/photos && chown starsky:starsky /app/photos
 RUN mkdir -p /app/thumbnailTempFolder && chown starsky:starsky /app/thumbnailTempFolder
+RUN mkdir -p /app/storageFolder && chown starsky:starsky /app/storageFolder
 RUN chown starsky:starsky /app
-
 USER starsky
 
 EXPOSE 8080
