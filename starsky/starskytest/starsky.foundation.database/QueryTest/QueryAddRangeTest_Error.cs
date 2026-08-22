@@ -105,6 +105,50 @@ public class QueryAddRangeTestError
 		Assert.ContainsSingle(p => p.FilePath == "/new.jpg", allItems);
 	}
 
+	[TestMethod]
+	public async Task AddRangeAsync_DbUpdateExceptionUniqueConstraint_UsesDuplicateFilterOnRetry()
+	{
+		await using var connection = new SqliteConnection("Filename=:memory:");
+		await connection.OpenAsync(TestContext.CancellationToken);
+
+		var services = new ServiceCollection();
+		services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connection));
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseSqlite(connection)
+			.Options;
+
+		await using ( var setupContext = new ApplicationDbContext(options) )
+		{
+			await setupContext.Database.EnsureCreatedAsync(TestContext.CancellationToken);
+		}
+
+		await using ( var seedContext = new ApplicationDbContext(options) )
+		{
+			await seedContext.FileIndex.AddAsync(new FileIndexItem("/existing-db-update.jpg") { Id = 42 },
+				TestContext.CancellationToken);
+			await seedContext.SaveChangesAsync(TestContext.CancellationToken);
+		}
+
+		await using var queryContext = new ApplicationDbContext(options);
+		var query = new Query(queryContext, new AppSettings(), scopeFactory,
+			new FakeIWebLogger());
+
+		await query.AddRangeAsync(
+		[
+			new FileIndexItem("/existing-db-update.jpg") { Id = 42 },
+			new FileIndexItem("/new-db-update.jpg") { Id = 43 }
+		]);
+
+		await using var assertContext = new ApplicationDbContext(options);
+		var allItems = await assertContext.FileIndex.ToListAsync(TestContext.CancellationToken);
+
+		Assert.ContainsSingle(p => p.FilePath == "/existing-db-update.jpg", allItems);
+		Assert.ContainsSingle(p => p.FilePath == "/new-db-update.jpg", allItems);
+	}
+
 	public TestContext TestContext { get; set; }
 }
 
