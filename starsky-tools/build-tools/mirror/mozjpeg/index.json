@@ -3,32 +3,32 @@
         {
             "architecture": "linux-arm",
             "fileName": "mozjpeg-linux-arm.zip",
-            "sha256": "ce4b94eddd86ecd88999c8be9c8f192e1b1f97676d09397132f1fce4c3db7c2a"
+            "sha256": "3f29a37d3c3c5d80aaf0c1f1dd3809b459a88c50994b2d44a587ee40c73e40f0"
         },
         {
             "architecture": "linux-arm64",
             "fileName": "mozjpeg-linux-arm64.zip",
-            "sha256": "9937fc843be91e21814cc9eac484bf9c0e6069d0bcae99c0b54328b28a932b0c"
+            "sha256": "939afee119c30478dba79906ee270518e2a56c2ef1a031c666bcbd6ac3167722"
         },
         {
             "architecture": "linux-x64",
             "fileName": "mozjpeg-linux-x64.zip",
-            "sha256": "8d0c0025501e122725f0cda0e213d517614a12c57a545e1739933674eb034e96"
+            "sha256": "9610b025348262539a113536d01da02eb52eb407dec0f22b2c63de6380883881"
         },
         {
             "architecture": "osx-x64",
             "fileName": "mozjpeg-osx-x64.zip",
-            "sha256": "e871df153162de0c4761400e8bf8907999938a36fcd0fb8d473702e952ee49eb"
+            "sha256": "8576e46c51a16dae3b84f2bd8a309af275f9020ca0058df918e189ff3252338f"
         },
         {
             "architecture": "osx-arm64",
             "fileName": "mozjpeg-osx-arm64.zip",
-            "sha256": "e871df153162de0c4761400e8bf8907999938a36fcd0fb8d473702e952ee49eb"
+            "sha256": "26568b4ff415c5b440a2004561f0ffc23ba577ea6edc9e4df57b8179fd8f9dc8"
         },
         {
             "architecture": "win-x64",
             "fileName": "mozjpeg-win-x64.zip",
-            "sha256": "9f169588a951b78ff75821e2624f909a34b644db67ed6a3c34e726b80141e2a2"
+            "sha256": "337f58098a519364e7b1cb2ade0e8427f273743f76b1cb42efd03e76512d2f0b"
         }
     ]
 }

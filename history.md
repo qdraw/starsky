@@ -42,7 +42,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.8.1 - _(Unreleased)_ 2026-?-? {#v0.8.1}
 
-- nothing yet
+- [x] (Changed) _Tools_ Improvements for mirroring dependencies (PR #3226)
+- [x] (Changed) _Back-end_ ExifTool SourceForge.net download (PR #3226)
 
 ## version 0.8.0 - 2026-08-21 {#v0.8.0}
 

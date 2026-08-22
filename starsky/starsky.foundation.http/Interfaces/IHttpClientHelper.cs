@@ -8,8 +8,10 @@ namespace starsky.foundation.http.Interfaces;
 
 public interface IHttpClientHelper
 {
-	Task<bool> Download(Uri sourceUri, string fullLocalPath, int retryAfterInSeconds = 15);
-	Task<bool> Download(string sourceHttpUrl, string fullLocalPath, int retryAfterInSeconds = 15);
+	Task<bool> Download(Uri sourceUri, string fullLocalPath, int retryAfterInSeconds = 15,
+		string? userAgent = null);
+	Task<bool> Download(string sourceHttpUrl, string fullLocalPath, int retryAfterInSeconds = 15,
+		string? userAgent = null);
 	Task<KeyValuePair<bool, string>> ReadString(string sourceHttpUrl);
 	Task<KeyValuePair<bool, string>> ReadString(Uri sourceHttpUrl);
 

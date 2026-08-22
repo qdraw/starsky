@@ -11,23 +11,54 @@ BINARY_FOLDERNAME="mirror/ffmpeg"
 INDEX_FILE="index.json"
 CHECK_FILES=("ffmpeg-linux-64.zip" "ffmpeg-linux-arm-64.zip" "ffmpeg-linux-armhf-32.zip" "ffmpeg-macos-64.zip" "ffmpeg-win-64.zip" $OSX_ARM64_FILENAME)
 
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --output)
+      shift
+      if [ -z "$1" ]; then
+        echo "Missing value for --output"
+        exit 1
+      fi
+      BINARY_FOLDERNAME="$1"
+      ;;
+    --help|-h)
+      echo "Usage: $0 [--output <directory>]"
+      echo "  --output <directory>   Output directory (default: mirror/ffmpeg)"
+      echo "                         Relative paths resolve under \$SCRIPT_DIR"
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1"
+      echo "Use --help to see available options."
+      exit 1
+      ;;
+  esac
+  shift
+done
+
 LAST_CHAR_SCRIPT_DIR=${SCRIPT_DIR:length-1:1}
 [[ $LAST_CHAR_SCRIPT_DIR != "/" ]] && SCRIPT_DIR="$SCRIPT_DIR/"; :
 
 LAST_CHAR_BINARY_FOLDERNAME=${BINARY_FOLDERNAME:length-1:1}
 [[ $LAST_CHAR_BINARY_FOLDERNAME != "/" ]] && BINARY_FOLDERNAME="$BINARY_FOLDERNAME/"; :
 
-INDEX_FILE_PATH=$SCRIPT_DIR$BINARY_FOLDERNAME$INDEX_FILE
+if [[ "$BINARY_FOLDERNAME" = /* ]]; then
+  OUTPUT_DIRECTORY="$BINARY_FOLDERNAME"
+else
+  OUTPUT_DIRECTORY="$SCRIPT_DIR$BINARY_FOLDERNAME"
+fi
+
+INDEX_FILE_PATH="$OUTPUT_DIRECTORY$INDEX_FILE"
 
 
 # Fetch the JSON data
 FFBINARIES_JSON=$(curl -s $FFBINARIES_API)
 
 # Create a directory to store the binaries
-echo "Cleaning up previous binaries... $SCRIPT_DIR$BINARY_FOLDERNAME"
-rm -rf $SCRIPT_DIR$BINARY_FOLDERNAME
-mkdir -p $SCRIPT_DIR$BINARY_FOLDERNAME
-cd $SCRIPT_DIR$BINARY_FOLDERNAME
+echo "Cleaning up previous binaries... $OUTPUT_DIRECTORY"
+rm -rf "$OUTPUT_DIRECTORY"
+mkdir -p "$OUTPUT_DIRECTORY"
+cd "$OUTPUT_DIRECTORY"
 
 # Initialize JSON output
 OUTPUT_JSON="{\"binaries\":["
@@ -118,8 +149,8 @@ echo "All ffmpeg binaries downloaded successfully."
 if command -v node &> /dev/null
 then
     node -e "console.log(JSON.stringify(JSON.parse(require('fs') \
-          .readFileSync(process.argv[1])), null, 4));" $INDEX_FILE_PATH > $INDEX_FILE_PATH.bak
-    mv $INDEX_FILE_PATH.bak $INDEX_FILE_PATH
+          .readFileSync(process.argv[1])), null, 4));" "$INDEX_FILE_PATH" > "$INDEX_FILE_PATH.bak"
+    mv "$INDEX_FILE_PATH.bak" "$INDEX_FILE_PATH"
 else
     echo ""
     echo -e "\033[31mWarning: Node.js is not installed. Skipping JSON formatting.\033[0m"
@@ -127,9 +158,9 @@ else
 fi
 
 for CHECK_FILE in "${CHECK_FILES[@]}"; do
-  if [ -f "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE" ] && [ "$(stat -c%s "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE" 2>/dev/null || stat -f%z "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE")" -gt 17874368 ]; then
+  if [ -f "$OUTPUT_DIRECTORY$CHECK_FILE" ] && [ "$(stat -c%s "$OUTPUT_DIRECTORY$CHECK_FILE" 2>/dev/null || stat -f%z "$OUTPUT_DIRECTORY$CHECK_FILE")" -gt 17874368 ]; then
     echo "✅ $CHECK_FILE exists and is larger than 17 MB."
-  elif [ -f "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE" ]; then
+  elif [ -f "$OUTPUT_DIRECTORY$CHECK_FILE" ]; then
     echo "⛌ FAIL -> $CHECK_FILE exists but is 17 MB or smaller."
     exit 1
   else

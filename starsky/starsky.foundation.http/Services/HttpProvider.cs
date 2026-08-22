@@ -29,10 +29,22 @@ public sealed class HttpProvider : IHttpProvider
 	/// </summary>
 	/// <param name="requestUri">https:// url</param>
 	/// <returns>Task with Response</returns>
-	public Task<HttpResponseMessage> GetAsync(string requestUri)
+	public Task<HttpResponseMessage> GetAsync(string requestUri, string? userAgent = null)
 	{
+		if ( string.IsNullOrWhiteSpace(userAgent) )
+		{
+			return _httpClientFactory.CreateClient(HttpClientName)
+				.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
+		}
+
+		var request = new HttpRequestMessage
+		{
+			Method = HttpMethod.Get, RequestUri = new Uri(requestUri)
+		};
+		request.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+
 		return _httpClientFactory.CreateClient(HttpClientName)
-			.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
+			.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 	}
 
 	/// <summary>
