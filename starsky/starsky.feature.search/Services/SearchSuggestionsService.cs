@@ -14,26 +14,17 @@ using starsky.foundation.platform.Models;
 namespace starsky.feature.search.Services;
 
 [Service(typeof(ISearchSuggest), InjectionLifetime = InjectionLifetime.Scoped)]
-public class SearchSuggestionsService : ISearchSuggest
+public class SearchSuggestionsService(
+	ApplicationDbContext context,
+	IMemoryCache? memoryCache,
+	IWebLogger logger,
+	AppSettings appSettings)
+	: ISearchSuggest
 {
 	private const int MaxResult = 20;
 	private const int InflateBatchSize = 5000;
-	private readonly AppSettings _appSettings;
-	private readonly IMemoryCache? _cache;
-	private readonly ApplicationDbContext _context;
-	private readonly IWebLogger _logger;
 
-	public SearchSuggestionsService(
-		ApplicationDbContext context,
-		IMemoryCache? memoryCache,
-		IWebLogger logger,
-		AppSettings appSettings)
-	{
-		_context = context;
-		_cache = memoryCache;
-		_logger = logger;
-		_appSettings = appSettings;
-	}
+	private sealed record TagBatchItem(int Id, string Tags);
 
 	/// <summary>
 	///     Used to fill the cache with an array of
@@ -42,82 +33,35 @@ public class SearchSuggestionsService : ISearchSuggest
 	/// <returns></returns>
 	public async Task<List<KeyValuePair<string, int>>> Inflate()
 	{
-		if ( _cache == null )
+		if ( memoryCache == null )
 		{
 			return [];
 		}
 
-		if ( _cache.TryGetValue(nameof(SearchSuggestionsService), out _) )
+		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService), out _) )
 		{
 			return new Dictionary<string, int>().ToList();
 		}
 
-		var suggestions =
-			new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
-
 		try
 		{
-			var lastId = 0;
-			while ( true )
-			{
-				var tagBatch = await _context.FileIndex
-					.AsNoTracking()
-					.Where(p => p.Id > lastId && !string.IsNullOrEmpty(p.Tags))
-					.OrderBy(p => p.Id)
-					.Select(p => new { p.Id, p.Tags })
-					.Take(InflateBatchSize)
-					.TagWith("Inflate SearchSuggestionsService")
-					.ToListAsync();
+			var suggestions = await LoadSuggestionsAsync();
+			var suggestionsFiltered = FilterSuggestions(suggestions);
+			memoryCache.Set(nameof(SearchSuggestionsService), suggestionsFiltered,
+				GetCacheExpire(suggestionsFiltered.Count));
 
-				if ( tagBatch.Count == 0 )
-				{
-					break;
-				}
-
-				foreach ( var item in tagBatch )
-				{
-					var keywordsHashSet = HashSetHelper.StringToHashSet(item.Tags!.Trim());
-					foreach ( var keyword in keywordsHashSet )
-					{
-						if ( suggestions.ContainsKey(keyword) )
-						{
-							suggestions[keyword] += 1;
-						}
-						else
-						{
-							suggestions.Add(keyword, 1);
-						}
-					}
-				}
-
-				lastId = tagBatch[^1].Id;
-			}
+			return suggestionsFiltered;
 		}
 		catch ( Exception exception )
 		{
 			if ( !exception.Message.Contains("Unknown column") )
 			{
-				_logger.LogError(exception,
+				logger.LogError(exception,
 					$"[SearchSuggestionsService] exception catch-ed {exception.Message} {exception.StackTrace}");
 			}
 
 			return [];
 		}
-
-		var suggestionsFiltered = suggestions
-			.Where(p => p.Value >= 10)
-			.OrderByDescending(p => p.Value)
-			.ToList();
-
-		// When changing here also change the cache expire time in SearchSuggestionsInflateHostedService
-		var cacheExpire = suggestionsFiltered.Count != 0
-			? new TimeSpan(120, 0, 0)
-			: new TimeSpan(0, 1, 0);
-
-		_cache.Set(nameof(SearchSuggestionsService), suggestionsFiltered,
-			cacheExpire);
-
-		return suggestionsFiltered;
 	}
 
 	/// <summary>
@@ -126,12 +70,12 @@ public class SearchSuggestionsService : ISearchSuggest
 	/// <returns>Key/Value pared list</returns>
 	public async Task<List<KeyValuePair<string, int>>> GetAllSuggestions()
 	{
-		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		if ( memoryCache == null || appSettings.AddMemoryCache == false )
 		{
 			return [];
 		}
 
-		if ( _cache.TryGetValue(nameof(SearchSuggestionsService),
+		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService),
 			    out var objectFileFolders) )
 		{
 			return objectFileFolders as List<KeyValuePair<string, int>> ??
@@ -149,7 +93,7 @@ public class SearchSuggestionsService : ISearchSuggest
 	/// <returns>list of suggested keywords</returns>
 	public async Task<IEnumerable<string>> SearchSuggest(string query, bool system)
 	{
-		if ( string.IsNullOrEmpty(query) || _cache == null || _appSettings.AddMemoryCache == false )
+		if ( string.IsNullOrEmpty(query) || memoryCache == null || appSettings.AddMemoryCache == false )
 		{
 			return new List<string>();
 		}
@@ -193,5 +137,65 @@ public class SearchSuggestionsService : ISearchSuggest
 			"-title:",
 			"-isDirectory:false"
 		];
+	}
+
+	private async Task<Dictionary<string, int>> LoadSuggestionsAsync()
+	{
+		var suggestions = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+		var lastId = 0;
+
+		while ( true )
+		{
+			var currentLastId = lastId;
+			var tagBatch = await context.FileIndex
+				.AsNoTracking()
+				.Where(p => p.Id > currentLastId && !string.IsNullOrEmpty(p.Tags))
+				.OrderBy(p => p.Id)
+				.Select(p => new TagBatchItem(p.Id, p.Tags!))
+				.Take(InflateBatchSize)
+				.TagWith("Inflate SearchSuggestionsService")
+				.ToListAsync();
+
+			if ( tagBatch.Count == 0 )
+			{
+				break;
+			}
+
+			foreach ( var item in tagBatch )
+			{
+				AddKeywords(suggestions, item.Tags);
+			}
+
+			lastId = tagBatch[^1].Id;
+		}
+
+		return suggestions;
+	}
+
+	private static void AddKeywords(Dictionary<string, int> suggestions, string tags)
+	{
+		var keywordsHashSet = HashSetHelper.StringToHashSet(tags.Trim());
+		foreach ( var keyword in keywordsHashSet )
+		{
+			suggestions.TryGetValue(keyword, out var count);
+			suggestions[keyword] = count + 1;
+		}
+	}
+
+	private static List<KeyValuePair<string, int>> FilterSuggestions(
+		Dictionary<string, int> suggestions)
+	{
+		return
+		[
+			.. suggestions
+				.Where(p => p.Value >= 10)
+				.OrderByDescending(p => p.Value)
+		];
+	}
+
+	private static TimeSpan GetCacheExpire(int count)
+	{
+		// When changing here also change the cache expire time in SearchSuggestionsInflateHostedService
+		return count != 0 ? new TimeSpan(120, 0, 0) : new TimeSpan(0, 1, 0);
 	}
 }
