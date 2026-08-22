@@ -57,7 +57,7 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
       } as IConnectionDefault;
       const appSettings = {
         statusCode: 200,
-        data: { storageFolderMappings: {} }
+        data: { storageFolderAllowEdit: true, storageFolderMappings: {} }
       } as IConnectionDefault;
 
       jest
@@ -109,7 +109,7 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
       } as IConnectionDefault;
       const appSettings = {
         statusCode: 200,
-        data: { storageFolderMappings: {} }
+        data: { storageFolderAllowEdit: true, storageFolderMappings: {} }
       } as IConnectionDefault;
 
       jest.spyOn(useFetch, "default").mockImplementation((url) => {
@@ -155,6 +155,122 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
       const component = render(<PreferencesAppSettingsStorageFolderMappings />);
 
       expect(screen.queryByTestId("storage-folder-mapping-remove-0")).toBeNull();
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("does not show remove buttons when storageFolderAllowEdit is false", () => {
+      const permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      const appSettings = {
+        statusCode: 200,
+        data: {
+          storageFolderAllowEdit: false,
+          storageFolderMappings: { "/2024": "/data/archive/2024" }
+        }
+      } as IConnectionDefault;
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings);
+
+      const component = render(<PreferencesAppSettingsStorageFolderMappings />);
+
+      expect(screen.queryByTestId("storage-folder-mapping-remove-0")).toBeNull();
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("shows remove buttons when storageFolderAllowEdit is true", () => {
+      const permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      const appSettings = {
+        statusCode: 200,
+        data: {
+          storageFolderAllowEdit: true,
+          storageFolderMappings: { "/2024": "/data/archive/2024" }
+        }
+      } as IConnectionDefault;
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings);
+
+      const component = render(<PreferencesAppSettingsStorageFolderMappings />);
+
+      expect(screen.getByTestId("storage-folder-mapping-remove-0")).toBeTruthy();
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("does not show add button when storageFolderAllowEdit is false", () => {
+      const permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      const appSettings = {
+        statusCode: 200,
+        data: {
+          storageFolderAllowEdit: false,
+          storageFolderMappings: {}
+        }
+      } as IConnectionDefault;
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings);
+
+      const component = render(<PreferencesAppSettingsStorageFolderMappings />);
+
+      expect(screen.queryByTestId("storage-folder-mapping-add")).toBeNull();
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("shows add button when storageFolderAllowEdit is true", () => {
+      const permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      const appSettings = {
+        statusCode: 200,
+        data: {
+          storageFolderAllowEdit: true,
+          storageFolderMappings: {}
+        }
+      } as IConnectionDefault;
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings);
+
+      const component = render(<PreferencesAppSettingsStorageFolderMappings />);
+
+      expect(screen.getByTestId("storage-folder-mapping-add")).toBeTruthy();
 
       act(() => {
         component.unmount();
@@ -354,6 +470,7 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
       const appSettings = {
         statusCode: 200,
         data: {
+          storageFolderAllowEdit: true,
           storageFolderMappings: {
             "/2024": "/data/archive/2024"
           }
@@ -458,6 +575,7 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
       const appSettingsResponse = {
         statusCode: 200,
         data: {
+          storageFolderAllowEdit: true,
           storageFolderMappings: { "/2024": "/data/archive/2024" }
         }
       } as unknown as IConnectionDefault;
@@ -496,6 +614,7 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
       const appSettingsResponse = {
         statusCode: 200,
         data: {
+          storageFolderAllowEdit: true,
           storageFolderMappings: { "/2024": "/data/archive/2024" }
         }
       } as unknown as IConnectionDefault;
@@ -530,6 +649,7 @@ describe("PreferencesAppSettingsStorageFolderMappings", () => {
       const appSettingsResponse = {
         statusCode: 200,
         data: {
+          storageFolderAllowEdit: true,
           storageFolderMappings: { "/2024": "/data/archive/2024" }
         }
       } as unknown as IConnectionDefault;
