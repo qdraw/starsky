@@ -42,6 +42,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.8.1 - _(Unreleased)_ 2026-?-? {#v0.8.1}
 
+- [x] (Fixed) _Back-end_ Filter Unique keys in QueryAddRange (PR #3227)
+- [x] (Fixed) _Back-end_ ThumbnailQuery SaveChangesDuplicate (PR #3227)
+- [x] (Fixed) _Front-end_ PreferencesAppSettingsStorageFolderMappings not with env (PR #3227)
 - [x] (Changed) _Tools_ Improvements for mirroring dependencies (PR #3226)
 - [x] (Changed) _Back-end_ ExifTool SourceForge.net download (PR #3226)
 

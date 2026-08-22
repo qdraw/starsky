@@ -131,7 +131,7 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent = () 
           <FormControl
             name={`storageFolderMappings-subPath-${row.id}`}
             className="form-control inline-block form-control--half"
-            contentEditable={isEnabled}
+            contentEditable={isEnabled && appSettings?.storageFolderAllowEdit === true}
             onBlur={(e) => handleSubPathBlur(row.id, e.target.innerText)}
             placeholder={MessageAppSettingsStorageFolderMappingsSubPath}
             spellcheck={false}
@@ -142,14 +142,14 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent = () 
           <FormControl
             name={`storageFolderMappings-physicalPath-${row.id}`}
             className="form-control inline-block form-control--half"
-            contentEditable={isEnabled}
+            contentEditable={isEnabled && appSettings?.storageFolderAllowEdit === true}
             onBlur={(e) => handlePhysicalPathBlur(row.id, e.target.innerText)}
             placeholder={MessageAppSettingsStorageFolderMappingsPhysicalPath}
             spellcheck={false}
           >
             {row.physicalPath}
           </FormControl>
-          {isEnabled ? (
+          {isEnabled && appSettings?.storageFolderAllowEdit === true ? (
             <button
               type="button"
               className="btn btn--default"
@@ -161,7 +161,7 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent = () 
           ) : null}
         </div>
       ))}
-      {isEnabled ? (
+      {isEnabled && appSettings?.storageFolderAllowEdit === true ? (
         <button
           type="button"
           className="btn btn--default"

@@ -94,7 +94,7 @@ public partial class Query : IQuery
 		     _cache.TryGetValue(
 			     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
 		{
-			if ( !( data is FileIndexItem fileIndexItem ) )
+			if ( data is not FileIndexItem fileIndexItem )
 			{
 				return null;
 			}
@@ -188,24 +188,6 @@ public partial class Query : IQuery
 	/// <returns>this item</returns>
 	public async Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent)
 	{
-		async Task LocalQuery(ApplicationDbContext context, FileIndexItem fileIndexItem)
-		{
-			context.Attach(fileIndexItem).State = EntityState.Modified;
-			await context.SaveChangesAsync();
-			context.Attach(fileIndexItem).State = EntityState.Detached;
-			// Clone to avoid reference when cache exists
-			CacheUpdateItem(new List<FileIndexItem> { updateStatusContent.Clone() });
-			if ( _appSettings.Verbose == true )
-				// Ef core changes debug
-			{
-				_logger.LogDebug(context.ChangeTracker.DebugView.LongView);
-			}
-
-			// object cache path is used to avoid updates
-			SetGetObjectByFilePathCache(fileIndexItem.FilePath!, updateStatusContent,
-				TimeSpan.FromMinutes(1));
-		}
-
 		try
 		{
 			await LocalQuery(_context, updateStatusContent);
@@ -248,6 +230,24 @@ public partial class Query : IQuery
 		}
 
 		return updateStatusContent;
+
+		async Task LocalQuery(ApplicationDbContext context, FileIndexItem fileIndexItem)
+		{
+			context.Attach(fileIndexItem).State = EntityState.Modified;
+			await context.SaveChangesAsync();
+			context.Attach(fileIndexItem).State = EntityState.Detached;
+			// Clone to avoid reference when cache exists
+			CacheUpdateItem(new List<FileIndexItem> { updateStatusContent.Clone() });
+			if ( _appSettings.Verbose == true )
+				// Ef core changes debug
+			{
+				_logger.LogDebug(context.ChangeTracker.DebugView.LongView);
+			}
+
+			// object cache path is used to avoid updates
+			SetGetObjectByFilePathCache(fileIndexItem.FilePath!, updateStatusContent,
+				TimeSpan.FromMinutes(1));
+		}
 	}
 
 	/// <summary>
@@ -261,7 +261,7 @@ public partial class Query : IQuery
 	{
 		if ( updateStatusContentList.Count == 0 )
 		{
-			return new List<FileIndexItem>();
+			return [];
 		}
 
 		async Task<List<FileIndexItem>> LocalQuery(DbContext context,
