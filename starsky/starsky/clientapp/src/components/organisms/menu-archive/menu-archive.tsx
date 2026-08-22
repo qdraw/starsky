@@ -261,6 +261,9 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                       new URLPath().StringToIUrl(history.location.search).f
                     )}
                     parentDirectory={state.subPath}
+                    selectedFileIndexItems={state.fileIndexItems.filter((item) =>
+                      select.includes(item.fileName)
+                    )}
                     setEnableMoreMenu={setEnableMoreMenu}
                   />
                   <MenuOptionBatchRename
