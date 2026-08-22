@@ -37,7 +37,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 		"https://qdraw.nl/special/mirror/exiftool/checksums.txt";
 
 	private const string ExiftoolDownloadBasePathSourceforge =
-		"https://sourceforge1.net/projects/exiftool/files/"; // with slash at the end
+		"https://sourceforge.net/projects/exiftool/files/"; // with slash at the end
 	private const string ExiftoolDownloadBasePathSourceforgePostfix = "/download";
 
 	private const string ExiftoolDownloadBasePathMirror =
