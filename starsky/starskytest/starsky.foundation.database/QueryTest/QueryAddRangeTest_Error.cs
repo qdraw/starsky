@@ -149,6 +149,58 @@ public class QueryAddRangeTestError
 		Assert.ContainsSingle(p => p.FilePath == "/new-db-update.jpg", allItems);
 	}
 
+	[TestMethod]
+	public async Task AddRangeAsync_DbUpdateExceptionUniqueConstraint_AllItemsExist_LogsSkippingInsert()
+	{
+		await using var connection = new SqliteConnection("Filename=:memory:");
+		await connection.OpenAsync(TestContext.CancellationToken);
+
+		var services = new ServiceCollection();
+		services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connection));
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseSqlite(connection)
+			.Options;
+
+		await using ( var setupContext = new ApplicationDbContext(options) )
+		{
+			await setupContext.Database.EnsureCreatedAsync(TestContext.CancellationToken);
+		}
+
+		await using ( var seedContext = new ApplicationDbContext(options) )
+		{
+			await seedContext.FileIndex.AddAsync(new FileIndexItem("/existing-one.jpg") { Id = 81 },
+				TestContext.CancellationToken);
+			await seedContext.FileIndex.AddAsync(new FileIndexItem("/existing-two.jpg") { Id = 82 },
+				TestContext.CancellationToken);
+			await seedContext.SaveChangesAsync(TestContext.CancellationToken);
+		}
+
+		var fakeLogger = new FakeIWebLogger();
+		await using var queryContext = new ApplicationDbContext(options);
+		var query = new Query(queryContext, new AppSettings(), scopeFactory, fakeLogger);
+
+		await query.AddRangeAsync(
+		[
+			new FileIndexItem("/existing-one.jpg") { Id = 81 },
+			new FileIndexItem("/existing-two.jpg") { Id = 82 }
+		]);
+
+		var hasLogMessage = false;
+		foreach ( var log in fakeLogger.TrackedInformation )
+		{
+			if ( log.Item2?.Contains("All items already exist in database, skipping insert") == true )
+			{
+				hasLogMessage = true;
+				break;
+			}
+		}
+
+		Assert.IsTrue(hasLogMessage);
+	}
+
 	public TestContext TestContext { get; set; }
 }
 
