@@ -63,6 +63,8 @@ public class QueryAddRangeTest_Error
 
 		Assert.AreEqual(1, dbUpdateExceptionDbContext.Count);
 	}
+
+	public TestContext TestContext { get; set; }
 }
 
 internal sealed class SqliteExceptionDbContext(DbContextOptions options)
