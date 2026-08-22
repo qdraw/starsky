@@ -20,17 +20,56 @@ BINARY_FOLDERNAME="mirror/mozjpeg"
 INDEX_FILE="index.json"
 CHECK_FILES=("mozjpeg-linux-x64.zip" "mozjpeg-linux-arm64.zip" "mozjpeg-linux-arm.zip" "mozjpeg-osx-x64.zip" "mozjpeg-osx-arm64.zip" "mozjpeg-win-x64.zip")
 
-LAST_CHAR_SCRIPT_DIR=${SCRIPT_DIR: -1}
-[[ $LAST_CHAR_SCRIPT_DIR != "/" ]] && SCRIPT_DIR="$SCRIPT_DIR/"; :
-LAST_CHAR_BINARY_FOLDERNAME=${BINARY_FOLDERNAME: -1}
-[[ $LAST_CHAR_BINARY_FOLDERNAME != "/" ]] && BINARY_FOLDERNAME="$BINARY_FOLDERNAME/"; :
-INDEX_FILE_PATH=$SCRIPT_DIR$BINARY_FOLDERNAME$INDEX_FILE
+usage() {
+  echo "Usage: $0 [--output <directory>] [--help]"
+  echo
+  echo "Options:"
+  echo "  --output <directory>  Output directory for generated artifacts."
+  echo "                        Default: \$SCRIPT_DIR/$BINARY_FOLDERNAME"
+  echo "  --help                Show this help message and exit."
+}
+
+OUTPUT_ARG=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --output)
+      if [[ $# -lt 2 ]]; then
+        echo "Error: --output requires a directory argument."
+        usage
+        exit 1
+      fi
+      OUTPUT_ARG="$2"
+      shift 2
+      ;;
+    --help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Error: Unknown argument '$1'."
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [[ -n "$OUTPUT_ARG" ]]; then
+  if [[ "$OUTPUT_ARG" = /* ]]; then
+    OUTPUT_DIR="$OUTPUT_ARG"
+  else
+    OUTPUT_DIR="$(pwd)/$OUTPUT_ARG"
+  fi
+else
+  OUTPUT_DIR="$SCRIPT_DIR/$BINARY_FOLDERNAME"
+fi
+
+INDEX_FILE_PATH="$OUTPUT_DIR/$INDEX_FILE"
 
 # Clean and prepare output folder
-echo "Cleaning up previous binaries... $SCRIPT_DIR$BINARY_FOLDERNAME"
-rm -rf "$SCRIPT_DIR$BINARY_FOLDERNAME"
-mkdir -p "$SCRIPT_DIR$BINARY_FOLDERNAME"
-cd "$SCRIPT_DIR$BINARY_FOLDERNAME"
+echo "Cleaning up previous binaries... $OUTPUT_DIR"
+rm -rf "$OUTPUT_DIR"
+mkdir -p "$OUTPUT_DIR"
+cd "$OUTPUT_DIR"
 
 # Download, zip, hash, and collect manifest entries
 OUTPUT_JSON='{"binaries":['
@@ -77,7 +116,7 @@ then
 fi
 
 for CHECK_FILE in "${CHECK_FILES[@]}"; do
-  FILE_PATH="$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE"
+  FILE_PATH="$OUTPUT_DIR/$CHECK_FILE"
 
   if [ ! -f "$FILE_PATH" ]; then
     echo "⛌ FAIL -> $CHECK_FILE does not exist."
