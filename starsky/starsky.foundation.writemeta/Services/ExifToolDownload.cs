@@ -37,7 +37,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 		"https://qdraw.nl/special/mirror/exiftool/checksums.txt";
 
 	private const string ExiftoolDownloadBasePathSourceforge =
-		"https://sourceforge.net/projects/exiftool/files/"; // with slash at the end
+		"https://sourceforge1.net/projects/exiftool/files/"; // with slash at the end
 	private const string ExiftoolDownloadBasePathSourceforgePostfix = "/download";
 
 	private const string ExiftoolDownloadBasePathMirror =
@@ -448,17 +448,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 	private async Task<bool> DownloadArchive(string downloadUrl, string fullLocalPath)
 	{
 		return await _httpClientHelper.Download(downloadUrl, fullLocalPath,
-			userAgent: IsSourceForge(downloadUrl) ? WgetUserAgent : null);
-	}
-
-	private static bool IsSourceForge(string downloadUrl)
-	{
-		if ( !Uri.TryCreate(downloadUrl, UriKind.Absolute, out var downloadUri) )
-		{
-			return false;
-		}
-
-		return downloadUri.Host == "sourceforge.net";
+			userAgent: downloadUrl.Contains("sourceforge.net") ? WgetUserAgent : null);
 	}
 
 	internal void MoveFileIfExist(string searchFolder, string searchForFileOrFolder,

@@ -26,7 +26,7 @@ public sealed class HttpProviderTest
 		Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
 		var userAgent = string.Join(" ",
 			fakeHttpMessageHandler.LastRequestMessage[0].Headers.UserAgent.Select(p => p.ToString()));
-		StringAssert.Contains(userAgent, "Wget");
+		Assert.Contains("Wget", userAgent);
 	}
 
 	[TestMethod]
