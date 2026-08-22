@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,6 +14,36 @@ namespace starskytest.starsky.foundation.http.Services;
 [TestClass]
 public sealed class HttpProviderTest
 {
+	[TestMethod]
+	public async Task GetAsync_WithUserAgent_ShouldSendUserAgentHeader()
+	{
+		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+		var httpClient = new HttpClient(fakeHttpMessageHandler);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
+
+		var result = await httpProvider.GetAsync("https://qdraw.nl/test", "Wget/1.21.1");
+
+		Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+		var userAgent = string.Join(" ",
+			fakeHttpMessageHandler.LastRequestMessage[0].Headers.UserAgent.Select(p => p.ToString()));
+		StringAssert.Contains(userAgent, "Wget");
+	}
+
+	[TestMethod]
+	public async Task GetAsync_WithoutUserAgent_ShouldNotSendUserAgentHeader()
+	{
+		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+		var httpClient = new HttpClient(fakeHttpMessageHandler);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
+
+		var result = await httpProvider.GetAsync("https://qdraw.nl/test");
+
+		Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+		var userAgent = string.Join(" ",
+			fakeHttpMessageHandler.LastRequestMessage[0].Headers.UserAgent.Select(p => p.ToString()));
+		Assert.IsFalse(userAgent.Contains("Wget", StringComparison.Ordinal));
+	}
+
 	[TestMethod]
 	public void PostAsync_Ok()
 	{

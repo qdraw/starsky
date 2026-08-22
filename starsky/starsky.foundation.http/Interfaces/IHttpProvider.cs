@@ -6,7 +6,7 @@ namespace starsky.foundation.http.Interfaces;
 
 public interface IHttpProvider
 {
-	Task<HttpResponseMessage> GetAsync(string requestUri);
+	Task<HttpResponseMessage> GetAsync(string requestUri, string? userAgent = null);
 
 	Task<HttpResponseMessage> PostAsync(string requestUri,
 		HttpContent? content, AuthenticationHeaderValue? authenticationHeaderValue = null);
