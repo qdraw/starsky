@@ -42,6 +42,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.8.1 - _(Unreleased)_ 2026-?-? {#v0.8.1}
 
+- [x] (Fixed) _Back-end_ Inflate SearchSuggestions batch 5k items to avoid timeouts (PR #3230)
 - [x] (Fixed) _Back-end_ Move item different folder does keep folder structure (PR #3229 I #2738)
 - [x] (Fixed) _Back-end_ Filter Unique keys in QueryAddRange (PR #3227)
 - [x] (Fixed) _Back-end_ ThumbnailQuery SaveChangesDuplicate (PR #3227)

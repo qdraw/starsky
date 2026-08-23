@@ -34,6 +34,9 @@ RUN for i in 1 2 3; do \
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
+ARG GitCommitHash
+
+ENV GitCommitHash=${GitCommitHash}
 
 RUN mkdir -p /app
 WORKDIR /app
