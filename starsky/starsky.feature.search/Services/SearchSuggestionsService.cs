@@ -24,8 +24,6 @@ public class SearchSuggestionsService(
 	private const int MaxResult = 20;
 	private const int InflateBatchSize = 5000;
 
-	private sealed record TagBatchItem(int Id, string Tags);
-
 	/// <summary>
 	///     Used to fill the cache with an array of
 	///     All keywords are stored lowercase
@@ -38,9 +36,9 @@ public class SearchSuggestionsService(
 			return [];
 		}
 
-		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService), out _) )
+		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService), out var objectFileFolders) )
 		{
-			return new Dictionary<string, int>().ToList();
+			return objectFileFolders as List<KeyValuePair<string, int>> ?? [];
 		}
 
 		try
@@ -57,7 +55,8 @@ public class SearchSuggestionsService(
 			if ( !exception.Message.Contains("Unknown column") )
 			{
 				logger.LogError(exception,
-					$"[SearchSuggestionsService] exception catch-ed {exception.Message} {exception.StackTrace}");
+					$"[SearchSuggestionsService] " +
+					$"exception catch-ed {exception.Message} {exception.StackTrace}");
 			}
 
 			return [];
@@ -93,7 +92,8 @@ public class SearchSuggestionsService(
 	/// <returns>list of suggested keywords</returns>
 	public async Task<IEnumerable<string>> SearchSuggest(string query, bool system)
 	{
-		if ( string.IsNullOrEmpty(query) || memoryCache == null || appSettings.AddMemoryCache == false )
+		if ( string.IsNullOrEmpty(query) || memoryCache == null ||
+		     appSettings.AddMemoryCache == false )
 		{
 			return new List<string>();
 		}
@@ -198,4 +198,6 @@ public class SearchSuggestionsService(
 		// When changing here also change the cache expire time in SearchSuggestionsInflateHostedService
 		return count != 0 ? new TimeSpan(120, 0, 0) : new TimeSpan(0, 1, 0);
 	}
+
+	private sealed record TagBatchItem(int Id, string Tags);
 }
