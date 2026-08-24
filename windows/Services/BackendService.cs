@@ -42,7 +42,8 @@ public class BackendService : IDisposable
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            CreateNoWindow = true
+            CreateNoWindow = true,
+            WorkingDirectory = runtimeDir
         };
 
         SetEnvironment(psi.Environment, _port);
@@ -83,13 +84,24 @@ public class BackendService : IDisposable
     private void SetEnvironment(IDictionary<string, string?> env, int port)
     {
         env["ASPNETCORE_URLS"] = $"http://localhost:{port}";
-        env["app__appsettingsPath"] = ApplicationPaths.AppData;
+
+        // Settings file paths (file paths, not directories — matches Electron)
+        env["app__appsettingspath"] = ApplicationPaths.AppSettingsFile;
+        env["app__appsettingslocalpath"] = ApplicationPaths.AppSettingsLocalFile;
+
+        // Storage
         env["app__databaseConnection"] = $"Data Source={ApplicationPaths.DatabaseFile}";
-        env["app__storageFolder"] = ApplicationPaths.AppData;
         env["app__tempFolder"] = ApplicationPaths.TempFolder;
         env["app__thumbnailTempFolder"] = ApplicationPaths.ThumbnailTempFolder;
-        env["app__isAccountRegisterOpen"] = "false";
-        env["app__isDesktop"] = "true";
+
+        // Desktop-mode flags (exact keys used by Electron)
+        env["app__NoAccountLocalhost"] = "true";
+        env["app__UseLocalDesktop"] = "true";
+        env["app__AccountRegisterDefaultRole"] = "Administrator";
+
+        // Performance / verbosity (packaged-app values, matching Electron's isPackaged=true branch)
+        env["app__ThumbnailGenerationIntervalInMinutes"] = "300";
+        env["app__Verbose"] = "false";
     }
 
     private void OnProcessExited(object? sender, EventArgs e)

@@ -28,4 +28,37 @@
   <ItemGroup>
     <Resource Include="Resources\starsky.ico" />
   </ItemGroup>
+
+  <!--
+    Copy the Starsky backend runtime to the output directory so the app can
+    start it in Local mode.
+
+    Source priority:
+      1. $(RepoRoot)\starsky\win-x64\   — produced by build.ps1 -runtime win-x64
+      2. $(RepoRoot)\starskydesktop\runtime-starsky-win-x64\  — staged by Electron before-build
+
+    Run `pwsh build.ps1 -runtime win-x64 -no-unit-tests` from the repo root
+    to produce the runtime if neither location exists.
+  -->
+  <PropertyGroup>
+    <RepoRoot>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), 'build.ps1'))</RepoRoot>
+    <_RuntimeSourceBuild>$(RepoRoot)\starsky\win-x64</_RuntimeSourceBuild>
+    <_RuntimeSourceElectron>$(RepoRoot)\starskydesktop\runtime-starsky-win-x64</_RuntimeSourceElectron>
+    <RuntimeSourceDir Condition="Exists('$(_RuntimeSourceBuild)')">$(_RuntimeSourceBuild)</RuntimeSourceDir>
+    <RuntimeSourceDir Condition="!Exists('$(_RuntimeSourceBuild)') AND Exists('$(_RuntimeSourceElectron)')">$(_RuntimeSourceElectron)</RuntimeSourceDir>
+  </PropertyGroup>
+
+  <Target Name="CopyStarskyRuntime" AfterTargets="Build" Condition="'$(RuntimeSourceDir)' != ''">
+    <Message Text="Copying Starsky runtime from $(RuntimeSourceDir) to $(OutDir)runtime-starsky-win-x64\" Importance="high" />
+    <ItemGroup>
+      <_RuntimeFiles Include="$(RuntimeSourceDir)\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_RuntimeFiles)"
+          DestinationFiles="@(_RuntimeFiles->'$(OutDir)runtime-starsky-win-x64\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="WarnMissingRuntime" AfterTargets="Build" Condition="'$(RuntimeSourceDir)' == ''">
+    <Warning Text="Starsky runtime not found. Run 'pwsh build.ps1 -runtime win-x64 -no-unit-tests' from the repo root to build it, then rebuild this project. Local mode will not work until the runtime is present." />
+  </Target>
 </Project>

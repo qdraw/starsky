@@ -13,6 +13,8 @@ public static class ApplicationPaths
     public static string LogsDir => Path.Combine(AppData, "logs");
     public static string WebView2UserData => Path.Combine(AppData, "webview2");
     public static string SettingsFile => Path.Combine(AppData, "settings.json");
+    public static string AppSettingsFile => Path.Combine(AppData, "appsettings.json");
+    public static string AppSettingsLocalFile => Path.Combine(AppData, "appsettings.local.json");
     public static string DatabaseFile => Path.Combine(AppData, "starsky.db");
     public static string TempFolder => Path.Combine(LocalAppData, "tempFolder");
     public static string ThumbnailTempFolder => Path.Combine(AppData, "thumbnailTempFolder");
