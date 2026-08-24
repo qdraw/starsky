@@ -53,16 +53,16 @@
 			src="@filePath500"
 			data-gps="@latitude,@longitude"
 			srcset="
-	      @filePath500 300w,
-	      @filePath500 500w,
-	      @filePath1000 1000w"
+		      @filePath500 300w,
+		      @filePath500 500w,
+		      @filePath1000 1000w"
 			sizes="(max-width: 600px) 100vw, (max-width: 1000px) 80vw, 700px"
 			width="@width" height="@height"
 			loading="lazy"
 			decoding="async"
-			alt="@Model.ItemName ; @item.Title ; @item.Tags"
+			alt="@Model.ItemName, @item.Title, @item.Tags"
 		>
-		<figcaption>@Model.ItemName - @item.Title | @photoText @count</figcaption>
+		<figcaption>@displayTitleName | @photoText @count</figcaption>
 	</figure>
 	}
 

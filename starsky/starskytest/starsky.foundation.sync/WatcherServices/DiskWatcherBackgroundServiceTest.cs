@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -41,5 +42,29 @@ public sealed class DiskWatcherBackgroundServiceTest
 		await dynMethod.InvokeAsync(service, CancellationToken.None);
 
 		Assert.IsEmpty(diskWatcher.AddedItems);
+	}
+
+	[TestMethod]
+	public async Task StartAsync_WatchesMappedPhysicalPaths()
+	{
+		var diskWatcher = new FakeDiskWatcher();
+		var appSettings = new AppSettings
+		{
+			UseDiskWatcher = true,
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/archive", "/data/archive" },
+				{ "/old", "/data/old" }
+			}
+		};
+		var service =
+			new DiskWatcherBackgroundService(diskWatcher, appSettings, new FakeIWebLogger());
+
+		var dynMethod = service.GetType().GetMethod("ExecuteAsync",
+			BindingFlags.NonPublic | BindingFlags.Instance)!;
+		await dynMethod.InvokeAsync(service, CancellationToken.None);
+
+		Assert.Contains("/data/archive", diskWatcher.AddedItems);
+		Assert.Contains("/data/old", diskWatcher.AddedItems);
 	}
 }

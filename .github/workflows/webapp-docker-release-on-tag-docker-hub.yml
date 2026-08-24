@@ -57,6 +57,8 @@ jobs:
           context: ./starsky
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
+          build-args: |
+            GitCommitHash=${{ github.sha }}
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:latest
             ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:${{ steps.pushtags.outputs.tag }}

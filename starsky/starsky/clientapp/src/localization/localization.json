@@ -489,6 +489,36 @@
     "nl": "Update alsjeblieft de 'app__storageFolder' environment variable om de opslag locatie te veranderen",
     "de": "Bitte aktualisieren Sie die Umgebungsvariable 'app__storageFolder', um den Speicherort zu ändern"
   },
+  "MessageAppSettingsStorageFolderMappings": {
+    "en": "Storage Folder Mappings",
+    "nl": "Opslag map koppelingen",
+    "de": "Speicherordner-Zuordnungen"
+  },
+  "MessageAppSettingsStorageFolderMappingsSubPath": {
+    "en": "Virtual sub-path (e.g. /2024)",
+    "nl": "Virtueel subpad (bijv. /2024)",
+    "de": "Virtueller Unterpfad (z.B. /2024)"
+  },
+  "MessageAppSettingsStorageFolderMappingsPhysicalPath": {
+    "en": "Physical path on disk",
+    "nl": "Fysiek pad op schijf",
+    "de": "Physischer Pfad auf der Festplatte"
+  },
+  "MessageAppSettingsStorageFolderMappingsAdd": {
+    "en": "Add mapping",
+    "nl": "Koppeling toevoegen",
+    "de": "Zuordnung hinzufügen"
+  },
+  "MessageAppSettingsStorageFolderMappingsRemove": {
+    "en": "Remove",
+    "nl": "Verwijderen",
+    "de": "Entfernen"
+  },
+  "MessageAppSettingsStorageFolderMappingsError": {
+    "en": "Mapping could not be saved. The physical path points to a restricted system directory.",
+    "nl": "Koppeling kon niet worden opgeslagen. Het fysieke pad verwijst naar een beperkte systeemmap.",
+    "de": "Zuordnung konnte nicht gespeichert werden. Der physische Pfad verweist auf ein eingeschränktes Systemverzeichnis."
+  },
   "MessageSwitchButtonDesktopCollectionsRawOn": {
     "en": "Raw first",
     "nl": "Raw eerst",

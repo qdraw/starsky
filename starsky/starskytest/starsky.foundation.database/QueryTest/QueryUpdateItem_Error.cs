@@ -509,7 +509,7 @@ public sealed class QueryUpdateItemError
 			.Options;
 
 		var fakeQuery = new Query(new AppDbContextConcurrencyException(options) { MinCount = 2 },
-			new AppSettings { Verbose = false }, null!, null!);
+			new AppSettings { Verbose = false }, null!, new FakeIWebLogger());
 
 		var fileIndexItemList = new List<FileIndexItem>
 		{
@@ -530,7 +530,7 @@ public sealed class QueryUpdateItemError
 			.Options;
 
 		var fakeQuery = new Query(new AppDbContextConcurrencyException(options) { MinCount = 3 },
-			new AppSettings { Verbose = true }, null!, null!);
+			new AppSettings { Verbose = true }, null!, new FakeIWebLogger());
 
 		var fileIndexItemList = new List<FileIndexItem>
 		{

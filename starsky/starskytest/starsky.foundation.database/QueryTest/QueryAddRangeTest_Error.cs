@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -15,7 +17,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.QueryTest;
 
 [TestClass]
-public class QueryAddRangeTest_Error
+public class QueryAddRangeTestError
 {
 	private static IServiceScopeFactory CreateNewScope()
 	{
@@ -63,6 +65,143 @@ public class QueryAddRangeTest_Error
 
 		Assert.AreEqual(1, dbUpdateExceptionDbContext.Count);
 	}
+
+	[TestMethod]
+	public async Task AddRangeAsync_UniqueConstraint_UsesDuplicateFilterOnRetry()
+	{
+		var dbName = $"QueryAddRange_Unique_{Guid.NewGuid()}";
+		var dbRoot = new InMemoryDatabaseRoot();
+
+		var services = new ServiceCollection();
+		services.AddDbContext<ApplicationDbContext>(options =>
+			options.UseInMemoryDatabase(dbName, dbRoot));
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(dbName, dbRoot)
+			.Options;
+
+		await using ( var seedContext = new ApplicationDbContext(options) )
+		{
+			await seedContext.FileIndex.AddAsync(new FileIndexItem("/existing.jpg"), TestContext.CancellationToken);
+			await seedContext.SaveChangesAsync(TestContext.CancellationToken);
+		}
+
+		await using var failingContext = new SqliteUniqueOnceDbContext(options);
+		var query = new Query(failingContext, new AppSettings(), scopeFactory,
+			new FakeIWebLogger());
+
+		await query.AddRangeAsync(
+		[
+			new FileIndexItem("/existing.jpg"),
+			new FileIndexItem("/new.jpg")
+		]);
+
+		await using var assertContext = new ApplicationDbContext(options);
+		var allItems = await assertContext.FileIndex.ToListAsync(TestContext.CancellationToken);
+
+		Assert.ContainsSingle(p => p.FilePath == "/existing.jpg", allItems);
+		Assert.ContainsSingle(p => p.FilePath == "/new.jpg", allItems);
+	}
+
+	[TestMethod]
+	public async Task AddRangeAsync_DbUpdateExceptionUniqueConstraint_UsesDuplicateFilterOnRetry()
+	{
+		await using var connection = new SqliteConnection("Filename=:memory:");
+		await connection.OpenAsync(TestContext.CancellationToken);
+
+		var services = new ServiceCollection();
+		services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connection));
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseSqlite(connection)
+			.Options;
+
+		await using ( var setupContext = new ApplicationDbContext(options) )
+		{
+			await setupContext.Database.EnsureCreatedAsync(TestContext.CancellationToken);
+		}
+
+		await using ( var seedContext = new ApplicationDbContext(options) )
+		{
+			await seedContext.FileIndex.AddAsync(new FileIndexItem("/existing-db-update.jpg") { Id = 42 },
+				TestContext.CancellationToken);
+			await seedContext.SaveChangesAsync(TestContext.CancellationToken);
+		}
+
+		await using var queryContext = new ApplicationDbContext(options);
+		var query = new Query(queryContext, new AppSettings(), scopeFactory,
+			new FakeIWebLogger());
+
+		await query.AddRangeAsync(
+		[
+			new FileIndexItem("/existing-db-update.jpg") { Id = 42 },
+			new FileIndexItem("/new-db-update.jpg") { Id = 43 }
+		]);
+
+		await using var assertContext = new ApplicationDbContext(options);
+		var allItems = await assertContext.FileIndex.ToListAsync(TestContext.CancellationToken);
+
+		Assert.ContainsSingle(p => p.FilePath == "/existing-db-update.jpg", allItems);
+		Assert.ContainsSingle(p => p.FilePath == "/new-db-update.jpg", allItems);
+	}
+
+	[TestMethod]
+	public async Task AddRangeAsync_DbUpdateExceptionUniqueConstraint_AllItemsExist_LogsSkippingInsert()
+	{
+		await using var connection = new SqliteConnection("Filename=:memory:");
+		await connection.OpenAsync(TestContext.CancellationToken);
+
+		var services = new ServiceCollection();
+		services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connection));
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseSqlite(connection)
+			.Options;
+
+		await using ( var setupContext = new ApplicationDbContext(options) )
+		{
+			await setupContext.Database.EnsureCreatedAsync(TestContext.CancellationToken);
+		}
+
+		await using ( var seedContext = new ApplicationDbContext(options) )
+		{
+			await seedContext.FileIndex.AddAsync(new FileIndexItem("/existing-one.jpg") { Id = 81 },
+				TestContext.CancellationToken);
+			await seedContext.FileIndex.AddAsync(new FileIndexItem("/existing-two.jpg") { Id = 82 },
+				TestContext.CancellationToken);
+			await seedContext.SaveChangesAsync(TestContext.CancellationToken);
+		}
+
+		var fakeLogger = new FakeIWebLogger();
+		await using var queryContext = new ApplicationDbContext(options);
+		var query = new Query(queryContext, new AppSettings(), scopeFactory, fakeLogger);
+
+		await query.AddRangeAsync(
+		[
+			new FileIndexItem("/existing-one.jpg") { Id = 81 },
+			new FileIndexItem("/existing-two.jpg") { Id = 82 }
+		]);
+
+		var hasLogMessage = false;
+		foreach ( var log in fakeLogger.TrackedInformation )
+		{
+			if ( log.Item2?.Contains("All items already exist in database, skipping insert") == true )
+			{
+				hasLogMessage = true;
+				break;
+			}
+		}
+
+		Assert.IsTrue(hasLogMessage);
+	}
+
+	public TestContext TestContext { get; set; }
 }
 
 internal sealed class SqliteExceptionDbContext(DbContextOptions options)
@@ -117,5 +256,23 @@ internal sealed class DbUpdateExceptionDbContext(DbContextOptions options)
 		}
 
 		return Task.FromResult(Count);
+	}
+}
+
+internal sealed class SqliteUniqueOnceDbContext(DbContextOptions options)
+	: ApplicationDbContext(options)
+{
+	private bool _hasThrown;
+
+	public override async Task<int> SaveChangesAsync(
+		CancellationToken cancellationToken = default)
+	{
+		if ( !_hasThrown )
+		{
+			_hasThrown = true;
+			throw new SqliteException("UNIQUE constraint failed: FileIndex.Id", 19, 19);
+		}
+
+		return await base.SaveChangesAsync(cancellationToken);
 	}
 }

@@ -562,7 +562,7 @@ public static class AppSettingsCompareHelper
 		Dictionary<string, string>? oldDictionaryValue,
 		Dictionary<string, string>? newDictionaryValue, List<string> differenceList)
 	{
-		if ( oldDictionaryValue == null || newDictionaryValue?.Count == 0 )
+		if ( oldDictionaryValue == null )
 		{
 			return;
 		}

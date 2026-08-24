@@ -19,6 +19,7 @@ interface IModalMoveFileProps {
   isOpen: boolean;
   handleExit: () => void;
   selectedSubPath: string;
+  selectedFolderSubPaths?: string[];
   parentDirectory: string;
 }
 
@@ -46,17 +47,27 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     const bodyParams = new URLSearchParams();
     bodyParams.append("f", props.selectedSubPath);
 
-    // selectedSubPath can contain ; as a separator for multiple files the "to" path
-    // must contain the same number of paths which is currentFolderPath
-    // the "to" path is "{currentFolderPath};{currentFolderPath};{currentFolderPath}"
-    if (props.selectedSubPath.includes(";")) {
-      const selectedPaths = props.selectedSubPath.split(";").filter(Boolean);
-      // Create a string like "folder;folder;folder" with the same count as selectedPaths
-      const toValue = new Array(selectedPaths.length).fill(currentFolderPath).join(";");
-      bodyParams.append("to", toValue);
-    } else {
-      bodyParams.append("to", currentFolderPath);
-    }
+    const folderPathSet = new Set(props.selectedFolderSubPaths ?? []);
+    const selectedPaths = props.selectedSubPath.split(";").filter(Boolean);
+    const trimTrailingSlashes = (path: string) => {
+      let end = path.length;
+      while (end > 0 && path[end - 1] === "/") {
+        end--;
+      }
+      return path.slice(0, end);
+    };
+    const targetFolderPath =
+      currentFolderPath === "/" ? "/" : trimTrailingSlashes(currentFolderPath);
+    const toPaths = selectedPaths.map((selectedPath) => {
+      if (!folderPathSet.has(selectedPath)) {
+        return currentFolderPath;
+      }
+
+      const folderName = new FileExtensions().GetFileName(selectedPath);
+      return targetFolderPath === "/" ? `/${folderName}` : `${targetFolderPath}/${folderName}`;
+    });
+    const toValue = toPaths.join(";");
+    bodyParams.append("to", toValue);
     bodyParams.append("collections", true.toString());
 
     const resultDo = await FetchPost(new UrlQuery().UrlDiskRename(), bodyParams.toString());

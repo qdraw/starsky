@@ -37,7 +37,6 @@ const contextProvider = {
 } as unknown as IDetailViewContext;
 
 export const _Default = () => {
-
   return (
     <DetailViewContext.Provider value={contextProvider}>
       <DetailViewInfoDateTime

@@ -9,7 +9,6 @@ variables:
 trigger:
   branches:
     include:
-    - master
     - release/*
     exclude:
     - feature/*
@@ -19,8 +18,6 @@ trigger:
       exclude:
       - starsky/*
       - starsky-tools/*
-      - starsky.netframework/*
-      - /*.md
       - starskydesktop/*.md
       - starskydesktop/readme.md
 

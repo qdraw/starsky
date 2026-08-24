@@ -34,6 +34,9 @@ RUN for i in 1 2 3; do \
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
+ARG GitCommitHash
+
+ENV GitCommitHash=${GitCommitHash}
 
 RUN mkdir -p /app
 WORKDIR /app
@@ -113,8 +116,10 @@ COPY --chown=starsky:starsky --from=react-build /app/starsky/clientapp ./clienta
 # Create necessary directories and set ownership
 RUN mkdir -p /app/photos && chown starsky:starsky /app/photos
 RUN mkdir -p /app/thumbnailTempFolder && chown starsky:starsky /app/thumbnailTempFolder
+RUN mkdir -p /app/storageFolder && chown starsky:starsky /app/storageFolder
+RUN mkdir -p /app/dependencies && chown starsky:starsky /app/dependencies
+RUN mkdir -p /app/temp && chown starsky:starsky /app/temp
 RUN chown starsky:starsky /app
-
 USER starsky
 
 EXPOSE 8080

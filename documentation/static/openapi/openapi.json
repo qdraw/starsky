@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "Starsky",
-    "version": "0.8.0.0",
+    "version": "0.8.1.0",
     "extensions": {}
   },
   "servers": [
@@ -2118,6 +2118,52 @@
                   "referenceV3": "#/components/schemas/RawJpegMode",
                   "referenceV2": "#/definitions/RawJpegMode"
                 }
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "StorageFolderMappings",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "object",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "additionalProperties": {
+                  "type": "string",
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false
+                },
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
               },
               "examples": {},
               "content": {},
@@ -15696,6 +15742,38 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "storageFolderMappings": {
+            "type": "object",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "additionalProperties": {
+              "type": "string",
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
           "verbose": {
             "type": "boolean",
             "readOnly": false,
@@ -23503,5 +23581,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "585CA67517030A6511DEB6A329B8103751B64E1013CEC29EB382C583DD6D76F8111B49775906DED3EA848CC5D569300AB6349ACD55033C4EC8991F8BCF0CA1CF"
+  "hashCode": "4C914A5E0CB02A61F575859F9BDFAE69BE4F20554464AB0ED19C3E0B429BBB5B4D0FC49F4412F9601977849F43F8C55C46B64FD7AD223876FCA26134F03EAB2E"
 }

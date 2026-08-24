@@ -165,10 +165,10 @@ public sealed class HttpClientHelper : IHttpClientHelper
 	}
 
 	public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath,
-		int retryAfterInSeconds = 15)
+		int retryAfterInSeconds = 15, string? userAgent = null)
 	{
 		var sourceUri = new Uri(sourceHttpUrl);
-		return await Download(sourceUri, fullLocalPath, retryAfterInSeconds);
+		return await Download(sourceUri, fullLocalPath, retryAfterInSeconds, userAgent);
 	}
 
 	/// <summary>
@@ -177,9 +177,10 @@ public sealed class HttpClientHelper : IHttpClientHelper
 	/// <param name="sourceUri">The source HTTPS URL.</param>
 	/// <param name="fullLocalPath">The full local path.</param>
 	/// <param name="retryAfterInSeconds">Retry after number of seconds</param>
+	/// <param name="userAgent">Optional user-agent override</param>
 	/// <returns></returns>
 	public async Task<bool> Download(Uri sourceUri, string fullLocalPath,
-		int retryAfterInSeconds = 15)
+		int retryAfterInSeconds = 15, string? userAgent = null)
 	{
 		if ( _storage == null )
 		{
@@ -200,7 +201,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 
 		async Task<bool> DownloadAsync()
 		{
-			using var response = await _httpProvider.GetAsync(sourceUri.ToString());
+			using var response = await _httpProvider.GetAsync(sourceUri.ToString(), userAgent);
 			await using var streamToReadFrom = await response.Content.ReadAsStreamAsync();
 			if ( response.StatusCode != HttpStatusCode.OK )
 			{

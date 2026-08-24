@@ -340,7 +340,8 @@ public sealed class AppSettingsTest
 			{
 				{
 					"test", [
-						new() { Copy = true }, new() { Path = "value", Prepend = "value" }
+						new AppSettingsPublishProfiles { Copy = true },
+						new AppSettingsPublishProfiles { Path = "value", Prepend = "value" }
 					]
 				}
 			}
@@ -449,7 +450,7 @@ public sealed class AppSettingsTest
 		Assert.IsFalse(appSettings.EnablePackageTelemetry);
 	}
 
-#if(DEBUG)
+#if DEBUG
 	[TestMethod]
 	public void EnablePackageTelemetry_Debug_False()
 	{
@@ -585,5 +586,146 @@ public sealed class AppSettingsTest
 		var expectedResult = $"/test/{appSettings.BaseDirectoryProject}";
 
 		Assert.AreEqual(expectedResult, appSettings.AppSettingsLocalPath);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	[DataRow("/2024/photo.jpg", "/data/archive/2024/photo.jpg", "RedirectsToPhysicalPath")]
+	[DataRow("/2024", "/data/archive/2024", "ExactFolderMatch")]
+	[DataRow("/archive/2024/photo.jpg", "/data/specific-archive/2024/photo.jpg", "LongerKeyWinsOverShorterKey")]
+	public void DatabasePathToFilePath_WithMappings_UnixOnly(string dbPath, string expected, string scenario)
+	{
+		var storageFolder = "/data/fotobieb";
+		var mappings = scenario == "LongerKeyWinsOverShorterKey" 
+			? new Dictionary<string, string>
+			{
+				{ "/archive", "/data/main-archive" },
+				{ "/archive/2024", "/data/specific-archive/2024" }
+			}
+			: new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			};
+
+		var appSettings = new AppSettings
+		{
+			StorageFolder = storageFolder,
+			StorageFolderMappings = mappings
+		};
+
+		var result = appSettings.DatabasePathToFilePath(dbPath);
+
+		Assert.AreEqual(expected, result);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void DatabasePathToFilePath_WithMapping_NonMappedPathUsesStorageFolder__UnixOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result = appSettings.DatabasePathToFilePath("/2023/photo.jpg");
+
+		Assert.Contains("fotobieb", result);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	[DataRow("/data/archive/2024/photo.jpg", "/2024/photo.jpg", "ConvertsToSubPath")]
+	[DataRow("/data/archive/2024", "/2024", "ExactFolderMatch")]
+	public void FullPathStorageFolderToDatabaseStyle_WithMappings_UnixOnly(string fullPath, string expected, string scenario)
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result = appSettings.FullPathStorageFolderToDatabaseStyle(fullPath);
+
+		Assert.AreEqual(expected, result, $"Failed for scenario: {scenario}");
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void FullPathStorageFolderToDatabaseStyle_NonMappedPath_UsesStorageFolder__UnixOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb/",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result =
+			appSettings.FullPathStorageFolderToDatabaseStyle("/data/fotobieb/photo.jpg");
+
+		Assert.AreEqual("/photo.jpg", result);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Windows)]
+	public void FullPathStorageFolderToDatabaseStyle_NonMappedPath_UsesStorageFolder__WindowsOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = @"C:\data\fotobieb\",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result =
+			appSettings.FullPathStorageFolderToDatabaseStyle(@"C:\data\fotobieb\photo.jpg");
+
+		Assert.AreEqual("/photo.jpg", result);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void DatabasePathToFilePath_PathTraversal_ThrowsUnauthorizedAccess__UnixOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		Assert.ThrowsExactly<UnauthorizedAccessException>(() =>
+			appSettings.DatabasePathToFilePath("/2024/../../../etc/shadow"));
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void
+		DatabasePathToFilePath_PathTraversal_SiblingDirectory_ThrowsUnauthorizedAccess__UnixOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		Assert.ThrowsExactly<UnauthorizedAccessException>(() =>
+			appSettings.DatabasePathToFilePath("/2024/../archive-sibling/secret.jpg"));
 	}
 }

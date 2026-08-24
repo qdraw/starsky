@@ -264,6 +264,80 @@ describe("ModalMoveFile", () => {
     modal.unmount();
   });
 
+  it("multi file and folder click to folder -> keeps folder structure", () => {
+    jest
+      .spyOn(useFileList, "default")
+      .mockImplementationOnce(() => startArchive)
+      .mockImplementationOnce(() => inTestFolderArchive);
+
+    jest.spyOn(FetchPost, "default").mockReset();
+
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: [
+        {
+          filePath: "test",
+          status: IExifStatus.Ok,
+          pageType: PageType.Archive
+        }
+      ]
+    } as IConnectionDefault);
+    const fetchPostSpy = jest
+      .spyOn(FetchPost, "default")
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    const locationMockData = {
+      location: jest.fn(),
+      navigate: jest.fn()
+    } as unknown as IUseLocation;
+
+    jest
+      .spyOn(useLocation, "default")
+      .mockReset()
+      .mockImplementationOnce(() => locationMockData)
+      .mockImplementationOnce(() => locationMockData)
+      .mockImplementationOnce(() => locationMockData);
+
+    const modal = render(
+      <ModalMoveFile
+        parentDirectory="/"
+        selectedSubPath="/test.jpg;/folder"
+        selectedFolderSubPaths={["/folder"]}
+        isOpen={true}
+        handleExit={() => {}}
+      ></ModalMoveFile>
+    );
+
+    const btnTest = screen.queryByTestId("btn-test");
+    expect(btnTest).toBeTruthy();
+
+    act(() => {
+      btnTest?.click();
+    });
+
+    const btnDefault = screen.queryByTestId("modal-move-file-btn-default") as HTMLButtonElement;
+    expect(btnDefault.disabled).toBeFalsy();
+
+    act(() => {
+      btnDefault?.click();
+    });
+
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+
+    const bodyParams = new URLSearchParams();
+    bodyParams.append("f", "/test.jpg;/folder");
+    bodyParams.append("to", "/test/;/test/folder");
+    bodyParams.append("collections", true.toString());
+
+    expect(fetchPostSpy).toHaveBeenCalledWith(
+      new UrlQuery().UrlDiskRename(),
+      bodyParams.toString()
+    );
+
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+    modal.unmount();
+  });
+
   it("single file click to folder -> move ", () => {
     // use this import => import * as useFileList from '../hooks/use-filelist';
     jest
@@ -458,8 +532,9 @@ describe("ModalMoveFile", () => {
       .mockImplementationOnce((props) => <>{props.children}</>)
       .mockImplementationOnce((props) => <>{props.children}</>);
 
-    // Local spyOn for FetchPost
-    const fetchPostSpy = jest.spyOn(FetchPost, "default").mockResolvedValueOnce({
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementationOnce(() => {});
+
+    const resultDo = {
       statusCode: 500,
       data: [
         {
@@ -469,7 +544,13 @@ describe("ModalMoveFile", () => {
           parentDirectory: "/"
         }
       ]
-    });
+    };
+
+    // Local spyOn for FetchPost
+    const fetchPostSpy = jest
+      .spyOn(FetchPost, "default")
+      .mockReset()
+      .mockResolvedValueOnce(resultDo);
 
     const handleExit = jest.fn();
 
@@ -495,8 +576,14 @@ describe("ModalMoveFile", () => {
       moveBtn.click();
     });
 
-    expect(await screen.findByTestId("modal-move-file-warning-box")).toBeInTheDocument();
+    const warningBox = await screen.findByTestId("modal-move-file-warning-box");
+    expect(warningBox).toBeInTheDocument();
+    // error message comes from fileIndexItems[0].status
+    expect(warningBox.textContent).toBe("ServerError");
+    expect(consoleErrorSpy).toHaveBeenCalledWith(resultDo);
     expect(handleExit).not.toHaveBeenCalled();
     expect(fetchPostSpy).toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
   });
 });

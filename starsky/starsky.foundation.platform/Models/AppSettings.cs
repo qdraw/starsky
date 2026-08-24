@@ -102,46 +102,9 @@ public sealed class AppSettings
 	public const string CloneToDisplaySecurityWarning =
 		"warning: The field is not empty but for security reasons it is not shown";
 
-	/// <summary>
-	///     Private: Location of AppSettings Path
-	/// </summary>
-	private string? _appSettingsLocalPathPrivate;
-
-	/// <summary>
-	///     Private: Location of AppSettings Path
-	/// </summary>
-	private string? _appSettingsPathPrivate;
-
-	// DatabaseType > above this one
-	private string _databaseConnection = string.Empty;
-
-	/// <summary>
-	///     Private: Location of dependencies folder
-	/// </summary>
-	private string? _dependenciesFolder;
-
-	// Used in the webHtmlCli to store the log item name
-	// used for the url
-	private string? _name;
-
-	/// <summary>
-	///     Can be used in the cli session to select files out of the file database system
-	/// </summary>
-	private string _storageFolder = string.Empty;
-
-	/// <summary>
-	///     Private: Location of the temp folder
-	/// </summary>
-	private string? _tempFolder;
-
-	/// <summary>
-	///     Private: Location of storage of Thumbnails
-	/// </summary>
-	private string? _thumbnailTempFolder;
-
 	public AppSettings()
 	{
-		ReadOnlyFolders = new List<string>();
+		ReadOnlyFolders = [];
 		DatabaseConnection = SqLiteFullPath("Data Source=data.db", BaseDirectoryProject);
 
 		// Cache for thumbs
@@ -154,21 +117,13 @@ public sealed class AppSettings
 
 		ExifToolPathDefaultPrivate = GetDefaultExifToolPath();
 
-		try
-		{
-			CreateDefaultFolders();
-		}
-		catch ( FileNotFoundException e )
-		{
-			Console.WriteLine("> Not allowed to create default folders: ");
-			Console.WriteLine(e);
-		}
+		var helper = new AppSettingsCreateDefaultFolders(BaseDirectoryProject, ThumbnailTempFolder,
+			StorageFolder, TempFolder, DependenciesFolder);
+		helper.CreateDefaultFolders();
 
 		// Set the default write to appSettings file
 		AppSettingsPath = Path.Combine(BaseDirectoryProject, "appsettings.patch.json");
 		AppSettingsLocalPath = Path.Combine(BaseDirectoryProject, "appsettings.local.json");
-
-		// AddMemoryCache defaults in prop
 	}
 
 	/// <summary>
@@ -204,6 +159,12 @@ public sealed class AppSettings
 		DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
 
 	/// <summary>
+	///     Get the git commit hash of the current build (if available).
+	/// </summary>
+	[PackageTelemetry]
+	public string AppVersionCommitHash => GitShaAssembly.GitHash(Assembly.GetExecutingAssembly());
+
+	/// <summary>
 	///     Main Storage provider on disk
 	/// </summary>
 	public string StorageFolder
@@ -211,17 +172,17 @@ public sealed class AppSettings
 		get
 		{
 			// ReSharper disable once ArrangeAccessorOwnerBody
-			return string.IsNullOrEmpty(_storageFolder)
+			return string.IsNullOrEmpty(field)
 				? Path.Combine(BaseDirectoryProject, "storageFolder")
-				: _storageFolder;
+				: field;
 		}
 		set
 		{
 			var storageFolder = ReplaceEnvironmentVariable(value);
 			// ReSharper disable once ArrangeAccessorOwnerBody
-			_storageFolder = PathHelper.AddBackslash(storageFolder);
+			field = PathHelper.AddBackslash(storageFolder);
 		}
-	}
+	} = string.Empty;
 
 	/// <summary>
 	///     Allow overwriting this name in AppSettingsController
@@ -230,21 +191,28 @@ public sealed class AppSettings
 		string.IsNullOrEmpty(
 			Environment.GetEnvironmentVariable("app__storageFolder"));
 
+	/// <summary>
+	///     Maps virtual subPaths to physical paths outside StorageFolder.
+	///     Key: subPath (e.g. "/2024"), Value: physical OS path (e.g. "/data/archive/2024").
+	///     Longer keys take precedence over shorter ones.
+	/// </summary>
+	public Dictionary<string, string> StorageFolderMappings { get; set; } = new();
+
 	[PackageTelemetry] public bool? Verbose { get; set; }
 
 	[PackageTelemetry]
 	public string Name
 	{
-		get => _name ?? "Starsky"; // defaults to this
+		get => field ?? "Starsky"; // defaults to this
 		set
 		{
 			if ( string.IsNullOrWhiteSpace(value) )
 			{
-				_name = string.Empty;
+				field = string.Empty;
 				return;
 			}
 
-			_name = value;
+			field = value;
 		}
 	}
 
@@ -261,11 +229,11 @@ public sealed class AppSettings
 	/// </summary>
 	public string DatabaseConnection
 	{
-		get => _databaseConnection;
+		get;
 		set
 		{
 			var connection = ReplaceEnvironmentVariable(value);
-			_databaseConnection = SqLiteFullPath(connection, BaseDirectoryProject);
+			field = SqLiteFullPath(connection, BaseDirectoryProject);
 		}
 	}
 
@@ -294,15 +262,7 @@ public sealed class AppSettings
 	[PackageTelemetry]
 	public string CameraTimeZone
 	{
-		get
-		{
-			if ( CameraTimeZoneInfo == null )
-			{
-				return string.Empty;
-			}
-
-			return CameraTimeZoneInfo.Id;
-		}
+		get => CameraTimeZoneInfo == null ? string.Empty : CameraTimeZoneInfo.Id;
 		set => CameraTimeZoneInfo = ConvertTimeZoneId(value);
 	}
 
@@ -313,11 +273,11 @@ public sealed class AppSettings
 	/// </summary>
 	public string ThumbnailTempFolder
 	{
-		get => _thumbnailTempFolder ??= string.Empty;
+		get => field ??= string.Empty;
 		set
 		{
 			var thumbnailTempFolder = ReplaceEnvironmentVariable(value);
-			_thumbnailTempFolder = PathHelper.AddBackslash(thumbnailTempFolder);
+			field = PathHelper.AddBackslash(thumbnailTempFolder);
 		}
 	}
 
@@ -334,11 +294,11 @@ public sealed class AppSettings
 	/// </summary>
 	public string TempFolder
 	{
-		get => AssemblyDirectoryReplacer(_tempFolder);
+		get => AssemblyDirectoryReplacer(field);
 		set
 		{
 			var tempFolder = ReplaceEnvironmentVariable(value);
-			_tempFolder = PathHelper.AddBackslash(tempFolder);
+			field = PathHelper.AddBackslash(tempFolder);
 		}
 	}
 
@@ -347,11 +307,11 @@ public sealed class AppSettings
 	/// </summary>
 	public string DependenciesFolder
 	{
-		get => AssemblyDirectoryReplacer(_dependenciesFolder);
+		get => AssemblyDirectoryReplacer(field);
 		set
 		{
 			var dependenciesFolder = ReplaceEnvironmentVariable(value);
-			_dependenciesFolder = PathHelper.AddBackslash(dependenciesFolder);
+			field = PathHelper.AddBackslash(dependenciesFolder);
 		}
 	}
 
@@ -362,9 +322,10 @@ public sealed class AppSettings
 	/// </summary>
 	public string AppSettingsPath
 	{
-		get => AssemblyDirectoryReplacer(_appSettingsPathPrivate);
+		get => AssemblyDirectoryReplacer(field);
 		// ReSharper disable once MemberCanBePrivate.Global
-		set => _appSettingsPathPrivate = value; // set by ctor
+		set;
+		// set by ctor
 	}
 
 	/// <summary>
@@ -374,9 +335,10 @@ public sealed class AppSettings
 	/// </summary>
 	public string AppSettingsLocalPath
 	{
-		get => AssemblyDirectoryReplacer(_appSettingsLocalPathPrivate);
+		get => AssemblyDirectoryReplacer(field);
 		// ReSharper disable once MemberCanBePrivate.Global
-		set => _appSettingsLocalPathPrivate = value; // set by ctor
+		set;
+		// set by ctor
 	}
 
 	/// <summary>
@@ -492,7 +454,8 @@ public sealed class AppSettings
 				return;
 			}
 
-			PublishProfilesPrivate = value.OrderBy(obj => obj.Key)
+			PublishProfilesPrivate = value
+				.OrderBy(obj => obj.Key)
 				.ToDictionary(obj => obj.Key,
 					obj => obj.Value);
 		}
@@ -621,7 +584,7 @@ public sealed class AppSettings
 	///     use env variable: app__SyncIgnore__0 - value
 	///     Use always UNIX style
 	/// </summary>
-	public List<string> SyncIgnore { get; set; } = new() { "/lost+found", "/.stfolder", "/.git" };
+	public List<string> SyncIgnore { get; set; } = ["/lost+found", "/.stfolder", "/.git"];
 
 	/// <summary>
 	///     Auto Sync on Startup
@@ -636,7 +599,7 @@ public sealed class AppSettings
 	///     Ignore folders
 	/// </summary>
 	public List<string> ImportIgnore { get; set; } =
-		new() { "lost+found", ".Trashes" };
+		["lost+found", ".Trashes"];
 
 	/// <summary>
 	///     According to Phil Harvey (exiftool's creator),
@@ -648,7 +611,7 @@ public sealed class AppSettings
 	/// </summary>
 	[PackageTelemetry]
 	public List<CameraMakeModel>? VideoUseLocalTime { get; set; } =
-		new() { new CameraMakeModel("Sony", "A58") };
+		[new CameraMakeModel("Sony", "A58")];
 
 	/// <summary>
 	///     Private storage for EnablePackageTelemetry
@@ -729,7 +692,7 @@ public sealed class AppSettings
 	/// <summary>
 	///     Use the system trash (if available)
 	///     This system trash is not supported on all platforms
-	///     or when running as a windows service its not supported
+	///     or when running as a Windows service it's not supported
 	///     Please check IMoveToTrashService.IsEnabled() instead
 	/// </summary>
 	[PackageTelemetry]
@@ -737,7 +700,7 @@ public sealed class AppSettings
 
 	/// <summary>
 	///     For background task with lower priority e.g. thumbnails
-	///     it skips the current task if the current process is to busy
+	///     it skips the current task if the current process is too busy
 	/// </summary>
 	[PackageTelemetry]
 	public double CpuUsageMaxPercentage { get; set; } = 75;
@@ -802,40 +765,6 @@ public sealed class AppSettings
 
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 
-	/// <summary>
-	///     @see: https://tomasherceg.com/blog/post/
-	///     azure-app-service-cannot-create-directories-and-write-to-filesystem-when-deployed-using-azure-devops
-	/// </summary>
-	private void CreateDefaultFolders()
-	{
-		if ( !Directory.Exists(BaseDirectoryProject) )
-		{
-			Directory.CreateDirectory(BaseDirectoryProject);
-		}
-
-		// Cache for thumbs
-		if ( !Directory.Exists(ThumbnailTempFolder) )
-		{
-			Directory.CreateDirectory(ThumbnailTempFolder);
-		}
-
-		// default location to store source images. you should change this
-		if ( !Directory.Exists(StorageFolder) )
-		{
-			Directory.CreateDirectory(StorageFolder);
-		}
-
-		// may be cleaned after restart (not implemented)
-		if ( !Directory.Exists(TempFolder) )
-		{
-			Directory.CreateDirectory(TempFolder);
-		}
-
-		if ( !Directory.Exists(DependenciesFolder) )
-		{
-			Directory.CreateDirectory(DependenciesFolder);
-		}
-	}
 
 	public bool IsVerbose()
 	{
@@ -858,7 +787,8 @@ public sealed class AppSettings
 		}
 
 		// when Windows 2019 is more common: TimeZoneInfo FindSystemTimeZoneById
-		// Windows 10 May 2019 https://learn.microsoft.com/en-us/dotnet/core/extensions/globalization-icu
+		// Windows 10 May 2019
+		// https://learn.microsoft.com/en-us/dotnet/core/extensions/globalization-icu
 		return TZConvert.GetTimeZoneInfo(value);
 	}
 
@@ -942,7 +872,8 @@ public sealed class AppSettings
 
 		if ( appSettings.PublishProfiles != null )
 		{
-			foreach ( var value in appSettings.PublishProfiles.SelectMany(profile =>
+			foreach ( var value in
+			         appSettings.PublishProfiles.SelectMany(profile =>
 				         profile.Value) )
 			{
 				ReplaceAppSettingsPublishProfilesCloneToDisplay(value);
@@ -1026,6 +957,27 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string FullPathStorageFolderToDatabaseStyle(string subpath)
 	{
+		foreach ( var mapping in
+		         StorageFolderMappings
+			         .OrderByDescending(m => m.Value.Length) )
+		{
+			var physicalBase = mapping.Value.TrimEnd('/', '\\');
+			if ( Path.DirectorySeparatorChar == '\\' )
+			{
+				physicalBase = physicalBase.Replace('/', '\\');
+			}
+
+			if ( subpath != physicalBase &&
+			     !subpath.StartsWith(physicalBase + Path.DirectorySeparatorChar) )
+			{
+				continue;
+			}
+
+			var remainder = subpath[physicalBase.Length..];
+			var dbKey = mapping.Key.TrimEnd('/');
+			return PathHelper.PrefixDbSlash(dbKey + PathReplaceToDatabaseStyle(remainder));
+		}
+
 		var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
 		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);
 
@@ -1116,11 +1068,34 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public string DatabasePathToFilePath(string databaseFilePath)
 	{
+		foreach ( var mapping in
+		         StorageFolderMappings.OrderByDescending(m => m.Key.Length) )
+		{
+			var key = mapping.Key.TrimEnd('/');
+			if ( databaseFilePath != key &&
+			     !databaseFilePath.StartsWith(key + "/") )
+			{
+				continue;
+			}
+
+			var remainder = databaseFilePath[key.Length..];
+			var physicalBase = mapping.Value.TrimEnd('/', '\\');
+			var combined = PathToFileReplacePathStyle(physicalBase + remainder);
+			var canonical = Path.GetFullPath(combined);
+			var canonicalBase = Path.GetFullPath(physicalBase);
+			if ( canonical != canonicalBase &&
+			     !canonical.StartsWith(canonicalBase + Path.DirectorySeparatorChar,
+				     StringComparison.OrdinalIgnoreCase) )
+			{
+				throw new UnauthorizedAccessException(
+					"Path traversal detected: resolved path is outside the mapped root.");
+			}
+
+			return canonical;
+		}
+
 		var filepath = StorageFolder + databaseFilePath;
-
-		filepath = PathToFileReplacePathStyle(filepath);
-
-		return filepath;
+		return PathToFileReplacePathStyle(filepath);
 	}
 
 	/// <summary>

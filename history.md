@@ -40,7 +40,23 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.8.0-beta.0 - _(Unreleased)_ 2024-?-11 {#v0.8.0-beta.0}
+## version 0.8.1 - _(Unreleased)_ 2026-?-? {#v0.8.1}
+
+- [x] (Fixed) _Back-end_ Inflate SearchSuggestions batch 5k items to avoid timeouts (PR #3230)
+- [x] (Fixed) _Back-end_ Move item different folder does keep folder structure (PR #3229 I #2738)
+- [x] (Fixed) _Back-end_ Filter Unique keys in QueryAddRange (PR #3227)
+- [x] (Fixed) _Back-end_ ThumbnailQuery SaveChangesDuplicate (PR #3227)
+- [x] (Fixed) _Front-end_ PreferencesAppSettingsStorageFolderMappings not with env (PR #3227)
+- [x] (Changed) _Tools_ Improvements for mirroring dependencies (PR #3226)
+- [x] (Changed) _Back-end_ ExifTool SourceForge.net download (PR #3226)
+
+## version 0.8.0 - 2026-08-21 {#v0.8.0}
+
+- [x] (Changed) _Back-end_ Add guard around ExifTool to auto download (PR #3223)
+- [x] (Changed) _Back-end_ Add IOException AppSettings (PR #3222)
+- [x] (Added) _Back-end_ Add virtual symlink (PR #3224)
+
+## version 0.8.0-beta.0 - 2026-08-20 {#v0.8.0-beta.0}
 
 - [x] (Changed) _Back-end_ Code quality .NET 10 (PR #3205)
 - [x] (Changed) _Back-end_ Upgrade to .NET 10 - SDK 8.0.400 (Runtime: 10.0.11) (PR #3204)
