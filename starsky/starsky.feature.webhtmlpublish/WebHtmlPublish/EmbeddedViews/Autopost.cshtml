@@ -50,9 +50,9 @@ var displayTitleName = !string.IsNullOrEmpty(@item.Title) ? @item.Title : @Model
 		width="@width" height="@height"
 		loading="lazy"
 		decoding="async"
-		alt="@Model.ItemName ; @item.Title ; @item.Tags"
+		alt="@Model.ItemName, @item.Title, @item.Tags"
 	>
-	<figcaption>@Model.ItemName - @item.Title | @photoText @count</figcaption>
+	<figcaption>@displayTitleName | @photoText @count</figcaption>
 </figure>
 }
 
