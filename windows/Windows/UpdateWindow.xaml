@@ -1,0 +1,33 @@
+<Window x:Class="Starsky.Desktop.Windows.UpdateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Starsky — Update Available"
+        Width="440" Height="200"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="SingleBorderWindow">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" VerticalAlignment="Center">
+            <TextBlock Text="A newer version of Starsky is available."
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,8"
+                       TextWrapping="Wrap"/>
+            <TextBlock Text="Use Help → Release Overview to download the latest version."
+                       FontSize="12"
+                       TextWrapping="Wrap"
+                       Foreground="#555"/>
+        </StackPanel>
+
+        <Button Grid.Row="1"
+                Content="Close"
+                Width="80"
+                HorizontalAlignment="Right"
+                Click="CloseButton_Click"/>
+    </Grid>
+</Window>
