@@ -30,11 +30,13 @@ public class RoutePersistenceService(SettingsService settings)
     public void RemoveRoute(int index)
     {
         var windows = settings.Current.Windows;
-        if (index >= 0 && index < windows.Count)
+        if ( index < 0 || index >= windows.Count )
         {
-            windows.RemoveAt(index);
-            settings.Save();
+	        return;
         }
+
+        windows.RemoveAt(index);
+        settings.Save();
     }
 
     public void ClearAll()

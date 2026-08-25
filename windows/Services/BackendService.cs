@@ -10,8 +10,9 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
     private bool _isShuttingDown;
     private bool _hasRestartedOnce;
     private bool _disposed;
+	private static readonly string[] SourceArray = ["starsky.exe", "starsky"];
 
-    public async Task StartAsync(int port)
+	public async Task StartAsync(int port)
     {
         _port = port;
         _isShuttingDown = false;
@@ -65,15 +66,7 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
 
     internal static string? FindBackendExe(string dir)
     {
-        foreach (var name in new[] { "starsky.exe", "starsky" })
-        {
-            var path = Path.Combine(dir, name);
-            if (File.Exists(path))
-            {
-	            return path;
-            }
-        }
-        return null;
+	    return SourceArray.Select(name => Path.Combine(dir, name)).FirstOrDefault(File.Exists);
     }
 
     internal static void SetEnvironment(IDictionary<string, string?> env, int port)
@@ -156,12 +149,14 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
         }
 
         _disposed = true;
-        if (disposing)
+        if ( !disposing )
         {
-            _isShuttingDown = true;
-            try { _process?.Kill(); } catch { /* best-effort */ }
-            _process?.Dispose();
+	        return;
         }
+
+        _isShuttingDown = true;
+        try { _process?.Kill(); } catch { /* best-effort */ }
+        _process?.Dispose();
     }
 
     internal static async Task<bool> WaitForHealthAsync(

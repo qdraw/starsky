@@ -9,15 +9,10 @@ public class NavigationService(SettingsService settings)
 	        return true;
         }
 
-        if (!string.IsNullOrEmpty(baseUrl) && Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri)
-                                           && uri.Host.Equals(baseUri.Host, StringComparison.OrdinalIgnoreCase)
-                                           && uri.Scheme.Equals(baseUri.Scheme, StringComparison.OrdinalIgnoreCase)
-                                           && uri.Port == baseUri.Port)
-        {
-            return true;
-        }
-
-        return false;
+        return !string.IsNullOrEmpty(baseUrl) && Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri)
+                                              && uri.Host.Equals(baseUri.Host, StringComparison.OrdinalIgnoreCase)
+                                              && uri.Scheme.Equals(baseUri.Scheme, StringComparison.OrdinalIgnoreCase)
+                                              && uri.Port == baseUri.Port;
     }
 
     public static string BuildStartUrl(string baseUrl, string? route)

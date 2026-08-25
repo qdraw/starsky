@@ -38,13 +38,15 @@ public class UpdateService
 	        return false;
         }
 
-        if (_settings.Current.LastUpdateWarningShown.HasValue)
+        if ( !_settings.Current.LastUpdateWarningShown.HasValue )
         {
-            var minutesSince = (DateTime.UtcNow - _settings.Current.LastUpdateWarningShown.Value).TotalMinutes;
-            if (minutesSince < SuppressMinutes)
-            {
-	            return false;
-            }
+	        return await CheckWithVelopackAsync();
+        }
+
+        var minutesSince = (DateTime.UtcNow - _settings.Current.LastUpdateWarningShown.Value).TotalMinutes;
+        if (minutesSince < SuppressMinutes)
+        {
+	        return false;
         }
 
         return await CheckWithVelopackAsync();
@@ -52,12 +54,7 @@ public class UpdateService
 
     public Task ApplyUpdateAsync()
     {
-        if (!HasPendingUpdate)
-        {
-	        throw new InvalidOperationException("No pending update available.");
-        }
-
-        return DoApplyUpdateAsync();
+	    return !HasPendingUpdate ? throw new InvalidOperationException("No pending update available.") : DoApplyUpdateAsync();
     }
 
     public void RecordWarningShown()
@@ -91,7 +88,12 @@ public class UpdateService
     [ExcludeFromCodeCoverage]
     protected virtual async Task DoApplyUpdateAsync()
     {
-        await _updateManager!.DownloadUpdatesAsync(_pendingUpdate!);
+	    if (_updateManager == null)
+	    {
+		    return;
+	    }
+
+        await _updateManager.DownloadUpdatesAsync(_pendingUpdate!);
         _updateManager.ApplyUpdatesAndRestart(_pendingUpdate!);
     }
 }

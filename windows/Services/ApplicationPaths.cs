@@ -7,7 +7,7 @@ public static class ApplicationPaths
     public static string AppData { get; } =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "starsky");
 
-    public static string LocalAppData { get; } =
+    private static string LocalAppData { get; } =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "starsky");
 
     public static string LogsDir => Path.Combine(AppData, "logs");

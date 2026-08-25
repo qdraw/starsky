@@ -6,7 +6,7 @@ namespace Starsky.Desktop.Services;
 
 public class SettingsService(ILogger<SettingsService> logger, string? settingsFile = null)
 {
-    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
     private readonly string _settingsFile = settingsFile ?? ApplicationPaths.SettingsFile;
 
     public DesktopSettings Current { get; private set; } = new();
@@ -39,7 +39,7 @@ public class SettingsService(ILogger<SettingsService> logger, string? settingsFi
         try
         {
             Current = settings;
-            var json = JsonSerializer.Serialize(settings, _jsonOptions);
+            var json = JsonSerializer.Serialize(settings, JsonOptions);
             File.WriteAllText(_settingsFile, json);
         }
         catch (Exception ex)
