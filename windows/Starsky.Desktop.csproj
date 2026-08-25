@@ -13,6 +13,7 @@
     <ApplicationIcon>Resources\starsky.ico</ApplicationIcon>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <StartupObject>Starsky.Desktop.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="starsky.Tests\**\*" />
