@@ -12,8 +12,8 @@
 # docker build -f starsky/Dockerfile . --no-cache --build-arg TEST=false
 
 # Stage 1 Front-end
-# docker buildx imagetools inspect node:22-alpine
-FROM --platform=$BUILDPLATFORM node:22-alpine AS react-build
+# docker buildx imagetools inspect node:24-alpine
+FROM --platform=$BUILDPLATFORM node:24-alpine AS react-build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
