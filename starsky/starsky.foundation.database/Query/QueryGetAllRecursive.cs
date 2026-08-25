@@ -37,17 +37,34 @@ public partial class Query
 		async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 		{
 			var predicates = new List<Expression<Func<FileIndexItem, bool>>>();
+			var recursivePrefixes = filePathList
+				.Select(filePath =>
+				{
+					var subPath = PathHelper.RemoveLatestSlash(filePath);
+					return string.IsNullOrEmpty(subPath) ? "/" : $"{subPath}/";
+				})
+				.Distinct()
+				.ToList();
 
 			// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-			foreach ( var filePath in filePathList )
+			foreach ( var recursivePrefix in recursivePrefixes )
 			{
-				var subPath = PathHelper.RemoveLatestSlash(filePath);
-				predicates.Add(p => p.ParentDirectory!.StartsWith(subPath));
+				var prefix = recursivePrefix;
+				if ( prefix == "/" )
+				{
+					predicates.Add(p => p.FilePath != null &&
+					                 p.FilePath != "/" &&
+					                 p.FilePath.StartsWith(prefix));
+					continue;
+				}
+
+				predicates.Add(p => p.FilePath != null && p.FilePath.StartsWith(prefix));
 			}
 
 			var predicate = PredicateBuilder.OrLoop(predicates);
 
-			return await context.FileIndex.Where(predicate).OrderBy(r => r.FilePath).ToListAsync();
+			return await context.FileIndex.AsNoTracking().Where(predicate)
+				.OrderBy(r => r.FilePath).ToListAsync();
 		}
 
 		try
