@@ -11,12 +11,11 @@ namespace Starsky.Desktop.Windows;
 public partial class MainWindow : Window
 {
     private const string AppVersion = "0.8.1";
-    private const string DocsUrl = "https://qdraw.nl/special/starsky/docs/";
-    private const string ReleasesUrl = "https://github.com/qdraw/starsky/releases";
+    private const string DocsUrl = "https://qdraw.nl/special/starsky/docs/"; // NOSONAR
+    private const string ReleasesUrl = "https://github.com/qdraw/starsky/releases"; // NOSONAR
 
     private readonly SettingsService _settings;
     private readonly RoutePersistenceService _routes;
-    private readonly NavigationService _navigation;
     private readonly WebViewEnvironmentService _webViewEnv;
     private readonly FileDownloadService _fileDownload;
     private readonly WindowManager _windowManager;
@@ -26,37 +25,25 @@ public partial class MainWindow : Window
     private readonly int _windowIndex;
     private string _currentRoute;
 
-    public MainWindow(
-        SettingsService settings,
-        RoutePersistenceService routes,
-        NavigationService navigation,
-        WebViewEnvironmentService webViewEnv,
-        FileDownloadService fileDownload,
-        string baseUrl,
-        string initialRoute,
-        SavedWindowState geometry,
-        int windowIndex,
-        WindowManager windowManager,
-        ILogger logger)
+    public MainWindow(MainWindowOptions options)
     {
         InitializeComponent();
 
-        _settings = settings;
-        _routes = routes;
-        _navigation = navigation;
-        _webViewEnv = webViewEnv;
-        _fileDownload = fileDownload;
-        _windowManager = windowManager;
-        _logger = logger;
-        _baseUrl = baseUrl;
-        _windowIndex = windowIndex;
-        _currentRoute = initialRoute;
+        _settings = options.Settings;
+        _routes = options.Routes;
+        _webViewEnv = options.WebViewEnv;
+        _fileDownload = options.FileDownload;
+        _windowManager = options.WindowManager;
+        _logger = options.Logger;
+        _baseUrl = options.BaseUrl;
+        _windowIndex = options.WindowIndex;
+        _currentRoute = options.InitialRoute;
 
-        Left = geometry.Left;
-        Top = geometry.Top;
-        Width = geometry.Width;
-        Height = geometry.Height;
-        if (geometry.IsMaximized)
+        Left = options.Geometry.Left;
+        Top = options.Geometry.Top;
+        Width = options.Geometry.Width;
+        Height = options.Geometry.Height;
+        if (options.Geometry.IsMaximized)
         {
 	        WindowState = WindowState.Maximized;
         }
@@ -81,7 +68,7 @@ public partial class MainWindow : Window
             WebView.CoreWebView2.SourceChanged += CoreWebView2_SourceChanged;
             WebView.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
 
-            var startUrl = _navigation.BuildStartUrl(_baseUrl, _currentRoute);
+            var startUrl = NavigationService.BuildStartUrl(_baseUrl, _currentRoute);
             _logger.LogInformation("Navigating main window to {Url}", startUrl);
             WebView.CoreWebView2.Navigate(startUrl);
         }
@@ -99,7 +86,7 @@ public partial class MainWindow : Window
 	        return;
         }
 
-        if (_navigation.IsAllowedOrigin(uri, _baseUrl))
+        if (NavigationService.IsAllowedOrigin(uri, _baseUrl))
         {
 	        return;
         }
@@ -127,7 +114,7 @@ public partial class MainWindow : Window
     {
         e.Handled = true;
 
-        if (!Uri.TryCreate(e.Uri, UriKind.Absolute, out var uri) || !_navigation.IsAllowedOrigin(uri, _baseUrl))
+        if (!Uri.TryCreate(e.Uri, UriKind.Absolute, out var uri) || !NavigationService.IsAllowedOrigin(uri, _baseUrl))
         {
             Process.Start(new ProcessStartInfo(e.Uri) { UseShellExecute = true });
             return;

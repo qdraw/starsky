@@ -3,18 +3,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Starsky.Desktop.Services;
 
-public class BackendService : IDisposable
+public class BackendService(ILogger<BackendService> logger) : IDisposable
 {
-    private readonly ILogger<BackendService> _logger;
-    private Process? _process;
+	private Process? _process;
     private int _port;
     private bool _isShuttingDown;
     private bool _hasRestartedOnce;
-
-    public BackendService(ILogger<BackendService> logger)
-    {
-        _logger = logger;
-    }
+    private bool _disposed;
 
     public async Task StartAsync(int port)
     {
@@ -31,11 +26,11 @@ public class BackendService : IDisposable
 
         if (exe == null)
         {
-            _logger.LogError("Backend executable not found in {Dir}", runtimeDir);
+            logger.LogError("Backend executable not found in {Dir}", runtimeDir);
             throw new FileNotFoundException($"Starsky backend not found in {runtimeDir}");
         }
 
-        _logger.LogInformation("Starting backend: {Exe} on port {Port}", exe, _port);
+        logger.LogInformation("Starting backend: {Exe} on port {Port}", exe, _port);
 
         var psi = new ProcessStartInfo(exe)
         {
@@ -51,12 +46,12 @@ public class BackendService : IDisposable
         _process = new Process { StartInfo = psi, EnableRaisingEvents = true };
         _process.OutputDataReceived += (_, e) => { if (e.Data != null)
 	        {
-		        _logger.LogInformation("[backend] {Line}", e.Data);
+		        logger.LogInformation("[backend] {Line}", e.Data);
 	        }
         };
         _process.ErrorDataReceived += (_, e) => { if (e.Data != null)
 	        {
-		        _logger.LogWarning("[backend:err] {Line}", e.Data);
+		        logger.LogWarning("[backend:err] {Line}", e.Data);
 	        }
         };
         _process.Exited += OnProcessExited;
@@ -106,20 +101,22 @@ public class BackendService : IDisposable
 
     private void OnProcessExited(object? sender, EventArgs e)
     {
-        _logger.LogWarning("Backend process exited (shutting down: {IsShuttingDown})", _isShuttingDown);
+        logger.LogWarning("Backend process exited (shutting down: {IsShuttingDown})", _isShuttingDown);
 
-        if (!_isShuttingDown && !_hasRestartedOnce)
+        if ( _isShuttingDown || _hasRestartedOnce )
         {
-            _hasRestartedOnce = true;
-            _logger.LogInformation("Attempting backend restart in 2 s");
-            Task.Delay(2000).ContinueWith(_ =>
-            {
-                if (!_isShuttingDown)
-                {
-	                _ = LaunchAsync();
-                }
-            });
+	        return;
         }
+
+        _hasRestartedOnce = true;
+        logger.LogInformation("Attempting backend restart in 2 s");
+        _ = Task.Delay(2000).ContinueWith(async _ =>
+        {
+	        if (!_isShuttingDown)
+	        {
+		        await LaunchAsync();
+	        }
+        }, TaskScheduler.Default);
     }
 
     public async Task StopAsync()
@@ -130,7 +127,7 @@ public class BackendService : IDisposable
 	        return;
         }
 
-        _logger.LogInformation("Stopping backend");
+        logger.LogInformation("Stopping backend");
         try
         {
             _process.Kill();
@@ -142,13 +139,28 @@ public class BackendService : IDisposable
             try { _process.Kill(entireProcessTree: true); } catch { /* best-effort */ }
         }
 
-        _logger.LogInformation("Backend stopped");
+        logger.LogInformation("Backend stopped");
     }
 
     public void Dispose()
     {
-        _isShuttingDown = true;
-        try { _process?.Kill(); } catch { /* best-effort */ }
-        _process?.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+	        return;
+        }
+
+        _disposed = true;
+        if (disposing)
+        {
+            _isShuttingDown = true;
+            try { _process?.Kill(); } catch { /* best-effort */ }
+            _process?.Dispose();
+        }
     }
 }

@@ -4,16 +4,9 @@ using Starsky.Desktop.Models;
 
 namespace Starsky.Desktop.Services;
 
-public class RemoteUrlValidator
+public class RemoteUrlValidator(ILogger<RemoteUrlValidator> logger, HttpClient? http = null)
 {
-    private readonly HttpClient _http;
-    private readonly ILogger<RemoteUrlValidator> _logger;
-
-    public RemoteUrlValidator(ILogger<RemoteUrlValidator> logger, HttpClient? http = null)
-    {
-        _logger = logger;
-        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-    }
+    private readonly HttpClient _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
 
     public async Task<UrlValidationResult> ValidateAsync(string url)
     {
@@ -31,7 +24,8 @@ public class RemoteUrlValidator
 
         try
         {
-            var response = await _http.GetAsync($"{url}/api/health");
+            var healthUri = new Uri(new Uri(url + "/"), "api/health");
+            var response = await _http.GetAsync(healthUri);
             if (response.StatusCode == System.Net.HttpStatusCode.OK ||
                 response.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)
             {
@@ -42,7 +36,7 @@ public class RemoteUrlValidator
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "URL validation failed for {Url}", url);
+            logger.LogWarning(ex, "URL validation failed for {Url}", url);
             return new UrlValidationResult(false, ex.Message);
         }
     }

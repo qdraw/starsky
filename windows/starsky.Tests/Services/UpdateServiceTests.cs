@@ -66,5 +66,6 @@ public class UpdateServiceTests : IDisposable
     public void Dispose()
     {
         try { File.Delete(_tempFile); } catch { /* best-effort */ }
+        GC.SuppressFinalize(this);
     }
 }

@@ -1,5 +1,4 @@
-using System.IO;
-using System.Net.Http;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using Microsoft.Extensions.Logging;
 using Starsky.Desktop.Models;
@@ -33,7 +32,7 @@ public partial class App : Application
             builder.SetMinimumLevel(LogLevel.Information);
         });
         _logger = logFactory.CreateLogger<App>();
-        _logger.LogInformation("Starsky Desktop {Version} starting", AppVersion);
+        _logger.LogInformation("Starsky Desktop starting");
 
         // 3. Load settings
         var settingsService = new SettingsService(logFactory.CreateLogger<SettingsService>());
@@ -113,7 +112,7 @@ public partial class App : Application
         {
             if (await updateService.CheckAsync())
             {
-                Dispatcher.Invoke(() => new UpdateWindow(updateService).Show());
+                await Dispatcher.InvokeAsync(() => new UpdateWindow(updateService).Show());
             }
         });
     }
@@ -167,6 +166,7 @@ public partial class App : Application
         base.OnExit(e);
     }
 
+    [SuppressMessage("Style", "S2325:Remove unused parameter", Justification = "Required by WPF")]
     public void Connect(int connectionId, object target)
     {
 	    throw new NotImplementedException();

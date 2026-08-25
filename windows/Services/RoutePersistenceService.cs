@@ -2,20 +2,13 @@ using Starsky.Desktop.Models;
 
 namespace Starsky.Desktop.Services;
 
-public class RoutePersistenceService
+public class RoutePersistenceService(SettingsService settings)
 {
-    private readonly SettingsService _settings;
-
-    public RoutePersistenceService(SettingsService settings)
-    {
-        _settings = settings;
-    }
-
-    public List<SavedWindowState> GetRoutes() => _settings.Current.Windows;
+	public List<SavedWindowState> GetRoutes() => settings.Current.Windows;
 
     public void SaveRoute(int index, string route, SavedWindowState? geometry = null)
     {
-        var windows = _settings.Current.Windows;
+        var windows = settings.Current.Windows;
         while (windows.Count <= index)
         {
 	        windows.Add(new SavedWindowState());
@@ -31,22 +24,22 @@ public class RoutePersistenceService
             windows[index].IsMaximized = geometry.IsMaximized;
         }
 
-        _settings.Save();
+        settings.Save();
     }
 
     public void RemoveRoute(int index)
     {
-        var windows = _settings.Current.Windows;
+        var windows = settings.Current.Windows;
         if (index >= 0 && index < windows.Count)
         {
             windows.RemoveAt(index);
-            _settings.Save();
+            settings.Save();
         }
     }
 
     public void ClearAll()
     {
-        _settings.Current.Windows.Clear();
-        _settings.Save();
+        settings.Current.Windows.Clear();
+        settings.Save();
     }
 }

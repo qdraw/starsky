@@ -16,10 +16,11 @@ public class PortFinderTests
     {
         var port = PortFinder.FindFreePort();
 
-        // Verify we can actually bind to the returned port
         var listener = new TcpListener(IPAddress.Loopback, port);
         listener.Start();
         listener.Stop();
+        var ep = (System.Net.IPEndPoint)listener.LocalEndpoint;
+        Assert.Equal(port, ep.Port);
     }
 
     [Fact]

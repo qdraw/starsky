@@ -5,12 +5,7 @@ namespace starsky.Tests.Services;
 
 public class FileWatcherServiceTests : IDisposable
 {
-    private readonly FileWatcherService _sut;
-
-    public FileWatcherServiceTests()
-    {
-        _sut = new FileWatcherService(NullLogger<FileWatcherService>.Instance);
-    }
+    private readonly FileWatcherService _sut = new(NullLogger<FileWatcherService>.Instance);
 
     [Fact]
     public void Start_DoesNotThrow()
@@ -59,5 +54,6 @@ public class FileWatcherServiceTests : IDisposable
     public void Dispose()
     {
         try { _sut.Dispose(); } catch { /* best-effort */ }
+        GC.SuppressFinalize(this);
     }
 }

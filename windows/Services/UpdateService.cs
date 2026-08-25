@@ -7,7 +7,7 @@ namespace Starsky.Desktop.Services;
 public class UpdateService
 {
     private const int SuppressMinutes = 5760; // 4 days
-    private const string GithubRepoUrl = "https://github.com/qdraw/starsky";
+    private const string GithubRepoUrl = "https://github.com/qdraw/starsky"; // NOSONAR
 
     private readonly SettingsService _settings;
     private readonly ILogger<UpdateService> _logger;

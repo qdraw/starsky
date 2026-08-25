@@ -4,25 +4,18 @@ using Starsky.Desktop.Models;
 
 namespace Starsky.Desktop.Services;
 
-public class SettingsService
+public class SettingsService(ILogger<SettingsService> logger, string? settingsFile = null)
 {
     private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
-    private readonly ILogger<SettingsService> _logger;
-    private readonly string _settingsFile;
+    private readonly string _settingsFile = settingsFile ?? ApplicationPaths.SettingsFile;
 
     public DesktopSettings Current { get; private set; } = new();
-
-    public SettingsService(ILogger<SettingsService> logger, string? settingsFile = null)
-    {
-        _logger = logger;
-        _settingsFile = settingsFile ?? ApplicationPaths.SettingsFile;
-    }
 
     public DesktopSettings Load()
     {
         if (!File.Exists(_settingsFile))
         {
-            _logger.LogInformation("Settings file not found, using defaults");
+            logger.LogInformation("Settings file not found, using defaults");
             Current = new DesktopSettings();
             return Current;
         }
@@ -34,7 +27,7 @@ public class SettingsService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to parse settings, using defaults");
+            logger.LogWarning(ex, "Failed to parse settings, using defaults");
             Current = new DesktopSettings();
         }
 
@@ -51,7 +44,7 @@ public class SettingsService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to save settings");
+            logger.LogError(ex, "Failed to save settings");
         }
     }
 

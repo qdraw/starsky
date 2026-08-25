@@ -68,5 +68,6 @@ public class FileDownloadServiceTests : IDisposable
     public void Dispose()
     {
         try { File.Delete(_expectedFile); } catch { /* best-effort */ }
+        GC.SuppressFinalize(this);
     }
 }

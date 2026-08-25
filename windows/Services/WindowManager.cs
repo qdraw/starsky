@@ -5,38 +5,22 @@ using Starsky.Desktop.Windows;
 
 namespace Starsky.Desktop.Services;
 
-public class WindowManager
+public class WindowManager(
+	SettingsService settings,
+	RoutePersistenceService routes,
+	NavigationService navigation,
+	WebViewEnvironmentService webViewEnv,
+	FileDownloadService fileDownload,
+	ILogger<WindowManager> logger)
 {
-    private readonly SettingsService _settings;
-    private readonly RoutePersistenceService _routes;
-    private readonly NavigationService _navigation;
-    private readonly WebViewEnvironmentService _webViewEnv;
-    private readonly FileDownloadService _fileDownload;
-    private readonly ILogger<WindowManager> _logger;
-    private readonly List<MainWindow> _mainWindows = [];
+	private readonly List<MainWindow> _mainWindows = [];
     private int? _localPort;
-
-    public WindowManager(
-        SettingsService settings,
-        RoutePersistenceService routes,
-        NavigationService navigation,
-        WebViewEnvironmentService webViewEnv,
-        FileDownloadService fileDownload,
-        ILogger<WindowManager> logger)
-    {
-        _settings = settings;
-        _routes = routes;
-        _navigation = navigation;
-        _webViewEnv = webViewEnv;
-        _fileDownload = fileDownload;
-        _logger = logger;
-    }
 
     public void SetLocalPort(int port) => _localPort = port;
 
     public void OpenMainWindow(string? route, SavedWindowState? geometry)
     {
-        var baseUrl = _navigation.GetEffectiveBaseUrl(_localPort);
+        var baseUrl = navigation.GetEffectiveBaseUrl(_localPort);
         var offset = _mainWindows.Count * 24;
 
         SavedWindowState state;
@@ -48,7 +32,7 @@ public class WindowManager
         {
             if (geometry != null)
             {
-	            _logger.LogWarning("Saved window geometry is off-screen; resetting to default position");
+	            logger.LogWarning("Saved window geometry is off-screen; resetting to default position");
             }
 
             state = new SavedWindowState
@@ -61,9 +45,19 @@ public class WindowManager
             };
         }
 
-        var window = new MainWindow(
-            _settings, _routes, _navigation, _webViewEnv, _fileDownload,
-            baseUrl, route ?? "?f=/", state, _mainWindows.Count, this, _logger);
+        var window = new MainWindow(new MainWindowOptions
+        {
+            Settings = settings,
+            Routes = routes,
+            WebViewEnv = webViewEnv,
+            FileDownload = fileDownload,
+            WindowManager = this,
+            Logger = logger,
+            BaseUrl = baseUrl,
+            InitialRoute = route ?? "?f=/",
+            Geometry = state,
+            WindowIndex = _mainWindows.Count
+        });
 
         _mainWindows.Add(window);
         window.Closed += (_, _) =>
@@ -80,7 +74,7 @@ public class WindowManager
 
     public void RestoreWindows()
     {
-        var saved = _routes.GetRoutes();
+        var saved = routes.GetRoutes();
         if (saved.Count == 0)
         {
             OpenMainWindow(null, null);
@@ -104,7 +98,7 @@ public class WindowManager
 
     public void ReopenAll()
     {
-        _routes.ClearAll();
+        routes.ClearAll();
         CloseAll();
         OpenMainWindow(null, null);
     }

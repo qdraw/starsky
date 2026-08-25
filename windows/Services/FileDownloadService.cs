@@ -5,16 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Starsky.Desktop.Services;
 
-public class FileDownloadService
+public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient? http = null)
 {
-    private readonly HttpClient _http;
-    private readonly ILogger<FileDownloadService> _logger;
-
-    public FileDownloadService(ILogger<FileDownloadService> logger, HttpClient? http = null)
-    {
-        _logger = logger;
-        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
-    }
+    private readonly HttpClient _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
 
     public async Task DownloadAndOpenAsync(string starskyPath, string baseUrl, bool openFile = true)
     {
@@ -47,17 +40,17 @@ public class FileDownloadService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Sidecar download failed or not available for {Path}", starskyPath);
+            logger.LogWarning(ex, "Sidecar download failed or not available for {Path}", starskyPath);
         }
 
         // 3. Download original file
-        _logger.LogInformation("Downloading {Path}", starskyPath);
+        logger.LogInformation("Downloading {Path}", starskyPath);
         var photoUrl = $"{baseUrl}/starsky/api/download-photo?isThumbnail=false&f={Uri.EscapeDataString(starskyPath)}&cache=false";
         var bytes = await _http.GetByteArrayAsync(photoUrl);
 
         await File.WriteAllBytesAsync(tmpPath, bytes);
         File.Move(tmpPath, finalPath, overwrite: true);
-        _logger.LogInformation("Downloaded to {LocalPath}", finalPath);
+        logger.LogInformation("Downloaded to {LocalPath}", finalPath);
 
         // 4. Open with default application
         if (openFile)

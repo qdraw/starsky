@@ -3,17 +3,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Starsky.Desktop.Services;
 
-public class FileWatcherService : IDisposable
+public class FileWatcherService(ILogger<FileWatcherService> logger) : IDisposable
 {
-    private readonly ILogger<FileWatcherService> _logger;
-    private FileSystemWatcher? _watcher;
+	private FileSystemWatcher? _watcher;
     private readonly Dictionary<string, System.Timers.Timer> _debounceTimers = new();
     private readonly Lock _lock = new();
-
-    public FileWatcherService(ILogger<FileWatcherService> logger)
-    {
-        _logger = logger;
-    }
+    private bool _disposed;
 
     public void Start()
     {
@@ -31,7 +26,7 @@ public class FileWatcherService : IDisposable
 
         _watcher.Created += OnChanged;
         _watcher.Changed += OnChanged;
-        _logger.LogInformation("File watcher started on {Path}", path);
+        logger.LogInformation("File watcher started on {Path}", path);
     }
 
     private void OnChanged(object sender, FileSystemEventArgs e)
@@ -64,7 +59,7 @@ public class FileWatcherService : IDisposable
 	        _debounceTimers.Remove(path);
         }
 
-        _logger.LogInformation("File changed in workspace: {Path}", path);
+        logger.LogInformation("File changed in workspace: {Path}", path);
     }
 
     public void Stop()
@@ -82,5 +77,23 @@ public class FileWatcherService : IDisposable
         }
     }
 
-    public void Dispose() => Stop();
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+	        return;
+        }
+
+        _disposed = true;
+        if (disposing)
+        {
+	        Stop();
+        }
+    }
 }

@@ -14,20 +14,15 @@ public class DailyFileLoggerProvider : ILoggerProvider
 
     public ILogger CreateLogger(string categoryName) => new DailyFileLogger(_logDir, categoryName);
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
 }
 
-internal sealed class DailyFileLogger : ILogger
+internal sealed class DailyFileLogger(string logDir, string category) : ILogger
 {
-    private readonly string _logDir;
-    private readonly string _category;
-    private static readonly Lock _lock = new();
-
-    public DailyFileLogger(string logDir, string category)
-    {
-        _logDir = logDir;
-        _category = category;
-    }
+	private static readonly Lock _lock = new();
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
 
@@ -41,13 +36,13 @@ internal sealed class DailyFileLogger : ILogger
         }
 
         var msg = formatter(state, exception);
-        var line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [{logLevel}] {_category}: {msg}";
+        var line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [{logLevel}] {category}: {msg}";
         if (exception != null)
         {
 	        line += $"\n{exception}";
         }
 
-        var file = Path.Combine(_logDir, $"starsky-{DateTime.Today:yyyy-MM-dd}.log");
+        var file = Path.Combine(logDir, $"starsky-{DateTime.Today:yyyy-MM-dd}.log");
         lock (_lock)
         {
             try { File.AppendAllText(file, line + Environment.NewLine); }
