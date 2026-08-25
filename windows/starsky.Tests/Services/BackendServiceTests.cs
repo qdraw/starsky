@@ -148,8 +148,9 @@ public class BackendServiceTests
     {
         using var http = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK));
 
-        await BackendService.WaitForHealthAsync(http, "http://localhost:5000");
-        // no exception = success
+        var result = await BackendService.WaitForHealthAsync(http, "http://localhost:5000");
+        
+        Assert.True(result);
     }
 
     [Fact]

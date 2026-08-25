@@ -164,7 +164,7 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
         }
     }
 
-    internal static async Task WaitForHealthAsync(
+    internal static async Task<bool> WaitForHealthAsync(
         HttpClient http, string baseUrl,
         Action<string>? onWaiting = null,
         int timeoutSeconds = 60)
@@ -177,7 +177,7 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
                 var resp = await http.GetAsync($"{baseUrl}/api/health");
                 if (resp.IsSuccessStatusCode)
                 {
-	                return;
+	                return true;
                 }
             }
             catch { /* not yet ready */ }
