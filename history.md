@@ -42,7 +42,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.8.2 - _(Unreleased)_ - 2026-?-? {#v0.8.2}
 
-- nothing yet
+- [x] (Fixed) _Back-end_ Docker simplifying user and group management and standardizing file ownership (PR #3235)
 
 ## version 0.8.1 - 2026-08-25 {#v0.8.1}
 
