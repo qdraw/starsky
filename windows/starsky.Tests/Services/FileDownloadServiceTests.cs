@@ -13,8 +13,9 @@ public sealed class FileDownloadServiceTests : IDisposable
     public FileDownloadServiceTests()
     {
         // Replicate the service's path calculation exactly so the assertion matches on Windows too.
-        var parentDir = (Path.GetDirectoryName(StarskyPath)?.TrimStart('/') ?? string.Empty)
-                        .Replace('/', Path.DirectorySeparatorChar);
+        var parentDir = (Path.GetDirectoryName(StarskyPath) ?? string.Empty)
+            .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+            .Replace('/', Path.DirectorySeparatorChar);
         _expectedFile = Path.Combine(ApplicationPaths.TempFolder, parentDir, Path.GetFileName(StarskyPath));
     }
 

@@ -8,17 +8,21 @@ public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient
 {
     private readonly HttpClient _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
 
-    public async Task DownloadAndOpenAsync(string starskyPath, string baseUrl, bool openFile = true)
+    public async Task DownloadAndOpenAsync(
+        string starskyPath, string baseUrl, bool openFile = true, string? cookieHeader = null)
     {
         baseUrl = baseUrl.TrimEnd('/');
 
         // 1. Get file info
         var infoUrl = $"{baseUrl}/starsky/api/index?f={Uri.EscapeDataString(starskyPath)}";
-        var infoJson = await _http.GetStringAsync(infoUrl);
+        var infoJson = await GetStringAsync(infoUrl, cookieHeader);
         using var doc = JsonDocument.Parse(infoJson);
 
-        // Resolve local path mirroring the server directory structure
-        var parentDir = Path.GetDirectoryName(starskyPath)?.TrimStart('/') ?? string.Empty;
+        // Resolve local path mirroring the server directory structure.
+        // TrimStart must strip both / and \ — on Windows GetDirectoryName returns a
+        // backslash-prefixed string, and Path.Combine treats a leading \ as drive-relative.
+        var parentDir = (Path.GetDirectoryName(starskyPath) ?? string.Empty)
+            .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         var fileName = Path.GetFileName(starskyPath);
         var localDir = Path.Combine(ApplicationPaths.TempFolder, parentDir.Replace('/', Path.DirectorySeparatorChar));
         Directory.CreateDirectory(localDir);
@@ -30,7 +34,7 @@ public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient
         try
         {
             var sidecarUrl = $"{baseUrl}/starsky/api/download-sidecar?f={Uri.EscapeDataString(starskyPath)}";
-            var sidecarBytes = await _http.GetByteArrayAsync(sidecarUrl);
+            var sidecarBytes = await GetBytesAsync(sidecarUrl, cookieHeader);
             if (sidecarBytes.Length > 0)
             {
                 var sidecarName = Path.GetFileNameWithoutExtension(fileName) + ".xmp";
@@ -45,7 +49,7 @@ public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient
         // 3. Download original file
         logger.LogInformation("Downloading {Path}", starskyPath);
         var photoUrl = $"{baseUrl}/starsky/api/download-photo?isThumbnail=false&f={Uri.EscapeDataString(starskyPath)}&cache=false";
-        var bytes = await _http.GetByteArrayAsync(photoUrl);
+        var bytes = await GetBytesAsync(photoUrl, cookieHeader);
 
         await File.WriteAllBytesAsync(tmpPath, bytes);
         File.Move(tmpPath, finalPath, overwrite: true);
@@ -53,9 +57,31 @@ public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient
 
         // 4. Open with default application
         if (openFile)
-        {
-	        OpenWithDefaultApp(finalPath);
-        }
+            OpenWithDefaultApp(finalPath);
+    }
+
+    private async Task<string> GetStringAsync(string url, string? cookieHeader)
+    {
+        if (cookieHeader == null)
+            return await _http.GetStringAsync(url);
+
+        using var req = new HttpRequestMessage(HttpMethod.Get, url);
+        req.Headers.TryAddWithoutValidation("Cookie", cookieHeader);
+        var resp = await _http.SendAsync(req);
+        resp.EnsureSuccessStatusCode();
+        return await resp.Content.ReadAsStringAsync();
+    }
+
+    private async Task<byte[]> GetBytesAsync(string url, string? cookieHeader)
+    {
+        if (cookieHeader == null)
+            return await _http.GetByteArrayAsync(url);
+
+        using var req = new HttpRequestMessage(HttpMethod.Get, url);
+        req.Headers.TryAddWithoutValidation("Cookie", cookieHeader);
+        var resp = await _http.SendAsync(req);
+        resp.EnsureSuccessStatusCode();
+        return await resp.Content.ReadAsByteArrayAsync();
     }
 
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]

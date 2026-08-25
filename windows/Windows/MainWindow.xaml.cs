@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
@@ -196,7 +197,11 @@ public partial class MainWindow : Window
 
         try
         {
-            await _fileDownload.DownloadAndOpenAsync(filePath, _baseUrl);
+            var webViewCookies = await WebView.CoreWebView2!.CookieManager.GetCookiesAsync(_baseUrl);
+            var cookieHeader = webViewCookies is { Count: > 0 }
+                ? string.Join("; ", webViewCookies.Select(c => $"{c.Name}={c.Value}"))
+                : null;
+            await _fileDownload.DownloadAndOpenAsync(filePath, _baseUrl, cookieHeader: cookieHeader);
         }
         catch (Exception ex)
         {
