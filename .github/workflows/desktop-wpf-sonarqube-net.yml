@@ -88,14 +88,19 @@ jobs:
             exit 0
           }
           $sonarUrl = if ($env:STARSKY_SONAR_URL) { $env:STARSKY_SONAR_URL } else { "https://sonarcloud.io" }
-          $prParam = if ($env:PR_NUMBER_GITHUB) { "/d:sonar.pullrequest.key=$env:PR_NUMBER_GITHUB" } else { "" }
+          $prArgs = @()
+          if ($env:PR_NUMBER_GITHUB) {
+            $prArgs += "/d:sonar.pullrequest.key=$env:PR_NUMBER_GITHUB"
+            $prArgs += "/d:sonar.pullrequest.branch=$env:GITHUB_HEAD_REF"
+            $prArgs += "/d:sonar.pullrequest.base=$env:GITHUB_BASE_REF"
+          }
           dotnet sonarscanner begin `
             /k:"$env:STARSKY_SONAR_KEY" `
             /o:"$env:STARSKY_SONAR_ORGANISATION" `
             /d:sonar.token="$env:STARSKY_SONAR_TOKEN" `
             /d:sonar.host.url="$sonarUrl" `
             /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" `
-            $prParam
+            @prArgs
 
       - name: Build
         shell: pwsh
