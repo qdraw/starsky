@@ -108,7 +108,7 @@ RUN mkdir -p /app/photos && chown app:app /app/photos
 RUN mkdir -p /app/thumbnailTempFolder && chown app:app /app/thumbnailTempFolder
 RUN mkdir -p /app/storageFolder && chown app:app /app/storageFolder
 RUN mkdir -p /app/dependencies && chown app:app /app/dependencies
-RUN mkdir -p /app/temp && chown app:app /app/temp && chmod 777 /app/temp
+RUN mkdir -p /app/temp && chown app:app /app/temp
 RUN chown app:app /app
 USER app
 
