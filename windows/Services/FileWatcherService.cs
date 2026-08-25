@@ -115,7 +115,14 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, HttpClient? 
             req.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
             var resp = await _http.SendAsync(req);
-            resp.EnsureSuccessStatusCode();
+            if (!resp.IsSuccessStatusCode)
+            {
+                var body = await resp.Content.ReadAsStringAsync();
+                logger.LogError("Upload failed ({Status}) for {Path}: {Body}",
+                    (int)resp.StatusCode, starskyPath, body);
+                return;
+            }
+
             logger.LogInformation("Upload complete: {ServerPath}", starskyPath);
         }
         catch (Exception ex)

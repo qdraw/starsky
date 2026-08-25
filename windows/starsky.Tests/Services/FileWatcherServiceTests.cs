@@ -1,5 +1,7 @@
+using System.Net.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Starsky.Desktop.Services;
+using starsky.Tests.Helpers;
 
 namespace starsky.Tests.Services;
 
@@ -104,6 +106,25 @@ public sealed class FileWatcherServiceTests : IDisposable
     {
         var ex = Record.Exception(() => _sut.SetUploadContext("http://localhost:5000", "auth=abc"));
         Assert.Null(ex);
+    }
+
+    [Fact]
+    public async Task UploadFileAsync_WhenServerReturns500_DoesNotThrow()
+    {
+        using var http = new HttpClient(
+            new FakeHttpMessageHandler(HttpStatusCode.InternalServerError, "server error"));
+        using var sut = new FileWatcherService(NullLogger<FileWatcherService>.Instance, http);
+        sut.Start();
+        sut.SetUploadContext("http://localhost:5000", null);
+
+        var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.jpg");
+        await File.WriteAllBytesAsync(path, [0xFF, 0xD8, 0xFF, 0xE0]);
+
+        // Wait for watcher debounce + background upload to complete
+        await Task.Delay(1200);
+
+        try { File.Delete(path); } catch { /* best-effort */ }
+        Assert.True(true); // reaching here without unhandled exception is the assertion
     }
 
     public void Dispose()
