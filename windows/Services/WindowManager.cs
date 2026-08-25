@@ -47,7 +47,9 @@ public class WindowManager
         else
         {
             if (geometry != null)
-                _logger.LogWarning("Saved window geometry is off-screen; resetting to default position");
+            {
+	            _logger.LogWarning("Saved window geometry is off-screen; resetting to default position");
+            }
 
             state = new SavedWindowState
             {
@@ -121,10 +123,14 @@ public class WindowManager
     internal static bool IsOnScreen(SavedWindowState state)
     {
         if (state.IsMaximized)
-            return true;
+        {
+	        return true;
+        }
 
         if (state.Width < 200 || state.Height < 100)
-            return false;
+        {
+	        return false;
+        }
 
         var vLeft   = SystemParameters.VirtualScreenLeft;
         var vTop    = SystemParameters.VirtualScreenTop;
