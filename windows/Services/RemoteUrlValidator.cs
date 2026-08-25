@@ -9,10 +9,10 @@ public class RemoteUrlValidator
     private readonly HttpClient _http;
     private readonly ILogger<RemoteUrlValidator> _logger;
 
-    public RemoteUrlValidator(ILogger<RemoteUrlValidator> logger)
+    public RemoteUrlValidator(ILogger<RemoteUrlValidator> logger, HttpClient? http = null)
     {
         _logger = logger;
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
     }
 
     public async Task<UrlValidationResult> ValidateAsync(string url)

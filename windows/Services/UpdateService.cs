@@ -32,17 +32,23 @@ public class UpdateService
     public async Task<bool> CheckAsync()
     {
         if (!_settings.Current.UpdateCheckEnabled)
-            return false;
+        {
+	        return false;
+        }
 
         if (_settings.Current.LastUpdateWarningShown.HasValue)
         {
             var minutesSince = (DateTime.UtcNow - _settings.Current.LastUpdateWarningShown.Value).TotalMinutes;
             if (minutesSince < SuppressMinutes)
-                return false;
+            {
+	            return false;
+            }
         }
 
         if (_updateManager == null)
-            return false;
+        {
+	        return false;
+        }
 
         try
         {
@@ -59,7 +65,9 @@ public class UpdateService
     public async Task ApplyUpdateAsync()
     {
         if (_updateManager == null || _pendingUpdate == null)
-            throw new InvalidOperationException("No pending update available.");
+        {
+	        throw new InvalidOperationException("No pending update available.");
+        }
 
         await _updateManager.DownloadUpdatesAsync(_pendingUpdate);
         _updateManager.ApplyUpdatesAndRestart(_pendingUpdate);

@@ -46,7 +46,7 @@ public class BackendService : IDisposable
             WorkingDirectory = runtimeDir
         };
 
-        SetEnvironment(psi.Environment, _port);
+        BackendService.SetEnvironment(psi.Environment, _port);
 
         _process = new Process { StartInfo = psi, EnableRaisingEvents = true };
         _process.OutputDataReceived += (_, e) => { if (e.Data != null)
@@ -68,7 +68,7 @@ public class BackendService : IDisposable
         await Task.CompletedTask;
     }
 
-    private static string? FindBackendExe(string dir)
+    internal static string? FindBackendExe(string dir)
     {
         foreach (var name in new[] { "starsky.exe", "starsky" })
         {
@@ -81,7 +81,7 @@ public class BackendService : IDisposable
         return null;
     }
 
-    private void SetEnvironment(IDictionary<string, string?> env, int port)
+    internal static void SetEnvironment(IDictionary<string, string?> env, int port)
     {
         env["ASPNETCORE_URLS"] = $"http://localhost:{port}";
 

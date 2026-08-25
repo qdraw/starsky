@@ -10,13 +10,13 @@ public class FileDownloadService
     private readonly HttpClient _http;
     private readonly ILogger<FileDownloadService> _logger;
 
-    public FileDownloadService(ILogger<FileDownloadService> logger)
+    public FileDownloadService(ILogger<FileDownloadService> logger, HttpClient? http = null)
     {
         _logger = logger;
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
+        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
     }
 
-    public async Task DownloadAndOpenAsync(string starskyPath, string baseUrl)
+    public async Task DownloadAndOpenAsync(string starskyPath, string baseUrl, bool openFile = true)
     {
         baseUrl = baseUrl.TrimEnd('/');
 
@@ -60,6 +60,9 @@ public class FileDownloadService
         _logger.LogInformation("Downloaded to {LocalPath}", finalPath);
 
         // 4. Open with default application
-        Process.Start(new ProcessStartInfo(finalPath) { UseShellExecute = true });
+        if (openFile)
+        {
+	        Process.Start(new ProcessStartInfo(finalPath) { UseShellExecute = true });
+        }
     }
 }

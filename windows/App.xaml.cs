@@ -166,4 +166,9 @@ public partial class App : Application
         _logger?.LogInformation("Shutdown complete");
         base.OnExit(e);
     }
+
+    public void Connect(int connectionId, object target)
+    {
+	    throw new NotImplementedException();
+    }
 }
