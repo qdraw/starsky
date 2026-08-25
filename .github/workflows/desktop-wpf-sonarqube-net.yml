@@ -99,8 +99,7 @@ jobs:
 
       - name: Build
         shell: pwsh
-        working-directory: ./windows
-        run: dotnet build Starsky.Desktop.csproj -c Release
+        run: dotnet build windows/starsky.Tests/starsky.Tests.csproj -c Release
 
       - name: Test with coverage
         shell: pwsh
