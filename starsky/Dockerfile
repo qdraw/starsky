@@ -82,10 +82,11 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS release
 WORKDIR /app
 ARG TOOLS=false
 
-# # for debugging
 # Remap app user to uid/gid 1000 so it matches typical host ownership.
 # The Ubuntu base layer ships an 'ubuntu' user at uid 1000; remove it first,
 # then slide 'app' (currently 1654) down to 1000.
+
+# # Tools is for debugging
 RUN if [ "$TOOLS" = "true" ]; then \
     apt-get update ;\
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --no-install-suggests -y curl nano ;\
