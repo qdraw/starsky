@@ -38,4 +38,39 @@ public class ApplicationPathsTests
     {
         Assert.EndsWith(".json", ApplicationPaths.SettingsFile, StringComparison.OrdinalIgnoreCase);
     }
+
+    [Fact]
+    public void AllSettingsPaths_HaveJsonExtension()
+    {
+        Assert.EndsWith(".json", ApplicationPaths.AppSettingsFile, StringComparison.OrdinalIgnoreCase);
+        Assert.EndsWith(".json", ApplicationPaths.AppSettingsLocalFile, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void DatabaseFile_HasDbExtension()
+    {
+        Assert.EndsWith(".db", ApplicationPaths.DatabaseFile, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void WebView2UserData_IsUnderAppData()
+    {
+        Assert.StartsWith(ApplicationPaths.AppData, ApplicationPaths.WebView2UserData, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ThumbnailTempFolder_ContainsStarsky()
+    {
+        Assert.Contains("starsky", ApplicationPaths.ThumbnailTempFolder, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void EnsureDirectories_CreatesRequiredFolders()
+    {
+        ApplicationPaths.EnsureDirectories();
+
+        Assert.True(Directory.Exists(ApplicationPaths.AppData));
+        Assert.True(Directory.Exists(ApplicationPaths.LogsDir));
+        Assert.True(Directory.Exists(ApplicationPaths.TempFolder));
+    }
 }

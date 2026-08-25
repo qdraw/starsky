@@ -72,6 +72,40 @@ public sealed class SettingsServiceTests : IDisposable
         Assert.Equal("https://example.com", svc2.Current.RemoteBaseUrl);
     }
 
+    [Fact]
+    public void Save_NoArg_PersistsCurrentSettings()
+    {
+        var svc = CreateService();
+        svc.Current.RemoteBaseUrl = "https://my-server.com";
+
+        svc.Save();
+
+        var svc2 = new SettingsService(NullLogger<SettingsService>.Instance, _settingsFile);
+        svc2.Load();
+        Assert.Equal("https://my-server.com", svc2.Current.RemoteBaseUrl);
+    }
+
+    [Fact]
+    public void Save_ToInvalidPath_DoesNotThrow()
+    {
+        var badFile = Path.Combine(_tempDir, "sub", "deeper", "settings.json"); // parent doesn't exist
+        var svc = new SettingsService(NullLogger<SettingsService>.Instance, badFile);
+
+        var ex = Record.Exception(() => svc.Save(new DesktopSettings()));
+
+        Assert.Null(ex);
+    }
+
+    [Fact]
+    public void Load_ReturnsCurrentAfterLoad()
+    {
+        var svc = CreateService();
+
+        var settings = svc.Load();
+
+        Assert.Same(svc.Current, settings);
+    }
+
     public void Dispose()
     {
         try { Directory.Delete(_tempDir, recursive: true); } catch { /* best-effort */ }

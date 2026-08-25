@@ -64,6 +64,22 @@ public sealed class FileDownloadServiceTests : IDisposable
             svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: false));
     }
 
+    [Fact]
+    public async Task DownloadAndOpenAsync_SidecarReturnsEmptyBytes_SkipsXmpFile()
+    {
+        var photoBytes = new byte[] { 0xFF, 0xD8, 0xFF };
+        var svc = Create(
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{}") },
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(Array.Empty<byte>()) }, // empty sidecar
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(photoBytes) });
+
+        await svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: false);
+
+        Assert.True(File.Exists(_expectedFile));
+        var localDir = Path.GetDirectoryName(_expectedFile)!;
+        Assert.DoesNotContain(Directory.GetFiles(localDir), f => f.EndsWith(".xmp", StringComparison.OrdinalIgnoreCase));
+    }
+
     public void Dispose()
     {
         try { File.Delete(_expectedFile); } catch { /* best-effort */ }

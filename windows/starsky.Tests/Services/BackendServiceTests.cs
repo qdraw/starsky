@@ -79,4 +79,47 @@ public class BackendServiceTests
             Directory.Delete(dir, recursive: true);
         }
     }
+
+    [Fact]
+    public void FindBackendExe_WhenLinuxExeExists_ReturnsPath()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), $"starsky-linux-{Guid.NewGuid()}");
+        Directory.CreateDirectory(dir);
+        var exePath = Path.Combine(dir, "starsky");
+        File.WriteAllBytes(exePath, Array.Empty<byte>());
+
+        try
+        {
+            var result = BackendService.FindBackendExe(dir);
+
+            Assert.Equal(exePath, result);
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Dispose_CalledTwice_DoesNotThrow()
+    {
+        var svc = new BackendService(NullLogger<BackendService>.Instance);
+        svc.Dispose();
+
+        var ex = Record.Exception(() => svc.Dispose());
+
+        Assert.Null(ex);
+    }
+
+    [Fact]
+    public void SetEnvironment_ContainsThumbnailAndSettingsPaths()
+    {
+        var env = new Dictionary<string, string?>();
+
+        BackendService.SetEnvironment(env, 5000);
+
+        Assert.Contains("app__thumbnailTempFolder", env.Keys);
+        Assert.Contains("app__appsettingslocalpath", env.Keys);
+        Assert.Equal("300", env["app__ThumbnailGenerationIntervalInMinutes"]);
+    }
 }

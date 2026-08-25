@@ -89,6 +89,16 @@ public class RemoteUrlValidatorTests
         Assert.Equal(withSlash.Success, withoutSlash.Success);
     }
 
+    [Fact]
+    public async Task ValidateAsync_HttpsScheme_IsAccepted()
+    {
+        var svc = Create(HttpStatusCode.OK);
+
+        var result = await svc.ValidateAsync("https://example.com");
+
+        Assert.True(result.Success);
+    }
+
     private sealed class ThrowingHttpMessageHandler : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)

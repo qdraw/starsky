@@ -63,6 +63,32 @@ public sealed class UpdateServiceTests : IDisposable
         await Assert.ThrowsAsync<InvalidOperationException>(() => svc.ApplyUpdateAsync());
     }
 
+    [Fact]
+    public async Task CheckAsync_WhenEnabledAndNoRecentWarning_ReturnsFalse_WhenVelopackUnavailable()
+    {
+        _settings.Current.UpdateCheckEnabled = true;
+        _settings.Current.LastUpdateWarningShown = null;
+        var svc = CreateService();
+
+        // Velopack is not installed in CI — manager gracefully returns false
+        var result = await svc.CheckAsync();
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task CheckAsync_WhenWarningShownLongAgo_ProceedsToCheck()
+    {
+        _settings.Current.UpdateCheckEnabled = true;
+        _settings.Current.LastUpdateWarningShown = DateTime.UtcNow.AddDays(-30);
+        var svc = CreateService();
+
+        // Falls through to Velopack which is unavailable in CI — just must not throw
+        var ex = await Record.ExceptionAsync(() => svc.CheckAsync());
+
+        Assert.Null(ex);
+    }
+
     public void Dispose()
     {
         try { File.Delete(_tempFile); } catch { /* best-effort */ }

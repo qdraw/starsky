@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging.Abstractions;
 using Starsky.Desktop.Models;
 using Starsky.Desktop.Services;
 
@@ -5,6 +6,41 @@ namespace starsky.Tests.Services;
 
 public class WindowManagerTests
 {
+    private static WindowManager CreateManager()
+    {
+        var settings = new SettingsService(NullLogger<SettingsService>.Instance);
+        var routes = new RoutePersistenceService(settings);
+        var navigation = new NavigationService(settings);
+        var webViewEnv = new WebViewEnvironmentService();
+        var fileDownload = new FileDownloadService(NullLogger<FileDownloadService>.Instance);
+        return new WindowManager(settings, routes, navigation, webViewEnv, fileDownload,
+            NullLogger<WindowManager>.Instance);
+    }
+
+    [Fact]
+    public void SetLocalPort_DoesNotThrow()
+    {
+        var wm = CreateManager();
+        var ex = Record.Exception(() => wm.SetLocalPort(9999));
+        Assert.Null(ex);
+    }
+
+    [Fact]
+    public void CloseAll_WithNoWindows_DoesNotThrow()
+    {
+        var wm = CreateManager();
+        var ex = Record.Exception(() => wm.CloseAll());
+        Assert.Null(ex);
+    }
+
+    [Fact]
+    public void ReloadAll_WithNoWindows_DoesNotThrow()
+    {
+        var wm = CreateManager();
+        var ex = Record.Exception(() => wm.ReloadAll());
+        Assert.Null(ex);
+    }
+
     private static SavedWindowState OnScreen(double left = 200, double top = 200,
         double width = 1200, double height = 800, bool maximized = false) =>
         new() { Left = left, Top = top, Width = width, Height = height, IsMaximized = maximized };
