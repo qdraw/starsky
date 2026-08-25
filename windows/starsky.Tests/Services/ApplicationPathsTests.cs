@@ -1,3 +1,4 @@
+using Starsky.Desktop;
 using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
@@ -72,5 +73,17 @@ public class ApplicationPathsTests
         Assert.True(Directory.Exists(ApplicationPaths.AppData));
         Assert.True(Directory.Exists(ApplicationPaths.LogsDir));
         Assert.True(Directory.Exists(ApplicationPaths.TempFolder));
+    }
+
+    [Fact]
+    public void ApplicationInfo_Version_MatchesSemver()
+    {
+        Assert.Matches(@"^\d+\.\d+\.\d+", ApplicationInfo.Version);
+    }
+
+    [Fact]
+    public void ApplicationInfo_Version_DoesNotContainBuildMetadata()
+    {
+        Assert.DoesNotContain("+", ApplicationInfo.Version);
     }
 }

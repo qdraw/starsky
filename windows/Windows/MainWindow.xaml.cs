@@ -12,7 +12,6 @@ namespace Starsky.Desktop.Windows;
 [ExcludeFromCodeCoverage]
 public partial class MainWindow : Window
 {
-    private const string AppVersion = "0.8.1";
     [SuppressMessage("Style", "S1075:URIs should not be hardcoded", Justification = "used")]
     private const string DocsUrl = "https://docs.qdraw.nl/"; 
     [SuppressMessage("Style", "S1075:URIs should not be hardcoded", Justification = "used")]
@@ -66,7 +65,7 @@ public partial class MainWindow : Window
 
             // Set user agent
             var uaBase = WebView.CoreWebView2.Settings.UserAgent;
-            WebView.CoreWebView2.Settings.UserAgent = $"{uaBase} starsky/{AppVersion}";
+            WebView.CoreWebView2.Settings.UserAgent = $"{uaBase} starsky/{ApplicationInfo.Version}";
 
             WebView.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
             WebView.CoreWebView2.SourceChanged += CoreWebView2_SourceChanged;

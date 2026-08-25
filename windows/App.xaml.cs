@@ -10,8 +10,6 @@ namespace Starsky.Desktop;
 [ExcludeFromCodeCoverage]
 public partial class App : Application
 {
-    private const string AppVersion = "0.8.1";
-
     private ILogger<App>? _logger;
     private BackendService? _backend;
     private FileWatcherService? _watcher;
@@ -78,7 +76,7 @@ public partial class App : Application
                 splash.UpdateStatus("Checking version…");
                 using var versionHttp = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
                 await BackendService.CheckVersionCompatibilityAsync(
-                    versionHttp, $"http://localhost:{_localPort}", AppVersion);
+                    versionHttp, $"http://localhost:{_localPort}", ApplicationInfo.Version);
             }
             else
             {
