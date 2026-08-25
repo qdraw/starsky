@@ -85,6 +85,16 @@ If you install Starsky on a public server outside your home network, always run 
 HTTPS reverse proxy such as Traefik or Caddy. Your files and passwords will otherwise be transmitted
 in clear text and can be intercepted by anyone, including your provider, hackers, and governments.
 
+## What Starsky does not do
+
+Starsky is intentionally scoped to self-hosted photo management. The following are out of scope by design:
+
+- **No mobile native app** — the PWA works on mobile browsers; a native iOS/Android app is not planned
+- **No AI tagging or face recognition** — metadata editing is manual or via external tools written to IPTC/XMP fields
+- **No cloud storage backend** — Starsky is self-hosted only; it does not sync to or store files in cloud services
+- **No MySQL 8** — only SQLite 3 and MariaDB 10.5.12+ are supported; MySQL 8 is explicitly not supported
+- **No multi-tenant support** — one library per instance; separate instances are needed for separate libraries
+
 ## Getting Support
 
 If you need help installing our software at home, you post your question in GitHub Discussions.

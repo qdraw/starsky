@@ -35,4 +35,5 @@ Here below there is a list of key features:
 - [Video Support - Play videos and generate thumbnails](video.md)
 - [Publish media with watermarks and optimizers](webhtmlpublish.md)
 - [Timezone Shift: Adjust Photo Timestamps Easily](timezone-shifting.md)
+- [Open photos in an external application (desktop mode)](../getting-started/configuration/desktop-open.md)
 
