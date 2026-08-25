@@ -39,13 +39,25 @@ public class WindowManager
         var baseUrl = _navigation.GetEffectiveBaseUrl(_localPort);
         var offset = _mainWindows.Count * 24;
 
-        var state = geometry ?? new SavedWindowState
+        SavedWindowState state;
+        if (geometry != null && IsOnScreen(geometry))
         {
-            Left = 100 + offset,
-            Top = 100 + offset,
-            Width = 1200,
-            Height = 800
-        };
+            state = geometry;
+        }
+        else
+        {
+            if (geometry != null)
+                _logger.LogWarning("Saved window geometry is off-screen; resetting to default position");
+
+            state = new SavedWindowState
+            {
+                Left = 100 + offset,
+                Top = 100 + offset,
+                Width = 1200,
+                Height = 800,
+                Route = geometry?.Route ?? "?f=/"
+            };
+        }
 
         var window = new MainWindow(
             _settings, _routes, _navigation, _webViewEnv, _fileDownload,
@@ -101,5 +113,30 @@ public class WindowManager
         {
 	        w.Reload();
         }
+    }
+
+    // Maximized windows are always valid — WPF snaps them to the nearest screen.
+    // For normal windows, require that a usable strip of the title bar (≥100 px wide,
+    // ≥1 px of height) intersects the virtual desktop so the user can grab and move it.
+    internal static bool IsOnScreen(SavedWindowState state)
+    {
+        if (state.IsMaximized)
+            return true;
+
+        if (state.Width < 200 || state.Height < 100)
+            return false;
+
+        var vLeft   = SystemParameters.VirtualScreenLeft;
+        var vTop    = SystemParameters.VirtualScreenTop;
+        var vRight  = vLeft + SystemParameters.VirtualScreenWidth;
+        var vBottom = vTop  + SystemParameters.VirtualScreenHeight;
+
+        // Window right edge must be far enough right, and left edge far enough left,
+        // that at least 100 px of the title bar is reachable.
+        const double minTitleBarVisible = 100;
+        return state.Left + state.Width  > vLeft  + minTitleBarVisible
+            && state.Left                < vRight - minTitleBarVisible
+            && state.Top                 < vBottom
+            && state.Top + 30            > vTop;
     }
 }
