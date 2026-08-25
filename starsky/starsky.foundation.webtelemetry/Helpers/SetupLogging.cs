@@ -20,7 +20,7 @@ public static class SetupLogging
 	internal const string DeploymentEnvironmentName = "deployment.environment";
 	internal const string AppVersionName = "service.version";
 	internal const string AppVersionBuildDateTimeName = "service.build_datetime";
-	private const string AppVersionCommitHash = "service.build_commit_hash";
+	internal const string AppVersionCommitHash = "service.build_commit_hash";
 	internal const string FrameworkDescriptionName = "runtime.framework";
 
 	[SuppressMessage("Usage", "S4792:Make sure that this logger's configuration is safe.")]
@@ -64,6 +64,8 @@ public static class SetupLogging
 	{
 		return
 		[
+			// When adding also update the tests
+
 			new KeyValuePair<string, object>(HostNameKey, Environment.MachineName),
 			// ASPNETCORE_ENVIRONMENT
 			new KeyValuePair<string, object>(DeploymentEnvironmentName,
