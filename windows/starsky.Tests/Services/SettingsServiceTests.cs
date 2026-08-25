@@ -19,7 +19,9 @@ public class SettingsServiceTests : IDisposable
     private SettingsService CreateService(string? settingsJson = null)
     {
         if (settingsJson != null)
-            File.WriteAllText(_settingsFile, settingsJson);
+        {
+	        File.WriteAllText(_settingsFile, settingsJson);
+        }
 
         return new SettingsService(NullLogger<SettingsService>.Instance, _settingsFile);
     }

@@ -4,7 +4,7 @@
         Title="Starsky — Connection Settings"
         Width="380" Height="480"
         ResizeMode="NoResize"
-        WindowStartupLocation="CenterOwnerOrScreen"
+        WindowStartupLocation="CenterOwner"
         WindowStyle="SingleBorderWindow">
     <Grid Margin="20">
         <Grid.RowDefinitions>

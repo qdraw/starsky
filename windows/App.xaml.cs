@@ -115,7 +115,7 @@ public partial class App : Application
                 ? $"http://localhost:{_localPort}"
                 : settingsService.Current.RemoteBaseUrl;
 
-            if (await updateService.CheckAsync(baseUrl, AppVersion))
+            if (await updateService.CheckAsync())
             {
                 Dispatcher.Invoke(() => new UpdateWindow(updateService).Show());
             }

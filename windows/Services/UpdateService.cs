@@ -1,48 +1,68 @@
-using System.Net.Http;
 using Microsoft.Extensions.Logging;
+using Velopack;
+using Velopack.Sources;
 
 namespace Starsky.Desktop.Services;
 
 public class UpdateService
 {
     private const int SuppressMinutes = 5760; // 4 days
+    private const string GithubRepoUrl = "https://github.com/qdraw/starsky";
+
     private readonly SettingsService _settings;
-    private readonly HttpClient _http;
     private readonly ILogger<UpdateService> _logger;
+    private readonly UpdateManager? _updateManager;
+    private UpdateInfo? _pendingUpdate;
 
     public UpdateService(SettingsService settings, ILogger<UpdateService> logger)
     {
         _settings = settings;
         _logger = logger;
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+
+        try
+        {
+            _updateManager = new UpdateManager(new GithubSource(GithubRepoUrl, null, false));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Velopack not available (running outside installer)");
+        }
     }
 
-    public async Task<bool> CheckAsync(string baseUrl, string version)
+    public async Task<bool> CheckAsync()
     {
         if (!_settings.Current.UpdateCheckEnabled)
-        {
-	        return false;
-        }
+            return false;
 
         if (_settings.Current.LastUpdateWarningShown.HasValue)
         {
             var minutesSince = (DateTime.UtcNow - _settings.Current.LastUpdateWarningShown.Value).TotalMinutes;
             if (minutesSince < SuppressMinutes)
-            {
-	            return false;
-            }
+                return false;
         }
+
+        if (_updateManager == null)
+            return false;
 
         try
         {
-            var response = await _http.GetAsync($"{baseUrl.TrimEnd('/')}/api/health/check-for-updates?currentVersion={Uri.EscapeDataString(version)}");
-            return response.StatusCode == System.Net.HttpStatusCode.Accepted; // 202
+            _pendingUpdate = await _updateManager.CheckForUpdatesAsync();
+            return _pendingUpdate != null;
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Update check failed");
             return false;
         }
+    }
+
+    public async Task ApplyUpdateAsync()
+    {
+        if (_updateManager == null || _pendingUpdate == null)
+            throw new InvalidOperationException("No pending update available.");
+
+        await _updateManager.DownloadUpdatesAsync(_pendingUpdate);
+        _updateManager.ApplyUpdatesAndRestart(_pendingUpdate);
     }
 
     public void RecordWarningShown()

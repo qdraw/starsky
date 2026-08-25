@@ -1,5 +1,3 @@
-using System.Net;
-using System.Net.Sockets;
 using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
