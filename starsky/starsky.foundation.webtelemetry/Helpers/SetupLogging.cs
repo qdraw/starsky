@@ -20,6 +20,7 @@ public static class SetupLogging
 	internal const string DeploymentEnvironmentName = "deployment.environment";
 	internal const string AppVersionName = "service.version";
 	internal const string AppVersionBuildDateTimeName = "service.build_datetime";
+	private const string AppVersionCommitHash = "service.build_commit_hash";
 	internal const string FrameworkDescriptionName = "runtime.framework";
 
 	[SuppressMessage("Usage", "S4792:Make sure that this logger's configuration is safe.")]
@@ -71,6 +72,8 @@ public static class SetupLogging
 			new KeyValuePair<string, object>(AppVersionBuildDateTimeName,
 				appSettings.AppVersionBuildDateTime.ToString(
 					new CultureInfo("nl-NL"))),
+			new KeyValuePair<string, object>(AppVersionCommitHash,
+				appSettings.AppVersionCommitHash),
 			new KeyValuePair<string, object>(FrameworkDescriptionName,
 				RuntimeInformation.FrameworkDescription)
 		];
