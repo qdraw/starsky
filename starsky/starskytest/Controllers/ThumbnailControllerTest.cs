@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -32,6 +33,7 @@ namespace starskytest.Controllers;
 [TestClass]
 public sealed class ThumbnailControllerTest
 {
+	private readonly string _databaseName = $"{nameof(ThumbnailControllerTest)}_{Guid.NewGuid()}";
 	private readonly Query _query;
 
 	public ThumbnailControllerTest()
@@ -42,7 +44,7 @@ public sealed class ThumbnailControllerTest
 		var memoryCache = provider.GetService<IMemoryCache>();
 
 		var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-		builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
+		builderDb.UseInMemoryDatabase(_databaseName);
 		var options = builderDb.Options;
 		var context = new ApplicationDbContext(options);
 		_query = new Query(context, new AppSettings(),

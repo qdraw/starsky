@@ -45,7 +45,7 @@ public class SetupLoggingTest
 		var result = SetupLogging.GetTelemetryAttributes(appSettings);
 
 		// Assert
-		Assert.HasCount(5, result);
+		Assert.HasCount(6, result);
 		Assert.Contains(kvp =>
 				kvp.Key == SetupLogging.HostNameKey && kvp.Value.Equals(Environment.MachineName),
 			result);
@@ -61,6 +61,10 @@ public class SetupLoggingTest
 		Assert.Contains(kvp =>
 			kvp.Key == SetupLogging.FrameworkDescriptionName &&
 			kvp.Value.Equals(RuntimeInformation.FrameworkDescription), result);
+
+		Assert.Contains(kvp =>
+			kvp.Key == SetupLogging.AppVersionCommitHash && kvp.Value.Equals(
+				appSettings.AppVersionCommitHash), result);
 	}
 
 	[TestMethod]

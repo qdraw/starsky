@@ -435,8 +435,13 @@ public class FakeIQuery : IQuery
 			snapshot = [.. _content];
 		}
 
-		var result = snapshot.Where
-				(p => p.ParentDirectory != null && p.ParentDirectory.StartsWith(subPath))
+		var recursivePrefix = PathHelper.RemoveLatestSlash(subPath);
+		recursivePrefix = string.IsNullOrEmpty(recursivePrefix) ? "/" : $"{recursivePrefix}/";
+
+		var result = snapshot.Where(p => p.FilePath != null &&
+				(recursivePrefix == "/"
+					? p.FilePath != "/" && p.FilePath.StartsWith(recursivePrefix)
+					: p.FilePath.StartsWith(recursivePrefix)))
 			.OrderBy(r => r.FileName).ToList();
 		foreach ( var item in result )
 		{
