@@ -21,16 +21,20 @@ public class DailyFileLoggerProvider : ILoggerProvider
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    protected virtual void Dispose(bool _)
     {
-        if (_disposed) return;
+        if (_disposed)
+        {
+	        return;
+        }
+
         _disposed = true;
     }
 }
 
 internal sealed class DailyFileLogger(string logDir, string category) : ILogger
 {
-	private static readonly Lock _lock = new();
+	private static readonly Lock Lock = new();
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
 
@@ -51,7 +55,7 @@ internal sealed class DailyFileLogger(string logDir, string category) : ILogger
         }
 
         var file = Path.Combine(logDir, $"starsky-{DateTime.Today:yyyy-MM-dd}.log");
-        lock (_lock)
+        lock (Lock)
         {
             try { File.AppendAllText(file, line + Environment.NewLine); }
             catch { /* best-effort */ }

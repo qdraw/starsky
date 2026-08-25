@@ -57,7 +57,7 @@ public sealed class FileWatcherServiceTests : IDisposable
         _sut.Start();
         var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.jpg");
 
-        File.WriteAllBytes(path, [1, 2, 3]);
+        await File.WriteAllBytesAsync(path, [1, 2, 3]);
 
         // Wait for watcher event + debounce timer (500 ms) to fire without throwing
         await Task.Delay(700);
@@ -72,7 +72,7 @@ public sealed class FileWatcherServiceTests : IDisposable
         _sut.Start();
         var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.tmp");
 
-        File.WriteAllBytes(path, [1, 2, 3]);
+        await File.WriteAllBytesAsync(path, [1, 2, 3]);
         await Task.Delay(200);
 
         try { File.Delete(path); } catch { /* best-effort */ }
