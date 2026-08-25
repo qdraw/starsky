@@ -163,4 +163,37 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
             _process?.Dispose();
         }
     }
+
+    internal static async Task WaitForHealthAsync(
+        HttpClient http, string baseUrl,
+        Action<string>? onWaiting = null,
+        int timeoutSeconds = 60)
+    {
+        var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                var resp = await http.GetAsync($"{baseUrl}/api/health");
+                if (resp.IsSuccessStatusCode) return;
+            }
+            catch { /* not yet ready */ }
+
+            onWaiting?.Invoke("Waiting for backend…");
+            await Task.Delay(1000);
+        }
+
+        throw new TimeoutException($"Backend did not become ready within {timeoutSeconds} seconds.");
+    }
+
+    internal static async Task CheckVersionCompatibilityAsync(
+        HttpClient http, string baseUrl, string appVersion)
+    {
+        var resp = await http.PostAsync(
+            $"{baseUrl}/api/health/version?version={appVersion}", null);
+
+        if (resp.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            throw new InvalidOperationException(
+                $"This version ({appVersion}) is incompatible with the server. Please update Starsky Desktop.");
+    }
 }

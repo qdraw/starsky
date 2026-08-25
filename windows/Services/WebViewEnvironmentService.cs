@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Web.WebView2.Core;
 
 namespace Starsky.Desktop.Services;
 
+[ExcludeFromCodeCoverage]
 public class WebViewEnvironmentService
 {
     private CoreWebView2Environment? _environment;

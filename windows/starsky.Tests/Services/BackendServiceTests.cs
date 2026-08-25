@@ -1,5 +1,8 @@
+using System.Net;
+using System.Net.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Starsky.Desktop.Services;
+using starsky.Tests.Helpers;
 
 namespace starsky.Tests.Services;
 
@@ -121,5 +124,85 @@ public class BackendServiceTests
         Assert.Contains("app__thumbnailTempFolder", env.Keys);
         Assert.Contains("app__appsettingslocalpath", env.Keys);
         Assert.Equal("300", env["app__ThumbnailGenerationIntervalInMinutes"]);
+    }
+
+    // ── WaitForHealthAsync ────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task WaitForHealthAsync_WhenServerReturns200_Returns()
+    {
+        using var http = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK));
+
+        await BackendService.WaitForHealthAsync(http, "http://localhost:5000");
+        // no exception = success
+    }
+
+    [Fact]
+    public async Task WaitForHealthAsync_WhenServerNeverSucceeds_ThrowsTimeout()
+    {
+        using var http = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.ServiceUnavailable));
+
+        await Assert.ThrowsAsync<TimeoutException>(() =>
+            BackendService.WaitForHealthAsync(http, "http://localhost:5000", timeoutSeconds: 1));
+    }
+
+    [Fact]
+    public async Task WaitForHealthAsync_WhenServerThrows_EventuallyTimesOut()
+    {
+        using var http = new HttpClient(new ThrowingHandler());
+
+        await Assert.ThrowsAsync<TimeoutException>(() =>
+            BackendService.WaitForHealthAsync(http, "http://localhost:5000", timeoutSeconds: 1));
+    }
+
+    [Fact]
+    public async Task WaitForHealthAsync_CallsOnWaiting_WhilePolling()
+    {
+        var messages = new List<string>();
+        using var http = new HttpClient(new FakeHttpMessageHandler(
+            new HttpResponseMessage(HttpStatusCode.ServiceUnavailable),
+            new HttpResponseMessage(HttpStatusCode.OK)));
+
+        await BackendService.WaitForHealthAsync(http, "http://localhost:5000",
+            onWaiting: msg => messages.Add(msg));
+
+        Assert.Single(messages);
+        Assert.Equal("Waiting for backend…", messages[0]);
+    }
+
+    // ── CheckVersionCompatibilityAsync ───────────────────────────────────────
+
+    [Fact]
+    public async Task CheckVersionCompatibilityAsync_WhenCompatible_DoesNotThrow()
+    {
+        using var http = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK));
+
+        await BackendService.CheckVersionCompatibilityAsync(http, "http://localhost:5000", "0.8.1");
+    }
+
+    [Fact]
+    public async Task CheckVersionCompatibilityAsync_WhenIncompatible_Throws()
+    {
+        using var http = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.BadRequest));
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            BackendService.CheckVersionCompatibilityAsync(http, "http://localhost:5000", "0.8.1"));
+
+        Assert.Contains("0.8.1", ex.Message);
+    }
+
+    [Fact]
+    public async Task CheckVersionCompatibilityAsync_WhenServerReturns404_DoesNotThrow()
+    {
+        using var http = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.NotFound));
+
+        await BackendService.CheckVersionCompatibilityAsync(http, "http://localhost:5000", "0.8.1");
+    }
+
+    private sealed class ThrowingHandler : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken)
+            => throw new HttpRequestException("simulated failure");
     }
 }

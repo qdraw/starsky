@@ -9,6 +9,7 @@ using Starsky.Desktop.Services;
 
 namespace Starsky.Desktop.Windows;
 
+[ExcludeFromCodeCoverage]
 public partial class MainWindow : Window
 {
     private const string AppVersion = "0.8.1";

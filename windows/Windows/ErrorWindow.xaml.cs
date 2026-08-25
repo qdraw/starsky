@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
 namespace Starsky.Desktop.Windows;
 
+[ExcludeFromCodeCoverage]
 public partial class ErrorWindow : Window
 {
     public ErrorWindow(string message)

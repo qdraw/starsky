@@ -7,6 +7,7 @@ using Starsky.Desktop.Windows;
 
 namespace Starsky.Desktop;
 
+[ExcludeFromCodeCoverage]
 public partial class App : Application
 {
     private const string AppVersion = "0.8.1";
@@ -68,11 +69,16 @@ public partial class App : Application
 
                 // 6b. Wait for health
                 splash.UpdateStatus("Waiting for backend…");
-                await WaitForHealthAsync($"http://localhost:{_localPort}", splash);
+                using var healthHttp = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
+                await BackendService.WaitForHealthAsync(
+                    healthHttp, $"http://localhost:{_localPort}",
+                    msg => splash.UpdateStatus(msg));
 
                 // 6c. Version compatibility
                 splash.UpdateStatus("Checking version…");
-                await CheckVersionAsync($"http://localhost:{_localPort}");
+                using var versionHttp = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                await BackendService.CheckVersionCompatibilityAsync(
+                    versionHttp, $"http://localhost:{_localPort}", AppVersion);
             }
             else
             {
@@ -115,41 +121,6 @@ public partial class App : Application
                 await Dispatcher.InvokeAsync(() => new UpdateWindow(updateService).Show());
             }
         });
-    }
-
-    private static async Task WaitForHealthAsync(string baseUrl, SplashWindow splash)
-    {
-        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
-        var deadline = DateTime.UtcNow.AddSeconds(60);
-
-        while (DateTime.UtcNow < deadline)
-        {
-            try
-            {
-                var resp = await http.GetAsync($"{baseUrl}/api/health");
-                if (resp.IsSuccessStatusCode)
-                {
-	                return;
-                }
-            }
-            catch { /* not yet ready */ }
-
-            splash.UpdateStatus("Waiting for backend…");
-            await Task.Delay(1000);
-        }
-
-        throw new TimeoutException("Backend did not become ready within 60 seconds.");
-    }
-
-    private static async Task CheckVersionAsync(string baseUrl)
-    {
-        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-        var resp = await http.PostAsync($"{baseUrl}/api/health/version?version={AppVersion}", null);
-
-        if (resp.StatusCode == System.Net.HttpStatusCode.BadRequest)
-        {
-	        throw new InvalidOperationException($"This version ({AppVersion}) is incompatible with the server. Please update Starsky Desktop.");
-        }
     }
 
     protected override async void OnExit(ExitEventArgs e)

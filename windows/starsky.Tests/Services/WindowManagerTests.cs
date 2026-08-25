@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Starsky.Desktop.Models;
 using Starsky.Desktop.Services;
@@ -39,6 +40,43 @@ public class WindowManagerTests
         var wm = CreateManager();
         var ex = Record.Exception(() => wm.ReloadAll());
         Assert.Null(ex);
+    }
+
+    [Fact]
+    public void MainWindowOptions_Properties_AreAccessible()
+    {
+        var settings = new SettingsService(NullLogger<SettingsService>.Instance);
+        var routes = new RoutePersistenceService(settings);
+        var nav = new NavigationService(settings);
+        var webViewEnv = new WebViewEnvironmentService();
+        var fileDownload = new FileDownloadService(NullLogger<FileDownloadService>.Instance);
+        var wm = new WindowManager(settings, routes, nav, webViewEnv, fileDownload,
+            NullLogger<WindowManager>.Instance);
+        var geometry = new SavedWindowState { Left = 10, Top = 20, Width = 800, Height = 600 };
+
+        var opts = new MainWindowOptions
+        {
+            Settings = settings,
+            Routes = routes,
+            WebViewEnv = webViewEnv,
+            FileDownload = fileDownload,
+            WindowManager = wm,
+            Logger = NullLogger.Instance,
+            BaseUrl = "http://localhost:5000",
+            InitialRoute = "?f=/photos",
+            Geometry = geometry,
+            WindowIndex = 3
+        };
+
+        Assert.Same(settings, opts.Settings);
+        Assert.Same(routes, opts.Routes);
+        Assert.Same(webViewEnv, opts.WebViewEnv);
+        Assert.Same(fileDownload, opts.FileDownload);
+        Assert.Same(wm, opts.WindowManager);
+        Assert.Equal("http://localhost:5000", opts.BaseUrl);
+        Assert.Equal("?f=/photos", opts.InitialRoute);
+        Assert.Same(geometry, opts.Geometry);
+        Assert.Equal(3, opts.WindowIndex);
     }
 
     private static SavedWindowState OnScreen(double left = 200, double top = 200,

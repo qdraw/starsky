@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Velopack;
 
 namespace Starsky.Desktop;
 
+[ExcludeFromCodeCoverage]
 public static class Program
 {
     [STAThread]

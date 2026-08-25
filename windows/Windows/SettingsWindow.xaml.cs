@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using Starsky.Desktop.Models;
 using Starsky.Desktop.Services;
 
 namespace Starsky.Desktop.Windows;
 
+[ExcludeFromCodeCoverage]
 public partial class SettingsWindow : Window
 {
     private readonly SettingsService _settings;
