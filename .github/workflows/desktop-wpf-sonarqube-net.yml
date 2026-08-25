@@ -78,10 +78,10 @@ jobs:
       - name: Begin SonarQube analysis
         shell: pwsh
         env:
-          STARSKY_SONAR_KEY: ${{ secrets.STARSKY_SONAR_KEY }}
+          STARSKY_SONAR_KEY: "starsky-desktop-windows"
           STARSKY_SONAR_TOKEN: ${{ secrets.STARSKY_SONAR_TOKEN }}
           STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
-          STARSKY_SONAR_URL: ${{ vars.STARSKY_SONAR_URL }}
+          STARSKY_SONAR_URL: ${{ vars.STARSKY_SONAR_URL }} # use default
         run: |
           if (-not $env:STARSKY_SONAR_TOKEN -or -not $env:STARSKY_SONAR_KEY) {
             Write-Host "SonarQube secrets not fully configured, skipping analysis"
