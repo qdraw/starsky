@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
@@ -11,8 +12,10 @@ namespace Starsky.Desktop.Windows;
 public partial class MainWindow : Window
 {
     private const string AppVersion = "0.8.1";
-    private const string DocsUrl = "https://qdraw.nl/special/starsky/docs/"; // NOSONAR
-    private const string ReleasesUrl = "https://github.com/qdraw/starsky/releases"; // NOSONAR
+    [SuppressMessage("Style", "S1075:URIs should not be hardcoded", Justification = "used")]
+    private const string DocsUrl = "https://docs.qdraw.nl/"; 
+    [SuppressMessage("Style", "S1075:URIs should not be hardcoded", Justification = "used")]
+    private const string ReleasesUrl = "https://github.com/qdraw/starsky/releases"; 
 
     private readonly SettingsService _settings;
     private readonly RoutePersistenceService _routes;

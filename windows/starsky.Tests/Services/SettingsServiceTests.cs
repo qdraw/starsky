@@ -4,7 +4,7 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
-public class SettingsServiceTests : IDisposable
+public sealed class SettingsServiceTests : IDisposable
 {
     private readonly string _tempDir;
     private readonly string _settingsFile;

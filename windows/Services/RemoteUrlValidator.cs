@@ -1,4 +1,3 @@
-using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Starsky.Desktop.Models;
 
@@ -24,7 +23,7 @@ public class RemoteUrlValidator(ILogger<RemoteUrlValidator> logger, HttpClient? 
 
         try
         {
-            var healthUri = new Uri(new Uri(url + "/"), "api/health");
+            var healthUri = new Uri(new Uri(url), "/api/health");
             var response = await _http.GetAsync(healthUri);
             if (response.StatusCode == System.Net.HttpStatusCode.OK ||
                 response.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)

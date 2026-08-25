@@ -4,7 +4,7 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
-public class RoutePersistenceServiceTests : IDisposable
+public sealed class RoutePersistenceServiceTests : IDisposable
 {
     private readonly string _tempFile;
     private readonly SettingsService _settings;

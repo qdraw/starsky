@@ -3,7 +3,7 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
-public class FileWatcherServiceTests : IDisposable
+public sealed class FileWatcherServiceTests : IDisposable
 {
     private readonly FileWatcherService _sut = new(NullLogger<FileWatcherService>.Instance);
 

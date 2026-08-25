@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Velopack;
 using Velopack.Sources;
@@ -7,7 +8,8 @@ namespace Starsky.Desktop.Services;
 public class UpdateService
 {
     private const int SuppressMinutes = 5760; // 4 days
-    private const string GithubRepoUrl = "https://github.com/qdraw/starsky"; // NOSONAR
+    [SuppressMessage("Style", "S1075:URIs should not be hardcoded", Justification = "used")]
+    private const string GithubRepoUrl = "https://github.com/qdraw/starsky";
 
     private readonly SettingsService _settings;
     private readonly ILogger<UpdateService> _logger;

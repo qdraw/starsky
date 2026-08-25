@@ -1,7 +1,4 @@
-using System.Net;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace starsky.Tests.Helpers;
 
@@ -13,6 +10,6 @@ internal sealed class FakeHttpMessageHandler(params HttpResponseMessage[] respon
     public FakeHttpMessageHandler(HttpStatusCode status, string content = "")
         : this(new HttpResponseMessage(status) { Content = new StringContent(content) }) { }
 
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage _, CancellationToken __)
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         => Task.FromResult(_responses.Count > 0 ? _responses.Dequeue() : new HttpResponseMessage(HttpStatusCode.OK));
 }

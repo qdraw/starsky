@@ -1,4 +1,3 @@
-using System.IO;
 using Microsoft.Extensions.Logging;
 
 namespace Starsky.Desktop.Services;

@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Starsky.Desktop.Services;
@@ -92,7 +91,7 @@ public class RemoteUrlValidatorTests
 
     private sealed class ThrowingHttpMessageHandler : HttpMessageHandler
     {
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage _, CancellationToken __)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             => throw new HttpRequestException("connection refused");
     }
 }

@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Starsky.Desktop.Services;
@@ -6,7 +5,7 @@ using starsky.Tests.Helpers;
 
 namespace starsky.Tests.Services;
 
-public class FileDownloadServiceTests : IDisposable
+public sealed class FileDownloadServiceTests : IDisposable
 {
     private const string StarskyPath = "/test-session/photo.jpg";
     private readonly string _expectedFile;

@@ -5,6 +5,7 @@ namespace Starsky.Desktop.Services;
 public class DailyFileLoggerProvider : ILoggerProvider
 {
     private readonly string _logDir;
+    private bool _disposed;
 
     public DailyFileLoggerProvider(string logDir)
     {
@@ -16,7 +17,14 @@ public class DailyFileLoggerProvider : ILoggerProvider
 
     public void Dispose()
     {
+        Dispose(true);
         GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed) return;
+        _disposed = true;
     }
 }
 

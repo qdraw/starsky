@@ -3,7 +3,7 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
-public class UpdateServiceTests : IDisposable
+public sealed class UpdateServiceTests : IDisposable
 {
     private readonly string _tempFile;
     private readonly SettingsService _settings;
