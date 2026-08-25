@@ -32,6 +32,8 @@ jobs:
 
     env:
       WEBSITE_SITE_NAME: "ci"
+      # Expose token at job level so steps can gate on it via ${{ env.SONAR_TOKEN != '' }}
+      SONAR_TOKEN: ${{ secrets.STARSKY_SONAR_TOKEN }}
 
     steps:
       - name: 'Checkout repository on branch: ${{ github.REF }}'
@@ -48,6 +50,7 @@ jobs:
           dotnet-version: 10.0.400
 
       - name: Use Java 21
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287
         with:
           distribution: 'zulu'
@@ -65,6 +68,7 @@ jobs:
             ${{ runner.os }}-nuget-windows-
 
       - name: Cache SonarQube packages
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
         with:
           path: ~/.sonar
@@ -73,13 +77,14 @@ jobs:
             ${{ runner.os }}-build-desktop-wpf-sonar
 
       - name: Install dotnet-sonarscanner
+        if: ${{ env.SONAR_TOKEN != '' }}
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Begin SonarQube analysis
+        if: ${{ env.SONAR_TOKEN != '' }}
         shell: pwsh
         env:
           STARSKY_SONAR_KEY: ${{ secrets.STARSKY_SONAR_KEY }}
-          STARSKY_SONAR_TOKEN: ${{ secrets.STARSKY_SONAR_TOKEN }}
           STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
           STARSKY_SONAR_URL: ${{ secrets.STARSKY_SONAR_URL }}
         run: |
@@ -87,7 +92,7 @@ jobs:
           dotnet sonarscanner begin `
             /k:"$env:STARSKY_SONAR_KEY" `
             /o:"$env:STARSKY_SONAR_ORGANISATION" `
-            /d:sonar.token="$env:STARSKY_SONAR_TOKEN" `
+            /d:sonar.token="$env:SONAR_TOKEN" `
             /d:sonar.host.url="$env:STARSKY_SONAR_URL" `
             /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" `
             $prParam
@@ -108,7 +113,6 @@ jobs:
             -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: End SonarQube analysis
+        if: ${{ env.SONAR_TOKEN != '' }}
         shell: pwsh
-        env:
-          STARSKY_SONAR_TOKEN: ${{ secrets.STARSKY_SONAR_TOKEN }}
-        run: dotnet sonarscanner end /d:sonar.token="$env:STARSKY_SONAR_TOKEN"
+        run: dotnet sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
