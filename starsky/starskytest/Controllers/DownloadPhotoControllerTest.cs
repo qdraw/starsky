@@ -29,6 +29,7 @@ namespace starskytest.Controllers;
 [TestClass]
 public sealed class DownloadPhotoControllerTest
 {
+	private readonly string _databaseName = $"{nameof(DownloadPhotoControllerTest)}_{Guid.NewGuid()}";
 	private readonly Query _query;
 
 	public DownloadPhotoControllerTest()
@@ -39,7 +40,7 @@ public sealed class DownloadPhotoControllerTest
 		var memoryCache = provider.GetService<IMemoryCache>();
 
 		var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-		builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
+		builderDb.UseInMemoryDatabase(_databaseName);
 		var options = builderDb.Options;
 		var context = new ApplicationDbContext(options);
 		var scopeFactory = provider.GetRequiredService<IServiceScopeFactory>();

@@ -40,7 +40,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.8.1 - _(Unreleased)_ 2026-?-? {#v0.8.1}
+## version 0.8.2 - _(Unreleased)_ - 2026-?-? {#v0.8.2}
+
+- nothing yet
+
+## version 0.8.1 - 2026-08-25 {#v0.8.1}
 
 - [x] (Fixed) _Back-end_ New telemetry attribute for the application commit hash (PR #3233)
 - [x] (Fixed) _Back-end_ QueryGetAllRecursive timeout (PR #3233)
