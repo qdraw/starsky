@@ -126,6 +126,21 @@ public class BackendServiceTests
         Assert.Equal("300", env["app__ThumbnailGenerationIntervalInMinutes"]);
     }
 
+    [Fact]
+    public async Task StartAsync_WhenExeNotFound_Throws()
+    {
+        // In the test environment ApplicationPaths.RuntimeDir does not contain a starsky.exe,
+        // so LaunchAsync cannot find the backend and throws FileNotFoundException.
+        if (BackendService.FindBackendExe(ApplicationPaths.RuntimeDir) != null)
+        {
+	        return; // Runtime present in test env — skip
+        }
+
+        var svc = new BackendService(NullLogger<BackendService>.Instance);
+
+        await Assert.ThrowsAsync<FileNotFoundException>(() => svc.StartAsync(5000));
+    }
+
     // ── WaitForHealthAsync ────────────────────────────────────────────────────
 
     [Fact]

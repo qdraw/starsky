@@ -47,6 +47,30 @@ public class UpdateService
             }
         }
 
+        return await CheckWithVelopackAsync();
+    }
+
+    public Task ApplyUpdateAsync()
+    {
+        if (!HasPendingUpdate)
+        {
+	        throw new InvalidOperationException("No pending update available.");
+        }
+
+        return DoApplyUpdateAsync();
+    }
+
+    public void RecordWarningShown()
+    {
+        _settings.Current.LastUpdateWarningShown = DateTime.UtcNow;
+        _settings.Save();
+    }
+
+    protected virtual bool HasPendingUpdate => _updateManager != null && _pendingUpdate != null;
+
+    [ExcludeFromCodeCoverage]
+    protected virtual async Task<bool> CheckWithVelopackAsync()
+    {
         if (_updateManager == null)
         {
 	        return false;
@@ -64,20 +88,10 @@ public class UpdateService
         }
     }
 
-    public async Task ApplyUpdateAsync()
+    [ExcludeFromCodeCoverage]
+    protected virtual async Task DoApplyUpdateAsync()
     {
-        if (_updateManager == null || _pendingUpdate == null)
-        {
-	        throw new InvalidOperationException("No pending update available.");
-        }
-
-        await _updateManager.DownloadUpdatesAsync(_pendingUpdate);
-        _updateManager.ApplyUpdatesAndRestart(_pendingUpdate);
-    }
-
-    public void RecordWarningShown()
-    {
-        _settings.Current.LastUpdateWarningShown = DateTime.UtcNow;
-        _settings.Save();
+        await _updateManager!.DownloadUpdatesAsync(_pendingUpdate!);
+        _updateManager.ApplyUpdatesAndRestart(_pendingUpdate!);
     }
 }

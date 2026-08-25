@@ -175,7 +175,10 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
             try
             {
                 var resp = await http.GetAsync($"{baseUrl}/api/health");
-                if (resp.IsSuccessStatusCode) return;
+                if (resp.IsSuccessStatusCode)
+                {
+	                return;
+                }
             }
             catch { /* not yet ready */ }
 
@@ -193,7 +196,9 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
             $"{baseUrl}/api/health/version?version={appVersion}", null);
 
         if (resp.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            throw new InvalidOperationException(
-                $"This version ({appVersion}) is incompatible with the server. Please update Starsky Desktop.");
+        {
+	        throw new InvalidOperationException(
+		        $"This version ({appVersion}) is incompatible with the server. Please update Starsky Desktop.");
+        }
     }
 }

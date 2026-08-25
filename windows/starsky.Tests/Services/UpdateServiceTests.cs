@@ -18,6 +18,15 @@ public sealed class UpdateServiceTests : IDisposable
     private UpdateService CreateService() =>
         new UpdateService(_settings, NullLogger<UpdateService>.Instance);
 
+    // Test subclass that bypasses Velopack runtime
+    private sealed class FakeUpdateService(SettingsService settings, bool hasUpdate = false, bool canApply = false)
+        : UpdateService(settings, NullLogger<UpdateService>.Instance)
+    {
+        protected override Task<bool> CheckWithVelopackAsync() => Task.FromResult(hasUpdate);
+        protected override bool HasPendingUpdate => canApply;
+        protected override Task DoApplyUpdateAsync() => Task.CompletedTask;
+    }
+
     [Fact]
     public async Task CheckAsync_WhenUpdateCheckDisabled_ReturnsFalse()
     {
@@ -85,6 +94,34 @@ public sealed class UpdateServiceTests : IDisposable
 
         // Falls through to Velopack which is unavailable in CI — just must not throw
         var ex = await Record.ExceptionAsync(() => svc.CheckAsync());
+
+        Assert.Null(ex);
+    }
+
+    [Fact]
+    public async Task CheckAsync_WhenUpdateAvailable_ReturnsTrue()
+    {
+        _settings.Current.UpdateCheckEnabled = true;
+        var svc = new FakeUpdateService(_settings, hasUpdate: true);
+
+        Assert.True(await svc.CheckAsync());
+    }
+
+    [Fact]
+    public async Task CheckAsync_WhenNoUpdate_ReturnsFalse()
+    {
+        _settings.Current.UpdateCheckEnabled = true;
+        var svc = new FakeUpdateService(_settings, hasUpdate: false);
+
+        Assert.False(await svc.CheckAsync());
+    }
+
+    [Fact]
+    public async Task ApplyUpdateAsync_WhenReadyToApply_DoesNotThrow()
+    {
+        var svc = new FakeUpdateService(_settings, canApply: true);
+
+        var ex = await Record.ExceptionAsync(() => svc.ApplyUpdateAsync());
 
         Assert.Null(ex);
     }

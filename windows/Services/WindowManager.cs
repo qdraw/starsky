@@ -18,32 +18,34 @@ public class WindowManager(
 
     public void SetLocalPort(int port) => _localPort = port;
 
+    internal static SavedWindowState ResolveGeometry(
+        SavedWindowState? geometry, int offset, ILogger? logger = null)
+    {
+        if (geometry != null && IsOnScreen(geometry))
+        {
+	        return geometry;
+        }
+
+        if (geometry != null)
+        {
+	        logger?.LogWarning("Saved window geometry is off-screen; resetting to default position");
+        }
+
+        return new SavedWindowState
+        {
+            Left = 100 + offset,
+            Top = 100 + offset,
+            Width = 1200,
+            Height = 800,
+            Route = geometry?.Route ?? "?f=/"
+        };
+    }
+
     public void OpenMainWindow(string? route, SavedWindowState? geometry)
     {
         var baseUrl = navigation.GetEffectiveBaseUrl(_localPort);
         var offset = _mainWindows.Count * 24;
-
-        SavedWindowState state;
-        if (geometry != null && IsOnScreen(geometry))
-        {
-            state = geometry;
-        }
-        else
-        {
-            if (geometry != null)
-            {
-	            logger.LogWarning("Saved window geometry is off-screen; resetting to default position");
-            }
-
-            state = new SavedWindowState
-            {
-                Left = 100 + offset,
-                Top = 100 + offset,
-                Width = 1200,
-                Height = 800,
-                Route = geometry?.Route ?? "?f=/"
-            };
-        }
+        var state = ResolveGeometry(geometry, offset, logger);
 
         var window = new MainWindow(new MainWindowOptions
         {

@@ -138,4 +138,63 @@ public class WindowManagerTests
         var state = OnScreen(left: 200, top: 200, width: 1200, height: 50);
         Assert.False(WindowManager.IsOnScreen(state));
     }
+
+    // ── ResolveGeometry ───────────────────────────────────────────────────────
+
+    [Fact]
+    public void ResolveGeometry_NullGeometry_ReturnsDefaultState()
+    {
+        var result = WindowManager.ResolveGeometry(null, 0);
+
+        Assert.Equal(100, result.Left);
+        Assert.Equal(100, result.Top);
+        Assert.Equal(1200, result.Width);
+        Assert.Equal(800, result.Height);
+        Assert.Equal("?f=/", result.Route);
+    }
+
+    [Fact]
+    public void ResolveGeometry_NullGeometry_WithOffset_AppliesOffset()
+    {
+        var result = WindowManager.ResolveGeometry(null, 48);
+
+        Assert.Equal(148, result.Left);
+        Assert.Equal(148, result.Top);
+    }
+
+    [Fact]
+    public void ResolveGeometry_OnScreenGeometry_ReturnsOriginal()
+    {
+        var geometry = OnScreen(left: 200, top: 200, width: 1200, height: 800);
+
+        var result = WindowManager.ResolveGeometry(geometry, 0);
+
+        Assert.Same(geometry, result);
+    }
+
+    [Fact]
+    public void ResolveGeometry_OffScreenGeometry_ReturnsDefaultWithRoutePreserved()
+    {
+        var geometry = new SavedWindowState
+        {
+            Left = -99999,
+            Top = -99999,
+            Width = 1200,
+            Height = 800,
+            Route = "?f=/photos"
+        };
+
+        var result = WindowManager.ResolveGeometry(geometry, 0);
+
+        Assert.Equal("?f=/photos", result.Route);
+        Assert.Equal(100, result.Left);
+    }
+
+    [Fact]
+    public void ResolveGeometry_NullGeometry_RouteIsDefault()
+    {
+        var result = WindowManager.ResolveGeometry(null, 0);
+
+        Assert.Equal("?f=/", result.Route);
+    }
 }

@@ -23,6 +23,17 @@ public sealed class FileDownloadServiceTests : IDisposable
             NullLogger<FileDownloadService>.Instance,
             new HttpClient(new FakeHttpMessageHandler(responses)));
 
+    // Subclass that records the file path passed to OpenWithDefaultApp instead of opening it
+    private sealed class TrackingFileDownloadService(HttpClient http)
+        : FileDownloadService(NullLogger<FileDownloadService>.Instance, http)
+    {
+        public string? OpenedFile { get; private set; }
+        protected override void OpenWithDefaultApp(string filePath) => OpenedFile = filePath;
+    }
+
+    private static TrackingFileDownloadService CreateTracking(params HttpResponseMessage[] responses) =>
+        new TrackingFileDownloadService(new HttpClient(new FakeHttpMessageHandler(responses)));
+
     [Fact]
     public async Task DownloadAndOpenAsync_ValidPath_WritesFileToDisk()
     {
@@ -78,6 +89,38 @@ public sealed class FileDownloadServiceTests : IDisposable
         Assert.True(File.Exists(_expectedFile));
         var localDir = Path.GetDirectoryName(_expectedFile)!;
         Assert.DoesNotContain(Directory.GetFiles(localDir), f => f.EndsWith(".xmp", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task DownloadAndOpenAsync_WhenOpenFileTrue_CallsOpenWithDefaultApp()
+    {
+        var photoBytes = new byte[] { 0xFF, 0xD8, 0xFF };
+        var svc = CreateTracking(
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{}") },
+            new HttpResponseMessage(HttpStatusCode.NotFound),
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(photoBytes) });
+
+        await svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: true);
+
+        Assert.NotNull(svc.OpenedFile);
+        Assert.EndsWith("photo.jpg", svc.OpenedFile, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task DownloadAndOpenAsync_RootLevelPath_UsesBaseOfTempFolder()
+    {
+        const string rootPath = "root-photo.jpg";
+        var photoBytes = new byte[] { 1, 2, 3 };
+        var svc = Create(
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{}") },
+            new HttpResponseMessage(HttpStatusCode.NotFound),
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(photoBytes) });
+
+        await svc.DownloadAndOpenAsync(rootPath, "http://localhost:5000", openFile: false);
+
+        var expectedFile = Path.Combine(ApplicationPaths.TempFolder, rootPath);
+        Assert.True(File.Exists(expectedFile));
+        try { File.Delete(expectedFile); } catch { /* best-effort */ }
     }
 
     public void Dispose()

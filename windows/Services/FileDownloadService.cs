@@ -54,7 +54,11 @@ public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient
         // 4. Open with default application
         if (openFile)
         {
-	        Process.Start(new ProcessStartInfo(finalPath) { UseShellExecute = true });
+	        OpenWithDefaultApp(finalPath);
         }
     }
+
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    protected virtual void OpenWithDefaultApp(string filePath)
+        => Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
 }
