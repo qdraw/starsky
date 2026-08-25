@@ -111,10 +111,6 @@ public partial class App : Application
         // 10. Schedule update check
         _ = Task.Delay(5000).ContinueWith(async _ =>
         {
-            var baseUrl = settingsService.Current.Mode == RuntimeMode.Local
-                ? $"http://localhost:{_localPort}"
-                : settingsService.Current.RemoteBaseUrl;
-
             if (await updateService.CheckAsync())
             {
                 Dispatcher.Invoke(() => new UpdateWindow(updateService).Show());
