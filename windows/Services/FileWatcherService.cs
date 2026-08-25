@@ -67,7 +67,9 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, HttpClient? 
         // initial download, not a user edit.  Any other rename (editor temp-file pattern)
         // is treated as a real change on the new path.
         if (Path.GetExtension(e.OldFullPath).Equals(".tmp", StringComparison.OrdinalIgnoreCase))
-            return;
+        {
+	        return;
+        }
 
         OnChanged(sender, e);
     }
@@ -81,12 +83,16 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, HttpClient? 
 
         // Directories fire Changed when a child is written — skip them.
         if (!File.Exists(path))
-            return;
+        {
+	        return;
+        }
 
         logger.LogInformation("File changed in workspace: {Path}", path);
 
         if (_uploadBaseUrl != null)
-            _ = Task.Run(() => UploadFileAsync(path));
+        {
+	        _ = Task.Run(() => UploadFileAsync(path));
+        }
     }
 
     private async Task UploadFileAsync(string localPath)
