@@ -41,9 +41,13 @@ public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient
                 await File.WriteAllBytesAsync(Path.Combine(localDir, sidecarName), sidecarBytes);
             }
         }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            logger.LogDebug("No sidecar available for {Path}", starskyPath);
+        }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Sidecar download failed or not available for {Path}", starskyPath);
+            logger.LogWarning(ex, "Sidecar download failed for {Path}", starskyPath);
         }
 
         // 3. Download original file
@@ -57,13 +61,17 @@ public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient
 
         // 4. Open with default application
         if (openFile)
-            OpenWithDefaultApp(finalPath);
+        {
+	        OpenWithDefaultApp(finalPath);
+        }
     }
 
     private async Task<string> GetStringAsync(string url, string? cookieHeader)
     {
         if (cookieHeader == null)
-            return await _http.GetStringAsync(url);
+        {
+	        return await _http.GetStringAsync(url);
+        }
 
         using var req = new HttpRequestMessage(HttpMethod.Get, url);
         req.Headers.TryAddWithoutValidation("Cookie", cookieHeader);
@@ -75,7 +83,9 @@ public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient
     private async Task<byte[]> GetBytesAsync(string url, string? cookieHeader)
     {
         if (cookieHeader == null)
-            return await _http.GetByteArrayAsync(url);
+        {
+	        return await _http.GetByteArrayAsync(url);
+        }
 
         using var req = new HttpRequestMessage(HttpMethod.Get, url);
         req.Headers.TryAddWithoutValidation("Cookie", cookieHeader);

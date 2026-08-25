@@ -22,6 +22,7 @@ public partial class MainWindow : Window
     private readonly RoutePersistenceService _routes;
     private readonly WebViewEnvironmentService _webViewEnv;
     private readonly FileDownloadService _fileDownload;
+    private readonly FileWatcherService _watcher;
     private readonly WindowManager _windowManager;
     private readonly ILogger _logger;
 
@@ -37,6 +38,7 @@ public partial class MainWindow : Window
         _routes = options.Routes;
         _webViewEnv = options.WebViewEnv;
         _fileDownload = options.FileDownload;
+        _watcher = options.Watcher;
         _windowManager = options.WindowManager;
         _logger = options.Logger;
         _baseUrl = options.BaseUrl;
@@ -201,6 +203,7 @@ public partial class MainWindow : Window
             var cookieHeader = webViewCookies is { Count: > 0 }
                 ? string.Join("; ", webViewCookies.Select(c => $"{c.Name}={c.Value}"))
                 : null;
+            _watcher.SetUploadContext(_baseUrl, cookieHeader);
             await _fileDownload.DownloadAndOpenAsync(filePath, _baseUrl, cookieHeader: cookieHeader);
         }
         catch (Exception ex)

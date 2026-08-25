@@ -14,7 +14,8 @@ public class WindowManagerTests
         var navigation = new NavigationService(settings);
         var webViewEnv = new WebViewEnvironmentService();
         var fileDownload = new FileDownloadService(NullLogger<FileDownloadService>.Instance);
-        return new WindowManager(settings, routes, navigation, webViewEnv, fileDownload,
+        var watcher = new FileWatcherService(NullLogger<FileWatcherService>.Instance);
+        return new WindowManager(settings, routes, navigation, webViewEnv, fileDownload, watcher,
             NullLogger<WindowManager>.Instance);
     }
 
@@ -50,7 +51,8 @@ public class WindowManagerTests
         var nav = new NavigationService(settings);
         var webViewEnv = new WebViewEnvironmentService();
         var fileDownload = new FileDownloadService(NullLogger<FileDownloadService>.Instance);
-        var wm = new WindowManager(settings, routes, nav, webViewEnv, fileDownload,
+        var watcher = new FileWatcherService(NullLogger<FileWatcherService>.Instance);
+        var wm = new WindowManager(settings, routes, nav, webViewEnv, fileDownload, watcher,
             NullLogger<WindowManager>.Instance);
         var geometry = new SavedWindowState { Left = 10, Top = 20, Width = 800, Height = 600 };
 
@@ -60,6 +62,7 @@ public class WindowManagerTests
             Routes = routes,
             WebViewEnv = webViewEnv,
             FileDownload = fileDownload,
+            Watcher = watcher,
             WindowManager = wm,
             Logger = NullLogger.Instance,
             BaseUrl = "http://localhost:5000",

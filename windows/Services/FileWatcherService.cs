@@ -1,13 +1,23 @@
+using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 
 namespace Starsky.Desktop.Services;
 
-public class FileWatcherService(ILogger<FileWatcherService> logger) : IDisposable
+public class FileWatcherService(ILogger<FileWatcherService> logger, HttpClient? http = null) : IDisposable
 {
-	private FileSystemWatcher? _watcher;
+    private readonly HttpClient _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
+    private FileSystemWatcher? _watcher;
     private readonly Dictionary<string, System.Timers.Timer> _debounceTimers = new();
     private readonly Lock _lock = new();
     private bool _disposed;
+    private string? _uploadBaseUrl;
+    private string? _uploadCookieHeader;
+
+    public void SetUploadContext(string baseUrl, string? cookieHeader)
+    {
+        _uploadBaseUrl = baseUrl;
+        _uploadCookieHeader = cookieHeader;
+    }
 
     public void Start()
     {
@@ -25,12 +35,12 @@ public class FileWatcherService(ILogger<FileWatcherService> logger) : IDisposabl
 
         _watcher.Created += OnChanged;
         _watcher.Changed += OnChanged;
+        _watcher.Renamed += OnRenamed;
         logger.LogInformation("File watcher started on {Path}", path);
     }
 
     private void OnChanged(object sender, FileSystemEventArgs e)
     {
-        // Skip .tmp files still being written
         if (Path.GetExtension(e.FullPath).Equals(".tmp", StringComparison.OrdinalIgnoreCase))
         {
 	        return;
@@ -51,14 +61,70 @@ public class FileWatcherService(ILogger<FileWatcherService> logger) : IDisposabl
         }
     }
 
+    private void OnRenamed(object sender, RenamedEventArgs e)
+    {
+        // Skip the .tmp → final rename produced by FileDownloadService — that is the
+        // initial download, not a user edit.  Any other rename (editor temp-file pattern)
+        // is treated as a real change on the new path.
+        if (Path.GetExtension(e.OldFullPath).Equals(".tmp", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        OnChanged(sender, e);
+    }
+
     private void HandleFileChanged(string path)
     {
         lock (_lock)
         {
-	        _debounceTimers.Remove(path);
+            _debounceTimers.Remove(path);
         }
 
+        // Directories fire Changed when a child is written — skip them.
+        if (!File.Exists(path))
+            return;
+
         logger.LogInformation("File changed in workspace: {Path}", path);
+
+        if (_uploadBaseUrl != null)
+            _ = Task.Run(() => UploadFileAsync(path));
+    }
+
+    private async Task UploadFileAsync(string localPath)
+    {
+        var starskyPath = LocalPathToStarskyPath(localPath);
+        logger.LogInformation("Uploading {LocalPath} → {ServerPath}", localPath, starskyPath);
+
+        try
+        {
+            using var req = new HttpRequestMessage(HttpMethod.Post,
+                $"{_uploadBaseUrl!.TrimEnd('/')}/starsky/api/upload");
+            req.Headers.TryAddWithoutValidation("to", starskyPath);
+            if (_uploadCookieHeader != null)
+            {
+	            req.Headers.TryAddWithoutValidation("Cookie", _uploadCookieHeader);
+            }
+
+            await using var fileStream = File.OpenRead(localPath);
+            req.Content = new StreamContent(fileStream);
+            req.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+            var resp = await _http.SendAsync(req);
+            resp.EnsureSuccessStatusCode();
+            logger.LogInformation("Upload complete: {ServerPath}", starskyPath);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Upload failed for {Path}", starskyPath);
+        }
+    }
+
+    internal static string LocalPathToStarskyPath(string localPath)
+    {
+        var tempFolder = ApplicationPaths.TempFolder;
+        var relative = localPath.StartsWith(tempFolder, StringComparison.OrdinalIgnoreCase)
+            ? localPath[tempFolder.Length..]
+            : localPath;
+        return "/" + relative.Replace('\\', '/').TrimStart('/');
     }
 
     public void Stop()

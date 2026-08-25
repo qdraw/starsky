@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Starsky.Desktop.Services;
+using starsky.Tests.FakeCreateAn.CreateFakeStarskyExe;
 using starsky.Tests.Helpers;
 
 namespace starsky.Tests.Services;
@@ -213,6 +214,94 @@ public class BackendServiceTests
         using var http = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.NotFound));
 
         await BackendService.CheckVersionCompatibilityAsync(http, "http://localhost:5000", "0.8.1");
+    }
+
+    // ── StartAsync / LaunchAsync (process launch) ────────────────────────────
+
+    [Fact]
+    public async Task StartAsync_WithFakeExe_StartsProcess()
+    {
+        var fakeExe = new CreateFakeStarskyExe();
+        var runtimeDir = ApplicationPaths.RuntimeDir;
+        var exeName = OperatingSystem.IsWindows() ? "starsky.exe" : "starsky";
+        var destExe = Path.Combine(runtimeDir, exeName);
+        Directory.CreateDirectory(runtimeDir);
+        File.Copy(fakeExe.ExePath, destExe, overwrite: true);
+
+        try
+        {
+            var svc = new BackendService(NullLogger<BackendService>.Instance);
+            await svc.StartAsync(19999);
+            await svc.StopAsync();
+            svc.Dispose();
+        }
+        finally
+        {
+            File.Delete(destExe);
+            if (!Directory.EnumerateFileSystemEntries(runtimeDir).Any())
+            {
+                Directory.Delete(runtimeDir);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task StartAsync_WithFakeExe_StopAsync_DoesNotThrow()
+    {
+        var fakeExe = new CreateFakeStarskyExe();
+        var runtimeDir = ApplicationPaths.RuntimeDir;
+        var exeName = OperatingSystem.IsWindows() ? "starsky.exe" : "starsky";
+        var destExe = Path.Combine(runtimeDir, exeName);
+        Directory.CreateDirectory(runtimeDir);
+        File.Copy(fakeExe.ExePath, destExe, overwrite: true);
+
+        try
+        {
+            var svc = new BackendService(NullLogger<BackendService>.Instance);
+            await svc.StartAsync(19998);
+
+            var ex = await Record.ExceptionAsync(() => svc.StopAsync());
+
+            Assert.Null(ex);
+            svc.Dispose();
+        }
+        finally
+        {
+            File.Delete(destExe);
+            if (!Directory.EnumerateFileSystemEntries(runtimeDir).Any())
+            {
+                Directory.Delete(runtimeDir);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task StartAsync_WithFakeExe_Dispose_DoesNotThrow()
+    {
+        var fakeExe = new CreateFakeStarskyExe();
+        var runtimeDir = ApplicationPaths.RuntimeDir;
+        var exeName = OperatingSystem.IsWindows() ? "starsky.exe" : "starsky";
+        var destExe = Path.Combine(runtimeDir, exeName);
+        Directory.CreateDirectory(runtimeDir);
+        File.Copy(fakeExe.ExePath, destExe, overwrite: true);
+
+        try
+        {
+            var svc = new BackendService(NullLogger<BackendService>.Instance);
+            await svc.StartAsync(19997);
+
+            var ex = Record.Exception(() => svc.Dispose());
+
+            Assert.Null(ex);
+        }
+        finally
+        {
+            File.Delete(destExe);
+            if (!Directory.EnumerateFileSystemEntries(runtimeDir).Any())
+            {
+                Directory.Delete(runtimeDir);
+            }
+        }
     }
 
     private sealed class ThrowingHandler : HttpMessageHandler

@@ -79,6 +79,33 @@ public sealed class FileWatcherServiceTests : IDisposable
         Assert.True(true);
     }
 
+    [Fact]
+    public void LocalPathToStarskyPath_StripsWinTempFolderPrefix()
+    {
+        var tempFolder = ApplicationPaths.TempFolder;
+        var localPath = Path.Combine(tempFolder, "photos", "2024", "image.jpg");
+
+        var result = FileWatcherService.LocalPathToStarskyPath(localPath);
+
+        Assert.Equal("/photos/2024/image.jpg", result);
+    }
+
+    [Fact]
+    public void LocalPathToStarskyPath_WhenOutsideTempFolder_NormalizesSlashes()
+    {
+        var result = FileWatcherService.LocalPathToStarskyPath(@"C:\some\other\file.jpg");
+
+        Assert.StartsWith("/", result);
+        Assert.DoesNotContain("\\", result);
+    }
+
+    [Fact]
+    public void SetUploadContext_DoesNotThrow()
+    {
+        var ex = Record.Exception(() => _sut.SetUploadContext("http://localhost:5000", "auth=abc"));
+        Assert.Null(ex);
+    }
+
     public void Dispose()
     {
         try { _sut.Dispose(); } catch { /* best-effort */ }

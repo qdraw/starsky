@@ -9,6 +9,7 @@ public sealed record MainWindowOptions
     public required RoutePersistenceService Routes { get; init; }
     public required WebViewEnvironmentService WebViewEnv { get; init; }
     public required FileDownloadService FileDownload { get; init; }
+    public required FileWatcherService Watcher { get; init; }
     public required WindowManager WindowManager { get; init; }
     public required ILogger Logger { get; init; }
     public required string BaseUrl { get; init; }

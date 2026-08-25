@@ -11,6 +11,7 @@ public class WindowManager(
 	NavigationService navigation,
 	WebViewEnvironmentService webViewEnv,
 	FileDownloadService fileDownload,
+	FileWatcherService watcher,
 	ILogger<WindowManager> logger)
 {
 	private readonly List<MainWindow> _mainWindows = [];
@@ -53,6 +54,7 @@ public class WindowManager(
             Routes = routes,
             WebViewEnv = webViewEnv,
             FileDownload = fileDownload,
+            Watcher = watcher,
             WindowManager = this,
             Logger = logger,
             BaseUrl = baseUrl,
