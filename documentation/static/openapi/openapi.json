@@ -15710,6 +15710,22 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "appVersionCommitHash": {
+            "type": "string",
+            "readOnly": true,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
           "storageFolder": {
             "type": "string",
             "readOnly": false,
@@ -23581,5 +23597,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "4C914A5E0CB02A61F575859F9BDFAE69BE4F20554464AB0ED19C3E0B429BBB5B4D0FC49F4412F9601977849F43F8C55C46B64FD7AD223876FCA26134F03EAB2E"
+  "hashCode": "2F33A8B4435125B2FD47BDB5428A5FC164EDEDA86D66BC59DCA1C4CCC15C5577A9F06573799308DFE22CDE6F078B40F3B16F3993CDFA7A40884EE585AB4ABB86"
 }
