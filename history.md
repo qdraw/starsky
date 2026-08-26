@@ -40,8 +40,15 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.8.1 - _(Unreleased)_ 2026-?-? {#v0.8.1}
+## version 0.8.2 - _(Unreleased)_ - 2026-?-? {#v0.8.2}
 
+- [x] (Fixed) _Back-end_ In Dockerfile user and group to UID/GID 1000 (PR #3236)
+- [x] (Fixed) _Back-end_ Docker simplifying user and group management and standardizing file ownership (PR #3235)
+
+## version 0.8.1 - 2026-08-25 {#v0.8.1}
+
+- [x] (Fixed) _Back-end_ New telemetry attribute for the application commit hash (PR #3233)
+- [x] (Fixed) _Back-end_ QueryGetAllRecursive timeout (PR #3233)
 - [x] (Fixed) _Back-end_ Inflate SearchSuggestions batch 5k items to avoid timeouts (PR #3230)
 - [x] (Fixed) _Back-end_ Move item different folder does keep folder structure (PR #3229 I #2738)
 - [x] (Fixed) _Back-end_ Filter Unique keys in QueryAddRange (PR #3227)

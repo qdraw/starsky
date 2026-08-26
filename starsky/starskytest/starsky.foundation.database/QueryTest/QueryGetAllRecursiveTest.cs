@@ -56,6 +56,8 @@ public sealed class QueryGetAllRecursiveTest
 			new FileIndexItem("/recursive_test/image2.jpg"));
 		await _query.AddItemAsync(
 			new FileIndexItem("/recursive_test/image3.jpg"));
+		await _query.AddItemAsync(
+			new FileIndexItem("/recursive_test_other/image4.jpg"));
 
 
 		var result = await _query.GetAllRecursiveAsync(["/recursive_test/"]);
@@ -64,11 +66,13 @@ public sealed class QueryGetAllRecursiveTest
 		Assert.AreEqual("/recursive_test/image2.jpg", result[1].FilePath);
 		Assert.AreEqual("/recursive_test/image3.jpg", result[2].FilePath);
 		Assert.AreEqual("/recursive_test/sub/image1.jpg", result[3].FilePath);
+		Assert.IsFalse(result.Exists(p => p.FilePath == "/recursive_test_other/image4.jpg"));
 
 		await _query.RemoveItemAsync(result[0]);
 		await _query.RemoveItemAsync(result[1]);
 		await _query.RemoveItemAsync(result[2]);
 		await _query.RemoveItemAsync(result[3]);
+		await _query.RemoveItemAsync(new FileIndexItem("/recursive_test_other/image4.jpg"));
 	}
 
 	[SuppressMessage("Usage",

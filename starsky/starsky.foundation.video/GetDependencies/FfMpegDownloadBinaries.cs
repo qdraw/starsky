@@ -12,27 +12,16 @@ using starsky.foundation.video.GetDependencies.Models;
 namespace starsky.foundation.video.GetDependencies;
 
 [Service(typeof(IFfMpegDownloadBinaries), InjectionLifetime = InjectionLifetime.Scoped)]
-public class FfMpegDownloadBinaries : IFfMpegDownloadBinaries
+public class FfMpegDownloadBinaries(
+	ISelectorStorage selectorStorage,
+	IHttpClientHelper httpClientHelper,
+	AppSettings appSettings,
+	IWebLogger logger,
+	IZipper zipper)
+	: IFfMpegDownloadBinaries
 {
-	private readonly AppSettings _appSettings;
-	private readonly FfmpegExePath _ffmpegExePath;
-	private readonly IStorage _hostFileSystemStorage;
-	private readonly IHttpClientHelper _httpClientHelper;
-	private readonly IWebLogger _logger;
-	private readonly IZipper _zipper;
-
-	public FfMpegDownloadBinaries(ISelectorStorage selectorStorage,
-		IHttpClientHelper httpClientHelper, AppSettings appSettings, IWebLogger logger,
-		IZipper zipper)
-	{
-		_appSettings = appSettings;
-		_httpClientHelper = httpClientHelper;
-		_logger = logger;
-		_ffmpegExePath = new FfmpegExePath(appSettings);
-		_hostFileSystemStorage =
-			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-		_zipper = zipper;
-	}
+	private readonly FfmpegExePath _ffmpegExePath = new(appSettings);
+	private readonly IStorage _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
 	public async Task<FfmpegDownloadStatus> Download(
 		KeyValuePair<BinaryIndex?, List<Uri>> binaryIndexKeyValuePair, string currentArchitecture,
@@ -53,26 +42,26 @@ public class FfMpegDownloadBinaries : IFfMpegDownloadBinaries
 		}
 
 		var zipFullFilePath =
-			Path.Combine(_appSettings.DependenciesFolder, binaryIndex.FileName);
+			Path.Combine(appSettings.DependenciesFolder, binaryIndex.FileName);
 
 		if ( !await DownloadMirror(baseUrls, zipFullFilePath, binaryIndex, retryInSeconds) )
 		{
-			_logger.LogError("Download failed");
+			logger.LogError("[FfMpegDownloadBinaries] Download failed");
 			return FfmpegDownloadStatus.DownloadBinariesFailed;
 		}
 
 		if ( !new CheckSha256Helper(_hostFileSystemStorage).CheckSha256(zipFullFilePath,
 			    [binaryIndex.Sha256]) )
 		{
-			_logger.LogError("Sha256 check failed");
+			logger.LogError("[FfMpegDownloadBinaries] Sha256 check failed");
 			return FfmpegDownloadStatus.DownloadBinariesFailedSha256Check;
 		}
 
-		_zipper.ExtractZip(zipFullFilePath, _ffmpegExePath.GetExeParentFolder(currentArchitecture));
+		zipper.ExtractZip(zipFullFilePath, _ffmpegExePath.GetExeParentFolder(currentArchitecture));
 
 		if ( !_hostFileSystemStorage.ExistFile(exePath) )
 		{
-			_logger.LogError($"Zipper failed {exePath}");
+			logger.LogError($"[FfMpegDownloadBinaries] Zipper failed {exePath}");
 			return FfmpegDownloadStatus.DownloadBinariesFailedZipperNotExtracted;
 		}
 
@@ -86,7 +75,7 @@ public class FfMpegDownloadBinaries : IFfMpegDownloadBinaries
 	{
 		foreach ( var uri in baseUrls.Select(baseUrl => new Uri(baseUrl + binaryIndex.FileName)) )
 		{
-			if ( await _httpClientHelper.Download(uri, zipFullFilePath, retryInSeconds) )
+			if ( await httpClientHelper.Download(uri, zipFullFilePath, retryInSeconds) )
 			{
 				return true;
 			}

@@ -12,8 +12,8 @@
 # docker build -f starsky/Dockerfile . --no-cache --build-arg TEST=false
 
 # Stage 1 Front-end
-# docker buildx imagetools inspect node:22-alpine
-FROM --platform=$BUILDPLATFORM node:22-alpine AS react-build
+# docker buildx imagetools inspect node:24-alpine
+FROM --platform=$BUILDPLATFORM node:24-alpine AS react-build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
@@ -82,7 +82,11 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS release
 WORKDIR /app
 ARG TOOLS=false
 
-# # for debugging
+# Remap app user to uid/gid 1000 so it matches typical host ownership.
+# The Ubuntu base layer ships an 'ubuntu' user at uid 1000; remove it first,
+# then slide 'app' (currently 1654) down to 1000.
+
+# # Tools is for debugging
 RUN if [ "$TOOLS" = "true" ]; then \
     apt-get update ;\
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --no-install-suggests -y curl nano ;\
@@ -91,36 +95,31 @@ RUN if [ "$TOOLS" = "true" ]; then \
 else \
     echo "no tools for debug" ;\
 fi && \
-  if ! getent group starsky >/dev/null; then \
-    if getent group 1000 >/dev/null; then groupadd starsky; else groupadd --gid 1000 starsky; fi; \
-  fi && \
-  if ! id -u starsky >/dev/null 2>&1; then \
-    if getent passwd 1000 >/dev/null; then \
-      useradd --gid starsky --shell /bin/bash --create-home starsky; \
-    else \
-      useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky; \
-    fi; \
-  fi
- 
+    userdel ubuntu 2>/dev/null || true && \
+    groupdel ubuntu 2>/dev/null || true && \
+    usermod -u 1000 app && \
+    groupmod -g 1000 app && \
+    find /app -user 1654 -exec chown -h app {} \; 2>/dev/null || true
+
 # Copy dlls
-COPY --chown=starsky:starsky --from=build-env /app/generic-netcore /app
+COPY --chown=app:app --from=build-env /app/generic-netcore /app
 
 # copy dependencies
-COPY --chown=starsky:starsky --from=build-env /app/dependencies /app/dependencies
-COPY --chown=starsky:starsky --from=build-env /app/temp /app/temp
-COPY --chown=starsky:starsky --from=build-env /app/data.db /app/app__data.db
+COPY --chown=app:app --from=build-env /app/dependencies /app/dependencies
+COPY --chown=app:app --from=build-env /app/temp /app/temp
+COPY --chown=app:app --from=build-env /app/data.db /app/app__data.db
 
 # Copy react build
-COPY --chown=starsky:starsky --from=react-build /app/starsky/clientapp ./clientapp
+COPY --chown=app:app --from=react-build /app/starsky/clientapp ./clientapp
 
 # Create necessary directories and set ownership
-RUN mkdir -p /app/photos && chown starsky:starsky /app/photos
-RUN mkdir -p /app/thumbnailTempFolder && chown starsky:starsky /app/thumbnailTempFolder
-RUN mkdir -p /app/storageFolder && chown starsky:starsky /app/storageFolder
-RUN mkdir -p /app/dependencies && chown starsky:starsky /app/dependencies
-RUN mkdir -p /app/temp && chown starsky:starsky /app/temp
-RUN chown starsky:starsky /app
-USER starsky
+RUN mkdir -p /app/photos && chown app:app /app/photos
+RUN mkdir -p /app/thumbnailTempFolder && chown app:app /app/thumbnailTempFolder
+RUN mkdir -p /app/storageFolder && chown app:app /app/storageFolder
+RUN mkdir -p /app/dependencies && chown app:app /app/dependencies
+RUN mkdir -p /app/temp && chown app:app /app/temp
+RUN chown app:app /app
+USER app
 
 EXPOSE 8080
 ENV ASPNETCORE_Environment=Production
