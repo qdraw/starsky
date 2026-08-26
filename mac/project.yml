@@ -1,0 +1,92 @@
+name: starsky
+options:
+  bundleIdPrefix: nl.qdraw
+  deploymentTarget:
+    macOS: "13.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.6.0
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    ARCHS: "arm64 x86_64"
+    ONLY_ACTIVE_ARCH: NO
+    ENABLE_HARDENED_RUNTIME: YES
+    OTHER_CODE_SIGN_FLAGS: "--options runtime"
+    SWIFT_STRICT_CONCURRENCY: minimal
+
+targets:
+  starsky:
+    type: application
+    platform: macOS
+    sources:
+      - path: starsky
+    dependencies:
+      - package: Sparkle
+        product: Sparkle
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: nl.qdraw.starsky
+        PRODUCT_NAME: starsky
+        INFOPLIST_FILE: starsky/Info.plist
+        CODE_SIGN_ENTITLEMENTS: starsky/starsky.entitlements
+        CODE_SIGN_IDENTITY: "Developer ID Application"
+        DEVELOPMENT_TEAM: ""
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: "-"
+          DEVELOPMENT_TEAM: ""
+    preBuildScripts:
+      - script: |
+          for ARCH in arm64 x64; do
+            RUNTIME_SRC="$SRCROOT/../starskydesktop/runtime-starsky-mac-${ARCH}"
+            RUNTIME_DST="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}"
+            if [ -d "$RUNTIME_SRC" ]; then
+              mkdir -p "$RUNTIME_DST"
+              cp -R "$RUNTIME_SRC/." "$RUNTIME_DST/"
+            else
+              echo "warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work"
+            fi
+          done
+        name: Copy Starsky Runtime
+
+  starskyTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: starskyTests
+    dependencies:
+      - target: starsky
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: nl.qdraw.starskyTests
+        INFOPLIST_FILE: starskyTests/Info.plist
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks"
+
+schemes:
+  starsky:
+    build:
+      targets:
+        starsky: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+
+  starskyTests:
+    build:
+      targets:
+        starskyTests: [test]
+        starsky: [build]
+    test:
+      config: Debug
+      targets:
+        - starskyTests

@@ -1,0 +1,696 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		033D422A3BCBC49ACFDD8A59 /* ApplicationPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CFFD91296CDC50EDCD7FA3 /* ApplicationPaths.swift */; };
+		09FF87CFEF8F3718D9A51271 /* FileDownloadServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F6B9B261337B367BAE7B88 /* FileDownloadServiceTests.swift */; };
+		18D060446DDCBB764F9621FF /* BackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CA83403E3576F4DDF6AA3F /* BackendService.swift */; };
+		19267496699CFB79FC4477F3 /* SettingsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3578CC83C650F985724744B7 /* SettingsServiceTests.swift */; };
+		2149C1F84602C5E4ABE92F5C /* RoutePersistenceServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C97D9AD6BA360D21DF54556 /* RoutePersistenceServiceTests.swift */; };
+		2553B59D843A36B5BD00D052 /* RuntimeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8415DA0473D238EB0F6108E2 /* RuntimeMode.swift */; };
+		29CCE389704C9AE90F98FEF2 /* ApplicationInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FA3618E9A48E3FF0C00198 /* ApplicationInfo.swift */; };
+		2E20FAE3BA0AAEA1837CA059 /* RemoteUrlValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73CD361EFF2B86D1744D0D3 /* RemoteUrlValidator.swift */; };
+		3735D4F79BBB39132389EA5E /* UpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A194174E0CB13CE48986CA /* UpdateService.swift */; };
+		37E4BB3666814B17F5055311 /* FileWatcherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EEB3D3F4A7BDBEED593F95 /* FileWatcherService.swift */; };
+		3D53FEA32BD5232EDF54E519 /* SettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2FAF9F0DB6D5AD35BE4E55 /* SettingsService.swift */; };
+		41EE07440713B387EAA5FC16 /* FileDownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF89347F9391AD851030846 /* FileDownloadService.swift */; };
+		430656002F48F777DE022C02 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638E6722EC6714AB1D74833D /* AppDelegate.swift */; };
+		472D6F6C902EBF5D3E2524E3 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = DF5D6D740321B8F421D7DC1C /* Sparkle */; };
+		52376CDE06991FB57D2AFF78 /* RoutePersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32EF46D239525D609F48272D /* RoutePersistenceService.swift */; };
+		528B639F38E2E709539232C4 /* UpdateServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3800BF95DAE1D80A5D7EB6EF /* UpdateServiceTests.swift */; };
+		52F0B4FA384E0151FE70C77C /* SavedWindowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EBAFB55CED6C71FB0FE02FD /* SavedWindowState.swift */; };
+		535F8BFA7322D17639E16EF3 /* UpdateWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8956542BB08C50ABED9CE2 /* UpdateWindowController.swift */; };
+		58614F9E6FF5CBE72C369BB0 /* DailyFileLoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537CF0BCF79013734BC9F797 /* DailyFileLoggerTests.swift */; };
+		5DCE49D698294FDA7B32A43E /* FileWatcherServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E6AD1C4B8C9A7666462936 /* FileWatcherServiceTests.swift */; };
+		67E1E3C6BCB8C839193CE5B5 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1DA28C66FE1CC762FC46095 /* SettingsWindowController.swift */; };
+		6E662DDC3AF725A0EB0A7CF7 /* UrlValidationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE9757114B39C8796B7DDB8 /* UrlValidationResult.swift */; };
+		72B91B9C3C7ECCDEEA460EEC /* BackendServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */; };
+		75643F69297DF8F1D8C753D4 /* NavigationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12047ED0B6586CEB41197A6 /* NavigationService.swift */; };
+		7FAAC31A66A4532C6218E51F /* NavigationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A220D2CCADAAE29E222E32FA /* NavigationServiceTests.swift */; };
+		921557DF7EBE949444ABB754 /* RemoteUrlValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A4355B016A576502FF1E51 /* RemoteUrlValidatorTests.swift */; };
+		B352323697B9E1BEEA2B3150 /* DesktopSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A09958ECF7CB2678EA7DD /* DesktopSettingsTests.swift */; };
+		B4BCF196BF3AE465A4B901A8 /* DesktopSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFEE83DC68F1FD52C83DA8C /* DesktopSettings.swift */; };
+		B5740FA3AE389EDA4C3E42EF /* SplashWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFD12F33E4CFB89DD6DA383 /* SplashWindowController.swift */; };
+		BE1D04448F507D0906FD281C /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554B5849A45556FFAA970085 /* WindowManager.swift */; };
+		C2E9E314DDA263E53F6916B9 /* FakeStarskyBin.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE0772661C728F9918A8A0E /* FakeStarskyBin.swift */; };
+		CB8DF2DE1B545794DA93F7BF /* PortFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF10CDC7C7FA47BA0423D288 /* PortFinder.swift */; };
+		CBEF11ACD5AB1701C013AB54 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A29613611956A9065F7D03E /* MainWindowController.swift */; };
+		D4C012064C660EFAD980E3F6 /* ApplicationPathsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7FF14576F32676391CCF10 /* ApplicationPathsTests.swift */; };
+		E2571D53FC9FFD60B32CB88C /* PortFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798CAE326CC1DB438FE8B71F /* PortFinderTests.swift */; };
+		F61BB25AD6E4A6519F79F584 /* FakeURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3DF9B7AD7AE65C57A997B91 /* FakeURLProtocol.swift */; };
+		F8053642799E7DE999D5231A /* DailyFileLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */; };
+		FAD78E84447F789AC438C71F /* ErrorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC719351FB87812C1BF8676 /* ErrorWindowController.swift */; };
+		FC19385CA8235FA9E3091E55 /* MainWindowOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68DD5D1A07ED134B0EFAF8FC /* MainWindowOptions.swift */; };
+		FC3FA016C05BDB7270A0328C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 263A83BFB1208A11BA2AD28D /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		954990475BAA3863C85E5BB4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96BD539A55F65BA405ACC316 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6A60AD57D9D47B2FAD5A7AAC;
+			remoteInfo = starsky;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyFileLogger.swift; sourceTree = "<group>"; };
+		13F6B9B261337B367BAE7B88 /* FileDownloadServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadServiceTests.swift; sourceTree = "<group>"; };
+		1595DFCCE586B6DD9B02AC5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1C97D9AD6BA360D21DF54556 /* RoutePersistenceServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePersistenceServiceTests.swift; sourceTree = "<group>"; };
+		1D1A09958ECF7CB2678EA7DD /* DesktopSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopSettingsTests.swift; sourceTree = "<group>"; };
+		25EEB3D3F4A7BDBEED593F95 /* FileWatcherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatcherService.swift; sourceTree = "<group>"; };
+		25FA3618E9A48E3FF0C00198 /* ApplicationInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationInfo.swift; sourceTree = "<group>"; };
+		263A83BFB1208A11BA2AD28D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2AFEE83DC68F1FD52C83DA8C /* DesktopSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopSettings.swift; sourceTree = "<group>"; };
+		3241E30A98E45F4148C41D75 /* starsky.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = starsky.entitlements; sourceTree = "<group>"; };
+		32EF46D239525D609F48272D /* RoutePersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePersistenceService.swift; sourceTree = "<group>"; };
+		3578CC83C650F985724744B7 /* SettingsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsServiceTests.swift; sourceTree = "<group>"; };
+		37CFFD91296CDC50EDCD7FA3 /* ApplicationPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationPaths.swift; sourceTree = "<group>"; };
+		3800BF95DAE1D80A5D7EB6EF /* UpdateServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateServiceTests.swift; sourceTree = "<group>"; };
+		3A29613611956A9065F7D03E /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
+		3EBAFB55CED6C71FB0FE02FD /* SavedWindowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedWindowState.swift; sourceTree = "<group>"; };
+		3EE9757114B39C8796B7DDB8 /* UrlValidationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlValidationResult.swift; sourceTree = "<group>"; };
+		537CF0BCF79013734BC9F797 /* DailyFileLoggerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyFileLoggerTests.swift; sourceTree = "<group>"; };
+		554B5849A45556FFAA970085 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		638E6722EC6714AB1D74833D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		68DD5D1A07ED134B0EFAF8FC /* MainWindowOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowOptions.swift; sourceTree = "<group>"; };
+		798CAE326CC1DB438FE8B71F /* PortFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortFinderTests.swift; sourceTree = "<group>"; };
+		7DF89347F9391AD851030846 /* FileDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadService.swift; sourceTree = "<group>"; };
+		8180D19840C574AC4878E465 /* starskyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = starskyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8415DA0473D238EB0F6108E2 /* RuntimeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMode.swift; sourceTree = "<group>"; };
+		8F8C3308F3AE014E18479C4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendServiceTests.swift; sourceTree = "<group>"; };
+		97B29EC047ED7E17B1E0563A /* starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A220D2CCADAAE29E222E32FA /* NavigationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationServiceTests.swift; sourceTree = "<group>"; };
+		A9A194174E0CB13CE48986CA /* UpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateService.swift; sourceTree = "<group>"; };
+		AD8956542BB08C50ABED9CE2 /* UpdateWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateWindowController.swift; sourceTree = "<group>"; };
+		AF10CDC7C7FA47BA0423D288 /* PortFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortFinder.swift; sourceTree = "<group>"; };
+		B12047ED0B6586CEB41197A6 /* NavigationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationService.swift; sourceTree = "<group>"; };
+		B2CA83403E3576F4DDF6AA3F /* BackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendService.swift; sourceTree = "<group>"; };
+		BEFD12F33E4CFB89DD6DA383 /* SplashWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashWindowController.swift; sourceTree = "<group>"; };
+		C73CD361EFF2B86D1744D0D3 /* RemoteUrlValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteUrlValidator.swift; sourceTree = "<group>"; };
+		D7A4355B016A576502FF1E51 /* RemoteUrlValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteUrlValidatorTests.swift; sourceTree = "<group>"; };
+		DA7FF14576F32676391CCF10 /* ApplicationPathsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationPathsTests.swift; sourceTree = "<group>"; };
+		DE2FAF9F0DB6D5AD35BE4E55 /* SettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsService.swift; sourceTree = "<group>"; };
+		E1DA28C66FE1CC762FC46095 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		E1E6AD1C4B8C9A7666462936 /* FileWatcherServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatcherServiceTests.swift; sourceTree = "<group>"; };
+		E3DF9B7AD7AE65C57A997B91 /* FakeURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeURLProtocol.swift; sourceTree = "<group>"; };
+		EAE0772661C728F9918A8A0E /* FakeStarskyBin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeStarskyBin.swift; sourceTree = "<group>"; };
+		FDC719351FB87812C1BF8676 /* ErrorWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorWindowController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		33DB0357E80FC5AE0C64F299 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				472D6F6C902EBF5D3E2524E3 /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0D202E738D9534764ECBD4E8 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				DA7FF14576F32676391CCF10 /* ApplicationPathsTests.swift */,
+				9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */,
+				537CF0BCF79013734BC9F797 /* DailyFileLoggerTests.swift */,
+				13F6B9B261337B367BAE7B88 /* FileDownloadServiceTests.swift */,
+				E1E6AD1C4B8C9A7666462936 /* FileWatcherServiceTests.swift */,
+				A220D2CCADAAE29E222E32FA /* NavigationServiceTests.swift */,
+				798CAE326CC1DB438FE8B71F /* PortFinderTests.swift */,
+				D7A4355B016A576502FF1E51 /* RemoteUrlValidatorTests.swift */,
+				1C97D9AD6BA360D21DF54556 /* RoutePersistenceServiceTests.swift */,
+				3578CC83C650F985724744B7 /* SettingsServiceTests.swift */,
+				3800BF95DAE1D80A5D7EB6EF /* UpdateServiceTests.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		1227CEE18FB6936E3AD98B88 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				2AFEE83DC68F1FD52C83DA8C /* DesktopSettings.swift */,
+				8415DA0473D238EB0F6108E2 /* RuntimeMode.swift */,
+				3EBAFB55CED6C71FB0FE02FD /* SavedWindowState.swift */,
+				3EE9757114B39C8796B7DDB8 /* UrlValidationResult.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		1915D70CA1807F72A55C01E1 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				638E6722EC6714AB1D74833D /* AppDelegate.swift */,
+				25FA3618E9A48E3FF0C00198 /* ApplicationInfo.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		1E244E08DF87B97A22CEC619 /* scripts */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = scripts;
+			sourceTree = "<group>";
+		};
+		3C7FFDB383093FBECF9207B1 /* FakeCreateAn */ = {
+			isa = PBXGroup;
+			children = (
+				D81768EC3E7595819B8FEF0E /* CreateFakeStarskyBin */,
+			);
+			path = FakeCreateAn;
+			sourceTree = "<group>";
+		};
+		50DD9685A8789EC5E846C556 = {
+			isa = PBXGroup;
+			children = (
+				55A1E52776205BFE7BB4B7A3 /* starsky */,
+				E498ECBFB59C2BB86270A022 /* starskyTests */,
+				E215F7E68D0EFC516B8D19BE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		55A1E52776205BFE7BB4B7A3 /* starsky */ = {
+			isa = PBXGroup;
+			children = (
+				1595DFCCE586B6DD9B02AC5E /* Info.plist */,
+				3241E30A98E45F4148C41D75 /* starsky.entitlements */,
+				554B5849A45556FFAA970085 /* WindowManager.swift */,
+				1915D70CA1807F72A55C01E1 /* App */,
+				1227CEE18FB6936E3AD98B88 /* Models */,
+				C9F9ADDD151F6CA985CEF39B /* Resources */,
+				1E244E08DF87B97A22CEC619 /* scripts */,
+				A969E4D303F9566A315133B5 /* Services */,
+				FA4E2D6E483B70C6071E8338 /* Windows */,
+			);
+			path = starsky;
+			sourceTree = "<group>";
+		};
+		66C4FC2A2BEA8C3BD2C16D52 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1D1A09958ECF7CB2678EA7DD /* DesktopSettingsTests.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A969E4D303F9566A315133B5 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				37CFFD91296CDC50EDCD7FA3 /* ApplicationPaths.swift */,
+				B2CA83403E3576F4DDF6AA3F /* BackendService.swift */,
+				12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */,
+				7DF89347F9391AD851030846 /* FileDownloadService.swift */,
+				25EEB3D3F4A7BDBEED593F95 /* FileWatcherService.swift */,
+				B12047ED0B6586CEB41197A6 /* NavigationService.swift */,
+				AF10CDC7C7FA47BA0423D288 /* PortFinder.swift */,
+				C73CD361EFF2B86D1744D0D3 /* RemoteUrlValidator.swift */,
+				32EF46D239525D609F48272D /* RoutePersistenceService.swift */,
+				DE2FAF9F0DB6D5AD35BE4E55 /* SettingsService.swift */,
+				A9A194174E0CB13CE48986CA /* UpdateService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		C9F9ADDD151F6CA985CEF39B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				263A83BFB1208A11BA2AD28D /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		D81768EC3E7595819B8FEF0E /* CreateFakeStarskyBin */ = {
+			isa = PBXGroup;
+			children = (
+				EAE0772661C728F9918A8A0E /* FakeStarskyBin.swift */,
+			);
+			path = CreateFakeStarskyBin;
+			sourceTree = "<group>";
+		};
+		E215F7E68D0EFC516B8D19BE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				97B29EC047ED7E17B1E0563A /* starsky.app */,
+				8180D19840C574AC4878E465 /* starskyTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E498ECBFB59C2BB86270A022 /* starskyTests */ = {
+			isa = PBXGroup;
+			children = (
+				8F8C3308F3AE014E18479C4A /* Info.plist */,
+				3C7FFDB383093FBECF9207B1 /* FakeCreateAn */,
+				FD0EE1EFBF4F6ECBC1915127 /* Helpers */,
+				66C4FC2A2BEA8C3BD2C16D52 /* Models */,
+				0D202E738D9534764ECBD4E8 /* Services */,
+			);
+			path = starskyTests;
+			sourceTree = "<group>";
+		};
+		FA4E2D6E483B70C6071E8338 /* Windows */ = {
+			isa = PBXGroup;
+			children = (
+				FDC719351FB87812C1BF8676 /* ErrorWindowController.swift */,
+				3A29613611956A9065F7D03E /* MainWindowController.swift */,
+				68DD5D1A07ED134B0EFAF8FC /* MainWindowOptions.swift */,
+				E1DA28C66FE1CC762FC46095 /* SettingsWindowController.swift */,
+				BEFD12F33E4CFB89DD6DA383 /* SplashWindowController.swift */,
+				AD8956542BB08C50ABED9CE2 /* UpdateWindowController.swift */,
+			);
+			path = Windows;
+			sourceTree = "<group>";
+		};
+		FD0EE1EFBF4F6ECBC1915127 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				E3DF9B7AD7AE65C57A997B91 /* FakeURLProtocol.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1EC700EB63FAE2C9BB20A7FE /* starskyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 72955AAB7F0BC8521612F9A4 /* Build configuration list for PBXNativeTarget "starskyTests" */;
+			buildPhases = (
+				66FCD2385D49DBA6712B44FB /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0F1E4CCA33EA4369A3FAC323 /* PBXTargetDependency */,
+			);
+			name = starskyTests;
+			packageProductDependencies = (
+			);
+			productName = starskyTests;
+			productReference = 8180D19840C574AC4878E465 /* starskyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		6A60AD57D9D47B2FAD5A7AAC /* starsky */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2141087CAD4ACB5D5AEE2DA8 /* Build configuration list for PBXNativeTarget "starsky" */;
+			buildPhases = (
+				D18B61017DB2E744895EC5D5 /* Copy Starsky Runtime */,
+				628C6D8D72CF8C83A94FB91D /* Sources */,
+				4B559BF44F4E7393EAF621A7 /* Resources */,
+				33DB0357E80FC5AE0C64F299 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = starsky;
+			packageProductDependencies = (
+				DF5D6D740321B8F421D7DC1C /* Sparkle */,
+			);
+			productName = starsky;
+			productReference = 97B29EC047ED7E17B1E0563A /* starsky.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		96BD539A55F65BA405ACC316 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					6A60AD57D9D47B2FAD5A7AAC = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = 90E4DA2552B8332616FE1F69 /* Build configuration list for PBXProject "starsky" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 50DD9685A8789EC5E846C556;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				4818074EF1FAC280B9B200CD /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = E215F7E68D0EFC516B8D19BE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6A60AD57D9D47B2FAD5A7AAC /* starsky */,
+				1EC700EB63FAE2C9BB20A7FE /* starskyTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4B559BF44F4E7393EAF621A7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC3FA016C05BDB7270A0328C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D18B61017DB2E744895EC5D5 /* Copy Starsky Runtime */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Starsky Runtime";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "for ARCH in arm64 x64; do\n  RUNTIME_SRC=\"$SRCROOT/../starskydesktop/runtime-starsky-mac-${ARCH}\"\n  RUNTIME_DST=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}\"\n  if [ -d \"$RUNTIME_SRC\" ]; then\n    mkdir -p \"$RUNTIME_DST\"\n    cp -R \"$RUNTIME_SRC/.\" \"$RUNTIME_DST/\"\n  else\n    echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n  fi\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		628C6D8D72CF8C83A94FB91D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				430656002F48F777DE022C02 /* AppDelegate.swift in Sources */,
+				29CCE389704C9AE90F98FEF2 /* ApplicationInfo.swift in Sources */,
+				033D422A3BCBC49ACFDD8A59 /* ApplicationPaths.swift in Sources */,
+				18D060446DDCBB764F9621FF /* BackendService.swift in Sources */,
+				F8053642799E7DE999D5231A /* DailyFileLogger.swift in Sources */,
+				B4BCF196BF3AE465A4B901A8 /* DesktopSettings.swift in Sources */,
+				FAD78E84447F789AC438C71F /* ErrorWindowController.swift in Sources */,
+				41EE07440713B387EAA5FC16 /* FileDownloadService.swift in Sources */,
+				37E4BB3666814B17F5055311 /* FileWatcherService.swift in Sources */,
+				CBEF11ACD5AB1701C013AB54 /* MainWindowController.swift in Sources */,
+				FC19385CA8235FA9E3091E55 /* MainWindowOptions.swift in Sources */,
+				75643F69297DF8F1D8C753D4 /* NavigationService.swift in Sources */,
+				CB8DF2DE1B545794DA93F7BF /* PortFinder.swift in Sources */,
+				2E20FAE3BA0AAEA1837CA059 /* RemoteUrlValidator.swift in Sources */,
+				52376CDE06991FB57D2AFF78 /* RoutePersistenceService.swift in Sources */,
+				2553B59D843A36B5BD00D052 /* RuntimeMode.swift in Sources */,
+				52F0B4FA384E0151FE70C77C /* SavedWindowState.swift in Sources */,
+				3D53FEA32BD5232EDF54E519 /* SettingsService.swift in Sources */,
+				67E1E3C6BCB8C839193CE5B5 /* SettingsWindowController.swift in Sources */,
+				B5740FA3AE389EDA4C3E42EF /* SplashWindowController.swift in Sources */,
+				3735D4F79BBB39132389EA5E /* UpdateService.swift in Sources */,
+				535F8BFA7322D17639E16EF3 /* UpdateWindowController.swift in Sources */,
+				6E662DDC3AF725A0EB0A7CF7 /* UrlValidationResult.swift in Sources */,
+				BE1D04448F507D0906FD281C /* WindowManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66FCD2385D49DBA6712B44FB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4C012064C660EFAD980E3F6 /* ApplicationPathsTests.swift in Sources */,
+				72B91B9C3C7ECCDEEA460EEC /* BackendServiceTests.swift in Sources */,
+				58614F9E6FF5CBE72C369BB0 /* DailyFileLoggerTests.swift in Sources */,
+				B352323697B9E1BEEA2B3150 /* DesktopSettingsTests.swift in Sources */,
+				C2E9E314DDA263E53F6916B9 /* FakeStarskyBin.swift in Sources */,
+				F61BB25AD6E4A6519F79F584 /* FakeURLProtocol.swift in Sources */,
+				09FF87CFEF8F3718D9A51271 /* FileDownloadServiceTests.swift in Sources */,
+				5DCE49D698294FDA7B32A43E /* FileWatcherServiceTests.swift in Sources */,
+				7FAAC31A66A4532C6218E51F /* NavigationServiceTests.swift in Sources */,
+				E2571D53FC9FFD60B32CB88C /* PortFinderTests.swift in Sources */,
+				921557DF7EBE949444ABB754 /* RemoteUrlValidatorTests.swift in Sources */,
+				2149C1F84602C5E4ABE92F5C /* RoutePersistenceServiceTests.swift in Sources */,
+				19267496699CFB79FC4477F3 /* SettingsServiceTests.swift in Sources */,
+				528B639F38E2E709539232C4 /* UpdateServiceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0F1E4CCA33EA4369A3FAC323 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6A60AD57D9D47B2FAD5A7AAC /* starsky */;
+			targetProxy = 954990475BAA3863C85E5BB4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0212C74170236C4F787122F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "arm64 x86_64";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CODE_SIGN_FLAGS = "--options runtime";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+		27903FAD964C4FB710211F53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = starskyTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/Contents/MacOS/starsky";
+			};
+			name = Debug;
+		};
+		57FBB4F517342C507D65DD9A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = starskyTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/Contents/MacOS/starsky";
+			};
+			name = Release;
+		};
+		8AD16C574A3274EC72AF8164 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "arm64 x86_64";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CODE_SIGN_FLAGS = "--options runtime";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+		9259D6F38CA13B6C2A0AE9C5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = starsky/starsky.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = starsky/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
+				PRODUCT_NAME = starsky;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		CF6EEC22B04BD6F35D823EF1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = starsky/starsky.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = starsky/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
+				PRODUCT_NAME = starsky;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2141087CAD4ACB5D5AEE2DA8 /* Build configuration list for PBXNativeTarget "starsky" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CF6EEC22B04BD6F35D823EF1 /* Debug */,
+				9259D6F38CA13B6C2A0AE9C5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		72955AAB7F0BC8521612F9A4 /* Build configuration list for PBXNativeTarget "starskyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				27903FAD964C4FB710211F53 /* Debug */,
+				57FBB4F517342C507D65DD9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		90E4DA2552B8332616FE1F69 /* Build configuration list for PBXProject "starsky" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8AD16C574A3274EC72AF8164 /* Debug */,
+				0212C74170236C4F787122F1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4818074EF1FAC280B9B200CD /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DF5D6D740321B8F421D7DC1C /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4818074EF1FAC280B9B200CD /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 96BD539A55F65BA405ACC316 /* Project object */;
+}
