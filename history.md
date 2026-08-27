@@ -40,9 +40,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.8.3 - _(Unreleased)_ - 2026-?-? {#v0.8.3}
+## version 0.9.0-beta.0 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.0}
 
-- nothing yet
+- [x] (Added) _App_ WPF-based Windows desktop app instead of Electron (PR #3234)
 
 ## version 0.8.2 - 2026-08-27 {#v0.8.2}
 
