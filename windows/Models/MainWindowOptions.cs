@@ -16,4 +16,5 @@ public sealed record MainWindowOptions
     public required string InitialRoute { get; init; }
     public required SavedWindowState Geometry { get; init; }
     public required int WindowIndex { get; init; }
+    public required UpdateService UpdateService { get; init; }
 }

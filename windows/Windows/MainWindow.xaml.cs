@@ -24,6 +24,7 @@ public partial class MainWindow : Window
     private readonly FileDownloadService _fileDownload;
     private readonly FileWatcherService _watcher;
     private readonly WindowManager _windowManager;
+    private readonly UpdateService _updateService;
     private readonly ILogger _logger;
 
     private readonly string _baseUrl;
@@ -40,6 +41,7 @@ public partial class MainWindow : Window
         _fileDownload = options.FileDownload;
         _watcher = options.Watcher;
         _windowManager = options.WindowManager;
+        _updateService = options.UpdateService;
         _logger = options.Logger;
         _baseUrl = options.BaseUrl;
         _windowIndex = options.WindowIndex;
@@ -53,6 +55,10 @@ public partial class MainWindow : Window
         {
 	        WindowState = WindowState.Maximized;
         }
+
+        var updateVisibility = _updateService.IsVelopackAvailable ? Visibility.Visible : Visibility.Collapsed;
+        CheckForUpdatesMenuItem.Visibility = updateVisibility;
+        CheckForUpdatesSeparator.Visibility = updateVisibility;
 
         Loaded += MainWindow_Loaded;
         Closing += MainWindow_Closing;
@@ -246,4 +252,25 @@ public partial class MainWindow : Window
 
     private void ReleaseOverview_Click(object sender, RoutedEventArgs e)
         => Process.Start(new ProcessStartInfo(ReleasesUrl) { UseShellExecute = true });
+
+    private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
+    {
+        CheckForUpdatesMenuItem.IsEnabled = false;
+        try
+        {
+            if (await _updateService.CheckAsync())
+            {
+                new UpdateWindow(_updateService).Show();
+            }
+            else
+            {
+                MessageBox.Show("You are running the latest version.", "Check for Updates",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        finally
+        {
+            CheckForUpdatesMenuItem.IsEnabled = true;
+        }
+    }
 }

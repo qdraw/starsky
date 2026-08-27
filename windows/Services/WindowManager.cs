@@ -12,6 +12,7 @@ public class WindowManager(
 	WebViewEnvironmentService webViewEnv,
 	FileDownloadService fileDownload,
 	FileWatcherService watcher,
+	UpdateService updateService,
 	ILogger<WindowManager> logger)
 {
 	private readonly List<MainWindow> _mainWindows = [];
@@ -60,7 +61,8 @@ public class WindowManager(
             BaseUrl = baseUrl,
             InitialRoute = route ?? "?f=/",
             Geometry = state,
-            WindowIndex = _mainWindows.Count
+            WindowIndex = _mainWindows.Count,
+            UpdateService = updateService
         });
 
         _mainWindows.Add(window);

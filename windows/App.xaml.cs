@@ -48,7 +48,7 @@ public partial class App : Application
 
         _windowManager = new WindowManager(
             settingsService, routes, navigation, webViewEnv, fileDownload, _watcher,
-            logFactory.CreateLogger<WindowManager>());
+            updateService, logFactory.CreateLogger<WindowManager>());
 
         // 5. Show splash
         var splash = new SplashWindow();

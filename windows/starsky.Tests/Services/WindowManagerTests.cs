@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Starsky.Desktop.Models;
 using Starsky.Desktop.Services;
@@ -15,8 +14,9 @@ public class WindowManagerTests
         var webViewEnv = new WebViewEnvironmentService();
         var fileDownload = new FileDownloadService(NullLogger<FileDownloadService>.Instance);
         var watcher = new FileWatcherService(NullLogger<FileWatcherService>.Instance);
+        var updateService = new UpdateService(settings, NullLogger<UpdateService>.Instance);
         return new WindowManager(settings, routes, navigation, webViewEnv, fileDownload, watcher,
-            NullLogger<WindowManager>.Instance);
+            updateService, NullLogger<WindowManager>.Instance);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class WindowManagerTests
     public void CloseAll_WithNoWindows_DoesNotThrow()
     {
         var wm = CreateManager();
-        var ex = Record.Exception(() => wm.CloseAll());
+        var ex = Record.Exception(wm.CloseAll);
         Assert.Null(ex);
     }
 
@@ -39,7 +39,7 @@ public class WindowManagerTests
     public void ReloadAll_WithNoWindows_DoesNotThrow()
     {
         var wm = CreateManager();
-        var ex = Record.Exception(() => wm.ReloadAll());
+        var ex = Record.Exception(wm.ReloadAll);
         Assert.Null(ex);
     }
 
@@ -52,8 +52,9 @@ public class WindowManagerTests
         var webViewEnv = new WebViewEnvironmentService();
         var fileDownload = new FileDownloadService(NullLogger<FileDownloadService>.Instance);
         var watcher = new FileWatcherService(NullLogger<FileWatcherService>.Instance);
+        var updateService = new UpdateService(settings, NullLogger<UpdateService>.Instance);
         var wm = new WindowManager(settings, routes, nav, webViewEnv, fileDownload, watcher,
-            NullLogger<WindowManager>.Instance);
+            updateService, NullLogger<WindowManager>.Instance);
         var geometry = new SavedWindowState { Left = 10, Top = 20, Width = 800, Height = 600 };
 
         var opts = new MainWindowOptions
@@ -64,6 +65,7 @@ public class WindowManagerTests
             FileDownload = fileDownload,
             Watcher = watcher,
             WindowManager = wm,
+            UpdateService = updateService,
             Logger = NullLogger.Instance,
             BaseUrl = "http://localhost:5000",
             InitialRoute = "?f=/photos",

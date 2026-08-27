@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Velopack;
+using Velopack.Locators;
 using Velopack.Sources;
 
 namespace Starsky.Desktop.Services;
@@ -27,7 +28,28 @@ public class UpdateService
         }
         catch (Exception ex)
         {
+            _logger.LogWarning(ex, "Velopack UpdateManager could not be created");
+        }
+
+        IsVelopackAvailable = ProbeInstalled();
+    }
+
+    private bool ProbeInstalled()
+    {
+        if (_updateManager == null)
+        {
+            return false;
+        }
+
+        try
+        {
+            var locator = VelopackLocator.CreateDefaultForPlatform();
+            return locator?.AppId != null;
+        }
+        catch (Exception ex)
+        {
             _logger.LogWarning(ex, "Velopack not available (running outside installer)");
+            return false;
         }
     }
 
@@ -63,12 +85,14 @@ public class UpdateService
         _settings.Save();
     }
 
+    public bool IsVelopackAvailable { get; }
+
     protected virtual bool HasPendingUpdate => _updateManager != null && _pendingUpdate != null;
 
     [ExcludeFromCodeCoverage]
     protected virtual async Task<bool> CheckWithVelopackAsync()
     {
-        if (_updateManager == null)
+        if (_updateManager == null || !IsVelopackAvailable)
         {
 	        return false;
         }

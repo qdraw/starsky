@@ -30,6 +30,8 @@
             <MenuItem Header="_Help">
                 <MenuItem Header="_Documentation" Click="Documentation_Click"/>
                 <MenuItem Header="_Release Overview" Click="ReleaseOverview_Click"/>
+                <Separator x:Name="CheckForUpdatesSeparator"/>
+                <MenuItem x:Name="CheckForUpdatesMenuItem" Header="_Check for Updates…" Click="CheckForUpdates_Click"/>
             </MenuItem>
         </Menu>
 

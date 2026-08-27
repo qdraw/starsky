@@ -20,6 +20,14 @@
     <EmbeddedResource Remove="starsky.Tests\**\*" />
     <Page Remove="starsky.Tests\**\*" />
     <None Remove="starsky.Tests\**\*" />
+    <Compile Remove="dist\**" />
+    <EmbeddedResource Remove="dist\**" />
+    <Page Remove="dist\**" />
+    <None Remove="dist\**" />
+    <Compile Remove="dist-prod\**" />
+    <EmbeddedResource Remove="dist-prod\**" />
+    <Page Remove="dist-prod\**" />
+    <None Remove="dist-prod\**" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Remove="App.xaml" />
