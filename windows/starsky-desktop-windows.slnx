@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="Starsky.Desktop.csproj" />
+  <Project Path="starsky.Tests/starsky.Tests.csproj" />
+</Solution>

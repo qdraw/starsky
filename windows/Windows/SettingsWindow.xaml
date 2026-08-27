@@ -1,0 +1,71 @@
+<Window x:Class="Starsky.Desktop.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Starsky — Connection Settings"
+        Width="380" Height="480"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="SingleBorderWindow">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Mode -->
+        <TextBlock Grid.Row="0" Text="Runtime Mode" FontWeight="SemiBold" FontSize="13"/>
+
+        <RadioButton x:Name="LocalRadio"
+                     Grid.Row="2"
+                     Content="Local (bundled backend)"
+                     GroupName="Mode"
+                     Checked="LocalRadio_Checked"/>
+
+        <RadioButton x:Name="RemoteRadio"
+                     Grid.Row="4"
+                     Content="Remote (connect to server)"
+                     GroupName="Mode"
+                     Checked="RemoteRadio_Checked"/>
+
+        <!-- Remote URL -->
+        <TextBlock Grid.Row="6" Text="Server URL" FontWeight="SemiBold" FontSize="13"/>
+
+        <TextBox x:Name="UrlBox"
+                 Grid.Row="8"
+                 IsEnabled="False"
+                 FontSize="12"/>
+
+        <Button x:Name="SaveUrlButton"
+                Grid.Row="10"
+                Content="Save URL"
+                HorizontalAlignment="Left"
+                Width="80"
+                IsEnabled="False"
+                Click="SaveUrlButton_Click"/>
+
+        <TextBlock x:Name="FeedbackText"
+                   Grid.Row="12"
+                   FontSize="11"
+                   TextWrapping="Wrap"
+                   Foreground="#555"/>
+
+        <!-- Update checks -->
+        <CheckBox x:Name="UpdateCheckBox"
+                  Grid.Row="12"
+                  Content="Check for updates on startup"
+                  VerticalAlignment="Bottom"
+                  Checked="UpdateCheckBox_Changed"
+                  Unchecked="UpdateCheckBox_Changed"/>
+    </Grid>
+</Window>
