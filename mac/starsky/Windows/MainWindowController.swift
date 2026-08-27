@@ -81,7 +81,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
             """
             webView.evaluateJavaScript(js)
         } else {
-            var components = URLComponents(url: currentUrl, resolvingAgainstBaseURL: false)
+            let components = URLComponents(url: currentUrl, resolvingAgainstBaseURL: false)
             if let fParam = components?.queryItems?.first(where: { $0.name == "f" })?.value {
                 Task {
                     do {

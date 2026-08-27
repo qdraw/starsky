@@ -54,8 +54,12 @@ targets:
             RUNTIME_SRC="$SRCROOT/../starskydesktop/runtime-starsky-mac-${ARCH}"
             RUNTIME_DST="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}"
             if [ -d "$RUNTIME_SRC" ]; then
+              rm -rf "$RUNTIME_DST"
               mkdir -p "$RUNTIME_DST"
               cp -R "$RUNTIME_SRC/." "$RUNTIME_DST/"
+              find "$RUNTIME_DST" -type f | while read -r f; do
+                codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$f" 2>/dev/null || true
+              done
             else
               echo "warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work"
             fi
