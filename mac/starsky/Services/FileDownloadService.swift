@@ -60,7 +60,7 @@ class FileDownloadService {
         _ = try? FileManager.default.replaceItemAt(finalURL, withItemAt: tmpURL)
 
         if openFile {
-            await MainActor.run {
+            _ = await MainActor.run {
                 NSWorkspace.shared.open(finalURL)
             }
         }

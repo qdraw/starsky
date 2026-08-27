@@ -65,7 +65,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func startLocalMode() async {
-        splash?.setStatus("Finding free port…")
+        await MainActor.run { splash?.setStatus("Finding free port…") }
         let port = PortFinder.findFreePort()
         guard port > 0 else {
             await showErrorAndQuit("Could not find a free port to start the backend.")
@@ -74,7 +74,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         localPort = port
         windowManager.setLocalPort(port)
 
-        splash?.setStatus("Starting backend…")
+        await MainActor.run { splash?.setStatus("Starting backend…") }
         do {
             try backendService.start(port: port)
         } catch {
@@ -82,7 +82,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        splash?.setStatus("Waiting for backend…")
+        await MainActor.run { splash?.setStatus("Waiting for backend…") }
         let baseUrl = "http://localhost:\(port)"
         let ready = await waitForHealth(baseUrl: baseUrl, timeoutSeconds: 60)
         guard ready else {

@@ -36,14 +36,9 @@ class UpdateService {
 
         guard updaterController != nil else { return false }
 
-        return await withCheckedContinuation { continuation in
-            DispatchQueue.main.async { [weak self] in
-                guard let updater = self?.updaterController?.updater else {
-                    continuation.resume(returning: false)
-                    return
-                }
-                continuation.resume(returning: updater.canCheckForUpdates)
-            }
+        let controller = updaterController
+        return await MainActor.run {
+            controller?.updater.canCheckForUpdates ?? false
         }
     }
 
