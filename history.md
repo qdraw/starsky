@@ -40,10 +40,15 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.8.2 - _(Unreleased)_ - 2026-?-? {#v0.8.2}
+## version 0.8.3 - _(Unreleased)_ - 2026-?-? {#v0.8.3}
+
+- nothing yet
+
+## version 0.8.2 - 2026-08-27 {#v0.8.2}
 
 - [x] (Fixed) _Back-end_ In Dockerfile user and group to UID/GID 1000 (PR #3236)
-- [x] (Fixed) _Back-end_ Docker simplifying user and group management and standardizing file ownership (PR #3235)
+- [x] (Fixed) _Back-end_ Docker simplifying user and group management and standardizing file
+  ownership (PR #3235)
 
 ## version 0.8.1 - 2026-08-25 {#v0.8.1}
 
