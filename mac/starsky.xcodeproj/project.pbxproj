@@ -77,6 +77,7 @@
 		3A29613611956A9065F7D03E /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
 		3EBAFB55CED6C71FB0FE02FD /* SavedWindowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedWindowState.swift; sourceTree = "<group>"; };
 		3EE9757114B39C8796B7DDB8 /* UrlValidationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlValidationResult.swift; sourceTree = "<group>"; };
+		45FCF2620A00BA536D9BA601 /* starsky.debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = starsky.debug.entitlements; sourceTree = "<group>"; };
 		537CF0BCF79013734BC9F797 /* DailyFileLoggerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyFileLoggerTests.swift; sourceTree = "<group>"; };
 		554B5849A45556FFAA970085 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		638E6722EC6714AB1D74833D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -156,13 +157,6 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		1E244E08DF87B97A22CEC619 /* scripts */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = scripts;
-			sourceTree = "<group>";
-		};
 		3C7FFDB383093FBECF9207B1 /* FakeCreateAn */ = {
 			isa = PBXGroup;
 			children = (
@@ -184,12 +178,12 @@
 			isa = PBXGroup;
 			children = (
 				1595DFCCE586B6DD9B02AC5E /* Info.plist */,
+				45FCF2620A00BA536D9BA601 /* starsky.debug.entitlements */,
 				3241E30A98E45F4148C41D75 /* starsky.entitlements */,
 				554B5849A45556FFAA970085 /* WindowManager.swift */,
 				1915D70CA1807F72A55C01E1 /* App */,
 				1227CEE18FB6936E3AD98B88 /* Models */,
 				C9F9ADDD151F6CA985CEF39B /* Resources */,
-				1E244E08DF87B97A22CEC619 /* scripts */,
 				A969E4D303F9566A315133B5 /* Services */,
 				FA4E2D6E483B70C6071E8338 /* Windows */,
 			);
@@ -460,7 +454,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "arm64 x86_64";
+				ARCHS = (
+					arm64,
+					x86_64,
+				);
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -523,7 +520,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = starskyTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/Contents/MacOS/starsky";
@@ -536,7 +537,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = starskyTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/Contents/MacOS/starsky";
@@ -547,7 +552,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "arm64 x86_64";
+				ARCHS = (
+					arm64,
+					x86_64,
+				);
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -618,7 +626,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = starsky/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
 				PRODUCT_NAME = starsky;
 				SDKROOT = macosx;
@@ -629,12 +640,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = starsky/starsky.entitlements;
+				CODE_SIGN_ENTITLEMENTS = starsky/starsky.debug.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = starsky/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
 				PRODUCT_NAME = starsky;
 				SDKROOT = macosx;

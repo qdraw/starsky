@@ -48,6 +48,7 @@ targets:
         Debug:
           CODE_SIGN_IDENTITY: "-"
           DEVELOPMENT_TEAM: ""
+          CODE_SIGN_ENTITLEMENTS: starsky/starsky.debug.entitlements
     preBuildScripts:
       - script: |
           for ARCH in arm64 x64; do
