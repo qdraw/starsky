@@ -156,6 +156,7 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
 
         _isShuttingDown = true;
         try { _process?.Kill(); } catch { /* best-effort */ }
+        try { _process?.WaitForExit(5000); } catch { /* best-effort */ }
         _process?.Dispose();
     }
 
