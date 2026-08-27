@@ -132,7 +132,7 @@ public partial class MainWindow : Window
 
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
-        _routes.RemoveRoute(_windowIndex);
+        _routes.SaveRoute(_windowIndex, _currentRoute, GetCurrentGeometry());
     }
 
     private void MainWindow_KeyDown(object sender, KeyEventArgs e)
