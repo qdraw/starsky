@@ -21,7 +21,9 @@ class RemoteUrlValidator {
             return UrlValidationResult(success: false, error: "URL scheme must be http or https.")
         }
 
-        let healthURL = url.appendingPathComponent("/api/health")
+        guard let healthURL = URL(string: "/api/health", relativeTo: url)?.absoluteURL else {
+            return UrlValidationResult(success: false, error: "Could not construct health URL.")
+        }
         var request = URLRequest(url: healthURL, timeoutInterval: 10)
         request.httpMethod = "GET"
 

@@ -1,0 +1,155 @@
+name: SonarQube Desktop macOS Analyze
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+    branches:
+      - master
+    paths:
+      - 'mac/**'
+      - '.github/workflows/desktop-macos-sonarqube.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'mac/**'
+      - '.github/workflows/desktop-macos-sonarqube.yml'
+  schedule:
+    - cron: '36 0 * * 1,3,5'
+
+permissions:
+  contents: read
+
+env:
+  PR_NUMBER_GITHUB: ${{ github.event.pull_request.number }}
+
+jobs:
+  build:
+    name: Test and analyze
+    runs-on: macos-latest
+
+    env:
+      WEBSITE_SITE_NAME: "ci"
+
+    steps:
+      - name: 'Checkout repository on branch: ${{ github.REF }}'
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          ref: ${{ github.HEAD_REF }}
+
+      - name: Retrieve entire repository history
+        run: git fetch --prune --unshallow
+
+      - name: Use Java 21
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+          check-latest: true
+          java-package: jdk
+          architecture: x64
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: cd mac && xcodegen generate
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        with:
+          path: ~/.sonar
+          key: ${{ runner.os }}-build-desktop-macos-sonar
+          restore-keys: |
+            ${{ runner.os }}-build-desktop-macos-sonar
+
+      - name: Install sonar-scanner
+        run: brew install sonar-scanner
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Test with coverage
+        run: |
+          xcodebuild test \
+            -project mac/starsky.xcodeproj \
+            -scheme starskyTests \
+            -destination 'platform=macOS' \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults/macos.xcresult \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Convert coverage to SonarQube generic format
+        run: |
+          xcrun xccov view --report --json TestResults/macos.xcresult > TestResults/coverage.json
+          python3 - <<'EOF'
+          import json, sys
+
+          with open("TestResults/coverage.json") as f:
+              data = json.load(f)
+
+          lines = ['<coverage version="1">']
+          for target in data.get("targets", []):
+              for src_file in target.get("files", []):
+                  path = src_file.get("path", "")
+                  if not path or not path.endswith(".swift"):
+                      continue
+                  file_lines = []
+                  for fn in src_file.get("functions", []):
+                      for line_num, count in enumerate(fn.get("executionCounts", []), start=fn.get("lineNumber", 1)):
+                          covered = "true" if count > 0 else "false"
+                          file_lines.append(f'    <lineToCover lineNumber="{line_num}" covered="{covered}"/>')
+                  if file_lines:
+                      lines.append(f'  <file path="{path}">')
+                      lines.extend(file_lines)
+                      lines.append("  </file>")
+          lines.append("</coverage>")
+
+          with open("TestResults/sonarqube-coverage.xml", "w") as f:
+              f.write("\n".join(lines))
+          print(f"Wrote coverage for {sum(1 for l in lines if l.strip().startswith('<file'))} files")
+          EOF
+
+      - name: Run SonarQube analysis
+        env:
+          STARSKY_SONAR_KEY: "starsky-desktop-macos"
+          STARSKY_SONAR_TOKEN: ${{ secrets.STARSKY_SONAR_TOKEN }}
+          STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
+          STARSKY_SONAR_URL: ${{ vars.STARSKY_SONAR_URL }}
+        run: |
+          if [ -z "$STARSKY_SONAR_TOKEN" ] || [ -z "$STARSKY_SONAR_KEY" ]; then
+            echo "SonarQube secrets not fully configured, skipping analysis"
+            exit 0
+          fi
+          SONAR_URL="${STARSKY_SONAR_URL:-https://sonarcloud.io}"
+          SONAR_ARGS=""
+          if [ -n "$PR_NUMBER_GITHUB" ]; then
+            SONAR_ARGS="-Dsonar.pullrequest.key=$PR_NUMBER_GITHUB -Dsonar.pullrequest.branch=$GITHUB_HEAD_REF -Dsonar.pullrequest.base=$GITHUB_BASE_REF"
+          fi
+          sonar-scanner \
+            -Dsonar.projectKey="$STARSKY_SONAR_KEY" \
+            -Dsonar.organization="$STARSKY_SONAR_ORGANISATION" \
+            -Dsonar.token="$STARSKY_SONAR_TOKEN" \
+            -Dsonar.host.url="$SONAR_URL" \
+            -Dsonar.sources=mac \
+            -Dsonar.coverageReportPaths=TestResults/sonarqube-coverage.xml \
+            $SONAR_ARGS
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-macos-sonar
+          path: TestResults/

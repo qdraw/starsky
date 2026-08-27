@@ -47,7 +47,7 @@ getFiles(join(__dirname, prefixPath, "starsky"))
 		console.log(err);
 	});
 
-getFiles(join(__dirname, prefixPath, "starskydesktop"))
+getFiles(join(__dirname, prefixPath, "windows"))
 	.then(async (filePathList) => {
 		await updateVersions(filePathList);
 	})
@@ -64,6 +64,14 @@ getFiles(join(__dirname, prefixPath, "starsky-tools"))
 	});
 
 getFiles(join(__dirname, prefixPath, "documentation"))
+	.then(async (filePathList) => {
+		await updateVersions(filePathList);
+	})
+	.catch((err) => {
+		console.log(err);
+	});
+
+getFiles(join(__dirname, prefixPath, "mac"))
 	.then(async (filePathList) => {
 		await updateVersions(filePathList);
 	})
@@ -97,6 +105,29 @@ async function updateVersions(filePathList) {
 				fileContent = fileContent.replace(
 					versionXMLRegex,
 					`<Version>${newVersion}</Version>`
+				);
+				await writeFile(filePath, fileContent);
+				console.log(
+					`✓ ${filePath} - Version is updated to ${newVersion}`
+				);
+			}
+		} else if (filePath.match(new RegExp("Info\\.plist$", "i"))) {
+			let buffer = await readFile(filePath);
+			let fileContent = buffer.toString("utf8");
+			// matches: <key>CFBundleShortVersionString</key>\n\t<string>X.Y.Z</string>
+			const plistVersionRegex = new RegExp(
+				"(<key>CFBundleShortVersionString</key>\\s*<string>)([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(</string>)",
+				"g"
+			);
+			const filePlistMatch = fileContent.match(plistVersionRegex);
+			if (filePlistMatch == null) {
+				console.log(
+					"✖ " + filePath + " - CFBundleShortVersionString tag is not included"
+				);
+			} else {
+				fileContent = fileContent.replace(
+					plistVersionRegex,
+					`$1${newVersion}$6`
 				);
 				await writeFile(filePath, fileContent);
 				console.log(

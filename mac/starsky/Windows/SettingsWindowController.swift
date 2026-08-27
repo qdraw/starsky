@@ -1,6 +1,8 @@
 import AppKit
 
 class SettingsWindowController: NSWindowController {
+    var onSwitchToLocal: (() -> Void)?
+
     private var settingsService: SettingsService
     private var remoteUrlValidator: RemoteUrlValidator
     private var windowManager: WindowManager
@@ -127,7 +129,7 @@ class SettingsWindowController: NSWindowController {
         updateUrlFieldEnabled()
 
         if settings.mode == .local && wasRemote {
-            Task { @MainActor in windowManager.reopenAll() }
+            onSwitchToLocal?()
         }
     }
 
@@ -135,21 +137,27 @@ class SettingsWindowController: NSWindowController {
         let urlString = urlField.stringValue
         statusLabel.stringValue = "Validating…"
         statusLabel.textColor = .labelColor
+        saveUrlButton.isEnabled = false
 
-        Task { @MainActor in
-            let result = await remoteUrlValidator.validate(urlString: urlString)
-            if result.success {
-                var settings = settingsService.current
-                settings.remoteBaseUrl = urlString.hasSuffix("/")
-                    ? String(urlString.dropLast())
-                    : urlString
-                settingsService.save(settings)
-                statusLabel.stringValue = "Setting is saved"
-                statusLabel.textColor = NSColor.systemGreen
-                windowManager.reopenAll()
-            } else {
-                statusLabel.stringValue = result.error ?? "Validation failed."
-                statusLabel.textColor = NSColor.systemRed
+        let validator = remoteUrlValidator
+        Task.detached {
+            let result = await validator.validate(urlString: urlString)
+            await MainActor.run { [weak self] in
+                guard let self else { return }
+                self.saveUrlButton.isEnabled = true
+                if result.success {
+                    var settings = self.settingsService.current
+                    settings.remoteBaseUrl = urlString.hasSuffix("/")
+                        ? String(urlString.dropLast())
+                        : urlString
+                    self.settingsService.save(settings)
+                    self.statusLabel.stringValue = "Setting is saved"
+                    self.statusLabel.textColor = NSColor.systemGreen
+                    self.windowManager.reopenAll()
+                } else {
+                    self.statusLabel.stringValue = result.error ?? "Validation failed."
+                    self.statusLabel.textColor = NSColor.systemRed
+                }
             }
         }
     }

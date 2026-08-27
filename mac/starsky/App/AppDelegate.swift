@@ -16,6 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var windowManager: WindowManager!
 
     private var splash: SplashWindowController?
+    private var settingsWindowController: SettingsWindowController?
     private var localPort: Int = 0
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -164,7 +165,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.fileWatcherService?.stop()
             self.backendService?.stop()
             await MainActor.run {
-                NSApplication.shared.replyToApplicationShouldTerminate(true)
+                NSApplication.shared.reply(toApplicationShouldTerminate: true)
             }
         }
         return .terminateLater
@@ -272,13 +273,55 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func openSettings() {
-        let controller = SettingsWindowController(
-            settingsService: settingsService,
-            remoteUrlValidator: remoteUrlValidator,
-            windowManager: windowManager
-        )
-        controller.window?.center()
-        controller.showWindow(nil)
+        if settingsWindowController == nil {
+            settingsWindowController = SettingsWindowController(
+                settingsService: settingsService,
+                remoteUrlValidator: remoteUrlValidator,
+                windowManager: windowManager
+            )
+            settingsWindowController?.window?.center()
+            settingsWindowController?.onSwitchToLocal = { [weak self] in
+                Task { await self?.switchToLocalMode() }
+            }
+        }
+        settingsWindowController?.showWindow(nil)
+        settingsWindowController?.window?.makeKeyAndOrderFront(nil)
+    }
+
+    private func switchToLocalMode() async {
+        if backendService.isRunning {
+            await MainActor.run { windowManager.reopenAll() }
+            return
+        }
+        await MainActor.run {
+            splash = SplashWindowController()
+            splash?.showWindow(nil)
+            NSApp.activate(ignoringOtherApps: true)
+        }
+        let port = PortFinder.findFreePort()
+        guard port > 0 else {
+            await showErrorAndQuit("Could not find a free port to start the backend.")
+            return
+        }
+        localPort = port
+        windowManager.setLocalPort(port)
+        do {
+            try backendService.start(port: port)
+        } catch {
+            await showErrorAndQuit("Failed to start the backend: \(error.localizedDescription)")
+            return
+        }
+        await MainActor.run { splash?.setStatus("Waiting for backend…") }
+        let ready = await waitForHealth(baseUrl: "http://localhost:\(port)", timeoutSeconds: 60)
+        guard ready else {
+            await showErrorAndQuit("Backend did not start within 60 seconds.")
+            return
+        }
+        await MainActor.run {
+            windowManager.reopenAll()
+            splash?.close()
+            splash = nil
+        }
     }
 
     @objc private func openApplicationSettings() {

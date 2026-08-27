@@ -13,6 +13,8 @@ class BackendService {
         self.fileLogger = fileLogger
     }
 
+    var isRunning: Bool { process?.isRunning ?? false }
+
     func start(port: Int) throws {
         currentPort = port
         try launch(port: port)
