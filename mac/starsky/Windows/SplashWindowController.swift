@@ -6,7 +6,7 @@ class SplashWindowController: NSWindowController {
     convenience init() {
         let window = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 320, height: 180),
-            styleMask: [.borderless, .nonactivatingPanel],
+            styleMask: [.borderless],
             backing: .buffered,
             defer: false
         )

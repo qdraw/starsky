@@ -24,6 +24,7 @@ settings:
       OTHER_CODE_SIGN_FLAGS: "--options runtime"
     Debug:
       ENABLE_HARDENED_RUNTIME: NO
+      ONLY_ACTIVE_ARCH: YES
 
 targets:
   starsky:

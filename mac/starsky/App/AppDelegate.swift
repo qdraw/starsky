@@ -20,6 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var localPort: Int = 0
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        print("[app] applicationDidFinishLaunching")
         do {
             try ApplicationPaths.ensureDirectories()
         } catch {
@@ -49,6 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         splash = SplashWindowController()
         splash?.showWindow(nil)
+        NSApp.activate(ignoringOtherApps: true)
 
         Task {
             await startup()
@@ -65,8 +67,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func startLocalMode() async {
+        print("[startup] startLocalMode begin")
         await MainActor.run { splash?.setStatus("Finding free port…") }
         let port = PortFinder.findFreePort()
+        print("[startup] port=\(port)")
         guard port > 0 else {
             await showErrorAndQuit("Could not find a free port to start the backend.")
             return
@@ -75,21 +79,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         windowManager.setLocalPort(port)
 
         await MainActor.run { splash?.setStatus("Starting backend…") }
+        print("[startup] launching backend")
         do {
             try backendService.start(port: port)
+            print("[startup] backend launched")
         } catch {
+            print("[startup] backend launch error: \(error)")
             await showErrorAndQuit("Failed to start the backend: \(error.localizedDescription)")
             return
         }
 
         await MainActor.run { splash?.setStatus("Waiting for backend…") }
         let baseUrl = "http://localhost:\(port)"
+        print("[startup] waiting for health at \(baseUrl)")
         let ready = await waitForHealth(baseUrl: baseUrl, timeoutSeconds: 60)
+        print("[startup] health ready=\(ready)")
         guard ready else {
             await showErrorAndQuit("Backend did not start within 60 seconds.")
             return
         }
 
+        print("[startup] finishStartup")
         await finishStartup()
     }
 
@@ -108,6 +118,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             windowManager.restoreWindows()
             splash?.close()
             splash = nil
+            NSApp.activate(ignoringOtherApps: true)
         }
 
         try? await Task.sleep(nanoseconds: 5_000_000_000)
