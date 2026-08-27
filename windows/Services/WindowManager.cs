@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using Microsoft.Extensions.Logging;
 using Starsky.Desktop.Models;
@@ -5,6 +6,9 @@ using Starsky.Desktop.Windows;
 
 namespace Starsky.Desktop.Services;
 
+[SuppressMessage("Sonar",
+	"S107: Methods should not have too many parameters",
+	Justification = "Needed")]
 public class WindowManager(
 	SettingsService settings,
 	RoutePersistenceService routes,
