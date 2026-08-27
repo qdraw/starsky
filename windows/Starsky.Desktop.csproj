@@ -54,6 +54,7 @@
     <RuntimeSourceDir Condition="!Exists('$(_RuntimeSourceBuild)') AND Exists('$(_RuntimeSourceElectron)')">$(_RuntimeSourceElectron)</RuntimeSourceDir>
   </PropertyGroup>
 
+  <!-- Copy runtime to the build output (used when running from the IDE / F5) -->
   <Target Name="CopyStarskyRuntime" AfterTargets="Build" Condition="'$(RuntimeSourceDir)' != ''">
     <Message Text="Copying Starsky runtime from $(RuntimeSourceDir) to $(OutDir)runtime-starsky-win-x64\" Importance="high" />
     <ItemGroup>
@@ -61,6 +62,17 @@
     </ItemGroup>
     <Copy SourceFiles="@(_RuntimeFiles)"
           DestinationFiles="@(_RuntimeFiles->'$(OutDir)runtime-starsky-win-x64\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Copy runtime to the publish output (used by dotnet publish / Velopack pack) -->
+  <Target Name="CopyStarskyRuntimeToPublish" AfterTargets="Publish" Condition="'$(RuntimeSourceDir)' != ''">
+    <Message Text="Copying Starsky runtime from $(RuntimeSourceDir) to $(PublishDir)runtime-starsky-win-x64\" Importance="high" />
+    <ItemGroup>
+      <_RuntimeFilesPublish Include="$(RuntimeSourceDir)\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_RuntimeFilesPublish)"
+          DestinationFiles="@(_RuntimeFilesPublish->'$(PublishDir)runtime-starsky-win-x64\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true" />
   </Target>
 

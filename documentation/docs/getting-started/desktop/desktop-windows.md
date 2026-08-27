@@ -45,10 +45,21 @@ The Windows app supports two modes, switchable in Settings:
 
 The app checks for updates on startup and will prompt you when a new version is available. You can postpone the update; the check is suppressed for 4 days after dismissing a prompt. Update checking can be disabled in Settings.
 
+## Advanced: custom installation directory
+
+By default the installer places the application in `%LocalAppData%\Starsky.Desktop`. To install to a different location, run the setup from the command line with the `--installto` flag:
+
+```powershell
+starsky-win-x64-desktop.exe --installto "D:\Apps\Starsky"
+```
+
+The directory will be created if it does not exist. All Velopack update mechanics (auto-update, uninstall) continue to work from the custom location.
+
 ## Data locations
 
 | Purpose | Path |
 |---|---|
+| Application binaries | `%LocalAppData%\Starsky.Desktop\current\` (default) |
 | Settings | `%AppData%\starsky\settings.json` |
 | Logs | `%AppData%\starsky\logs\` |
 | Database (local mode) | `%AppData%\starsky\starsky.db` |

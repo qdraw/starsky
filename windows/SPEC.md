@@ -388,6 +388,23 @@ public enum RuntimeMode { Local = 0, Remote = 1 }
 
 ## 8. File System Layout
 
+### Velopack install tree (default)
+
+| Path | Purpose |
+|---|---|
+| `%LocalAppData%\Starsky.Desktop\` | Velopack root — created by the installer |
+| `%LocalAppData%\Starsky.Desktop\Starsky.Desktop.exe` | Velopack execution stub (launches `current\Starsky.Desktop.exe`) |
+| `%LocalAppData%\Starsky.Desktop\current\` | Active version — all application files including `runtime-starsky-win-x64\` |
+| `%LocalAppData%\Starsky.Desktop\packages\` | Velopack nupkg cache used by the update mechanism |
+
+The installer defaults to `%LocalAppData%\Starsky.Desktop`. To install to a custom location, pass `--installto` on the command line:
+
+```powershell
+starsky-win-x64-desktop.exe --installto "D:\Apps\Starsky"
+```
+
+### Application data (all paths are fixed regardless of install location)
+
 | Path | Purpose |
 |---|---|
 | `%AppData%\starsky\settings.json` | Desktop app settings |
