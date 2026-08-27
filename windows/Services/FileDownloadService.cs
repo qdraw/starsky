@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
@@ -8,6 +9,9 @@ public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient
 {
     private readonly HttpClient _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
 
+    [SuppressMessage("Sonar",
+	    "S6667: Logging in a catch clause should pass the caught exception as a parameter.",
+	    Justification = "Not needed there")]
     public async Task DownloadAndOpenAsync(
         string starskyPath, string baseUrl, bool openFile = true, string? cookieHeader = null)
     {

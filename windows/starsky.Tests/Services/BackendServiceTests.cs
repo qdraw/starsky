@@ -233,6 +233,7 @@ public class BackendServiceTests
             var svc = new BackendService(NullLogger<BackendService>.Instance);
             await svc.StartAsync(19999);
             await svc.StopAsync();
+            Assert.NotNull(svc);
             svc.Dispose();
         }
         finally
