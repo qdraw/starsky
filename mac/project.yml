@@ -15,16 +15,16 @@ settings:
   base:
     SWIFT_VERSION: "5.10"
     MACOSX_DEPLOYMENT_TARGET: "13.0"
-    ARCHS: "arm64 x86_64"
-    ONLY_ACTIVE_ARCH: NO
     SWIFT_STRICT_CONCURRENCY: minimal
   configs:
     Release:
+      ARCHS: "arm64 x86_64"
+      ONLY_ACTIVE_ARCH: NO
       ENABLE_HARDENED_RUNTIME: YES
       OTHER_CODE_SIGN_FLAGS: "--options runtime"
     Debug:
-      ENABLE_HARDENED_RUNTIME: NO
       ONLY_ACTIVE_ARCH: YES
+      ENABLE_HARDENED_RUNTIME: NO
 
 targets:
   starsky:
@@ -67,7 +67,13 @@ targets:
             fi
           done
         name: Copy Starsky Runtime
-        basedOnDependencyAnalysis: false
+        basedOnDependencyAnalysis: true
+        inputFiles:
+          - $(SRCROOT)/../starsky/osx-arm64
+          - $(SRCROOT)/../starsky/osx-x64
+        outputFiles:
+          - $(BUILT_PRODUCTS_DIR)/$(PRODUCT_NAME).app/Contents/MacOS/runtime-starsky-osx-arm64
+          - $(BUILT_PRODUCTS_DIR)/$(PRODUCT_NAME).app/Contents/MacOS/runtime-starsky-osx-x64
 
   starskyTests:
     type: bundle.unit-test
