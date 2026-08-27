@@ -183,7 +183,7 @@ jobs:
           path: ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg 
  
   build_win:
-    name: Build Windows Desktop app
+    name: Build Windows Desktop app (WPF + Velopack)
     runs-on: windows-latest
     needs: [build_net]
     permissions:
@@ -198,39 +198,72 @@ jobs:
           name: win-x64
           path: ./starsky
 
-      - name: Unzip Windows bundle
-        shell: bash
+      - name: Unzip Windows backend bundle
+        shell: pwsh
         working-directory: ./starsky
-        run: unzip starsky-win-x64.zip -d win-x64
+        run: Expand-Archive starsky-win-x64.zip -DestinationPath win-x64
 
-      - name: List
-        shell: bash
-        working-directory: ./starsky
-        run: ls -lah
-
-      - name: fix release version (release-version-check)
-        shell: bash
-        working-directory: ./starsky-tools/build-tools
-        run: npm run release-version-check
-
-      - name: Use node version
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2
         with:
-          node-version: '22.x'
+          dotnet-version: 10.0.400
 
-      - name: NpmCi
-        working-directory: ./starskydesktop
-        run: npm ci
+      - name: Install Velopack CLI
+        run: dotnet tool install -g vpk --version 1.2.0
 
-      - name: NpmDist
-        working-directory: ./starskydesktop
-        run: npm run windows
-     
+      - name: Get version
+        id: get_version
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF -match 'refs/tags/v(.+)') {
+            $version = $Matches[1]
+          } else {
+            [xml]$proj = Get-Content windows/Starsky.Desktop.csproj
+            $version = ($proj.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+          }
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Building version: $version"
+
+      - name: Publish WPF app
+        shell: pwsh
+        run: |
+          dotnet publish windows/Starsky.Desktop.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -o ./publish-win
+
+      - name: Pack with Velopack
+        shell: pwsh
+        run: |
+          vpk pack `
+            --packId Starsky.Desktop `
+            --packVersion ${{ steps.get_version.outputs.VERSION }} `
+            --packDir ./publish-win `
+            --mainExe Starsky.Desktop.exe `
+            --outputDir ./velopack-releases `
+            --packTitle "Starsky Desktop" `
+            --icon windows/Resources/starsky.ico
+
+      - name: Rename setup to starsky-win-x64-desktop.exe
+        shell: pwsh
+        run: |
+          $setup = Get-Item ./velopack-releases/*-Setup.exe
+          Move-Item $setup.FullName ./velopack-releases/starsky-win-x64-desktop.exe
+
       - name: Upload starsky-win-x64-desktop as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: starsky-win-x64-desktop
-          path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
+          path: ./velopack-releases/starsky-win-x64-desktop.exe
+
+      - name: Upload Velopack feed as build artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: starsky-win-x64-velopack-feed
+          path: |
+            ./velopack-releases/*.nupkg
+            ./velopack-releases/RELEASES*
  
   create_release:
     name: Create Release
@@ -251,7 +284,13 @@ jobs:
         with:
           name: starsky-win-x64-desktop
           path: ./starskydesktop/dist-prod
- 
+
+      - name: Download starsky-win-x64-velopack-feed as build artifact
+        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        with:
+          name: starsky-win-x64-velopack-feed
+          path: ./starskydesktop/dist-prod
+
       - name: Download starsky-mac-x64-desktop as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
@@ -319,6 +358,7 @@ jobs:
             ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg
             ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg
             ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
+            ./starskydesktop/dist-prod/*.nupkg
             ./starsky/starsky-linux-arm.zip
             ./starsky/starsky-linux-arm64.zip
             ./starsky/starsky-osx-x64.zip

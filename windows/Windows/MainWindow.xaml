@@ -1,0 +1,41 @@
+<Window x:Class="Starsky.Desktop.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="Starsky"
+        Width="1200" Height="800"
+        WindowStartupLocation="Manual">
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding NewWindowCommand}"/>
+        <KeyBinding Key="R" Modifiers="Ctrl+Shift" Command="{Binding ReloadAllCommand}"/>
+        <KeyBinding Key="F5" Command="{Binding ReloadAllCommand}"/>
+    </Window.InputBindings>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New Window" InputGestureText="Ctrl+N" Click="NewWindow_Click"/>
+                <MenuItem Header="_Reload All" InputGestureText="Ctrl+Shift+R" Click="ReloadAll_Click"/>
+                <Separator/>
+                <MenuItem Header="_Edit File in Editor" InputGestureText="Ctrl+E" Click="EditFile_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Settings">
+                <MenuItem Header="_Connection Settings…" Click="ConnectionSettings_Click"/>
+                <MenuItem Header="_Application Settings" InputGestureText="Ctrl+Shift+K" Click="AppSettings_Click"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="_Developer Tools" InputGestureText="F12" Click="DevTools_Click"/>
+                <MenuItem Header="_Open in Browser" Click="OpenInBrowser_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_Documentation" Click="Documentation_Click"/>
+                <MenuItem Header="_Release Overview" Click="ReleaseOverview_Click"/>
+                <Separator x:Name="CheckForUpdatesSeparator"/>
+                <MenuItem x:Name="CheckForUpdatesMenuItem" Header="_Check for Updates…" Click="CheckForUpdates_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <wv2:WebView2 x:Name="WebView"
+                      DockPanel.Dock="Bottom"/>
+    </DockPanel>
+</Window>

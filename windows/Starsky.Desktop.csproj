@@ -1,0 +1,90 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Starsky.Desktop</AssemblyName>
+    <RootNamespace>Starsky.Desktop</RootNamespace>
+    <Version>0.8.1</Version>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>Resources\starsky.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <StartupObject>Starsky.Desktop.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="starsky.Tests\**\*" />
+    <EmbeddedResource Remove="starsky.Tests\**\*" />
+    <Page Remove="starsky.Tests\**\*" />
+    <None Remove="starsky.Tests\**\*" />
+    <Compile Remove="dist\**" />
+    <EmbeddedResource Remove="dist\**" />
+    <Page Remove="dist\**" />
+    <None Remove="dist\**" />
+    <Compile Remove="dist-prod\**" />
+    <EmbeddedResource Remove="dist-prod\**" />
+    <Page Remove="dist-prod\**" />
+    <None Remove="dist-prod\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4129.50" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.0" />
+    <PackageReference Include="Velopack" Version="1.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\starsky.ico" />
+  </ItemGroup>
+
+  <!--
+    Copy the Starsky backend runtime to the output directory so the app can
+    start it in Local mode.
+
+    Source priority:
+      1. $(RepoRoot)\starsky\win-x64\   — produced by build.ps1 -runtime win-x64
+      2. $(RepoRoot)\starskydesktop\runtime-starsky-win-x64\  — staged by Electron before-build
+
+    Run `pwsh build.ps1 -runtime win-x64 -no-unit-tests` from the repo root
+    to produce the runtime if neither location exists.
+  -->
+  <PropertyGroup>
+    <RepoRoot>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), 'build.ps1'))</RepoRoot>
+    <_RuntimeSourceBuild>$(RepoRoot)\starsky\win-x64</_RuntimeSourceBuild>
+    <_RuntimeSourceElectron>$(RepoRoot)\starskydesktop\runtime-starsky-win-x64</_RuntimeSourceElectron>
+    <RuntimeSourceDir Condition="Exists('$(_RuntimeSourceBuild)')">$(_RuntimeSourceBuild)</RuntimeSourceDir>
+    <RuntimeSourceDir Condition="!Exists('$(_RuntimeSourceBuild)') AND Exists('$(_RuntimeSourceElectron)')">$(_RuntimeSourceElectron)</RuntimeSourceDir>
+  </PropertyGroup>
+
+  <!-- Copy runtime to the build output (used when running from the IDE / F5) -->
+  <Target Name="CopyStarskyRuntime" AfterTargets="Build" Condition="'$(RuntimeSourceDir)' != ''">
+    <Message Text="Copying Starsky runtime from $(RuntimeSourceDir) to $(OutDir)runtime-starsky-win-x64\" Importance="high" />
+    <ItemGroup>
+      <_RuntimeFiles Include="$(RuntimeSourceDir)\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_RuntimeFiles)"
+          DestinationFiles="@(_RuntimeFiles->'$(OutDir)runtime-starsky-win-x64\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Copy runtime to the publish output (used by dotnet publish / Velopack pack) -->
+  <Target Name="CopyStarskyRuntimeToPublish" AfterTargets="Publish" Condition="'$(RuntimeSourceDir)' != ''">
+    <Message Text="Copying Starsky runtime from $(RuntimeSourceDir) to $(PublishDir)runtime-starsky-win-x64\" Importance="high" />
+    <ItemGroup>
+      <_RuntimeFilesPublish Include="$(RuntimeSourceDir)\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_RuntimeFilesPublish)"
+          DestinationFiles="@(_RuntimeFilesPublish->'$(PublishDir)runtime-starsky-win-x64\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="WarnMissingRuntime" AfterTargets="Build" Condition="'$(RuntimeSourceDir)' == ''">
+    <Warning Text="Starsky runtime not found. Run 'pwsh build.ps1 -runtime win-x64 -no-unit-tests' from the repo root to build it, then rebuild this project. Local mode will not work until the runtime is present." />
+  </Target>
+</Project>
