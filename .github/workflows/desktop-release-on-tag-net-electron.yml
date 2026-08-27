@@ -1,4 +1,4 @@
-name: Desktop Release on tag (.NET & Electron)
+name: Desktop Release on tag (.NET, Swift & WPF)
 permissions:
   contents: read
 
@@ -8,6 +8,7 @@ on:
     paths:
     - '.github/workflows/desktop-release-on-tag-net-electron.yml'
     - 'starsky-tools/build-tools/app-version-update.js'
+    - 'mac/**'
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   schedule:
@@ -79,8 +80,8 @@ jobs:
           name: starsky-tools-slack-notification
           path: ./starsky-tools/slack-notification
 
-  build_mac_x64:
-    name: Build Mac Desktop app (x64)
+  build_mac_native:
+    name: Build Mac Desktop app (native Swift, universal)
     runs-on: macos-latest
     permissions:
       contents: read
@@ -95,48 +96,86 @@ jobs:
           name: osx-x64
           path: ./starsky
 
-      - name: Unzip Mac OS bundle (osx-x64)
+      - name: Download osx-arm64 as build artifact
+        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        with:
+          name: osx-arm64
+          path: ./starsky
+
+      - name: Unzip osx-x64 backend
         shell: bash
         working-directory: ./starsky
         run: unzip starsky-osx-x64.zip -d osx-x64
 
-      - name: Restore rights pm2-restore-x-rights.sh (osx-x64)
-        shell: bash
-        working-directory: ./starsky/osx-x64
-        run: chmod 777 pm2-restore-x-rights.sh 
-
-      - name: run pm2-restore-x-rights.sh (osx-x64)
-        shell: bash
-        working-directory: ./starsky/osx-x64
-        run: bash pm2-restore-x-rights.sh 
-
-      - name: List
+      - name: Unzip osx-arm64 backend
         shell: bash
         working-directory: ./starsky
-        run: ls -lah 
+        run: unzip starsky-osx-arm64.zip -d osx-arm64
 
-      - name: fix release version (release-version-check)
-        shell: bash
-        working-directory: ./starsky-tools/build-tools
-        run: npm run release-version-check
+      - name: Install tools
+        run: brew install xcodegen create-dmg
 
-      - name: NpmCi
-        working-directory: ./starskydesktop
-        run: npm ci
+      - name: Generate Xcode project
+        run: cd mac && xcodegen generate
 
-      - name: NpmDist
-        working-directory: ./starskydesktop
-        run: npm run macx64
-   
-      - name: Upload starsky-mac-x64-desktop as build artifact
+      - name: Archive (universal)
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcodebuild archive \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Release \
+            -archivePath build/starsky.xcarchive \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            ARCHS="arm64 x86_64"
+
+      - name: Export
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/starsky.xcarchive \
+            -exportPath build/ \
+            -exportOptionsPlist mac/ExportOptions.plist
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "Starsky" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "starsky.app" 175 190 \
+            --app-drop-link 425 190 \
+            build/starsky-mac-universal-desktop.dmg \
+            "build/starsky.app"
+
+      - name: Notarize
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          NOTARYTOOL_PASSWORD: ${{ secrets.NOTARYTOOL_APP_PASSWORD }}
+        run: |
+          xcrun notarytool submit build/starsky-mac-universal-desktop.dmg \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$NOTARYTOOL_PASSWORD" \
+            --wait
+
+      - name: Staple
+        run: xcrun stapler staple build/starsky-mac-universal-desktop.dmg
+
+      - name: Upload starsky-mac-universal-desktop as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: starsky-mac-x64-desktop
-          path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg 
+          name: starsky-mac-universal-desktop
+          path: build/starsky-mac-universal-desktop.dmg
 
   build_mac_arm64:
-    name: Build Mac Desktop app (arm64)
+    name: Build Mac Desktop app (native Swift, arm64)
     runs-on: macos-latest
+    permissions:
+      contents: read
     needs: [build_net]
     steps:
       - name: Checkout code
@@ -148,40 +187,152 @@ jobs:
           name: osx-arm64
           path: ./starsky
 
-      - name: Unzip Mac OS bundle (osx-arm64)
+      - name: Unzip osx-arm64 backend
         shell: bash
         working-directory: ./starsky
         run: unzip starsky-osx-arm64.zip -d osx-arm64
 
-      - name: Restore rights pm2-restore-x-rights.sh (osx-arm64)
-        shell: bash
-        working-directory: ./starsky/osx-arm64
-        run: chmod 777 pm2-restore-x-rights.sh 
+      - name: Install tools
+        run: brew install xcodegen create-dmg
 
-      - name: run pm2-restore-x-rights.sh (osx-arm64)
-        shell: bash
-        working-directory: ./starsky/osx-arm64
-        run: bash pm2-restore-x-rights.sh 
+      - name: Generate Xcode project
+        run: cd mac && xcodegen generate
 
-      - name: fix release version (release-version-check)
-        shell: bash
-        working-directory: ./starsky-tools/build-tools
-        run: npm run release-version-check
+      - name: Archive (arm64)
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcodebuild archive \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Release \
+            -archivePath build/starsky.xcarchive \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            ARCHS="arm64" \
+            ONLY_ACTIVE_ARCH=NO
 
-      - name: NpmCi
-        working-directory: ./starskydesktop
-        run: npm ci
+      - name: Export
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/starsky.xcarchive \
+            -exportPath build/ \
+            -exportOptionsPlist mac/ExportOptions.plist
 
-      - name: NpmDist
-        working-directory: ./starskydesktop
-        run: npm run macarm64
-   
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "Starsky" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "starsky.app" 175 190 \
+            --app-drop-link 425 190 \
+            build/starsky-mac-arm64-desktop.dmg \
+            "build/starsky.app"
+
+      - name: Notarize
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          NOTARYTOOL_PASSWORD: ${{ secrets.NOTARYTOOL_APP_PASSWORD }}
+        run: |
+          xcrun notarytool submit build/starsky-mac-arm64-desktop.dmg \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$NOTARYTOOL_PASSWORD" \
+            --wait
+
+      - name: Staple
+        run: xcrun stapler staple build/starsky-mac-arm64-desktop.dmg
+
       - name: Upload starsky-mac-arm64-desktop as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: starsky-mac-arm64-desktop
-          path: ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg 
- 
+          path: build/starsky-mac-arm64-desktop.dmg
+
+  build_mac_x64:
+    name: Build Mac Desktop app (native Swift, x64)
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    needs: [build_net]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Download osx-x64 as build artifact
+        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        with:
+          name: osx-x64
+          path: ./starsky
+
+      - name: Unzip osx-x64 backend
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx-x64.zip -d osx-x64
+
+      - name: Install tools
+        run: brew install xcodegen create-dmg
+
+      - name: Generate Xcode project
+        run: cd mac && xcodegen generate
+
+      - name: Archive (x64)
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcodebuild archive \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Release \
+            -archivePath build/starsky.xcarchive \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            ARCHS="x86_64" \
+            ONLY_ACTIVE_ARCH=NO
+
+      - name: Export
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/starsky.xcarchive \
+            -exportPath build/ \
+            -exportOptionsPlist mac/ExportOptions.plist
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "Starsky" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "starsky.app" 175 190 \
+            --app-drop-link 425 190 \
+            build/starsky-mac-x64-desktop.dmg \
+            "build/starsky.app"
+
+      - name: Notarize
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          NOTARYTOOL_PASSWORD: ${{ secrets.NOTARYTOOL_APP_PASSWORD }}
+        run: |
+          xcrun notarytool submit build/starsky-mac-x64-desktop.dmg \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$NOTARYTOOL_PASSWORD" \
+            --wait
+
+      - name: Staple
+        run: xcrun stapler staple build/starsky-mac-x64-desktop.dmg
+
+      - name: Upload starsky-mac-x64-desktop as build artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: starsky-mac-x64-desktop
+          path: build/starsky-mac-x64-desktop.dmg
+
   build_win:
     name: Build Windows Desktop app (WPF + Velopack)
     runs-on: windows-latest
@@ -267,7 +418,7 @@ jobs:
  
   create_release:
     name: Create Release
-    needs: [build_net, build_mac_x64, build_mac_arm64, build_win]
+    needs: [build_net, build_mac_native, build_mac_arm64, build_mac_x64, build_win]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -291,16 +442,22 @@ jobs:
           name: starsky-win-x64-velopack-feed
           path: ./starskydesktop/dist-prod
 
-      - name: Download starsky-mac-x64-desktop as build artifact
+      - name: Download starsky-mac-universal-desktop as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
-          name: starsky-mac-x64-desktop
+          name: starsky-mac-universal-desktop
           path: ./starskydesktop/dist-prod
 
       - name: Download starsky-mac-arm64-desktop as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
           name: starsky-mac-arm64-desktop
+          path: ./starskydesktop/dist-prod
+
+      - name: Download starsky-mac-x64-desktop as build artifact
+        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        with:
+          name: starsky-mac-x64-desktop
           path: ./starskydesktop/dist-prod
  
       - name: Download linux-arm as build artifact
@@ -355,8 +512,9 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           files: |
-            ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg
+            ./starskydesktop/dist-prod/starsky-mac-universal-desktop.dmg
             ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg
+            ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg
             ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
             ./starskydesktop/dist-prod/*.nupkg
             ./starsky/starsky-linux-arm.zip
@@ -370,8 +528,9 @@ jobs:
           body: |
             ## Desktop app versions:
             _When you are not sure pick the Desktop App_
+            - starsky-mac-universal-desktop.dmg - __Starsky Desktop App for Mac OS *13.0* or newer (Intel & Apple Silicon, recommended)__
+            - starsky-mac-arm64-desktop.dmg - __Starsky Desktop App for Apple Silicon, Mac OS *13.0* or newer__
             - starsky-mac-x64-desktop.dmg - __Starsky Desktop App for Intel, Mac OS *13.0* or newer__
-            - starsky-mac-arm64-desktop.dmg - __Starsky Desktop App for Apple silicon, Mac OS *13.0* or newer__            
             - starsky-win-x64-desktop.exe - __Starsky Desktop App for Windows 10 1809+ or Windows 11 (21H2) 22000+ (Intel 64 bits)__
 
             ## Server versions:
@@ -431,8 +590,7 @@ jobs:
   trigger_pipe:
     runs-on: ubuntu-latest
     if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-    needs: [build_net, build_mac_x64, build_win, build_mac_arm64] 
-    # build_mac_arm64 is not used for end2end tests, but it needs to be done
+    needs: [build_net, build_mac_native, build_mac_arm64, build_mac_x64, build_win]
     steps:
       - name: trigger end2end-ubuntu-ci.yml
         shell: bash

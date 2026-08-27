@@ -156,10 +156,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    func applicationWillTerminate(_ notification: Notification) {
-        fileWatcherService?.stop()
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        // Close windows immediately so the UI disappears before the blocking backend shutdown
         windowManager?.closeAll()
-        backendService?.stop()
+
+        Task.detached {
+            self.fileWatcherService?.stop()
+            self.backendService?.stop()
+            await MainActor.run {
+                NSApplication.shared.replyToApplicationShouldTerminate(true)
+            }
+        }
+        return .terminateLater
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        // Intentionally empty — cleanup is done in applicationShouldTerminate
     }
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {

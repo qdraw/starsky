@@ -112,7 +112,7 @@ class SettingsWindowController: NSWindowController {
     }
 
     private func updateUrlFieldEnabled() {
-        let isRemote = remoteRadio.state == .on
+        let isRemote = settingsService.current.mode == .remote
         urlField.isEnabled = isRemote
         saveUrlButton.isEnabled = isRemote
     }
@@ -121,6 +121,8 @@ class SettingsWindowController: NSWindowController {
         var settings = settingsService.current
         let wasRemote = settings.mode == .remote
         settings.mode = sender.tag == 0 ? .local : .remote
+        localRadio.state = settings.mode == .local ? .on : .off
+        remoteRadio.state = settings.mode == .remote ? .on : .off
         settingsService.save(settings)
         updateUrlFieldEnabled()
 

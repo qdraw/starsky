@@ -31,6 +31,17 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         config.applicationNameForUserAgent = ApplicationInfo.userAgentSuffix
         config.preferences.setValue(true, forKey: "developerExtrasEnabled")
 
+        let middleClickScript = WKUserScript(source: """
+            document.addEventListener('auxclick', function(e) {
+                if (e.button !== 1) return;
+                var a = e.target.closest('a[href]');
+                if (!a) return;
+                e.preventDefault();
+                window.open(a.href, '_blank');
+            }, true);
+            """, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
+        config.userContentController.addUserScript(middleClickScript)
+
         webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = self
         webView.uiDelegate = self
@@ -107,9 +118,10 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     }
 
     @objc func openDevTools() {
-        webView.evaluateJavaScript("__inspectorIndicateWebView__()")
-        if let wv = webView.value(forKey: "_inspector") as? NSObject {
-            wv.performSelector(onMainThread: Selector(("show")), with: nil, waitUntilDone: false)
+        guard let inspector = webView.value(forKey: "_inspector") as? NSObject else { return }
+        inspector.perform(Selector(("show")))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            inspector.perform(Selector(("detach")))
         }
     }
 
@@ -183,6 +195,10 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     }
 
     // MARK: - NSWindowDelegate
+
+    func windowDidBecomeKey(_ notification: Notification) {
+        window?.makeFirstResponder(webView)
+    }
 
     func windowWillClose(_ notification: Notification) {
         options.routePersistenceService.removeRoute(index: options.index)
