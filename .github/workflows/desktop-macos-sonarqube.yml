@@ -1,4 +1,4 @@
-name: SonarQube Desktop macOS Analyze
+name: Desktop macOS Sonarqube Analyze
 
 on:
   workflow_dispatch:
