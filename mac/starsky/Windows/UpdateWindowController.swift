@@ -19,7 +19,7 @@ class UpdateWindowController: NSWindowController {
         setupContent()
     }
 
-    required init?(coder: NSCoder) { fatalError("init(coder:) not supported") }
+    required init?(coder _: NSCoder) { fatalError("init(coder:) not supported") }
 
     private func setupContent() {
         guard let contentView = window?.contentView else { return }

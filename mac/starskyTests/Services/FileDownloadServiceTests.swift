@@ -2,6 +2,8 @@ import XCTest
 @testable import starsky
 
 final class FileDownloadServiceTests: XCTestCase {
+    private let localBaseUrl = "http://localhost:5000"
+    private let remoteBaseUrl = "http://remote.example.com"
     private var tempDir: URL!
 
     override func setUp() {
@@ -18,7 +20,7 @@ final class FileDownloadServiceTests: XCTestCase {
     }
 
     func testHappyPathWritesFileToDisk() async throws {
-        let baseUrl = "http://localhost:5000"
+        let baseUrl = localBaseUrl
         let path = "/photos/test.jpg"
         let imageData = "fake-jpeg-bytes".data(using: .utf8)!
 
@@ -40,7 +42,7 @@ final class FileDownloadServiceTests: XCTestCase {
     }
 
     func testSidecarFailureStillDownloadsMainFile() async throws {
-        let baseUrl = "http://localhost:5000"
+        let baseUrl = localBaseUrl
         let path = "/photos/test.jpg"
         let imageData = "fake-jpeg".data(using: .utf8)!
 
@@ -59,7 +61,7 @@ final class FileDownloadServiceTests: XCTestCase {
     }
 
     func testCookiesAreForwardedAsHeader() async throws {
-        let baseUrl = "http://remote.example.com"
+        let baseUrl = remoteBaseUrl
         let path = "/photos/test.jpg"
         let imageData = "data".data(using: .utf8)!
 
@@ -84,7 +86,7 @@ final class FileDownloadServiceTests: XCTestCase {
     }
 
     func testPhotoHttpErrorThrows() async {
-        let baseUrl = "http://localhost:5000"
+        let baseUrl = localBaseUrl
         let path = "/photos/missing.jpg"
 
         FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Fmissing.jpg")!, data: Data())

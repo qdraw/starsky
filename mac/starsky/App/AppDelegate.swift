@@ -19,10 +19,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsWindowController: SettingsWindowController?
     private var localPort: Int = 0
 
-    func applicationDidFinishLaunching(_ notification: Notification) {
+    func applicationDidFinishLaunching(_: Notification) {
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
         NSLog("[app] applicationDidFinishLaunching")
-        try? "[app] start".write(to: URL(fileURLWithPath: "/tmp/starsky-trace.txt"), atomically: false, encoding: .utf8)
         do {
             try ApplicationPaths.ensureDirectories()
         } catch {
@@ -158,7 +157,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+    func applicationShouldTerminate(_: NSApplication) -> NSApplication.TerminateReply {
         // Close windows immediately so the UI disappears before the blocking backend shutdown
         windowManager?.closeAll()
 
@@ -172,19 +171,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return .terminateLater
     }
 
-    func applicationWillTerminate(_ notification: Notification) {
+    func applicationWillTerminate(_: Notification) {
         // Intentionally empty — cleanup is done in applicationShouldTerminate
     }
 
-    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+    func applicationSupportsSecureRestorableState(_: NSApplication) -> Bool {
         true
     }
 
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+    func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
         false
     }
 
-    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+    func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         if !flag {
             Task { @MainActor in windowManager?.openMainWindow() }
         }
@@ -341,12 +340,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         (NSApp.keyWindow?.windowController as? MainWindowController)?.openInBrowser()
     }
 
+    private let docsURL = URL(string: "https://qdraw.nl/special/starsky/docs/")!
+    private let releasesURL = URL(string: "https://github.com/qdraw/starsky/releases")!
+
     @objc private func openDocs() {
-        NSWorkspace.shared.open(URL(string: "https://qdraw.nl/special/starsky/docs/")!)
+        NSWorkspace.shared.open(docsURL)
     }
 
     @objc private func openReleases() {
-        NSWorkspace.shared.open(URL(string: "https://github.com/qdraw/starsky/releases")!)
+        NSWorkspace.shared.open(releasesURL)
     }
 }
 

@@ -1,6 +1,8 @@
 import AppKit
 
 class SettingsWindowController: NSWindowController {
+    private static let remoteUrlPlaceholder = "https://your-starsky-server.com"
+
     var onSwitchToLocal: (() -> Void)?
     var onSwitchToRemote: (() -> Void)?
 
@@ -37,7 +39,7 @@ class SettingsWindowController: NSWindowController {
         loadCurrentSettings()
     }
 
-    required init?(coder: NSCoder) { fatalError("init(coder:) not supported") }
+    required init?(coder _: NSCoder) { fatalError("init(coder:) not supported") }
 
     private func setupContent() {
         guard let contentView = window?.contentView else { return }
@@ -59,7 +61,7 @@ class SettingsWindowController: NSWindowController {
         urlLabel.translatesAutoresizingMaskIntoConstraints = false
 
         urlField = NSTextField()
-        urlField.placeholderString = "https://your-starsky-server.com"
+        urlField.placeholderString = Self.remoteUrlPlaceholder
         urlField.translatesAutoresizingMaskIntoConstraints = false
 
         saveUrlButton = NSButton(title: "Save URL", target: self, action: #selector(saveUrl))

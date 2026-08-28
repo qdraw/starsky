@@ -25,7 +25,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         setupMenu()
     }
 
-    required init?(coder: NSCoder) { fatalError() }
+    required init?(coder _: NSCoder) { fatalError() }
 
     private func setupWebView() {
         let config = WKWebViewConfiguration()
@@ -50,9 +50,8 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         window?.contentView?.addSubview(webView)
 
         titleObservation = webView.observe(\.title, options: [.new]) { [weak self] webView, _ in
-            DispatchQueue.main.async {
-                self?.window?.title = webView.title.flatMap { $0.isEmpty ? nil : $0 } ?? "Starsky"
-            }
+            let title = webView.title.flatMap { $0.isEmpty ? nil : $0 } ?? "Starsky"
+            DispatchQueue.main.async { self?.window?.title = title }
         }
 
         if let contentView = window?.contentView {
@@ -104,11 +103,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
                fParam != "/" && !fParam.isEmpty {
                 Task {
                     do {
-                        let cookies = await withCheckedContinuation { continuation in
-                            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies {
-                                continuation.resume(returning: $0)
-                            }
-                        }
+                        let cookies = await fetchAllCookies()
                         try await options.fileDownloadService.downloadAndOpen(
                             path: fParam, baseUrl: baseUrl, cookies: cookies
                         )
@@ -147,9 +142,17 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         webView.evaluateJavaScript(js)
     }
 
+    private func fetchAllCookies() async -> [HTTPCookie] {
+        await withCheckedContinuation { continuation in
+            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies {
+                continuation.resume(returning: $0)
+            }
+        }
+    }
+
     // MARK: - WKNavigationDelegate
 
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+    func webView(_: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
@@ -163,7 +166,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         }
     }
 
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
         guard let url = webView.url else { return }
         currentUrl = url
         let route = url.path
@@ -187,9 +190,9 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
 
     // MARK: - WKUIDelegate
 
-    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
+    func webView(_: WKWebView, createWebViewWith _: WKWebViewConfiguration,
                  for navigationAction: WKNavigationAction,
-                 windowFeatures: WKWindowFeatures) -> WKWebView? {
+                 windowFeatures _: WKWindowFeatures) -> WKWebView? {
         guard let url = navigationAction.request.url else { return nil }
         if options.navigationService.isAllowedOrigin(url, baseUrl: options.baseUrl) {
             let route = url.path
@@ -206,11 +209,11 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
 
     // MARK: - NSWindowDelegate
 
-    func windowDidBecomeKey(_ notification: Notification) {
+    func windowDidBecomeKey(_: Notification) {
         window?.makeFirstResponder(webView)
     }
 
-    func windowWillClose(_ notification: Notification) {
+    func windowWillClose(_: Notification) {
         options.routePersistenceService.removeRoute(index: options.index)
         options.windowManager.remove(controller: self)
     }

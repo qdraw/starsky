@@ -4,6 +4,7 @@ import XCTest
 final class NavigationServiceTests: XCTestCase {
     private let localBaseUrl = "http://localhost:5000"
     private let remoteBaseUrl = "https://example.com"
+    private let remoteBaseUrlHttp = "http://example.com"
     private let evilBaseUrl = "https://evil.com"
     private let altPortUrl = "http://localhost:9999"
 
@@ -36,7 +37,7 @@ final class NavigationServiceTests: XCTestCase {
 
     func testDifferentSchemeIsBlocked() {
         let svc = makeService()
-        let url = URL(string: "http://example.com/photos")!
+        let url = URL(string: "\(remoteBaseUrlHttp)/photos")!
         XCTAssertFalse(svc.isAllowedOrigin(url, baseUrl: remoteBaseUrl))
     }
 

@@ -4,7 +4,7 @@ class FakeURLProtocol: URLProtocol {
     static var responses: [(Data, HTTPURLResponse)] = []
     static var capturedRequests: [URLRequest] = []
 
-    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canInit(with _: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
     override func startLoading() {
@@ -19,7 +19,9 @@ class FakeURLProtocol: URLProtocol {
         client?.urlProtocolDidFinishLoading(self)
     }
 
-    override func stopLoading() {}
+    override func stopLoading() {
+        // URLProtocol requires this override; no teardown needed for a synchronous fake
+    }
 
     static func makeSession() -> URLSession {
         let config = URLSessionConfiguration.ephemeral

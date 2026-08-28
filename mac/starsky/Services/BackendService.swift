@@ -82,15 +82,18 @@ class BackendService {
         return FileManager.default.fileExists(atPath: binary.path) ? binary : nil
     }
 
+    private static let xattrPath = "/usr/bin/xattr"
+    private static let codesignPath = "/usr/bin/codesign"
+
     private func clearQuarantine(path: String) {
         let xattr = Process()
-        xattr.executableURL = URL(fileURLWithPath: "/usr/bin/xattr")
+        xattr.executableURL = URL(fileURLWithPath: Self.xattrPath)
         xattr.arguments = ["-rd", "com.apple.quarantine", path]
         try? xattr.run()
         xattr.waitUntilExit()
 
         let codesign = Process()
-        codesign.executableURL = URL(fileURLWithPath: "/usr/bin/codesign")
+        codesign.executableURL = URL(fileURLWithPath: Self.codesignPath)
         codesign.arguments = ["--force", "--deep", "-s", "-", path]
         try? codesign.run()
         codesign.waitUntilExit()
