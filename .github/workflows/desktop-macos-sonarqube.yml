@@ -120,14 +120,14 @@ jobs:
             SONAR_ARGS="-Dsonar.pullrequest.key=$PR_NUMBER_GITHUB -Dsonar.pullrequest.branch=$GITHUB_HEAD_REF -Dsonar.pullrequest.base=$GITHUB_BASE_REF"
           fi
           sonar-scanner \
+            -Dproject.settings=mac/sonar-project.properties \
             -Dsonar.projectKey="$STARSKY_SONAR_KEY" \
             -Dsonar.organization="$STARSKY_SONAR_ORGANISATION" \
             -Dsonar.token="$STARSKY_SONAR_TOKEN" \
             -Dsonar.host.url="$SONAR_URL" \
-            -Dsonar.sources=mac \
-            -Dsonar.inclusions="mac/**" \
+            -Dsonar.sources=mac/starsky \
+            -Dsonar.tests=mac/starskyTests \
             -Dsonar.exclusions="starsky/**,starskydesktop/**,starsky-tools/**,documentation/**,windows/**" \
-            -Dsonar.coverage.inclusions="mac/**" \
             -Dsonar.coverage.exclusions="**/Windows/**" \
             -Dsonar.coverageReportPaths=TestResults/sonarqube-coverage.xml \
             $SONAR_ARGS
