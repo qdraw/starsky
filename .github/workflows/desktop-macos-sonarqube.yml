@@ -94,8 +94,11 @@ jobs:
       - name: Convert coverage to SonarQube generic format
         run: |
           xcrun xccov view --report --json TestResults/macos.xcresult > TestResults/coverage.json
-          python3 - <<'EOF'
-          import json, re, subprocess
+          REPO_ROOT="$(pwd)"
+          python3 - "$REPO_ROOT" <<'EOF'
+          import json, re, subprocess, sys, os
+
+          repo_root = sys.argv[1].rstrip("/") + "/"
 
           with open("TestResults/coverage.json") as f:
               data = json.load(f)
@@ -105,14 +108,18 @@ jobs:
 
           for target in data.get("targets", []):
               for src_file in target.get("files", []):
-                  path = src_file.get("path", "")
-                  if not path or not path.endswith(".swift"):
+                  abs_path = src_file.get("path", "")
+                  if not abs_path or not abs_path.endswith(".swift"):
                       continue
-                  if "/mac/" not in path:
+                  if not abs_path.startswith(repo_root):
+                      continue
+
+                  rel_path = abs_path[len(repo_root):]
+                  if not rel_path.startswith("mac/"):
                       continue
 
                   result = subprocess.run(
-                      ["xcrun", "xccov", "view", "--file", path, "--archive", "TestResults/macos.xcresult"],
+                      ["xcrun", "xccov", "view", "--file", abs_path, "--archive", "TestResults/macos.xcresult"],
                       capture_output=True, text=True,
                   )
                   if result.returncode != 0:
@@ -125,12 +132,12 @@ jobs:
                           continue
                       line_num, count_str = int(m.group(1)), m.group(2)
                       if not count_str.lstrip('*').isdigit():
-                          continue  # '-' or other non-executable marker
+                          continue
                       covered = "true" if int(count_str.lstrip('*')) > 0 else "false"
                       file_lines.append(f'    <lineToCover lineNumber="{line_num}" covered="{covered}"/>')
 
                   if file_lines:
-                      lines.append(f'  <file path="{path}">')
+                      lines.append(f'  <file path="{rel_path}">')
                       lines.extend(file_lines)
                       lines.append("  </file>")
                       file_count += 1
@@ -167,6 +174,7 @@ jobs:
             -Dsonar.inclusions="mac/**" \
             -Dsonar.exclusions="starsky/**,starskydesktop/**,starsky-tools/**,documentation/**,windows/**" \
             -Dsonar.coverage.inclusions="mac/**" \
+            -Dsonar.coverage.exclusions="**/Windows/**" \
             -Dsonar.coverageReportPaths=TestResults/sonarqube-coverage.xml \
             $SONAR_ARGS
 
