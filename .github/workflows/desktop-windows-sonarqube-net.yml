@@ -93,6 +93,9 @@ jobs:
             $prArgs += "/d:sonar.pullrequest.key=$env:PR_NUMBER_GITHUB"
             $prArgs += "/d:sonar.pullrequest.branch=$env:GITHUB_HEAD_REF"
             $prArgs += "/d:sonar.pullrequest.base=$env:GITHUB_BASE_REF"
+            $prArgs += "/d:sonar.pullrequest.provider=github"
+            $prArgs += "/d:sonar.pullrequest.github.endpoint=https://api.github.com/"
+            $prArgs += "/d:sonar.pullrequest.github.repository=$env:GITHUB_REPOSITORY"
           }
           dotnet sonarscanner begin `
             /k:"$env:STARSKY_SONAR_KEY" `
