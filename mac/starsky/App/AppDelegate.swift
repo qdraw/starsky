@@ -340,15 +340,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         (NSApp.keyWindow?.windowController as? MainWindowController)?.openInBrowser()
     }
 
-    private let docsURL = URL(string: "https://qdraw.nl/special/starsky/docs/")!
-    private let releasesURL = URL(string: "https://github.com/qdraw/starsky/releases")!
+    private static let docsURL = URL(string: "https://qdraw.nl/special/starsky/docs/")!
+    private static let releasesURL = URL(string: "https://github.com/qdraw/starsky/releases")!
 
     @objc private func openDocs() {
-        NSWorkspace.shared.open(docsURL)
+        NSWorkspace.shared.open(Self.docsURL)
     }
 
     @objc private func openReleases() {
-        NSWorkspace.shared.open(releasesURL)
+        NSWorkspace.shared.open(Self.releasesURL)
     }
 }
 

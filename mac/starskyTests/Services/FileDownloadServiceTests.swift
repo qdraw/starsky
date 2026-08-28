@@ -2,8 +2,10 @@ import XCTest
 @testable import starsky
 
 final class FileDownloadServiceTests: XCTestCase {
-    private let localBaseUrl = "http://localhost:5000"
-    private let remoteBaseUrl = "http://remote.example.com"
+    private static let localBaseUrl = "http://localhost:5000"
+    private static let remoteBaseUrl = "http://remote.example.com"
+    private static let testPhotoPath = "/photos/test.jpg"
+    private static let testMissingPath = "/photos/missing.jpg"
     private var tempDir: URL!
 
     override func setUp() {
@@ -20,8 +22,8 @@ final class FileDownloadServiceTests: XCTestCase {
     }
 
     func testHappyPathWritesFileToDisk() async throws {
-        let baseUrl = localBaseUrl
-        let path = "/photos/test.jpg"
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testPhotoPath
         let imageData = "fake-jpeg-bytes".data(using: .utf8)!
 
         FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Ftest.jpg")!, data: Data())
@@ -42,8 +44,8 @@ final class FileDownloadServiceTests: XCTestCase {
     }
 
     func testSidecarFailureStillDownloadsMainFile() async throws {
-        let baseUrl = localBaseUrl
-        let path = "/photos/test.jpg"
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testPhotoPath
         let imageData = "fake-jpeg".data(using: .utf8)!
 
         FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Ftest.jpg")!, data: Data())
@@ -61,8 +63,8 @@ final class FileDownloadServiceTests: XCTestCase {
     }
 
     func testCookiesAreForwardedAsHeader() async throws {
-        let baseUrl = remoteBaseUrl
-        let path = "/photos/test.jpg"
+        let baseUrl = Self.remoteBaseUrl
+        let path = Self.testPhotoPath
         let imageData = "data".data(using: .utf8)!
 
         FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Ftest.jpg")!, data: Data())
@@ -86,8 +88,8 @@ final class FileDownloadServiceTests: XCTestCase {
     }
 
     func testPhotoHttpErrorThrows() async {
-        let baseUrl = localBaseUrl
-        let path = "/photos/missing.jpg"
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testMissingPath
 
         FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Fmissing.jpg")!, data: Data())
         FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=%2Fphotos%2Fmissing.jpg")!, data: Data())

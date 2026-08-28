@@ -2,7 +2,7 @@ import XCTest
 @testable import starsky
 
 final class BackendServiceTests: XCTestCase {
-    private let localhostUrl = "http://localhost"
+    private static let localhostUrl = "http://localhost"
     private var tempDir: URL!
 
     override func setUp() {
@@ -28,7 +28,7 @@ final class BackendServiceTests: XCTestCase {
 
     func testEnvironmentContainsAspNetCoreUrls() {
         let env = BackendService.buildEnvironment(port: 5432)
-        XCTAssertEqual(env["ASPNETCORE_URLS"], "\(localhostUrl):5432")
+        XCTAssertEqual(env["ASPNETCORE_URLS"], "\(Self.localhostUrl):5432")
     }
 
     func testEnvironmentContainsAllRequiredKeys() {

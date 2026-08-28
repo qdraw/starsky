@@ -9,8 +9,13 @@ class BackendService {
     private var hasRestarted = false
     private var currentPort: Int = 0
 
-    init(fileLogger: DailyFileLogger) {
+    private let xattrPath: String
+    private let codesignPath: String
+
+    init(fileLogger: DailyFileLogger, xattrPath: String = "/usr/bin/xattr", codesignPath: String = "/usr/bin/codesign") {
         self.fileLogger = fileLogger
+        self.xattrPath = xattrPath
+        self.codesignPath = codesignPath
     }
 
     var isRunning: Bool { process?.isRunning ?? false }
@@ -82,21 +87,16 @@ class BackendService {
         return FileManager.default.fileExists(atPath: binary.path) ? binary : nil
     }
 
-    private static let xattrPath = "/usr/bin/xattr"
-    private static let codesignPath = "/usr/bin/codesign"
-
     private func clearQuarantine(path: String) {
         let xattr = Process()
-        xattr.executableURL = URL(fileURLWithPath: Self.xattrPath)
+        xattr.executableURL = URL(fileURLWithPath: xattrPath)
         xattr.arguments = ["-rd", "com.apple.quarantine", path]
-        try? xattr.run()
-        xattr.waitUntilExit()
+        if (try? xattr.run()) != nil { xattr.waitUntilExit() }
 
         let codesign = Process()
-        codesign.executableURL = URL(fileURLWithPath: Self.codesignPath)
+        codesign.executableURL = URL(fileURLWithPath: codesignPath)
         codesign.arguments = ["--force", "--deep", "-s", "-", path]
-        try? codesign.run()
-        codesign.waitUntilExit()
+        if (try? codesign.run()) != nil { codesign.waitUntilExit() }
     }
 
     static func buildEnvironment(port: Int) -> [String: String] {

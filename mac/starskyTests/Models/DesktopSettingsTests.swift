@@ -2,7 +2,7 @@ import XCTest
 @testable import starsky
 
 final class DesktopSettingsTests: XCTestCase {
-    private let exampleUrl = "https://example.com"
+    private static let exampleUrl = "https://example.com"
 
     func testDefaultValues() {
         let settings = DesktopSettings()
@@ -16,7 +16,7 @@ final class DesktopSettingsTests: XCTestCase {
     func testJsonRoundTrip() throws {
         var settings = DesktopSettings()
         settings.mode = .remote
-        settings.remoteBaseUrl = exampleUrl
+        settings.remoteBaseUrl = Self.exampleUrl
         settings.updateCheckEnabled = false
         settings.lastUpdateWarningShown = Date(timeIntervalSince1970: 0)
         settings.windows = [SavedWindowState(route: "?f=/photos", x: 50, y: 60, width: 800, height: 600, isMaximized: true)]
@@ -30,7 +30,7 @@ final class DesktopSettingsTests: XCTestCase {
         let decoded = try decoder.decode(DesktopSettings.self, from: data)
 
         XCTAssertEqual(decoded.mode, .remote)
-        XCTAssertEqual(decoded.remoteBaseUrl, exampleUrl)
+        XCTAssertEqual(decoded.remoteBaseUrl, Self.exampleUrl)
         XCTAssertFalse(decoded.updateCheckEnabled)
         XCTAssertNotNil(decoded.lastUpdateWarningShown)
         XCTAssertEqual(decoded.windows.count, 1)

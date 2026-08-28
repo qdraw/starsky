@@ -84,6 +84,11 @@ class WindowManager {
     }
 
     @MainActor
+    func openMainWindow(route: String?) {
+        openMainWindow(route: route, geometry: nil)
+    }
+
+    @MainActor
     func reopenAll() {
         isReopening = true
         routePersistenceService.clearAll()

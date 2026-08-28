@@ -1,11 +1,12 @@
 import Foundation
 
 class RemoteUrlValidator {
-    private static let healthPath = "/api/health"
+    private let healthPath: String
     private let session: URLSession
 
-    init(session: URLSession = .shared) {
+    init(session: URLSession = .shared, healthPath: String = "/api/health") {
         self.session = session
+        self.healthPath = healthPath
     }
 
     func validate(urlString: String) async -> UrlValidationResult {
@@ -22,7 +23,7 @@ class RemoteUrlValidator {
             return UrlValidationResult(success: false, error: "URL scheme must be http or https.")
         }
 
-        guard let healthURL = URL(string: Self.healthPath, relativeTo: url)?.absoluteURL else {
+        guard let healthURL = URL(string: healthPath, relativeTo: url)?.absoluteURL else {
             return UrlValidationResult(success: false, error: "Could not construct health URL.")
         }
         var request = URLRequest(url: healthURL, timeoutInterval: 10)

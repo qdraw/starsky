@@ -2,11 +2,11 @@ import XCTest
 @testable import starsky
 
 final class NavigationServiceTests: XCTestCase {
-    private let localBaseUrl = "http://localhost:5000"
-    private let remoteBaseUrl = "https://example.com"
-    private let remoteBaseUrlHttp = "http://example.com"
-    private let evilBaseUrl = "https://evil.com"
-    private let altPortUrl = "http://localhost:9999"
+    private static let localBaseUrl = "http://localhost:5000"
+    private static let remoteBaseUrl = "https://example.com"
+    private static let remoteBaseUrlHttp = "http://example.com"
+    private static let evilBaseUrl = "https://evil.com"
+    private static let altPortUrl = "http://localhost:9999"
 
     private func makeService(mode: RuntimeMode = .local, remoteUrl: String = "") -> NavigationService {
         let settingsService = SettingsService(settingsFile: URL(fileURLWithPath: "/dev/null"))
@@ -19,49 +19,49 @@ final class NavigationServiceTests: XCTestCase {
 
     func testLocalhostIsAllowed() {
         let svc = makeService()
-        let url = URL(string: "\(localBaseUrl)/photos")!
-        XCTAssertTrue(svc.isAllowedOrigin(url, baseUrl: localBaseUrl))
+        let url = URL(string: "\(Self.localBaseUrl)/photos")!
+        XCTAssertTrue(svc.isAllowedOrigin(url, baseUrl: Self.localBaseUrl))
     }
 
     func testMatchingRemoteOriginIsAllowed() {
         let svc = makeService()
-        let url = URL(string: "\(remoteBaseUrl)/photos")!
-        XCTAssertTrue(svc.isAllowedOrigin(url, baseUrl: remoteBaseUrl))
+        let url = URL(string: "\(Self.remoteBaseUrl)/photos")!
+        XCTAssertTrue(svc.isAllowedOrigin(url, baseUrl: Self.remoteBaseUrl))
     }
 
     func testDifferentHostIsBlocked() {
         let svc = makeService()
-        let url = URL(string: "\(evilBaseUrl)/photos")!
-        XCTAssertFalse(svc.isAllowedOrigin(url, baseUrl: remoteBaseUrl))
+        let url = URL(string: "\(Self.evilBaseUrl)/photos")!
+        XCTAssertFalse(svc.isAllowedOrigin(url, baseUrl: Self.remoteBaseUrl))
     }
 
     func testDifferentSchemeIsBlocked() {
         let svc = makeService()
-        let url = URL(string: "\(remoteBaseUrlHttp)/photos")!
-        XCTAssertFalse(svc.isAllowedOrigin(url, baseUrl: remoteBaseUrl))
+        let url = URL(string: "\(Self.remoteBaseUrlHttp)/photos")!
+        XCTAssertFalse(svc.isAllowedOrigin(url, baseUrl: Self.remoteBaseUrl))
     }
 
     func testDifferentPortIsBlocked() {
         let svc = makeService()
-        let url = URL(string: "\(altPortUrl)/internal")!
-        XCTAssertFalse(svc.isAllowedOrigin(url, baseUrl: localBaseUrl))
+        let url = URL(string: "\(Self.altPortUrl)/internal")!
+        XCTAssertFalse(svc.isAllowedOrigin(url, baseUrl: Self.localBaseUrl))
     }
 
     func testBuildStartUrlAppendsRoute() {
         let svc = makeService()
-        let result = svc.buildStartUrl(baseUrl: localBaseUrl, route: "?f=/photos")
-        XCTAssertEqual(result, "\(localBaseUrl)?f=/photos")
+        let result = svc.buildStartUrl(baseUrl: Self.localBaseUrl, route: "?f=/photos")
+        XCTAssertEqual(result, "\(Self.localBaseUrl)?f=/photos")
     }
 
     func testBuildStartUrlDefaultRoute() {
         let svc = makeService()
-        let result = svc.buildStartUrl(baseUrl: localBaseUrl)
-        XCTAssertEqual(result, "\(localBaseUrl)?f=/")
+        let result = svc.buildStartUrl(baseUrl: Self.localBaseUrl)
+        XCTAssertEqual(result, "\(Self.localBaseUrl)?f=/")
     }
 
     func testBuildStartUrlStripsTrailingSlash() {
         let svc = makeService()
-        let result = svc.buildStartUrl(baseUrl: "\(localBaseUrl)/", route: "?f=/")
-        XCTAssertEqual(result, "\(localBaseUrl)?f=/")
+        let result = svc.buildStartUrl(baseUrl: "\(Self.localBaseUrl)/", route: "?f=/")
+        XCTAssertEqual(result, "\(Self.localBaseUrl)?f=/")
     }
 }

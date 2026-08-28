@@ -102,8 +102,10 @@ schemes:
     build:
       targets:
         starskyTests: [test]
-        starsky: [build]
+        starsky: [build, test]
     test:
       config: Debug
       targets:
         - starskyTests
+      coverageTargets:
+        - starsky

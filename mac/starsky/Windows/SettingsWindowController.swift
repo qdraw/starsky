@@ -1,15 +1,16 @@
 import AppKit
 
 class SettingsWindowController: NSWindowController {
-    private static let remoteUrlPlaceholder = "https://your-starsky-server.com"
+    private let remoteUrlPlaceholder: String
 
-    var onSwitchToLocal: (() -> Void)?
-    var onSwitchToRemote: (() -> Void)?
+    var onSwitchToLocal: (() -> Void)? {
+        didSet { presenter.onSwitchToLocal = onSwitchToLocal }
+    }
+    var onSwitchToRemote: (() -> Void)? {
+        didSet { presenter.onSwitchToRemote = onSwitchToRemote }
+    }
 
-    private var settingsService: SettingsService
-    private var remoteUrlValidator: RemoteUrlValidator
-    private var windowManager: WindowManager
-
+    private let presenter: SettingsPresenter
     private var localRadio: NSButton!
     private var remoteRadio: NSButton!
     private var urlField: NSTextField!
@@ -20,12 +21,15 @@ class SettingsWindowController: NSWindowController {
     init(
         settingsService: SettingsService,
         remoteUrlValidator: RemoteUrlValidator,
-        windowManager: WindowManager
+        windowManager: WindowManagerProtocol,
+        remoteUrlPlaceholder: String = "https://your-starsky-server.com"
     ) {
-        self.settingsService = settingsService
-        self.remoteUrlValidator = remoteUrlValidator
-        self.windowManager = windowManager
-
+        self.remoteUrlPlaceholder = remoteUrlPlaceholder
+        presenter = SettingsPresenter(
+            settingsService: settingsService,
+            remoteUrlValidator: remoteUrlValidator,
+            windowManager: windowManager
+        )
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 380, height: 480),
             styleMask: [.titled, .closable],
@@ -35,11 +39,14 @@ class SettingsWindowController: NSWindowController {
         window.title = "Connection Settings"
         window.isReleasedWhenClosed = false
         super.init(window: window)
+        presenter.view = self
         setupContent()
         loadCurrentSettings()
     }
 
     required init?(coder _: NSCoder) { fatalError("init(coder:) not supported") }
+
+    // MARK: - Setup
 
     private func setupContent() {
         guard let contentView = window?.contentView else { return }
@@ -61,7 +68,7 @@ class SettingsWindowController: NSWindowController {
         urlLabel.translatesAutoresizingMaskIntoConstraints = false
 
         urlField = NSTextField()
-        urlField.placeholderString = Self.remoteUrlPlaceholder
+        urlField.placeholderString = remoteUrlPlaceholder
         urlField.translatesAutoresizingMaskIntoConstraints = false
 
         saveUrlButton = NSButton(title: "Save URL", target: self, action: #selector(saveUrl))
@@ -108,68 +115,52 @@ class SettingsWindowController: NSWindowController {
     }
 
     private func loadCurrentSettings() {
-        let settings = settingsService.current
+        let settings = presenter.currentSettings
         localRadio.state = settings.mode == .local ? .on : .off
         remoteRadio.state = settings.mode == .remote ? .on : .off
         urlField.stringValue = settings.remoteBaseUrl
         updateCheckBox.state = settings.updateCheckEnabled ? .on : .off
-        updateUrlFieldEnabled()
-    }
-
-    private func updateUrlFieldEnabled() {
-        let isRemote = settingsService.current.mode == .remote
+        let isRemote = settings.mode == .remote
         urlField.isEnabled = isRemote
         saveUrlButton.isEnabled = isRemote
     }
 
-    @objc private func modeChanged(_ sender: NSButton) {
-        var settings = settingsService.current
-        let wasRemote = settings.mode == .remote
-        settings.mode = sender.tag == 0 ? .local : .remote
-        localRadio.state = settings.mode == .local ? .on : .off
-        remoteRadio.state = settings.mode == .remote ? .on : .off
-        settingsService.save(settings)
-        updateUrlFieldEnabled()
+    // MARK: - Actions
 
-        if settings.mode == .local && wasRemote {
-            onSwitchToLocal?()
-        } else if settings.mode == .remote && !wasRemote {
-            onSwitchToRemote?()
-        }
+    @objc private func modeChanged(_ sender: NSButton) {
+        let mode: RuntimeMode = sender.tag == 0 ? .local : .remote
+        presenter.modeChanged(to: mode)
+        localRadio.state = mode == .local ? .on : .off
+        remoteRadio.state = mode == .remote ? .on : .off
     }
 
     @objc private func saveUrl() {
-        let urlString = urlField.stringValue
-        statusLabel.stringValue = "Validating…"
-        statusLabel.textColor = .labelColor
-        saveUrlButton.isEnabled = false
-
-        let validator = remoteUrlValidator
-        Task.detached {
-            let result = await validator.validate(urlString: urlString)
-            await MainActor.run { [weak self] in
-                guard let self else { return }
-                self.saveUrlButton.isEnabled = true
-                if result.success {
-                    var settings = self.settingsService.current
-                    settings.remoteBaseUrl = urlString.hasSuffix("/")
-                        ? String(urlString.dropLast())
-                        : urlString
-                    self.settingsService.save(settings)
-                    self.statusLabel.stringValue = "Setting is saved"
-                    self.statusLabel.textColor = NSColor.systemGreen
-                    self.windowManager.reopenAll()
-                } else {
-                    self.statusLabel.stringValue = result.error ?? "Validation failed."
-                    self.statusLabel.textColor = NSColor.systemRed
-                }
-            }
-        }
+        Task { await presenter.saveUrl(urlField.stringValue) }
     }
 
     @objc private func updateCheckChanged() {
-        var settings = settingsService.current
-        settings.updateCheckEnabled = updateCheckBox.state == .on
-        settingsService.save(settings)
+        presenter.updateCheckChanged(enabled: updateCheckBox.state == .on)
+    }
+}
+
+// MARK: - SettingsView
+
+extension SettingsWindowController: SettingsView {
+    func setValidating() {
+        statusLabel.stringValue = "Validating…"
+        statusLabel.textColor = .labelColor
+    }
+
+    func setResult(success: Bool, message: String) {
+        statusLabel.stringValue = message
+        statusLabel.textColor = success ? .systemGreen : .systemRed
+    }
+
+    func setUrlFieldEnabled(_ enabled: Bool) {
+        urlField.isEnabled = enabled
+    }
+
+    func setSaveEnabled(_ enabled: Bool) {
+        saveUrlButton.isEnabled = enabled
     }
 }
