@@ -2,6 +2,11 @@ import XCTest
 @testable import starsky
 
 final class RemoteUrlValidatorTests: XCTestCase {
+    private let exampleBaseUrl = "https://example.com"
+    private let exampleHealthUrl = URL(string: "https://example.com/api/health")!
+    private let ftpUrl = "ftp://example.com"
+    private let unreachableUrl = "https://unreachable.invalid"
+
     private func makeValidator(responses: [(Int, URL, Data)] = []) -> RemoteUrlValidator {
         FakeURLProtocol.reset()
         for (status, url, data) in responses {
@@ -19,43 +24,39 @@ final class RemoteUrlValidatorTests: XCTestCase {
 
     func testInvalidSchemeFails() async {
         let v = makeValidator()
-        let result = await v.validate(urlString: "ftp://example.com")
+        let result = await v.validate(urlString: ftpUrl)
         XCTAssertFalse(result.success)
         XCTAssertTrue(result.error?.contains("http") == true)
     }
 
     func testHttp200Succeeds() async {
-        let url = URL(string: "https://example.com/api/health")!
-        let v = makeValidator(responses: [(200, url, Data())])
-        let result = await v.validate(urlString: "https://example.com")
+        let v = makeValidator(responses: [(200, exampleHealthUrl, Data())])
+        let result = await v.validate(urlString: exampleBaseUrl)
         XCTAssertTrue(result.success)
     }
 
     func testHttp503Succeeds() async {
-        let url = URL(string: "https://example.com/api/health")!
-        let v = makeValidator(responses: [(503, url, Data())])
-        let result = await v.validate(urlString: "https://example.com")
+        let v = makeValidator(responses: [(503, exampleHealthUrl, Data())])
+        let result = await v.validate(urlString: exampleBaseUrl)
         XCTAssertTrue(result.success)
     }
 
     func testOtherStatusFails() async {
-        let url = URL(string: "https://example.com/api/health")!
-        let v = makeValidator(responses: [(404, url, Data())])
-        let result = await v.validate(urlString: "https://example.com")
+        let v = makeValidator(responses: [(404, exampleHealthUrl, Data())])
+        let result = await v.validate(urlString: exampleBaseUrl)
         XCTAssertFalse(result.success)
     }
 
     func testTrailingSlashStripped() async {
-        let url = URL(string: "https://example.com/api/health")!
-        let v = makeValidator(responses: [(200, url, Data())])
-        let result = await v.validate(urlString: "https://example.com/")
+        let v = makeValidator(responses: [(200, exampleHealthUrl, Data())])
+        let result = await v.validate(urlString: "\(exampleBaseUrl)/")
         XCTAssertTrue(result.success)
     }
 
     func testNetworkErrorFails() async {
         FakeURLProtocol.reset()
         let v = RemoteUrlValidator(session: FakeURLProtocol.makeSession())
-        let result = await v.validate(urlString: "https://unreachable.invalid")
+        let result = await v.validate(urlString: unreachableUrl)
         XCTAssertFalse(result.success)
     }
 }

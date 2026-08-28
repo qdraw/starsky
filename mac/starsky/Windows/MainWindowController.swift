@@ -91,7 +91,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         guard let liveUrl = webView.url else { return }
         let baseUrl = options.navigationService.getEffectiveBaseUrl()
 
-        if options.navigationService.isAllowedOrigin(liveUrl, baseUrl: "http://localhost") {
+        if options.navigationService.isAllowedOrigin(liveUrl, baseUrl: options.baseUrl) {
             let js = """
             document.dispatchEvent(new KeyboardEvent('keydown', {
                 key: 'e', code: 'KeyE', keyCode: 69, metaKey: true, bubbles: true
@@ -155,8 +155,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
             decisionHandler(.allow)
             return
         }
-        let baseUrl = options.navigationService.getEffectiveBaseUrl()
-        if options.navigationService.isAllowedOrigin(url, baseUrl: baseUrl) {
+        if options.navigationService.isAllowedOrigin(url, baseUrl: options.baseUrl) {
             decisionHandler(.allow)
         } else {
             NSWorkspace.shared.open(url)
@@ -192,8 +191,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
                  for navigationAction: WKNavigationAction,
                  windowFeatures: WKWindowFeatures) -> WKWebView? {
         guard let url = navigationAction.request.url else { return nil }
-        let baseUrl = options.navigationService.getEffectiveBaseUrl()
-        if options.navigationService.isAllowedOrigin(url, baseUrl: baseUrl) {
+        if options.navigationService.isAllowedOrigin(url, baseUrl: options.baseUrl) {
             let route = url.path
                 + (url.query.map { "?\($0)" } ?? "")
                 + (url.fragment.map { "#\($0)" } ?? "")

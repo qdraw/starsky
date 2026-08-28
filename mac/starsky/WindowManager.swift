@@ -36,6 +36,7 @@ class WindowManager {
         let options = MainWindowOptions(
             index: index,
             startUrl: startUrl,
+            baseUrl: baseUrl,
             geometry: geometry,
             navigationService: navigationService,
             routePersistenceService: routePersistenceService,

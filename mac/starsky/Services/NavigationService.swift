@@ -8,9 +8,8 @@ class NavigationService {
     }
 
     func isAllowedOrigin(_ url: URL, baseUrl: String) -> Bool {
-        guard let host = url.host else { return false }
-        if host == "localhost" || host == "127.0.0.1" { return true }
-        guard let base = URL(string: baseUrl),
+        guard let host = url.host,
+              let base = URL(string: baseUrl),
               let baseHost = base.host else { return false }
         let sameScheme = url.scheme?.lowercased() == base.scheme?.lowercased()
         let sameHost = host.lowercased() == baseHost.lowercased()

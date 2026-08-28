@@ -3,6 +3,7 @@ import Foundation
 struct MainWindowOptions {
     let index: Int
     let startUrl: String
+    let baseUrl: String
     let geometry: SavedWindowState?
     let navigationService: NavigationService
     let routePersistenceService: RoutePersistenceService
