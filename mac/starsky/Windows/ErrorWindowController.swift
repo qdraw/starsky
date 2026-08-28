@@ -38,7 +38,11 @@ class ErrorWindowController: NSWindowController {
     }
 
     @objc private func dismiss() {
-        window?.close()
+        if let parent = window?.sheetParent {
+            parent.endSheet(window!)
+        } else {
+            window?.close()
+        }
     }
 
     static func show(message: String, parentWindow: NSWindow? = nil) {

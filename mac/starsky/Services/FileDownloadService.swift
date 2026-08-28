@@ -49,7 +49,9 @@ class FileDownloadService {
         }
         let (photoData, photoResponse) = try await session.data(for: request(photoURL, cookieHeader: cookieHeader))
         guard let photoHTTP = photoResponse as? HTTPURLResponse, photoHTTP.statusCode == 200 else {
-            throw DownloadError.downloadFailed
+            let status = (photoResponse as? HTTPURLResponse)?.statusCode ?? -1
+            logger.error("download-photo returned HTTP \(status) for \(encodedPath)")
+            throw DownloadError.downloadFailed(statusCode: status)
         }
 
         let filename = URL(fileURLWithPath: path).lastPathComponent
@@ -83,13 +85,13 @@ class FileDownloadService {
 enum DownloadError: LocalizedError {
     case invalidPath
     case fileNotFound
-    case downloadFailed
+    case downloadFailed(statusCode: Int)
 
     var errorDescription: String? {
         switch self {
         case .invalidPath: return "Invalid file path."
         case .fileNotFound: return "File not found on server."
-        case .downloadFailed: return "Download failed."
+        case .downloadFailed(let statusCode): return "Download failed (HTTP \(statusCode))."
         }
     }
 }
