@@ -283,6 +283,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             settingsWindowController?.onSwitchToLocal = { [weak self] in
                 Task { await self?.switchToLocalMode() }
             }
+            settingsWindowController?.onSwitchToRemote = { [weak self] in
+                guard let self, !self.settingsService.current.remoteBaseUrl.isEmpty else { return }
+                Task { @MainActor in self.windowManager.reopenAll() }
+            }
         }
         settingsWindowController?.showWindow(nil)
         settingsWindowController?.window?.makeKeyAndOrderFront(nil)

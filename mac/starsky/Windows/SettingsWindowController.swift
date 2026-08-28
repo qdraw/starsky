@@ -2,6 +2,7 @@ import AppKit
 
 class SettingsWindowController: NSWindowController {
     var onSwitchToLocal: (() -> Void)?
+    var onSwitchToRemote: (() -> Void)?
 
     private var settingsService: SettingsService
     private var remoteUrlValidator: RemoteUrlValidator
@@ -130,6 +131,8 @@ class SettingsWindowController: NSWindowController {
 
         if settings.mode == .local && wasRemote {
             onSwitchToLocal?()
+        } else if settings.mode == .remote && !wasRemote {
+            onSwitchToRemote?()
         }
     }
 

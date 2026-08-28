@@ -7,6 +7,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     private let options: MainWindowOptions
     private var webView: WKWebView!
     private var currentUrl: URL?
+    private var titleObservation: NSKeyValueObservation?
 
     init(options: MainWindowOptions) {
         self.options = options
@@ -47,6 +48,12 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         webView.uiDelegate = self
         webView.translatesAutoresizingMaskIntoConstraints = false
         window?.contentView?.addSubview(webView)
+
+        titleObservation = webView.observe(\.title, options: [.new]) { [weak self] webView, _ in
+            DispatchQueue.main.async {
+                self?.window?.title = webView.title.flatMap { $0.isEmpty ? nil : $0 } ?? "Starsky"
+            }
+        }
 
         if let contentView = window?.contentView {
             NSLayoutConstraint.activate([
@@ -154,7 +161,6 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         guard let url = webView.url else { return }
         currentUrl = url
-        window?.title = url.host.map { "Starsky — \($0)" } ?? "Starsky"
         let route = url.path
             + (url.query.map { "?\($0)" } ?? "")
             + (url.fragment.map { "#\($0)" } ?? "")

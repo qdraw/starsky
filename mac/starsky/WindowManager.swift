@@ -3,6 +3,7 @@ import AppKit
 class WindowManager {
     private var windows: [MainWindowController] = []
     private var localPort: Int = 0
+    private var isReopening = false
     private let settingsService: SettingsService
     private let routePersistenceService: RoutePersistenceService
     private let navigationService: NavigationService
@@ -83,9 +84,11 @@ class WindowManager {
 
     @MainActor
     func reopenAll() {
+        isReopening = true
         routePersistenceService.clearAll()
         closeAll()
         openMainWindow()
+        isReopening = false
     }
 
     @MainActor
@@ -95,12 +98,12 @@ class WindowManager {
         }
     }
 
+    @MainActor
     func remove(controller: MainWindowController) {
         windows.removeAll { $0 === controller }
-        if windows.isEmpty {
-            DispatchQueue.main.async {
-                NSApplication.shared.terminate(nil)
-            }
+        if windows.isEmpty && !isReopening {
+            NSApplication.shared.terminate(nil)
         }
     }
 }
+
