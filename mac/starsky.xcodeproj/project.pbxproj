@@ -40,6 +40,7 @@
 		7F2607AE7A59F59002D4BF7E /* SettingsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435D0EF7EF41315830FC8920 /* SettingsPresenter.swift */; };
 		7FAAC31A66A4532C6218E51F /* NavigationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A220D2CCADAAE29E222E32FA /* NavigationServiceTests.swift */; };
 		921557DF7EBE949444ABB754 /* RemoteUrlValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A4355B016A576502FF1E51 /* RemoteUrlValidatorTests.swift */; };
+		9AF72F2CCF93518E1DA668D0 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4EAD3D340CB0C7C84427212 /* Localizable.strings */; };
 		A197D2E6CF48C7955BE4C7F4 /* SettingsPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07655E3EE2770129AD67DA87 /* SettingsPresenterTests.swift */; };
 		AC8B8EF6258EB5B57404CD8C /* UrlValidationResultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FD597500E536E705E06522 /* UrlValidationResultTests.swift */; };
 		B352323697B9E1BEEA2B3150 /* DesktopSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A09958ECF7CB2678EA7DD /* DesktopSettingsTests.swift */; };
@@ -50,6 +51,7 @@
 		CB8DF2DE1B545794DA93F7BF /* PortFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF10CDC7C7FA47BA0423D288 /* PortFinder.swift */; };
 		CBEF11ACD5AB1701C013AB54 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A29613611956A9065F7D03E /* MainWindowController.swift */; };
 		D4C012064C660EFAD980E3F6 /* ApplicationPathsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7FF14576F32676391CCF10 /* ApplicationPathsTests.swift */; };
+		E0FFBC9B201198CA6250AA04 /* AppDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518E0933311F6D5490C13CF6 /* AppDelegateTests.swift */; };
 		E2571D53FC9FFD60B32CB88C /* PortFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798CAE326CC1DB438FE8B71F /* PortFinderTests.swift */; };
 		F40BB21ABC14E0B286B0191F /* WindowManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF53E62B518E6B3C2A7C0CC3 /* WindowManagerProtocol.swift */; };
 		F61BB25AD6E4A6519F79F584 /* FakeURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3DF9B7AD7AE65C57A997B91 /* FakeURLProtocol.swift */; };
@@ -71,6 +73,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		03C062833D54026BC07780BB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		07655E3EE2770129AD67DA87 /* SettingsPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPresenterTests.swift; sourceTree = "<group>"; };
 		12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyFileLogger.swift; sourceTree = "<group>"; };
 		13F6B9B261337B367BAE7B88 /* FileDownloadServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadServiceTests.swift; sourceTree = "<group>"; };
@@ -92,6 +95,7 @@
 		3EE9757114B39C8796B7DDB8 /* UrlValidationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlValidationResult.swift; sourceTree = "<group>"; };
 		435D0EF7EF41315830FC8920 /* SettingsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPresenter.swift; sourceTree = "<group>"; };
 		45FCF2620A00BA536D9BA601 /* starsky.debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = starsky.debug.entitlements; sourceTree = "<group>"; };
+		518E0933311F6D5490C13CF6 /* AppDelegateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateTests.swift; sourceTree = "<group>"; };
 		537CF0BCF79013734BC9F797 /* DailyFileLoggerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyFileLoggerTests.swift; sourceTree = "<group>"; };
 		554B5849A45556FFAA970085 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		5A8476C6054F0190F025A4FE /* MainWindowPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowPresenterTests.swift; sourceTree = "<group>"; };
@@ -106,6 +110,7 @@
 		9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendServiceTests.swift; sourceTree = "<group>"; };
 		97B29EC047ED7E17B1E0563A /* starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9851583918F3426A017184E8 /* RuntimeModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeModeTests.swift; sourceTree = "<group>"; };
+		A1B288A8995FE028D4694CC1 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A220D2CCADAAE29E222E32FA /* NavigationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationServiceTests.swift; sourceTree = "<group>"; };
 		A9A194174E0CB13CE48986CA /* UpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateService.swift; sourceTree = "<group>"; };
 		AD8956542BB08C50ABED9CE2 /* UpdateWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateWindowController.swift; sourceTree = "<group>"; };
@@ -214,6 +219,7 @@
 				3241E30A98E45F4148C41D75 /* starsky.entitlements */,
 				554B5849A45556FFAA970085 /* WindowManager.swift */,
 				1915D70CA1807F72A55C01E1 /* App */,
+				A4EAD3D340CB0C7C84427212 /* Localizable.strings */,
 				1227CEE18FB6936E3AD98B88 /* Models */,
 				C6C26B5DEB7899926B0956E0 /* Presentation */,
 				C9F9ADDD151F6CA985CEF39B /* Resources */,
@@ -237,6 +243,7 @@
 		71B2A8EC19789FECF9162A8C /* App */ = {
 			isa = PBXGroup;
 			children = (
+				518E0933311F6D5490C13CF6 /* AppDelegateTests.swift */,
 				D4E9538E4281ECA333F416A1 /* ApplicationInfoTests.swift */,
 			);
 			path = App;
@@ -393,6 +400,7 @@
 			knownRegions = (
 				Base,
 				en,
+				nl,
 			);
 			mainGroup = 50DD9685A8789EC5E846C556;
 			minimizedProjectReferenceProxies = 1;
@@ -416,6 +424,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FC3FA016C05BDB7270A0328C /* Assets.xcassets in Resources */,
+				9AF72F2CCF93518E1DA668D0 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -486,6 +495,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E0FFBC9B201198CA6250AA04 /* AppDelegateTests.swift in Sources */,
 				63AD0FC4331D997CC6F7077C /* ApplicationInfoTests.swift in Sources */,
 				D4C012064C660EFAD980E3F6 /* ApplicationPathsTests.swift in Sources */,
 				72B91B9C3C7ECCDEEA460EEC /* BackendServiceTests.swift in Sources */,
@@ -519,6 +529,18 @@
 			targetProxy = 954990475BAA3863C85E5BB4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		A4EAD3D340CB0C7C84427212 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				03C062833D54026BC07780BB /* en */,
+				A1B288A8995FE028D4694CC1 /* nl */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		0212C74170236C4F787122F1 /* Release */ = {

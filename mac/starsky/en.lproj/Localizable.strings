@@ -1,0 +1,22 @@
+/* App menu */
+"menu.app.about" = "About Starsky";
+"menu.app.connectionSettings" = "Connection Settings\U2026";
+"menu.app.applicationSettings" = "Application Settings";
+"menu.app.hide" = "Hide Starsky";
+"menu.app.quit" = "Quit Starsky";
+
+/* File menu */
+"menu.file.title" = "File";
+"menu.file.newWindow" = "New Window";
+"menu.file.reloadAll" = "Reload All";
+"menu.file.editFileInEditor" = "Edit File in Editor";
+
+/* View menu */
+"menu.view.title" = "View";
+"menu.view.developerTools" = "Developer Tools";
+"menu.view.openInBrowser" = "Open in Browser";
+
+/* Help menu */
+"menu.help.title" = "Help";
+"menu.help.documentation" = "Documentation";
+"menu.help.releaseOverview" = "Release Overview";

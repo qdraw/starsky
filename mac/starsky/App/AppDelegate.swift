@@ -217,44 +217,44 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func buildAppMenu() -> NSMenu {
         let menu = NSMenu(title: "Starsky")
 
-        menu.addItem(NSMenuItem(title: "About Starsky", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.about", comment: ""), action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: ""))
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Connection Settings…", action: #selector(openSettings), keyEquivalent: ","))
-        menu.addItem(withTitle: "Application Settings", action: #selector(openApplicationSettings), keyEquivalent: "k")
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.connectionSettings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
+        menu.addItem(withTitle: NSLocalizedString("menu.app.applicationSettings", comment: ""), action: #selector(openApplicationSettings), keyEquivalent: "k")
             .keyEquivalentModifierMask = [.command, .shift]
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Hide Starsky", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h"))
-        menu.addItem(NSMenuItem(title: "Quit Starsky", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.hide", comment: ""), action: #selector(NSApplication.hide(_:)), keyEquivalent: "h"))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.quit", comment: ""), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         return menu
     }
 
     private func buildFileMenu() -> NSMenu {
-        let menu = NSMenu(title: "File")
-        menu.addItem(NSMenuItem(title: "New Window", action: #selector(newWindow), keyEquivalent: "n"))
+        let menu = NSMenu(title: NSLocalizedString("menu.file.title", comment: ""))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.file.newWindow", comment: ""), action: #selector(newWindow), keyEquivalent: "n"))
 
-        let reloadItem = NSMenuItem(title: "Reload All", action: #selector(reloadAll), keyEquivalent: "r")
+        let reloadItem = NSMenuItem(title: NSLocalizedString("menu.file.reloadAll", comment: ""), action: #selector(reloadAll), keyEquivalent: "r")
         reloadItem.keyEquivalentModifierMask = [.command, .shift]
         menu.addItem(reloadItem)
 
-        menu.addItem(NSMenuItem(title: "Edit File in Editor", action: #selector(editFileInEditor), keyEquivalent: "e"))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.file.editFileInEditor", comment: ""), action: #selector(editFileInEditor), keyEquivalent: "e"))
         return menu
     }
 
     private func buildViewMenu() -> NSMenu {
-        let menu = NSMenu(title: "View")
+        let menu = NSMenu(title: NSLocalizedString("menu.view.title", comment: ""))
 
-        let devToolsItem = NSMenuItem(title: "Developer Tools", action: #selector(openDevTools), keyEquivalent: "i")
+        let devToolsItem = NSMenuItem(title: NSLocalizedString("menu.view.developerTools", comment: ""), action: #selector(openDevTools), keyEquivalent: "i")
         devToolsItem.keyEquivalentModifierMask = [.command, .option]
         menu.addItem(devToolsItem)
 
-        menu.addItem(NSMenuItem(title: "Open in Browser", action: #selector(openInBrowser), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.view.openInBrowser", comment: ""), action: #selector(openInBrowser), keyEquivalent: ""))
         return menu
     }
 
     private func buildHelpMenu() -> NSMenu {
-        let menu = NSMenu(title: "Help")
-        menu.addItem(NSMenuItem(title: "Documentation", action: #selector(openDocs), keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: "Release Overview", action: #selector(openReleases), keyEquivalent: ""))
+        let menu = NSMenu(title: NSLocalizedString("menu.help.title", comment: ""))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.help.documentation", comment: ""), action: #selector(openDocs), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.help.releaseOverview", comment: ""), action: #selector(openReleases), keyEquivalent: ""))
         return menu
     }
 
