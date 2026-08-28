@@ -58,6 +58,31 @@ final class FileDownloadServiceTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: destFile.path))
     }
 
+    func testCookiesAreForwardedAsHeader() async throws {
+        let baseUrl = "http://remote.example.com"
+        let path = "/photos/test.jpg"
+        let imageData = "data".data(using: .utf8)!
+
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 404, url: URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=%2Fphotos%2Ftest.jpg&cache=false")!, data: imageData)
+
+        let cookie = HTTPCookie(properties: [
+            .name: "session", .value: "abc123",
+            .domain: "remote.example.com", .path: "/"
+        ])!
+
+        let service = FileDownloadService(
+            fileLogger: DailyFileLogger(),
+            session: FakeURLProtocol.makeSession(),
+            tempFolder: tempDir
+        )
+        try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false, cookies: [cookie])
+
+        let cookieHeaders = FakeURLProtocol.capturedRequests.compactMap { $0.value(forHTTPHeaderField: "Cookie") }
+        XCTAssertTrue(cookieHeaders.allSatisfy { $0.contains("session=abc123") }, "Cookie header missing from requests")
+    }
+
     func testPhotoHttpErrorThrows() async {
         let baseUrl = "http://localhost:5000"
         let path = "/photos/missing.jpg"

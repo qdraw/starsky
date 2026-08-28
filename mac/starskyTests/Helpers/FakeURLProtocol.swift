@@ -2,11 +2,13 @@ import Foundation
 
 class FakeURLProtocol: URLProtocol {
     static var responses: [(Data, HTTPURLResponse)] = []
+    static var capturedRequests: [URLRequest] = []
 
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
     override func startLoading() {
+        Self.capturedRequests.append(request)
         guard !Self.responses.isEmpty else {
             client?.urlProtocol(self, didFailWithError: URLError(.fileDoesNotExist))
             return
@@ -37,5 +39,6 @@ class FakeURLProtocol: URLProtocol {
 
     static func reset() {
         responses = []
+        capturedRequests = []
     }
 }

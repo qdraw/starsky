@@ -103,8 +103,13 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
             if let fParam = components?.queryItems?.first(where: { $0.name == "f" })?.value {
                 Task {
                     do {
+                        let cookies = await withCheckedContinuation { continuation in
+                            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies {
+                                continuation.resume(returning: $0)
+                            }
+                        }
                         try await options.fileDownloadService.downloadAndOpen(
-                            path: fParam, baseUrl: baseUrl
+                            path: fParam, baseUrl: baseUrl, cookies: cookies
                         )
                     } catch {
                         await MainActor.run {

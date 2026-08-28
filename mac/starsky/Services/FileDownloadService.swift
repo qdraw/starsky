@@ -24,27 +24,30 @@ class FileDownloadService {
         }
     }
 
-    func downloadAndOpen(path: String, baseUrl: String, openFile: Bool = true) async throws {
+    func downloadAndOpen(path: String, baseUrl: String, openFile: Bool = true, cookies: [HTTPCookie] = []) async throws {
         guard let encodedPath = path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             throw DownloadError.invalidPath
         }
 
+        let cookieHeader: String? = cookies.isEmpty ? nil
+            : cookies.map { "\($0.name)=\($0.value)" }.joined(separator: "; ")
+
         guard let indexURL = URL(string: "\(baseUrl)/starsky/api/index?f=\(encodedPath)") else {
             throw DownloadError.invalidPath
         }
-        let (_, indexResponse) = try await session.data(from: indexURL)
+        let (_, indexResponse) = try await session.data(for: request(indexURL, cookieHeader: cookieHeader))
         guard let http = indexResponse as? HTTPURLResponse, http.statusCode == 200 else {
             throw DownloadError.fileNotFound
         }
 
         if let sidecarURL = URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=\(encodedPath)") {
-            _ = try? await session.data(from: sidecarURL)
+            _ = try? await session.data(for: request(sidecarURL, cookieHeader: cookieHeader))
         }
 
         guard let photoURL = URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=\(encodedPath)&cache=false") else {
             throw DownloadError.invalidPath
         }
-        let (photoData, photoResponse) = try await session.data(from: photoURL)
+        let (photoData, photoResponse) = try await session.data(for: request(photoURL, cookieHeader: cookieHeader))
         guard let photoHTTP = photoResponse as? HTTPURLResponse, photoHTTP.statusCode == 200 else {
             throw DownloadError.downloadFailed
         }
@@ -66,6 +69,14 @@ class FileDownloadService {
         }
 
         fileLogger.info("Downloaded and opened \(filename)", category: "FileDownloadService")
+    }
+
+    private func request(_ url: URL, cookieHeader: String?) -> URLRequest {
+        var req = URLRequest(url: url)
+        if let cookieHeader {
+            req.setValue(cookieHeader, forHTTPHeaderField: "Cookie")
+        }
+        return req
     }
 }
 
