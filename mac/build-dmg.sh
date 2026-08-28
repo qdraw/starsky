@@ -85,6 +85,7 @@ if ! $SKIP_BACKEND; then
         universal) RUNTIMES="osx-x64,osx-arm64" ;;
         arm64)     RUNTIMES="osx-arm64" ;;
         x64)       RUNTIMES="osx-x64" ;;
+        *) echo "Unsupported architecture: $ARCH" >&2; exit 1 ;;
     esac
 
     pushd "$STARSKY_DIR" > /dev/null
@@ -131,6 +132,7 @@ case "$ARCH" in
     universal) ARCHS_VAL="arm64 x86_64"; ONLY_ACTIVE="NO" ;;
     arm64)     ARCHS_VAL="arm64";        ONLY_ACTIVE="NO" ;;
     x64)       ARCHS_VAL="x86_64";      ONLY_ACTIVE="NO" ;;
+    *) echo "Unsupported architecture: $ARCH" >&2; exit 1 ;;
 esac
 
 if $SIGN; then
