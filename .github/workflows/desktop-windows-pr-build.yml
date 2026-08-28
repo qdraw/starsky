@@ -1,4 +1,4 @@
-name: Desktop WPF PR Build (Windows)
+name: Desktop Windows PR Build
 
 permissions:
   contents: read
@@ -16,7 +16,7 @@ on:
     branches: [master]
     paths:
       - 'windows/**'
-      - '.github/workflows/**'
+      - '.github/workflows/desktop-windows-pr-build.yml'
 
 jobs:
   build:
