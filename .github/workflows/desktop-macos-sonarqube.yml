@@ -164,6 +164,9 @@ jobs:
             -Dsonar.token="$STARSKY_SONAR_TOKEN" \
             -Dsonar.host.url="$SONAR_URL" \
             -Dsonar.sources=mac \
+            -Dsonar.inclusions="mac/**" \
+            -Dsonar.coverage.exclusions="**" \
+            -Dsonar.coverage.inclusions="mac/**" \
             -Dsonar.coverageReportPaths=TestResults/sonarqube-coverage.xml \
             $SONAR_ARGS
 
