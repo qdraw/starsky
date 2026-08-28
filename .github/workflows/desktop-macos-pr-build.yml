@@ -1,4 +1,4 @@
-name: Desktop macOS — Build & Test
+name: Desktop macOS PR Build
 
 on:
   push:
