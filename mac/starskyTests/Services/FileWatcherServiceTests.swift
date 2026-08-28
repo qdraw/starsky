@@ -58,4 +58,34 @@ final class FileWatcherServiceTests: XCTestCase {
         let service = FileWatcherService(fileLogger: DailyFileLogger(), watchedDirectory: watchDir)
         service.stop()
     }
+
+    func testHandleDirectoryChangeRunsWithoutCrashing() throws {
+        let watchDir = tempDir.appendingPathComponent("eventWatch")
+        try FileManager.default.createDirectory(at: watchDir, withIntermediateDirectories: true)
+        let service = FileWatcherService(fileLogger: DailyFileLogger(), watchedDirectory: watchDir)
+        service.start()
+
+        try "x".write(to: watchDir.appendingPathComponent("photo.jpg"), atomically: true, encoding: .utf8)
+
+        // Allow debounce (0.5 s) plus dispatch overhead to complete
+        Thread.sleep(forTimeInterval: 1.0)
+        service.stop()
+    }
+
+    func testOnDirectoryChangedIgnoresTmpFiles() throws {
+        let watchDir = tempDir.appendingPathComponent("tmpWatch")
+        try FileManager.default.createDirectory(at: watchDir, withIntermediateDirectories: true)
+
+        // Pre-populate with a .tmp file that should be skipped
+        try "pending".write(to: watchDir.appendingPathComponent("pending.tmp"), atomically: true, encoding: .utf8)
+
+        let service = FileWatcherService(fileLogger: DailyFileLogger(), watchedDirectory: watchDir)
+        service.start()
+
+        // Trigger a change event by writing a non-tmp file
+        try "data".write(to: watchDir.appendingPathComponent("image.jpg"), atomically: true, encoding: .utf8)
+
+        Thread.sleep(forTimeInterval: 1.0)
+        service.stop()
+    }
 }

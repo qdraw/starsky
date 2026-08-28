@@ -157,6 +157,43 @@ final class MainWindowPresenterTests: XCTestCase {
 
         XCTAssertNil(mockView.evaluatedJavaScript)
     }
+
+    func testEditFileInEditorExternalUrlWithRootFParamDoesNothing() {
+        let presenter = makePresenter(baseUrl: "http://localhost:5000")
+        let mockView = MockMainWindowView()
+        // f=/ should be ignored per the presenter guard
+        mockView.stubbedURL = URL(string: "https://external.com/page?f=/")
+        presenter.view = mockView
+
+        presenter.editFileInEditor()
+
+        XCTAssertNil(mockView.evaluatedJavaScript)
+    }
+
+    // MARK: - handleNewWindowRequest
+
+    func testHandleNewWindowRequestForAllowedOriginOpensViaWindowManager() async {
+        let presenter = makePresenter(baseUrl: "http://localhost:5000")
+        presenter.handleNewWindowRequest(for: URL(string: "http://localhost:5000/photos?f=/trip")!)
+        // Yield to let the MainActor Task scheduled by handleNewWindowRequest execute
+        await Task.yield()
+        XCTAssertTrue(mockWindowManager.openMainWindowCalled)
+        XCTAssertEqual(mockWindowManager.openMainWindowRoute, "/photos?f=/trip")
+    }
+
+    func testHandleNewWindowRequestForExternalOriginOpensInBrowser() {
+        let presenter = makePresenter(baseUrl: "http://localhost:5000")
+        presenter.handleNewWindowRequest(for: URL(string: "https://example.com/page")!)
+        XCTAssertFalse(mockWindowManager.openMainWindowCalled)
+        XCTAssertEqual(openedURLs.map(\.absoluteString), ["https://example.com/page"])
+    }
+
+    func testHandleNewWindowRequestPreservesQueryAndFragment() async {
+        let presenter = makePresenter(baseUrl: "http://localhost:5000")
+        presenter.handleNewWindowRequest(for: URL(string: "http://localhost:5000/search?q=test#top")!)
+        await Task.yield()
+        XCTAssertEqual(mockWindowManager.openMainWindowRoute, "/search?q=test#top")
+    }
 }
 
 // MARK: - Test doubles

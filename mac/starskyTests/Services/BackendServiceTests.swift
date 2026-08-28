@@ -65,4 +65,72 @@ final class BackendServiceTests: XCTestCase {
         let env = BackendService.buildEnvironment(port: 5000)
         XCTAssertEqual(env["app__NoAccountLocalhost"], "true")
     }
+
+    func testIsRunningReturnsFalseWhenNotStarted() {
+        let service = BackendService(fileLogger: DailyFileLogger())
+        XCTAssertFalse(service.isRunning)
+    }
+
+    func testStartThrowsWhenExecutableMissing() {
+        let service = BackendService(fileLogger: DailyFileLogger())
+        // findBackendExe() returns nil in the test environment (no app bundle runtime dir)
+        if service.findBackendExe() == nil {
+            XCTAssertThrowsError(try service.start(port: 19990)) { error in
+                XCTAssertTrue(error is BackendError)
+            }
+        }
+    }
+
+    func testStartAndStopWithFakeProcess() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtime")
+        try FakeStarskyBin.create(in: runtimeDir)
+
+        let service = TestableBackendService(
+            fileLogger: DailyFileLogger(),
+            xattrPath: "/usr/bin/true",
+            codesignPath: "/usr/bin/true"
+        )
+        service.fakeExeURL = runtimeDir.appendingPathComponent("starsky")
+
+        try service.start(port: 19991)
+        XCTAssertTrue(service.isRunning)
+        service.stop()
+        XCTAssertFalse(service.isRunning)
+    }
+
+    func testClearQuarantineWithBogusToolsDoesNotCrash() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtime2")
+        try FakeStarskyBin.create(in: runtimeDir)
+
+        let service = TestableBackendService(
+            fileLogger: DailyFileLogger(),
+            xattrPath: "/nonexistent/xattr",
+            codesignPath: "/nonexistent/codesign"
+        )
+        service.fakeExeURL = runtimeDir.appendingPathComponent("starsky")
+
+        XCTAssertNoThrow(try service.start(port: 19992))
+        service.stop()
+    }
+
+    func testStopOnAlreadyStoppedServiceAfterStartDoesNotCrash() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtime3")
+        try FakeStarskyBin.create(in: runtimeDir)
+
+        let service = TestableBackendService(
+            fileLogger: DailyFileLogger(),
+            xattrPath: "/usr/bin/true",
+            codesignPath: "/usr/bin/true"
+        )
+        service.fakeExeURL = runtimeDir.appendingPathComponent("starsky")
+
+        try service.start(port: 19993)
+        service.stop()
+        service.stop()
+    }
+}
+
+private class TestableBackendService: BackendService {
+    var fakeExeURL: URL?
+    override func findBackendExe() -> URL? { fakeExeURL }
 }

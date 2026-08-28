@@ -107,4 +107,72 @@ final class FileDownloadServiceTests: XCTestCase {
             XCTAssertTrue(error is DownloadError)
         }
     }
+
+    func testIndexNotFoundThrowsFileNotFound() async {
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testMissingPath
+
+        FakeURLProtocol.enqueue(statusCode: 404, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Fmissing.jpg")!, data: Data())
+
+        let service = FileDownloadService(
+            fileLogger: DailyFileLogger(),
+            session: FakeURLProtocol.makeSession(),
+            tempFolder: tempDir
+        )
+        do {
+            try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false)
+            XCTFail("Expected error was not thrown")
+        } catch DownloadError.fileNotFound {
+            // expected
+        } catch {
+            XCTFail("Wrong error type: \(error)")
+        }
+    }
+
+    func testExistingFileIsOverwritten() async throws {
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testPhotoPath
+        let destFile = tempDir.appendingPathComponent("photos/test.jpg")
+
+        // Pre-create the destination file with old content
+        try FileManager.default.createDirectory(at: destFile.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try "old-content".write(to: destFile, atomically: true, encoding: .utf8)
+
+        let newData = "new-jpeg-bytes".data(using: .utf8)!
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=%2Fphotos%2Ftest.jpg&cache=false")!, data: newData)
+
+        let service = FileDownloadService(
+            fileLogger: DailyFileLogger(),
+            session: FakeURLProtocol.makeSession(),
+            tempFolder: tempDir
+        )
+        try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false)
+
+        let written = try Data(contentsOf: destFile)
+        XCTAssertEqual(written, newData)
+    }
+
+    func testMultipleCookiesAreConcatenated() async throws {
+        let baseUrl = Self.remoteBaseUrl
+        let path = Self.testPhotoPath
+
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=%2Fphotos%2Ftest.jpg&cache=false")!, data: "x".data(using: .utf8)!)
+
+        let cookie1 = HTTPCookie(properties: [.name: "a", .value: "1", .domain: "remote.example.com", .path: "/"])!
+        let cookie2 = HTTPCookie(properties: [.name: "b", .value: "2", .domain: "remote.example.com", .path: "/"])!
+
+        let service = FileDownloadService(
+            fileLogger: DailyFileLogger(),
+            session: FakeURLProtocol.makeSession(),
+            tempFolder: tempDir
+        )
+        try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false, cookies: [cookie1, cookie2])
+
+        let headers = FakeURLProtocol.capturedRequests.compactMap { $0.value(forHTTPHeaderField: "Cookie") }
+        XCTAssertTrue(headers.allSatisfy { $0.contains("a=1") && $0.contains("b=2") })
+    }
 }

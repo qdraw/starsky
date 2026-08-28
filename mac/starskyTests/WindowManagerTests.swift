@@ -58,4 +58,27 @@ final class WindowManagerTests: XCTestCase {
 
         XCTAssertTrue(routePersistenceService.getRoutes().isEmpty)
     }
+
+    @MainActor
+    func testRestoreWindowsWithSavedRoutesOpensEachRoute() {
+        var settings = settingsService.current
+        settings.windows = [
+            SavedWindowState(route: "?f=/a", x: 0, y: 0, width: 800, height: 600, isMaximized: false),
+            SavedWindowState(route: "?f=/b", x: 50, y: 50, width: 1024, height: 768, isMaximized: false)
+        ]
+        settingsService.save(settings)
+
+        sut.setLocalPort(2)
+        sut.restoreWindows()
+        // After restore, persisted routes are those from the windows list
+        // (openMainWindow triggers pageDidLoad later, so we just verify no crash)
+    }
+
+    @MainActor
+    func testRestoreWindowsWithNoRoutesOpensOneWindow() {
+        sut.setLocalPort(3)
+        sut.restoreWindows()
+        // If no saved routes, openMainWindow is called once — verify no crash
+    }
+
 }

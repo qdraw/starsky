@@ -59,4 +59,17 @@ final class RemoteUrlValidatorTests: XCTestCase {
         let result = await v.validate(urlString: Self.unreachableUrl)
         XCTAssertFalse(result.success)
     }
+
+    func testMalformedUrlFails() async {
+        let v = makeValidator()
+        let result = await v.validate(urlString: "not a url at all ://??")
+        XCTAssertFalse(result.success)
+        XCTAssertNotNil(result.error)
+    }
+
+    func testWhitespaceOnlyFails() async {
+        let v = makeValidator()
+        let result = await v.validate(urlString: "   ")
+        XCTAssertFalse(result.success)
+    }
 }
