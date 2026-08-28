@@ -1,4 +1,4 @@
-name: Windows .NET build
+name: WebApp Build .NET Windows
 
 permissions:
   contents: read
