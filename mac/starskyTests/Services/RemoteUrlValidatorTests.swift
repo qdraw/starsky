@@ -72,4 +72,23 @@ final class RemoteUrlValidatorTests: XCTestCase {
         let result = await v.validate(urlString: "   ")
         XCTAssertFalse(result.success)
     }
+
+    func testHttpSchemeSucceeds() async {
+        let healthUrl = URL(string: "http://example.com/api/health")!
+        let v = makeValidator(responses: [(200, healthUrl, Data())])
+        let result = await v.validate(urlString: "http://example.com")
+        XCTAssertTrue(result.success)
+    }
+
+    func testUrlWithTrailingWhitespaceSucceeds() async {
+        let v = makeValidator(responses: [(200, Self.exampleHealthUrl, Data())])
+        let result = await v.validate(urlString: "  \(Self.exampleBaseUrl)  ")
+        XCTAssertTrue(result.success)
+    }
+
+    func testUrlWithNoHostFails() async {
+        let v = makeValidator()
+        let result = await v.validate(urlString: "https://")
+        XCTAssertFalse(result.success)
+    }
 }

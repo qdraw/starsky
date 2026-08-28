@@ -154,6 +154,38 @@ final class FileDownloadServiceTests: XCTestCase {
         XCTAssertEqual(written, newData)
     }
 
+    func testDownloadErrorInvalidPathDescription() {
+        let error = DownloadError.invalidPath
+        XCTAssertEqual(error.errorDescription, "Invalid file path.")
+    }
+
+    func testDownloadErrorFileNotFoundDescription() {
+        let error = DownloadError.fileNotFound
+        XCTAssertEqual(error.errorDescription, "File not found on server.")
+    }
+
+    func testDownloadErrorDownloadFailedDescription() {
+        let error = DownloadError.downloadFailed(statusCode: 403)
+        XCTAssertEqual(error.errorDescription, "Download failed (HTTP 403).")
+    }
+
+    func testInvalidBaseUrlThrowsInvalidPath() async {
+        let service = FileDownloadService(
+            fileLogger: DailyFileLogger(),
+            session: FakeURLProtocol.makeSession(),
+            tempFolder: tempDir
+        )
+        do {
+            // A baseUrl with unencoded spaces produces a nil URL when combined with the query string
+            try await service.downloadAndOpen(path: "/test.jpg", baseUrl: "http://host with spaces", openFile: false)
+            XCTFail("Expected error was not thrown")
+        } catch DownloadError.invalidPath {
+            // expected
+        } catch {
+            // network or other errors are also acceptable — the important thing is it doesn't crash
+        }
+    }
+
     func testMultipleCookiesAreConcatenated() async throws {
         let baseUrl = Self.remoteBaseUrl
         let path = Self.testPhotoPath

@@ -24,4 +24,44 @@ final class ApplicationPathsTests: XCTestCase {
         XCTAssertTrue(ApplicationPaths.tempFolder.path.hasPrefix(ApplicationPaths.caches.path))
         XCTAssertEqual(ApplicationPaths.tempFolder.lastPathComponent, "tempFolder")
     }
+
+    func testAppSettingsFileUnderAppSupport() {
+        XCTAssertTrue(ApplicationPaths.appSettingsFile.path.hasPrefix(ApplicationPaths.appSupport.path))
+        XCTAssertEqual(ApplicationPaths.appSettingsFile.lastPathComponent, "appsettings.json")
+    }
+
+    func testAppSettingsLocalFileUnderAppSupport() {
+        XCTAssertTrue(ApplicationPaths.appSettingsLocalFile.path.hasPrefix(ApplicationPaths.appSupport.path))
+        XCTAssertEqual(ApplicationPaths.appSettingsLocalFile.lastPathComponent, "appsettings.local.json")
+    }
+
+    func testDatabaseFileUnderAppSupport() {
+        XCTAssertTrue(ApplicationPaths.databaseFile.path.hasPrefix(ApplicationPaths.appSupport.path))
+        XCTAssertEqual(ApplicationPaths.databaseFile.lastPathComponent, "starsky.db")
+    }
+
+    func testThumbnailTempFolderUnderAppSupport() {
+        XCTAssertTrue(ApplicationPaths.thumbnailTempFolder.path.hasPrefix(ApplicationPaths.appSupport.path))
+        XCTAssertEqual(ApplicationPaths.thumbnailTempFolder.lastPathComponent, "thumbnailTempFolder")
+    }
+
+    func testRuntimeDirectoryUnderBundleContents() {
+        let runtimeDir = ApplicationPaths.runtimeDirectory
+        XCTAssertTrue(runtimeDir.path.contains("Contents/MacOS"))
+        #if arch(arm64)
+        XCTAssertEqual(runtimeDir.lastPathComponent, "runtime-starsky-osx-arm64")
+        #else
+        XCTAssertEqual(runtimeDir.lastPathComponent, "runtime-starsky-osx-x64")
+        #endif
+    }
+
+    func testEnsureDirectoriesCreatesRequiredDirs() throws {
+        try ApplicationPaths.ensureDirectories()
+        let fm = FileManager.default
+        XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.appSupport.path))
+        XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.caches.path))
+        XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.logsDirectory.path))
+        XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.thumbnailTempFolder.path))
+        XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.tempFolder.path))
+    }
 }
