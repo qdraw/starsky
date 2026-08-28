@@ -99,7 +99,6 @@ jobs:
             /o:"$env:STARSKY_SONAR_ORGANISATION" `
             /d:sonar.token="$env:STARSKY_SONAR_TOKEN" `
             /d:sonar.host.url="$sonarUrl" `
-            /d:sonar.sources="windows" `
             /d:sonar.inclusions="windows/**" `
             /d:sonar.coverage.exclusions="**" `
             /d:sonar.coverage.inclusions="windows/**" `
