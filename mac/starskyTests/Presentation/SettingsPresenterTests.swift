@@ -190,7 +190,11 @@ final class SettingsPresenterTests: XCTestCase {
 @MainActor
 private class MockWindowManager: WindowManagerProtocol {
     var reopenAllCalled = false
-    func openMainWindow(route: String?) {}
+    func openMainWindow(route: String?) {
+        // Intentionally no-op: these tests assert settings-save/reopen behavior only.
+        // openMainWindow is required by the protocol but not part of this scenario.
+        _ = route
+    }
     func reopenAll() { reopenAllCalled = true }
 }
 

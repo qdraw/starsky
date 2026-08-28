@@ -99,18 +99,14 @@ fi
 echo "==> Unpacking backend binaries"
 pushd "$STARSKY_DIR" > /dev/null
 
-if [[ "$ARCH" == "universal" || "$ARCH" == "x64" ]]; then
-    if [[ ! -d "osx-x64" ]]; then
-        [[ -f "starsky-osx-x64.zip" ]] || { echo "Error: starsky-osx-x64.zip not found in $STARSKY_DIR" >&2; exit 1; }
-        unzip -q starsky-osx-x64.zip -d osx-x64
-    fi
+if [[ ( "$ARCH" == "universal" || "$ARCH" == "x64" ) && ! -d "osx-x64" ]]; then
+    [[ -f "starsky-osx-x64.zip" ]] || { echo "Error: starsky-osx-x64.zip not found in $STARSKY_DIR" >&2; exit 1; }
+    unzip -q starsky-osx-x64.zip -d osx-x64
 fi
 
-if [[ "$ARCH" == "universal" || "$ARCH" == "arm64" ]]; then
-    if [[ ! -d "osx-arm64" ]]; then
-        [[ -f "starsky-osx-arm64.zip" ]] || { echo "Error: starsky-osx-arm64.zip not found in $STARSKY_DIR" >&2; exit 1; }
-        unzip -q starsky-osx-arm64.zip -d osx-arm64
-    fi
+if [[ ( "$ARCH" == "universal" || "$ARCH" == "arm64" ) && ! -d "osx-arm64" ]]; then
+    [[ -f "starsky-osx-arm64.zip" ]] || { echo "Error: starsky-osx-arm64.zip not found in $STARSKY_DIR" >&2; exit 1; }
+    unzip -q starsky-osx-arm64.zip -d osx-arm64
 fi
 
 popd > /dev/null
