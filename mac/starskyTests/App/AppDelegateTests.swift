@@ -41,28 +41,3 @@ final class AppDelegateTests: XCTestCase {
         delegate.applicationWillTerminate(Notification(name: NSApplication.willTerminateNotification))
     }
 }
-
-// MARK: - NSMenu extension
-
-final class NSMenuExtensionTests: XCTestCase {
-    func testAddItemReturnsItemWithCorrectTitle() {
-        let menu = NSMenu()
-        let item = menu.addItem(withTitle: "Test Item", action: nil, keyEquivalent: "t")
-        XCTAssertEqual(item.title, "Test Item")
-        XCTAssertEqual(item.keyEquivalent, "t")
-    }
-
-    func testAddItemAppendsToMenu() {
-        let menu = NSMenu()
-        menu.addItem(withTitle: "First", action: nil, keyEquivalent: "")
-        menu.addItem(withTitle: "Second", action: nil, keyEquivalent: "")
-        XCTAssertEqual(menu.items.count, 2)
-        XCTAssertEqual(menu.items[1].title, "Second")
-    }
-
-    func testAddItemReturnsDiscardableResult() {
-        let menu = NSMenu()
-        menu.addItem(withTitle: "Discarded", action: nil, keyEquivalent: "")
-        XCTAssertEqual(menu.items.count, 1)
-    }
-}

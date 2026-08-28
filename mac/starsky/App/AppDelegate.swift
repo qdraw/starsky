@@ -351,12 +351,3 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSWorkspace.shared.open(Self.releasesURL)
     }
 }
-
-extension NSMenu {
-    @discardableResult
-    func addItem(withTitle title: String, action: Selector?, keyEquivalent: String) -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: action, keyEquivalent: keyEquivalent)
-        addItem(item)
-        return item
-    }
-}
