@@ -16,7 +16,7 @@ on:
     branches: [ master ]
     paths:
     - 'starskydesktop/**'
-    - '.github/workflows/**'
+    - '.github/workflows/desktop-electron-pr-build-mac-win.yml'
 
 jobs:
   build:

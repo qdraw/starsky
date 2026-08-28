@@ -34,6 +34,11 @@ public class SettingsService(ILogger<SettingsService> logger, string? settingsFi
         return Current;
     }
 
+    /// <summary>
+    /// Saves the current settings to the settings file
+    /// </summary>
+    /// <param name="settings">The settings to save</param>
+    /// <returns></returns>
     public void Save(DesktopSettings settings)
     {
         try

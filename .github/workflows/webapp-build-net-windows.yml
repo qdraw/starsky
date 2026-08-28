@@ -1,4 +1,4 @@
-name: Windows .NET build
+name: WebApp Build .NET Windows
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ on:
     paths:
     - 'starsky/**'
     - '!starsky/starsky/clientapp/**'
-    - '.github/workflows/**'
+    - '.github/workflows/webapp-build-net-windows.yml'
     - '!starsky/Dockerfile'
     - '!starsky/docker_demo_setup.sh'
 

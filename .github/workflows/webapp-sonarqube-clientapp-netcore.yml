@@ -1,4 +1,4 @@
-name: SonarQube ClientApp .NET Analyze
+name: WebApp SonarQube ClientApp .NET Analyze
 permissions:
   contents: read
 
@@ -12,7 +12,7 @@ on:
       - master
     paths:
     - 'starsky/**'
-    - '.github/workflows/**'
+    - '.github/workflows/webapp-sonarqube-clientapp-netcore.yml'
     - '!starsky/Dockerfile'
     - '!starsky/docker_demo_setup.sh'    
     - '!history.md'
