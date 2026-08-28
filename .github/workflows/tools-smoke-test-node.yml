@@ -21,7 +21,7 @@ on:
     - 'starsky-tools/mail/**'
     - 'starsky-tools/mock/**'
     - 'starsky-tools/thumbnail/**'
-    - '.github/workflows/**'
+    - '.github/workflows/tools-smoke-test-node.yml'
   workflow_dispatch: 
 
 jobs:
