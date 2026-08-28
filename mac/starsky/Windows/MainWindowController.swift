@@ -54,7 +54,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     private func setupWebView() {
         let config = WKWebViewConfiguration()
         config.applicationNameForUserAgent = ApplicationInfo.userAgentSuffix
-        config.preferences.setValue(true, forKey: "developerExtrasEnabled")
+        config.preferences.setValue(true, forKey: "developerExtrasEnabled") // NOSONAR swift:S4507
 
         let middleClickScript = WKUserScript(source: """
             document.addEventListener('auxclick', function(e) {
