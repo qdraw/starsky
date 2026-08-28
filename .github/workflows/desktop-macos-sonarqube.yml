@@ -93,61 +93,17 @@ jobs:
 
       - name: Convert coverage to SonarQube generic format
         run: |
-          xcrun xccov view --report --json TestResults/macos.xcresult > TestResults/coverage.json
-          REPO_ROOT="$(pwd)"
-          python3 - "$REPO_ROOT" <<'EOF'
-          import json, re, subprocess, sys, os
+          curl -sSLo TestResults/xccov-to-sonarqube-generic.sh \
+            https://raw.githubusercontent.com/SonarSource/sonar-scanning-examples/master/swift-coverage/xccov-to-sonarqube-generic.sh
+          chmod +x TestResults/xccov-to-sonarqube-generic.sh
+          TestResults/xccov-to-sonarqube-generic.sh TestResults/macos.xcresult > TestResults/sonarqube-coverage.xml
 
-          repo_root = sys.argv[1].rstrip("/") + "/"
-
-          with open("TestResults/coverage.json") as f:
-              data = json.load(f)
-
-          lines = ['<coverage version="1">']
-          file_count = 0
-
-          for target in data.get("targets", []):
-              for src_file in target.get("files", []):
-                  abs_path = src_file.get("path", "")
-                  if not abs_path or not abs_path.endswith(".swift"):
-                      continue
-                  if not abs_path.startswith(repo_root):
-                      continue
-
-                  rel_path = abs_path[len(repo_root):]
-                  if not rel_path.startswith("mac/"):
-                      continue
-
-                  result = subprocess.run(
-                      ["xcrun", "xccov", "view", "--file", abs_path, "--archive", "TestResults/macos.xcresult"],
-                      capture_output=True, text=True,
-                  )
-                  if result.returncode != 0:
-                      continue
-
-                  file_lines = []
-                  for row in result.stdout.splitlines():
-                      m = re.match(r'\s+(\d+)\|\s+(\S+)\|', row)
-                      if not m:
-                          continue
-                      line_num, count_str = int(m.group(1)), m.group(2)
-                      if not count_str.lstrip('*').isdigit():
-                          continue
-                      covered = "true" if int(count_str.lstrip('*')) > 0 else "false"
-                      file_lines.append(f'    <lineToCover lineNumber="{line_num}" covered="{covered}"/>')
-
-                  if file_lines:
-                      lines.append(f'  <file path="{rel_path}">')
-                      lines.extend(file_lines)
-                      lines.append("  </file>")
-                      file_count += 1
-
-          lines.append("</coverage>")
-
-          with open("TestResults/sonarqube-coverage.xml", "w") as f:
-              f.write("\n".join(lines))
-          print(f"Wrote coverage for {file_count} files")
-          EOF
+          FILE_COUNT=$(grep -c '<file path=' TestResults/sonarqube-coverage.xml || true)
+          echo "Coverage XML file entries: ${FILE_COUNT}"
+          if [ "${FILE_COUNT}" -eq 0 ]; then
+            echo "No files were written to TestResults/sonarqube-coverage.xml"
+            exit 1
+          fi
 
       - name: Run SonarQube analysis
         env:
