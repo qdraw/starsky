@@ -1,4 +1,4 @@
-name: Ubuntu .NET build
+name: WebApp Build .NET Ubuntu Linux
 permissions:
   contents: read
 
