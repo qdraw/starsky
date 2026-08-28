@@ -1,4 +1,4 @@
-name: SonarQube Desktop WPF .NET Analyze
+name: "Desktop Windows SonarQube .NET"
 
 on:
   workflow_dispatch:
@@ -10,12 +10,12 @@ on:
       - master
     paths:
       - 'windows/**'
-      - '.github/workflows/desktop-wpf-sonarqube-net.yml'
+      - '.github/workflows/desktop-windows-sonarqube-net.yml'
   push:
     branches: [master]
     paths:
       - 'windows/**'
-      - '.github/workflows/desktop-wpf-sonarqube-net.yml'
+      - '.github/workflows/desktop-windows-sonarqube-net.yml'
   schedule:
     - cron: '36 0 * * 0,2,4,6'
 
@@ -99,6 +99,7 @@ jobs:
             /o:"$env:STARSKY_SONAR_ORGANISATION" `
             /d:sonar.token="$env:STARSKY_SONAR_TOKEN" `
             /d:sonar.host.url="$sonarUrl" `
+            /d:sonar.sources="windows" `
             /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" `
             @prArgs
 

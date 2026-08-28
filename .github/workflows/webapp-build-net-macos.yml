@@ -1,4 +1,4 @@
-name: MacOS Webapp .NET only build
+name: WebApp Build .NET macOS
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ on:
     paths:
     - 'starsky/**'
     - '!starsky/starsky/clientapp/**'
-    - '.github/workflows/**'
+    - '.github/workflows/webapp-build-net-macos.yml'
     - '!starsky/Dockerfile'
     - '!starsky/docker_demo_setup.sh'
 
