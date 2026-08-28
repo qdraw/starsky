@@ -113,12 +113,8 @@ COPY --chown=app:app --from=build-env /app/data.db /app/app__data.db
 COPY --chown=app:app --from=react-build /app/starsky/clientapp ./clientapp
 
 # Create necessary directories and set ownership
-RUN mkdir -p /app/photos && chown app:app /app/photos
-RUN mkdir -p /app/thumbnailTempFolder && chown app:app /app/thumbnailTempFolder
-RUN mkdir -p /app/storageFolder && chown app:app /app/storageFolder
-RUN mkdir -p /app/dependencies && chown app:app /app/dependencies
-RUN mkdir -p /app/temp && chown app:app /app/temp
-RUN chown app:app /app
+RUN mkdir -p /app/photos /app/thumbnailTempFolder /app/storageFolder /app/dependencies /app/temp \
+    && chown app:app /app /app/photos /app/thumbnailTempFolder /app/storageFolder /app/dependencies /app/temp
 USER app
 
 EXPOSE 8080
