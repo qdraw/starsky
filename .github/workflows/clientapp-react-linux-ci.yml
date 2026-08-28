@@ -16,7 +16,7 @@ on:
     branches: [ master ]
     paths:
     - 'starsky/starsky/clientapp/**'
-    - '.github/workflows/**'
+    - '.github/workflows/clientapp-react-linux-ci.yml'
   workflow_dispatch:
   schedule:
     - cron:  '30 4 * * */1'    

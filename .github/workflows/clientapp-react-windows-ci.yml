@@ -12,11 +12,12 @@ on:
     branches: [ master ]
     paths:
     - 'starsky/starsky/clientapp/**'
+    - '.github/workflows/clientapp-react-windows-ci.yml'
   pull_request:
     branches: [ master ]
     paths:
     - 'starsky/starsky/clientapp/**'
-    - '.github/workflows/**'
+    - '.github/workflows/clientapp-react-windows-ci.yml'
   workflow_dispatch:
     
 
