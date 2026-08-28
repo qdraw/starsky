@@ -13,7 +13,7 @@
 #   --output-dir <path>            Output directory (default: ./build)
 #   -h, --help                     Show this help
 
-if [ -z "${BASH_VERSION:-}" ]; then
+if [[ -z "${BASH_VERSION:-}" ]]; then
     exec bash "$0" "$@"
 fi
 

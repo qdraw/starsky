@@ -7,7 +7,7 @@ import OSLog
     func detach()
 }
 
-class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate, MainWindowView {
+class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate, MainWindowView { // NOSONAR swift:S7485
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "MainWindowController")
     private let options: MainWindowOptions
     private let presenter: MainWindowPresenter
