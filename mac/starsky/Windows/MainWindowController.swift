@@ -2,6 +2,11 @@ import AppKit
 import WebKit
 import OSLog
 
+@objc private protocol WKInspectorProtocol {
+    func show()
+    func detach()
+}
+
 class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "MainWindowController")
     private let options: MainWindowOptions
@@ -127,9 +132,9 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
 
     @objc func openDevTools() {
         guard let inspector = webView.value(forKey: "_inspector") as? NSObject else { return }
-        inspector.perform(Selector(("show")))
+        inspector.perform(#selector(WKInspectorProtocol.show))
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            inspector.perform(Selector(("detach")))
+            inspector.perform(#selector(WKInspectorProtocol.detach))
         }
     }
 
