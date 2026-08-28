@@ -1,4 +1,4 @@
-name: Webapp SonarQube ClientApp .NET Analyze
+name: WebApp SonarQube ClientApp .NET Analyze
 permissions:
   contents: read
 
