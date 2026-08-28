@@ -100,7 +100,6 @@ jobs:
             /d:sonar.token="$env:STARSKY_SONAR_TOKEN" `
             /d:sonar.host.url="$sonarUrl" `
             /d:sonar.inclusions="windows/**" `
-            /d:sonar.coverage.exclusions="**" `
             /d:sonar.coverage.inclusions="windows/**" `
             /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" `
             @prArgs
