@@ -24,6 +24,8 @@ on:
     - '**.sln'
     - '**.json'
     - '**.csproj'
+  schedule:
+    - cron:  '45 6 * * 1'
 
 jobs:
   build:
