@@ -14,7 +14,7 @@ on:
     - '!starsky/starsky/clientapp/**'
     - '!starsky/Dockerfile'
     - '!starsky/docker_demo_setup.sh'
-    - '.github/workflows/**'
+    - '.github/workflows/webapp-build-net-ubuntu.yml'
   workflow_dispatch:
   push:
     branches: [release/*]
