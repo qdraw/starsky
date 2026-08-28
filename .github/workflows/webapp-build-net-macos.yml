@@ -1,4 +1,4 @@
-name: MacOS Webapp .NET only build
+name: WebApp Build .NET macOS
 
 permissions:
   contents: read
