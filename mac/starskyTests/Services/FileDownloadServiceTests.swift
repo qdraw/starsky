@@ -22,9 +22,9 @@ final class FileDownloadServiceTests: XCTestCase {
         let path = "/photos/test.jpg"
         let imageData = "fake-jpeg-bytes".data(using: .utf8)!
 
-        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=\(path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)")!, data: Data())
-        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=\(path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)")!, data: Data())
-        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=\(path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)&cache=false")!, data: imageData)
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=%2Fphotos%2Ftest.jpg&cache=false")!, data: imageData)
 
         let service = FileDownloadService(
             fileLogger: DailyFileLogger(),

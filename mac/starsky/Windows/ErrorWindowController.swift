@@ -1,6 +1,8 @@
 import AppKit
 
 class ErrorWindowController: NSWindowController {
+    private static var retained: Set<ErrorWindowController> = []
+
     convenience init(message: String) {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 440, height: 220),
@@ -43,13 +45,17 @@ class ErrorWindowController: NSWindowController {
         } else {
             window?.close()
         }
+        ErrorWindowController.retained.remove(self)
     }
 
     static func show(message: String, parentWindow: NSWindow? = nil) {
         let controller = ErrorWindowController(message: message)
+        retained.insert(controller)
         controller.window?.center()
         if let parent = parentWindow {
-            parent.beginSheet(controller.window!) { _ in }
+            parent.beginSheet(controller.window!) { _ in
+                retained.remove(controller)
+            }
         } else {
             controller.showWindow(nil)
         }

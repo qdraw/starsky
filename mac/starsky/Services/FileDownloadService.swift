@@ -25,7 +25,10 @@ class FileDownloadService {
     }
 
     func downloadAndOpen(path: String, baseUrl: String, openFile: Bool = true, cookies: [HTTPCookie] = []) async throws {
-        guard let encodedPath = path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+        // Encode like Uri.EscapeDataString: only unreserved chars (RFC 3986) left bare,
+        // so slashes and other reserved chars in the value don't confuse the server.
+        let unreserved = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-._~"))
+        guard let encodedPath = path.addingPercentEncoding(withAllowedCharacters: unreserved) else {
             throw DownloadError.invalidPath
         }
 
@@ -55,14 +58,18 @@ class FileDownloadService {
         }
 
         let filename = URL(fileURLWithPath: path).lastPathComponent
-        let parentDir = URL(fileURLWithPath: path).deletingLastPathComponent().lastPathComponent
+        let parentDir = URL(fileURLWithPath: path).deletingLastPathComponent().path
+            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         let destDir = tempFolder.appendingPathComponent(parentDir, isDirectory: true)
         try FileManager.default.createDirectory(at: destDir, withIntermediateDirectories: true)
 
         let tmpURL = destDir.appendingPathComponent("\(filename).tmp")
         let finalURL = destDir.appendingPathComponent(filename)
         try photoData.write(to: tmpURL)
-        _ = try? FileManager.default.replaceItemAt(finalURL, withItemAt: tmpURL)
+        if FileManager.default.fileExists(atPath: finalURL.path) {
+            try FileManager.default.removeItem(at: finalURL)
+        }
+        try FileManager.default.moveItem(at: tmpURL, to: finalURL)
 
         if openFile {
             _ = await MainActor.run {
