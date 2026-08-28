@@ -49,6 +49,7 @@ jobs:
 
       - name: Test
         run: |
+          set -o pipefail
           xcodebuild test \
             -project mac/starsky.xcodeproj \
             -scheme starskyTests \
@@ -57,7 +58,7 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             -resultBundlePath TestResults/macos.xcresult \
-            | xcpretty --report junit --output TestResults/test-results.xml || true
+            | xcpretty --report junit --output TestResults/test-results.xml
 
       - name: Upload test results
         if: always()

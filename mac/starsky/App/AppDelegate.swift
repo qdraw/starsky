@@ -20,6 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var localPort: Int = 0
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
         NSLog("[app] applicationDidFinishLaunching")
         try? "[app] start".write(to: URL(fileURLWithPath: "/tmp/starsky-trace.txt"), atomically: false, encoding: .utf8)
         do {

@@ -88,10 +88,10 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     }
 
     @objc func editFileInEditor() {
-        guard let currentUrl = currentUrl else { return }
+        guard let liveUrl = webView.url else { return }
         let baseUrl = options.navigationService.getEffectiveBaseUrl()
 
-        if options.navigationService.isAllowedOrigin(currentUrl, baseUrl: "http://localhost") {
+        if options.navigationService.isAllowedOrigin(liveUrl, baseUrl: "http://localhost") {
             let js = """
             document.dispatchEvent(new KeyboardEvent('keydown', {
                 key: 'e', code: 'KeyE', keyCode: 69, metaKey: true, bubbles: true
@@ -99,8 +99,9 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
             """
             webView.evaluateJavaScript(js)
         } else {
-            let components = URLComponents(url: currentUrl, resolvingAgainstBaseURL: false)
-            if let fParam = components?.queryItems?.first(where: { $0.name == "f" })?.value {
+            let components = URLComponents(url: liveUrl, resolvingAgainstBaseURL: false)
+            if let fParam = components?.queryItems?.first(where: { $0.name == "f" })?.value,
+               fParam != "/" && !fParam.isEmpty {
                 Task {
                     do {
                         let cookies = await withCheckedContinuation { continuation in
@@ -125,7 +126,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     }
 
     @objc func openInBrowser() {
-        guard let url = currentUrl else { return }
+        guard let url = webView.url else { return }
         NSWorkspace.shared.open(url)
     }
 
