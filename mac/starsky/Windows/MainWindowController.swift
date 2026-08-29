@@ -7,6 +7,12 @@ import OSLog
     func detach()
 }
 
+private class SilentWebView: WKWebView {
+    override func noResponderFor(_ eventSelector: Selector) {
+        // Prevent the system beep for unhandled keyboard events
+    }
+}
+
 class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate, MainWindowView { // NOSONAR swift:S7485
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "MainWindowController")
     private let options: MainWindowOptions
@@ -67,7 +73,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
             """, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
         config.userContentController.addUserScript(middleClickScript)
 
-        webView = WKWebView(frame: .zero, configuration: config)
+        webView = SilentWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = self
         webView.uiDelegate = self
         webView.translatesAutoresizingMaskIntoConstraints = false

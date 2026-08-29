@@ -9,7 +9,15 @@ class FileDownloadService {
     private let tempFolder: URL
 
     private let watcherQueue = DispatchQueue(label: "nl.qdraw.starsky.fileuploadwatcher")
-    private var watcherSources: [String: DispatchSourceFileSystemObject] = [:]
+    // Per-file fd sources (catch in-place writes; key = file path)
+    private var fileSources: [String: DispatchSourceFileSystemObject] = [:]
+    // Per-directory fd sources (catch atomic renames; key = dir path)
+    private var dirSources: [String: DispatchSourceFileSystemObject] = [:]
+    // Dir path → set of tracked file paths within it
+    private var dirFiles: [String: Set<String>] = [:]
+    // Last mtime we saw when the file was downloaded or last uploaded
+    private var lastMtimes: [String: Date] = [:]
+
     private var debounceItems: [String: DispatchWorkItem] = [:]
     private var remoteContexts: [String: (remotePath: String, baseUrl: String, cookieProvider: () async -> [HTTPCookie])] = [:]
 
@@ -33,9 +41,13 @@ class FileDownloadService {
         watcherQueue.sync {
             debounceItems.values.forEach { $0.cancel() }
             debounceItems.removeAll()
-            watcherSources.values.forEach { $0.cancel() }
-            watcherSources.removeAll()
+            fileSources.values.forEach { $0.cancel() }
+            fileSources.removeAll()
+            dirSources.values.forEach { $0.cancel() }
+            dirSources.removeAll()
             remoteContexts.removeAll()
+            lastMtimes.removeAll()
+            dirFiles.removeAll()
         }
     }
 
@@ -101,35 +113,92 @@ class FileDownloadService {
 
     private func watchFile(localURL: URL, remotePath: String, baseUrl: String, cookieProvider: @escaping () async -> [HTTPCookie]) {
         let key = localURL.path
+        let dirPath = localURL.deletingLastPathComponent().path
 
         watcherQueue.sync {
-            watcherSources[key]?.cancel()
-            watcherSources.removeValue(forKey: key)
             debounceItems[key]?.cancel()
-
-            let fd = open(localURL.path, O_EVTONLY)
-            guard fd >= 0 else {
-                logger.warning("Could not open file fd for watching: \(localURL.path)")
-                return
-            }
-
             remoteContexts[key] = (remotePath, baseUrl, cookieProvider)
+            lastMtimes[key] = mtime(of: localURL)
 
-            let src = DispatchSource.makeFileSystemObjectSource(
-                fileDescriptor: fd,
-                eventMask: .write,
-                queue: watcherQueue
-            )
-            src.setEventHandler { [weak self] in self?.handleFileChange(key: key, localURL: localURL) }
-            src.setCancelHandler { close(fd) }
-            src.resume()
-            watcherSources[key] = src
+            registerFileSource(key: key, localURL: localURL)
 
-            logger.info("Watching for changes: \(localURL.lastPathComponent)")
+            if dirSources[dirPath] == nil {
+                registerDirSource(dirPath: dirPath)
+            }
+            dirFiles[dirPath, default: []].insert(key)
         }
     }
 
-    private func handleFileChange(key: String, localURL: URL) {
+    // MARK: - Source registration (must be called on watcherQueue)
+
+    private func registerFileSource(key: String, localURL: URL) {
+        fileSources[key]?.cancel()
+        fileSources.removeValue(forKey: key)
+
+        let fd = open(localURL.path, O_EVTONLY)
+        guard fd >= 0 else {
+            logger.warning("Could not open file fd for watching: \(localURL.lastPathComponent)")
+            return
+        }
+
+        let src = DispatchSource.makeFileSystemObjectSource(
+            fileDescriptor: fd,
+            eventMask: [.write, .delete, .rename],
+            queue: watcherQueue
+        )
+        src.setEventHandler { [weak self] in self?.handleFileEvent(key: key, localURL: localURL) }
+        src.setCancelHandler { close(fd) }
+        src.resume()
+        fileSources[key] = src
+
+        logger.info("Watching for changes: \(localURL.lastPathComponent)")
+    }
+
+    private func registerDirSource(dirPath: String) {
+        let fd = open(dirPath, O_EVTONLY)
+        guard fd >= 0 else { return }
+
+        let src = DispatchSource.makeFileSystemObjectSource(
+            fileDescriptor: fd,
+            eventMask: [.write, .link, .rename],
+            queue: watcherQueue
+        )
+        src.setEventHandler { [weak self] in self?.handleDirEvent(dirPath: dirPath) }
+        src.setCancelHandler { close(fd) }
+        src.resume()
+        dirSources[dirPath] = src
+    }
+
+    // MARK: - Event handlers (run on watcherQueue)
+
+    private func handleFileEvent(key: String, localURL: URL) {
+        logger.info("File event for: \(localURL.lastPathComponent)")
+        // Re-register after a short delay so an atomic rename has time to land
+        watcherQueue.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self, self.remoteContexts[key] != nil else { return }
+            self.registerFileSource(key: key, localURL: localURL)
+        }
+        scheduleUpload(key: key, localURL: localURL)
+    }
+
+    private func handleDirEvent(dirPath: String) {
+        guard let fileKeys = dirFiles[dirPath] else { return }
+        for key in fileKeys {
+            guard remoteContexts[key] != nil else { continue }
+            let localURL = URL(fileURLWithPath: key)
+            let currentMtime = mtime(of: localURL)
+            let knownMtime = lastMtimes[key] ?? .distantPast
+            guard let currentMtime, currentMtime > knownMtime else { continue }
+            logger.info("Dir event detected change for: \(localURL.lastPathComponent)")
+            // Re-register file fd — the inode may have been replaced by an atomic rename
+            registerFileSource(key: key, localURL: localURL)
+            scheduleUpload(key: key, localURL: localURL)
+        }
+    }
+
+    // MARK: - Upload scheduling
+
+    private func scheduleUpload(key: String, localURL: URL) {
         debounceItems[key]?.cancel()
         let item = DispatchWorkItem { [weak self] in
             guard let self, let ctx = self.remoteContexts[key] else { return }
@@ -137,6 +206,7 @@ class FileDownloadService {
                 let cookies = await ctx.cookieProvider()
                 do {
                     try await self.upload(localURL: localURL, remotePath: ctx.remotePath, baseUrl: ctx.baseUrl, cookies: cookies)
+                    self.watcherQueue.async { self.lastMtimes[key] = self.mtime(of: localURL) }
                 } catch {
                     self.logger.error("Upload failed for \(localURL.lastPathComponent): \(error.localizedDescription)")
                     self.fileLogger.info("Upload failed for \(localURL.lastPathComponent): \(error.localizedDescription)", category: "FileDownloadService")
@@ -146,6 +216,8 @@ class FileDownloadService {
         debounceItems[key] = item
         watcherQueue.asyncAfter(deadline: .now() + 1.0, execute: item)
     }
+
+    // MARK: - Upload
 
     func upload(localURL: URL, remotePath: String, baseUrl: String, cookies: [HTTPCookie] = []) async throws {
         guard let data = try? Data(contentsOf: localURL) else {
@@ -177,6 +249,12 @@ class FileDownloadService {
         }
 
         fileLogger.info("Uploaded \(filename) to \(remotePath)", category: "FileDownloadService")
+    }
+
+    // MARK: - Helpers
+
+    private func mtime(of url: URL) -> Date? {
+        (try? FileManager.default.attributesOfItem(atPath: url.path))?[FileAttributeKey.modificationDate] as? Date
     }
 
     private func request(_ url: URL, cookieHeader: String?) -> URLRequest {
