@@ -18,7 +18,7 @@ private func fsEventsCallback(
     let cPaths = eventPaths.assumingMemoryBound(to: UnsafePointer<CChar>.self)
     for i in 0..<numEvents { paths.append(String(cString: cPaths[i])) }
     let flags = Array(UnsafeBufferPointer(start: eventFlags, count: numEvents))
-    svc.handleFSEvents(paths: paths, flags: flags)
+    svc.watcherQueue.async { svc.handleFSEvents(paths: paths, flags: flags) }
 }
 
 class FileDownloadService {
@@ -27,7 +27,7 @@ class FileDownloadService {
     private let session: URLSession
     private let tempFolder: URL
 
-    private let watcherQueue = DispatchQueue(label: "nl.qdraw.starsky.fileuploadwatcher")
+    let watcherQueue = DispatchQueue(label: "nl.qdraw.starsky.fileuploadwatcher")
     // localPath → remote context for files we downloaded and are watching
     private var remoteContexts: [String: (remotePath: String, baseUrl: String, cookieProvider: () async -> [HTTPCookie])] = [:]
     // dirPath → context — new files in this dir inherit this for upload
@@ -61,6 +61,7 @@ class FileDownloadService {
     deinit {
         if let stream = streamRef {
             FSEventStreamStop(stream)
+            FSEventStreamUnscheduleFromRunLoop(stream, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
             FSEventStreamInvalidate(stream)
             FSEventStreamRelease(stream)
         }
@@ -134,12 +135,15 @@ class FileDownloadService {
     }
 
     private func watchFile(localURL: URL, remotePath: String, baseUrl: String, cookieProvider: @escaping () async -> [HTTPCookie]) {
-        let key = localURL.path
-        let dirPath = localURL.deletingLastPathComponent().path
+        // Resolve symlinks now that the file's parent directory exists (created by downloadAndOpen).
+        // This ensures our dictionary keys always match the canonical paths FSEvents delivers.
+        let resolved = localURL.resolvingSymlinksInPath()
+        let key = resolved.path
+        let dirPath = resolved.deletingLastPathComponent().path
         watcherQueue.sync {
             remoteContexts[key] = (remotePath, baseUrl, cookieProvider)
             dirContexts[dirPath] = (baseUrl, cookieProvider)
-            lastMtimes[key] = mtime(of: localURL)
+            lastMtimes[key] = mtime(of: resolved)
             startFSEventsWatcherIfNeeded()
         }
     }
@@ -175,7 +179,7 @@ class FileDownloadService {
             return
         }
 
-        FSEventStreamSetDispatchQueue(stream, watcherQueue)
+        FSEventStreamScheduleWithRunLoop(stream, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
         guard FSEventStreamStart(stream) else {
             FSEventStreamRelease(stream)
             logger.error("Failed to start FSEvents stream")
@@ -194,13 +198,17 @@ class FileDownloadService {
             kFSEventStreamEventFlagItemModified |
             kFSEventStreamEventFlagItemRenamed
         )
-        let tempPrefix = tempFolder.path + "/"
+        // Resolve symlinks here too — the directory now exists so resolution is reliable.
+        // FSEvents always delivers canonical (resolved) paths; our keys must match.
+        let tempPrefix = tempFolder.resolvingSymlinksInPath().path + "/"
 
-        for (path, flag) in zip(paths, flags) {
+        for (rawPath, flag) in zip(paths, flags) {
             guard flag & isFile != 0 else { continue }
             guard flag & isRemoved == 0 else { continue }
             guard flag & isChange != 0 else { continue }
-            guard !path.hasSuffix(".tmp") else { continue }
+            guard !rawPath.hasSuffix(".tmp") else { continue }
+
+            let path = URL(fileURLWithPath: rawPath).resolvingSymlinksInPath().path
             guard path.hasPrefix(tempPrefix) else { continue }
 
             let localURL = URL(fileURLWithPath: path)
@@ -209,7 +217,7 @@ class FileDownloadService {
             if remoteContexts[path] == nil {
                 let dirPath = localURL.deletingLastPathComponent().path
                 guard let dirCtx = dirContexts[dirPath] else { continue }
-                let remotePath = String(path.dropFirst(tempFolder.path.count))
+                let remotePath = String(path.dropFirst(tempPrefix.count - 1))
                 remoteContexts[path] = (remotePath, dirCtx.baseUrl, dirCtx.cookieProvider)
                 logger.info("New file detected, will upload: \(localURL.lastPathComponent)")
                 fileLogger.info("New file detected, will upload: \(localURL.lastPathComponent)", category: "FileDownloadService")
