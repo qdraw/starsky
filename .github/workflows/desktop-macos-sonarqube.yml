@@ -68,28 +68,28 @@ jobs:
       - name: Install sonar-scanner
         run: brew install sonar-scanner
 
-      - name: Build
+      - name: Build for testing
         run: |
-          xcodebuild build \
+          set -o pipefail
+          xcodebuild build-for-testing \
             -project mac/starsky.xcodeproj \
             -scheme starsky \
             -configuration Debug \
             -destination 'platform=macOS' \
+            -enableCodeCoverage YES \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
       - name: Test with coverage
         run: |
-          xcodebuild test \
+          set -o pipefail
+          xcodebuild test-without-building \
             -project mac/starsky.xcodeproj \
             -scheme starsky \
             -destination 'platform=macOS' \
             -enableCodeCoverage YES \
-            -resultBundlePath TestResults/macos.xcresult \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            -resultBundlePath TestResults/macos.xcresult
 
       - name: Convert coverage to SonarQube generic format
         run: |

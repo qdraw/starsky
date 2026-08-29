@@ -21,6 +21,7 @@ class AppCore {
     var healthCheckRetryDelay: UInt64
     var healthCheckTimeoutSeconds: Int
     var splashStatus: @MainActor (String) -> Void
+    var versionProvider: () -> String
 
     private(set) var localPort: Int = 0
 
@@ -43,7 +44,8 @@ class AppCore {
         healthCheckTimeoutSeconds: Int = 60,
         splashStatus: @escaping @MainActor (String) -> Void = { _ in
             // Intentionally no-op by default: splash updates are optional (e.g. tests/headless startup).
-        }
+        },
+        versionProvider: @escaping () -> String = { ApplicationInfo.version }
     ) {
         self.settingsService = settingsService
         self.backendService = backendService
@@ -58,6 +60,7 @@ class AppCore {
         self.healthCheckRetryDelay = healthCheckRetryDelay
         self.healthCheckTimeoutSeconds = healthCheckTimeoutSeconds
         self.splashStatus = splashStatus
+        self.versionProvider = versionProvider
     }
 
     // MARK: - Startup
@@ -104,6 +107,15 @@ class AppCore {
             return
         }
 
+        await splashStatus("Checking version compatibility…")
+        let compatible = await checkVersionCompatibility(baseUrl: baseUrl)
+        NSLog("[startup] version compatible=\(compatible)")
+        guard compatible else {
+            let v = versionProvider()
+            await showErrorAndQuit("This version (\(v)) is incompatible with the server. Please update Starsky.")
+            return
+        }
+
         NSLog("[startup] finishStartup")
         await finishStartup()
     }
@@ -147,6 +159,16 @@ class AppCore {
             try? await Task.sleep(nanoseconds: healthCheckRetryDelay)
         }
         return false
+    }
+
+    func checkVersionCompatibility(baseUrl: String) async -> Bool {
+        let version = versionProvider()
+        guard let url = URL(string: "\(baseUrl)/api/health/version?version=\(version)") else { return true }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        guard let (_, response) = try? await healthCheckSession.data(for: request),
+              let http = response as? HTTPURLResponse else { return true }
+        return http.statusCode != 400
     }
 
     var terminateDelay: Double = 0.5

@@ -28,9 +28,10 @@ jobs:
       - name: Generate Xcode project
         run: cd mac && xcodegen generate
 
-      - name: Build
+      - name: Build for testing
         run: |
-          xcodebuild build \
+          set -o pipefail
+          xcodebuild build-for-testing \
             -project mac/starsky.xcodeproj \
             -scheme starsky \
             -configuration Debug \
@@ -38,7 +39,7 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            | xcpretty || xcodebuild build \
+            | xcpretty || xcodebuild build-for-testing \
               -project mac/starsky.xcodeproj \
               -scheme starsky \
               -configuration Debug \
@@ -50,13 +51,10 @@ jobs:
       - name: Test
         run: |
           set -o pipefail
-          xcodebuild test \
+          xcodebuild test-without-building \
             -project mac/starsky.xcodeproj \
             -scheme starsky \
             -destination 'platform=macOS' \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
             -resultBundlePath TestResults/macos.xcresult \
             | xcpretty --report junit --output TestResults/test-results.xml
 

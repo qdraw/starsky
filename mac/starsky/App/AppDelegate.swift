@@ -170,6 +170,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func buildHelpMenu() -> NSMenu {
         let menu = NSMenu(title: NSLocalizedString("menu.help.title", comment: ""))
+        let checkUpdatesItem = NSMenuItem(title: NSLocalizedString("menu.help.checkForUpdates", comment: ""), action: #selector(checkForUpdates), keyEquivalent: "")
+        checkUpdatesItem.isHidden = !(core?.updateService.isAvailable ?? false)
+        menu.addItem(checkUpdatesItem)
+        menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.help.documentation", comment: ""), action: #selector(openDocs), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.help.releaseOverview", comment: ""), action: #selector(openReleases), keyEquivalent: ""))
         return menu
@@ -236,6 +240,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func openInBrowser() {
         (NSApp.keyWindow?.windowController as? MainWindowController)?.openInBrowser()
+    }
+
+    @objc private func checkForUpdates() {
+        core?.updateService.applyUpdate()
     }
 
     @objc private func openDocs() {

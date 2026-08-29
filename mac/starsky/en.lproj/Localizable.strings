@@ -31,5 +31,6 @@
 
 /* Help menu */
 "menu.help.title" = "Help";
+"menu.help.checkForUpdates" = "Check for Updates\U2026";
 "menu.help.documentation" = "Documentation";
 "menu.help.releaseOverview" = "Release Overview";

@@ -26,6 +26,8 @@ class UpdateService {
         )
     }
 
+    var isAvailable: Bool { updaterController != nil }
+
     func checkAsync() async -> Bool {
         guard settingsService.current.updateCheckEnabled else { return false }
 
