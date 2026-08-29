@@ -1,5 +1,5 @@
 import XCTest
-@testable import Starsky
+
 
 final class NavigationServiceTests: XCTestCase {
     private static let localBaseUrl = "http://localhost:5000"

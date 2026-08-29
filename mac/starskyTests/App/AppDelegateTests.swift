@@ -1,6 +1,6 @@
 import XCTest
 import AppKit
-@testable import Starsky
+
 
 /// AppDelegate is a thin NSApplicationDelegate adapter with no business logic.
 /// Tests here only verify the delegate stubs — all business logic lives in AppCoreTests.

@@ -1,5 +1,5 @@
 import XCTest
-@testable import Starsky
+
 import Darwin
 
 final class PortFinderTests: XCTestCase {

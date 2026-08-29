@@ -1,5 +1,5 @@
 import XCTest
-@testable import Starsky
+
 
 final class UpdateServiceTests: XCTestCase {
     private var tempDir: URL!

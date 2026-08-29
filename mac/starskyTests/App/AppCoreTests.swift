@@ -1,6 +1,6 @@
 import XCTest
 import AppKit
-@testable import Starsky
+
 
 // MARK: - Test doubles
 

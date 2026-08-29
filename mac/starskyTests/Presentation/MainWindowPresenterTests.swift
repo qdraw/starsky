@@ -1,5 +1,5 @@
 import XCTest
-@testable import Starsky
+
 
 @MainActor
 final class MainWindowPresenterTests: XCTestCase {

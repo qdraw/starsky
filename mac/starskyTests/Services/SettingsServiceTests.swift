@@ -1,5 +1,5 @@
 import XCTest
-@testable import Starsky
+
 
 final class SettingsServiceTests: XCTestCase {
     private static let remoteBaseUrl = "https://example.com"
