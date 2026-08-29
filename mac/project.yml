@@ -94,8 +94,8 @@ schemes:
   starsky:
     build:
       targets:
-        starsky: all
         starskyTests: [test]
+        starsky: [build, test]
     run:
       config: Debug
     test:
