@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6A60AD57D9D47B2FAD5A7AAC"
-               BuildableName = "starsky.app"
+               BuildableName = "Starsky.app"
                BlueprintName = "starsky"
                ReferencedContainer = "container:starsky.xcodeproj">
             </BuildableReference>
@@ -31,7 +31,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6A60AD57D9D47B2FAD5A7AAC"
-            BuildableName = "starsky.app"
+            BuildableName = "Starsky.app"
             BlueprintName = "starsky"
             ReferencedContainer = "container:starsky.xcodeproj">
          </BuildableReference>
@@ -54,7 +54,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6A60AD57D9D47B2FAD5A7AAC"
-            BuildableName = "starsky.app"
+            BuildableName = "Starsky.app"
             BlueprintName = "starsky"
             ReferencedContainer = "container:starsky.xcodeproj">
          </BuildableReference>
@@ -71,7 +71,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6A60AD57D9D47B2FAD5A7AAC"
-            BuildableName = "starsky.app"
+            BuildableName = "Starsky.app"
             BlueprintName = "starsky"
             ReferencedContainer = "container:starsky.xcodeproj">
          </BuildableReference>

@@ -38,7 +38,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: nl.qdraw.starsky
-        PRODUCT_NAME: starsky
+        PRODUCT_NAME: Starsky
         INFOPLIST_FILE: starsky/Info.plist
         CODE_SIGN_ENTITLEMENTS: starsky/starsky.entitlements
         CODE_SIGN_IDENTITY: "Developer ID Application"

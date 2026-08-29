@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1500"
-   version = "1.7">
+   version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES"
-      runPostActionsOnFailure = "NO">
+      buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
             buildForArchiving = "NO"
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6A60AD57D9D47B2FAD5A7AAC"
-               BuildableName = "starsky.app"
+               BuildableName = "Starsky.app"
                BlueprintName = "starsky"
                ReferencedContainer = "container:starsky.xcodeproj">
             </BuildableReference>
@@ -47,11 +46,20 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6A60AD57D9D47B2FAD5A7AAC"
-            BuildableName = "starsky.app"
+            BuildableName = "Starsky.app"
             BlueprintName = "starsky"
             ReferencedContainer = "container:starsky.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <CodeCoverageTargets>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "6A60AD57D9D47B2FAD5A7AAC"
+            BuildableName = "Starsky.app"
+            BlueprintName = "starsky"
+            ReferencedContainer = "container:starsky.xcodeproj">
+         </BuildableReference>
+      </CodeCoverageTargets>
       <Testables>
          <TestableReference
             skipped = "NO"
@@ -65,17 +73,6 @@
             </BuildableReference>
          </TestableReference>
       </Testables>
-      <CommandLineArguments>
-      </CommandLineArguments>
-      <CodeCoverageTargets>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6A60AD57D9D47B2FAD5A7AAC"
-            BuildableName = "starsky.app"
-            BlueprintName = "starsky"
-            ReferencedContainer = "container:starsky.xcodeproj">
-         </BuildableReference>
-      </CodeCoverageTargets>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -92,7 +89,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6A60AD57D9D47B2FAD5A7AAC"
-            BuildableName = "starsky.app"
+            BuildableName = "Starsky.app"
             BlueprintName = "starsky"
             ReferencedContainer = "container:starsky.xcodeproj">
          </BuildableReference>
@@ -109,7 +106,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6A60AD57D9D47B2FAD5A7AAC"
-            BuildableName = "starsky.app"
+            BuildableName = "Starsky.app"
             BlueprintName = "starsky"
             ReferencedContainer = "container:starsky.xcodeproj">
          </BuildableReference>

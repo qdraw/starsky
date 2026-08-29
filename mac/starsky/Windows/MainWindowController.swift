@@ -81,6 +81,26 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
             """, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
         config.userContentController.addUserScript(middleClickScript)
 
+        // Suppress the macOS system beep that WebKit emits when navigation keys
+        // (arrows, page up/down, etc.) aren't consumed by the page. We listen at
+        // the bubble phase so app-level handlers fire first; if nothing called
+        // preventDefault() and no editable element is focused, we do so ourselves,
+        // which makes WebKit treat the event as handled and skip the NSBeep() call.
+        let suppressBeepScript = WKUserScript(source: """
+            window.addEventListener('keydown', function(e) {
+                if (e.defaultPrevented) return;
+                var nav = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',
+                           'PageUp','PageDown','Home','End'];
+                if (nav.indexOf(e.key) === -1) return;
+                var el = document.activeElement;
+                if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||
+                           el.isContentEditable ||
+                           el.getAttribute('contenteditable') === 'true')) return;
+                e.preventDefault();
+            }, false);
+            """, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+        config.userContentController.addUserScript(suppressBeepScript)
+
         webView = SilentWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = self
         webView.uiDelegate = self
