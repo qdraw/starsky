@@ -32,10 +32,11 @@ final class MainWindowPresenterTests: XCTestCase {
         super.tearDown()
     }
 
-    private func makePresenter(baseUrl: String = "http://localhost:5000", index: Int = 0) -> MainWindowPresenter {
+    private func makePresenter(baseUrl: String = "http://localhost:5000", mode: RuntimeMode = .local, index: Int = 0) -> MainWindowPresenter {
         MainWindowPresenter(
             index: index,
             baseUrl: baseUrl,
+            mode: mode,
             navigationService: navigationService,
             routePersistenceService: routePersistenceService,
             fileDownloadService: fileDownloadService,
@@ -170,6 +171,19 @@ final class MainWindowPresenterTests: XCTestCase {
         XCTAssertNil(mockView.evaluatedJavaScript)
     }
 
+    func testEditFileInEditorRemoteModeWithValidFParamDoesNotDispatchKeyboardEvent() async {
+        let remoteBase = "https://myserver.example.com"
+        let presenter = makePresenter(baseUrl: remoteBase, mode: .remote)
+        let mockView = MockMainWindowView()
+        mockView.stubbedURL = URL(string: "\(remoteBase)/starsky?f=/photo.jpg")
+        presenter.view = mockView
+
+        presenter.editFileInEditor()
+
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertNil(mockView.evaluatedJavaScript)
+    }
+
     // MARK: - handleNewWindowRequest
 
     func testHandleNewWindowRequestForAllowedOriginOpensViaWindowManager() async {
@@ -210,6 +224,7 @@ final class MainWindowPresenterTests: XCTestCase {
             index: 7,
             startUrl: "http://localhost:5000",
             baseUrl: "http://localhost:5000",
+            mode: .local,
             geometry: nil,
             navigationService: navigationService,
             routePersistenceService: routePersistenceService,

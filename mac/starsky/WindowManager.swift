@@ -37,6 +37,7 @@ class WindowManager {
             index: index,
             startUrl: startUrl,
             baseUrl: baseUrl,
+            mode: settingsService.current.mode,
             geometry: geometry,
             navigationService: navigationService,
             routePersistenceService: routePersistenceService,

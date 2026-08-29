@@ -13,6 +13,7 @@ class MainWindowPresenter {
 
     private let index: Int
     private let baseUrl: String
+    private let mode: RuntimeMode
     private let navigationService: NavigationService
     private let routePersistenceService: RoutePersistenceService
     private let fileDownloadService: FileDownloadService
@@ -22,6 +23,7 @@ class MainWindowPresenter {
     init(
         index: Int,
         baseUrl: String,
+        mode: RuntimeMode = .local,
         navigationService: NavigationService,
         routePersistenceService: RoutePersistenceService,
         fileDownloadService: FileDownloadService,
@@ -30,6 +32,7 @@ class MainWindowPresenter {
     ) {
         self.index = index
         self.baseUrl = baseUrl
+        self.mode = mode
         self.navigationService = navigationService
         self.routePersistenceService = routePersistenceService
         self.fileDownloadService = fileDownloadService
@@ -41,6 +44,7 @@ class MainWindowPresenter {
         self.init(
             index: options.index,
             baseUrl: options.baseUrl,
+            mode: options.mode,
             navigationService: options.navigationService,
             routePersistenceService: options.routePersistenceService,
             fileDownloadService: options.fileDownloadService,
@@ -85,7 +89,7 @@ class MainWindowPresenter {
 
     func editFileInEditor() {
         guard let liveUrl = view?.currentURL() else { return }
-        if navigationService.isAllowedOrigin(liveUrl, baseUrl: baseUrl) {
+        if navigationService.isAllowedOrigin(liveUrl, baseUrl: baseUrl) && mode == .local {
             let js = """
             document.dispatchEvent(new KeyboardEvent('keydown', {
                 key: 'e', code: 'KeyE', keyCode: 69, metaKey: true, bubbles: true
@@ -98,9 +102,13 @@ class MainWindowPresenter {
                fParam != "/" && !fParam.isEmpty {
                 Task {
                     do {
-                        let cookies = await view?.allCookies() ?? []
+                        let cookieProvider: () async -> [HTTPCookie] = { [weak self] in
+                            await self?.view?.allCookies() ?? []
+                        }
+                        let cookies = await cookieProvider()
                         try await fileDownloadService.downloadAndOpen(
-                            path: fParam, baseUrl: baseUrl, cookies: cookies
+                            path: fParam, baseUrl: baseUrl, cookies: cookies,
+                            cookieProvider: cookieProvider
                         )
                     } catch {
                         await MainActor.run { [weak self] in

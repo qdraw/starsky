@@ -169,6 +169,83 @@ final class FileDownloadServiceTests: XCTestCase {
         XCTAssertEqual(error.errorDescription, "Download failed (HTTP 403).")
     }
 
+    func testUploadSendsCorrectHeadersAndBody() async throws {
+        let baseUrl = Self.remoteBaseUrl
+        let remotePath = "/photos/test.jpg"
+        let fileData = "updated-jpeg-bytes".data(using: .utf8)!
+        let localFile = tempDir.appendingPathComponent("test.jpg")
+        try fileData.write(to: localFile)
+
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/upload")!, data: "[]".data(using: .utf8)!)
+
+        let cookie = HTTPCookie(properties: [.name: "session", .value: "tok", .domain: "remote.example.com", .path: "/"])!
+        let service = FileDownloadService(
+            fileLogger: DailyFileLogger(),
+            session: FakeURLProtocol.makeSession(),
+            tempFolder: tempDir
+        )
+        try await service.upload(localURL: localFile, remotePath: remotePath, baseUrl: baseUrl, cookies: [cookie])
+
+        let uploadReq = FakeURLProtocol.capturedRequests.first { $0.url?.path == "/starsky/api/upload" }
+        XCTAssertNotNil(uploadReq, "No upload request captured")
+        XCTAssertEqual(uploadReq?.value(forHTTPHeaderField: "to"), "/photos")
+        XCTAssertEqual(uploadReq?.value(forHTTPHeaderField: "filename"), "test.jpg")
+        XCTAssertEqual(uploadReq?.value(forHTTPHeaderField: "Content-Type"), "application/octet-stream")
+        XCTAssertTrue(uploadReq?.value(forHTTPHeaderField: "Cookie")?.contains("session=tok") == true)
+    }
+
+    func testUploadFailedStatusThrows() async {
+        let baseUrl = Self.remoteBaseUrl
+        let localFile = tempDir.appendingPathComponent("f.jpg")
+        try? "x".data(using: .utf8)!.write(to: localFile)
+
+        FakeURLProtocol.enqueue(statusCode: 403, url: URL(string: "\(baseUrl)/starsky/api/upload")!, data: Data())
+
+        let service = FileDownloadService(
+            fileLogger: DailyFileLogger(),
+            session: FakeURLProtocol.makeSession(),
+            tempFolder: tempDir
+        )
+        do {
+            try await service.upload(localURL: localFile, remotePath: "/f.jpg", baseUrl: baseUrl)
+            XCTFail("Expected error")
+        } catch {
+            XCTAssertTrue(error is UploadError)
+        }
+    }
+
+    func testDownloadWithCookieProviderRegistersWatcher() async throws {
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testPhotoPath
+        let imageData = "img".data(using: .utf8)!
+        var providerCallCount = 0
+
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 404, url: URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=%2Fphotos%2Ftest.jpg&cache=false")!, data: imageData)
+
+        let service = FileDownloadService(
+            fileLogger: DailyFileLogger(),
+            session: FakeURLProtocol.makeSession(),
+            tempFolder: tempDir
+        )
+        try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false, cookieProvider: {
+            providerCallCount += 1
+            return []
+        })
+
+        // Provider should not have been called yet (only called on change)
+        XCTAssertEqual(providerCallCount, 0)
+        let destFile = tempDir.appendingPathComponent("photos/test.jpg")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: destFile.path))
+    }
+
+    func testUploadErrorDescriptions() {
+        XCTAssertEqual(UploadError.readFailed.errorDescription, "Could not read local file for upload.")
+        XCTAssertEqual(UploadError.invalidPath.errorDescription, "Invalid upload URL.")
+        XCTAssertEqual(UploadError.uploadFailed(statusCode: 500).errorDescription, "Upload failed (HTTP 500).")
+    }
+
     func testInvalidBaseUrlThrowsInvalidPath() async {
         let service = FileDownloadService(
             fileLogger: DailyFileLogger(),
