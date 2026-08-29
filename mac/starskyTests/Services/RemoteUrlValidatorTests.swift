@@ -1,5 +1,5 @@
 import XCTest
-@testable import starsky
+@testable import Starsky
 
 final class RemoteUrlValidatorTests: XCTestCase {
     private static let exampleBaseUrl = "https://example.com"

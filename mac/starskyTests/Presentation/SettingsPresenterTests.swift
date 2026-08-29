@@ -1,5 +1,5 @@
 import XCTest
-@testable import starsky
+@testable import Starsky
 
 @MainActor
 final class SettingsPresenterTests: XCTestCase {

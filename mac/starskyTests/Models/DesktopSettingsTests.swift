@@ -1,5 +1,5 @@
 import XCTest
-@testable import starsky
+@testable import Starsky
 
 final class DesktopSettingsTests: XCTestCase {
     private static let exampleUrl = "https://example.com"

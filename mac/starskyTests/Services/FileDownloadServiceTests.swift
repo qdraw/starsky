@@ -1,5 +1,5 @@
 import XCTest
-@testable import starsky
+@testable import Starsky
 
 final class FileDownloadServiceTests: XCTestCase {
     private static let localBaseUrl = "http://localhost:5000"

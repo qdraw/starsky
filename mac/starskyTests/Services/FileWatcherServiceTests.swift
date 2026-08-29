@@ -1,5 +1,5 @@
 import XCTest
-@testable import starsky
+@testable import Starsky
 
 final class FileWatcherServiceTests: XCTestCase {
     private var tempDir: URL!
