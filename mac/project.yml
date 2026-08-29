@@ -87,6 +87,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: nl.qdraw.starskyTests
         INFOPLIST_FILE: starskyTests/Info.plist
         LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Starsky.app/Contents/MacOS/Starsky"
+        BUNDLE_LOADER: "$(TEST_HOST)"
 
 schemes:
   starsky:

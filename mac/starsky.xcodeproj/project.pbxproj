@@ -629,7 +629,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/Contents/MacOS/starsky";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Starsky.app/Contents/MacOS/Starsky";
 			};
 			name = Debug;
 		};
@@ -642,7 +642,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/Contents/MacOS/starsky";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Starsky.app/Contents/MacOS/Starsky";
 			};
 			name = Release;
 		};

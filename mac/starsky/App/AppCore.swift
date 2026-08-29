@@ -166,6 +166,7 @@ class AppCore {
         guard let url = URL(string: "\(baseUrl)/api/health/version?version=\(version)") else { return true }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.setValue(version, forHTTPHeaderField: "x-api-version")
         guard let (_, response) = try? await healthCheckSession.data(for: request),
               let http = response as? HTTPURLResponse else { return true }
         return http.statusCode != 400
