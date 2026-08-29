@@ -18,10 +18,11 @@ private func fsEventsCallback(
     let cPaths = eventPaths.assumingMemoryBound(to: UnsafePointer<CChar>.self)
     for i in 0..<numEvents { paths.append(String(cString: cPaths[i])) }
     let flags = Array(UnsafeBufferPointer(start: eventFlags, count: numEvents))
-    svc.watcherQueue.async { svc.handleFSEvents(paths: paths, flags: flags) }
+    // Callback fires on watcherQueue (set via FSEventStreamSetDispatchQueue), so call directly.
+    svc.handleFSEvents(paths: paths, flags: flags)
 }
 
-class FileDownloadService {
+class FileDownloadService: @unchecked Sendable {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "FileDownloadService")
     private let fileLogger: DailyFileLogger
     private let session: URLSession
@@ -61,7 +62,6 @@ class FileDownloadService {
     deinit {
         if let stream = streamRef {
             FSEventStreamStop(stream)
-            FSEventStreamUnscheduleFromRunLoop(stream, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
             FSEventStreamInvalidate(stream)
             FSEventStreamRelease(stream)
         }
@@ -179,7 +179,7 @@ class FileDownloadService {
             return
         }
 
-        FSEventStreamScheduleWithRunLoop(stream, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
+        FSEventStreamSetDispatchQueue(stream, watcherQueue)
         guard FSEventStreamStart(stream) else {
             FSEventStreamRelease(stream)
             logger.error("Failed to start FSEvents stream")

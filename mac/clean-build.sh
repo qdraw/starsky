@@ -20,6 +20,8 @@ else
 fi
 
 cd "$SCRIPT_DIR"
+echo "Resolving package dependencies..."
+xcodebuild -resolvePackageDependencies -scheme starsky -quiet
 echo "Rebuilding..."
 xcodebuild build -scheme starsky -destination 'platform=macOS' -quiet
 echo "Done."
