@@ -11,10 +11,23 @@
 "menu.file.reloadAll" = "Reload All";
 "menu.file.editFileInEditor" = "Edit File in Editor";
 
+/* Edit menu */
+"menu.edit.title" = "Edit";
+"menu.edit.undo" = "Undo";
+"menu.edit.redo" = "Redo";
+"menu.edit.cut" = "Cut";
+"menu.edit.copy" = "Copy";
+"menu.edit.paste" = "Paste";
+"menu.edit.selectAll" = "Select All";
+
 /* View menu */
 "menu.view.title" = "View";
+"menu.view.actualSize" = "Actual Size";
+"menu.view.zoomIn" = "Zoom In";
+"menu.view.zoomOut" = "Zoom Out";
 "menu.view.developerTools" = "Developer Tools";
 "menu.view.openInBrowser" = "Open in Browser";
+"menu.view.fullScreen" = "Toggle Full Screen";
 
 /* Help menu */
 "menu.help.title" = "Help";

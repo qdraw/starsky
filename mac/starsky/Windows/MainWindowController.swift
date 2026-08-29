@@ -121,6 +121,18 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         }
     }
 
+    @objc func zoomIn() {
+        webView.pageZoom = min(webView.pageZoom * 1.1, 5.0)
+    }
+
+    @objc func zoomOut() {
+        webView.pageZoom = max(webView.pageZoom / 1.1, 0.25)
+    }
+
+    @objc func actualSize() {
+        webView.pageZoom = 1.0
+    }
+
     @objc func openApplicationSettings() {
         let js = """
         document.dispatchEvent(new KeyboardEvent('keydown', {

@@ -98,6 +98,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         fileMenu.submenu = buildFileMenu()
         mainMenu.addItem(fileMenu)
 
+        let editMenu = NSMenuItem()
+        editMenu.submenu = buildEditMenu()
+        mainMenu.addItem(editMenu)
+
         let viewMenu = NSMenuItem()
         viewMenu.submenu = buildViewMenu()
         mainMenu.addItem(viewMenu)
@@ -132,12 +136,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return menu
     }
 
+    private func buildEditMenu() -> NSMenu {
+        let menu = NSMenu(title: NSLocalizedString("menu.edit.title", comment: ""))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.edit.undo", comment: ""), action: Selector(("undo:")), keyEquivalent: "z"))
+        let redo = NSMenuItem(title: NSLocalizedString("menu.edit.redo", comment: ""), action: Selector(("redo:")), keyEquivalent: "z")
+        redo.keyEquivalentModifierMask = [.command, .shift]
+        menu.addItem(redo)
+        menu.addItem(.separator())
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.edit.cut", comment: ""), action: #selector(NSText.cut(_:)), keyEquivalent: "x"))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.edit.copy", comment: ""), action: #selector(NSText.copy(_:)), keyEquivalent: "c"))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.edit.paste", comment: ""), action: #selector(NSText.paste(_:)), keyEquivalent: "v"))
+        menu.addItem(.separator())
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.edit.selectAll", comment: ""), action: #selector(NSText.selectAll(_:)), keyEquivalent: "a"))
+        return menu
+    }
+
     private func buildViewMenu() -> NSMenu {
         let menu = NSMenu(title: NSLocalizedString("menu.view.title", comment: ""))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.view.actualSize", comment: ""), action: #selector(actualSize), keyEquivalent: "0"))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.view.zoomIn", comment: ""), action: #selector(zoomIn), keyEquivalent: "="))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.view.zoomOut", comment: ""), action: #selector(zoomOut), keyEquivalent: "-"))
+        menu.addItem(.separator())
         let devToolsItem = NSMenuItem(title: NSLocalizedString("menu.view.developerTools", comment: ""), action: #selector(openDevTools), keyEquivalent: "i")
         devToolsItem.keyEquivalentModifierMask = [.command, .option]
         menu.addItem(devToolsItem)
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.view.openInBrowser", comment: ""), action: #selector(openInBrowser), keyEquivalent: ""))
+        menu.addItem(.separator())
+        let fullScreenItem = NSMenuItem(title: NSLocalizedString("menu.view.fullScreen", comment: ""), action: #selector(toggleFullScreen), keyEquivalent: "f")
+        fullScreenItem.keyEquivalentModifierMask = [.command, .control]
+        menu.addItem(fullScreenItem)
         return menu
     }
 
@@ -185,6 +212,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func openApplicationSettings() {
         (NSApp.keyWindow?.windowController as? MainWindowController)?.openApplicationSettings()
+    }
+
+    @objc private func zoomIn() {
+        (NSApp.keyWindow?.windowController as? MainWindowController)?.zoomIn()
+    }
+
+    @objc private func zoomOut() {
+        (NSApp.keyWindow?.windowController as? MainWindowController)?.zoomOut()
+    }
+
+    @objc private func actualSize() {
+        (NSApp.keyWindow?.windowController as? MainWindowController)?.actualSize()
+    }
+
+    @objc private func toggleFullScreen() {
+        NSApp.keyWindow?.toggleFullScreen(nil)
     }
 
     @objc private func openDevTools() {

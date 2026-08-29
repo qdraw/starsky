@@ -11,10 +11,23 @@
 "menu.file.reloadAll" = "Alles herladen";
 "menu.file.editFileInEditor" = "Bestand bewerken in editor";
 
+/* Edit menu */
+"menu.edit.title" = "Bewerken";
+"menu.edit.undo" = "Ongedaan maken";
+"menu.edit.redo" = "Opnieuw";
+"menu.edit.cut" = "Knippen";
+"menu.edit.copy" = "Kopiëren";
+"menu.edit.paste" = "Plakken";
+"menu.edit.selectAll" = "Alles selecteren";
+
 /* View menu */
 "menu.view.title" = "Weergave";
+"menu.view.actualSize" = "Werkelijke grootte";
+"menu.view.zoomIn" = "Inzoomen";
+"menu.view.zoomOut" = "Uitzoomen";
 "menu.view.developerTools" = "Ontwikkelaarshulpmiddelen";
 "menu.view.openInBrowser" = "Open in browser";
+"menu.view.fullScreen" = "Schermvullende weergave";
 
 /* Help menu */
 "menu.help.title" = "Help";
