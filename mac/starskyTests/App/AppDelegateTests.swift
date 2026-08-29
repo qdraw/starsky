@@ -2,6 +2,8 @@ import XCTest
 import AppKit
 @testable import starsky
 
+/// AppDelegate is a thin NSApplicationDelegate adapter with no business logic.
+/// Tests here only verify the delegate stubs — all business logic lives in AppCoreTests.
 final class AppDelegateTests: XCTestCase {
     private var delegate: AppDelegate!
 
@@ -15,9 +17,6 @@ final class AppDelegateTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - Simple delegate methods (services are nil because applicationDidFinishLaunching
-    // early-returns in XCTest; all usages are nil-safe via optional chaining)
-
     func testSupportsSecureRestorableStateReturnsTrue() {
         XCTAssertTrue(delegate.applicationSupportsSecureRestorableState(NSApplication.shared))
     }
@@ -27,17 +26,21 @@ final class AppDelegateTests: XCTestCase {
     }
 
     func testShouldHandleReopenWithVisibleWindowsReturnsTrue() {
-        let result = delegate.applicationShouldHandleReopen(NSApplication.shared, hasVisibleWindows: true)
-        XCTAssertTrue(result)
+        XCTAssertTrue(delegate.applicationShouldHandleReopen(NSApplication.shared, hasVisibleWindows: true))
     }
 
     func testShouldHandleReopenWithoutVisibleWindowsReturnsTrue() {
-        // windowManager is nil (startup skipped in tests) — the Task uses optional chaining so no crash
-        let result = delegate.applicationShouldHandleReopen(NSApplication.shared, hasVisibleWindows: false)
-        XCTAssertTrue(result)
+        // core is nil (startup skipped in tests); optional chaining prevents a crash
+        XCTAssertTrue(delegate.applicationShouldHandleReopen(NSApplication.shared, hasVisibleWindows: false))
     }
 
     func testApplicationWillTerminateDoesNotCrash() {
         delegate.applicationWillTerminate(Notification(name: NSApplication.willTerminateNotification))
+    }
+
+    func testApplicationShouldTerminateReturnsTerminateLater() {
+        // core is nil; no-op
+        let reply = delegate.applicationShouldTerminate(NSApplication.shared)
+        XCTAssertEqual(reply, .terminateLater)
     }
 }

@@ -4,20 +4,9 @@ import OSLog
 class AppDelegate: NSObject, NSApplicationDelegate {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "AppDelegate")
 
-    private var fileLogger: DailyFileLogger!
-    private var settingsService: SettingsService!
-    private var navigationService: NavigationService!
-    private var routePersistenceService: RoutePersistenceService!
-    private var backendService: BackendService!
-    private var fileWatcherService: FileWatcherService!
-    private var fileDownloadService: FileDownloadService!
-    private var remoteUrlValidator: RemoteUrlValidator!
-    private var updateService: UpdateService!
-    private var windowManager: WindowManager!
-
+    private var core: AppCore?
     private var splash: SplashWindowController?
     private var settingsWindowController: SettingsWindowController?
-    private var localPort: Int = 0
 
     func applicationDidFinishLaunching(_: Notification) {
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
@@ -28,18 +17,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             logger.error("Failed to create app directories: \(error.localizedDescription)")
         }
 
-        fileLogger = DailyFileLogger()
-        settingsService = SettingsService()
+        let fileLogger = DailyFileLogger()
+        let settingsService = SettingsService()
         settingsService.load()
 
-        navigationService = NavigationService(settings: settingsService)
-        routePersistenceService = RoutePersistenceService(settingsService: settingsService)
-        backendService = BackendService(fileLogger: fileLogger)
-        fileWatcherService = FileWatcherService(fileLogger: fileLogger)
-        fileDownloadService = FileDownloadService(fileLogger: fileLogger)
-        remoteUrlValidator = RemoteUrlValidator()
-        updateService = UpdateService(settingsService: settingsService)
-        windowManager = WindowManager(
+        let navigationService = NavigationService(settings: settingsService)
+        let routePersistenceService = RoutePersistenceService(settingsService: settingsService)
+        let fileDownloadService = FileDownloadService(fileLogger: fileLogger)
+        let windowManager = WindowManager(
             settingsService: settingsService,
             routePersistenceService: routePersistenceService,
             navigationService: navigationService,
@@ -47,127 +32,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             fileLogger: fileLogger
         )
 
-        buildMenu()
+        let splashRef = SplashWindowController()
+        splash = splashRef
 
-        splash = SplashWindowController()
+        core = AppCore(
+            settingsService: settingsService,
+            backendService: BackendService(fileLogger: fileLogger),
+            fileWatcherService: FileWatcherService(fileLogger: fileLogger),
+            updateService: UpdateService(settingsService: settingsService),
+            windowManager: windowManager,
+            terminate: { NSApplication.shared.terminate(nil) },
+            showError: { ErrorWindowController.show(message: $0) },
+            urlOpener: { NSWorkspace.shared.open($0) },
+            splashStatus: { [weak splashRef] status in splashRef?.setStatus(status) }
+        )
+
+        buildMenu()
         splash?.showWindow(nil)
         NSApp.activate(ignoringOtherApps: true)
 
         Task {
-            await startup()
-        }
-    }
-
-    private func startup() async {
-        switch settingsService.current.mode {
-        case .local:
-            await startLocalMode()
-        case .remote:
-            await startRemoteMode()
-        }
-    }
-
-    private func startLocalMode() async {
-        NSLog("[startup] startLocalMode begin")
-        await MainActor.run { splash?.setStatus("Finding free port…") }
-        let port = PortFinder.findFreePort()
-        NSLog("[startup] port=\(port)")
-        guard port > 0 else {
-            await showErrorAndQuit("Could not find a free port to start the backend.")
-            return
-        }
-        localPort = port
-        windowManager.setLocalPort(port)
-
-        await MainActor.run { splash?.setStatus("Starting backend…") }
-        NSLog("[startup] launching backend")
-        do {
-            try backendService.start(port: port)
-            NSLog("[startup] backend launched")
-        } catch {
-            NSLog("[startup] backend launch error: \(error)")
-            await showErrorAndQuit("Failed to start the backend: \(error.localizedDescription)")
-            return
-        }
-
-        await MainActor.run { splash?.setStatus("Waiting for backend…") }
-        let baseUrl = "http://localhost:\(port)"
-        NSLog("[startup] waiting for health at \(baseUrl)")
-        let ready = await waitForHealth(baseUrl: baseUrl, timeoutSeconds: 60)
-        NSLog("[startup] health ready=\(ready)")
-        guard ready else {
-            await showErrorAndQuit("Backend did not start within 60 seconds.")
-            return
-        }
-
-        NSLog("[startup] finishStartup")
-        await finishStartup()
-    }
-
-    private func startRemoteMode() async {
-        guard !settingsService.current.remoteBaseUrl.isEmpty else {
-            await showErrorAndQuit("No remote server URL configured.\nPlease set one in Settings.")
-            return
-        }
-        await finishStartup()
-    }
-
-    private func finishStartup() async {
-        fileWatcherService.start()
-
-        await MainActor.run {
-            windowManager.restoreWindows()
-            splash?.close()
-            splash = nil
-            NSApp.activate(ignoringOtherApps: true)
-        }
-
-        try? await Task.sleep(nanoseconds: 5_000_000_000)
-        let hasUpdate = await updateService.checkAsync()
-        if hasUpdate {
+            await core?.startup()
             await MainActor.run {
-                let updateWindow = UpdateWindowController(updateService: updateService)
-                updateWindow.window?.center()
-                updateWindow.showWindow(nil)
+                self.splash?.close()
+                self.splash = nil
+                NSApp.activate(ignoringOtherApps: true)
             }
-        }
-    }
-
-    private func waitForHealth(baseUrl: String, timeoutSeconds: Int) async -> Bool {
-        guard let healthURL = URL(string: "\(baseUrl)/api/health") else { return false }
-        let deadline = Date().addingTimeInterval(Double(timeoutSeconds))
-        while Date() < deadline {
-            if let (_, response) = try? await URLSession.shared.data(from: healthURL),
-               let http = response as? HTTPURLResponse,
-               (200...503).contains(http.statusCode) {
-                return true
-            }
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-        }
-        return false
-    }
-
-    @MainActor
-    private func showErrorAndQuit(_ message: String) async {
-        splash?.close()
-        splash = nil
-        ErrorWindowController.show(message: message)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            NSApplication.shared.terminate(nil)
         }
     }
 
     func applicationShouldTerminate(_: NSApplication) -> NSApplication.TerminateReply {
-        // Close windows immediately so the UI disappears before the blocking backend shutdown
-        windowManager?.closeAll()
-
-        Task.detached {
-            self.fileWatcherService?.stop()
-            self.backendService?.stop()
-            await MainActor.run {
-                NSApplication.shared.reply(toApplicationShouldTerminate: true)
-            }
-        }
+        core?.beginTermination()
         return .terminateLater
     }
 
@@ -185,7 +80,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         if !flag {
-            Task { @MainActor in windowManager?.openMainWindow() }
+            Task { @MainActor in core?.windowManager.openMainWindow() }
         }
         return true
     }
@@ -216,7 +111,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func buildAppMenu() -> NSMenu {
         let menu = NSMenu(title: "Starsky")
-
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.about", comment: ""), action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: ""))
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.connectionSettings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
@@ -231,22 +125,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func buildFileMenu() -> NSMenu {
         let menu = NSMenu(title: NSLocalizedString("menu.file.title", comment: ""))
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.file.newWindow", comment: ""), action: #selector(newWindow), keyEquivalent: "n"))
-
         let reloadItem = NSMenuItem(title: NSLocalizedString("menu.file.reloadAll", comment: ""), action: #selector(reloadAll), keyEquivalent: "r")
         reloadItem.keyEquivalentModifierMask = [.command, .shift]
         menu.addItem(reloadItem)
-
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.file.editFileInEditor", comment: ""), action: #selector(editFileInEditor), keyEquivalent: "e"))
         return menu
     }
 
     private func buildViewMenu() -> NSMenu {
         let menu = NSMenu(title: NSLocalizedString("menu.view.title", comment: ""))
-
         let devToolsItem = NSMenuItem(title: NSLocalizedString("menu.view.developerTools", comment: ""), action: #selector(openDevTools), keyEquivalent: "i")
         devToolsItem.keyEquivalentModifierMask = [.command, .option]
         menu.addItem(devToolsItem)
-
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.view.openInBrowser", comment: ""), action: #selector(openInBrowser), keyEquivalent: ""))
         return menu
     }
@@ -261,11 +151,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Actions
 
     @objc private func newWindow() {
-        Task { @MainActor in windowManager.openMainWindow() }
+        Task { @MainActor in core?.windowManager.openMainWindow() }
     }
 
     @objc private func reloadAll() {
-        Task { @MainActor in windowManager.reloadAll() }
+        Task { @MainActor in core?.windowManager.reloadAll() }
     }
 
     @objc private func editFileInEditor() {
@@ -273,59 +163,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func openSettings() {
+        guard let core else { return }
         if settingsWindowController == nil {
             settingsWindowController = SettingsWindowController(
-                settingsService: settingsService,
-                remoteUrlValidator: remoteUrlValidator,
-                windowManager: windowManager
+                settingsService: core.settingsService,
+                remoteUrlValidator: RemoteUrlValidator(),
+                windowManager: core.windowManager
             )
             settingsWindowController?.window?.center()
             settingsWindowController?.onSwitchToLocal = { [weak self] in
-                Task { await self?.switchToLocalMode() }
+                Task { await self?.core?.switchToLocalMode() }
             }
-            settingsWindowController?.onSwitchToRemote = { [weak self] in
-                guard let self, !self.settingsService.current.remoteBaseUrl.isEmpty else { return }
-                Task { @MainActor in self.windowManager.reopenAll() }
+            settingsWindowController?.onSwitchToRemote = { [weak core] in
+                guard let core, !core.settingsService.current.remoteBaseUrl.isEmpty else { return }
+                Task { @MainActor in core.windowManager.reopenAll() }
             }
         }
         settingsWindowController?.showWindow(nil)
         settingsWindowController?.window?.makeKeyAndOrderFront(nil)
-    }
-
-    private func switchToLocalMode() async {
-        if backendService.isRunning {
-            await MainActor.run { windowManager.reopenAll() }
-            return
-        }
-        await MainActor.run {
-            splash = SplashWindowController()
-            splash?.showWindow(nil)
-            NSApp.activate(ignoringOtherApps: true)
-        }
-        let port = PortFinder.findFreePort()
-        guard port > 0 else {
-            await showErrorAndQuit("Could not find a free port to start the backend.")
-            return
-        }
-        localPort = port
-        windowManager.setLocalPort(port)
-        do {
-            try backendService.start(port: port)
-        } catch {
-            await showErrorAndQuit("Failed to start the backend: \(error.localizedDescription)")
-            return
-        }
-        await MainActor.run { splash?.setStatus("Waiting for backend…") }
-        let ready = await waitForHealth(baseUrl: "http://localhost:\(port)", timeoutSeconds: 60)
-        guard ready else {
-            await showErrorAndQuit("Backend did not start within 60 seconds.")
-            return
-        }
-        await MainActor.run {
-            windowManager.reopenAll()
-            splash?.close()
-            splash = nil
-        }
     }
 
     @objc private func openApplicationSettings() {
@@ -340,14 +195,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         (NSApp.keyWindow?.windowController as? MainWindowController)?.openInBrowser()
     }
 
-    private static let docsURL = URL(string: "https://qdraw.nl/special/starsky/docs/")!
-    private static let releasesURL = URL(string: "https://github.com/qdraw/starsky/releases")!
-
     @objc private func openDocs() {
-        NSWorkspace.shared.open(Self.docsURL)
+        core?.openDocs()
     }
 
     @objc private func openReleases() {
-        NSWorkspace.shared.open(Self.releasesURL)
+        core?.openReleases()
     }
 }
