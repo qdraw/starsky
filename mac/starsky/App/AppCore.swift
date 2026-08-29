@@ -27,6 +27,7 @@ class AppCore {
     static let docsURL = URL(string: "https://qdraw.nl/special/starsky/docs/")!
     static let releasesURL = URL(string: "https://github.com/qdraw/starsky/releases")!
 
+    // NOSONAR S107
     init(
         settingsService: SettingsService,
         backendService: any BackendServiceProtocol,
@@ -40,7 +41,9 @@ class AppCore {
         updateCheckDelay: UInt64 = 5_000_000_000,
         healthCheckRetryDelay: UInt64 = 1_000_000_000,
         healthCheckTimeoutSeconds: Int = 60,
-        splashStatus: @escaping @MainActor (String) -> Void = { _ in }
+        splashStatus: @escaping @MainActor (String) -> Void = { _ in
+            // Intentionally no-op by default: splash updates are optional (e.g. tests/headless startup).
+        }
     ) {
         self.settingsService = settingsService
         self.backendService = backendService
