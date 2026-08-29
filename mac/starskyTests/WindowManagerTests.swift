@@ -104,6 +104,95 @@ final class WindowManagerTests: XCTestCase {
 
 }
 
+// MARK: - isOnScreen / resolveGeometry
+
+final class WindowManagerGeometryTests: XCTestCase {
+
+    private func state(x: Double = 100, y: Double = 100, w: Double = 800, h: Double = 600,
+                       maximized: Bool = false) -> SavedWindowState {
+        SavedWindowState(route: "?f=/", x: x, y: y, width: w, height: h, isMaximized: maximized)
+    }
+
+    func testMaximizedWindowIsAlwaysOnScreen() {
+        XCTAssertTrue(WindowManager.isOnScreen(state(x: -9999, y: -9999, maximized: true)))
+    }
+
+    func testWindowTooNarrowIsOffScreen() {
+        XCTAssertFalse(WindowManager.isOnScreen(state(w: 100, h: 600)))
+    }
+
+    func testWindowTooShortIsOffScreen() {
+        XCTAssertFalse(WindowManager.isOnScreen(state(w: 800, h: 50)))
+    }
+
+    func testWindowCompletelyOffRightIsOffScreen() {
+        // Place window far off the right edge of any realistic screen
+        XCTAssertFalse(WindowManager.isOnScreen(state(x: 999_999, y: 100)))
+    }
+
+    func testWindowCompletelyOffLeftIsOffScreen() {
+        XCTAssertFalse(WindowManager.isOnScreen(state(x: -999_999, y: 100)))
+    }
+
+    func testWindowCompletelyAboveScreenIsOffScreen() {
+        XCTAssertFalse(WindowManager.isOnScreen(state(x: 100, y: 999_999)))
+    }
+
+    func testWindowCompletelyBelowScreenIsOffScreen() {
+        XCTAssertFalse(WindowManager.isOnScreen(state(x: 100, y: -999_999)))
+    }
+
+    func testNormalWindowOnPrimaryScreenIsOnScreen() {
+        // Assumes at least one screen exists in the test environment
+        guard let screen = NSScreen.screens.first else { return }
+        let f = screen.frame
+        XCTAssertTrue(WindowManager.isOnScreen(
+            state(x: Double(f.midX) - 400, y: Double(f.midY) - 300)
+        ))
+    }
+
+    func testResolveGeometryPassesThroughValidGeometry() {
+        guard let screen = NSScreen.screens.first else { return }
+        let f = screen.frame
+        let g = state(x: Double(f.midX) - 400, y: Double(f.midY) - 300, w: 900, h: 700)
+        let resolved = WindowManager.resolveGeometry(g, offset: 0)
+        XCTAssertEqual(resolved.width, 900)
+        XCTAssertEqual(resolved.height, 700)
+    }
+
+    func testResolveGeometryFallsBackToDefaultWhenOffScreen() {
+        let offScreen = state(x: 999_999, y: 999_999)
+        let resolved = WindowManager.resolveGeometry(offScreen, offset: 0)
+        XCTAssertEqual(resolved.x, 100)
+        XCTAssertEqual(resolved.y, 100)
+        XCTAssertEqual(resolved.width, 1200)
+        XCTAssertEqual(resolved.height, 800)
+    }
+
+    func testResolveGeometryPreservesRouteOnFallback() {
+        let offScreen = state(x: 999_999, y: 999_999)
+        var s = offScreen; s.route = "?f=/vacation"
+        let resolved = WindowManager.resolveGeometry(s, offset: 0)
+        XCTAssertEqual(resolved.route, "?f=/vacation")
+    }
+
+    func testResolveGeometryAppliesCascadeOffset() {
+        guard let screen = NSScreen.screens.first else { return }
+        let f = screen.frame
+        let g = state(x: Double(f.midX) - 400, y: Double(f.midY) - 300)
+        let resolved = WindowManager.resolveGeometry(g, offset: 48)
+        XCTAssertEqual(resolved.x, g.x + 48, accuracy: 0.001)
+    }
+
+    func testResolveGeometryWithNilUsesDefaults() {
+        let resolved = WindowManager.resolveGeometry(nil, offset: 0)
+        XCTAssertEqual(resolved.x, 100)
+        XCTAssertEqual(resolved.y, 100)
+        XCTAssertEqual(resolved.width, 1200)
+        XCTAssertEqual(resolved.height, 800)
+    }
+}
+
 // MARK: - WindowManagerProtocol default extension coverage
 
 @MainActor
