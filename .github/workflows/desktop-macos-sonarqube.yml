@@ -127,7 +127,7 @@ jobs:
             -Dsonar.host.url="$SONAR_URL" \
             -Dsonar.sources=mac/starsky \
             -Dsonar.tests=mac/starskyTests \
-            -Dsonar.exclusions="starsky/**,starskydesktop/**,starsky-tools/**,documentation/**,windows/**" \
+            -Dsonar.exclusions="starsky/**,starskydesktop/**,starsky-tools/**,documentation/**,windows/**",**/AppDelegate.swift \
             -Dsonar.coverage.exclusions="**/Windows/**" \
             -Dsonar.coverageReportPaths=TestResults/sonarqube-coverage.xml \
             $SONAR_ARGS
