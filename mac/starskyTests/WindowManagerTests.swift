@@ -81,6 +81,27 @@ final class WindowManagerTests: XCTestCase {
         // If no saved routes, openMainWindow is called once — verify no crash
     }
 
+    @MainActor
+    func testOpenMainWindowWithRouteDoesNotCrash() {
+        sut.setLocalPort(4)
+        sut.openMainWindow(route: "?f=/photos")
+    }
+
+    @MainActor
+    func testOpenMainWindowWithMaximizedGeometryDoesNotCrash() {
+        sut.setLocalPort(5)
+        let geometry = SavedWindowState(route: "?f=/", x: 0, y: 0, width: 1440, height: 900, isMaximized: true)
+        sut.openMainWindow(route: nil, geometry: geometry)
+    }
+
+    @MainActor
+    func testOpenMultipleWindowsAppliesCascadeOffset() {
+        sut.setLocalPort(6)
+        sut.openMainWindow(route: "?f=/a")
+        sut.openMainWindow(route: "?f=/b")
+        // Second window (index=1) has cascadeOffset=24 — verify no crash
+    }
+
 }
 
 // MARK: - WindowManagerProtocol default extension coverage

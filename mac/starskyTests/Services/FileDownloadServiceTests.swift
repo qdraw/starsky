@@ -186,6 +186,15 @@ final class FileDownloadServiceTests: XCTestCase {
         }
     }
 
+    func testDefaultSessionInitDoesNotCrash() {
+        // Exercises the else-branch in init where no URLSession is provided
+        let service = FileDownloadService(
+            fileLogger: DailyFileLogger(),
+            tempFolder: URL(fileURLWithPath: NSTemporaryDirectory())
+        )
+        XCTAssertNotNil(service)
+    }
+
     func testMultipleCookiesAreConcatenated() async throws {
         let baseUrl = Self.remoteBaseUrl
         let path = Self.testPhotoPath

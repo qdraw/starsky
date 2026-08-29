@@ -64,4 +64,26 @@ final class UpdateServiceTests: XCTestCase {
     func testSuppressMinutesIsReasonable() {
         XCTAssertGreaterThan(UpdateService.suppressMinutes, 0)
     }
+
+    func testCheckAsyncReturnsFalseWhenLastShownIsNilAndUpdateDisabled() async {
+        let (service, _) = makeService(enabled: false, lastShown: nil)
+        let result = await service.checkAsync()
+        XCTAssertFalse(result)
+    }
+
+    func testCheckAsyncReturnsFalseWhenLastShownIsExactlyAtSuppressThreshold() async {
+        // Exactly at the boundary (elapsed == suppressMinutes) should still suppress
+        let boundary = Date().addingTimeInterval(-UpdateService.suppressMinutes * 60)
+        let (service, _) = makeService(enabled: true, lastShown: boundary)
+        let result = await service.checkAsync()
+        XCTAssertFalse(result)
+    }
+
+    func testRecordWarningShownUpdatesExistingTimestamp() {
+        let (service, settings) = makeService(enabled: true, lastShown: Date().addingTimeInterval(-1000))
+        let before = settings.current.lastUpdateWarningShown!
+        service.recordWarningShown()
+        let after = settings.current.lastUpdateWarningShown!
+        XCTAssertGreaterThanOrEqual(after, before)
+    }
 }

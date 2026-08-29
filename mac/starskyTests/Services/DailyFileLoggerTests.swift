@@ -51,4 +51,32 @@ final class DailyFileLoggerTests: XCTestCase {
         let content = try String(contentsOf: file)
         XCTAssertTrue(content.contains("error-happened"))
     }
+
+    func testWarningWritesToFile() throws {
+        let logger = DailyFileLogger(logsDirectory: tempDir)
+        logger.warning("warn-message", category: "Test")
+        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
+        XCTAssertFalse(files.isEmpty)
+        let content = try String(contentsOf: files[0])
+        XCTAssertTrue(content.contains("warn-message"))
+        XCTAssertTrue(content.contains("WARN"))
+    }
+
+    func testErrorWithNoErrorObjectWritesMessage() throws {
+        let logger = DailyFileLogger(logsDirectory: tempDir)
+        logger.error("just-a-message", error: nil, category: "Test")
+        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
+        guard let file = files.first else { XCTFail("No log file"); return }
+        let content = try String(contentsOf: file)
+        XCTAssertTrue(content.contains("just-a-message"))
+        XCTAssertTrue(content.contains("ERROR"))
+    }
+
+    func testLogCategoryIsIncluded() throws {
+        let logger = DailyFileLogger(logsDirectory: tempDir)
+        logger.info("msg", category: "MyCategory")
+        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
+        let content = try String(contentsOf: files[0])
+        XCTAssertTrue(content.contains("MyCategory"))
+    }
 }

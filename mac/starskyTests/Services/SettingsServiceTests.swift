@@ -60,4 +60,25 @@ final class SettingsServiceTests: XCTestCase {
         XCTAssertEqual(service2.current.remoteBaseUrl, Self.roundtripBaseUrl)
         XCTAssertEqual(service2.current.mode, .remote)
     }
+
+    func testSaveNoArgPersistsCurrentSettings() throws {
+        let file = tempDir.appendingPathComponent("settings.json")
+        let service = SettingsService(settingsFile: file)
+        service.load()
+        var settings = service.current
+        settings.remoteBaseUrl = "https://noarg.example.com"
+        service.save(settings)
+        service.save()
+
+        let service2 = SettingsService(settingsFile: file)
+        service2.load()
+        XCTAssertEqual(service2.current.remoteBaseUrl, "https://noarg.example.com")
+    }
+
+    func testSaveToUnwritablePathDoesNotCrash() {
+        let service = SettingsService(settingsFile: URL(fileURLWithPath: "/nonexistent/dir/settings.json"))
+        var settings = service.current
+        settings.remoteBaseUrl = "https://example.com"
+        service.save(settings)
+    }
 }

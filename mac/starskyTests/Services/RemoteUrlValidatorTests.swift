@@ -91,4 +91,31 @@ final class RemoteUrlValidatorTests: XCTestCase {
         let result = await v.validate(urlString: "https://")
         XCTAssertFalse(result.success)
     }
+
+    func testSchemelessUrlFails() async {
+        // "example.com" parses as a URL but has nil scheme — hits the nil-scheme branch
+        let v = makeValidator()
+        let result = await v.validate(urlString: "example.com")
+        XCTAssertFalse(result.success)
+        XCTAssertNotNil(result.error)
+    }
+
+    func testCustomHealthPathIsUsed() async {
+        let customHealthUrl = URL(string: "https://example.com/custom/health")!
+        let v = RemoteUrlValidator(
+            session: FakeURLProtocol.makeSession(),
+            healthPath: "/custom/health"
+        )
+        FakeURLProtocol.reset()
+        FakeURLProtocol.enqueue(statusCode: 200, url: customHealthUrl, data: Data())
+        let result = await v.validate(urlString: "https://example.com")
+        XCTAssertTrue(result.success)
+    }
+
+    func testErrorDescriptionIncludesStatusCode() async {
+        let v = makeValidator(responses: [(401, Self.exampleHealthUrl, Data())])
+        let result = await v.validate(urlString: Self.exampleBaseUrl)
+        XCTAssertFalse(result.success)
+        XCTAssertTrue(result.error?.contains("401") == true)
+    }
 }

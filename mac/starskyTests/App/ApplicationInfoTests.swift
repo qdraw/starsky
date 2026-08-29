@@ -22,4 +22,9 @@ final class ApplicationInfoTests: XCTestCase {
         XCTAssertEqual(parts.count, 2)
         XCTAssertEqual(String(parts[0]), "starsky")
     }
+
+    func testVersionFallsBackWhenBundleMissing() {
+        // In test bundles CFBundleShortVersionString may be absent; version must still be a non-empty string
+        XCTAssertFalse(ApplicationInfo.version.isEmpty)
+    }
 }

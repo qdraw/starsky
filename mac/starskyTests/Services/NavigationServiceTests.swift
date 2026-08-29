@@ -64,4 +64,34 @@ final class NavigationServiceTests: XCTestCase {
         let result = svc.buildStartUrl(baseUrl: "\(Self.localBaseUrl)/", route: "?f=/")
         XCTAssertEqual(result, "\(Self.localBaseUrl)?f=/")
     }
+
+    func testBuildStartUrlPrefixesBarePath() {
+        let svc = makeService()
+        let result = svc.buildStartUrl(baseUrl: Self.localBaseUrl, route: "photos")
+        XCTAssertEqual(result, "\(Self.localBaseUrl)/photos")
+    }
+
+    func testIsAllowedOriginReturnsFalseForUrlWithNoHost() {
+        let svc = makeService()
+        let url = URL(string: "file:///local/path")!
+        XCTAssertFalse(svc.isAllowedOrigin(url, baseUrl: Self.localBaseUrl))
+    }
+
+    func testIsAllowedOriginReturnsFalseForBaseUrlWithNoHost() {
+        let svc = makeService()
+        let url = URL(string: "\(Self.localBaseUrl)/photos")!
+        XCTAssertFalse(svc.isAllowedOrigin(url, baseUrl: "http://"))
+    }
+
+    func testGetEffectiveBaseUrlLocalWithNilPort() {
+        let svc = makeService(mode: .local)
+        let result = svc.getEffectiveBaseUrl(localPort: nil)
+        XCTAssertEqual(result, "http://localhost:0")
+    }
+
+    func testGetEffectiveBaseUrlRemote() {
+        let svc = makeService(mode: .remote, remoteUrl: Self.remoteBaseUrl)
+        let result = svc.getEffectiveBaseUrl()
+        XCTAssertEqual(result, Self.remoteBaseUrl)
+    }
 }
