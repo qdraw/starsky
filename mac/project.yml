@@ -93,19 +93,14 @@ schemes:
     build:
       targets:
         starsky: all
+        starskyTests: [test]
     run:
       config: Debug
-    archive:
-      config: Release
-
-  starskyTests:
-    build:
-      targets:
-        starskyTests: [test]
-        starsky: [build, test]
     test:
       config: Debug
       targets:
         - starskyTests
       coverageTargets:
         - starsky
+    archive:
+      config: Release

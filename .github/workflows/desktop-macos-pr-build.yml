@@ -52,7 +52,7 @@ jobs:
           set -o pipefail
           xcodebuild test \
             -project mac/starsky.xcodeproj \
-            -scheme starskyTests \
+            -scheme starsky \
             -destination 'platform=macOS' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \

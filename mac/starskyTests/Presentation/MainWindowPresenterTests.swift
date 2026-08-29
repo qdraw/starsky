@@ -105,22 +105,37 @@ final class MainWindowPresenterTests: XCTestCase {
 
     // MARK: - windowWillClose
 
-    func testWindowWillCloseRemovesRoute() {
+    func testWindowWillClosePreservesRouteForNextLaunch() {
         let presenter = makePresenter(index: 0)
         presenter.pageDidLoad(url: URL(string: "http://localhost:5000/photos")!, frame: nil, isZoomed: false)
-        XCTAssertFalse(routePersistenceService.getRoutes().isEmpty)
         presenter.windowWillClose()
-        XCTAssertTrue(routePersistenceService.getRoutes().isEmpty)
+        // Route must persist so the window is restored on next launch
+        XCTAssertEqual(routePersistenceService.getRoutes().first?.route, "/photos")
     }
 
-    func testWindowWillCloseOnlyRemovesItsOwnIndex() {
+    func testWindowWillCloseSavesGeometryFromView() {
+        let presenter = makePresenter(index: 0)
+        let mockView = MockMainWindowView()
+        mockView.stubbedURL = URL(string: "http://localhost:5000/photos")
+        mockView.stubbedFrame = NSRect(x: 10, y: 20, width: 900, height: 700)
+        presenter.view = mockView
+        presenter.pageDidLoad(url: URL(string: "http://localhost:5000/photos")!, frame: nil, isZoomed: false)
+        presenter.windowWillClose()
+        let saved = routePersistenceService.getRoutes().first
+        XCTAssertEqual(saved?.x, 10)
+        XCTAssertEqual(saved?.y, 20)
+        XCTAssertEqual(saved?.width, 900)
+        XCTAssertEqual(saved?.height, 700)
+    }
+
+    func testWindowWillClosePreservesAllRoutesForMultipleWindows() {
         let p0 = makePresenter(index: 0)
         let p1 = makePresenter(index: 1)
         p0.pageDidLoad(url: URL(string: "http://localhost:5000/a")!, frame: nil, isZoomed: false)
         p1.pageDidLoad(url: URL(string: "http://localhost:5000/b")!, frame: nil, isZoomed: false)
         p0.windowWillClose()
-        XCTAssertEqual(routePersistenceService.getRoutes().count, 1)
-        XCTAssertEqual(routePersistenceService.getRoutes().first?.route, "/b")
+        // Both routes must remain so both windows restore on next launch
+        XCTAssertEqual(routePersistenceService.getRoutes().count, 2)
     }
 
     // MARK: - editFileInEditor
@@ -274,7 +289,12 @@ private class MockWindowManager: WindowManagerProtocol {
 private class MockMainWindowView: MainWindowView {
     var window: NSWindow? { nil }
     var stubbedURL: URL?
+    var stubbedFrame: NSRect?
+    var stubbedIsZoomed: Bool = false
     var evaluatedJavaScript: String?
+
+    var windowFrame: NSRect? { stubbedFrame }
+    var windowIsZoomed: Bool { stubbedIsZoomed }
 
     func evaluateJavaScript(_ script: String) { evaluatedJavaScript = script }
     func currentURL() -> URL? { stubbedURL }

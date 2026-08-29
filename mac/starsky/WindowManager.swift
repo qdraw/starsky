@@ -49,19 +49,54 @@ class WindowManager {
         windows.append(controller)
 
         let cascadeOffset = CGFloat(index) * 24
-        let x = (geometry?.x ?? 100) + Double(cascadeOffset > 0 ? cascadeOffset : 0)
-        let y = (geometry?.y ?? 100)
-        let w = geometry?.width ?? 1200
-        let h = geometry?.height ?? 800
+        let resolved = WindowManager.resolveGeometry(geometry, offset: cascadeOffset)
 
         controller.window?.setFrame(
-            NSRect(x: x, y: y, width: w, height: h),
+            NSRect(x: resolved.x, y: resolved.y, width: resolved.width, height: resolved.height),
             display: false
         )
-        if geometry?.isMaximized == true {
+        if resolved.isMaximized {
             controller.window?.zoom(nil)
         }
         controller.showWindow(nil)
+    }
+
+    // Maximized windows are always valid — macOS snaps them to the nearest screen.
+    // For normal windows, require that at least 100 px of the title bar is reachable
+    // on any connected screen so the user can grab and move the window.
+    static func isOnScreen(_ state: SavedWindowState) -> Bool {
+        if state.isMaximized { return true }
+        if state.width < 200 || state.height < 100 { return false }
+
+        let minVisible: CGFloat = 100
+        let winLeft   = CGFloat(state.x)
+        let winTop    = CGFloat(state.y)
+        let winRight  = winLeft + CGFloat(state.width)
+        let winBottom = winTop  + CGFloat(state.height)
+
+        return NSScreen.screens.contains { screen in
+            let f = screen.frame
+            return winRight  > f.minX + minVisible
+                && winLeft   < f.maxX - minVisible
+                && winBottom > f.minY
+                && winTop    < f.maxY
+        }
+    }
+
+    static func resolveGeometry(_ geometry: SavedWindowState?, offset: CGFloat) -> SavedWindowState {
+        if let g = geometry, isOnScreen(g) {
+            var resolved = g
+            resolved.x += Double(offset)
+            return resolved
+        }
+        return SavedWindowState(
+            route: geometry?.route ?? "?f=/",
+            x: 100 + Double(offset),
+            y: 100,
+            width: 1200,
+            height: 800,
+            isMaximized: false
+        )
     }
 
     @MainActor

@@ -55,6 +55,9 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
 
     func currentURL() -> URL? { webView.url }
 
+    var windowFrame: NSRect? { window?.frame }
+    var windowIsZoomed: Bool { window?.isZoomed ?? false }
+
     func allCookies() async -> [HTTPCookie] {
         await withCheckedContinuation { continuation in
             webView.configuration.websiteDataStore.httpCookieStore.getAllCookies {

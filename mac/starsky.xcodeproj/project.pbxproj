@@ -629,7 +629,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Starsky.app/Contents/MacOS/Starsky";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/Contents/MacOS/starsky";
 			};
 			name = Debug;
 		};
@@ -642,7 +642,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Starsky.app/Contents/MacOS/Starsky";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/Contents/MacOS/starsky";
 			};
 			name = Release;
 		};
@@ -722,7 +722,6 @@
 				INFOPLIST_FILE = starsky/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
-				PRODUCT_MODULE_NAME = starsky;
 				PRODUCT_NAME = Starsky;
 				SDKROOT = macosx;
 			};
@@ -739,7 +738,6 @@
 				INFOPLIST_FILE = starsky/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
-				PRODUCT_MODULE_NAME = starsky;
 				PRODUCT_NAME = Starsky;
 				SDKROOT = macosx;
 			};

@@ -83,7 +83,7 @@ jobs:
         run: |
           xcodebuild test \
             -project mac/starsky.xcodeproj \
-            -scheme starskyTests \
+            -scheme starsky \
             -destination 'platform=macOS' \
             -enableCodeCoverage YES \
             -resultBundlePath TestResults/macos.xcresult \

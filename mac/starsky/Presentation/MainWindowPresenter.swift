@@ -3,6 +3,8 @@ import WebKit
 
 protocol MainWindowView: AnyObject {
     var window: NSWindow? { get }
+    var windowFrame: NSRect? { get }
+    var windowIsZoomed: Bool { get }
     func evaluateJavaScript(_ script: String)
     func currentURL() -> URL?
     func allCookies() async -> [HTTPCookie]
@@ -124,6 +126,8 @@ class MainWindowPresenter {
     }
 
     func windowWillClose() {
-        routePersistenceService.removeRoute(index: index)
+        if let url = view?.currentURL() {
+            pageDidLoad(url: url, frame: view?.windowFrame, isZoomed: view?.windowIsZoomed ?? false)
+        }
     }
 }
