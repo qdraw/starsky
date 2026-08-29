@@ -188,8 +188,11 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
     internal static async Task CheckVersionCompatibilityAsync(
         HttpClient http, string baseUrl, string appVersion)
     {
-        var resp = await http.PostAsync(
-            $"{baseUrl}/api/health/version?version={appVersion}", null);
+        using var request = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"{baseUrl}/api/health/version?version={appVersion}");
+        request.Headers.Add("x-api-version", appVersion);
+        var resp = await http.SendAsync(request);
 
         if (resp.StatusCode == System.Net.HttpStatusCode.BadRequest)
         {
