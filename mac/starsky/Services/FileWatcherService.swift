@@ -61,17 +61,7 @@ class FileWatcherService {
     }
 
     private func onDirectoryChanged() {
-        let dir = self.watchedDirectory
-        guard let contents = try? FileManager.default.contentsOfDirectory(
-            at: dir,
-            includingPropertiesForKeys: nil
-        ) else { return }
-
-        for url in contents where url.pathExtension != "tmp" {
-            let path = url.path
-            logger.info("File changed in workspace: \(path)")
-            fileLogger.info("File changed in workspace: \(path)", category: "FileWatcherService")
-        }
+        logger.info("Temp folder change detected")
     }
 
     func stop() {

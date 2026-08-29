@@ -246,6 +246,117 @@ final class FileDownloadServiceTests: XCTestCase {
         XCTAssertEqual(UploadError.uploadFailed(statusCode: 500).errorDescription, "Upload failed (HTTP 500).")
     }
 
+    // MARK: - Watcher integration tests
+
+    func testInPlaceWriteTriggersUpload() async throws {
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testPhotoPath
+
+        enqueuDownload(baseUrl: baseUrl, path: path, data: "original".data(using: .utf8)!)
+        let service = makeWatchedService()
+        try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false, cookieProvider: { [] })
+
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/upload")!, data: Data())
+
+        let destFile = tempDir.appendingPathComponent("photos/test.jpg")
+        // Non-atomic write — modifies the inode in place, triggers .write on the file fd
+        try "updated".data(using: .utf8)!.write(to: destFile, options: [])
+
+        try await Task.sleep(nanoseconds: 2_000_000_000)
+        XCTAssertNotNil(
+            FakeURLProtocol.capturedRequests.first { $0.url?.path == "/starsky/api/upload" },
+            "In-place write did not trigger an upload"
+        )
+    }
+
+    func testAtomicWriteTriggersUpload() async throws {
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testPhotoPath
+
+        enqueuDownload(baseUrl: baseUrl, path: path, data: "original".data(using: .utf8)!)
+        let service = makeWatchedService()
+        try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false, cookieProvider: { [] })
+
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/upload")!, data: Data())
+
+        let destFile = tempDir.appendingPathComponent("photos/test.jpg")
+        // Atomic write: Swift Data.write with .atomic writes to a temp file in the same
+        // directory and renames it over the target — the classic editor save pattern.
+        try "updated-atomic".data(using: .utf8)!.write(to: destFile, options: .atomic)
+
+        try await Task.sleep(nanoseconds: 2_000_000_000)
+        XCTAssertNotNil(
+            FakeURLProtocol.capturedRequests.first { $0.url?.path == "/starsky/api/upload" },
+            "Atomic write (rename) did not trigger an upload"
+        )
+    }
+
+    func testNewFileInSameDirTriggersUpload() async throws {
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testPhotoPath  // /photos/test.jpg
+
+        enqueuDownload(baseUrl: baseUrl, path: path, data: "original".data(using: .utf8)!)
+        let service = makeWatchedService()
+        try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false, cookieProvider: { [] })
+
+        // Simulate an editor exporting a new file (e.g. DNG → JPEG export) into the same dir
+        let exportedFile = tempDir.appendingPathComponent("photos/export.jpg")
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/upload")!, data: Data())
+        try "exported-jpeg-bytes".data(using: .utf8)!.write(to: exportedFile)
+
+        try await Task.sleep(nanoseconds: 2_000_000_000)
+        XCTAssertNotNil(
+            FakeURLProtocol.capturedRequests.first { $0.url?.path == "/starsky/api/upload" },
+            "New file created by editor in same directory did not trigger an upload"
+        )
+        // Remote path should use the same parent directory as the watched file
+        let uploadReq = FakeURLProtocol.capturedRequests.first { $0.url?.path == "/starsky/api/upload" }
+        XCTAssertEqual(uploadReq?.value(forHTTPHeaderField: "to"), "/photos")
+        XCTAssertEqual(uploadReq?.value(forHTTPHeaderField: "filename"), "export.jpg")
+    }
+
+    func testMtimeUpdatedAfterUploadPreventsDoubleUpload() async throws {
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testPhotoPath
+
+        enqueuDownload(baseUrl: baseUrl, path: path, data: "original".data(using: .utf8)!)
+        let service = makeWatchedService()
+        try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false, cookieProvider: { [] })
+
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/upload")!, data: Data())
+
+        let destFile = tempDir.appendingPathComponent("photos/test.jpg")
+        try "updated".data(using: .utf8)!.write(to: destFile, options: [])
+
+        // Wait for upload to complete and mtime to be refreshed
+        try await Task.sleep(nanoseconds: 2_000_000_000)
+        let countAfterFirstSave = FakeURLProtocol.capturedRequests.filter { $0.url?.path == "/starsky/api/upload" }.count
+        XCTAssertEqual(countAfterFirstSave, 1)
+
+        // Simulate a directory event with no actual file change (no new upload expected)
+        try await Task.sleep(nanoseconds: 500_000_000)
+        let countAfterNoChange = FakeURLProtocol.capturedRequests.filter { $0.url?.path == "/starsky/api/upload" }.count
+        XCTAssertEqual(countAfterNoChange, 1, "Upload fired again despite no mtime change")
+    }
+
+    // MARK: - Watcher test helpers
+
+    private func enqueuDownload(baseUrl: String, path: String, data: Data) {
+        let enc = path.addingPercentEncoding(withAllowedCharacters:
+            CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-._~")))!
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=\(enc)")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 404, url: URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=\(enc)")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=\(enc)&cache=false")!, data: data)
+    }
+
+    private func makeWatchedService() -> FileDownloadService {
+        FileDownloadService(
+            fileLogger: DailyFileLogger(),
+            session: FakeURLProtocol.makeSession(),
+            tempFolder: tempDir
+        )
+    }
+
     func testInvalidBaseUrlThrowsInvalidPath() async {
         let service = FileDownloadService(
             fileLogger: DailyFileLogger(),

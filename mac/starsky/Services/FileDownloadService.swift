@@ -11,10 +11,13 @@ class FileDownloadService {
     private let watcherQueue = DispatchQueue(label: "nl.qdraw.starsky.fileuploadwatcher")
     // Per-file fd sources (catch in-place writes; key = file path)
     private var fileSources: [String: DispatchSourceFileSystemObject] = [:]
-    // Per-directory fd sources (catch atomic renames; key = dir path)
+    // Per-directory fd sources (catch atomic renames and new files; key = dir path)
     private var dirSources: [String: DispatchSourceFileSystemObject] = [:]
-    // Dir path → set of tracked file paths within it
+    // Dir path → set of tracked file paths within it (files we're actively monitoring)
     private var dirFiles: [String: Set<String>] = [:]
+    // Dir path → set of file paths that existed when we first started watching the directory.
+    // Files NOT in this set that appear later are treated as new editor exports and uploaded.
+    private var dirKnownFiles: [String: Set<String>] = [:]
     // Last mtime we saw when the file was downloaded or last uploaded
     private var lastMtimes: [String: Date] = [:]
 
@@ -48,6 +51,7 @@ class FileDownloadService {
             remoteContexts.removeAll()
             lastMtimes.removeAll()
             dirFiles.removeAll()
+            dirKnownFiles.removeAll()
         }
     }
 
@@ -123,6 +127,12 @@ class FileDownloadService {
             registerFileSource(key: key, localURL: localURL)
 
             if dirSources[dirPath] == nil {
+                // Snapshot files already present so new editor exports can be distinguished
+                let existing = (try? FileManager.default.contentsOfDirectory(
+                    at: URL(fileURLWithPath: dirPath),
+                    includingPropertiesForKeys: nil
+                ))?.map(\.path) ?? []
+                dirKnownFiles[dirPath] = Set(existing)
                 registerDirSource(dirPath: dirPath)
             }
             dirFiles[dirPath, default: []].insert(key)
@@ -146,12 +156,16 @@ class FileDownloadService {
             eventMask: [.write, .delete, .rename],
             queue: watcherQueue
         )
-        src.setEventHandler { [weak self] in self?.handleFileEvent(key: key, localURL: localURL) }
+        src.setEventHandler { [weak self, weak src] in
+            let events = src?.data ?? []
+            self?.handleFileEvent(key: key, localURL: localURL, events: events)
+        }
         src.setCancelHandler { close(fd) }
         src.resume()
         fileSources[key] = src
 
         logger.info("Watching for changes: \(localURL.lastPathComponent)")
+        fileLogger.info("Watching for changes: \(localURL.lastPathComponent)", category: "FileDownloadService")
     }
 
     private func registerDirSource(dirPath: String) {
@@ -171,28 +185,57 @@ class FileDownloadService {
 
     // MARK: - Event handlers (run on watcherQueue)
 
-    private func handleFileEvent(key: String, localURL: URL) {
+    private func handleFileEvent(key: String, localURL: URL, events: DispatchSource.FileSystemEvent) {
         logger.info("File event for: \(localURL.lastPathComponent)")
-        // Re-register after a short delay so an atomic rename has time to land
-        watcherQueue.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            guard let self, self.remoteContexts[key] != nil else { return }
-            self.registerFileSource(key: key, localURL: localURL)
+        fileLogger.info("File event for: \(localURL.lastPathComponent)", category: "FileDownloadService")
+        // Only re-register after delete/rename (atomic write replaced the inode).
+        // Plain .write events keep the same inode, so the existing source stays valid.
+        if events.contains(.delete) || events.contains(.rename) {
+            watcherQueue.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                guard let self, self.remoteContexts[key] != nil else { return }
+                self.registerFileSource(key: key, localURL: localURL)
+            }
         }
         scheduleUpload(key: key, localURL: localURL)
     }
 
     private func handleDirEvent(dirPath: String) {
-        guard let fileKeys = dirFiles[dirPath] else { return }
+        guard let fileKeys = dirFiles[dirPath], !fileKeys.isEmpty else { return }
+
+        // Part 1: tracked files whose mtime changed (in-place or atomic overwrite)
         for key in fileKeys {
             guard remoteContexts[key] != nil else { continue }
             let localURL = URL(fileURLWithPath: key)
-            let currentMtime = mtime(of: localURL)
-            let knownMtime = lastMtimes[key] ?? .distantPast
-            guard let currentMtime, currentMtime > knownMtime else { continue }
+            guard let currentMtime = mtime(of: localURL),
+                  currentMtime > (lastMtimes[key] ?? .distantPast) else { continue }
             logger.info("Dir event detected change for: \(localURL.lastPathComponent)")
-            // Re-register file fd — the inode may have been replaced by an atomic rename
+            fileLogger.info("Dir event detected change for: \(localURL.lastPathComponent)", category: "FileDownloadService")
             registerFileSource(key: key, localURL: localURL)
             scheduleUpload(key: key, localURL: localURL)
+        }
+
+        // Part 2: files that weren't present when we started watching — editor exports
+        guard let ctxKey = fileKeys.first(where: { remoteContexts[$0] != nil }),
+              let ctx = remoteContexts[ctxKey] else { return }
+        let remoteParentDir = URL(fileURLWithPath: ctx.remotePath).deletingLastPathComponent().path
+        let known = dirKnownFiles[dirPath] ?? []
+
+        guard let contents = try? FileManager.default.contentsOfDirectory(
+            at: URL(fileURLWithPath: dirPath),
+            includingPropertiesForKeys: nil
+        ) else { return }
+
+        for fileURL in contents where fileURL.pathExtension != "tmp" {
+            let newKey = fileURL.path
+            guard !known.contains(newKey), remoteContexts[newKey] == nil else { continue }
+            let remotePath = remoteParentDir + "/" + fileURL.lastPathComponent
+            remoteContexts[newKey] = (remotePath, ctx.baseUrl, ctx.cookieProvider)
+            dirFiles[dirPath, default: []].insert(newKey)
+            dirKnownFiles[dirPath, default: []].insert(newKey)
+            registerFileSource(key: newKey, localURL: fileURL)
+            scheduleUpload(key: newKey, localURL: fileURL)
+            logger.info("New file in dir, will upload: \(fileURL.lastPathComponent)")
+            fileLogger.info("New file in dir, will upload: \(fileURL.lastPathComponent)", category: "FileDownloadService")
         }
     }
 
@@ -201,9 +244,14 @@ class FileDownloadService {
     private func scheduleUpload(key: String, localURL: URL) {
         debounceItems[key]?.cancel()
         let item = DispatchWorkItem { [weak self] in
-            guard let self, let ctx = self.remoteContexts[key] else { return }
+            guard let self, let ctx = self.remoteContexts[key] else {
+                self?.fileLogger.info("Upload skipped (no context): \(localURL.lastPathComponent)", category: "FileDownloadService")
+                return
+            }
+            self.fileLogger.info("Starting upload for: \(localURL.lastPathComponent)", category: "FileDownloadService")
             Task {
                 let cookies = await ctx.cookieProvider()
+                self.fileLogger.info("Got \(cookies.count) cookies, uploading: \(localURL.lastPathComponent)", category: "FileDownloadService")
                 do {
                     try await self.upload(localURL: localURL, remotePath: ctx.remotePath, baseUrl: ctx.baseUrl, cookies: cookies)
                     self.watcherQueue.async { self.lastMtimes[key] = self.mtime(of: localURL) }

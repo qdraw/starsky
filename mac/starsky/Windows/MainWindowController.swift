@@ -7,9 +7,17 @@ import OSLog
     func detach()
 }
 
+private class SilentWindow: NSWindow {
+    override func noResponder(for eventSelector: Selector) {}
+}
+
 private class SilentWebView: WKWebView {
-    override func noResponderFor(_ eventSelector: Selector) {
-        // Prevent the system beep for unhandled keyboard events
+    override func noResponder(for eventSelector: Selector) {}
+
+    override func doCommand(by selector: Selector) {
+        // Arrow keys and other navigation commands that the web content doesn't
+        // consume go through interpretKeyEvents → doCommand, which beeps by default.
+        // Calling super here triggers NSBeep(); doing nothing silences it.
     }
 }
 
@@ -23,7 +31,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     init(options: MainWindowOptions) {
         self.options = options
         self.presenter = MainWindowPresenter(options: options)
-        let window = NSWindow(
+        let window = SilentWindow(
             contentRect: NSRect(x: 100, y: 100, width: 1200, height: 800),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
