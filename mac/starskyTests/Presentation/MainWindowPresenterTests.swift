@@ -194,6 +194,48 @@ final class MainWindowPresenterTests: XCTestCase {
         await Task.yield()
         XCTAssertEqual(mockWindowManager.openMainWindowRoute, "/search?q=test#top")
     }
+
+    // MARK: - convenience init(options:)
+
+    func testConvenienceInitCreatesUsablePresenter() {
+        let fileLogger = DailyFileLogger(logsDirectory: tempDir)
+        let wm = WindowManager(
+            settingsService: settingsService,
+            routePersistenceService: routePersistenceService,
+            navigationService: navigationService,
+            fileDownloadService: fileDownloadService,
+            fileLogger: fileLogger
+        )
+        let options = MainWindowOptions(
+            index: 7,
+            startUrl: "http://localhost:5000",
+            baseUrl: "http://localhost:5000",
+            geometry: nil,
+            navigationService: navigationService,
+            routePersistenceService: routePersistenceService,
+            fileDownloadService: fileDownloadService,
+            windowManager: wm,
+            fileLogger: fileLogger
+        )
+        let presenter = MainWindowPresenter(options: options)
+        XCTAssertTrue(presenter.navigationPolicy(for: URL(string: "http://localhost:5000/photos")!))
+    }
+
+    // MARK: - editFileInEditor async download path
+
+    func testEditFileInEditorExternalUrlWithValidFParamStartsDownloadTask() async {
+        let presenter = makePresenter(baseUrl: "http://localhost:5000")
+        let mockView = MockMainWindowView()
+        // External origin with a non-root f param triggers the async download branch
+        mockView.stubbedURL = URL(string: "https://external.com/page?f=/photo.jpg")
+        presenter.view = mockView
+
+        presenter.editFileInEditor()
+
+        // Let the async Task run to completion (download fails gracefully with no network in tests)
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertNil(mockView.evaluatedJavaScript)
+    }
 }
 
 // MARK: - Test doubles

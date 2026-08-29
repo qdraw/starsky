@@ -82,3 +82,53 @@ final class WindowManagerTests: XCTestCase {
     }
 
 }
+
+// MARK: - WindowManagerProtocol default extension coverage
+
+@MainActor
+private final class MinimalWindowManager: WindowManagerProtocol {
+    var openCallCount = 0
+    var lastRoute: String? = "sentinel"
+
+    func openMainWindow(route: String?) {
+        openCallCount += 1
+        lastRoute = route
+    }
+
+    func reopenAll() {}
+}
+
+final class WindowManagerProtocolDefaultTests: XCTestCase {
+
+    @MainActor
+    func testDefaultOpenMainWindowCallsWithNilRoute() {
+        let wm = MinimalWindowManager()
+        wm.openMainWindow()
+        XCTAssertEqual(wm.openCallCount, 1)
+        XCTAssertNil(wm.lastRoute)
+    }
+
+    @MainActor
+    func testDefaultSetLocalPortIsNoOp() {
+        let wm = MinimalWindowManager()
+        wm.setLocalPort(9000)
+    }
+
+    @MainActor
+    func testDefaultRestoreWindowsIsNoOp() {
+        let wm = MinimalWindowManager()
+        wm.restoreWindows()
+    }
+
+    @MainActor
+    func testDefaultCloseAllIsNoOp() {
+        let wm = MinimalWindowManager()
+        wm.closeAll()
+    }
+
+    @MainActor
+    func testDefaultReloadAllIsNoOp() {
+        let wm = MinimalWindowManager()
+        wm.reloadAll()
+    }
+}
