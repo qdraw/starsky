@@ -27,6 +27,11 @@ if [[ ! -f "$DMG" ]]; then
 fi
 
 echo "==> Submitting for notarization: $DMG"
+echo "TO DEBUG: You can run the following command to check the status of the notarization request:"
+echo "xcrun notarytool history --apple-id $APPLE_ID --team-id $APPLE_TEAM_ID --password $NOTARYTOOL_PASSWORD"
+echo "or to check the status of a specific request:"
+echo "xcrun notarytool log 7d925d80-e9a9-4974-9fdb-e0afc9b95f4a --apple-id $APPLE_ID --team-id $APPLE_TEAM_ID --password $NOTARYTOOL_PASSWORD"
+
 xcrun notarytool submit "$DMG" \
   --apple-id "$APPLE_ID" \
   --team-id "$APPLE_TEAM_ID" \
