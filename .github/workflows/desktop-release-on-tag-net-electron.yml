@@ -157,20 +157,13 @@ jobs:
             build/starsky-mac-universal-desktop.dmg \
             "build/starsky.app"
 
-      - name: Notarize
-        env:
-          APPLE_ID: ${{ secrets.STARSKY_APPLE_ID }}
-          APPLE_TEAM_ID: "LHZ4426ABB"
-          NOTARYTOOL_PASSWORD: ${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}
+      - name: Notarize and staple
         run: |
-          xcrun notarytool submit build/starsky-mac-universal-desktop.dmg \
-            --apple-id "$APPLE_ID" \
-            --team-id "$APPLE_TEAM_ID" \
-            --password "$NOTARYTOOL_PASSWORD" \
-            --wait
-
-      - name: Staple
-        run: xcrun stapler staple build/starsky-mac-universal-desktop.dmg
+          bash mac/scripts/notarize.sh \
+            build/starsky-mac-universal-desktop.dmg \
+            "${{ secrets.STARSKY_APPLE_ID }}" \
+            "LHZ4426ABB" \
+            "${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}"
 
       - name: Upload starsky-mac-universal-desktop as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -245,20 +238,13 @@ jobs:
             build/starsky-mac-arm64-desktop.dmg \
             "build/starsky.app"
 
-      - name: Notarize
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_TEAM_ID: "LHZ4426ABB"
-          NOTARYTOOL_PASSWORD: ${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}
+      - name: Notarize and staple
         run: |
-          xcrun notarytool submit build/starsky-mac-arm64-desktop.dmg \
-            --apple-id "$APPLE_ID" \
-            --team-id "$APPLE_TEAM_ID" \
-            --password "$NOTARYTOOL_PASSWORD" \
-            --wait
-
-      - name: Staple
-        run: xcrun stapler staple build/starsky-mac-arm64-desktop.dmg
+          bash mac/scripts/notarize.sh \
+            build/starsky-mac-arm64-desktop.dmg \
+            "${{ secrets.STARSKY_APPLE_ID }}" \
+            "LHZ4426ABB" \
+            "${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}"
 
       - name: Upload starsky-mac-arm64-desktop as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -333,20 +319,13 @@ jobs:
             build/starsky-mac-x64-desktop.dmg \
             "build/starsky.app"
 
-      - name: Notarize
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_TEAM_ID: "LHZ4426ABB"
-          NOTARYTOOL_PASSWORD: ${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}
+      - name: Notarize and staple
         run: |
-          xcrun notarytool submit build/starsky-mac-x64-desktop.dmg \
-            --apple-id "$APPLE_ID" \
-            --team-id "$APPLE_TEAM_ID" \
-            --password "$NOTARYTOOL_PASSWORD" \
-            --wait
-
-      - name: Staple
-        run: xcrun stapler staple build/starsky-mac-x64-desktop.dmg
+          bash mac/scripts/notarize.sh \
+            build/starsky-mac-x64-desktop.dmg \
+            "${{ secrets.STARSKY_APPLE_ID }}" \
+            "LHZ4426ABB" \
+            "${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}"
 
       - name: Upload starsky-mac-x64-desktop as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
