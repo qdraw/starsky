@@ -433,4 +433,57 @@ final class AppCoreTests: XCTestCase {
         XCTAssertTrue(watcher.startCalled)
         XCTAssertTrue(wm.restoreWindowsCalled)
     }
+
+    // MARK: - checkVersionCompatibility
+
+    func testCheckVersionCompatibilityReturnsTrueOn200() async {
+        let core = makeCore()
+        FakeURLProtocol.reset()
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "http://localhost:9999/api/health/version")!, data: Data())
+        core.healthCheckSession = FakeURLProtocol.makeSession()
+        let result = await core.checkVersionCompatibility(baseUrl: "http://localhost:9999")
+        XCTAssertTrue(result)
+    }
+
+    func testCheckVersionCompatibilityReturnsFalseOn400() async {
+        let core = makeCore()
+        FakeURLProtocol.reset()
+        FakeURLProtocol.enqueue(statusCode: 400, url: URL(string: "http://localhost:9999/api/health/version")!, data: Data())
+        core.healthCheckSession = FakeURLProtocol.makeSession()
+        let result = await core.checkVersionCompatibility(baseUrl: "http://localhost:9999")
+        XCTAssertFalse(result)
+    }
+
+    func testCheckVersionCompatibilityReturnsTrueOnMalformedBaseUrl() async {
+        let core = makeCore()
+        // Malformed base URL causes URL construction to fail — fails open (returns true).
+        let result = await core.checkVersionCompatibility(baseUrl: "not a url ://??")
+        XCTAssertTrue(result)
+    }
+
+    func testCheckVersionCompatibilityReturnsTrueOnNetworkError() async {
+        let core = makeCore()
+        FakeURLProtocol.reset()
+        core.healthCheckSession = FakeURLProtocol.makeSession()
+        // No response queued → network error → fails open (returns true).
+        let result = await core.checkVersionCompatibility(baseUrl: "http://localhost:9999")
+        XCTAssertTrue(result)
+    }
+
+    // MARK: - startLocalMode version compatibility
+
+    func testStartLocalModeShowsErrorWhenVersionIncompatible() async {
+        let backend = MockBackendService()
+        var errorMessage: String?
+        let core = makeCore(backendService: backend)
+        core.showError = { errorMessage = $0 }
+        core.healthCheckTimeoutSeconds = 5
+        // Health check passes, then version check returns 400 (incompatible).
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "http://localhost:1/api/health")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 400, url: URL(string: "http://localhost:1/api/health/version")!, data: Data())
+        await core.startLocalMode()
+        XCTAssertTrue(backend.startCalled)
+        XCTAssertNotNil(errorMessage)
+        XCTAssertTrue(errorMessage?.contains("incompatible") == true || errorMessage?.contains("update") == true)
+    }
 }

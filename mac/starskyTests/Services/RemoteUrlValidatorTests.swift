@@ -1,5 +1,24 @@
 import XCTest
 
+private class PlainResponseURLProtocol: URLProtocol {
+    override class func canInit(with _: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+    override func startLoading() {
+        let response = URLResponse(url: request.url!, mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: Data())
+        client?.urlProtocolDidFinishLoading(self)
+    }
+
+    override func stopLoading() {}
+
+    static func makeSession() -> URLSession {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [PlainResponseURLProtocol.self]
+        return URLSession(configuration: config)
+    }
+}
 
 final class RemoteUrlValidatorTests: XCTestCase {
     private static let exampleBaseUrl = "https://example.com"
@@ -118,4 +137,12 @@ final class RemoteUrlValidatorTests: XCTestCase {
         XCTAssertFalse(result.success)
         XCTAssertTrue(result.error?.contains("401") == true)
     }
+
+    func testNonHTTPResponseFails() async {
+        let v = RemoteUrlValidator(session: PlainResponseURLProtocol.makeSession())
+        let result = await v.validate(urlString: Self.exampleBaseUrl)
+        XCTAssertFalse(result.success)
+        XCTAssertEqual(result.error, "Unexpected response from server.")
+    }
+
 }
