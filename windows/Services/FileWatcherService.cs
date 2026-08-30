@@ -100,10 +100,12 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, HttpClient? 
         var starskyPath = LocalPathToStarskyPath(localPath);
         logger.LogInformation("Uploading {LocalPath} → {ServerPath}", localPath, starskyPath);
 
+        var endpoint = GetUploadEndpoint(localPath);
+
         try
         {
             using var req = new HttpRequestMessage(HttpMethod.Post,
-                $"{_uploadBaseUrl!.TrimEnd('/')}/starsky/api/upload");
+                $"{_uploadBaseUrl!.TrimEnd('/')}/starsky/api/{endpoint}");
             req.Headers.TryAddWithoutValidation("to", starskyPath);
             if (_uploadCookieHeader != null)
             {
@@ -130,6 +132,11 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, HttpClient? 
             logger.LogError(ex, "Upload failed for {Path}", starskyPath);
         }
     }
+
+    internal static string GetUploadEndpoint(string localPath)
+        => Path.GetExtension(localPath).Equals(".xmp", StringComparison.OrdinalIgnoreCase)
+            ? "upload-sidecar"
+            : "upload";
 
     internal static string LocalPathToStarskyPath(string localPath)
     {

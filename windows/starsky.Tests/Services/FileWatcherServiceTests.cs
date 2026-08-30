@@ -102,6 +102,22 @@ public sealed class FileWatcherServiceTests : IDisposable
     }
 
     [Fact]
+    public void GetUploadEndpoint_XmpLowercase_ReturnsSidecar()
+        => Assert.Equal("upload-sidecar", FileWatcherService.GetUploadEndpoint("photo.xmp"));
+
+    [Fact]
+    public void GetUploadEndpoint_XmpUppercase_ReturnsSidecar()
+        => Assert.Equal("upload-sidecar", FileWatcherService.GetUploadEndpoint("photo.XMP"));
+
+    [Fact]
+    public void GetUploadEndpoint_Jpg_ReturnsUpload()
+        => Assert.Equal("upload", FileWatcherService.GetUploadEndpoint("photo.jpg"));
+
+    [Fact]
+    public void GetUploadEndpoint_NoExtension_ReturnsUpload()
+        => Assert.Equal("upload", FileWatcherService.GetUploadEndpoint("photo"));
+
+    [Fact]
     public void SetUploadContext_DoesNotThrow()
     {
         var ex = Record.Exception(() => _sut.SetUploadContext("http://localhost:5000", "auth=abc"));
