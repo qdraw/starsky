@@ -8,13 +8,15 @@ import OSLog
 }
 
 private class SilentWindow: NSWindow {
-    override func noResponder(for eventSelector: Selector) {}
+    // Intentionally empty: suppresses the default NSBeep() emitted when no responder handles an event.
+    override func noResponder(for _: Selector) {}
 }
 
 private class SilentWebView: WKWebView {
-    override func noResponder(for eventSelector: Selector) {}
+    // Intentionally empty: suppresses the default NSBeep() emitted when no responder handles an event.
+    override func noResponder(for _: Selector) {}
 
-    override func doCommand(by selector: Selector) {
+    override func doCommand(by _: Selector) {
         // Arrow keys and other navigation commands that the web content doesn't
         // consume go through interpretKeyEvents → doCommand, which beeps by default.
         // Calling super here triggers NSBeep(); doing nothing silences it.

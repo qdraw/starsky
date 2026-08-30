@@ -20,7 +20,7 @@ class MainWindowPresenter {
     private let routePersistenceService: RoutePersistenceService
     private let fileDownloadService: FileDownloadService
     private let windowManager: WindowManagerProtocol
-    private let urlOpener: (URL) -> Void
+    var urlOpener: (URL) -> Void = { NSWorkspace.shared.open($0) }
 
     init(
         index: Int,
@@ -29,8 +29,7 @@ class MainWindowPresenter {
         navigationService: NavigationService,
         routePersistenceService: RoutePersistenceService,
         fileDownloadService: FileDownloadService,
-        windowManager: WindowManagerProtocol,
-        urlOpener: @escaping (URL) -> Void = { NSWorkspace.shared.open($0) }
+        windowManager: WindowManagerProtocol
     ) {
         self.index = index
         self.baseUrl = baseUrl
@@ -39,7 +38,6 @@ class MainWindowPresenter {
         self.routePersistenceService = routePersistenceService
         self.fileDownloadService = fileDownloadService
         self.windowManager = windowManager
-        self.urlOpener = urlOpener
     }
 
     convenience init(options: MainWindowOptions) {

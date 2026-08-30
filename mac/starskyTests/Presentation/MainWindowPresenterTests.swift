@@ -33,16 +33,17 @@ final class MainWindowPresenterTests: XCTestCase {
     }
 
     private func makePresenter(baseUrl: String = "http://localhost:5000", mode: RuntimeMode = .local, index: Int = 0) -> MainWindowPresenter {
-        MainWindowPresenter(
+        let presenter = MainWindowPresenter(
             index: index,
             baseUrl: baseUrl,
             mode: mode,
             navigationService: navigationService,
             routePersistenceService: routePersistenceService,
             fileDownloadService: fileDownloadService,
-            windowManager: mockWindowManager,
-            urlOpener: { [weak self] url in self?.openedURLs.append(url) }
+            windowManager: mockWindowManager
         )
+        presenter.urlOpener = { [weak self] url in self?.openedURLs.append(url) }
+        return presenter
     }
 
     // MARK: - navigationPolicy

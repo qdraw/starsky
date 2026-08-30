@@ -5,12 +5,12 @@ import CoreServices
 
 // File-level function ensures correct @convention(c) compilation (no Swift closure thunk).
 private func fsEventsCallback(
-    _ stream: ConstFSEventStreamRef,
+    _: ConstFSEventStreamRef,
     _ info: UnsafeMutableRawPointer?,
     _ numEvents: Int,
     _ eventPaths: UnsafeMutableRawPointer,
     _ eventFlags: UnsafePointer<FSEventStreamEventFlags>,
-    _ eventIds: UnsafePointer<FSEventStreamEventId>
+    _: UnsafePointer<FSEventStreamEventId>
 ) {
     guard let info = info else { return }
     let svc = Unmanaged<FileDownloadService>.fromOpaque(info).takeUnretainedValue()
@@ -252,23 +252,29 @@ class FileDownloadService: @unchecked Sendable {
         let fl = fileLogger
         let item = DispatchWorkItem { [weak self] in
             fl.info("Starting upload for: \(localURL.lastPathComponent)", category: "FileDownloadService")
-            guard let self, let ctx = self.remoteContexts[key] else {
+            guard let self else {
                 fl.info("Upload skipped (no context): \(localURL.lastPathComponent)", category: "FileDownloadService")
                 return
             }
-            Task {
-                let cookies = await ctx.cookieProvider()
-                do {
-                    try await self.upload(localURL: localURL, remotePath: ctx.remotePath, baseUrl: ctx.baseUrl, cookies: cookies)
-                    self.watcherQueue.async { self.lastMtimes[key] = self.mtime(of: localURL) }
-                } catch {
-                    self.logger.error("Upload failed for \(localURL.lastPathComponent): \(error.localizedDescription)")
-                    self.fileLogger.info("Upload failed for \(localURL.lastPathComponent): \(error.localizedDescription)", category: "FileDownloadService")
-                }
-            }
+            Task { await self.performUpload(key: key, localURL: localURL) }
         }
         debounceItems[key] = item
         watcherQueue.asyncAfter(deadline: .now() + 1.0, execute: item)
+    }
+
+    private func performUpload(key: String, localURL: URL) async {
+        guard let ctx = remoteContexts[key] else {
+            fileLogger.info("Upload skipped (no context): \(localURL.lastPathComponent)", category: "FileDownloadService")
+            return
+        }
+        let cookies = await ctx.cookieProvider()
+        do {
+            try await upload(localURL: localURL, remotePath: ctx.remotePath, baseUrl: ctx.baseUrl, cookies: cookies)
+            watcherQueue.async { self.lastMtimes[key] = self.mtime(of: localURL) }
+        } catch {
+            logger.error("Upload failed for \(localURL.lastPathComponent): \(error.localizedDescription)")
+            fileLogger.info("Upload failed for \(localURL.lastPathComponent): \(error.localizedDescription)", category: "FileDownloadService")
+        }
     }
 
     // MARK: - Upload

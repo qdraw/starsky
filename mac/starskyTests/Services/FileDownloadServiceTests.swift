@@ -169,6 +169,54 @@ final class FileDownloadServiceTests: XCTestCase {
         XCTAssertEqual(error.errorDescription, "Download failed (HTTP 403).")
     }
 
+    func testSidecarDataIsWrittenToDisk() async throws {
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testPhotoPath
+        let xmpData = "<x:xmpmeta/>".data(using: .utf8)!
+
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=%2Fphotos%2Ftest.jpg")!, data: xmpData)
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=%2Fphotos%2Ftest.jpg&cache=false")!, data: "img".data(using: .utf8)!)
+
+        let service = FileDownloadService(fileLogger: DailyFileLogger(), session: FakeURLProtocol.makeSession(), tempFolder: tempDir)
+        try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false)
+
+        let xmpFile = tempDir.appendingPathComponent("photos/test.xmp")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: xmpFile.path), "XMP sidecar was not written to disk")
+        XCTAssertEqual(try Data(contentsOf: xmpFile), xmpData)
+    }
+
+    func testEmptySidecarResponseDoesNotWriteXmp() async throws {
+        let baseUrl = Self.localBaseUrl
+        let path = Self.testPhotoPath
+
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/index?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=%2Fphotos%2Ftest.jpg")!, data: Data())
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=%2Fphotos%2Ftest.jpg&cache=false")!, data: "img".data(using: .utf8)!)
+
+        let service = FileDownloadService(fileLogger: DailyFileLogger(), session: FakeURLProtocol.makeSession(), tempFolder: tempDir)
+        try await service.downloadAndOpen(path: path, baseUrl: baseUrl, openFile: false)
+
+        let xmpFile = tempDir.appendingPathComponent("photos/test.xmp")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: xmpFile.path), "XMP should not be written for empty sidecar response")
+    }
+
+    func testUploadXmpUsesSidecarEndpoint() async throws {
+        let baseUrl = Self.remoteBaseUrl
+        let localFile = tempDir.appendingPathComponent("test.xmp")
+        try "<x:xmpmeta/>".data(using: .utf8)!.write(to: localFile)
+
+        FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/upload-sidecar")!, data: "[]".data(using: .utf8)!)
+
+        let service = FileDownloadService(fileLogger: DailyFileLogger(), session: FakeURLProtocol.makeSession(), tempFolder: tempDir)
+        try await service.upload(localURL: localFile, remotePath: "/photos/test.xmp", baseUrl: baseUrl)
+
+        XCTAssertNotNil(
+            FakeURLProtocol.capturedRequests.first { $0.url?.path == "/starsky/api/upload-sidecar" },
+            "XMP upload did not use the upload-sidecar endpoint"
+        )
+    }
+
     func testUploadSendsCorrectHeadersAndBody() async throws {
         let baseUrl = Self.remoteBaseUrl
         let remotePath = "/photos/test.jpg"
