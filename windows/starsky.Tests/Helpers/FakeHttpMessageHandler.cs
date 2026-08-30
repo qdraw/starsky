@@ -6,10 +6,15 @@ internal sealed class FakeHttpMessageHandler(params HttpResponseMessage[] respon
 	: HttpMessageHandler
 {
     private readonly Queue<HttpResponseMessage> _responses = new(responses);
+    private HttpResponseMessage? _last;
 
     public FakeHttpMessageHandler(HttpStatusCode status, string content = "")
         : this(new HttpResponseMessage(status) { Content = new StringContent(content) }) { }
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        => Task.FromResult(_responses.Count > 0 ? _responses.Dequeue() : new HttpResponseMessage(HttpStatusCode.OK));
+    {
+        if (_responses.Count > 0)
+            _last = _responses.Dequeue();
+        return Task.FromResult(_last ?? new HttpResponseMessage(HttpStatusCode.OK));
+    }
 }
