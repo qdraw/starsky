@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
@@ -148,6 +149,11 @@ public partial class MainWindow : Window
             WebView.CoreWebView2?.OpenDevToolsWindow();
             e.Handled = true;
         }
+        else if (e.Key == Key.F11)
+        {
+            ToggleFullScreen_Click(sender, e);
+            e.Handled = true;
+        }
     }
 
     public void Reload()
@@ -233,6 +239,65 @@ public partial class MainWindow : Window
     {
         await WebView.CoreWebView2.ExecuteScriptAsync(
             "document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, shiftKey: true, bubbles: true }))");
+    }
+
+    // ── Edit menu ─────────────────────────────────────────────────────────────
+
+    private async void Undo_Click(object sender, RoutedEventArgs e)
+        => await ExecCommandAsync("undo");
+
+    private async void Redo_Click(object sender, RoutedEventArgs e)
+        => await ExecCommandAsync("redo");
+
+    private async void Cut_Click(object sender, RoutedEventArgs e)
+        => await ExecCommandAsync("cut");
+
+    private async void Copy_Click(object sender, RoutedEventArgs e)
+        => await ExecCommandAsync("copy");
+
+    private async void Paste_Click(object sender, RoutedEventArgs e)
+        => await ExecCommandAsync("paste");
+
+    private async void SelectAll_Click(object sender, RoutedEventArgs e)
+        => await ExecCommandAsync("selectAll");
+
+    private async Task ExecCommandAsync(string command)
+    {
+        if (WebView.CoreWebView2 != null)
+            await WebView.CoreWebView2.ExecuteScriptAsync($"document.execCommand('{command}')");
+    }
+
+    // ── View menu ─────────────────────────────────────────────────────────────
+
+    private void ActualSize_Click(object sender, RoutedEventArgs e)
+        => WebView.ZoomFactor = 1.0;
+
+    private void ZoomIn_Click(object sender, RoutedEventArgs e)
+        => WebView.ZoomFactor = Math.Min(WebView.ZoomFactor * 1.25, 5.0);
+
+    private void ZoomOut_Click(object sender, RoutedEventArgs e)
+        => WebView.ZoomFactor = Math.Max(WebView.ZoomFactor / 1.25, 0.25);
+
+    private bool _isFullScreen;
+    private WindowStyle _savedWindowStyle;
+    private WindowState _savedWindowState;
+
+    private void ToggleFullScreen_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isFullScreen)
+        {
+            WindowStyle = _savedWindowStyle;
+            WindowState = _savedWindowState;
+            _isFullScreen = false;
+        }
+        else
+        {
+            _savedWindowStyle = WindowStyle;
+            _savedWindowState = WindowState;
+            WindowStyle = WindowStyle.None;
+            WindowState = WindowState.Maximized;
+            _isFullScreen = true;
+        }
     }
 
     private void DevTools_Click(object sender, RoutedEventArgs e)

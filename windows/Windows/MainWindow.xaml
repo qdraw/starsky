@@ -16,22 +16,37 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_New Window" InputGestureText="Ctrl+N" Click="NewWindow_Click"/>
                 <MenuItem Header="_Reload All" InputGestureText="Ctrl+Shift+R" Click="ReloadAll_Click"/>
-                <Separator/>
                 <MenuItem Header="_Edit File in Editor" InputGestureText="Ctrl+E" Click="EditFile_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Click="Undo_Click"/>
+                <MenuItem Header="_Redo" InputGestureText="Ctrl+Shift+Z" Click="Redo_Click"/>
+                <Separator/>
+                <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" Click="Cut_Click"/>
+                <MenuItem Header="_Copy" InputGestureText="Ctrl+C" Click="Copy_Click"/>
+                <MenuItem Header="_Paste" InputGestureText="Ctrl+V" Click="Paste_Click"/>
+                <Separator/>
+                <MenuItem Header="Select _All" InputGestureText="Ctrl+A" Click="SelectAll_Click"/>
             </MenuItem>
             <MenuItem Header="_Settings">
                 <MenuItem Header="_Connection Settings…" Click="ConnectionSettings_Click"/>
                 <MenuItem Header="_Application Settings" InputGestureText="Ctrl+Shift+K" Click="AppSettings_Click"/>
             </MenuItem>
             <MenuItem Header="_View">
+                <MenuItem Header="Actual _Size" InputGestureText="Ctrl+0" Click="ActualSize_Click"/>
+                <MenuItem Header="Zoom _In" InputGestureText="Ctrl+=" Click="ZoomIn_Click"/>
+                <MenuItem Header="Zoom _Out" InputGestureText="Ctrl+-" Click="ZoomOut_Click"/>
+                <Separator/>
                 <MenuItem Header="_Developer Tools" InputGestureText="F12" Click="DevTools_Click"/>
                 <MenuItem Header="_Open in Browser" Click="OpenInBrowser_Click"/>
+                <Separator/>
+                <MenuItem Header="Toggle Full _Screen" InputGestureText="F11" Click="ToggleFullScreen_Click"/>
             </MenuItem>
             <MenuItem Header="_Help">
+                <MenuItem x:Name="CheckForUpdatesMenuItem" Header="_Check for Updates…" Click="CheckForUpdates_Click"/>
+                <Separator x:Name="CheckForUpdatesSeparator"/>
                 <MenuItem Header="_Documentation" Click="Documentation_Click"/>
                 <MenuItem Header="_Release Overview" Click="ReleaseOverview_Click"/>
-                <Separator x:Name="CheckForUpdatesSeparator"/>
-                <MenuItem x:Name="CheckForUpdatesMenuItem" Header="_Check for Updates…" Click="CheckForUpdates_Click"/>
             </MenuItem>
         </Menu>
 
