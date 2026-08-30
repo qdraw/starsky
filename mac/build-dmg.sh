@@ -222,6 +222,10 @@ if command -v create-dmg &>/dev/null; then
         --app-drop-link 425 190 \
         "$OUTPUT_DIR/$DMG_NAME" \
         "$OUTPUT_DIR/starsky.app"
+    if $SIGN; then
+        echo "==> Signing DMG"
+        codesign --force --sign "Developer ID Application" "$OUTPUT_DIR/$DMG_NAME"
+    fi
 else
     echo "==> Skipping DMG creation: 'create-dmg' not found (install with: brew install create-dmg)"
 fi

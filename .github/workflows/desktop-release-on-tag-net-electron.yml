@@ -157,6 +157,9 @@ jobs:
             build/starsky-mac-universal-desktop.dmg \
             "build/starsky.app"
 
+      - name: Sign DMG
+        run: codesign --force --sign "Developer ID Application" build/starsky-mac-universal-desktop.dmg
+
       - name: Notarize and staple
         run: |
           bash mac/scripts/notarize.sh \
@@ -238,6 +241,9 @@ jobs:
             build/starsky-mac-arm64-desktop.dmg \
             "build/starsky.app"
 
+      - name: Sign DMG
+        run: codesign --force --sign "Developer ID Application" build/starsky-mac-arm64-desktop.dmg
+
       - name: Notarize and staple
         run: |
           bash mac/scripts/notarize.sh \
@@ -318,6 +324,9 @@ jobs:
             --app-drop-link 425 190 \
             build/starsky-mac-x64-desktop.dmg \
             "build/starsky.app"
+
+      - name: Sign DMG
+        run: codesign --force --sign "Developer ID Application" build/starsky-mac-x64-desktop.dmg
 
       - name: Notarize and staple
         run: |
