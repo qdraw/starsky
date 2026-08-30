@@ -72,6 +72,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         let config = WKWebViewConfiguration()
         config.applicationNameForUserAgent = ApplicationInfo.userAgentSuffix
         config.preferences.setValue(true, forKey: "developerExtrasEnabled") // NOSONAR swift:S4507
+        config.preferences.setValue(true, forKey: "continuousSpellCheckingEnabled")
 
         let middleClickScript = WKUserScript(source: """
             document.addEventListener('auxclick', function(e) {
