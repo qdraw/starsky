@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Models.Account;
@@ -354,5 +355,119 @@ public sealed class AccountController(
 	{
 		var claims = User.Claims.Where(p => p.Type == "Permission").Select(p => p.Value);
 		return Json(claims);
+	}
+
+	/// <summary>
+	///     Start external auth flow for a configured provider
+	/// </summary>
+	/// <param name="provider">provider id or provider type</param>
+	/// <param name="returnUrl">optional return path after successful login</param>
+	/// <param name="tenant">optional tenant key</param>
+	/// <returns>501 until OIDC handshake is implemented</returns>
+	[HttpGet("/api/account/external-auth/challenge/{provider}")]
+	[ProducesResponseType(typeof(string), 404)]
+	[ProducesResponseType(typeof(string), 501)]
+	[AllowAnonymous]
+	public IActionResult ExternalAuthChallenge(string provider, string? returnUrl = null,
+		string? tenant = null)
+	{
+		_ = returnUrl;
+		_ = tenant;
+
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest(ModelError);
+		}
+
+		if ( appSettings.ExternalAuth?.GetEnabledProvider(provider) == null )
+		{
+			return NotFound("External auth provider is not enabled");
+		}
+
+		Response.StatusCode = StatusCodes.Status501NotImplemented;
+		return Json("External auth challenge endpoint is configured but not implemented yet");
+	}
+
+	/// <summary>
+	///     Callback endpoint used by external identity providers
+	/// </summary>
+	/// <param name="provider">provider id or provider type</param>
+	/// <param name="returnUrl">optional return path after successful login</param>
+	/// <returns>501 until callback processing is implemented</returns>
+	[HttpGet("/api/account/external-auth/callback/{provider}")]
+	[HttpPost("/api/account/external-auth/callback/{provider}")]
+	[IgnoreAntiforgeryToken]
+	[ProducesResponseType(typeof(string), 404)]
+	[ProducesResponseType(typeof(string), 501)]
+	[AllowAnonymous]
+	public IActionResult ExternalAuthCallback(string provider, string? returnUrl = null)
+	{
+		_ = returnUrl;
+
+		if ( appSettings.ExternalAuth?.GetEnabledProvider(provider) == null )
+		{
+			return NotFound("External auth provider is not enabled");
+		}
+
+		Response.StatusCode = StatusCodes.Status501NotImplemented;
+		return Json("External auth callback endpoint is configured but not implemented yet");
+	}
+
+	/// <summary>
+	///     Link the current account with an external auth provider
+	/// </summary>
+	/// <param name="provider">provider id or provider type</param>
+	/// <param name="tenant">optional tenant key</param>
+	/// <returns>501 until linking is implemented</returns>
+	[HttpPost("/api/account/external-auth/link/{provider}")]
+	[Authorize]
+	[ProducesResponseType(typeof(string), 401)]
+	[ProducesResponseType(typeof(string), 404)]
+	[ProducesResponseType(typeof(string), 501)]
+	public IActionResult ExternalAuthLink(string provider, string? tenant = null)
+	{
+		_ = tenant;
+
+		if ( User.Identity?.IsAuthenticated != true )
+		{
+			return Unauthorized("please login first");
+		}
+
+		if ( appSettings.ExternalAuth?.GetEnabledProvider(provider) == null )
+		{
+			return NotFound("External auth provider is not enabled");
+		}
+
+		Response.StatusCode = StatusCodes.Status501NotImplemented;
+		return Json("External auth link endpoint is configured but not implemented yet");
+	}
+
+	/// <summary>
+	///     Unlink the current account from an external auth provider
+	/// </summary>
+	/// <param name="provider">provider id or provider type</param>
+	/// <param name="tenant">optional tenant key</param>
+	/// <returns>501 until unlinking is implemented</returns>
+	[HttpPost("/api/account/external-auth/unlink/{provider}")]
+	[Authorize]
+	[ProducesResponseType(typeof(string), 401)]
+	[ProducesResponseType(typeof(string), 404)]
+	[ProducesResponseType(typeof(string), 501)]
+	public IActionResult ExternalAuthUnlink(string provider, string? tenant = null)
+	{
+		_ = tenant;
+
+		if ( User.Identity?.IsAuthenticated != true )
+		{
+			return Unauthorized("please login first");
+		}
+
+		if ( appSettings.ExternalAuth?.GetEnabledProvider(provider) == null )
+		{
+			return NotFound("External auth provider is not enabled");
+		}
+
+		Response.StatusCode = StatusCodes.Status501NotImplemented;
+		return Json("External auth unlink endpoint is configured but not implemented yet");
 	}
 }

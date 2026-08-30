@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace starsky.project.web.ViewModels;
 
 public class EnvFeaturesViewModel
@@ -16,4 +18,14 @@ public class EnvFeaturesViewModel
 	/// Is supported and enabled in the feature toggle
 	/// </summary>
 	public bool OpenEditorEnabled { get; set; }
+
+	/// <summary>
+	/// External authentication is available in this environment
+	/// </summary>
+	public bool ExternalAuthEnabled { get; set; }
+
+	/// <summary>
+	/// List of enabled external authentication providers
+	/// </summary>
+	public List<string> ExternalAuthProviders { get; set; } = [];
 }

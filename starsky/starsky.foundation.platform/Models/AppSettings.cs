@@ -763,6 +763,11 @@ public sealed class AppSettings
 	/// </summary>
 	public CloudImportSettings? CloudImport { get; set; } = new();
 
+	/// <summary>
+	///     Optional external authentication provider settings
+	/// </summary>
+	public ExternalAuthSettings? ExternalAuth { get; set; } = new();
+
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 
 
@@ -882,6 +887,7 @@ public sealed class AppSettings
 
 		ReplaceOpenTelemetryData(appSettings);
 		ReplaceCloudImportData(appSettings);
+		ReplaceExternalAuthData(appSettings);
 
 		Queue.RabbitMq.Password = CloneToDisplaySecurityWarning;
 
@@ -896,6 +902,19 @@ public sealed class AppSettings
 			{
 				RefreshToken = CloneToDisplaySecurityWarning
 			};
+		}
+	}
+
+	private static void ReplaceExternalAuthData(AppSettings appSettings)
+	{
+		foreach ( var provider in appSettings.ExternalAuth?.Providers ?? [] )
+		{
+			if ( string.IsNullOrEmpty(provider.ClientSecret) )
+			{
+				continue;
+			}
+
+			provider.ClientSecret = CloneToDisplaySecurityWarning;
 		}
 	}
 
