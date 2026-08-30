@@ -76,8 +76,6 @@ public partial class MainWindow : Window
             var uaBase = WebView.CoreWebView2.Settings.UserAgent;
             WebView.CoreWebView2.Settings.UserAgent = $"{uaBase} starsky/{ApplicationInfo.Version}";
 
-            WebView.CoreWebView2.Settings.IsSpellCheckEnabled = true;
-
             WebView.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
             WebView.CoreWebView2.SourceChanged += CoreWebView2_SourceChanged;
             WebView.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
