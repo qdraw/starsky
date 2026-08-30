@@ -2,7 +2,8 @@ import Foundation
 
 class FakeURLProtocol: URLProtocol {
     private static let lock = NSLock()
-    // Keyed by URL string; each entry is a FIFO queue of responses for that URL.
+    // Keyed by URL path (scheme/host/port/query ignored) so dynamic ports and query
+    // parameters don't break matching, while distinct API endpoints remain isolated.
     private static var _responses: [String: [(Data, HTTPURLResponse)]] = [:]
     private static var _capturedRequests: [URLRequest] = []
 
@@ -15,13 +16,13 @@ class FakeURLProtocol: URLProtocol {
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
     override func startLoading() {
-        let urlKey = request.url?.absoluteString ?? ""
+        let pathKey = request.url?.path ?? ""
         Self.lock.lock()
         Self._capturedRequests.append(request)
         let entry: (Data, HTTPURLResponse)?
-        if Self._responses[urlKey]?.isEmpty == false {
-            entry = Self._responses[urlKey]!.removeFirst()
-            if Self._responses[urlKey]!.isEmpty { Self._responses.removeValue(forKey: urlKey) }
+        if Self._responses[pathKey]?.isEmpty == false {
+            entry = Self._responses[pathKey]!.removeFirst()
+            if Self._responses[pathKey]!.isEmpty { Self._responses.removeValue(forKey: pathKey) }
         } else {
             entry = nil
         }
@@ -47,7 +48,7 @@ class FakeURLProtocol: URLProtocol {
     static func enqueue(statusCode: Int, url: URL, data: Data = Data()) {
         let response = HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: nil)!
         lock.lock(); defer { lock.unlock() }
-        _responses[url.absoluteString, default: []].append((data, response))
+        _responses[url.path, default: []].append((data, response))
     }
 
     static func reset() {
