@@ -161,8 +161,24 @@ echo "==> Exporting archive"
 EXPORT_PLIST="$MAC_DIR/ExportOptions.plist"
 if $SIGN; then
     EXPORT_PLIST="$OUTPUT_DIR/ExportOptions-signed.plist"
-    cp "$MAC_DIR/ExportOptions.plist" "$EXPORT_PLIST"
-    /usr/libexec/PlistBuddy -c "Set :teamID $TEAM_ID" "$EXPORT_PLIST"
+    cat > "$EXPORT_PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>method</key>
+	<string>developer-id</string>
+	<key>signingStyle</key>
+	<string>manual</string>
+	<key>signingCertificate</key>
+	<string>Developer ID Application</string>
+	<key>teamID</key>
+	<string>$TEAM_ID</string>
+	<key>stripSwiftSymbols</key>
+	<true/>
+</dict>
+</plist>
+EOF
 else
     EXPORT_PLIST="$OUTPUT_DIR/ExportOptions-unsigned.plist"
     cat > "$EXPORT_PLIST" <<'EOF'
