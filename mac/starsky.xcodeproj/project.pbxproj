@@ -504,7 +504,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "for ARCH in arm64 x64; do\n  RUNTIME_SRC=\"$SRCROOT/../starsky/osx-${ARCH}\"\n  RUNTIME_DST=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}\"\n  if [ -d \"$RUNTIME_SRC\" ]; then\n    rm -rf \"$RUNTIME_DST\"\n    mkdir -p \"$RUNTIME_DST\"\n    cp -R \"$RUNTIME_SRC/.\" \"$RUNTIME_DST/\"\n    find \"$RUNTIME_DST\" -type f | while read -r f; do\n      codesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>/dev/null || true\n    done\n  else\n    echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n  fi\ndone\n";
+			shellScript = "for ARCH in arm64 x64; do\n  RUNTIME_SRC=\"$SRCROOT/../starsky/osx-${ARCH}\"\n  RUNTIME_DST=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}\"\n  if [ -d \"$RUNTIME_SRC\" ]; then\n    rm -rf \"$RUNTIME_DST\"\n    mkdir -p \"$RUNTIME_DST\"\n    cp -R \"$RUNTIME_SRC/.\" \"$RUNTIME_DST/\"\n    find \"$RUNTIME_DST\" -type f | while read -r f; do\n      codesign --force --options runtime --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>/dev/null || true\n    done\n  else\n    echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n  fi\ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

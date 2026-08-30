@@ -213,6 +213,7 @@ esac
 if command -v create-dmg &>/dev/null; then
     echo "==> Creating DMG ($DMG_NAME)"
     create-dmg \
+        --overwrite \
         --volname "Starsky" \
         --window-pos 200 120 \
         --window-size 600 400 \
