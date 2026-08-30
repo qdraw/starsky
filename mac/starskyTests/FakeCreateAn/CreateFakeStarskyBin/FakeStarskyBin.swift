@@ -1,6 +1,7 @@
 import Foundation
 
 enum FakeStarskyBin {
+    @discardableResult
     static func create(in directory: URL) throws -> URL {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let binary = directory.appendingPathComponent("starsky")
