@@ -8,6 +8,15 @@ docs/advanced-options/starsky/__do_not_edit_this__folder
 docs/advanced-options/starskydesktop/**/readme.md
 docs/advanced-options/starskydesktop/__do_not_edit_this__folder
 docs/advanced-options/starskydesktop/**/*.jpg
+docs/advanced-options/mac/**/readme.md
+docs/advanced-options/readme-desktop.md
+docs/advanced-options/mac/__do_not_edit_this__folder
+docs/advanced-options/mac/**/*.yml
+docs/advanced-options/mac/**/*.plist
+docs/advanced-options/mac/**/*.md
+docs/advanced-options/windows/**/readme.md
+docs/advanced-options/windows/**/*.md
+docs/advanced-options/windows/__do_not_edit_this__folder
 docs/advanced-options/starsky
 docs/advanced-options/starskydesktop
 docs/advanced-options/starsky-tools

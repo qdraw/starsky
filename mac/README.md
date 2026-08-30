@@ -193,7 +193,7 @@ xcrun stapler staple ../build/starsky.dmg
 spctl -a -vvv ../build/starsky.app
 ```
 
-Release builds on tagged commits are automated via [`.github/workflows/desktop-macos-pr-build.yml`](../.github/workflows/desktop-macos-pr-build.yml).
+Release builds on tagged commits are automated via [`.github/workflows/desktop-macos-pr-build.yml`](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-pr-build.yml).
 
 ---
 

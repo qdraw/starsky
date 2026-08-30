@@ -40,10 +40,10 @@
       "commitMessageTopic": "chokidar"
     },
     {
-      "matchPaths": ["starskydesktop/**"],
-      "groupName": "Electron starskydesktop dependencies",
-      "groupSlug": "starskydesktop",
-      "commitMessageTopic": "Electron dependencies",
+      "matchPaths": ["windows/**"],
+      "groupName": "Windows dependencies",
+      "groupSlug": "windows",
+      "commitMessageTopic": "Electron dependencies"
     },
     {
       "matchPaths": ["starsky-tools/**"],

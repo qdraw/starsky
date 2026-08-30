@@ -19,7 +19,7 @@
     - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _internal libraries (.NET)_
     - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](starsky-tools/readme.md) _Node.js tools to add-on tasks_
-- [Starsky Desktop](starskydesktop/readme.md) _Desktop Application_
+- [Starsky Desktop](readme-desktop.md) _Desktop Application_
     - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 - **[Changelog](history.md) Release notes and history**
 
