@@ -118,9 +118,19 @@ Go to **Settings → Secrets and variables → Actions** in your GitHub repo and
 
 | Secret name | Value |
 |---|---|
-| `APPLE_ID` | Your Apple ID email (e.g. `you@example.com`) |
-| `APPLE_TEAM_ID` | Your 10-character Team ID |
-| `NOTARYTOOL_APP_PASSWORD` | An app-specific password from [appleid.apple.com](https://appleid.apple.com) → App-Specific Passwords |
+| `STARSKY_APPLE_ID` | Your Apple ID email (e.g. `you@example.com`) |
+| `STARSKY_APPLE_TEAM_ID` | Your 10-character Team ID |
+| `STARSKY_NOTARYTOOL_APP_PASSWORD` | An app-specific password from [appleid.apple.com](https://appleid.apple.com) → App-Specific Passwords |
+| `STARSKY_MACOS_CERTIFICATE` | Base64-encoded Developer ID Application `.p12`: `base64 -i cert.p12 \| pbcopy` |
+| `STARSKY_MACOS_CERTIFICATE_PWD` | Password that protects the `.p12` file |
+| `STARSKY_MACOS_KEYCHAIN_PASSWORD` | Any strong random string — used only for the throwaway CI keychain |
+
+#### Verifying CI signing
+
+Watch the `build_mac_native`, `build_mac_arm64`, and `build_mac_x64` jobs after pushing a tag.
+
+- **Archive step** — if the keychain import worked, `xcodebuild archive` completes without "No signing certificate found." A failure here means `STARSKY_MACOS_CERTIFICATE` or `STARSKY_MACOS_CERTIFICATE_PWD` is wrong.
+- **Notarize step** — signing and notarizing are independent; a passing archive does not guarantee notarization succeeds. If notarization fails, check `STARSKY_APPLE_ID`, `STARSKY_APPLE_TEAM_ID`, and `STARSKY_NOTARYTOOL_APP_PASSWORD`.
 
 ### 5. Create the Sparkle appcast
 

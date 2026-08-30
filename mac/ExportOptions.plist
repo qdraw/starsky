@@ -8,7 +8,7 @@
 	<string>manual</string>
 	<key>signingCertificate</key>
 	<string>Developer ID Application</string>
-	<key>teamID</key>
+	<key>LHZ4426ABB</key>
 	<string></string>
 	<key>stripSwiftSymbols</key>
 	<true/>
