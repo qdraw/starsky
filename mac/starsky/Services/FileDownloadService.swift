@@ -93,8 +93,11 @@ class FileDownloadService: @unchecked Sendable {
             throw DownloadError.fileNotFound
         }
 
-        if let sidecarURL = URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=\(encodedPath)") {
-            _ = try? await session.data(for: request(sidecarURL, cookieHeader: cookieHeader))
+        var xmpData: Data? = nil
+        if let sidecarURL = URL(string: "\(baseUrl)/starsky/api/download-sidecar?f=\(encodedPath)"),
+           let (data, response) = try? await session.data(for: request(sidecarURL, cookieHeader: cookieHeader)),
+           let http = response as? HTTPURLResponse, http.statusCode == 200, !data.isEmpty {
+            xmpData = data
         }
 
         guard let photoURL = URL(string: "\(baseUrl)/starsky/api/download-photo?isThumbnail=false&f=\(encodedPath)&cache=false") else {
@@ -112,6 +115,13 @@ class FileDownloadService: @unchecked Sendable {
             .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         let destDir = tempFolder.appendingPathComponent(parentDir, isDirectory: true)
         try FileManager.default.createDirectory(at: destDir, withIntermediateDirectories: true)
+
+        // Save the XMP sidecar before starting the FSEvents watcher so the initial
+        // write does not trigger a spurious re-upload (stream starts after this point).
+        if let xmpData {
+            let xmpFilename = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent + ".xmp"
+            try? xmpData.write(to: destDir.appendingPathComponent(xmpFilename))
+        }
 
         let tmpURL = destDir.appendingPathComponent("\(filename).tmp")
         let finalURL = destDir.appendingPathComponent(filename)
@@ -271,7 +281,8 @@ class FileDownloadService: @unchecked Sendable {
         let parentDir = URL(fileURLWithPath: remotePath).deletingLastPathComponent().path
         let filename = URL(fileURLWithPath: remotePath).lastPathComponent
 
-        guard let uploadURL = URL(string: "\(baseUrl)/starsky/api/upload") else {
+        let uploadEndpoint = localURL.pathExtension.lowercased() == "xmp" ? "upload-sidecar" : "upload"
+        guard let uploadURL = URL(string: "\(baseUrl)/starsky/api/\(uploadEndpoint)") else {
             throw UploadError.invalidPath
         }
 
