@@ -2,7 +2,8 @@ import Foundation
 
 class FakeURLProtocol: URLProtocol {
     private static let lock = NSLock()
-    private static var _responses: [(Data, HTTPURLResponse)] = []
+    // Keyed by URL string; each entry is a FIFO queue of responses for that URL.
+    private static var _responses: [String: [(Data, HTTPURLResponse)]] = [:]
     private static var _capturedRequests: [URLRequest] = []
 
     static var capturedRequests: [URLRequest] {
@@ -14,13 +15,15 @@ class FakeURLProtocol: URLProtocol {
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
     override func startLoading() {
+        let urlKey = request.url?.absoluteString ?? ""
         Self.lock.lock()
         Self._capturedRequests.append(request)
         let entry: (Data, HTTPURLResponse)?
-        if Self._responses.isEmpty {
-            entry = nil
+        if Self._responses[urlKey]?.isEmpty == false {
+            entry = Self._responses[urlKey]!.removeFirst()
+            if Self._responses[urlKey]!.isEmpty { Self._responses.removeValue(forKey: urlKey) }
         } else {
-            entry = Self._responses.removeFirst()
+            entry = nil
         }
         Self.lock.unlock()
 
@@ -44,12 +47,12 @@ class FakeURLProtocol: URLProtocol {
     static func enqueue(statusCode: Int, url: URL, data: Data = Data()) {
         let response = HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: nil)!
         lock.lock(); defer { lock.unlock() }
-        _responses.append((data, response))
+        _responses[url.absoluteString, default: []].append((data, response))
     }
 
     static func reset() {
         lock.lock(); defer { lock.unlock() }
-        _responses = []
+        _responses = [:]
         _capturedRequests = []
     }
 }
