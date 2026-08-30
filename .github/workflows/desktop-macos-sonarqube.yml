@@ -99,8 +99,8 @@ jobs:
 
       - name: Convert coverage to SonarQube generic format
         run: |
-          chmod +x mac/xccov-to-sonarqube-generic.sh
-          mac/xccov-to-sonarqube-generic.sh TestResults/macos.xcresult > TestResults/sonarqube-coverage.xml
+          chmod +x mac/scripts/xccov-to-sonarqube-generic.sh
+          mac/scripts/xccov-to-sonarqube-generic.sh TestResults/macos.xcresult > TestResults/sonarqube-coverage.xml
 
           FILE_COUNT=$(grep -c '<file path=' TestResults/sonarqube-coverage.xml || true)
           echo "Coverage XML file entries: ${FILE_COUNT}"
