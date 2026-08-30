@@ -182,7 +182,34 @@ xcodebuild -exportArchive \
     -exportPath "$OUTPUT_DIR/" \
     -exportOptionsPlist "$EXPORT_PLIST"
 
+# ── Step 5: Create DMG ────────────────────────────────────────────────────────
+
+case "$ARCH" in
+    universal) DMG_NAME="starsky-mac-universal-desktop.dmg" ;;
+    arm64)     DMG_NAME="starsky-mac-arm64-desktop.dmg" ;;
+    x64)       DMG_NAME="starsky-mac-x64-desktop.dmg" ;;
+esac
+
+if command -v create-dmg &>/dev/null; then
+    echo "==> Creating DMG ($DMG_NAME)"
+    create-dmg \
+        --volname "Starsky" \
+        --window-pos 200 120 \
+        --window-size 600 400 \
+        --icon-size 100 \
+        --icon "starsky.app" 175 190 \
+        --app-drop-link 425 190 \
+        "$OUTPUT_DIR/$DMG_NAME" \
+        "$OUTPUT_DIR/starsky.app"
+else
+    echo "==> Skipping DMG creation: 'create-dmg' not found (install with: brew install create-dmg)"
+fi
+
 # ── Done ──────────────────────────────────────────────────────────────────────
 
 echo ""
-echo "==> Done: $OUTPUT_DIR/starsky.app"
+if command -v create-dmg &>/dev/null; then
+    echo "==> Done: $OUTPUT_DIR/$DMG_NAME"
+else
+    echo "==> Done: $OUTPUT_DIR/starsky.app"
+fi
