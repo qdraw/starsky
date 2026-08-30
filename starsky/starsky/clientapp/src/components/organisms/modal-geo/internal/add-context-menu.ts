@@ -3,6 +3,7 @@ import React from "react";
 import { ILanguageLocalization } from "../../../../interfaces/ILanguageLocalization";
 import { Language } from "../../../../shared/language";
 import { FetchAddressFromNominatim, GetStreetName } from "./fetch-address-from-nominatim";
+import { FetchMapElementsFromOsm, IOsmMapElementItem } from "./fetch-osm-map-elements";
 
 export interface ILocalization {
   MessageCoordinates: ILanguageLocalization;
@@ -14,6 +15,11 @@ export interface ILocalization {
   MessageStreetNameCopied: ILanguageLocalization;
   MessageNoStreetFound: ILanguageLocalization;
   MessageLoadingAddress: ILanguageLocalization;
+  MessageNearbyObjects: ILanguageLocalization;
+  MessageNoNearbyObjects: ILanguageLocalization;
+  MessageEnclosingObjects: ILanguageLocalization;
+  MessageNoEnclosingObjects: ILanguageLocalization;
+  MessageMapElementCopied: ILanguageLocalization;
   [key: string]: ILanguageLocalization;
 }
 
@@ -45,6 +51,8 @@ export function AddContextMenu({
   let currentLat = 0;
   let currentLng = 0;
   let streetName = "";
+  let nearbyObjects: IOsmMapElementItem[] = [];
+  let enclosingObjects: IOsmMapElementItem[] = [];
 
   // Create context menu on right-click
   map.on("contextmenu", async function (event: L.LeafletMouseEvent) {
@@ -74,9 +82,14 @@ export function AddContextMenu({
 
     mapContainer.appendChild(contextMenu);
 
-    // Fetch address from Nominatim
-    const addressData = await FetchAddressFromNominatim(currentLat, currentLng);
+    // Fetch address and OSM map elements in parallel.
+    const [addressData, mapElementsData] = await Promise.all([
+      FetchAddressFromNominatim(currentLat, currentLng),
+      FetchMapElementsFromOsm(currentLat, currentLng)
+    ]);
     streetName = addressData ? GetStreetName(addressData.address) : "";
+    nearbyObjects = mapElementsData?.nearbyObjects || [];
+    enclosingObjects = mapElementsData?.enclosingObjects || [];
 
     // Update menu with data
     contextMenu.innerHTML = `
@@ -108,6 +121,16 @@ export function AddContextMenu({
         </div>
       `
       }
+      ${renderOsmSection(
+        language.key(localization.MessageNearbyObjects),
+        language.key(localization.MessageNoNearbyObjects),
+        nearbyObjects
+      )}
+      ${renderOsmSection(
+        language.key(localization.MessageEnclosingObjects),
+        language.key(localization.MessageNoEnclosingObjects),
+        enclosingObjects
+      )}
     `;
 
     // Add click handlers
@@ -131,6 +154,22 @@ export function AddContextMenu({
         closeContextMenu();
       });
     });
+
+    contextMenu.querySelectorAll('[data-action="copy-osm-item"]').forEach((el) => {
+      el.addEventListener("click", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const target = event.currentTarget as HTMLElement;
+        const copyText = target.getAttribute("data-copy-text") || "";
+        if (!copyText) {
+          return;
+        }
+
+        await copyToClipboard(copyText);
+        setNotificationStatus(language.key(localization.MessageMapElementCopied));
+        closeContextMenu();
+      });
+    });
   });
 
   // Close menu when clicking elsewhere
@@ -143,6 +182,44 @@ export function AddContextMenu({
 
   map.on("click", closeContextMenu);
   map.on("movestart", closeContextMenu);
+}
+
+function renderOsmSection(title: string, emptyMessage: string, items: IOsmMapElementItem[]): string {
+  const itemsMarkup = items
+    .filter((item) => !!item)
+    .map((item) => {
+      const label = escapeHtml(item.label || item.copyText || "");
+      const description = escapeHtml(item.description || "");
+      const copyText = escapeHtml(item.copyText || item.label || "");
+
+      return `
+        <div class="context-menu-item leaflet-context-menu__osm-item" data-action="copy-osm-item" data-copy-text="${copyText}">
+          <div class="leaflet-context-menu__osm-item-label">${label}</div>
+          ${description ? `<div class="leaflet-context-menu__osm-item-description">${description}</div>` : ""}
+        </div>
+      `;
+    })
+    .join("");
+
+  return `
+    <div class="leaflet-context-menu__section-title leaflet-context-menu__section-title--top">
+      ${escapeHtml(title)}
+    </div>
+    ${
+      itemsMarkup
+        ? `<div class="leaflet-context-menu__osm-items">${itemsMarkup}</div>`
+        : `<div class="leaflet-context-menu__no-osm-items">${escapeHtml(emptyMessage)}</div>`
+    }
+  `;
+}
+
+function escapeHtml(input: string): string {
+  return input
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 // Copy to clipboard helper
