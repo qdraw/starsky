@@ -120,14 +120,14 @@ jobs:
 
       - name: Import code signing certificate
         env:
-          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          MACOS_CERTIFICATE: ${{ secrets.STARSKY_MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.STARSKY_MACOS_CERTIFICATE_PWD }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.STARSKY_MACOS_KEYCHAIN_PASSWORD }}
         run: bash mac/import-cert.sh
 
       - name: Archive (universal)
         env:
-          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          DEVELOPMENT_TEAM: ${{ secrets.STARSKY_APPLE_TEAM_ID }}
         run: |
           xcodebuild archive \
             -project mac/starsky.xcodeproj \
@@ -159,9 +159,9 @@ jobs:
 
       - name: Notarize
         env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          NOTARYTOOL_PASSWORD: ${{ secrets.NOTARYTOOL_APP_PASSWORD }}
+          APPLE_ID: ${{ secrets.STARSKY_APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.STARSKY_APPLE_TEAM_ID }}
+          NOTARYTOOL_PASSWORD: ${{ secrets.STARSKY_NOTARYTOOL_APP_PASSWORD }}
         run: |
           xcrun notarytool submit build/starsky-mac-universal-desktop.dmg \
             --apple-id "$APPLE_ID" \
@@ -207,14 +207,14 @@ jobs:
 
       - name: Import code signing certificate
         env:
-          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          MACOS_CERTIFICATE: ${{ secrets.STARSKY_MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.STARSKY_MACOS_CERTIFICATE_PWD }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.STARSKY_MACOS_KEYCHAIN_PASSWORD }}
         run: bash mac/import-cert.sh
 
       - name: Archive (arm64)
         env:
-          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          DEVELOPMENT_TEAM: "LHZ4426ABB"
         run: |
           xcodebuild archive \
             -project mac/starsky.xcodeproj \
@@ -248,7 +248,7 @@ jobs:
       - name: Notarize
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_TEAM_ID: "LHZ4426ABB"
           NOTARYTOOL_PASSWORD: ${{ secrets.NOTARYTOOL_APP_PASSWORD }}
         run: |
           xcrun notarytool submit build/starsky-mac-arm64-desktop.dmg \
@@ -295,14 +295,14 @@ jobs:
 
       - name: Import code signing certificate
         env:
-          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          MACOS_CERTIFICATE: ${{ secrets.STARSKY_MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.STARSKY_MACOS_CERTIFICATE_PWD }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.STARSKY_MACOS_KEYCHAIN_PASSWORD }}
         run: bash mac/import-cert.sh
 
       - name: Archive (x64)
         env:
-          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          DEVELOPMENT_TEAM: ${{ secrets.STARSKY_APPLE_TEAM_ID }}
         run: |
           xcodebuild archive \
             -project mac/starsky.xcodeproj \

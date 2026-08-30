@@ -435,9 +435,6 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					6A60AD57D9D47B2FAD5A7AAC = {
-						DevelopmentTeam = "";
-					};
 				};
 			};
 			buildConfigurationList = 90E4DA2552B8332616FE1F69 /* Build configuration list for PBXProject "starsky" */;
@@ -782,7 +779,7 @@
 				CODE_SIGN_ENTITLEMENTS = starsky/starsky.entitlements;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = LHZ4426ABB;
 				INFOPLIST_FILE = starsky/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;

@@ -5,12 +5,12 @@
 # Required environment variables:
 #   MACOS_CERTIFICATE     - Base64-encoded .p12 certificate bundle
 #   MACOS_CERTIFICATE_PWD - Password that protects the .p12 file
-#   KEYCHAIN_PASSWORD     - Password for the temporary keychain created here
+#   MACOS_KEYCHAIN_PASSWORD     - Password for the temporary keychain created here
 #   RUNNER_TEMP           - Temp directory (set automatically by GitHub Actions)
 set -euo pipefail
 
 # Validate required environment variables are present and non-empty
-for var in MACOS_CERTIFICATE MACOS_CERTIFICATE_PWD KEYCHAIN_PASSWORD RUNNER_TEMP; do
+for var in MACOS_CERTIFICATE MACOS_CERTIFICATE_PWD MACOS_KEYCHAIN_PASSWORD RUNNER_TEMP; do
   if [[ -z "${!var:-}" ]]; then
     echo "Error: required environment variable '$var' is not set or empty" >&2
     exit 1
@@ -28,9 +28,9 @@ if [[ ! -s "$CERT_FILE" ]]; then
 fi
 
 # Create a temporary keychain that only lives for this CI run (6-hour timeout)
-security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+security create-keychain -p "$MACOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
 security set-keychain-settings -lut 21600 "$KEYCHAIN_NAME"
-security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+security unlock-keychain -p "$MACOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
 
 # Import the certificate; -T grants codesign access without an interactive prompt
 security import "$CERT_FILE" -k "$KEYCHAIN_NAME" \
@@ -41,7 +41,7 @@ security list-keychain -d user -s "$KEYCHAIN_NAME"
 
 # Allow codesign to access the private key without a UI password prompt
 security set-key-partition-list -S apple-tool:,apple:,codesign: \
-  -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+  -s -k "$MACOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
 
 # Verify the identity is visible to the toolchain before proceeding
 if ! security find-identity -v -p codesigning "$KEYCHAIN_NAME" | grep -q "Developer ID Application"; then
