@@ -1,27 +1,39 @@
 import Foundation
 
 class FakeURLProtocol: URLProtocol {
-    static var responses: [(Data, HTTPURLResponse)] = []
-    static var capturedRequests: [URLRequest] = []
+    private static let lock = NSLock()
+    private static var _responses: [(Data, HTTPURLResponse)] = []
+    private static var _capturedRequests: [URLRequest] = []
+
+    static var capturedRequests: [URLRequest] {
+        lock.lock(); defer { lock.unlock() }
+        return _capturedRequests
+    }
 
     override class func canInit(with _: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
     override func startLoading() {
-        Self.capturedRequests.append(request)
-        guard !Self.responses.isEmpty else {
+        Self.lock.lock()
+        Self._capturedRequests.append(request)
+        let entry: (Data, HTTPURLResponse)?
+        if Self._responses.isEmpty {
+            entry = nil
+        } else {
+            entry = Self._responses.removeFirst()
+        }
+        Self.lock.unlock()
+
+        guard let (data, response) = entry else {
             client?.urlProtocol(self, didFailWithError: URLError(.fileDoesNotExist))
             return
         }
-        let (data, response) = Self.responses.removeFirst()
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
         client?.urlProtocol(self, didLoad: data)
         client?.urlProtocolDidFinishLoading(self)
     }
 
-    override func stopLoading() {
-        // URLProtocol requires this override; no teardown needed for a synchronous fake
-    }
+    override func stopLoading() {}
 
     static func makeSession() -> URLSession {
         let config = URLSessionConfiguration.ephemeral
@@ -30,17 +42,14 @@ class FakeURLProtocol: URLProtocol {
     }
 
     static func enqueue(statusCode: Int, url: URL, data: Data = Data()) {
-        let response = HTTPURLResponse(
-            url: url,
-            statusCode: statusCode,
-            httpVersion: nil,
-            headerFields: nil
-        )!
-        responses.append((data, response))
+        let response = HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: nil)!
+        lock.lock(); defer { lock.unlock() }
+        _responses.append((data, response))
     }
 
     static func reset() {
-        responses = []
-        capturedRequests = []
+        lock.lock(); defer { lock.unlock() }
+        _responses = []
+        _capturedRequests = []
     }
 }
