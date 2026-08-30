@@ -39,12 +39,14 @@ public sealed class ImportController : Controller
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IHttpClientHelper _httpClientHelper;
 	private readonly IImport _import;
+	private readonly IChunkUploadSessionStore _chunkUploadSessionStore;
 	private readonly IWebLogger _logger;
 	private readonly ISelectorStorage _selectorStorage;
 
 	public ImportController(IImport import, AppSettings appSettings,
 		IUpdateBackgroundTaskQueue queue,
-		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, IWebLogger logger)
+		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, IWebLogger logger,
+		IChunkUploadSessionStore? chunkUploadSessionStore = null)
 	{
 		_appSettings = appSettings;
 		_import = import;
@@ -54,6 +56,121 @@ public sealed class ImportController : Controller
 		_hostFileSystemStorage =
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_logger = logger;
+		_chunkUploadSessionStore = chunkUploadSessionStore ?? new InMemoryChunkUploadSessionStore();
+	}
+
+	[HttpPost("/api/import/chunk/init")]
+	[ProducesResponseType(typeof(ChunkUploadInitResultModel), 200)]
+	[ProducesResponseType(typeof(string), 400)]
+	public IActionResult ImportChunkInit(string fileName, int totalChunks, long totalSize)
+	{
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest("Model invalid");
+		}
+
+		if ( string.IsNullOrWhiteSpace(fileName) || totalChunks <= 0 || totalSize <= 0 )
+		{
+			return BadRequest("invalid init payload");
+		}
+
+		var safeFileName = Path.GetFileName(fileName);
+		var result = _chunkUploadSessionStore.Create(safeFileName, string.Empty,
+			totalChunks, totalSize);
+		return Json(result);
+	}
+
+	[HttpPut("/api/import/chunk/{uploadId}")]
+	[RequestSizeLimit(120_000_000)]
+	[ProducesResponseType(typeof(ChunkUploadStatusModel), 200)]
+	[ProducesResponseType(typeof(string), 400)]
+	[ProducesResponseType(typeof(string), 404)]
+	public async Task<IActionResult> ImportChunkPart(string uploadId, int chunkIndex)
+	{
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest("Model invalid");
+		}
+
+		using var memoryStream = new MemoryStream();
+		await Request.Body.CopyToAsync(memoryStream);
+		var chunkData = memoryStream.ToArray();
+
+		if ( chunkData.Length == 0 )
+		{
+			return BadRequest("chunk is empty");
+		}
+
+		if ( !_chunkUploadSessionStore.AddChunk(uploadId, chunkIndex, chunkData,
+			     out var errorMessage) )
+		{
+			if ( errorMessage == "upload session not found" )
+			{
+				return NotFound(errorMessage);
+			}
+
+			return BadRequest(errorMessage);
+		}
+
+		var status = _chunkUploadSessionStore.GetStatus(uploadId);
+		return Json(status);
+	}
+
+	[HttpGet("/api/import/chunk/{uploadId}/status")]
+	[ProducesResponseType(typeof(ChunkUploadStatusModel), 200)]
+	[ProducesResponseType(typeof(string), 404)]
+	public IActionResult ImportChunkStatus(string uploadId)
+	{
+		var status = _chunkUploadSessionStore.GetStatus(uploadId);
+		if ( status == null )
+		{
+			return NotFound("upload session not found");
+		}
+
+		return Json(status);
+	}
+
+	[HttpDelete("/api/import/chunk/{uploadId}")]
+	public IActionResult DeleteImportChunk(string uploadId)
+	{
+		_chunkUploadSessionStore.Delete(uploadId);
+		return NoContent();
+	}
+
+	[HttpPost("/api/import/chunk/{uploadId}/complete")]
+	[ProducesResponseType(typeof(List<ImportIndexItem>), 200)]
+	[ProducesResponseType(typeof(string), 400)]
+	[ProducesResponseType(typeof(string), 404)]
+	public async Task<IActionResult> CompleteImportChunk(string uploadId)
+	{
+		var status = _chunkUploadSessionStore.GetStatus(uploadId);
+		if ( status == null )
+		{
+			return NotFound("upload session not found");
+		}
+
+		if ( !_chunkUploadSessionStore.TryAssemble(uploadId, out var payload,
+			     out var errorMessage) )
+		{
+			return BadRequest(errorMessage);
+		}
+
+		var chunkImportDirectory = Path.Combine(_appSettings.TempFolder, "chunk-import", uploadId);
+		_hostFileSystemStorage.CreateDirectory(chunkImportDirectory);
+		var tempImportPath = Path.Combine(chunkImportDirectory, status.FileName);
+
+		var writeStatus = await _hostFileSystemStorage.WriteStreamAsync(new MemoryStream(payload),
+			tempImportPath);
+		if ( !writeStatus )
+		{
+			return BadRequest("unable to persist assembled file");
+		}
+
+		var fileIndexResultsList = await ProcessImportTempImportPaths(
+			new List<string> { tempImportPath }, new ImportSettingsModel(Request));
+
+		_chunkUploadSessionStore.Delete(uploadId);
+		return Json(fileIndexResultsList);
 	}
 
 	/// <summary>
@@ -77,7 +194,13 @@ public sealed class ImportController : Controller
 	{
 		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
 		var importSettings = new ImportSettingsModel(Request);
+		var fileIndexResultsList = await ProcessImportTempImportPaths(tempImportPaths, importSettings);
+		return Json(fileIndexResultsList);
+	}
 
+	private async Task<List<ImportIndexItem>> ProcessImportTempImportPaths(
+		List<string> tempImportPaths, ImportSettingsModel importSettings)
+	{
 		var fileIndexResultsList = await _import.Preflight(tempImportPaths, importSettings);
 
 		// Import files >
@@ -112,7 +235,7 @@ public sealed class ImportController : Controller
 			Response.StatusCode = 415;
 		}
 
-		return Json(fileIndexResultsList);
+		return fileIndexResultsList;
 	}
 
 

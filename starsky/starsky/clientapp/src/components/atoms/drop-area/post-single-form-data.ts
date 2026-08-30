@@ -2,6 +2,7 @@ import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem, newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import FetchPost from "../../../shared/fetch/fetch-post";
+import { ChunkUploadHelper, getChunkThreshold } from "./chunk-upload-helper";
 
 const CastFileIndexItem = (element: {
   fileHash: string;
@@ -36,29 +37,49 @@ export function PostSingleFormData(
     return;
   }
 
+  const currentFile = inputFilesList[index];
+  const fileSize = currentFile.size / 1024 / 1024; // Convert to MB
+  const chunkThreshold = getChunkThreshold() / 1024 / 1024; // Convert to MB
+
   setNotificationStatus(
-    `Uploading ${index + 1}/${inputFilesList.length} ${inputFilesList[index].name}`
+    `Uploading ${index + 1}/${inputFilesList.length} ${currentFile.name}`
   );
 
-  if (inputFilesList[index].size / 1024 / 1024 > 250) {
-    outputUploadFilesList.push({
-      filePath: inputFilesList[index].name,
-      fileName: inputFilesList[index].name,
-      status: IExifStatus.ServerError
-    } as IFileIndexItem);
-    next(
-      endpoint,
-      folderPath,
-      inputFilesList,
-      index,
-      outputUploadFilesList,
-      callBackWhenReady,
-      setNotificationStatus
-    );
+  // Use chunked upload for large files
+  if (fileSize > chunkThreshold) {
+    const chunkHelper = new ChunkUploadHelper(endpoint, folderPath, setNotificationStatus);
+    chunkHelper.uploadFileInChunks(currentFile, index, inputFilesList.length).then((results) => {
+      outputUploadFilesList.push(...results);
+      next(
+        endpoint,
+        folderPath,
+        inputFilesList,
+        index,
+        outputUploadFilesList,
+        callBackWhenReady,
+        setNotificationStatus
+      );
+    }).catch((error) => {
+      console.error("Chunk upload error:", error);
+      outputUploadFilesList.push({
+        filePath: currentFile.name,
+        fileName: currentFile.name,
+        status: IExifStatus.ServerError
+      } as IFileIndexItem);
+      next(
+        endpoint,
+        folderPath,
+        inputFilesList,
+        index,
+        outputUploadFilesList,
+        callBackWhenReady,
+        setNotificationStatus
+      );
+    });
     return;
   }
 
-  formData.append("file", inputFilesList[index]);
+  formData.append("file", currentFile);
 
   FetchPost(endpoint, formData, "post", { to: folderPath }).then((response) => {
     new ProcessResponse(endpoint).Run(

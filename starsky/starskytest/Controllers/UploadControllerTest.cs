@@ -18,6 +18,8 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.import.Services;
+using starsky.foundation.import.Interfaces;
+using starsky.foundation.import.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
@@ -35,6 +37,7 @@ public sealed class UploadControllerTest
 	private readonly AppSettings _appSettings;
 	private readonly Import _import;
 	private readonly FakeIStorage _iStorage;
+	private readonly IChunkUploadSessionStore _chunkUploadSessionStore;
 	private readonly Query _query;
 
 	public UploadControllerTest()
@@ -72,6 +75,7 @@ public sealed class UploadControllerTest
 			new FakeExifTool(_iStorage, _appSettings), _query, new ConsoleWrapper(),
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), memoryCache);
+		_chunkUploadSessionStore = new InMemoryChunkUploadSessionStore();
 
 		// Start using dependency injection
 		// Add random config to dependency injection
@@ -104,6 +108,79 @@ public sealed class UploadControllerTest
 		var actionContext = new ActionContext(httpContext, new RouteData(),
 			new ControllerActionDescriptor());
 		return new ControllerContext(actionContext);
+	}
+
+	private static ControllerContext RequestWithBinary(byte[] bytes)
+	{
+		var httpContext = new DefaultHttpContext();
+		httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
+		httpContext.Request.Body = new MemoryStream(bytes);
+
+		var actionContext = new ActionContext(httpContext, new RouteData(),
+			new ControllerActionDescriptor());
+		return new ControllerContext(actionContext);
+	}
+
+	[TestMethod]
+	public void UploadChunkInit_NoToHeader_BadRequest()
+	{
+		var controller = new UploadController(_import, _appSettings,
+			new FakeSelectorStorage(_iStorage), _query,
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(),
+			_chunkUploadSessionStore)
+		{
+			ControllerContext = { HttpContext = new DefaultHttpContext() }
+		};
+
+		var actionResult = controller.UploadChunkInit("test.jpg", 2, 10) as BadRequestObjectResult;
+		Assert.AreEqual(400, actionResult?.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task UploadChunkFlow_DefaultFlow()
+	{
+		var imageBytes = CreateAnImage.Bytes.ToArray();
+		var chunkSize = imageBytes.Length / 2;
+		var firstChunk = imageBytes.Take(chunkSize).ToArray();
+		var secondChunk = imageBytes.Skip(chunkSize).ToArray();
+
+		var controller = new UploadController(_import, _appSettings,
+			new FakeSelectorStorage(_iStorage), _query,
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(),
+			_chunkUploadSessionStore)
+		{
+			ControllerContext = { HttpContext = new DefaultHttpContext() }
+		};
+
+		controller.ControllerContext.HttpContext.Request.Headers["to"] = "/chunked01.jpg";
+		var initActionResult = controller.UploadChunkInit("chunked01.jpg", 2, imageBytes.Length) as JsonResult;
+		var initModel = initActionResult?.Value as ChunkUploadInitResultModel;
+		if ( initModel == null )
+		{
+			throw new WebException("initModel should not be null");
+		}
+
+		controller.ControllerContext = RequestWithBinary(firstChunk);
+		await controller.UploadChunkPart(initModel.UploadId, 0);
+
+		controller.ControllerContext = RequestWithBinary(secondChunk);
+		await controller.UploadChunkPart(initModel.UploadId, 1);
+
+		controller.ControllerContext = new ControllerContext
+		{
+			HttpContext = new DefaultHttpContext()
+		};
+		var completeActionResult = await controller.CompleteUploadChunk(initModel.UploadId) as JsonResult;
+		var list = completeActionResult?.Value as List<ImportIndexItem>;
+
+		Assert.AreEqual(ImportStatus.Ok, list?.FirstOrDefault()?.Status);
+		Assert.IsTrue(_iStorage.ExistFile("/chunked01.jpg"));
+
+		var queryResult = _query.SingleItem("/chunked01.jpg");
+		Assert.AreEqual("Sony", queryResult?.FileIndexItem?.Make);
+		await _query.RemoveItemAsync(queryResult?.FileIndexItem!);
 	}
 
 	[TestMethod]
