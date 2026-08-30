@@ -161,7 +161,7 @@ echo "==> Exporting archive"
 EXPORT_PLIST="$MAC_DIR/ExportOptions.plist"
 if $SIGN; then
     EXPORT_PLIST="$OUTPUT_DIR/ExportOptions-signed.plist"
-    /usr/libexec/PlistBuddy -c "Merge $MAC_DIR/ExportOptions.plist" "$EXPORT_PLIST" 2>/dev/null || cp "$MAC_DIR/ExportOptions.plist" "$EXPORT_PLIST"
+    cp "$MAC_DIR/ExportOptions.plist" "$EXPORT_PLIST"
     /usr/libexec/PlistBuddy -c "Set :teamID $TEAM_ID" "$EXPORT_PLIST"
 else
     EXPORT_PLIST="$OUTPUT_DIR/ExportOptions-unsigned.plist"
