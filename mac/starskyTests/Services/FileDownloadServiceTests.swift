@@ -282,6 +282,12 @@ final class FileDownloadServiceTests: XCTestCase {
             return []
         })
 
+        // Drain the watcher queue so any FSEvents callback that fired concurrently
+        // during the download has fully completed before we read providerCallCount.
+        await withCheckedContinuation { continuation in
+            service.watcherQueue.async { continuation.resume() }
+        }
+
         // Provider should not have been called yet (only called on change)
         XCTAssertEqual(providerCallCount, 0)
         let destFile = tempDir.appendingPathComponent("photos/test.jpg")

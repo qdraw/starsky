@@ -206,6 +206,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github", "Github", "{194554
 		..\.github\workflows\webapp-docker-release-on-tag-docker-hub.yml = ..\.github\workflows\webapp-docker-release-on-tag-docker-hub.yml
 		..\.github\workflows\webapp-sonarqube-clientapp-netcore.yml = ..\.github\workflows\webapp-sonarqube-clientapp-netcore.yml
 		..\.github\workflows\webapp-unstable-docker-buildx.yml = ..\.github\workflows\webapp-unstable-docker-buildx.yml
+		..\.github\workflows\desktop-release-on-tag-net-electron.yml = ..\.github\workflows\desktop-release-on-tag-net-electron.yml
 	EndProjectSection
 EndProject
 Global

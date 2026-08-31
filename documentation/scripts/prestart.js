@@ -164,21 +164,6 @@ copyFileSync(
 
 copyFileSync("readme-desktop.md", "advanced-options/readme-desktop.md");
 
-// Legacy: starskydesktop
-// copyFileSync("starskydesktop/readme.md", "advanced-options/starskydesktop/readme.md");
-
-// touchSync("advanced-options/starskydesktop/__do_not_edit_this__folder");
-
-// copyFileSync(
-// 	"starskydesktop/docs-assets/starskyapp-mac-gatekeeper.jpg",
-// 	"advanced-options/starskydesktop/docs-assets/starskyapp-mac-gatekeeper.jpg"
-// );
-
-// copyFileSync(
-// 	"starskydesktop/docs-assets/starskyapp-remote-options-v040.jpg",
-// 	"advanced-options/starskydesktop/docs-assets/starskyapp-remote-options-v040.jpg"
-// );
-
 // Mac CLIENT
 copyFileSync("mac/readme.md", "advanced-options/mac/readme.md");
 copyFileSync("mac/secrets-setup.md", "advanced-options/mac/secrets-setup.md");
