@@ -9,19 +9,63 @@ import OSLog
 
 private class SilentWindow: NSWindow {
     override func noResponder(for _: Selector) {
-        // Intentionally empty: suppresses the default NSBeep() emitted when no responder handles an event. (comment should be inside the override, not outside)
+        // Suppresses the NSBeep() emitted when no responder handles an event.
     }
 }
 
-private class SilentWebView: WKWebView {
-    override func noResponder(for _: Selector) {
-        // Intentionally empty: suppresses the default NSBeep() emitted when no responder handles an event. (comment should be inside the override, not outside)
-    }
+// MARK: - Key-event handling design
+//
+// WKWebView on macOS has two problematic default behaviours for navigation keys
+// (Backspace, arrows, Page Up/Down, Home, End) when no editable element has focus:
+//   1. Backspace triggers WKWebView's native go-back navigation.
+//   2. Other nav keys that are not consumed by the page cause an NSBeep().
+//
+// We fix both in JavaScript rather than Swift because the JS layer can inspect
+// document.activeElement and the current selection synchronously, which is not
+// possible from keyDown(with:) without an async JS evaluation round-trip.
+//
+// How it works:
+//   - suppressNavigationKeysSource is injected at document-start.
+//   - For every nav key, if the event target (or any ancestor via the selection)
+//     is editable (INPUT, TEXTAREA, or contenteditable), the handler returns early
+//     and the browser handles the key normally — text is deleted, cursors move, etc.
+//   - Otherwise, e.preventDefault() is called. When WebKit sees a prevented
+//     keydown it marks the event as handled and skips the AppKit interpretKeyEvents
+//     path, so doCommand(by:) is never called and no beep or goBack fires.
+//
+// The selection-walk fallback is needed because WKWebView sometimes reports
+// document.body as document.activeElement even when a contenteditable div has
+// keyboard focus; walking from the selection's commonAncestorContainer catches that.
+//
+// noResponder(for:) on SilentWebView is kept as a last-resort beep suppressor
+// for any key that somehow makes it to the responder chain without a handler.
+class SilentWebView: WKWebView {
+    // Exported as a static so tests can assert on the script content.
+    static let suppressNavigationKeysSource = """
+        window.addEventListener('keydown', function(e) {
+            if (e.defaultPrevented) return;
+            var nav = ['Backspace','ArrowLeft','ArrowRight','ArrowUp','ArrowDown',
+                       'PageUp','PageDown','Home','End'];
+            if (nav.indexOf(e.key) === -1) return;
+            var el = document.activeElement;
+            if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||
+                       el.isContentEditable ||
+                       el.getAttribute('contenteditable') === 'true')) return;
+            var sel = window.getSelection && window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+                var node = sel.getRangeAt(0).commonAncestorContainer;
+                if (node.nodeType === 3) node = node.parentElement;
+                while (node) {
+                    if (node.isContentEditable) return;
+                    node = node.parentElement;
+                }
+            }
+            e.preventDefault();
+        }, false);
+        """
 
-    override func doCommand(by _: Selector) {
-        // Arrow keys and other navigation commands that the web content doesn't
-        // consume go through interpretKeyEvents → doCommand, which beeps by default.
-        // Calling super here triggers NSBeep(); doing nothing silences it.
+    override func noResponder(for _: Selector) {
+        // Suppresses the NSBeep() emitted when no responder handles an event.
     }
 }
 
@@ -88,24 +132,11 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
             """, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
         config.userContentController.addUserScript(middleClickScript)
 
-        // Suppress the macOS system beep that WebKit emits when navigation keys
-        // (arrows, page up/down, etc.) aren't consumed by the page. We listen at
-        // the bubble phase so app-level handlers fire first; if nothing called
-        // preventDefault() and no editable element is focused, we do so ourselves,
-        // which makes WebKit treat the event as handled and skip the NSBeep() call.
-        let suppressBeepScript = WKUserScript(source: """
-            window.addEventListener('keydown', function(e) {
-                if (e.defaultPrevented) return;
-                var nav = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',
-                           'PageUp','PageDown','Home','End'];
-                if (nav.indexOf(e.key) === -1) return;
-                var el = document.activeElement;
-                if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||
-                           el.isContentEditable ||
-                           el.getAttribute('contenteditable') === 'true')) return;
-                e.preventDefault();
-            }, false);
-            """, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+        let suppressBeepScript = WKUserScript(
+            source: SilentWebView.suppressNavigationKeysSource,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: false
+        )
         config.userContentController.addUserScript(suppressBeepScript)
 
         webView = SilentWebView(frame: .zero, configuration: config)
