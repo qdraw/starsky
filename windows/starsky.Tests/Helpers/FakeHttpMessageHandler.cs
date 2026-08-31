@@ -14,7 +14,10 @@ internal sealed class FakeHttpMessageHandler(params HttpResponseMessage[] respon
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         if (_responses.Count > 0)
-            _last = _responses.Dequeue();
+        {
+	        _last = _responses.Dequeue();
+        }
+
         return Task.FromResult(_last ?? new HttpResponseMessage(HttpStatusCode.OK));
     }
 }

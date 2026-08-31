@@ -42,6 +42,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.0-beta.0 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.0}
 
+- [x] (Added) _App_ Align menu's in Windows with macOS (PR #3243)
 - [x] (Added) _App_ Swift-based MacOS desktop app instead of Electron (PR #3238)
 - [x] (Added) _App_ WPF-based Windows desktop app instead of Electron (PR #3234)
 
