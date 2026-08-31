@@ -20,14 +20,11 @@ trigger:
     - feature/*
   paths:
       include:
-      - starskydesktop/*
       - mac/**
       - windows/**
       exclude:
       - starsky/*
       - starsky-tools/*
-      - starskydesktop/*.md
-      - starskydesktop/readme.md
 
 # specific path build
 pr:
@@ -36,7 +33,6 @@ pr:
     - master
   paths:
     include:
-    - starskydesktop/*
     - mac/**
     - windows/**
     exclude:
@@ -57,6 +53,12 @@ stages:
     - checkout: self
       clean: true
       fetchDepth: 1
+
+    - task: Bash@3
+      displayName: 'Free disk space (remove Android SDK)'
+      inputs:
+        targetType: 'inline'
+        script: sudo rm -rf /usr/local/lib/android
 
     - template: /pipelines/azure/steps/use_dotnet_version.yml
 
@@ -90,56 +92,6 @@ stages:
             value: '/starsky/starsky-win-x64.zip'
           - key: osx-arm64
             value: '/starsky/starsky-osx-arm64.zip'
-
-- stage: buildelectron
-  displayName: 'Build Electron'
-  dependsOn: buildnetcore
-  jobs:
-  - job: build
-    displayName: 'Build Electron'
-    pool:
-      vmImage: 'ubuntu-24.04'
-    container: electronuserland/builder:20-wine
-    steps:
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        source: 'current'
-        artifactName: 'win-x64'
-        path: '$(Build.SourcesDirectory)'
-
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        source: 'current'
-        artifactName: 'osx-x64'
-        path: '$(Build.SourcesDirectory)'
-
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        source: 'current'
-        artifactName: 'osx-arm64'
-        path: '$(Build.SourcesDirectory)'
-
-    - template: /pipelines/azure/steps/electron_build.yml
-      parameters:
-        codeSign: ${{ parameters.codeSign }}
-
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish Artifact: starsky-win-x64-desktop'
-      inputs:
-        path: '$(Build.SourcesDirectory)/starskydesktop/dist-prod/starsky-win-x64-desktop.exe'
-        ArtifactName: 'starsky-win-x64-desktop'
-
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish Artifact: starsky-mac-x64-desktop'
-      inputs:
-        path: '$(Build.SourcesDirectory)/starskydesktop/dist-prod/starsky-mac-x64-desktop.zip'
-        ArtifactName: 'starsky-mac-x64-desktop'
-
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish Artifact: starsky-mac-arm64-desktop'
-      inputs:
-        path: '$(Build.SourcesDirectory)/starskydesktop/dist-prod/starsky-mac-x64-desktop.zip'
-        ArtifactName: 'starsky-mac-arm64-desktop'
 
 - stage: buildmacnative
   displayName: 'Build Mac Desktop App (native Swift)'
