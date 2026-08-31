@@ -23,6 +23,19 @@ private class SilentWebView: WKWebView {
         // consume go through interpretKeyEvents → doCommand, which beeps by default.
         // Calling super here triggers NSBeep(); doing nothing silences it.
     }
+
+    override func keyDown(with event: NSEvent) {
+        // Bare backspace would otherwise trigger WKWebView's go-back navigation
+        // when no editable element has focus. Route it through interpretKeyEvents
+        // so text inputs still receive it; doCommand (above) then discards it
+        // instead of calling goBack().
+        if event.charactersIgnoringModifiers == "\u{08}",
+           event.modifierFlags.intersection(.deviceIndependentFlagsMask).isEmpty {
+            interpretKeyEvents([event])
+            return
+        }
+        super.keyDown(with: event)
+    }
 }
 
 class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate, MainWindowView { // NOSONAR swift:S7485
