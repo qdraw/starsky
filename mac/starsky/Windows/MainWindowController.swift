@@ -64,7 +64,9 @@ class SilentWebView: WKWebView {
         }, false);
         """
 
-    override func noResponder(for _: Selector) {}
+    override func noResponder(for _: Selector) {
+        // Suppresses the NSBeep() emitted when no responder handles an event.
+    }
 }
 
 class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate, MainWindowView { // NOSONAR swift:S7485
