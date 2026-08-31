@@ -14,27 +14,28 @@ private class SilentWindow: NSWindow {
 }
 
 class SilentWebView: WKWebView {
-    override func noResponder(for _: Selector) {
-        // Intentionally empty: suppresses the default NSBeep() emitted when no responder handles an event. (comment should be inside the override, not outside)
-    }
+    // Injected at document-start to prevent Backspace from triggering WKWebView's
+    // native go-back navigation and to suppress the NSBeep for unhandled nav keys.
+    // Exported as a static so tests can assert on the script source.
+    static let suppressNavigationKeysSource = """
+        window.addEventListener('keydown', function(e) {
+            if (e.defaultPrevented) return;
+            var nav = ['Backspace','ArrowLeft','ArrowRight','ArrowUp','ArrowDown',
+                       'PageUp','PageDown','Home','End'];
+            if (nav.indexOf(e.key) === -1) return;
+            var el = document.activeElement;
+            if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||
+                       el.isContentEditable ||
+                       el.getAttribute('contenteditable') === 'true')) return;
+            e.preventDefault();
+        }, false);
+        """
+
+    override func noResponder(for _: Selector) {}
 
     override func doCommand(by _: Selector) {
-        // Arrow keys and other navigation commands that the web content doesn't
-        // consume go through interpretKeyEvents → doCommand, which beeps by default.
-        // Calling super here triggers NSBeep(); doing nothing silences it.
-    }
-
-    override func keyDown(with event: NSEvent) {
-        // Bare backspace would otherwise trigger WKWebView's go-back navigation
-        // when no editable element has focus. Route it through interpretKeyEvents
-        // so text inputs still receive it; doCommand (above) then discards it
-        // instead of calling goBack().
-        if event.charactersIgnoringModifiers == "\u{08}",
-           event.modifierFlags.intersection(.deviceIndependentFlagsMask).isEmpty {
-            interpretKeyEvents([event])
-            return
-        }
-        super.keyDown(with: event)
+        // Unhandled nav keys come back through interpretKeyEvents → doCommand.
+        // Calling super beeps; doing nothing silences it.
     }
 }
 
@@ -101,24 +102,11 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
             """, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
         config.userContentController.addUserScript(middleClickScript)
 
-        // Suppress the macOS system beep that WebKit emits when navigation keys
-        // (arrows, page up/down, etc.) aren't consumed by the page. We listen at
-        // the bubble phase so app-level handlers fire first; if nothing called
-        // preventDefault() and no editable element is focused, we do so ourselves,
-        // which makes WebKit treat the event as handled and skip the NSBeep() call.
-        let suppressBeepScript = WKUserScript(source: """
-            window.addEventListener('keydown', function(e) {
-                if (e.defaultPrevented) return;
-                var nav = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',
-                           'PageUp','PageDown','Home','End'];
-                if (nav.indexOf(e.key) === -1) return;
-                var el = document.activeElement;
-                if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||
-                           el.isContentEditable ||
-                           el.getAttribute('contenteditable') === 'true')) return;
-                e.preventDefault();
-            }, false);
-            """, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+        let suppressBeepScript = WKUserScript(
+            source: SilentWebView.suppressNavigationKeysSource,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: false
+        )
         config.userContentController.addUserScript(suppressBeepScript)
 
         webView = SilentWebView(frame: .zero, configuration: config)
