@@ -19,7 +19,7 @@ public class PortFinderTests
         var listener = new TcpListener(IPAddress.Loopback, port);
         listener.Start();
         listener.Stop();
-        var ep = (System.Net.IPEndPoint)listener.LocalEndpoint;
+        var ep = (IPEndPoint)listener.LocalEndpoint;
         Assert.Equal(port, ep.Port);
     }
 

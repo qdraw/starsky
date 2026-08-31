@@ -4,6 +4,10 @@ class FakeURLProtocol: URLProtocol {
     private static let lock = NSLock()
     // Keyed by URL path (scheme/host/port/query ignored) so dynamic ports and query
     // parameters don't break matching, while distinct API endpoints remain isolated.
+    //
+    // IMPORTANT: each per-path queue MUST remain FIFO (append at tail, removeFirst at head).
+    // Several tests rely on enqueue order matching request order.  Do NOT change to a
+    // dictionary keyed by index, a stack (removeLast), or any other non-FIFO structure.
     private static var _responses: [String: [(Data, HTTPURLResponse)]] = [:]
     private static var _capturedRequests: [URLRequest] = []
 

@@ -107,7 +107,6 @@ class AppCore {
             return
         }
 
-        await splashStatus("Checking version compatibility…")
         let compatible = await checkVersionCompatibility(baseUrl: baseUrl)
         NSLog("[startup] version compatible=\(compatible)")
         guard compatible else {
