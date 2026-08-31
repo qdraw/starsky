@@ -27,16 +27,20 @@ class SilentWebView: WKWebView {
             if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||
                        el.isContentEditable ||
                        el.getAttribute('contenteditable') === 'true')) return;
+            var sel = window.getSelection && window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+                var node = sel.getRangeAt(0).commonAncestorContainer;
+                if (node.nodeType === 3) node = node.parentElement;
+                while (node) {
+                    if (node.isContentEditable) return;
+                    node = node.parentElement;
+                }
+            }
             e.preventDefault();
         }, false);
         """
 
     override func noResponder(for _: Selector) {}
-
-    override func doCommand(by _: Selector) {
-        // Unhandled nav keys come back through interpretKeyEvents → doCommand.
-        // Calling super beeps; doing nothing silences it.
-    }
 }
 
 class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate, MainWindowView { // NOSONAR swift:S7485

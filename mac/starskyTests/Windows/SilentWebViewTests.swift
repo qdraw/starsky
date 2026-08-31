@@ -23,12 +23,13 @@ final class SilentWebViewTests: XCTestCase {
         XCTAssertTrue(src.contains("isContentEditable"))
     }
 
-    // MARK: - doCommand
-
-    @MainActor
-    func testDoCommandDoesNotCrash() {
-        let webView = SilentWebView(frame: .zero, configuration: WKWebViewConfiguration())
-        // deleteBackward: via doCommand must be a no-op, not a crash or a goBack call.
-        webView.doCommand(by: #selector(NSResponder.deleteBackward(_:)))
+    func testSuppressScriptGuardsSelectionInContentEditable() {
+        let src = SilentWebView.suppressNavigationKeysSource
+        // WKWebView can report document.body as activeElement even when a
+        // contenteditable div has focus; the selection-walk fallback catches that.
+        XCTAssertTrue(src.contains("getSelection"))
+        XCTAssertTrue(src.contains("commonAncestorContainer"))
+        XCTAssertTrue(src.contains("parentElement"))
     }
+
 }
