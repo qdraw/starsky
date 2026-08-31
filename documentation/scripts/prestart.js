@@ -162,19 +162,40 @@ copyFileSync(
 	"advanced-options/starsky/starskydemoseedcli/readme.md"
 );
 
-copyFileSync("starskydesktop/readme.md", "advanced-options/starskydesktop/readme.md");
+copyFileSync("readme-desktop.md", "advanced-options/readme-desktop.md");
 
-touchSync("advanced-options/starskydesktop/__do_not_edit_this__folder");
+// Legacy: starskydesktop
+// copyFileSync("starskydesktop/readme.md", "advanced-options/starskydesktop/readme.md");
 
-copyFileSync(
-	"starskydesktop/docs-assets/starskyapp-mac-gatekeeper.jpg",
-	"advanced-options/starskydesktop/docs-assets/starskyapp-mac-gatekeeper.jpg"
-);
+// touchSync("advanced-options/starskydesktop/__do_not_edit_this__folder");
 
-copyFileSync(
-	"starskydesktop/docs-assets/starskyapp-remote-options-v040.jpg",
-	"advanced-options/starskydesktop/docs-assets/starskyapp-remote-options-v040.jpg"
-);
+// copyFileSync(
+// 	"starskydesktop/docs-assets/starskyapp-mac-gatekeeper.jpg",
+// 	"advanced-options/starskydesktop/docs-assets/starskyapp-mac-gatekeeper.jpg"
+// );
+
+// copyFileSync(
+// 	"starskydesktop/docs-assets/starskyapp-remote-options-v040.jpg",
+// 	"advanced-options/starskydesktop/docs-assets/starskyapp-remote-options-v040.jpg"
+// );
+
+// Mac CLIENT
+copyFileSync("mac/readme.md", "advanced-options/mac/readme.md");
+copyFileSync("mac/secrets-setup.md", "advanced-options/mac/secrets-setup.md");
+copyFileSync("mac/SPEC.md", "advanced-options/mac/SPEC.md");
+copyFileSync("mac/project.yml", "advanced-options/mac/project.yml");
+copyFileSync("mac/ExportOptions.plist", "advanced-options/mac/ExportOptions.plist");
+copyFileSync("mac/starsky/Info.plist", "advanced-options/mac/starsky/Info.plist");
+
+touchSync("advanced-options/mac/__do_not_edit_this__folder");
+
+// PC client
+
+copyFileSync("windows/readme.md", "advanced-options/windows/readme.md");
+copyFileSync("windows/SPEC.md", "advanced-options/windows/SPEC.md");
+
+touchSync("advanced-options/windows/__do_not_edit_this__folder");
+
 
 copyFileSync("starsky/starskytest/readme.md", "advanced-options/starsky/starskytest/readme.md");
 

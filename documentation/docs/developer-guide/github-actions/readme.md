@@ -11,28 +11,37 @@ Build, test, and deploy your code right from GitHub.
 
 ## Important pipelines
 
-- [Build desktop app (Create Desktop Release on tag for .Net Core and Electron)](#create-desktop-release-on-tag-for-net-core-and-electron)
-- [Docker Hub on new version (Create Release on tag for docker hub)](#create-release-on-tag-for-docker-hub)
+- [Build desktop app (Create Desktop Release on tag for .NET and Electron)](#create-desktop-release-on-tag-for-net-and-electron)
+- [Docker Hub on new version (Create Release on tag for Docker Hub)](#create-release-on-tag-for-docker-hub)
 - [Docker unstable build (Docker buildx multi-arch CI unstable master)](#docker-buildx-multi-arch-ci-unstable-master)
 
 ## Table of Contents
 
-1. [Create Desktop Release on tag for .Net Core and Electron](#create-desktop-release-on-tag-for-net-core-and-electron)
+1. [Create Desktop Release on tag for .NET and Electron](#create-desktop-release-on-tag-for-net-and-electron)
 2. [Docker Hub on new version (Create Release on tag for Docker Hub)](#create-release-on-tag-for-docker-hub)
-3. [Docker unstable build (Docker buildx multi-arch CI unstable master)](#docker-buildx-multi-arch-ci-unstable-master)
+3. [Docker buildx multi-arch CI unstable master](#docker-buildx-multi-arch-ci-unstable-master)
 4. [Auto upgrade .NET SDK version](#auto-upgrade-net-sdk-version)
 5. [Application Version Auto update](#application-version-auto-update)
 6. [Auto update Nuget packages list](#auto-update-nuget-packages-list)
 7. [Auto Update Swagger](#auto-update-swagger)
-8. [Auto clientapp create Vite upgrade](#auto-clientapp-create-react-app-upgrade)
+8. [Auto clientapp create Vite upgrade](#auto-clientapp-create-vite-upgrade)
 9. [Auto Documentation create Docusaurus upgrade](#auto-documentation-create-docusaurus-upgrade)
 10. [ClientApp React Linux CI](#clientapp-react-linux-ci)
 11. [ClientApp React Windows CI](#clientapp-react-windows-ci)
 12. [CodeQL analysis](#codeql-analysis)
-13. [Documentation to GitHub Pages](#documentation-to-github-pages)
-14. [End-to-End on Ubuntu CI](#end2end-on-ubuntu-ci)
-15. [End-to-End on Windows CI](#end2end-on-windows-ci)
-16. [Create Release on tag for Docker Hub](#create-release-on-tag-for-docker-hub)
+13. [Documentation Linux CI](#documentation-linux-ci)
+14. [Documentation to GitHub Pages](#documentation-to-github-pages)
+15. [End-to-End on Ubuntu CI](#end2end-on-ubuntu-ci)
+16. [End-to-End on Windows CI](#end2end-on-windows-ci)
+17. [Clean untagged GHCR images](#clean-untagged-ghcr-images)
+18. [Desktop macOS PR Build](#desktop-macos-pr-build)
+19. [Desktop macOS SonarQube Analyze](#desktop-macos-sonarqube-analyze)
+20. [Desktop Windows PR Build](#desktop-windows-pr-build)
+21. [Desktop Windows SonarQube .NET](#desktop-windows-sonarqube-net)
+22. [SonarQube Desktop Electron Analyze (Missing .NET dependency)](#sonarqube-desktop-electron-analyze-missing-net-dependency)
+23. [Tools dependencies mirror Netlify](#tools-dependencies-mirror-netlify)
+24. [Tools SonarCloud Create Issue](#tools-sonarcloud-create-issue)
+25. [WebApp Build .NET macOS](#webapp-build-net-macos)
 
 # All github actions used by this project
 
@@ -101,7 +110,7 @@ npm run nuget-package-list
 
 > [webapp-update-swagger-dotnet.yml](https://github.com/qdraw/starsky/actions/workflows/webapp-update-swagger-dotnet.yml)
 
-## auto clientapp create Vite upgrade
+## Auto clientapp create Vite upgrade
 
 Bootstrap the client app with the latest Vite version
 
@@ -137,7 +146,7 @@ Runs on pull request and push on the master branch
 ```bash
 cd starsky/starsky/clientapp
 npm ci
-npm npm run build
+npm run build
 npm run test:ci
 ```
 
@@ -153,7 +162,7 @@ Runs on pull request and push on the master branch
 ```bash
 cd starsky/starsky/clientapp
 npm ci
-npm npm run build
+npm run build
 npm run test:ci
 ```
 
@@ -210,9 +219,8 @@ runs on release of a new stable version
 
 ## Create Desktop Release on tag for .NET and Electron
 
-Build the .NET runtime for Linux, Windows and macOS
-And build Electron
-Only create release when a new tag is pushed
+Build the .NET runtime for Linux, Windows and macOS and build Electron.
+Only creates a release when a new tag is pushed.
 
 [![desktop-release-on-tag-net-electron](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml)
 
@@ -281,4 +289,94 @@ Deploy storybook of clientapp to netlify
 
 [![clientapp-storybook-netlify](https://github.com/qdraw/starsky/actions/workflows/clientapp-storybook-netlify.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/clientapp-storybook-netlify.yml)
 
-> [storybook-clientapp-netlify.yml](https://github.com/qdraw/starsky/actions/workflows/storybook-clientapp-netlify.yml)
+> [clientapp-storybook-netlify.yml](https://github.com/qdraw/starsky/actions/workflows/clientapp-storybook-netlify.yml)
+
+## Documentation Linux CI
+
+Build and verify the documentation site on Linux.
+Runs on pull request when files under `documentation/` change.
+
+[![documentation-linux-ci](https://github.com/qdraw/starsky/actions/workflows/documentation-linux-ci.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/documentation-linux-ci.yml)
+
+> [documentation-linux-ci.yml](https://github.com/qdraw/starsky/actions/workflows/documentation-linux-ci.yml)
+
+## Clean untagged GHCR images
+
+Run daily (scheduled)
+Deletes untagged container images and old nightly builds from the GitHub Container Registry to keep storage usage low.
+
+[![global-clean-untagged-ghcr-images](https://github.com/qdraw/starsky/actions/workflows/global-clean-untagged-ghcr-images.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/global-clean-untagged-ghcr-images.yml)
+
+> [global-clean-untagged-ghcr-images.yml](https://github.com/qdraw/starsky/actions/workflows/global-clean-untagged-ghcr-images.yml)
+
+## Desktop macOS PR Build
+
+Build and test the native macOS Swift/AppKit app on pull request and push to master.
+Uses xcodegen to generate the Xcode project before building.
+
+[![desktop-macos-pr-build](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-pr-build.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-pr-build.yml)
+
+> [desktop-macos-pr-build.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-pr-build.yml)
+
+## Desktop macOS SonarQube Analyze
+
+SonarQube code analysis for the native macOS app.
+Runs on push/PR to master when `mac/` changes, and on a schedule (Mon/Wed/Fri).
+
+[![desktop-macos-sonarqube](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-sonarqube.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-sonarqube.yml)
+
+> [desktop-macos-sonarqube.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-sonarqube.yml)
+
+## Desktop Windows PR Build
+
+Build and test the native Windows desktop app on pull request and push to master.
+Runs on `windows-latest` when files under `windows/` change.
+
+[![desktop-windows-pr-build](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-pr-build.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-pr-build.yml)
+
+> [desktop-windows-pr-build.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-pr-build.yml)
+
+## Desktop Windows SonarQube .NET
+
+SonarQube code analysis for the Windows desktop .NET project.
+Runs on push/PR to master when `windows/` changes, and on a schedule (Sun/Tue/Thu/Sat).
+
+[![desktop-windows-sonarqube-net](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-sonarqube-net.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-sonarqube-net.yml)
+
+> [desktop-windows-sonarqube-net.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-sonarqube-net.yml)
+
+## SonarQube Desktop Electron Analyze (Missing .NET dependency)
+
+SonarQube analysis for the Electron desktop app without the .NET runtime dependency.
+Runs on push/PR to master when `starskydesktop/` changes, and on a schedule (Sun/Tue/Thu/Sat).
+
+[![desktop-electron-sonarqube-missing-net-dependency](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-sonarqube-missing-net-dependency.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-sonarqube-missing-net-dependency.yml)
+
+> [desktop-electron-sonarqube-missing-net-dependency.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-sonarqube-missing-net-dependency.yml)
+
+## Tools dependencies mirror Netlify
+
+Verify and mirror external tool dependencies (exiftool, ffmpeg, geonames) to Netlify.
+Runs on push/PR when download-mirror scripts change.
+
+[![tools-dependencies-mirror-netlify](https://github.com/qdraw/starsky/actions/workflows/tools-dependencies-mirror-netlify.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/tools-dependencies-mirror-netlify.yml)
+
+> [tools-dependencies-mirror-netlify.yml](https://github.com/qdraw/starsky/actions/workflows/tools-dependencies-mirror-netlify.yml)
+
+## Tools SonarCloud Create Issue
+
+Run every 12 hours (scheduled)
+Fetches SonarCloud analysis results and automatically creates GitHub issues for new findings.
+
+[![tools-sonarcloud-create-issue](https://github.com/qdraw/starsky/actions/workflows/tools-sonarcloud-create-issue.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/tools-sonarcloud-create-issue.yml)
+
+> [tools-sonarcloud-create-issue.yml](https://github.com/qdraw/starsky/actions/workflows/tools-sonarcloud-create-issue.yml)
+
+## WebApp Build .NET macOS
+
+CI build for .NET on macOS.
+Runs on push/PR to master when files under `starsky/` change (excluding the clientapp).
+
+[![webapp-build-net-macos](https://github.com/qdraw/starsky/actions/workflows/webapp-build-net-macos.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/webapp-build-net-macos.yml)
+
+> [webapp-build-net-macos.yml](https://github.com/qdraw/starsky/actions/workflows/webapp-build-net-macos.yml)
