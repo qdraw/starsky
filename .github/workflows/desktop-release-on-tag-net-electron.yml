@@ -49,13 +49,13 @@ jobs:
         with:
           name: linux-arm64
           path: ./starsky/starsky-linux-arm64.zip
- 
+
       - name: Upload win-x64 as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: win-x64
           path: ./starsky/starsky-win-x64.zip
-  
+
       - name: Upload linux-x64 as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
@@ -67,13 +67,13 @@ jobs:
         with:
           name: osx-x64
           path: ./starsky/starsky-osx-x64.zip
- 
+
       - name: Upload osx-arm64 as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: osx-arm64
           path: ./starsky/starsky-osx-arm64.zip
- 
+
       - name: Upload slack-notification as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
@@ -424,7 +424,7 @@ jobs:
           path: |
             ./velopack-releases/*.nupkg
             ./velopack-releases/RELEASES*
- 
+
   create_release:
     name: Create Release
     needs: [build_net, build_mac_native, build_mac_arm64, build_mac_x64, build_win]
@@ -433,12 +433,12 @@ jobs:
       contents: write
       discussions: write
     steps:
-       
+
       - name: Create parent directories
         shell: bash
         working-directory: ./
         run: mkdir -p starsky && mkdir -p starskydesktop && mkdir -p starskydesktop/dist-prod
- 
+
       - name: Download starsky-win-x64-desktop as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
@@ -468,7 +468,7 @@ jobs:
         with:
           name: starsky-mac-x64-desktop
           path: ./starskydesktop/dist-prod
- 
+
       - name: Download linux-arm as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
@@ -538,16 +538,18 @@ jobs:
             ## Desktop app versions:
             _When you are not sure pick the Desktop App_
             - starsky-mac-universal-desktop.dmg - __Starsky Desktop App for Mac OS *13.0* or newer (Intel & Apple Silicon, recommended)__
-            - starsky-mac-arm64-desktop.dmg - __Starsky Desktop App for Apple Silicon, Mac OS *13.0* or newer__
-            - starsky-mac-x64-desktop.dmg - __Starsky Desktop App for Intel, Mac OS *13.0* or newer__
             - starsky-win-x64-desktop.exe - __Starsky Desktop App for Windows 10 1809+ or Windows 11 (21H2) 22000+ (Intel 64 bits)__
 
             ## Server versions:
             - starsky-linux-arm.zip - Starsky as Web Application (start from command line) only for Raspberry Pi's
-            - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's 
+            - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's
             - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *13.0* or newer
             - starsky-osx-arm64.zip - Starsky as Web Application (start from command line) only for Apple Silicon (newer then end of 2020) Mac OS *13* or newer
             - starsky-win-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1809+ or 11 (21H2) 22000+ (Intel 64 bits)
+
+            ## Other Desktop versions:
+            - starsky-mac-arm64-desktop.dmg - __Starsky Desktop App for Apple Silicon, Mac OS *13.0* or newer__
+            - starsky-mac-x64-desktop.dmg - __Starsky Desktop App for Intel, Mac OS *13.0* or newer__
 
             ## Getting started
             [Read about the first steps](https://docs.qdraw.nl/docs/getting-started/first-steps)
@@ -556,7 +558,7 @@ jobs:
             [There is an changelog to see the recent changes](https://docs.qdraw.nl/docs/advanced-options/history/#${{ steps.get_tag_name.outputs.VERSION }})
           draft: true
           prerelease: false
-           
+
       # - name: Upload Release Asset osx-x64 -- reference only
       #   id: upload-osx-x64
       #   if: startsWith(github.ref, 'refs/tags/v')

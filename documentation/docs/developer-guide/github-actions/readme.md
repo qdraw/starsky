@@ -274,15 +274,6 @@ Smoke tests for the starsky-tools
 
 > [tools-smoke-test-node.yml](https://github.com/qdraw/starsky/actions/workflows/tools-smoke-test-node.yml)
 
-## starskyDesktop Electron PR (Missing .NET dependency)
-
-Build the Electron app on pull request without .NET so faster but does not run the app
-For Windows and macOS builds the app and runs the unit tests
-
-[![desktop-electron-pr-build-mac-win](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml)
-
-> [desktop-electron-pr-build-mac-win.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml)
-
 ## storybook clientapp netlify
 
 Deploy storybook of clientapp to netlify
