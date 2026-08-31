@@ -17,7 +17,6 @@ Starsky is a photo-management platform with a .NET/ASP.NET Core backend, a React
 | `starsky/starsky.feature.*` | Feature-scoped .NET libraries |
 | `starsky/starsky.foundation.*` | Infrastructure/shared .NET libraries |
 | `starsky-tools/` | Node.js helper scripts — **no `package.json` dependencies** (except Cypress for end2end) |
-| `starskydesktop/` | Electron desktop app wrapping the web UI |
 | `mac/` | Native Swift/AppKit macOS app (WKWebView shell around the backend) |
 | `windows/` | Windows desktop app |
 | `documentation/` | Docusaurus site; output goes to `documentation/docs` |

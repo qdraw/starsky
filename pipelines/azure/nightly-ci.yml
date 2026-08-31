@@ -34,13 +34,6 @@ steps:
 
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
-      name: "starskydesktop_vulnerabilities"
-      displayName: 'starskydesktop vulnerabilities check'
-      targetFolder: "$(Build.SourcesDirectory)/starskydesktop"
-      action: 'find-vulnerabilities'
-
-  - template: /pipelines/azure/steps/audit_npm.yml
-    parameters:
       name: "clientapp_outdated"
       displayName: 'ClientApp outdated check'
       targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"

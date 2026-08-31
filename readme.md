@@ -117,11 +117,6 @@ _See `./pipelines/azure` for details_
 
 #### App on Windows and macOS
 
-The pipeline below is to test the Desktop build process. The .NET part isn't build in this pipeline,
-but it's needed to run the Desktop app.
-
-[![starskyDesktop Electron PR (Missing .NET dependency)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml)
-
 A full build including the .NET dependency
 
 [![Create Desktop Release on tag for .Net Core and Electron](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml)
