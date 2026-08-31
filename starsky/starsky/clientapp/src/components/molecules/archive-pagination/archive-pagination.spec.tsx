@@ -193,5 +193,107 @@ describe("ArchivePagination", () => {
       expect(navigateSpy).not.toHaveBeenCalled();
       component.unmount();
     });
+
+    it("ArrowLeft is ignored when event target is a form element", () => {
+      const navigateSpy = jest.fn();
+      jest.spyOn(useLocation, "default").mockReturnValue({
+        location: { search: "" } as Location,
+        navigate: navigateSpy
+      });
+
+      const component = render(
+        <MemoryRouter>
+          <ArchivePagination relativeObjects={relativeObjectsWithPaths} />
+        </MemoryRouter>
+      );
+
+      const input = document.createElement("input");
+      input.className = "form-control";
+      document.body.appendChild(input);
+
+      act(() => {
+        input.dispatchEvent(
+          new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowLeft" })
+        );
+      });
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+      document.body.removeChild(input);
+      component.unmount();
+    });
+
+    it("ArrowRight is ignored when event target is a form element", () => {
+      const navigateSpy = jest.fn();
+      jest.spyOn(useLocation, "default").mockReturnValue({
+        location: { search: "" } as Location,
+        navigate: navigateSpy
+      });
+
+      const component = render(
+        <MemoryRouter>
+          <ArchivePagination relativeObjects={relativeObjectsWithPaths} />
+        </MemoryRouter>
+      );
+
+      const input = document.createElement("input");
+      input.className = "form-control";
+      document.body.appendChild(input);
+
+      act(() => {
+        input.dispatchEvent(
+          new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowRight" })
+        );
+      });
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+      document.body.removeChild(input);
+      component.unmount();
+    });
+
+    it("Cmd+[ does not navigate when prevFilePath is null", () => {
+      const navigateSpy = jest.fn();
+      jest.spyOn(useLocation, "default").mockReturnValue({
+        location: { search: "" } as Location,
+        navigate: navigateSpy
+      });
+
+      const component = render(
+        <MemoryRouter>
+          <ArchivePagination relativeObjects={relativeObjectsNullPrev} />
+        </MemoryRouter>
+      );
+
+      act(() => {
+        globalThis.dispatchEvent(
+          new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "[", metaKey: true })
+        );
+      });
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+      component.unmount();
+    });
+
+    it("Cmd+] does not navigate when nextFilePath is null", () => {
+      const navigateSpy = jest.fn();
+      jest.spyOn(useLocation, "default").mockReturnValue({
+        location: { search: "" } as Location,
+        navigate: navigateSpy
+      });
+
+      const component = render(
+        <MemoryRouter>
+          <ArchivePagination relativeObjects={relativeObjectsNullNext} />
+        </MemoryRouter>
+      );
+
+      act(() => {
+        globalThis.dispatchEvent(
+          new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "]", metaKey: true })
+        );
+      });
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+      component.unmount();
+    });
   });
 });
