@@ -9,14 +9,38 @@ import OSLog
 
 private class SilentWindow: NSWindow {
     override func noResponder(for _: Selector) {
-        // Intentionally empty: suppresses the default NSBeep() emitted when no responder handles an event. (comment should be inside the override, not outside)
+        // Suppresses the NSBeep() emitted when no responder handles an event.
     }
 }
 
+// MARK: - Key-event handling design
+//
+// WKWebView on macOS has two problematic default behaviours for navigation keys
+// (Backspace, arrows, Page Up/Down, Home, End) when no editable element has focus:
+//   1. Backspace triggers WKWebView's native go-back navigation.
+//   2. Other nav keys that are not consumed by the page cause an NSBeep().
+//
+// We fix both in JavaScript rather than Swift because the JS layer can inspect
+// document.activeElement and the current selection synchronously, which is not
+// possible from keyDown(with:) without an async JS evaluation round-trip.
+//
+// How it works:
+//   - suppressNavigationKeysSource is injected at document-start.
+//   - For every nav key, if the event target (or any ancestor via the selection)
+//     is editable (INPUT, TEXTAREA, or contenteditable), the handler returns early
+//     and the browser handles the key normally — text is deleted, cursors move, etc.
+//   - Otherwise, e.preventDefault() is called. When WebKit sees a prevented
+//     keydown it marks the event as handled and skips the AppKit interpretKeyEvents
+//     path, so doCommand(by:) is never called and no beep or goBack fires.
+//
+// The selection-walk fallback is needed because WKWebView sometimes reports
+// document.body as document.activeElement even when a contenteditable div has
+// keyboard focus; walking from the selection's commonAncestorContainer catches that.
+//
+// noResponder(for:) on SilentWebView is kept as a last-resort beep suppressor
+// for any key that somehow makes it to the responder chain without a handler.
 class SilentWebView: WKWebView {
-    // Injected at document-start to prevent Backspace from triggering WKWebView's
-    // native go-back navigation and to suppress the NSBeep for unhandled nav keys.
-    // Exported as a static so tests can assert on the script source.
+    // Exported as a static so tests can assert on the script content.
     static let suppressNavigationKeysSource = """
         window.addEventListener('keydown', function(e) {
             if (e.defaultPrevented) return;
