@@ -117,6 +117,11 @@ _See `./pipelines/azure` for details_
 
 #### App on Windows and macOS
 
+The pipeline below is to test the Desktop build process. The back-end is not included in this build
+
+[![Desktop macOS Sonarqube Analyze](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-sonarqube.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-sonarqube.yml)
+[![Desktop Windows SonarQube .NET](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-sonarqube-net.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-sonarqube-net.yml)
+
 A full build including the .NET dependency
 
 [![Create Desktop Release on tag for .Net Core and Electron](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml)
