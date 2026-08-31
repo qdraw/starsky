@@ -1,3 +1,9 @@
+parameters:
+- name: codeSign
+  displayName: 'Enable code signing'
+  type: boolean
+  default: false
+
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -15,6 +21,8 @@ trigger:
   paths:
       include:
       - starskydesktop/*
+      - mac/**
+      - windows/**
       exclude:
       - starsky/*
       - starsky-tools/*
@@ -29,6 +37,8 @@ pr:
   paths:
     include:
     - starskydesktop/*
+    - mac/**
+    - windows/**
     exclude:
     - starsky/*
     - starsky-tools/*
@@ -69,9 +79,9 @@ stages:
 
     - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
-        publish: 
+        publish:
           - key: osx-x64
-            value: '/starsky/starsky-osx-x64.zip' 
+            value: '/starsky/starsky-osx-x64.zip'
           - key: generic-netcore
             value: '/starsky/starsky-generic-netcore.zip'
           - key: linux-x64
@@ -83,6 +93,7 @@ stages:
 
 - stage: buildelectron
   displayName: 'Build Electron'
+  dependsOn: buildnetcore
   jobs:
   - job: build
     displayName: 'Build Electron'
@@ -109,6 +120,8 @@ stages:
         path: '$(Build.SourcesDirectory)'
 
     - template: /pipelines/azure/steps/electron_build.yml
+      parameters:
+        codeSign: ${{ parameters.codeSign }}
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Artifact: starsky-win-x64-desktop'
@@ -127,3 +140,519 @@ stages:
       inputs:
         path: '$(Build.SourcesDirectory)/starskydesktop/dist-prod/starsky-mac-x64-desktop.zip'
         ArtifactName: 'starsky-mac-arm64-desktop'
+
+- stage: buildmacnative
+  displayName: 'Build Mac Desktop App (native Swift)'
+  dependsOn: buildnetcore
+  jobs:
+
+  - job: build_universal
+    displayName: 'Build Mac Desktop (universal)'
+    pool:
+      vmImage: 'macOS-latest'
+    steps:
+    - checkout: self
+      clean: true
+      fetchDepth: 1
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download osx-x64'
+      inputs:
+        source: 'current'
+        artifactName: 'osx-x64'
+        path: '$(Build.SourcesDirectory)/starsky'
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download osx-arm64'
+      inputs:
+        source: 'current'
+        artifactName: 'osx-arm64'
+        path: '$(Build.SourcesDirectory)/starsky'
+
+    - task: Bash@3
+      displayName: 'Unzip osx-x64 backend'
+      inputs:
+        targetType: 'inline'
+        script: unzip $(Build.SourcesDirectory)/starsky/starsky-osx-x64.zip -d $(Build.SourcesDirectory)/starsky/osx-x64
+
+    - task: Bash@3
+      displayName: 'Unzip osx-arm64 backend'
+      inputs:
+        targetType: 'inline'
+        script: unzip $(Build.SourcesDirectory)/starsky/starsky-osx-arm64.zip -d $(Build.SourcesDirectory)/starsky/osx-arm64
+
+    - task: Bash@3
+      displayName: 'Install tools'
+      inputs:
+        targetType: 'inline'
+        script: brew install xcodegen create-dmg
+
+    - task: Bash@3
+      displayName: 'Generate Xcode project'
+      inputs:
+        targetType: 'inline'
+        script: cd mac && xcodegen generate
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Import code signing certificate'
+        inputs:
+          targetType: 'inline'
+          script: bash mac/scripts/import-cert.sh
+        env:
+          MACOS_CERTIFICATE: $(STARSKY_MACOS_CERTIFICATE)
+          MACOS_CERTIFICATE_PWD: $(STARSKY_MACOS_CERTIFICATE_PWD)
+          MACOS_KEYCHAIN_PASSWORD: $(STARSKY_MACOS_KEYCHAIN_PASSWORD)
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Archive (universal, signed)'
+        inputs:
+          targetType: 'inline'
+          script: |
+            xcodebuild archive \
+              -project mac/starsky.xcodeproj \
+              -scheme starsky \
+              -configuration Release \
+              -archivePath build/starsky.xcarchive \
+              DEVELOPMENT_TEAM="LHZ4426ABB" \
+              CODE_SIGN_IDENTITY="Developer ID Application" \
+              ARCHS="arm64 x86_64"
+
+    - ${{ if eq(parameters.codeSign, false) }}:
+      - task: Bash@3
+        displayName: 'Archive (universal, unsigned)'
+        inputs:
+          targetType: 'inline'
+          script: |
+            xcodebuild archive \
+              -project mac/starsky.xcodeproj \
+              -scheme starsky \
+              -configuration Release \
+              -archivePath build/starsky.xcarchive \
+              CODE_SIGN_IDENTITY="" \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGNING_ALLOWED=NO \
+              ARCHS="arm64 x86_64"
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Export'
+        inputs:
+          targetType: 'inline'
+          script: |
+            xcodebuild -exportArchive \
+              -archivePath build/starsky.xcarchive \
+              -exportPath build/ \
+              -exportOptionsPlist mac/ExportOptions.plist
+
+    - ${{ if eq(parameters.codeSign, false) }}:
+      - task: Bash@3
+        displayName: 'Copy app from archive (unsigned)'
+        inputs:
+          targetType: 'inline'
+          script: cp -r "build/starsky.xcarchive/Products/Applications/starsky.app" "build/starsky.app"
+
+    - task: Bash@3
+      displayName: 'Create DMG'
+      inputs:
+        targetType: 'inline'
+        script: |
+          create-dmg \
+            --volname "Starsky" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "starsky.app" 175 190 \
+            --app-drop-link 425 190 \
+            build/starsky-mac-universal-desktop.dmg \
+            "build/starsky.app"
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Sign DMG'
+        inputs:
+          targetType: 'inline'
+          script: codesign --force --sign "Developer ID Application" build/starsky-mac-universal-desktop.dmg
+
+      - task: Bash@3
+        displayName: 'Notarize and staple'
+        inputs:
+          targetType: 'inline'
+          script: |
+            bash mac/scripts/notarize.sh \
+              build/starsky-mac-universal-desktop.dmg \
+              "$(STARSKY_APPLE_ID)" \
+              "LHZ4426ABB" \
+              "$(STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD)"
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: starsky-mac-universal-desktop'
+      inputs:
+        path: 'build/starsky-mac-universal-desktop.dmg'
+        ArtifactName: 'starsky-mac-universal-desktop'
+
+  - job: build_arm64
+    displayName: 'Build Mac Desktop (arm64)'
+    pool:
+      vmImage: 'macOS-latest'
+    steps:
+    - checkout: self
+      clean: true
+      fetchDepth: 1
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download osx-arm64'
+      inputs:
+        source: 'current'
+        artifactName: 'osx-arm64'
+        path: '$(Build.SourcesDirectory)/starsky'
+
+    - task: Bash@3
+      displayName: 'Unzip osx-arm64 backend'
+      inputs:
+        targetType: 'inline'
+        script: unzip $(Build.SourcesDirectory)/starsky/starsky-osx-arm64.zip -d $(Build.SourcesDirectory)/starsky/osx-arm64
+
+    - task: Bash@3
+      displayName: 'Install tools'
+      inputs:
+        targetType: 'inline'
+        script: brew install xcodegen create-dmg
+
+    - task: Bash@3
+      displayName: 'Generate Xcode project'
+      inputs:
+        targetType: 'inline'
+        script: cd mac && xcodegen generate
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Import code signing certificate'
+        inputs:
+          targetType: 'inline'
+          script: bash mac/scripts/import-cert.sh
+        env:
+          MACOS_CERTIFICATE: $(STARSKY_MACOS_CERTIFICATE)
+          MACOS_CERTIFICATE_PWD: $(STARSKY_MACOS_CERTIFICATE_PWD)
+          MACOS_KEYCHAIN_PASSWORD: $(STARSKY_MACOS_KEYCHAIN_PASSWORD)
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Archive (arm64, signed)'
+        inputs:
+          targetType: 'inline'
+          script: |
+            xcodebuild archive \
+              -project mac/starsky.xcodeproj \
+              -scheme starsky \
+              -configuration Release \
+              -archivePath build/starsky.xcarchive \
+              DEVELOPMENT_TEAM="LHZ4426ABB" \
+              CODE_SIGN_IDENTITY="Developer ID Application" \
+              ARCHS="arm64" \
+              ONLY_ACTIVE_ARCH=NO
+
+    - ${{ if eq(parameters.codeSign, false) }}:
+      - task: Bash@3
+        displayName: 'Archive (arm64, unsigned)'
+        inputs:
+          targetType: 'inline'
+          script: |
+            xcodebuild archive \
+              -project mac/starsky.xcodeproj \
+              -scheme starsky \
+              -configuration Release \
+              -archivePath build/starsky.xcarchive \
+              CODE_SIGN_IDENTITY="" \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGNING_ALLOWED=NO \
+              ARCHS="arm64" \
+              ONLY_ACTIVE_ARCH=NO
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Export'
+        inputs:
+          targetType: 'inline'
+          script: |
+            xcodebuild -exportArchive \
+              -archivePath build/starsky.xcarchive \
+              -exportPath build/ \
+              -exportOptionsPlist mac/ExportOptions.plist
+
+    - ${{ if eq(parameters.codeSign, false) }}:
+      - task: Bash@3
+        displayName: 'Copy app from archive (unsigned)'
+        inputs:
+          targetType: 'inline'
+          script: cp -r "build/starsky.xcarchive/Products/Applications/starsky.app" "build/starsky.app"
+
+    - task: Bash@3
+      displayName: 'Create DMG'
+      inputs:
+        targetType: 'inline'
+        script: |
+          create-dmg \
+            --volname "Starsky" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "starsky.app" 175 190 \
+            --app-drop-link 425 190 \
+            build/starsky-mac-arm64-desktop.dmg \
+            "build/starsky.app"
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Sign DMG'
+        inputs:
+          targetType: 'inline'
+          script: codesign --force --sign "Developer ID Application" build/starsky-mac-arm64-desktop.dmg
+
+      - task: Bash@3
+        displayName: 'Notarize and staple'
+        inputs:
+          targetType: 'inline'
+          script: |
+            bash mac/scripts/notarize.sh \
+              build/starsky-mac-arm64-desktop.dmg \
+              "$(STARSKY_APPLE_ID)" \
+              "LHZ4426ABB" \
+              "$(STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD)"
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: starsky-mac-arm64-desktop'
+      inputs:
+        path: 'build/starsky-mac-arm64-desktop.dmg'
+        ArtifactName: 'starsky-mac-arm64-desktop'
+
+  - job: build_x64
+    displayName: 'Build Mac Desktop (x64)'
+    pool:
+      vmImage: 'macOS-latest'
+    steps:
+    - checkout: self
+      clean: true
+      fetchDepth: 1
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download osx-x64'
+      inputs:
+        source: 'current'
+        artifactName: 'osx-x64'
+        path: '$(Build.SourcesDirectory)/starsky'
+
+    - task: Bash@3
+      displayName: 'Unzip osx-x64 backend'
+      inputs:
+        targetType: 'inline'
+        script: unzip $(Build.SourcesDirectory)/starsky/starsky-osx-x64.zip -d $(Build.SourcesDirectory)/starsky/osx-x64
+
+    - task: Bash@3
+      displayName: 'Install tools'
+      inputs:
+        targetType: 'inline'
+        script: brew install xcodegen create-dmg
+
+    - task: Bash@3
+      displayName: 'Generate Xcode project'
+      inputs:
+        targetType: 'inline'
+        script: cd mac && xcodegen generate
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Import code signing certificate'
+        inputs:
+          targetType: 'inline'
+          script: bash mac/scripts/import-cert.sh
+        env:
+          MACOS_CERTIFICATE: $(STARSKY_MACOS_CERTIFICATE)
+          MACOS_CERTIFICATE_PWD: $(STARSKY_MACOS_CERTIFICATE_PWD)
+          MACOS_KEYCHAIN_PASSWORD: $(STARSKY_MACOS_KEYCHAIN_PASSWORD)
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Archive (x64, signed)'
+        inputs:
+          targetType: 'inline'
+          script: |
+            xcodebuild archive \
+              -project mac/starsky.xcodeproj \
+              -scheme starsky \
+              -configuration Release \
+              -archivePath build/starsky.xcarchive \
+              DEVELOPMENT_TEAM="LHZ4426ABB" \
+              CODE_SIGN_IDENTITY="Developer ID Application" \
+              ARCHS="x86_64" \
+              ONLY_ACTIVE_ARCH=NO
+
+    - ${{ if eq(parameters.codeSign, false) }}:
+      - task: Bash@3
+        displayName: 'Archive (x64, unsigned)'
+        inputs:
+          targetType: 'inline'
+          script: |
+            xcodebuild archive \
+              -project mac/starsky.xcodeproj \
+              -scheme starsky \
+              -configuration Release \
+              -archivePath build/starsky.xcarchive \
+              CODE_SIGN_IDENTITY="" \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGNING_ALLOWED=NO \
+              ARCHS="x86_64" \
+              ONLY_ACTIVE_ARCH=NO
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Export'
+        inputs:
+          targetType: 'inline'
+          script: |
+            xcodebuild -exportArchive \
+              -archivePath build/starsky.xcarchive \
+              -exportPath build/ \
+              -exportOptionsPlist mac/ExportOptions.plist
+
+    - ${{ if eq(parameters.codeSign, false) }}:
+      - task: Bash@3
+        displayName: 'Copy app from archive (unsigned)'
+        inputs:
+          targetType: 'inline'
+          script: cp -r "build/starsky.xcarchive/Products/Applications/starsky.app" "build/starsky.app"
+
+    - task: Bash@3
+      displayName: 'Create DMG'
+      inputs:
+        targetType: 'inline'
+        script: |
+          create-dmg \
+            --volname "Starsky" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "starsky.app" 175 190 \
+            --app-drop-link 425 190 \
+            build/starsky-mac-x64-desktop.dmg \
+            "build/starsky.app"
+
+    - ${{ if eq(parameters.codeSign, true) }}:
+      - task: Bash@3
+        displayName: 'Sign DMG'
+        inputs:
+          targetType: 'inline'
+          script: codesign --force --sign "Developer ID Application" build/starsky-mac-x64-desktop.dmg
+
+      - task: Bash@3
+        displayName: 'Notarize and staple'
+        inputs:
+          targetType: 'inline'
+          script: |
+            bash mac/scripts/notarize.sh \
+              build/starsky-mac-x64-desktop.dmg \
+              "$(STARSKY_APPLE_ID)" \
+              "LHZ4426ABB" \
+              "$(STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD)"
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: starsky-mac-x64-desktop'
+      inputs:
+        path: 'build/starsky-mac-x64-desktop.dmg'
+        ArtifactName: 'starsky-mac-x64-desktop'
+
+- stage: buildwin
+  displayName: 'Build Windows Desktop App (WPF + Velopack)'
+  dependsOn: buildnetcore
+  jobs:
+  - job: build
+    displayName: 'Build Windows Desktop (WPF + Velopack)'
+    pool:
+      vmImage: 'windows-2022'
+    steps:
+    - checkout: self
+      clean: true
+      fetchDepth: 1
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download win-x64'
+      inputs:
+        source: 'current'
+        artifactName: 'win-x64'
+        path: '$(Build.SourcesDirectory)/starsky'
+
+    - task: PowerShell@2
+      displayName: 'Unzip Windows backend'
+      inputs:
+        targetType: 'inline'
+        script: Expand-Archive $(Build.SourcesDirectory)/starsky/starsky-win-x64.zip -DestinationPath $(Build.SourcesDirectory)/starsky/win-x64
+
+    - template: /pipelines/azure/steps/use_dotnet_version.yml
+
+    - task: PowerShell@2
+      displayName: 'Install Velopack CLI'
+      inputs:
+        targetType: 'inline'
+        script: dotnet tool install -g vpk --version 1.2.0
+
+    - task: PowerShell@2
+      displayName: 'Get version'
+      name: getversion
+      inputs:
+        targetType: 'inline'
+        script: |
+          $branch = "$(Build.SourceBranch)"
+          if ($branch -match 'refs/tags/v(.+)') {
+            $version = $Matches[1]
+          } else {
+            [xml]$proj = Get-Content windows/Starsky.Desktop.csproj
+            $version = ($proj.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+          }
+          Write-Host "Building version: $version"
+          Write-Host "##vso[task.setvariable variable=VERSION;isOutput=true]$version"
+
+    - task: PowerShell@2
+      displayName: 'Publish WPF app'
+      inputs:
+        targetType: 'inline'
+        script: |
+          dotnet publish windows/Starsky.Desktop.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -o ./publish-win
+
+    - task: PowerShell@2
+      displayName: 'Pack with Velopack'
+      inputs:
+        targetType: 'inline'
+        script: |
+          vpk pack `
+            --packId Starsky.Desktop `
+            --packVersion $(getversion.VERSION) `
+            --packDir ./publish-win `
+            --mainExe Starsky.Desktop.exe `
+            --outputDir ./velopack-releases `
+            --packTitle "Starsky Desktop" `
+            --icon windows/Resources/starsky.ico
+
+    - task: PowerShell@2
+      displayName: 'Rename setup to starsky-win-x64-desktop.exe'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $setup = Get-Item ./velopack-releases/*-Setup.exe
+          Move-Item $setup.FullName ./velopack-releases/starsky-win-x64-desktop.exe
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: starsky-win-x64-desktop (WPF)'
+      inputs:
+        path: './velopack-releases/starsky-win-x64-desktop.exe'
+        ArtifactName: 'starsky-win-x64-desktop-wpf'
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: Velopack feed'
+      inputs:
+        path: './velopack-releases'
+        ArtifactName: 'starsky-win-x64-velopack-feed'
