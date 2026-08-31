@@ -1,7 +1,5 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
@@ -12,7 +10,7 @@ using Starsky.Desktop.Services;
 namespace Starsky.Desktop.Windows;
 
 [ExcludeFromCodeCoverage]
-public partial class MainWindow : Window
+public partial class MainWindow
 {
     [SuppressMessage("Style", "S1075:URIs should not be hardcoded", Justification = "used")]
     private const string DocsUrl = "https://docs.qdraw.nl/"; 
@@ -76,8 +74,6 @@ public partial class MainWindow : Window
             // Set user agent
             var uaBase = WebView.CoreWebView2.Settings.UserAgent;
             WebView.CoreWebView2.Settings.UserAgent = $"{uaBase} starsky/{ApplicationInfo.Version}";
-
-            WebView.CoreWebView2.Settings.IsSpellCheckEnabled = true;
 
             WebView.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
             WebView.CoreWebView2.SourceChanged += CoreWebView2_SourceChanged;
@@ -183,7 +179,7 @@ public partial class MainWindow : Window
 
     private async void EditFile_Click(object sender, RoutedEventArgs e)
     {
-        if (_settings.Current.Mode == Models.RuntimeMode.Local)
+        if (_settings.Current.Mode == RuntimeMode.Local)
         {
             // Forward Ctrl+E keystroke to the web app
             await WebView.CoreWebView2.ExecuteScriptAsync(
@@ -266,7 +262,9 @@ public partial class MainWindow : Window
     private async Task ExecCommandAsync(string command)
     {
         if (WebView.CoreWebView2 != null)
-            await WebView.CoreWebView2.ExecuteScriptAsync($"document.execCommand('{command}')");
+        {
+	        await WebView.CoreWebView2.ExecuteScriptAsync($"document.execCommand('{command}')");
+        }
     }
 
     // ── View menu ─────────────────────────────────────────────────────────────

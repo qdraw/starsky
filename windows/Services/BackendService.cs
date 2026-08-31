@@ -42,7 +42,7 @@ public class BackendService(ILogger<BackendService> logger) : IDisposable
             WorkingDirectory = runtimeDir
         };
 
-        BackendService.SetEnvironment(psi.Environment, _port);
+        SetEnvironment(psi.Environment, _port);
 
         _process = new Process { StartInfo = psi, EnableRaisingEvents = true };
         _process.OutputDataReceived += (_, e) => { if (e.Data != null)
