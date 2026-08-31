@@ -19,7 +19,7 @@
     - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _internal libraries (.NET)_
     - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](starsky-tools/readme.md) _Node.js tools to add-on tasks_
-- [Starsky Desktop](starskydesktop/readme.md) _Desktop Application_
+- [Starsky Desktop](readme-desktop.md) _Desktop Application_
     - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 - **[Changelog](history.md) Release notes and history**
 
@@ -40,8 +40,14 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.9.0-beta.0 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.0}
+## version 0.9.0-beta.1 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.1}
 
+- [x] (Added) _App_ Align menu's in Windows with macOS (PR #3243)
+- [x] (Fixed) _App_ prevent accidental navigation when the backspace key (PR #3251)
+
+## version 0.9.0-beta.0 - 2026-08-31 {#0.9.0-beta.0}
+
+- [x] (Added) _App_ Swift-based macOS desktop app instead of Electron (PR #3238)
 - [x] (Added) _App_ WPF-based Windows desktop app instead of Electron (PR #3234)
 
 ## version 0.8.2 - 2026-08-27 {#v0.8.2}

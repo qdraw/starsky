@@ -1,0 +1,36 @@
+/* App menu */
+"menu.app.about" = "Over Starsky";
+"menu.app.connectionSettings" = "Verbindingsinstellingen\U2026";
+"menu.app.applicationSettings" = "Toepassingsinstellingen";
+"menu.app.hide" = "Verberg Starsky";
+"menu.app.quit" = "Stop Starsky";
+
+/* File menu */
+"menu.file.title" = "Bestand";
+"menu.file.newWindow" = "Nieuw venster";
+"menu.file.reloadAll" = "Alles herladen";
+"menu.file.editFileInEditor" = "Bestand bewerken in editor";
+
+/* Edit menu */
+"menu.edit.title" = "Bewerken";
+"menu.edit.undo" = "Ongedaan maken";
+"menu.edit.redo" = "Opnieuw";
+"menu.edit.cut" = "Knippen";
+"menu.edit.copy" = "Kopiëren";
+"menu.edit.paste" = "Plakken";
+"menu.edit.selectAll" = "Alles selecteren";
+
+/* View menu */
+"menu.view.title" = "Weergave";
+"menu.view.actualSize" = "Werkelijke grootte";
+"menu.view.zoomIn" = "Inzoomen";
+"menu.view.zoomOut" = "Uitzoomen";
+"menu.view.developerTools" = "Ontwikkelaarshulpmiddelen";
+"menu.view.openInBrowser" = "Open in browser";
+"menu.view.fullScreen" = "Schermvullende weergave";
+
+/* Help menu */
+"menu.help.title" = "Help";
+"menu.help.checkForUpdates" = "Controleer op updates\U2026";
+"menu.help.documentation" = "Documentatie";
+"menu.help.releaseOverview" = "Versieoverzicht";

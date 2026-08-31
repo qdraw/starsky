@@ -5,7 +5,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>Starsky.Desktop</AssemblyName>
     <RootNamespace>Starsky.Desktop</RootNamespace>
-    <Version>0.8.1</Version>
+    <Version>0.9.0-beta.0</Version>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>x64</Platforms>
@@ -34,9 +34,9 @@
     <Page Include="App.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4129.50" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4191.47" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.11" />
     <PackageReference Include="Velopack" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>

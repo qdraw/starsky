@@ -20,7 +20,7 @@
       .NET)_
     * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
 * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
-* [Starsky Desktop](starskydesktop/readme.md) _Desktop Application_
+* [Starsky Desktop](readme-desktop.md) _Desktop Application_
     * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 * [Changelog](history.md) _Release notes and history_
 
@@ -117,10 +117,10 @@ _See `./pipelines/azure` for details_
 
 #### App on Windows and macOS
 
-The pipeline below is to test the Desktop build process. The .NET part isn't build in this pipeline,
-but it's needed to run the Desktop app.
+The pipeline below is to test the Desktop build process. The back-end is not included in this build
 
-[![starskyDesktop Electron PR (Missing .NET dependency)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml)
+[![Desktop macOS Sonarqube Analyze](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-sonarqube.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-sonarqube.yml)
+[![Desktop Windows SonarQube .NET](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-sonarqube-net.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-sonarqube-net.yml)
 
 A full build including the .NET dependency
 

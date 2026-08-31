@@ -98,7 +98,7 @@ public class FileDownloadService(ILogger<FileDownloadService> logger, HttpClient
         return await resp.Content.ReadAsByteArrayAsync();
     }
 
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage]
     protected virtual void OpenWithDefaultApp(string filePath)
         => Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
 }

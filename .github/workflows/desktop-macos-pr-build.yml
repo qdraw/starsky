@@ -1,0 +1,65 @@
+name: Desktop macOS PR Build
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'mac/**'
+  pull_request:
+    paths:
+      - 'mac/**'
+
+concurrency:
+  group: desktop-macos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & Test (macOS)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: cd mac && xcodegen generate
+
+      - name: Build
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            ENABLE_TESTABILITY=YES \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            -resultBundlePath TestResults/macos.xcresult \
+            | xcpretty --report junit --output TestResults/test-results.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: test-results-macos
+          path: TestResults/
