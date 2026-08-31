@@ -97,10 +97,13 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       );
       history.navigate(toNavigateUrl, { replace: true });
     } else {
-      // a single file
+      // a single file: compute destination from known folder + original filename
+      const fileName = new FileExtensions().GetFileName(props.selectedSubPath);
+      const targetFilePath =
+        targetFolderPath === "/" ? `/${fileName}` : `${targetFolderPath}/${fileName}`;
       const toNavigateUrl = new UrlQuery().updateFilePathHash(
         history.location.search,
-        fileIndexItems[0].filePath
+        targetFilePath
       );
       history.navigate(toNavigateUrl, { replace: true });
     }
