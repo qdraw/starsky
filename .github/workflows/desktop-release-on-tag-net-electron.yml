@@ -9,6 +9,7 @@ on:
     - '.github/workflows/desktop-release-on-tag-net-electron.yml'
     - 'starsky-tools/build-tools/app-version-update.js'
     - 'mac/**'
+    - 'windows/**'
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   schedule:
@@ -437,37 +438,37 @@ jobs:
       - name: Create parent directories
         shell: bash
         working-directory: ./
-        run: mkdir -p starsky && mkdir -p starskydesktop && mkdir -p starskydesktop/dist-prod
+        run: mkdir -p starsky && mkdir -p desktop-releases
 
       - name: Download starsky-win-x64-desktop as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
           name: starsky-win-x64-desktop
-          path: ./starskydesktop/dist-prod
+          path: ./desktop-releases
 
       - name: Download starsky-win-x64-velopack-feed as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
           name: starsky-win-x64-velopack-feed
-          path: ./starskydesktop/dist-prod
+          path: ./desktop-releases
 
       - name: Download starsky-mac-universal-desktop as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
           name: starsky-mac-universal-desktop
-          path: ./starskydesktop/dist-prod
+          path: ./desktop-releases
 
       - name: Download starsky-mac-arm64-desktop as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
           name: starsky-mac-arm64-desktop
-          path: ./starskydesktop/dist-prod
+          path: ./desktop-releases
 
       - name: Download starsky-mac-x64-desktop as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
           name: starsky-mac-x64-desktop
-          path: ./starskydesktop/dist-prod
+          path: ./desktop-releases
 
       - name: Download linux-arm as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
@@ -503,8 +504,8 @@ jobs:
         working-directory: ./starsky
         run: ls
 
-      - name: show downloads starskydesktop/dist-prod
-        working-directory: ./starskydesktop/dist-prod
+      - name: show downloads desktop-releases
+        working-directory: ./desktop-releases
         run: ls
 
       - name: Get tag name (needed for slack/create release)
@@ -521,11 +522,11 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           files: |
-            ./starskydesktop/dist-prod/starsky-mac-universal-desktop.dmg
-            ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg
-            ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg
-            ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
-            ./starskydesktop/dist-prod/*.nupkg
+            ./desktop-releases/starsky-mac-universal-desktop.dmg
+            ./desktop-releases/starsky-mac-arm64-desktop.dmg
+            ./desktop-releases/starsky-mac-x64-desktop.dmg
+            ./desktop-releases/starsky-win-x64-desktop.exe
+            ./desktop-releases/*.nupkg
             ./starsky/starsky-linux-arm.zip
             ./starsky/starsky-linux-arm64.zip
             ./starsky/starsky-osx-x64.zip
