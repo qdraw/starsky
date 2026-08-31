@@ -13,7 +13,7 @@ private class SilentWindow: NSWindow {
     }
 }
 
-private class SilentWebView: WKWebView {
+class SilentWebView: WKWebView {
     override func noResponder(for _: Selector) {
         // Intentionally empty: suppresses the default NSBeep() emitted when no responder handles an event. (comment should be inside the override, not outside)
     }
