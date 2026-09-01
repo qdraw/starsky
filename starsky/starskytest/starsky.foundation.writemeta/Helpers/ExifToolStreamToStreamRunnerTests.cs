@@ -145,6 +145,26 @@ public class ExifToolStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
+	public async Task ExifTool_RunProcessAsync_PipeClosedEarly_ReturnsStream()
+	{
+		var logger = new FakeIWebLogger();
+		var sourceStream = new MemoryStream();
+		var sut = new PipeClosedExifToolStreamToStreamRunner(_appSettingsWithExifTool, logger);
+
+		var stream = await sut.RunProcessAsync(sourceStream, "arg1", "reference");
+
+		Assert.IsNotNull(stream);
+		Assert.AreEqual(0, stream.Position);
+		Assert.IsTrue(
+			logger.TrackedDebug.Exists(x =>
+				x.Item2?.Contains("pipe closed early", StringComparison.OrdinalIgnoreCase) == true),
+			"Expected the pipe-closed catch block to log a debug message");
+
+		await sourceStream.DisposeAsync();
+		await stream.DisposeAsync();
+	}
+
+	[TestMethod]
 	public async Task ExifTool_RunProcessAsync_ExitCode()
 	{
 		if ( new AppSettings().IsWindows )
@@ -263,4 +283,18 @@ public class ExifToolStreamToStreamRunnerTests
 	// 		}
 	// 	}
 	// }
+
+	private sealed class PipeClosedExifToolStreamToStreamRunner : ExifToolStreamToStreamRunner
+	{
+		public PipeClosedExifToolStreamToStreamRunner(AppSettings appSettings, FakeIWebLogger logger)
+			: base(appSettings, logger)
+		{
+		}
+
+		protected override Task<bool> RunCommandAsync(Stream sourceStream, Stream outputStream,
+			string arguments)
+		{
+			throw new IOException("pipe is being closed");
+		}
+	}
 }
