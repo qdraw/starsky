@@ -630,20 +630,20 @@ jobs:
           bash mac/scripts/publish-appcast.sh \
             ./desktop-releases/starsky-mac-universal-desktop.dmg \
             "${{ steps.get_version.outputs.VERSION }}" \
-            appcast-macos.xml
+            starsky-mac-universal-desktop-appcast.xml
 
       - name: Upload appcast to release
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "${{ github.ref_name }}" appcast-macos.xml --clobber
+        run: gh release upload "${{ github.ref_name }}" starsky-mac-universal-desktop-appcast.xml --clobber
 
       - name: Upload appcast as workflow artifact
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: appcast-macos
-          path: appcast-macos.xml
+          name: starsky-mac-universal-desktop-appcast
+          path: starsky-mac-universal-desktop-appcast.xml
 
   trigger_pipe:
     runs-on: ubuntu-latest
