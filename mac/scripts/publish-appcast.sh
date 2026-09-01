@@ -39,13 +39,16 @@ printf '%s' "${SPARKLE_PRIVATE_ED_KEY:?SPARKLE_PRIVATE_ED_KEY is required}" \
 
 # --- Sign the DMG ---
 echo "==> Signing DMG: $DMG_PATH"
-ED_SIGNATURE="$("$SPARKLE_DIR/bin/sign_update" "$DMG_PATH" --ed-key-file "$PRIVATE_KEY_FILE")"
+ED_SIGNATURE_AND_LENGTH="$("$SPARKLE_DIR/bin/sign_update" "$DMG_PATH" --ed-key-file "$PRIVATE_KEY_FILE")"
 
 # --- Build appcast XML ---
 FILE_SIZE="$(stat -f%z "$DMG_PATH")"
 DMG_NAME="$(basename "$DMG_PATH")"
 DOWNLOAD_URL="https://github.com/qdraw/starsky/releases/download/v${VERSION}/${DMG_NAME}"
-PUB_DATE="$(date -u "+%a, %d %b %Y %H:%M:%S +0000")"
+PUB_DATE="$(LC_ALL=C date -u "+%a, %d %b %Y %H:%M:%S +0000")"
+
+echo "$ED_SIGNATURE_AND_LENGTH"
+echo "--"
 
 cat > "$OUTPUT_PATH" <<XML
 <?xml version="1.0" encoding="utf-8"?>
@@ -55,13 +58,12 @@ cat > "$OUTPUT_PATH" <<XML
     <item>
       <title>${VERSION}</title>
       <pubDate>${PUB_DATE}</pubDate>
-      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+      <sparkle:version>${VERSION}</sparkle:version>
+      <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>13.0.0</sparkle:minimumSystemVersion>
       <enclosure
         url="${DOWNLOAD_URL}"
-        sparkle:version="${VERSION}"
-        sparkle:shortVersionString="${VERSION}"
-        sparkle:edSignature="${ED_SIGNATURE}"
-        length="${FILE_SIZE}"
+        ${ED_SIGNATURE_AND_LENGTH}
         type="application/octet-stream" />
     </item>
   </channel>
