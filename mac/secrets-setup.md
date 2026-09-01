@@ -79,11 +79,13 @@ The tool prints the public key to the terminal and saves the private key to the 
 Public key (add to Info.plist): <base64-string>
 ```
 
-Export the **private key** from the Keychain for CI (outputs hex, converts to base64):
+Export the **private key** using `generate_keys -x`:
 
 ```bash
-./generate_keys -x test || true && cat test
+./bin/generate_keys -x private_key || true && cat private_key | pbcopy
 ```
+
+This writes the key to a file called `private_key` and copies its contents to the clipboard.
 
 Add both to GitHub secrets:
 
