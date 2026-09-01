@@ -40,7 +40,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.9.0-beta.1 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.1}
+## version 0.9.0-beta.2 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.2}
+
+- nothing yet
+
+## version 0.9.0-beta.1 - 2026-09-01 {#0.9.0-beta.1}
 
 - [x] (Added) _App_ Publish Sparkle app-cast (PR #3261)
 - [x] (Fixed) _Front-end_ Pipeline handling for exiftool and closing (PR #3262)
