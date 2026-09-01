@@ -40,6 +40,10 @@ printf '%s' "${SPARKLE_PRIVATE_ED_KEY:?SPARKLE_PRIVATE_ED_KEY is required}" \
 # --- Sign the DMG ---
 echo "==> Signing DMG: $DMG_PATH"
 ED_SIGNATURE_AND_LENGTH="$("$SPARKLE_DIR/bin/sign_update" "$DMG_PATH" --ed-key-file "$PRIVATE_KEY_FILE")"
+if [[ ! "$ED_SIGNATURE_AND_LENGTH" =~ ^sparkle:edSignature=\"[A-Za-z0-9+/]+={0,2}\"[[:space:]]+length=\"[0-9]+\"$ ]]; then
+  echo "Error: sign_update returned an invalid EdDSA signature and file length." >&2
+  exit 1
+fi
 
 # --- Build appcast XML ---
 FILE_SIZE="$(stat -f%z "$DMG_PATH")"
