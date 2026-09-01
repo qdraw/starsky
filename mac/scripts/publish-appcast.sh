@@ -35,7 +35,7 @@ curl -fsSL \
 
 # --- Write private key ---
 printf '%s' "${SPARKLE_PRIVATE_ED_KEY:?SPARKLE_PRIVATE_ED_KEY is required}" \
-  | base64 --decode > "$PRIVATE_KEY_FILE"
+  > "$PRIVATE_KEY_FILE"
 
 # --- Sign the DMG ---
 echo "==> Signing DMG: $DMG_PATH"

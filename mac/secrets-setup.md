@@ -73,17 +73,16 @@ curl -fsSL https://github.com/sparkle-project/Sparkle/releases/download/2.9.6/Sp
 ./bin/generate_keys
 ```
 
-The tool prints a public key and saves the private key:
+The tool prints the public key to the terminal and saves the private key to the Keychain:
 
 ```
-Private key saved to ~/Library/Preferences/Sparkle/Sparkle_private_key
 Public key (add to Info.plist): <base64-string>
 ```
 
-Base64-encode the **private key file** for CI:
+Export the **private key** from the Keychain for CI:
 
 ```bash
-base64 -i ~/Library/Preferences/Sparkle/Sparkle_private_key | pbcopy
+security find-generic-password -s "https://sparkle-project.org" -a "ed25519" -w | pbcopy
 ```
 
 Add both to GitHub secrets:
@@ -91,7 +90,7 @@ Add both to GitHub secrets:
 | Secret | Value |
 |---|---|
 | `STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY` | The base64 public key printed to the terminal by `generate_keys` |
-| `STARSKY_MACOS_SPARKLE_PRIVATE_ED_KEY` | The base64 output of the `base64 -i ...` command above |
+| `STARSKY_MACOS_SPARKLE_PRIVATE_ED_KEY` | The output of the `security find-generic-password` command above |
 
 The public key is injected into `Info.plist` at build time so the app can verify updates. The private key is used by the `publish_appcast` CI job to sign the DMG and generate the appcast XML.
 
