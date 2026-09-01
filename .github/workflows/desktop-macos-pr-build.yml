@@ -29,6 +29,8 @@ jobs:
         run: cd mac && xcodegen generate
 
       - name: Build
+        env:
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY }}
         run: |
           set -o pipefail
           xcodebuild build \
@@ -40,9 +42,12 @@ jobs:
             ENABLE_TESTABILITY=YES \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            SPARKLE_PUBLIC_ED_KEY="$SPARKLE_PUBLIC_ED_KEY"
 
       - name: Test
+        env:
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY }}
         run: |
           set -o pipefail
           xcodebuild test \
@@ -54,6 +59,7 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
+            SPARKLE_PUBLIC_ED_KEY="$SPARKLE_PUBLIC_ED_KEY" \
             -resultBundlePath TestResults/macos.xcresult \
             | xcpretty --report junit --output TestResults/test-results.xml
 
