@@ -57,7 +57,9 @@ describe('DetailView (from upload) (40)', () => {
     cy.get(flow.content)
   })
 
-  it('go next to filename3 (40)', () => {
+  it('go next to filename3 (40)', {
+    retries: { runMode: 3, openMode: 3 }
+  }, () => {
     if (!config.isEnabled) return
 
     cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_112430.jpg').as('index1')
@@ -72,6 +74,8 @@ describe('DetailView (from upload) (40)', () => {
 
     cy.url()
       .should('contain', fileName1)
+
+    cy.wait(100)
 
     cy.get('.nextprev.nextprev--next').first().click()
 

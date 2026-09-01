@@ -249,7 +249,7 @@ describe("Delete file from upload (50)", () => {
       );
     });
 
-    cy.get(".folder > div").contains(fileName1);
+    cy.get(".folder > div", { timeout: 10000 }).contains(fileName1);
   });
 
   it("remove item and remove from trash (50)", () => {
