@@ -64,6 +64,40 @@ Use `workflow_dispatch` (already enabled in this workflow) to verify signing bef
 
 This runs the full pipeline including the Mac jobs without pushing a `v*` tag.
 
+## 9. Generate Sparkle EdDSA keys for auto-update
+
+Sparkle 2 requires an EdDSA keypair to sign and verify update packages. Do this **once** and keep the private key safe — it never goes in the repo.
+
+```bash
+curl -fsSL https://github.com/sparkle-project/Sparkle/releases/download/2.9.6/Sparkle-2.9.6.tar.xz | tar -xJ
+./bin/generate_keys
+```
+
+The tool prints the public key to the terminal and saves the private key to the Keychain:
+
+```
+Public key (add to Info.plist): <base64-string>
+```
+
+Export the **private key** using `generate_keys -x`:
+
+```bash
+./bin/generate_keys -x private_key || true && cat private_key | pbcopy
+```
+
+This writes the key to a file called `private_key` and copies its contents to the clipboard.
+
+Add both to GitHub secrets:
+
+| Secret | Value |
+|---|---|
+| `STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY` | The base64 public key printed to the terminal by `generate_keys` |
+| `STARSKY_MACOS_SPARKLE_PRIVATE_ED_KEY` | The output of the `generate_keys -x` command above |
+
+The public key is injected into `Info.plist` at build time so the app can verify updates. The private key is used by the `publish_appcast` CI job to sign the DMG and generate the appcast XML.
+
+Do **not** put either key in the repository. The private key in particular must be kept secret — whoever holds it can sign malicious updates.
+
 ## Troubleshooting
 
 - **"No signing certificate found"** during `xcodebuild archive` → the keychain import step did not run or the certificate was not imported correctly. Check `MACOS_CERTIFICATE` and `MACOS_CERTIFICATE_PWD`.

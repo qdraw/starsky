@@ -32,10 +32,10 @@
 		<true/>
 	</dict>
 	<key>SUFeedURL</key>
-	<string>https://qdraw.nl/special/starsky/appcast-macos.xml</string>
+	<string>https://qdraw.nl/special/starsky/appcast-macos/</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUPublicEDKey</key>
-	<string></string>
+	<string>$(SPARKLE_PUBLIC_ED_KEY)</string>
 </dict>
 </plist>
