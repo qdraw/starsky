@@ -2168,6 +2168,52 @@
               "examples": {},
               "content": {},
               "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "ReadOnlyFolders",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "array",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "items": {
+                  "type": "string",
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false
+                },
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
             }
           ],
           "responses": {
@@ -23597,5 +23643,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "B044D9BF95D6CC86B5BF8447F740A401A37F73A8CED70D303F1945761444507657CDAC9EE7083A15AD342260A7E0CBDF9C9A908F058F81FEBEB9BAFB4337E195"
+  "hashCode": "6A5017DABC537A3217403C6CBB7F10B5F4C5007F7888549AB14769E73A0E5C1C9187D771D48A69AFFD76515F870BC24C95DE5A63F914667D8224DFA02E47359F"
 }
