@@ -3,28 +3,29 @@ import WebKit
 
 final class SilentWebViewTests: XCTestCase {
 
-    // MARK: - suppressNavigationKeysSource
-
-    func testSuppressScriptIncludesBackspace() {
-        XCTAssertTrue(
-            SilentWebView.suppressNavigationKeysSource.contains("'Backspace'"),
-            "Script must include Backspace so WKWebView doesn't trigger go-back navigation"
-        )
-    }
+    // MARK: - suppressKeysSource
 
     func testSuppressScriptCallsPreventDefault() {
-        XCTAssertTrue(SilentWebView.suppressNavigationKeysSource.contains("e.preventDefault()"))
+        XCTAssertTrue(SilentWebView.suppressKeysSource.contains("e.preventDefault()"))
+    }
+
+    func testSuppressScriptGuardsModifierKeys() {
+        let src = SilentWebView.suppressKeysSource
+        // Cmd/Ctrl/Alt shortcuts must never be suppressed.
+        XCTAssertTrue(src.contains("e.metaKey"))
+        XCTAssertTrue(src.contains("e.ctrlKey"))
+        XCTAssertTrue(src.contains("e.altKey"))
     }
 
     func testSuppressScriptGuardsEditableElements() {
-        let src = SilentWebView.suppressNavigationKeysSource
+        let src = SilentWebView.suppressKeysSource
         XCTAssertTrue(src.contains("INPUT"))
         XCTAssertTrue(src.contains("TEXTAREA"))
         XCTAssertTrue(src.contains("isContentEditable"))
     }
 
     func testSuppressScriptGuardsSelectionInContentEditable() {
-        let src = SilentWebView.suppressNavigationKeysSource
+        let src = SilentWebView.suppressKeysSource
         // WKWebView can report document.body as activeElement even when a
         // contenteditable div has focus; the selection-walk fallback catches that.
         XCTAssertTrue(src.contains("getSelection"))

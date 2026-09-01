@@ -562,20 +562,27 @@ public static class AppSettingsCompareHelper
 		Dictionary<string, string>? oldDictionaryValue,
 		Dictionary<string, string>? newDictionaryValue, List<string> differenceList)
 	{
-		if ( oldDictionaryValue == null )
+		if ( oldDictionaryValue == null || newDictionaryValue == null ||
+		     newDictionaryValue.Count == 0 )
 		{
 			return;
 		}
 
+		var merged = new Dictionary<string, string>(oldDictionaryValue);
+		foreach ( var kvp in newDictionaryValue )
+		{
+			merged[kvp.Key] = kvp.Value;
+		}
+
 		if ( JsonSerializer.Serialize(oldDictionaryValue,
-			    DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newDictionaryValue,
+			    DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(merged,
 			    DefaultJsonSerializer.CamelCase) )
 		{
 			return;
 		}
 
 		sourceIndexItem.GetType().GetProperty(propertyName)
-			?.SetValue(sourceIndexItem, newDictionaryValue, null);
+			?.SetValue(sourceIndexItem, merged, null);
 		differenceList.Add(propertyName.ToLowerInvariant());
 	}
 

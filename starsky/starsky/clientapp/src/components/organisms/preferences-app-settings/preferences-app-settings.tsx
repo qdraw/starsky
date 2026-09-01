@@ -1,7 +1,8 @@
 import React from "react";
 import PreferencesAppSettingsDesktop from "../preference-app-settings-desktop/preference-app-settings-desktop";
-import PreferencesAppSettingsStorageFolder from "../preferences-app-settings-storage-folder/preferences-app-settings-storage-folder";
+import PreferencesAppSettingsReadonlyFolders from "../preferences-app-settings-readonly-folders/preferences-app-settings-readonly-folders";
 import PreferencesAppSettingsStorageFolderMappings from "../preferences-app-settings-storage-folder-mappings/preferences-app-settings-storage-folder-mappings";
+import PreferencesAppSettingsStorageFolder from "../preferences-app-settings-storage-folder/preferences-app-settings-storage-folder";
 
 const PreferencesAppSettings: React.FunctionComponent = () => {
   return (
@@ -11,6 +12,7 @@ const PreferencesAppSettings: React.FunctionComponent = () => {
         <PreferencesAppSettingsStorageFolder />
         <PreferencesAppSettingsStorageFolderMappings />
         <PreferencesAppSettingsDesktop />
+        <PreferencesAppSettingsReadonlyFolders />
       </div>
     </div>
   );

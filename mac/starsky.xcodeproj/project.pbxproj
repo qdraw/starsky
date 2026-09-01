@@ -78,6 +78,7 @@
 		BE1D04448F507D0906FD281C /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554B5849A45556FFAA970085 /* WindowManager.swift */; };
 		BFBFB40FD03988FBE83B078B /* MainWindowOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68DD5D1A07ED134B0EFAF8FC /* MainWindowOptions.swift */; };
 		C2E9E314DDA263E53F6916B9 /* FakeStarskyBin.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE0772661C728F9918A8A0E /* FakeStarskyBin.swift */; };
+		C5488518F01646AB2D55FA35 /* SilentWebViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F51DA46919A291FBFD8783F /* SilentWebViewTests.swift */; };
 		CB8DF2DE1B545794DA93F7BF /* PortFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF10CDC7C7FA47BA0423D288 /* PortFinder.swift */; };
 		CBEF11ACD5AB1701C013AB54 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A29613611956A9065F7D03E /* MainWindowController.swift */; };
 		CD33C23C28C1A210E724C207 /* BackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CA83403E3576F4DDF6AA3F /* BackendService.swift */; };
@@ -140,6 +141,7 @@
 		9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendServiceTests.swift; sourceTree = "<group>"; };
 		97B29EC047ED7E17B1E0563A /* starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9851583918F3426A017184E8 /* RuntimeModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeModeTests.swift; sourceTree = "<group>"; };
+		9F51DA46919A291FBFD8783F /* SilentWebViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilentWebViewTests.swift; sourceTree = "<group>"; };
 		A1B288A8995FE028D4694CC1 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A220D2CCADAAE29E222E32FA /* NavigationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationServiceTests.swift; sourceTree = "<group>"; };
 		A9A194174E0CB13CE48986CA /* UpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateService.swift; sourceTree = "<group>"; };
@@ -232,6 +234,14 @@
 				D81768EC3E7595819B8FEF0E /* CreateFakeStarskyBin */,
 			);
 			path = FakeCreateAn;
+			sourceTree = "<group>";
+		};
+		3FF16225403A5BDB4E25E59A /* Windows */ = {
+			isa = PBXGroup;
+			children = (
+				9F51DA46919A291FBFD8783F /* SilentWebViewTests.swift */,
+			);
+			path = Windows;
 			sourceTree = "<group>";
 		};
 		4548884DE610F3D1FE7E5B8D /* Presentation */ = {
@@ -357,6 +367,7 @@
 				66C4FC2A2BEA8C3BD2C16D52 /* Models */,
 				4548884DE610F3D1FE7E5B8D /* Presentation */,
 				0D202E738D9534764ECBD4E8 /* Services */,
+				3FF16225403A5BDB4E25E59A /* Windows */,
 			);
 			path = starskyTests;
 			sourceTree = "<group>";
@@ -595,6 +606,7 @@
 				ABABCE907574E0BCC0EF2522 /* SettingsService.swift in Sources */,
 				19267496699CFB79FC4477F3 /* SettingsServiceTests.swift in Sources */,
 				0A2B5A1F9B4930D1E2517AE4 /* SettingsWindowController.swift in Sources */,
+				C5488518F01646AB2D55FA35 /* SilentWebViewTests.swift in Sources */,
 				D2DC9D761B2B3C68FB4385CF /* SplashWindowController.swift in Sources */,
 				5A54A8C8CEA8383DCE53A6D6 /* UpdateService.swift in Sources */,
 				528B639F38E2E709539232C4 /* UpdateServiceTests.swift in Sources */,
