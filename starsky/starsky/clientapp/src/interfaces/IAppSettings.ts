@@ -9,4 +9,5 @@ export interface IAppSettings {
   useLocalDesktop: boolean;
   defaultDesktopEditor: IAppSettingsDefaultEditorApplication[];
   desktopCollectionsOpen: RawJpegMode;
+  readOnlyFolders: string[];
 }

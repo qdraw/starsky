@@ -519,6 +519,31 @@
     "nl": "Koppeling kon niet worden opgeslagen. Het fysieke pad verwijst naar een beperkte systeemmap.",
     "de": "Zuordnung konnte nicht gespeichert werden. Der physische Pfad verweist auf ein eingeschränktes Systemverzeichnis."
   },
+  "MessageAppSettingsReadOnlyFolders": {
+    "en": "Readonly folders",
+    "nl": "Readonly / alleen lezen mappen",
+    "de": "Schreibgeschützte Ordner"
+  },
+  "MessageAppSettingsReadOnlyFoldersNone": {
+    "en": "No readonly folders configured.",
+    "nl": "Geen alleen lezen mappen geconfigureerd.",
+    "de": "Keine schreibgeschützten Ordner konfiguriert."
+  },
+  "MessageAppSettingsReadOnlyFoldersAdd": {
+    "en": "Add folder",
+    "nl": "Map toevoegen",
+    "de": "Ordner hinzufügen"
+  },
+  "MessageAppSettingsReadOnlyFoldersRemove": {
+    "en": "Remove",
+    "nl": "Verwijderen",
+    "de": "Entfernen"
+  },
+  "MessageAppSettingsReadOnlyFoldersError": {
+    "en": "Readonly folders could not be saved.",
+    "nl": "Alleen lezen mappen konden niet worden opgeslagen.",
+    "de": "Schreibgeschützte Ordner konnten nicht gespeichert werden."
+  },
   "MessageSwitchButtonDesktopCollectionsRawOn": {
     "en": "Raw first",
     "nl": "Raw eerst",

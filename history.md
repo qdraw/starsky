@@ -42,6 +42,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.0-beta.1 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.1}
 
+- [x] (Fixed) _Front-end_ Read-only setting in preferences (PR #3259)
+- [x] (Fixed) _App_ Silence when pressing a key and no NSBeep in macOS client (PR #3259)
+- [x] (Fixed) _Back-end_ Improve CompareStringDictionary (PR #3259)
 - [x] (Fixed) _Front-end_ Moving file client side (PR #3245)
 - [x] (Added) _Front-end_ Next and Previous by keyboard in Archive (PR #3244)
 - [x] (Fixed) _App_ Use new macOS/windows client in Azure Devops pipeline (PR #3250)

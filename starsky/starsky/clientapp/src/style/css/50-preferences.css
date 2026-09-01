@@ -133,3 +133,17 @@
     margin-bottom: 15px;
   }
 }
+
+.preferences--readonly-folder-row .btn {
+  margin-left: 10px;
+}
+
+@media screen and (max-width: 600px) {
+  .preferences--readonly-folder-row .form-control.form-control--half {
+    width: 70%;
+  }
+  .preferences--readonly-folder-row .btn {
+    margin-left: 10px;
+    margin-bottom: 15px;
+  }
+}

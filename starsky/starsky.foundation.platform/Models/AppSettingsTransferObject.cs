@@ -21,5 +21,7 @@ namespace starsky.foundation.platform.Models
 			CollectionsOpenType.RawJpegMode.Default;
 
 		public Dictionary<string, string> StorageFolderMappings { get; set; } = new();
+
+		public List<string> ReadOnlyFolders { get; set; } = [];
 	}
 }
