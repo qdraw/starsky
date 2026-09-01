@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Starsky — Connection Settings"
-        Width="380" Height="480"
+        Width="380" Height="510"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         WindowStyle="SingleBorderWindow">
@@ -20,6 +20,8 @@
             <RowDefinition Height="20"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -67,5 +69,12 @@
                   VerticalAlignment="Bottom"
                   Checked="UpdateCheckBox_Changed"
                   Unchecked="UpdateCheckBox_Changed"/>
+
+        <CheckBox x:Name="PreReleaseCheckBox"
+                  Grid.Row="14"
+                  Content="Include pre-release builds"
+                  Margin="16,0,0,0"
+                  Checked="PreReleaseCheckBox_Changed"
+                  Unchecked="PreReleaseCheckBox_Changed"/>
     </Grid>
 </Window>

@@ -126,6 +126,34 @@ public sealed class UpdateServiceTests : IDisposable
         Assert.Null(ex);
     }
 
+    [Fact]
+    public void UpdatePreRelease_DefaultsToFalse()
+    {
+        Assert.False(_settings.Current.UpdatePreRelease);
+    }
+
+    [Fact]
+    public void UpdatePreRelease_IsPersisted()
+    {
+        _settings.Current.UpdatePreRelease = true;
+        _settings.Save();
+
+        var loaded = new SettingsService(NullLogger<SettingsService>.Instance, _tempFile);
+        loaded.Load();
+
+        Assert.True(loaded.Current.UpdatePreRelease);
+    }
+
+    [Fact]
+    public async Task CheckAsync_WhenPreReleaseEnabled_ProceedsToCheck()
+    {
+        _settings.Current.UpdateCheckEnabled = true;
+        _settings.Current.UpdatePreRelease = true;
+        var svc = new FakeUpdateService(_settings, hasUpdate: true);
+
+        Assert.True(await svc.CheckAsync());
+    }
+
     public void Dispose()
     {
         try { File.Delete(_tempFile); } catch { /* best-effort */ }

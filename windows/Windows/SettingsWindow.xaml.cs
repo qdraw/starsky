@@ -31,6 +31,7 @@ public partial class SettingsWindow : Window
         RemoteRadio.IsChecked = s.Mode == RuntimeMode.Remote;
         UrlBox.Text = s.RemoteBaseUrl;
         UpdateCheckBox.IsChecked = s.UpdateCheckEnabled;
+        PreReleaseCheckBox.IsChecked = s.UpdatePreRelease;
 
         SetRemoteControlsEnabled(s.Mode == RuntimeMode.Remote);
 
@@ -105,6 +106,17 @@ public partial class SettingsWindow : Window
         }
 
         _settings.Current.UpdateCheckEnabled = UpdateCheckBox.IsChecked == true;
+        _settings.Save();
+    }
+
+    private void PreReleaseCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_initializing)
+        {
+	        return;
+        }
+
+        _settings.Current.UpdatePreRelease = PreReleaseCheckBox.IsChecked == true;
         _settings.Save();
     }
 }

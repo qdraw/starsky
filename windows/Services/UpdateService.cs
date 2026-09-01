@@ -21,26 +21,11 @@ public class UpdateService
     {
         _settings = settings;
         _logger = logger;
-
-        try
-        {
-            _updateManager = new UpdateManager(new GithubSource(GithubRepoUrl, null, false));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Velopack UpdateManager could not be created");
-        }
-
         IsVelopackAvailable = ProbeInstalled();
     }
 
     private bool ProbeInstalled()
     {
-        if (_updateManager == null)
-        {
-            return false;
-        }
-
         try
         {
             var locator = VelopackLocator.CreateDefaultForPlatform();
@@ -92,13 +77,15 @@ public class UpdateService
     [ExcludeFromCodeCoverage]
     protected virtual async Task<bool> CheckWithVelopackAsync()
     {
-        if (_updateManager == null || !IsVelopackAvailable)
+        if (!IsVelopackAvailable)
         {
 	        return false;
         }
 
         try
         {
+            _updateManager = new UpdateManager(
+                new GithubSource(GithubRepoUrl, null, _settings.Current.UpdatePreRelease));
             _pendingUpdate = await _updateManager.CheckForUpdatesAsync();
             return _pendingUpdate != null;
         }
