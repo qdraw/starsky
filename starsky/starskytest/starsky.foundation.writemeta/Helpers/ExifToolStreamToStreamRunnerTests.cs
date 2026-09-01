@@ -145,6 +145,30 @@ public class ExifToolStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
+	public async Task ExifTool_RunProcessAsync_PipeClosedEarly_ReturnsStream()
+	{
+		// The fake exiftool (bash echo on Unix, NASM stub on Windows) exits immediately
+		// without reading stdin. A stream larger than the OS pipe buffer (Windows ~4 KB,
+		// Unix ~64 KB) reliably triggers IOException "pipe is being closed" / "Broken pipe"
+		// before the write completes. The catch block should absorb the error and return
+		// whatever stdout was captured.
+		await SetupFakeExifToolExecutable();
+
+		var largeData = new byte[1024 * 1024]; // 1 MB — larger than any OS pipe buffer
+		var sourceStream = new MemoryStream(largeData);
+
+		var sut = new ExifToolStreamToStreamRunner(_appSettingsWithExifTool,
+			new FakeIWebLogger());
+
+		var stream = await sut.RunProcessAsync(sourceStream, "arg1", "reference");
+
+		Assert.IsNotNull(stream);
+
+		await sourceStream.DisposeAsync();
+		await stream.DisposeAsync();
+	}
+
+	[TestMethod]
 	public async Task ExifTool_RunProcessAsync_ExitCode()
 	{
 		if ( new AppSettings().IsWindows )

@@ -65,6 +65,17 @@ public class ExifToolStreamToStreamRunner
 
 			return memoryStream;
 		}
+		catch ( IOException ex ) when (
+			ex.Message.Contains("pipe is being closed", StringComparison.OrdinalIgnoreCase) ||
+			ex.Message.Contains("Broken pipe", StringComparison.OrdinalIgnoreCase) )
+		{
+			// Process exited before stdin was fully consumed — normal when a fast-exit process
+			// ignores remaining input. The stdout data already written to memoryStream is valid.
+			_logger.LogDebug(
+				$"[ExifToolRunProcessAsync] Stdin pipe closed early for {referenceInfoAndPath}");
+			memoryStream.Seek(0, SeekOrigin.Begin);
+			return memoryStream;
+		}
 		catch ( Win32Exception exception )
 		{
 			throw new ArgumentException("Error when trying to start the exifTool process.  " +
