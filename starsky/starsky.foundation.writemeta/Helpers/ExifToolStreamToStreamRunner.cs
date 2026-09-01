@@ -46,20 +46,12 @@ public class ExifToolStreamToStreamRunner
 
 		try
 		{
-			// run with pipes
-			var command = Default.Run(_appSettings.ExifToolPath,
-					options: opts =>
-					{
-						opts.StartInfo(si =>
-							si.Arguments = argumentsWithPipeEnd);
-					})
-				< sourceStream > memoryStream;
+			var resultSuccess = await RunCommandAsync(sourceStream, memoryStream,
+				argumentsWithPipeEnd).ConfigureAwait(false);
 
-			var result = await command.Task.ConfigureAwait(false);
-
-			_logger.LogInformation($"[ExifToolRunProcessAsync] {result.Success} ~ exifTool " +
+			_logger.LogInformation($"[ExifToolRunProcessAsync] {resultSuccess} ~ exifTool " +
 			                       $"{referenceInfoAndPath} {exifToolInputArguments} " +
-			                       $"run with result: {result.Success}  ~ ");
+			                       $"run with result: {resultSuccess}  ~ ");
 
 			memoryStream.Seek(0, SeekOrigin.Begin);
 
@@ -82,5 +74,19 @@ public class ExifToolStreamToStreamRunner
 			                            "Please make sure exifTool is installed, and its path is properly " +
 			                            "specified in the options.", exception);
 		}
+	}
+
+	protected virtual async Task<bool> RunCommandAsync(Stream sourceStream, Stream outputStream,
+		string arguments)
+	{
+		var command = Default.Run(_appSettings.ExifToolPath,
+				options: opts =>
+				{
+					opts.StartInfo(si => si.Arguments = arguments);
+				})
+			< sourceStream > outputStream;
+
+		var result = await command.Task.ConfigureAwait(false);
+		return result.Success;
 	}
 }
