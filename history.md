@@ -42,7 +42,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.0-beta.1 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.1}
 
-- [x] (Fixed) _Front-end_ Read-only setting in preferences (PR #3259)
+- [x] (Fixed) _Front-end_ Read-only path setting in preferences (PR #3259)
 - [x] (Fixed) _App_ Silence when pressing a key and no NSBeep in macOS client (PR #3259)
 - [x] (Fixed) _Back-end_ Improve CompareStringDictionary (PR #3259)
 - [x] (Fixed) _Front-end_ Moving file client side (PR #3245)

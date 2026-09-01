@@ -1177,6 +1177,36 @@ public sealed class AppSettingsCompareHelperTest
 	}
 
 	[TestMethod]
+	public void StorageFolderMappings_NullOldValue_DoesNothing()
+	{
+		var source = new AppSettings { StorageFolderMappings = null! };
+
+		var transfer = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string> { { "/new", "/data/new" } }
+		};
+
+		AppSettingsCompareHelper.Compare(source, transfer);
+
+		Assert.IsNull(source.StorageFolderMappings);
+	}
+
+	[TestMethod]
+	public void StorageFolderMappings_NullNewValue_KeepsExistingMappings()
+	{
+		var source = new AppSettings
+		{
+			StorageFolderMappings = new Dictionary<string, string> { { "/archive", "/data/archive" } }
+		};
+
+		var transfer = new AppSettingsTransferObject { StorageFolderMappings = null! };
+
+		AppSettingsCompareHelper.Compare(source, transfer);
+
+		Assert.IsTrue(source.StorageFolderMappings.ContainsKey("/archive"));
+	}
+
+	[TestMethod]
 	public void StorageFolderMappings_EmptyNewValue_KeepsExistingMappings()
 	{
 		var source = new AppSettings
