@@ -79,10 +79,10 @@ The tool prints the public key to the terminal and saves the private key to the 
 Public key (add to Info.plist): <base64-string>
 ```
 
-Export the **private key** from the Keychain for CI:
+Export the **private key** from the Keychain for CI (outputs hex, converts to base64):
 
 ```bash
-security find-generic-password -s "https://sparkle-project.org" -a "ed25519" -w | pbcopy
+./generate_keys -x test || true && cat test
 ```
 
 Add both to GitHub secrets:
@@ -90,7 +90,7 @@ Add both to GitHub secrets:
 | Secret | Value |
 |---|---|
 | `STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY` | The base64 public key printed to the terminal by `generate_keys` |
-| `STARSKY_MACOS_SPARKLE_PRIVATE_ED_KEY` | The output of the `security find-generic-password` command above |
+| `STARSKY_MACOS_SPARKLE_PRIVATE_ED_KEY` | The output of the `generate_keys -x` command above |
 
 The public key is injected into `Info.plist` at build time so the app can verify updates. The private key is used by the `publish_appcast` CI job to sign the DMG and generate the appcast XML.
 

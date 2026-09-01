@@ -70,3 +70,6 @@ XML
 
 echo "==> Appcast written to: $OUTPUT_PATH"
 cat "$OUTPUT_PATH"
+
+rm -rf "$SPARKLE_DIR" "$PRIVATE_KEY_FILE"
+echo "done"
