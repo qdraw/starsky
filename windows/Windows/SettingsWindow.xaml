@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Starsky — Connection Settings"
-        Width="380" Height="480"
+        Width="380" Height="510"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         WindowStyle="SingleBorderWindow">
@@ -20,6 +20,10 @@
             <RowDefinition Height="20"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -61,11 +65,25 @@
                    Foreground="#555"/>
 
         <!-- Update checks -->
-        <CheckBox x:Name="UpdateCheckBox"
-                  Grid.Row="12"
-                  Content="Check for updates on startup"
-                  VerticalAlignment="Bottom"
-                  Checked="UpdateCheckBox_Changed"
-                  Unchecked="UpdateCheckBox_Changed"/>
+        <StackPanel Grid.Row="14" Orientation="Horizontal">
+            <CheckBox x:Name="UpdateCheckBox"
+                      Content="Check for updates on startup"
+                      VerticalAlignment="Center"
+                      Checked="UpdateCheckBox_Changed"
+                      Unchecked="UpdateCheckBox_Changed"/>
+            <Button x:Name="CheckNowButton"
+                    Content="Check now"
+                    Margin="12,0,0,0"
+                    Width="80"
+                    Visibility="Collapsed"
+                    Click="CheckNowButton_Click"/>
+        </StackPanel>
+
+        <CheckBox x:Name="PreReleaseCheckBox"
+                  Grid.Row="16"
+                  Content="Include pre-release builds"
+                  Margin="16,0,0,0"
+                  Checked="PreReleaseCheckBox_Changed"
+                  Unchecked="PreReleaseCheckBox_Changed"/>
     </Grid>
 </Window>

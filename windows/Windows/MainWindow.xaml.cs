@@ -228,7 +228,8 @@ public partial class MainWindow
         var w = new SettingsWindow(
             _settings,
             new RemoteUrlValidator(Microsoft.Extensions.Logging.Abstractions.NullLogger<RemoteUrlValidator>.Instance),
-            _windowManager)
+            _windowManager,
+            _updateService)
         { Owner = this };
         w.Show();
     }

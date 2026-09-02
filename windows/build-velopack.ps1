@@ -45,8 +45,8 @@ $ErrorActionPreference = 'Stop'
 # ---------------------------------------------------------------------------
 $ScriptDir  = $PSScriptRoot                          # windows/
 $RepoRoot   = Split-Path $ScriptDir -Parent          # repo root (contains build.ps1)
-$PublishDir = Join-Path $RepoRoot 'windows' 'dist'
-if (-not $OutputDir) { $OutputDir = Join-Path $RepoRoot 'windows' 'dist-prod' }
+$PublishDir = Join-Path (Join-Path $RepoRoot 'windows') 'dist'
+if (-not $OutputDir) { $OutputDir = Join-Path (Join-Path $RepoRoot 'windows') 'dist-prod' }
 
 $CsprojPath    = Join-Path $ScriptDir 'Starsky.Desktop.csproj'
 $BackendOutDir = Join-Path $RepoRoot 'starsky\win-x64'
@@ -119,7 +119,7 @@ Write-Host "`n[Step 3] Checking Velopack CLI (vpk)..." -ForegroundColor Cyan
 
 $vpkCmd = Get-Command vpk -ErrorAction SilentlyContinue
 if (-not $vpkCmd) {
-    Write-Host "  vpk not found — installing..." -ForegroundColor Yellow
+    Write-Host "  vpk not found - installing..." -ForegroundColor Yellow
     dotnet tool install -g vpk --version 1.2.0
     if ($LASTEXITCODE -ne 0) { throw "vpk install failed (exit $LASTEXITCODE)." }
 } else {
@@ -134,6 +134,9 @@ Write-Host "`n[Step 4] Packing with Velopack to '$OutputDir'..." -ForegroundColo
 if (Test-Path $OutputDir) {
     Remove-Item $OutputDir -Recurse -Force
 }
+
+$env:VPK_SIGN_TEMPLATE = $null
+$env:VPK_SIGN_PARAMS   = $null
 
 vpk pack `
     --packId      Starsky.Desktop `
@@ -153,7 +156,7 @@ Write-Host "`n[Step 5] Renaming installer..." -ForegroundColor Cyan
 
 $SetupExe = Get-Item (Join-Path $OutputDir '*-Setup.exe') -ErrorAction SilentlyContinue
 if (-not $SetupExe) {
-    Write-Warning "No *-Setup.exe found in '$OutputDir' — skipping rename."
+    Write-Warning "No *-Setup.exe found in '$OutputDir' - skipping rename."
 } else {
     $FinalName = Join-Path $OutputDir 'starsky-win-x64-desktop.exe'
     Move-Item $SetupExe.FullName $FinalName -Force
