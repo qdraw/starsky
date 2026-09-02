@@ -23,7 +23,7 @@
   "Microsoft.EntityFrameworkCore.Relational 10.0.11",
   "Microsoft.Extensions.DependencyInjection 10.0.11",
   "Microsoft.Extensions.Identity.Stores 10.0.11",
-  "Microting.EntityFrameworkCore.MySql 10.0.10",
+  "Microting.EntityFrameworkCore.MySql 10.0.11",
   "SQLitePCLRaw.lib.e_sqlite3 3.53.3",
   "System.ComponentModel.Annotations 5.0.0",
   "NGeoNames 1.5.1",
