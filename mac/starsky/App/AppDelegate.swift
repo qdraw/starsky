@@ -44,7 +44,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             terminate: { NSApplication.shared.terminate(nil) },
             showError: { ErrorWindowController.show(message: $0) },
             urlOpener: { NSWorkspace.shared.open($0) },
-            splashStatus: { [weak splashRef] status in splashRef?.setStatus(status) }
+            splashStatus: { [weak splashRef] status in splashRef?.setStatus(status) },
+            onWindowsReady: { [weak self] in
+                self?.splash?.enableDismiss()
+                self?.splash?.close()
+                self?.splash = nil
+            }
         )
 
         buildMenu()
@@ -56,7 +61,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             await MainActor.run {
                 self.splash?.close()
                 self.splash = nil
-                NSApp.activate(ignoringOtherApps: true)
             }
         }
     }

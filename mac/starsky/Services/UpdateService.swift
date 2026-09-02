@@ -24,6 +24,7 @@ class UpdateService {
     private let settingsService: SettingsService
     private var updaterController: SPUStandardUpdaterController?
     private var sparkleDelegate: SparkleUpdaterDelegate?
+    private var isStarted = false
     static let suppressMinutes: Double = 5760
 
     init(settingsService: SettingsService) {
@@ -74,8 +75,29 @@ class UpdateService {
 
     func applyUpdate() {
         guard let controller = updaterController else { return }
+        logPublicKeyPrefix()
         DispatchQueue.main.async {
+            self.startIfNeeded(controller)
             controller.updater.checkForUpdates()
+        }
+    }
+
+    private func logPublicKeyPrefix() {
+        if let key = Bundle.main.infoDictionary?["SUPublicEDKey"] as? String, !key.isEmpty {
+            let prefix = String(key.prefix(15))
+            logger.info("SUPublicEDKey prefix: \(prefix)")
+        } else {
+            logger.warning("SUPublicEDKey is not set")
+        }
+    }
+
+    private func startIfNeeded(_ controller: SPUStandardUpdaterController) {
+        guard !isStarted else { return }
+        do {
+            try controller.updater.start()
+            isStarted = true
+        } catch {
+            logger.warning("Sparkle startUpdater failed: \(error.localizedDescription)")
         }
     }
 

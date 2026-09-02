@@ -21,6 +21,7 @@ class AppCore {
     var healthCheckRetryDelay: UInt64
     var healthCheckTimeoutSeconds: Int
     var splashStatus: @MainActor (String) -> Void
+    var onWindowsReady: @MainActor () -> Void
     var versionProvider: () -> String
 
     private(set) var localPort: Int = 0
@@ -45,6 +46,7 @@ class AppCore {
         splashStatus: @escaping @MainActor (String) -> Void = { _ in
             // Intentionally no-op by default: splash updates are optional (e.g. tests/headless startup).
         },
+        onWindowsReady: @escaping @MainActor () -> Void = {},
         versionProvider: @escaping () -> String = { ApplicationInfo.version }
     ) {
         self.settingsService = settingsService
@@ -60,6 +62,7 @@ class AppCore {
         self.healthCheckRetryDelay = healthCheckRetryDelay
         self.healthCheckTimeoutSeconds = healthCheckTimeoutSeconds
         self.splashStatus = splashStatus
+        self.onWindowsReady = onWindowsReady
         self.versionProvider = versionProvider
     }
 
@@ -76,7 +79,7 @@ class AppCore {
 
     func startLocalMode() async {
         NSLog("[startup] startLocalMode begin")
-        await splashStatus("Finding free port…")
+        await splashStatus(NSLocalizedString("splash.status.findingPort", comment: ""))
         let port = PortFinder.findFreePort()
         NSLog("[startup] port=\(port)")
         guard port > 0 else {
@@ -86,7 +89,7 @@ class AppCore {
         localPort = port
         await MainActor.run { windowManager.setLocalPort(port) }
 
-        await splashStatus("Starting backend…")
+        await splashStatus(NSLocalizedString("splash.status.startingBackend", comment: ""))
         NSLog("[startup] launching backend")
         do {
             try backendService.start(port: port)
@@ -97,7 +100,7 @@ class AppCore {
             return
         }
 
-        await splashStatus("Waiting for backend…")
+        await splashStatus(NSLocalizedString("splash.status.waitingForBackend", comment: ""))
         let baseUrl = "http://localhost:\(port)"
         NSLog("[startup] waiting for health at \(baseUrl)")
         let ready = await waitForHealth(baseUrl: baseUrl, timeoutSeconds: healthCheckTimeoutSeconds)
@@ -133,6 +136,7 @@ class AppCore {
         await MainActor.run {
             windowManager.restoreWindows()
             NSApp.activate(ignoringOtherApps: true)
+            onWindowsReady()
         }
 
         try? await Task.sleep(nanoseconds: updateCheckDelay)
@@ -215,7 +219,7 @@ class AppCore {
             await showErrorAndQuit("Failed to start the backend: \(error.localizedDescription)")
             return
         }
-        await splashStatus("Waiting for backend…")
+        await splashStatus(NSLocalizedString("splash.status.waitingForBackend", comment: ""))
         let ready = await waitForHealth(baseUrl: "http://localhost:\(port)", timeoutSeconds: healthCheckTimeoutSeconds)
         guard ready else {
             await showErrorAndQuit("Backend did not start within 60 seconds.")
