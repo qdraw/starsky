@@ -16,7 +16,24 @@ set -euo pipefail
 DMG_PATH="${1:?Usage: publish-appcast.sh <dmg-path> <version> [output-path]}"
 VERSION="${2:?Usage: publish-appcast.sh <dmg-path> <version> [output-path]}"
 OUTPUT_PATH="${3:-appcast-macos.xml}"
-SPARKLE_VERSION="2.9.6"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_FILE="$SCRIPT_DIR/../project.yml"
+
+SPARKLE_VERSION="$(awk '
+  $0 == "  Sparkle:" { in_sparkle = 1; next }
+  in_sparkle && /^[^[:space:]]/ { exit }
+  in_sparkle && /^[[:space:]]+from:[[:space:]]*/ {
+    sub(/^[[:space:]]+from:[[:space:]]*/, "")
+    print
+    exit
+  }
+' "$PROJECT_FILE")"
+
+if [[ -z "$SPARKLE_VERSION" ]]; then
+  echo "Error: Sparkle version not found in $PROJECT_FILE." >&2
+  SPARKLE_VERSION="2.9.6"
+fi
 
 if [[ ! -f "$DMG_PATH" ]]; then
   echo "Error: DMG not found: $DMG_PATH" >&2
@@ -46,7 +63,6 @@ if [[ ! "$ED_SIGNATURE_AND_LENGTH" =~ ^sparkle:edSignature=\"[A-Za-z0-9+/]+={0,2
 fi
 
 # --- Build appcast XML ---
-FILE_SIZE="$(stat -f%z "$DMG_PATH")"
 DMG_NAME="$(basename "$DMG_PATH")"
 DOWNLOAD_URL="https://github.com/qdraw/starsky/releases/download/v${VERSION}/${DMG_NAME}"
 PUB_DATE="$(LC_ALL=C date -u "+%a, %d %b %Y %H:%M:%S +0000")"
