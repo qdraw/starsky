@@ -135,6 +135,9 @@ if (Test-Path $OutputDir) {
     Remove-Item $OutputDir -Recurse -Force
 }
 
+$env:VPK_SIGN_TEMPLATE = $null
+$env:VPK_SIGN_PARAMS   = $null
+
 vpk pack `
     --packId      Starsky.Desktop `
     --packVersion $Version `
