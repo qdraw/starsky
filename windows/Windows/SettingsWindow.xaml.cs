@@ -11,14 +11,16 @@ public partial class SettingsWindow : Window
     private readonly SettingsService _settings;
     private readonly RemoteUrlValidator _validator;
     private readonly WindowManager _windowManager;
+    private readonly UpdateService _updateService;
     private bool _initializing;
 
-    public SettingsWindow(SettingsService settings, RemoteUrlValidator validator, WindowManager windowManager)
+    public SettingsWindow(SettingsService settings, RemoteUrlValidator validator, WindowManager windowManager, UpdateService updateService)
     {
         InitializeComponent();
         _settings = settings;
         _validator = validator;
         _windowManager = windowManager;
+        _updateService = updateService;
         LoadSettings();
     }
 
@@ -32,6 +34,7 @@ public partial class SettingsWindow : Window
         UrlBox.Text = s.RemoteBaseUrl;
         UpdateCheckBox.IsChecked = s.UpdateCheckEnabled;
         PreReleaseCheckBox.IsChecked = s.UpdatePreRelease;
+        CheckNowButton.Visibility = _updateService.IsVelopackAvailable ? Visibility.Visible : Visibility.Collapsed;
 
         SetRemoteControlsEnabled(s.Mode == RuntimeMode.Remote);
 
@@ -118,5 +121,25 @@ public partial class SettingsWindow : Window
 
         _settings.Current.UpdatePreRelease = PreReleaseCheckBox.IsChecked == true;
         _settings.Save();
+    }
+
+    private async void CheckNowButton_Click(object sender, RoutedEventArgs e)
+    {
+        CheckNowButton.IsEnabled = false;
+        CheckNowButton.Content = "Checking…";
+
+        var hasUpdate = await _updateService.CheckNowAsync();
+
+        CheckNowButton.Content = "Check now";
+        CheckNowButton.IsEnabled = true;
+
+        if (hasUpdate)
+        {
+            new UpdateWindow(_updateService) { Owner = this }.Show();
+        }
+        else
+        {
+            MessageBox.Show("You're up to date.", "Starsky", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
     }
 }

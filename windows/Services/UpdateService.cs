@@ -14,7 +14,7 @@ public class UpdateService
 
     private readonly SettingsService _settings;
     private readonly ILogger<UpdateService> _logger;
-    private readonly UpdateManager? _updateManager;
+    private UpdateManager? _updateManager;
     private UpdateInfo? _pendingUpdate;
 
     public UpdateService(SettingsService settings, ILogger<UpdateService> logger)
@@ -58,6 +58,8 @@ public class UpdateService
 
         return await CheckWithVelopackAsync();
     }
+
+    public Task<bool> CheckNowAsync() => CheckWithVelopackAsync();
 
     public Task ApplyUpdateAsync()
     {

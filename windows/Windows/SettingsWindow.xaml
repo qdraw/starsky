@@ -23,6 +23,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="8"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Mode -->
@@ -63,15 +65,22 @@
                    Foreground="#555"/>
 
         <!-- Update checks -->
-        <CheckBox x:Name="UpdateCheckBox"
-                  Grid.Row="12"
-                  Content="Check for updates on startup"
-                  VerticalAlignment="Bottom"
-                  Checked="UpdateCheckBox_Changed"
-                  Unchecked="UpdateCheckBox_Changed"/>
+        <StackPanel Grid.Row="14" Orientation="Horizontal">
+            <CheckBox x:Name="UpdateCheckBox"
+                      Content="Check for updates on startup"
+                      VerticalAlignment="Center"
+                      Checked="UpdateCheckBox_Changed"
+                      Unchecked="UpdateCheckBox_Changed"/>
+            <Button x:Name="CheckNowButton"
+                    Content="Check now"
+                    Margin="12,0,0,0"
+                    Width="80"
+                    Visibility="Collapsed"
+                    Click="CheckNowButton_Click"/>
+        </StackPanel>
 
         <CheckBox x:Name="PreReleaseCheckBox"
-                  Grid.Row="14"
+                  Grid.Row="16"
                   Content="Include pre-release builds"
                   Margin="16,0,0,0"
                   Checked="PreReleaseCheckBox_Changed"
