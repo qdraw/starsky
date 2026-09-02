@@ -9,6 +9,7 @@ final class DesktopSettingsTests: XCTestCase {
         XCTAssertEqual(settings.mode, .local)
         XCTAssertEqual(settings.remoteBaseUrl, "")
         XCTAssertTrue(settings.updateCheckEnabled)
+        XCTAssertFalse(settings.preReleaseEnabled)
         XCTAssertNil(settings.lastUpdateWarningShown)
         XCTAssertTrue(settings.windows.isEmpty)
     }
@@ -18,6 +19,7 @@ final class DesktopSettingsTests: XCTestCase {
         settings.mode = .remote
         settings.remoteBaseUrl = Self.exampleUrl
         settings.updateCheckEnabled = false
+        settings.preReleaseEnabled = true
         settings.lastUpdateWarningShown = Date(timeIntervalSince1970: 0)
         settings.windows = [SavedWindowState(route: "?f=/photos", x: 50, y: 60, width: 800, height: 600, isMaximized: true)]
 
@@ -32,9 +34,19 @@ final class DesktopSettingsTests: XCTestCase {
         XCTAssertEqual(decoded.mode, .remote)
         XCTAssertEqual(decoded.remoteBaseUrl, Self.exampleUrl)
         XCTAssertFalse(decoded.updateCheckEnabled)
+        XCTAssertTrue(decoded.preReleaseEnabled)
         XCTAssertNotNil(decoded.lastUpdateWarningShown)
         XCTAssertEqual(decoded.windows.count, 1)
         XCTAssertEqual(decoded.windows[0].route, "?f=/photos")
         XCTAssertTrue(decoded.windows[0].isMaximized)
+    }
+
+    func testPreReleaseEnabledDefaultsToFalseWhenMissingFromJson() throws {
+        let json = """
+        {"mode":0,"remoteBaseUrl":"","updateCheckEnabled":true,"windows":[]}
+        """
+        let decoder = JSONDecoder()
+        let decoded = try decoder.decode(DesktopSettings.self, from: json.data(using: .utf8)!)
+        XCTAssertFalse(decoded.preReleaseEnabled)
     }
 }

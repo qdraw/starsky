@@ -209,6 +209,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 guard let core, !core.settingsService.current.remoteBaseUrl.isEmpty else { return }
                 Task { @MainActor in core.windowManager.reopenAll() }
             }
+            settingsWindowController?.onCheckForUpdatesNow = { [weak core] in
+                core?.updateService.applyUpdate()
+            }
         }
         settingsWindowController?.showWindow(nil)
         settingsWindowController?.window?.makeKeyAndOrderFront(nil)

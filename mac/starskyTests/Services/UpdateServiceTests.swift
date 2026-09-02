@@ -65,6 +65,30 @@ final class UpdateServiceTests: XCTestCase {
         XCTAssertGreaterThan(UpdateService.suppressMinutes, 0)
     }
 
+    // MARK: - feedURLOverride
+
+    func testFeedURLOverrideReturnsNilWhenPreReleaseDisabled() {
+        let (service, _) = makeService(enabled: true)
+        XCTAssertNil(service.feedURLOverride(baseFeedURL: "https://example.com/appcast/"))
+    }
+
+    func testFeedURLOverrideReturnsNilWhenBaseFeedURLIsNil() {
+        let (service, settingsService) = makeService(enabled: true)
+        var s = settingsService.current
+        s.preReleaseEnabled = true
+        settingsService.save(s)
+        XCTAssertNil(service.feedURLOverride(baseFeedURL: nil))
+    }
+
+    func testFeedURLOverrideAppendsPreReleaseQueryParam() {
+        let (service, settingsService) = makeService(enabled: true)
+        var s = settingsService.current
+        s.preReleaseEnabled = true
+        settingsService.save(s)
+        let result = service.feedURLOverride(baseFeedURL: "https://example.com/appcast/")
+        XCTAssertEqual(result, "https://example.com/appcast/?pre-release=1")
+    }
+
     func testCheckAsyncReturnsFalseWhenLastShownIsNilAndUpdateDisabled() async {
         let (service, _) = makeService(enabled: false, lastShown: nil)
         let result = await service.checkAsync()

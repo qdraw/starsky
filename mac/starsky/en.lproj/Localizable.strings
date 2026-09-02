@@ -34,3 +34,7 @@
 "menu.help.checkForUpdates" = "Check for Updates\U2026";
 "menu.help.documentation" = "Documentation";
 "menu.help.releaseOverview" = "Release Overview";
+
+/* Settings window */
+"settings.updateCheck.preRelease" = "Include pre-release versions";
+"settings.updateCheck.checkNow" = "Check Now";

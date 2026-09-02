@@ -65,4 +65,10 @@ class SettingsPresenter {
         settings.updateCheckEnabled = enabled
         settingsService.save(settings)
     }
+
+    func preReleaseChanged(enabled: Bool) {
+        var settings = settingsService.current
+        settings.preReleaseEnabled = enabled
+        settingsService.save(settings)
+    }
 }

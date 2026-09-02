@@ -113,6 +113,16 @@ final class SettingsPresenterTests: XCTestCase {
         XCTAssertTrue(settingsService.current.updateCheckEnabled)
     }
 
+    // MARK: - preReleaseChanged
+
+    func testPreReleaseChangedSavesEnabledState() {
+        let presenter = makePresenter()
+        presenter.preReleaseChanged(enabled: true)
+        XCTAssertTrue(settingsService.current.preReleaseEnabled)
+        presenter.preReleaseChanged(enabled: false)
+        XCTAssertFalse(settingsService.current.preReleaseEnabled)
+    }
+
     // MARK: - saveUrl
 
     func testSaveUrlEmptyStringShowsError() async {

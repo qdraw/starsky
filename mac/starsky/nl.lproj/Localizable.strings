@@ -34,3 +34,7 @@
 "menu.help.checkForUpdates" = "Controleer op updates\U2026";
 "menu.help.documentation" = "Documentatie";
 "menu.help.releaseOverview" = "Versieoverzicht";
+
+/* Settings window */
+"settings.updateCheck.preRelease" = "Inclusief pre-releaseversies";
+"settings.updateCheck.checkNow" = "Nu controleren";
