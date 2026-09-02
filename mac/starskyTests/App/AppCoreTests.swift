@@ -434,6 +434,16 @@ final class AppCoreTests: XCTestCase {
         XCTAssertTrue(wm.restoreWindowsCalled)
     }
 
+    func testFinishStartupCallsOnWindowsReady() async {
+        var called = false
+        let wm = MockWindowManager()
+        let core = makeCore(windowManager: wm)
+        core.onWindowsReady = { called = true }
+        await core.finishStartup()
+        XCTAssertTrue(called)
+        XCTAssertTrue(wm.restoreWindowsCalled)
+    }
+
     // MARK: - checkVersionCompatibility
 
     func testCheckVersionCompatibilityReturnsTrueOn200() async {

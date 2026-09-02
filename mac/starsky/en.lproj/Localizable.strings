@@ -34,3 +34,14 @@
 "menu.help.checkForUpdates" = "Check for Updates\U2026";
 "menu.help.documentation" = "Documentation";
 "menu.help.releaseOverview" = "Release Overview";
+
+/* Settings window */
+"settings.updateCheck.preRelease" = "Include pre-release versions";
+"settings.updateCheck.checkNow" = "Check Now";
+
+/* Splash window */
+"splash.status.starting" = "Starting\U2026";
+"splash.status.findingPort" = "Finding free port\U2026";
+"splash.status.startingBackend" = "Starting backend\U2026";
+"splash.status.waitingForBackend" = "Waiting for backend\U2026";
+"splash.hint.clickToDismiss" = "Click to dismiss";

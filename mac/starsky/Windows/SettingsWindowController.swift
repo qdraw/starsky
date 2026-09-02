@@ -9,6 +9,7 @@ class SettingsWindowController: NSWindowController {
     var onSwitchToRemote: (() -> Void)? {
         didSet { presenter.onSwitchToRemote = onSwitchToRemote }
     }
+    var onCheckForUpdatesNow: (() -> Void)?
 
     private let presenter: SettingsPresenter
     private var localRadio: NSButton!
@@ -16,6 +17,8 @@ class SettingsWindowController: NSWindowController {
     private var urlField: NSTextField!
     private var saveUrlButton: NSButton!
     private var updateCheckBox: NSButton!
+    private var checkNowButton: NSButton!
+    private var preReleaseCheckBox: NSButton!
     private var statusLabel: NSTextField!
 
     init(
@@ -31,7 +34,7 @@ class SettingsWindowController: NSWindowController {
             windowManager: windowManager
         )
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 380, height: 480),
+            contentRect: NSRect(x: 0, y: 0, width: 380, height: 400),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -81,7 +84,22 @@ class SettingsWindowController: NSWindowController {
         updateCheckBox = NSButton(checkboxWithTitle: "Check for updates on startup", target: self, action: #selector(updateCheckChanged))
         updateCheckBox.translatesAutoresizingMaskIntoConstraints = false
 
-        for view in [modeLabel, localRadio!, remoteRadio!, urlLabel, urlField!, saveUrlButton!, statusLabel!, updateCheckBox!] as [NSView] {
+        checkNowButton = NSButton(
+            title: NSLocalizedString("settings.updateCheck.checkNow", comment: ""),
+            target: self,
+            action: #selector(checkNowTapped)
+        )
+        checkNowButton.translatesAutoresizingMaskIntoConstraints = false
+
+        preReleaseCheckBox = NSButton(
+            checkboxWithTitle: NSLocalizedString("settings.updateCheck.preRelease", comment: ""),
+            target: self,
+            action: #selector(preReleaseChanged)
+        )
+        preReleaseCheckBox.translatesAutoresizingMaskIntoConstraints = false
+
+        for view in [modeLabel, localRadio!, remoteRadio!, urlLabel, urlField!, saveUrlButton!,
+                     statusLabel!, updateCheckBox!, checkNowButton!, preReleaseCheckBox!] as [NSView] {
             contentView.addSubview(view)
         }
 
@@ -109,8 +127,14 @@ class SettingsWindowController: NSWindowController {
             statusLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             statusLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
 
-            updateCheckBox.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
-            updateCheckBox.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20)
+            updateCheckBox.bottomAnchor.constraint(equalTo: preReleaseCheckBox.topAnchor, constant: -8),
+            updateCheckBox.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+
+            checkNowButton.centerYAnchor.constraint(equalTo: updateCheckBox.centerYAnchor),
+            checkNowButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+
+            preReleaseCheckBox.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+            preReleaseCheckBox.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 36)
         ])
     }
 
@@ -120,6 +144,7 @@ class SettingsWindowController: NSWindowController {
         remoteRadio.state = settings.mode == .remote ? .on : .off
         urlField.stringValue = settings.remoteBaseUrl
         updateCheckBox.state = settings.updateCheckEnabled ? .on : .off
+        preReleaseCheckBox.state = settings.preReleaseEnabled ? .on : .off
         let isRemote = settings.mode == .remote
         urlField.isEnabled = isRemote
         saveUrlButton.isEnabled = isRemote
@@ -140,6 +165,14 @@ class SettingsWindowController: NSWindowController {
 
     @objc private func updateCheckChanged() {
         presenter.updateCheckChanged(enabled: updateCheckBox.state == .on)
+    }
+
+    @objc private func checkNowTapped() {
+        onCheckForUpdatesNow?()
+    }
+
+    @objc private func preReleaseChanged() {
+        presenter.preReleaseChanged(enabled: preReleaseCheckBox.state == .on)
     }
 }
 

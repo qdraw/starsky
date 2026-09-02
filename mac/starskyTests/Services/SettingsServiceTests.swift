@@ -36,6 +36,7 @@ final class SettingsServiceTests: XCTestCase {
         XCTAssertEqual(service.current.mode, .remote)
         XCTAssertEqual(service.current.remoteBaseUrl, Self.remoteBaseUrl)
         XCTAssertFalse(service.current.updateCheckEnabled)
+        XCTAssertFalse(service.current.preReleaseEnabled)
     }
 
     func testCorruptJsonFallsBackToDefaults() throws {

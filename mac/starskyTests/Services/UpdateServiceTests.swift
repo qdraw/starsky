@@ -65,6 +65,59 @@ final class UpdateServiceTests: XCTestCase {
         XCTAssertGreaterThan(UpdateService.suppressMinutes, 0)
     }
 
+    func testSuppressMinutesMatchesExpectedValue() {
+        // 5760 min == 4 days; changing this silently would alter update-nag frequency
+        XCTAssertEqual(UpdateService.suppressMinutes, 5760)
+    }
+
+    func testIsAvailableReflectsSparkleControllerState() {
+        let (service, _) = makeService(enabled: true)
+        // Sparkle can initialise in the test runner bundle, so isAvailable may be true or false
+        // depending on the environment. We just confirm the property is readable without crashing.
+        _ = service.isAvailable
+    }
+
+    func testCheckAsyncEnabledNoLastShownReturnsFalse() async {
+        // enabled=true, lastShown=nil: suppression is skipped, but updaterController is nil → false
+        let (service, _) = makeService(enabled: true, lastShown: nil)
+        let result = await service.checkAsync()
+        XCTAssertFalse(result)
+    }
+
+    func testFeedURLOverrideWithEmptyBaseURLAppendsParam() {
+        let (service, settingsService) = makeService(enabled: true)
+        var s = settingsService.current
+        s.preReleaseEnabled = true
+        settingsService.save(s)
+        // An empty string is a valid (if degenerate) base URL; the param should still be appended.
+        let result = service.feedURLOverride(baseFeedURL: "")
+        XCTAssertEqual(result, "?pre-release=1")
+    }
+
+    // MARK: - feedURLOverride
+
+    func testFeedURLOverrideReturnsNilWhenPreReleaseDisabled() {
+        let (service, _) = makeService(enabled: true)
+        XCTAssertNil(service.feedURLOverride(baseFeedURL: "https://example.com/appcast/"))
+    }
+
+    func testFeedURLOverrideReturnsNilWhenBaseFeedURLIsNil() {
+        let (service, settingsService) = makeService(enabled: true)
+        var s = settingsService.current
+        s.preReleaseEnabled = true
+        settingsService.save(s)
+        XCTAssertNil(service.feedURLOverride(baseFeedURL: nil))
+    }
+
+    func testFeedURLOverrideAppendsPreReleaseQueryParam() {
+        let (service, settingsService) = makeService(enabled: true)
+        var s = settingsService.current
+        s.preReleaseEnabled = true
+        settingsService.save(s)
+        let result = service.feedURLOverride(baseFeedURL: "https://example.com/appcast/")
+        XCTAssertEqual(result, "https://example.com/appcast/?pre-release=1")
+    }
+
     func testCheckAsyncReturnsFalseWhenLastShownIsNilAndUpdateDisabled() async {
         let (service, _) = makeService(enabled: false, lastShown: nil)
         let result = await service.checkAsync()

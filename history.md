@@ -42,11 +42,12 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.0-beta.2 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.2}
 
-- nothing yet
+- [x] (Fixed) _App_ macOS Splash screen only shown when loading (PR #3275)
+- [x] (Added) _App_ macOS Pre-release as option to check for updates (PR #3275)
 
 ## version 0.9.0-beta.1 - 2026-09-01 {#0.9.0-beta.1}
 
-- [x] (Added) _App_ Publish Sparkle app-cast (PR #3261)
+- [x] (Added) _App_ macOS Publish Sparkle app-cast (PR #3261)
 - [x] (Fixed) _Front-end_ Pipeline handling for exiftool and closing (PR #3262)
 - [x] (Fixed) _Front-end_ Read-only path setting in preferences (PR #3259)
 - [x] (Fixed) _App_ Silence when pressing a key and no NSBeep in macOS client (PR #3259)
