@@ -40,7 +40,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.9.0-beta.2 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.2}
+## version 0.9.0-beta.3 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.3}
+
+- nothing yet
+
+## version 0.9.0-beta.2 - 2026-09-02 {#0.9.0-beta.2}
 
 - [x] (Added) _App_ Windows Pre-release as option to check for updates (PR #3266)
 - [x] (Fixed) _App_ macOS Splash screen only shown when loading (PR #3275)
