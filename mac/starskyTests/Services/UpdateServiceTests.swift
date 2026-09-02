@@ -65,6 +65,34 @@ final class UpdateServiceTests: XCTestCase {
         XCTAssertGreaterThan(UpdateService.suppressMinutes, 0)
     }
 
+    func testSuppressMinutesMatchesExpectedValue() {
+        // 5760 min == 4 days; changing this silently would alter update-nag frequency
+        XCTAssertEqual(UpdateService.suppressMinutes, 5760)
+    }
+
+    func testIsAvailableReturnsFalseInTestEnvironment() {
+        let (service, _) = makeService(enabled: true)
+        // Sparkle cannot initialise without a host app bundle, so the controller is always nil in tests.
+        XCTAssertFalse(service.isAvailable)
+    }
+
+    func testCheckAsyncEnabledNoLastShownReturnsFalse() async {
+        // enabled=true, lastShown=nil: suppression is skipped, but updaterController is nil → false
+        let (service, _) = makeService(enabled: true, lastShown: nil)
+        let result = await service.checkAsync()
+        XCTAssertFalse(result)
+    }
+
+    func testFeedURLOverrideWithEmptyBaseURLAppendsParam() {
+        let (service, settingsService) = makeService(enabled: true)
+        var s = settingsService.current
+        s.preReleaseEnabled = true
+        settingsService.save(s)
+        // An empty string is a valid (if degenerate) base URL; the param should still be appended.
+        let result = service.feedURLOverride(baseFeedURL: "")
+        XCTAssertEqual(result, "?pre-release=1")
+    }
+
     // MARK: - feedURLOverride
 
     func testFeedURLOverrideReturnsNilWhenPreReleaseDisabled() {

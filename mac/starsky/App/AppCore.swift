@@ -46,7 +46,9 @@ class AppCore {
         splashStatus: @escaping @MainActor (String) -> Void = { _ in
             // Intentionally no-op by default: splash updates are optional (e.g. tests/headless startup).
         },
-        onWindowsReady: @escaping @MainActor () -> Void = {},
+        onWindowsReady: @escaping @MainActor () -> Void = {
+            // Intentionally no-op by default: AppDelegate overrides this to open windows; tests and headless startups do not need it.
+        },
         versionProvider: @escaping () -> String = { ApplicationInfo.version }
     ) {
         self.settingsService = settingsService

@@ -8,7 +8,10 @@ struct DesktopSettings: Codable {
     var lastUpdateWarningShown: Date? = nil
     var windows: [SavedWindowState] = []
 
-    init() {}
+
+    init() {
+        // Explicit no-arg init is required because defining init(from:) suppresses Swift's synthesized memberwise init. (comment need to be inside the init() function)
+    }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)

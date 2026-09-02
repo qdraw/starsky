@@ -79,7 +79,7 @@ class SplashWindowController: NSWindowController {
 private class ClickThroughView: NSView {
     var onMouseDown: (() -> Void)?
 
-    override func mouseDown(with event: NSEvent) {
+    override func mouseDown(with _: NSEvent) {
         onMouseDown?()
     }
 }
