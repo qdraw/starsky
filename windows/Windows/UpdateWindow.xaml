@@ -18,15 +18,17 @@
                        FontWeight="SemiBold"
                        Margin="0,0,0,8"
                        TextWrapping="Wrap"/>
-            <TextBlock Text="Click 'Update Now' to download and install the latest version. The app will restart automatically."
+            <TextBlock x:Name="DescriptionText"
+                       Text="Click 'Update Now' to download and install the latest version. The app will restart automatically."
                        FontSize="12"
                        TextWrapping="Wrap"
                        Foreground="#555"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Update Now"
-                    Width="100"
+            <Button x:Name="UpdateButton"
+                    Content="Update Now"
+                    Width="110"
                     Margin="0,0,8,0"
                     Click="UpdateButton_Click"/>
             <Button Content="Close"
