@@ -356,4 +356,19 @@ public sealed class XmpReadHelperTest
 
 		Assert.AreEqual(ImageStabilisationType.Off, data.ImageStabilisation);
 	}
+
+	[TestMethod]
+	public void XmpReadHelperTest_GetData_QdrawImageStabilizationUnknown()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		                       "<qdraw:ImageStabilization>SomeUnknownValue</qdraw:ImageStabilization>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(ImageStabilisationType.Unknown, data.ImageStabilisation);
+	}
 }

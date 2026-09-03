@@ -321,9 +321,9 @@ public sealed class ExifToolCmdHelperTest
 			null!, new FakeIWebLogger(), new AppSettings()).ExifToolCommandLineArgs(updateModel,
 			comparedNames, true);
 
-		Assert.IsTrue(result.Contains("-ImageStabilization=\"On\""),
+		Assert.Contains("-ImageStabilization=\"On\"", result,
 			"Expected EXIF ImageStabilization flag");
-		Assert.IsTrue(result.Contains("-XMP-qdraw:ImageStabilization=\"On\""),
+		Assert.Contains("-XMP-qdraw:ImageStabilization=\"On\"", result,
 			"Expected XMP-qdraw ImageStabilization flag");
 	}
 
@@ -346,9 +346,9 @@ public sealed class ExifToolCmdHelperTest
 			new AppSettings());
 		var helperResult = await sut.UpdateAsync(updateModel, comparedNames);
 
-		Assert.IsTrue(helperResult.Command.Contains($"-config \"{sut.GetConfigPath()}\""),
+		Assert.Contains($"-config \"{sut.GetConfigPath()}\"", helperResult.Command,
 			"Expected -config flag when writing ImageStabilisation");
-		Assert.IsTrue(helperResult.Command.Contains("-XMP-qdraw:ImageStabilization=\"On\""),
+		Assert.Contains("-XMP-qdraw:ImageStabilization=\"On\"", helperResult.Command,
 			"Expected XMP-qdraw ImageStabilization flag");
 	}
 
