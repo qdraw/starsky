@@ -50,7 +50,7 @@ jobs:
       
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
-      uses: peter-evans/create-pull-request@1a3c7ab17dbab4d180a43a7a4f9a8613a1215f17
+      uses: peter-evans/create-pull-request@c9f8b51aaac1dfba340a97878061732b0e738ec1
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: 'Update ClientApp'
