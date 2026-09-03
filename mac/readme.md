@@ -66,6 +66,58 @@ These are copied at build time from `starskydesktop/runtime-starsky-mac-arm64/` 
 
 ---
 
+## Versioning
+
+The app uses two version fields, both kept in [`starsky/Info.plist`](starsky/Info.plist):
+
+| Key | Example | Purpose |
+|---|---|---|
+| `CFBundleShortVersionString` | `0.9.0-beta.2` | Human-readable semver shown in the UI and in Sparkle's update dialog |
+| `CFBundleVersion` | `90002` | Machine-readable integer used by Sparkle and the App Store for version comparison. Must be numeric-only per Apple's requirements. |
+
+Both fields are updated automatically by `starsky-tools/build-tools/app-version-update.js`. Run it with the new semver as argument:
+
+```bash
+node starsky-tools/build-tools/app-version-update.js 0.9.0-beta.2
+```
+
+### CFBundleVersion formula
+
+`CFBundleVersion` is derived from the semver string using:
+
+```
+major × 1 000 000 + minor × 10 000 + patch × 100 + preType × 30 + preNumber
+```
+
+Pre-release type slots — `preNumber` must be < 30:
+
+| Pre-release type | preType |
+|---|---|
+| `alpha` | 0 |
+| `beta` | 1 |
+| `rc` | 2 |
+| stable | 3 (preNumber = 9 → slot value 99) |
+
+Stable releases always sort above any pre-release of the same version:
+
+| Version | CFBundleVersion |
+|---|---|
+| `0.9.0-alpha.1` | `90001` |
+| `0.9.0-alpha.2` | `90002` |
+| `0.9.0-beta.1` | `90031` |
+| `0.9.0-beta.2` | `90032` |
+| `0.9.0-rc.1` | `90061` |
+| `0.9.0` | `90099` |
+| `0.9.1` | `90199` |
+| `1.0.0-alpha.1` | `1000001` |
+| `1.0.0-beta.1` | `1000031` |
+| `1.0.0-rc.1` | `1000061` |
+| `1.0.0` | `1000099` |
+
+Sparkle compares the `CFBundleVersion` of the installed app against the `sparkle:version` attribute in the appcast to decide whether an update is available.
+
+---
+
 ## Before Releasing
 
 ### 1. Generate a Sparkle EdDSA keypair

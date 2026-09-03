@@ -44,6 +44,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - nothing yet
 
+## version 0.9.0-beta.3 - 2026-09-03 {#0.9.0-beta.3}
+
+- [x] (Fixed) _App_ macOS For updates add CFBundleVersion (PR #3281)
+
 ## version 0.9.0-beta.2 - 2026-09-02 {#0.9.0-beta.2}
 
 - [x] (Added) _App_ Windows Pre-release as option to check for updates (PR #3266)
