@@ -1,6 +1,6 @@
+using System.Net.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Starsky.Desktop.Services;
-using System.Net.Http;
 
 namespace starsky.Tests.Services;
 
@@ -80,7 +80,7 @@ public sealed class UpdateServiceTests : IDisposable
         _settings.Current.UpdateCheckEnabled = true;
         _settings.Current.LastUpdateWarningShown = DateTime.UtcNow.AddDays(-30);
 
-        // Velopack unavailable in CI; appcast returns no update — must not throw
+        // Falls through to Velopack (unavailable in CI) then appcast stub — must not throw
         var svc = CreateService(httpGet: _ => Task.FromResult(AppcastXml("0.0.0")));
         var ex = await Record.ExceptionAsync(() => svc.CheckAsync());
 
@@ -147,46 +147,14 @@ public sealed class UpdateServiceTests : IDisposable
         Assert.True(await new FakeUpdateService(_settings, hasUpdate: true).CheckAsync());
     }
 
-    // --- CheckAppcastAsync (tested via real UpdateService + injected httpGet) ---
+    // --- TryAppcastFallbackAsync (internal — tests CheckAppcastAsync + result wiring) ---
 
     [Fact]
-    public async Task CheckAppcastAsync_WhenNewerVersionInFeed_ReturnsTrueAndSetsUrl()
+    public async Task TryAppcastFallbackAsync_WhenFeedReturnsNewerVersion_ReturnsTrueAndSetsUrl()
     {
-        _settings.Current.UpdateCheckEnabled = true;
-        var svc = CreateService(httpGet: _ => Task.FromResult(AppcastXml("0.9.0-beta.3")));
-
-        // ApplicationInfo.Version will not be 0.9.0-beta.3 in test, so anything older works;
-        // we only need the appcast to report a version greater than what AppcastChecker sees.
-        // Use a known-lower "current" by exercising the method directly.
-        var result = await svc.CheckAsync();
-
-        // Velopack unavailable in CI → falls through to appcast.
-        // Whether it finds an update depends on the test binary's version vs "0.9.0-beta.3".
-        // The important invariant: no exception is thrown.
-        Assert.True(result || !result); // always passes — exception would be the failure
-    }
-
-    [Fact]
-    public async Task CheckAppcastAsync_WhenFeedReturnsCurrentVersion_ReturnsFalse()
-    {
-        _settings.Current.UpdateCheckEnabled = true;
-        // Feed returns version 0.0.0 which can never be newer than any real app version
-        var svc = CreateService(httpGet: _ => Task.FromResult(AppcastXml("0.0.0")));
-
-        var result = await svc.CheckAsync();
-
-        Assert.False(result);
-        Assert.Null(svc.PendingGitHubReleaseUrl);
-    }
-
-    [Fact]
-    public async Task CheckAppcastAsync_WhenFeedReturnsNewerVersion_SetsReleaseUrl()
-    {
-        _settings.Current.UpdateCheckEnabled = true;
-        // Use a very large version number — guaranteed to be newer than any real binary
         var svc = CreateService(httpGet: _ => Task.FromResult(AppcastXml("999.0.0")));
 
-        var result = await svc.CheckAsync();
+        var result = await svc.TryAppcastFallbackAsync();
 
         Assert.True(result);
         Assert.True(svc.IsGitHubFallbackUpdate);
@@ -194,9 +162,19 @@ public sealed class UpdateServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task CheckAppcastAsync_WhenPreReleaseEnabled_PassesQueryParam()
+    public async Task TryAppcastFallbackAsync_WhenFeedReturnsOlderVersion_ReturnsFalse()
     {
-        _settings.Current.UpdateCheckEnabled = true;
+        var svc = CreateService(httpGet: _ => Task.FromResult(AppcastXml("0.0.0")));
+
+        var result = await svc.TryAppcastFallbackAsync();
+
+        Assert.False(result);
+        Assert.Null(svc.PendingGitHubReleaseUrl);
+    }
+
+    [Fact]
+    public async Task TryAppcastFallbackAsync_WhenPreReleaseEnabled_PassesQueryParam()
+    {
         _settings.Current.UpdatePreRelease = true;
         string? capturedUrl = null;
         var svc = CreateService(httpGet: url =>
@@ -205,16 +183,15 @@ public sealed class UpdateServiceTests : IDisposable
             return Task.FromResult(AppcastXml("0.0.0"));
         });
 
-        await svc.CheckAsync();
+        await svc.TryAppcastFallbackAsync();
 
         Assert.NotNull(capturedUrl);
         Assert.Contains("?pre-release=1", capturedUrl);
     }
 
     [Fact]
-    public async Task CheckAppcastAsync_WhenPreReleaseDisabled_OmitsQueryParam()
+    public async Task TryAppcastFallbackAsync_WhenPreReleaseDisabled_OmitsQueryParam()
     {
-        _settings.Current.UpdateCheckEnabled = true;
         _settings.Current.UpdatePreRelease = false;
         string? capturedUrl = null;
         var svc = CreateService(httpGet: url =>
@@ -223,21 +200,18 @@ public sealed class UpdateServiceTests : IDisposable
             return Task.FromResult(AppcastXml("0.0.0"));
         });
 
-        await svc.CheckAsync();
+        await svc.TryAppcastFallbackAsync();
 
         Assert.NotNull(capturedUrl);
         Assert.DoesNotContain("?pre-release=1", capturedUrl);
     }
 
     [Fact]
-    public async Task CheckAppcastAsync_WhenHttpThrows_ReturnsFalse()
+    public async Task TryAppcastFallbackAsync_WhenHttpThrows_PropagatesException()
     {
-        _settings.Current.UpdateCheckEnabled = true;
         var svc = CreateService(httpGet: _ => Task.FromException<string>(new HttpRequestException("network error")));
 
-        var result = await svc.CheckAsync();
-
-        Assert.False(result);
+        await Assert.ThrowsAsync<HttpRequestException>(() => svc.TryAppcastFallbackAsync());
     }
 
     public void Dispose()

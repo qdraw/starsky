@@ -16,6 +16,11 @@
     <StartupObject>Starsky.Desktop.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>starsky.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="starsky.Tests\**\*" />
     <EmbeddedResource Remove="starsky.Tests\**\*" />
     <Page Remove="starsky.Tests\**\*" />

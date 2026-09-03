@@ -42,7 +42,7 @@ public class UpdateService
         try
         {
             var locator = VelopackLocator.CreateDefaultForPlatform();
-            return locator?.AppId != null;
+            return locator.AppId != null;
         }
         catch (Exception ex)
         {
@@ -55,27 +55,28 @@ public class UpdateService
     {
         if (!_settings.Current.UpdateCheckEnabled)
         {
-            _logger.LogInformation("[UpdateService] Update check is disabled in settings");
+	        _logger.LogInformation("[UpdateService] Update check is disabled in settings");
             return false;
         }
 
         if (!_settings.Current.LastUpdateWarningShown.HasValue)
         {
-            _logger.LogInformation("[UpdateService] No previous check recorded; running check now");
+	        _logger.LogInformation("[UpdateService] No previous check recorded; running check now");
             return await CheckWithVelopackAsync();
         }
 
         var minutesSince = (DateTime.UtcNow - _settings.Current.LastUpdateWarningShown.Value).TotalMinutes;
         _logger.LogInformation("[UpdateService] Minutes since last update warning: {MinutesSince} (suppress threshold: {SuppressMinutes})", minutesSince, SuppressMinutes);
 
-        if (minutesSince < SuppressMinutes)
+        if ( !( minutesSince < SuppressMinutes ) )
         {
-            _logger.LogInformation("[UpdateService] Suppressing update check (within suppress window)");
-            return false;
+	        _logger.LogInformation("[UpdateService] Suppress window elapsed; running check now");
+	        return await CheckWithVelopackAsync();
         }
 
-        _logger.LogInformation("[UpdateService] Suppress window elapsed; running check now");
-        return await CheckWithVelopackAsync();
+        _logger.LogInformation("[UpdateService] Suppressing update check (within suppress window)");
+        return false;
+
     }
 
     public Task<bool> CheckNowAsync() => CheckWithVelopackAsync();
@@ -104,13 +105,7 @@ public class UpdateService
     [ExcludeFromCodeCoverage]
     protected virtual async Task<bool> CheckWithVelopackAsync()
     {
-        if (!IsVelopackAvailable)
-        {
-            _logger.LogInformation("[UpdateService] Velopack is not available; skipping update check");
-            return false;
-        }
-
-        _logger.LogInformation("[UpdateService] Querying GitHub for updates (pre-release: {PreRelease})", _settings.Current.UpdatePreRelease);
+        _logger.LogInformation("[UpdateService] Querying for updates (pre-release: {PreRelease})", _settings.Current.UpdatePreRelease);
 
         try
         {
@@ -133,22 +128,31 @@ public class UpdateService
                 _logger.LogInformation("[UpdateService] Velopack is not available; trying appcast");
             }
 
-            var fallback = await CheckAppcastAsync();
-            if (fallback.HasValue)
-            {
-                PendingGitHubReleaseUrl = fallback.Value.HtmlUrl;
-                _logger.LogInformation("[UpdateService] Appcast found newer release: {Version}", fallback.Value.Version);
-                return true;
-            }
-
-            _logger.LogInformation("[UpdateService] No update available; already on latest version");
-            return false;
+            return await TryAppcastFallbackAsync();
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Update check failed");
             return false;
         }
+    }
+
+    /// <summary>
+    /// Fetches and parses the appcast, sets <see cref="PendingGitHubReleaseUrl"/> when a newer
+    /// release is found, and returns whether an update is available. Testable without Velopack.
+    /// </summary>
+    internal async Task<bool> TryAppcastFallbackAsync()
+    {
+        var fallback = await CheckAppcastAsync();
+        if (fallback.HasValue)
+        {
+            PendingGitHubReleaseUrl = fallback.Value.HtmlUrl;
+            _logger.LogInformation("[UpdateService] Appcast found newer release: {Version}", fallback.Value.Version);
+            return true;
+        }
+
+        _logger.LogInformation("[UpdateService] No update available; already on latest version");
+        return false;
     }
 
     protected virtual async Task<(string Version, string HtmlUrl)?> CheckAppcastAsync()
