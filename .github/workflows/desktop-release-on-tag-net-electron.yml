@@ -549,8 +549,8 @@ jobs:
             - starsky-win-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1809+ or 11 (21H2) 22000+ (Intel 64 bits)
 
             ## Other Desktop versions:
-            - starsky-mac-arm64-desktop.dmg - __Starsky Desktop App for Apple Silicon, Mac OS *13.0* or newer__
-            - starsky-mac-x64-desktop.dmg - __Starsky Desktop App for Intel, Mac OS *13.0* or newer__
+            - starsky-mac-arm64-desktop.dmg - Starsky Desktop App for Apple Silicon, Mac OS 13.0 or newer
+            - starsky-mac-x64-desktop.dmg - Starsky Desktop App for Intel, Mac OS 13.0 or newer
 
             ## Getting started
             [Read about the first steps](https://docs.qdraw.nl/docs/getting-started/first-steps)
