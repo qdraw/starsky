@@ -35,6 +35,26 @@ function checkNewVersion() {
 
 checkNewVersion();
 
+// Derives a monotonically-increasing integer from a semver string for use as
+// CFBundleVersion (which must be numeric-only per Apple's requirements).
+// Formula: major * 1_000_000 + minor * 10_000 + patch * 100 + preType * 30 + preNumber
+// preType: alpha=0, beta=1, rc=2, stable=3 (preNumber must be < 30)
+// Stable releases use preType=3, preNumber=9 → slot value 99, always above any pre-release.
+// Example: 0.9.0-alpha.1 → 90001, 0.9.0-beta.1 → 90031, 0.9.0-rc.1 → 90061, 0.9.0 → 90099
+function computeBuildNumber(version) {
+	const match = version.match(
+		/^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d+))?/
+	);
+	if (!match) return 1;
+	const major = parseInt(match[1], 10);
+	const minor = parseInt(match[2], 10);
+	const patch = parseInt(match[3], 10);
+	const preTypeMap = {alpha: 0, beta: 1, rc: 2};
+	const preType = match[4] !== undefined ? preTypeMap[match[4]] : 3;
+	const preNum = match[5] !== undefined ? parseInt(match[5], 10) : 9;
+	return major * 1_000_000 + minor * 10_000 + patch * 100 + preType * 30 + preNum;
+}
+
 console.log(
 	`\nUpgrade version in csproj-files and package.json to ${newVersion}\n`
 );
@@ -129,6 +149,20 @@ async function updateVersions(filePathList) {
 					plistVersionRegex,
 					`$1${newVersion}$6`
 				);
+				const buildNumber = computeBuildNumber(newVersion);
+				const bundleVersionRegex = new RegExp(
+					"(<key>CFBundleVersion</key>\\s*<string>)\\d+(</string>)",
+					"g"
+				);
+				if (fileContent.match(bundleVersionRegex)) {
+					fileContent = fileContent.replace(
+						bundleVersionRegex,
+						`$1${buildNumber}$2`
+					);
+					console.log(
+						`✓ ${filePath} - CFBundleVersion is updated to ${buildNumber}`
+					);
+				}
 				await writeFile(filePath, fileContent);
 				console.log(
 					`✓ ${filePath} - Version is updated to ${newVersion}`
