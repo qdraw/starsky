@@ -51,62 +51,45 @@ public static class AppcastChecker
         var c = ParseVersion(candidate);
         var x = ParseVersion(current);
 
-        if (c.Maj != x.Maj)
-        {
-	        return c.Maj > x.Maj;
-        }
+        var numeric = CompareNumericParts(c, x);
+        if (numeric != 0)
+            return numeric > 0;
 
-        if (c.Min != x.Min)
-        {
-	        return c.Min > x.Min;
-        }
+        return ComparePreRelease(c.Pre, x.Pre);
+    }
 
-        if (c.Pat != x.Pat)
-        {
-	        return c.Pat > x.Pat;
-        }
+    private static int CompareNumericParts(
+        (int Maj, int Min, int Pat, string? Pre) c,
+        (int Maj, int Min, int Pat, string? Pre) x)
+    {
+        if (c.Maj != x.Maj) return c.Maj.CompareTo(x.Maj);
+        if (c.Min != x.Min) return c.Min.CompareTo(x.Min);
+        return c.Pat.CompareTo(x.Pat);
+    }
 
-        if (c.Pre == null && x.Pre != null)
-        {
-	        return true;  // stable > pre-release
-        }
+    private static bool ComparePreRelease(string? cPre, string? xPre)
+    {
+        if (cPre == null && xPre != null) return true;   // stable > pre-release
+        if (cPre != null && xPre == null) return false;  // pre-release < stable
+        if (cPre == null) return false;                   // same stable version
 
-        if (c.Pre != null && x.Pre == null)
-        {
-	        return false; // pre-release < stable
-        }
-
-        if (c.Pre == null)
-        {
-	        return false;                  // same stable version
-        }
-
-        // Both have pre-release labels — compare segment by segment
-        var cSegs = c.Pre.Split('.');
-        var xSegs = x.Pre!.Split('.');
+        var cSegs = cPre.Split('.');
+        var xSegs = xPre.Split('.');
         for (var i = 0; i < Math.Max(cSegs.Length, xSegs.Length); i++)
         {
-            var cs = i < cSegs.Length ? cSegs[i] : "0";
-            var xs = i < xSegs.Length ? xSegs[i] : "0";
-
-            if (int.TryParse(cs, out var cn) && int.TryParse(xs, out var xn))
-            {
-                if (cn != xn)
-                {
-	                return cn > xn;
-                }
-            }
-            else
-            {
-                var cmp = string.Compare(cs, xs, StringComparison.OrdinalIgnoreCase);
-                if (cmp != 0)
-                {
-	                return cmp > 0;
-                }
-            }
+            var result = CompareSegment(
+                cSegs.ElementAtOrDefault(i) ?? "0",
+                xSegs.ElementAtOrDefault(i) ?? "0");
+            if (result != 0) return result > 0;
         }
-
         return false;
+    }
+
+    private static int CompareSegment(string cs, string xs)
+    {
+        if (int.TryParse(cs, out var cn) && int.TryParse(xs, out var xn))
+            return cn.CompareTo(xn);
+        return string.Compare(cs, xs, StringComparison.OrdinalIgnoreCase);
     }
 
     private static (int Maj, int Min, int Pat, string? Pre) ParseVersion(string v)
