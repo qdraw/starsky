@@ -55,20 +55,26 @@ public class UpdateService
     {
         if (!_settings.Current.UpdateCheckEnabled)
         {
+            _logger.LogInformation("[UpdateService] Update check is disabled in settings");
             return false;
         }
 
         if (!_settings.Current.LastUpdateWarningShown.HasValue)
         {
+            _logger.LogInformation("[UpdateService] No previous check recorded; running check now");
             return await CheckWithVelopackAsync();
         }
 
         var minutesSince = (DateTime.UtcNow - _settings.Current.LastUpdateWarningShown.Value).TotalMinutes;
+        _logger.LogInformation("[UpdateService] Minutes since last update warning: {MinutesSince} (suppress threshold: {SuppressMinutes})", minutesSince, SuppressMinutes);
+
         if (minutesSince < SuppressMinutes)
         {
+            _logger.LogInformation("[UpdateService] Suppressing update check (within suppress window)");
             return false;
         }
 
+        _logger.LogInformation("[UpdateService] Suppress window elapsed; running check now");
         return await CheckWithVelopackAsync();
     }
 
@@ -98,6 +104,12 @@ public class UpdateService
     [ExcludeFromCodeCoverage]
     protected virtual async Task<bool> CheckWithVelopackAsync()
     {
+        if (!IsVelopackAvailable)
+        {
+            _logger.LogInformation("[UpdateService] Velopack is not available; skipping update check");
+            return false;
+        }
+
         _logger.LogInformation("[UpdateService] Querying GitHub for updates (pre-release: {PreRelease})", _settings.Current.UpdatePreRelease);
 
         try
