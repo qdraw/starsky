@@ -1099,4 +1099,46 @@ public sealed class ExifReadTest
 		// Assert
 		Assert.AreEqual(19.881148, result, 0.0000000001);
 	}
+
+	[TestMethod]
+	public void ExifRead_QdrawImageStabilization_On()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		                       "<qdraw:ImageStabilization>On</qdraw:ImageStabilization>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var xmpMeta = XmpMetaFactory.ParseFromString(xmpData);
+		var container = new List<Directory>();
+		var dir = new XmpDirectory();
+		dir.SetXmpMeta(xmpMeta);
+		container.Add(dir);
+
+		var item = new FileIndexItem();
+		ReadMetaExif.SetArrayBasedItemsAiClassificationTest(container, item);
+
+		Assert.AreEqual(ImageStabilisationType.On, item.ImageStabilisation);
+	}
+
+	[TestMethod]
+	public void ExifRead_QdrawImageStabilization_Off()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		                       "<qdraw:ImageStabilization>Off</qdraw:ImageStabilization>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var xmpMeta = XmpMetaFactory.ParseFromString(xmpData);
+		var container = new List<Directory>();
+		var dir = new XmpDirectory();
+		dir.SetXmpMeta(xmpMeta);
+		container.Add(dir);
+
+		var item = new FileIndexItem();
+		ReadMetaExif.SetArrayBasedItemsAiClassificationTest(container, item);
+
+		Assert.AreEqual(ImageStabilisationType.Off, item.ImageStabilisation);
+	}
 }
