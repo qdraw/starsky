@@ -1,10 +1,14 @@
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Starsky.Desktop.Services;
 
 public static class AppcastChecker
 {
+	[SuppressMessage("Sonar",
+		"S5332: Using http protocol is insecure. Use https instead.",
+		Justification = "Xml namespace")]
     private static readonly XNamespace Sparkle = "http://www.andymatuschak.org/xml-namespaces/sparkle";
 
     /// <summary>
