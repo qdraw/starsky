@@ -527,6 +527,7 @@ jobs:
             ./desktop-releases/starsky-mac-x64-desktop.dmg
             ./desktop-releases/starsky-win-x64-desktop.exe
             ./desktop-releases/*.nupkg
+            ./desktop-releases/RELEASES*
             ./starsky/starsky-linux-arm.zip
             ./starsky/starsky-linux-arm64.zip
             ./starsky/starsky-osx-x64.zip
