@@ -156,6 +156,17 @@ public sealed class ReadMetaExif
 		{
 			item.ImageClassificationGeneratedAt = parsedGeneratedAt;
 		}
+
+		var imageStabilization = GetXmpData(xmpDirectory, "qdraw:ImageStabilization");
+		if ( !string.IsNullOrWhiteSpace(imageStabilization) )
+		{
+			item.ImageStabilisation = imageStabilization switch
+			{
+				"On" => ImageStabilisationType.On,
+				"Off" => ImageStabilisationType.Off,
+				_ => ImageStabilisationType.Unknown
+			};
+		}
 	}
 
 	private static void SetArrayBasedItemsArtist(List<Directory> allExifItems, FileIndexItem item)
@@ -1397,5 +1408,11 @@ public sealed class ReadMetaExif
 		int.TryParse(isoSpeedString, NumberStyles.Number, CultureInfo.InvariantCulture,
 			out var isoSpeed);
 		return isoSpeed;
+	}
+
+	internal static void SetArrayBasedItemsAiClassificationTest(List<Directory> allExifItems,
+		FileIndexItem item)
+	{
+		SetArrayBasedItemsAiClassification(allExifItems, item);
 	}
 }

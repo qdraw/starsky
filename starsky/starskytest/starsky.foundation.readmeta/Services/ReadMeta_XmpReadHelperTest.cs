@@ -326,4 +326,49 @@ public sealed class XmpReadHelperTest
 		Assert.AreEqual(new DateTime(2026, 4, 21, 10, 20, 30, DateTimeKind.Utc),
 			data.ImageClassificationGeneratedAt);
 	}
+
+	[TestMethod]
+	public void XmpReadHelperTest_GetData_QdrawImageStabilizationOn()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		                       "<qdraw:ImageStabilization>On</qdraw:ImageStabilization>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(ImageStabilisationType.On, data.ImageStabilisation);
+	}
+
+	[TestMethod]
+	public void XmpReadHelperTest_GetData_QdrawImageStabilizationOff()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		                       "<qdraw:ImageStabilization>Off</qdraw:ImageStabilization>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(ImageStabilisationType.Off, data.ImageStabilisation);
+	}
+
+	[TestMethod]
+	public void XmpReadHelperTest_GetData_QdrawImageStabilizationUnknown()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		                       "<qdraw:ImageStabilization>SomeUnknownValue</qdraw:ImageStabilization>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(ImageStabilisationType.Unknown, data.ImageStabilisation);
+	}
 }

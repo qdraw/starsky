@@ -386,6 +386,16 @@ public sealed class ReadMetaXmp
 		{
 			item.ImageClassificationGeneratedAt = generatedAt;
 		}
+
+		if ( property.Path == "qdraw:ImageStabilization" )
+		{
+			item.ImageStabilisation = property.Value switch
+			{
+				"On" => ImageStabilisationType.On,
+				"Off" => ImageStabilisationType.Off,
+				_ => ImageStabilisationType.Unknown
+			};
+		}
 	}
 
 	private static string AddCommaSeparatedUnique(string? current, string value)
