@@ -40,7 +40,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.9.0-beta.3 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.3}
+## version 0.9.0-beta.4 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.4}
 
 - nothing yet
 

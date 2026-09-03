@@ -165,7 +165,8 @@ public sealed class ExifToolCmdHelper
 			{
 				nameof(FileIndexItem.SuggestedTags), nameof(FileIndexItem.RejectedTags),
 				nameof(FileIndexItem.ImageClassificationModel),
-				nameof(FileIndexItem.ImageClassificationGeneratedAt)
+				nameof(FileIndexItem.ImageClassificationGeneratedAt),
+				nameof(FileIndexItem.ImageStabilisation)
 			}
 			.Select(x => x.ToLowerInvariant());
 
@@ -776,8 +777,8 @@ public sealed class ExifToolCmdHelper
 			     .ToLowerInvariant()) &&
 		     updateModel.ImageStabilisation != ImageStabilisationType.Unknown )
 		{
-			// there is no XMP version of the name
-			command += $" -ImageStabilization=\"{updateModel.ImageStabilisation}\" ";
+			command += $" -ImageStabilization=\"{updateModel.ImageStabilisation}\" " +
+			           $"-XMP-qdraw:ImageStabilization=\"{updateModel.ImageStabilisation}\" ";
 		}
 
 		return command;
