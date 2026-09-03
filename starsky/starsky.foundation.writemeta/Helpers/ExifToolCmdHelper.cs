@@ -93,7 +93,7 @@ public sealed class ExifToolCmdHelper
 		var command = string.Empty;
 
 		// Update AI config needed first to be working
-		command = UpdateAiConfig(command, comparedNames);
+		command = UpdateAiConfig(command, comparedNames, updateModel);
 
 		const string initCommand = "-json -overwrite_original"; // to check if nothing
 		command += initCommand;
@@ -159,18 +159,24 @@ public sealed class ExifToolCmdHelper
 		return configPath;
 	}
 
-	private string UpdateAiConfig(string command, List<string> comparedNames)
+	private string UpdateAiConfig(string command, List<string> comparedNames,
+		FileIndexItem updateModel)
 	{
-		var required = new[]
+		var required = new List<string>
 			{
 				nameof(FileIndexItem.SuggestedTags), nameof(FileIndexItem.RejectedTags),
 				nameof(FileIndexItem.ImageClassificationModel),
-				nameof(FileIndexItem.ImageClassificationGeneratedAt),
-				nameof(FileIndexItem.ImageStabilisation)
-			}
-			.Select(x => x.ToLowerInvariant());
+				nameof(FileIndexItem.ImageClassificationGeneratedAt)
+			};
 
-		if ( !comparedNames.Intersect(required).Any() )
+		if ( updateModel.ImageStabilisation != ImageStabilisationType.Unknown )
+		{
+			required.Add(nameof(FileIndexItem.ImageStabilisation));
+		}
+
+		var requiredLower = required.Select(x => x.ToLowerInvariant());
+
+		if ( !comparedNames.Intersect(requiredLower).Any() )
 		{
 			return command;
 		}
