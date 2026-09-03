@@ -1,0 +1,124 @@
+using System.Xml.Linq;
+using Microsoft.Extensions.Logging;
+
+namespace Starsky.Desktop.Services;
+
+public static class AppcastChecker
+{
+    private static readonly XNamespace Sparkle = "http://www.andymatuschak.org/xml-namespaces/sparkle";
+
+    /// <summary>
+    /// Parses a Sparkle appcast XML string and returns the first item whose version is
+    /// newer than <paramref name="currentVersion"/>. Returns null if already up to date
+    /// or if the XML cannot be parsed.
+    /// </summary>
+    public static (string Version, string HtmlUrl)? FindNewerRelease(
+        string xml, string currentVersion, ILogger? logger = null)
+    {
+        try
+        {
+            var doc = XDocument.Parse(xml);
+            foreach (var item in doc.Descendants("item"))
+            {
+                var version = (string?)item.Element(Sparkle + "shortVersionString")
+                              ?? (string?)item.Element(Sparkle + "version");
+
+                if (string.IsNullOrEmpty(version))
+                {
+	                continue;
+                }
+
+                if (IsNewerVersion(version, currentVersion))
+                {
+	                return (version, BuildReleaseUrl(version));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger?.LogWarning(ex, "[AppcastChecker] Failed to parse appcast response");
+        }
+
+        return null;
+    }
+
+    public static bool IsNewerVersion(string candidate, string current)
+    {
+        var c = ParseVersion(candidate);
+        var x = ParseVersion(current);
+
+        if (c.Maj != x.Maj)
+        {
+	        return c.Maj > x.Maj;
+        }
+
+        if (c.Min != x.Min)
+        {
+	        return c.Min > x.Min;
+        }
+
+        if (c.Pat != x.Pat)
+        {
+	        return c.Pat > x.Pat;
+        }
+
+        if (c.Pre == null && x.Pre != null)
+        {
+	        return true;  // stable > pre-release
+        }
+
+        if (c.Pre != null && x.Pre == null)
+        {
+	        return false; // pre-release < stable
+        }
+
+        if (c.Pre == null)
+        {
+	        return false;                  // same stable version
+        }
+
+        // Both have pre-release labels — compare segment by segment
+        var cSegs = c.Pre.Split('.');
+        var xSegs = x.Pre!.Split('.');
+        for (var i = 0; i < Math.Max(cSegs.Length, xSegs.Length); i++)
+        {
+            var cs = i < cSegs.Length ? cSegs[i] : "0";
+            var xs = i < xSegs.Length ? xSegs[i] : "0";
+
+            if (int.TryParse(cs, out var cn) && int.TryParse(xs, out var xn))
+            {
+                if (cn != xn)
+                {
+	                return cn > xn;
+                }
+            }
+            else
+            {
+                var cmp = string.Compare(cs, xs, StringComparison.OrdinalIgnoreCase);
+                if (cmp != 0)
+                {
+	                return cmp > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static (int Maj, int Min, int Pat, string? Pre) ParseVersion(string v)
+    {
+        var dashIdx = v.IndexOf('-');
+        var numPart = dashIdx >= 0 ? v[..dashIdx] : v;
+        var pre = dashIdx >= 0 ? v[(dashIdx + 1)..] : null;
+        var parts = numPart.Split('.');
+        return (
+            int.TryParse(parts.ElementAtOrDefault(0), out var maj) ? maj : 0,
+            int.TryParse(parts.ElementAtOrDefault(1), out var min) ? min : 0,
+            int.TryParse(parts.ElementAtOrDefault(2), out var pat) ? pat : 0,
+            pre
+        );
+    }
+
+    private static string BuildReleaseUrl(string version) =>
+        $"https://github.com/qdraw/starsky/releases/tag/v{version}";
+}
