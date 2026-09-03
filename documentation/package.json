@@ -34,9 +34,9 @@
     "@docusaurus/faster": "3.10.2"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.7.0",
-    "@docusaurus/tsconfig": "3.6.1",
-    "@docusaurus/types": "3.6.3",
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
+    "@docusaurus/types": "3.10.2",
     "typescript": "~5.7.2"
   },
   "browserslist": {
