@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Data.Sqlite;
 using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
@@ -259,6 +260,15 @@ public class ThumbnailQuery : IThumbnailQuery
 				_logger.LogInformation(
 					"[SaveChangesDuplicate] OK Duplicate entry error occurred: " +
 					$"{mySqlException.Message}");
+				return;
+			}
+
+			// SQLite UNIQUE constraint violation (error code 19)
+			if ( exception.InnerException is SqliteException { SqliteErrorCode: 19 } sqliteException )
+			{
+				_logger.LogInformation(
+					"[SaveChangesDuplicate] OK SQLite unique constraint error occurred: " +
+					$"{sqliteException.Message}");
 				return;
 			}
 
