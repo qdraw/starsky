@@ -52,7 +52,8 @@ public partial class Query
 		{
 			// https://github.com/qdraw/starsky/issues/1243
 			// https://github.com/qdraw/starsky/issues/1628
-			if ( exception.ErrorCode is not (MySqlErrorCode.QueryTimeout or
+			if ( exception.ErrorCode is not (MySqlErrorCode.CommandTimeoutExpired or
+			    MySqlErrorCode.QueryTimeout or
 			    MySqlErrorCode.LockWaitTimeout or
 			    MySqlErrorCode.QueryInterrupted) )
 			{

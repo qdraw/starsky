@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -1025,6 +1026,37 @@ public class ThumbnailQueryTest
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
 			throw new DbUpdateConcurrencyException();
+		}
+	}
+
+	[TestMethod]
+	public async Task AddThumbnailRangeAsync_SqliteUniqueConstraintException()
+	{
+		var addedItems = new List<ThumbnailResultDataTransferModel> { new("test123", null, true) };
+
+		var serviceScopeFactory =
+			CreateNewScope(nameof(AddThumbnailRangeAsync_SqliteUniqueConstraintException));
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(AddThumbnailRangeAsync_SqliteUniqueConstraintException))
+			.Options;
+		var dbContext = new SqliteUniqueConstraintApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var importQuery = new ThumbnailQuery(dbContext, serviceScopeFactory, webLogger);
+
+		await importQuery.AddThumbnailRangeAsync(addedItems);
+
+		Assert.IsTrue(webLogger.TrackedInformation.Exists(x =>
+			x.Item2?.StartsWith("[SaveChangesDuplicate] OK SQLite unique constraint") == true));
+	}
+
+	private sealed class SqliteUniqueConstraintApplicationDbContext(DbContextOptions options)
+		: ApplicationDbContext(options)
+	{
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+		{
+			var sqliteException = new SqliteException("SQLite Error 19: 'UNIQUE constraint failed'", 19);
+			throw new DbUpdateException("unique constraint", sqliteException);
 		}
 	}
 }

@@ -46,6 +46,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.0-beta.3 - 2026-09-03 {#0.9.0-beta.3}
 
+- [x] (Added) _App_ Windows Detailed logging to UpdateService.CheckAsync (PR #3282)
+- [x] (Fixed) _App_ macOS AppCast add monotonically-increasing build number (PR #3282)
+- [x] (Fixed) _Back-end_ Timeout GetAllRecursiveAsync recognize CommandTimeoutExpired (PR #3282)
+- [x] (Fixed) _Back-end_ SQLite unique constraint violations (error code 19) (PR #3282)
 - [x] (Fixed) _App_ macOS For updates add CFBundleVersion (PR #3281)
 
 ## version 0.9.0-beta.2 - 2026-09-02 {#0.9.0-beta.2}

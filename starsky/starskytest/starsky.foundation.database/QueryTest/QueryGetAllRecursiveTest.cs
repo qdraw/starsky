@@ -98,6 +98,7 @@ public sealed class QueryGetAllRecursiveTest
 	}
 
 	[TestMethod] // [Theory]
+	[DataRow(MySqlErrorCode.CommandTimeoutExpired)]
 	[DataRow(MySqlErrorCode.QueryTimeout)]
 	[DataRow(MySqlErrorCode.QueryInterrupted)]
 	public async Task Retry_When_HitTimeout(MySqlErrorCode code)

@@ -20,6 +20,37 @@ OUTPUT_PATH="${3:-appcast-macos.xml}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_FILE="$SCRIPT_DIR/../project.yml"
 
+# Derives a monotonically-increasing integer from a semver string, mirroring
+# the formula in starsky-tools/build-tools/app-version-update.js:
+#   major * 1_000_000 + minor * 10_000 + patch * 100 + preType * 30 + preNumber
+#   preType: alpha=0, beta=1, rc=2, stable=3  (preNumber must be < 30)
+#   Stable: preType=3, preNumber=9  →  always above any pre-release for same x.y.z
+compute_build_number() {
+  local version="$1"
+  local major minor patch pre_type pre_num
+  major="$(echo "$version" | sed 's/^\([0-9]*\)\..*/\1/')"
+  minor="$(echo "$version" | sed 's/^[0-9]*\.\([0-9]*\)\..*/\1/')"
+  patch="$(echo "$version" | sed 's/^[0-9]*\.[0-9]*\.\([0-9]*\).*/\1/')"
+  local pre_label
+  pre_label="$(echo "$version" | sed -n 's/^[0-9]*\.[0-9]*\.[0-9]*-\(.*\)/\1/p')"
+  if [[ -z "$pre_label" ]]; then
+    pre_type=3; pre_num=9
+  elif [[ "$pre_label" == alpha.* ]]; then
+    pre_type=0; pre_num="${pre_label#alpha.}"
+  elif [[ "$pre_label" == beta.* ]]; then
+    pre_type=1; pre_num="${pre_label#beta.}"
+  elif [[ "$pre_label" == rc.* ]]; then
+    pre_type=2; pre_num="${pre_label#rc.}"
+  else
+    echo "Warning: unrecognised pre-release label '$pre_label', treating as stable." >&2
+    pre_type=3; pre_num=9
+  fi
+  echo $(( major * 1000000 + minor * 10000 + patch * 100 + pre_type * 30 + pre_num ))
+}
+
+BUILD_NUMBER="$(compute_build_number "$VERSION")"
+echo "==> sparkle:version (CFBundleVersion) = $BUILD_NUMBER"
+
 SPARKLE_VERSION="$(awk '
   $0 == "  Sparkle:" { in_sparkle = 1; next }
   in_sparkle && /^[^[:space:]]/ { exit }
@@ -78,7 +109,7 @@ cat > "$OUTPUT_PATH" <<XML
     <item>
       <title>${VERSION}</title>
       <pubDate>${PUB_DATE}</pubDate>
-      <sparkle:version>${VERSION}</sparkle:version>
+      <sparkle:version>${BUILD_NUMBER}</sparkle:version>
       <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>13.0.0</sparkle:minimumSystemVersion>
       <enclosure

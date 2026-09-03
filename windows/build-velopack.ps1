@@ -5,7 +5,7 @@
 .DESCRIPTION
     Steps:
       1. (Optional) Build the Starsky backend for win-x64 using the NUKE build system.
-         Skip with -SkipBackendBuild if starsky\win-x64\ already exists.
+         Skip with -SkipBackend if starsky\win-x64\ already exists.
       2. dotnet publish the WPF app (also copies runtime-starsky-win-x64 into publish dir).
       3. Install the Velopack CLI (vpk) if not already present.
       4. vpk pack to produce the installer and update feed.
@@ -25,17 +25,25 @@
     .\build-velopack.ps1
 
     # Skip the slow backend build if you already have starsky\win-x64\:
-    .\build-velopack.ps1 -SkipBackendBuild
+    .\build-velopack.ps1 -SkipBackend
 
     # Override version:
-    .\build-velopack.ps1 -Version 0.8.2 -SkipBackendBuild
+    .\build-velopack.ps1 -Version 0.8.2 -SkipBackend
 #>
 [CmdletBinding()]
 param(
+    [Alias('h')]
+    [switch] $Help,
     [string] $Version,
+    [Alias('skip-backend', 'SkipBackend')]
     [switch] $SkipBackendBuild,
     [string] $OutputDir
 )
+
+if ($Help) {
+    Get-Help $MyInvocation.MyCommand.Path -Detailed
+    exit 0
+}
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
