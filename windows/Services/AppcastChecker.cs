@@ -69,9 +69,8 @@ public static class AppcastChecker
 
     private static bool ComparePreRelease(string? cPre, string? xPre)
     {
-        if (cPre == null && xPre != null) return true;   // stable > pre-release
-        if (cPre != null && xPre == null) return false;  // pre-release < stable
-        if (cPre == null) return false;                   // same stable version
+        if (cPre == null) return xPre != null;  // stable > pre-release; or same stable
+        if (xPre == null) return false;         // pre-release < stable
 
         var cSegs = cPre.Split('.');
         var xSegs = xPre.Split('.');
