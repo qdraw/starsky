@@ -40,22 +40,30 @@ public class UpdateService
 
     public async Task<bool> CheckAsync()
     {
+        _logger.LogInformation("[UpdateService] CheckAsync started");
+
         if (!_settings.Current.UpdateCheckEnabled)
         {
-	        return false;
+            _logger.LogInformation("[UpdateService] Update check is disabled in settings");
+            return false;
         }
 
         if ( !_settings.Current.LastUpdateWarningShown.HasValue )
         {
-	        return await CheckWithVelopackAsync();
+            _logger.LogInformation("[UpdateService] No previous check recorded; running check now");
+            return await CheckWithVelopackAsync();
         }
 
         var minutesSince = (DateTime.UtcNow - _settings.Current.LastUpdateWarningShown.Value).TotalMinutes;
+        _logger.LogInformation("[UpdateService] Minutes since last update warning: {MinutesSince} (suppress threshold: {SuppressMinutes})", minutesSince, SuppressMinutes);
+
         if (minutesSince < SuppressMinutes)
         {
-	        return false;
+            _logger.LogInformation("[UpdateService] Suppressing update check (within suppress window)");
+            return false;
         }
 
+        _logger.LogInformation("[UpdateService] Suppress window elapsed; running check now");
         return await CheckWithVelopackAsync();
     }
 
@@ -81,14 +89,27 @@ public class UpdateService
     {
         if (!IsVelopackAvailable)
         {
-	        return false;
+            _logger.LogInformation("[UpdateService] Velopack is not available; skipping update check");
+            return false;
         }
+
+        _logger.LogInformation("[UpdateService] Querying GitHub for updates (pre-release: {PreRelease})", _settings.Current.UpdatePreRelease);
 
         try
         {
             _updateManager = new UpdateManager(
                 new GithubSource(GithubRepoUrl, null, _settings.Current.UpdatePreRelease));
             _pendingUpdate = await _updateManager.CheckForUpdatesAsync();
+
+            if (_pendingUpdate != null)
+            {
+                _logger.LogInformation("[UpdateService] Update available: {Version}", _pendingUpdate.TargetFullRelease.Version);
+            }
+            else
+            {
+                _logger.LogInformation("[UpdateService] No update available; already on latest version");
+            }
+
             return _pendingUpdate != null;
         }
         catch (Exception ex)
