@@ -11,7 +11,7 @@ const {readFile, writeFile} = require("fs").promises;
 const {getFiles} = require("./lib/get-files-directory");
 const {prefixPath} = require("./lib/prefix-path.const.js");
 
-let newVersion = "0.9.0-beta.2";
+let newVersion = "0.9.0-beta.3";
 
 // allow version as single argument
 const argv = process.argv.slice(2);
@@ -41,14 +41,34 @@ checkNewVersion();
 // preType: alpha=0, beta=1, rc=2, stable=3 (preNumber must be < 30)
 // Stable releases use preType=3, preNumber=9 → slot value 99, always above any pre-release.
 // Example: 0.9.0-alpha.1 → 90001, 0.9.0-beta.1 → 90031, 0.9.0-rc.1 → 90061, 0.9.0 → 90099
+const ALLOWED_PRE_RELEASE_TYPES = ["alpha", "beta", "rc"];
+
 function computeBuildNumber(version) {
 	const match = version.match(
-		/^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d+))?/
+		/^(\d+)\.(\d+)\.(\d+)(?:-([a-z]+)\.(\d+))?/
 	);
 	if (!match) return 1;
 	const major = parseInt(match[1], 10);
 	const minor = parseInt(match[2], 10);
 	const patch = parseInt(match[3], 10);
+
+	if (match[4] !== undefined) {
+		if (!ALLOWED_PRE_RELEASE_TYPES.includes(match[4])) {
+			console.error(
+				`✖ Unsupported pre-release type "${match[4]}" in version "${version}". ` +
+				`Allowed types: ${ALLOWED_PRE_RELEASE_TYPES.join(", ")}.`
+			);
+			process.exit(1);
+		}
+		const preNum = parseInt(match[5], 10);
+		if (preNum >= 30) {
+			console.error(
+				`✖ Pre-release number ${preNum} in version "${version}" must be < 30.`
+			);
+			process.exit(1);
+		}
+	}
+
 	const preTypeMap = {alpha: 0, beta: 1, rc: 2};
 	const preType = match[4] !== undefined ? preTypeMap[match[4]] : 3;
 	const preNum = match[5] !== undefined ? parseInt(match[5], 10) : 9;
