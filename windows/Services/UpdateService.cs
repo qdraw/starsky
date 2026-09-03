@@ -40,8 +40,6 @@ public class UpdateService
 
     public async Task<bool> CheckAsync()
     {
-        _logger.LogInformation("[UpdateService] CheckAsync started");
-
         if (!_settings.Current.UpdateCheckEnabled)
         {
             _logger.LogInformation("[UpdateService] Update check is disabled in settings");
