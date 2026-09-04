@@ -305,7 +305,6 @@ public class MountWatcherCli
 				importSettings);
 			_logger.LogInformation($"Import completed for {cameraPath}: " +
 			                       $"{result.Count} items processed");
-			GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
 		}
 		catch ( Exception ex )
 		{
