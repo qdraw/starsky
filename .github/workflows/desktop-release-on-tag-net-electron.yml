@@ -398,10 +398,10 @@ jobs:
         shell: pwsh
         run: |
           vpk pack `
-            --packId "Starsky Desktop" `
+            --packId Starsky.Desktop `
             --packVersion ${{ steps.get_version.outputs.VERSION }} `
             --packDir ./publish-win `
-            --mainExe "Starsky Desktop.exe" `
+            --mainExe Starsky.Desktop.exe `
             --outputDir ./velopack-releases `
             --packTitle "Starsky Desktop" `
             --icon windows/Resources/starsky.ico
