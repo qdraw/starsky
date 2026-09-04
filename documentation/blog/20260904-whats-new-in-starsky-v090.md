@@ -15,8 +15,6 @@ Electron is gone, replaced by native desktop apps on both macOS and Windows.
 
 <!-- truncate -->
 
----
-
 ### 🚨 Breaking Changes
 
 - **Native desktop apps replace Electron (PR #3238, #3234)**
