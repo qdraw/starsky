@@ -328,6 +328,32 @@ public sealed class XmpReadHelperTest
 	}
 
 	[TestMethod]
+	[DataRow("2026-04-21T10:20:30Z", 2026, true)]
+	[DataRow("not-a-date", 1, false)]
+	[DataRow("0001-04-21T10:20:30Z", 1, false)]
+	[DataRow("   ", 1, false)]
+	public void XmpReadHelperTest_GetData_ImageClassificationGeneratedAtCases(string generatedAtValue,
+		int expectedYear, bool shouldSetGeneratedAt)
+	{
+		var xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		              "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		              "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		              $"<qdraw:ImageClassificationGeneratedAt>{generatedAtValue}</qdraw:ImageClassificationGeneratedAt>" +
+		              "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		if ( shouldSetGeneratedAt )
+		{
+			Assert.AreEqual(expectedYear, data.ImageClassificationGeneratedAt.Year);
+			return;
+		}
+
+		Assert.AreEqual(default, data.ImageClassificationGeneratedAt);
+	}
+
+	[TestMethod]
 	public void XmpReadHelperTest_GetData_QdrawImageStabilizationOn()
 	{
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
