@@ -89,9 +89,17 @@ internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) 
 			new MountDetectedEventArgs { MountPath = mountPath, DetectedAt = DateTime.UtcNow });
 	}
 
-	public virtual void Dispose()
+	public void Dispose()
 	{
-		_pollCts.Dispose();
+		Dispose(true);
 		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+		if ( disposing )
+		{
+			_pollCts.Dispose();
+		}
 	}
 }

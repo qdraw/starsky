@@ -18,9 +18,18 @@ public sealed class BaseMountWatcherTest
 	public void BaseMountWatcher_Dispose_DoesNotThrow()
 	{
 		var sut = new TestBaseMountWatcher();
-		sut.Dispose();
-		// double-dispose must also be safe
-		sut.Dispose();
+		Exception? caught = null;
+		try
+		{
+			sut.Dispose();
+			sut.Dispose(); // double-dispose must also be safe
+		}
+		catch ( Exception ex )
+		{
+			caught = ex;
+		}
+
+		Assert.IsNull(caught, $"Dispose threw: {caught?.Message}");
 	}
 
 	[TestMethod]
