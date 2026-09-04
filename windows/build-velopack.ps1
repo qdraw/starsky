@@ -147,10 +147,10 @@ $env:VPK_SIGN_TEMPLATE = $null
 $env:VPK_SIGN_PARAMS   = $null
 
 vpk pack `
-    --packId      Starsky.Desktop `
+    --packId      "Starsky Desktop" `
     --packVersion $Version `
     --packDir     $PublishDir `
-    --mainExe     Starsky.Desktop.exe `
+    --mainExe     "Starsky Desktop.exe" `
     --outputDir   $OutputDir `
     --packTitle   "Starsky Desktop" `
     --icon        $IconPath
@@ -176,4 +176,4 @@ if (-not $SetupExe) {
 # ---------------------------------------------------------------------------
 Write-Host "`nBuild complete." -ForegroundColor Green
 Write-Host "  Installer : $(Join-Path $OutputDir 'starsky-win-x64-desktop.exe')"
-Write-Host "  Feed      : $OutputDir\*.nupkg + RELEASES*"
+Write-Host "  Feed      : $OutputDir\*.nupkg + releases.win.json"
