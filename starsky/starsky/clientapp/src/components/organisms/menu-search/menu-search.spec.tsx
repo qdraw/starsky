@@ -81,10 +81,10 @@ describe("MenuSearch", () => {
         (screen.queryByTestId("menu-menu-button") as HTMLButtonElement).click();
       });
 
-      expect(screen.queryByTestId("undo-selection")).toBeTruthy();
-      expect(screen.queryByTestId("export")).toBeTruthy();
-      expect(screen.queryByTestId("publish")).toBeTruthy();
-      expect(screen.queryByTestId("select-further")).toBeTruthy();
+      expect(screen.getByTestId("undo-selection")).toBeTruthy();
+      expect(screen.getByTestId("export")).toBeTruthy();
+      expect(screen.getByTestId("publish")).toBeTruthy();
+      expect(screen.getByTestId("select-further")).toBeTruthy();
 
       component.unmount();
       Router.navigate("/");
