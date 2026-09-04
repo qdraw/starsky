@@ -26,6 +26,38 @@ public sealed class OnStartupSyncBackgroundServiceTest
 	public TestContext TestContext { get; set; }
 
 	[TestMethod]
+	public async Task OnStartupSyncBackgroundService_NonWebController_SkipsSync()
+	{
+		var services = new ServiceCollection();
+		services.AddSingleton<IRealtimeConnectionsService, FakeIRealtimeConnectionsService>();
+		services.AddSingleton(new AppSettings
+		{
+			SyncOnStartup = true,
+			ApplicationType = AppSettings.StarskyAppType.MountWatcher
+		});
+		services.AddSingleton<ISynchronize, FakeISynchronize>();
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		services.AddSingleton<ISettingsService, FakeISettingsService>();
+		services.AddSingleton<IOnStartupSync, OnStartupSync>();
+		services.AddSingleton<IBackgroundJobHandler, OnStartupSyncJobHandler>();
+		services.AddSingleton<INotificationQuery, FakeINotificationQuery>();
+		services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+		services.AddSingleton<IDiskWatcherBackgroundTaskQueue>(sp =>
+			new FakeDiskWatcherUpdateBackgroundTaskQueue(
+				sp.GetRequiredService<IServiceScopeFactory>()));
+
+		var serviceProvider = services.BuildServiceProvider();
+		var finalScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var startupSync = new OnStartupSyncBackgroundService(finalScopeFactory);
+		await startupSync.StartAsync(CancellationToken.None);
+
+		var synchronize = serviceProvider.GetRequiredService<ISynchronize>() as FakeISynchronize;
+		Assert.IsNotNull(synchronize);
+		Assert.IsEmpty(synchronize.Inputs);
+	}
+
+	[TestMethod]
 	public async Task OnStartupSyncBackgroundService_DoesStoreAfterWards()
 	{
 		var services = new ServiceCollection();

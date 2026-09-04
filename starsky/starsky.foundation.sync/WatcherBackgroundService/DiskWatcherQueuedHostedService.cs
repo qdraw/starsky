@@ -32,6 +32,11 @@ public sealed class DiskWatcherQueuedHostedService : BackgroundService
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
+		if ( _appSettings.ApplicationType != AppSettings.StarskyAppType.WebController )
+		{
+			return;
+		}
+
 		_logger.LogInformation("Queued Hosted Service for DiskWatcher");
 		await ProcessTaskQueue.ProcessBatchedLoopAsync(_taskQueue, _logger,
 			_appSettings, stoppingToken, _scopeFactory);

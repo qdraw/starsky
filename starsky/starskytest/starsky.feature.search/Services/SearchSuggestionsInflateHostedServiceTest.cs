@@ -84,6 +84,25 @@ public sealed class SearchSuggestionsInflateHostedServiceTest
 
 
 	[TestMethod]
+	public async Task StartAsync_NonWebController_DoesNotInflate()
+	{
+		var testContent = new FileIndexItem { Tags = "test, nonwebcontroller" };
+		_dbContext.FileIndex.AddRange(Enumerable.Repeat(testContent, 13));
+		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		var logger = new FakeIWebLogger();
+		await new SearchSuggestionsInflateHostedService(_scopeFactory, _memoryCache,
+			logger,
+			new AppSettings
+			{
+				ApplicationType = AppSettings.StarskyAppType.MountWatcher
+			}).StartAsync(TestContext.CancellationTokenSource.Token);
+
+		Assert.HasCount(0, logger.TrackedDebug.Where(p =>
+			p.Item2?.Contains("Cache inflated successfully") == true));
+	}
+
+	[TestMethod]
 	public async Task Inflate_Error_Test()
 	{
 		var logger = new FakeIWebLogger();
