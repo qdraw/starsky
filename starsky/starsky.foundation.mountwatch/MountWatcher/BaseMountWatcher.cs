@@ -16,6 +16,7 @@ internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) 
 	protected readonly int PollIntervalMs = pollIntervalMs;
 	protected bool IsRunning;
 	protected internal Thread? WatchThread;
+	private readonly CancellationTokenSource _pollCts = new();
 
 	public event EventHandler<MountDetectedEventArgs>? MountDetected;
 
@@ -34,6 +35,8 @@ internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) 
 	/// </summary>
 	public abstract List<string> GetMountedVolumes();
 
+	protected void CancelPolling() => _pollCts.Cancel();
+
 	/// <summary>
 	///     Run polling fallback - polls for mount changes at regular intervals
 	/// </summary>
@@ -45,7 +48,11 @@ internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) 
 		{
 			try
 			{
-				Thread.Sleep(PollIntervalMs);
+				_pollCts.Token.WaitHandle.WaitOne(PollIntervalMs);
+				if ( !IsRunning )
+				{
+					break;
+				}
 
 				var currentMounts = GetMountedVolumes();
 				var newMounts = currentMounts.Except(previousMounts).ToList();
@@ -68,7 +75,7 @@ internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) 
 			}
 			catch
 			{
-				Thread.Sleep(PollIntervalMs);
+				_pollCts.Token.WaitHandle.WaitOne(PollIntervalMs);
 			}
 		}
 	}
