@@ -513,6 +513,17 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
 
+      - name: Detect pre-release
+        id: detect_prerelease
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION="${GITHUB_REF/refs\/tags\//}"
+          if [[ "$VERSION" =~ -(alpha|beta|rc) ]]; then
+            echo "IS_PRERELEASE=true" >> $GITHUB_OUTPUT
+          else
+            echo "IS_PRERELEASE=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64
@@ -559,7 +570,7 @@ jobs:
             ## Changelog
             [There is an changelog to see the recent changes](https://docs.qdraw.nl/docs/advanced-options/history/#${{ steps.get_tag_name.outputs.VERSION }})
           draft: true
-          prerelease: false
+          prerelease: ${{ steps.detect_prerelease.outputs.IS_PRERELEASE == 'true' }}
 
       # - name: Upload Release Asset osx-x64 -- reference only
       #   id: upload-osx-x64
