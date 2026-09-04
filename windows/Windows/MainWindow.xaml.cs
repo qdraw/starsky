@@ -327,7 +327,7 @@ public partial class MainWindow
         CheckForUpdatesMenuItem.IsEnabled = false;
         try
         {
-            if (await _updateService.CheckAsync())
+            if (await _updateService.CheckNowAsync())
             {
                 new UpdateWindow(_updateService).Show();
             }
