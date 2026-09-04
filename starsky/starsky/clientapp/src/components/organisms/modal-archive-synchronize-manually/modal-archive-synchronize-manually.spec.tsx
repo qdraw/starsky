@@ -161,6 +161,27 @@ describe("ModalArchiveSynchronizeManually", () => {
 
         fetchGetSpy.mockReset();
       });
+
+      it("uses the root folder for empty parent folders", async () => {
+        const fetchGetSpy = jest.spyOn(FetchGet, "default");
+        const fetchPostSpy = jest
+          .spyOn(FetchPost, "default")
+          .mockImplementation(() => Promise.resolve({ statusCode: 200 } as IConnectionDefault));
+        const component = render(
+          <ModalArchiveSynchronizeManually isOpen={true} parentFolder="" handleExit={() => {}} />
+        );
+
+        await act(async () => {
+          component.getByTestId("geo-sync").click();
+          component.getByTestId("thumbnail-generation").click();
+        });
+
+        expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().UrlGeoSync(), "f=%2F");
+        expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().UrlThumbnailGeneration(), "f=%2F");
+
+        component.unmount();
+        fetchGetSpy.mockReset();
+      });
     });
 
     it("test if handleExit is called", () => {
