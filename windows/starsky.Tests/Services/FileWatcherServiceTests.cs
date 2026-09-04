@@ -69,6 +69,8 @@ public sealed class FileWatcherServiceTests : IDisposable
 
         await File.WriteAllBytesAsync(path, [1, 2, 3], TestContext.CancellationToken);
 
+        Assert.IsTrue(File.Exists(path), "Test file should exist after creation");
+
         // Wait for watcher event + debounce timer (500 ms) to fire without throwing
         await Task.Delay(700, TestContext.CancellationToken);
 
@@ -82,6 +84,9 @@ public sealed class FileWatcherServiceTests : IDisposable
         var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.tmp");
 
         await File.WriteAllBytesAsync(path, [1, 2, 3], TestContext.CancellationToken);
+
+        Assert.IsTrue(File.Exists(path), "Test file should exist after creation");
+
         await Task.Delay(200, TestContext.CancellationToken);
 
         try { File.Delete(path); } catch { /* best-effort */ }
@@ -142,6 +147,8 @@ public sealed class FileWatcherServiceTests : IDisposable
 
         var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.jpg");
         await File.WriteAllBytesAsync(path, [0xFF, 0xD8, 0xFF, 0xE0], TestContext.CancellationToken);
+
+        Assert.IsTrue(File.Exists(path), "Test file should exist after creation");
 
         // Wait for watcher debounce + background upload to complete
         await Task.Delay(1200, TestContext.CancellationToken);
