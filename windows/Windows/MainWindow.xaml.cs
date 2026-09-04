@@ -329,7 +329,9 @@ public partial class MainWindow
         {
             if (await _updateService.CheckNowAsync())
             {
-                new UpdateWindow(_updateService).Show();
+                var w = new UpdateWindow(_updateService);
+                w.Show();
+                w.Activate();
             }
             else
             {

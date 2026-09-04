@@ -112,11 +112,24 @@ public partial class App : Application
         splash.Close();
 
         // 10. Schedule update check
-        _ = Task.Delay(5000).ContinueWith(async _ =>
+        _ = Task.Run(async () =>
         {
-            if (await updateService.CheckAsync())
+            await Task.Delay(5000);
+            try
             {
-                await Dispatcher.InvokeAsync(() => new UpdateWindow(updateService).Show());
+                if (await updateService.CheckAsync())
+                {
+                    await Dispatcher.InvokeAsync(() =>
+                    {
+                        var w = new UpdateWindow(updateService);
+                        w.Show();
+                        w.Activate();
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "[App] Update check or UpdateWindow failed");
             }
         });
     }

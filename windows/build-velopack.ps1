@@ -176,4 +176,4 @@ if (-not $SetupExe) {
 # ---------------------------------------------------------------------------
 Write-Host "`nBuild complete." -ForegroundColor Green
 Write-Host "  Installer : $(Join-Path $OutputDir 'starsky-win-x64-desktop.exe')"
-Write-Host "  Feed      : $OutputDir\*.nupkg + RELEASES*"
+Write-Host "  Feed      : $OutputDir\*.nupkg + releases.win.json"
