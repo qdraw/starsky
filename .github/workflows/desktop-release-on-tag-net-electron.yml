@@ -424,7 +424,7 @@ jobs:
           name: starsky-win-x64-velopack-feed
           path: |
             ./velopack-releases/*.nupkg
-            ./velopack-releases/RELEASES*
+            ./velopack-releases/releases.win.json
 
   create_release:
     name: Create Release
@@ -527,7 +527,7 @@ jobs:
             ./desktop-releases/starsky-mac-x64-desktop.dmg
             ./desktop-releases/starsky-win-x64-desktop.exe
             ./desktop-releases/*.nupkg
-            ./desktop-releases/RELEASES*
+            ./desktop-releases/releases.win.json
             ./starsky/starsky-linux-arm.zip
             ./starsky/starsky-linux-arm64.zip
             ./starsky/starsky-osx-x64.zip

@@ -47,6 +47,8 @@
                 <Separator x:Name="CheckForUpdatesSeparator"/>
                 <MenuItem Header="_Documentation" Click="Documentation_Click"/>
                 <MenuItem Header="_Release Overview" Click="ReleaseOverview_Click"/>
+                <Separator/>
+                <MenuItem Header="_About Starsky…" Click="About_Click"/>
             </MenuItem>
         </Menu>
 
