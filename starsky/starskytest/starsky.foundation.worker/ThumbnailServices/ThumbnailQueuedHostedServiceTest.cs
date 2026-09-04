@@ -15,8 +15,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.worker.CpuEventListener.Interfaces;
 using starsky.foundation.worker.Backends;
+using starsky.foundation.worker.CpuEventListener.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Models;
@@ -297,8 +297,9 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		Assert.IsNotNull(method);
 		method.Invoke(service, [CancellationToken.None]);
 
-		Assert.DoesNotContain(fakeLogger.TrackedInformation,
-			p => p.Item2?.Contains("Queued Hosted Service for Thumbnails") == true);
+		Assert.DoesNotContain(
+			p => p.Item2?.Contains("Queued Hosted Service for Thumbnails") == true,
+			fakeLogger.TrackedInformation);
 	}
 
 	[TestMethod]
@@ -369,4 +370,3 @@ internal sealed class RecordingThumbnailQueueBackendFactory : IQueueBackendFacto
 		return _backend;
 	}
 }
-

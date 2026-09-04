@@ -3,11 +3,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starskytest.FakeMocks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace starskytest.starsky.foundation.sync.WatcherBackgroundService;
 
@@ -59,12 +59,13 @@ public sealed class DiskWatcherQueuedHostedServiceTest
 
 		var dynMethod = service.GetType().GetMethod("ExecuteAsync",
 			                BindingFlags.NonPublic | BindingFlags.Instance) ??
-			            throw new Exception("missing ExecuteAsync");
+		                throw new Exception("missing ExecuteAsync");
 
 		dynMethod.Invoke(service, [CancellationToken.None]);
 
-		Assert.DoesNotContain(logger.TrackedInformation,
-			p => p.Item2?.Contains("Queued Hosted Service for DiskWatcher") == true);
+		Assert.DoesNotContain(
+			p => p.Item2?.Contains("Queued Hosted Service for DiskWatcher") == true,
+			logger.TrackedInformation);
 	}
 
 	[TestMethod]
