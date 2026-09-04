@@ -21,17 +21,25 @@ public sealed class ThumbnailQueuedHostedService : BackgroundService
 	private readonly IServiceScopeFactory _scopeFactory;
 	private readonly IThumbnailQueuedHostedService _taskQueue;
 
+	private readonly AppSettings _appSettings;
+
 	public ThumbnailQueuedHostedService(
 		IThumbnailQueuedHostedService taskQueue,
 		IWebLogger logger, AppSettings appSettings,
 		IServiceScopeFactory scopeFactory)
 	{
-		(_taskQueue, _logger, _, _scopeFactory) = (taskQueue, logger, appSettings,
+		(_taskQueue, _logger, _appSettings, _scopeFactory) = (taskQueue, logger, appSettings,
 			scopeFactory);
 	}
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
+		if ( _appSettings.ApplicationType is not AppSettings.StarskyAppType.WebController
+		     and not AppSettings.StarskyAppType.Thumbnail )
+		{
+			return;
+		}
+
 		_logger.LogInformation("Queued Hosted Service for Thumbnails");
 		await ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger,
 			stoppingToken, _scopeFactory);

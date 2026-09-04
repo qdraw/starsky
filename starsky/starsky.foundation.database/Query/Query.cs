@@ -158,7 +158,7 @@ public partial class Query : IQuery
 
 		cachedSubPaths = await QueryGetItemsByHashAsync(fileHash);
 
-		_cache.Set(queryHashListCacheName, cachedSubPaths, new TimeSpan(48, 0, 0));
+		_cache.Set(queryHashListCacheName, cachedSubPaths, new TimeSpan(1, 0, 0));
 		return ( List<string> ) cachedSubPaths;
 	}
 

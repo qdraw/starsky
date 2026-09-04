@@ -3,11 +3,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starskytest.FakeMocks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace starskytest.starsky.foundation.sync.WatcherBackgroundService;
 
@@ -43,6 +43,29 @@ public sealed class DiskWatcherQueuedHostedServiceTest
 		Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2
 			?.Contains("Queued Hosted Service"));
 		source.Dispose();
+	}
+
+	[TestMethod]
+	public void DiskWatcherQueuedHostedService_NonWebController_DoesNotRun()
+	{
+		var logger = new FakeIWebLogger();
+		var scopeFactory = new ServiceCollection().BuildServiceProvider()
+			.GetRequiredService<IServiceScopeFactory>();
+		var service = new DiskWatcherQueuedHostedService(
+			new FakeDiskWatcherUpdateBackgroundTaskQueue(),
+			logger,
+			new AppSettings { ApplicationType = AppSettings.StarskyAppType.MountWatcher },
+			scopeFactory);
+
+		var dynMethod = service.GetType().GetMethod("ExecuteAsync",
+			                BindingFlags.NonPublic | BindingFlags.Instance) ??
+		                throw new Exception("missing ExecuteAsync");
+
+		dynMethod.Invoke(service, [CancellationToken.None]);
+
+		Assert.DoesNotContain(
+			p => p.Item2?.Contains("Queued Hosted Service for DiskWatcher") == true,
+			logger.TrackedInformation);
 	}
 
 	[TestMethod]

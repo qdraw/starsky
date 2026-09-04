@@ -53,6 +53,8 @@ describe('Archive (from upload) (21)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
 
+    cy.get(flow.content)
+
     cy.get(
       '[data-filepath="/starsky-end2end-test/20200822_111408.jpg"]'
     ).should('have.length', 1)
