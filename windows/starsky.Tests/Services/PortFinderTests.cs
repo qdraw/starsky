@@ -9,7 +9,7 @@ public class PortFinderTests
     public void FindFreePort_ReturnsPositivePort()
     {
         var port = PortFinder.FindFreePort();
-        Assert.IsTrue(port > 0, $"Expected positive port, got {port}");
+        Assert.IsGreaterThan(0, port, $"Expected positive port, got {port}");
     }
 
     [TestMethod]
@@ -30,6 +30,6 @@ public class PortFinderTests
         // Ports can in theory be re-used, but two rapid calls rarely return the same value
         var ports = Enumerable.Range(0, 5).Select(_ => PortFinder.FindFreePort()).ToList();
         // At minimum all are valid
-        foreach (var p in ports) Assert.IsTrue(p > 0);
+        foreach (var p in ports) Assert.IsGreaterThan(0, p);
     }
 }

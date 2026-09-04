@@ -13,7 +13,7 @@ public class DesktopSettingsTests
         Assert.AreEqual(string.Empty, s.RemoteBaseUrl);
         Assert.IsTrue(s.UpdateCheckEnabled);
         Assert.IsNull(s.LastUpdateWarningShown);
-        Assert.AreEqual(0, s.Windows.Count);
+        Assert.IsEmpty(s.Windows);
     }
 
     [TestMethod]
@@ -38,7 +38,7 @@ public class DesktopSettingsTests
         Assert.AreEqual(original.RemoteBaseUrl, restored.RemoteBaseUrl);
         Assert.AreEqual(original.UpdateCheckEnabled, restored.UpdateCheckEnabled);
         Assert.AreEqual(original.LastUpdateWarningShown, restored.LastUpdateWarningShown);
-        Assert.AreEqual(1, restored.Windows.Count);
+        Assert.HasCount(1, restored.Windows);
         Assert.AreEqual("?f=/test", restored.Windows[0].Route);
         Assert.AreEqual(50, restored.Windows[0].Left);
         Assert.IsTrue(restored.Windows[0].IsMaximized);

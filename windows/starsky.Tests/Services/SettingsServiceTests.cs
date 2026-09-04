@@ -34,7 +34,7 @@ public sealed class SettingsServiceTests : IDisposable
         var s = svc.Load();
         Assert.AreEqual(RuntimeMode.Local, s.Mode);
         Assert.IsTrue(s.UpdateCheckEnabled);
-        Assert.AreEqual(0, s.Windows.Count);
+        Assert.IsEmpty(s.Windows);
     }
 
     [TestMethod]

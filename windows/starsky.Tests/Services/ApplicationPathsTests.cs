@@ -79,12 +79,12 @@ public class ApplicationPathsTests
     [TestMethod]
     public void ApplicationInfo_Version_MatchesSemver()
     {
-        StringAssert.Matches(ApplicationInfo.Version, new Regex(@"^\d+\.\d+\.\d+"));
+        Assert.MatchesRegex(ApplicationInfo.Version, @"^\d+\.\d+\.\d+");
     }
 
     [TestMethod]
     public void ApplicationInfo_Version_DoesNotContainBuildMetadata()
     {
-        Assert.IsFalse(ApplicationInfo.Version.Contains("+"));
+        Assert.DoesNotContain("+", ApplicationInfo.Version);
     }
 }

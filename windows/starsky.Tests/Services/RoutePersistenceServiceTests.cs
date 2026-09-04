@@ -22,7 +22,7 @@ public sealed class RoutePersistenceServiceTests : IDisposable
     [TestMethod]
     public void GetRoutes_WhenEmpty_ReturnsEmptyList()
     {
-        Assert.AreEqual(0, _sut.GetRoutes().Count);
+        Assert.IsEmpty(_sut.GetRoutes());
     }
 
     [TestMethod]
@@ -31,7 +31,7 @@ public sealed class RoutePersistenceServiceTests : IDisposable
         _sut.SaveRoute(0, "?f=/photos");
 
         var routes = _sut.GetRoutes();
-        Assert.AreEqual(1, routes.Count);
+        Assert.HasCount(1, routes);
         Assert.AreEqual("?f=/photos", routes[0].Route);
     }
 
@@ -56,7 +56,7 @@ public sealed class RoutePersistenceServiceTests : IDisposable
         _sut.SaveRoute(2, "?f=/deep");
 
         var routes = _sut.GetRoutes();
-        Assert.AreEqual(3, routes.Count);
+        Assert.HasCount(3, routes);
         Assert.AreEqual("?f=/", routes[0].Route);
         Assert.AreEqual("?f=/", routes[1].Route);
         Assert.AreEqual("?f=/deep", routes[2].Route);
@@ -71,7 +71,7 @@ public sealed class RoutePersistenceServiceTests : IDisposable
         _sut.RemoveRoute(0);
 
         var routes = _sut.GetRoutes();
-        Assert.AreEqual(1, routes.Count);
+        Assert.HasCount(1, routes);
         Assert.AreEqual("?f=/b", routes[0].Route);
     }
 
@@ -83,7 +83,7 @@ public sealed class RoutePersistenceServiceTests : IDisposable
 
         _sut.ClearAll();
 
-        Assert.AreEqual(0, _sut.GetRoutes().Count);
+        Assert.IsEmpty(_sut.GetRoutes());
     }
 
     public void Dispose()

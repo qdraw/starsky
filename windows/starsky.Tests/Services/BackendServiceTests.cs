@@ -43,9 +43,9 @@ public class BackendServiceTests
         Assert.AreEqual("true", env["app__UseLocalDesktop"]);
         Assert.AreEqual("Administrator", env["app__AccountRegisterDefaultRole"]);
         Assert.AreEqual("false", env["app__Verbose"]);
-        CollectionAssert.Contains(env.Keys.ToList(), "app__databaseConnection");
-        CollectionAssert.Contains(env.Keys.ToList(), "app__tempFolder");
-        CollectionAssert.Contains(env.Keys.ToList(), "app__appsettingspath");
+        Assert.Contains("app__databaseConnection", env.Keys);
+        Assert.Contains("app__tempFolder", env.Keys);
+        Assert.Contains("app__appsettingspath", env.Keys);
     }
 
     [TestMethod]
@@ -125,8 +125,8 @@ public class BackendServiceTests
 
         BackendService.SetEnvironment(env, 5000);
 
-        CollectionAssert.Contains(env.Keys.ToList(), "app__thumbnailTempFolder");
-        CollectionAssert.Contains(env.Keys.ToList(), "app__appsettingslocalpath");
+        Assert.Contains("app__thumbnailTempFolder", env.Keys);
+        Assert.Contains("app__appsettingslocalpath", env.Keys);
         Assert.AreEqual("300", env["app__ThumbnailGenerationIntervalInMinutes"]);
     }
 
@@ -190,7 +190,7 @@ public class BackendServiceTests
         await BackendService.WaitForHealthAsync(http, "http://localhost:5000",
             onWaiting: msg => messages.Add(msg));
 
-        Assert.AreEqual(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual("Waiting for backend…", messages[0]);
     }
 
@@ -213,7 +213,7 @@ public class BackendServiceTests
         try { await BackendService.CheckVersionCompatibilityAsync(http, "http://localhost:5000", "0.8.1"); } catch (InvalidOperationException e) { ex = e; }
         Assert.IsNotNull(ex);
 
-        Assert.IsTrue(ex.Message.Contains("0.8.1"));
+        Assert.Contains("0.8.1", ex.Message);
     }
 
     [TestMethod]

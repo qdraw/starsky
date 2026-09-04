@@ -60,10 +60,10 @@ public sealed class DailyFileLoggerProviderTests : IDisposable
         logger.LogInformation("Hello from test");
 
         var files = Directory.GetFiles(_logDir, "*.log");
-        Assert.AreEqual(1, files.Length);
+        Assert.HasCount(1, files);
         var content = File.ReadAllText(files[0]);
-        Assert.IsTrue(content.Contains("Hello from test"));
-        Assert.IsTrue(content.Contains("MyCategory"));
+        Assert.Contains("Hello from test", content);
+        Assert.Contains("MyCategory", content);
     }
 
     [TestMethod]
@@ -74,7 +74,7 @@ public sealed class DailyFileLoggerProviderTests : IDisposable
 
         logger.LogDebug("should be ignored");
 
-        Assert.AreEqual(0, Directory.GetFiles(_logDir, "*.log").Length);
+        Assert.IsEmpty(Directory.GetFiles(_logDir, "*.log"));
     }
 
     [TestMethod]
@@ -87,7 +87,7 @@ public sealed class DailyFileLoggerProviderTests : IDisposable
         catch (Exception ex) { logger.LogError(ex, "an error occurred"); }
 
         var content = File.ReadAllText(Directory.GetFiles(_logDir, "*.log")[0]);
-        Assert.IsTrue(content.Contains("test-exception"));
+        Assert.Contains("test-exception", content);
     }
 
     [TestMethod]
@@ -100,8 +100,8 @@ public sealed class DailyFileLoggerProviderTests : IDisposable
         logger.LogInformation("second");
 
         var content = File.ReadAllText(Directory.GetFiles(_logDir, "*.log")[0]);
-        Assert.IsTrue(content.Contains("first"));
-        Assert.IsTrue(content.Contains("second"));
+        Assert.Contains("first", content);
+        Assert.Contains("second", content);
     }
 
     [TestMethod]

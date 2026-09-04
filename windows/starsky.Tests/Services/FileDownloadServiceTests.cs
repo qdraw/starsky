@@ -11,6 +11,8 @@ public sealed class FileDownloadServiceTests : IDisposable
     private const string StarskyPath = "/test-session/photo.jpg";
     private readonly string _expectedFile;
 
+    public TestContext TestContext { get; set; } = null!;
+
     public FileDownloadServiceTests()
     {
         // Replicate the service's path calculation exactly so the assertion matches on Windows too.
@@ -48,7 +50,7 @@ public sealed class FileDownloadServiceTests : IDisposable
         await svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: false);
 
         Assert.IsTrue(File.Exists(_expectedFile));
-        CollectionAssert.AreEqual(photoBytes, await File.ReadAllBytesAsync(_expectedFile));
+        Assert.AreSequenceEqual(photoBytes, await File.ReadAllBytesAsync(_expectedFile, TestContext.CancellationToken));
     }
 
     [TestMethod]
@@ -91,7 +93,8 @@ public sealed class FileDownloadServiceTests : IDisposable
 
         Assert.IsTrue(File.Exists(_expectedFile));
         var localDir = Path.GetDirectoryName(_expectedFile)!;
-        Assert.IsFalse(Directory.GetFiles(localDir).Any(f => f.EndsWith(".xmp", StringComparison.OrdinalIgnoreCase)));
+        var xmpFiles = Directory.GetFiles(localDir).Where(f => f.EndsWith(".xmp", StringComparison.OrdinalIgnoreCase));
+        Assert.IsEmpty(xmpFiles);
     }
 
     [TestMethod]

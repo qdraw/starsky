@@ -190,7 +190,7 @@ public sealed class UpdateServiceTests : IDisposable
         await svc.TryAppcastFallbackAsync();
 
         Assert.IsNotNull(capturedUrl);
-        Assert.IsTrue(capturedUrl.Contains("?pre-release=1"));
+        Assert.Contains("?pre-release=1", capturedUrl!);
     }
 
     [TestMethod]
@@ -207,7 +207,7 @@ public sealed class UpdateServiceTests : IDisposable
         await svc.TryAppcastFallbackAsync();
 
         Assert.IsNotNull(capturedUrl);
-        Assert.IsFalse(capturedUrl.Contains("?pre-release=1"));
+        Assert.DoesNotContain("?pre-release=1", capturedUrl!);
     }
 
     [TestMethod]

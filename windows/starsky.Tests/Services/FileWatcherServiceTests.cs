@@ -10,6 +10,8 @@ public sealed class FileWatcherServiceTests : IDisposable
 {
     private readonly FileWatcherService _sut = new(NullLogger<FileWatcherService>.Instance);
 
+    public TestContext TestContext { get; set; } = null!;
+
     [TestMethod]
     public void Start_DoesNotThrow()
     {
@@ -65,13 +67,12 @@ public sealed class FileWatcherServiceTests : IDisposable
         _sut.Start();
         var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.jpg");
 
-        await File.WriteAllBytesAsync(path, [1, 2, 3]);
+        await File.WriteAllBytesAsync(path, [1, 2, 3], TestContext.CancellationToken);
 
         // Wait for watcher event + debounce timer (500 ms) to fire without throwing
-        await Task.Delay(700);
+        await Task.Delay(700, TestContext.CancellationToken);
 
         try { File.Delete(path); } catch { /* best-effort */ }
-        Assert.IsTrue(true); // reaching here without exception is the assertion
     }
 
     [TestMethod]
@@ -80,11 +81,10 @@ public sealed class FileWatcherServiceTests : IDisposable
         _sut.Start();
         var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.tmp");
 
-        await File.WriteAllBytesAsync(path, [1, 2, 3]);
-        await Task.Delay(200);
+        await File.WriteAllBytesAsync(path, [1, 2, 3], TestContext.CancellationToken);
+        await Task.Delay(200, TestContext.CancellationToken);
 
         try { File.Delete(path); } catch { /* best-effort */ }
-        Assert.IsTrue(true);
     }
 
     [TestMethod]
@@ -103,8 +103,8 @@ public sealed class FileWatcherServiceTests : IDisposable
     {
         var result = FileWatcherService.LocalPathToStarskyPath(@"C:\some\other\file.jpg");
 
-        Assert.IsTrue(result.StartsWith("/"));
-        Assert.IsFalse(result.Contains("\\"));
+        Assert.StartsWith("/", result);
+        Assert.DoesNotContain("\\", result);
     }
 
     [TestMethod]
@@ -141,13 +141,12 @@ public sealed class FileWatcherServiceTests : IDisposable
         sut.SetUploadContext("http://localhost:5000", null);
 
         var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.jpg");
-        await File.WriteAllBytesAsync(path, [0xFF, 0xD8, 0xFF, 0xE0]);
+        await File.WriteAllBytesAsync(path, [0xFF, 0xD8, 0xFF, 0xE0], TestContext.CancellationToken);
 
         // Wait for watcher debounce + background upload to complete
-        await Task.Delay(1200);
+        await Task.Delay(1200, TestContext.CancellationToken);
 
         try { File.Delete(path); } catch { /* best-effort */ }
-        Assert.IsTrue(true); // reaching here without unhandled exception is the assertion
     }
 
     public void Dispose()

@@ -63,7 +63,7 @@ public class RemoteUrlValidatorTests
         var result = await svc.ValidateAsync("http://localhost:5000");
 
         Assert.IsFalse(result.Success);
-        Assert.IsTrue(result.Error!.Contains("403"));
+        Assert.Contains("403", result.Error!);
     }
 
     [TestMethod]
