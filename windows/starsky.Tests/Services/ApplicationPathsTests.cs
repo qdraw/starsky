@@ -79,7 +79,7 @@ public class ApplicationPathsTests
     [TestMethod]
     public void ApplicationInfo_Version_MatchesSemver()
     {
-        Assert.MatchesRegex(ApplicationInfo.Version, @"^\d+\.\d+\.\d+");
+        Assert.MatchesRegex(@"^\d+\.\d+\.\d+", ApplicationInfo.Version);
     }
 
     [TestMethod]
