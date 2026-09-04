@@ -260,8 +260,8 @@ public sealed class XmpReadHelperTest
 		// qdraw:SuggestedTags bag items contain whitespace-only values -> early return path
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
 		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
-		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
-		                       "<rdf:li>cat</rdf:li><rdf:li>   </rdf:li></rdf:Bag></ai:SuggestedTags>" +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'><qdraw:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>cat</rdf:li><rdf:li>   </rdf:li></rdf:Bag></qdraw:SuggestedTags>" +
 		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
 
 		var data =
@@ -278,8 +278,8 @@ public sealed class XmpReadHelperTest
 		// An ai bag with only whitespace items and no prior value produces empty SuggestedTags
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
 		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
-		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
-		                       "<rdf:li>   </rdf:li></rdf:Bag></ai:SuggestedTags>" +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'><qdraw:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>   </rdf:li></rdf:Bag></qdraw:SuggestedTags>" +
 		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
 
 		var data =
@@ -295,8 +295,8 @@ public sealed class XmpReadHelperTest
 		// RejectedTags starts empty and stays empty when all bag items are whitespace
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
 		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
-		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:RejectedTags><rdf:Bag>" +
-		                       "<rdf:li></rdf:li></rdf:Bag></ai:RejectedTags>" +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'><qdraw:RejectedTags><rdf:Bag>" +
+		                       "<rdf:li></rdf:li></rdf:Bag></qdraw:RejectedTags>" +
 		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
 
 		var data =
@@ -310,11 +310,11 @@ public sealed class XmpReadHelperTest
 	{
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
 		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
-		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
-		                       "<rdf:li>cat</rdf:li><rdf:li>park</rdf:li></rdf:Bag></ai:SuggestedTags>" +
-		                       "<ai:RejectedTags><rdf:Bag><rdf:li>car</rdf:li></rdf:Bag></ai:RejectedTags>" +
-		                       "<ai:ImageClassificationModel>vit-base-1</ai:ImageClassificationModel>" +
-		                       "<ai:ImageClassificationGeneratedAt>2026-04-21T10:20:30Z</ai:ImageClassificationGeneratedAt>" +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'><qdraw:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>cat</rdf:li><rdf:li>park</rdf:li></rdf:Bag></qdraw:SuggestedTags>" +
+		                       "<qdraw:RejectedTags><rdf:Bag><rdf:li>car</rdf:li></rdf:Bag></qdraw:RejectedTags>" +
+		                       "<qdraw:ImageClassificationModel>vit-base-1</qdraw:ImageClassificationModel>" +
+		                       "<qdraw:ImageClassificationGeneratedAt>2026-04-21T10:20:30Z</qdraw:ImageClassificationGeneratedAt>" +
 		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
 
 		var data =
