@@ -257,7 +257,7 @@ public sealed class XmpReadHelperTest
 	public void AddCommaSeparatedUnique_EmptyNextValue_ReturnsCurrentValue()
 	{
 		// Tests AddCommaSeparatedUnique: when next is empty the current value is preserved
-		// ai:SuggestedTags bag items contain whitespace-only values -> early return path
+		// qdraw:SuggestedTags bag items contain whitespace-only values -> early return path
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
 		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
 		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +

@@ -222,7 +222,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		var value = updateModel.SuggestedTags.QuotesCommandLineEscape();
-		command += $" -sep \", \" -XMP-ai:SuggestedTags=\"{value}\" ";
+		command += $" -sep \", \" -XMP-qdraw:SuggestedTags=\"{value}\" ";
 
 		return command;
 	}
@@ -237,7 +237,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		var value = updateModel.RejectedTags.QuotesCommandLineEscape();
-		command += $" -sep \", \" -XMP-ai:RejectedTags=\"{value}\" ";
+		command += $" -sep \", \" -XMP-qdraw:RejectedTags=\"{value}\" ";
 
 		return command;
 	}
@@ -254,7 +254,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		var value = updateModel.ImageClassificationModel.QuotesCommandLineEscape();
-		command += $" -XMP-ai:ImageClassificationModel=\"{value}\" ";
+		command += $" -XMP-qdraw:ImageClassificationModel=\"{value}\" ";
 
 		return command;
 	}
@@ -272,7 +272,7 @@ public sealed class ExifToolCmdHelper
 
 		var value = updateModel.ImageClassificationGeneratedAt.ToString("o",
 			CultureInfo.InvariantCulture);
-		command += $" -XMP-ai:ImageClassificationGeneratedAt=\"{value}\" ";
+		command += $" -XMP-qdraw:ImageClassificationGeneratedAt=\"{value}\" ";
 
 		return command;
 	}

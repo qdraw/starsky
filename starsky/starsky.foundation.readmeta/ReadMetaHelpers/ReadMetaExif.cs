@@ -130,25 +130,25 @@ public sealed class ReadMetaExif
 	{
 		var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
 
-		var suggestedTags = GetXmpDataList(xmpDirectory, "ai:SuggestedTags[");
+		var suggestedTags = GetXmpDataList(xmpDirectory, "qdraw:SuggestedTags[");
 		if ( !string.IsNullOrWhiteSpace(suggestedTags) )
 		{
 			item.SuggestedTags = suggestedTags;
 		}
 
-		var rejectedTags = GetXmpDataList(xmpDirectory, "ai:RejectedTags[");
+		var rejectedTags = GetXmpDataList(xmpDirectory, "qdraw:RejectedTags[");
 		if ( !string.IsNullOrWhiteSpace(rejectedTags) )
 		{
 			item.RejectedTags = rejectedTags;
 		}
 
-		var model = GetXmpData(xmpDirectory, "ai:ImageClassificationModel");
+		var model = GetXmpData(xmpDirectory, "qdraw:ImageClassificationModel");
 		if ( !string.IsNullOrWhiteSpace(model) )
 		{
 			item.ImageClassificationModel = model;
 		}
 
-		var generatedAt = GetXmpData(xmpDirectory, "ai:ImageClassificationGeneratedAt");
+		var generatedAt = GetXmpData(xmpDirectory, "qdraw:ImageClassificationGeneratedAt");
 		if ( !string.IsNullOrWhiteSpace(generatedAt) &&
 		     DateTime.TryParse(generatedAt, CultureInfo.InvariantCulture,
 			     DateTimeStyles.RoundtripKind, out var parsedGeneratedAt) &&
