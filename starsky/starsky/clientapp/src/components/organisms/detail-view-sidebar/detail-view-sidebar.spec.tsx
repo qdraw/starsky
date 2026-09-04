@@ -1,7 +1,9 @@
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import { render, RenderResult } from "@testing-library/react";
 import { act, JSX } from "react";
+import { MemoryRouter } from "react-router-dom";
 import { DetailViewContext } from "../../../contexts/detailview-context";
+import * as UseFetch from "../../../hooks/use-fetch";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView, IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
@@ -10,11 +12,13 @@ import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { ClipboardHelper } from "../../../shared/clipboard-helper";
 import { parseDate, parseTime } from "../../../shared/date";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
+import { FileListCache } from "../../../shared/filelist-cache";
 import { Keyboard } from "../../../shared/keyboard/keyboard";
 import { SupportedLanguages } from "../../../shared/language";
 import * as ClearSearchCache from "../../../shared/search/clear-search-cache";
 import { UrlQuery } from "../../../shared/url/url-query";
 import { LimitLength } from "../../atoms/form-control/limit-length";
+import * as ColorClassSelectModule from "../../molecules/color-class-select/color-class-select";
 import * as ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
 import DetailViewSidebar from "./detail-view-sidebar";
 
@@ -669,6 +673,176 @@ describe("DetailViewSidebar", () => {
       // });
 
       // await waitFor(() => expect(keyboardSpy).toHaveBeenCalled());
+
+      component.unmount();
+    });
+  });
+
+  describe("Additional coverage", () => {
+    const state = {
+      breadcrumb: [],
+      fileIndexItem: { filePath: "/test.jpg", status: IExifStatus.Ok } as IFileIndexItem,
+      status: IExifStatus.Default,
+      pageType: PageType.DetailView,
+      colorClassActiveList: []
+    } as unknown as IDetailView;
+
+    it("pressing t or i focuses the tags field", () => {
+      let tiHandlerIsCalled = false;
+
+      function keyboardCallback(regex: RegExp, callback: (arg0: KeyboardEvent) => void) {
+        if (regex.source === "^([ti])$") {
+          tiHandlerIsCalled = true;
+          callback(
+            new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "t" })
+          );
+        }
+      }
+
+      jest
+        .spyOn(useKeyboardEvent, "default")
+        .mockReset()
+        .mockImplementationOnce(keyboardCallback)
+        .mockImplementationOnce(keyboardCallback)
+        .mockImplementationOnce(keyboardCallback);
+
+      jest.spyOn(Keyboard.prototype, "isInForm").mockReset().mockImplementationOnce(() => false);
+      const setFocusSpy = jest
+        .spyOn(Keyboard.prototype, "SetFocusOnEndField")
+        .mockReset()
+        .mockImplementationOnce(() => {});
+
+      const component = render(
+        <DetailViewSidebar
+          status={IExifStatus.Default}
+          filePath={"/t"}
+          state={state}
+          dispatch={jest.fn()}
+        ></DetailViewSidebar>
+      );
+
+      expect(tiHandlerIsCalled).toBeTruthy();
+      expect(setFocusSpy).toHaveBeenCalled();
+
+      component.unmount();
+    });
+
+    it("dismisses the copy notification when the close button is clicked", () => {
+      let cCallback: ((event: KeyboardEvent) => void) | undefined;
+
+      const keyboardEventSpy = jest
+        .spyOn(useKeyboardEvent, "default")
+        .mockImplementation((regex: RegExp, callback: (arg0: KeyboardEvent) => void) => {
+          if (regex.source === "^c$") {
+            cCallback = callback;
+          }
+        });
+
+      const isInFormSpy = jest
+        .spyOn(Keyboard.prototype, "isInForm")
+        .mockImplementation(() => false);
+      jest.spyOn(ClipboardHelper.prototype, "Copy").mockImplementationOnce(() => true);
+
+      const component = render(
+        <DetailViewSidebar
+          status={IExifStatus.Default}
+          filePath={"/t"}
+          state={state}
+          dispatch={jest.fn()}
+        ></DetailViewSidebar>
+      );
+
+      act(() => {
+        cCallback?.(
+          new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "c" })
+        );
+      });
+
+      const closeButton = component.queryByTestId("notification-close") as HTMLElement;
+      expect(closeButton).not.toBeNull();
+
+      act(() => {
+        closeButton.click();
+      });
+
+      expect(component.queryByTestId("notification-close")).toBeNull();
+
+      keyboardEventSpy.mockRestore();
+      isInFormSpy.mockRestore();
+      component.unmount();
+    });
+
+    it("processes the info API response, dispatches an update and renders collections", async () => {
+      const dispatchSpy = jest.fn();
+      const infoFileIndexItem = [
+        { filePath: "/test.jpg", imageWidth: 200, imageHeight: 100, size: 12345 },
+        { filePath: "/other.jpg" }
+      ] as IFileIndexItem[];
+
+      const useFetchSpy = jest.spyOn(UseFetch, "default").mockReturnValue({
+        statusCode: 200,
+        data: infoFileIndexItem
+      } as IConnectionDefault);
+
+      const component = render(
+        <MemoryRouter>
+          <DetailViewSidebar
+            status={IExifStatus.Default}
+            filePath={"/test.jpg"}
+            state={state}
+            dispatch={dispatchSpy}
+          ></DetailViewSidebar>
+        </MemoryRouter>
+      );
+
+      await waitFor(() => expect(dispatchSpy).toHaveBeenCalled());
+
+      expect(dispatchSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "update", filePath: "/test.jpg" })
+      );
+
+      const collectionLinks = component.queryAllByTestId("collections");
+      expect(collectionLinks).toHaveLength(2);
+
+      useFetchSpy.mockRestore();
+      component.unmount();
+    });
+
+    it("invokes onToggle on the color class select to update state and clear caches", () => {
+      const dispatchSpy = jest.fn();
+      const clearSearchCacheSpy = jest
+        .spyOn(ClearSearchCache, "ClearSearchCache")
+        .mockImplementationOnce(() => {});
+      const cacheCleanSpy = jest
+        .spyOn(FileListCache.prototype, "CacheCleanEverything")
+        .mockImplementationOnce(() => {});
+
+      const colorClassSelectSpy = jest
+        .spyOn(ColorClassSelectModule, "default")
+        .mockImplementationOnce((props) => {
+          props.onToggle(5);
+          return <></>;
+        });
+
+      const component = render(
+        <DetailViewSidebar
+          status={IExifStatus.Default}
+          filePath={"/test.jpg"}
+          state={state}
+          dispatch={dispatchSpy}
+        ></DetailViewSidebar>
+      );
+
+      expect(colorClassSelectSpy).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "update",
+          filePath: "/test.jpg",
+          colorclass: 5
+        })
+      );
+      expect(clearSearchCacheSpy).toHaveBeenCalled();
+      expect(cacheCleanSpy).toHaveBeenCalled();
 
       component.unmount();
     });
