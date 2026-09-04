@@ -5,6 +5,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.foundation.platform.Models;
 
 [TestClass]
+[DoNotParallelize]
 public class OpenTelemetrySettingsTest
 {
 	[TestMethod]

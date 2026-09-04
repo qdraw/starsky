@@ -24,6 +24,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.demo.Services;
 
 [TestClass]
+[DoNotParallelize]
 public class CleanDemoDataServiceTest
 {
 	private readonly AppSettings _appSettings;

@@ -16,6 +16,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.packagetelemetry.Helpers;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class PackageTelemetryTest
 {
 	private readonly IServiceScopeFactory? _nullServiceScopeFactory = null;

@@ -7,6 +7,7 @@ using starskythumbnailcli;
 namespace starskytest.starskythumbnailcli;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class ProgramTest
 {
 	private static string? _ffmpegSkipDownloadOnStartup;

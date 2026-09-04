@@ -98,7 +98,7 @@ public sealed class SearchSuggestionsInflateHostedServiceTest
 				ApplicationType = AppSettings.StarskyAppType.MountWatcher
 			}).StartAsync(TestContext.CancellationTokenSource.Token);
 
-		Assert.HasCount(0, logger.TrackedDebug.Where(p =>
+		Assert.IsEmpty(logger.TrackedDebug.Where(p =>
 			p.Item2?.Contains("Cache inflated successfully") == true));
 	}
 
@@ -113,8 +113,8 @@ public sealed class SearchSuggestionsInflateHostedServiceTest
 		var allSuggestions = await new SearchSuggestionsService(_dbContext,
 				_memoryCache, logger, new AppSettings())
 			.GetAllSuggestions();
-		Assert.HasCount(0, allSuggestions);
-		Assert.HasCount(0, logger.TrackedDebug.Where(p =>
+		Assert.IsEmpty(allSuggestions);
+		Assert.IsEmpty(logger.TrackedDebug.Where(p =>
 			p.Item2?.Contains("Cache inflated successfully") == true));
 		Assert.HasCount(1, logger.TrackedExceptions);
 	}

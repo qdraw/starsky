@@ -15,6 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.settings.Services;
 
 [TestClass]
+[DoNotParallelize]
 public class UpdateAppSettingsByPathTests
 {
 	[TestMethod]

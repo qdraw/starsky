@@ -13,6 +13,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starsky.foundation.platform.Models;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class AppSettingsTest
 {
 	private readonly AppSettings _appSettings;
