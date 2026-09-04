@@ -108,6 +108,9 @@ jobs:
             /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" `
             @prArgs
 
+      - name: Install dotnet-coverage
+        run: dotnet tool install --global dotnet-coverage
+
       - name: Build
         shell: pwsh
         run: dotnet build windows/starsky.Tests/starsky.Tests.csproj -c Release
@@ -115,12 +118,10 @@ jobs:
       - name: Test with coverage
         shell: pwsh
         run: |
-          dotnet test windows/starsky.Tests/starsky.Tests.csproj `
-            --no-build `
-            -c Release `
-            --collect:"XPlat Code Coverage" `
-            --results-directory TestResults/ `
-            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          dotnet-coverage collect `
+            --output TestResults/coverage.opencover.xml `
+            --output-format opencover `
+            "windows/starsky.Tests/bin/Release/net10.0-windows/starsky.Tests.exe"
 
       - name: End SonarQube analysis
         shell: pwsh
