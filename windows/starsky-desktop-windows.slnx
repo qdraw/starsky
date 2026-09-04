@@ -1,4 +1,12 @@
 <Solution>
+  <Folder Name="/Root/">
+    <File Path="../history.md" />
+  </Folder>
+  <Folder Name="/Root/Tools/" />
+  <Folder Name="/Root/Tools/BuildTools/">
+    <File Path="../starsky-tools/build-tools/app-version-update.js" />
+    <File Path="../starsky-tools/build-tools/package.json" />
+  </Folder>
   <Folder Name="/Solution/">
     <File Path=".editorconfig" />
   </Folder>
