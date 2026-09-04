@@ -36,7 +36,7 @@ public static class MergeCoverageFiles
 		}
 
 		var netCoreCoverageFile =
-			Path.Combine(rootDirectory, "starskytest/netcore-coverage.opencover.xml");
+			Path.Combine(rootDirectory, "starskytest/netcore-coverage.cobertura.xml");
 		if ( !FileExists(netCoreCoverageFile) )
 		{
 			throw new FileNotFoundException($"Missing .NET coverage file ${netCoreCoverageFile}");
