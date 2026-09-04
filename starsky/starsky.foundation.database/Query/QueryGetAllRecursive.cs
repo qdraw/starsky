@@ -62,10 +62,14 @@ public partial class Query
 				throw;
 			}
 
-			_logger.LogInformation($"[GetAllRecursiveAsync] Next Retry Timeout/interrupted " +
+			_logger.LogInformation($"[GetAllRecursiveAsync] Retry Timeout/interrupted " +
 			                       $"{exception.ErrorCode} in GetAllRecursiveAsync");
 
-			await Task.Delay(1000);
+			return await RetryHelper.DoAsync(LocalRetryQuery, TimeSpan.FromSeconds(2), 4);
+		}
+
+		async Task<List<FileIndexItem>> LocalRetryQuery()
+		{
 			var scope = new InjectServiceScope(_scopeFactory);
 			return await scope.ExecuteAsync(context => QueryRecursiveAsync(context, filePathList));
 		}
