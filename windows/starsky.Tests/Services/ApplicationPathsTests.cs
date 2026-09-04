@@ -3,85 +3,86 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
+[TestClass]
 public class ApplicationPathsTests
 {
-    [Fact]
+    [TestMethod]
     public void AppData_IsUnderApplicationData()
     {
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        Assert.StartsWith(appData, ApplicationPaths.AppData, StringComparison.OrdinalIgnoreCase);
+        Assert.IsTrue(ApplicationPaths.AppData.StartsWith(appData, StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public void TempFolder_IsUnderLocalApplicationData()
     {
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        Assert.StartsWith(localAppData, ApplicationPaths.TempFolder, StringComparison.OrdinalIgnoreCase);
+        Assert.IsTrue(ApplicationPaths.TempFolder.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public void AllPaths_ContainStarskySubdirectory()
     {
-        Assert.Contains("starsky", ApplicationPaths.AppData, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("starsky", ApplicationPaths.TempFolder, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("starsky", ApplicationPaths.LogsDir, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("starsky", ApplicationPaths.SettingsFile, StringComparison.OrdinalIgnoreCase);
+        Assert.IsTrue(ApplicationPaths.AppData.Contains("starsky", StringComparison.OrdinalIgnoreCase));
+        Assert.IsTrue(ApplicationPaths.TempFolder.Contains("starsky", StringComparison.OrdinalIgnoreCase));
+        Assert.IsTrue(ApplicationPaths.LogsDir.Contains("starsky", StringComparison.OrdinalIgnoreCase));
+        Assert.IsTrue(ApplicationPaths.SettingsFile.Contains("starsky", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public void RuntimeDir_IsRelativeToExecutable()
     {
-        Assert.EndsWith("runtime-starsky-win-x64", ApplicationPaths.RuntimeDir, StringComparison.OrdinalIgnoreCase);
+        Assert.IsTrue(ApplicationPaths.RuntimeDir.EndsWith("runtime-starsky-win-x64", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public void SettingsFile_HasJsonExtension()
     {
-        Assert.EndsWith(".json", ApplicationPaths.SettingsFile, StringComparison.OrdinalIgnoreCase);
+        Assert.IsTrue(ApplicationPaths.SettingsFile.EndsWith(".json", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public void AllSettingsPaths_HaveJsonExtension()
     {
-        Assert.EndsWith(".json", ApplicationPaths.AppSettingsFile, StringComparison.OrdinalIgnoreCase);
-        Assert.EndsWith(".json", ApplicationPaths.AppSettingsLocalFile, StringComparison.OrdinalIgnoreCase);
+        Assert.IsTrue(ApplicationPaths.AppSettingsFile.EndsWith(".json", StringComparison.OrdinalIgnoreCase));
+        Assert.IsTrue(ApplicationPaths.AppSettingsLocalFile.EndsWith(".json", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public void DatabaseFile_HasDbExtension()
     {
-        Assert.EndsWith(".db", ApplicationPaths.DatabaseFile, StringComparison.OrdinalIgnoreCase);
+        Assert.IsTrue(ApplicationPaths.DatabaseFile.EndsWith(".db", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public void WebView2UserData_IsUnderAppData()
     {
-        Assert.StartsWith(ApplicationPaths.AppData, ApplicationPaths.WebView2UserData, StringComparison.OrdinalIgnoreCase);
+        Assert.IsTrue(ApplicationPaths.WebView2UserData.StartsWith(ApplicationPaths.AppData, StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public void ThumbnailTempFolder_ContainsStarsky()
     {
-        Assert.Contains("starsky", ApplicationPaths.ThumbnailTempFolder, StringComparison.OrdinalIgnoreCase);
+        Assert.IsTrue(ApplicationPaths.ThumbnailTempFolder.Contains("starsky", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public void EnsureDirectories_CreatesRequiredFolders()
     {
         ApplicationPaths.EnsureDirectories();
 
-        Assert.True(Directory.Exists(ApplicationPaths.AppData));
-        Assert.True(Directory.Exists(ApplicationPaths.LogsDir));
-        Assert.True(Directory.Exists(ApplicationPaths.TempFolder));
+        Assert.IsTrue(Directory.Exists(ApplicationPaths.AppData));
+        Assert.IsTrue(Directory.Exists(ApplicationPaths.LogsDir));
+        Assert.IsTrue(Directory.Exists(ApplicationPaths.TempFolder));
     }
 
-    [Fact]
+    [TestMethod]
     public void ApplicationInfo_Version_MatchesSemver()
     {
-        Assert.Matches(@"^\d+\.\d+\.\d+", ApplicationInfo.Version);
+        Assert.MatchesRegex(@"^\d+\.\d+\.\d+", ApplicationInfo.Version);
     }
 
-    [Fact]
+    [TestMethod]
     public void ApplicationInfo_Version_DoesNotContainBuildMetadata()
     {
         Assert.DoesNotContain("+", ApplicationInfo.Version);

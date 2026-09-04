@@ -4,6 +4,7 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
+[TestClass]
 public sealed class RoutePersistenceServiceTests : IDisposable
 {
     private readonly string _tempFile;
@@ -18,23 +19,23 @@ public sealed class RoutePersistenceServiceTests : IDisposable
         _sut = new RoutePersistenceService(_settings);
     }
 
-    [Fact]
+    [TestMethod]
     public void GetRoutes_WhenEmpty_ReturnsEmptyList()
     {
-        Assert.Empty(_sut.GetRoutes());
+        Assert.IsEmpty(_sut.GetRoutes());
     }
 
-    [Fact]
+    [TestMethod]
     public void SaveRoute_AddsEntry()
     {
         _sut.SaveRoute(0, "?f=/photos");
 
         var routes = _sut.GetRoutes();
-        Assert.Single(routes);
-        Assert.Equal("?f=/photos", routes[0].Route);
+        Assert.HasCount(1, routes);
+        Assert.AreEqual("?f=/photos", routes[0].Route);
     }
 
-    [Fact]
+    [TestMethod]
     public void SaveRoute_WithGeometry_PersistsGeometry()
     {
         var geo = new SavedWindowState { Left = 50, Top = 60, Width = 800, Height = 600, IsMaximized = true };
@@ -42,26 +43,26 @@ public sealed class RoutePersistenceServiceTests : IDisposable
         _sut.SaveRoute(0, "?f=/", geo);
 
         var state = _sut.GetRoutes()[0];
-        Assert.Equal(50, state.Left);
-        Assert.Equal(60, state.Top);
-        Assert.Equal(800, state.Width);
-        Assert.Equal(600, state.Height);
-        Assert.True(state.IsMaximized);
+        Assert.AreEqual(50, state.Left);
+        Assert.AreEqual(60, state.Top);
+        Assert.AreEqual(800, state.Width);
+        Assert.AreEqual(600, state.Height);
+        Assert.IsTrue(state.IsMaximized);
     }
 
-    [Fact]
+    [TestMethod]
     public void SaveRoute_ExpandsListWithBlanks()
     {
         _sut.SaveRoute(2, "?f=/deep");
 
         var routes = _sut.GetRoutes();
-        Assert.Equal(3, routes.Count);
-        Assert.Equal("?f=/", routes[0].Route);
-        Assert.Equal("?f=/", routes[1].Route);
-        Assert.Equal("?f=/deep", routes[2].Route);
+        Assert.HasCount(3, routes);
+        Assert.AreEqual("?f=/", routes[0].Route);
+        Assert.AreEqual("?f=/", routes[1].Route);
+        Assert.AreEqual("?f=/deep", routes[2].Route);
     }
 
-    [Fact]
+    [TestMethod]
     public void RemoveRoute_RemovesEntry()
     {
         _sut.SaveRoute(0, "?f=/a");
@@ -70,11 +71,11 @@ public sealed class RoutePersistenceServiceTests : IDisposable
         _sut.RemoveRoute(0);
 
         var routes = _sut.GetRoutes();
-        Assert.Single(routes);
-        Assert.Equal("?f=/b", routes[0].Route);
+        Assert.HasCount(1, routes);
+        Assert.AreEqual("?f=/b", routes[0].Route);
     }
 
-    [Fact]
+    [TestMethod]
     public void ClearAll_EmptiesList()
     {
         _sut.SaveRoute(0, "?f=/a");
@@ -82,7 +83,7 @@ public sealed class RoutePersistenceServiceTests : IDisposable
 
         _sut.ClearAll();
 
-        Assert.Empty(_sut.GetRoutes());
+        Assert.IsEmpty(_sut.GetRoutes());
     }
 
     public void Dispose()

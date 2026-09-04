@@ -4,6 +4,7 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
+[TestClass]
 public sealed class SettingsServiceTests : IDisposable
 {
     private readonly string _tempDir;
@@ -20,42 +21,42 @@ public sealed class SettingsServiceTests : IDisposable
     {
         if (settingsJson != null)
         {
-	        File.WriteAllText(_settingsFile, settingsJson);
+            File.WriteAllText(_settingsFile, settingsJson);
         }
 
         return new SettingsService(NullLogger<SettingsService>.Instance, _settingsFile);
     }
 
-    [Fact]
+    [TestMethod]
     public void Load_MissingFile_ReturnsDefaults()
     {
         var svc = CreateService();
         var s = svc.Load();
-        Assert.Equal(RuntimeMode.Local, s.Mode);
-        Assert.True(s.UpdateCheckEnabled);
-        Assert.Empty(s.Windows);
+        Assert.AreEqual(RuntimeMode.Local, s.Mode);
+        Assert.IsTrue(s.UpdateCheckEnabled);
+        Assert.IsEmpty(s.Windows);
     }
 
-    [Fact]
+    [TestMethod]
     public void Load_ValidJson_RestoresSettings()
     {
         var json = """{"Mode":1,"RemoteBaseUrl":"https://example.com","UpdateCheckEnabled":false,"Windows":[]}""";
         var svc = CreateService(json);
         var s = svc.Load();
-        Assert.Equal(RuntimeMode.Remote, s.Mode);
-        Assert.Equal("https://example.com", s.RemoteBaseUrl);
-        Assert.False(s.UpdateCheckEnabled);
+        Assert.AreEqual(RuntimeMode.Remote, s.Mode);
+        Assert.AreEqual("https://example.com", s.RemoteBaseUrl);
+        Assert.IsFalse(s.UpdateCheckEnabled);
     }
 
-    [Fact]
+    [TestMethod]
     public void Load_CorruptJson_ReturnsDefaults()
     {
         var svc = CreateService("{not-valid-json}}}");
         var s = svc.Load();
-        Assert.Equal(RuntimeMode.Local, s.Mode);
+        Assert.AreEqual(RuntimeMode.Local, s.Mode);
     }
 
-    [Fact]
+    [TestMethod]
     public void Save_ThenLoad_RoundTrips()
     {
         var svc = CreateService();
@@ -68,11 +69,11 @@ public sealed class SettingsServiceTests : IDisposable
 
         var svc2 = new SettingsService(NullLogger<SettingsService>.Instance, _settingsFile);
         svc2.Load();
-        Assert.Equal(RuntimeMode.Remote, svc2.Current.Mode);
-        Assert.Equal("https://example.com", svc2.Current.RemoteBaseUrl);
+        Assert.AreEqual(RuntimeMode.Remote, svc2.Current.Mode);
+        Assert.AreEqual("https://example.com", svc2.Current.RemoteBaseUrl);
     }
 
-    [Fact]
+    [TestMethod]
     public void Save_NoArg_PersistsCurrentSettings()
     {
         var svc = CreateService();
@@ -82,28 +83,29 @@ public sealed class SettingsServiceTests : IDisposable
 
         var svc2 = new SettingsService(NullLogger<SettingsService>.Instance, _settingsFile);
         svc2.Load();
-        Assert.Equal("https://my-server.com", svc2.Current.RemoteBaseUrl);
+        Assert.AreEqual("https://my-server.com", svc2.Current.RemoteBaseUrl);
     }
 
-    [Fact]
+    [TestMethod]
     public void Save_ToInvalidPath_DoesNotThrow()
     {
         var badFile = Path.Combine(_tempDir, "sub", "deeper", "settings.json"); // parent doesn't exist
         var svc = new SettingsService(NullLogger<SettingsService>.Instance, badFile);
 
-        var ex = Record.Exception(() => svc.Save(new DesktopSettings()));
+        Exception? ex = null;
+        try { svc.Save(new DesktopSettings()); } catch (Exception e) { ex = e; }
 
-        Assert.Null(ex);
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public void Load_ReturnsCurrentAfterLoad()
     {
         var svc = CreateService();
 
         var settings = svc.Load();
 
-        Assert.Same(svc.Current, settings);
+        Assert.AreSame(svc.Current, settings);
     }
 
     public void Dispose()

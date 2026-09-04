@@ -4,6 +4,7 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
+[TestClass]
 public class WindowManagerTests
 {
     private static WindowManager CreateManager()
@@ -19,31 +20,34 @@ public class WindowManagerTests
             updateService, NullLogger<WindowManager>.Instance);
     }
 
-    [Fact]
+    [TestMethod]
     public void SetLocalPort_DoesNotThrow()
     {
         var wm = CreateManager();
-        var ex = Record.Exception(() => wm.SetLocalPort(9999));
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { wm.SetLocalPort(9999); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public void CloseAll_WithNoWindows_DoesNotThrow()
     {
         var wm = CreateManager();
-        var ex = Record.Exception(wm.CloseAll);
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { wm.CloseAll(); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public void ReloadAll_WithNoWindows_DoesNotThrow()
     {
         var wm = CreateManager();
-        var ex = Record.Exception(wm.ReloadAll);
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { wm.ReloadAll(); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public void MainWindowOptions_Properties_AreAccessible()
     {
         var settings = new SettingsService(NullLogger<SettingsService>.Instance);
@@ -73,111 +77,111 @@ public class WindowManagerTests
             WindowIndex = 3
         };
 
-        Assert.Same(settings, opts.Settings);
-        Assert.Same(routes, opts.Routes);
-        Assert.Same(webViewEnv, opts.WebViewEnv);
-        Assert.Same(fileDownload, opts.FileDownload);
-        Assert.Same(wm, opts.WindowManager);
-        Assert.Equal("http://localhost:5000", opts.BaseUrl);
-        Assert.Equal("?f=/photos", opts.InitialRoute);
-        Assert.Same(geometry, opts.Geometry);
-        Assert.Equal(3, opts.WindowIndex);
+        Assert.AreSame(settings, opts.Settings);
+        Assert.AreSame(routes, opts.Routes);
+        Assert.AreSame(webViewEnv, opts.WebViewEnv);
+        Assert.AreSame(fileDownload, opts.FileDownload);
+        Assert.AreSame(wm, opts.WindowManager);
+        Assert.AreEqual("http://localhost:5000", opts.BaseUrl);
+        Assert.AreEqual("?f=/photos", opts.InitialRoute);
+        Assert.AreSame(geometry, opts.Geometry);
+        Assert.AreEqual(3, opts.WindowIndex);
     }
 
     private static SavedWindowState OnScreen(double left = 200, double top = 200,
         double width = 1200, double height = 800, bool maximized = false) =>
         new() { Left = left, Top = top, Width = width, Height = height, IsMaximized = maximized };
 
-    [Fact]
+    [TestMethod]
     public void IsOnScreen_NormalWindowOnScreen_ReturnsTrue()
     {
-        Assert.True(WindowManager.IsOnScreen(OnScreen()));
+        Assert.IsTrue(WindowManager.IsOnScreen(OnScreen()));
     }
 
-    [Fact]
+    [TestMethod]
     public void IsOnScreen_Maximized_AlwaysReturnsTrue()
     {
         // Maximized windows may have any stored position; WPF snaps to nearest screen.
         var offscreen = OnScreen(left: -99999, top: -99999, maximized: true);
-        Assert.True(WindowManager.IsOnScreen(offscreen));
+        Assert.IsTrue(WindowManager.IsOnScreen(offscreen));
     }
 
-    [Fact]
+    [TestMethod]
     public void IsOnScreen_WindowFarOffLeftEdge_ReturnsFalse()
     {
         var state = OnScreen(left: -5000, top: 200);
-        Assert.False(WindowManager.IsOnScreen(state));
+        Assert.IsFalse(WindowManager.IsOnScreen(state));
     }
 
-    [Fact]
+    [TestMethod]
     public void IsOnScreen_WindowFarOffRightEdge_ReturnsFalse()
     {
         var state = OnScreen(left: 999_999, top: 200);
-        Assert.False(WindowManager.IsOnScreen(state));
+        Assert.IsFalse(WindowManager.IsOnScreen(state));
     }
 
-    [Fact]
+    [TestMethod]
     public void IsOnScreen_WindowFarAboveTopEdge_ReturnsFalse()
     {
         var state = OnScreen(left: 200, top: -5000);
-        Assert.False(WindowManager.IsOnScreen(state));
+        Assert.IsFalse(WindowManager.IsOnScreen(state));
     }
 
-    [Fact]
+    [TestMethod]
     public void IsOnScreen_WindowFarBelowBottomEdge_ReturnsFalse()
     {
         var state = OnScreen(left: 200, top: 999_999);
-        Assert.False(WindowManager.IsOnScreen(state));
+        Assert.IsFalse(WindowManager.IsOnScreen(state));
     }
 
-    [Fact]
+    [TestMethod]
     public void IsOnScreen_TooNarrow_ReturnsFalse()
     {
         var state = OnScreen(left: 200, top: 200, width: 50, height: 800);
-        Assert.False(WindowManager.IsOnScreen(state));
+        Assert.IsFalse(WindowManager.IsOnScreen(state));
     }
 
-    [Fact]
+    [TestMethod]
     public void IsOnScreen_TooShort_ReturnsFalse()
     {
         var state = OnScreen(left: 200, top: 200, width: 1200, height: 50);
-        Assert.False(WindowManager.IsOnScreen(state));
+        Assert.IsFalse(WindowManager.IsOnScreen(state));
     }
 
     // ── ResolveGeometry ───────────────────────────────────────────────────────
 
-    [Fact]
+    [TestMethod]
     public void ResolveGeometry_NullGeometry_ReturnsDefaultState()
     {
         var result = WindowManager.ResolveGeometry(null, 0);
 
-        Assert.Equal(100, result.Left);
-        Assert.Equal(100, result.Top);
-        Assert.Equal(1200, result.Width);
-        Assert.Equal(800, result.Height);
-        Assert.Equal("?f=/", result.Route);
+        Assert.AreEqual(100, result.Left);
+        Assert.AreEqual(100, result.Top);
+        Assert.AreEqual(1200, result.Width);
+        Assert.AreEqual(800, result.Height);
+        Assert.AreEqual("?f=/", result.Route);
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveGeometry_NullGeometry_WithOffset_AppliesOffset()
     {
         var result = WindowManager.ResolveGeometry(null, 48);
 
-        Assert.Equal(148, result.Left);
-        Assert.Equal(148, result.Top);
+        Assert.AreEqual(148, result.Left);
+        Assert.AreEqual(148, result.Top);
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveGeometry_OnScreenGeometry_ReturnsOriginal()
     {
         var geometry = OnScreen(left: 200, top: 200, width: 1200, height: 800);
 
         var result = WindowManager.ResolveGeometry(geometry, 0);
 
-        Assert.Same(geometry, result);
+        Assert.AreSame(geometry, result);
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveGeometry_OffScreenGeometry_ReturnsDefaultWithRoutePreserved()
     {
         var geometry = new SavedWindowState
@@ -191,15 +195,15 @@ public class WindowManagerTests
 
         var result = WindowManager.ResolveGeometry(geometry, 0);
 
-        Assert.Equal("?f=/photos", result.Route);
-        Assert.Equal(100, result.Left);
+        Assert.AreEqual("?f=/photos", result.Route);
+        Assert.AreEqual(100, result.Left);
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveGeometry_NullGeometry_RouteIsDefault()
     {
         var result = WindowManager.ResolveGeometry(null, 0);
 
-        Assert.Equal("?f=/", result.Route);
+        Assert.AreEqual("?f=/", result.Route);
     }
 }

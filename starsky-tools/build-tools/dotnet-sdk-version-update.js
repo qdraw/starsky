@@ -976,19 +976,12 @@ async function updateGlobalJsonFiles(filePathList, sdkVersionInput) {
 			console.log("✖ " + filePath + " - " + error);
 		}
 
-		// the global json needs to have a strictVersion property to be auto-upgraded
-		if (globalJsonFile?.strictVersion !== true) {
-			console.log(
-				"✖ " +
-				filePath +
-				" - strictVersion is not enabled so skip upgrade globalJson file"
-			);
+		if (!globalJsonFile?.sdk?.version) {
+			console.log("✖ " + filePath + " - sdk.version is not present, skipping");
+			continue;
 		}
 
-		if (
-			globalJsonFile?.strictVersion === true &&
-			globalJsonFile?.sdk?.version !== sdkVersion
-		) {
+		if (globalJsonFile.sdk.version !== sdkVersion) {
 			globalJsonFile.sdk.version = sdkVersion;
 			await writeFile(filePath, JSON.stringify(globalJsonFile, null, 4));
 		}

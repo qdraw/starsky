@@ -5,83 +5,94 @@ using starsky.Tests.Helpers;
 
 namespace starsky.Tests.Services;
 
+[TestClass]
 public sealed class FileWatcherServiceTests : IDisposable
 {
     private readonly FileWatcherService _sut = new(NullLogger<FileWatcherService>.Instance);
 
-    [Fact]
+    public TestContext TestContext { get; set; } = null!;
+
+    [TestMethod]
     public void Start_DoesNotThrow()
     {
-        var ex = Record.Exception(() => _sut.Start());
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { _sut.Start(); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public void Stop_BeforeStart_DoesNotThrow()
     {
-        var ex = Record.Exception(() => _sut.Stop());
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { _sut.Stop(); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public void Stop_AfterStart_DoesNotThrow()
     {
         _sut.Start();
-        var ex = Record.Exception(() => _sut.Stop());
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { _sut.Stop(); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public void Dispose_BeforeStart_IsIdempotent()
     {
-        var ex = Record.Exception(() => _sut.Dispose());
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { _sut.Dispose(); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public void Dispose_AfterStart_DoesNotThrow()
     {
         _sut.Start();
-        var ex = Record.Exception(() => _sut.Dispose());
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { _sut.Dispose(); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public void Start_CreatesTempFolderIfMissing()
     {
         _sut.Start();
-        Assert.True(Directory.Exists(ApplicationPaths.TempFolder));
+        Assert.IsTrue(Directory.Exists(ApplicationPaths.TempFolder));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FileCreated_NonTmpFile_TriggersDebounce()
     {
         _sut.Start();
         var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.jpg");
 
-        await File.WriteAllBytesAsync(path, [1, 2, 3]);
+        await File.WriteAllBytesAsync(path, [1, 2, 3], TestContext.CancellationToken);
+
+        Assert.IsTrue(File.Exists(path), "Test file should exist after creation");
 
         // Wait for watcher event + debounce timer (500 ms) to fire without throwing
-        await Task.Delay(700);
+        await Task.Delay(700, TestContext.CancellationToken);
 
         try { File.Delete(path); } catch { /* best-effort */ }
-        Assert.True(true); // reaching here without exception is the assertion
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FileCreated_TmpFile_IsIgnored()
     {
         _sut.Start();
         var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.tmp");
 
-        await File.WriteAllBytesAsync(path, [1, 2, 3]);
-        await Task.Delay(200);
+        await File.WriteAllBytesAsync(path, [1, 2, 3], TestContext.CancellationToken);
+
+        Assert.IsTrue(File.Exists(path), "Test file should exist after creation");
+
+        await Task.Delay(200, TestContext.CancellationToken);
 
         try { File.Delete(path); } catch { /* best-effort */ }
-        Assert.True(true);
     }
 
-    [Fact]
+    [TestMethod]
     public void LocalPathToStarskyPath_StripsWinTempFolderPrefix()
     {
         var tempFolder = ApplicationPaths.TempFolder;
@@ -89,10 +100,10 @@ public sealed class FileWatcherServiceTests : IDisposable
 
         var result = FileWatcherService.LocalPathToStarskyPath(localPath);
 
-        Assert.Equal("/photos/2024/image.jpg", result);
+        Assert.AreEqual("/photos/2024/image.jpg", result);
     }
 
-    [Fact]
+    [TestMethod]
     public void LocalPathToStarskyPath_WhenOutsideTempFolder_NormalizesSlashes()
     {
         var result = FileWatcherService.LocalPathToStarskyPath(@"C:\some\other\file.jpg");
@@ -101,30 +112,31 @@ public sealed class FileWatcherServiceTests : IDisposable
         Assert.DoesNotContain("\\", result);
     }
 
-    [Fact]
+    [TestMethod]
     public void GetUploadEndpoint_XmpLowercase_ReturnsSidecar()
-        => Assert.Equal("upload-sidecar", FileWatcherService.GetUploadEndpoint("photo.xmp"));
+        => Assert.AreEqual("upload-sidecar", FileWatcherService.GetUploadEndpoint("photo.xmp"));
 
-    [Fact]
+    [TestMethod]
     public void GetUploadEndpoint_XmpUppercase_ReturnsSidecar()
-        => Assert.Equal("upload-sidecar", FileWatcherService.GetUploadEndpoint("photo.XMP"));
+        => Assert.AreEqual("upload-sidecar", FileWatcherService.GetUploadEndpoint("photo.XMP"));
 
-    [Fact]
+    [TestMethod]
     public void GetUploadEndpoint_Jpg_ReturnsUpload()
-        => Assert.Equal("upload", FileWatcherService.GetUploadEndpoint("photo.jpg"));
+        => Assert.AreEqual("upload", FileWatcherService.GetUploadEndpoint("photo.jpg"));
 
-    [Fact]
+    [TestMethod]
     public void GetUploadEndpoint_NoExtension_ReturnsUpload()
-        => Assert.Equal("upload", FileWatcherService.GetUploadEndpoint("photo"));
+        => Assert.AreEqual("upload", FileWatcherService.GetUploadEndpoint("photo"));
 
-    [Fact]
+    [TestMethod]
     public void SetUploadContext_DoesNotThrow()
     {
-        var ex = Record.Exception(() => _sut.SetUploadContext("http://localhost:5000", "auth=abc"));
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { _sut.SetUploadContext("http://localhost:5000", "auth=abc"); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UploadFileAsync_WhenServerReturns500_DoesNotThrow()
     {
         using var http = new HttpClient(
@@ -134,13 +146,14 @@ public sealed class FileWatcherServiceTests : IDisposable
         sut.SetUploadContext("http://localhost:5000", null);
 
         var path = Path.Combine(ApplicationPaths.TempFolder, $"test-{Guid.NewGuid()}.jpg");
-        await File.WriteAllBytesAsync(path, [0xFF, 0xD8, 0xFF, 0xE0]);
+        await File.WriteAllBytesAsync(path, [0xFF, 0xD8, 0xFF, 0xE0], TestContext.CancellationToken);
+
+        Assert.IsTrue(File.Exists(path), "Test file should exist after creation");
 
         // Wait for watcher debounce + background upload to complete
-        await Task.Delay(1200);
+        await Task.Delay(1200, TestContext.CancellationToken);
 
         try { File.Delete(path); } catch { /* best-effort */ }
-        Assert.True(true); // reaching here without unhandled exception is the assertion
     }
 
     public void Dispose()
