@@ -145,10 +145,13 @@ public sealed class QueryGetAllRecursiveTest
 			new MySqlSaveDbExceptionContext(options, MySqlErrorCode.CommandTimeoutExpired),
 			null!, alwaysFailingScope, new FakeIWebLogger());
 
-		// Every attempt (initial + all retries) keeps timing out, so it should
-		// eventually give up and rethrow instead of retrying forever.
-		await Assert.ThrowsExactlyAsync<MySqlException>(async () =>
+		// Every attempt (initial + all retries) keeps timing out, so RetryHelper
+		// should eventually give up and rethrow (wrapped in an AggregateException)
+		// instead of crashing the whole process with an unhandled exception.
+		var aggregateException = await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
 			await fakeQuery.GetAllRecursiveAsync("test"));
+
+		Assert.IsTrue(aggregateException.InnerExceptions.All(p => p is MySqlException));
 	}
 
 	private static IServiceScopeFactory CreateAlwaysFailingScope(MySqlErrorCode code)
