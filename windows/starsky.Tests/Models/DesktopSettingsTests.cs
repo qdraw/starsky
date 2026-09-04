@@ -2,20 +2,21 @@ using Starsky.Desktop.Models;
 
 namespace starsky.Tests.Models;
 
+[TestClass]
 public class DesktopSettingsTests
 {
-    [Fact]
+    [TestMethod]
     public void Defaults_AreCorrect()
     {
         var s = new DesktopSettings();
-        Assert.Equal(RuntimeMode.Local, s.Mode);
-        Assert.Equal(string.Empty, s.RemoteBaseUrl);
-        Assert.True(s.UpdateCheckEnabled);
-        Assert.Null(s.LastUpdateWarningShown);
-        Assert.Empty(s.Windows);
+        Assert.AreEqual(RuntimeMode.Local, s.Mode);
+        Assert.AreEqual(string.Empty, s.RemoteBaseUrl);
+        Assert.IsTrue(s.UpdateCheckEnabled);
+        Assert.IsNull(s.LastUpdateWarningShown);
+        Assert.AreEqual(0, s.Windows.Count);
     }
 
-    [Fact]
+    [TestMethod]
     public void RoundTrip_Json_PreservesAllFields()
     {
         var original = new DesktopSettings
@@ -33,13 +34,13 @@ public class DesktopSettingsTests
         var json = JsonSerializer.Serialize(original);
         var restored = JsonSerializer.Deserialize<DesktopSettings>(json)!;
 
-        Assert.Equal(original.Mode, restored.Mode);
-        Assert.Equal(original.RemoteBaseUrl, restored.RemoteBaseUrl);
-        Assert.Equal(original.UpdateCheckEnabled, restored.UpdateCheckEnabled);
-        Assert.Equal(original.LastUpdateWarningShown, restored.LastUpdateWarningShown);
-        Assert.Single(restored.Windows);
-        Assert.Equal("?f=/test", restored.Windows[0].Route);
-        Assert.Equal(50, restored.Windows[0].Left);
-        Assert.True(restored.Windows[0].IsMaximized);
+        Assert.AreEqual(original.Mode, restored.Mode);
+        Assert.AreEqual(original.RemoteBaseUrl, restored.RemoteBaseUrl);
+        Assert.AreEqual(original.UpdateCheckEnabled, restored.UpdateCheckEnabled);
+        Assert.AreEqual(original.LastUpdateWarningShown, restored.LastUpdateWarningShown);
+        Assert.AreEqual(1, restored.Windows.Count);
+        Assert.AreEqual("?f=/test", restored.Windows[0].Route);
+        Assert.AreEqual(50, restored.Windows[0].Left);
+        Assert.IsTrue(restored.Windows[0].IsMaximized);
     }
 }

@@ -3,6 +3,7 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
+[TestClass]
 public sealed class DailyFileLoggerProviderTests : IDisposable
 {
     private readonly string _logDir;
@@ -13,44 +14,44 @@ public sealed class DailyFileLoggerProviderTests : IDisposable
         Directory.CreateDirectory(_logDir);
     }
 
-    [Fact]
+    [TestMethod]
     public void CreateLogger_ReturnsNonNullLogger()
     {
         using var provider = new DailyFileLoggerProvider(_logDir);
         var logger = provider.CreateLogger("TestCategory");
-        Assert.NotNull(logger);
+        Assert.IsNotNull(logger);
     }
 
-    [Fact]
+    [TestMethod]
     public void IsEnabled_InfoAndAbove_ReturnsTrue()
     {
         using var provider = new DailyFileLoggerProvider(_logDir);
         var logger = provider.CreateLogger("Test");
-        Assert.True(logger.IsEnabled(LogLevel.Information));
-        Assert.True(logger.IsEnabled(LogLevel.Warning));
-        Assert.True(logger.IsEnabled(LogLevel.Error));
-        Assert.True(logger.IsEnabled(LogLevel.Critical));
+        Assert.IsTrue(logger.IsEnabled(LogLevel.Information));
+        Assert.IsTrue(logger.IsEnabled(LogLevel.Warning));
+        Assert.IsTrue(logger.IsEnabled(LogLevel.Error));
+        Assert.IsTrue(logger.IsEnabled(LogLevel.Critical));
     }
 
-    [Fact]
+    [TestMethod]
     public void IsEnabled_Debug_ReturnsFalse()
     {
         using var provider = new DailyFileLoggerProvider(_logDir);
         var logger = provider.CreateLogger("Test");
-        Assert.False(logger.IsEnabled(LogLevel.Debug));
-        Assert.False(logger.IsEnabled(LogLevel.Trace));
+        Assert.IsFalse(logger.IsEnabled(LogLevel.Debug));
+        Assert.IsFalse(logger.IsEnabled(LogLevel.Trace));
     }
 
-    [Fact]
+    [TestMethod]
     public void BeginScope_ReturnsNull()
     {
         using var provider = new DailyFileLoggerProvider(_logDir);
         var logger = provider.CreateLogger("Test");
         var scope = logger.BeginScope("state");
-        Assert.Null(scope);
+        Assert.IsNull(scope);
     }
 
-    [Fact]
+    [TestMethod]
     public void Log_WritesMessageToFile()
     {
         using var provider = new DailyFileLoggerProvider(_logDir);
@@ -59,13 +60,13 @@ public sealed class DailyFileLoggerProviderTests : IDisposable
         logger.LogInformation("Hello from test");
 
         var files = Directory.GetFiles(_logDir, "*.log");
-        Assert.Single(files);
+        Assert.AreEqual(1, files.Length);
         var content = File.ReadAllText(files[0]);
-        Assert.Contains("Hello from test", content);
-        Assert.Contains("MyCategory", content);
+        Assert.IsTrue(content.Contains("Hello from test"));
+        Assert.IsTrue(content.Contains("MyCategory"));
     }
 
-    [Fact]
+    [TestMethod]
     public void Log_BelowThreshold_DoesNotWrite()
     {
         using var provider = new DailyFileLoggerProvider(_logDir);
@@ -73,10 +74,10 @@ public sealed class DailyFileLoggerProviderTests : IDisposable
 
         logger.LogDebug("should be ignored");
 
-        Assert.Empty(Directory.GetFiles(_logDir, "*.log"));
+        Assert.AreEqual(0, Directory.GetFiles(_logDir, "*.log").Length);
     }
 
-    [Fact]
+    [TestMethod]
     public void Log_WithException_IncludesExceptionInFile()
     {
         using var provider = new DailyFileLoggerProvider(_logDir);
@@ -86,10 +87,10 @@ public sealed class DailyFileLoggerProviderTests : IDisposable
         catch (Exception ex) { logger.LogError(ex, "an error occurred"); }
 
         var content = File.ReadAllText(Directory.GetFiles(_logDir, "*.log")[0]);
-        Assert.Contains("test-exception", content);
+        Assert.IsTrue(content.Contains("test-exception"));
     }
 
-    [Fact]
+    [TestMethod]
     public void Log_MultipleEntries_AllAppended()
     {
         using var provider = new DailyFileLoggerProvider(_logDir);
@@ -99,25 +100,27 @@ public sealed class DailyFileLoggerProviderTests : IDisposable
         logger.LogInformation("second");
 
         var content = File.ReadAllText(Directory.GetFiles(_logDir, "*.log")[0]);
-        Assert.Contains("first", content);
-        Assert.Contains("second", content);
+        Assert.IsTrue(content.Contains("first"));
+        Assert.IsTrue(content.Contains("second"));
     }
 
-    [Fact]
+    [TestMethod]
     public void Dispose_DoesNotThrow()
     {
         var provider = new DailyFileLoggerProvider(_logDir);
-        var ex = Record.Exception(() => provider.Dispose());
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { provider.Dispose(); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
-    [Fact]
+    [TestMethod]
     public void Dispose_CalledTwice_DoesNotThrow()
     {
         var provider = new DailyFileLoggerProvider(_logDir);
         provider.Dispose();
-        var ex = Record.Exception(() => provider.Dispose());
-        Assert.Null(ex);
+        Exception? ex = null;
+        try { provider.Dispose(); } catch (Exception e) { ex = e; }
+        Assert.IsNull(ex);
     }
 
     public void Dispose()

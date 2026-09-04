@@ -5,6 +5,7 @@ using starsky.Tests.Helpers;
 
 namespace starsky.Tests.Services;
 
+[TestClass]
 public sealed class FileDownloadServiceTests : IDisposable
 {
     private const string StarskyPath = "/test-session/photo.jpg";
@@ -35,7 +36,7 @@ public sealed class FileDownloadServiceTests : IDisposable
     private static TrackingFileDownloadService CreateTracking(params HttpResponseMessage[] responses) =>
         new TrackingFileDownloadService(new HttpClient(new FakeHttpMessageHandler(responses)));
 
-    [Fact]
+    [TestMethod]
     public async Task DownloadAndOpenAsync_ValidPath_WritesFileToDisk()
     {
         var photoBytes = new byte[] { 0xFF, 0xD8, 0xFF }; // minimal JPEG header
@@ -46,11 +47,11 @@ public sealed class FileDownloadServiceTests : IDisposable
 
         await svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: false);
 
-        Assert.True(File.Exists(_expectedFile));
-        Assert.Equal(photoBytes, await File.ReadAllBytesAsync(_expectedFile));
+        Assert.IsTrue(File.Exists(_expectedFile));
+        CollectionAssert.AreEqual(photoBytes, await File.ReadAllBytesAsync(_expectedFile));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DownloadAndOpenAsync_SidecarFails_StillDownloadsMain()
     {
         var photoBytes = new byte[] { 1, 2, 3 };
@@ -61,10 +62,10 @@ public sealed class FileDownloadServiceTests : IDisposable
 
         await svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: false);
 
-        Assert.True(File.Exists(_expectedFile));
+        Assert.IsTrue(File.Exists(_expectedFile));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DownloadAndOpenAsync_PhotoDownloadFails_Throws()
     {
         var svc = Create(
@@ -72,11 +73,12 @@ public sealed class FileDownloadServiceTests : IDisposable
             new HttpResponseMessage(HttpStatusCode.NotFound),
             new HttpResponseMessage(HttpStatusCode.InternalServerError));
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
-            svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: false));
+        Exception? caught = null;
+        try { await svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: false); } catch (HttpRequestException e) { caught = e; }
+        Assert.IsInstanceOfType<HttpRequestException>(caught);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DownloadAndOpenAsync_SidecarReturnsEmptyBytes_SkipsXmpFile()
     {
         var photoBytes = new byte[] { 0xFF, 0xD8, 0xFF };
@@ -87,12 +89,12 @@ public sealed class FileDownloadServiceTests : IDisposable
 
         await svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: false);
 
-        Assert.True(File.Exists(_expectedFile));
+        Assert.IsTrue(File.Exists(_expectedFile));
         var localDir = Path.GetDirectoryName(_expectedFile)!;
-        Assert.DoesNotContain(Directory.GetFiles(localDir), f => f.EndsWith(".xmp", StringComparison.OrdinalIgnoreCase));
+        Assert.IsFalse(Directory.GetFiles(localDir).Any(f => f.EndsWith(".xmp", StringComparison.OrdinalIgnoreCase)));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DownloadAndOpenAsync_WhenOpenFileTrue_CallsOpenWithDefaultApp()
     {
         var photoBytes = new byte[] { 0xFF, 0xD8, 0xFF };
@@ -103,11 +105,11 @@ public sealed class FileDownloadServiceTests : IDisposable
 
         await svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: true);
 
-        Assert.NotNull(svc.OpenedFile);
-        Assert.EndsWith("photo.jpg", svc.OpenedFile, StringComparison.OrdinalIgnoreCase);
+        Assert.IsNotNull(svc.OpenedFile);
+        Assert.IsTrue(svc.OpenedFile.EndsWith("photo.jpg", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DownloadAndOpenAsync_RootLevelPath_UsesBaseOfTempFolder()
     {
         const string rootPath = "root-photo.jpg";
@@ -120,7 +122,7 @@ public sealed class FileDownloadServiceTests : IDisposable
         await svc.DownloadAndOpenAsync(rootPath, "http://localhost:5000", openFile: false);
 
         var expectedFile = Path.Combine(ApplicationPaths.TempFolder, rootPath);
-        Assert.True(File.Exists(expectedFile));
+        Assert.IsTrue(File.Exists(expectedFile));
         try { File.Delete(expectedFile); } catch { /* best-effort */ }
     }
 

@@ -5,6 +5,7 @@ using starsky.Tests.Helpers;
 
 namespace starsky.Tests.Services;
 
+[TestClass]
 public class RemoteUrlValidatorTests
 {
     private static RemoteUrlValidator Create(HttpStatusCode status, string content = "") =>
@@ -12,60 +13,60 @@ public class RemoteUrlValidatorTests
             NullLogger<RemoteUrlValidator>.Instance,
             new HttpClient(new FakeHttpMessageHandler(status, content)));
 
-    [Fact]
+    [TestMethod]
     public async Task ValidateAsync_EmptyString_ReturnsFalse()
     {
         var svc = Create(HttpStatusCode.OK);
 
         var result = await svc.ValidateAsync(string.Empty);
 
-        Assert.False(result.Success);
+        Assert.IsFalse(result.Success);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ValidateAsync_InvalidScheme_ReturnsFalse()
     {
         var svc = Create(HttpStatusCode.OK);
 
         var result = await svc.ValidateAsync("ftp://example.com");
 
-        Assert.False(result.Success);
-        Assert.Contains("http", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.IsFalse(result.Success);
+        Assert.IsTrue(result.Error!.Contains("http", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ValidateAsync_WhenServerReturns200_ReturnsSuccess()
     {
         var svc = Create(HttpStatusCode.OK);
 
         var result = await svc.ValidateAsync("http://localhost:5000");
 
-        Assert.True(result.Success);
-        Assert.Null(result.Error);
+        Assert.IsTrue(result.Success);
+        Assert.IsNull(result.Error);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ValidateAsync_WhenServerReturns503_ReturnsSuccess()
     {
         var svc = Create(HttpStatusCode.ServiceUnavailable);
 
         var result = await svc.ValidateAsync("http://localhost:5000");
 
-        Assert.True(result.Success);
+        Assert.IsTrue(result.Success);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ValidateAsync_WhenServerReturnsOtherError_ReturnsFalse()
     {
         var svc = Create(HttpStatusCode.Forbidden);
 
         var result = await svc.ValidateAsync("http://localhost:5000");
 
-        Assert.False(result.Success);
-        Assert.Contains("403", result.Error);
+        Assert.IsFalse(result.Success);
+        Assert.IsTrue(result.Error!.Contains("403"));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ValidateAsync_WhenRequestThrows_ReturnsFalse()
     {
         var handler = new ThrowingHttpMessageHandler();
@@ -75,10 +76,10 @@ public class RemoteUrlValidatorTests
 
         var result = await svc.ValidateAsync("http://localhost:5000");
 
-        Assert.False(result.Success);
+        Assert.IsFalse(result.Success);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ValidateAsync_TrailingSlash_DoesNotAffectResult()
     {
         var svc = Create(HttpStatusCode.OK);
@@ -86,17 +87,17 @@ public class RemoteUrlValidatorTests
         var withSlash = await svc.ValidateAsync("http://localhost:5000/");
         var withoutSlash = await svc.ValidateAsync("http://localhost:5000");
 
-        Assert.Equal(withSlash.Success, withoutSlash.Success);
+        Assert.AreEqual(withSlash.Success, withoutSlash.Success);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ValidateAsync_HttpsScheme_IsAccepted()
     {
         var svc = Create(HttpStatusCode.OK);
 
         var result = await svc.ValidateAsync("https://example.com");
 
-        Assert.True(result.Success);
+        Assert.IsTrue(result.Success);
     }
 
     private sealed class ThrowingHttpMessageHandler : HttpMessageHandler

@@ -2,6 +2,7 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
+[TestClass]
 public class AppcastCheckerTests
 {
     private const string Ns = "http://www.andymatuschak.org/xml-namespaces/sparkle";
@@ -24,39 +25,39 @@ public class AppcastCheckerTests
         </rss>
         """;
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_ReturnsBeta3_WhenCurrentIsBeta1()
     {
         var xml = BuildAppcast("0.9.0-beta.3");
 
         var result = AppcastChecker.FindNewerRelease(xml, "0.9.0-beta.1");
 
-        Assert.NotNull(result);
-        Assert.Equal("0.9.0-beta.3", result.Value.Version);
-        Assert.Equal("https://github.com/qdraw/starsky/releases/tag/v0.9.0-beta.3", result.Value.HtmlUrl);
+        Assert.IsNotNull(result);
+        Assert.AreEqual("0.9.0-beta.3", result.Value.Version);
+        Assert.AreEqual("https://github.com/qdraw/starsky/releases/tag/v0.9.0-beta.3", result.Value.HtmlUrl);
     }
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_ReturnsNull_WhenAlreadyOnLatest()
     {
         var xml = BuildAppcast("0.9.0-beta.1");
 
         var result = AppcastChecker.FindNewerRelease(xml, "0.9.0-beta.1");
 
-        Assert.Null(result);
+        Assert.IsNull(result);
     }
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_ReturnsNull_WhenCurrentIsNewer()
     {
         var xml = BuildAppcast("0.9.0-beta.1");
 
         var result = AppcastChecker.FindNewerRelease(xml, "0.9.0-beta.3");
 
-        Assert.Null(result);
+        Assert.IsNull(result);
     }
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_PrefersShortVersionString_OverVersion()
     {
         // shortVersionString = beta.3, sparkle:version = beta.1 (mismatch — shortVersionString wins)
@@ -72,22 +73,22 @@ public class AppcastCheckerTests
 
         var result = AppcastChecker.FindNewerRelease(xml, "0.9.0-beta.1");
 
-        Assert.NotNull(result);
-        Assert.Equal("0.9.0-beta.3", result.Value.Version);
+        Assert.IsNotNull(result);
+        Assert.AreEqual("0.9.0-beta.3", result.Value.Version);
     }
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_FallsBackToVersion_WhenShortVersionStringAbsent()
     {
         var xml = BuildAppcast("0.9.0-beta.3", includeVersion: true, includeShortVersion: false);
 
         var result = AppcastChecker.FindNewerRelease(xml, "0.9.0-beta.1");
 
-        Assert.NotNull(result);
-        Assert.Equal("0.9.0-beta.3", result.Value.Version);
+        Assert.IsNotNull(result);
+        Assert.AreEqual("0.9.0-beta.3", result.Value.Version);
     }
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_ReturnsNull_WhenNoVersionElements()
     {
         const string xml = """
@@ -97,37 +98,37 @@ public class AppcastCheckerTests
 
         var result = AppcastChecker.FindNewerRelease(xml, "0.9.0-beta.1");
 
-        Assert.Null(result);
+        Assert.IsNull(result);
     }
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_ReturnsNull_WhenXmlIsInvalid()
     {
         var result = AppcastChecker.FindNewerRelease("not xml at all", "0.9.0");
 
-        Assert.Null(result);
+        Assert.IsNull(result);
     }
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_ReturnsNull_WhenXmlIsEmpty()
     {
         var result = AppcastChecker.FindNewerRelease(string.Empty, "0.9.0");
 
-        Assert.Null(result);
+        Assert.IsNull(result);
     }
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_StableVersionNewerThanPreRelease()
     {
         var xml = BuildAppcast("0.9.0");
 
         var result = AppcastChecker.FindNewerRelease(xml, "0.9.0-beta.3");
 
-        Assert.NotNull(result);
-        Assert.Equal("0.9.0", result.Value.Version);
+        Assert.IsNotNull(result);
+        Assert.AreEqual("0.9.0", result.Value.Version);
     }
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_UsesFirstItemWithNewerVersion()
     {
         // Two items — first is newer
@@ -143,18 +144,18 @@ public class AppcastCheckerTests
 
         var result = AppcastChecker.FindNewerRelease(xml, "0.9.0-beta.1");
 
-        Assert.NotNull(result);
-        Assert.Equal("0.9.0-beta.3", result.Value.Version);
+        Assert.IsNotNull(result);
+        Assert.AreEqual("0.9.0-beta.3", result.Value.Version);
     }
 
-    [Fact]
+    [TestMethod]
     public void FindNewerRelease_HtmlUrlPointsToGitHubRelease()
     {
         var xml = BuildAppcast("1.0.0");
 
         var result = AppcastChecker.FindNewerRelease(xml, "0.9.0");
 
-        Assert.NotNull(result);
-        Assert.Equal("https://github.com/qdraw/starsky/releases/tag/v1.0.0", result.Value.HtmlUrl);
+        Assert.IsNotNull(result);
+        Assert.AreEqual("https://github.com/qdraw/starsky/releases/tag/v1.0.0", result.Value.HtmlUrl);
     }
 }

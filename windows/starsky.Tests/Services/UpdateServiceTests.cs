@@ -4,6 +4,7 @@ using Starsky.Desktop.Services;
 
 namespace starsky.Tests.Services;
 
+[TestClass]
 public sealed class UpdateServiceTests : IDisposable
 {
     private readonly string _tempFile;
@@ -41,40 +42,40 @@ public sealed class UpdateServiceTests : IDisposable
 
     // --- CheckAsync routing ---
 
-    [Fact]
+    [TestMethod]
     public async Task CheckAsync_WhenUpdateCheckDisabled_ReturnsFalse()
     {
         _settings.Current.UpdateCheckEnabled = false;
 
-        Assert.False(await CreateService().CheckAsync());
+        Assert.IsFalse(await CreateService().CheckAsync());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CheckAsync_WhenWarningShownRecently_ReturnsFalse()
     {
         _settings.Current.UpdateCheckEnabled = true;
         _settings.Current.LastUpdateWarningShown = DateTime.UtcNow.AddMinutes(-1);
 
-        Assert.False(await CreateService().CheckAsync());
+        Assert.IsFalse(await CreateService().CheckAsync());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CheckAsync_WhenUpdateAvailable_ReturnsTrue()
     {
         _settings.Current.UpdateCheckEnabled = true;
 
-        Assert.True(await new FakeUpdateService(_settings, hasUpdate: true).CheckAsync());
+        Assert.IsTrue(await new FakeUpdateService(_settings, hasUpdate: true).CheckAsync());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CheckAsync_WhenNoUpdate_ReturnsFalse()
     {
         _settings.Current.UpdateCheckEnabled = true;
 
-        Assert.False(await new FakeUpdateService(_settings, hasUpdate: false).CheckAsync());
+        Assert.IsFalse(await new FakeUpdateService(_settings, hasUpdate: false).CheckAsync());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CheckAsync_WhenWarningShownLongAgo_ProceedsToCheck()
     {
         _settings.Current.UpdateCheckEnabled = true;
@@ -82,31 +83,34 @@ public sealed class UpdateServiceTests : IDisposable
 
         // Falls through to Velopack (unavailable in CI) then appcast stub — must not throw
         var svc = CreateService(httpGet: _ => Task.FromResult(AppcastXml("0.0.0")));
-        var ex = await Record.ExceptionAsync(() => svc.CheckAsync());
+        Exception? ex = null;
+        try { await svc.CheckAsync(); } catch (Exception e) { ex = e; }
 
-        Assert.Null(ex);
+        Assert.IsNull(ex);
     }
 
     // --- ApplyUpdateAsync ---
 
-    [Fact]
+    [TestMethod]
     public async Task ApplyUpdateAsync_WhenNoPendingUpdate_Throws()
     {
-        await Assert.ThrowsAsync<InvalidOperationException>(() => CreateService().ApplyUpdateAsync());
+        Exception? caught = null;
+        try { await CreateService().ApplyUpdateAsync(); } catch (InvalidOperationException e) { caught = e; }
+        Assert.IsInstanceOfType<InvalidOperationException>(caught);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApplyUpdateAsync_WhenReadyToApply_DoesNotThrow()
     {
-        var ex = await Record.ExceptionAsync(() =>
-            new FakeUpdateService(_settings, canApply: true).ApplyUpdateAsync());
+        Exception? ex = null;
+        try { await new FakeUpdateService(_settings, canApply: true).ApplyUpdateAsync(); } catch (Exception e) { ex = e; }
 
-        Assert.Null(ex);
+        Assert.IsNull(ex);
     }
 
     // --- RecordWarningShown ---
 
-    [Fact]
+    [TestMethod]
     public void RecordWarningShown_SetsTimestamp()
     {
         var before = DateTime.UtcNow.AddSeconds(-1);
@@ -114,19 +118,19 @@ public sealed class UpdateServiceTests : IDisposable
 
         var loaded = new SettingsService(NullLogger<SettingsService>.Instance, _tempFile);
         loaded.Load();
-        Assert.NotNull(loaded.Current.LastUpdateWarningShown);
-        Assert.True(loaded.Current.LastUpdateWarningShown >= before);
+        Assert.IsNotNull(loaded.Current.LastUpdateWarningShown);
+        Assert.IsTrue(loaded.Current.LastUpdateWarningShown >= before);
     }
 
     // --- UpdatePreRelease setting ---
 
-    [Fact]
+    [TestMethod]
     public void UpdatePreRelease_DefaultsToFalse()
     {
-        Assert.False(_settings.Current.UpdatePreRelease);
+        Assert.IsFalse(_settings.Current.UpdatePreRelease);
     }
 
-    [Fact]
+    [TestMethod]
     public void UpdatePreRelease_IsPersisted()
     {
         _settings.Current.UpdatePreRelease = true;
@@ -135,44 +139,44 @@ public sealed class UpdateServiceTests : IDisposable
         var loaded = new SettingsService(NullLogger<SettingsService>.Instance, _tempFile);
         loaded.Load();
 
-        Assert.True(loaded.Current.UpdatePreRelease);
+        Assert.IsTrue(loaded.Current.UpdatePreRelease);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CheckAsync_WhenPreReleaseEnabled_ProceedsToCheck()
     {
         _settings.Current.UpdateCheckEnabled = true;
         _settings.Current.UpdatePreRelease = true;
 
-        Assert.True(await new FakeUpdateService(_settings, hasUpdate: true).CheckAsync());
+        Assert.IsTrue(await new FakeUpdateService(_settings, hasUpdate: true).CheckAsync());
     }
 
     // --- TryAppcastFallbackAsync (internal — tests CheckAppcastAsync + result wiring) ---
 
-    [Fact]
+    [TestMethod]
     public async Task TryAppcastFallbackAsync_WhenFeedReturnsNewerVersion_ReturnsTrueAndSetsUrl()
     {
         var svc = CreateService(httpGet: _ => Task.FromResult(AppcastXml("999.0.0")));
 
         var result = await svc.TryAppcastFallbackAsync();
 
-        Assert.True(result);
-        Assert.True(svc.IsGitHubFallbackUpdate);
-        Assert.Equal("https://github.com/qdraw/starsky/releases/tag/v999.0.0", svc.PendingGitHubReleaseUrl);
+        Assert.IsTrue(result);
+        Assert.IsTrue(svc.IsGitHubFallbackUpdate);
+        Assert.AreEqual("https://github.com/qdraw/starsky/releases/tag/v999.0.0", svc.PendingGitHubReleaseUrl);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task TryAppcastFallbackAsync_WhenFeedReturnsOlderVersion_ReturnsFalse()
     {
         var svc = CreateService(httpGet: _ => Task.FromResult(AppcastXml("0.0.0")));
 
         var result = await svc.TryAppcastFallbackAsync();
 
-        Assert.False(result);
-        Assert.Null(svc.PendingGitHubReleaseUrl);
+        Assert.IsFalse(result);
+        Assert.IsNull(svc.PendingGitHubReleaseUrl);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task TryAppcastFallbackAsync_WhenPreReleaseEnabled_PassesQueryParam()
     {
         _settings.Current.UpdatePreRelease = true;
@@ -185,11 +189,11 @@ public sealed class UpdateServiceTests : IDisposable
 
         await svc.TryAppcastFallbackAsync();
 
-        Assert.NotNull(capturedUrl);
-        Assert.Contains("?pre-release=1", capturedUrl);
+        Assert.IsNotNull(capturedUrl);
+        Assert.IsTrue(capturedUrl.Contains("?pre-release=1"));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task TryAppcastFallbackAsync_WhenPreReleaseDisabled_OmitsQueryParam()
     {
         _settings.Current.UpdatePreRelease = false;
@@ -202,16 +206,18 @@ public sealed class UpdateServiceTests : IDisposable
 
         await svc.TryAppcastFallbackAsync();
 
-        Assert.NotNull(capturedUrl);
-        Assert.DoesNotContain("?pre-release=1", capturedUrl);
+        Assert.IsNotNull(capturedUrl);
+        Assert.IsFalse(capturedUrl.Contains("?pre-release=1"));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task TryAppcastFallbackAsync_WhenHttpThrows_PropagatesException()
     {
         var svc = CreateService(httpGet: _ => Task.FromException<string>(new HttpRequestException("network error")));
 
-        await Assert.ThrowsAsync<HttpRequestException>(() => svc.TryAppcastFallbackAsync());
+        Exception? caught = null;
+        try { await svc.TryAppcastFallbackAsync(); } catch (HttpRequestException e) { caught = e; }
+        Assert.IsInstanceOfType<HttpRequestException>(caught);
     }
 
     public void Dispose()
