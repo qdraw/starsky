@@ -53,7 +53,9 @@ public static class AppcastChecker
 
         var numeric = CompareNumericParts(c, x);
         if (numeric != 0)
-            return numeric > 0;
+        {
+	        return numeric > 0;
+        }
 
         return ComparePreRelease(c.Pre, x.Pre);
     }
@@ -62,15 +64,30 @@ public static class AppcastChecker
         (int Maj, int Min, int Pat, string? Pre) c,
         (int Maj, int Min, int Pat, string? Pre) x)
     {
-        if (c.Maj != x.Maj) return c.Maj.CompareTo(x.Maj);
-        if (c.Min != x.Min) return c.Min.CompareTo(x.Min);
+        if (c.Maj != x.Maj)
+        {
+	        return c.Maj.CompareTo(x.Maj);
+        }
+
+        if (c.Min != x.Min)
+        {
+	        return c.Min.CompareTo(x.Min);
+        }
+
         return c.Pat.CompareTo(x.Pat);
     }
 
     private static bool ComparePreRelease(string? cPre, string? xPre)
     {
-        if (cPre == null) return xPre != null;  // stable > pre-release; or same stable
-        if (xPre == null) return false;         // pre-release < stable
+        if (cPre == null)
+        {
+	        return xPre != null;  // stable > pre-release; or same stable
+        }
+
+        if (xPre == null)
+        {
+	        return false;         // pre-release < stable
+        }
 
         var cSegs = cPre.Split('.');
         var xSegs = xPre.Split('.');
@@ -79,7 +96,10 @@ public static class AppcastChecker
             var result = CompareSegment(
                 cSegs.ElementAtOrDefault(i) ?? "0",
                 xSegs.ElementAtOrDefault(i) ?? "0");
-            if (result != 0) return result > 0;
+            if (result != 0)
+            {
+	            return result > 0;
+            }
         }
         return false;
     }
@@ -87,7 +107,10 @@ public static class AppcastChecker
     private static int CompareSegment(string cs, string xs)
     {
         if (int.TryParse(cs, out var cn) && int.TryParse(xs, out var xn))
-            return cn.CompareTo(xn);
+        {
+	        return cn.CompareTo(xn);
+        }
+
         return string.Compare(cs, xs, StringComparison.OrdinalIgnoreCase);
     }
 

@@ -319,6 +319,9 @@ public partial class MainWindow
     private void ReleaseOverview_Click(object sender, RoutedEventArgs e)
         => Process.Start(new ProcessStartInfo(ReleasesUrl) { UseShellExecute = true });
 
+    private void About_Click(object sender, RoutedEventArgs e)
+        => new AboutWindow { Owner = this }.ShowDialog();
+
     private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
     {
         CheckForUpdatesMenuItem.IsEnabled = false;
