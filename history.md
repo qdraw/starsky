@@ -45,6 +45,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.0-beta.4 - 2026-09-04 {#0.9.0-beta.4}
 
+- [x] (Fixed) _App_ Windows show update window (PR #3295)
 - [x] (Fixed) _App_ Windows use releases.win.json (PR #3291)
 - [x] (Fixed) _App_ Windows about menu / splash screen (PR #3291)
 - [x] (Fixed) _Back-end_ Read and Write XMP tag for ImageStabilization (PR #3290)
