@@ -392,7 +392,7 @@ public class FilenameDatetimeRepairServiceTest
 		var result = await sut.ExecuteRepairAsync(mappings);
 
 		// Assert
-		Assert.HasCount(0, result, "No items should be returned");
+		Assert.IsEmpty(result, "No items should be returned");
 		Assert.Contains("File not found", logger.TrackedExceptions.LastOrDefault().Item2!);
 	}
 
@@ -420,7 +420,7 @@ public class FilenameDatetimeRepairServiceTest
 		var result = await sut.ExecuteRepairAsync(mappings);
 
 		// Assert
-		Assert.HasCount(0, result, "No items should be returned");
+		Assert.IsEmpty(result, "No items should be returned");
 		Assert.Contains("Failed to rename", logger.TrackedExceptions.LastOrDefault().Item2!);
 	}
 

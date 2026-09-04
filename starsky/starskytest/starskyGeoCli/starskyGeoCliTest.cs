@@ -8,6 +8,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starskyGeoCli;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class starskyGeoCliTest
 {
 	private static string? _prePort;

@@ -3,13 +3,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.accountmanagement.Services;
-using starsky.foundation.database.Data;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
@@ -17,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.platform.Middleware;
 
 [TestClass]
-public sealed class CheckIfAccountExistMiddlewareTest
+public sealed class CheckIfAccountExistMiddlewareTest : DatabaseTest
 {
 	private readonly ServiceProvider _serviceProvider;
 
@@ -26,11 +24,7 @@ public sealed class CheckIfAccountExistMiddlewareTest
 		var services = new ServiceCollection();
 		// IHttpContextAccessor is required for SignInManager, and UserManager
 
-		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-		builder.UseInMemoryDatabase("test");
-		var options = builder.Options;
-		var context = new ApplicationDbContext(options);
-		services.AddSingleton(context);
+		services.AddSingleton(DbContext);
 
 		services.AddSingleton<AppSettings>();
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();

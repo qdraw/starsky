@@ -7,6 +7,7 @@ using starskyimportercli;
 namespace starskytest.starskyImporterCli;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class StarskyImporterCliProgramTest
 {
 	private static string? _prePort;

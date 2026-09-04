@@ -7,6 +7,7 @@ using starskydemoseedcli;
 namespace starskytest.starskyDemoCli;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class StarskyDemoCliProgramTest
 {
 	[TestMethod]

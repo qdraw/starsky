@@ -8,6 +8,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starskymountwatchercli;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class ProgramTest
 {
 	// Snapshot existing env-vars so they can be restored after the class runs.

@@ -8,6 +8,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starskySynchronizeCli;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class SynchronizeCliTest
 {
 	private static string? _prePort;

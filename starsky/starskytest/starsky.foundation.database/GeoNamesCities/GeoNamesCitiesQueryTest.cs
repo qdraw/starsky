@@ -112,7 +112,7 @@ public class GeoNamesCitiesQueryTest
 		var (db, scopeFactory) = CreateDbContextAndScopeFactory("Search1");
 		var query = new GeoNamesCitiesQuery(db, scopeFactory);
 		var results = await query.Search(string.Empty, 10, nameof(GeoNameCity.Name));
-		Assert.HasCount(0, results);
+		Assert.IsEmpty(results);
 	}
 
 	[TestMethod]
@@ -121,7 +121,7 @@ public class GeoNamesCitiesQueryTest
 		var (db, scopeFactory) = CreateDbContextAndScopeFactory("Search1");
 		var query = new GeoNamesCitiesQuery(db, scopeFactory);
 		var results = await query.Search("test", 10);
-		Assert.HasCount(0, results);
+		Assert.IsEmpty(results);
 	}
 
 	[TestMethod]
@@ -130,6 +130,6 @@ public class GeoNamesCitiesQueryTest
 		var (db, scopeFactory) = CreateDbContextAndScopeFactory("Search1");
 		var query = new GeoNamesCitiesQuery(db, scopeFactory);
 		var results = await query.Search("test", 10, "invalid-field");
-		Assert.HasCount(0, results);
+		Assert.IsEmpty(results);
 	}
 }

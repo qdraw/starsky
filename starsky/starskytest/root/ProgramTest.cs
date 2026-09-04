@@ -10,6 +10,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.root;
 
 [TestClass]
+[DoNotParallelize]
 public class ProgramTest
 {
 	private static string? _imageOptimisationDownloadOnStartup;
