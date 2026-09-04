@@ -64,6 +64,32 @@ describe("MenuSearch", () => {
       Router.navigate("/");
     });
 
+    it("shows selected-item actions when every item is selected", () => {
+      Router.navigate("/?select=1");
+      const component = render(
+        <MenuSearch
+          state={
+            {
+              fileIndexItems: [{ filePath: "/test.jpg", status: IExifStatus.Ok }]
+            } as unknown as IArchiveProps
+          }
+          dispatch={jest.fn()}
+        />
+      );
+
+      act(() => {
+        (screen.queryByTestId("menu-menu-button") as HTMLButtonElement).click();
+      });
+
+      expect(screen.queryByTestId("undo-selection")).toBeTruthy();
+      expect(screen.queryByTestId("export")).toBeTruthy();
+      expect(screen.queryByTestId("publish")).toBeTruthy();
+      expect(screen.queryByTestId("select-further")).toBeTruthy();
+
+      component.unmount();
+      Router.navigate("/");
+    });
+
     it("keyboard ctrl a and command a", () => {
       jest.spyOn(React, "useContext").mockRestore();
 
