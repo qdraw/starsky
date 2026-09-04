@@ -15,6 +15,32 @@ public sealed class BaseMountWatcherTest
 	public TestContext TestContext { get; set; }
 
 	[TestMethod]
+	public void BaseMountWatcher_Dispose_DoesNotThrow()
+	{
+		var sut = new TestBaseMountWatcher();
+		sut.Dispose();
+		// double-dispose must also be safe
+		sut.Dispose();
+	}
+
+	[TestMethod]
+	[Timeout(5000, CooperativeCancellation = true)]
+	public async Task BaseMountWatcher_RunPollingFallback_ExitsOnCancellation()
+	{
+		var sut = new TestBaseMountWatcher();
+		sut.SetRunning(true);
+
+		var pollingTask = Task.Run(sut.RunPollingFallbackForTest, TestContext.CancellationToken);
+
+		// cancel via Dispose (which cancels _pollCts) while loop is still running
+		sut.CancelPollingForTest();
+
+		await pollingTask.WaitAsync(TimeSpan.FromSeconds(3), TestContext.CancellationToken);
+
+		Assert.IsTrue(pollingTask.IsCompletedSuccessfully);
+	}
+
+	[TestMethod]
 	public void BaseMountWatcher_OnMountDetected_RaisesEventWithPath()
 	{
 		var sut = new TestBaseMountWatcher();
@@ -169,6 +195,11 @@ public sealed class BaseMountWatcherTest
 		public void RaiseMount(string mountPath)
 		{
 			OnMountDetected(mountPath);
+		}
+
+		public void CancelPollingForTest()
+		{
+			CancelPolling();
 		}
 	}
 }
