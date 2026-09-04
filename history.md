@@ -40,16 +40,20 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.9.0-beta.5 - _(Unreleased)_ - 2026-?-? {#0.9.0-beta.5}
+## version 0.9.1 - _(Unreleased)_ - 2026-?-? {#0.9.1}
+
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
 
 - nothing yet
 
 ## version 0.9.0 - 2026-09-04 {#0.9.0}
 
-_Note: Windows Desktop: should uninstall the existing version before installing the new version_
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
 
+- [x] (Breaking Change) _Back-end_ Exiftool namespace for AI features (PR #3296)
 - [x] (Fixed) _Back-end_ Restricting background service execution (PR #3292)
 - [x] (Fixed) _Back-end_ Reduce cache duration (PR #3292)
+- [x] (Breaking Change) _App_ Different way of using the Windows wrapper (PR #3234)
 
 ## version 0.9.0-beta.4 - 2026-09-04 {#0.9.0-beta.4}
 

@@ -152,7 +152,7 @@ public sealed class ExifToolCmdHelperTest
 			$" -config \"{sut.GetConfigPath()}\" " +
 			"-json -overwrite_original " +
 			"-ObjectName=\"\" \"-title\"=\"\" \"-xmp-dc:title=\" " +
-			"-sep \", \" -XMP-ai:SuggestedTags=\"test\" ";
+			"-sep \", \" -XMP-qdraw:SuggestedTags=\"test\" ";
 		Assert.AreEqual(expectedResult, helperResult.Command);
 	}
 
@@ -178,7 +178,7 @@ public sealed class ExifToolCmdHelperTest
 		var result = sut.ExifToolCommandLineArgs(updateModel, comparedNames, true);
 
 		Assert.Contains("-json -overwrite_original", result);
-		Assert.Contains("-XMP-ai:SuggestedTags=\"test\"", result);
+		Assert.Contains("-XMP-qdraw:SuggestedTags=\"test\"", result);
 		Assert.IsFalse(result.Contains("-config \"", StringComparison.Ordinal),
 			"Config should not be added when file does not exist");
 		Assert.Contains(
@@ -494,10 +494,10 @@ public sealed class ExifToolCmdHelperTest
 				null!, null!, new AppSettings())
 			.ExifToolCommandLineArgs(updateModel, comparedNames, true);
 
-		Assert.Contains("-XMP-ai:SuggestedTags", result);
-		Assert.Contains("-XMP-ai:RejectedTags", result);
-		Assert.Contains("-XMP-ai:ImageClassificationModel=\"vit-base-1\"", result);
-		Assert.Contains($"-XMP-ai:ImageClassificationGeneratedAt=\"{generatedAt:o}\"", result);
+		Assert.Contains("-XMP-qdraw:SuggestedTags", result);
+		Assert.Contains("-XMP-qdraw:RejectedTags", result);
+		Assert.Contains("-XMP-qdraw:ImageClassificationModel=\"vit-base-1\"", result);
+		Assert.Contains($"-XMP-qdraw:ImageClassificationGeneratedAt=\"{generatedAt:o}\"", result);
 	}
 
 	/// <summary>

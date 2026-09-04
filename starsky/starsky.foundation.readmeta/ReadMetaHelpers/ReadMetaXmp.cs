@@ -364,22 +364,22 @@ public sealed class ReadMetaXmp
 			return;
 		}
 
-		if ( property.Path.StartsWith("ai:SuggestedTags[", StringComparison.Ordinal) )
+		if ( property.Path.StartsWith("qdraw:SuggestedTags[", StringComparison.Ordinal) )
 		{
 			item.SuggestedTags = AddCommaSeparatedUnique(item.SuggestedTags, property.Value);
 		}
 
-		if ( property.Path.StartsWith("ai:RejectedTags[", StringComparison.Ordinal) )
+		if ( property.Path.StartsWith("qdraw:RejectedTags[", StringComparison.Ordinal) )
 		{
 			item.RejectedTags = AddCommaSeparatedUnique(item.RejectedTags, property.Value);
 		}
 
-		if ( property.Path == "ai:ImageClassificationModel" )
+		if ( property.Path == "qdraw:ImageClassificationModel" )
 		{
 			item.ImageClassificationModel = property.Value;
 		}
 
-		if ( property.Path == "ai:ImageClassificationGeneratedAt" &&
+		if ( property.Path == "qdraw:ImageClassificationGeneratedAt" &&
 		     DateTime.TryParse(property.Value, CultureInfo.InvariantCulture,
 			     DateTimeStyles.RoundtripKind, out var generatedAt) &&
 		     generatedAt.Year >= 2 )
