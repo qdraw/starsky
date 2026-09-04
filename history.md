@@ -48,6 +48,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 _Note: Windows Desktop: should uninstall the existing version before installing the new version_
 
+- [x] (Fixed) _Back-end_ Restricting background service execution (PR #3292)
+- [x] (Fixed) _Back-end_ Reduce cache duration (PR #3292)
 
 ## version 0.9.0-beta.4 - 2026-09-04 {#0.9.0-beta.4}
 
