@@ -10,7 +10,7 @@ namespace starsky.foundation.mountwatch.MountWatcher;
 /// <summary>
 ///     Base class for mount watchers with shared polling fallback logic
 /// </summary>
-internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) : IMountWatcher
+internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) : IMountWatcher, IDisposable
 {
 	protected readonly IWebLogger logger = logger;
 	protected readonly int PollIntervalMs = pollIntervalMs;
@@ -49,7 +49,7 @@ internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) 
 			try
 			{
 				_pollCts.Token.WaitHandle.WaitOne(PollIntervalMs);
-				if ( !IsRunning )
+				if ( _pollCts.Token.IsCancellationRequested )
 				{
 					break;
 				}
@@ -87,5 +87,11 @@ internal abstract class BaseMountWatcher(IWebLogger logger, int pollIntervalMs) 
 	{
 		MountDetected?.Invoke(this,
 			new MountDetectedEventArgs { MountPath = mountPath, DetectedAt = DateTime.UtcNow });
+	}
+
+	public virtual void Dispose()
+	{
+		_pollCts.Dispose();
+		GC.SuppressFinalize(this);
 	}
 }
