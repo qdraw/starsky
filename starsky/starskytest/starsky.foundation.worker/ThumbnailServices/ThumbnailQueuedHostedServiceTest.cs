@@ -283,6 +283,25 @@ public sealed class ThumbnailQueuedHostedServiceTest
 	}
 
 	[TestMethod]
+	public void ExecuteAsync_NonWebController_DoesNotProcess()
+	{
+		var fakeLogger = new FakeIWebLogger();
+		var scopeFactory = new ServiceCollection().BuildServiceProvider()
+			.GetRequiredService<IServiceScopeFactory>();
+		var service = new ThumbnailQueuedHostedService(new FakeThumbnailBackgroundTaskQueue(),
+			fakeLogger,
+			new AppSettings { ApplicationType = AppSettings.StarskyAppType.MountWatcher },
+			scopeFactory);
+
+		var method = service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
+		Assert.IsNotNull(method);
+		method.Invoke(service, [CancellationToken.None]);
+
+		Assert.DoesNotContain(fakeLogger.TrackedInformation,
+			p => p.Item2?.Contains("Queued Hosted Service for Thumbnails") == true);
+	}
+
+	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task StartAsync_CancelBeforeStart()
 	{

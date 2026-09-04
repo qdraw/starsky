@@ -46,6 +46,28 @@ public sealed class DiskWatcherQueuedHostedServiceTest
 	}
 
 	[TestMethod]
+	public void DiskWatcherQueuedHostedService_NonWebController_DoesNotRun()
+	{
+		var logger = new FakeIWebLogger();
+		var scopeFactory = new ServiceCollection().BuildServiceProvider()
+			.GetRequiredService<IServiceScopeFactory>();
+		var service = new DiskWatcherQueuedHostedService(
+			new FakeDiskWatcherUpdateBackgroundTaskQueue(),
+			logger,
+			new AppSettings { ApplicationType = AppSettings.StarskyAppType.MountWatcher },
+			scopeFactory);
+
+		var dynMethod = service.GetType().GetMethod("ExecuteAsync",
+			                BindingFlags.NonPublic | BindingFlags.Instance) ??
+			            throw new Exception("missing ExecuteAsync");
+
+		dynMethod.Invoke(service, [CancellationToken.None]);
+
+		Assert.DoesNotContain(logger.TrackedInformation,
+			p => p.Item2?.Contains("Queued Hosted Service for DiskWatcher") == true);
+	}
+
+	[TestMethod]
 #if DEBUG
 	[Timeout(2000, CooperativeCancellation = true)]
 #else
