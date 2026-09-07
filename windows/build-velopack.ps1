@@ -10,6 +10,7 @@
       3. Install the Velopack CLI (vpk) if not already present.
       4. vpk pack to produce the installer and update feed.
       5. Rename the setup exe to starsky-win-x64-desktop.exe.
+      6. Extract Starsky.Desktop-win-Portable.zip (skipped if the zip is absent).
 
 .PARAMETER Version
     Version string to embed (e.g. "0.8.2"). Defaults to the <Version> in the csproj.
@@ -169,6 +170,23 @@ if (-not $SetupExe) {
     $FinalName = Join-Path $OutputDir 'starsky-win-x64-desktop.exe'
     Move-Item $SetupExe.FullName $FinalName -Force
     Write-Host "  Installer: $FinalName" -ForegroundColor Green
+}
+
+# ---------------------------------------------------------------------------
+# Step 6 — Extract portable zip
+# ---------------------------------------------------------------------------
+Write-Host "`n[Step 6] Extracting portable zip..." -ForegroundColor Cyan
+
+$PortableZip = Join-Path $OutputDir 'Starsky.Desktop-win-Portable.zip'
+if (-not (Test-Path $PortableZip)) {
+    Write-Host "  Portable zip not found, skipping extraction." -ForegroundColor Yellow
+} else {
+    $PortableExtractDir = Join-Path $OutputDir 'Starsky.Desktop-win-Portable'
+    if (Test-Path $PortableExtractDir) {
+        Remove-Item $PortableExtractDir -Recurse -Force
+    }
+    Expand-Archive -Path $PortableZip -DestinationPath $PortableExtractDir
+    Write-Host "  Extracted to: $PortableExtractDir" -ForegroundColor Green
 }
 
 # ---------------------------------------------------------------------------
