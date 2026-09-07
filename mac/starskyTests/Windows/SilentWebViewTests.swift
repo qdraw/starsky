@@ -33,4 +33,13 @@ final class SilentWebViewTests: XCTestCase {
         XCTAssertTrue(src.contains("parentElement"))
     }
 
+    func testSuppressScriptGuardsScrollingKeys() {
+        let src = SilentWebView.suppressKeysSource
+        // Page Up/Down, Home, End must scroll the page, not be suppressed.
+        XCTAssertTrue(src.contains("PageUp"))
+        XCTAssertTrue(src.contains("PageDown"))
+        XCTAssertTrue(src.contains("Home"))
+        XCTAssertTrue(src.contains("End"))
+    }
+
 }

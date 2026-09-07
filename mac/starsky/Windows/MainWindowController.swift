@@ -47,6 +47,8 @@ class SilentWebView: WKWebView {
         window.addEventListener('keydown', function(e) {
             if (e.defaultPrevented) return;
             if (e.metaKey || e.ctrlKey || e.altKey) return;
+            if (e.key === 'PageUp' || e.key === 'PageDown' ||
+                e.key === 'Home' || e.key === 'End') return;
             var el = document.activeElement;
             if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||
                        el.isContentEditable ||
