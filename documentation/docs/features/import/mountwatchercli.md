@@ -76,6 +76,34 @@ Or override with an environment variable:
 
 When `DeleteAfter` is `true`, successfully imported files on the mounted device will be removed. Use this with caution — enable only when you want files removed from the source device after import.
 
+## macOS Desktop App integration
+
+The macOS Starsky desktop app has built-in support for managing MountWatcher without using the command line.
+
+### Enable via the menu
+
+Open the Starsky menu bar icon → **MountWatcher** → **Enable MountWatcher**.
+
+The submenu shows the current state each time it opens:
+
+| State | Menu shows |
+|---|---|
+| Disabled | "Enable MountWatcher" |
+| Enabled, running | "Status: Running" + "Disable MountWatcher" |
+| Enabled, not running | "Status: Not Running" + "Disable MountWatcher" |
+
+### Preference persistence
+
+The enabled/disabled preference is stored in `~/Library/Application Support/starsky/settings.json`. It survives app restarts and Sparkle automatic updates.
+
+- On startup the app re-enables MountWatcher automatically if the preference is set.
+- Before a Sparkle update replaces the app bundle, the app stops MountWatcher; the next launch re-enables it.
+- If enabling fails (for example the CLI binary is missing), the preference is cleared and an error is shown.
+
+### Requirement
+
+The `starskymountwatchercli` binary must be present in the app bundle's runtime directory (`starsky.app/Contents/MacOS/runtime-starsky-osx-{arm64,x64}/`). It is included automatically in release builds.
+
 ## Related
 
 - [Import options](import.md)

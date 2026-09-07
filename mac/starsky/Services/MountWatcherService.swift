@@ -30,8 +30,12 @@ final class DefaultProcessRunner: ProcessRunner {
         process.arguments = arguments
         process.standardOutput = FileHandle.nullDevice
         process.standardError = FileHandle.nullDevice
-        try? process.run()
-        process.waitUntilExit()
+        do {
+            try process.run()
+            process.waitUntilExit()
+        } catch {
+            // executable not found or not launchable — nothing to wait for
+        }
     }
 }
 
