@@ -87,8 +87,15 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public async Task<bool> UpdateAsync(ThumbnailItem item)
 	{
-		var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
-		return await retry.ExecuteWithRetryAsync(ctx => UpdateInternalAsync(ctx, item));
+		try
+		{
+			var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
+			return await retry.ExecuteWithRetryAsync(ctx => UpdateInternalAsync(ctx, item));
+		}
+		catch ( DbUpdateConcurrencyException concurrencyException )
+		{
+			return await SolveDbUpdateConcurrencyException(concurrencyException);
+		}
 	}
 
 	public async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber,

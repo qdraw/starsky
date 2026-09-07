@@ -169,7 +169,9 @@ final class BackendServiceTests: XCTestCase {
         let runtimeDir = tempDir.appendingPathComponent("runtime4")
         try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
         let binary = runtimeDir.appendingPathComponent("starsky")
-        try "#!/bin/sh\ntrap '' TERM\nsleep 3600\n".write(to: binary, atomically: true, encoding: .utf8)
+        // while loop prevents exec-optimisation of the last command, keeping the shell
+        // as the tracked PID so it genuinely ignores SIGTERM via the trap.
+        try "#!/bin/sh\ntrap '' TERM\nwhile true; do sleep 0.05; done\n".write(to: binary, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
 
         let service = TestableBackendService(fileLogger: DailyFileLogger(), xattrPath: "/usr/bin/true", codesignPath: "/usr/bin/true")
@@ -186,7 +188,7 @@ final class BackendServiceTests: XCTestCase {
         let runtimeDir = tempDir.appendingPathComponent("runtime5")
         try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
         let binary = runtimeDir.appendingPathComponent("starsky")
-        try "#!/bin/sh\ntrap '' TERM\ntrap '' INT\nsleep 3600\n".write(to: binary, atomically: true, encoding: .utf8)
+        try "#!/bin/sh\ntrap '' TERM\ntrap '' INT\nwhile true; do sleep 0.05; done\n".write(to: binary, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
 
         let service = TestableBackendService(fileLogger: DailyFileLogger(), xattrPath: "/usr/bin/true", codesignPath: "/usr/bin/true")
