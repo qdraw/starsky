@@ -217,7 +217,7 @@ class AppCore {
         DispatchQueue.global(qos: .userInitiated).async {
             mws?.stopSync()
             fws.stop()
-            bs.stop()
+            bs.beginShutdown()   // SIGTERM, non-blocking — reply immediately so the app appears to close
             DispatchQueue.main.async {
                 NSApplication.shared.reply(toApplicationShouldTerminate: true)
             }

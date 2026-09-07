@@ -8,6 +8,8 @@ private final class MockBackendService: BackendServiceProtocol, @unchecked Senda
     var isRunning: Bool = false
     var startCalled = false
     var stopCalled = false
+    var beginShutdownCalled = false
+    var forceStopCalled = false
     var startError: Error?
 
     func start(port _: Int) throws {
@@ -18,6 +20,16 @@ private final class MockBackendService: BackendServiceProtocol, @unchecked Senda
 
     func stop() {
         stopCalled = true
+        isRunning = false
+    }
+
+    func beginShutdown() {
+        beginShutdownCalled = true
+        isRunning = false
+    }
+
+    func forceStop() {
+        forceStopCalled = true
         isRunning = false
     }
 }
@@ -332,7 +344,7 @@ final class AppCoreTests: XCTestCase {
         let core = makeCore(backendService: backend)
         core.beginTermination()
         try? await Task.sleep(nanoseconds: 50_000_000)
-        XCTAssertTrue(backend.stopCalled)
+        XCTAssertTrue(backend.beginShutdownCalled)
     }
 
     func testBeginTerminationStopsFileWatcher() async {

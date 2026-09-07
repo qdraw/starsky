@@ -86,10 +86,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_: Notification) {
-        // Safety net: if beginTermination's async work did not complete (e.g. the cooperative
-        // thread pool shut down before the GCD block ran), kill the backend process now.
-        // stop() is idempotent — if it already ran this is a no-op.
-        backendService?.stop()
+        // The UI is already gone by the time this runs, so blocking here is invisible to the user.
+        // Give the backend up to 3 s to respond to the SIGTERM from beginShutdown(), then SIGKILL.
+        if let bs = backendService {
+            let deadline = Date().addingTimeInterval(3.0)
+            while bs.isRunning && Date() < deadline {
+                Thread.sleep(forTimeInterval: 0.05)
+            }
+            bs.forceStop()
+        }
     }
 
     func applicationSupportsSecureRestorableState(_: NSApplication) -> Bool {

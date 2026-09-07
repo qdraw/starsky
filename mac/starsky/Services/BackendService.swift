@@ -90,6 +90,28 @@ class BackendService: @unchecked Sendable {
         fileLogger.info("Backend stopped", category: "BackendService")
     }
 
+    // Marks shutdown intent and sends SIGTERM without waiting. Call this early in the
+    // termination path to give the backend time to flush; follow up with forceStop().
+    func beginShutdown() {
+        isShuttingDown = true
+        guard let proc = process, proc.isRunning else { return }
+        logger.info("Backend beginShutdown: sending SIGTERM to pid \(proc.processIdentifier)")
+        proc.terminate()
+    }
+
+    // Sends SIGKILL immediately and clears the process reference. Call after a grace period
+    // to ensure the backend is dead before the parent process exits.
+    func forceStop() {
+        guard let proc = process else { return }
+        if proc.isRunning {
+            logger.warning("Backend forceStop: sending SIGKILL to pid \(proc.processIdentifier)")
+            kill(proc.processIdentifier, SIGKILL)
+        }
+        process = nil
+        logger.info("Backend force stopped")
+        fileLogger.info("Backend force stopped", category: "BackendService")
+    }
+
     private func onProcessExited(port: Int) {
         guard !isShuttingDown, !hasRestarted else { return }
         hasRestarted = true

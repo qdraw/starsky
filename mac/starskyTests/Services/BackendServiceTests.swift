@@ -209,6 +209,52 @@ final class BackendServiceTests: XCTestCase {
         XCTAssertFalse(service.isRunning)
     }
 
+    func testBeginShutdownSendsTermAndSetsShuttingDown() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtimeBeginShutdown")
+        try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
+        let binary = runtimeDir.appendingPathComponent("starsky")
+        let readyMarker = runtimeDir.appendingPathComponent("ready")
+        try "#!/bin/sh\ntouch '\(readyMarker.path)'\nwhile true; do sleep 0.05; done\n".write(to: binary, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
+
+        let service = TestableBackendService(fileLogger: DailyFileLogger(), xattrPath: "/usr/bin/true", codesignPath: "/usr/bin/true")
+        service.fakeExeURL = binary
+
+        try service.start(port: 19998)
+        XCTAssertTrue(service.isRunning)
+        try waitForReadyMarker(readyMarker)
+
+        service.beginShutdown()
+        // Process should exit from SIGTERM; wait briefly
+        let deadline = Date().addingTimeInterval(1.0)
+        while service.isRunning && Date() < deadline { Thread.sleep(forTimeInterval: 0.05) }
+        XCTAssertFalse(service.isRunning)
+    }
+
+    func testForceStopKillsRunningProcess() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtimeForceStop")
+        try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
+        let binary = runtimeDir.appendingPathComponent("starsky")
+        let readyMarker = runtimeDir.appendingPathComponent("ready")
+        // Ignores SIGTERM so only SIGKILL (from forceStop) will end it
+        try "#!/bin/sh\ntrap '' TERM\ntouch '\(readyMarker.path)'\nwhile true; do sleep 0.05; done\n".write(to: binary, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
+
+        let service = TestableBackendService(fileLogger: DailyFileLogger(), xattrPath: "/usr/bin/true", codesignPath: "/usr/bin/true")
+        service.fakeExeURL = binary
+
+        try service.start(port: 19999)
+        XCTAssertTrue(service.isRunning)
+        try waitForReadyMarker(readyMarker)
+
+        service.beginShutdown()               // SIGTERM, ignored by trap
+        Thread.sleep(forTimeInterval: 0.1)   // confirm it's still alive
+        XCTAssertTrue(service.isRunning)
+
+        service.forceStop()                   // SIGKILL
+        XCTAssertFalse(service.isRunning)
+    }
+
     private func waitForReadyMarker(_ marker: URL, timeout: TimeInterval = 2) throws {
         let deadline = Date().addingTimeInterval(timeout)
         while !FileManager.default.fileExists(atPath: marker.path) {

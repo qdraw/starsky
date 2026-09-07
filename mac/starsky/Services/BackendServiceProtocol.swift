@@ -5,6 +5,8 @@ protocol BackendServiceProtocol: AnyObject, Sendable {
     var isRunning: Bool { get }
     func start(port: Int) throws
     func stop()
+    func beginShutdown()
+    func forceStop()
 }
 
 extension BackendService: BackendServiceProtocol {}
