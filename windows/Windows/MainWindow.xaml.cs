@@ -351,7 +351,10 @@ public partial class MainWindow
 
     private void MountWatcherMenu_SubmenuOpened(object sender, RoutedEventArgs e)
     {
-        if (_mountWatcherService == null) return;
+        if (_mountWatcherService == null)
+        {
+	        return;
+        }
 
         var enabled = _settings.Current.MountWatcherEnabled;
         if (enabled)
@@ -370,7 +373,10 @@ public partial class MainWindow
 
     private async void MountWatcherToggle_Click(object sender, RoutedEventArgs e)
     {
-        if (_mountWatcherService == null) return;
+        if (_mountWatcherService == null)
+        {
+	        return;
+        }
 
         if (_settings.Current.MountWatcherEnabled)
         {

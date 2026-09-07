@@ -86,7 +86,11 @@ public class UpdateService
 
     public Task ApplyUpdateAsync()
     {
-        if (!HasPendingUpdate) throw new InvalidOperationException("No pending update available.");
+        if (!HasPendingUpdate)
+        {
+	        throw new InvalidOperationException("No pending update available.");
+        }
+
         _mountWatcherService?.StopSync();
         return DoApplyUpdateAsync();
     }

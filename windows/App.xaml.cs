@@ -41,7 +41,7 @@ public partial class App : Application
         // 4. Initialize services
         _backend = new BackendService(logFactory.CreateLogger<BackendService>());
         _watcher = new FileWatcherService(logFactory.CreateLogger<FileWatcherService>());
-        var mountWatcherService = new MountWatcherService();
+        var mountWatcherService = new MountWatcherService(logFactory.CreateLogger<MountWatcherService>());
         _mountWatcherLifecycle = new MountWatcherLifecycle(
             mountWatcherService, settingsService, logFactory.CreateLogger<MountWatcherLifecycle>());
         var webViewEnv = new WebViewEnvironmentService();

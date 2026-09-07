@@ -19,7 +19,9 @@ internal class MountWatcherLifecycle(
     internal async Task OnStartupAsync()
     {
         if (!settingsService.Current.MountWatcherEnabled)
-            return;
+        {
+	        return;
+        }
 
         var ok = await mountWatcherService.EnableAsync();
         if (ok)
@@ -40,7 +42,9 @@ internal class MountWatcherLifecycle(
     internal void OnShutdown()
     {
         if (!settingsService.Current.MountWatcherEnabled)
-            return;
+        {
+	        return;
+        }
 
         logger.LogInformation("Stopping MountWatcher on shutdown");
         mountWatcherService.StopSync();
