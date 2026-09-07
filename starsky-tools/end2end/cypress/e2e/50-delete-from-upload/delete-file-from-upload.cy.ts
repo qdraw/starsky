@@ -176,10 +176,13 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.url);
 
     cy.get(".item.item--select").click();
+    cy.get(".item.item--labels").should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.get(".item.item--more").click();
+    cy.intercept("**/api/trash/move-to-trash").as("trash1");
     cy.get("[data-test=trash]").click();
+    cy.wait("@trash1");
 
     cy.get(".folder > div").should(($lis) => {
       expect($lis).to.have.length(2);
@@ -191,6 +194,7 @@ describe("Delete file from upload (50)", () => {
     cy.log("view trash");
 
     cy.get(".item.item--select").click();
+    cy.get(".item.item--labels").should("exist");
 
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
@@ -257,10 +261,13 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.url);
 
     cy.get(".item.item--select").click();
+    cy.get(".item.item--labels").should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.get(".item.item--more").click();
+    cy.intercept("**/api/trash/move-to-trash").as("trash2");
     cy.get("[data-test=trash]").click();
+    cy.wait("@trash2");
 
     cy.get(".folder > div").should(($lis) => {
       expect($lis).to.have.length(2);
@@ -270,6 +277,7 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.trash);
 
     cy.get(".item.item--select").click();
+    cy.get(".item.item--labels").should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.get(".item.item--more").click();
