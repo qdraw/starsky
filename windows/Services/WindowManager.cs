@@ -17,7 +17,8 @@ public class WindowManager(
 	FileDownloadService fileDownload,
 	FileWatcherService watcher,
 	UpdateService updateService,
-	ILogger<WindowManager> logger)
+	ILogger<WindowManager> logger,
+	IMountWatcherService? mountWatcherService = null)
 {
 	private readonly List<MainWindow> _mainWindows = [];
     private int? _localPort;
@@ -66,7 +67,8 @@ public class WindowManager(
             InitialRoute = route ?? "?f=/",
             Geometry = state,
             WindowIndex = _mainWindows.Count,
-            UpdateService = updateService
+            UpdateService = updateService,
+            MountWatcherService = mountWatcherService
         });
 
         _mainWindows.Add(window);

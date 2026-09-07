@@ -17,15 +17,18 @@ public class UpdateService
     private readonly SettingsService _settings;
     private readonly ILogger<UpdateService> _logger;
     private readonly Func<string, Task<string>> _httpGet;
+    private readonly IMountWatcherService? _mountWatcherService;
     private UpdateManager? _updateManager;
     private UpdateInfo? _pendingUpdate;
 
     public UpdateService(SettingsService settings, ILogger<UpdateService> logger,
-        Func<string, Task<string>>? httpGet = null)
+        Func<string, Task<string>>? httpGet = null,
+        IMountWatcherService? mountWatcherService = null)
     {
         _settings = settings;
         _logger = logger;
         _httpGet = httpGet ?? DefaultHttpGetAsync;
+        _mountWatcherService = mountWatcherService;
         IsVelopackAvailable = ProbeInstalled();
     }
 
@@ -83,7 +86,13 @@ public class UpdateService
 
     public Task ApplyUpdateAsync()
     {
-        return !HasPendingUpdate ? throw new InvalidOperationException("No pending update available.") : DoApplyUpdateAsync();
+        if (!HasPendingUpdate)
+        {
+	        throw new InvalidOperationException("No pending update available.");
+        }
+
+        _mountWatcherService?.StopSync();
+        return DoApplyUpdateAsync();
     }
 
     public void RecordWarningShown()
