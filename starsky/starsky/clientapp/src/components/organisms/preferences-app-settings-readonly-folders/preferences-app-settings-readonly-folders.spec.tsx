@@ -270,6 +270,87 @@ describe("PreferencesAppSettingsReadonlyFolders", () => {
         component.unmount();
       });
     });
+
+    it("trims newlines from contentEditable innerText before saving", async () => {
+      const permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      const appSettings = {
+        statusCode: 200,
+        data: { readOnlyFolders: ["/2024"] }
+      } as IConnectionDefault;
+
+      jest.spyOn(useFetch, "default").mockImplementation((url) => {
+        if (url === new UrlQuery().UrlAccountPermissions()) return permissions;
+        return appSettings;
+      });
+
+      const mockResult: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: null
+      });
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockResult);
+
+      const component = render(<PreferencesAppSettingsReadonlyFolders />);
+
+      const formControl = screen.getByTestId("form-control");
+      formControl.innerText = "/renamed\n";
+      await act(async () => {
+        fireEvent.focusOut(formControl);
+        await mockResult;
+      });
+
+      expect(fetchPostSpy).toHaveBeenCalledWith(expect.anything(), "ReadOnlyFolders%5B0%5D=%2Frenamed");
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("keeps other rows unchanged when blurring a single row", async () => {
+      const permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      const appSettings = {
+        statusCode: 200,
+        data: { readOnlyFolders: ["/2024", "/2023"] }
+      } as IConnectionDefault;
+
+      jest.spyOn(useFetch, "default").mockImplementation((url) => {
+        if (url === new UrlQuery().UrlAccountPermissions()) return permissions;
+        return appSettings;
+      });
+
+      const mockResult: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: null
+      });
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockResult);
+
+      const component = render(<PreferencesAppSettingsReadonlyFolders />);
+
+      const formControls = screen.getAllByTestId("form-control");
+      formControls[0].innerText = "/renamed";
+      await act(async () => {
+        fireEvent.focusOut(formControls[0]);
+        await mockResult;
+      });
+
+      expect(fetchPostSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        "ReadOnlyFolders%5B0%5D=%2Frenamed&ReadOnlyFolders%5B1%5D=%2F2023"
+      );
+
+      act(() => {
+        component.unmount();
+      });
+    });
   });
 
   describe("error handling", () => {
