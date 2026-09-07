@@ -216,6 +216,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return menu
     }
 
+    func applicationDockMenu(_: NSApplication) -> NSMenu? {
+        buildDockMenu(windows: core?.windowManager.allWindows() ?? [], keyWindow: NSApp.keyWindow)
+    }
+
+    func buildDockMenu(windows: [MainWindowController], keyWindow: NSWindow?) -> NSMenu {
+        let menu = NSMenu()
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.file.newWindow", comment: ""), action: #selector(newWindow), keyEquivalent: ""))
+
+        if !windows.isEmpty {
+            menu.addItem(.separator())
+            for controller in windows {
+                let title = controller.window?.title ?? "Starsky"
+                let item = NSMenuItem(title: title, action: #selector(bringWindowToFront(_:)), keyEquivalent: "")
+                item.representedObject = controller
+                item.state = (controller.window != nil && controller.window === keyWindow) ? .on : .off
+                menu.addItem(item)
+            }
+        }
+        return menu
+    }
+
+    @objc private func bringWindowToFront(_ sender: NSMenuItem) {
+        guard let controller = sender.representedObject as? MainWindowController else { return }
+        controller.window?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
     private func buildHelpMenu() -> NSMenu {
         let menu = NSMenu(title: NSLocalizedString("menu.help.title", comment: ""))
         let checkUpdatesItem = NSMenuItem(title: NSLocalizedString("menu.help.checkForUpdates", comment: ""), action: #selector(checkForUpdates), keyEquivalent: "")

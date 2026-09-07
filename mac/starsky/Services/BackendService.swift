@@ -7,6 +7,8 @@ class BackendService: @unchecked Sendable {
     private var process: Process?
     private var isShuttingDown = false
     private var hasRestarted = false
+    private var hasTriedQuarantineClear = false
+    private var currentExePath: String?
     private var currentPort: Int = 0
 
     private let xattrPath: String
@@ -34,35 +36,28 @@ class BackendService: @unchecked Sendable {
             throw BackendError.executableNotFound
         }
 
-        func makeProcess() -> Process {
-            let p = Process()
-            p.executableURL = executableURL
-            p.environment = Self.buildEnvironment(port: port)
-            let pipe = Pipe()
-            p.standardOutput = pipe
-            p.standardError = pipe
-            pipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
-                let data = handle.availableData
-                if !data.isEmpty, let line = String(data: data, encoding: .utf8) {
-                    self?.fileLogger.info(line.trimmingCharacters(in: .newlines), category: "Backend")
-                }
+        currentExePath = executableURL.path
+
+        let proc = Process()
+        proc.executableURL = executableURL
+        proc.environment = Self.buildEnvironment(port: port)
+
+        let pipe = Pipe()
+        proc.standardOutput = pipe
+        proc.standardError = pipe
+
+        pipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
+            let data = handle.availableData
+            if !data.isEmpty, let line = String(data: data, encoding: .utf8) {
+                self?.fileLogger.info(line.trimmingCharacters(in: .newlines), category: "Backend")
             }
-            p.terminationHandler = { [weak self] _ in self?.onProcessExited(port: port) }
-            return p
         }
 
-        let proc: Process
-        do {
-            let first = makeProcess()
-            try first.run()
-            proc = first
-        } catch {
-            logger.warning("Backend launch failed, clearing quarantine and retrying: \(error)")
-            clearQuarantine(path: executableURL.path)
-            let retry = makeProcess()
-            try retry.run()
-            proc = retry
+        proc.terminationHandler = { [weak self] _ in
+            self?.onProcessExited(port: port)
         }
+
+        try proc.run()
         self.process = proc
         logger.info("Backend started on port \(port), pid \(proc.processIdentifier)")
         fileLogger.info("Backend started on port \(port)", category: "BackendService")
@@ -122,8 +117,15 @@ class BackendService: @unchecked Sendable {
     private func onProcessExited(port: Int) {
         guard !isShuttingDown, !hasRestarted else { return }
         hasRestarted = true
-        logger.warning("Backend exited unexpectedly, restarting in 2 s...")
-        fileLogger.warning("Backend exited unexpectedly, restarting in 2 s", category: "BackendService")
+        if !hasTriedQuarantineClear, let path = currentExePath {
+            hasTriedQuarantineClear = true
+            logger.warning("Backend exited unexpectedly; clearing quarantine/signature before restart")
+            fileLogger.warning("Backend exited unexpectedly; clearing quarantine/signature before restart", category: "BackendService")
+            clearQuarantine(path: path)
+        } else {
+            logger.warning("Backend exited unexpectedly, restarting in 2 s...")
+            fileLogger.warning("Backend exited unexpectedly, restarting in 2 s", category: "BackendService")
+        }
         DispatchQueue.global().asyncAfter(deadline: .now() + restartDelay) { [weak self] in
             guard self?.isShuttingDown == false else { return }
             try? self?.launch(port: port)
@@ -146,7 +148,10 @@ class BackendService: @unchecked Sendable {
         codesign.executableURL = URL(fileURLWithPath: codesignPath)
         codesign.arguments = ["--force", "--deep", "-s", "-", path]
         if (try? codesign.run()) != nil { codesign.waitUntilExit() }
+        quarantineDidClear(path: path)
     }
+
+    func quarantineDidClear(path: String) {}
 
     static func buildEnvironment(port: Int) -> [String: String] {
         var env = ProcessInfo.processInfo.environment

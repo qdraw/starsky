@@ -255,61 +255,40 @@ final class BackendServiceTests: XCTestCase {
         XCTAssertFalse(service.isRunning)
     }
 
-    func testClearQuarantineNotCalledOnSuccessfulLaunch() throws {
-        let runtimeDir = tempDir.appendingPathComponent("runtimeNoQuarantine")
+    func testClearQuarantineNotCalledWhenBackendStaysRunning() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtimeStable")
         try FakeStarskyBin.create(in: runtimeDir)
 
-        let markerFile = tempDir.appendingPathComponent("quarantine_called")
-        let noopScript = tempDir.appendingPathComponent("fake_xattr_noop.sh")
-        try "#!/bin/sh\n".write(to: noopScript, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: noopScript.path)
-
-        let markerScript = tempDir.appendingPathComponent("fake_codesign.sh")
-        try "#!/bin/sh\ntouch '\(markerFile.path)'\n".write(to: markerScript, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: markerScript.path)
-
-        let service = TestableBackendService(
-            fileLogger: DailyFileLogger(),
-            xattrPath: noopScript.path,
-            codesignPath: markerScript.path
-        )
+        let service = TestableBackendService(fileLogger: DailyFileLogger())
         service.fakeExeURL = runtimeDir.appendingPathComponent("starsky")
 
         try service.start(port: 20001)
+        Thread.sleep(forTimeInterval: 0.1)
         service.stop()
 
-        XCTAssertFalse(FileManager.default.fileExists(atPath: markerFile.path),
-                       "clearQuarantine should not be called when the first launch succeeds")
+        XCTAssertEqual(service.quarantineClearCount, 0,
+                       "clearQuarantine should not be called when the backend stays running")
     }
 
-    func testClearQuarantineCalledAndRetrySucceedsWhenFirstLaunchFails() throws {
-        let runtimeDir = tempDir.appendingPathComponent("runtimeRetry")
+    func testClearQuarantineCalledOnFirstUnexpectedExit() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtimeCrash")
         try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
         let binary = runtimeDir.appendingPathComponent("starsky")
+        try "#!/bin/sh\nexit 0\n".write(to: binary, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
 
-        // Valid script but no execute permission — proc.run() will throw on the first attempt
-        try "#!/bin/sh\nwhile true; do sleep 0.1; done\n".write(to: binary, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes([.posixPermissions: 0o644], ofItemAtPath: binary.path)
-
-        let noopScript = tempDir.appendingPathComponent("fake_xattr_noop.sh")
-        try "#!/bin/sh\n".write(to: noopScript, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: noopScript.path)
-
-        // fake codesign adds +x so the retry process can run; args are: --force --deep -s - <path>
-        let codesignScript = tempDir.appendingPathComponent("fake_codesign.sh")
-        try "#!/bin/sh\nchmod +x \"$5\"\n".write(to: codesignScript, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: codesignScript.path)
-
-        let service = TestableBackendService(
-            fileLogger: DailyFileLogger(),
-            xattrPath: noopScript.path,
-            codesignPath: codesignScript.path
-        )
+        let service = TestableBackendService(fileLogger: DailyFileLogger())
         service.fakeExeURL = binary
+        service.restartDelay = 0.1
 
-        XCTAssertNoThrow(try service.start(port: 20002), "Retry after clearQuarantine should succeed")
-        XCTAssertTrue(service.isRunning)
+        try service.start(port: 20002)
+        Thread.sleep(forTimeInterval: 0.5)
         service.stop()
+
+        XCTAssertGreaterThanOrEqual(service.launchCount, 2,
+            "Restart should have fired (confirms onProcessExited ran)")
+        XCTAssertEqual(service.quarantineClearCount, 1,
+                       "clearQuarantine should be called exactly once after the first unexpected exit")
     }
 
     private func waitForReadyMarker(_ marker: URL, timeout: TimeInterval = 2) throws {
@@ -324,8 +303,14 @@ final class BackendServiceTests: XCTestCase {
 private class TestableBackendService: BackendService {
     var fakeExeURL: URL?
     private(set) var launchCount = 0
+    private(set) var quarantineClearCount = 0
+
     override func findBackendExe() -> URL? {
         launchCount += 1
         return fakeExeURL
+    }
+
+    override func quarantineDidClear(path: String) {
+        quarantineClearCount += 1
     }
 }

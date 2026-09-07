@@ -141,6 +141,9 @@ class WindowManager {
     }
 
     @MainActor
+    func allWindows() -> [MainWindowController] { windows }
+
+    @MainActor
     func remove(controller: MainWindowController) {
         windows.removeAll { $0 === controller }
         if windows.isEmpty && !isReopening {
