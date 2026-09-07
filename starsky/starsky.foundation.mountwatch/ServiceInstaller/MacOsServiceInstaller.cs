@@ -18,6 +18,8 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// </summary>
 internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
+	private const string Launchctl = "launchctl";
+
 	private readonly Func<string, string, int[]?, Task<bool>> _runProcessAsync =
 		(fileName, args, codes) => new RunProcess(logger).RunProcessAsync(fileName, args, codes);
 
@@ -106,9 +108,9 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			// not registered; any genuinely unexpected code is still treated as success here
 			// because the load that follows will fail with a clear error if needed.
 			int[] silentUnloadExitCodes = [0, 1, 2, 3, 4, 5, 36, 113, 125];
-			await _runProcessAsync("launchctl", $"unload {plistPath}", silentUnloadExitCodes);
+			await _runProcessAsync(Launchctl, $"unload {plistPath}", silentUnloadExitCodes);
 
-			var result = await _runProcessAsync("launchctl", $"load {plistPath}", null);
+			var result = await _runProcessAsync(Launchctl, $"load {plistPath}", null);
 			if ( result )
 			{
 				logger.LogInformation(
@@ -133,7 +135,7 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		{
 			var plistPath = GetMacOsPlistPath();
 			var result =
-				await _runProcessAsync("launchctl", $"unload {plistPath}", null);
+				await _runProcessAsync(Launchctl, $"unload {plistPath}", null);
 			if ( result )
 			{
 				logger.LogInformation(
@@ -157,7 +159,7 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		try
 		{
 			// launchctl list <label> returns 0 when loaded
-			running = await _runProcessAsync("launchctl",
+			running = await _runProcessAsync(Launchctl,
 				$"list {new WatchServiceName().GetReverseDnsName()}", null);
 		}
 		catch

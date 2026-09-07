@@ -129,6 +129,42 @@ final class BackendServiceTests: XCTestCase {
         service.stop()
     }
 
+    func testUnexpectedExitTriggersRestart() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtimeRestart")
+        try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
+        let binary = runtimeDir.appendingPathComponent("starsky")
+        try "#!/bin/sh\nexit 0\n".write(to: binary, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
+
+        let service = TestableBackendService(fileLogger: DailyFileLogger(), xattrPath: "/usr/bin/true", codesignPath: "/usr/bin/true")
+        service.fakeExeURL = binary
+        service.restartDelay = 0.1
+
+        try service.start(port: 19996)
+        Thread.sleep(forTimeInterval: 0.5)
+
+        XCTAssertGreaterThanOrEqual(service.launchCount, 2, "Backend should have been relaunched after unexpected exit")
+    }
+
+    func testRestartIsBlockedWhenShuttingDown() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtimeNoRestart")
+        try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
+        let binary = runtimeDir.appendingPathComponent("starsky")
+        try "#!/bin/sh\nexit 0\n".write(to: binary, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
+
+        let service = TestableBackendService(fileLogger: DailyFileLogger(), xattrPath: "/usr/bin/true", codesignPath: "/usr/bin/true")
+        service.fakeExeURL = binary
+        service.restartDelay = 0.3
+
+        try service.start(port: 19997)
+        Thread.sleep(forTimeInterval: 0.1)  // let the crash be detected
+        service.stop()                        // mark isShuttingDown before restart fires
+        Thread.sleep(forTimeInterval: 0.5)  // wait past the restart deadline
+
+        XCTAssertEqual(service.launchCount, 1, "Restart should have been blocked after stop()")
+    }
+
     func testStopSendsInterruptWhenProcessIgnoresTerm() throws {
         let runtimeDir = tempDir.appendingPathComponent("runtime4")
         try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
@@ -167,5 +203,9 @@ final class BackendServiceTests: XCTestCase {
 
 private class TestableBackendService: BackendService {
     var fakeExeURL: URL?
-    override func findBackendExe() -> URL? { fakeExeURL }
+    private(set) var launchCount = 0
+    override func findBackendExe() -> URL? {
+        launchCount += 1
+        return fakeExeURL
+    }
 }
