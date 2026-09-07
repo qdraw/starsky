@@ -149,7 +149,7 @@
 		8415DA0473D238EB0F6108E2 /* RuntimeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMode.swift; sourceTree = "<group>"; };
 		8F8C3308F3AE014E18479C4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendServiceTests.swift; sourceTree = "<group>"; };
-		97B29EC047ED7E17B1E0563A /* starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		97B29EC047ED7E17B1E0563A /* Starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9851583918F3426A017184E8 /* RuntimeModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeModeTests.swift; sourceTree = "<group>"; };
 		9F51DA46919A291FBFD8783F /* SilentWebViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilentWebViewTests.swift; sourceTree = "<group>"; };
 		A1B288A8995FE028D4694CC1 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -372,7 +372,7 @@
 		E215F7E68D0EFC516B8D19BE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				97B29EC047ED7E17B1E0563A /* starsky.app */,
+				97B29EC047ED7E17B1E0563A /* Starsky.app */,
 				8180D19840C574AC4878E465 /* starskyTests.xctest */,
 			);
 			name = Products;
@@ -456,7 +456,7 @@
 				DF5D6D740321B8F421D7DC1C /* Sparkle */,
 			);
 			productName = starsky;
-			productReference = 97B29EC047ED7E17B1E0563A /* starsky.app */;
+			productReference = 97B29EC047ED7E17B1E0563A /* Starsky.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -466,9 +466,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-				};
+				LastUpgradeCheck = 2660;
 			};
 			buildConfigurationList = 90E4DA2552B8332616FE1F69 /* Build configuration list for PBXProject "starsky" */;
 			developmentRegion = en;
@@ -666,7 +664,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "arm64 x86_64";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -697,10 +695,12 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -716,6 +716,7 @@
 				OTHER_CODE_SIGN_FLAGS = "--options runtime";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_STRICT_CONCURRENCY = minimal;
@@ -728,8 +729,13 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = starskyTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
 			};
@@ -740,8 +746,13 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = starskyTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
 			};
@@ -751,6 +762,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -781,10 +793,12 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -805,6 +819,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = minimal;
@@ -817,11 +832,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = starsky/starsky.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = LHZ4426ABB;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = starsky/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
 				PRODUCT_MODULE_NAME = Starsky;
 				PRODUCT_NAME = Starsky;
@@ -836,9 +856,13 @@
 				CODE_SIGN_ENTITLEMENTS = starsky/starsky.debug.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = starsky/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
 				PRODUCT_MODULE_NAME = Starsky;
 				PRODUCT_NAME = Starsky;
