@@ -128,6 +128,41 @@ final class BackendServiceTests: XCTestCase {
         service.stop()
         service.stop()
     }
+
+    func testStopSendsInterruptWhenProcessIgnoresTerm() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtime4")
+        try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
+        let binary = runtimeDir.appendingPathComponent("starsky")
+        try "#!/bin/sh\ntrap '' TERM\nsleep 3600\n".write(to: binary, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
+
+        let service = TestableBackendService(fileLogger: DailyFileLogger(), xattrPath: "/usr/bin/true", codesignPath: "/usr/bin/true")
+        service.fakeExeURL = binary
+        service.sigtermTimeout = 0.1
+
+        try service.start(port: 19994)
+        XCTAssertTrue(service.isRunning)
+        service.stop()
+        XCTAssertFalse(service.isRunning)
+    }
+
+    func testStopSendsKillWhenProcessIgnoresTermAndInt() throws {
+        let runtimeDir = tempDir.appendingPathComponent("runtime5")
+        try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
+        let binary = runtimeDir.appendingPathComponent("starsky")
+        try "#!/bin/sh\ntrap '' TERM\ntrap '' INT\nsleep 3600\n".write(to: binary, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
+
+        let service = TestableBackendService(fileLogger: DailyFileLogger(), xattrPath: "/usr/bin/true", codesignPath: "/usr/bin/true")
+        service.fakeExeURL = binary
+        service.sigtermTimeout = 0.1
+        service.sigintTimeout = 0.1
+
+        try service.start(port: 19995)
+        XCTAssertTrue(service.isRunning)
+        service.stop()
+        XCTAssertFalse(service.isRunning)
+    }
 }
 
 private class TestableBackendService: BackendService {

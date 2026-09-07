@@ -12,6 +12,9 @@ class BackendService {
     private let xattrPath: String
     private let codesignPath: String
 
+    var sigtermTimeout: TimeInterval = 5
+    var sigintTimeout: TimeInterval = 2
+
     init(fileLogger: DailyFileLogger, xattrPath: String = "/usr/bin/xattr", codesignPath: String = "/usr/bin/codesign") {
         self.fileLogger = fileLogger
         self.xattrPath = xattrPath
@@ -61,13 +64,13 @@ class BackendService {
         isShuttingDown = true
         guard let proc = process, proc.isRunning else { return }
         proc.terminate()
-        let sigtermDeadline = Date().addingTimeInterval(5)
+        let sigtermDeadline = Date().addingTimeInterval(sigtermTimeout)
         while proc.isRunning && Date() < sigtermDeadline {
             Thread.sleep(forTimeInterval: 0.1)
         }
         if proc.isRunning {
             proc.interrupt()
-            let sigintDeadline = Date().addingTimeInterval(2)
+            let sigintDeadline = Date().addingTimeInterval(sigintTimeout)
             while proc.isRunning && Date() < sigintDeadline {
                 Thread.sleep(forTimeInterval: 0.1)
             }
