@@ -270,6 +270,45 @@ describe("PreferencesAppSettingsReadonlyFolders", () => {
         component.unmount();
       });
     });
+
+    it("trims newlines from contentEditable innerText before saving", async () => {
+      const permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      const appSettings = {
+        statusCode: 200,
+        data: { readOnlyFolders: ["/2024"] }
+      } as IConnectionDefault;
+
+      jest.spyOn(useFetch, "default").mockImplementation((url) => {
+        if (url === new UrlQuery().UrlAccountPermissions()) return permissions;
+        return appSettings;
+      });
+
+      const mockResult: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: null
+      });
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockResult);
+
+      const component = render(<PreferencesAppSettingsReadonlyFolders />);
+
+      const formControl = screen.getByTestId("form-control");
+      formControl.innerText = "/renamed\n";
+      await act(async () => {
+        fireEvent.focusOut(formControl);
+        await mockResult;
+      });
+
+      expect(fetchPostSpy).toHaveBeenCalledWith(expect.anything(), "ReadOnlyFolders%5B0%5D=%2Frenamed");
+
+      act(() => {
+        component.unmount();
+      });
+    });
   });
 
   describe("error handling", () => {

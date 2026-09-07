@@ -84,7 +84,9 @@ const PreferencesAppSettingsReadonlyFolders: React.FunctionComponent = () => {
   }
 
   function handleBlur(id: number, value: string) {
-    const updated = rows.map((r) => (r.id === id ? { ...r, folder: value } : r));
+    // contentEditable divs can leave a trailing newline in innerText
+    const trimmed = value.replace(/[\r\n]+/g, "").trim();
+    const updated = rows.map((r) => (r.id === id ? { ...r, folder: trimmed } : r));
     setRows(updated);
     saveAll(updated);
   }
