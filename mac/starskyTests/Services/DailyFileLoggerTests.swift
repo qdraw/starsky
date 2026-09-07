@@ -79,4 +79,28 @@ final class DailyFileLoggerTests: XCTestCase {
         let content = try String(contentsOf: files[0])
         XCTAssertTrue(content.contains("MyCategory"))
     }
+
+    func testSymlinkIsCreatedAfterFirstLog() throws {
+        let logger = DailyFileLogger(logsDirectory: tempDir)
+        logger.info("symlink-test", category: "Test")
+        let symlink = tempDir.appendingPathComponent(DailyFileLogger.symlinkName)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: symlink.path), "Expected symlink to exist")
+    }
+
+    func testSymlinkPointsToCurrentLogFile() throws {
+        let logger = DailyFileLogger(logsDirectory: tempDir)
+        logger.info("symlink-target-test", category: "Test")
+        let symlink = tempDir.appendingPathComponent(DailyFileLogger.symlinkName)
+        let destination = try FileManager.default.destinationOfSymbolicLink(atPath: symlink.path)
+        XCTAssertTrue(destination.hasSuffix(".log"), "Symlink should point to a .log file")
+        XCTAssertFalse(destination.hasSuffix(DailyFileLogger.symlinkName), "Symlink must not point to itself")
+    }
+
+    func testSymlinkContentMatchesLogFile() throws {
+        let logger = DailyFileLogger(logsDirectory: tempDir)
+        logger.info("via-symlink", category: "Test")
+        let symlink = tempDir.appendingPathComponent(DailyFileLogger.symlinkName)
+        let content = try String(contentsOf: symlink)
+        XCTAssertTrue(content.contains("via-symlink"))
+    }
 }

@@ -5,6 +5,9 @@ class DailyFileLogger {
     private let lock = NSLock()
     private let dateFormatter: DateFormatter
     private let fileDateFormatter: DateFormatter
+    private var currentLogFile: URL?
+
+    static let symlinkName = "starsky-latest.log"
 
     init(logsDirectory: URL = ApplicationPaths.logsDirectory) {
         self.logsDirectory = logsDirectory
@@ -41,6 +44,18 @@ class DailyFileLogger {
         } else {
             try? data.write(to: logFile, options: .atomic)
         }
+
+        if currentLogFile != logFile {
+            updateSymlink(to: logFile)
+        }
+    }
+
+    private func updateSymlink(to logFile: URL) {
+        let symlink = logsDirectory.appendingPathComponent(DailyFileLogger.symlinkName)
+        let fm = FileManager.default
+        try? fm.removeItem(at: symlink)
+        try? fm.createSymbolicLink(at: symlink, withDestinationURL: logFile)
+        currentLogFile = logFile
     }
 
     func info(_ message: String, category: String = "App") {
