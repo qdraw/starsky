@@ -61,11 +61,20 @@ class BackendService {
         isShuttingDown = true
         guard let proc = process, proc.isRunning else { return }
         proc.terminate()
-        let deadline = Date().addingTimeInterval(5)
-        while proc.isRunning && Date() < deadline {
+        let sigtermDeadline = Date().addingTimeInterval(5)
+        while proc.isRunning && Date() < sigtermDeadline {
             Thread.sleep(forTimeInterval: 0.1)
         }
-        if proc.isRunning { proc.interrupt() }
+        if proc.isRunning {
+            proc.interrupt()
+            let sigintDeadline = Date().addingTimeInterval(2)
+            while proc.isRunning && Date() < sigintDeadline {
+                Thread.sleep(forTimeInterval: 0.1)
+            }
+        }
+        if proc.isRunning {
+            kill(proc.processIdentifier, SIGKILL)
+        }
         process = nil
         logger.info("Backend stopped")
         fileLogger.info("Backend stopped", category: "BackendService")
