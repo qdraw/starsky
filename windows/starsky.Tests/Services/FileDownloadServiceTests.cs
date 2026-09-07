@@ -50,7 +50,8 @@ public sealed class FileDownloadServiceTests : IDisposable
         await svc.DownloadAndOpenAsync(StarskyPath, "http://localhost:5000", openFile: false);
 
         Assert.IsTrue(File.Exists(_expectedFile));
-        Assert.AreSequenceEqual(photoBytes, await File.ReadAllBytesAsync(_expectedFile, TestContext.CancellationToken));
+        var actualBytes = await File.ReadAllBytesAsync(_expectedFile, TestContext.CancellationToken);
+        Assert.AreSequenceEqual(photoBytes, actualBytes);
     }
 
     [TestMethod]

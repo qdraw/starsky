@@ -30,6 +30,9 @@ public class PortFinderTests
         // Ports can in theory be re-used, but two rapid calls rarely return the same value
         var ports = Enumerable.Range(0, 5).Select(_ => PortFinder.FindFreePort()).ToList();
         // At minimum all are valid
-        foreach (var p in ports) Assert.IsGreaterThan(0, p);
+        foreach (var p in ports)
+        {
+	        Assert.IsGreaterThan(0, p);
+        }
     }
 }
