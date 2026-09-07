@@ -5,6 +5,7 @@ import OSLog
 private class SparkleUpdaterDelegate: NSObject, SPUUpdaterDelegate {
     private let updateService: UpdateService
     private let baseFeedURLProvider: () -> String?
+    var mountWatcherProvider: (() -> (any MountWatcherServiceProtocol)?)?
 
     init(
         updateService: UpdateService,
@@ -16,6 +17,10 @@ private class SparkleUpdaterDelegate: NSObject, SPUUpdaterDelegate {
 
     func feedURLString(for _: SPUUpdater) -> String? {
         updateService.feedURLOverride(baseFeedURL: baseFeedURLProvider())
+    }
+
+    func updater(_: SPUUpdater, willInstallUpdate _: SUAppcastItem) {
+        mountWatcherProvider?()?.stopSync()
     }
 }
 
@@ -48,6 +53,11 @@ class UpdateService {
     }
 
     var isAvailable: Bool { updaterController != nil }
+
+    var mountWatcherProvider: (() -> (any MountWatcherServiceProtocol)?)? {
+        get { sparkleDelegate?.mountWatcherProvider }
+        set { sparkleDelegate?.mountWatcherProvider = newValue }
+    }
 
     // Returns nil (use Info.plist default) when pre-release is off,
     // or the base URL with ?pre-release=1 appended when it is on.

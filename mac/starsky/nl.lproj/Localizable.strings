@@ -35,6 +35,18 @@
 "menu.help.documentation" = "Documentatie";
 "menu.help.releaseOverview" = "Versieoverzicht";
 
+/* MountWatcher menu */
+"menu.mountwatcher.title" = "MountWatcher";
+"menu.mountwatcher.enable" = "MountWatcher inschakelen";
+"menu.mountwatcher.disable" = "MountWatcher uitschakelen";
+"menu.mountwatcher.status.label" = "Status: %@";
+"menu.mountwatcher.status.running" = "Actief";
+"menu.mountwatcher.status.stopped" = "Niet actief";
+"menu.mountwatcher.status.notInstalled" = "Niet geïnstalleerd";
+"menu.mountwatcher.status.unknown" = "Onbekend";
+"mountwatcher.error.enable" = "MountWatcher kon niet worden ingeschakeld. De service kon niet worden geïnstalleerd.";
+"mountwatcher.error.disable" = "MountWatcher kon niet worden uitgeschakeld. De service kon niet worden verwijderd.";
+
 /* Settings window */
 "settings.updateCheck.preRelease" = "Inclusief pre-releaseversies";
 "settings.updateCheck.checkNow" = "Nu controleren";

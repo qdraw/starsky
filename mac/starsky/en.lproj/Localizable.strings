@@ -35,6 +35,18 @@
 "menu.help.documentation" = "Documentation";
 "menu.help.releaseOverview" = "Release Overview";
 
+/* MountWatcher menu */
+"menu.mountwatcher.title" = "MountWatcher";
+"menu.mountwatcher.enable" = "Enable MountWatcher";
+"menu.mountwatcher.disable" = "Disable MountWatcher";
+"menu.mountwatcher.status.label" = "Status: %@";
+"menu.mountwatcher.status.running" = "Running";
+"menu.mountwatcher.status.stopped" = "Not Running";
+"menu.mountwatcher.status.notInstalled" = "Not Installed";
+"menu.mountwatcher.status.unknown" = "Unknown";
+"mountwatcher.error.enable" = "Failed to enable MountWatcher. The service could not be installed.";
+"mountwatcher.error.disable" = "Failed to disable MountWatcher. The service could not be removed.";
+
 /* Settings window */
 "settings.updateCheck.preRelease" = "Include pre-release versions";
 "settings.updateCheck.checkNow" = "Check Now";

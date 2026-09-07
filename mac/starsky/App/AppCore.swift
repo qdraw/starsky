@@ -9,6 +9,7 @@ class AppCore {
     let settingsService: SettingsService
     let backendService: any BackendServiceProtocol
     let fileWatcherService: any FileWatcherServiceProtocol
+    let mountWatcherService: (any MountWatcherServiceProtocol)?
     let updateService: UpdateService
     let windowManager: any WindowManagerProtocol
 
@@ -34,6 +35,7 @@ class AppCore {
         settingsService: SettingsService,
         backendService: any BackendServiceProtocol,
         fileWatcherService: any FileWatcherServiceProtocol,
+        mountWatcherService: (any MountWatcherServiceProtocol)? = nil,
         updateService: UpdateService,
         windowManager: any WindowManagerProtocol,
         terminate: @escaping () -> Void = { NSApplication.shared.terminate(nil) },
@@ -54,6 +56,7 @@ class AppCore {
         self.settingsService = settingsService
         self.backendService = backendService
         self.fileWatcherService = fileWatcherService
+        self.mountWatcherService = mountWatcherService
         self.updateService = updateService
         self.windowManager = windowManager
         self.terminate = terminate
@@ -135,6 +138,15 @@ class AppCore {
     func finishStartup() async {
         fileWatcherService.start()
 
+        if settingsService.current.mountWatcherEnabled, let mws = mountWatcherService {
+            let ok = await mws.enable()
+            if !ok {
+                var s = settingsService.current
+                s.mountWatcherEnabled = false
+                settingsService.save(s)
+            }
+        }
+
         await MainActor.run {
             windowManager.restoreWindows()
             NSApp.activate(ignoringOtherApps: true)
@@ -193,6 +205,9 @@ class AppCore {
     func beginTermination() {
         windowManager.closeAll()
         Task.detached { [weak self] in
+            if self?.settingsService.current.mountWatcherEnabled == true {
+                self?.mountWatcherService?.stopSync()
+            }
             self?.fileWatcherService.stop()
             self?.backendService.stop()
             await MainActor.run {
