@@ -134,8 +134,9 @@ describe('DetailView (from upload) (40)', () => {
       cy.get(tagFileSelector).should('contain', sourceTags)
     }).then(() => {
       // and now we going back to the orginal state
-      cy.intercept('POST', '**/api/update').as('cleanupUpdate')
       cy.get(tagFileSelector).type('{end}' + '{backspace}'.repeat(appendText.length))
+      // intercept AFTER typing so autosaves during keystrokes don't satisfy the alias early
+      cy.intercept('POST', '**/api/update').as('cleanupUpdate')
       cy.get(tagFileSelector).blur()
       cy.wait('@cleanupUpdate')
     }).then(() => {
