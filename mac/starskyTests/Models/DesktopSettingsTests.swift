@@ -12,6 +12,7 @@ final class DesktopSettingsTests: XCTestCase {
         XCTAssertFalse(settings.preReleaseEnabled)
         XCTAssertNil(settings.lastUpdateWarningShown)
         XCTAssertTrue(settings.windows.isEmpty)
+        XCTAssertFalse(settings.mountWatcherEnabled)
     }
 
     func testJsonRoundTrip() throws {
@@ -48,5 +49,28 @@ final class DesktopSettingsTests: XCTestCase {
         let decoder = JSONDecoder()
         let decoded = try decoder.decode(DesktopSettings.self, from: json.data(using: .utf8)!)
         XCTAssertFalse(decoded.preReleaseEnabled)
+    }
+
+    func testMountWatcherEnabledDefaultsToFalseWhenMissingFromJson() throws {
+        let json = """
+        {"mode":0,"remoteBaseUrl":"","updateCheckEnabled":true,"windows":[]}
+        """
+        let decoder = JSONDecoder()
+        let decoded = try decoder.decode(DesktopSettings.self, from: json.data(using: .utf8)!)
+        XCTAssertFalse(decoded.mountWatcherEnabled)
+    }
+
+    func testMountWatcherEnabledRoundTrips() throws {
+        var settings = DesktopSettings()
+        settings.mountWatcherEnabled = true
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(settings)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(DesktopSettings.self, from: data)
+        XCTAssertTrue(decoded.mountWatcherEnabled)
     }
 }

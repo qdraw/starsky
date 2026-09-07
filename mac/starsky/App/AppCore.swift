@@ -9,6 +9,7 @@ class AppCore {
     let settingsService: SettingsService
     let backendService: any BackendServiceProtocol
     let fileWatcherService: any FileWatcherServiceProtocol
+    let mountWatcherService: (any MountWatcherServiceProtocol)?
     let updateService: UpdateService
     let windowManager: any WindowManagerProtocol
 
@@ -23,6 +24,7 @@ class AppCore {
     var splashStatus: @MainActor (String) -> Void
     var onWindowsReady: @MainActor () -> Void
     var versionProvider: () -> String
+    var portFinder: () -> Int
 
     private(set) var localPort: Int = 0
 
@@ -34,6 +36,7 @@ class AppCore {
         settingsService: SettingsService,
         backendService: any BackendServiceProtocol,
         fileWatcherService: any FileWatcherServiceProtocol,
+        mountWatcherService: (any MountWatcherServiceProtocol)? = nil,
         updateService: UpdateService,
         windowManager: any WindowManagerProtocol,
         terminate: @escaping () -> Void = { NSApplication.shared.terminate(nil) },
@@ -49,11 +52,13 @@ class AppCore {
         onWindowsReady: @escaping @MainActor () -> Void = {
             // Intentionally no-op by default: AppDelegate overrides this to open windows; tests and headless startups do not need it.
         },
-        versionProvider: @escaping () -> String = { ApplicationInfo.version }
+        versionProvider: @escaping () -> String = { ApplicationInfo.version },
+        portFinder: @escaping () -> Int = { PortFinder.findFreePort() }
     ) {
         self.settingsService = settingsService
         self.backendService = backendService
         self.fileWatcherService = fileWatcherService
+        self.mountWatcherService = mountWatcherService
         self.updateService = updateService
         self.windowManager = windowManager
         self.terminate = terminate
@@ -66,6 +71,7 @@ class AppCore {
         self.splashStatus = splashStatus
         self.onWindowsReady = onWindowsReady
         self.versionProvider = versionProvider
+        self.portFinder = portFinder
     }
 
     // MARK: - Startup
@@ -82,7 +88,7 @@ class AppCore {
     func startLocalMode() async {
         NSLog("[startup] startLocalMode begin")
         await splashStatus(NSLocalizedString("splash.status.findingPort", comment: ""))
-        let port = PortFinder.findFreePort()
+        let port = portFinder()
         NSLog("[startup] port=\(port)")
         guard port > 0 else {
             await showErrorAndQuit("Could not find a free port to start the backend.")
@@ -134,6 +140,16 @@ class AppCore {
 
     func finishStartup() async {
         fileWatcherService.start()
+
+        if settingsService.current.mountWatcherEnabled, let mws = mountWatcherService {
+            let ok = await mws.enable()
+            if !ok {
+                logger.error("MountWatcher enable failed on startup — clearing stored preference")
+                var s = settingsService.current
+                s.mountWatcherEnabled = false
+                settingsService.save(s)
+            }
+        }
 
         await MainActor.run {
             windowManager.restoreWindows()
@@ -193,6 +209,9 @@ class AppCore {
     func beginTermination() {
         windowManager.closeAll()
         Task.detached { [weak self] in
+            if self?.settingsService.current.mountWatcherEnabled == true {
+                self?.mountWatcherService?.stopSync()
+            }
             self?.fileWatcherService.stop()
             self?.backendService.stop()
             await MainActor.run {
@@ -208,7 +227,7 @@ class AppCore {
             await MainActor.run { windowManager.reopenAll() }
             return
         }
-        let port = PortFinder.findFreePort()
+        let port = portFinder()
         guard port > 0 else {
             await showErrorAndQuit("Could not find a free port to start the backend.")
             return

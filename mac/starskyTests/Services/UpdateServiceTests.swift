@@ -139,4 +139,26 @@ final class UpdateServiceTests: XCTestCase {
         let after = settings.current.lastUpdateWarningShown!
         XCTAssertGreaterThanOrEqual(after, before)
     }
+
+    // MARK: - mountWatcherProvider
+
+    func testMountWatcherProviderIsNilByDefault() {
+        let (service, _) = makeService()
+        XCTAssertNil(service.mountWatcherProvider)
+    }
+
+    func testMountWatcherProviderCanBeSetAndRetrieved() {
+        let (service, _) = makeService()
+        service.mountWatcherProvider = { nil }
+        // The provider is stored; calling it returns nil (no service configured).
+        XCTAssertNotNil(service.mountWatcherProvider)
+        XCTAssertNil(service.mountWatcherProvider?())
+    }
+
+    func testMountWatcherProviderCanBeCleared() {
+        let (service, _) = makeService()
+        service.mountWatcherProvider = { nil }
+        service.mountWatcherProvider = nil
+        XCTAssertNil(service.mountWatcherProvider)
+    }
 }

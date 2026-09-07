@@ -12,7 +12,11 @@ final class ApplicationPathsTests: XCTestCase {
 
     func testSettingsFileUnderAppSupport() {
         XCTAssertTrue(ApplicationPaths.settingsFile.path.hasPrefix(ApplicationPaths.appSupport.path))
+        #if DEBUG
+        XCTAssertEqual(ApplicationPaths.settingsFile.lastPathComponent, "settings-debug.json")
+        #else
         XCTAssertEqual(ApplicationPaths.settingsFile.lastPathComponent, "settings.json")
+        #endif
     }
 
     func testLogsDirectoryUnderAppSupport() {

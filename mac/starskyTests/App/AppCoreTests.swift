@@ -30,6 +30,19 @@ private final class MockFileWatcherService: FileWatcherServiceProtocol {
     func stop() { stopCalled = true }
 }
 
+private final class MockMountWatcherService: MountWatcherServiceProtocol {
+    var enableCalled = false
+    var disableCalled = false
+    var stopSyncCalled = false
+    var enableResult = true
+    var statusResult: MountWatcherStatus = .notInstalled
+
+    func enable() async -> Bool { enableCalled = true; return enableResult }
+    func disable() async -> Bool { disableCalled = true; return true }
+    func status() async -> MountWatcherStatus { statusResult }
+    func stopSync() { stopSyncCalled = true }
+}
+
 @MainActor
 private final class MockWindowManager: WindowManagerProtocol {
     var openMainWindowCalled = false
@@ -57,6 +70,7 @@ private func makeCore(
     mode: RuntimeMode = .local,
     backendService: MockBackendService? = nil,
     fileWatcherService: MockFileWatcherService? = nil,
+    mountWatcherService: MockMountWatcherService? = nil,
     windowManager: MockWindowManager? = nil
 ) -> AppCore {
     let backendService = backendService ?? MockBackendService()
@@ -81,6 +95,7 @@ private func makeCore(
         settingsService: settings,
         backendService: backendService,
         fileWatcherService: fileWatcherService,
+        mountWatcherService: mountWatcherService,
         updateService: UpdateService(settingsService: settings),
         windowManager: windowManager,
         terminate: {},
@@ -161,6 +176,25 @@ final class AppCoreTests: XCTestCase {
         await core.startLocalMode()
         XCTAssertTrue(backend.startCalled)
         XCTAssertEqual(wm.setLocalPortValue, core.localPort)
+    }
+
+    func testStartLocalModeShowsErrorWhenNoFreePort() async {
+        var errorMessage: String?
+        let core = makeCore()
+        core.portFinder = { 0 }
+        core.showError = { errorMessage = $0 }
+        await core.startLocalMode()
+        XCTAssertNotNil(errorMessage)
+        XCTAssertTrue(errorMessage?.contains("port") == true)
+    }
+
+    func testSwitchToLocalModeShowsErrorWhenNoFreePort() async {
+        var errorMessage: String?
+        let core = makeCore()
+        core.portFinder = { 0 }
+        core.showError = { errorMessage = $0 }
+        await core.switchToLocalMode()
+        XCTAssertNotNil(errorMessage)
     }
 
     func testStartLocalModeShowsErrorWhenBackendThrows() async {
@@ -495,5 +529,58 @@ final class AppCoreTests: XCTestCase {
         XCTAssertTrue(backend.startCalled)
         XCTAssertNotNil(errorMessage)
         XCTAssertTrue(errorMessage?.contains("incompatible") == true || errorMessage?.contains("update") == true)
+    }
+
+    // MARK: - MountWatcher
+
+    func testFinishStartupDoesNotEnableMountWatcherWhenDisabled() async {
+        let mws = MockMountWatcherService()
+        let core = makeCore(mountWatcherService: mws)
+        // mountWatcherEnabled defaults to false
+        await core.finishStartup()
+        XCTAssertFalse(mws.enableCalled)
+    }
+
+    func testFinishStartupEnablesMountWatcherWhenPreferenceIsTrue() async {
+        let mws = MockMountWatcherService()
+        let wm = MockWindowManager()
+        let core = makeCore(mountWatcherService: mws, windowManager: wm)
+        var s = core.settingsService.current
+        s.mountWatcherEnabled = true
+        core.settingsService.save(s)
+        await core.finishStartup()
+        XCTAssertTrue(mws.enableCalled)
+    }
+
+    func testFinishStartupClearsPreferenceWhenEnableFails() async {
+        let mws = MockMountWatcherService()
+        mws.enableResult = false
+        let core = makeCore(mountWatcherService: mws)
+        var s = core.settingsService.current
+        s.mountWatcherEnabled = true
+        core.settingsService.save(s)
+        await core.finishStartup()
+        XCTAssertTrue(mws.enableCalled)
+        XCTAssertFalse(core.settingsService.current.mountWatcherEnabled)
+    }
+
+    func testBeginTerminationCallsStopSyncWhenMountWatcherEnabled() async {
+        let mws = MockMountWatcherService()
+        let core = makeCore(mountWatcherService: mws)
+        var s = core.settingsService.current
+        s.mountWatcherEnabled = true
+        core.settingsService.save(s)
+        core.beginTermination()
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        XCTAssertTrue(mws.stopSyncCalled)
+    }
+
+    func testBeginTerminationDoesNotCallStopSyncWhenMountWatcherDisabled() async {
+        let mws = MockMountWatcherService()
+        let core = makeCore(mountWatcherService: mws)
+        // mountWatcherEnabled defaults to false
+        core.beginTermination()
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        XCTAssertFalse(mws.stopSyncCalled)
     }
 }

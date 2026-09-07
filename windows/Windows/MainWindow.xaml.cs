@@ -152,6 +152,11 @@ public partial class MainWindow
             ToggleFullScreen_Click(sender, e);
             e.Handled = true;
         }
+        else if (e.Key == Key.W && Keyboard.Modifiers == ModifierKeys.Control)
+        {
+            Close();
+            e.Handled = true;
+        }
     }
 
     public void Reload()

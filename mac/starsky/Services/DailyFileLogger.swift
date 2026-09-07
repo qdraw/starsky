@@ -5,9 +5,21 @@ class DailyFileLogger {
     private let lock = NSLock()
     private let dateFormatter: DateFormatter
     private let fileDateFormatter: DateFormatter
+    private var currentLogFile: URL?
+    private let isDebugBuild: Bool
 
-    init(logsDirectory: URL = ApplicationPaths.logsDirectory) {
+    static let symlinkName = "starsky-latest.log"
+    static let debugSuffix = "-debug"
+
+    init(logsDirectory: URL = ApplicationPaths.logsDirectory, isDebugBuild: Bool = {
+        #if DEBUG
+        return true
+        #else
+        return false
+        #endif
+    }()) {
         self.logsDirectory = logsDirectory
+        self.isDebugBuild = isDebugBuild
 
         dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -25,7 +37,8 @@ class DailyFileLogger {
         let now = Date()
         let timestamp = dateFormatter.string(from: now)
         let dateSuffix = fileDateFormatter.string(from: now)
-        let logFile = logsDirectory.appendingPathComponent("starsky-\(dateSuffix).log")
+        let suffix = isDebugBuild ? "\(dateSuffix)\(DailyFileLogger.debugSuffix)" : dateSuffix
+        let logFile = logsDirectory.appendingPathComponent("starsky-\(suffix).log")
 
         var line = "\(timestamp) [\(level)] \(category): \(message)\n"
         if let error = error {
@@ -41,6 +54,18 @@ class DailyFileLogger {
         } else {
             try? data.write(to: logFile, options: .atomic)
         }
+
+        if !isDebugBuild, currentLogFile != logFile {
+            updateSymlink(to: logFile)
+        }
+    }
+
+    private func updateSymlink(to logFile: URL) {
+        let symlink = logsDirectory.appendingPathComponent(DailyFileLogger.symlinkName)
+        let fm = FileManager.default
+        try? fm.removeItem(at: symlink)
+        try? fm.createSymbolicLink(at: symlink, withDestinationURL: logFile)
+        currentLogFile = logFile
     }
 
     func info(_ message: String, category: String = "App") {

@@ -11,7 +11,13 @@ enum ApplicationPaths {
         return base.appendingPathComponent("starsky", isDirectory: true)
     }()
 
-    static let settingsFile: URL = appSupport.appendingPathComponent("settings.json")
+    static let settingsFile: URL = {
+        #if DEBUG
+        return appSupport.appendingPathComponent("settings-debug.json")
+        #else
+        return appSupport.appendingPathComponent("settings.json")
+        #endif
+    }()
     static let appSettingsFile: URL = appSupport.appendingPathComponent("appsettings.json")
     static let appSettingsLocalFile: URL = appSupport.appendingPathComponent("appsettings.local.json")
     static let databaseFile: URL = appSupport.appendingPathComponent("starsky.db")

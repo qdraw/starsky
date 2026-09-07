@@ -7,6 +7,7 @@ struct DesktopSettings: Codable {
     var preReleaseEnabled: Bool = false
     var lastUpdateWarningShown: Date? = nil
     var windows: [SavedWindowState] = []
+    var mountWatcherEnabled: Bool = false
 
 
     init() {
@@ -21,5 +22,6 @@ struct DesktopSettings: Codable {
         preReleaseEnabled = try c.decodeIfPresent(Bool.self, forKey: .preReleaseEnabled) ?? false
         lastUpdateWarningShown = try c.decodeIfPresent(Date.self, forKey: .lastUpdateWarningShown)
         windows = try c.decode([SavedWindowState].self, forKey: .windows)
+        mountWatcherEnabled = try c.decodeIfPresent(Bool.self, forKey: .mountWatcherEnabled) ?? false
     }
 }
