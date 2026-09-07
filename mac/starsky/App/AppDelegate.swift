@@ -171,6 +171,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func buildFileMenu() -> NSMenu {
         let menu = NSMenu(title: NSLocalizedString("menu.file.title", comment: ""))
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.file.newWindow", comment: ""), action: #selector(newWindow), keyEquivalent: "n"))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.file.closeWindow", comment: ""), action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w"))
         let reloadItem = NSMenuItem(title: NSLocalizedString("menu.file.reloadAll", comment: ""), action: #selector(reloadAll), keyEquivalent: "r")
         reloadItem.keyEquivalentModifierMask = [.command, .shift]
         menu.addItem(reloadItem)

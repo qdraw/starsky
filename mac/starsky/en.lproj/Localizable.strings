@@ -8,6 +8,7 @@
 /* File menu */
 "menu.file.title" = "File";
 "menu.file.newWindow" = "New Window";
+"menu.file.closeWindow" = "Close Window";
 "menu.file.reloadAll" = "Reload All";
 "menu.file.editFileInEditor" = "Edit File in Editor";
 

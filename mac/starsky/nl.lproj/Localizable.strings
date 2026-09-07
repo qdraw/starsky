@@ -8,6 +8,7 @@
 /* File menu */
 "menu.file.title" = "Bestand";
 "menu.file.newWindow" = "Nieuw venster";
+"menu.file.closeWindow" = "Venster sluiten";
 "menu.file.reloadAll" = "Alles herladen";
 "menu.file.editFileInEditor" = "Bestand bewerken in editor";
 
