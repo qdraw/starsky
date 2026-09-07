@@ -6,11 +6,20 @@ class DailyFileLogger {
     private let dateFormatter: DateFormatter
     private let fileDateFormatter: DateFormatter
     private var currentLogFile: URL?
+    private let isDebugBuild: Bool
 
     static let symlinkName = "starsky-latest.log"
+    static let debugSuffix = "-debug"
 
-    init(logsDirectory: URL = ApplicationPaths.logsDirectory) {
+    init(logsDirectory: URL = ApplicationPaths.logsDirectory, isDebugBuild: Bool = {
+        #if DEBUG
+        return true
+        #else
+        return false
+        #endif
+    }()) {
         self.logsDirectory = logsDirectory
+        self.isDebugBuild = isDebugBuild
 
         dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -28,7 +37,8 @@ class DailyFileLogger {
         let now = Date()
         let timestamp = dateFormatter.string(from: now)
         let dateSuffix = fileDateFormatter.string(from: now)
-        let logFile = logsDirectory.appendingPathComponent("starsky-\(dateSuffix).log")
+        let suffix = isDebugBuild ? "\(dateSuffix)\(DailyFileLogger.debugSuffix)" : dateSuffix
+        let logFile = logsDirectory.appendingPathComponent("starsky-\(suffix).log")
 
         var line = "\(timestamp) [\(level)] \(category): \(message)\n"
         if let error = error {
@@ -45,7 +55,7 @@ class DailyFileLogger {
             try? data.write(to: logFile, options: .atomic)
         }
 
-        if currentLogFile != logFile {
+        if !isDebugBuild, currentLogFile != logFile {
             updateSymlink(to: logFile)
         }
     }
