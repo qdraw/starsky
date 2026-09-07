@@ -3,6 +3,7 @@ import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import localization from "../../../localization/localization.json";
+import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
@@ -113,6 +114,15 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
 
     // clean user cache
     new FileListCache().CacheCleanEverything();
+
+    // Wait for the backend index to reflect the renamed folder before navigating,
+    // otherwise the new page loads before the index is updated and shows a 404.
+    const newIndexUrl = new UrlQuery().UrlIndexServerApiPath(filePathAfterChange);
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const check = await FetchGet(newIndexUrl);
+      if (check.statusCode !== 404) break;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
 
     // redirect to new path (so if you press refresh the image is shown)
     const replacePath = new UrlQuery().updateFilePathHash(

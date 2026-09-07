@@ -3,6 +3,7 @@ import { render } from "@testing-library/react";
 import { act } from "react";
 import * as useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url/url-query";
 import * as Modal from "../../atoms/modal/modal";
@@ -64,6 +65,7 @@ describe("ModalArchiveRename", () => {
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
+      jest.spyOn(FetchGet, "default").mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
 
       const handleExitSpy = jest.fn();
       const modal = render(
@@ -113,6 +115,7 @@ describe("ModalArchiveRename", () => {
         statusCode: 200
       } as IConnectionDefault);
       jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
+      jest.spyOn(FetchGet, "default").mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
 
       const dispatch = jest.fn();
       const handleExitSpy = jest.fn();
@@ -161,6 +164,7 @@ describe("ModalArchiveRename", () => {
         statusCode: 200
       } as IConnectionDefault);
       jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
+      jest.spyOn(FetchGet, "default").mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
 
       const locationObject = {
         location: globalThis.location,
