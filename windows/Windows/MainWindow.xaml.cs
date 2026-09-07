@@ -361,10 +361,9 @@ public partial class MainWindow
 	        return;
         }
 
-        var enabled = _settings.Current.MountWatcherEnabled;
-        if (enabled)
+        var status = _mountWatcherService.GetStatus();
+        if (status is MountWatcherStatus.Running or MountWatcherStatus.Stopped)
         {
-            var status = _mountWatcherService.GetStatus();
             MountWatcherStatusItem.Header = $"Status: {status}";
             MountWatcherStatusItem.Visibility = Visibility.Visible;
             MountWatcherToggleItem.Header = "Disable _Mount Watcher";
@@ -383,7 +382,8 @@ public partial class MainWindow
 	        return;
         }
 
-        if (_settings.Current.MountWatcherEnabled)
+        var status = _mountWatcherService.GetStatus();
+        if (status is MountWatcherStatus.Running or MountWatcherStatus.Stopped)
         {
             var ok = await _mountWatcherService.DisableAsync();
             if (ok)

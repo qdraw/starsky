@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -5,14 +6,15 @@ namespace Starsky.Desktop.Services;
 
 public class MountWatcherService : IMountWatcherService
 {
-    // The CLI binary in the runtime directory is always a Release build,
-    // so it always registers the service under the production name.
-    internal const string ServiceName = "starsky-mountwatcher";
+    // Windows services use the reverse-DNS name from WatchServiceName.GetReverseDnsName().
+    // The Linux systemd name ("starsky-mountwatcher") is different — do not use it here.
+    internal static readonly string ServiceName = "nl.qdraw.mountwatcher";
 
     private readonly string _cliBinaryPath;
     private readonly ILogger<MountWatcherService> _logger;
     private readonly IProcessRunner _runner;
 
+    [ExcludeFromCodeCoverage]
     public MountWatcherService(ILogger<MountWatcherService> logger)
         : this(Path.Combine(ApplicationPaths.RuntimeDir, "starskymountwatchercli.exe"),
                logger,

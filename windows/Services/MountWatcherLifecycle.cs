@@ -30,7 +30,16 @@ internal class MountWatcherLifecycle(
             return;
         }
 
-        logger.LogWarning("MountWatcher enable failed on startup; clearing preference");
+        // --install exits non-zero when the service is already registered (sc.exe 1073).
+        // Only clear the preference when the service is genuinely absent.
+        var status = mountWatcherService.GetStatus();
+        if (status is MountWatcherStatus.Running or MountWatcherStatus.Stopped)
+        {
+            logger.LogInformation("MountWatcher enable failed but service is {Status}; keeping preference", status);
+            return;
+        }
+
+        logger.LogWarning("MountWatcher enable failed and service is absent; clearing preference");
         settingsService.Current.MountWatcherEnabled = false;
         settingsService.Save();
     }

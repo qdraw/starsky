@@ -1,7 +1,9 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Starsky.Desktop.Services;
 
+[ExcludeFromCodeCoverage]
 internal sealed class WindowsProcessRunner : IProcessRunner
 {
     public ProcessResult Run(string fileName, string args)

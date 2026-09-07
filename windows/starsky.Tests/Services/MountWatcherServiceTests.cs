@@ -177,6 +177,13 @@ public class MountWatcherServiceTests
         Assert.AreEqual(MountWatcherStatus.Running, WithRunner(NonExistentBinary(), runner).GetStatus());
     }
 
+    [TestMethod]
+    public void GetStatus_ReturnsUnknown_WhenRunnerThrows()
+    {
+        var runner = new FakeProcessRunner().ThrowOnRun();
+        Assert.AreEqual(MountWatcherStatus.Unknown, WithRunner(NonExistentBinary(), runner).GetStatus());
+    }
+
     // ── MountWatcherService — StopSync ────────────────────────────────────────
 
     [TestMethod]
@@ -215,14 +222,28 @@ public class MountWatcherServiceTests
         finally { TryDelete(bin); }
     }
 
+    [TestMethod]
+    public void StopSync_DoesNotThrow_WhenRunnerThrows()
+    {
+        var bin = CreateTempBinary();
+        try
+        {
+            var runner = new FakeProcessRunner().ThrowOnElevated();
+            Exception? ex = null;
+            try { WithRunner(bin, runner).StopSync(); } catch (Exception e) { ex = e; }
+            Assert.IsNull(ex);
+        }
+        finally { TryDelete(bin); }
+    }
+
     // ── MountWatcherService — ServiceName constant ────────────────────────────
 
     [TestMethod]
-    public void ServiceName_IsProductionName()
+    public void ServiceName_IsProductionReverseDnsName()
     {
-        // Protects against accidental debug-mode suffix being left in
-        Assert.IsFalse(MountWatcherService.ServiceName.EndsWith("-debug", StringComparison.Ordinal));
-        Assert.IsTrue(MountWatcherService.ServiceName.StartsWith("starsky-", StringComparison.Ordinal));
+        // Must match WatchServiceName.GetReverseDnsName() in the CLI — Windows uses the
+        // reverse-DNS form, NOT the Linux systemd name ("starsky-mountwatcher").
+        Assert.AreEqual("nl.qdraw.mountwatcher", MountWatcherService.ServiceName);
     }
 
     // ── FakeMountWatcherService ───────────────────────────────────────────────
@@ -307,6 +328,28 @@ public class MountWatcherServiceTests
             Assert.IsFalse(settings.Current.MountWatcherEnabled);
         }
         finally { TryDelete(tempFile); }
+    }
+
+    [TestMethod]
+    public async Task Lifecycle_OnStartup_KeepsPreference_WhenEnableFailsButServiceIsRunning()
+    {
+        var (lifecycle, settings, fake) = CreateLifecycle();
+        settings.Current.MountWatcherEnabled = true;
+        fake.EnableResult = false;
+        fake.StatusResult = MountWatcherStatus.Running;
+        await lifecycle.OnStartupAsync();
+        Assert.IsTrue(settings.Current.MountWatcherEnabled);
+    }
+
+    [TestMethod]
+    public async Task Lifecycle_OnStartup_KeepsPreference_WhenEnableFailsButServiceIsStopped()
+    {
+        var (lifecycle, settings, fake) = CreateLifecycle();
+        settings.Current.MountWatcherEnabled = true;
+        fake.EnableResult = false;
+        fake.StatusResult = MountWatcherStatus.Stopped;
+        await lifecycle.OnStartupAsync();
+        Assert.IsTrue(settings.Current.MountWatcherEnabled);
     }
 
     [TestMethod]
