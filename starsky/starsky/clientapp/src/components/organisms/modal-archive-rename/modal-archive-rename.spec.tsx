@@ -363,6 +363,59 @@ describe("ModalArchiveRename", () => {
       modal.unmount();
     });
 
+    it("ignores input when form is disabled", async () => {
+      // FetchPost never resolves so the form stays in loading/disabled state
+      jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => new Promise<IConnectionDefault>(() => {}));
+
+      render(
+        <ModalArchiveRename isOpen={true} subPath="/test" handleExit={() => {}} />
+      );
+
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // Type a valid name so the button becomes enabled
+      directoryName.textContent = "valid-name";
+      fireEvent(directoryName, createEvent.input(directoryName, { key: "v" }));
+      expect(button.disabled).toBeFalsy();
+
+      // Click submit — isFormEnabled becomes false (state changes before the first await)
+      await act(async () => {
+        button.click();
+      });
+
+      // Now fire an invalid name — handleUpdateChange should bail early on !isFormEnabled
+      directoryName.textContent = "??invalid??";
+      fireEvent(directoryName, createEvent.input(directoryName, { key: "?" }));
+
+      // No warning box means the invalid-name branch was never reached
+      expect(screen.queryByTestId("modal-archive-rename-warning-box")).toBeNull();
+    });
+
+    it("ignores input when textContent is empty", () => {
+      render(
+        <ModalArchiveRename isOpen={true} subPath="/test" handleExit={() => {}} />
+      );
+
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // Type a valid name so folderName is updated and button becomes enabled
+      directoryName.textContent = "valid-name";
+      fireEvent(directoryName, createEvent.input(directoryName, { key: "v" }));
+      expect(button.disabled).toBeFalsy();
+
+      // Clear textContent and fire input — handleUpdateChange should bail on !textContent
+      directoryName.textContent = "";
+      fireEvent(directoryName, createEvent.input(directoryName, { key: "Backspace" }));
+
+      // folderName was not cleared so button stays enabled and no error appears
+      expect(button.disabled).toBeFalsy();
+      expect(screen.queryByTestId("modal-archive-rename-warning-box")).toBeNull();
+    });
+
     it("test if handleExit is called", () => {
       // simulate if a user press on close
       // use as ==> import * as Modal from '../../atoms/modal/modal';
