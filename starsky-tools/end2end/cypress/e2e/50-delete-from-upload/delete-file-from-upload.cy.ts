@@ -176,7 +176,7 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.url);
 
     cy.get(".item.item--select").click();
-    cy.get(".item.item--labels").should("exist");
+    cy.get('[data-test="selected-0"]').should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.get(".item.item--more").click();
@@ -194,7 +194,7 @@ describe("Delete file from upload (50)", () => {
     cy.log("view trash");
 
     cy.get(".item.item--select").click();
-    cy.get(".item.item--labels").should("exist");
+    cy.get('[data-test="selected-0"]').should("exist");
 
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
@@ -261,7 +261,7 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.url);
 
     cy.get(".item.item--select").click();
-    cy.get(".item.item--labels").should("exist");
+    cy.get('[data-test="selected-0"]').should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.get(".item.item--more").click();
@@ -277,7 +277,7 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.trash);
 
     cy.get(".item.item--select").click();
-    cy.get(".item.item--labels").should("exist");
+    cy.get('[data-test="selected-0"]').should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.get(".item.item--more").click();
