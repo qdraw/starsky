@@ -44,7 +44,6 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 _Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
 
-- [x] (Changed) _App_ macOS: Add menu options to install MountWatcher (PR #3308)
 - [x] (Changed) _App_ macOS & Windows: Ctrl + W & Command + W Close window (PR #3308)
 - [x] (Changed) _App_ macOS: Add menu options to install MountWatcher (PR #3308)
 - [x] (Fixed) _Back-end_ Retry logic in the QueryGetAllRecursiveAsync (PR #3305)
