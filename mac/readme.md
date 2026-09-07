@@ -262,13 +262,58 @@ mac/
 │   │   ├── AppDelegate.swift          startup / shutdown / menu bar
 │   │   └── ApplicationInfo.swift      version string from bundle
 │   ├── Models/                        Codable data types
-│   ├── Services/                      all business logic (no UI)
+│   ├── Services/
+│   │   ├── BackendService.swift        manages the bundled ASP.NET Core process
+│   │   ├── FileWatcherService.swift    watches settings.json for live changes
+│   │   ├── MountWatcherService.swift   shells out to starskymountwatchercli
+│   │   ├── MountWatcherServiceProtocol.swift  protocol + MountWatcherStatus enum
+│   │   ├── PortFinder.swift            finds a free TCP port
+│   │   ├── SettingsService.swift       reads/writes DesktopSettings
+│   │   └── UpdateService.swift         Sparkle auto-update wrapper
 │   ├── Windows/                       NSWindowController subclasses + WKWebView
 │   ├── WindowManager.swift            manages open MainWindowController instances
 │   └── Resources/Assets.xcassets     AppIcon (populate before release)
 └── starskyTests/
     ├── Helpers/FakeURLProtocol.swift  offline HTTP testing
-    ├── FakeCreateAn/                  fake backend binary helper
+    ├── FakeCreateAn/
+    │   ├── CreateFakeStarskyBin/      fake ASP.NET Core binary for BackendService tests
+    │   └── CreateFakeProcessBin/      fake shell scripts for MountWatcherService tests
     ├── Models/                        model tests
-    └── Services/                      service tests (57 tests total)
+    └── Services/                      service tests
 ```
+
+---
+
+## MountWatcher
+
+The macOS desktop app can manage [MountWatcher](../../features/import/mountwatchercli.md) — a background service that auto-imports photos when a camera card is connected.
+
+### Enabling from the menu
+
+Open the Starsky menu bar icon → **MountWatcher** → **Enable MountWatcher**.
+
+The submenu refreshes each time it opens and shows:
+
+| Service state | Menu shows |
+|---|---|
+| Disabled | "Enable MountWatcher" |
+| Enabled, running | "Status: Running" + "Disable MountWatcher" |
+| Enabled, stopped | "Status: Not Running" + "Disable MountWatcher" |
+
+### How it works
+
+- The app shells out to `starskymountwatchercli --install` / `--uninstall` (bundled in the runtime directory) for service management. No launchd logic is duplicated in Swift.
+- The enabled/disabled preference is stored in `DesktopSettings` (`~/Library/Application Support/starsky/settings.json`), so it survives restarts and Sparkle updates.
+- On startup the app re-enables MountWatcher if the preference is set. If enabling fails, the preference is cleared and an error is shown.
+- Before Sparkle installs an update, `stopSync()` is called so the launchd agent is unloaded before the bundle is replaced. The next launch re-enables it automatically.
+
+### Requirement
+
+`starskymountwatchercli` must be present in the app bundle at:
+
+```
+starsky.app/Contents/MacOS/runtime-starsky-osx-arm64/starskymountwatchercli   # Apple Silicon
+starsky.app/Contents/MacOS/runtime-starsky-osx-x64/starskymountwatchercli     # Intel
+```
+
+It is included automatically in release builds alongside the `starsky` backend binary.
