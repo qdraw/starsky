@@ -158,6 +158,56 @@ describe("ModalArchiveRename", () => {
       modal.unmount();
     });
 
+    it("retries index check when backend returns 404 before navigating", async () => {
+      jest.useFakeTimers();
+
+      const mockPost: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockPost);
+
+      // First call returns 404 (index not ready yet), second returns 200
+      jest
+        .spyOn(FetchGet, "default")
+        .mockResolvedValueOnce({ statusCode: 404 } as IConnectionDefault)
+        .mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
+
+      const locationObject = {
+        location: globalThis.location,
+        navigate: jest.fn()
+      };
+      jest
+        .spyOn(useLocation, "default")
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject);
+
+      const handleExitSpy = jest.fn();
+      render(
+        <ModalArchiveRename
+          isOpen={true}
+          subPath="/test"
+          handleExit={handleExitSpy}
+        ></ModalArchiveRename>
+      );
+
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+      directoryName.textContent = "directory";
+      fireEvent(directoryName, createEvent.input(directoryName, { key: "d" }));
+
+      const clickPromise = act(async () => {
+        button.click();
+        // advance past the 300ms retry delay
+        await jest.advanceTimersByTimeAsync(300);
+      });
+      await clickPromise;
+
+      expect(handleExitSpy).toHaveBeenCalledWith("/directory");
+
+      jest.useRealTimers();
+    });
+
     it("change directory name should give callback", async () => {
       // spy on fetch
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
