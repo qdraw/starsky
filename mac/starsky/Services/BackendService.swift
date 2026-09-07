@@ -71,9 +71,9 @@ class BackendService {
             while proc.isRunning && Date() < sigintDeadline {
                 Thread.sleep(forTimeInterval: 0.1)
             }
-        }
-        if proc.isRunning {
-            kill(proc.processIdentifier, SIGKILL)
+            if proc.isRunning {
+                kill(proc.processIdentifier, SIGKILL)
+            }
         }
         process = nil
         logger.info("Backend stopped")
