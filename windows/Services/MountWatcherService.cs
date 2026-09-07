@@ -71,7 +71,7 @@ public class MountWatcherService : IMountWatcherService
     {
         try
         {
-            var psi = new ProcessStartInfo("sc.exe", $"query {ServiceName}")
+            var psi = new ProcessStartInfo(Path.Combine(Environment.SystemDirectory, "sc.exe"), $"query {ServiceName}")
             {
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
