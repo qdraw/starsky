@@ -584,7 +584,7 @@ final class AppCoreTests: XCTestCase {
         s.mountWatcherEnabled = true
         core.settingsService.save(s)
         core.beginTermination()
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        await waitUntil { mws.stopSyncCalled }
         XCTAssertTrue(mws.stopSyncCalled)
     }
 
@@ -593,7 +593,16 @@ final class AppCoreTests: XCTestCase {
         let core = makeCore(mountWatcherService: mws)
         // mountWatcherEnabled defaults to false
         core.beginTermination()
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        // no positive signal to wait on here, so give the background queue a generous head start
+        try? await Task.sleep(nanoseconds: 300_000_000)
         XCTAssertFalse(mws.stopSyncCalled)
+    }
+
+    /// Polls a condition on a background queue's async work, avoiding flaky fixed sleeps under CI load.
+    private func waitUntil(timeout: TimeInterval = 2, _ condition: @escaping () -> Bool) async {
+        let deadline = Date().addingTimeInterval(timeout)
+        while !condition() && Date() < deadline {
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
     }
 }
