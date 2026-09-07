@@ -42,6 +42,21 @@ Additional flags:
 - Linux: systemd service install/uninstall flow (with user-level fallback).
 - Windows: Windows Service install/uninstall flow via `sc.exe`.
 
+## Windows Desktop App integration
+
+On the **Windows desktop app** (WPF), MountWatcher can be toggled without using the CLI directly:
+
+1. Open the app menu: **Settings → Mount Watcher**
+2. Click **Enable Mount Watcher (requires admin)**
+3. A Windows UAC consent prompt appears — approve it to install the service
+4. The submenu shows **Status: Running** once the service is active
+
+To stop and remove the service, open the same submenu and click **Disable Mount Watcher** (another UAC prompt appears).
+
+The preference is stored in `%AppData%\starsky\settings.json` (`MountWatcherEnabled`). When the app starts and the preference is enabled, it automatically reinstalls and starts the service. If installation fails (for example the binary is missing), the preference is cleared automatically so the app does not retry on every launch.
+
+> **Note:** The app itself does not run elevated. Only the `starskymountwatchercli.exe` sub-process is elevated for the duration of the `sc.exe create` or `sc.exe delete` call.
+
 ## Typical workflow
 
 1. Install and start the service.

@@ -8,4 +8,5 @@ public class DesktopSettings
     public bool UpdatePreRelease { get; set; } = false;
     public DateTime? LastUpdateWarningShown { get; set; }
     public List<SavedWindowState> Windows { get; set; } = [];
+    public bool MountWatcherEnabled { get; set; } = false;
 }

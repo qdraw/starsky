@@ -17,4 +17,5 @@ public sealed record MainWindowOptions
     public required SavedWindowState Geometry { get; init; }
     public required int WindowIndex { get; init; }
     public required UpdateService UpdateService { get; init; }
+    public IMountWatcherService? MountWatcherService { get; init; }
 }
