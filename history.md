@@ -40,7 +40,13 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.9.1 - _(Unreleased)_ - 2026-?-? {#0.9.1}
+## version 0.9.2 - _(Unreleased)_ - 2026-?-? {#0.9.2}
+
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
+
+- nothing yet
+
+## version 0.9.1 - 2026-09-07 {#0.9.1}
 
 _Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
 
