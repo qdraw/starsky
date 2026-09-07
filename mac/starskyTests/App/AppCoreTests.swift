@@ -4,7 +4,7 @@ import AppKit
 
 // MARK: - Test doubles
 
-private final class MockBackendService: BackendServiceProtocol {
+private final class MockBackendService: BackendServiceProtocol, @unchecked Sendable {
     var isRunning: Bool = false
     var startCalled = false
     var stopCalled = false
@@ -22,7 +22,7 @@ private final class MockBackendService: BackendServiceProtocol {
     }
 }
 
-private final class MockFileWatcherService: FileWatcherServiceProtocol {
+private final class MockFileWatcherService: FileWatcherServiceProtocol, @unchecked Sendable {
     var startCalled = false
     var stopCalled = false
 
@@ -30,7 +30,7 @@ private final class MockFileWatcherService: FileWatcherServiceProtocol {
     func stop() { stopCalled = true }
 }
 
-private final class MockMountWatcherService: MountWatcherServiceProtocol {
+private final class MockMountWatcherService: MountWatcherServiceProtocol, @unchecked Sendable {
     var enableCalled = false
     var disableCalled = false
     var stopSyncCalled = false

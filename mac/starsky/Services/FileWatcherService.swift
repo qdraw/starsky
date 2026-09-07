@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-class FileWatcherService {
+class FileWatcherService: @unchecked Sendable {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "FileWatcherService")
     private let fileLogger: DailyFileLogger
     private let watchedDirectory: URL

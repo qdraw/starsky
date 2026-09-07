@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-class BackendService {
+class BackendService: @unchecked Sendable {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "BackendService")
     private let fileLogger: DailyFileLogger
     private var process: Process?

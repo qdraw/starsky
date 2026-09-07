@@ -208,13 +208,17 @@ class AppCore {
     @MainActor
     func beginTermination() {
         windowManager.closeAll()
-        Task.detached { [weak self] in
-            if self?.settingsService.current.mountWatcherEnabled == true {
-                self?.mountWatcherService?.stopSync()
-            }
-            self?.fileWatcherService.stop()
-            self?.backendService.stop()
-            await MainActor.run {
+        // Capture services strongly — Task.detached with [weak self] is unreliable during
+        // app termination because Swift's cooperative thread pool may not schedule the task.
+        // GCD global queues stay alive until the process exits.
+        let bs = backendService
+        let fws = fileWatcherService
+        let mws: (any MountWatcherServiceProtocol)? = settingsService.current.mountWatcherEnabled ? mountWatcherService : nil
+        DispatchQueue.global(qos: .userInitiated).async {
+            mws?.stopSync()
+            fws.stop()
+            bs.stop()
+            DispatchQueue.main.async {
                 NSApplication.shared.reply(toApplicationShouldTerminate: true)
             }
         }
