@@ -24,6 +24,7 @@ public partial class MainWindow
     private readonly FileWatcherService _watcher;
     private readonly WindowManager _windowManager;
     private readonly UpdateService _updateService;
+    private readonly IMountWatcherService? _mountWatcherService;
     private readonly ILogger _logger;
 
     private readonly string _baseUrl;
@@ -41,6 +42,7 @@ public partial class MainWindow
         _watcher = options.Watcher;
         _windowManager = options.WindowManager;
         _updateService = options.UpdateService;
+        _mountWatcherService = options.MountWatcherService;
         _logger = options.Logger;
         _baseUrl = options.BaseUrl;
         _windowIndex = options.WindowIndex;
@@ -342,6 +344,62 @@ public partial class MainWindow
         finally
         {
             CheckForUpdatesMenuItem.IsEnabled = true;
+        }
+    }
+
+    // ── MountWatcher menu ─────────────────────────────────────────────────────
+
+    private void MountWatcherMenu_SubmenuOpened(object sender, RoutedEventArgs e)
+    {
+        if (_mountWatcherService == null) return;
+
+        var enabled = _settings.Current.MountWatcherEnabled;
+        if (enabled)
+        {
+            var status = _mountWatcherService.GetStatus();
+            MountWatcherStatusItem.Header = $"Status: {status}";
+            MountWatcherStatusItem.Visibility = Visibility.Visible;
+            MountWatcherToggleItem.Header = "Disable _Mount Watcher";
+        }
+        else
+        {
+            MountWatcherStatusItem.Visibility = Visibility.Collapsed;
+            MountWatcherToggleItem.Header = "Enable _Mount Watcher (requires admin)";
+        }
+    }
+
+    private async void MountWatcherToggle_Click(object sender, RoutedEventArgs e)
+    {
+        if (_mountWatcherService == null) return;
+
+        if (_settings.Current.MountWatcherEnabled)
+        {
+            var ok = await _mountWatcherService.DisableAsync();
+            if (ok)
+            {
+                _settings.Current.MountWatcherEnabled = false;
+                _settings.Save();
+            }
+            else
+            {
+                MessageBox.Show("Failed to disable Mount Watcher.", "Mount Watcher",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        else
+        {
+            var ok = await _mountWatcherService.EnableAsync();
+            if (ok)
+            {
+                _settings.Current.MountWatcherEnabled = true;
+                _settings.Save();
+            }
+            else
+            {
+                MessageBox.Show(
+                    "Failed to enable Mount Watcher.\n\nEnsure the starskymountwatchercli.exe binary is present and that you approved the administrator prompt.",
+                    "Mount Watcher", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
     }
 }

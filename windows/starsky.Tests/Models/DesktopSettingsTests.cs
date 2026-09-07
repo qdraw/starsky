@@ -14,6 +14,7 @@ public class DesktopSettingsTests
         Assert.IsTrue(s.UpdateCheckEnabled);
         Assert.IsNull(s.LastUpdateWarningShown);
         Assert.IsEmpty(s.Windows);
+        Assert.IsFalse(s.MountWatcherEnabled);
     }
 
     [TestMethod]

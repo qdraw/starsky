@@ -31,6 +31,11 @@
             <MenuItem Header="_Settings">
                 <MenuItem Header="_Connection Settings…" Click="ConnectionSettings_Click"/>
                 <MenuItem Header="_Application Settings" InputGestureText="Ctrl+Shift+K" Click="AppSettings_Click"/>
+                <Separator/>
+                <MenuItem Header="_Mount Watcher" SubmenuOpened="MountWatcherMenu_SubmenuOpened">
+                    <MenuItem x:Name="MountWatcherStatusItem" IsEnabled="False" Visibility="Collapsed"/>
+                    <MenuItem x:Name="MountWatcherToggleItem" Click="MountWatcherToggle_Click"/>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Header="Actual _Size" InputGestureText="Ctrl+0" Click="ActualSize_Click"/>

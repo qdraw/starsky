@@ -14,6 +14,7 @@ public partial class App : Application
     private BackendService? _backend;
     private FileWatcherService? _watcher;
     private WindowManager? _windowManager;
+    private MountWatcherLifecycle? _mountWatcherLifecycle;
     private int _localPort;
 
     protected override async void OnStartup(StartupEventArgs e)
@@ -40,15 +41,19 @@ public partial class App : Application
         // 4. Initialize services
         _backend = new BackendService(logFactory.CreateLogger<BackendService>());
         _watcher = new FileWatcherService(logFactory.CreateLogger<FileWatcherService>());
+        var mountWatcherService = new MountWatcherService();
+        _mountWatcherLifecycle = new MountWatcherLifecycle(
+            mountWatcherService, settingsService, logFactory.CreateLogger<MountWatcherLifecycle>());
         var webViewEnv = new WebViewEnvironmentService();
         var navigation = new NavigationService(settingsService);
         var routes = new RoutePersistenceService(settingsService);
         var fileDownload = new FileDownloadService(logFactory.CreateLogger<FileDownloadService>());
-        var updateService = new UpdateService(settingsService, logFactory.CreateLogger<UpdateService>());
+        var updateService = new UpdateService(settingsService, logFactory.CreateLogger<UpdateService>(),
+            mountWatcherService: mountWatcherService);
 
         _windowManager = new WindowManager(
             settingsService, routes, navigation, webViewEnv, fileDownload, _watcher,
-            updateService, logFactory.CreateLogger<WindowManager>());
+            updateService, logFactory.CreateLogger<WindowManager>(), mountWatcherService);
 
         // 5. Show splash
         var splash = new SplashWindow();
@@ -95,6 +100,9 @@ public partial class App : Application
             // 7. Start file watcher
             _watcher.Start();
 
+            // 7a. Enable MountWatcher if configured
+            await _mountWatcherLifecycle.OnStartupAsync();
+
             // 8. Restore windows
             splash.UpdateStatus("Opening Starsky…");
             _windowManager.RestoreWindows();
@@ -137,6 +145,7 @@ public partial class App : Application
     protected override async void OnExit(ExitEventArgs e)
     {
         _logger?.LogInformation("Starsky Desktop shutting down");
+        _mountWatcherLifecycle?.OnShutdown();
         _watcher?.Stop();
         _windowManager?.CloseAll();
         if (_backend != null)
