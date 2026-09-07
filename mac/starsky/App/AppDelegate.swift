@@ -7,6 +7,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var core: AppCore?
     private var splash: SplashWindowController?
     private var settingsWindowController: SettingsWindowController?
+    private var mountWatcherService: MountWatcherService?
+    private var mountWatcherSubmenu: NSMenu?
+    private var mountWatcherStatusItem: NSMenuItem?
+    private var mountWatcherToggleItem: NSMenuItem?
+    private var cachedMountWatcherStatus: MountWatcherStatus = .notInstalled
 
     func applicationDidFinishLaunching(_: Notification) {
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
@@ -35,11 +40,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let splashRef = SplashWindowController()
         splash = splashRef
 
+        let mws = MountWatcherService()
+        mountWatcherService = mws
+
+        let updateService = UpdateService(settingsService: settingsService)
         core = AppCore(
             settingsService: settingsService,
             backendService: BackendService(fileLogger: fileLogger),
             fileWatcherService: FileWatcherService(fileLogger: fileLogger),
-            updateService: UpdateService(settingsService: settingsService),
+            mountWatcherService: mws,
+            updateService: updateService,
             windowManager: windowManager,
             terminate: { NSApplication.shared.terminate(nil) },
             showError: { ErrorWindowController.show(message: $0) },
@@ -51,6 +61,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self?.splash = nil
             }
         )
+
+        updateService.mountWatcherProvider = { [weak self] in self?.mountWatcherService }
 
         buildMenu()
         splash?.showWindow(nil)
@@ -124,15 +136,42 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.connectionSettings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
         menu.addItem(withTitle: NSLocalizedString("menu.app.applicationSettings", comment: ""), action: #selector(openApplicationSettings), keyEquivalent: "k")
             .keyEquivalentModifierMask = [.command, .shift]
+        menu.addItem(buildMountWatcherMenuItem())
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.hide", comment: ""), action: #selector(NSApplication.hide(_:)), keyEquivalent: "h"))
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.quit", comment: ""), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         return menu
     }
 
+    private func buildMountWatcherMenuItem() -> NSMenuItem {
+        let submenu = NSMenu(title: NSLocalizedString("menu.mountwatcher.title", comment: ""))
+        submenu.delegate = self
+        mountWatcherSubmenu = submenu
+
+        let statusItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
+        statusItem.isEnabled = false
+        statusItem.isHidden = true
+        mountWatcherStatusItem = statusItem
+        submenu.addItem(statusItem)
+
+        let toggleItem = NSMenuItem(
+            title: NSLocalizedString("menu.mountwatcher.enable", comment: ""),
+            action: #selector(toggleMountWatcher),
+            keyEquivalent: ""
+        )
+        mountWatcherToggleItem = toggleItem
+        submenu.addItem(toggleItem)
+
+        let item = NSMenuItem()
+        item.title = NSLocalizedString("menu.mountwatcher.title", comment: "")
+        item.submenu = submenu
+        return item
+    }
+
     private func buildFileMenu() -> NSMenu {
         let menu = NSMenu(title: NSLocalizedString("menu.file.title", comment: ""))
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.file.newWindow", comment: ""), action: #selector(newWindow), keyEquivalent: "n"))
+        menu.addItem(NSMenuItem(title: NSLocalizedString("menu.file.closeWindow", comment: ""), action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w"))
         let reloadItem = NSMenuItem(title: NSLocalizedString("menu.file.reloadAll", comment: ""), action: #selector(reloadAll), keyEquivalent: "r")
         reloadItem.keyEquivalentModifierMask = [.command, .shift]
         menu.addItem(reloadItem)
@@ -259,5 +298,59 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func openReleases() {
         core?.openReleases()
+    }
+
+    @objc private func toggleMountWatcher() {
+        guard let core, let mws = mountWatcherService else { return }
+        let enabling = !core.settingsService.current.mountWatcherEnabled
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            if enabling {
+                let ok = await mws.enable()
+                if ok {
+                    var s = core.settingsService.current
+                    s.mountWatcherEnabled = true
+                    core.settingsService.save(s)
+                    cachedMountWatcherStatus = await mws.status()
+                } else {
+                    core.showError(NSLocalizedString("mountwatcher.error.enable", comment: ""))
+                }
+            } else {
+                let ok = await mws.disable()
+                if ok {
+                    var s = core.settingsService.current
+                    s.mountWatcherEnabled = false
+                    core.settingsService.save(s)
+                    cachedMountWatcherStatus = .notInstalled
+                } else {
+                    cachedMountWatcherStatus = await mws.status()
+                    core.showError(NSLocalizedString("mountwatcher.error.disable", comment: ""))
+                }
+            }
+        }
+    }
+}
+
+extension AppDelegate: NSMenuDelegate {
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        guard menu === mountWatcherSubmenu else { return }
+        let enabled = core?.settingsService.current.mountWatcherEnabled ?? false
+        if enabled {
+            let statusText = String(
+                format: NSLocalizedString("menu.mountwatcher.status.label", comment: ""),
+                cachedMountWatcherStatus.displayString
+            )
+            mountWatcherStatusItem?.title = statusText
+            mountWatcherStatusItem?.isHidden = false
+            mountWatcherToggleItem?.title = NSLocalizedString("menu.mountwatcher.disable", comment: "")
+            Task { [weak self] in
+                guard let self else { return }
+                let fresh = await mountWatcherService?.status() ?? .unknown
+                await MainActor.run { self.cachedMountWatcherStatus = fresh }
+            }
+        } else {
+            mountWatcherStatusItem?.isHidden = true
+            mountWatcherToggleItem?.title = NSLocalizedString("menu.mountwatcher.enable", comment: "")
+        }
     }
 }
