@@ -339,11 +339,10 @@ final class AppCoreTests: XCTestCase {
         XCTAssertTrue(wm.closeAllCalled)
     }
 
-    func testBeginTerminationStopsBackend() async {
+    func testBeginTerminationStopsBackend() {
         let backend = MockBackendService()
         let core = makeCore(backendService: backend)
         core.beginTermination()
-        try? await Task.sleep(nanoseconds: 50_000_000)
         XCTAssertTrue(backend.beginShutdownCalled)
     }
 

@@ -214,13 +214,15 @@ class AppCore {
         let bs = backendService
         let fws = fileWatcherService
         let mws: (any MountWatcherServiceProtocol)? = settingsService.current.mountWatcherEnabled ? mountWatcherService : nil
-        DispatchQueue.global(qos: .userInitiated).async {
+        // Reply before any slow cleanup so the app disappears instantly for the user.
+        // applicationWillTerminate sends SIGKILL as the final safety net.
+        bs.beginShutdown()
+        DispatchQueue.main.async {
+            NSApplication.shared.reply(toApplicationShouldTerminate: true)
+        }
+        DispatchQueue.global(qos: .background).async {
             mws?.stopSync()
             fws.stop()
-            bs.beginShutdown()   // SIGTERM, non-blocking — reply immediately so the app appears to close
-            DispatchQueue.main.async {
-                NSApplication.shared.reply(toApplicationShouldTerminate: true)
-            }
         }
     }
 

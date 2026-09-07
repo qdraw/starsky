@@ -86,15 +86,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_: Notification) {
-        // The UI is already gone by the time this runs, so blocking here is invisible to the user.
-        // Give the backend up to 3 s to respond to the SIGTERM from beginShutdown(), then SIGKILL.
-        if let bs = backendService {
-            let deadline = Date().addingTimeInterval(3.0)
-            while bs.isRunning && Date() < deadline {
-                Thread.sleep(forTimeInterval: 0.05)
-            }
-            bs.forceStop()
-        }
+        // SIGTERM was already sent in beginShutdown(). Send SIGKILL now — no waiting,
+        // so this never blocks the termination path.
+        backendService?.forceStop()
     }
 
     func applicationSupportsSecureRestorableState(_: NSApplication) -> Bool {
