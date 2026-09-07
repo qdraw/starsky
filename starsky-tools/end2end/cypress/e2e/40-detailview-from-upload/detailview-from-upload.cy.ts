@@ -134,12 +134,18 @@ describe('DetailView (from upload) (40)', () => {
       cy.get(tagFileSelector).should('contain', sourceTags)
     }).then(() => {
       // and now we going back to the orginal state
-      cy.get(tagFileSelector).type('{end}' + '{backspace}'.repeat(appendText.length))
-      // intercept AFTER typing so autosaves during keystrokes don't satisfy the alias early
+      cy.get(tagFileSelector).focus()
+      cy.get(tagFileSelector).type('{selectall}').type(
+        sourceTags.length > 0 ? sourceTags : '{del}',
+        { parseSpecialCharSequences: false }
+      )
+      // intercept AFTER typing so keystrokes don't satisfy the alias early
       cy.intercept('POST', '**/api/update').as('cleanupUpdate')
       cy.get(tagFileSelector).blur()
       cy.wait('@cleanupUpdate')
     }).then(() => {
+      // verify the live DOM reflects the cleanup before reloading
+      cy.get(tagFileSelector).should('not.contain', 'test')
       sessionStorage.clear()
       cy.reload()
     }).then(() => {
