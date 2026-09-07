@@ -45,7 +45,7 @@ private let mountWatcherLaunchAgentName = "nl.qdraw.mountwatcher.debug"
 private let mountWatcherLaunchAgentName = "nl.qdraw.mountwatcher"
 #endif
 
-final class MountWatcherService: MountWatcherServiceProtocol {
+final class MountWatcherService: MountWatcherServiceProtocol, @unchecked Sendable {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "MountWatcher")
     private let processRunner: ProcessRunner
     let cliBinaryURL: URL

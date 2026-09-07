@@ -1,9 +1,12 @@
 import Foundation
 
-protocol BackendServiceProtocol: AnyObject {
+// @unchecked Sendable: stop() is called from a background queue during termination by design.
+protocol BackendServiceProtocol: AnyObject, Sendable {
     var isRunning: Bool { get }
     func start(port: Int) throws
     func stop()
+    func beginShutdown()
+    func forceStop()
 }
 
 extension BackendService: BackendServiceProtocol {}

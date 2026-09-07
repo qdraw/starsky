@@ -110,10 +110,14 @@ public class MountWatcherCli
 			var installResult = await _serviceInstaller.InstallAsync(execPath);
 			if ( installResult )
 			{
-				await _serviceInstaller.StartAsync();
+				// Unload any stale launchd registration before loading the new plist.
+				// This handles the case where a previous unload silently failed (e.g. during
+				// a Sparkle update), leaving the job registered even though the binary was gone.
+				await _serviceInstaller.StopAsync();
+				return await _serviceInstaller.StartAsync();
 			}
 
-			return installResult;
+			return false;
 		}
 
 		if ( NeedUninstall(args) )

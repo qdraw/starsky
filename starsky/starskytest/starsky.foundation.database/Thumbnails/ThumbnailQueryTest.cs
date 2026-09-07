@@ -1011,6 +1011,27 @@ public class ThumbnailQueryTest
 			"[ThumbnailQuery] try to fix DbUpdateConcurrencyException"));
 	}
 
+	[TestMethod]
+	public async Task UpdateAsync_DbUpdateConcurrencyException()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(UpdateAsync_DbUpdateConcurrencyException))
+			.Options;
+		var dbContext = new ConcurrencyExceptionApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var thumbnailQuery = new ThumbnailQuery(dbContext, null, webLogger);
+
+		var result = await thumbnailQuery.UpdateAsync(new ThumbnailItem("hash_update_test", null, null, null, null, null));
+
+		Assert.IsFalse(result);
+		Assert.HasCount(2, webLogger.TrackedInformation);
+		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
+			"[ThumbnailQuery] try to fix DbUpdateConcurrencyException"));
+		Assert.IsTrue(webLogger.TrackedInformation[1].Item2?.StartsWith(
+			"[ThumbnailQuery] save failed after DbUpdateConcurrencyException"));
+	}
+
 	private sealed class ConcurrencyExceptionApplicationDbContext(DbContextOptions options)
 		: ApplicationDbContext(options)
 	{

@@ -16,7 +16,8 @@ enum MountWatcherStatus: Equatable {
     }
 }
 
-protocol MountWatcherServiceProtocol: AnyObject {
+// @unchecked Sendable: stopSync() is documented safe to call from any thread during termination.
+protocol MountWatcherServiceProtocol: AnyObject, Sendable {
     /// Install and start the MountWatcher launchd agent. Returns true on success.
     func enable() async -> Bool
     /// Stop and remove the MountWatcher launchd agent. Returns true on success.

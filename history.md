@@ -44,7 +44,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 _Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
 
-- nothing yet
+- [x] (Fixed) _Front-end_ Wait for backend when rename  (PR #3312)
+- [x] (Fixed) _Back-end_ Handle concurrency in `ThumbnailQuery.UpdateAsync` (PR #3312)
+- [x] (Fixed) _App_ macOS: Backend process not terminated on app quit  (PR #3312)
+- [x] (Fixed) _App_ macOS: Avoid backend restart when shutdown initiated (PR #3312)
 
 ## version 0.9.1 - 2026-09-07 {#0.9.1}
 

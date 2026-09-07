@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -92,10 +93,10 @@ public static class Program
 			mountWatcherFactory,
 			serviceInstaller);
 
-		if ( !await service.StartWatcher(args) )
+		var success = await service.StartWatcher(args);
+
+		if ( !success )
 		{
-			// StartWatcher returns false when it fails, but not when it's an install/uninstall
-			// Unless the install/uninstall operation itself failed.
 			webLogger.LogError("Mount watcher failed to start or install. See logs for details.");
 		}
 
@@ -105,6 +106,11 @@ public static class Program
 		     !ArgsHelper.NeedHelp(args) )
 		{
 			await host.RunAsync();
+		}
+		else if ( !success )
+		{
+			// Propagate failure to the caller (e.g. the macOS app shell) via exit code.
+			Environment.ExitCode = 1;
 		}
 	}
 }

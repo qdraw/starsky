@@ -5,6 +5,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "AppDelegate")
 
     private var core: AppCore?
+    private var backendService: BackendService?
     private var splash: SplashWindowController?
     private var settingsWindowController: SettingsWindowController?
     private var mountWatcherService: MountWatcherService?
@@ -44,9 +45,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         mountWatcherService = mws
 
         let updateService = UpdateService(settingsService: settingsService)
+        let bs = BackendService(fileLogger: fileLogger)
+        backendService = bs
         core = AppCore(
             settingsService: settingsService,
-            backendService: BackendService(fileLogger: fileLogger),
+            backendService: bs,
             fileWatcherService: FileWatcherService(fileLogger: fileLogger),
             mountWatcherService: mws,
             updateService: updateService,
@@ -83,7 +86,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_: Notification) {
-        // Intentionally empty — cleanup is done in applicationShouldTerminate
+        // SIGTERM was already sent in beginShutdown(). Send SIGKILL now — no waiting,
+        // so this never blocks the termination path.
+        backendService?.forceStop()
     }
 
     func applicationSupportsSecureRestorableState(_: NSApplication) -> Bool {

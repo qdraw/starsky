@@ -3,6 +3,7 @@ import { render } from "@testing-library/react";
 import { act } from "react";
 import * as useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url/url-query";
 import * as Modal from "../../atoms/modal/modal";
@@ -64,6 +65,7 @@ describe("ModalArchiveRename", () => {
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
+      jest.spyOn(FetchGet, "default").mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
 
       const handleExitSpy = jest.fn();
       const modal = render(
@@ -113,6 +115,7 @@ describe("ModalArchiveRename", () => {
         statusCode: 200
       } as IConnectionDefault);
       jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
+      jest.spyOn(FetchGet, "default").mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
 
       const dispatch = jest.fn();
       const handleExitSpy = jest.fn();
@@ -155,12 +158,63 @@ describe("ModalArchiveRename", () => {
       modal.unmount();
     });
 
+    it("retries index check when backend returns 404 before navigating", async () => {
+      jest.useFakeTimers();
+
+      const mockPost: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockPost);
+
+      // First call returns 404 (index not ready yet), second returns 200
+      jest
+        .spyOn(FetchGet, "default")
+        .mockResolvedValueOnce({ statusCode: 404 } as IConnectionDefault)
+        .mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
+
+      const locationObject = {
+        location: globalThis.location,
+        navigate: jest.fn()
+      };
+      jest
+        .spyOn(useLocation, "default")
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject);
+
+      const handleExitSpy = jest.fn();
+      render(
+        <ModalArchiveRename
+          isOpen={true}
+          subPath="/test"
+          handleExit={handleExitSpy}
+        ></ModalArchiveRename>
+      );
+
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+      directoryName.textContent = "directory";
+      fireEvent(directoryName, createEvent.input(directoryName, { key: "d" }));
+
+      const clickPromise = act(async () => {
+        button.click();
+        // advance past the 300ms retry delay
+        await jest.advanceTimersByTimeAsync(300);
+      });
+      await clickPromise;
+
+      expect(handleExitSpy).toHaveBeenCalledWith("/directory");
+
+      jest.useRealTimers();
+    });
+
     it("change directory name should give callback", async () => {
       // spy on fetch
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200
       } as IConnectionDefault);
       jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
+      jest.spyOn(FetchGet, "default").mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
 
       const locationObject = {
         location: globalThis.location,
@@ -307,6 +361,59 @@ describe("ModalArchiveRename", () => {
       // Cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
       modal.unmount();
+    });
+
+    it("ignores input when form is disabled", async () => {
+      // FetchPost never resolves so the form stays in loading/disabled state
+      jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => new Promise<IConnectionDefault>(() => {}));
+
+      render(
+        <ModalArchiveRename isOpen={true} subPath="/test" handleExit={() => {}} />
+      );
+
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // Type a valid name so the button becomes enabled
+      directoryName.textContent = "valid-name";
+      fireEvent(directoryName, createEvent.input(directoryName, { key: "v" }));
+      expect(button.disabled).toBeFalsy();
+
+      // Click submit — isFormEnabled becomes false (state changes before the first await)
+      await act(async () => {
+        button.click();
+      });
+
+      // Now fire an invalid name — handleUpdateChange should bail early on !isFormEnabled
+      directoryName.textContent = "??invalid??";
+      fireEvent(directoryName, createEvent.input(directoryName, { key: "?" }));
+
+      // No warning box means the invalid-name branch was never reached
+      expect(screen.queryByTestId("modal-archive-rename-warning-box")).toBeNull();
+    });
+
+    it("ignores input when textContent is empty", () => {
+      render(
+        <ModalArchiveRename isOpen={true} subPath="/test" handleExit={() => {}} />
+      );
+
+      const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
+
+      // Type a valid name so folderName is updated and button becomes enabled
+      directoryName.textContent = "valid-name";
+      fireEvent(directoryName, createEvent.input(directoryName, { key: "v" }));
+      expect(button.disabled).toBeFalsy();
+
+      // Clear textContent and fire input — handleUpdateChange should bail on !textContent
+      directoryName.textContent = "";
+      fireEvent(directoryName, createEvent.input(directoryName, { key: "Backspace" }));
+
+      // folderName was not cleared so button stays enabled and no error appears
+      expect(button.disabled).toBeFalsy();
+      expect(screen.queryByTestId("modal-archive-rename-warning-box")).toBeNull();
     });
 
     it("test if handleExit is called", () => {

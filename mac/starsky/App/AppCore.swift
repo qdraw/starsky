@@ -144,10 +144,10 @@ class AppCore {
         if settingsService.current.mountWatcherEnabled, let mws = mountWatcherService {
             let ok = await mws.enable()
             if !ok {
-                logger.error("MountWatcher enable failed on startup — clearing stored preference")
-                var s = settingsService.current
-                s.mountWatcherEnabled = false
-                settingsService.save(s)
+                // Log but preserve the preference so the next launch retries automatically.
+                // Clearing it would permanently lose the user's setting on a transient
+                // failure (e.g. first launch after a Sparkle update).
+                logger.error("MountWatcher enable failed on startup — will retry on next launch")
             }
         }
 
@@ -208,15 +208,21 @@ class AppCore {
     @MainActor
     func beginTermination() {
         windowManager.closeAll()
-        Task.detached { [weak self] in
-            if self?.settingsService.current.mountWatcherEnabled == true {
-                self?.mountWatcherService?.stopSync()
-            }
-            self?.fileWatcherService.stop()
-            self?.backendService.stop()
-            await MainActor.run {
-                NSApplication.shared.reply(toApplicationShouldTerminate: true)
-            }
+        // Capture services strongly — Task.detached with [weak self] is unreliable during
+        // app termination because Swift's cooperative thread pool may not schedule the task.
+        // GCD global queues stay alive until the process exits.
+        let bs = backendService
+        let fws = fileWatcherService
+        let mws: (any MountWatcherServiceProtocol)? = settingsService.current.mountWatcherEnabled ? mountWatcherService : nil
+        // Reply before any slow cleanup so the app disappears instantly for the user.
+        // applicationWillTerminate sends SIGKILL as the final safety net.
+        bs.beginShutdown()
+        DispatchQueue.main.async {
+            NSApplication.shared.reply(toApplicationShouldTerminate: true)
+        }
+        DispatchQueue.global(qos: .background).async {
+            mws?.stopSync()
+            fws.stop()
         }
     }
 

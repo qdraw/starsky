@@ -4,10 +4,12 @@ import AppKit
 
 // MARK: - Test doubles
 
-private final class MockBackendService: BackendServiceProtocol {
+private final class MockBackendService: BackendServiceProtocol, @unchecked Sendable {
     var isRunning: Bool = false
     var startCalled = false
     var stopCalled = false
+    var beginShutdownCalled = false
+    var forceStopCalled = false
     var startError: Error?
 
     func start(port _: Int) throws {
@@ -20,9 +22,19 @@ private final class MockBackendService: BackendServiceProtocol {
         stopCalled = true
         isRunning = false
     }
+
+    func beginShutdown() {
+        beginShutdownCalled = true
+        isRunning = false
+    }
+
+    func forceStop() {
+        forceStopCalled = true
+        isRunning = false
+    }
 }
 
-private final class MockFileWatcherService: FileWatcherServiceProtocol {
+private final class MockFileWatcherService: FileWatcherServiceProtocol, @unchecked Sendable {
     var startCalled = false
     var stopCalled = false
 
@@ -30,7 +42,7 @@ private final class MockFileWatcherService: FileWatcherServiceProtocol {
     func stop() { stopCalled = true }
 }
 
-private final class MockMountWatcherService: MountWatcherServiceProtocol {
+private final class MockMountWatcherService: MountWatcherServiceProtocol, @unchecked Sendable {
     var enableCalled = false
     var disableCalled = false
     var stopSyncCalled = false
@@ -327,12 +339,11 @@ final class AppCoreTests: XCTestCase {
         XCTAssertTrue(wm.closeAllCalled)
     }
 
-    func testBeginTerminationStopsBackend() async {
+    func testBeginTerminationStopsBackend() {
         let backend = MockBackendService()
         let core = makeCore(backendService: backend)
         core.beginTermination()
-        try? await Task.sleep(nanoseconds: 50_000_000)
-        XCTAssertTrue(backend.stopCalled)
+        XCTAssertTrue(backend.beginShutdownCalled)
     }
 
     func testBeginTerminationStopsFileWatcher() async {
@@ -552,7 +563,9 @@ final class AppCoreTests: XCTestCase {
         XCTAssertTrue(mws.enableCalled)
     }
 
-    func testFinishStartupClearsPreferenceWhenEnableFails() async {
+    func testFinishStartupPreservesPreferenceWhenEnableFails() async {
+        // A transient failure (e.g. first launch after a Sparkle update) must NOT clear the
+        // user's preference — the next launch will retry automatically.
         let mws = MockMountWatcherService()
         mws.enableResult = false
         let core = makeCore(mountWatcherService: mws)
@@ -561,7 +574,7 @@ final class AppCoreTests: XCTestCase {
         core.settingsService.save(s)
         await core.finishStartup()
         XCTAssertTrue(mws.enableCalled)
-        XCTAssertFalse(core.settingsService.current.mountWatcherEnabled)
+        XCTAssertTrue(core.settingsService.current.mountWatcherEnabled)
     }
 
     func testBeginTerminationCallsStopSyncWhenMountWatcherEnabled() async {

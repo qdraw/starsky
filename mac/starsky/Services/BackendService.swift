@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-class BackendService {
+class BackendService: @unchecked Sendable {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "BackendService")
     private let fileLogger: DailyFileLogger
     private var process: Process?
@@ -11,6 +11,10 @@ class BackendService {
 
     private let xattrPath: String
     private let codesignPath: String
+
+    var sigtermTimeout: TimeInterval = 5
+    var sigintTimeout: TimeInterval = 2
+    var restartDelay: TimeInterval = 2
 
     init(fileLogger: DailyFileLogger, xattrPath: String = "/usr/bin/xattr", codesignPath: String = "/usr/bin/codesign") {
         self.fileLogger = fileLogger
@@ -59,16 +63,53 @@ class BackendService {
 
     func stop() {
         isShuttingDown = true
-        guard let proc = process, proc.isRunning else { return }
+        guard let proc = process, proc.isRunning else {
+            logger.info("Backend stop: no running process (pid=\(self.process?.processIdentifier ?? -1), isRunning=\(self.process?.isRunning ?? false))")
+            return
+        }
+        logger.info("Backend stop: sending SIGTERM to pid \(proc.processIdentifier)")
         proc.terminate()
-        let deadline = Date().addingTimeInterval(5)
-        while proc.isRunning && Date() < deadline {
+        let sigtermDeadline = Date().addingTimeInterval(sigtermTimeout)
+        while proc.isRunning && Date() < sigtermDeadline {
             Thread.sleep(forTimeInterval: 0.1)
         }
-        if proc.isRunning { proc.interrupt() }
+        if proc.isRunning {
+            logger.warning("Backend stop: SIGTERM timeout, sending SIGINT to pid \(proc.processIdentifier)")
+            proc.interrupt()
+            let sigintDeadline = Date().addingTimeInterval(sigintTimeout)
+            while proc.isRunning && Date() < sigintDeadline {
+                Thread.sleep(forTimeInterval: 0.1)
+            }
+            if proc.isRunning {
+                logger.warning("Backend stop: SIGINT timeout, sending SIGKILL to pid \(proc.processIdentifier)")
+                kill(proc.processIdentifier, SIGKILL)
+            }
+        }
         process = nil
         logger.info("Backend stopped")
         fileLogger.info("Backend stopped", category: "BackendService")
+    }
+
+    // Marks shutdown intent and sends SIGTERM without waiting. Call this early in the
+    // termination path to give the backend time to flush; follow up with forceStop().
+    func beginShutdown() {
+        isShuttingDown = true
+        guard let proc = process, proc.isRunning else { return }
+        logger.info("Backend beginShutdown: sending SIGTERM to pid \(proc.processIdentifier)")
+        proc.terminate()
+    }
+
+    // Sends SIGKILL immediately and clears the process reference. Call after a grace period
+    // to ensure the backend is dead before the parent process exits.
+    func forceStop() {
+        guard let proc = process else { return }
+        if proc.isRunning {
+            logger.warning("Backend forceStop: sending SIGKILL to pid \(proc.processIdentifier)")
+            kill(proc.processIdentifier, SIGKILL)
+        }
+        process = nil
+        logger.info("Backend force stopped")
+        fileLogger.info("Backend force stopped", category: "BackendService")
     }
 
     private func onProcessExited(port: Int) {
@@ -76,7 +117,8 @@ class BackendService {
         hasRestarted = true
         logger.warning("Backend exited unexpectedly, restarting in 2 s...")
         fileLogger.warning("Backend exited unexpectedly, restarting in 2 s", category: "BackendService")
-        DispatchQueue.global().asyncAfter(deadline: .now() + 2) { [weak self] in
+        DispatchQueue.global().asyncAfter(deadline: .now() + restartDelay) { [weak self] in
+            guard self?.isShuttingDown == false else { return }
             try? self?.launch(port: port)
         }
     }
