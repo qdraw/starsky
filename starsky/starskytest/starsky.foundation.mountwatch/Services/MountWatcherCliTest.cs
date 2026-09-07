@@ -111,6 +111,22 @@ public sealed class MountWatcherCliTest
 		var result = await sut.StartWatcher(["--install"]);
 		Assert.IsTrue(result);
 		Assert.HasCount(1, installer.InstalledPaths);
+		// StopAsync is called before StartAsync to clear any stale launchd registration
+		Assert.AreEqual(1, installer.StopCount);
+		Assert.AreEqual(1, installer.StartCount);
+	}
+
+	[TestMethod]
+	public async Task StartWatcher_InstallArg_ReturnsFalseWhenStartFails()
+	{
+		// Install succeeds but Start fails (e.g. launchctl load fails after Sparkle update).
+		// The returned value must reflect the Start failure so the caller (macOS app shell)
+		// receives a non-zero exit code and the user can see the mount watcher is not running.
+		var installer = new FakeServiceInstaller { ReturnValue = true };
+		installer.OverrideStartReturn = false;
+		var sut = CreateSut(installer: installer);
+		var result = await sut.StartWatcher(["--install"]);
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]

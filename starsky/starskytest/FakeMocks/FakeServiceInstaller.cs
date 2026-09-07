@@ -12,6 +12,12 @@ public class FakeServiceInstaller : IServiceInstaller
 	public int StopCount { get; private set; }
 	public bool ReturnValue { get; set; } = true;
 
+	/// <summary>
+	///     When set, overrides <see cref="ReturnValue" /> for <see cref="StartAsync" /> only.
+	///     Allows tests to simulate install succeeding but the service not starting.
+	/// </summary>
+	public bool? OverrideStartReturn { get; set; }
+
 	public Task<bool> InstallAsync(string executablePath)
 	{
 		InstalledPaths.Add(executablePath);
@@ -27,7 +33,7 @@ public class FakeServiceInstaller : IServiceInstaller
 	public Task<bool> StartAsync()
 	{
 		StartCount++;
-		return Task.FromResult(ReturnValue);
+		return Task.FromResult(OverrideStartReturn ?? ReturnValue);
 	}
 
 	public Task<bool> StopAsync()

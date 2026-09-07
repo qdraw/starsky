@@ -552,7 +552,9 @@ final class AppCoreTests: XCTestCase {
         XCTAssertTrue(mws.enableCalled)
     }
 
-    func testFinishStartupClearsPreferenceWhenEnableFails() async {
+    func testFinishStartupPreservesPreferenceWhenEnableFails() async {
+        // A transient failure (e.g. first launch after a Sparkle update) must NOT clear the
+        // user's preference — the next launch will retry automatically.
         let mws = MockMountWatcherService()
         mws.enableResult = false
         let core = makeCore(mountWatcherService: mws)
@@ -561,7 +563,7 @@ final class AppCoreTests: XCTestCase {
         core.settingsService.save(s)
         await core.finishStartup()
         XCTAssertTrue(mws.enableCalled)
-        XCTAssertFalse(core.settingsService.current.mountWatcherEnabled)
+        XCTAssertTrue(core.settingsService.current.mountWatcherEnabled)
     }
 
     func testBeginTerminationCallsStopSyncWhenMountWatcherEnabled() async {

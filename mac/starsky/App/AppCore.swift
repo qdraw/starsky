@@ -144,10 +144,10 @@ class AppCore {
         if settingsService.current.mountWatcherEnabled, let mws = mountWatcherService {
             let ok = await mws.enable()
             if !ok {
-                logger.error("MountWatcher enable failed on startup — clearing stored preference")
-                var s = settingsService.current
-                s.mountWatcherEnabled = false
-                settingsService.save(s)
+                // Log but preserve the preference so the next launch retries automatically.
+                // Clearing it would permanently lose the user's setting on a transient
+                // failure (e.g. first launch after a Sparkle update).
+                logger.error("MountWatcher enable failed on startup — will retry on next launch")
             }
         }
 

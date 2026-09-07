@@ -18,14 +18,14 @@ namespace starsky.foundation.mountwatch.ServiceInstaller;
 /// </summary>
 internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 {
-	private readonly Func<string, string, Task<bool>> _runProcessAsync =
-		(fileName, args) => new RunProcess(logger).RunProcessAsync(fileName, args);
+	private readonly Func<string, string, int[]?, Task<bool>> _runProcessAsync =
+		(fileName, args, codes) => new RunProcess(logger).RunProcessAsync(fileName, args, codes);
 
 	private readonly IStorage _storage = new StorageHostFullPathFilesystem(logger);
 
 	internal MacOsServiceInstaller(IWebLogger logger,
 		IStorage storage,
-		Func<string, string, Task<bool>> runProcessAsync) : this(logger)
+		Func<string, string, int[]?, Task<bool>> runProcessAsync) : this(logger)
 	{
 		_storage = storage;
 		_runProcessAsync = runProcessAsync;
@@ -99,8 +99,16 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		try
 		{
 			var plistPath = GetMacOsPlistPath();
-			var result =
-				await _runProcessAsync("launchctl", $"load {plistPath}");
+
+			// Best-effort unload before loading: clears any stale launchd registration that
+			// may have been left behind when a previous unload silently failed (e.g. during a
+			// Sparkle update). Non-zero exit codes are expected and suppressed when the job was
+			// not registered; any genuinely unexpected code is still treated as success here
+			// because the load that follows will fail with a clear error if needed.
+			int[] silentUnloadExitCodes = [0, 1, 2, 3, 4, 5, 36, 113, 125];
+			await _runProcessAsync("launchctl", $"unload {plistPath}", silentUnloadExitCodes);
+
+			var result = await _runProcessAsync("launchctl", $"load {plistPath}", null);
 			if ( result )
 			{
 				logger.LogInformation(
@@ -125,7 +133,7 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		{
 			var plistPath = GetMacOsPlistPath();
 			var result =
-				await _runProcessAsync("launchctl", $"unload {plistPath}");
+				await _runProcessAsync("launchctl", $"unload {plistPath}", null);
 			if ( result )
 			{
 				logger.LogInformation(
@@ -150,7 +158,7 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 		{
 			// launchctl list <label> returns 0 when loaded
 			running = await _runProcessAsync("launchctl",
-				$"list {new WatchServiceName().GetReverseDnsName()}");
+				$"list {new WatchServiceName().GetReverseDnsName()}", null);
 		}
 		catch
 		{
