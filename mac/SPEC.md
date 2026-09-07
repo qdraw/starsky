@@ -558,30 +558,34 @@ xcrun stapler staple build/starsky.dmg
 
 **`FakeURLProtocol`** — `URLProtocol` subclass. Configured with a queue of `(Data, HTTPURLResponse)` pairs; dequeues one per request. Used to test HTTP-dependent services without network access.
 
+**`FakeProcessBin`** (`CreateFakeProcessBin/`) — writes a minimal shell script (`#!/bin/sh\nexit N\n`) with mode `755` and returns the URL. Used by `MountWatcherServiceTests` to test `DefaultProcessRunner` without spawning system binaries (which macOS 15's test runner restricts).
+
 **`CreateFakeStarskyBin`** — writes a minimal shell script (`#!/bin/sh\nexit 0`) as the fake backend binary for `BackendService` tests.
 
 ### Test Classes
 
 | Class | What is covered |
 |---|---|
+| `AppCoreTests` | Startup mode dispatch; MountWatcher enable/disable on startup; preference cleared on failed enable; stopSync on termination; port-0 guard; portFinder injection |
 | `ApplicationPathsTests` | AppSupport/Caches folder mapping; path structure |
 | `BackendServiceTests` | stop/dispose on unstarted service; all env var keys; findBackendExe (found/not found) |
-| `DesktopSettingsTests` | Default property values; JSON round-trip |
+| `DesktopSettingsTests` | Default property values; JSON round-trip; `mountWatcherEnabled` defaults to `false`; backward-compat decode |
 | `FileDownloadServiceTests` | Happy path writes file; sidecar failure still downloads; photo error propagates |
 | `FileWatcherServiceTests` | start/stop/dispose lifecycle; temp folder creation |
+| `MountWatcherServiceTests` | enable/disable/status/stopSync with `MockProcessRunner`; `DefaultProcessRunner` with real scripts via `FakeProcessBin`; `MountWatcherStatus.displayString` uniqueness |
 | `NavigationServiceTests` | `isAllowedOrigin` (localhost, matching remote, different host); `buildStartUrl` |
 | `PortFinderTests` | Returns positive port; port is bindable |
 | `RemoteUrlValidatorTests` | Empty string; invalid scheme; HTTP 200; HTTP 503; other status; exception; trailing slash |
 | `RoutePersistenceServiceTests` | Empty list; save entry; save with geometry; list expansion; remove; clear all |
 | `SettingsServiceTests` | Missing file (defaults); valid JSON; corrupt JSON (defaults); round-trip |
-| `UpdateServiceTests` | Disabled; recent warning suppresses; recordWarningShown; applyUpdate without update |
+| `UpdateServiceTests` | Disabled; recent warning suppresses; recordWarningShown; applyUpdate without update; `mountWatcherProvider` get/set/clear |
 
 ### Running Tests
 
 ```bash
 xcodebuild test \
   -project mac/starsky.xcodeproj \
-  -scheme starskyTests \
+  -scheme starsky \
   -destination 'platform=macOS'
 ```
 
@@ -599,7 +603,7 @@ Runner: `macos-latest`.
 | Install xcodegen | `brew install xcodegen` |
 | Generate project | `cd mac && xcodegen generate` |
 | Build | `xcodebuild build -scheme starsky -configuration Debug` |
-| Test | `xcodebuild test -scheme starskyTests -destination 'platform=macOS'` |
+| Test | `xcodebuild test -scheme starsky -destination 'platform=macOS'` |
 | Upload results | `actions/upload-artifact` → `test-results-macos` |
 | Publish (on tag) | archive → export → notarize → staple → upload DMG |
 
