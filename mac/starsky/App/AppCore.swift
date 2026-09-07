@@ -24,6 +24,7 @@ class AppCore {
     var splashStatus: @MainActor (String) -> Void
     var onWindowsReady: @MainActor () -> Void
     var versionProvider: () -> String
+    var portFinder: () -> Int
 
     private(set) var localPort: Int = 0
 
@@ -51,7 +52,8 @@ class AppCore {
         onWindowsReady: @escaping @MainActor () -> Void = {
             // Intentionally no-op by default: AppDelegate overrides this to open windows; tests and headless startups do not need it.
         },
-        versionProvider: @escaping () -> String = { ApplicationInfo.version }
+        versionProvider: @escaping () -> String = { ApplicationInfo.version },
+        portFinder: @escaping () -> Int = { PortFinder.findFreePort() }
     ) {
         self.settingsService = settingsService
         self.backendService = backendService
@@ -69,6 +71,7 @@ class AppCore {
         self.splashStatus = splashStatus
         self.onWindowsReady = onWindowsReady
         self.versionProvider = versionProvider
+        self.portFinder = portFinder
     }
 
     // MARK: - Startup
@@ -85,7 +88,7 @@ class AppCore {
     func startLocalMode() async {
         NSLog("[startup] startLocalMode begin")
         await splashStatus(NSLocalizedString("splash.status.findingPort", comment: ""))
-        let port = PortFinder.findFreePort()
+        let port = portFinder()
         NSLog("[startup] port=\(port)")
         guard port > 0 else {
             await showErrorAndQuit("Could not find a free port to start the backend.")
@@ -141,6 +144,7 @@ class AppCore {
         if settingsService.current.mountWatcherEnabled, let mws = mountWatcherService {
             let ok = await mws.enable()
             if !ok {
+                logger.error("MountWatcher enable failed on startup — clearing stored preference")
                 var s = settingsService.current
                 s.mountWatcherEnabled = false
                 settingsService.save(s)
@@ -223,7 +227,7 @@ class AppCore {
             await MainActor.run { windowManager.reopenAll() }
             return
         }
-        let port = PortFinder.findFreePort()
+        let port = portFinder()
         guard port > 0 else {
             await showErrorAndQuit("Could not find a free port to start the backend.")
             return

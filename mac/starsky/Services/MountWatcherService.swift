@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 // Abstracts Process execution so MountWatcherService is testable without spawning real processes.
 protocol ProcessRunner {
@@ -41,6 +42,7 @@ private let mountWatcherLaunchAgentName = "nl.qdraw.mountwatcher"
 #endif
 
 final class MountWatcherService: MountWatcherServiceProtocol {
+    private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "MountWatcher")
     private let processRunner: ProcessRunner
     let cliBinaryURL: URL
     let plistURL: URL
@@ -63,18 +65,35 @@ final class MountWatcherService: MountWatcherServiceProtocol {
     }
 
     func enable() async -> Bool {
-        guard FileManager.default.fileExists(atPath: cliBinaryURL.path) else { return false }
+        logger.info("Enabling MountWatcher service (\(self.serviceName, privacy: .public))")
+        guard FileManager.default.fileExists(atPath: cliBinaryURL.path) else {
+            logger.error("Enable failed: CLI binary not found at \(self.cliBinaryURL.path, privacy: .public)")
+            return false
+        }
         let code = await processRunner.run(executable: cliBinaryURL, arguments: ["--install"])
-        return code == 0
+        if code != 0 {
+            logger.error("Enable failed: --install exited with code \(code, privacy: .public)")
+            return false
+        }
+        logger.info("MountWatcher service enabled successfully")
+        return true
     }
 
     func disable() async -> Bool {
+        logger.info("Disabling MountWatcher service (\(self.serviceName, privacy: .public))")
         guard FileManager.default.fileExists(atPath: cliBinaryURL.path) else {
+            let plistPresent = FileManager.default.fileExists(atPath: plistURL.path)
+            logger.warning("Disable: CLI binary not found at \(self.cliBinaryURL.path, privacy: .public); plist present: \(plistPresent, privacy: .public)")
             // CLI missing — report success only if the plist is also gone.
-            return !FileManager.default.fileExists(atPath: plistURL.path)
+            return !plistPresent
         }
         let code = await processRunner.run(executable: cliBinaryURL, arguments: ["--uninstall"])
-        return code == 0
+        if code != 0 {
+            logger.error("Disable failed: --uninstall exited with code \(code, privacy: .public)")
+            return false
+        }
+        logger.info("MountWatcher service disabled successfully")
+        return true
     }
 
     func status() async -> MountWatcherStatus {
@@ -83,11 +102,18 @@ final class MountWatcherService: MountWatcherServiceProtocol {
         }
         let launchctl = URL(fileURLWithPath: "/bin/launchctl")
         let code = await processRunner.run(executable: launchctl, arguments: ["list", serviceName])
-        return code == 0 ? .running : .stopped
+        let result: MountWatcherStatus = code == 0 ? .running : .stopped
+        logger.debug("Status check: launchctl list exited \(code, privacy: .public) → \(result.displayString, privacy: .public)")
+        return result
     }
 
     func stopSync() {
-        guard FileManager.default.fileExists(atPath: cliBinaryURL.path) else { return }
+        logger.info("Stopping MountWatcher synchronously (pre-update or termination)")
+        guard FileManager.default.fileExists(atPath: cliBinaryURL.path) else {
+            logger.warning("stopSync: CLI binary not found at \(self.cliBinaryURL.path, privacy: .public); skipping")
+            return
+        }
         processRunner.runSync(executable: cliBinaryURL, arguments: ["--uninstall"])
+        logger.info("MountWatcher stopSync completed")
     }
 }

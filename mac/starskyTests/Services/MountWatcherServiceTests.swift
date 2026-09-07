@@ -154,4 +154,62 @@ final class MountWatcherServiceTests: XCTestCase {
         svc.stopSync()
         XCTAssertTrue(runner.runSyncCalled.isEmpty)
     }
+
+    // MARK: - DefaultProcessRunner (real process execution via FakeProcessBin)
+
+    func testDefaultProcessRunnerRunReturnsZeroForSuccessScript() async throws {
+        let bin = try FakeProcessBin.create(in: tempDir, exitCode: 0, name: "exit0")
+        let runner = DefaultProcessRunner()
+        let code = await runner.run(executable: bin, arguments: [])
+        XCTAssertEqual(code, 0)
+    }
+
+    func testDefaultProcessRunnerRunReturnsNonZeroForFailScript() async throws {
+        let bin = try FakeProcessBin.create(in: tempDir, exitCode: 1, name: "exit1")
+        let runner = DefaultProcessRunner()
+        let code = await runner.run(executable: bin, arguments: [])
+        XCTAssertEqual(code, 1)
+    }
+
+    func testDefaultProcessRunnerRunReturnsMinusOneForMissingExecutable() async {
+        let runner = DefaultProcessRunner()
+        let code = await runner.run(
+            executable: URL(fileURLWithPath: "/nonexistent/binary_that_does_not_exist"),
+            arguments: []
+        )
+        XCTAssertEqual(code, -1)
+    }
+
+    func testDefaultProcessRunnerRunSyncCompletesWithoutCrash() throws {
+        let bin = try FakeProcessBin.create(in: tempDir, exitCode: 0, name: "syncbin")
+        let runner = DefaultProcessRunner()
+        runner.runSync(executable: bin, arguments: [])
+    }
+
+    func testDefaultProcessRunnerRunSyncWithMissingExecutableDoesNotCrash() {
+        let runner = DefaultProcessRunner()
+        runner.runSync(
+            executable: URL(fileURLWithPath: "/nonexistent/binary_that_does_not_exist"),
+            arguments: []
+        )
+    }
+
+    // MARK: - MountWatcherStatus displayString
+
+    func testDisplayStringsAreNonEmpty() {
+        XCTAssertFalse(MountWatcherStatus.running.displayString.isEmpty)
+        XCTAssertFalse(MountWatcherStatus.stopped.displayString.isEmpty)
+        XCTAssertFalse(MountWatcherStatus.notInstalled.displayString.isEmpty)
+        XCTAssertFalse(MountWatcherStatus.unknown.displayString.isEmpty)
+    }
+
+    func testDisplayStringsAreDistinct() {
+        let strings = [
+            MountWatcherStatus.running.displayString,
+            MountWatcherStatus.stopped.displayString,
+            MountWatcherStatus.notInstalled.displayString,
+            MountWatcherStatus.unknown.displayString,
+        ]
+        XCTAssertEqual(Set(strings).count, strings.count)
+    }
 }

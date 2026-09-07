@@ -33,6 +33,7 @@
 		3E8C4704EDE298CED0E1752C /* MountWatcherServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39543A07F37AC605718750B6 /* MountWatcherServiceProtocol.swift */; };
 		41EE07440713B387EAA5FC16 /* FileDownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF89347F9391AD851030846 /* FileDownloadService.swift */; };
 		430656002F48F777DE022C02 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638E6722EC6714AB1D74833D /* AppDelegate.swift */; };
+		45039DD3D6166A16E2729EDB /* FakeProcessBin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FC44930BCEE3477D6328EE3 /* FakeProcessBin.swift */; };
 		45A6CFBF36F251FE992AC4EC /* SavedWindowStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7599F0F8868A19701613D3FE /* SavedWindowStateTests.swift */; };
 		472D6F6C902EBF5D3E2524E3 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = DF5D6D740321B8F421D7DC1C /* Sparkle */; };
 		495E8C0728A1909CC21A650F /* MountWatcherServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064147AE75ED8E46531D7841 /* MountWatcherServiceTests.swift */; };
@@ -133,6 +134,7 @@
 		3EE9757114B39C8796B7DDB8 /* UrlValidationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlValidationResult.swift; sourceTree = "<group>"; };
 		435D0EF7EF41315830FC8920 /* SettingsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPresenter.swift; sourceTree = "<group>"; };
 		45FCF2620A00BA536D9BA601 /* starsky.debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = starsky.debug.entitlements; sourceTree = "<group>"; };
+		4FC44930BCEE3477D6328EE3 /* FakeProcessBin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeProcessBin.swift; sourceTree = "<group>"; };
 		518E0933311F6D5490C13CF6 /* AppDelegateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateTests.swift; sourceTree = "<group>"; };
 		537CF0BCF79013734BC9F797 /* DailyFileLoggerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyFileLoggerTests.swift; sourceTree = "<group>"; };
 		554B5849A45556FFAA970085 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
@@ -240,6 +242,7 @@
 		3C7FFDB383093FBECF9207B1 /* FakeCreateAn */ = {
 			isa = PBXGroup;
 			children = (
+				75E3FA210EDC7E1C6400F632 /* CreateFakeProcessBin */,
 				D81768EC3E7595819B8FEF0E /* CreateFakeStarskyBin */,
 			);
 			path = FakeCreateAn;
@@ -308,6 +311,14 @@
 				D4E9538E4281ECA333F416A1 /* ApplicationInfoTests.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		75E3FA210EDC7E1C6400F632 /* CreateFakeProcessBin */ = {
+			isa = PBXGroup;
+			children = (
+				4FC44930BCEE3477D6328EE3 /* FakeProcessBin.swift */,
+			);
+			path = CreateFakeProcessBin;
 			sourceTree = "<group>";
 		};
 		A969E4D303F9566A315133B5 /* Services */ = {
@@ -591,6 +602,7 @@
 				BE19E9CD1AB672594105CDC7 /* DesktopSettings.swift in Sources */,
 				B352323697B9E1BEEA2B3150 /* DesktopSettingsTests.swift in Sources */,
 				7A338BBACE8483094F111EF0 /* ErrorWindowController.swift in Sources */,
+				45039DD3D6166A16E2729EDB /* FakeProcessBin.swift in Sources */,
 				C2E9E314DDA263E53F6916B9 /* FakeStarskyBin.swift in Sources */,
 				F61BB25AD6E4A6519F79F584 /* FakeURLProtocol.swift in Sources */,
 				DFA1DCACE73C0522676673D0 /* FileDownloadService.swift in Sources */,

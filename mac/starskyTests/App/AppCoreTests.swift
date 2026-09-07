@@ -178,6 +178,25 @@ final class AppCoreTests: XCTestCase {
         XCTAssertEqual(wm.setLocalPortValue, core.localPort)
     }
 
+    func testStartLocalModeShowsErrorWhenNoFreePort() async {
+        var errorMessage: String?
+        let core = makeCore()
+        core.portFinder = { 0 }
+        core.showError = { errorMessage = $0 }
+        await core.startLocalMode()
+        XCTAssertNotNil(errorMessage)
+        XCTAssertTrue(errorMessage?.contains("port") == true)
+    }
+
+    func testSwitchToLocalModeShowsErrorWhenNoFreePort() async {
+        var errorMessage: String?
+        let core = makeCore()
+        core.portFinder = { 0 }
+        core.showError = { errorMessage = $0 }
+        await core.switchToLocalMode()
+        XCTAssertNotNil(errorMessage)
+    }
+
     func testStartLocalModeShowsErrorWhenBackendThrows() async {
         let backend = MockBackendService()
         backend.startError = BackendError.executableNotFound
