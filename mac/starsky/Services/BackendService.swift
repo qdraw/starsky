@@ -34,28 +34,35 @@ class BackendService: @unchecked Sendable {
             throw BackendError.executableNotFound
         }
 
-        clearQuarantine(path: executableURL.path)
-
-        let proc = Process()
-        proc.executableURL = executableURL
-        proc.environment = Self.buildEnvironment(port: port)
-
-        let pipe = Pipe()
-        proc.standardOutput = pipe
-        proc.standardError = pipe
-
-        pipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
-            let data = handle.availableData
-            if !data.isEmpty, let line = String(data: data, encoding: .utf8) {
-                self?.fileLogger.info(line.trimmingCharacters(in: .newlines), category: "Backend")
+        func makeProcess() -> Process {
+            let p = Process()
+            p.executableURL = executableURL
+            p.environment = Self.buildEnvironment(port: port)
+            let pipe = Pipe()
+            p.standardOutput = pipe
+            p.standardError = pipe
+            pipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
+                let data = handle.availableData
+                if !data.isEmpty, let line = String(data: data, encoding: .utf8) {
+                    self?.fileLogger.info(line.trimmingCharacters(in: .newlines), category: "Backend")
+                }
             }
+            p.terminationHandler = { [weak self] _ in self?.onProcessExited(port: port) }
+            return p
         }
 
-        proc.terminationHandler = { [weak self] _ in
-            self?.onProcessExited(port: port)
+        let proc: Process
+        do {
+            let first = makeProcess()
+            try first.run()
+            proc = first
+        } catch {
+            logger.warning("Backend launch failed, clearing quarantine and retrying: \(error)")
+            clearQuarantine(path: executableURL.path)
+            let retry = makeProcess()
+            try retry.run()
+            proc = retry
         }
-
-        try proc.run()
         self.process = proc
         logger.info("Backend started on port \(port), pid \(proc.processIdentifier)")
         fileLogger.info("Backend started on port \(port)", category: "BackendService")
