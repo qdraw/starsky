@@ -169,9 +169,11 @@ final class BackendServiceTests: XCTestCase {
         let runtimeDir = tempDir.appendingPathComponent("runtime4")
         try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
         let binary = runtimeDir.appendingPathComponent("starsky")
+        let readyMarker = runtimeDir.appendingPathComponent("ready")
+        // ready marker guarantees the trap is installed before stop() sends SIGTERM;
         // while loop prevents exec-optimisation of the last command, keeping the shell
         // as the tracked PID so it genuinely ignores SIGTERM via the trap.
-        try "#!/bin/sh\ntrap '' TERM\nwhile true; do sleep 0.05; done\n".write(to: binary, atomically: true, encoding: .utf8)
+        try "#!/bin/sh\ntrap '' TERM\ntouch '\(readyMarker.path)'\nwhile true; do sleep 0.05; done\n".write(to: binary, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
 
         let service = TestableBackendService(fileLogger: DailyFileLogger(), xattrPath: "/usr/bin/true", codesignPath: "/usr/bin/true")
@@ -180,6 +182,7 @@ final class BackendServiceTests: XCTestCase {
 
         try service.start(port: 19994)
         XCTAssertTrue(service.isRunning)
+        try waitForReadyMarker(readyMarker)
         service.stop()
         XCTAssertFalse(service.isRunning)
     }
@@ -188,7 +191,9 @@ final class BackendServiceTests: XCTestCase {
         let runtimeDir = tempDir.appendingPathComponent("runtime5")
         try FileManager.default.createDirectory(at: runtimeDir, withIntermediateDirectories: true)
         let binary = runtimeDir.appendingPathComponent("starsky")
-        try "#!/bin/sh\ntrap '' TERM\ntrap '' INT\nwhile true; do sleep 0.05; done\n".write(to: binary, atomically: true, encoding: .utf8)
+        let readyMarker = runtimeDir.appendingPathComponent("ready")
+        // ready marker guarantees both traps are installed before stop() sends SIGTERM/SIGINT.
+        try "#!/bin/sh\ntrap '' TERM\ntrap '' INT\ntouch '\(readyMarker.path)'\nwhile true; do sleep 0.05; done\n".write(to: binary, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binary.path)
 
         let service = TestableBackendService(fileLogger: DailyFileLogger(), xattrPath: "/usr/bin/true", codesignPath: "/usr/bin/true")
@@ -198,8 +203,17 @@ final class BackendServiceTests: XCTestCase {
 
         try service.start(port: 19995)
         XCTAssertTrue(service.isRunning)
+        try waitForReadyMarker(readyMarker)
         service.stop()
         XCTAssertFalse(service.isRunning)
+    }
+
+    private func waitForReadyMarker(_ marker: URL, timeout: TimeInterval = 2) throws {
+        let deadline = Date().addingTimeInterval(timeout)
+        while !FileManager.default.fileExists(atPath: marker.path) {
+            XCTAssertTrue(Date() < deadline, "Process never signalled readiness at \(marker.path)")
+            Thread.sleep(forTimeInterval: 0.02)
+        }
     }
 }
 
