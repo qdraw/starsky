@@ -96,6 +96,8 @@ AppDelegate.applicationDidFinishLaunching(_:)
   │    [Remote]  Validate remoteBaseUrl is set (else ErrorWindowController + terminate)
   │
   ├─ 7. FileWatcherService.start()
+  ├─ 7.5. [if mountWatcherEnabled] MountWatcherService.enable()
+  │           → if enable() returns false: clear mountWatcherEnabled preference
   ├─ 8. WindowManager.restoreWindows()
   ├─ 9. SplashWindowController.close()
   │
@@ -105,9 +107,10 @@ AppDelegate.applicationDidFinishLaunching(_:)
 
 ### Shutdown (`applicationWillTerminate(_:)`)
 
-1. `FileWatcherService.stop()`
-2. `WindowManager.closeAll()`
-3. `BackendService.stop()` — kills the backend process, waits up to 5 seconds
+1. `WindowManager.closeAll()`
+2. `[if mountWatcherEnabled] MountWatcherService.stopSync()`
+3. `FileWatcherService.stop()`
+4. `BackendService.stop()` — kills the backend process, waits up to 5 seconds
 
 ---
 
@@ -146,10 +149,22 @@ macOS menu bar is screen-level (set in `AppDelegate`).
 | File | Edit File in Editor | Cmd+E | Local: inject Cmd+E keydown; Remote: download + open |
 | Starsky | Connection Settings… | — | Open SettingsWindowController |
 | Starsky | Application Settings | Cmd+Shift+K | Inject Cmd+Shift+K into web app |
+| Starsky | MountWatcher ▶ | — | Submenu (see below) |
 | View | Developer Tools | Cmd+Opt+I | Enable WKWebView inspector, open devtools |
 | View | Open in Browser | — | `NSWorkspace.shared.open(currentURL)` |
 | Help | Documentation | — | Open `https://qdraw.nl/special/starsky/docs/` |
 | Help | Release Overview | — | Open `https://github.com/qdraw/starsky/releases` |
+
+#### MountWatcher Submenu
+
+The **MountWatcher** submenu is populated dynamically via `NSMenuDelegate.menuNeedsUpdate(_:)` each time it opens.
+
+| State | Items shown |
+|---|---|
+| Disabled | "Enable MountWatcher" |
+| Enabled | "Status: Running / Not Running / Not Installed" (non-clickable) + "Disable MountWatcher" |
+
+Toggling calls `MountWatcherService.enable()` / `disable()` asynchronously. On success the preference is persisted; on failure an error is shown via `ErrorWindowController` and the preference is unchanged.
 
 #### Navigation Rules
 
@@ -311,14 +326,39 @@ URLSession: 10-second timeout. Injected via constructor.
 
 Wraps Sparkle 2 `SPUUpdater` for GitHub-hosted auto-updates.
 
-| Method | Behaviour |
+| Method / Property | Behaviour |
 |---|---|
 | `checkAsync() async -> Bool` | Returns `false` if: `updateCheckEnabled = false`, OR last warning < 4 days ago (`suppressMinutes = 5760`), OR Sparkle unavailable, OR no update found |
 | `applyUpdate()` | Calls `SPUUpdater.checkForUpdates()` — Sparkle handles download + restart |
 | `recordWarningShown()` | Sets `lastUpdateWarningShown = Date()`, saves settings |
+| `mountWatcherProvider` | Closure `() -> (any MountWatcherServiceProtocol)?` forwarded to the internal `SparkleUpdaterDelegate`. Before Sparkle installs an update, `willInstallUpdate` calls `mountWatcherProvider()?.stopSync()` to unload the launchd agent before the bundle is replaced. |
 
 Appcast URL: configured in `Info.plist` `SUFeedURL` key.  
 Gracefully degrades when Sparkle is unavailable (sets `updater = nil`).
+
+### 6.12 MountWatcherService
+
+Manages the optional `starskymountwatchercli` background service (launchd LaunchAgent).
+
+| Method | Behaviour |
+|---|---|
+| `enable() async -> Bool` | Checks CLI binary exists; calls `starskymountwatchercli --install`; returns `true` on exit 0 |
+| `disable() async -> Bool` | Calls `starskymountwatchercli --uninstall`; if CLI missing, returns `true` only when plist is also absent |
+| `status() async -> MountWatcherStatus` | Returns `.notInstalled` if plist absent; runs `launchctl list <serviceName>`: exit 0 → `.running`, else `.stopped` |
+| `stopSync()` | Synchronously calls `starskymountwatchercli --uninstall`; used pre-update and at termination |
+
+The CLI binary path defaults to `<runtime-dir>/starskymountwatchercli`. Service name is `nl.qdraw.mountwatcher` (or `nl.qdraw.mountwatcher.debug` in Debug builds).
+
+All process execution is abstracted behind the `ProcessRunner` protocol for testability. The production implementation (`DefaultProcessRunner`) uses `Foundation.Process` with stdout/stderr suppressed via `FileHandle.nullDevice`.
+
+**`MountWatcherStatus` enum:**
+
+| Case | Meaning |
+|---|---|
+| `.running` | plist exists; `launchctl list` returns 0 |
+| `.stopped` | plist exists; `launchctl list` returns non-0 |
+| `.notInstalled` | plist does not exist |
+| `.unknown` | process launch error |
 
 ### 6.10 WindowManager
 
@@ -359,7 +399,10 @@ Persisted to `~/Library/Application Support/starsky/settings.json` as indented J
 | `remoteBaseUrl` | `String` | `""` | URL of remote server (Remote mode only) |
 | `updateCheckEnabled` | `Bool` | `true` | Whether to check for updates on startup |
 | `lastUpdateWarningShown` | `Date?` | `nil` | UTC timestamp of last update prompt |
+| `mountWatcherEnabled` | `Bool` | `false` | Whether MountWatcher LaunchAgent should be active |
 | `windows` | `[SavedWindowState]` | `[]` | Per-window route + geometry |
+
+`mountWatcherEnabled` uses `decodeIfPresent` so existing `settings.json` files written before this field existed decode without error (defaults to `false`).
 
 ### 7.2 SavedWindowState
 
@@ -405,6 +448,9 @@ enum RuntimeMode: Int, Codable {
 | `~/Library/Caches/starsky/tempFolder/` | Downloaded files |
 | `<bundle>/Contents/MacOS/runtime-starsky-osx-arm64/starsky` | Bundled backend (Apple Silicon) |
 | `<bundle>/Contents/MacOS/runtime-starsky-osx-x64/starsky` | Bundled backend (Intel) |
+| `<bundle>/Contents/MacOS/runtime-starsky-osx-arm64/starskymountwatchercli` | MountWatcher CLI (Apple Silicon) |
+| `<bundle>/Contents/MacOS/runtime-starsky-osx-x64/starskymountwatchercli` | MountWatcher CLI (Intel) |
+| `~/Library/LaunchAgents/nl.qdraw.mountwatcher.plist` | launchd LaunchAgent plist (created by CLI `--install`) |
 
 ---
 
