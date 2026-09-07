@@ -77,6 +77,7 @@ final class BackendServiceTests: XCTestCase {
         if service.findBackendExe() == nil {
             XCTAssertThrowsError(try service.start(port: 19990)) { error in
                 XCTAssertTrue(error is BackendError)
+                XCTAssertEqual((error as? BackendError)?.errorDescription, "The Starsky backend executable was not found in the application bundle.")
             }
         }
     }
