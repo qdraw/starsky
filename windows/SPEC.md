@@ -90,6 +90,9 @@ Program.Main()
        │    [Remote]  Validate RemoteBaseUrl is set (else ErrorWindow + Shutdown)
        │
        ├─ 7. FileWatcherService.Start()
+       ├─ 7a. MountWatcherLifecycle.OnStartupAsync()
+       │       → if MountWatcherEnabled: starskymountwatchercli.exe --install (elevated)
+       │       → on failure: clear MountWatcherEnabled + save settings
        ├─ 8. WindowManager.RestoreWindows()
        ├─ 9. SplashWindow.Close()
        │
@@ -99,9 +102,10 @@ Program.Main()
 
 ### Shutdown Sequence (`App.OnExit`)
 
-1. `FileWatcherService.Stop()`
-2. `WindowManager.CloseAll()`
-3. `BackendService.StopAsync()` — kills the backend process, waits up to 5 seconds
+1. `MountWatcherLifecycle.OnShutdown()` — if `MountWatcherEnabled`: runs `starskymountwatchercli.exe --uninstall` synchronously (elevated) so the binary is not locked when Velopack replaces files
+2. `FileWatcherService.Stop()`
+3. `WindowManager.CloseAll()`
+4. `BackendService.StopAsync()` — kills the backend process, waits up to 5 seconds
 
 ---
 
@@ -138,6 +142,7 @@ Default size: **1200×800**. Position: saved and restored per window index.
 | File | Edit File in Editor | Ctrl+E | Local: forward keystroke to web app; Remote: download file + open locally |
 | Settings | Connection Settings… | — | Open SettingsWindow |
 | Settings | Application Settings | Ctrl+Shift+K | Inject `Ctrl+Shift+K` keyboard event into web app |
+| Settings → Mount Watcher | Enable / Disable Mount Watcher | — | Toggle MountWatcher Windows Service (UAC elevation required); shows current status when submenu is open |
 | View | Developer Tools | F12 | Open WebView2 DevTools window |
 | View | Open in Browser | — | Open current URL in default system browser |
 | Help | Documentation | — | Open `https://qdraw.nl/special/starsky/docs/` in system browser |
@@ -185,6 +190,8 @@ Fixed 380×480, not resizable, centered on owner. Contains:
 | **Server URL** text box | Editable only in Remote mode |
 | **Save URL** button | Calls `RemoteUrlValidator.ValidateAsync(url)` → if valid, saves URL and calls `ReopenAll()`; shows green "Setting is saved" or red error message |
 | **Check for updates** checkbox | Toggles `UpdateCheckEnabled` in settings; saved immediately |
+
+MountWatcher enable/disable is accessed from **Settings → Mount Watcher** in the main menu bar (not from SettingsWindow).
 
 ### 5.4 ErrorWindow
 
@@ -337,7 +344,31 @@ Manages the collection of open `MainWindow` instances.
 
 When the last window closes, `Application.Current.Shutdown()` is called.
 
-### 6.12 DailyFileLoggerProvider / DailyFileLogger
+### 6.13 MountWatcherService
+
+Optional integration with the `starskymountwatchercli.exe` binary bundled in `runtime-starsky-win-x64\`.
+
+| Method | Behaviour |
+|---|---|
+| `EnableAsync()` | Returns `false` immediately if the binary is missing; otherwise calls `RunElevatedAsync("--install")` via `IProcessRunner.RunElevated` — triggers a UAC elevation prompt; returns `true` on exit code 0 |
+| `DisableAsync()` | Same flow with `--uninstall`; if binary is missing, succeeds only when `GetStatus()` returns `NotInstalled` |
+| `GetStatus()` | Runs `sc.exe query starsky-mountwatcher` via `IProcessRunner.Run`; exit code ≠ 0 → `NotInstalled`; output contains "RUNNING" → `Running`; otherwise → `Stopped`; exception → `Unknown` |
+| `StopSync()` | Synchronous uninstall call; used on app shutdown and before Velopack update so the binary is not file-locked during replacement; no-op when binary is missing |
+
+`IProcessRunner` is the seam for unit testing — `WindowsProcessRunner` wraps real `Process.Start` calls; `FakeProcessRunner` is used in tests.
+
+The service name is always `starsky-mountwatcher` regardless of build configuration, because the CLI binary in the runtime directory is always a Release build.
+
+### 6.14 MountWatcherLifecycle
+
+Encapsulates startup/shutdown logic for MountWatcher so it can be tested independently of the WPF `Application` class.
+
+| Method | Behaviour |
+|---|---|
+| `OnStartupAsync()` | No-op when `MountWatcherEnabled = false`; calls `EnableAsync()`; on failure: clears `MountWatcherEnabled` and saves settings so the app does not retry on every start with a broken or missing binary |
+| `OnShutdown()` | No-op when `MountWatcherEnabled = false`; calls `StopSync()` synchronously |
+
+### 6.15 DailyFileLoggerProvider / DailyFileLogger
 
 Custom `ILoggerProvider` that writes log lines to date-stamped files:  
 `%AppData%\starsky\logs\starsky-{yyyy-MM-dd}.log`
@@ -362,6 +393,7 @@ Persisted to `%AppData%\starsky\settings.json` as indented JSON.
 | `UpdateCheckEnabled` | `bool` | `true` | Whether to check for updates on startup |
 | `LastUpdateWarningShown` | `DateTime?` | `null` | UTC timestamp of last update prompt (suppression window) |
 | `Windows` | `List<SavedWindowState>` | `[]` | Per-window route + geometry state |
+| `MountWatcherEnabled` | `bool` | `false` | Whether MountWatcher Windows Service should be started on app launch |
 
 ### 7.2 SavedWindowState
 
@@ -416,6 +448,7 @@ starsky-win-x64-desktop.exe --installto "D:\Apps\Starsky"
 | `%AppData%\starsky\thumbnailTempFolder\` | Thumbnail cache |
 | `%LocalAppData%\starsky\tempFolder\` | Downloaded files (file-download feature) |
 | `<exe dir>\runtime-starsky-win-x64\starsky.exe` | Bundled ASP.NET Core backend |
+| `<exe dir>\runtime-starsky-win-x64\starskymountwatchercli.exe` | MountWatcher CLI (install/uninstall Windows Service) |
 
 ---
 
@@ -455,8 +488,8 @@ dotnet publish windows/Starsky.Desktop.csproj -c Release -r win-x64 --self-conta
 ## 10. Test Suite
 
 **Project:** `windows/starsky.Tests/starsky.Tests.csproj`  
-**Framework:** xUnit 2.9.2, `net10.0-windows`, `UseWPF=true`  
-**Total:** 52 tests, all passing
+**Framework:** MSTest 4.4.0, `net10.0-windows`, `UseWPF=true`  
+**Total:** 179 tests, all passing
 
 ### Test Infrastructure
 
@@ -477,6 +510,7 @@ dotnet publish windows/Starsky.Desktop.csproj -c Release -r win-x64 --self-conta
 | `RoutePersistenceServiceTests` | 6 | Empty list; save entry; save with geometry; list expansion with blanks; remove entry; clear all |
 | `SettingsServiceTests` | 4 | Missing file (defaults); valid JSON; corrupt JSON (defaults); save-then-load round-trip |
 | `UpdateServiceTests` | 4 | `UpdateCheckEnabled = false`; recent warning suppresses; `RecordWarningShown` persists timestamp; `ApplyUpdateAsync` throws without pending update |
+| `MountWatcherServiceTests` | 33 | `DesktopSettings.MountWatcherEnabled` default and JSON round-trip; `MountWatcherService` enable/disable/status/stop branches via `FakeProcessRunner`; `MountWatcherLifecycle` startup (skip, call, keep, clear, persist) and shutdown; `UpdateService.ApplyUpdateAsync` calls `StopSync` before applying |
 
 ### Running Tests
 
@@ -538,6 +572,7 @@ Triggered on version tag pushes. Builds and publishes the desktop release binari
 | External navigation | `NavigationStarting` cancels non-allowlisted navigations and redirects to system browser |
 | External new-window | `NewWindowRequested` intercepts `target="_blank"`; only allowed origins open in-app |
 | Local backend auth bypass | `app__NoAccountLocalhost=true` — only safe because the backend binds to `127.0.0.1`; no remote access |
+| MountWatcher elevation | Enable/disable triggers a UAC consent prompt via `ProcessStartInfo.Verb = "runas"`; the WPF app itself does **not** run elevated; only the CLI sub-process is elevated for the duration of `sc.exe create/delete` |
 | Remote URL validation | Scheme must be `http`/`https`; server must respond to `/api/health` |
 | Credential storage | No credentials stored; Remote mode relies on the web app's own cookie-based session |
 | Update integrity | Velopack validates packages via signatures from GitHub Releases |

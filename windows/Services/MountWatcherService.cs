@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -12,14 +11,21 @@ public class MountWatcherService : IMountWatcherService
 
     private readonly string _cliBinaryPath;
     private readonly ILogger<MountWatcherService> _logger;
+    private readonly IProcessRunner _runner;
 
     public MountWatcherService(ILogger<MountWatcherService> logger)
-        : this(Path.Combine(ApplicationPaths.RuntimeDir, "starskymountwatchercli.exe"), logger) { }
+        : this(Path.Combine(ApplicationPaths.RuntimeDir, "starskymountwatchercli.exe"),
+               logger,
+               new WindowsProcessRunner()) { }
 
-    internal MountWatcherService(string cliBinaryPath, ILogger<MountWatcherService>? logger = null)
+    internal MountWatcherService(
+        string cliBinaryPath,
+        ILogger<MountWatcherService>? logger = null,
+        IProcessRunner? runner = null)
     {
         _cliBinaryPath = cliBinaryPath;
         _logger = logger ?? NullLoggerFactory.Instance.CreateLogger<MountWatcherService>();
+        _runner = runner ?? new WindowsProcessRunner();
     }
 
     public async Task<bool> EnableAsync()
@@ -71,29 +77,17 @@ public class MountWatcherService : IMountWatcherService
     {
         try
         {
-            var psi = new ProcessStartInfo(Path.Combine(Environment.SystemDirectory, "sc.exe"), $"query {ServiceName}")
-            {
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-            using var process = Process.Start(psi);
-            if (process == null)
-            {
-                _logger.LogWarning("[MountWatcher] GetStatus: failed to start sc.exe");
-                return MountWatcherStatus.Unknown;
-            }
+            var result = _runner.Run(
+                Path.Combine(Environment.SystemDirectory, "sc.exe"),
+                $"query {ServiceName}");
 
-            var output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-
-            if (process.ExitCode != 0)
+            if (result.ExitCode != 0)
             {
-                _logger.LogDebug("[MountWatcher] GetStatus: service not installed (sc.exe exit {ExitCode})", process.ExitCode);
+                _logger.LogDebug("[MountWatcher] GetStatus: service not installed (sc.exe exit {ExitCode})", result.ExitCode);
                 return MountWatcherStatus.NotInstalled;
             }
 
-            var status = output.Contains("RUNNING", StringComparison.OrdinalIgnoreCase)
+            var status = result.Output.Contains("RUNNING", StringComparison.OrdinalIgnoreCase)
                 ? MountWatcherStatus.Running
                 : MountWatcherStatus.Stopped;
 
@@ -119,15 +113,8 @@ public class MountWatcherService : IMountWatcherService
 
         try
         {
-            var psi = new ProcessStartInfo(_cliBinaryPath, "--uninstall")
-            {
-                Verb = "runas",
-                UseShellExecute = true,
-                CreateNoWindow = true
-            };
-            using var process = Process.Start(psi);
-            process?.WaitForExit();
-            _logger.LogInformation("[MountWatcher] StopSync: completed (exit {ExitCode})", process?.ExitCode);
+            var result = _runner.RunElevated(_cliBinaryPath, "--uninstall");
+            _logger.LogInformation("[MountWatcher] StopSync: completed (exit {ExitCode})", result.ExitCode);
         }
         catch (Exception ex)
         {
@@ -141,22 +128,9 @@ public class MountWatcherService : IMountWatcherService
         {
             try
             {
-                var psi = new ProcessStartInfo(_cliBinaryPath, args)
-                {
-                    Verb = "runas",
-                    UseShellExecute = true,
-                    CreateNoWindow = true
-                };
-                using var process = Process.Start(psi);
-                if (process == null)
-                {
-                    _logger.LogWarning("[MountWatcher] RunElevatedAsync: Process.Start returned null for args={Args}", args);
-                    return -1;
-                }
-
-                process.WaitForExit();
-                _logger.LogDebug("[MountWatcher] RunElevatedAsync: args={Args} exit={ExitCode}", args, process.ExitCode);
-                return process.ExitCode;
+                var result = _runner.RunElevated(_cliBinaryPath, args);
+                _logger.LogDebug("[MountWatcher] RunElevatedAsync: args={Args} exit={ExitCode}", args, result.ExitCode);
+                return result.ExitCode;
             }
             catch (Exception ex)
             {
