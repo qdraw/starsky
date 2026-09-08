@@ -77,6 +77,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     private let presenter: MainWindowPresenter
     private var webView: WKWebView!
     private var titleObservation: NSKeyValueObservation?
+    private var urlObservation: NSKeyValueObservation?
 
     init(options: MainWindowOptions) {
         self.options = options
@@ -150,6 +151,14 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         titleObservation = webView.observe(\.title, options: [.new]) { [weak self] webView, _ in
             let title = webView.title.flatMap { $0.isEmpty ? nil : $0 } ?? "Starsky"
             DispatchQueue.main.async { self?.window?.title = title }
+        }
+
+        urlObservation = webView.observe(\.url, options: [.new]) { [weak self] _, _ in
+            guard let self else { return }
+            Task { @MainActor [weak self] in
+                guard let self, let url = self.webView.url else { return }
+                self.window?.representedURL = self.presenter.proxyIconURL(for: url)
+            }
         }
 
         if let contentView = window?.contentView {
