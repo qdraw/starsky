@@ -61,8 +61,8 @@ xcodebuild build -project starsky.xcodeproj -scheme starsky \
   -configuration Debug -destination 'platform=macOS' \
   CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-# Test (57 tests, XCTest)
-xcodebuild test -project starsky.xcodeproj -scheme starskyTests \
+# Test (XCTest)
+xcodebuild test -project starsky.xcodeproj -scheme starsky \
   -destination 'platform=macOS' \
   CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 ```

@@ -1,6 +1,11 @@
 import XCTest
 import AppKit
 
+@MainActor
+private final class DefaultWindowManager: WindowManagerProtocol {
+    func openMainWindow(route: String?) {}
+    func reopenAll() {}
+}
 
 /// AppDelegate is a thin NSApplicationDelegate adapter with no business logic.
 /// Tests here only verify the delegate stubs — all business logic lives in AppCoreTests.
@@ -63,6 +68,13 @@ final class AppDelegateTests: XCTestCase {
         // core is nil; no-op
         let reply = delegate.applicationShouldTerminate(NSApplication.shared)
         XCTAssertEqual(reply, .terminateLater)
+    }
+
+    @MainActor
+    func testDefaultWindowManagerAllWindowsReturnsEmptyArray() {
+        let manager = DefaultWindowManager()
+
+        XCTAssertTrue(manager.allWindows().isEmpty)
     }
 
     // MARK: - buildDockMenu

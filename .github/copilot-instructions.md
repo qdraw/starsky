@@ -14,6 +14,8 @@ When writing tests use `[TestMethod]` and `[DataRow]` to cover multiple scenario
 - Unit tests are located in `starsky/starskytest`.
 - Run tests with:
   `dotnet test starsky/starskytest/starskytest.csproj`
+- Run macOS XCTest project tests from `mac/` with:
+  `xcodebuild test -project starsky.xcodeproj -scheme starsky -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO`
 
 Be concise.
 
