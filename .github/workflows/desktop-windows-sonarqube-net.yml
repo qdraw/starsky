@@ -121,7 +121,7 @@ jobs:
           dotnet-coverage collect `
             --output TestResults/coverage.opencover.xml `
             --output-format opencover `
-            -- dotnet test windows/starsky.Tests/starsky.Tests.csproj -c Release --no-build
+            -- windows/starsky.Tests/bin/Release/net10.0-windows/starsky.Tests.exe
 
       - name: End SonarQube analysis
         shell: pwsh
