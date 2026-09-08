@@ -119,9 +119,12 @@ jobs:
         shell: pwsh
         run: |
           dotnet-coverage collect `
+            --output TestResults/coverage.coverage `
+            -- windows/starsky.Tests/bin/Release/net10.0-windows/starsky.Tests.exe
+          dotnet-coverage merge `
             --output TestResults/coverage.opencover.xml `
             --output-format opencover `
-            -- windows/starsky.Tests/bin/Release/net10.0-windows/starsky.Tests.exe
+            TestResults/coverage.coverage
 
       - name: End SonarQube analysis
         shell: pwsh
