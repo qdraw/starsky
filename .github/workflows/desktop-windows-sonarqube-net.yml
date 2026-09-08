@@ -105,7 +105,7 @@ jobs:
             /d:sonar.inclusions="windows/**" `
             /d:sonar.exclusions="starsky/**,starskydesktop/**,starsky-tools/**,documentation/**,mac/**" `
             /d:sonar.coverage.inclusions="windows/**" `
-            /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" `
+            /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/**/coverage.xml" `
             @prArgs
 
       - name: Install dotnet-coverage
@@ -119,12 +119,9 @@ jobs:
         shell: pwsh
         run: |
           dotnet-coverage collect `
-            --output TestResults/coverage.coverage `
+            --output TestResults/coverage.xml `
+            --output-format xml `
             -- windows/starsky.Tests/bin/Release/net10.0-windows/starsky.Tests.exe
-          dotnet-coverage merge `
-            --output TestResults/coverage.opencover.xml `
-            --output-format opencover `
-            TestResults/coverage.coverage
 
       - name: End SonarQube analysis
         shell: pwsh
