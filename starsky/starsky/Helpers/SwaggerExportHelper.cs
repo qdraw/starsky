@@ -124,7 +124,7 @@ public sealed class SwaggerExportHelper : BackgroundService
 			return string.Empty;
 		}
 
-		var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/");
+		var swaggerDocument = swaggerProvider.GetSwagger(docName, string.Empty, "/");
 		var stringOutput = JsonConvert.SerializeObject(swaggerDocument,
 			Formatting.Indented,
 			new JsonSerializerSettings

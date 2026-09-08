@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using starsky.foundation.platform.Models;
 
 namespace starsky.Helpers;
@@ -20,18 +20,9 @@ public sealed class SwaggerSetupHelper(AppSettings appSettings)
 				new OpenApiInfo { Title = appSettings.Name, Version = version });
 			c.AddSecurityDefinition("basic",
 				new OpenApiSecurityScheme { Type = SecuritySchemeType.Http, Scheme = "basic" });
-			c.AddSecurityRequirement(new OpenApiSecurityRequirement
+			c.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
 			{
-				{
-					new OpenApiSecurityScheme
-					{
-						Reference = new OpenApiReference
-						{
-							Type = ReferenceType.SecurityScheme, Id = "basic"
-						}
-					},
-					Array.Empty<string>()
-				}
+				{ new OpenApiSecuritySchemeReference("basic"), [] }
 			});
 			// DescribeAllEnumsAsStrings are not working
 			c.IncludeXmlComments(GetXmlCommentsPath());
