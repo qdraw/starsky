@@ -59,7 +59,6 @@ public class WindowManager(
         var window = new MainWindow(new MainWindowOptions
         {
             Settings = settings,
-            Routes = routes,
             WebViewEnv = webViewEnv,
             FileDownload = fileDownload,
             Watcher = watcher,
@@ -68,7 +67,6 @@ public class WindowManager(
             BaseUrl = baseUrl,
             InitialRoute = route ?? "?f=/",
             Geometry = state,
-            WindowIndex = _mainWindows.Count,
             UpdateService = updateService,
             MountWatcherService = mountWatcherService
         });
@@ -101,9 +99,23 @@ public class WindowManager(
         }
     }
 
-    public void CloseAll()
+    private List<SavedWindowState> CollectStates(MainWindow? exclude = null) =>
+        _mainWindows
+            .Where(w => w != exclude)
+            .Select(w => w.GetCurrentState())
+            .ToList();
+
+    internal void PersistCurrentState(MainWindow? exclude = null) =>
+        routes.SaveAll(CollectStates(exclude));
+
+    public void CloseAll(bool saveState = true)
     {
         IsTerminating = true;
+        if (saveState)
+        {
+            routes.SaveAll(CollectStates());
+        }
+
         foreach (var w in _mainWindows.ToList())
         {
             try { w.Close(); } catch { /* best-effort */ }
@@ -113,8 +125,8 @@ public class WindowManager(
 
     public void ReopenAll()
     {
+        CloseAll(saveState: false);
         routes.ClearAll();
-        CloseAll();
         IsTerminating = false;
         OpenMainWindow(null, null);
     }

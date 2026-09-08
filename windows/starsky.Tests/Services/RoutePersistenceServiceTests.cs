@@ -76,6 +76,34 @@ public sealed class RoutePersistenceServiceTests : IDisposable
     }
 
     [TestMethod]
+    public void SaveAll_ReplacesEntireList()
+    {
+        _sut.SaveRoute(0, "?f=/old");
+
+        var states = new List<SavedWindowState>
+        {
+            new() { Route = "?f=/a", Left = 10, Top = 20, Width = 800, Height = 600 },
+            new() { Route = "?f=/b", Left = 50, Top = 60, Width = 1200, Height = 800 },
+        };
+        _sut.SaveAll(states);
+
+        var routes = _sut.GetRoutes();
+        Assert.HasCount(2, routes);
+        Assert.AreEqual("?f=/a", routes[0].Route);
+        Assert.AreEqual("?f=/b", routes[1].Route);
+    }
+
+    [TestMethod]
+    public void SaveAll_WithEmptyList_ClearsRoutes()
+    {
+        _sut.SaveRoute(0, "?f=/a");
+
+        _sut.SaveAll([]);
+
+        Assert.IsEmpty(_sut.GetRoutes());
+    }
+
+    [TestMethod]
     public void ClearAll_EmptiesList()
     {
         _sut.SaveRoute(0, "?f=/a");
