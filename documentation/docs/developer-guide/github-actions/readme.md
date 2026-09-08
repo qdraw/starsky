@@ -11,13 +11,13 @@ Build, test, and deploy your code right from GitHub.
 
 ## Important pipelines
 
-- [Build desktop app (Create Desktop Release on tag for .NET and Electron)](#create-desktop-release-on-tag-for-net-and-electron)
+- [Build desktop apps (Create Desktop Release on tag for Swift and WPF)](#create-desktop-release-on-tag-for-swift-and-wpf)
 - [Docker Hub on new version (Create Release on tag for Docker Hub)](#create-release-on-tag-for-docker-hub)
 - [Docker unstable build (Docker buildx multi-arch CI unstable master)](#docker-buildx-multi-arch-ci-unstable-master)
 
 ## Table of Contents
 
-1. [Create Desktop Release on tag for .NET and Electron](#create-desktop-release-on-tag-for-net-and-electron)
+1. [Create Desktop Release on tag for Swift and WPF](#create-desktop-release-on-tag-for-swift-and-wpf)
 2. [Docker Hub on new version (Create Release on tag for Docker Hub)](#create-release-on-tag-for-docker-hub)
 3. [Docker buildx multi-arch CI unstable master](#docker-buildx-multi-arch-ci-unstable-master)
 4. [Auto upgrade .NET SDK version](#auto-upgrade-net-sdk-version)
@@ -38,10 +38,9 @@ Build, test, and deploy your code right from GitHub.
 19. [Desktop macOS SonarQube Analyze](#desktop-macos-sonarqube-analyze)
 20. [Desktop Windows PR Build](#desktop-windows-pr-build)
 21. [Desktop Windows SonarQube .NET](#desktop-windows-sonarqube-net)
-22. [SonarQube Desktop Electron Analyze (Missing .NET dependency)](#sonarqube-desktop-electron-analyze-missing-net-dependency)
-23. [Tools dependencies mirror Netlify](#tools-dependencies-mirror-netlify)
-24. [Tools SonarCloud Create Issue](#tools-sonarcloud-create-issue)
-25. [WebApp Build .NET macOS](#webapp-build-net-macos)
+22. [Tools dependencies mirror Netlify](#tools-dependencies-mirror-netlify)
+23. [Tools SonarCloud Create Issue](#tools-sonarcloud-create-issue)
+24. [WebApp Build .NET macOS](#webapp-build-net-macos)
 
 # All github actions used by this project
 
@@ -217,9 +216,9 @@ runs on release of a new stable version
 
 > [webapp-docker-release-on-tag-docker-hub.yml](https://github.com/qdraw/starsky/actions/workflows/webapp-docker-release-on-tag-docker-hub.yml)
 
-## Create Desktop Release on tag for .NET and Electron
+## Create Desktop Release on tag for Swift and WPF
 
-Build the .NET runtime for Linux, Windows and macOS and build Electron.
+Build the .NET runtime and the native Swift macOS and WPF Windows desktop clients.
 Only creates a release when a new tag is pushed.
 
 [![desktop-release-on-tag-net-electron](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml)
@@ -335,15 +334,6 @@ Runs on push/PR to master when `windows/` changes, and on a schedule (Sun/Tue/Th
 [![desktop-windows-sonarqube-net](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-sonarqube-net.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-sonarqube-net.yml)
 
 > [desktop-windows-sonarqube-net.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-windows-sonarqube-net.yml)
-
-## SonarQube Desktop Electron Analyze (Missing .NET dependency)
-
-SonarQube analysis for the Electron desktop app without the .NET runtime dependency.
-Runs on push/PR to master when `starskydesktop/` changes, and on a schedule (Sun/Tue/Thu/Sat).
-
-[![desktop-electron-sonarqube-missing-net-dependency](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-sonarqube-missing-net-dependency.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-sonarqube-missing-net-dependency.yml)
-
-> [desktop-electron-sonarqube-missing-net-dependency.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-sonarqube-missing-net-dependency.yml)
 
 ## Tools dependencies mirror Netlify
 

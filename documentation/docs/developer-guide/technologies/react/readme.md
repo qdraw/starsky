@@ -32,6 +32,14 @@ TypeScript is supported by a large and growing community,
 and many popular libraries and frameworks have TypeScript definitions available,
 making it easier to use these tools with TypeScript.
 
+## Leaflet and OpenStreetMap
+
+The client uses Leaflet with OpenStreetMap tiles to display and edit locations for photos and GPX files.
+
+## Storybook
+
+Storybook provides an isolated development environment for React components. Start it from `starsky/starsky/clientapp/` with `npm run storybook`.
+
 ## Jest unit tests
 
 Jest is a popular JavaScript testing framework that provides a seamless testing experience with its simple APIs,

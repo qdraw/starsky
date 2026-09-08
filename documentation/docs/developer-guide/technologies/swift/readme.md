@@ -9,6 +9,10 @@ It provides a desktop shell around the Starsky web interface using `WKWebView`.
 
 The app starts and manages a bundled Starsky backend in local mode, or connects to a configured remote server in remote mode. Business logic remains in the .NET backend; the macOS client owns the native application lifecycle, windows, menus, settings, and WebKit integration.
 
+## WebKit and Sparkle
+
+WebKit supplies the `WKWebView` that presents the Starsky web interface. Sparkle provides signed automatic updates for the native macOS application.
+
 ## Build and test
 
 After adding or removing Swift source files, regenerate the Xcode project:

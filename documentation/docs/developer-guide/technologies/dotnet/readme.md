@@ -22,6 +22,17 @@ including verifying expected output, exceptions, and performance.
 
 > We aim to achieve a code line unit test coverage of more than 90%
 
+## Microsoft Testing Platform
+
+Microsoft Testing Platform (MTP) runs the MSTest suites for the .NET backend and Windows desktop client. The test projects are executable MTP runners.
+
+Run the backend suite from the repository root:
+
+```bash
+cd starsky
+dotnet run --project starskytest/starskytest.csproj
+```
+
 ## Nuke build tools
 
 Write automation tools and CI/CD pipelines in plain C# and with access to all .NET libraries.

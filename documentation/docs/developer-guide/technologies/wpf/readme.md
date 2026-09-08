@@ -9,6 +9,10 @@ It provides a desktop shell around the Starsky web interface using WebView2.
 
 The client runs the bundled Starsky backend in local mode or connects to a configured remote server. Business logic remains in the .NET backend; the Windows client owns the native window lifecycle, menus, settings, and WebView2 integration.
 
+## WebView2 and Velopack
+
+Microsoft WebView2 hosts the Starsky web interface in the WPF application. Velopack packages and delivers Windows desktop updates.
+
 ## Test
 
 Run the Microsoft Testing Platform test executable on Windows from the repository root:
