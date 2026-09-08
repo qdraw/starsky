@@ -2,6 +2,7 @@ import Foundation
 
 @MainActor
 protocol WindowManagerProtocol: AnyObject {
+    var isTerminating: Bool { get }
     func openMainWindow(route: String?)
     func openMainWindow()
     func reopenAll()
@@ -14,6 +15,7 @@ protocol WindowManagerProtocol: AnyObject {
 
 // Default no-op implementations so existing conformers only need to add what they use.
 extension WindowManagerProtocol {
+    var isTerminating: Bool { false }
     func openMainWindow() {
         // Default behavior: forward to the route-based API with no route.
         openMainWindow(route: nil)

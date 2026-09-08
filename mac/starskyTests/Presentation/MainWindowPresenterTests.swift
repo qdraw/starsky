@@ -104,9 +104,10 @@ final class MainWindowPresenterTests: XCTestCase {
         XCTAssertTrue(routePersistenceService.getRoutes().first?.isMaximized ?? false)
     }
 
-    // MARK: - windowWillClose
+    // MARK: - windowWillClose (terminating)
 
-    func testWindowWillClosePreservesRouteForNextLaunch() {
+    func testWindowWillClosePreservesRouteWhenTerminating() {
+        mockWindowManager.isTerminating = true
         let presenter = makePresenter(index: 0)
         presenter.pageDidLoad(url: URL(string: "http://localhost:5000/photos")!, frame: nil, isZoomed: false)
         presenter.windowWillClose()
@@ -114,7 +115,8 @@ final class MainWindowPresenterTests: XCTestCase {
         XCTAssertEqual(routePersistenceService.getRoutes().first?.route, "/photos")
     }
 
-    func testWindowWillCloseSavesGeometryFromView() {
+    func testWindowWillCloseSavesGeometryFromViewWhenTerminating() {
+        mockWindowManager.isTerminating = true
         let presenter = makePresenter(index: 0)
         let mockView = MockMainWindowView()
         mockView.stubbedURL = URL(string: "http://localhost:5000/photos")
@@ -129,7 +131,8 @@ final class MainWindowPresenterTests: XCTestCase {
         XCTAssertEqual(saved?.height, 700)
     }
 
-    func testWindowWillClosePreservesAllRoutesForMultipleWindows() {
+    func testWindowWillClosePreservesAllRoutesForMultipleWindowsWhenTerminating() {
+        mockWindowManager.isTerminating = true
         let p0 = makePresenter(index: 0)
         let p1 = makePresenter(index: 1)
         p0.pageDidLoad(url: URL(string: "http://localhost:5000/a")!, frame: nil, isZoomed: false)
@@ -137,6 +140,41 @@ final class MainWindowPresenterTests: XCTestCase {
         p0.windowWillClose()
         // Both routes must remain so both windows restore on next launch
         XCTAssertEqual(routePersistenceService.getRoutes().count, 2)
+    }
+
+    // MARK: - windowWillClose (manual close, not terminating)
+
+    func testWindowWillCloseRemovesRouteWhenNotTerminating() {
+        let presenter = makePresenter(index: 0)
+        presenter.pageDidLoad(url: URL(string: "http://localhost:5000/photos")!, frame: nil, isZoomed: false)
+        XCTAssertEqual(routePersistenceService.getRoutes().count, 1)
+        presenter.windowWillClose()
+        // Route must be removed — a manually closed window should not reopen on next launch
+        XCTAssertEqual(routePersistenceService.getRoutes().count, 0)
+    }
+
+    func testWindowWillCloseRemovesOnlyClosedWindowRouteWhenNotTerminating() {
+        let p0 = makePresenter(index: 0)
+        let p1 = makePresenter(index: 1)
+        p0.pageDidLoad(url: URL(string: "http://localhost:5000/a")!, frame: nil, isZoomed: false)
+        p1.pageDidLoad(url: URL(string: "http://localhost:5000/b")!, frame: nil, isZoomed: false)
+        p1.windowWillClose()
+        // Only window 1 was closed; window 0 must still restore on next launch
+        let remaining = routePersistenceService.getRoutes()
+        XCTAssertEqual(remaining.count, 1)
+        XCTAssertEqual(remaining.first?.route, "/a")
+    }
+
+    func testWindowWillCloseDoesNotSaveGeometryWhenNotTerminating() {
+        let presenter = makePresenter(index: 0)
+        let mockView = MockMainWindowView()
+        mockView.stubbedURL = URL(string: "http://localhost:5000/photos")
+        mockView.stubbedFrame = NSRect(x: 10, y: 20, width: 900, height: 700)
+        presenter.view = mockView
+        presenter.pageDidLoad(url: URL(string: "http://localhost:5000/photos")!, frame: nil, isZoomed: false)
+        presenter.windowWillClose()
+        // Route was removed, not updated — no stale geometry entry
+        XCTAssertEqual(routePersistenceService.getRoutes().count, 0)
     }
 
     // MARK: - editFileInEditor
@@ -273,6 +311,7 @@ final class MainWindowPresenterTests: XCTestCase {
 
 @MainActor
 private class MockWindowManager: WindowManagerProtocol {
+    var isTerminating: Bool = false
     var openMainWindowCalled = false
     var openMainWindowRoute: String?
     var reopenAllCalled = false

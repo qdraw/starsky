@@ -1,6 +1,7 @@
 import AppKit
 
 class SplashWindowController: NSWindowController {
+    private let titleLabel = NSTextField(labelWithString: "Starsky")
     private let statusLabel = NSTextField(labelWithString: NSLocalizedString("splash.status.starting", comment: ""))
     private let hintLabel = NSTextField(labelWithString: "")
     private var isDismissable = false
@@ -39,7 +40,13 @@ class SplashWindowController: NSWindowController {
             clickView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         ])
 
-        statusLabel.textColor = .white
+        titleLabel.textColor = .white
+        titleLabel.font = NSFont.boldSystemFont(ofSize: 42)
+        titleLabel.alignment = .center
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        clickView.addSubview(titleLabel)
+
+        statusLabel.textColor = NSColor.white.withAlphaComponent(0.75)
         statusLabel.font = NSFont.systemFont(ofSize: 13)
         statusLabel.alignment = .center
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -52,12 +59,16 @@ class SplashWindowController: NSWindowController {
         clickView.addSubview(hintLabel)
 
         NSLayoutConstraint.activate([
+            titleLabel.centerXAnchor.constraint(equalTo: clickView.centerXAnchor),
+            titleLabel.centerYAnchor.constraint(equalTo: clickView.centerYAnchor, constant: -30),
+            titleLabel.widthAnchor.constraint(equalTo: clickView.widthAnchor, constant: -20),
+
             statusLabel.centerXAnchor.constraint(equalTo: clickView.centerXAnchor),
-            statusLabel.centerYAnchor.constraint(equalTo: clickView.centerYAnchor, constant: -10),
+            statusLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
             statusLabel.widthAnchor.constraint(equalTo: clickView.widthAnchor, constant: -20),
 
             hintLabel.centerXAnchor.constraint(equalTo: clickView.centerXAnchor),
-            hintLabel.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 8),
+            hintLabel.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 6),
             hintLabel.widthAnchor.constraint(equalTo: clickView.widthAnchor, constant: -20)
         ])
     }
