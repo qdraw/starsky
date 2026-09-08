@@ -214,7 +214,8 @@ class FileDownloadService: @unchecked Sendable {
 
         for (rawPath, flag) in zip(paths, flags) {
             guard flag & isFile != 0 else { continue }
-            guard flag & isRemoved == 0 else { continue }
+            // Skip pure deletions; allow atomic overwrites that set Removed alongside Renamed/Created.
+            guard flag & isRemoved == 0 || flag & isChange != 0 else { continue }
             guard flag & isChange != 0 else { continue }
             guard !rawPath.hasSuffix(".tmp") else { continue }
 
