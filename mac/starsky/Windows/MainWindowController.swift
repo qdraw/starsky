@@ -227,6 +227,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
         guard let url = webView.url else { return }
         presenter.pageDidLoad(url: url, frame: window?.frame, isZoomed: window?.isZoomed ?? false)
+        window?.representedURL = presenter.proxyIconURL(for: url)
     }
 
     // MARK: - WKUIDelegate

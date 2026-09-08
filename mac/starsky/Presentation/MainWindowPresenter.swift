@@ -22,6 +22,7 @@ class MainWindowPresenter {
     private let fileDownloadService: FileDownloadService
     private let windowManager: WindowManagerProtocol
     var urlOpener: (URL) -> Void = { NSWorkspace.shared.open($0) }
+    var appSettingsReader: () -> BackendAppSettings? = { AppSettingsReader.read() }
 
     init(
         index: Int,
@@ -122,6 +123,30 @@ class MainWindowPresenter {
                 }
             }
         }
+    }
+
+    func proxyIconURL(for webURL: URL) -> URL? {
+        guard mode == .local else { return nil }
+        guard let fParam = URLComponents(url: webURL, resolvingAgainstBaseURL: false)?
+            .queryItems?.first(where: { $0.name == "f" })?.value,
+              !fParam.isEmpty, fParam != "/" else { return nil }
+        guard let settings = appSettingsReader() else { return nil }
+        let physicalPath = resolve(fParam: fParam, settings: settings)
+        let localURL = URL(fileURLWithPath: physicalPath)
+        guard FileManager.default.fileExists(atPath: localURL.path) else { return nil }
+        return localURL
+    }
+
+    private func resolve(fParam: String, settings: BackendAppSettings) -> String {
+        let match = settings.storageFolderMappings
+            .filter { fParam.hasPrefix($0.key) }
+            .max(by: { $0.key.count < $1.key.count })
+        if let (virtualPrefix, physicalRoot) = match {
+            let remainder = String(fParam.dropFirst(virtualPrefix.count))
+            let root = physicalRoot.hasSuffix("/") ? physicalRoot : physicalRoot + "/"
+            return root + remainder.drop(while: { $0 == "/" })
+        }
+        return settings.storageFolder + fParam.drop(while: { $0 == "/" })
     }
 
     func windowWillClose() {

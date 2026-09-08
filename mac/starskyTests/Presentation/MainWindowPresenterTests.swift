@@ -290,6 +290,86 @@ final class MainWindowPresenterTests: XCTestCase {
         XCTAssertTrue(presenter.navigationPolicy(for: URL(string: "http://localhost:5000/photos")!))
     }
 
+    // MARK: - proxyIconURL
+
+    func testProxyIconURLReturnsNilInRemoteMode() {
+        let presenter = makePresenter(mode: .remote)
+        presenter.appSettingsReader = { BackendAppSettings(storageFolder: "/photos/", storageFolderMappings: [:]) }
+        let url = URL(string: "http://localhost:5000?f=/2024/vacation")!
+        XCTAssertNil(presenter.proxyIconURL(for: url))
+    }
+
+    func testProxyIconURLReturnsNilWhenFParamAbsent() {
+        let presenter = makePresenter(mode: .local)
+        presenter.appSettingsReader = { BackendAppSettings(storageFolder: "/photos/", storageFolderMappings: [:]) }
+        let url = URL(string: "http://localhost:5000/search?q=test")!
+        XCTAssertNil(presenter.proxyIconURL(for: url))
+    }
+
+    func testProxyIconURLReturnsNilForRootFParam() {
+        let presenter = makePresenter(mode: .local)
+        presenter.appSettingsReader = { [self] in BackendAppSettings(storageFolder: tempDir.path + "/", storageFolderMappings: [:]) }
+        let url = URL(string: "http://localhost:5000?f=/")!
+        XCTAssertNil(presenter.proxyIconURL(for: url))
+    }
+
+    func testProxyIconURLReturnsNilWhenSettingsUnreadable() {
+        let presenter = makePresenter(mode: .local)
+        presenter.appSettingsReader = { nil }
+        let url = URL(string: "http://localhost:5000?f=/2024")!
+        XCTAssertNil(presenter.proxyIconURL(for: url))
+    }
+
+    func testProxyIconURLReturnsNilWhenPathDoesNotExistOnDisk() {
+        let presenter = makePresenter(mode: .local)
+        presenter.appSettingsReader = { BackendAppSettings(storageFolder: "/nonexistent/root/", storageFolderMappings: [:]) }
+        let url = URL(string: "http://localhost:5000?f=/missing-folder")!
+        XCTAssertNil(presenter.proxyIconURL(for: url))
+    }
+
+    func testProxyIconURLReturnsLocalURLForExistingPath() throws {
+        let folder = tempDir.appendingPathComponent("2024", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let presenter = makePresenter(mode: .local)
+        let root = tempDir.path.hasSuffix("/") ? tempDir.path : tempDir.path + "/"
+        presenter.appSettingsReader = { BackendAppSettings(storageFolder: root, storageFolderMappings: [:]) }
+        let url = URL(string: "http://localhost:5000?f=/2024")!
+        XCTAssertEqual(presenter.proxyIconURL(for: url), folder)
+    }
+
+    func testProxyIconURLUsesStorageFolderMappingForVirtualPrefix() throws {
+        let mapped = tempDir.appendingPathComponent("archive", isDirectory: true)
+        try FileManager.default.createDirectory(at: mapped, withIntermediateDirectories: true)
+        let presenter = makePresenter(mode: .local)
+        presenter.appSettingsReader = {
+            BackendAppSettings(
+                storageFolder: "/photos/",
+                storageFolderMappings: ["/archive": mapped.path]
+            )
+        }
+        let url = URL(string: "http://localhost:5000?f=/archive")!
+        XCTAssertEqual(presenter.proxyIconURL(for: url), mapped)
+    }
+
+    func testProxyIconURLUsesLongestMatchingMappingPrefix() throws {
+        let shortMatch = tempDir.appendingPathComponent("short", isDirectory: true)
+        let longMatch  = tempDir.appendingPathComponent("long",  isDirectory: true)
+        try FileManager.default.createDirectory(at: shortMatch, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: longMatch,  withIntermediateDirectories: true)
+        let presenter = makePresenter(mode: .local)
+        presenter.appSettingsReader = {
+            BackendAppSettings(
+                storageFolder: "/photos/",
+                storageFolderMappings: [
+                    "/2024":         shortMatch.path,
+                    "/2024/special": longMatch.path
+                ]
+            )
+        }
+        let url = URL(string: "http://localhost:5000?f=/2024/special")!
+        XCTAssertEqual(presenter.proxyIconURL(for: url), longMatch)
+    }
+
     // MARK: - editFileInEditor async download path
 
     func testEditFileInEditorExternalUrlWithValidFParamStartsDownloadTask() async {

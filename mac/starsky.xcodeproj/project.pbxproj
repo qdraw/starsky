@@ -18,6 +18,7 @@
 		0CBDCB6EC839DBF7F541C157 /* MountWatcherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A2180370AB095422F0D794 /* MountWatcherService.swift */; };
 		18D060446DDCBB764F9621FF /* BackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CA83403E3576F4DDF6AA3F /* BackendService.swift */; };
 		19267496699CFB79FC4477F3 /* SettingsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3578CC83C650F985724744B7 /* SettingsServiceTests.swift */; };
+		1E423D970086D4A34F5B5397 /* AppSettingsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14185764DEA03451E026CC3B /* AppSettingsReader.swift */; };
 		1F26483EDA26E60879986E31 /* NavigationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12047ED0B6586CEB41197A6 /* NavigationService.swift */; };
 		2149C1F84602C5E4ABE92F5C /* RoutePersistenceServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C97D9AD6BA360D21DF54556 /* RoutePersistenceServiceTests.swift */; };
 		2553B59D843A36B5BD00D052 /* RuntimeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8415DA0473D238EB0F6108E2 /* RuntimeMode.swift */; };
@@ -50,6 +51,7 @@
 		5DCE49D698294FDA7B32A43E /* FileWatcherServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E6AD1C4B8C9A7666462936 /* FileWatcherServiceTests.swift */; };
 		5F616BF15011310370B1E407 /* RemoteUrlValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73CD361EFF2B86D1744D0D3 /* RemoteUrlValidator.swift */; };
 		61202E8B9C51195F74C180A6 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 640D1681562A0F78A432EEC5 /* Sparkle */; };
+		6168C2F7FB0758794A15D66F /* AppSettingsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14185764DEA03451E026CC3B /* AppSettingsReader.swift */; };
 		621B556EA8AE14A27EF58C39 /* DailyFileLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */; };
 		63AD0FC4331D997CC6F7077C /* ApplicationInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E9538E4281ECA333F416A1 /* ApplicationInfoTests.swift */; };
 		647960F8407D0F42B077C3E6 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554B5849A45556FFAA970085 /* WindowManager.swift */; };
@@ -60,6 +62,7 @@
 		72B91B9C3C7ECCDEEA460EEC /* BackendServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */; };
 		75643F69297DF8F1D8C753D4 /* NavigationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12047ED0B6586CEB41197A6 /* NavigationService.swift */; };
 		7A0AE799038C4B9B2332B9DD /* PortFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF10CDC7C7FA47BA0423D288 /* PortFinder.swift */; };
+		7A1A532AD775B5AE5E88222A /* AppSettingsReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97214CEE522585D8BD8138EF /* AppSettingsReaderTests.swift */; };
 		7A338BBACE8483094F111EF0 /* ErrorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC719351FB87812C1BF8676 /* ErrorWindowController.swift */; };
 		7F2607AE7A59F59002D4BF7E /* SettingsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435D0EF7EF41315830FC8920 /* SettingsPresenter.swift */; };
 		7FAAC31A66A4532C6218E51F /* NavigationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A220D2CCADAAE29E222E32FA /* NavigationServiceTests.swift */; };
@@ -114,6 +117,7 @@
 		07655E3EE2770129AD67DA87 /* SettingsPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPresenterTests.swift; sourceTree = "<group>"; };
 		12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyFileLogger.swift; sourceTree = "<group>"; };
 		13F6B9B261337B367BAE7B88 /* FileDownloadServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadServiceTests.swift; sourceTree = "<group>"; };
+		14185764DEA03451E026CC3B /* AppSettingsReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsReader.swift; sourceTree = "<group>"; };
 		1595DFCCE586B6DD9B02AC5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1C97D9AD6BA360D21DF54556 /* RoutePersistenceServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePersistenceServiceTests.swift; sourceTree = "<group>"; };
 		1D1A09958ECF7CB2678EA7DD /* DesktopSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopSettingsTests.swift; sourceTree = "<group>"; };
@@ -149,6 +153,7 @@
 		8415DA0473D238EB0F6108E2 /* RuntimeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMode.swift; sourceTree = "<group>"; };
 		8F8C3308F3AE014E18479C4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendServiceTests.swift; sourceTree = "<group>"; };
+		97214CEE522585D8BD8138EF /* AppSettingsReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsReaderTests.swift; sourceTree = "<group>"; };
 		97B29EC047ED7E17B1E0563A /* starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9851583918F3426A017184E8 /* RuntimeModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeModeTests.swift; sourceTree = "<group>"; };
 		9F51DA46919A291FBFD8783F /* SilentWebViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilentWebViewTests.swift; sourceTree = "<group>"; };
@@ -202,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				DA7FF14576F32676391CCF10 /* ApplicationPathsTests.swift */,
+				97214CEE522585D8BD8138EF /* AppSettingsReaderTests.swift */,
 				9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */,
 				537CF0BCF79013734BC9F797 /* DailyFileLoggerTests.swift */,
 				13F6B9B261337B367BAE7B88 /* FileDownloadServiceTests.swift */,
@@ -325,6 +331,7 @@
 			isa = PBXGroup;
 			children = (
 				37CFFD91296CDC50EDCD7FA3 /* ApplicationPaths.swift */,
+				14185764DEA03451E026CC3B /* AppSettingsReader.swift */,
 				B2CA83403E3576F4DDF6AA3F /* BackendService.swift */,
 				24B825F5B3A9E99B050667CE /* BackendServiceProtocol.swift */,
 				12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */,
@@ -548,6 +555,7 @@
 			files = (
 				0A8960D6A6CCCEA927320327 /* AppCore.swift in Sources */,
 				430656002F48F777DE022C02 /* AppDelegate.swift in Sources */,
+				1E423D970086D4A34F5B5397 /* AppSettingsReader.swift in Sources */,
 				29CCE389704C9AE90F98FEF2 /* ApplicationInfo.swift in Sources */,
 				033D422A3BCBC49ACFDD8A59 /* ApplicationPaths.swift in Sources */,
 				18D060446DDCBB764F9621FF /* BackendService.swift in Sources */,
@@ -590,6 +598,8 @@
 				CF37359A250F73EA3E478D84 /* AppCoreTests.swift in Sources */,
 				E25F67E6A5FB2022DD88DAE1 /* AppDelegate.swift in Sources */,
 				E0FFBC9B201198CA6250AA04 /* AppDelegateTests.swift in Sources */,
+				6168C2F7FB0758794A15D66F /* AppSettingsReader.swift in Sources */,
+				7A1A532AD775B5AE5E88222A /* AppSettingsReaderTests.swift in Sources */,
 				67491DE224D1C39B325E5DA5 /* ApplicationInfo.swift in Sources */,
 				63AD0FC4331D997CC6F7077C /* ApplicationInfoTests.swift in Sources */,
 				4E54C9A6F8501ACFC5AD27CE /* ApplicationPaths.swift in Sources */,
