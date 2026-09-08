@@ -50,6 +50,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 _Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
 
+- [x] (Fixed) _App_ macOS: Show name of app in Splash screen (PR #3317)
+- [x] (Fixed) _App_ macOS: Manually closing a window no longer causes it to reopen on next launch (PR #3317)
 - [x] (Changed) _App_ macOS: Allow for Page Up, Page Down, Home and End keyboard shortcuts (PR #3315)
 - [x] (Changed) _App_ macOS: Only re-sign bundled backend when it exits unexpectedly on first launch (PR #3315)
 - [x] (Added) _App_ macOS: Dynamic Dock menu listing open windows with active-window highlight (PR #3315)

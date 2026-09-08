@@ -4,6 +4,7 @@ class WindowManager {
     private var windows: [MainWindowController] = []
     private var localPort: Int = 0
     private var isReopening = false
+    private(set) var isTerminating = false
     private let settingsService: SettingsService
     private let routePersistenceService: RoutePersistenceService
     private let navigationService: NavigationService
@@ -113,6 +114,7 @@ class WindowManager {
 
     @MainActor
     func closeAll() {
+        isTerminating = true
         for controller in windows {
             controller.window?.close()
         }
@@ -146,7 +148,7 @@ class WindowManager {
     @MainActor
     func remove(controller: MainWindowController) {
         windows.removeAll { $0 === controller }
-        if windows.isEmpty && !isReopening {
+        if windows.isEmpty && !isReopening && !isTerminating {
             NSApplication.shared.terminate(nil)
         }
     }

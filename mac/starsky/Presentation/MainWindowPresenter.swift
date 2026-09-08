@@ -10,6 +10,7 @@ protocol MainWindowView: AnyObject {
     func allCookies() async -> [HTTPCookie]
 }
 
+@MainActor
 class MainWindowPresenter {
     weak var view: MainWindowView?
 
@@ -124,8 +125,12 @@ class MainWindowPresenter {
     }
 
     func windowWillClose() {
-        if let url = view?.currentURL() {
-            pageDidLoad(url: url, frame: view?.windowFrame, isZoomed: view?.windowIsZoomed ?? false)
+        if windowManager.isTerminating {
+            if let url = view?.currentURL() {
+                pageDidLoad(url: url, frame: view?.windowFrame, isZoomed: view?.windowIsZoomed ?? false)
+            }
+        } else {
+            routePersistenceService.removeRoute(index: index)
         }
     }
 }

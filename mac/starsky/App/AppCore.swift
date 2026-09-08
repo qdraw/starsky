@@ -15,6 +15,7 @@ class AppCore {
 
     // Injected side-effectful operations — override in tests
     var terminate: () -> Void
+    var replyToTerminate: () -> Void
     var showError: @MainActor (String) -> Void
     var urlOpener: (URL) -> Void
     var healthCheckSession: URLSession
@@ -40,6 +41,7 @@ class AppCore {
         updateService: UpdateService,
         windowManager: any WindowManagerProtocol,
         terminate: @escaping () -> Void = { NSApplication.shared.terminate(nil) },
+        replyToTerminate: @escaping () -> Void = { NSApplication.shared.reply(toApplicationShouldTerminate: true) },
         showError: @escaping @MainActor (String) -> Void = { ErrorWindowController.show(message: $0) },
         urlOpener: @escaping (URL) -> Void = { NSWorkspace.shared.open($0) },
         healthCheckSession: URLSession = .shared,
@@ -62,6 +64,7 @@ class AppCore {
         self.updateService = updateService
         self.windowManager = windowManager
         self.terminate = terminate
+        self.replyToTerminate = replyToTerminate
         self.showError = showError
         self.urlOpener = urlOpener
         self.healthCheckSession = healthCheckSession
@@ -153,7 +156,6 @@ class AppCore {
 
         await MainActor.run {
             windowManager.restoreWindows()
-            NSApp.activate(ignoringOtherApps: true)
             onWindowsReady()
         }
 
@@ -217,10 +219,11 @@ class AppCore {
         // Reply before any slow cleanup so the app disappears instantly for the user.
         // applicationWillTerminate sends SIGKILL as the final safety net.
         bs.beginShutdown()
+        let reply = replyToTerminate
         DispatchQueue.main.async {
-            NSApplication.shared.reply(toApplicationShouldTerminate: true)
+            reply()
         }
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .utility).async {
             mws?.stopSync()
             fws.stop()
         }
