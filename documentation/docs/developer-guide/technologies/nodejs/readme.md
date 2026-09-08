@@ -6,7 +6,7 @@ It is a popular tool for almost any kind of project!
 Node.js runs the V8 JavaScript engine, the core of Google Chrome, outside of the browser.
 This allows Node.js to be very performant.
 
-## NodeJS is only used for build tools and inside Electron
+## NodeJS is used for build tools to build the web client
 
-For running the application when its builded Node JS is not needed to be installed on the machine.
-NodeJS is an dependency of [Electron](../electron/readme.md), but only used in the context of Electron. In our case Electron is only used with the Desktop app
+NodeJS is required to run Starsky build tools and build the React client application.
+It is not required to run the native macOS or Windows desktop clients.
