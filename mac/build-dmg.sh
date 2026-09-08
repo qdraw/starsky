@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build the Starsky macOS *.app.
-# Mirrors the desktop-release-on-tag-net-electron.yml GitHub Actions workflow.
+# Mirrors the desktop-release-on-tag-native.yml GitHub Actions workflow.
 #
 # Usage:
 #   ./build-dmg.sh [options]

@@ -466,9 +466,7 @@ starsky-win-x64-desktop.exe --installto "D:\Apps\Starsky"
 ### MSBuild Targets (in `Starsky.Desktop.csproj`)
 
 **`CopyStarskyRuntime`** (runs after build):  
-Copies the compiled backend binary from one of these locations (in order):
-1. `$(RepoRoot)\starsky\win-x64\`
-2. `$(RepoRoot)\starskydesktop\runtime-starsky-win-x64\`
+Copies the compiled backend binary from `$(RepoRoot)\starsky\win-x64\`.
 
 Output: `$(OutDir)runtime-starsky-win-x64\`
 
@@ -549,9 +547,9 @@ Concurrency group: one run per branch; in-progress runs are cancelled on new pus
 
 Adds OpenCover code-coverage collection and SonarQube static analysis on top of the same build/test steps.
 
-### `desktop-release-on-tag-net-electron.yml`
+### `desktop-release-on-tag-native.yml`
 
-The legacy-named workflow triggers on version tag pushes and builds and publishes the native Swift macOS and WPF Windows desktop releases as GitHub Release assets.
+The workflow triggers on version tag pushes and builds and publishes the native Swift macOS and WPF Windows desktop releases as GitHub Release assets.
 
 ---
 

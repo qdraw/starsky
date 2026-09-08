@@ -221,9 +221,9 @@ runs on release of a new stable version
 Build the .NET runtime and the native Swift macOS and WPF Windows desktop clients.
 Only creates a release when a new tag is pushed.
 
-[![desktop-release-on-tag-net-electron](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml)
+[![desktop-release-on-tag-native](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-native.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-native.yml)
 
-> [desktop-release-on-tag-net-electron.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml)
+> [desktop-release-on-tag-native.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-native.yml)
 
 ## Docker buildx multi-arch CI unstable master
 

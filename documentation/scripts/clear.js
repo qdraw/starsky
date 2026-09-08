@@ -13,5 +13,4 @@ function cleanFolder(input) {
 
 cleanFolder("advanced-options/starsky");
 cleanFolder("advanced-options/starsky-tools");
-cleanFolder("advanced-options/starskydesktop");
 cleanFolder("advanced-options/history.md");

@@ -6,7 +6,7 @@ on:
   push:
     branches: [master]
     paths:
-    - '.github/workflows/desktop-release-on-tag-net-electron.yml'
+    - '.github/workflows/desktop-release-on-tag-native.yml'
     - 'starsky-tools/build-tools/app-version-update.js'
     - 'mac/**'
     - 'windows/**'

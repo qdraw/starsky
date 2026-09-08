@@ -479,7 +479,7 @@ Minimum deployment: macOS 13.0
 
 ```bash
 for ARCH in arm64 x64; do
-  RUNTIME_SRC="$SRCROOT/../starskydesktop/runtime-starsky-mac-${ARCH}"
+  RUNTIME_SRC="$SRCROOT/../starsky/osx-${ARCH}"
   RUNTIME_DST="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}"
   if [ -d "$RUNTIME_SRC" ]; then
     mkdir -p "$RUNTIME_DST"
