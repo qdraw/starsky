@@ -43,6 +43,21 @@ final class WindowManagerTests: XCTestCase {
     }
 
     @MainActor
+    func testCloseAllSetsIsTerminating() {
+        sut.closeAll()
+        XCTAssertTrue(sut.isTerminating)
+    }
+
+    @MainActor
+    func testReopenAllResetsIsTerminating() {
+        sut.setLocalPort(1)
+        sut.closeAll()
+        XCTAssertTrue(sut.isTerminating)
+        sut.reopenAll()
+        XCTAssertFalse(sut.isTerminating)
+    }
+
+    @MainActor
     func testReloadAllWithNoWindows() {
         sut.reloadAll()
     }

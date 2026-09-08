@@ -30,12 +30,39 @@ public class WindowManagerTests
     }
 
     [TestMethod]
+    public void IsTerminating_DefaultValue_IsFalse()
+    {
+        var wm = CreateManager();
+        Assert.IsFalse(wm.IsTerminating);
+    }
+
+    [TestMethod]
     public void CloseAll_WithNoWindows_DoesNotThrow()
     {
         var wm = CreateManager();
         Exception? ex = null;
         try { wm.CloseAll(); } catch (Exception e) { ex = e; }
         Assert.IsNull(ex);
+    }
+
+    [TestMethod]
+    public void CloseAll_SetsIsTerminating()
+    {
+        var wm = CreateManager();
+        wm.CloseAll();
+        Assert.IsTrue(wm.IsTerminating);
+    }
+
+    [TestMethod]
+    public void ReopenAll_ResetsIsTerminating()
+    {
+        var wm = CreateManager();
+        wm.CloseAll();
+        Assert.IsTrue(wm.IsTerminating);
+        // ReopenAll calls CloseAll internally; flag must be cleared so the
+        // reopened window can eventually shut down the app normally.
+        wm.ReopenAll();
+        Assert.IsFalse(wm.IsTerminating);
     }
 
     [TestMethod]

@@ -23,6 +23,8 @@ public class WindowManager(
 	private readonly List<MainWindow> _mainWindows = [];
     private int? _localPort;
 
+    public bool IsTerminating { get; private set; }
+
     public void SetLocalPort(int port) => _localPort = port;
 
     internal static SavedWindowState ResolveGeometry(
@@ -75,7 +77,7 @@ public class WindowManager(
         window.Closed += (_, _) =>
         {
             _mainWindows.Remove(window);
-            if (_mainWindows.Count == 0 && Application.Current != null)
+            if (_mainWindows.Count == 0 && !IsTerminating && Application.Current != null)
             {
 	            Application.Current.Shutdown();
             }
@@ -101,6 +103,7 @@ public class WindowManager(
 
     public void CloseAll()
     {
+        IsTerminating = true;
         foreach (var w in _mainWindows.ToList())
         {
             try { w.Close(); } catch { /* best-effort */ }
@@ -112,6 +115,7 @@ public class WindowManager(
     {
         routes.ClearAll();
         CloseAll();
+        IsTerminating = false;
         OpenMainWindow(null, null);
     }
 
