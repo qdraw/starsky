@@ -40,10 +40,19 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.9.2 - _(Unreleased)_ - 2026-?-? {#0.9.2}
+> Within a version block the top are item are the newest
 
-_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
+## version 0.9.3 - _(Unreleased)_ - 2026-?-? {#0.9.3}
 
+- nothing yet
+
+## version 0.9.2 - 2026-09-08 {#0.9.2}
+
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
+
+- [x] (Changed) _App_ macOS: Allow for Page Up, Page Down, Home and End keyboard shortcuts (PR #3315)
+- [x] (Changed) _App_ macOS: Only re-sign bundled backend when it exits unexpectedly on first launch (PR #3315)
+- [x] (Added) _App_ macOS: Dynamic Dock menu listing open windows with active-window highlight (PR #3315)
 - [x] (Fixed) _Front-end_ Skip new lines in Preferences > ReadonlyFolders (PR #3313)
 - [x] (Fixed) _Front-end_ Wait for backend when rename (PR #3312)
 - [x] (Fixed) _Back-end_ Handle concurrency in `ThumbnailQuery.UpdateAsync` (PR #3312)
@@ -52,7 +61,7 @@ _Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
 
 ## version 0.9.1 - 2026-09-07 {#0.9.1}
 
-_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
 
 - [x] (Added) _App_ Windows: Add menu option to install MountWatcher (PR #3309)
 - [x] (Changed) _App_ macOS & Windows: Ctrl + W & Command + W Close window (PR #3308)
@@ -63,7 +72,7 @@ _Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
 
 ## version 0.9.0 - 2026-09-04 {#0.9.0}
 
-_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating._
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
 
 - [x] (Breaking Change) _Back-end_ Exiftool namespace for AI features (PR #3296)
 - [x] (Fixed) _Back-end_ Restricting background service execution (PR #3292)

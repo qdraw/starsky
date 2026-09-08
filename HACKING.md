@@ -69,21 +69,9 @@ Non-microsoft nuget packages are updated manually.
 Twice a month a new react bolierplate is created with the following command:
 `starsky-tools/build-tools/clientapp-create-react-app-update.js`
 
-### Deps: major-upgrading Electron
+### Deps: native desktop clients
 
-When a new major [Electron release](https://github.com/electron/electron/releases) occurs,
-
-1. Wait a few weeks to let it stabilize. Never upgrade Starsky to a `.0.0`.
-2. Thoroughly digest the new version's [breaking changes](https://www.electronjs.org/docs/breaking-changes)
-   (also via the [Releases page](https://github.com/electron/electron/releases) and [the blog](https://www.electronjs.org/blog/), the content is different),
-   grepping our codebase for every changed API.
-   - If called for by the breaking changes, perform the necessary API changes
-3. On Windows, macOS, Linux, test for regression and crashes:
-   1. With `npm test` and `npm run test:ci`
-   2. With extra manual testing
-4. When confident enough, release it in a regression-spelunking-friendly way:
-   1. If `master` has unreleased commits, make a patch/minor release with them, but without the major Electron bump.
-   2. Commit your Electron major bump and release it as a major new Starsky version. Help users identify the breaking change by using a bold **[BREAKING]** marker in `CHANGELOG.md` and in the GitHub release.
+The desktop clients use platform-specific dependencies: Sparkle for macOS and WebView2, Velopack, and .NET packages for Windows. Review their release notes and breaking changes before upgrading, then run their platform-specific test suites and perform manual regression testing on the supported operating systems.
 
 ### Deps updates
 

@@ -103,7 +103,7 @@ jobs:
             /d:sonar.token="$env:STARSKY_SONAR_TOKEN" `
             /d:sonar.host.url="$sonarUrl" `
             /d:sonar.inclusions="windows/**" `
-            /d:sonar.exclusions="starsky/**,starskydesktop/**,starsky-tools/**,documentation/**,mac/**" `
+            /d:sonar.exclusions="starsky/**,starsky-tools/**,documentation/**,mac/**" `
             /d:sonar.coverage.inclusions="windows/**" `
             /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/**/coverage.xml" `
             @prArgs

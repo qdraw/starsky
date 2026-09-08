@@ -62,7 +62,7 @@ starsky.app/Contents/MacOS/runtime-starsky-osx-arm64/starsky   # Apple Silicon
 starsky.app/Contents/MacOS/runtime-starsky-osx-x64/starsky     # Intel
 ```
 
-These are copied at build time from `starskydesktop/runtime-starsky-mac-arm64/` and `starskydesktop/runtime-starsky-mac-x64/` (if present). A build warning is emitted when they are missing; Local mode will not work without them.
+These are copied at build time from `starsky/osx-arm64/` and `starsky/osx-x64/`. A build warning is emitted when they are missing; Local mode will not work without them.
 
 ---
 

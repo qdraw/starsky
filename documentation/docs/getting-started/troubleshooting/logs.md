@@ -2,7 +2,7 @@
 
 ## "Desktop App"
 
-The Electron stores it's cache in these folders:
+The native desktop clients store their logs in these folders:
 
 Windows:
 
@@ -10,13 +10,7 @@ Windows:
 C:\Users\<user>\AppData\Roaming\starsky\logs
 ```
 
-Linux:
-
-```
-~/.config/starsky/logs
-```
-
-OS X:
+macOS:
 
 ```
 ~/Library/Application\ Support/starsky/logs

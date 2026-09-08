@@ -9,6 +9,7 @@ protocol WindowManagerProtocol: AnyObject {
     func restoreWindows()
     func closeAll()
     func reloadAll()
+    func allWindows() -> [MainWindowController]
 }
 
 // Default no-op implementations so existing conformers only need to add what they use.
@@ -29,6 +30,7 @@ extension WindowManagerProtocol {
     func reloadAll() {
         // Default behavior: no-op unless window reload is supported.
     }
+    func allWindows() -> [MainWindowController] { [] }
 }
 
 extension WindowManager: WindowManagerProtocol {}

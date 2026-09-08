@@ -12,7 +12,6 @@
     <ItemGroup>
       <Compile Remove="docs\advanced-options\starsky\**" />
       <Compile Remove="docs\advanced-options\starsky-tools\**" />
-      <Compile Remove="docs\advanced-options\starskydesktop\**" />
       <Compile Remove="build\**" />
       <Compile Remove="build\assets\**" />
     </ItemGroup>
@@ -20,7 +19,6 @@
     <ItemGroup>
       <EmbeddedResource Remove="docs\advanced-options\starsky\**" />
       <EmbeddedResource Remove="docs\advanced-options\starsky-tools\**" />
-      <EmbeddedResource Remove="docs\advanced-options\starskydesktop\**" />
       <EmbeddedResource Remove="build\**" />
       <EmbeddedResource Remove="build\assets\**" />
     </ItemGroup>
@@ -28,7 +26,6 @@
     <ItemGroup>
       <None Remove="docs\advanced-options\starsky\**" />
       <None Remove="docs\advanced-options\starsky-tools\**" />
-      <None Remove="docs\advanced-options\starskydesktop\**" />
       <None Remove="docs\advanced-options\history.md" />
       <None Remove="build\**" />
       <None Remove="build\assets\**" />

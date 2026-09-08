@@ -7,6 +7,8 @@ class BackendService: @unchecked Sendable {
     private var process: Process?
     private var isShuttingDown = false
     private var hasRestarted = false
+    private var hasTriedQuarantineClear = false
+    private var currentExePath: String?
     private var currentPort: Int = 0
 
     private let xattrPath: String
@@ -34,7 +36,7 @@ class BackendService: @unchecked Sendable {
             throw BackendError.executableNotFound
         }
 
-        clearQuarantine(path: executableURL.path)
+        currentExePath = executableURL.path
 
         let proc = Process()
         proc.executableURL = executableURL
@@ -115,8 +117,15 @@ class BackendService: @unchecked Sendable {
     private func onProcessExited(port: Int) {
         guard !isShuttingDown, !hasRestarted else { return }
         hasRestarted = true
-        logger.warning("Backend exited unexpectedly, restarting in 2 s...")
-        fileLogger.warning("Backend exited unexpectedly, restarting in 2 s", category: "BackendService")
+        if !hasTriedQuarantineClear, let path = currentExePath {
+            hasTriedQuarantineClear = true
+            logger.warning("Backend exited unexpectedly; clearing quarantine/signature before restart")
+            fileLogger.warning("Backend exited unexpectedly; clearing quarantine/signature before restart", category: "BackendService")
+            clearQuarantine(path: path)
+        } else {
+            logger.warning("Backend exited unexpectedly, restarting in 2 s...")
+            fileLogger.warning("Backend exited unexpectedly, restarting in 2 s", category: "BackendService")
+        }
         DispatchQueue.global().asyncAfter(deadline: .now() + restartDelay) { [weak self] in
             guard self?.isShuttingDown == false else { return }
             try? self?.launch(port: port)
@@ -139,7 +148,10 @@ class BackendService: @unchecked Sendable {
         codesign.executableURL = URL(fileURLWithPath: codesignPath)
         codesign.arguments = ["--force", "--deep", "-s", "-", path]
         if (try? codesign.run()) != nil { codesign.waitUntilExit() }
+        quarantineDidClear(path: path)
     }
+
+    func quarantineDidClear(path: String) {}
 
     static func buildEnvironment(port: Int) -> [String: String] {
         var env = ProcessInfo.processInfo.environment

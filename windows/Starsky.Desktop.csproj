@@ -5,7 +5,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>Starsky.Desktop</AssemblyName>
     <RootNamespace>Starsky.Desktop</RootNamespace>
-    <Version>0.9.1</Version>
+    <Version>0.9.2</Version>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>x64</Platforms>
@@ -52,19 +52,15 @@
     Copy the Starsky backend runtime to the output directory so the app can
     start it in Local mode.
 
-    Source priority:
-      1. $(RepoRoot)\starsky\win-x64\   — produced by build.ps1 -runtime win-x64
-      2. $(RepoRoot)\starskydesktop\runtime-starsky-win-x64\  — staged by Electron before-build
+    Source: $(RepoRoot)\starsky\win-x64\ — produced by build.ps1 -runtime win-x64
 
     Run `pwsh build.ps1 -runtime win-x64 -no-unit-tests` from the repo root
-    to produce the runtime if neither location exists.
+    to produce the runtime when it is missing.
   -->
   <PropertyGroup>
     <RepoRoot>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), 'build.ps1'))</RepoRoot>
     <_RuntimeSourceBuild>$(RepoRoot)\starsky\win-x64</_RuntimeSourceBuild>
-    <_RuntimeSourceElectron>$(RepoRoot)\starskydesktop\runtime-starsky-win-x64</_RuntimeSourceElectron>
     <RuntimeSourceDir Condition="Exists('$(_RuntimeSourceBuild)')">$(_RuntimeSourceBuild)</RuntimeSourceDir>
-    <RuntimeSourceDir Condition="!Exists('$(_RuntimeSourceBuild)') AND Exists('$(_RuntimeSourceElectron)')">$(_RuntimeSourceElectron)</RuntimeSourceDir>
   </PropertyGroup>
 
   <!-- Copy runtime to the build output (used when running from the IDE / F5) -->

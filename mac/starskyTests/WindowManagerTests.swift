@@ -102,6 +102,16 @@ final class WindowManagerTests: XCTestCase {
         // Second window (index=1) has cascadeOffset=24 — verify no crash
     }
 
+    @MainActor
+    func testAllWindowsReturnsOpenControllers() {
+        sut.setLocalPort(7)
+        XCTAssertEqual(sut.allWindows().count, 0)
+        sut.openMainWindow(route: "?f=/a")
+        XCTAssertEqual(sut.allWindows().count, 1)
+        sut.openMainWindow(route: "?f=/b")
+        XCTAssertEqual(sut.allWindows().count, 2)
+    }
+
 }
 
 // MARK: - isOnScreen / resolveGeometry

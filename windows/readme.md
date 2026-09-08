@@ -47,14 +47,17 @@ dotnet publish windows/Starsky.Desktop.csproj -c Release -r win-x64 --self-conta
 ## Run Tests
 
 ```powershell
-dotnet test windows/starsky.Tests/starsky.Tests.csproj -c Release
+cd windows
+dotnet run --project starsky.Tests/starsky.Tests.csproj
 ```
 
 With code coverage:
 
 ```powershell
-dotnet test windows/starsky.Tests/starsky.Tests.csproj -c Release `
-  --collect:"XPlat Code Coverage" `
+cd windows
+dotnet run --project starsky.Tests/starsky.Tests.csproj -- `
+  --coverage `
+  --coverage-output-format cobertura `
   --results-directory TestResults/
 ```
 
