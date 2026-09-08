@@ -49,7 +49,7 @@ Also ensure these secrets are set:
 
 ## 6. Add the keychain import step to the workflow
 
-In `.github/workflows/desktop-release-on-tag-net-electron.yml`, the certificate import step (from `mac/scripts/import-cert.sh`) must run **before** each `Archive` step in `build_mac_native`, `build_mac_arm64`, and `build_mac_x64`. Add the keychain cleanup step after each job's `Notarize and staple` step.
+In `.github/workflows/desktop-release-on-tag-net-electron.yml` (the legacy filename for the Swift and WPF desktop release workflow), the certificate import step (from `mac/scripts/import-cert.sh`) must run **before** each `Archive` step in `build_mac_native`, `build_mac_arm64`, and `build_mac_x64`. Add the keychain cleanup step after each job's `Notarize and staple` step.
 
 ## 7. Delete the .p12 from your machine
 

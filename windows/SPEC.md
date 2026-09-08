@@ -516,11 +516,14 @@ dotnet publish windows/Starsky.Desktop.csproj -c Release -r win-x64 --self-conta
 
 ```powershell
 # Run all tests
-dotnet test windows/starsky.Tests/starsky.Tests.csproj -c Release
+cd windows
+dotnet run --project starsky.Tests/starsky.Tests.csproj
 
 # With code coverage
-dotnet test windows/starsky.Tests/starsky.Tests.csproj -c Release `
-  --collect:"XPlat Code Coverage" `
+cd windows
+dotnet run --project starsky.Tests/starsky.Tests.csproj -- `
+  --coverage `
+  --coverage-output-format cobertura `
   --results-directory TestResults/
 ```
 
@@ -548,7 +551,7 @@ Adds OpenCover code-coverage collection and SonarQube static analysis on top of 
 
 ### `desktop-release-on-tag-net-electron.yml`
 
-Triggered on version tag pushes. Builds and publishes the desktop release binaries (Electron + WPF) as GitHub Release assets.
+The legacy-named workflow triggers on version tag pushes and builds and publishes the native Swift macOS and WPF Windows desktop releases as GitHub Release assets.
 
 ---
 
