@@ -121,7 +121,7 @@ jobs:
           dotnet-coverage collect `
             --output TestResults/coverage.opencover.xml `
             --output-format opencover `
-            "windows/starsky.Tests/bin/Release/net10.0-windows/starsky.Tests.exe"
+            -- dotnet test windows/starsky.Tests/starsky.Tests.csproj -c Release --no-build
 
       - name: End SonarQube analysis
         shell: pwsh
@@ -134,3 +134,10 @@ jobs:
             exit 0
           }
           dotnet sonarscanner end /d:sonar.token="$env:STARSKY_SONAR_TOKEN"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: test-results-windows-sonar
+          path: TestResults/
