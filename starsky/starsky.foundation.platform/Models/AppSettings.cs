@@ -196,7 +196,11 @@ public sealed class AppSettings
 	///     Key: subPath (e.g. "/2024"), Value: physical OS path (e.g. "/data/archive/2024").
 	///     Longer keys take precedence over shorter ones.
 	/// </summary>
-	public Dictionary<string, string> StorageFolderMappings { get; set; } = new();
+	public Dictionary<string, string> StorageFolderMappings
+	{
+		get;
+		set => field = value?.ToDictionary(mapping => mapping.Key.Trim(), mapping => mapping.Value)!;
+	} = new();
 
 	[PackageTelemetry] public bool? Verbose { get; set; }
 
