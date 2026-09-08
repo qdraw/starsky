@@ -156,7 +156,6 @@ class AppCore {
 
         await MainActor.run {
             windowManager.restoreWindows()
-            NSApp.activate(ignoringOtherApps: true)
             onWindowsReady()
         }
 
