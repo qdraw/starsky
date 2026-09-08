@@ -111,6 +111,7 @@ private func makeCore(
         updateService: UpdateService(settingsService: settings),
         windowManager: windowManager,
         terminate: {},
+        replyToTerminate: {},
         showError: { _ in },
         urlOpener: { _ in },
         healthCheckSession: FakeURLProtocol.makeSession(),
@@ -350,7 +351,7 @@ final class AppCoreTests: XCTestCase {
         let watcher = MockFileWatcherService()
         let core = makeCore(fileWatcherService: watcher)
         core.beginTermination()
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        await waitUntil { watcher.stopCalled }
         XCTAssertTrue(watcher.stopCalled)
     }
 
