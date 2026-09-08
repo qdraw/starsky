@@ -1,10 +1,11 @@
 {
   "name": "build-tools",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "",
   "main": "",
   "scripts": {
     "app-version-update": "node app-version-update.js",
+    "app-update-version": "node app-version-update.js",
     "update": "echo 'keep this without any npm dependencies'",
     "update:install": "echo 'keep this without any npm dependencies'",
     "clientapp-vite-update": "node clientapp-vite-update",
