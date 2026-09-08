@@ -33,14 +33,21 @@ Starsky is a photo-management platform with a .NET/ASP.NET Core backend, a React
 ### .NET backend
 
 ```bash
-# Run all .NET tests
-dotnet test starsky/starskytest/starskytest.csproj
+# Run all .NET tests with Microsoft Testing Platform (MTP), from the repository root
+cd starsky && dotnet run --project starskytest/starskytest.csproj
 
-# Run a single test class
-dotnet test starsky/starskytest/starskytest.csproj --filter "FullyQualifiedName~ClassName"
+# Run a single test class from the repository root
+cd starsky && dotnet run --project starskytest/starskytest.csproj -- --filter "FullyQualifiedName~ClassName"
 
 # Format all .csproj files
 cd starsky && ./format.sh
+```
+
+### Windows desktop app (from the repository root on Windows)
+
+```powershell
+# Run all Windows Microsoft Testing Platform (MTP) tests
+cd windows; dotnet run --project starsky.Tests/starsky.Tests.csproj
 ```
 
 ### React clientapp (from `starsky/starsky/clientapp/`)
