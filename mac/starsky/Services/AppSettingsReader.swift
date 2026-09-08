@@ -6,6 +6,11 @@ struct BackendAppSettings {
 }
 
 enum AppSettingsReader {
+    private struct RawSettings {
+        var storageFolder: String?
+        var storageFolderMappings: [String: String]?   // nil = key absent in file
+    }
+
     static func read(
         mainFile: URL = ApplicationPaths.appSettingsFile,
         localFile: URL = ApplicationPaths.appSettingsLocalFile
@@ -13,19 +18,21 @@ enum AppSettingsReader {
         let base  = parse(mainFile)
         let local = parse(localFile)
 
-        let folder   = local?.storageFolder.nilIfEmpty         ?? base?.storageFolder.nilIfEmpty
-        let mappings = local?.storageFolderMappings            ?? base?.storageFolderMappings ?? [:]
+        // Per-key fallback: local only wins for keys it explicitly contains.
+        let folder   = (local?.storageFolder ?? base?.storageFolder)?.nilIfEmpty
+        let mappings = local?.storageFolderMappings ?? base?.storageFolderMappings ?? [:]
         guard let folder else { return nil }
         return BackendAppSettings(storageFolder: folder, storageFolderMappings: mappings)
     }
 
-    private static func parse(_ url: URL) -> BackendAppSettings? {
+    private static func parse(_ url: URL) -> RawSettings? {
         guard let data = try? Data(contentsOf: url),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let app  = json["app"] as? [String: Any] else { return nil }
-        let folder   = app["StorageFolder"] as? String ?? ""
-        let mappings = app["StorageFolderMappings"] as? [String: String] ?? [:]
-        return BackendAppSettings(storageFolder: folder, storageFolderMappings: mappings)
+        return RawSettings(
+            storageFolder:         app["StorageFolder"]         as? String,
+            storageFolderMappings: app["StorageFolderMappings"] as? [String: String]
+        )
     }
 }
 

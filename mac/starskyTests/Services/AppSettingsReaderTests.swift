@@ -84,6 +84,15 @@ final class AppSettingsReaderTests: XCTestCase {
         XCTAssertEqual(result?.storageFolder, "/photos/")
     }
 
+    func testLocalFileWithoutMappingsKeyDoesNotWipeMappingsFromMain() throws {
+        // local file has StorageFolder but no StorageFolderMappings key —
+        // the main file's mappings must still be used.
+        try write(to: mainFile,  storageFolder: "/photos/", mappings: ["/archive": "/mnt/archive"])
+        try write(to: localFile, storageFolder: "/photos/local/")   // no mappings key
+        let result = AppSettingsReader.read(mainFile: mainFile, localFile: localFile)
+        XCTAssertEqual(result?.storageFolderMappings, ["/archive": "/mnt/archive"])
+    }
+
     // MARK: - Helpers
 
     private func write(to url: URL, storageFolder: String, mappings: [String: String] = [:]) throws {
