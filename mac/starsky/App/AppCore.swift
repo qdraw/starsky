@@ -223,7 +223,7 @@ class AppCore {
         DispatchQueue.main.async {
             reply()
         }
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .utility).async {
             mws?.stopSync()
             fws.stop()
         }
