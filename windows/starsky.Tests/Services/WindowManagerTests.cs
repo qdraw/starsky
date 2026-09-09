@@ -30,12 +30,41 @@ public class WindowManagerTests
     }
 
     [TestMethod]
+    public void IsTerminating_DefaultValue_IsFalse()
+    {
+        var wm = CreateManager();
+        Assert.IsFalse(wm.IsTerminating);
+    }
+
+    [TestMethod]
     public void CloseAll_WithNoWindows_DoesNotThrow()
     {
         var wm = CreateManager();
         Exception? ex = null;
         try { wm.CloseAll(); } catch (Exception e) { ex = e; }
         Assert.IsNull(ex);
+    }
+
+    [TestMethod]
+    public void CloseAll_SetsIsTerminating()
+    {
+        var wm = CreateManager();
+        wm.CloseAll();
+        Assert.IsTrue(wm.IsTerminating);
+    }
+
+    [TestMethod]
+    public void ReopenAll_ResetsIsTerminating()
+    {
+        var wm = CreateManager();
+        wm.CloseAll();
+        Assert.IsTrue(wm.IsTerminating);
+        // ReopenAll calls CloseAll internally; flag must be cleared so the
+        // reopened window can eventually shut down the app normally.
+        // OpenMainWindow requires an STA thread (WPF), so swallow the resulting
+        // InvalidOperationException — IsTerminating is reset before that call.
+        try { wm.ReopenAll(); } catch (InvalidOperationException) { }
+        Assert.IsFalse(wm.IsTerminating);
     }
 
     [TestMethod]
@@ -64,7 +93,6 @@ public class WindowManagerTests
         var opts = new MainWindowOptions
         {
             Settings = settings,
-            Routes = routes,
             WebViewEnv = webViewEnv,
             FileDownload = fileDownload,
             Watcher = watcher,
@@ -74,18 +102,15 @@ public class WindowManagerTests
             BaseUrl = "http://localhost:5000",
             InitialRoute = "?f=/photos",
             Geometry = geometry,
-            WindowIndex = 3
         };
 
         Assert.AreSame(settings, opts.Settings);
-        Assert.AreSame(routes, opts.Routes);
         Assert.AreSame(webViewEnv, opts.WebViewEnv);
         Assert.AreSame(fileDownload, opts.FileDownload);
         Assert.AreSame(wm, opts.WindowManager);
         Assert.AreEqual("http://localhost:5000", opts.BaseUrl);
         Assert.AreEqual("?f=/photos", opts.InitialRoute);
         Assert.AreSame(geometry, opts.Geometry);
-        Assert.AreEqual(3, opts.WindowIndex);
     }
 
     private static SavedWindowState OnScreen(double left = 200, double top = 200,
