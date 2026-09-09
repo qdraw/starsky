@@ -20,9 +20,9 @@ public sealed class SwaggerSetupHelper(AppSettings appSettings)
 				new OpenApiInfo { Title = appSettings.Name, Version = version });
 			c.AddSecurityDefinition("basic",
 				new OpenApiSecurityScheme { Type = SecuritySchemeType.Http, Scheme = "basic" });
-			c.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+			c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
 			{
-				{ new OpenApiSecuritySchemeReference("basic"), [] }
+				{ new OpenApiSecuritySchemeReference("basic", document, null), [] }
 			});
 			// DescribeAllEnumsAsStrings are not working
 			c.IncludeXmlComments(GetXmlCommentsPath());
