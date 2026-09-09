@@ -137,9 +137,11 @@ public partial class MainWindow
     {
         if (!_windowManager.IsTerminating)
         {
-            // Snapshot all remaining windows (excluding this one) so the closed
-            // window is not restored on next launch, regardless of window count.
-            _windowManager.PersistCurrentState(exclude: this);
+            // When this is the last window, closing it exits the app — treat it like
+            // an app shutdown and keep its state so it's restored on next launch.
+            // When other windows remain, exclude this one so it's not restored.
+            var exclude = _windowManager.IsLastOpenWindow ? null : this;
+            _windowManager.PersistCurrentState(exclude: exclude);
         }
         // When terminating, CloseAll() already snapshotted all windows before Close() was called.
     }

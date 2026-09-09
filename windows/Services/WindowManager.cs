@@ -25,6 +25,10 @@ public class WindowManager(
 
     public bool IsTerminating { get; private set; }
 
+    // True when this is the only window left; used by MainWindow_Closing to decide
+    // whether to save itself (last window = app is exiting, keep the state).
+    internal bool IsLastOpenWindow => _mainWindows.Count == 1;
+
     public void SetLocalPort(int port) => _localPort = port;
 
     internal static SavedWindowState ResolveGeometry(
@@ -111,7 +115,10 @@ public class WindowManager(
     public void CloseAll(bool saveState = true)
     {
         IsTerminating = true;
-        if (saveState)
+        // Skip when _mainWindows is already empty: the last window saved its own
+        // state in MainWindow_Closing before triggering Shutdown(), so overwriting
+        // with an empty list here would discard it.
+        if (saveState && _mainWindows.Count > 0)
         {
             routes.SaveAll(CollectStates());
         }
