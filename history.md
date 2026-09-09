@@ -40,27 +40,31 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-> Within a version block the top are item are the newest
+> Within a version block the top are item is the newest
 
-## version 0.9.3 - _(Unreleased)_ - 2026-?-? {#0.9.3}
+## version 0.9.4 - _(Unreleased)_ - 2026-?-? {#0.9.4}
+
+- nothing yet
+
+## version 0.9.3 - 2026-09-09 {#0.9.3}
 
 - [x] (Fixed) _Back-end_ Updated to Swashbuckle v10 (PR #3326)
 - [x] (Changed) _Back-end_ Upgrade to .NET 10.0 - SDK 10.0.401 (Runtime: 10.0.12) (PR #3324)
-- [x] (Fixed) _App_ Windows: Manually closing a window no longer causes it to reopen on next launch (PR #3318)
+- [x] (Fixed) _App_ Windows: Manual closing a window no longer causes re-open next launch (PR #3318)
 
 ## version 0.9.2 - 2026-09-08 {#0.9.2}
 
 _Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
 
 - [x] (Fixed) _App_ macOS: Show name of app in Splash screen (PR #3317)
-- [x] (Fixed) _App_ macOS: Manually closing a window no longer causes it to reopen on next launch (PR #3317)
-- [x] (Changed) _App_ macOS: Allow for Page Up, Page Down, Home and End keyboard shortcuts (PR #3315)
-- [x] (Changed) _App_ macOS: Only re-sign bundled backend when it exits unexpectedly on first launch (PR #3315)
-- [x] (Added) _App_ macOS: Dynamic Dock menu listing open windows with active-window highlight (PR #3315)
+- [x] (Fixed) _App_ macOS: Manually closing a window no longer causes re-open next launch (PR #3317)
+- [x] (Changed) _App_ macOS: Allow Page Up, Page Down, Home, End keyboard shortcuts (PR #3315)
+- [x] (Changed) _App_ macOS: Only re-sign app when it exits unexpectedly on launch (PR #3315)
+- [x] (Added) _App_ macOS: Dynamic Dock menu open windows with active-window highlight (PR #3315)
 - [x] (Fixed) _Front-end_ Skip new lines in Preferences > ReadonlyFolders (PR #3313)
 - [x] (Fixed) _Front-end_ Wait for backend when rename (PR #3312)
 - [x] (Fixed) _Back-end_ Handle concurrency in `ThumbnailQuery.UpdateAsync` (PR #3312)
-- [x] (Fixed) _App_ macOS: Backend process not terminated on app quit (PR #3312)
+- [x] (Fixed) _App_ macOS: A backend process not terminated on app quit (PR #3312)
 - [x] (Fixed) _App_ macOS: Avoid backend restart when shutdown initiated (PR #3312)
 
 ## version 0.9.1 - 2026-09-07 {#0.9.1}
