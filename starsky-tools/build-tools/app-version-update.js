@@ -210,6 +210,28 @@ async function updateVersions(filePathList) {
 					`✓ ${filePath} - Version is updated to ${newVersion}`
 				);
 			}
+		} else if (
+			filePath.match(
+				new RegExp("documentation[/\\\\]static[/\\\\]openapi[/\\\\]openapi\\.json$", "i")
+			)
+		) {
+			let buffer = await readFile(filePath);
+			let fileJsonContent = buffer.toString("utf8");
+			const openApiVersion = `${newVersion}.0`;
+			const openApiVersionRegex =
+				/("info"\s*:\s*\{[\s\S]*?"version"\s*:\s*")([^"\r\n]+)(")/;
+			if (!fileJsonContent.match(openApiVersionRegex)) {
+				console.log("✖ " + filePath + " - OpenAPI info version is not included");
+			} else {
+				fileJsonContent = fileJsonContent.replace(
+					openApiVersionRegex,
+					`$1${openApiVersion}$3`
+				);
+				await writeFile(filePath, fileJsonContent);
+				console.log(
+					`✓ ${filePath} - Version is updated to ${openApiVersion}`
+				);
+			}
 		}
 	});
 }
