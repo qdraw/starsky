@@ -1,7 +1,7 @@
 [
   "Microsoft.AspNetCore.Mvc.NewtonsoftJson 10.0.12",
   "Microsoft.Extensions.Hosting.WindowsServices 10.0.12",
-  "Swashbuckle.AspNetCore 9.0.6",
+  "Swashbuckle.AspNetCore 10.2.3",
   "Dropbox.Api 7.2.0",
   "Microsoft.Extensions.Caching.Abstractions 10.0.12",
   "Microsoft.Extensions.Caching.Memory 10.0.12",

@@ -4,8 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using Microsoft.OpenApi;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -97,8 +96,8 @@ public sealed class SwaggerExportHelper : BackgroundService
 		IHostApplicationLifetime applicationLifetime)
 	{
 		if ( appSettings.AddSwagger != true ||
-			 appSettings.AddSwaggerExport != true ||
-			 appSettings.AddSwaggerExportExitAfter != true )
+		     appSettings.AddSwaggerExport != true ||
+		     appSettings.AddSwaggerExportExitAfter != true )
 		{
 			return false;
 		}
@@ -124,17 +123,9 @@ public sealed class SwaggerExportHelper : BackgroundService
 			return string.Empty;
 		}
 
-		var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/");
-		var stringOutput = JsonConvert.SerializeObject(swaggerDocument,
-			Formatting.Indented,
-			new JsonSerializerSettings
-			{
-				NullValueHandling = NullValueHandling.Ignore,
-				ContractResolver = new DefaultContractResolver
-				{
-					NamingStrategy = new CamelCaseNamingStrategy()
-				}
-			});
-		return stringOutput;
+		var swaggerDocument = swaggerProvider.GetSwagger(docName, string.Empty, "/");
+		var stringWriter = new StringWriter();
+		swaggerDocument.SerializeAsV3(new OpenApiJsonWriter(stringWriter));
+		return stringWriter.ToString();
 	}
 }

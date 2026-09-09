@@ -11,6 +11,7 @@ and copy this file
 */
 
 const fs = require("fs");
+const path = require("path");
 const swagger = require("../static/openapi/openapi.json");
 
 function parseSwagger() {
@@ -34,8 +35,8 @@ function parseSwagger() {
 	for (const path in swagger.paths) {
 		const pathObject = swagger.paths[path];
 
-		for (const operation in pathObject.operations) {
-			if (operation === "Head") {
+		for (const operation in pathObject) {
+			if (operation.toLowerCase() === "head" || !pathObject[operation].responses) {
 				continue;
 			}
 
@@ -57,8 +58,8 @@ function parseSwagger() {
 			const rightOperationSpace = " ".repeat(operationLen - operation.length);
 
 			let summary = "Missing summary";
-			if (pathObject.operations[operation].summary) {
-				summary = pathObject.operations[operation].summary
+			if (pathObject[operation].summary) {
+				summary = pathObject[operation].summary
 					.replace(/(\n|\r\n)/gi, "")
 					.trimStart();
 			}
@@ -72,14 +73,14 @@ function parseSwagger() {
 
 			let parametersDefaultValue = "Parameters: ";
 			let parametersContent = parametersDefaultValue;
-			for (const parameterIndex in pathObject.operations[operation].parameters) {
-				const parameter = pathObject.operations[operation].parameters[parameterIndex];
+			for (const parameterIndex in pathObject[operation].parameters ?? []) {
+				const parameter = pathObject[operation].parameters[parameterIndex];
 
 				parametersContent += `${parameter.name}`;
 				if (parameter.description) {
 					parametersContent += ` (${parameter.description})`;
 				}
-				if (parameterIndex != pathObject.operations[operation].parameters.length - 1) {
+				if (parameterIndex != pathObject[operation].parameters.length - 1) {
 					parametersContent += ", ";
 				}
 			}
@@ -139,7 +140,8 @@ function parseAndWrite(showLog = false) {
 		console.log(apiOutputReadme);
 	}
 
-	fs.writeFileSync("docs/developer-guide/api/readme.md", apiOutputReadme, "utf8");
+	const outputPath = path.join(__dirname, "..", "docs", "developer-guide", "api", "readme.md");
+	fs.writeFileSync(outputPath, apiOutputReadme, "utf8");
 }
 
 if (require.main === module) {
