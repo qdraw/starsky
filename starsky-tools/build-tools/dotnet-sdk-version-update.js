@@ -119,6 +119,7 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 			await updateMcrDockerFile(filePathList);
 			await updateGlobalJsonFiles(filePathList, sdkVersion);
 			await updateDockerEnvFile(filePathList);
+			await updateHistoryFile(sdkVersion, newTargetVersion);
 			console.log(`---done sdk version`);
 		})
 		.catch((err) => {
@@ -568,7 +569,11 @@ async function sortNetFrameworkMoniker(frameworkMonikerByPath, newTargetVersionA
 		// console.log(referencedProjectPaths)
 
 		if (referencedProjectPaths.length === 0) {
-			const netMonikerFallback = "net" + newTargetVersionAsFallback.match(/^\d\.\d/ig, "")[0];
+			const targetVersionMatch = String(newTargetVersionAsFallback).match(/^\d+\.\d+/);
+			const targetVersion = targetVersionMatch
+				? targetVersionMatch[0]
+				: newRunTimeVersion.replace(/\.x$/, "");
+			const netMonikerFallback = "net" + targetVersion;
 			frameworkMonikerByPath[filePath].push(netMonikerFallback);
 			console.log(
 				`🎁 ${filePath} - is using default ${netMonikerFallback}`
@@ -601,7 +606,11 @@ async function sortNetFrameworkMoniker(frameworkMonikerByPath, newTargetVersionA
 
 		const newStylenetMonikers = netMonikers
 			.filter((x) => newStyleDotNetRegex.test(x))
-			.sort((a, b) => b.localeCompare(a));
+			.sort((a, b) => {
+				const versionA = Number(a.replace(/^net/i, ""));
+				const versionB = Number(b.replace(/^net/i, ""));
+				return versionB - versionA;
+			});
 		const oldStylenetMonikers = netMonikers
 			.filter((x) => !newStyleDotNetRegex.test(x))
 			.sort((a, b) => b.localeCompare(a));
@@ -686,18 +695,23 @@ async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 					.replace("<TargetFramework>", "")
 					.replace("</TargetFramework>", "");
 			}
+			const targetFrameworkSuffix = beforeTargetFramework.replace(
+				/^net\d+(?:\.\d+)?/i,
+				""
+			);
+			const updatedTargetFramework = lastNet + targetFrameworkSuffix;
 
 			fileContent = fileContent.replace(
 				targetFrameworkRegex,
-				`<TargetFramework>${lastNet}</TargetFramework>`
+				`<TargetFramework>${updatedTargetFramework}</TargetFramework>`
 			);
 
 			await writeFile(filePath, fileContent);
 
-			if (lastNet !== beforeTargetFramework) {
-				console.log(`✅ ✓ ${filePath} - .NET is updated to ${lastNet}`);
+			if (updatedTargetFramework !== beforeTargetFramework) {
+				console.log(`✅ ✓ ${filePath} - .NET is updated to ${updatedTargetFramework}`);
 			} else {
-				console.log(`🙏 ${filePath} - .NET is the same: ${lastNet}`);
+				console.log(`🙏 ${filePath} - .NET is the same: ${updatedTargetFramework}`);
 			}
 
 			if (!usedTargetFrameworkMonikers[filePath]) {
@@ -986,4 +1000,57 @@ async function updateGlobalJsonFiles(filePathList, sdkVersionInput) {
 			await writeFile(filePath, JSON.stringify(globalJsonFile, null, 4));
 		}
 	}
+}
+
+async function updateHistoryFile(sdkVersion, runtimeVersion) {
+	const historyFilePath = join(__dirname, prefixPath, "history.md");
+	let historyFileContent = (await readFile(historyFilePath)).toString("utf8");
+	const historyLines = historyFileContent.split(/\r?\n/);
+	const latestUnreleasedIndex = historyLines.findIndex((line) =>
+		/^## version .+ - _\(Unreleased\)/i.test(line)
+	);
+
+	if (latestUnreleasedIndex === -1) {
+		console.log("✖ history.md - unreleased version is not present");
+		return;
+	}
+
+	const historyEntry =
+		`- [x] (Changed) _Back-end_ Upgrade to .NET ${newRunTimeVersion.replace(
+			/\.x$/,
+			"",
+		)} - SDK ${sdkVersion} (Runtime: ${runtimeVersion})`;
+	const nextVersionIndex = historyLines.findIndex(
+		(line, lineIndex) =>
+			lineIndex > latestUnreleasedIndex && /^## version /i.test(line)
+	);
+	const unreleasedEndIndex =
+		nextVersionIndex === -1 ? historyLines.length : nextVersionIndex;
+	const existingDotnetEntryIndex = historyLines.findIndex(
+		(line, lineIndex) =>
+			lineIndex > latestUnreleasedIndex &&
+			lineIndex < unreleasedEndIndex &&
+			/^- \[x\] \(Changed\) _Back-end_ Upgrade to \.NET /i.test(line)
+	);
+
+	if (existingDotnetEntryIndex !== -1) {
+		historyLines[existingDotnetEntryIndex] = historyEntry;
+	} else {
+		const nothingYetIndex = historyLines.findIndex(
+			(line, lineIndex) =>
+				lineIndex > latestUnreleasedIndex &&
+				lineIndex < unreleasedEndIndex &&
+				line === "- nothing yet"
+		);
+
+		if (nothingYetIndex !== -1) {
+			historyLines[nothingYetIndex] = historyEntry;
+		} else {
+			historyLines.splice(latestUnreleasedIndex + 1, 0, "", historyEntry);
+		}
+	}
+
+	historyFileContent = historyLines.join("\n");
+	await writeFile(historyFilePath, historyFileContent);
+	console.log(`✅ ✓ ${historyFilePath} - history is updated`);
 }

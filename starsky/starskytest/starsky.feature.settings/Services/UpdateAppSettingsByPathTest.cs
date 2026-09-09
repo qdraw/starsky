@@ -287,6 +287,30 @@ public class UpdateAppSettingsByPathTests
 	}
 
 	[TestMethod]
+	public async Task UpdateAppSettingsAsync_StorageFolderMappings_TrimsWhitespaceFromKey()
+	{
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings();
+		var diskWatcher = new FakeDiskWatcher();
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(appSettings, selectorStorage, diskWatcher);
+		var appSettingTransferObject = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "\u00A0/testcontent", "/data/testcontent" }
+			}
+		};
+
+		await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+		Assert.IsTrue(appSettings.StorageFolderMappings.ContainsKey("/testcontent"));
+		Assert.IsFalse(appSettings.StorageFolderMappings.ContainsKey("\u00A0/testcontent"));
+		Assert.AreEqual("/data/testcontent", appSettings.StorageFolderMappings["/testcontent"]);
+	}
+
+	[TestMethod]
 	public async Task UpdateAppSettingsAsync_StorageFolderMappings_NotifiesDiskWatcher()
 	{
 		// Arrange

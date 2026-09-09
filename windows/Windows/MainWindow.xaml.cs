@@ -18,7 +18,6 @@ public partial class MainWindow
     private const string ReleasesUrl = "https://github.com/qdraw/starsky/releases"; 
 
     private readonly SettingsService _settings;
-    private readonly RoutePersistenceService _routes;
     private readonly WebViewEnvironmentService _webViewEnv;
     private readonly FileDownloadService _fileDownload;
     private readonly FileWatcherService _watcher;
@@ -28,7 +27,6 @@ public partial class MainWindow
     private readonly ILogger _logger;
 
     private readonly string _baseUrl;
-    private readonly int _windowIndex;
     private string _currentRoute;
 
     public MainWindow(MainWindowOptions options)
@@ -36,7 +34,6 @@ public partial class MainWindow
         InitializeComponent();
 
         _settings = options.Settings;
-        _routes = options.Routes;
         _webViewEnv = options.WebViewEnv;
         _fileDownload = options.FileDownload;
         _watcher = options.Watcher;
@@ -45,7 +42,6 @@ public partial class MainWindow
         _mountWatcherService = options.MountWatcherService;
         _logger = options.Logger;
         _baseUrl = options.BaseUrl;
-        _windowIndex = options.WindowIndex;
         _currentRoute = options.InitialRoute;
 
         Left = options.Geometry.Left;
@@ -120,7 +116,7 @@ public partial class MainWindow
 
         // Persist relative part (path + query + fragment)
         _currentRoute = uri.PathAndQuery + uri.Fragment;
-        _routes.SaveRoute(_windowIndex, _currentRoute, GetCurrentGeometry());
+        _windowManager.PersistCurrentState();
     }
 
     private void CoreWebView2_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
@@ -139,7 +135,15 @@ public partial class MainWindow
 
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
-        _routes.SaveRoute(_windowIndex, _currentRoute, GetCurrentGeometry());
+        if (!_windowManager.IsTerminating)
+        {
+            // When this is the last window, closing it exits the app — treat it like
+            // an app shutdown and keep its state so it's restored on next launch.
+            // When other windows remain, exclude this one so it's not restored.
+            var exclude = _windowManager.IsLastOpenWindow ? null : this;
+            _windowManager.PersistCurrentState(exclude: exclude);
+        }
+        // When terminating, CloseAll() already snapshotted all windows before Close() was called.
     }
 
     private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -166,7 +170,7 @@ public partial class MainWindow
         Dispatcher.Invoke(() => WebView.CoreWebView2?.Reload());
     }
 
-    private SavedWindowState GetCurrentGeometry() => new()
+    internal SavedWindowState GetCurrentState() => new()
     {
         Route = _currentRoute,
         Left = Left,

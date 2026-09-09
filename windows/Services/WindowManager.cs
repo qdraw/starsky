@@ -23,6 +23,12 @@ public class WindowManager(
 	private readonly List<MainWindow> _mainWindows = [];
     private int? _localPort;
 
+    public bool IsTerminating { get; private set; }
+
+    // True when this is the only window left; used by MainWindow_Closing to decide
+    // whether to save itself (last window = app is exiting, keep the state).
+    internal bool IsLastOpenWindow => _mainWindows.Count == 1;
+
     public void SetLocalPort(int port) => _localPort = port;
 
     internal static SavedWindowState ResolveGeometry(
@@ -57,7 +63,6 @@ public class WindowManager(
         var window = new MainWindow(new MainWindowOptions
         {
             Settings = settings,
-            Routes = routes,
             WebViewEnv = webViewEnv,
             FileDownload = fileDownload,
             Watcher = watcher,
@@ -66,7 +71,6 @@ public class WindowManager(
             BaseUrl = baseUrl,
             InitialRoute = route ?? "?f=/",
             Geometry = state,
-            WindowIndex = _mainWindows.Count,
             UpdateService = updateService,
             MountWatcherService = mountWatcherService
         });
@@ -75,7 +79,7 @@ public class WindowManager(
         window.Closed += (_, _) =>
         {
             _mainWindows.Remove(window);
-            if (_mainWindows.Count == 0 && Application.Current != null)
+            if (_mainWindows.Count == 0 && !IsTerminating && Application.Current != null)
             {
 	            Application.Current.Shutdown();
             }
@@ -99,8 +103,26 @@ public class WindowManager(
         }
     }
 
-    public void CloseAll()
+    private List<SavedWindowState> CollectStates(MainWindow? exclude = null) =>
+        _mainWindows
+            .Where(w => w != exclude)
+            .Select(w => w.GetCurrentState())
+            .ToList();
+
+    internal void PersistCurrentState(MainWindow? exclude = null) =>
+        routes.SaveAll(CollectStates(exclude));
+
+    public void CloseAll(bool saveState = true)
     {
+        IsTerminating = true;
+        // Skip when _mainWindows is already empty: the last window saved its own
+        // state in MainWindow_Closing before triggering Shutdown(), so overwriting
+        // with an empty list here would discard it.
+        if (saveState && _mainWindows.Count > 0)
+        {
+            routes.SaveAll(CollectStates());
+        }
+
         foreach (var w in _mainWindows.ToList())
         {
             try { w.Close(); } catch { /* best-effort */ }
@@ -110,8 +132,9 @@ public class WindowManager(
 
     public void ReopenAll()
     {
+        CloseAll(saveState: false);
         routes.ClearAll();
-        CloseAll();
+        IsTerminating = false;
         OpenMainWindow(null, null);
     }
 

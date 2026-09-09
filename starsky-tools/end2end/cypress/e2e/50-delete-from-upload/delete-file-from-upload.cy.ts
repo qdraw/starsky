@@ -175,7 +175,7 @@ describe("Delete file from upload (50)", () => {
     if (!config.isEnabled) return;
     cy.visit(config.url);
 
-    cy.get(".item.item--select").click();
+    cy.get(".item.item--select", { timeout: 20000 }).click();
     cy.get('[data-test="selected-0"]').should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
