@@ -42,7 +42,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
       with:
-        dotnet-version: 10.0.400
+        dotnet-version: 10.0.401
 
     - name: Cache nuget packages (*nix)
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
