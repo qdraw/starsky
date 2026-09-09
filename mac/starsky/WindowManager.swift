@@ -131,6 +131,7 @@ class WindowManager {
         isReopening = true
         routePersistenceService.clearAll()
         closeAll()
+        isTerminating = false
         openMainWindow()
         isReopening = false
     }

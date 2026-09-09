@@ -39,6 +39,13 @@ public class RoutePersistenceService(SettingsService settings)
         settings.Save();
     }
 
+    public void SaveAll(IReadOnlyList<SavedWindowState> states)
+    {
+        settings.Current.Windows.Clear();
+        settings.Current.Windows.AddRange(states);
+        settings.Save();
+    }
+
     public void ClearAll()
     {
         settings.Current.Windows.Clear();
