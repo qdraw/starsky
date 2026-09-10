@@ -138,6 +138,16 @@ public class ThumbnailQuery : IThumbnailQuery
 		_logger.LogInformation("[ThumbnailQuery] try to fix DbUpdateConcurrencyException",
 			concurrencyException);
 		SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+
+		// All entries were detached (rows deleted from DB); nothing to save.
+		if ( concurrencyException.Entries.Count > 0 &&
+		     concurrencyException.Entries.All(e => e.State == EntityState.Detached) )
+		{
+			_logger.LogInformation(
+				"[ThumbnailQuery] all entries detached after DbUpdateConcurrencyException; rows were deleted");
+			return false;
+		}
+
 		try
 		{
 			await _context.SaveChangesAsync();
