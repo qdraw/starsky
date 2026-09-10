@@ -99,6 +99,7 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.urlVideoItemCollectionsFalse);
 
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=trash]").click();
 
     cy.visit(config.url);
@@ -122,6 +123,7 @@ describe("Delete file from upload (50)", () => {
 
     // more menu and delete
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=delete]").click();
 
     // verwijder onmiddelijk
@@ -203,12 +205,13 @@ describe("Delete file from upload (50)", () => {
     cy.get('[data-test="selected-0"]').should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
-    cy.get(".item.item--more").click();
     cy.intercept("**/api/trash/move-to-trash").as("trash1");
+    cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=trash]").click();
     cy.wait("@trash1");
 
-    cy.get(".folder > div").should(($lis) => {
+    cy.get(".folder > div", { timeout: 10000 }).should(($lis) => {
       expect($lis).to.have.length(2);
     });
 
@@ -225,9 +228,9 @@ describe("Delete file from upload (50)", () => {
     cy.log("next: click more and restore from trash");
 
     // restore
-    cy.get(".item.item--more").click();
-
     cy.intercept("/starsky/api/replace").as("replace");
+    cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=restore-from-trash]").click();
     cy.wait("@replace");
 
@@ -288,12 +291,13 @@ describe("Delete file from upload (50)", () => {
     cy.get('[data-test="selected-0"]').should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
-    cy.get(".item.item--more").click();
     cy.intercept("**/api/trash/move-to-trash").as("trash2");
+    cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=trash]").click();
     cy.wait("@trash2");
 
-    cy.get(".folder > div").should(($lis) => {
+    cy.get(".folder > div", { timeout: 10000 }).should(($lis) => {
       expect($lis).to.have.length(2);
     });
 
@@ -305,6 +309,7 @@ describe("Delete file from upload (50)", () => {
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click();
 
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=delete]").click();
 
     // verwijder onmiddelijk
