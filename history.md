@@ -44,7 +44,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.4 - _(Unreleased)_ - 2026-?-? {#0.9.4}
 
-- nothing yet
+- [x] (Changed) _Back-end_ Upgrade to .NET 10.0 - SDK 10.0.401 (Runtime: 10.0.12)
 
 ## version 0.9.3 - 2026-09-09 {#0.9.3}
 
