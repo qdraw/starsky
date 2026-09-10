@@ -223,6 +223,12 @@ public class ExecuteWithRetryTest
 	}
 
 	[TestMethod]
+	public void IsTransientDbException_DbUpdateConcurrencyException_ReturnsTrue()
+	{
+		Assert.IsTrue(ExecuteWithRetry.IsTransientDbException(new DbUpdateConcurrencyException()));
+	}
+
+	[TestMethod]
 	public void IsTransientDbException_ArgumentException_ReturnsFalse()
 	{
 		Assert.IsFalse(ExecuteWithRetry.IsTransientDbException(new ArgumentException("bad")));

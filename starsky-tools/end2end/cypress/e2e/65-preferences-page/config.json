@@ -1,0 +1,25 @@
+{
+  "starsky": {
+    "local": {
+      "isEnabled": true,
+      "preferencesUrl": "/preferences",
+      "accountStatusApi": "/starsky/api/account/status",
+      "accountPermissionsApi": "/starsky/api/account/permissions",
+      "changeSecretApi": "/starsky/api/account/change-secret"
+    },
+    "heroku-demo": {
+      "isEnabled": true,
+      "preferencesUrl": "/preferences",
+      "accountStatusApi": "/starsky/api/account/status",
+      "accountPermissionsApi": "/starsky/api/account/permissions",
+      "changeSecretApi": "/starsky/api/account/change-secret"
+    },
+    "no-create-account": {
+      "isEnabled": true,
+      "preferencesUrl": "/preferences",
+      "accountStatusApi": "/starsky/api/account/status",
+      "accountPermissionsApi": "/starsky/api/account/permissions",
+      "changeSecretApi": "/starsky/api/account/change-secret"
+    }
+  }
+}
