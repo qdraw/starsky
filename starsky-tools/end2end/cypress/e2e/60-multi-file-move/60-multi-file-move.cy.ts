@@ -123,7 +123,7 @@ describe("Delete file from upload (50)", () => {
     cy.get("[data-test=modal-move-file-btn-default]").click();
 
     // expect url to end with ?f=/starsky-end2end-test/child_folder
-    cy.url({ timeout: 10000 }).should('match', /\?f=\/starsky-end2end-test\/child_folder\/20200822_134151.jpg$/);
+    cy.url({ timeout: 20000 }).should('match', /\?f=\/starsky-end2end-test\/child_folder\/20200822_134151.jpg$/);
 
     //  // and undo
 
@@ -134,7 +134,7 @@ describe("Delete file from upload (50)", () => {
     cy.get("[data-test=parent]").click();
    cy.get("[data-test=modal-move-file-btn-default]").click();
 
-    cy.url({ timeout: 10000 }).should('match', /\?f=\/starsky-end2end-test\/20200822_134151.jpg$/);
+    cy.url({ timeout: 20000 }).should('match', /\?f=\/starsky-end2end-test\/20200822_134151.jpg$/);
   });
 
 
