@@ -107,6 +107,7 @@ describe("Delete file from upload (50)", () => {
     });
 
     waitFileInTrash(0, `/starsky-end2end-test/${fileName4}`);
+    waitFileInSearchResults(0, `/starsky-end2end-test/${fileName4}`);
 
     cy.log(`go to: ${config.trash}`);
 
@@ -114,7 +115,8 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.trash);
     cy.wait("@trashPage");
 
-    cy.get(".item.item--select").click();
+    cy.get(".item.item--select", { timeout: 20000 }).click();
+    cy.get('[data-test="selected-0"]').should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName4}"]`, { timeout: 10000 }).should("exist");
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName4}"] button`).click();
 
@@ -143,6 +145,28 @@ describe("Delete file from upload (50)", () => {
       expect($lis).to.have.length(3);
     });
   });
+
+  function waitFileInSearchResults(index: number, filePath: string, max: number = 15) {
+    cy.request({
+      url: "/starsky/api/search?json=true&t=!delete!&p=0",
+      method: "GET",
+      headers: { "Content-Type": "text/plain" },
+      failOnStatusCode: false,
+    }).then((response) => {
+      if (response.status === 200) {
+        const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
+        for (const item of items) {
+          if (item.filePath === filePath) {
+            cy.log("file found in search results");
+            return;
+          }
+        }
+      }
+      cy.wait(1500);
+      index++;
+      if (index < max) waitFileInSearchResults(index, filePath, max);
+    });
+  }
 
   function waitFileInTrash(index: number, filePath: string, max: number = 15) {
     cy.request({

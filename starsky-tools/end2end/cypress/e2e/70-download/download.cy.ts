@@ -64,6 +64,7 @@ describe("Download files (70)", () => {
     cy.visit(`${config.url}/${fileName1}`);
 
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=download]").click();
 
     cy.get("#detailview-export-modal").should("be.visible");
