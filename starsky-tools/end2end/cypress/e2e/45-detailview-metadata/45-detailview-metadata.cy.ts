@@ -59,9 +59,11 @@ describe('DetailView metadata editing (45)', () => {
 
     // A slow CI backend may still be writing; sessionStorage.clear() + reload
     // bypasses the client-side cache and forces a fresh fetch.
+    // The URL still carries ?details=true from openWithSidebar(), so the sidebar
+    // is already open after reload — clicking the toggle would close it.
     cy.then(() => { sessionStorage.clear() })
     cy.reload()
-    cy.get('.item.item--labels').should('be.visible').click()
+    cy.get('.item.item--labels').should('be.visible')
     cy.get('[data-test="detailview-sidebar"]').should('be.visible')
     cy.get(selector).should('contain', newValue)
 
@@ -78,7 +80,7 @@ describe('DetailView metadata editing (45)', () => {
 
     cy.then(() => { sessionStorage.clear() })
     cy.reload()
-    cy.get('.item.item--labels').should('be.visible').click()
+    cy.get('.item.item--labels').should('be.visible')
     cy.get('[data-test="detailview-sidebar"]').should('be.visible')
     cy.get(selector).should('not.contain', newValue)
   }
@@ -145,7 +147,7 @@ describe('DetailView metadata editing (45)', () => {
 
       cy.then(() => { sessionStorage.clear() })
       cy.reload()
-      cy.get('.item.item--labels').should('be.visible').click()
+      // URL still carries ?details=true — sidebar is already open, do not toggle.
       cy.get('[data-test="detailview-sidebar"]').should('be.visible')
 
       // Re-open modal and verify year persisted.
@@ -164,7 +166,8 @@ describe('DetailView metadata editing (45)', () => {
 
       cy.then(() => { sessionStorage.clear() })
       cy.reload()
-      cy.get('.item.item--labels').click()
+      // URL still carries ?details=true — sidebar is already open, do not toggle.
+      cy.get('[data-test="detailview-sidebar"]').should('be.visible')
       cy.get('[data-test="dateTime"]').click()
       cy.get('[data-test="modal-edit-datetime"]').should('be.visible')
       cy.get(yearSelector).should('contain', originalYear)
