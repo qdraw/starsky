@@ -124,7 +124,7 @@ The pipeline below is to test the Desktop build process. The back-end is not inc
 
 A full build including the .NET dependency
 
-[![Create Desktop Release on tag for .Net Core and Electron](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-net-electron.yml)
+[![Create Desktop Release on tag for .Net Core and Electron](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-native.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-release-on-tag-native.yml)
 
 _See [the documentation](https://docs.qdraw.nl/docs/developer-guide/github-actions/) for details_
 

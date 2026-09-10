@@ -79,6 +79,7 @@ describe("Delete file from upload (50)", () => {
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName2}"] button`).click({ force: true });
 
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=move]").click();
 
     cy.get("[data-test=btn-child_folder]").click();
@@ -96,6 +97,7 @@ describe("Delete file from upload (50)", () => {
     cy.get(`[data-filepath="/starsky-end2end-test/child_folder/${fileName1}"] button`).click({ force: true });
     cy.get(`[data-filepath="/starsky-end2end-test/child_folder/${fileName2}"] button`).click({ force: true });
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
 
     cy.get("[data-test=move]").click();
 
@@ -112,6 +114,7 @@ describe("Delete file from upload (50)", () => {
     cy.visit(`${config.url}/${fileName3}`);
 
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
 
     cy.get("[data-test=move]").click();
 
@@ -125,6 +128,7 @@ describe("Delete file from upload (50)", () => {
     //  // and undo
 
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=move]").click();
 
     cy.get("[data-test=parent]").click();
@@ -158,6 +162,7 @@ describe("Delete file from upload (50)", () => {
         cy.get(`[data-filepath="${url}"] button`).click({ force: true });
     }
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=trash]").click();
     cy.wait(1500);
 

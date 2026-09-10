@@ -1033,6 +1033,19 @@ async function updateHistoryFile(sdkVersion, runtimeVersion) {
 			/^- \[x\] \(Changed\) _Back-end_ Upgrade to \.NET /i.test(line)
 	);
 
+	// Skip if the same SDK+runtime version is already present in a released section
+	const alreadyReleased = historyLines.slice(unreleasedEndIndex).some(
+		(line) =>
+			/^- \[x\] \(Changed\) _Back-end_ Upgrade to \.NET /i.test(line) &&
+			line.includes(`SDK ${sdkVersion}`) &&
+			line.includes(`Runtime: ${runtimeVersion}`)
+	);
+
+	if (alreadyReleased) {
+		console.log(`✅ ✓ ${historyFilePath} - SDK ${sdkVersion} (Runtime: ${runtimeVersion}) already in a released version, skipping`);
+		return;
+	}
+
 	if (existingDotnetEntryIndex !== -1) {
 		historyLines[existingDotnetEntryIndex] = historyEntry;
 	} else {
