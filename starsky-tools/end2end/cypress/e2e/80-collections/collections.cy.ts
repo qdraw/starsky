@@ -40,7 +40,14 @@ describe("Collections / stacked files (80)", () => {
       if (response.body.fileIndexItems.length >= 2) return;
       cy.wait(1500);
       index++;
-      if (index < max) waitUntilBothIndexed(index, max);
+      if (index < max) {
+        waitUntilBothIndexed(index, max);
+      } else {
+        expect(
+          response.body.fileIndexItems.length,
+          "both jpg and mp4 should be indexed before proceeding"
+        ).to.be.at.least(2);
+      }
     });
   }
 

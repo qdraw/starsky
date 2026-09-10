@@ -1038,5 +1038,56 @@ public sealed class QueryUpdateItemError
 		}
 	}
 
+	[TestMethod]
+	public void SolveConcurrencyExceptionLoop_DeletedRow_DetachesEntry()
+	{
+		var dbName = nameof(SolveConcurrencyExceptionLoop_DeletedRow_DetachesEntry);
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(dbName)
+			.Options;
+
+		using var context1 = new ApplicationDbContext(options);
+		var item = new ThumbnailItem("hash_deleted_concurrency", null, null, null, null, null);
+		context1.Thumbnails.Add(item);
+		context1.SaveChanges();
+
+		// Delete the row via a second context so context1 still tracks it.
+		using var context2 = new ApplicationDbContext(options);
+		var toDelete = context2.Thumbnails.First(t => t.FileHash == "hash_deleted_concurrency");
+		context2.Thumbnails.Remove(toDelete);
+		context2.SaveChanges();
+
+		// Mark the tracked entry as Modified to simulate an in-flight update.
+		var entry = context1.Entry(item);
+		entry.State = EntityState.Modified;
+
+		SolveConcurrency.SolveConcurrencyExceptionLoop(new List<EntityEntry> { entry });
+
+		// Row is gone → entry must be detached so SaveChangesAsync won't send a ghost UPDATE.
+		Assert.AreEqual(EntityState.Detached, entry.State);
+	}
+
+	[TestMethod]
+	public void SolveConcurrencyExceptionLoop_ExistingRow_PreservesModifiedState()
+	{
+		var dbName = nameof(SolveConcurrencyExceptionLoop_ExistingRow_PreservesModifiedState);
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(dbName)
+			.Options;
+
+		using var context = new ApplicationDbContext(options);
+		var item = new ThumbnailItem("hash_existing_concurrency", null, null, null, null, null);
+		context.Thumbnails.Add(item);
+		context.SaveChanges();
+
+		var entry = context.Entry(item);
+		entry.State = EntityState.Modified;
+
+		SolveConcurrency.SolveConcurrencyExceptionLoop(new List<EntityEntry> { entry });
+
+		// Row still exists → original values are refreshed but the entry is NOT detached.
+		Assert.AreNotEqual(EntityState.Detached, entry.State);
+	}
+
 	public TestContext TestContext { get; set; }
 }

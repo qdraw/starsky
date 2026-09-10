@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using starsky.foundation.database.Models;
 
@@ -16,8 +17,16 @@ public static class SolveConcurrency
 	{
 		foreach ( var entry in concurrencyExceptionEntries )
 		{
+			var databaseValues = entry.GetDatabaseValues();
+			if ( databaseValues == null )
+			{
+				// Row was deleted; detach so SaveChangesAsync won't attempt another UPDATE.
+				entry.State = EntityState.Detached;
+				continue;
+			}
+
 			SolveConcurrencyException(entry.Entity, entry.CurrentValues,
-				entry.GetDatabaseValues(), entry.Metadata.Name,
+				databaseValues, entry.Metadata.Name,
 				// former values from database
 				entry.CurrentValues.SetValues);
 		}

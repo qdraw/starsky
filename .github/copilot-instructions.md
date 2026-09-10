@@ -11,10 +11,11 @@ When using ApplicationDbContext use DatabaseTest as a base class for testing. Th
 When writing tests use `[TestMethod]` and `[DataRow]` to cover multiple scenarios in a single test method. `[DataTestMethod]` is deprecated use `[TestMethod]` with `[DataRow]` instead.
 
 - Unit tests are located in `starsky/starskytest`.
-- Run Microsoft Testing Platform (MTP) tests from the repository root with:
-  `cd starsky && dotnet run --project starskytest/starskytest.csproj`
-- Run Windows Microsoft Testing Platform (MTP) tests from the repository root on Windows with:
-  `cd windows && dotnet run --project starsky.Tests/starsky.Tests.csproj`
+- Do not infer the working directory from the terminal prompt. Before running a repository command, resolve the root with `git rev-parse --show-toplevel` and change to it in the same command.
+- Run Microsoft Testing Platform (MTP) tests with:
+  `cd "$(git rev-parse --show-toplevel)/starsky" && dotnet run --project starskytest/starskytest.csproj`
+- Run Windows Microsoft Testing Platform (MTP) tests with:
+  `cd "$(git rev-parse --show-toplevel)/windows" && dotnet run --project starsky.Tests/starsky.Tests.csproj`
 - Run macOS XCTest project tests from `mac/` with:
   `xcodebuild test -project starsky.xcodeproj -scheme starsky -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO`
 

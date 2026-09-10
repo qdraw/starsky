@@ -44,7 +44,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.4 - _(Unreleased)_ - 2026-?-? {#0.9.4}
 
-- nothing yet
+- [x] (Fixed) _Back-end_ Concurrency handling with deleted items (PR #3333)
+- [x] (Fixed) _Back-end_ DiskWatcher NotifyFilters (PR #3333)
 
 ## version 0.9.3 - 2026-09-09 {#0.9.3}
 

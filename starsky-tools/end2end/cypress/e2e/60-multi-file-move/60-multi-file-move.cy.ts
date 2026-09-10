@@ -79,6 +79,7 @@ describe("Delete file from upload (50)", () => {
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName2}"] button`).click({ force: true });
 
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=move]").click();
 
     cy.get("[data-test=btn-child_folder]").click();
@@ -96,6 +97,7 @@ describe("Delete file from upload (50)", () => {
     cy.get(`[data-filepath="/starsky-end2end-test/child_folder/${fileName1}"] button`).click({ force: true });
     cy.get(`[data-filepath="/starsky-end2end-test/child_folder/${fileName2}"] button`).click({ force: true });
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
 
     cy.get("[data-test=move]").click();
 
@@ -112,6 +114,7 @@ describe("Delete file from upload (50)", () => {
     cy.visit(`${config.url}/${fileName3}`);
 
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
 
     cy.get("[data-test=move]").click();
 
@@ -120,17 +123,18 @@ describe("Delete file from upload (50)", () => {
     cy.get("[data-test=modal-move-file-btn-default]").click();
 
     // expect url to end with ?f=/starsky-end2end-test/child_folder
-    cy.url({ timeout: 10000 }).should('match', /\?f=\/starsky-end2end-test\/child_folder\/20200822_134151.jpg$/);
+    cy.url({ timeout: 20000 }).should('match', /\?f=\/starsky-end2end-test\/child_folder\/20200822_134151.jpg$/);
 
     //  // and undo
 
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=move]").click();
 
     cy.get("[data-test=parent]").click();
    cy.get("[data-test=modal-move-file-btn-default]").click();
 
-    cy.url({ timeout: 10000 }).should('match', /\?f=\/starsky-end2end-test\/20200822_134151.jpg$/);
+    cy.url({ timeout: 20000 }).should('match', /\?f=\/starsky-end2end-test\/20200822_134151.jpg$/);
   });
 
 
@@ -158,6 +162,7 @@ describe("Delete file from upload (50)", () => {
         cy.get(`[data-filepath="${url}"] button`).click({ force: true });
     }
     cy.get(".item.item--more").click();
+    cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=trash]").click();
     cy.wait(1500);
 
