@@ -140,6 +140,9 @@ describe('DetailView metadata editing (45)', () => {
       cy.get(yearSelector)
         .type('{selectall}')
         .type(newYear, { parseSpecialCharSequences: false })
+      // Blur before clicking submit so the onBlur→setState cycle commits the
+      // new year into React state before updateDateTime() reads getDates().
+      cy.get(yearSelector).blur()
 
       cy.intercept('POST', '**/api/update').as('updateDatetime')
       cy.get('[data-test="modal-edit-datetime-btn-default"]').click()
@@ -160,6 +163,8 @@ describe('DetailView metadata editing (45)', () => {
       cy.get(yearSelector)
         .type('{selectall}')
         .type(originalYear, { parseSpecialCharSequences: false })
+      cy.get(yearSelector).blur()
+
       cy.intercept('POST', '**/api/update').as('restoreDatetime')
       cy.get('[data-test="modal-edit-datetime-btn-default"]').click()
       cy.wait('@restoreDatetime')
