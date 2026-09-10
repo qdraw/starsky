@@ -81,11 +81,8 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		wrapper.IncludeSubdirectories = true;
 		wrapper.NotifyFilter = NotifyFilters.FileName
 		                       | NotifyFilters.DirectoryName
-		                       | NotifyFilters.Attributes
 		                       | NotifyFilters.Size
-		                       | NotifyFilters.LastWrite
-		                       | NotifyFilters.CreationTime
-		                       | NotifyFilters.Security;
+		                       | NotifyFilters.LastWrite;
 
 		// handle many file system events quickly
 		wrapper.InternalBufferSize = 64 * 1024; // 64 KB - default = 4096 / 4 KB
