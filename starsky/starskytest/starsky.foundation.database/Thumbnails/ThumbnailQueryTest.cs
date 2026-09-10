@@ -1032,6 +1032,47 @@ public class ThumbnailQueryTest
 			"[ThumbnailQuery] save failed after DbUpdateConcurrencyException"));
 	}
 
+	[TestMethod]
+	public async Task UpdateAsync_DbUpdateConcurrencyExceptionWithDeletedRow_ReturnsFalse()
+	{
+		await using var connection = new SqliteConnection("Filename=:memory:");
+		await connection.OpenAsync(TestContext.CancellationToken);
+
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseSqlite(connection)
+			.Options;
+		await using ( var setupContext = new ApplicationDbContext(options) )
+		{
+			await setupContext.Database.EnsureCreatedAsync(TestContext.CancellationToken);
+			await setupContext.Thumbnails.AddAsync(
+				new ThumbnailItem("hash_update_test", null, null, null, null),
+				TestContext.CancellationToken);
+			await setupContext.SaveChangesAsync(TestContext.CancellationToken);
+		}
+
+		await using ( var deleteContext = new ApplicationDbContext(options) )
+		{
+			deleteContext.Thumbnails.Remove(
+				await deleteContext.Thumbnails.SingleAsync(
+					thumbnail => thumbnail.FileHash == "hash_update_test",
+					TestContext.CancellationToken));
+			await deleteContext.SaveChangesAsync(TestContext.CancellationToken);
+		}
+
+		await using var dbContext = new ApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var thumbnailQuery = new ThumbnailQuery(dbContext, null, webLogger);
+
+		var result = await thumbnailQuery.UpdateAsync(
+			new ThumbnailItem("hash_update_test", null, null, null, null, null));
+
+		Assert.IsFalse(result);
+		Assert.HasCount(2, webLogger.TrackedInformation);
+		Assert.IsTrue(webLogger.TrackedInformation[1].Item2?.StartsWith(
+			"[ThumbnailQuery] all entries detached after DbUpdateConcurrencyException; rows were deleted"));
+	}
+
 	private sealed class ConcurrencyExceptionApplicationDbContext(DbContextOptions options)
 		: ApplicationDbContext(options)
 	{
