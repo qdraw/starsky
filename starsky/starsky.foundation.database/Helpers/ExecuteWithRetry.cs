@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using starsky.foundation.database.Data;
@@ -101,8 +100,6 @@ public class ExecuteWithRetry(
 			case MySqlException:
 			// It may come from MySqlConnector internals; treat as transient
 			case NullReferenceException:
-			// Row was modified or deleted by a concurrent writer; retry with a fresh context
-			case DbUpdateConcurrencyException:
 				return true;
 		}
 

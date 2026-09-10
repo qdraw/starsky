@@ -28,8 +28,8 @@ describe('DetailView metadata editing (45)', () => {
   // Open the file in detail view with the labels sidebar visible.
   function openWithSidebar () {
     cy.visit(detailUrl)
-    cy.get('.item.item--labels').click()
-    cy.get('[data-test="detailview-sidebar"]')
+    cy.get('.item.item--labels').should('be.visible').click()
+    cy.get('[data-test="detailview-sidebar"]').should('be.visible')
   }
 
   // Generic helper: edit a contenteditable metadata field, wait for the
@@ -61,8 +61,8 @@ describe('DetailView metadata editing (45)', () => {
     // bypasses the client-side cache and forces a fresh fetch.
     cy.then(() => { sessionStorage.clear() })
     cy.reload()
-    cy.get('.item.item--labels').click()
-    cy.get('[data-test="detailview-sidebar"]')
+    cy.get('.item.item--labels').should('be.visible').click()
+    cy.get('[data-test="detailview-sidebar"]').should('be.visible')
     cy.get(selector).should('contain', newValue)
 
     // Restore original value.
@@ -78,8 +78,8 @@ describe('DetailView metadata editing (45)', () => {
 
     cy.then(() => { sessionStorage.clear() })
     cy.reload()
-    cy.get('.item.item--labels').click()
-    cy.get('[data-test="detailview-sidebar"]')
+    cy.get('.item.item--labels').should('be.visible').click()
+    cy.get('[data-test="detailview-sidebar"]').should('be.visible')
     cy.get(selector).should('not.contain', newValue)
   }
 
@@ -145,8 +145,8 @@ describe('DetailView metadata editing (45)', () => {
 
       cy.then(() => { sessionStorage.clear() })
       cy.reload()
-      cy.get('.item.item--labels').click()
-      cy.get('[data-test="detailview-sidebar"]')
+      cy.get('.item.item--labels').should('be.visible').click()
+      cy.get('[data-test="detailview-sidebar"]').should('be.visible')
 
       // Re-open modal and verify year persisted.
       cy.get('[data-test="dateTime"]').click()
