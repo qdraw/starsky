@@ -151,7 +151,9 @@ class BackendService: @unchecked Sendable {
         quarantineDidClear(path)
     }
 
-    func quarantineDidClear(_: String) {}
+    func quarantineDidClear(_: String) {
+        // Intentionally no-op by default: hook in tests (leave comment inside class)
+    }
 
     static func buildEnvironment(port: Int) -> [String: String] {
         var env = ProcessInfo.processInfo.environment
