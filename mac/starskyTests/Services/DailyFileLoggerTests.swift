@@ -180,6 +180,30 @@ final class DailyFileLoggerTests: XCTestCase {
         XCTAssertTrue(content.contains("session-two"))
     }
 
+    func testDayRolloverMergesIntoExistingArchive() throws {
+        // Pre-create the archive for day-one so the rollover hits the merge path (else branch).
+        let existingArchive = tempDir.appendingPathComponent("starsky-2026-01-10.log")
+        try "pre-existing\n".write(to: existingArchive, atomically: true, encoding: .utf8)
+
+        var day = makeDate(year: 2026, month: 1, day: 10)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false, dateProvider: { day })
+        logger.info("day-one", category: "Test")
+
+        day = makeDate(year: 2026, month: 1, day: 11)
+        logger.info("day-two", category: "Test")
+
+        // Archive must contain both the pre-existing content and day-one's entry
+        let content = try String(contentsOf: existingArchive)
+        XCTAssertTrue(content.contains("pre-existing"), "Pre-existing archive content must be kept")
+        XCTAssertTrue(content.contains("day-one"), "Latest content must be merged into the existing archive")
+
+        // Latest must only have day-two
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let latestContent = try String(contentsOf: latest)
+        XCTAssertTrue(latestContent.contains("day-two"))
+        XCTAssertFalse(latestContent.contains("day-one"))
+    }
+
     // MARK: - Log pruning
 
     func testOldLogsAreDeletedAfter90Days() throws {
@@ -199,6 +223,30 @@ final class DailyFileLoggerTests: XCTestCase {
 
         XCTAssertFalse(fm.fileExists(atPath: oldFile.path), "Log older than 90 days should be deleted")
         XCTAssertTrue(fm.fileExists(atPath: recentFile.path), "Recent log within 90 days should be kept")
+    }
+
+    func testPruneSkipsNonMatchingFiles() throws {
+        let fm = FileManager.default
+        let today = makeDate(year: 2026, month: 9, day: 11)
+
+        // Non-starsky prefix — must not be deleted
+        let otherPrefix = tempDir.appendingPathComponent("other-2025-01-01.log")
+        try "x\n".write(to: otherPrefix, atomically: true, encoding: .utf8)
+
+        // No .log extension — must not be deleted
+        let noExt = tempDir.appendingPathComponent("starsky-2025-01-01.txt")
+        try "x\n".write(to: noExt, atomically: true, encoding: .utf8)
+
+        // Unparseable date in name — must not be deleted
+        let badDate = tempDir.appendingPathComponent("starsky-notadate.log")
+        try "x\n".write(to: badDate, atomically: true, encoding: .utf8)
+
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false, dateProvider: { today })
+        logger.info("trigger-prune", category: "Test")
+
+        XCTAssertTrue(fm.fileExists(atPath: otherPrefix.path), "Non-starsky file must not be pruned")
+        XCTAssertTrue(fm.fileExists(atPath: noExt.path), "Non-.log file must not be pruned")
+        XCTAssertTrue(fm.fileExists(atPath: badDate.path), "File with unparseable date must not be pruned")
     }
 
     func testLatestFilesAreNeverPruned() throws {
