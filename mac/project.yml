@@ -61,7 +61,10 @@ targets:
               mkdir -p "$RUNTIME_DST"
               cp -R "$RUNTIME_SRC/." "$RUNTIME_DST/"
               find "$RUNTIME_DST" -type f | while read -r f; do
-                codesign --force --options runtime --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$f" 2>/dev/null || true
+                codesign_output=$(codesign --force --options runtime --entitlements "$SRCROOT/starsky/runtime.entitlements" --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$f" 2>&1)
+                if [ $? -ne 0 ]; then
+                  echo "warning: codesign failed for $(basename "$f"): $codesign_output"
+                fi
               done
             else
               echo "warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work"

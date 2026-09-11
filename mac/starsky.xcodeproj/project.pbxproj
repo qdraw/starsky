@@ -147,6 +147,7 @@
 		7DF89347F9391AD851030846 /* FileDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadService.swift; sourceTree = "<group>"; };
 		8180D19840C574AC4878E465 /* starskyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = starskyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8415DA0473D238EB0F6108E2 /* RuntimeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMode.swift; sourceTree = "<group>"; };
+		8F869DD89AA979A8AF54755E /* runtime.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = runtime.entitlements; sourceTree = "<group>"; };
 		8F8C3308F3AE014E18479C4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendServiceTests.swift; sourceTree = "<group>"; };
 		97B29EC047ED7E17B1E0563A /* starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -278,6 +279,7 @@
 			isa = PBXGroup;
 			children = (
 				1595DFCCE586B6DD9B02AC5E /* Info.plist */,
+				8F869DD89AA979A8AF54755E /* runtime.entitlements */,
 				45FCF2620A00BA536D9BA601 /* starsky.debug.entitlements */,
 				3241E30A98E45F4148C41D75 /* starsky.entitlements */,
 				554B5849A45556FFAA970085 /* WindowManager.swift */,
@@ -537,7 +539,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "for ARCH in arm64 x64; do\n  RUNTIME_SRC=\"$SRCROOT/../starsky/osx-${ARCH}\"\n  RUNTIME_DST=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}\"\n  if [ -d \"$RUNTIME_SRC\" ]; then\n    rm -rf \"$RUNTIME_DST\"\n    mkdir -p \"$RUNTIME_DST\"\n    cp -R \"$RUNTIME_SRC/.\" \"$RUNTIME_DST/\"\n    find \"$RUNTIME_DST\" -type f | while read -r f; do\n      codesign --force --options runtime --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>/dev/null || true\n    done\n  else\n    echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n  fi\ndone\n";
+			shellScript = "for ARCH in arm64 x64; do\n  RUNTIME_SRC=\"$SRCROOT/../starsky/osx-${ARCH}\"\n  RUNTIME_DST=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}\"\n  if [ -d \"$RUNTIME_SRC\" ]; then\n    rm -rf \"$RUNTIME_DST\"\n    mkdir -p \"$RUNTIME_DST\"\n    cp -R \"$RUNTIME_SRC/.\" \"$RUNTIME_DST/\"\n    find \"$RUNTIME_DST\" -type f | while read -r f; do\n      codesign_output=$(codesign --force --options runtime --entitlements \"$SRCROOT/starsky/runtime.entitlements\" --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>&1)\n      if [ $? -ne 0 ]; then\n        echo \"warning: codesign failed for $(basename \"$f\"): $codesign_output\"\n      fi\n    done\n  else\n    echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n  fi\ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
