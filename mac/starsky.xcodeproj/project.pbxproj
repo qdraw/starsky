@@ -38,6 +38,7 @@
 		472D6F6C902EBF5D3E2524E3 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = DF5D6D740321B8F421D7DC1C /* Sparkle */; };
 		495E8C0728A1909CC21A650F /* MountWatcherServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064147AE75ED8E46531D7841 /* MountWatcherServiceTests.swift */; };
 		49D6E031AA4A9F61CEF4680C /* WindowManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF53E62B518E6B3C2A7C0CC3 /* WindowManagerProtocol.swift */; };
+		4B12B38EE955CC29EE8C28F7 /* UpdateWindowControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3D18032332E144D202CCAB7 /* UpdateWindowControllerTests.swift */; };
 		4BFC1A88C18A396A96E5D175 /* FileWatcherServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066BB49FDF5E95A8E40A5FA2 /* FileWatcherServiceProtocol.swift */; };
 		4E54C9A6F8501ACFC5AD27CE /* ApplicationPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CFFD91296CDC50EDCD7FA3 /* ApplicationPaths.swift */; };
 		52376CDE06991FB57D2AFF78 /* RoutePersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32EF46D239525D609F48272D /* RoutePersistenceService.swift */; };
@@ -166,6 +167,7 @@
 		BF53E62B518E6B3C2A7C0CC3 /* WindowManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagerProtocol.swift; sourceTree = "<group>"; };
 		C73CD361EFF2B86D1744D0D3 /* RemoteUrlValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteUrlValidator.swift; sourceTree = "<group>"; };
 		CE6869EADE8ABA081813C089 /* MainWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowPresenter.swift; sourceTree = "<group>"; };
+		D3D18032332E144D202CCAB7 /* UpdateWindowControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateWindowControllerTests.swift; sourceTree = "<group>"; };
 		D4E9538E4281ECA333F416A1 /* ApplicationInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationInfoTests.swift; sourceTree = "<group>"; };
 		D4FD597500E536E705E06522 /* UrlValidationResultTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlValidationResultTests.swift; sourceTree = "<group>"; };
 		D7A4355B016A576502FF1E51 /* RemoteUrlValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteUrlValidatorTests.swift; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 			isa = PBXGroup;
 			children = (
 				9F51DA46919A291FBFD8783F /* SilentWebViewTests.swift */,
+				D3D18032332E144D202CCAB7 /* UpdateWindowControllerTests.swift */,
 			);
 			path = Windows;
 			sourceTree = "<group>";
@@ -652,6 +655,7 @@
 				5A54A8C8CEA8383DCE53A6D6 /* UpdateService.swift in Sources */,
 				528B639F38E2E709539232C4 /* UpdateServiceTests.swift in Sources */,
 				69D50BFF898F0D3FE7FE8935 /* UpdateWindowController.swift in Sources */,
+				4B12B38EE955CC29EE8C28F7 /* UpdateWindowControllerTests.swift in Sources */,
 				B80B23B2B73D4CAEE7DBE338 /* UrlValidationResult.swift in Sources */,
 				AC8B8EF6258EB5B57404CD8C /* UrlValidationResultTests.swift in Sources */,
 				647960F8407D0F42B077C3E6 /* WindowManager.swift in Sources */,
