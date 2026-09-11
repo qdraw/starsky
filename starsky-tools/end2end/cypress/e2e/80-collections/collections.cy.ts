@@ -37,16 +37,16 @@ describe("Collections / stacked files (80)", () => {
       headers: { "Content-Type": "text/plain" },
     }).then((response) => {
       expect(response.status).to.eq(200);
-      if (response.body.fileIndexItems.length >= 2) return;
+      const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
+      const hasJpg = items.some((i) => i.filePath === filePathJpg);
+      const hasMp4 = items.some((i) => i.filePath === filePathMp4);
+      if (hasJpg && hasMp4) return;
       cy.wait(1500);
       index++;
       if (index < max) {
         waitUntilBothIndexed(index, max);
       } else {
-        expect(
-          response.body.fileIndexItems.length,
-          "both jpg and mp4 should be indexed before proceeding"
-        ).to.be.at.least(2);
+        expect(hasJpg && hasMp4, "both jpg and mp4 should be indexed before proceeding").to.be.true;
       }
     });
   }
@@ -91,7 +91,7 @@ describe("Collections / stacked files (80)", () => {
   it("Detail view: clicking the mp4 collection entry navigates to the mp4 (80)", () => {
     if (!config.isEnabled) return;
 
-    cy.intercept("GET", "**/api/info*").as("infoRequest");
+    cy.intercept("GET", "/starsky/api/info*").as("infoRequest");
     cy.visit(`${config.url}/${fileNameJpg}`);
 
     cy.get("[data-test=menu-detail-view-labels]").click();
