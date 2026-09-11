@@ -50,6 +50,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 _Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
 
+- [x] (Fixed) _App_ macOS: logging in .log file about updates (PR #3338)
+- [x] (Fixed) _App_ macOS: Sparkle public ed key passing though (PR #3338)
+- [x] (Fixed) _App_ macOS: Update window localization (PR #3338)
 - [x] (Fixed) _App_ macOS: Write to "latest" log files starsky-latest.log (PR #3336)
 - [x] (Fixed) _App_ macOS: sign files with explicit entitlements (PR #3336)
 - [x] (Fixed) _Back-end_ Concurrency handling with deleted items (PR #3333)
