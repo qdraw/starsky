@@ -108,6 +108,7 @@ class UpdateService {
         if let key = Bundle.main.infoDictionary?["SUPublicEDKey"] as? String, !key.isEmpty {
             let prefix = String(key.prefix(15))
             logger.info("SUPublicEDKey prefix: \(prefix)")
+            fileLogger?.info("SUPublicEDKey prefix: \(prefix)", category: "UpdateService")
         } else {
             logger.warning("SUPublicEDKey is not set")
             fileLogger?.warning("SUPublicEDKey is not set", category: "UpdateService")
