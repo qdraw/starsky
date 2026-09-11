@@ -25,6 +25,26 @@ final class UpdateServiceTests: XCTestCase {
         return (UpdateService(settingsService: svc), svc)
     }
 
+    private func makeServiceWithFileLogger(enabled: Bool = true) -> (UpdateService, SettingsService, DailyFileLogger, URL) {
+        let logDir = tempDir.appendingPathComponent("logs-\(UUID().uuidString)")
+        try? FileManager.default.createDirectory(at: logDir, withIntermediateDirectories: true)
+        let fileLogger = DailyFileLogger(logsDirectory: logDir)
+        let svc = SettingsService(settingsFile: tempDir.appendingPathComponent("settings-fl.json"))
+        svc.load()
+        var settings = svc.current
+        settings.updateCheckEnabled = enabled
+        svc.save(settings)
+        return (UpdateService(settingsService: svc, fileLogger: fileLogger), svc, fileLogger, logDir)
+    }
+
+    private func readLatestLog(in logDir: URL) -> String {
+        let debugLog = logDir.appendingPathComponent(DailyFileLogger.latestDebugFileName)
+        let releaseLog = logDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        return (try? String(contentsOf: debugLog, encoding: .utf8))
+            ?? (try? String(contentsOf: releaseLog, encoding: .utf8))
+            ?? ""
+    }
+
     func testDisabledReturnsFalse() async {
         let (service, _) = makeService(enabled: false)
         let result = await service.checkAsync()
@@ -160,5 +180,41 @@ final class UpdateServiceTests: XCTestCase {
         service.mountWatcherProvider = { nil }
         service.mountWatcherProvider = nil
         XCTAssertNil(service.mountWatcherProvider)
+    }
+
+    // MARK: - fileLogger integration
+
+    func testApplyUpdateWritesErrorToFileLoggerWhenSparkleUnavailableOrCannotStart() {
+        let (service, _, _, logDir) = makeServiceWithFileLogger()
+        service.applyUpdate()
+
+        // Drain the main queue so the DispatchQueue.main.async in applyUpdate completes.
+        let exp = expectation(description: "main queue drained")
+        DispatchQueue.main.async { exp.fulfill() }
+        waitForExpectations(timeout: 2)
+
+        let content = readLatestLog(in: logDir)
+        // In test environments Sparkle may or may not initialize, but in every case
+        // applyUpdate writes at least one UpdateService entry to the file logger.
+        XCTAssertTrue(content.contains("UpdateService"), "Expected at least one UpdateService log entry")
+    }
+
+    func testApplyUpdateFileLoggerContainsKnownMessage() {
+        let (service, _, _, logDir) = makeServiceWithFileLogger()
+        service.applyUpdate()
+
+        let exp = expectation(description: "main queue drained")
+        DispatchQueue.main.async { exp.fulfill() }
+        waitForExpectations(timeout: 2)
+
+        let content = readLatestLog(in: logDir)
+        let knownMessages = [
+            "applyUpdate called but Sparkle updater is unavailable",
+            "SUPublicEDKey is not set",
+            "Sparkle startUpdater failed",
+            "applyUpdate: canCheckForUpdates is false, skipping"
+        ]
+        let matched = knownMessages.contains { content.contains($0) }
+        XCTAssertTrue(matched, "Expected one of the known update-error messages in the log; got:\n\(content)")
     }
 }

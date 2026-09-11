@@ -13,7 +13,7 @@ class UpdateWindowController: NSWindowController {
             backing: .buffered,
             defer: false
         )
-        window.title = "Starsky Update Available"
+        window.title = NSLocalizedString("update.window.title", comment: "")
         window.isReleasedWhenClosed = false
         super.init(window: window)
         setupContent()
@@ -24,18 +24,18 @@ class UpdateWindowController: NSWindowController {
     private func setupContent() {
         guard let contentView = window?.contentView else { return }
 
-        let label = NSTextField(wrappingLabelWithString: "A new version of Starsky is available.")
+        let label = NSTextField(wrappingLabelWithString: NSLocalizedString("update.window.message", comment: ""))
         label.alignment = .center
         label.font = NSFont.systemFont(ofSize: 13)
         label.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(label)
 
-        updateButton = NSButton(title: "Update Now", target: self, action: #selector(updateNow))
+        updateButton = NSButton(title: NSLocalizedString("update.window.updateNow", comment: ""), target: self, action: #selector(updateNow))
         updateButton.keyEquivalent = "\r"
         updateButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(updateButton)
 
-        let closeButton = NSButton(title: "Close", target: self, action: #selector(dismissAndSuppress))
+        let closeButton = NSButton(title: NSLocalizedString("update.window.close", comment: ""), target: self, action: #selector(dismissAndSuppress))
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(closeButton)
 

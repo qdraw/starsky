@@ -48,6 +48,12 @@
 "mountwatcher.error.enable" = "Failed to enable MountWatcher. The service could not be installed.";
 "mountwatcher.error.disable" = "Failed to disable MountWatcher. The service could not be removed.";
 
+/* Update window */
+"update.window.title" = "Starsky Update Available";
+"update.window.message" = "A new version of Starsky is available.";
+"update.window.updateNow" = "Update Now";
+"update.window.close" = "Close";
+
 /* Settings window */
 "settings.updateCheck.preRelease" = "Include pre-release versions";
 "settings.updateCheck.checkNow" = "Check Now";
