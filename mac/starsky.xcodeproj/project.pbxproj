@@ -839,6 +839,7 @@
 				PRODUCT_MODULE_NAME = Starsky;
 				PRODUCT_NAME = Starsky;
 				SDKROOT = macosx;
+				SPARKLE_PUBLIC_ED_KEY = "";
 			};
 			name = Release;
 		};
@@ -856,6 +857,7 @@
 				PRODUCT_MODULE_NAME = Starsky;
 				PRODUCT_NAME = Starsky;
 				SDKROOT = macosx;
+				SPARKLE_PUBLIC_ED_KEY = "";
 			};
 			name = Debug;
 		};

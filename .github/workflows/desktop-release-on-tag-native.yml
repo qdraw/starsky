@@ -129,6 +129,7 @@ jobs:
       - name: Archive (universal)
         env:
           DEVELOPMENT_TEAM: "LHZ4426ABB"
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY }}
         run: |
           xcodebuild archive \
             -project mac/starsky.xcodeproj \
@@ -137,7 +138,8 @@ jobs:
             -archivePath build/starsky.xcarchive \
             DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
             CODE_SIGN_IDENTITY="Developer ID Application" \
-            ARCHS="arm64 x86_64"
+            ARCHS="arm64 x86_64" \
+            SPARKLE_PUBLIC_ED_KEY="$SPARKLE_PUBLIC_ED_KEY"
 
       - name: Export
         run: |
@@ -212,6 +214,7 @@ jobs:
       - name: Archive (arm64)
         env:
           DEVELOPMENT_TEAM: "LHZ4426ABB"
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY }}
         run: |
           xcodebuild archive \
             -project mac/starsky.xcodeproj \
@@ -221,7 +224,8 @@ jobs:
             DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
             CODE_SIGN_IDENTITY="Developer ID Application" \
             ARCHS="arm64" \
-            ONLY_ACTIVE_ARCH=NO
+            ONLY_ACTIVE_ARCH=NO \
+            SPARKLE_PUBLIC_ED_KEY="$SPARKLE_PUBLIC_ED_KEY"
 
       - name: Export
         run: |
@@ -296,6 +300,7 @@ jobs:
       - name: Archive (x64)
         env:
           DEVELOPMENT_TEAM: "LHZ4426ABB"
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY }}
         run: |
           xcodebuild archive \
             -project mac/starsky.xcodeproj \
@@ -305,7 +310,8 @@ jobs:
             DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
             CODE_SIGN_IDENTITY="Developer ID Application" \
             ARCHS="x86_64" \
-            ONLY_ACTIVE_ARCH=NO
+            ONLY_ACTIVE_ARCH=NO \
+            SPARKLE_PUBLIC_ED_KEY="$SPARKLE_PUBLIC_ED_KEY"
 
       - name: Export
         run: |

@@ -26,18 +26,21 @@ private class SparkleUpdaterDelegate: NSObject, SPUUpdaterDelegate {
 
 class UpdateService {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "UpdateService")
+    private let fileLogger: DailyFileLogger?
     private let settingsService: SettingsService
     private var updaterController: SPUStandardUpdaterController?
     private var sparkleDelegate: SparkleUpdaterDelegate?
     private var isStarted = false
     static let suppressMinutes: Double = 5760
 
-    init(settingsService: SettingsService) {
+    init(settingsService: SettingsService, fileLogger: DailyFileLogger? = nil) {
         self.settingsService = settingsService
+        self.fileLogger = fileLogger
         do {
             updaterController = try makeUpdaterController()
         } catch {
             logger.warning("Sparkle updater unavailable: \(error.localizedDescription)")
+            fileLogger?.warning("Sparkle updater unavailable: \(error.localizedDescription)", category: "UpdateService")
             updaterController = nil
         }
     }
@@ -84,10 +87,19 @@ class UpdateService {
     }
 
     func applyUpdate() {
-        guard let controller = updaterController else { return }
+        guard let controller = updaterController else {
+            logger.error("applyUpdate called but Sparkle updater is unavailable")
+            fileLogger?.error("applyUpdate called but Sparkle updater is unavailable", category: "UpdateService")
+            return
+        }
         logPublicKeyPrefix()
         DispatchQueue.main.async {
             self.startIfNeeded(controller)
+            guard controller.updater.canCheckForUpdates else {
+                self.logger.warning("applyUpdate: canCheckForUpdates is false, skipping")
+                self.fileLogger?.warning("applyUpdate: canCheckForUpdates is false, skipping", category: "UpdateService")
+                return
+            }
             controller.updater.checkForUpdates()
         }
     }
@@ -98,6 +110,7 @@ class UpdateService {
             logger.info("SUPublicEDKey prefix: \(prefix)")
         } else {
             logger.warning("SUPublicEDKey is not set")
+            fileLogger?.warning("SUPublicEDKey is not set", category: "UpdateService")
         }
     }
 
@@ -108,6 +121,7 @@ class UpdateService {
             isStarted = true
         } catch {
             logger.warning("Sparkle startUpdater failed: \(error.localizedDescription)")
+            fileLogger?.error("Sparkle startUpdater failed: \(error.localizedDescription)", category: "UpdateService")
         }
     }
 
