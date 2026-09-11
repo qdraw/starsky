@@ -42,7 +42,13 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 > Within a version block the top are item is the newest
 
-## version 0.9.4 - _(Unreleased)_ - 2026-?-? {#0.9.4}
+## version 0.9.5 - _(Unreleased)_ - 2026-?-? {#0.9.5}
+
+- nothing yet
+
+## version 0.9.4 - 2026-09-11 {#0.9.4}
+
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
 
 - [x] (Fixed) _App_ macOS: Write to "latest" log files starsky-latest.log (PR #3336)
 - [x] (Fixed) _App_ macOS: sign files with explicit entitlements (PR #3336)
