@@ -91,13 +91,11 @@ describe("Collections / stacked files (80)", () => {
   it("Detail view: clicking the mp4 collection entry navigates to the mp4 (80)", () => {
     if (!config.isEnabled) return;
 
-    cy.intercept("GET", "/starsky/api/info*").as("infoRequest");
     cy.visit(`${config.url}/${fileNameJpg}`);
-
     cy.get("[data-test=menu-detail-view-labels]").click();
-    cy.wait("@infoRequest");
 
-    cy.contains("[data-test=collections]", fileNameMp4).click();
+    cy.get("[data-test=collections]").should("have.length", 2);
+    cy.contains("[data-test=collections]", fileNameMp4).scrollIntoView().click();
 
     cy.url({ timeout: 10000 }).should("contain", fileNameMp4);
   });
