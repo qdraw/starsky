@@ -1,5 +1,9 @@
 import XCTest
+import Sparkle
 
+private final class NilControllerUpdateService: UpdateService {
+    override func makeSparkleController() -> SPUStandardUpdaterController? { nil }
+}
 
 final class UpdateServiceTests: XCTestCase {
     private var tempDir: URL!
@@ -23,6 +27,15 @@ final class UpdateServiceTests: XCTestCase {
         settings.lastUpdateWarningShown = lastShown
         svc.save(settings)
         return (UpdateService(settingsService: svc), svc)
+    }
+
+    private func makeNilControllerServiceWithFileLogger() -> (UpdateService, URL) {
+        let logDir = tempDir.appendingPathComponent("logs-nil-\(UUID().uuidString)")
+        try? FileManager.default.createDirectory(at: logDir, withIntermediateDirectories: true)
+        let fileLogger = DailyFileLogger(logsDirectory: logDir)
+        let svc = SettingsService(settingsFile: tempDir.appendingPathComponent("settings-nil.json"))
+        svc.load()
+        return (NilControllerUpdateService(settingsService: svc, fileLogger: fileLogger), logDir)
     }
 
     private func makeServiceWithFileLogger(enabled: Bool = true) -> (UpdateService, SettingsService, DailyFileLogger, URL) {
@@ -183,6 +196,26 @@ final class UpdateServiceTests: XCTestCase {
     }
 
     // MARK: - fileLogger integration
+
+    func testIsAvailableFalseWhenControllerIsNil() {
+        let (service, _) = makeNilControllerServiceWithFileLogger()
+        XCTAssertFalse(service.isAvailable)
+    }
+
+    func testApplyUpdateLogsToFileLoggerWhenControllerIsNil() {
+        let (service, logDir) = makeNilControllerServiceWithFileLogger()
+        XCTAssertFalse(service.isAvailable, "Precondition: controller must be nil for this test")
+        service.applyUpdate()
+        let content = readLatestLog(in: logDir)
+        XCTAssertTrue(content.contains("applyUpdate called but Sparkle updater is unavailable"),
+            "Expected the nil-controller error message in the log; got:\n\(content)")
+    }
+
+    func testCheckAsyncReturnsFalseWhenControllerIsNil() async {
+        let (service, _) = makeNilControllerServiceWithFileLogger()
+        let result = await service.checkAsync()
+        XCTAssertFalse(result)
+    }
 
     func testApplyUpdateWritesErrorToFileLoggerWhenSparkleUnavailableOrCannotStart() {
         let (service, _, _, logDir) = makeServiceWithFileLogger()

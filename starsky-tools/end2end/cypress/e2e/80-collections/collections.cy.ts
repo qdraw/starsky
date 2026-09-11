@@ -91,11 +91,13 @@ describe("Collections / stacked files (80)", () => {
   it("Detail view: clicking the mp4 collection entry navigates to the mp4 (80)", () => {
     if (!config.isEnabled) return;
 
+    cy.intercept("GET", "/api/info*").as("infoRequest");
     cy.visit(`${config.url}/${fileNameJpg}`);
 
     cy.get("[data-test=menu-detail-view-labels]").click();
+    cy.wait("@infoRequest");
 
-    cy.get("[data-test=collections]").eq(1).click();
+    cy.contains("[data-test=collections]", fileNameMp4).click();
 
     cy.url({ timeout: 10000 }).should("contain", fileNameMp4);
   });

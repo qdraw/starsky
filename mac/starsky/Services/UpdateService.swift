@@ -36,16 +36,11 @@ class UpdateService {
     init(settingsService: SettingsService, fileLogger: DailyFileLogger? = nil) {
         self.settingsService = settingsService
         self.fileLogger = fileLogger
-        do {
-            updaterController = try makeUpdaterController()
-        } catch {
-            logger.warning("Sparkle updater unavailable: \(error.localizedDescription)")
-            fileLogger?.warning("Sparkle updater unavailable: \(error.localizedDescription)", category: "UpdateService")
-            updaterController = nil
-        }
+        updaterController = nil
+        updaterController = makeSparkleController()
     }
 
-    private func makeUpdaterController() throws -> SPUStandardUpdaterController {
+    func makeSparkleController() -> SPUStandardUpdaterController? {
         let delegate = SparkleUpdaterDelegate(updateService: self)
         sparkleDelegate = delegate
         return SPUStandardUpdaterController(
