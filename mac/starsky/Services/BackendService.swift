@@ -148,10 +148,10 @@ class BackendService: @unchecked Sendable {
         codesign.executableURL = URL(fileURLWithPath: codesignPath)
         codesign.arguments = ["--force", "--deep", "-s", "-", path]
         if (try? codesign.run()) != nil { codesign.waitUntilExit() }
-        quarantineDidClear(path: path)
+        quarantineDidClear(path)
     }
 
-    func quarantineDidClear(path: String) {}
+    func quarantineDidClear(_: String) {}
 
     static func buildEnvironment(port: Int) -> [String: String] {
         var env = ProcessInfo.processInfo.environment
