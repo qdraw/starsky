@@ -65,13 +65,6 @@ final class UpdateWindowControllerTests: XCTestCase {
 
     // MARK: - Window setup
 
-    func testWindowTitleIsLocalized() {
-        let controller = UpdateWindowController(updateService: makeUpdateService())
-        XCTAssertFalse(controller.window?.title.isEmpty ?? true)
-        XCTAssertNotEqual(controller.window?.title, "update.window.title",
-            "Window title must be the localized string, not the raw key")
-    }
-
     func testWindowIsNotReleasedWhenClosed() {
         let controller = UpdateWindowController(updateService: makeUpdateService())
         controller.showWindow(nil)

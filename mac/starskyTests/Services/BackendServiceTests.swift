@@ -310,7 +310,7 @@ private class TestableBackendService: BackendService, @unchecked Sendable {
         return fakeExeURL
     }
 
-    override func quarantineDidClear(path: String) {
+    override func quarantineDidClear(_ path: String) {
         quarantineClearCount += 1
     }
 }
