@@ -44,6 +44,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.4 - _(Unreleased)_ - 2026-?-? {#0.9.4}
 
+- [x] (Fixed) _App_ macOS: Write to "latest" log files starsky-latest.log (PR #3336)
+- [x] (Fixed) _App_ macOS: sign files with explicit entitlements (PR #3336)
 - [x] (Fixed) _Back-end_ Concurrency handling with deleted items (PR #3333)
 - [x] (Fixed) _Back-end_ DiskWatcher NotifyFilters (PR #3333)
 

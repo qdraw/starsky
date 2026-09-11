@@ -5,21 +5,29 @@ class DailyFileLogger {
     private let lock = NSLock()
     private let dateFormatter: DateFormatter
     private let fileDateFormatter: DateFormatter
-    private var currentLogFile: URL?
+    private let dateProvider: () -> Date
+    private var currentDateSuffix: String?
     private let isDebugBuild: Bool
 
-    static let symlinkName = "starsky-latest.log"
+    static let latestFileName = "starsky-latest.log"
+    static let latestDebugFileName = "starsky-latest-debug.log"
     static let debugSuffix = "-debug"
+    static let logRetentionDays = 90
 
-    init(logsDirectory: URL = ApplicationPaths.logsDirectory, isDebugBuild: Bool = {
-        #if DEBUG
-        return true
-        #else
-        return false
-        #endif
-    }()) {
+    init(
+        logsDirectory: URL = ApplicationPaths.logsDirectory,
+        isDebugBuild: Bool = {
+            #if DEBUG
+            return true
+            #else
+            return false
+            #endif
+        }(),
+        dateProvider: @escaping () -> Date = { Date() }
+    ) {
         self.logsDirectory = logsDirectory
         self.isDebugBuild = isDebugBuild
+        self.dateProvider = dateProvider
 
         dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -34,11 +42,9 @@ class DailyFileLogger {
         lock.lock()
         defer { lock.unlock() }
 
-        let now = Date()
+        let now = dateProvider()
         let timestamp = dateFormatter.string(from: now)
         let dateSuffix = fileDateFormatter.string(from: now)
-        let suffix = isDebugBuild ? "\(dateSuffix)\(DailyFileLogger.debugSuffix)" : dateSuffix
-        let logFile = logsDirectory.appendingPathComponent("starsky-\(suffix).log")
 
         var line = "\(timestamp) [\(level)] \(category): \(message)\n"
         if let error = error {
@@ -46,26 +52,89 @@ class DailyFileLogger {
         }
 
         guard let data = line.data(using: .utf8) else { return }
-        if FileManager.default.fileExists(atPath: logFile.path) {
-            guard let handle = try? FileHandle(forWritingTo: logFile) else { return }
+
+        let latestName = isDebugBuild ? DailyFileLogger.latestDebugFileName : DailyFileLogger.latestFileName
+        let latestFile = logsDirectory.appendingPathComponent(latestName)
+
+        if currentDateSuffix != dateSuffix {
+            archiveLatestIfNeeded(latestFile: latestFile, archiveDateSuffix: currentDateSuffix, isDebug: isDebugBuild)
+            pruneOldLogs(before: now)
+            currentDateSuffix = dateSuffix
+        }
+
+        appendData(data, to: latestFile)
+    }
+
+    // Archives the latest log file to a dated name before a new day begins.
+    // archiveDateSuffix is nil on the first write after app launch — falls back to the file's modification date.
+    private func archiveLatestIfNeeded(latestFile: URL, archiveDateSuffix: String?, isDebug: Bool) {
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: latestFile.path) else { return }
+
+        let dateSuffix: String
+        if let s = archiveDateSuffix {
+            dateSuffix = s
+        } else {
+            // App restart: if the file is already from today, keep appending to it.
+            let attrs = try? fm.attributesOfItem(atPath: latestFile.path)
+            let modDate = (attrs?[.modificationDate] as? Date) ?? dateProvider()
+            let modSuffix = fileDateFormatter.string(from: modDate)
+            if modSuffix == fileDateFormatter.string(from: dateProvider()) { return }
+            dateSuffix = modSuffix
+        }
+
+        let archiveName = isDebug
+            ? "starsky-\(dateSuffix)\(DailyFileLogger.debugSuffix).log"
+            : "starsky-\(dateSuffix).log"
+        let archive = logsDirectory.appendingPathComponent(archiveName)
+
+        if !fm.fileExists(atPath: archive.path) {
+            try? fm.moveItem(at: latestFile, to: archive)
+        } else {
+            if let latestData = try? Data(contentsOf: latestFile),
+               let handle = try? FileHandle(forWritingTo: archive) {
+                handle.seekToEndOfFile()
+                handle.write(latestData)
+                try? handle.close()
+            }
+            try? fm.removeItem(at: latestFile)
+        }
+    }
+
+    // Deletes dated log files (starsky-YYYY-MM-DD[.log / -debug.log]) older than logRetentionDays.
+    // The two "latest" files are never touched.
+    private func pruneOldLogs(before now: Date) {
+        let fm = FileManager.default
+        guard let files = try? fm.contentsOfDirectory(at: logsDirectory, includingPropertiesForKeys: nil) else { return }
+        let cutoff = Calendar(identifier: .gregorian)
+            .date(byAdding: .day, value: -DailyFileLogger.logRetentionDays, to: now) ?? now
+
+        for file in files {
+            let name = file.lastPathComponent
+            guard name != DailyFileLogger.latestFileName,
+                  name != DailyFileLogger.latestDebugFileName,
+                  name.hasSuffix(".log"),
+                  name.hasPrefix("starsky-") else { continue }
+
+            // Extract the date portion: the 10 characters after "starsky-"
+            let afterPrefix = name.dropFirst("starsky-".count)
+            let dateString = String(afterPrefix.prefix(10))
+            guard let fileDate = fileDateFormatter.date(from: dateString),
+                  fileDate < cutoff else { continue }
+
+            try? fm.removeItem(at: file)
+        }
+    }
+
+    private func appendData(_ data: Data, to file: URL) {
+        if FileManager.default.fileExists(atPath: file.path) {
+            guard let handle = try? FileHandle(forWritingTo: file) else { return }
             handle.seekToEndOfFile()
             handle.write(data)
             try? handle.close()
         } else {
-            try? data.write(to: logFile, options: .atomic)
+            try? data.write(to: file, options: .atomic)
         }
-
-        if !isDebugBuild, currentLogFile != logFile {
-            updateSymlink(to: logFile)
-        }
-    }
-
-    private func updateSymlink(to logFile: URL) {
-        let symlink = logsDirectory.appendingPathComponent(DailyFileLogger.symlinkName)
-        let fm = FileManager.default
-        try? fm.removeItem(at: symlink)
-        try? fm.createSymbolicLink(at: symlink, withDestinationURL: logFile)
-        currentLogFile = logFile
     }
 
     func info(_ message: String, category: String = "App") {

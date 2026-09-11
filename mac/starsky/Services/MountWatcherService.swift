@@ -8,17 +8,27 @@ protocol ProcessRunner {
 }
 
 final class DefaultProcessRunner: ProcessRunner {
+    private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "MountWatcher")
+
     func run(executable: URL, arguments: [String]) async -> Int32 {
         await withCheckedContinuation { continuation in
             let process = Process()
             process.executableURL = executable
             process.arguments = arguments
             process.standardOutput = FileHandle.nullDevice
-            process.standardError = FileHandle.nullDevice
-            process.terminationHandler = { p in continuation.resume(returning: p.terminationStatus) }
+            let stderrPipe = Pipe()
+            process.standardError = stderrPipe
+            process.terminationHandler = { [logger] p in
+                let data = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+                if !data.isEmpty, let text = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty {
+                    logger.error("Process stderr (\(executable.lastPathComponent, privacy: .public)): \(text, privacy: .public)")
+                }
+                continuation.resume(returning: p.terminationStatus)
+            }
             do {
                 try process.run()
             } catch {
+                logger.error("Failed to launch \(executable.lastPathComponent, privacy: .public): \(error.localizedDescription, privacy: .public)")
                 continuation.resume(returning: -1)
             }
         }
@@ -29,12 +39,17 @@ final class DefaultProcessRunner: ProcessRunner {
         process.executableURL = executable
         process.arguments = arguments
         process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
+        let stderrPipe = Pipe()
+        process.standardError = stderrPipe
         do {
             try process.run()
             process.waitUntilExit()
+            let data = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+            if !data.isEmpty, let text = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty {
+                logger.error("Process stderr (\(executable.lastPathComponent, privacy: .public)): \(text, privacy: .public)")
+            }
         } catch {
-            // executable not found or not launchable — nothing to wait for
+            logger.error("Failed to launch \(executable.lastPathComponent, privacy: .public): \(error.localizedDescription, privacy: .public)")
         }
     }
 }

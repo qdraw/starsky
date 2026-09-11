@@ -300,7 +300,7 @@ final class BackendServiceTests: XCTestCase {
     }
 }
 
-private class TestableBackendService: BackendService {
+private class TestableBackendService: BackendService, @unchecked Sendable {
     var fakeExeURL: URL?
     private(set) var launchCount = 0
     private(set) var quarantineClearCount = 0

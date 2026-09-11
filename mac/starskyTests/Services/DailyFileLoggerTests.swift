@@ -15,127 +15,267 @@ final class DailyFileLoggerTests: XCTestCase {
         super.tearDown()
     }
 
-    func testInfoWritesToFile() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir)
+    // MARK: - Basic logging
+
+    func testInfoWritesToLatestFile() throws {
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
         logger.info("Hello from test", category: "Test")
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
-        XCTAssertFalse(files.isEmpty, "Expected a log file to be created")
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: latest.path))
     }
 
     func testLogContainsMessage() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
         logger.info("unique-test-message-xyz", category: "Test")
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
-        guard let file = files.first else { XCTFail("No log file"); return }
-        let content = try String(contentsOf: file)
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let content = try String(contentsOf: latest)
         XCTAssertTrue(content.contains("unique-test-message-xyz"))
     }
 
     func testMultipleWritesAppend() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
         logger.info("line-one", category: "Test")
         logger.info("line-two", category: "Test")
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
-        guard let file = files.first else { XCTFail("No log file"); return }
-        let content = try String(contentsOf: file)
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let content = try String(contentsOf: latest)
         XCTAssertTrue(content.contains("line-one"))
         XCTAssertTrue(content.contains("line-two"))
     }
 
     func testLogWithError() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
         let err = NSError(domain: "test", code: 42, userInfo: [NSLocalizedDescriptionKey: "test-error"])
         logger.error("error-happened", error: err, category: "Test")
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
-        guard let file = files.first else { XCTFail("No log file"); return }
-        let content = try String(contentsOf: file)
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let content = try String(contentsOf: latest)
         XCTAssertTrue(content.contains("error-happened"))
     }
 
-    func testWarningWritesToFile() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir)
+    func testWarningWritesToLatestFile() throws {
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
         logger.warning("warn-message", category: "Test")
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
-        XCTAssertFalse(files.isEmpty)
-        let content = try String(contentsOf: files[0])
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let content = try String(contentsOf: latest)
         XCTAssertTrue(content.contains("warn-message"))
         XCTAssertTrue(content.contains("WARN"))
     }
 
     func testErrorWithNoErrorObjectWritesMessage() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
         logger.error("just-a-message", error: nil, category: "Test")
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
-        guard let file = files.first else { XCTFail("No log file"); return }
-        let content = try String(contentsOf: file)
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let content = try String(contentsOf: latest)
         XCTAssertTrue(content.contains("just-a-message"))
         XCTAssertTrue(content.contains("ERROR"))
     }
 
     func testLogCategoryIsIncluded() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
         logger.info("msg", category: "MyCategory")
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
-        let content = try String(contentsOf: files[0])
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let content = try String(contentsOf: latest)
         XCTAssertTrue(content.contains("MyCategory"))
     }
 
     // MARK: - Debug build file naming
 
-    func testDebugBuildWritesToDebugSuffixedFile() throws {
+    func testDebugBuildWritesToLatestDebugFile() throws {
         let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: true)
         logger.info("debug-msg", category: "Test")
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
-        let logFiles = files.filter { $0.pathExtension == "log" }
-        // Expected filename pattern: starsky-yyyy-MM-dd-debug.log
-        let datePattern = #"\d{4}-\d{2}-\d{2}"#
-        XCTAssertTrue(logFiles.allSatisfy { file in
-            let name = file.lastPathComponent
-            return name.contains(DailyFileLogger.debugSuffix) &&
-                   name.range(of: datePattern, options: .regularExpression) != nil
-        }, "Debug build should write to a starsky-yyyy-MM-dd-debug.log file")
+        let latestDebug = tempDir.appendingPathComponent(DailyFileLogger.latestDebugFileName)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: latestDebug.path),
+                      "Debug build should write to \(DailyFileLogger.latestDebugFileName)")
     }
 
-    func testReleaseBuildDoesNotWriteToDebugSuffixedFile() throws {
+    func testDebugBuildDoesNotWriteToReleasLatestFile() throws {
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: true)
+        logger.info("debug-msg", category: "Test")
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: latest.path),
+                       "Debug build must not write to \(DailyFileLogger.latestFileName)")
+    }
+
+    func testReleaseBuildDoesNotWriteToDebugLatestFile() throws {
         let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
         logger.info("release-msg", category: "Test")
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
-        let logFiles = files.filter { $0.pathExtension == "log" && $0.lastPathComponent != DailyFileLogger.symlinkName }
-        XCTAssertFalse(logFiles.allSatisfy { $0.lastPathComponent.contains(DailyFileLogger.debugSuffix) },
-                       "Release build should not write to a *-debug.log file")
+        let latestDebug = tempDir.appendingPathComponent(DailyFileLogger.latestDebugFileName)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: latestDebug.path),
+                       "Release build must not write to \(DailyFileLogger.latestDebugFileName)")
     }
 
-    // MARK: - Symlink (release only)
+    // MARK: - Day rollover
 
-    func testSymlinkIsCreatedInReleaseBuild() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
-        logger.info("symlink-test", category: "Test")
-        let symlink = tempDir.appendingPathComponent(DailyFileLogger.symlinkName)
-        XCTAssertTrue(FileManager.default.fileExists(atPath: symlink.path), "Expected symlink to exist in release build")
+    func testDayRolloverArchivesLatestToDateFile() throws {
+        var day = makeDate(year: 2026, month: 1, day: 10)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false, dateProvider: { day })
+        logger.info("day-one", category: "Test")
+
+        day = makeDate(year: 2026, month: 1, day: 11)
+        logger.info("day-two", category: "Test")
+
+        let archive = tempDir.appendingPathComponent("starsky-2026-01-10.log")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: archive.path),
+                      "Previous day's log should be archived")
+        let archiveContent = try String(contentsOf: archive)
+        XCTAssertTrue(archiveContent.contains("day-one"))
+        XCTAssertFalse(archiveContent.contains("day-two"))
+
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let latestContent = try String(contentsOf: latest)
+        XCTAssertTrue(latestContent.contains("day-two"))
+        XCTAssertFalse(latestContent.contains("day-one"))
     }
 
-    func testSymlinkIsNotCreatedInDebugBuild() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: true)
-        logger.info("symlink-test", category: "Test")
-        let symlink = tempDir.appendingPathComponent(DailyFileLogger.symlinkName)
-        XCTAssertFalse(FileManager.default.fileExists(atPath: symlink.path), "Symlink must not be created in debug build")
+    func testDayRolloverDebugArchivesWithDebugSuffix() throws {
+        var day = makeDate(year: 2026, month: 1, day: 10)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: true, dateProvider: { day })
+        logger.info("debug-day-one", category: "Test")
+
+        day = makeDate(year: 2026, month: 1, day: 11)
+        logger.info("debug-day-two", category: "Test")
+
+        let archive = tempDir.appendingPathComponent("starsky-2026-01-10\(DailyFileLogger.debugSuffix).log")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: archive.path),
+                      "Previous day's debug log should be archived with -debug suffix")
+        let content = try String(contentsOf: archive)
+        XCTAssertTrue(content.contains("debug-day-one"))
     }
 
-    func testSymlinkPointsToCurrentLogFile() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
-        logger.info("symlink-target-test", category: "Test")
-        let symlink = tempDir.appendingPathComponent(DailyFileLogger.symlinkName)
-        let destination = try FileManager.default.destinationOfSymbolicLink(atPath: symlink.path)
-        XCTAssertTrue(destination.hasSuffix(".log"), "Symlink should point to a .log file")
-        XCTAssertFalse(destination.hasSuffix(DailyFileLogger.symlinkName), "Symlink must not point to itself")
-        XCTAssertFalse(destination.contains(DailyFileLogger.debugSuffix), "Symlink must not point to a debug log")
+    // MARK: - App restart
+
+    func testAppRestartArchivesExistingLatestFileByModDate() throws {
+        let latestFile = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        try "old-session-content\n".write(to: latestFile, atomically: true, encoding: .utf8)
+
+        // Set the modification date to 2026-01-09 so the logger can derive the archive name
+        let oldDate = makeDate(year: 2026, month: 1, day: 9)
+        try FileManager.default.setAttributes([.modificationDate: oldDate], ofItemAtPath: latestFile.path)
+
+        let newDay = makeDate(year: 2026, month: 1, day: 10)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false, dateProvider: { newDay })
+        logger.info("new-session", category: "Test")
+
+        let archive = tempDir.appendingPathComponent("starsky-2026-01-09.log")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: archive.path),
+                      "Previous session's latest should be archived using its modification date")
+        let archiveContent = try String(contentsOf: archive)
+        XCTAssertTrue(archiveContent.contains("old-session-content"))
+
+        let latestContent = try String(contentsOf: latestFile)
+        XCTAssertTrue(latestContent.contains("new-session"))
+        XCTAssertFalse(latestContent.contains("old-session-content"))
     }
 
-    func testSymlinkContentMatchesLogFile() throws {
-        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
-        logger.info("via-symlink", category: "Test")
-        let symlink = tempDir.appendingPathComponent(DailyFileLogger.symlinkName)
-        let content = try String(contentsOf: symlink)
-        XCTAssertTrue(content.contains("via-symlink"))
+    func testSameDayRestartAppendsToExistingLatestFile() throws {
+        // Use real Date() so the file's filesystem modification date matches the dateProvider.
+        let logger1 = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
+        logger1.info("session-one", category: "Test")
+
+        let logger2 = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
+        logger2.info("session-two", category: "Test")
+
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let content = try String(contentsOf: latest)
+        XCTAssertTrue(content.contains("session-one"))
+        XCTAssertTrue(content.contains("session-two"))
+    }
+
+    func testDayRolloverMergesIntoExistingArchive() throws {
+        // Pre-create the archive for day-one so the rollover hits the merge path (else branch).
+        let existingArchive = tempDir.appendingPathComponent("starsky-2026-01-10.log")
+        try "pre-existing\n".write(to: existingArchive, atomically: true, encoding: .utf8)
+
+        var day = makeDate(year: 2026, month: 1, day: 10)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false, dateProvider: { day })
+        logger.info("day-one", category: "Test")
+
+        day = makeDate(year: 2026, month: 1, day: 11)
+        logger.info("day-two", category: "Test")
+
+        // Archive must contain both the pre-existing content and day-one's entry
+        let content = try String(contentsOf: existingArchive)
+        XCTAssertTrue(content.contains("pre-existing"), "Pre-existing archive content must be kept")
+        XCTAssertTrue(content.contains("day-one"), "Latest content must be merged into the existing archive")
+
+        // Latest must only have day-two
+        let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let latestContent = try String(contentsOf: latest)
+        XCTAssertTrue(latestContent.contains("day-two"))
+        XCTAssertFalse(latestContent.contains("day-one"))
+    }
+
+    // MARK: - Log pruning
+
+    func testOldLogsAreDeletedAfter90Days() throws {
+        let fm = FileManager.default
+        // Plant a 91-day-old dated log file
+        let oldFile = tempDir.appendingPathComponent("starsky-2025-01-01.log")
+        try "old-content\n".write(to: oldFile, atomically: true, encoding: .utf8)
+
+        // Plant a recent dated log (within retention window)
+        let recentFile = tempDir.appendingPathComponent("starsky-2026-06-15.log")
+        try "recent-content\n".write(to: recentFile, atomically: true, encoding: .utf8)
+
+        // First write triggers pruning; "today" is 2026-09-11 (> 90 days after 2025-01-01)
+        let today = makeDate(year: 2026, month: 9, day: 11)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false, dateProvider: { today })
+        logger.info("trigger-prune", category: "Test")
+
+        XCTAssertFalse(fm.fileExists(atPath: oldFile.path), "Log older than 90 days should be deleted")
+        XCTAssertTrue(fm.fileExists(atPath: recentFile.path), "Recent log within 90 days should be kept")
+    }
+
+    func testPruneSkipsNonMatchingFiles() throws {
+        let fm = FileManager.default
+        let today = makeDate(year: 2026, month: 9, day: 11)
+
+        // Non-starsky prefix — must not be deleted
+        let otherPrefix = tempDir.appendingPathComponent("other-2025-01-01.log")
+        try "x\n".write(to: otherPrefix, atomically: true, encoding: .utf8)
+
+        // No .log extension — must not be deleted
+        let noExt = tempDir.appendingPathComponent("starsky-2025-01-01.txt")
+        try "x\n".write(to: noExt, atomically: true, encoding: .utf8)
+
+        // Unparseable date in name — must not be deleted
+        let badDate = tempDir.appendingPathComponent("starsky-notadate.log")
+        try "x\n".write(to: badDate, atomically: true, encoding: .utf8)
+
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false, dateProvider: { today })
+        logger.info("trigger-prune", category: "Test")
+
+        XCTAssertTrue(fm.fileExists(atPath: otherPrefix.path), "Non-starsky file must not be pruned")
+        XCTAssertTrue(fm.fileExists(atPath: noExt.path), "Non-.log file must not be pruned")
+        XCTAssertTrue(fm.fileExists(atPath: badDate.path), "File with unparseable date must not be pruned")
+    }
+
+    func testLatestFilesAreNeverPruned() throws {
+        let fm = FileManager.default
+        let latestFile = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let latestDebugFile = tempDir.appendingPathComponent(DailyFileLogger.latestDebugFileName)
+        try "latest\n".write(to: latestFile, atomically: true, encoding: .utf8)
+        try "latest-debug\n".write(to: latestDebugFile, atomically: true, encoding: .utf8)
+
+        // Set old modification dates to simulate them looking ancient
+        let ancientDate = makeDate(year: 2020, month: 1, day: 1)
+        try fm.setAttributes([.modificationDate: ancientDate], ofItemAtPath: latestFile.path)
+        try fm.setAttributes([.modificationDate: ancientDate], ofItemAtPath: latestDebugFile.path)
+
+        let today = makeDate(year: 2026, month: 9, day: 11)
+        let logger = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false, dateProvider: { today })
+        logger.info("trigger-prune", category: "Test")
+
+        // latestFile was archived (rolled over); latestDebugFile must survive — pruning must never touch it
+        XCTAssertTrue(fm.fileExists(atPath: latestDebugFile.path),
+                      "\(DailyFileLogger.latestDebugFileName) must not be deleted by pruning")
+    }
+
+    // MARK: - Helpers
+
+    private func makeDate(year: Int, month: Int, day: Int) -> Date {
+        var c = DateComponents()
+        c.year = year; c.month = month; c.day = day
+        c.hour = 12; c.minute = 0; c.second = 0
+        return Calendar(identifier: .gregorian).date(from: c)!
     }
 }
