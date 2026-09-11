@@ -48,6 +48,12 @@
 "mountwatcher.error.enable" = "MountWatcher kon niet worden ingeschakeld. De service kon niet worden geïnstalleerd.";
 "mountwatcher.error.disable" = "MountWatcher kon niet worden uitgeschakeld. De service kon niet worden verwijderd.";
 
+/* Update window */
+"update.window.title" = "Starsky-update beschikbaar";
+"update.window.message" = "Er is een nieuwe versie van Starsky beschikbaar.";
+"update.window.updateNow" = "Nu bijwerken";
+"update.window.close" = "Sluiten";
+
 /* Settings window */
 "settings.updateCheck.preRelease" = "Inclusief pre-releaseversies";
 "settings.updateCheck.checkNow" = "Nu controleren";

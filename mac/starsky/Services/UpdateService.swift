@@ -26,23 +26,21 @@ private class SparkleUpdaterDelegate: NSObject, SPUUpdaterDelegate {
 
 class UpdateService {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "UpdateService")
+    private let fileLogger: DailyFileLogger?
     private let settingsService: SettingsService
     private var updaterController: SPUStandardUpdaterController?
     private var sparkleDelegate: SparkleUpdaterDelegate?
-    private var isStarted = false
+    var isStarted = false
     static let suppressMinutes: Double = 5760
 
-    init(settingsService: SettingsService) {
+    init(settingsService: SettingsService, fileLogger: DailyFileLogger? = nil) {
         self.settingsService = settingsService
-        do {
-            updaterController = try makeUpdaterController()
-        } catch {
-            logger.warning("Sparkle updater unavailable: \(error.localizedDescription)")
-            updaterController = nil
-        }
+        self.fileLogger = fileLogger
+        updaterController = nil
+        updaterController = makeSparkleController()
     }
 
-    private func makeUpdaterController() throws -> SPUStandardUpdaterController {
+    func makeSparkleController() -> SPUStandardUpdaterController? {
         let delegate = SparkleUpdaterDelegate(updateService: self)
         sparkleDelegate = delegate
         return SPUStandardUpdaterController(
@@ -84,30 +82,46 @@ class UpdateService {
     }
 
     func applyUpdate() {
-        guard let controller = updaterController else { return }
+        guard let controller = updaterController else {
+            logger.error("applyUpdate called but Sparkle updater is unavailable")
+            fileLogger?.error("applyUpdate called but Sparkle updater is unavailable", category: "UpdateService")
+            return
+        }
         logPublicKeyPrefix()
         DispatchQueue.main.async {
             self.startIfNeeded(controller)
+            guard controller.updater.canCheckForUpdates else {
+                self.logger.warning("applyUpdate: canCheckForUpdates is false, skipping")
+                self.fileLogger?.warning("applyUpdate: canCheckForUpdates is false, skipping", category: "UpdateService")
+                return
+            }
             controller.updater.checkForUpdates()
         }
     }
 
     private func logPublicKeyPrefix() {
-        if let key = Bundle.main.infoDictionary?["SUPublicEDKey"] as? String, !key.isEmpty {
+        logPublicKeyPrefix(infoDictionary: Bundle.main.infoDictionary)
+    }
+
+    func logPublicKeyPrefix(infoDictionary: [String: Any]?) {
+        if let key = infoDictionary?["SUPublicEDKey"] as? String, !key.isEmpty {
             let prefix = String(key.prefix(15))
             logger.info("SUPublicEDKey prefix: \(prefix)")
+            fileLogger?.info("SUPublicEDKey prefix: \(prefix)", category: "UpdateService")
         } else {
             logger.warning("SUPublicEDKey is not set")
+            fileLogger?.warning("SUPublicEDKey is not set", category: "UpdateService")
         }
     }
 
-    private func startIfNeeded(_ controller: SPUStandardUpdaterController) {
+    func startIfNeeded(_ controller: SPUStandardUpdaterController) {
         guard !isStarted else { return }
         do {
             try controller.updater.start()
             isStarted = true
         } catch {
             logger.warning("Sparkle startUpdater failed: \(error.localizedDescription)")
+            fileLogger?.error("Sparkle startUpdater failed: \(error.localizedDescription)", category: "UpdateService")
         }
     }
 

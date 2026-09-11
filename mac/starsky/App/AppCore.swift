@@ -28,6 +28,7 @@ class AppCore {
     var portFinder: () -> Int
 
     private(set) var localPort: Int = 0
+    private(set) var updateWindowController: UpdateWindowController?
 
     static let docsURL = URL(string: "https://qdraw.nl/special/starsky/docs/")!
     static let releasesURL = URL(string: "https://github.com/qdraw/starsky/releases")!
@@ -166,6 +167,7 @@ class AppCore {
                 let updateWindow = UpdateWindowController(updateService: updateService)
                 updateWindow.window?.center()
                 updateWindow.showWindow(nil)
+                self.updateWindowController = updateWindow
             }
         }
     }

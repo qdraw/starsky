@@ -44,7 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let mws = MountWatcherService()
         mountWatcherService = mws
 
-        let updateService = UpdateService(settingsService: settingsService)
+        let updateService = UpdateService(settingsService: settingsService, fileLogger: fileLogger)
         let bs = BackendService(fileLogger: fileLogger)
         backendService = bs
         core = AppCore(

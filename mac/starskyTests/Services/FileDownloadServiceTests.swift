@@ -282,16 +282,18 @@ final class FileDownloadServiceTests: XCTestCase {
             return []
         })
 
-        // Drain the watcher queue so any FSEvents callback that fired concurrently
-        // during the download has fully completed before we read providerCallCount.
-        await withCheckedContinuation { continuation in
-            service.watcherQueue.async { continuation.resume() }
-        }
-
-        // Provider should not have been called yet (only called on change)
-        XCTAssertEqual(providerCallCount, 0)
         let destFile = tempDir.appendingPathComponent("photos/test.jpg")
         XCTAssertTrue(FileManager.default.fileExists(atPath: destFile.path))
+
+        // Verify the watcher was registered — this is the primary assertion for this test.
+        // isWatching syncs on watcherQueue internally, so this is deterministic.
+        XCTAssertTrue(service.isWatching(localURL: destFile),
+                      "File should be registered as watched after downloadAndOpen with a cookieProvider")
+
+        // Provider must not have been called during or immediately after download:
+        // cookieProvider is only invoked inside performUpload, which runs after a 1-second
+        // debounce on top of FSEvents latency (≥0.5 s), so at least 1.5 s must elapse first.
+        XCTAssertEqual(providerCallCount, 0)
     }
 
     func testUploadErrorDescriptions() {

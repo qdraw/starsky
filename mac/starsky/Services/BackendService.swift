@@ -114,7 +114,7 @@ class BackendService: @unchecked Sendable {
         fileLogger.info("Backend force stopped", category: "BackendService")
     }
 
-    private func onProcessExited(port: Int) {
+    func onProcessExited(port: Int) {
         guard !isShuttingDown, !hasRestarted else { return }
         hasRestarted = true
         if !hasTriedQuarantineClear, let path = currentExePath {
@@ -148,10 +148,12 @@ class BackendService: @unchecked Sendable {
         codesign.executableURL = URL(fileURLWithPath: codesignPath)
         codesign.arguments = ["--force", "--deep", "-s", "-", path]
         if (try? codesign.run()) != nil { codesign.waitUntilExit() }
-        quarantineDidClear(path: path)
+        quarantineDidClear(path)
     }
 
-    func quarantineDidClear(path: String) {}
+    func quarantineDidClear(_: String) {
+        // Intentionally no-op by default: hook in tests (leave comment inside class)
+    }
 
     static func buildEnvironment(port: Int) -> [String: String] {
         var env = ProcessInfo.processInfo.environment

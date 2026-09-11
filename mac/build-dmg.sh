@@ -29,6 +29,7 @@ SIGN=false
 SKIP_BACKEND=false
 OUTPUT_DIR="$REPO_ROOT/mac/dist"
 TEAM_ID="${APPLE_TEAM_ID:-}"
+SPARKLE_KEY="${SPARKLE_PUBLIC_ED_KEY:-}"
 
 usage() {
     sed -n '/^# Usage/,/^$/p' "$0" | sed 's/^# \?//'
@@ -140,7 +141,8 @@ if $SIGN; then
         DEVELOPMENT_TEAM="$TEAM_ID" \
         CODE_SIGN_IDENTITY="Developer ID Application" \
         ARCHS="$ARCHS_VAL" \
-        ONLY_ACTIVE_ARCH="$ONLY_ACTIVE"
+        ONLY_ACTIVE_ARCH="$ONLY_ACTIVE" \
+        SPARKLE_PUBLIC_ED_KEY="$SPARKLE_KEY"
 else
     xcodebuild archive \
         -project "$MAC_DIR/starsky.xcodeproj" \
@@ -151,7 +153,8 @@ else
         CODE_SIGNING_REQUIRED=NO \
         CODE_SIGNING_ALLOWED=NO \
         ARCHS="$ARCHS_VAL" \
-        ONLY_ACTIVE_ARCH="$ONLY_ACTIVE"
+        ONLY_ACTIVE_ARCH="$ONLY_ACTIVE" \
+        SPARKLE_PUBLIC_ED_KEY="$SPARKLE_KEY"
 fi
 
 # ── Step 4: Export ────────────────────────────────────────────────────────────

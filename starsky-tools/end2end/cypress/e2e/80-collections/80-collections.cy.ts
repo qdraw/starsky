@@ -37,16 +37,16 @@ describe("Collections / stacked files (80)", () => {
       headers: { "Content-Type": "text/plain" },
     }).then((response) => {
       expect(response.status).to.eq(200);
-      if (response.body.fileIndexItems.length >= 2) return;
+      const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
+      const hasJpg = items.some((i) => i.filePath === filePathJpg);
+      const hasMp4 = items.some((i) => i.filePath === filePathMp4);
+      if (hasJpg && hasMp4) return;
       cy.wait(1500);
       index++;
       if (index < max) {
         waitUntilBothIndexed(index, max);
       } else {
-        expect(
-          response.body.fileIndexItems.length,
-          "both jpg and mp4 should be indexed before proceeding"
-        ).to.be.at.least(2);
+        expect(hasJpg && hasMp4, "both jpg and mp4 should be indexed before proceeding").to.be.true;
       }
     });
   }
@@ -92,10 +92,10 @@ describe("Collections / stacked files (80)", () => {
     if (!config.isEnabled) return;
 
     cy.visit(`${config.url}/${fileNameJpg}`);
-
     cy.get("[data-test=menu-detail-view-labels]").click();
 
-    cy.get("[data-test=collections]").eq(1).click();
+    cy.get("[data-test=collections]").should("have.length", 2);
+    cy.contains("[data-test=collections]", fileNameMp4).scrollIntoView().click();
 
     cy.url({ timeout: 10000 }).should("contain", fileNameMp4);
   });

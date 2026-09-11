@@ -313,6 +313,13 @@ class FileDownloadService: @unchecked Sendable {
         fileLogger.info("Uploaded \(filename) to \(remotePath)", category: "FileDownloadService")
     }
 
+    // MARK: - Test support
+
+    internal func isWatching(localURL: URL) -> Bool {
+        let key = localURL.resolvingSymlinksInPath().path
+        return watcherQueue.sync { remoteContexts[key] != nil }
+    }
+
     // MARK: - Helpers
 
     private func mtime(of url: URL) -> Date? {

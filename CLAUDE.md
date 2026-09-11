@@ -99,6 +99,7 @@ node starsky-tools/build-tools/app-version-update.js
 - Comments should explain *why*, not *what*. Avoid restating what the code already says.
 - Documentation for users goes in `documentation/docs/`.
 - **Do not create git commits.** Leave committing to the user.
+- **Do not use explicit system binary paths in tests** (e.g. `/usr/bin/true`, `/usr/bin/xattr`). Use the class's default constructor or a `FakeStarskyBin`-style helper; the existing `TestableBackendService` already provides the right defaults for process tests.
 
 ## macOS app architecture (mac/)
 

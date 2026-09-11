@@ -291,6 +291,32 @@ final class BackendServiceTests: XCTestCase {
                        "clearQuarantine should be called exactly once after the first unexpected exit")
     }
 
+    func testQuarantineDidClearBaseClassIsNoop() {
+        // Calls the no-op base class implementation directly (not the TestableBackendService override)
+        let service = BackendService(fileLogger: DailyFileLogger())
+        service.quarantineDidClear("any/path")
+    }
+
+    func testOnProcessExitedElseBranchWithNilCurrentExePath() {
+        // currentExePath starts nil (start() was never called) so onProcessExited hits the else branch.
+        let logDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try? FileManager.default.createDirectory(at: logDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: logDir) }
+
+        let service = BackendService(fileLogger: DailyFileLogger(logsDirectory: logDir))
+        service.restartDelay = 0.01
+        service.onProcessExited(port: 0)
+        Thread.sleep(forTimeInterval: 0.1)
+
+        let debugLog = logDir.appendingPathComponent(DailyFileLogger.latestDebugFileName)
+        let releaseLog = logDir.appendingPathComponent(DailyFileLogger.latestFileName)
+        let content = (try? String(contentsOf: debugLog, encoding: .utf8))
+            ?? (try? String(contentsOf: releaseLog, encoding: .utf8))
+            ?? ""
+        XCTAssertTrue(content.contains("restarting in 2 s"),
+                      "Expected restart-warning log entry from else branch; got:\n\(content)")
+    }
+
     private func waitForReadyMarker(_ marker: URL, timeout: TimeInterval = 2) throws {
         let deadline = Date().addingTimeInterval(timeout)
         while !FileManager.default.fileExists(atPath: marker.path) {
@@ -310,7 +336,7 @@ private class TestableBackendService: BackendService, @unchecked Sendable {
         return fakeExeURL
     }
 
-    override func quarantineDidClear(path: String) {
+    override func quarantineDidClear(_ path: String) {
         quarantineClearCount += 1
     }
 }
