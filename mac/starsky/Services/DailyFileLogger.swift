@@ -75,9 +75,12 @@ class DailyFileLogger {
         if let s = archiveDateSuffix {
             dateSuffix = s
         } else {
+            // App restart: if the file is already from today, keep appending to it.
             let attrs = try? fm.attributesOfItem(atPath: latestFile.path)
             let modDate = (attrs?[.modificationDate] as? Date) ?? dateProvider()
-            dateSuffix = fileDateFormatter.string(from: modDate)
+            let modSuffix = fileDateFormatter.string(from: modDate)
+            if modSuffix == fileDateFormatter.string(from: dateProvider()) { return }
+            dateSuffix = modSuffix
         }
 
         let archiveName = isDebug
