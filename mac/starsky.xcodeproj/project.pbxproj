@@ -112,6 +112,7 @@
 		064147AE75ED8E46531D7841 /* MountWatcherServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MountWatcherServiceTests.swift; sourceTree = "<group>"; };
 		066BB49FDF5E95A8E40A5FA2 /* FileWatcherServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatcherServiceProtocol.swift; sourceTree = "<group>"; };
 		07655E3EE2770129AD67DA87 /* SettingsPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPresenterTests.swift; sourceTree = "<group>"; };
+		0D26DE8C0DEA33C56509D3BC /* history.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = history.md; sourceTree = "<group>"; };
 		12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyFileLogger.swift; sourceTree = "<group>"; };
 		13F6B9B261337B367BAE7B88 /* FileDownloadServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadServiceTests.swift; sourceTree = "<group>"; };
 		1595DFCCE586B6DD9B02AC5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -240,6 +241,15 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		1AB772749DFD92095608D732 /* starsky */ = {
+			isa = PBXGroup;
+			children = (
+				0D26DE8C0DEA33C56509D3BC /* history.md */,
+			);
+			name = starsky;
+			path = ..;
+			sourceTree = "<group>";
+		};
 		3C7FFDB383093FBECF9207B1 /* FakeCreateAn */ = {
 			isa = PBXGroup;
 			children = (
@@ -270,6 +280,7 @@
 			isa = PBXGroup;
 			children = (
 				55A1E52776205BFE7BB4B7A3 /* starsky */,
+				1AB772749DFD92095608D732 /* starsky */,
 				E498ECBFB59C2BB86270A022 /* starskyTests */,
 				E215F7E68D0EFC516B8D19BE /* Products */,
 			);

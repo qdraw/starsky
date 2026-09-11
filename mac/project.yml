@@ -11,6 +11,9 @@ packages:
     url: https://github.com/sparkle-project/Sparkle
     from: 2.9.6
 
+fileGroups:
+  - ../history.md
+
 settings:
   base:
     SWIFT_VERSION: "5.10"
