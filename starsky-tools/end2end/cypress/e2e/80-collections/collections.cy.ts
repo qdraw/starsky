@@ -91,7 +91,7 @@ describe("Collections / stacked files (80)", () => {
   it("Detail view: clicking the mp4 collection entry navigates to the mp4 (80)", () => {
     if (!config.isEnabled) return;
 
-    cy.intercept("GET", "/api/info*").as("infoRequest");
+    cy.intercept("GET", "**/api/info*").as("infoRequest");
     cy.visit(`${config.url}/${fileNameJpg}`);
 
     cy.get("[data-test=menu-detail-view-labels]").click();
