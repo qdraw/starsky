@@ -114,7 +114,7 @@ class BackendService: @unchecked Sendable {
         fileLogger.info("Backend force stopped", category: "BackendService")
     }
 
-    private func onProcessExited(port: Int) {
+    func onProcessExited(port: Int) {
         guard !isShuttingDown, !hasRestarted else { return }
         hasRestarted = true
         if !hasTriedQuarantineClear, let path = currentExePath {

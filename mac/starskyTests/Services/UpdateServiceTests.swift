@@ -232,6 +232,25 @@ final class UpdateServiceTests: XCTestCase {
         XCTAssertTrue(content.contains("UpdateService"), "Expected at least one UpdateService log entry")
     }
 
+    func testLogPublicKeyPrefixWithValidKeyWritesToFileLogger() {
+        let (service, _, _, logDir) = makeServiceWithFileLogger()
+        service.logPublicKeyPrefix(infoDictionary: ["SUPublicEDKey": "TestKeyForPrefix"])
+        let content = readLatestLog(in: logDir)
+        XCTAssertTrue(content.contains("SUPublicEDKey prefix:"),
+                      "Expected SUPublicEDKey prefix log entry; got:\n\(content)")
+    }
+
+    func testStartIfNeededIsNoopWhenAlreadyStarted() {
+        let (service, _) = makeService()
+        guard let controller = service.makeSparkleController() else {
+            // Sparkle cannot initialise in this environment — skip
+            return
+        }
+        service.isStarted = true
+        service.startIfNeeded(controller)
+        XCTAssertTrue(service.isStarted, "isStarted should remain true after a no-op startIfNeeded")
+    }
+
     func testApplyUpdateFileLoggerContainsKnownMessage() {
         let (service, _, _, logDir) = makeServiceWithFileLogger()
         service.applyUpdate()

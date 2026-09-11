@@ -30,7 +30,7 @@ class UpdateService {
     private let settingsService: SettingsService
     private var updaterController: SPUStandardUpdaterController?
     private var sparkleDelegate: SparkleUpdaterDelegate?
-    private var isStarted = false
+    var isStarted = false
     static let suppressMinutes: Double = 5760
 
     init(settingsService: SettingsService, fileLogger: DailyFileLogger? = nil) {
@@ -100,7 +100,11 @@ class UpdateService {
     }
 
     private func logPublicKeyPrefix() {
-        if let key = Bundle.main.infoDictionary?["SUPublicEDKey"] as? String, !key.isEmpty {
+        logPublicKeyPrefix(infoDictionary: Bundle.main.infoDictionary)
+    }
+
+    func logPublicKeyPrefix(infoDictionary: [String: Any]?) {
+        if let key = infoDictionary?["SUPublicEDKey"] as? String, !key.isEmpty {
             let prefix = String(key.prefix(15))
             logger.info("SUPublicEDKey prefix: \(prefix)")
             fileLogger?.info("SUPublicEDKey prefix: \(prefix)", category: "UpdateService")
@@ -110,7 +114,7 @@ class UpdateService {
         }
     }
 
-    private func startIfNeeded(_ controller: SPUStandardUpdaterController) {
+    func startIfNeeded(_ controller: SPUStandardUpdaterController) {
         guard !isStarted else { return }
         do {
             try controller.updater.start()

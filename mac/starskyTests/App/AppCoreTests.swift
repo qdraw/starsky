@@ -4,6 +4,10 @@ import AppKit
 
 // MARK: - Test doubles
 
+private final class AlwaysUpdateService: UpdateService {
+    override func checkAsync() async -> Bool { true }
+}
+
 private final class MockBackendService: BackendServiceProtocol, @unchecked Sendable {
     var isRunning: Bool = false
     var startCalled = false
@@ -597,6 +601,37 @@ final class AppCoreTests: XCTestCase {
         // no positive signal to wait on here, so give the background queue a generous head start
         try? await Task.sleep(nanoseconds: 300_000_000)
         XCTAssertFalse(mws.stopSyncCalled)
+    }
+
+    func testFinishStartupSetsUpdateWindowControllerWhenUpdateIsAvailable() async {
+        let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        let settings = SettingsService(settingsFile: tempDir.appendingPathComponent("s.json"))
+        settings.load()
+
+        let core = AppCore(
+            settingsService: settings,
+            backendService: MockBackendService(),
+            fileWatcherService: MockFileWatcherService(),
+            updateService: AlwaysUpdateService(settingsService: settings),
+            windowManager: MockWindowManager(),
+            terminate: {},
+            replyToTerminate: {},
+            showError: { _ in },
+            urlOpener: { _ in },
+            healthCheckSession: FakeURLProtocol.makeSession(),
+            updateCheckDelay: 0,
+            healthCheckRetryDelay: 0,
+            healthCheckTimeoutSeconds: 0
+        )
+        core.terminateDelay = 0
+
+        await core.finishStartup()
+
+        XCTAssertNotNil(core.updateWindowController,
+                        "updateWindowController should be set when an update is available")
     }
 
     /// Polls a condition on a background queue's async work, avoiding flaky fixed sleeps under CI load.
