@@ -167,11 +167,11 @@ final class DailyFileLoggerTests: XCTestCase {
     }
 
     func testSameDayRestartAppendsToExistingLatestFile() throws {
-        let today = makeDate(year: 2026, month: 1, day: 10)
-        let logger1 = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false, dateProvider: { today })
+        // Use real Date() so the file's filesystem modification date matches the dateProvider.
+        let logger1 = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
         logger1.info("session-one", category: "Test")
 
-        let logger2 = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false, dateProvider: { today })
+        let logger2 = DailyFileLogger(logsDirectory: tempDir, isDebugBuild: false)
         logger2.info("session-two", category: "Test")
 
         let latest = tempDir.appendingPathComponent(DailyFileLogger.latestFileName)
