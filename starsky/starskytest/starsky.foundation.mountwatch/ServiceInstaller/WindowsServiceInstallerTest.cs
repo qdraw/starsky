@@ -56,6 +56,67 @@ public sealed class WindowsServiceInstallerTest
 	}
 
 	[TestMethod]
+	public async Task InstallAsync_Exe_IncludesConnectionArg()
+	{
+		var calls = new List<(string fileName, string args)>();
+		var sut = new WindowsServiceInstaller(new FakeIWebLogger(),
+			(fileName, args) =>
+			{
+				calls.Add(( fileName, args ));
+				return Task.FromResult(true);
+			},
+			(_, _) => Task.FromResult(( true, string.Empty, 0 )),
+			_ => Task.CompletedTask);
+
+		await sut.InstallAsync("C:/apps/starskymountwatchercli.exe");
+
+		Assert.HasCount(1, calls);
+		Assert.Contains("--connection", calls[0].args);
+		Assert.Contains("starsky.db", calls[0].args);
+	}
+
+	[TestMethod]
+	public async Task InstallAsync_Exe_IncludesAppsettingsPathArgs()
+	{
+		var calls = new List<(string fileName, string args)>();
+		var sut = new WindowsServiceInstaller(new FakeIWebLogger(),
+			(fileName, args) =>
+			{
+				calls.Add(( fileName, args ));
+				return Task.FromResult(true);
+			},
+			(_, _) => Task.FromResult(( true, string.Empty, 0 )),
+			_ => Task.CompletedTask);
+
+		await sut.InstallAsync("C:/apps/starskymountwatchercli.exe");
+
+		Assert.HasCount(1, calls);
+		Assert.Contains("--appsettingspath", calls[0].args);
+		Assert.Contains("--appsettingslocalpath", calls[0].args);
+		Assert.Contains("appsettings.json", calls[0].args);
+	}
+
+	[TestMethod]
+	public async Task InstallAsync_Exe_IncludesTempFolderArgs()
+	{
+		var calls = new List<(string fileName, string args)>();
+		var sut = new WindowsServiceInstaller(new FakeIWebLogger(),
+			(fileName, args) =>
+			{
+				calls.Add(( fileName, args ));
+				return Task.FromResult(true);
+			},
+			(_, _) => Task.FromResult(( true, string.Empty, 0 )),
+			_ => Task.CompletedTask);
+
+		await sut.InstallAsync("C:/apps/starskymountwatchercli.exe");
+
+		Assert.HasCount(1, calls);
+		Assert.Contains("--thumbnailtempfolder", calls[0].args);
+		Assert.Contains("--tempfolder", calls[0].args);
+	}
+
+	[TestMethod]
 	public async Task StartAsync_RetriesOnce_WhenFirstStartFails()
 	{
 		var calls = new List<(string fileName, string args)>();

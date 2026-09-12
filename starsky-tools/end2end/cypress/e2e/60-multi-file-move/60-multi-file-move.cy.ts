@@ -74,9 +74,18 @@ describe("Delete file from upload (50)", () => {
     cy.visit(config.url);
     cy.wait(500);
 
-    cy.get(".item.item--select").click();
-    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click({ force: true });
-    cy.get(`[data-filepath="/starsky-end2end-test/${fileName2}"] button`).click({ force: true });
+    cy.get(".item.item--select", { timeout: 20000 }).click();
+    cy.get('[data-test="selected-0"]', { timeout: 20000 }).should("exist");
+
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`, { timeout: 20000 })
+      .should("exist")
+      .click({ force: true });
+    cy.get('[data-test="selected-1"]', { timeout: 20000 }).should("exist");
+
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName2}"] button`, { timeout: 20000 })
+      .should("exist")
+      .click({ force: true });
+    cy.get('[data-test="selected-2"]', { timeout: 20000 }).should("exist");
 
     cy.get(".item.item--more").click();
     cy.get("[data-test=menu-context]").should("be.visible");
@@ -92,10 +101,23 @@ describe("Delete file from upload (50)", () => {
      // and undo
 
     cy.visit(config.urlSubFolder);
-    cy.get(".item.item--select").click();
+    cy.get(".item.item--select", { timeout: 20000 }).click();
+    cy.get('[data-test="selected-0"]', { timeout: 20000 }).should("exist");
 
-    cy.get(`[data-filepath="/starsky-end2end-test/child_folder/${fileName1}"] button`).click({ force: true });
-    cy.get(`[data-filepath="/starsky-end2end-test/child_folder/${fileName2}"] button`).click({ force: true });
+    cy.get(`[data-filepath="/starsky-end2end-test/child_folder/${fileName1}"] button`, {
+      timeout: 20000
+    })
+      .should("exist")
+      .click({ force: true });
+    cy.get('[data-test="selected-1"]', { timeout: 20000 }).should("exist");
+
+    cy.get(`[data-filepath="/starsky-end2end-test/child_folder/${fileName2}"] button`, {
+      timeout: 20000
+    })
+      .should("exist")
+      .click({ force: true });
+    cy.get('[data-test="selected-2"]', { timeout: 20000 }).should("exist");
+
     cy.get(".item.item--more").click();
     cy.get("[data-test=menu-context]").should("be.visible");
 
@@ -156,11 +178,17 @@ describe("Delete file from upload (50)", () => {
     for (const url of urls) {
         cy.get(`[data-filepath="${url}"]`, { timeout: 20000 }).should("exist");
     }
-    cy.get(".item.item--select").click();
+    cy.get(".item.item--select", { timeout: 20000 }).click();
+    // select mode is only active when the select counter is rendered
+    cy.get('[data-test="selected-0"]', { timeout: 20000 }).should("exist");
 
-    for (const url of urls) {
-        cy.get(`[data-filepath="${url}"] button`).click({ force: true });
-    }
+    urls.forEach((url, index) => {
+        cy.get(`[data-filepath="${url}"] button`, { timeout: 20000 })
+          .should("exist")
+          .click({ force: true });
+        // the list re-renders after each selection, so wait until it is registered
+        cy.get(`[data-test="selected-${index + 1}"]`, { timeout: 20000 }).should("exist");
+    });
     cy.get(".item.item--more").click();
     cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=trash]").click();

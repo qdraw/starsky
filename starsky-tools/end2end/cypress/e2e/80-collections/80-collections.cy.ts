@@ -28,6 +28,7 @@ describe("Collections / stacked files (80)", () => {
     cy.fileRequest(fileNameMp4, "/starsky-end2end-test", "video/mp4");
 
     waitUntilBothIndexed(0);
+    waitUntilCollectionReady(0);
   });
 
   function waitUntilBothIndexed(index: number, max: number = 10) {
@@ -47,6 +48,25 @@ describe("Collections / stacked files (80)", () => {
         waitUntilBothIndexed(index, max);
       } else {
         expect(hasJpg && hasMp4, "both jpg and mp4 should be indexed before proceeding").to.be.true;
+      }
+    });
+  }
+
+  function waitUntilCollectionReady(index: number, max: number = 10) {
+    cy.request({
+      url: `/starsky/api/info?f=${filePathJpg}&json=true`,
+      method: "GET",
+      headers: { "Content-Type": "text/plain" },
+    }).then((response) => {
+      if (response.status === 200 && Array.isArray(response.body) && response.body.length >= 2) {
+        return;
+      }
+      cy.wait(1500);
+      index++;
+      if (index < max) {
+        waitUntilCollectionReady(index, max);
+      } else {
+        expect(response.body.length, "info endpoint should return 2 collection members").to.be.at.least(2);
       }
     });
   }

@@ -101,6 +101,46 @@ public sealed class ServiceInstallerTest
 	}
 
 	[TestMethod]
+	public void GenerateMacOsPlist_ContainsAppSettingsPathEnvVar()
+	{
+		var plist = ServiceInstallerHelper.GenerateMacOsPlist("/any/path", "nl.qdraw.mountwatcher");
+		Assert.Contains("app__appsettingspath", plist);
+		Assert.Contains("appsettings.json", plist);
+	}
+
+	[TestMethod]
+	public void GenerateMacOsPlist_ContainsAppSettingsLocalPathEnvVar()
+	{
+		var plist = ServiceInstallerHelper.GenerateMacOsPlist("/any/path", "nl.qdraw.mountwatcher");
+		Assert.Contains("app__appsettingslocalpath", plist);
+		Assert.Contains("appsettings.local.json", plist);
+	}
+
+	[TestMethod]
+	public void GenerateMacOsPlist_ContainsDatabaseConnectionEnvVar()
+	{
+		var plist = ServiceInstallerHelper.GenerateMacOsPlist("/any/path", "nl.qdraw.mountwatcher");
+		Assert.Contains("app__databaseConnection", plist);
+		Assert.Contains("starsky.db", plist);
+	}
+
+	[TestMethod]
+	public void GenerateMacOsPlist_ContainsTempFolderEnvVar()
+	{
+		var plist = ServiceInstallerHelper.GenerateMacOsPlist("/any/path", "nl.qdraw.mountwatcher");
+		Assert.Contains("app__tempFolder", plist);
+		Assert.Contains("app__thumbnailTempFolder", plist);
+	}
+
+	[TestMethod]
+	public void GenerateMacOsPlist_EnvVarsPointToLibraryAppSupport()
+	{
+		var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+		var plist = ServiceInstallerHelper.GenerateMacOsPlist("/any/path", "nl.qdraw.mountwatcher");
+		Assert.Contains(Path.Combine(home, "Library", "Application Support", "starsky"), plist);
+	}
+
+	[TestMethod]
 	public void GenerateLinuxSystemdUnit_ContainsExecStart()
 	{
 		const string execPath = "/usr/local/bin/starskymountwatchercli";

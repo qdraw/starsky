@@ -59,6 +59,13 @@ describe("Delete file from upload (50)", () => {
     waitOnUploadIsDone(0);
   });
 
+  const allFilePaths = [
+    `/starsky-end2end-test/${fileName1}`,
+    `/starsky-end2end-test/${fileName2}`,
+    `/starsky-end2end-test/${fileName3}`,
+    `/starsky-end2end-test/${fileName4}`,
+  ];
+
   it(
     "check if upload is done (50)",
     {
@@ -67,7 +74,10 @@ describe("Delete file from upload (50)", () => {
     () => {
       cy.request(config.urlApiCollectionsFalse).then((res) => {
         expect(res.status).to.eq(200);
-        expect(res.body.fileIndexItems.length).to.eq(4);
+        const items: Array<{ filePath: string }> = res.body.fileIndexItems ?? [];
+        for (const fp of allFilePaths) {
+          expect(items.some((i) => i.filePath === fp), `${fp} should be indexed`).to.be.true;
+        }
       });
     },
   );
@@ -83,8 +93,10 @@ describe("Delete file from upload (50)", () => {
       expect(response.status).to.eq(200);
       cy.log(JSON.stringify(response.body.fileIndexItems));
 
-      if (response.body.fileIndexItems.length === 4) {
-        cy.log("4 items, done");
+      const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
+      const allPresent = allFilePaths.every((fp) => items.some((i) => i.filePath === fp));
+      if (allPresent) {
+        cy.log("all 4 items indexed, done");
         return;
       }
       cy.wait(1500);
@@ -98,9 +110,11 @@ describe("Delete file from upload (50)", () => {
   it("remove collection item, but not the other file (50)", () => {
     cy.visit(config.urlVideoItemCollectionsFalse);
 
+    cy.intercept("**/api/trash/move-to-trash").as("trashMp4");
     cy.get(".item.item--more").click();
     cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=trash]").click();
+    cy.wait("@trashMp4");
 
     cy.visit(config.url);
     cy.get(".folder > div").should(($lis) => {
@@ -133,10 +147,18 @@ describe("Delete file from upload (50)", () => {
 
     cy.wait(500);
 
-    // test 50
+    // test 50: mp4 should be gone, jpg should still be present
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200);
-      expect(res.body.fileIndexItems.length).to.eq(3);
+      const items: Array<{ filePath: string }> = res.body.fileIndexItems ?? [];
+      expect(
+        items.some((i) => i.filePath === `/starsky-end2end-test/${fileName4}`),
+        `${fileName4} should be deleted`
+      ).to.be.false;
+      expect(
+        items.some((i) => i.filePath === `/starsky-end2end-test/${fileName3}`),
+        `${fileName3} should still exist`
+      ).to.be.true;
     });
 
     cy.visit(config.url);
