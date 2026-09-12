@@ -145,16 +145,13 @@ describe("Delete file from upload (50)", () => {
     cy.get(".modal .btn.btn--default").click();
     cy.wait("@delete4");
 
-    cy.wait(500);
+    // The permanent delete is async — poll until the index no longer includes the mp4.
+    waitUntilFileAbsent(`/starsky-end2end-test/${fileName4}`);
 
-    // test 50: mp4 should be gone, jpg should still be present
+    // Once mp4 is confirmed gone, verify jpg still exists.
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200);
       const items: Array<{ filePath: string }> = res.body.fileIndexItems ?? [];
-      expect(
-        items.some((i) => i.filePath === `/starsky-end2end-test/${fileName4}`),
-        `${fileName4} should be deleted`
-      ).to.be.false;
       expect(
         items.some((i) => i.filePath === `/starsky-end2end-test/${fileName3}`),
         `${fileName3} should still exist`
@@ -169,6 +166,28 @@ describe("Delete file from upload (50)", () => {
       expect($lis).to.have.length(3);
     });
   });
+
+  function waitUntilFileAbsent(filePath: string, index: number = 0, max: number = 15) {
+    cy.request({
+      url: config.urlApiCollectionsFalse,
+      method: "GET",
+      headers: { "Content-Type": "text/plain" },
+    }).then((response) => {
+      const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
+      const stillPresent = items.some((i) => i.filePath === filePath);
+      if (!stillPresent) {
+        cy.log(`${filePath} confirmed absent from index`);
+        return;
+      }
+      cy.wait(1500);
+      index++;
+      if (index < max) {
+        waitUntilFileAbsent(filePath, index, max);
+      } else {
+        expect(stillPresent, `${filePath} should be deleted`).to.be.false;
+      }
+    });
+  }
 
   function waitFileInSearchResults(index: number, filePath: string, max: number = 15) {
     cy.request({

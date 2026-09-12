@@ -4,52 +4,52 @@ import AppKit
 @MainActor
 final class DownloadCoordinatorTests: XCTestCase {
 
-    // MARK: - savePanelPresenter is called with the suggested filename
+    // MARK: - decideDownloadDestination: nil window → completion(nil)
 
-    func testSavePanelPresenterReceivesSuggestedFilename() {
+    func testDecideDestinationCallsNilCompletionWhenWindowIsNil() {
         let coordinator = DownloadCoordinator(window: nil)
-        var capturedFilename: String?
-        coordinator.savePanelPresenter = { filename, _, completion in
-            capturedFilename = filename
-            completion(nil)
-        }
-
-        coordinator.savePanelPresenter("export.zip", nil) { _ in }
-
-        XCTAssertEqual(capturedFilename, "export.zip")
-    }
-
-    // MARK: - savePanelPresenter is called with the coordinator's window
-
-    func testSavePanelPresenterReceivesWindow() {
-        let win = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
-            styleMask: .borderless,
-            backing: .buffered,
-            defer: true
-        )
-        let coordinator = DownloadCoordinator(window: win)
-        var capturedWindow: NSWindow?
-        coordinator.savePanelPresenter = { _, window, completion in
-            capturedWindow = window
-            completion(nil)
-        }
-
-        coordinator.savePanelPresenter("test.zip", win) { _ in }
-
-        XCTAssertTrue(capturedWindow === win)
-    }
-
-    // MARK: - completion is forwarded from the panel presenter
-
-    func testSavePanelPresenterCompletionReceivesChosenURL() {
-        let coordinator = DownloadCoordinator(window: nil)
-        let chosen = URL(fileURLWithPath: "/tmp/chosen.zip")
-        var result: URL? = nil
-        coordinator.savePanelPresenter = { _, _, completion in completion(chosen) }
+        var result: URL? = URL(fileURLWithPath: "/sentinel")
 
         let expectation = expectation(description: "completion called")
-        coordinator.savePanelPresenter("file.zip", nil) { url in
+        coordinator.decideDownloadDestination(suggestedFilename: "export.zip") { url in
+            result = url
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 1)
+
+        XCTAssertNil(result)
+    }
+
+    // MARK: - decideDownloadDestination: configures panel before presenting
+
+    func testDecideDestinationSetsSuggestedFilenameOnPanel() {
+        let panel = SpyPanel()
+        let coordinator = makeCoordinator(panel: panel)
+
+        coordinator.decideDownloadDestination(suggestedFilename: "archive.zip") { _ in }
+
+        XCTAssertEqual(panel.nameFieldStringValue, "archive.zip")
+    }
+
+    func testDecideDestinationEnablesDirectoryCreationOnPanel() {
+        let panel = SpyPanel()
+        let coordinator = makeCoordinator(panel: panel)
+
+        coordinator.decideDownloadDestination(suggestedFilename: "archive.zip") { _ in }
+
+        XCTAssertTrue(panel.canCreateDirectories)
+    }
+
+    // MARK: - decideDownloadDestination: forwards panel result
+
+    func testDecideDestinationForwardsChosenURLOnOK() {
+        let chosen = URL(fileURLWithPath: "/tmp/out.zip")
+        let panel = SpyPanel(response: .OK, url: chosen)
+        let coordinator = makeCoordinator(panel: panel)
+        var result: URL?
+
+        let expectation = expectation(description: "completion called")
+        coordinator.decideDownloadDestination(suggestedFilename: "file.zip") { url in
             result = url
             expectation.fulfill()
         }
@@ -58,13 +58,13 @@ final class DownloadCoordinatorTests: XCTestCase {
         XCTAssertEqual(result, chosen)
     }
 
-    func testSavePanelPresenterCompletionReceivesNilOnCancel() {
-        let coordinator = DownloadCoordinator(window: nil)
+    func testDecideDestinationForwardsNilOnCancel() {
+        let panel = SpyPanel(response: .cancel, url: nil)
+        let coordinator = makeCoordinator(panel: panel)
         var result: URL? = URL(fileURLWithPath: "/sentinel")
-        coordinator.savePanelPresenter = { _, _, completion in completion(nil) }
 
         let expectation = expectation(description: "completion called")
-        coordinator.savePanelPresenter("file.zip", nil) { url in
+        coordinator.decideDownloadDestination(suggestedFilename: "file.zip") { url in
             result = url
             expectation.fulfill()
         }
@@ -73,20 +73,28 @@ final class DownloadCoordinatorTests: XCTestCase {
         XCTAssertNil(result)
     }
 
-    // MARK: - Default savePanelPresenter: nil window → completion(nil)
-
-    func testDefaultSavePanelPresenterCallsNilWhenNoWindow() {
-        let coordinator = DownloadCoordinator(window: nil)
+    func testDecideDestinationForwardsNilWhenPanelURLIsNilOnOK() {
+        let panel = SpyPanel(response: .OK, url: nil)
+        let coordinator = makeCoordinator(panel: panel)
         var result: URL? = URL(fileURLWithPath: "/sentinel")
 
         let expectation = expectation(description: "completion called")
-        coordinator.savePanelPresenter("archive.zip", nil) { url in
+        coordinator.decideDownloadDestination(suggestedFilename: "file.zip") { url in
             result = url
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 1)
 
         XCTAssertNil(result)
+    }
+
+    // MARK: - handleDownloadFailure: does not crash
+
+    func testHandleDownloadFailureDoesNotThrow() {
+        let coordinator = DownloadCoordinator(window: nil)
+        let error = NSError(domain: "test", code: 1, userInfo: [NSLocalizedDescriptionKey: "network error"])
+        coordinator.handleDownloadFailure(error: error)
+        // No assertion needed — confirms it reaches completion without crashing
     }
 
     // MARK: - Window weak reference
@@ -105,5 +113,43 @@ final class DownloadCoordinatorTests: XCTestCase {
             _ = coordinator
         }
         XCTAssertNil(weakWin, "DownloadCoordinator must not retain the window strongly")
+    }
+
+    // MARK: - Helpers
+
+    private func makeCoordinator(panel: SpyPanel) -> DownloadCoordinator {
+        let win = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 200, height: 200),
+            styleMask: .borderless,
+            backing: .buffered,
+            defer: true
+        )
+        let coordinator = DownloadCoordinator(window: win)
+        coordinator.panelFactory = { panel }
+        return coordinator
+    }
+}
+
+// MARK: - SpyPanel
+
+/// NSSavePanel subclass that immediately calls its completion handler
+/// without showing any UI, enabling synchronous unit-test assertions.
+private class SpyPanel: NSSavePanel {
+    private let stubbedResponse: NSApplication.ModalResponse
+    private let stubbedURL: URL?
+
+    init(response: NSApplication.ModalResponse = .OK, url: URL? = nil) {
+        self.stubbedResponse = response
+        self.stubbedURL = url
+        super.init(contentRect: .zero, styleMask: .borderless, backing: .buffered, defer: true)
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+
+    override var url: URL? { stubbedURL }
+
+    override func beginSheetModal(for sheetWindow: NSWindow,
+                                  completionHandler handler: @escaping (NSApplication.ModalResponse) -> Void) {
+        handler(stubbedResponse)
     }
 }
