@@ -47,18 +47,23 @@ describe("Delete file from upload (50)", () => {
     cy.log("sub folder created");
   });
 
+  const allFilePaths60 = [
+    `/starsky-end2end-test/${fileName1}`,
+    `/starsky-end2end-test/${fileName2}`,
+    `/starsky-end2end-test/${fileName3}`,
+  ];
+
   function waitOnUploadIsDone(index: number, max: number = 10) {
     cy.request({
       url: config.urlApiCollectionsFalse,
       method: "GET",
-      headers: {
-        "Content-Type": "text/plain",
-      },
+      headers: { "Content-Type": "text/plain" },
     }).then((response) => {
       expect(response.status).to.eq(200);
-
-      if (response.body.fileIndexItems.length >= 3) {
-        cy.log("3 items, done");
+      const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
+      const allPresent = allFilePaths60.every((fp) => items.some((i) => i.filePath === fp));
+      if (allPresent) {
+        cy.log("all 3 items indexed, done");
         return;
       }
       cy.wait(1500);
@@ -93,7 +98,7 @@ describe("Delete file from upload (50)", () => {
 
     cy.get("[data-test=btn-child_folder]").click();
 
-    cy.get("[data-test=modal-move-file-btn-default]").click();
+    cy.get("[data-test=modal-move-file-btn-default]").should("not.be.disabled").click();
 
     // expect url to end with ?f=/starsky-end2end-test/child_folder
      cy.url().should('match', /\?f=\/starsky-end2end-test\/child_folder&select=20200822_112430.jpg,20200822_111408.jpg$/);
@@ -123,8 +128,8 @@ describe("Delete file from upload (50)", () => {
 
     cy.get("[data-test=move]").click();
 
-    cy.get("[data-test=parent]").click();
-    cy.get("[data-test=modal-move-file-btn-default]").click();
+    cy.get("[data-test=parent]", { timeout: 10000 }).click();
+    cy.get("[data-test=modal-move-file-btn-default]").should("not.be.disabled").click();
 
     // expect url to end with ?f=/starsky-end2end-test
      cy.url().should('match', /starsky-end2end-test&select=20200822_112430.jpg,20200822_111408.jpg$/);
@@ -142,7 +147,7 @@ describe("Delete file from upload (50)", () => {
 
     cy.get("[data-test=btn-child_folder]").click();
 
-    cy.get("[data-test=modal-move-file-btn-default]").click();
+    cy.get("[data-test=modal-move-file-btn-default]").should("not.be.disabled").click();
 
     // expect url to end with ?f=/starsky-end2end-test/child_folder
     cy.url({ timeout: 20000 }).should('match', /\?f=\/starsky-end2end-test\/child_folder\/20200822_134151.jpg$/);
@@ -153,8 +158,8 @@ describe("Delete file from upload (50)", () => {
     cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=move]").click();
 
-    cy.get("[data-test=parent]").click();
-   cy.get("[data-test=modal-move-file-btn-default]").click();
+    cy.get("[data-test=parent]", { timeout: 10000 }).click();
+    cy.get("[data-test=modal-move-file-btn-default]").should("not.be.disabled").click();
 
     cy.url({ timeout: 20000 }).should('match', /\?f=\/starsky-end2end-test\/20200822_134151.jpg$/);
   });
@@ -167,40 +172,22 @@ describe("Delete file from upload (50)", () => {
   });
 
   function deleteFiles() {
-    const urls = [
+    // Delete via API so cleanup works regardless of where files ended up
+    // (a previous test may have left files in child_folder if undo failed).
+    const candidates = [
       `/starsky-end2end-test/${fileName1}`,
       `/starsky-end2end-test/${fileName2}`,
       `/starsky-end2end-test/${fileName3}`,
+      `/starsky-end2end-test/child_folder/${fileName1}`,
+      `/starsky-end2end-test/child_folder/${fileName2}`,
+      `/starsky-end2end-test/child_folder/${fileName3}`,
       `/starsky-end2end-test/child_folder`,
     ];
-    cy.visit(config.url);
-
-    for (const url of urls) {
-        cy.get(`[data-filepath="${url}"]`, { timeout: 20000 }).should("exist");
-    }
-    cy.get(".item.item--select", { timeout: 20000 }).click();
-    // select mode is only active when the select counter is rendered
-    cy.get('[data-test="selected-0"]', { timeout: 20000 }).should("exist");
-
-    urls.forEach((url, index) => {
-        cy.get(`[data-filepath="${url}"] button`, { timeout: 20000 })
-          .should("exist")
-          .click({ force: true });
-        // the list re-renders after each selection, so wait until it is registered
-        cy.get(`[data-test="selected-${index + 1}"]`, { timeout: 20000 }).should("exist");
-    });
-    cy.get(".item.item--more").click();
-    cy.get("[data-test=menu-context]").should("be.visible");
-    cy.get("[data-test=trash]").click();
-    cy.wait(1500);
-
     cy.request({
       failOnStatusCode: false,
       method: "DELETE",
       url: "/starsky/api/delete",
-      qs: {
-        f: `${urls[0]};${urls[1]};${urls[2]};${urls[3]}`,
-      },
+      qs: { f: candidates.join(";") },
     });
   }
 });
