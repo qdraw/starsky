@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
