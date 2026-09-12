@@ -198,6 +198,10 @@ describe('DetailView metadata editing (45)', () => {
       cy.get(selector).focus()
       cy.get(selector).type('{selectall}').type(value, { parseSpecialCharSequences: false })
       cy.get(selector).blur()
+      // Wait for React to commit the state update from onBlur before typing
+      // into the next field. On Windows CI the re-render can race with the
+      // next field's focus and wipe the just-typed value.
+      cy.get(selector).should('have.text', value)
     }
 
     // Fill every field so the warning disappears and the submit button enables.
