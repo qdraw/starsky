@@ -392,18 +392,16 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			     ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large,
 				     _appSettings.ThumbnailImageFormat)) )
 		{
-			await _overlayImage.ResizeOverlayImageThumbnails(item.FileHash!, outputPath,
-				profile);
+			await _overlayImage.ResizeOverlayImageThumbnails(item.FileHash!,
+				ThumbnailSize.Large, outputPath, profile);
 		}
 		else if ( profile.SourceMaxWidth <= 2000 &&
 		          _thumbnailStorage.ExistFile(
 			          ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge,
 				          _appSettings.ThumbnailImageFormat)) )
 		{
-			await _overlayImage.ResizeOverlayImageThumbnails(
-				ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge,
-					_appSettings.ThumbnailImageFormat),
-				outputPath, profile);
+			await _overlayImage.ResizeOverlayImageThumbnails(item.FileHash!,
+				ThumbnailSize.ExtraLarge, outputPath, profile);
 		}
 		else if ( _subPathStorage.ExistFile(item.FilePath!) )
 		{

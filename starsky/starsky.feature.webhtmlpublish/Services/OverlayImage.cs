@@ -51,7 +51,7 @@ public class OverlayImage : IOverlayImage
 	}
 
 	public Task<bool> ResizeOverlayImageThumbnails(string itemFileHash,
-		string outputFullFilePath, AppSettingsPublishProfiles profile)
+		ThumbnailSize size, string outputFullFilePath, AppSettingsPublishProfiles profile)
 	{
 		if ( string.IsNullOrWhiteSpace(itemFileHash) )
 		{
@@ -59,7 +59,7 @@ public class OverlayImage : IOverlayImage
 		}
 
 		var fileHashWithExtension = ThumbnailNameHelper.Combine(itemFileHash,
-			ThumbnailSize.Large, _appSettings.ThumbnailImageFormat);
+			size, _appSettings.ThumbnailImageFormat);
 
 		if ( !_thumbnailStorage.ExistFile(fileHashWithExtension) )
 		{
