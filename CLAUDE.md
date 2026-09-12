@@ -109,7 +109,6 @@ Key rules at a glance:
 
 ## Code conventions
 
-- **No try/catch in feature/foundation code.** Exceptions are caught at the top-level middleware; let them propagate.
 - **Avoid new NuGet/npm dependencies.** Prefer a small in-tree helper over adding a package.
 - Frontend: Prettier enforces formatting. Install a Prettier editor plugin; the CI will fail on violations.
 - TypeScript: use types everywhere, avoid `any`.
