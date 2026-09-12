@@ -318,11 +318,8 @@ final class FileDownloadServiceTests: XCTestCase {
         // Non-atomic write — modifies the inode in place, triggers .write on the file fd
         try "updated".data(using: .utf8)!.write(to: destFile, options: [])
 
-        try await Task.sleep(nanoseconds: 2_000_000_000)
-        XCTAssertNotNil(
-            FakeURLProtocol.capturedRequests.first { $0.url?.path == "/starsky/api/upload" },
-            "In-place write did not trigger an upload"
-        )
+        let uploaded = await waitForUploadRequest()
+        XCTAssertNotNil(uploaded, "In-place write did not trigger an upload")
     }
 
     func testAtomicWriteTriggersUpload() async throws {
@@ -340,11 +337,8 @@ final class FileDownloadServiceTests: XCTestCase {
         // directory and renames it over the target — the classic editor save pattern.
         try "updated-atomic".data(using: .utf8)!.write(to: destFile, options: .atomic)
 
-        try await Task.sleep(nanoseconds: 2_000_000_000)
-        XCTAssertNotNil(
-            FakeURLProtocol.capturedRequests.first { $0.url?.path == "/starsky/api/upload" },
-            "Atomic write (rename) did not trigger an upload"
-        )
+        let uploaded = await waitForUploadRequest()
+        XCTAssertNotNil(uploaded, "Atomic write (rename) did not trigger an upload")
     }
 
     func testNewFileInSameDirTriggersUpload() async throws {
@@ -360,13 +354,10 @@ final class FileDownloadServiceTests: XCTestCase {
         FakeURLProtocol.enqueue(statusCode: 200, url: URL(string: "\(baseUrl)/starsky/api/upload")!, data: Data())
         try "exported-jpeg-bytes".data(using: .utf8)!.write(to: exportedFile)
 
-        try await Task.sleep(nanoseconds: 2_000_000_000)
-        XCTAssertNotNil(
-            FakeURLProtocol.capturedRequests.first { $0.url?.path == "/starsky/api/upload" },
-            "New file created by editor in same directory did not trigger an upload"
-        )
+        let uploadReq = await waitForUploadRequest()
+        XCTAssertNotNil(uploadReq,
+                        "New file created by editor in same directory did not trigger an upload")
         // Remote path should use the same parent directory as the watched file
-        let uploadReq = FakeURLProtocol.capturedRequests.first { $0.url?.path == "/starsky/api/upload" }
         XCTAssertEqual(uploadReq?.value(forHTTPHeaderField: "to"), "/photos")
         XCTAssertEqual(uploadReq?.value(forHTTPHeaderField: "filename"), "export.jpg")
     }
@@ -385,17 +376,37 @@ final class FileDownloadServiceTests: XCTestCase {
         try "updated".data(using: .utf8)!.write(to: destFile, options: [])
 
         // Wait for upload to complete and mtime to be refreshed
-        try await Task.sleep(nanoseconds: 2_000_000_000)
-        let countAfterFirstSave = FakeURLProtocol.capturedRequests.filter { $0.url?.path == "/starsky/api/upload" }.count
+        let firstUpload = await waitForUploadRequest()
+        XCTAssertNotNil(firstUpload)
+        let countAfterFirstSave = uploadRequestCount()
         XCTAssertEqual(countAfterFirstSave, 1)
 
         // Simulate a directory event with no actual file change (no new upload expected)
-        try await Task.sleep(nanoseconds: 500_000_000)
-        let countAfterNoChange = FakeURLProtocol.capturedRequests.filter { $0.url?.path == "/starsky/api/upload" }.count
+        try await Task.sleep(nanoseconds: 2_000_000_000)
+        let countAfterNoChange = uploadRequestCount()
         XCTAssertEqual(countAfterNoChange, 1, "Upload fired again despite no mtime change")
     }
 
     // MARK: - Watcher test helpers
+
+    /// FSEvents latency plus the 1 s upload debounce make the delay unpredictable on
+    /// loaded machines, so poll instead of sleeping for a fixed duration.
+    private func waitForUploadRequest(timeout: TimeInterval = 20) async -> URLRequest? {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if let request = FakeURLProtocol.capturedRequests.first(where: {
+                $0.url?.path == "/starsky/api/upload"
+            }) {
+                return request
+            }
+            try? await Task.sleep(nanoseconds: 100_000_000)
+        }
+        return nil
+    }
+
+    private func uploadRequestCount() -> Int {
+        FakeURLProtocol.capturedRequests.filter { $0.url?.path == "/starsky/api/upload" }.count
+    }
 
     private func enqueuDownload(baseUrl: String, path: String, data: Data) {
         let enc = path.addingPercentEncoding(withAllowedCharacters:
