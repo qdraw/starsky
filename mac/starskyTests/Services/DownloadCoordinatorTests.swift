@@ -1,5 +1,6 @@
 import XCTest
 import AppKit
+import WebKit
 
 @MainActor
 final class DownloadCoordinatorTests: XCTestCase {
@@ -115,7 +116,67 @@ final class DownloadCoordinatorTests: XCTestCase {
         XCTAssertNil(weakWin, "DownloadCoordinator must not retain the window strongly")
     }
 
+    // MARK: - WKDownloadDelegate forwarding
+
+    func testDelegateDecideDestinationForwardsSuggestedFilename() {
+        let coordinator = SpyCoordinator(window: nil)
+
+        coordinator.download(makeDownloadStub(),
+                             decideDestinationUsing: URLResponse(),
+                             suggestedFilename: "photo.jpg") { _ in }
+
+        XCTAssertEqual(coordinator.decideCalls, ["photo.jpg"])
+    }
+
+    func testDelegateDecideDestinationForwardsCompletionHandler() {
+        let coordinator = SpyCoordinator(window: nil)
+        let chosen = URL(fileURLWithPath: "/tmp/photo.jpg")
+        coordinator.decideResult = chosen
+        var result: URL?
+
+        let expectation = expectation(description: "completion called")
+        coordinator.download(makeDownloadStub(),
+                             decideDestinationUsing: URLResponse(),
+                             suggestedFilename: "photo.jpg") { url in
+            result = url
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 1)
+
+        XCTAssertEqual(result, chosen)
+    }
+
+    func testDelegateDidFailWithErrorForwardsError() {
+        let coordinator = SpyCoordinator(window: nil)
+        let error = NSError(domain: "test", code: 42)
+
+        coordinator.download(makeDownloadStub(), didFailWithError: error, resumeData: nil)
+
+        XCTAssertEqual(coordinator.failures.count, 1)
+        XCTAssertEqual((coordinator.failures.first as? NSError)?.code, 42)
+    }
+
+    func testDelegateDidFailWithErrorForwardsResumeDataIndependently() {
+        let coordinator = SpyCoordinator(window: nil)
+        let error = NSError(domain: "test", code: 7)
+
+        coordinator.download(makeDownloadStub(),
+                             didFailWithError: error,
+                             resumeData: Data([0x01, 0x02]))
+
+        XCTAssertEqual((coordinator.failures.first as? NSError)?.code, 7)
+    }
+
     // MARK: - Helpers
+
+    /// WKDownload has no public initializer and the delegate methods ignore the
+    /// argument, so a placeholder object is reinterpreted for the call.
+    private func makeDownloadStub() -> WKDownload {
+        downloadPlaceholder = NSObject()
+        return unsafeBitCast(downloadPlaceholder, to: WKDownload.self)
+    }
+
+    private var downloadPlaceholder = NSObject()
 
     private func makeCoordinator(panel: SpyPanel) -> DownloadCoordinator {
         let win = NSWindow(
@@ -127,6 +188,27 @@ final class DownloadCoordinatorTests: XCTestCase {
         let coordinator = DownloadCoordinator(window: win)
         coordinator.panelFactory = { panel }
         return coordinator
+    }
+}
+
+// MARK: - SpyCoordinator
+
+/// Records calls to the overridable internal methods so the thin
+/// WKDownloadDelegate forwarding can be verified without a real download.
+@MainActor
+private final class SpyCoordinator: DownloadCoordinator {
+    var decideCalls: [String] = []
+    var decideResult: URL?
+    var failures: [Error] = []
+
+    override func decideDownloadDestination(suggestedFilename: String,
+                                            completionHandler: @escaping @MainActor (URL?) -> Void) {
+        decideCalls.append(suggestedFilename)
+        completionHandler(decideResult)
+    }
+
+    override func handleDownloadFailure(error: Error) {
+        failures.append(error)
     }
 }
 

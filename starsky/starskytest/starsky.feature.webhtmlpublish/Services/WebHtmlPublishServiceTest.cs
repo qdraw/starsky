@@ -569,6 +569,58 @@ public sealed class WebHtmlPublishServiceTest
 	}
 
 	[TestMethod]
+	[DataRow(1001)]
+	[DataRow(2000)]
+	public async Task GenerateJpeg_ExtraLargeThumbnail_Test(int sourceMaxWidth)
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{
+					"default", [
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.Jpeg,
+							Path = "index.html",
+							MetaData = false,
+							SourceMaxWidth = sourceMaxWidth
+						}
+					]
+				}
+			},
+			Verbose = true
+		};
+		var fileHash = "fileHash";
+		var storage = new FakeIStorage([],
+			[
+				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge,
+					new AppSettings().ThumbnailImageFormat)
+			],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var selectorStorage = new FakeSelectorStorage(storage);
+
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
+
+		var profiles = new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
+			.GetPublishProfileName("default");
+
+		var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault()!,
+			new List<FileIndexItem> { new("/test.jpg") { FileHash = fileHash } },
+			Path.DirectorySeparatorChar.ToString(), 1);
+
+		Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
+		Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
+	}
+
+	[TestMethod]
 	public async Task MoveSourceFiles_True()
 	{
 		var profile = new AppSettingsPublishProfiles
