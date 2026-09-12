@@ -31,7 +31,9 @@ public sealed class ArgsHelper
 		"app__subpathrelative",
 		"app__ExifToolImportXmpCreate",
 		"app__TempFolder",
-		"app__DependenciesFolder"
+		"app__DependenciesFolder",
+		"app__appsettingspath",
+		"app__appsettingslocalpath"
 	}.AsReadOnly();
 
 	/// <summary>
@@ -58,7 +60,9 @@ public sealed class ArgsHelper
 			"--subpathrelative",
 			"--clean",
 			"--tempfolder",
-			"--dependencies"
+			"--dependencies",
+			"--appsettingspath",
+			"--appsettingslocalpath"
 		}
 		.AsReadOnly();
 
@@ -76,10 +80,14 @@ public sealed class ArgsHelper
 		"-g",
 		"-x",
 		"-tf",
-		"-dep"
+		"-dep",
+		"-asp",
+		"-aspl"
 	}.AsReadOnly();
 	// Table of Content
 
+	// -asp > --appsettingspath
+	// -aspl > --appsettingslocalpath
 	// -j > free
 	// -k > free
 	// -l > free

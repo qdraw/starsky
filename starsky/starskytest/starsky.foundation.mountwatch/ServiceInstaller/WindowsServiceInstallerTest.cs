@@ -76,7 +76,7 @@ public sealed class WindowsServiceInstallerTest
 	}
 
 	[TestMethod]
-	public async Task InstallAsync_Exe_IncludesBasepathArg()
+	public async Task InstallAsync_Exe_IncludesAppsettingsPathArgs()
 	{
 		var calls = new List<(string fileName, string args)>();
 		var sut = new WindowsServiceInstaller(new FakeIWebLogger(),
@@ -91,13 +91,13 @@ public sealed class WindowsServiceInstallerTest
 		await sut.InstallAsync("C:/apps/starskymountwatchercli.exe");
 
 		Assert.HasCount(1, calls);
-		Assert.Contains("--basepath", calls[0].args);
-		Assert.Contains("--thumbnailtempfolder", calls[0].args);
-		Assert.Contains("--tempfolder", calls[0].args);
+		Assert.Contains("--appsettingspath", calls[0].args);
+		Assert.Contains("--appsettingslocalpath", calls[0].args);
+		Assert.Contains("appsettings.json", calls[0].args);
 	}
 
 	[TestMethod]
-	public async Task InstallAsync_Exe_PathArgsContainStarskySubdir()
+	public async Task InstallAsync_Exe_IncludesTempFolderArgs()
 	{
 		var calls = new List<(string fileName, string args)>();
 		var sut = new WindowsServiceInstaller(new FakeIWebLogger(),
@@ -112,7 +112,8 @@ public sealed class WindowsServiceInstallerTest
 		await sut.InstallAsync("C:/apps/starskymountwatchercli.exe");
 
 		Assert.HasCount(1, calls);
-		Assert.Contains("starsky", calls[0].args);
+		Assert.Contains("--thumbnailtempfolder", calls[0].args);
+		Assert.Contains("--tempfolder", calls[0].args);
 	}
 
 	[TestMethod]

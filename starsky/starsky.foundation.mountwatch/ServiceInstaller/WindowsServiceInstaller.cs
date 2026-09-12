@@ -74,7 +74,8 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "starsky");
 
 			var serviceArgs = $" --connection \\\"Data Source={appData}\\starsky.db\\\"" +
-			                  $" --basepath \\\"{appData}\\\"" +
+			                  $" --appsettingspath \\\"{appData}\\appsettings.json\\\"" +
+			                  $" --appsettingslocalpath \\\"{appData}\\appsettings.local.json\\\"" +
 			                  $" --thumbnailtempfolder \\\"{appData}\\thumbnailTempFolder\\\"" +
 			                  $" --tempfolder \\\"{localAppData}\\tempFolder\\\"";
 
