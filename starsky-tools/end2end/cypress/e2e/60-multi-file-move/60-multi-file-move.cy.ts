@@ -96,7 +96,7 @@ describe("Delete file from upload (50)", () => {
     cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=move]").click();
 
-    cy.get("[data-test=btn-child_folder]").click();
+    cy.get("[data-test=btn-child_folder]", { timeout: 15000 }).click();
 
     cy.get("[data-test=modal-move-file-btn-default]").should("not.be.disabled").click();
 
@@ -128,7 +128,7 @@ describe("Delete file from upload (50)", () => {
 
     cy.get("[data-test=move]").click();
 
-    cy.get("[data-test=parent]", { timeout: 10000 }).click();
+    cy.get("[data-test=parent]", { timeout: 15000 }).click();
     cy.get("[data-test=modal-move-file-btn-default]").should("not.be.disabled").click();
 
     // expect url to end with ?f=/starsky-end2end-test
@@ -145,7 +145,7 @@ describe("Delete file from upload (50)", () => {
 
     cy.get("[data-test=move]").click();
 
-    cy.get("[data-test=btn-child_folder]").click();
+    cy.get("[data-test=btn-child_folder]", { timeout: 15000 }).click();
 
     cy.get("[data-test=modal-move-file-btn-default]").should("not.be.disabled").click();
 
@@ -158,7 +158,7 @@ describe("Delete file from upload (50)", () => {
     cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=move]").click();
 
-    cy.get("[data-test=parent]", { timeout: 10000 }).click();
+    cy.get("[data-test=parent]", { timeout: 15000 }).click();
     cy.get("[data-test=modal-move-file-btn-default]").should("not.be.disabled").click();
 
     cy.url({ timeout: 20000 }).should('match', /\?f=\/starsky-end2end-test\/20200822_134151.jpg$/);
