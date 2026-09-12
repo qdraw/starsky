@@ -110,9 +110,11 @@ describe("Delete file from upload (50)", () => {
   it("remove collection item, but not the other file (50)", () => {
     cy.visit(config.urlVideoItemCollectionsFalse);
 
+    cy.intercept("**/api/trash/move-to-trash").as("trashMp4");
     cy.get(".item.item--more").click();
     cy.get("[data-test=menu-context]").should("be.visible");
     cy.get("[data-test=trash]").click();
+    cy.wait("@trashMp4");
 
     cy.visit(config.url);
     cy.get(".folder > div").should(($lis) => {

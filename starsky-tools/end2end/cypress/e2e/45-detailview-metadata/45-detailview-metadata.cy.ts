@@ -179,8 +179,10 @@ describe('DetailView metadata editing (45)', () => {
 
     // The modal renders from the detailview item; while that is still loading the
     // date is incomplete, the warning box is shown and submit stays disabled.
+    // Wait for the sidebar's info API to populate the datetime before opening.
     function openDatetimeModal () {
-      cy.get('[data-test="dateTime"]', { timeout: 20000 }).click()
+      cy.get('[data-test="dateTime"] b', { timeout: 20000 }).invoke('text').should('match', /\d{4}/)
+      cy.get('[data-test="dateTime"]').click()
       cy.get('[data-test="modal-edit-datetime"]').should('be.visible')
       cy.get('[data-test="modal-edit-datetime-non-valid"]', { timeout: 20000 }).should('not.exist')
       cy.get(yearSelector).invoke('text').should('match', /^\d{4}$/)
