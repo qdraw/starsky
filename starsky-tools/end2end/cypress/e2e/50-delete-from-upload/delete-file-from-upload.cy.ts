@@ -126,6 +126,11 @@ describe("Delete file from upload (50)", () => {
 
     cy.log(`go to: ${config.trash}`);
 
+    // Clear sessionStorage so the trash page does not inherit collections=false
+    // from the earlier detail-page visit — the backend rejects collections=false
+    // permanent-delete for collection members that have fully-indexed siblings.
+    cy.then(() => { sessionStorage.clear(); });
+
     cy.intercept("/starsky/api/search?json=true&t=!delete!&p=0").as("trashPage");
     cy.visit(config.trash);
     cy.wait("@trashPage");
