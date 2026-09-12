@@ -77,6 +77,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     private let presenter: MainWindowPresenter
     private var webView: WKWebView!
     private var titleObservation: NSKeyValueObservation?
+    private var downloadCoordinator: DownloadCoordinator!
 
     init(options: MainWindowOptions) {
         self.options = options
@@ -90,6 +91,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         window.title = "Starsky"
         window.isReleasedWhenClosed = false
         super.init(window: window)
+        downloadCoordinator = DownloadCoordinator(window: window)
         window.delegate = self
         presenter.view = self
         setupWebView()
@@ -220,8 +222,25 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
 
     func webView(_: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if navigationAction.shouldPerformDownload {
+            decisionHandler(.download)
+            return
+        }
         guard let url = navigationAction.request.url else { decisionHandler(.allow); return }
         decisionHandler(presenter.navigationPolicy(for: url) ? .allow : .cancel)
+    }
+
+    func webView(_: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
+                 decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+        decisionHandler(navigationResponse.canShowMIMEType ? .allow : .download)
+    }
+
+    func webView(_: WKWebView, navigationAction _: WKNavigationAction, didBecome download: WKDownload) {
+        download.delegate = downloadCoordinator
+    }
+
+    func webView(_: WKWebView, navigationResponse _: WKNavigationResponse, didBecome download: WKDownload) {
+        download.delegate = downloadCoordinator
     }
 
     func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
@@ -250,3 +269,4 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         options.windowManager.remove(controller: self)
     }
 }
+

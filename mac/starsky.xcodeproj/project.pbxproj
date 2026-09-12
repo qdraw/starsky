@@ -19,6 +19,7 @@
 		18D060446DDCBB764F9621FF /* BackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CA83403E3576F4DDF6AA3F /* BackendService.swift */; };
 		19267496699CFB79FC4477F3 /* SettingsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3578CC83C650F985724744B7 /* SettingsServiceTests.swift */; };
 		1F26483EDA26E60879986E31 /* NavigationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12047ED0B6586CEB41197A6 /* NavigationService.swift */; };
+		20EE6A6EC532824AFA9BE7F0 /* DownloadCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7A1878FC47CE7962B9FC2D /* DownloadCoordinatorTests.swift */; };
 		2149C1F84602C5E4ABE92F5C /* RoutePersistenceServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C97D9AD6BA360D21DF54556 /* RoutePersistenceServiceTests.swift */; };
 		2553B59D843A36B5BD00D052 /* RuntimeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8415DA0473D238EB0F6108E2 /* RuntimeMode.swift */; };
 		2579EFBFBE4BAF388FB134E1 /* MainWindowPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8476C6054F0190F025A4FE /* MainWindowPresenterTests.swift */; };
@@ -48,6 +49,7 @@
 		5845EDD5C35C5DF0D1A61E6D /* RuntimeModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9851583918F3426A017184E8 /* RuntimeModeTests.swift */; };
 		58614F9E6FF5CBE72C369BB0 /* DailyFileLoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537CF0BCF79013734BC9F797 /* DailyFileLoggerTests.swift */; };
 		5A54A8C8CEA8383DCE53A6D6 /* UpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A194174E0CB13CE48986CA /* UpdateService.swift */; };
+		5CB28BD0D50D8B42F023D06B /* DownloadCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F91076EC3DD3B82B20ACD5 /* DownloadCoordinator.swift */; };
 		5DCE49D698294FDA7B32A43E /* FileWatcherServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E6AD1C4B8C9A7666462936 /* FileWatcherServiceTests.swift */; };
 		5F616BF15011310370B1E407 /* RemoteUrlValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73CD361EFF2B86D1744D0D3 /* RemoteUrlValidator.swift */; };
 		61202E8B9C51195F74C180A6 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 640D1681562A0F78A432EEC5 /* Sparkle */; };
@@ -59,6 +61,7 @@
 		69D50BFF898F0D3FE7FE8935 /* UpdateWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8956542BB08C50ABED9CE2 /* UpdateWindowController.swift */; };
 		6E662DDC3AF725A0EB0A7CF7 /* UrlValidationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE9757114B39C8796B7DDB8 /* UrlValidationResult.swift */; };
 		72B91B9C3C7ECCDEEA460EEC /* BackendServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */; };
+		73AEE0230BDE843CA8D95B7E /* DownloadCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F91076EC3DD3B82B20ACD5 /* DownloadCoordinator.swift */; };
 		75643F69297DF8F1D8C753D4 /* NavigationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12047ED0B6586CEB41197A6 /* NavigationService.swift */; };
 		7A0AE799038C4B9B2332B9DD /* PortFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF10CDC7C7FA47BA0423D288 /* PortFinder.swift */; };
 		7A338BBACE8483094F111EF0 /* ErrorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC719351FB87812C1BF8676 /* ErrorWindowController.swift */; };
@@ -114,6 +117,7 @@
 		066BB49FDF5E95A8E40A5FA2 /* FileWatcherServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatcherServiceProtocol.swift; sourceTree = "<group>"; };
 		07655E3EE2770129AD67DA87 /* SettingsPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPresenterTests.swift; sourceTree = "<group>"; };
 		0D26DE8C0DEA33C56509D3BC /* history.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = history.md; sourceTree = "<group>"; };
+		0E7A1878FC47CE7962B9FC2D /* DownloadCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCoordinatorTests.swift; sourceTree = "<group>"; };
 		12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyFileLogger.swift; sourceTree = "<group>"; };
 		13F6B9B261337B367BAE7B88 /* FileDownloadServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadServiceTests.swift; sourceTree = "<group>"; };
 		1595DFCCE586B6DD9B02AC5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -121,6 +125,7 @@
 		1D1A09958ECF7CB2678EA7DD /* DesktopSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopSettingsTests.swift; sourceTree = "<group>"; };
 		1E770271ED2C2C7C1FDF78F9 /* WindowManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagerTests.swift; sourceTree = "<group>"; };
 		24B825F5B3A9E99B050667CE /* BackendServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendServiceProtocol.swift; sourceTree = "<group>"; };
+		24F91076EC3DD3B82B20ACD5 /* DownloadCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCoordinator.swift; sourceTree = "<group>"; };
 		25EEB3D3F4A7BDBEED593F95 /* FileWatcherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatcherService.swift; sourceTree = "<group>"; };
 		25FA3618E9A48E3FF0C00198 /* ApplicationInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationInfo.swift; sourceTree = "<group>"; };
 		263A83BFB1208A11BA2AD28D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -208,6 +213,7 @@
 				DA7FF14576F32676391CCF10 /* ApplicationPathsTests.swift */,
 				9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */,
 				537CF0BCF79013734BC9F797 /* DailyFileLoggerTests.swift */,
+				0E7A1878FC47CE7962B9FC2D /* DownloadCoordinatorTests.swift */,
 				13F6B9B261337B367BAE7B88 /* FileDownloadServiceTests.swift */,
 				E1E6AD1C4B8C9A7666462936 /* FileWatcherServiceTests.swift */,
 				064147AE75ED8E46531D7841 /* MountWatcherServiceTests.swift */,
@@ -344,6 +350,7 @@
 				B2CA83403E3576F4DDF6AA3F /* BackendService.swift */,
 				24B825F5B3A9E99B050667CE /* BackendServiceProtocol.swift */,
 				12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */,
+				24F91076EC3DD3B82B20ACD5 /* DownloadCoordinator.swift */,
 				7DF89347F9391AD851030846 /* FileDownloadService.swift */,
 				25EEB3D3F4A7BDBEED593F95 /* FileWatcherService.swift */,
 				066BB49FDF5E95A8E40A5FA2 /* FileWatcherServiceProtocol.swift */,
@@ -570,6 +577,7 @@
 				DFE7E79504F87BA4B238A0C0 /* BackendServiceProtocol.swift in Sources */,
 				F8053642799E7DE999D5231A /* DailyFileLogger.swift in Sources */,
 				B4BCF196BF3AE465A4B901A8 /* DesktopSettings.swift in Sources */,
+				73AEE0230BDE843CA8D95B7E /* DownloadCoordinator.swift in Sources */,
 				FAD78E84447F789AC438C71F /* ErrorWindowController.swift in Sources */,
 				41EE07440713B387EAA5FC16 /* FileDownloadService.swift in Sources */,
 				37E4BB3666814B17F5055311 /* FileWatcherService.swift in Sources */,
@@ -617,6 +625,8 @@
 				58614F9E6FF5CBE72C369BB0 /* DailyFileLoggerTests.swift in Sources */,
 				BE19E9CD1AB672594105CDC7 /* DesktopSettings.swift in Sources */,
 				B352323697B9E1BEEA2B3150 /* DesktopSettingsTests.swift in Sources */,
+				5CB28BD0D50D8B42F023D06B /* DownloadCoordinator.swift in Sources */,
+				20EE6A6EC532824AFA9BE7F0 /* DownloadCoordinatorTests.swift in Sources */,
 				7A338BBACE8483094F111EF0 /* ErrorWindowController.swift in Sources */,
 				45039DD3D6166A16E2729EDB /* FakeProcessBin.swift in Sources */,
 				C2E9E314DDA263E53F6916B9 /* FakeStarskyBin.swift in Sources */,

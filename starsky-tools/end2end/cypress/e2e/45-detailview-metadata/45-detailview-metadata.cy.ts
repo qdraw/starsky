@@ -165,7 +165,9 @@ describe('DetailView metadata editing (45)', () => {
   })
 
   // The datetime modal has its own submit flow rather than a blur.
-  // We read the current year, increment it, save, verify, then restore.
+  // The fixture file has no EXIF datetime, so fields start empty and the
+  // warning box shows on first open. We fill all six fields with a known
+  // date, submit, then cycle the year to verify persistence and restore.
   // retries=3 because the modal submit → reload → verify cycle is the most
   // susceptible step to slow async writes on CI.
   it('edit datetime via modal, verify persistence, restore (45)', {
@@ -174,69 +176,85 @@ describe('DetailView metadata editing (45)', () => {
     if (!config.isEnabled) return
     openWithSidebar()
 
-    const yearSelector = '[data-test="modal-edit-datetime"] [data-name="year"]'
-    let originalYear = ''
+    const modalSelector = '[data-test="modal-edit-datetime"]'
+    const yearSelector = `${modalSelector} [data-name="year"]`
+    const monthSelector = `${modalSelector} [data-name="month"]`
+    const dateSelector = `${modalSelector} [data-name="date"]`
+    const hourSelector = `${modalSelector} [data-name="hour"]`
+    const minuteSelector = `${modalSelector} [data-name="minute"]`
+    const secSelector = `${modalSelector} [data-name="sec"]`
 
-    // The modal renders from the detailview item; while that is still loading the
-    // date is incomplete, the warning box is shown and submit stays disabled.
-    // Wait for the sidebar's info API to populate the datetime before opening.
-    function openDatetimeModal () {
-      cy.get('[data-test="dateTime"] b', { timeout: 20000 }).invoke('text').should('match', /\d{4}/)
+    // Known full datetime for a file that has no EXIF data.
+    // Using the date encoded in the fixture filename as a mnemonic.
+    const baseYear = '2019'
+    const changedYear = '2020'
+
+    function openModal () {
       cy.get('[data-test="dateTime"]').click()
-      cy.get('[data-test="modal-edit-datetime"]').should('be.visible')
-      cy.get('[data-test="modal-edit-datetime-non-valid"]', { timeout: 20000 }).should('not.exist')
-      cy.get(yearSelector).invoke('text').should('match', /^\d{4}$/)
+      cy.get(modalSelector).should('be.visible')
     }
 
-    function setYearAndSubmit (year: string, aliasName: string) {
-      cy.get(yearSelector).focus()
-      cy.get(yearSelector)
-        .type('{selectall}')
-        .type(year, { parseSpecialCharSequences: false })
-      // Blur so the onBlur→setState cycle commits the new year into React state
-      // before updateDateTime() reads getDates().
-      cy.get(yearSelector).blur()
-      cy.get(yearSelector).should('have.text', year)
+    function typeInField (selector: string, value: string) {
+      cy.get(selector).focus()
+      cy.get(selector).type('{selectall}').type(value, { parseSpecialCharSequences: false })
+      cy.get(selector).blur()
+    }
 
+    // Fill every field so the warning disappears and the submit button enables.
+    // Called only for the first open when the file has no existing datetime.
+    function fillAllFields (year: string) {
+      typeInField(yearSelector, year)
+      typeInField(monthSelector, '08')
+      typeInField(dateSelector, '22')
+      typeInField(hourSelector, '13')
+      typeInField(minuteSelector, '41')
+      typeInField(secSelector, '51')
+      cy.get('[data-test="modal-edit-datetime-non-valid"]', { timeout: 10000 }).should('not.exist')
+      cy.get('[data-test="modal-edit-datetime-btn-default"]').should('not.be.disabled')
+    }
+
+    function changeYearAndSubmit (year: string, aliasName: string) {
+      typeInField(yearSelector, year)
+      cy.get(yearSelector).should('have.text', year)
+      cy.get('[data-test="modal-edit-datetime-non-valid"]').should('not.exist')
       cy.intercept('POST', '**/api/update').as(aliasName)
-      cy.get('[data-test="modal-edit-datetime-btn-default"]')
-        .should('not.be.disabled')
-        .click()
+      cy.get('[data-test="modal-edit-datetime-btn-default"]').should('not.be.disabled').click()
       cy.wait(`@${aliasName}`)
       waitUntilApiDateTimeYear(year)
     }
 
-    openDatetimeModal()
-    // Capture current year before touching anything.
-    cy.get(yearSelector).then((el) => {
-      originalYear = el.text().trim()
-      cy.log('original year: ' + originalYear)
-    })
+    // ── Step 1: set a complete datetime from scratch (file had no EXIF) ──────
+    openModal()
+    fillAllFields(baseYear)
+    cy.intercept('POST', '**/api/update').as('updateDatetime1')
+    cy.get('[data-test="modal-edit-datetime-btn-default"]').click()
+    cy.wait('@updateDatetime1')
+    waitUntilApiDateTimeYear(baseYear)
 
-    // Change to a clearly different year so the assertion is unambiguous.
-    cy.then(() => {
-      const newYear = String(Number(originalYear) + 1)
+    cy.then(() => { sessionStorage.clear() })
+    cy.reload()
+    cy.get('[data-test="detailview-sidebar"]').should('be.visible')
 
-      setYearAndSubmit(newYear, 'updateDatetime')
+    // ── Step 2: change year to changedYear, verify persistence ───────────────
+    openModal()
+    cy.get(yearSelector).should('have.text', baseYear)
+    changeYearAndSubmit(changedYear, 'updateDatetime2')
 
-      cy.then(() => { sessionStorage.clear() })
-      cy.reload()
-      // URL still carries ?details=true — sidebar is already open, do not toggle.
-      cy.get('[data-test="detailview-sidebar"]').should('be.visible')
+    cy.then(() => { sessionStorage.clear() })
+    cy.reload()
+    cy.get('[data-test="detailview-sidebar"]').should('be.visible')
 
-      // Re-open modal and verify year persisted.
-      openDatetimeModal()
-      cy.get(yearSelector).should('contain', newYear)
+    openModal()
+    cy.get(yearSelector).should('have.text', changedYear)
 
-      // Restore original year.
-      setYearAndSubmit(originalYear, 'restoreDatetime')
+    // ── Step 3: restore to baseYear ──────────────────────────────────────────
+    changeYearAndSubmit(baseYear, 'restoreDatetime')
 
-      cy.then(() => { sessionStorage.clear() })
-      cy.reload()
-      // URL still carries ?details=true — sidebar is already open, do not toggle.
-      cy.get('[data-test="detailview-sidebar"]').should('be.visible')
-      openDatetimeModal()
-      cy.get(yearSelector).should('contain', originalYear)
-    })
+    cy.then(() => { sessionStorage.clear() })
+    cy.reload()
+    cy.get('[data-test="detailview-sidebar"]').should('be.visible')
+
+    openModal()
+    cy.get(yearSelector).should('have.text', baseYear)
   })
 })
