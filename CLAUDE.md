@@ -83,6 +83,23 @@ xcodebuild test -project starsky.xcodeproj -scheme starsky \
 node starsky-tools/build-tools/app-version-update.js
 ```
 
+## End-to-end tests (`starsky-tools/end2end/`)
+
+When working on Cypress end-to-end tests, follow the guidelines in
+[`documentation/docs/developer-guide/testing/end2end-guidelines.md`](documentation/docs/developer-guide/testing/end2end-guidelines.md).
+
+Key rules at a glance:
+- **Poll, don't wait** — use a retry loop to check API state after any write; never `cy.wait(N)` + immediate assertion.
+- **Check specific file paths** — never assert on total item counts; other suites leave files behind.
+- **Content-based selectors** — prefer `cy.contains(...)` over `.eq(N)`.
+- **Enable-guard before clicking** — add `.should("not.be.disabled")` before any modal action button.
+- **15 s timeout on modal content** — folder lists and collection members load from the API; the default 4 s is not enough on Windows CI.
+- **No `cy.intercept` on GET** — browser cache silently skips the network on Windows; use DOM assertions or direct API polling instead.
+- **Intercepts before the click** — set up `cy.intercept` aliases before the action that triggers the request.
+- **Assert contenteditable value after blur** — add `.should("have.text", value)` after each field blur when filling multiple fields in sequence.
+- **Clear sessionStorage before reload** — `cy.then(() => { sessionStorage.clear(); })` before any reload that verifies a backend write.
+- **API-based cleanup** — use a direct `DELETE /starsky/api/delete` request covering all possible file locations; never rely on UI selection for cleanup.
+
 ## .NET testing conventions
 
 - Test framework: **MSTest** — use `[TestMethod]` + `[DataRow]` for parameterised tests. `[DataTestMethod]` is deprecated; do not use it.
