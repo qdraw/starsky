@@ -32,6 +32,29 @@ describe('DetailView metadata editing (45)', () => {
     cy.get('[data-test="detailview-sidebar"]').should('be.visible')
   }
 
+  // The backend accepts POST /api/update before the value is written to disk by
+  // the background queue, so poll /api/info until the new value is readable.
+  function waitUntilApiValue (
+    fieldName: string,
+    expected: string,
+    attempt: number = 0,
+    maxAttempts: number = 20
+  ) {
+    cy.request({
+      url: `/starsky/api/info?f=/starsky-end2end-test/${fileName}&collections=false`,
+      method: 'GET',
+      failOnStatusCode: false
+    }).then((response) => {
+      const current = String(response.body?.[0]?.[fieldName] ?? '').trim()
+      if (current === expected.trim() || attempt >= maxAttempts) {
+        cy.log(`${fieldName} on disk: "${current}" (attempt ${attempt})`)
+        return
+      }
+      cy.wait(500)
+      waitUntilApiValue(fieldName, expected, attempt + 1, maxAttempts)
+    })
+  }
+
   // Generic helper: edit a contenteditable metadata field, wait for the
   // backend update to confirm, reload to verify persistence, then restore.
   // The intercept is set up AFTER typing so that keystrokes during editing
@@ -41,6 +64,7 @@ describe('DetailView metadata editing (45)', () => {
     newValue: string,
     aliasName: string
   ) {
+    const fieldName = selector.replace(/^\[data-name="(.+)"\]$/, '$1')
     let originalValue = ''
 
     cy.get(selector).then((el) => {
@@ -57,6 +81,8 @@ describe('DetailView metadata editing (45)', () => {
     cy.get(selector).blur()
     cy.wait(`@${aliasName}`)
 
+    waitUntilApiValue(fieldName, newValue)
+
     // A slow CI backend may still be writing; sessionStorage.clear() + reload
     // bypasses the client-side cache and forces a fresh fetch.
     // The URL still carries ?details=true from openWithSidebar(), so the sidebar
@@ -69,20 +95,26 @@ describe('DetailView metadata editing (45)', () => {
 
     // Restore original value.
     cy.get(selector).focus()
-    cy.get(selector)
-      .type('{selectall}')
-      .type(originalValue.length > 0 ? originalValue : '{del}', {
-        parseSpecialCharSequences: false
-      })
+    cy.then(() => {
+      if (originalValue.length > 0) {
+        cy.get(selector)
+          .type('{selectall}')
+          .type(originalValue, { parseSpecialCharSequences: false })
+        return
+      }
+      cy.get(selector).type('{selectall}{del}')
+    })
     cy.intercept('POST', '**/api/update').as(`${aliasName}Restore`)
     cy.get(selector).blur()
     cy.wait(`@${aliasName}Restore`)
+
+    cy.then(() => waitUntilApiValue(fieldName, originalValue))
 
     cy.then(() => { sessionStorage.clear() })
     cy.reload()
     cy.get('.item.item--labels').should('be.visible')
     cy.get('[data-test="detailview-sidebar"]').should('be.visible')
-    cy.get(selector).should('not.contain', newValue)
+    cy.get(selector, { timeout: 20000 }).should('not.contain', newValue)
   }
 
   // ── tests ─────────────────────────────────────────────────────────────────
