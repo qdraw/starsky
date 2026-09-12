@@ -35,6 +35,11 @@ starskymountwatchercli --status
 Additional flags:
 
 - `--help` or `-h` to print usage and platform-specific service notes.
+- `--appsettingspath` or `-asp` — override the path to `appsettings.json` (sets `app__appsettingspath`).
+- `--appsettingslocalpath` or `-aspl` — override the path to `appsettings.local.json`.
+- `--connection` or `-c` — override the database connection string (sets `app__DatabaseConnection`).
+- `--thumbnailtempfolder` or `-f` — override the thumbnail temp folder path.
+- `--tempfolder` or `-tf` — override the temp folder path.
 
 ## Platform support
 
@@ -56,6 +61,20 @@ To stop and remove the service, open the same submenu and click **Disable Mount 
 The preference is stored in `%AppData%\starsky\settings.json` (`MountWatcherEnabled`). When the app starts and the preference is enabled, it automatically reinstalls and starts the service. If installation fails (for example the binary is missing), the preference is cleared automatically so the app does not retry on every launch.
 
 > **Note:** The app itself does not run elevated. Only the `starskymountwatchercli.exe` sub-process is elevated for the duration of the `sc.exe create` or `sc.exe delete` call.
+
+### Windows service paths
+
+When the desktop app installs the Windows service, it bakes the user's AppData paths directly into the service command line. This means the service reads the correct `appsettings.json`, database, and temp folders even though it runs as `LocalSystem` without inheriting user environment variables.
+
+The paths are resolved at install time from the installing user's profile:
+
+| Arg | Path |
+|---|---|
+| `--connection` | `%APPDATA%\starsky\starsky.db` |
+| `--appsettingspath` | `%APPDATA%\starsky\appsettings.json` |
+| `--appsettingslocalpath` | `%APPDATA%\starsky\appsettings.local.json` |
+| `--thumbnailtempfolder` | `%APPDATA%\starsky\thumbnailTempFolder` |
+| `--tempfolder` | `%LOCALAPPDATA%\starsky\tempFolder` |
 
 ## Typical workflow
 
@@ -114,6 +133,18 @@ The enabled/disabled preference is stored in `~/Library/Application Support/star
 - On startup the app re-enables MountWatcher automatically if the preference is set.
 - Before a Sparkle update replaces the app bundle, the app stops MountWatcher; the next launch re-enables it.
 - If enabling fails (for example the CLI binary is missing), the preference is cleared and an error is shown.
+
+### macOS launchd paths
+
+When the desktop app installs the launchd agent, the generated plist includes an `EnvironmentVariables` section so the service finds the correct appsettings, database, and temp folders without inheriting the app's environment.
+
+| Variable | Path |
+|---|---|
+| `app__appsettingspath` | `~/Library/Application Support/starsky/appsettings.json` |
+| `app__appsettingslocalpath` | `~/Library/Application Support/starsky/appsettings.local.json` |
+| `app__databaseConnection` | `Data Source=~/Library/Application Support/starsky/starsky.db` |
+| `app__thumbnailTempFolder` | `~/Library/Application Support/starsky/thumbnailTempFolder/` |
+| `app__tempFolder` | `~/Library/Caches/starsky/tempFolder/` |
 
 ### Requirement
 

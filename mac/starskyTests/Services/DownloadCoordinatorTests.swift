@@ -21,6 +21,51 @@ final class DownloadCoordinatorTests: XCTestCase {
         XCTAssertNil(result)
     }
 
+    func testDecideDestinationDoesNotPresentPanelWhenWindowIsNil() {
+        let panel = SpyPanel(response: .OK, url: URL(fileURLWithPath: "/tmp/out.zip"))
+        let coordinator = DownloadCoordinator(window: nil)
+        coordinator.panelFactory = { panel }
+
+        coordinator.decideDownloadDestination(suggestedFilename: "export.zip") { _ in }
+
+        XCTAssertEqual(panel.beginSheetModalCallCount, 0)
+    }
+
+    func testDecideDestinationCallsNilCompletionWhenWindowIsDeallocated() {
+        let panel = SpyPanel(response: .OK, url: URL(fileURLWithPath: "/tmp/out.zip"))
+        var coordinator: DownloadCoordinator?
+        autoreleasepool {
+            let win = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 200, height: 200),
+                styleMask: .borderless,
+                backing: .buffered,
+                defer: true
+            )
+            coordinator = DownloadCoordinator(window: win)
+            coordinator?.panelFactory = { panel }
+        }
+        var result: URL? = URL(fileURLWithPath: "/sentinel")
+
+        let expectation = expectation(description: "completion called")
+        coordinator?.decideDownloadDestination(suggestedFilename: "export.zip") { url in
+            result = url
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 1)
+
+        XCTAssertNil(result)
+        XCTAssertEqual(panel.beginSheetModalCallCount, 0)
+    }
+
+    func testDecideDestinationPresentsPanelWhenWindowExists() {
+        let panel = SpyPanel(response: .OK, url: URL(fileURLWithPath: "/tmp/out.zip"))
+        let coordinator = makeCoordinator(panel: panel)
+
+        coordinator.decideDownloadDestination(suggestedFilename: "export.zip") { _ in }
+
+        XCTAssertEqual(panel.beginSheetModalCallCount, 1)
+    }
+
     // MARK: - decideDownloadDestination: configures panel before presenting
 
     func testDecideDestinationSetsSuggestedFilenameOnPanel() {
@@ -219,6 +264,7 @@ private final class SpyCoordinator: DownloadCoordinator {
 private class SpyPanel: NSSavePanel {
     private let stubbedResponse: NSApplication.ModalResponse
     private let stubbedURL: URL?
+    private(set) var beginSheetModalCallCount = 0
 
     init(response: NSApplication.ModalResponse = .OK, url: URL? = nil) {
         self.stubbedResponse = response
@@ -232,6 +278,7 @@ private class SpyPanel: NSSavePanel {
 
     override func beginSheetModal(for sheetWindow: NSWindow,
                                   completionHandler handler: @escaping (NSApplication.ModalResponse) -> Void) {
+        beginSheetModalCallCount += 1
         handler(stubbedResponse)
     }
 }
