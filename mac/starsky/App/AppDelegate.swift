@@ -8,15 +8,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var backendService: BackendService?
     private var splash: SplashWindowController?
     private var settingsWindowController: SettingsWindowController?
+    #if !MAS
     private var mountWatcherService: MountWatcherService?
     private var mountWatcherSubmenu: NSMenu?
     private var mountWatcherStatusItem: NSMenuItem?
     private var mountWatcherToggleItem: NSMenuItem?
     private var cachedMountWatcherStatus: MountWatcherStatus = .notInstalled
+    #endif
 
     func applicationDidFinishLaunching(_: Notification) {
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
         NSLog("[app] applicationDidFinishLaunching")
+        AppMigrationService.migrateToGroupContainerIfNeeded()
         do {
             try ApplicationPaths.ensureDirectories()
         } catch {
@@ -41,8 +44,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let splashRef = SplashWindowController()
         splash = splashRef
 
+        #if !MAS
         let mws = MountWatcherService()
         mountWatcherService = mws
+        #else
+        let mws = MountWatcherService()
+        #endif
 
         let updateService = UpdateService(settingsService: settingsService, fileLogger: fileLogger)
         let bs = BackendService(fileLogger: fileLogger)
@@ -141,13 +148,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.connectionSettings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
         menu.addItem(withTitle: NSLocalizedString("menu.app.applicationSettings", comment: ""), action: #selector(openApplicationSettings), keyEquivalent: "k")
             .keyEquivalentModifierMask = [.command, .shift]
+        #if !MAS
         menu.addItem(buildMountWatcherMenuItem())
+        #endif
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.hide", comment: ""), action: #selector(NSApplication.hide(_:)), keyEquivalent: "h"))
         menu.addItem(NSMenuItem(title: NSLocalizedString("menu.app.quit", comment: ""), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         return menu
     }
 
+    #if !MAS
     private func buildMountWatcherMenuItem() -> NSMenuItem {
         let submenu = NSMenu(title: NSLocalizedString("menu.mountwatcher.title", comment: ""))
         submenu.delegate = self
@@ -172,6 +182,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         item.submenu = submenu
         return item
     }
+    #endif
 
     private func buildFileMenu() -> NSMenu {
         let menu = NSMenu(title: NSLocalizedString("menu.file.title", comment: ""))
@@ -332,6 +343,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         core?.openReleases()
     }
 
+    #if !MAS
     @objc private func toggleMountWatcher() {
         guard let core, let mws = mountWatcherService else { return }
         let enabling = !core.settingsService.current.mountWatcherEnabled
@@ -361,8 +373,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
+    #endif
 }
 
+#if !MAS
 extension AppDelegate: NSMenuDelegate {
     func menuNeedsUpdate(_ menu: NSMenu) {
         guard menu === mountWatcherSubmenu else { return }
@@ -386,3 +400,4 @@ extension AppDelegate: NSMenuDelegate {
         }
     }
 }
+#endif

@@ -4,17 +4,16 @@ import OSLog
 
 // Handles the "storageFolderPicker" message posted from the web layer.
 // Presents an NSOpenPanel so the user can choose a storage folder, then:
-//   - In MAS builds: creates a security-scoped bookmark, writes it to the App Group
-//     container, and starts accessing the resource for the main app's process.
-//   - In all builds: evaluates window.__starskyStorageFolderSelected("<path>") in the
-//     web view so React can call ChangeSetting and update the displayed path.
+//   - Saves a security-scoped bookmark to the App Group container's bookmarks/
+//     directory. In MAS builds this is required to regain access after relaunch;
+//     in Developer ID builds it is harmless and keeps SecurityScopedBookmarkService
+//     (.NET) consistent across distribution channels.
+//   - Evaluates window.__starskyStorageFolderSelected("<path>") in the web view
+//     so React can call ChangeSetting and update the displayed path.
 final class StorageFolderPickerHandler: NSObject, WKScriptMessageHandler, @unchecked Sendable {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "StorageFolderPicker")
     private weak var webView: WKWebView?
-    #if MAS
-    // Track URLs whose security-scoped access has been started so we can stop it on deinit.
     private var accessedURLs: [URL] = []
-    #endif
 
     init(webView: WKWebView) {
         self.webView = webView
@@ -36,9 +35,7 @@ final class StorageFolderPickerHandler: NSObject, WKScriptMessageHandler, @unche
 
         guard panel.runModal() == .OK, let url = panel.url else { return }
 
-        #if MAS
         saveBookmark(for: url)
-        #endif
 
         let escaped = url.path
             .replacingOccurrences(of: "\\", with: "\\\\")
@@ -46,7 +43,6 @@ final class StorageFolderPickerHandler: NSObject, WKScriptMessageHandler, @unche
         webView?.evaluateJavaScript("window.__starskyStorageFolderSelected(\"\(escaped)\")")
     }
 
-    #if MAS
     private func saveBookmark(for url: URL) {
         do {
             let bookmarkData = try url.bookmarkData(
@@ -78,5 +74,4 @@ final class StorageFolderPickerHandler: NSObject, WKScriptMessageHandler, @unche
             url.stopAccessingSecurityScopedResource()
         }
     }
-    #endif
 }

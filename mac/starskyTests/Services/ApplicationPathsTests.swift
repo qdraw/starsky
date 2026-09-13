@@ -1,13 +1,15 @@
 import XCTest
 
-
 final class ApplicationPathsTests: XCTestCase {
     func testAppSupportContainsStarsky() {
         XCTAssertTrue(ApplicationPaths.appSupport.path.contains("starsky"))
     }
 
-    func testCachesContainsStarsky() {
-        XCTAssertTrue(ApplicationPaths.caches.path.contains("starsky"))
+    func testGroupContainerContainsStarsky() {
+        // In test builds the entitlement isn't provisioned, so groupContainer falls
+        // back to appSupport — either way the path must contain "starsky".
+        let path = ApplicationPaths.groupContainer.path
+        XCTAssertTrue(path.contains("starsky") || path.contains("group.nl.qdraw.starsky"))
     }
 
     func testSettingsFileUnderAppSupport() {
@@ -19,34 +21,39 @@ final class ApplicationPathsTests: XCTestCase {
         #endif
     }
 
-    func testLogsDirectoryUnderAppSupport() {
-        XCTAssertTrue(ApplicationPaths.logsDirectory.path.hasPrefix(ApplicationPaths.appSupport.path))
+    func testLogsDirectoryUnderGroupContainer() {
+        XCTAssertTrue(ApplicationPaths.logsDirectory.path.hasPrefix(ApplicationPaths.groupContainer.path))
         XCTAssertEqual(ApplicationPaths.logsDirectory.lastPathComponent, "logs")
     }
 
-    func testTempFolderUnderCaches() {
-        XCTAssertTrue(ApplicationPaths.tempFolder.path.hasPrefix(ApplicationPaths.caches.path))
-        XCTAssertEqual(ApplicationPaths.tempFolder.lastPathComponent, "tempFolder")
+    func testTempFolderUnderGroupContainer() {
+        XCTAssertTrue(ApplicationPaths.tempFolder.path.hasPrefix(ApplicationPaths.groupContainer.path))
+        XCTAssertEqual(ApplicationPaths.tempFolder.lastPathComponent, "tmp")
     }
 
-    func testAppSettingsFileUnderAppSupport() {
-        XCTAssertTrue(ApplicationPaths.appSettingsFile.path.hasPrefix(ApplicationPaths.appSupport.path))
+    func testAppSettingsFileUnderGroupContainer() {
+        XCTAssertTrue(ApplicationPaths.appSettingsFile.path.hasPrefix(ApplicationPaths.groupContainer.path))
         XCTAssertEqual(ApplicationPaths.appSettingsFile.lastPathComponent, "appsettings.json")
     }
 
-    func testAppSettingsLocalFileUnderAppSupport() {
-        XCTAssertTrue(ApplicationPaths.appSettingsLocalFile.path.hasPrefix(ApplicationPaths.appSupport.path))
+    func testAppSettingsLocalFileUnderGroupContainer() {
+        XCTAssertTrue(ApplicationPaths.appSettingsLocalFile.path.hasPrefix(ApplicationPaths.groupContainer.path))
         XCTAssertEqual(ApplicationPaths.appSettingsLocalFile.lastPathComponent, "appsettings.local.json")
     }
 
-    func testDatabaseFileUnderAppSupport() {
-        XCTAssertTrue(ApplicationPaths.databaseFile.path.hasPrefix(ApplicationPaths.appSupport.path))
+    func testDatabaseFileUnderGroupContainer() {
+        XCTAssertTrue(ApplicationPaths.databaseFile.path.hasPrefix(ApplicationPaths.groupContainer.path))
         XCTAssertEqual(ApplicationPaths.databaseFile.lastPathComponent, "starsky.db")
     }
 
-    func testThumbnailTempFolderUnderAppSupport() {
-        XCTAssertTrue(ApplicationPaths.thumbnailTempFolder.path.hasPrefix(ApplicationPaths.appSupport.path))
+    func testThumbnailTempFolderUnderGroupContainer() {
+        XCTAssertTrue(ApplicationPaths.thumbnailTempFolder.path.hasPrefix(ApplicationPaths.groupContainer.path))
         XCTAssertEqual(ApplicationPaths.thumbnailTempFolder.lastPathComponent, "thumbnailTempFolder")
+    }
+
+    func testBookmarksDirectoryUnderGroupContainer() {
+        XCTAssertTrue(ApplicationPaths.bookmarksDirectory.path.hasPrefix(ApplicationPaths.groupContainer.path))
+        XCTAssertEqual(ApplicationPaths.bookmarksDirectory.lastPathComponent, "bookmarks")
     }
 
     func testRuntimeDirectoryUnderBundleContents() {
@@ -63,9 +70,10 @@ final class ApplicationPathsTests: XCTestCase {
         try ApplicationPaths.ensureDirectories()
         let fm = FileManager.default
         XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.appSupport.path))
-        XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.caches.path))
+        XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.groupContainer.path))
         XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.logsDirectory.path))
         XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.thumbnailTempFolder.path))
         XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.tempFolder.path))
+        XCTAssertTrue(fm.fileExists(atPath: ApplicationPaths.bookmarksDirectory.path))
     }
 }

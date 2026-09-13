@@ -100,10 +100,12 @@ class BackendService: @unchecked Sendable {
     }
 
     // Returns the environment dictionary the backend process needs.
-    // Uses ApplicationPaths.* which resolves to the correct directory for this build.
+    // Uses ApplicationPaths.* which always resolves to the App Group container,
+    // ensuring the same paths are used regardless of distribution channel.
     static func buildEnvironment(port: Int) -> [String: String] {
         var env = ProcessInfo.processInfo.environment
         env["ASPNETCORE_URLS"] = "http://localhost:\(port)"
+        env["STARSKY_APP_GROUP"] = "group.nl.qdraw.starsky"
         env["app__appsettingspath"] = ApplicationPaths.appSettingsFile.path
         env["app__appsettingslocalpath"] = ApplicationPaths.appSettingsLocalFile.path
         env["app__databaseConnection"] = "Data Source=\(ApplicationPaths.databaseFile.path)"

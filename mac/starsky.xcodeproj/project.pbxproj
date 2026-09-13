@@ -76,6 +76,7 @@
 		A798D1ED44E9DAD18AB723A0 /* FileWatcherServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066BB49FDF5E95A8E40A5FA2 /* FileWatcherServiceProtocol.swift */; };
 		A8A0A840C8FDC2A9D7A7478F /* StorageFolderPickerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E86D100380D8BC04F82CE2 /* StorageFolderPickerHandler.swift */; };
 		AA5F8A54C787D6E5437A10DE /* StorageFolderPickerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E86D100380D8BC04F82CE2 /* StorageFolderPickerHandler.swift */; };
+		AB60A14D919E0949CFA80023 /* AppMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91C86C8EF558C50B9BF0801 /* AppMigrationService.swift */; };
 		ABABCE907574E0BCC0EF2522 /* SettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2FAF9F0DB6D5AD35BE4E55 /* SettingsService.swift */; };
 		AC8B8EF6258EB5B57404CD8C /* UrlValidationResultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FD597500E536E705E06522 /* UrlValidationResultTests.swift */; };
 		B0ADB1B7009216B47DDE5718 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4EAD3D340CB0C7C84427212 /* Localizable.strings */; };
@@ -106,6 +107,7 @@
 		E8622E893024A6B2A04DC7B9 /* SavedWindowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EBAFB55CED6C71FB0FE02FD /* SavedWindowState.swift */; };
 		F40BB21ABC14E0B286B0191F /* WindowManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF53E62B518E6B3C2A7C0CC3 /* WindowManagerProtocol.swift */; };
 		F61BB25AD6E4A6519F79F584 /* FakeURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3DF9B7AD7AE65C57A997B91 /* FakeURLProtocol.swift */; };
+		F7791FBF0198A2C4AE8262EE /* AppMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91C86C8EF558C50B9BF0801 /* AppMigrationService.swift */; };
 		F8053642799E7DE999D5231A /* DailyFileLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */; };
 		FA4B0F25837997F84A685519 /* WindowManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E770271ED2C2C7C1FDF78F9 /* WindowManagerTests.swift */; };
 		FAD78E84447F789AC438C71F /* ErrorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC719351FB87812C1BF8676 /* ErrorWindowController.swift */; };
@@ -181,6 +183,7 @@
 		D4FD597500E536E705E06522 /* UrlValidationResultTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlValidationResultTests.swift; sourceTree = "<group>"; };
 		D7A4355B016A576502FF1E51 /* RemoteUrlValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteUrlValidatorTests.swift; sourceTree = "<group>"; };
 		D7C712CCE4152F2ADDFC4C1A /* AppCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoreTests.swift; sourceTree = "<group>"; };
+		D91C86C8EF558C50B9BF0801 /* AppMigrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMigrationService.swift; sourceTree = "<group>"; };
 		DA7FF14576F32676391CCF10 /* ApplicationPathsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationPathsTests.swift; sourceTree = "<group>"; };
 		DE2FAF9F0DB6D5AD35BE4E55 /* SettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsService.swift; sourceTree = "<group>"; };
 		E187CC9FC3077B3A8F3D5469 /* AppCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCore.swift; sourceTree = "<group>"; };
@@ -352,6 +355,7 @@
 			isa = PBXGroup;
 			children = (
 				37CFFD91296CDC50EDCD7FA3 /* ApplicationPaths.swift */,
+				D91C86C8EF558C50B9BF0801 /* AppMigrationService.swift */,
 				B2CA83403E3576F4DDF6AA3F /* BackendService.swift */,
 				24B825F5B3A9E99B050667CE /* BackendServiceProtocol.swift */,
 				12DD89AA0258C225CD8706ED /* DailyFileLogger.swift */,
@@ -577,6 +581,7 @@
 			files = (
 				0A8960D6A6CCCEA927320327 /* AppCore.swift in Sources */,
 				430656002F48F777DE022C02 /* AppDelegate.swift in Sources */,
+				F7791FBF0198A2C4AE8262EE /* AppMigrationService.swift in Sources */,
 				29CCE389704C9AE90F98FEF2 /* ApplicationInfo.swift in Sources */,
 				033D422A3BCBC49ACFDD8A59 /* ApplicationPaths.swift in Sources */,
 				18D060446DDCBB764F9621FF /* BackendService.swift in Sources */,
@@ -621,6 +626,7 @@
 				CF37359A250F73EA3E478D84 /* AppCoreTests.swift in Sources */,
 				E25F67E6A5FB2022DD88DAE1 /* AppDelegate.swift in Sources */,
 				E0FFBC9B201198CA6250AA04 /* AppDelegateTests.swift in Sources */,
+				AB60A14D919E0949CFA80023 /* AppMigrationService.swift in Sources */,
 				67491DE224D1C39B325E5DA5 /* ApplicationInfo.swift in Sources */,
 				63AD0FC4331D997CC6F7077C /* ApplicationInfoTests.swift in Sources */,
 				4E54C9A6F8501ACFC5AD27CE /* ApplicationPaths.swift in Sources */,

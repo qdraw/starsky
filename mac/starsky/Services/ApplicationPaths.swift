@@ -6,11 +6,7 @@ enum ApplicationPaths {
         return base.appendingPathComponent("starsky", isDirectory: true)
     }()
 
-    static let caches: URL = {
-        let base = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        return base.appendingPathComponent("starsky", isDirectory: true)
-    }()
-
+    // Swift-only desktop settings file — never shared with the backend.
     static let settingsFile: URL = {
         #if DEBUG
         return appSupport.appendingPathComponent("settings-debug.json")
@@ -19,36 +15,27 @@ enum ApplicationPaths {
         #endif
     }()
 
-    // Paths shared with the backend. In MAS builds these live in the App Group container
-    // so both the main app and the login item can read and write them.
-    #if MAS
+    // App Group container shared between the main app and the backend process (login item
+    // in MAS builds, child process in Developer ID builds). Falls back to appSupport when
+    // the entitlement is not provisioned, e.g. in XCTest runs or ad-hoc local builds.
     static let groupContainer: URL = {
         guard let url = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: "group.nl.qdraw.starsky"
         ) else {
-            // Fallback to app support when the group container isn't provisioned (e.g. in tests).
             return appSupport
         }
         return url
     }()
 
     private static let sharedBase = groupContainer
-    #else
-    private static let sharedBase = appSupport
-    #endif
 
     static let appSettingsFile: URL = sharedBase.appendingPathComponent("appsettings.json")
     static let appSettingsLocalFile: URL = sharedBase.appendingPathComponent("appsettings.local.json")
     static let databaseFile: URL = sharedBase.appendingPathComponent("starsky.db")
     static let logsDirectory: URL = sharedBase.appendingPathComponent("logs", isDirectory: true)
     static let thumbnailTempFolder: URL = sharedBase.appendingPathComponent("thumbnailTempFolder", isDirectory: true)
-
-    #if MAS
     static let tempFolder: URL = sharedBase.appendingPathComponent("tmp", isDirectory: true)
     static let bookmarksDirectory: URL = sharedBase.appendingPathComponent("bookmarks", isDirectory: true)
-    #else
-    static let tempFolder: URL = caches.appendingPathComponent("tempFolder", isDirectory: true)
-    #endif
 
     static var runtimeDirectory: URL {
         let macOSDir = Bundle.main.bundleURL
@@ -62,12 +49,8 @@ enum ApplicationPaths {
 
     static func ensureDirectories() throws {
         let fm = FileManager.default
-        #if MAS
-        let dirs = [appSupport, groupContainer, logsDirectory, thumbnailTempFolder, tempFolder, bookmarksDirectory]
-        #else
-        let dirs = [appSupport, caches, logsDirectory, thumbnailTempFolder, tempFolder]
-        #endif
-        for dir in dirs {
+        for dir in [appSupport, groupContainer, logsDirectory, thumbnailTempFolder,
+                    tempFolder, bookmarksDirectory] {
             try fm.createDirectory(at: dir, withIntermediateDirectories: true)
         }
     }

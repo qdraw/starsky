@@ -60,19 +60,6 @@ private let mountWatcherLaunchAgentName = "nl.qdraw.mountwatcher.debug"
 private let mountWatcherLaunchAgentName = "nl.qdraw.mountwatcher"
 #endif
 
-// In MAS sandbox builds the LaunchAgent subprocess approach is blocked.
-// DiskArbitration callbacks also stop firing in the sandbox (Mach port to diskarbitrationd
-// is denied), but the .NET backend's 2-second polling fallback in MacMountWatcher continues
-// to work for already-accessible paths. Background sync when the app is closed is a known
-// MAS limitation.
-#if MAS
-final class MountWatcherService: MountWatcherServiceProtocol, @unchecked Sendable {
-    func enable() async -> Bool { true }
-    func disable() async -> Bool { true }
-    func stopSync() {}
-    func status() async -> MountWatcherStatus { .stopped }
-}
-#else
 final class MountWatcherService: MountWatcherServiceProtocol, @unchecked Sendable {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "MountWatcher")
     private let processRunner: ProcessRunner
