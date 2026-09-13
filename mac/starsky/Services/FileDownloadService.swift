@@ -39,6 +39,9 @@ class FileDownloadService: @unchecked Sendable {
     private var debounceItems: [String: DispatchWorkItem] = [:]
     // FSEvents stream watching tempFolder recursively
     private var streamRef: FSEventStreamRef?
+    // Polling fallback: scans remoteContexts every 2 s so atomic writes whose FSEvents
+    // destination event is dropped by the kernel are still caught.
+    private var pollingTimer: DispatchSourceTimer?
 
     init(
         fileLogger: DailyFileLogger,
@@ -66,6 +69,8 @@ class FileDownloadService: @unchecked Sendable {
             FSEventStreamRelease(stream)
         }
         watcherQueue.sync {
+            pollingTimer?.cancel()
+            pollingTimer = nil
             debounceItems.values.forEach { $0.cancel() }
             debounceItems.removeAll()
             remoteContexts.removeAll()
@@ -198,6 +203,31 @@ class FileDownloadService: @unchecked Sendable {
         streamRef = stream
         logger.info("Watching temp folder: \(watchPath)")
         fileLogger.info("Watching temp folder for changes", category: "FileDownloadService")
+        startPollingTimer()
+    }
+
+    private func startPollingTimer() {
+        guard pollingTimer == nil else { return }
+        let timer = DispatchSource.makeTimerSource(queue: watcherQueue)
+        // 2-second interval: catches atomic-write events that FSEvents drops entirely
+        // (e.g., when the rename source is in a different directory and the kernel
+        // omits the destination-side event). The debounce in scheduleUpload is
+        // idempotent, so files already handled by FSEvents are not double-uploaded.
+        timer.schedule(deadline: .now() + 2.0, repeating: 2.0, leeway: .milliseconds(500))
+        timer.setEventHandler { [weak self] in self?.pollWatchedFiles() }
+        timer.resume()
+        pollingTimer = timer
+    }
+
+    private func pollWatchedFiles() {
+        for (path, _) in remoteContexts {
+            let url = URL(fileURLWithPath: path)
+            guard let currentMtime = mtime(of: url),
+                  currentMtime != lastMtimes[path] else { continue }
+            lastMtimes[path] = currentMtime
+            logger.info("Poll detected change, scheduling upload: \(url.lastPathComponent)")
+            scheduleUpload(key: path, localURL: url)
+        }
     }
 
     func handleFSEvents(paths: [String], flags: [FSEventStreamEventFlags]) {
