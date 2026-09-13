@@ -253,6 +253,12 @@ class FileDownloadService: @unchecked Sendable {
             guard let currentMtime = mtime(of: localURL),
                   currentMtime != lastMtimes[path] else { continue }
 
+            // Update lastMtimes here (on watcherQueue) rather than after upload completion.
+            // Updating after completion races with the test retry loop's forceDistinctMtime:
+            // the async update can execute after the next attempt already changed the mtime,
+            // storing the new mtime into lastMtimes and causing that attempt's FSEvents check
+            // to falsely match and skip the upload.
+            lastMtimes[path] = currentMtime
             logger.info("File changed, scheduling upload: \(localURL.lastPathComponent)")
             fileLogger.info("File changed, scheduling upload: \(localURL.lastPathComponent)", category: "FileDownloadService")
             scheduleUpload(key: path, localURL: localURL)
@@ -261,14 +267,15 @@ class FileDownloadService: @unchecked Sendable {
         // Fallback for atomic overwrites: the per-file loop may have missed the watched file
         // because FSEvents only delivered the disappearing temp-source event (pure ItemRemoved,
         // no ItemRenamed). Scan every watched file whose directory was touched and upload any
-        // whose mtime changed. scheduleUpload's debounce is idempotent, so double-scheduling
-        // a file that was already handled above is harmless.
+        // whose mtime changed. Because lastMtimes is now set in the per-file loop above,
+        // files already handled there are naturally skipped here (currentMtime == lastMtimes).
         for dir in affectedDirs {
             for (watchedPath, _) in remoteContexts {
                 guard URL(fileURLWithPath: watchedPath).deletingLastPathComponent().path == dir else { continue }
                 let watchedURL = URL(fileURLWithPath: watchedPath)
                 guard let currentMtime = mtime(of: watchedURL),
                       currentMtime != lastMtimes[watchedPath] else { continue }
+                lastMtimes[watchedPath] = currentMtime
                 scheduleUpload(key: watchedPath, localURL: watchedURL)
             }
         }
@@ -299,7 +306,6 @@ class FileDownloadService: @unchecked Sendable {
         let cookies = await ctx.cookieProvider()
         do {
             try await upload(localURL: localURL, remotePath: ctx.remotePath, baseUrl: ctx.baseUrl, cookies: cookies)
-            watcherQueue.async { self.lastMtimes[key] = self.mtime(of: localURL) }
         } catch {
             logger.error("Upload failed for \(localURL.lastPathComponent): \(error.localizedDescription)")
             fileLogger.info("Upload failed for \(localURL.lastPathComponent): \(error.localizedDescription)", category: "FileDownloadService")
