@@ -234,6 +234,37 @@ public sealed class SetupAppSettingsTest
 	}
 
 	[TestMethod]
+	public async Task MergeJsonFiles_ImportIgnoreRemovesDuplicates()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject,
+			"_test_importignore_duplicates");
+		_hostStorage.FolderDelete(testDir);
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("{}"),
+			Path.Combine(testDir, "appsettings.json"));
+
+		var localJson = """
+		                {
+		                  "app": {
+		                    "importIgnore": ["lost+found", "THMBNL", "lost+found", "THMBNL"]
+		                  }
+		                }
+		                """;
+		var localPath = Path.Combine(testDir, "appsettings.local.json");
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(localJson),
+			localPath);
+		Environment.SetEnvironmentVariable("app__appsettingslocalpath", localPath);
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.AreSequenceEqual(["lost+found", "THMBNL"], result.ImportIgnore);
+
+		_hostStorage.FolderDelete(testDir);
+		Environment.SetEnvironmentVariable("app__appsettingslocalpath", null);
+	}
+
+	[TestMethod]
 	public async Task MergeJsonFiles_ImportBackupFromLocalJson()
 	{
 		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test_importbackup");

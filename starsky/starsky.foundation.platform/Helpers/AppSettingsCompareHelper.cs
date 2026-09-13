@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using starsky.foundation.platform.Enums;
@@ -662,7 +663,7 @@ public static class AppSettingsCompareHelper
 	/// <summary>
 	///     Compare List String
 	/// </summary>
-	/// <param name="propertyName">name of property e.g. Readonly folders</param>
+	/// <param name="propertyName">name of property e.g., Readonly folders</param>
 	/// <param name="sourceIndexItem">source object</param>
 	/// <param name="oldListStringValue">oldListStringValue to compare with newListStringValue</param>
 	/// <param name="newListStringValue">newListStringValue to compare with oldListStringValue</param>
@@ -684,7 +685,8 @@ public static class AppSettingsCompareHelper
 		}
 
 		sourceIndexItem.GetType().GetProperty(propertyName)
-			?.SetValue(sourceIndexItem, newListStringValue, null);
+			?.SetValue(sourceIndexItem,
+				newListStringValue!.Distinct(StringComparer.Ordinal).ToList(), null);
 		differenceList.Add(propertyName.ToLowerInvariant());
 	}
 
