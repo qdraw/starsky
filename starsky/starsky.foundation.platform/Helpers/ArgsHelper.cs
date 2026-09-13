@@ -370,6 +370,12 @@ public sealed class ArgsHelper
 				_console.WriteLine(
 					"--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
 				break;
+			case AppSettings.StarskyAppType.MountWatcher:
+				_console.WriteLine(
+					"--install       Install as OS service (launchd / systemd / Windows Service)");
+				_console.WriteLine("--uninstall     Remove the OS service");
+				_console.WriteLine("--status        Check if the service is running");
+				break;
 		}
 
 		_console.WriteLine("--verbose or -v == verbose, more detailed info");
@@ -436,6 +442,10 @@ public sealed class ArgsHelper
 		}
 
 		_console.Write("\n");
+		_console.WriteLine(
+			$"ImportBackup Enabled: {_appSettings.ImportBackup.Enabled} StorageFolder: {_appSettings.ImportBackup.StorageFolder}");
+		_console.WriteLine(
+			$"ImportMountWatcher DeleteAfter: {_appSettings.ImportMountWatcher.DeleteAfter}");
 
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Importer )
 		{

@@ -70,6 +70,20 @@ public sealed class MountWatcherCliTest
 	}
 
 	[TestMethod]
+	[Timeout(5000, CooperativeCancellation = true)]
+	public async Task StartWatcher_VerboseOnly_ShowsHelp()
+	{
+		var console = new FakeConsoleWrapper([]);
+		var sut = CreateSut(console);
+
+		var result = await sut.StartWatcher(["--verbose"]);
+
+		Assert.IsTrue(result);
+		Assert.Contains("Starsky MountWatcher Cli ~ Help:", console.WrittenLines);
+		Assert.Contains("Service setup:", console.WrittenLines);
+	}
+
+	[TestMethod]
 	public async Task StartWatcher_Help_ShowsMacOSHelp_WhenPlatformIsOSX()
 	{
 		var console = new FakeConsoleWrapper([]);

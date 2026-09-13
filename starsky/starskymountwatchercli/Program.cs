@@ -109,7 +109,7 @@ public static class Program
 		}
 		else if ( !success )
 		{
-			// Propagate failure to the caller (e.g. the macOS app shell) via exit code.
+			// Propagate failure to the caller (e.g., the macOS app shell) via exit code.
 			Environment.ExitCode = 1;
 		}
 	}

@@ -1114,6 +1114,28 @@ public sealed class RenameServiceTest
 	}
 
 	[TestMethod]
+	public void CollectionAddPreflight_WhenSingleItemReturnsNull_ShouldTreatAsSingleItem()
+	{
+		const string filePath = "/child_folder/race_cond.jpg";
+		const string toPath = "/child_folder/race_cond_renamed.jpg";
+
+		var sourceQueryCount = 0;
+		var query = new FakeIQuery(singleItemOverride: (path, _) =>
+			path == filePath && sourceQueryCount++ == 0
+				? new DetailView { FileIndexItem = new FileIndexItem(filePath) }
+				: null);
+		var iStorage = new FakeIStorage(["/", "/child_folder"], [filePath]);
+
+		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
+			new RenameService(query, iStorage, new FakeIWebLogger())
+				.InputOutputSubPathsPreflight(filePath, toPath, true);
+
+		Assert.AreSequenceEqual([filePath], inputFileSubPaths);
+		Assert.AreSequenceEqual([toPath], toFileSubPaths);
+		Assert.IsEmpty(fileIndexResultsList);
+	}
+
+	[TestMethod]
 	public async Task Rename_ShouldResetCacheForFileHash()
 	{
 		// Arrange

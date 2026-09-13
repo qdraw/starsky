@@ -25,7 +25,7 @@ internal static class ServiceInstallerHelper
 		            <key>ProgramArguments</key>
 		            <array>
 		                <string>{executablePath}</string>
-		                <string></string>
+		                <string>-v</string>
 		            </array>
 		            <key>RunAtLoad</key>
 		            <true/>
@@ -54,7 +54,7 @@ internal static class ServiceInstallerHelper
 	}
 
 	/// <summary>
-	///     Generate Linux systemd unit file
+	///     Generate a Linux systemd unit file
 	/// </summary>
 	internal static string GenerateLinuxSystemdUnit(string executablePath)
 	{

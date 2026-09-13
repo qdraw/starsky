@@ -308,7 +308,15 @@ public class RenameService(IQuery query, IStorage iStorage, IWebLogger logger)
 			// when it is a file update the 'to paths'
 			var querySingleItemCollections = query.SingleItem(inputFileSubPaths[i],
 				null, true, false);
-			var collectionPaths = querySingleItemCollections!.FileIndexItem!.CollectionPaths;
+			if ( querySingleItemCollections?.FileIndexItem == null )
+			{
+				// file not in the database; treat as single-item (no sidecar collection)
+				inputCollectionFileSubPaths.Add(inputFileSubPaths[i]);
+				toCollectionFileSubPaths.Add(toFileSubPaths[i]);
+				continue;
+			}
+
+			var collectionPaths = querySingleItemCollections.FileIndexItem.CollectionPaths;
 
 			inputCollectionFileSubPaths.AddRange(collectionPaths);
 

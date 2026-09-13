@@ -31,6 +31,7 @@ public static class SetupLogging
 		{
 			logging.ClearProviders();
 			logging.AddConsole();
+			logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
 
 			new AddEventLogger().AddEventLog(logging, appSettings.ApplicationType);
 

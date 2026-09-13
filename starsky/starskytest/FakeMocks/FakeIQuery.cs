@@ -21,10 +21,14 @@ public class FakeIQuery : IQuery
 	private readonly List<FileIndexItem> _content = [];
 	private readonly object _contentLock = new object();
 	private List<FileIndexItem> _fakeCachedContent = [];
+	private readonly Func<string, bool, DetailView?>? _singleItemOverride;
 
 	public FakeIQuery(List<FileIndexItem>? content = null,
-		List<FileIndexItem>? fakeCachedContent = null)
+		List<FileIndexItem>? fakeCachedContent = null,
+		Func<string, bool, DetailView?>? singleItemOverride = null)
 	{
+		_singleItemOverride = singleItemOverride;
+
 		if ( content == null )
 		{
 			return;
@@ -98,6 +102,11 @@ public class FakeIQuery : IQuery
 		bool enableCollections = true, bool hideDeleted = true,
 		SortType? sort = SortType.FileName)
 	{
+		if ( _singleItemOverride != null )
+		{
+			return _singleItemOverride(singleItemDbPath, enableCollections);
+		}
+
 		if ( _content.TrueForAll(p => p.FilePath != singleItemDbPath) )
 		{
 			return null;
