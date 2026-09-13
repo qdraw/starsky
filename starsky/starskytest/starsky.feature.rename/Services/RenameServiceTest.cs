@@ -1114,28 +1114,25 @@ public sealed class RenameServiceTest
 	}
 
 	[TestMethod]
-	public void
-		CollectionAddPreflight_WhenSingleItemReturnsNull_ShouldNotThrow()
+	public void CollectionAddPreflight_WhenSingleItemReturnsNull_ShouldTreatAsSingleItem()
 	{
-		// Covers the race-condition case: a file passes the initial DB check in
-		// InputOutputSubPathsPreflight but SingleItem returns null in CollectionAddPreflight
-		// (e.g. the item was concurrently deleted). The method must not throw and must
-		// treat the file as a single-item (no sidecar expansion).
 		const string filePath = "/child_folder/race_cond.jpg";
 		const string toPath = "/child_folder/race_cond_renamed.jpg";
 
-		// File is NOT in the database — InputOutputSubPathsPreflight returns NotFoundNotInIndex
-		// and never reaches CollectionAddPreflight, so no crash.
+		var sourceQueryCount = 0;
+		var query = new FakeIQuery(singleItemOverride: (path, _) =>
+			path == filePath && sourceQueryCount++ == 0
+				? new DetailView { FileIndexItem = new FileIndexItem(filePath) }
+				: null);
 		var iStorage = new FakeIStorage(["/", "/child_folder"], [filePath]);
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
-			new RenameService(_query, iStorage, new FakeIWebLogger())
+			new RenameService(query, iStorage, new FakeIWebLogger())
 				.InputOutputSubPathsPreflight(filePath, toPath, true);
 
-		// When not in DB the paths are empty and error status is returned — no exception thrown.
-		Assert.IsEmpty(inputFileSubPaths);
-		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,
-			fileIndexResultsList.Last().Status);
+		Assert.AreSequenceEqual([filePath], inputFileSubPaths);
+		Assert.AreSequenceEqual([toPath], toFileSubPaths);
+		Assert.IsEmpty(fileIndexResultsList);
 	}
 
 	[TestMethod]
