@@ -99,6 +99,7 @@ public class MountWatcherCli
 
 		if ( ArgsHelper.NeedHelp(args) )
 		{
+			new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 			ShowHelp();
 			return true;
 		}
@@ -176,20 +177,7 @@ public class MountWatcherCli
 	/// </summary>
 	private void ShowHelp()
 	{
-		_console.WriteLine("Starsky Mount Watcher - automatically imports from camera storage");
-		_console.WriteLine("");
-		_console.WriteLine("Usage:");
-		_console.WriteLine("  starskymountwatchercli [options]");
-		_console.WriteLine("");
-		_console.WriteLine("Options:");
-		_console.WriteLine(
-			"  --install       Install as OS service (launchd/systemd/Windows Service)");
-		_console.WriteLine("  --uninstall     Remove the OS service");
-		_console.WriteLine("  --verbose, -v   Enable verbose logging");
-		_console.WriteLine("  --help, -h      Show this help");
-		_console.WriteLine("");
 		_console.WriteLine("Service setup:");
-
 		_console.WriteLine($" Storage: {_appSettings.StorageFolder}");
 
 		if ( _platformResolver() == OSPlatform.OSX )

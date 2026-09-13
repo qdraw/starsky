@@ -8,7 +8,7 @@ namespace starsky.foundation.mountwatch.Services;
 public interface IMountWatcherFactory
 {
 	/// <summary>
-	///     Create OS-specific mount watcher
+	///     Create an OS-specific mount watcher
 	/// </summary>
 	IMountWatcher CreateMountWatcher();
 }
