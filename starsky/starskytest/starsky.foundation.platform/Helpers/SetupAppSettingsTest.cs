@@ -200,4 +200,150 @@ public sealed class SetupAppSettingsTest
 
 		_hostStorage.FolderDelete(testDir);
 	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_ImportIgnoreFromLocalJson()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test_importignore");
+		_hostStorage.FolderDelete(testDir);
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{}"), Path.Combine(testDir, "appsettings.json"));
+
+		var localJson = """
+		                {
+		                  "app": {
+		                    "importIgnore": ["lost+found", ".Trashes", "THMBNL"]
+		                  }
+		                }
+		                """;
+
+		var localPath = Path.Combine(testDir, "appsettings.local.json");
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(localJson),
+			localPath);
+		Environment.SetEnvironmentVariable("app__appsettingslocalpath", localPath);
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.IsTrue(result.ImportIgnore.Contains("THMBNL"),
+			$"Expected THMBNL in ImportIgnore, got: {string.Join(", ", result.ImportIgnore)}");
+
+		_hostStorage.FolderDelete(testDir);
+		Environment.SetEnvironmentVariable("app__appsettingslocalpath", null);
+	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_ImportBackupFromLocalJson()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test_importbackup");
+		_hostStorage.FolderDelete(testDir);
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{}"), Path.Combine(testDir, "appsettings.json"));
+
+		var localJson = """
+		                {
+		                  "app": {
+		                    "ImportBackup": {
+		                      "Enabled": "true",
+		                      "StorageFolder": "/data/backup"
+		                    }
+		                  }
+		                }
+		                """;
+
+		var localPath = Path.Combine(testDir, "appsettings.local.json");
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(localJson),
+			localPath);
+		Environment.SetEnvironmentVariable("app__appsettingslocalpath", localPath);
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.IsTrue(result.ImportBackup.Enabled,
+			"ImportBackup.Enabled should be true");
+		Assert.AreEqual("/data/backup", result.ImportBackup.StorageFolder);
+
+		_hostStorage.FolderDelete(testDir);
+		Environment.SetEnvironmentVariable("app__appsettingslocalpath", null);
+	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_ImportMountWatcherFromLocalJson()
+	{
+		var testDir =
+			Path.Combine(new AppSettings().BaseDirectoryProject, "_test_mountwatcher");
+		_hostStorage.FolderDelete(testDir);
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{}"), Path.Combine(testDir, "appsettings.json"));
+
+		var localJson = """
+		                {
+		                  "app": {
+		                    "ImportMountWatcher": {
+		                      "DeleteAfter": "true"
+		                    }
+		                  }
+		                }
+		                """;
+
+		var localPath = Path.Combine(testDir, "appsettings.local.json");
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(localJson),
+			localPath);
+		Environment.SetEnvironmentVariable("app__appsettingslocalpath", localPath);
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.IsTrue(result.ImportMountWatcher.DeleteAfter,
+			"ImportMountWatcher.DeleteAfter should be true");
+
+		_hostStorage.FolderDelete(testDir);
+		Environment.SetEnvironmentVariable("app__appsettingslocalpath", null);
+	}
+
+	[TestMethod]
+	public async Task MergeJsonFiles_StructureFromLocalJson()
+	{
+		var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test_structure");
+		_hostStorage.FolderDelete(testDir);
+		_hostStorage.CreateDirectory(testDir);
+
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
+			"{}"), Path.Combine(testDir, "appsettings.json"));
+
+		var localJson = """
+		                {
+		                  "app": {
+		                    "Structure": {
+		                      "DefaultPattern": "/yyyy/MM/yyyy_MM_dd_\\d/yyyyMMdd_HHmmss_{filenamebase}.ext",
+		                      "Rules": [
+		                        {
+		                          "Conditions": { "Origin": "sarah" },
+		                          "Pattern": "/yyyy/MM/yyyy_MM_dd_\\d/yyyyMMdd_HHmmss_\\s.ext"
+		                        }
+		                      ]
+		                    }
+		                  }
+		                }
+		                """;
+
+		var localPath = Path.Combine(testDir, "appsettings.local.json");
+		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(localJson),
+			localPath);
+		Environment.SetEnvironmentVariable("app__appsettingslocalpath", localPath);
+
+		var result = await SetupAppSettings.MergeJsonFiles(testDir);
+
+		Assert.AreEqual("/yyyy/MM/yyyy_MM_dd_\\d/yyyyMMdd_HHmmss_{filenamebase}.ext",
+			result.Structure.DefaultPattern,
+			$"Structure.DefaultPattern mismatch. Errors: {string.Join("; ", result.Structure.Errors)}");
+		Assert.AreEqual(1, result.Structure.Rules.Count,
+			"Expected 1 structure rule");
+
+		_hostStorage.FolderDelete(testDir);
+		Environment.SetEnvironmentVariable("app__appsettingslocalpath", null);
+	}
 }
