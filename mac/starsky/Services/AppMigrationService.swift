@@ -14,6 +14,10 @@ enum AppMigrationService {
         // In that case there is nothing to migrate.
         guard src.standardizedFileURL != dst.standardizedFileURL else { return }
 
+        let fm = FileManager.default
+        let sentinel = dst.appendingPathComponent(".migration-done")
+        guard !fm.fileExists(atPath: sentinel.path) else { return }
+
         let names = [
             "starsky.db",
             "appsettings.json",
@@ -22,7 +26,6 @@ enum AppMigrationService {
             "thumbnailTempFolder"
         ]
 
-        let fm = FileManager.default
         for name in names {
             let srcURL = src.appendingPathComponent(name)
             let dstURL = dst.appendingPathComponent(name)
@@ -36,5 +39,7 @@ enum AppMigrationService {
                 logger.error("Failed to migrate \(name, privacy: .public): \(error.localizedDescription, privacy: .public)")
             }
         }
+
+        fm.createFile(atPath: sentinel.path, contents: nil)
     }
 }
