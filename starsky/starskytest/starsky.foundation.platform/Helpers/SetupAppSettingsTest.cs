@@ -226,7 +226,7 @@ public sealed class SetupAppSettingsTest
 
 		var result = await SetupAppSettings.MergeJsonFiles(testDir);
 
-		Assert.IsTrue(result.ImportIgnore.Contains("THMBNL"),
+		Assert.Contains("THMBNL", result.ImportIgnore,
 			$"Expected THMBNL in ImportIgnore, got: {string.Join(", ", result.ImportIgnore)}");
 
 		_hostStorage.FolderDelete(testDir);
@@ -340,7 +340,7 @@ public sealed class SetupAppSettingsTest
 		Assert.AreEqual("/yyyy/MM/yyyy_MM_dd_\\d/yyyyMMdd_HHmmss_{filenamebase}.ext",
 			result.Structure.DefaultPattern,
 			$"Structure.DefaultPattern mismatch. Errors: {string.Join("; ", result.Structure.Errors)}");
-		Assert.AreEqual(1, result.Structure.Rules.Count,
+		Assert.HasCount(1, result.Structure.Rules,
 			"Expected 1 structure rule");
 
 		_hostStorage.FolderDelete(testDir);
