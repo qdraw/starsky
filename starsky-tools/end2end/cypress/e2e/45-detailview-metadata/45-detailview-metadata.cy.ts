@@ -32,6 +32,49 @@ describe('DetailView metadata editing (45)', () => {
     cy.get('[data-test="detailview-sidebar"]').should('be.visible')
   }
 
+  // The backend accepts POST /api/update before the value is written to disk by
+  // the background queue, so poll /api/info until the new value is readable.
+  function waitUntilApiValue (
+    fieldName: string,
+    expected: string,
+    attempt: number = 0,
+    maxAttempts: number = 20
+  ) {
+    cy.request({
+      url: `/starsky/api/info?f=/starsky-end2end-test/${fileName}&collections=false`,
+      method: 'GET',
+      failOnStatusCode: false
+    }).then((response) => {
+      const current = String(response.body?.[0]?.[fieldName] ?? '').trim()
+      if (current === expected.trim() || attempt >= maxAttempts) {
+        cy.log(`${fieldName} on disk: "${current}" (attempt ${attempt})`)
+        return
+      }
+      cy.wait(500)
+      waitUntilApiValue(fieldName, expected, attempt + 1, maxAttempts)
+    })
+  }
+
+  function waitUntilApiDateTimeYear (
+    year: string,
+    attempt: number = 0,
+    maxAttempts: number = 20
+  ) {
+    cy.request({
+      url: `/starsky/api/info?f=/starsky-end2end-test/${fileName}&collections=false`,
+      method: 'GET',
+      failOnStatusCode: false
+    }).then((response) => {
+      const current = String(response.body?.[0]?.dateTime ?? '')
+      if (current.startsWith(year) || attempt >= maxAttempts) {
+        cy.log(`dateTime on disk: "${current}" (attempt ${attempt})`)
+        return
+      }
+      cy.wait(500)
+      waitUntilApiDateTimeYear(year, attempt + 1, maxAttempts)
+    })
+  }
+
   // Generic helper: edit a contenteditable metadata field, wait for the
   // backend update to confirm, reload to verify persistence, then restore.
   // The intercept is set up AFTER typing so that keystrokes during editing
@@ -41,6 +84,7 @@ describe('DetailView metadata editing (45)', () => {
     newValue: string,
     aliasName: string
   ) {
+    const fieldName = selector.replace(/^\[data-name="(.+)"\]$/, '$1')
     let originalValue = ''
 
     cy.get(selector).then((el) => {
@@ -57,6 +101,8 @@ describe('DetailView metadata editing (45)', () => {
     cy.get(selector).blur()
     cy.wait(`@${aliasName}`)
 
+    waitUntilApiValue(fieldName, newValue)
+
     // A slow CI backend may still be writing; sessionStorage.clear() + reload
     // bypasses the client-side cache and forces a fresh fetch.
     // The URL still carries ?details=true from openWithSidebar(), so the sidebar
@@ -69,20 +115,26 @@ describe('DetailView metadata editing (45)', () => {
 
     // Restore original value.
     cy.get(selector).focus()
-    cy.get(selector)
-      .type('{selectall}')
-      .type(originalValue.length > 0 ? originalValue : '{del}', {
-        parseSpecialCharSequences: false
-      })
+    cy.then(() => {
+      if (originalValue.length > 0) {
+        cy.get(selector)
+          .type('{selectall}')
+          .type(originalValue, { parseSpecialCharSequences: false })
+        return
+      }
+      cy.get(selector).type('{selectall}{del}')
+    })
     cy.intercept('POST', '**/api/update').as(`${aliasName}Restore`)
     cy.get(selector).blur()
     cy.wait(`@${aliasName}Restore`)
+
+    cy.then(() => waitUntilApiValue(fieldName, originalValue))
 
     cy.then(() => { sessionStorage.clear() })
     cy.reload()
     cy.get('.item.item--labels').should('be.visible')
     cy.get('[data-test="detailview-sidebar"]').should('be.visible')
-    cy.get(selector).should('not.contain', newValue)
+    cy.get(selector, { timeout: 20000 }).should('not.contain', newValue)
   }
 
   // ── tests ─────────────────────────────────────────────────────────────────
@@ -113,7 +165,9 @@ describe('DetailView metadata editing (45)', () => {
   })
 
   // The datetime modal has its own submit flow rather than a blur.
-  // We read the current year, increment it, save, verify, then restore.
+  // The fixture file has no EXIF datetime, so fields start empty and the
+  // warning box shows on first open. We fill all six fields with a known
+  // date, submit, then cycle the year to verify persistence and restore.
   // retries=3 because the modal submit → reload → verify cycle is the most
   // susceptible step to slow async writes on CI.
   it('edit datetime via modal, verify persistence, restore (45)', {
@@ -122,60 +176,89 @@ describe('DetailView metadata editing (45)', () => {
     if (!config.isEnabled) return
     openWithSidebar()
 
-    const yearSelector = '[data-test="modal-edit-datetime"] [data-name="year"]'
-    let originalYear = ''
+    const modalSelector = '[data-test="modal-edit-datetime"]'
+    const yearSelector = `${modalSelector} [data-name="year"]`
+    const monthSelector = `${modalSelector} [data-name="month"]`
+    const dateSelector = `${modalSelector} [data-name="date"]`
+    const hourSelector = `${modalSelector} [data-name="hour"]`
+    const minuteSelector = `${modalSelector} [data-name="minute"]`
+    const secSelector = `${modalSelector} [data-name="sec"]`
 
-    cy.get('[data-test="dateTime"]').click()
-    cy.get('[data-test="modal-edit-datetime"]').should('be.visible')
-    // Capture current year before touching anything.
-    cy.get(yearSelector).then((el) => {
-      originalYear = el.text().trim()
-      cy.log('original year: ' + originalYear)
-    })
+    // Known full datetime for a file that has no EXIF data.
+    // Using the date encoded in the fixture filename as a mnemonic.
+    const baseYear = '2019'
+    const changedYear = '2020'
 
-    // Change to a clearly different year so the assertion is unambiguous.
-    cy.then(() => {
-      const newYear = String(Number(originalYear) + 1)
-      cy.get(yearSelector).focus()
-      cy.get(yearSelector)
-        .type('{selectall}')
-        .type(newYear, { parseSpecialCharSequences: false })
-      // Blur before clicking submit so the onBlur→setState cycle commits the
-      // new year into React state before updateDateTime() reads getDates().
-      cy.get(yearSelector).blur()
-
-      cy.intercept('POST', '**/api/update').as('updateDatetime')
-      cy.get('[data-test="modal-edit-datetime-btn-default"]').click()
-      cy.wait('@updateDatetime')
-
-      cy.then(() => { sessionStorage.clear() })
-      cy.reload()
-      // URL still carries ?details=true — sidebar is already open, do not toggle.
-      cy.get('[data-test="detailview-sidebar"]').should('be.visible')
-
-      // Re-open modal and verify year persisted.
+    function openModal () {
       cy.get('[data-test="dateTime"]').click()
-      cy.get('[data-test="modal-edit-datetime"]').should('be.visible')
-      cy.get(yearSelector).should('contain', newYear)
+      cy.get(modalSelector).should('be.visible')
+    }
 
-      // Restore original year.
-      cy.get(yearSelector).focus()
-      cy.get(yearSelector)
-        .type('{selectall}')
-        .type(originalYear, { parseSpecialCharSequences: false })
-      cy.get(yearSelector).blur()
+    function typeInField (selector: string, value: string) {
+      cy.get(selector).focus()
+      cy.get(selector).type('{selectall}').type(value, { parseSpecialCharSequences: false })
+      cy.get(selector).blur()
+      // Wait for React to commit the state update from onBlur before typing
+      // into the next field. On Windows CI the re-render can race with the
+      // next field's focus and wipe the just-typed value.
+      cy.get(selector).should('have.text', value)
+    }
 
-      cy.intercept('POST', '**/api/update').as('restoreDatetime')
-      cy.get('[data-test="modal-edit-datetime-btn-default"]').click()
-      cy.wait('@restoreDatetime')
+    // Fill every field so the warning disappears and the submit button enables.
+    // Called only for the first open when the file has no existing datetime.
+    function fillAllFields (year: string) {
+      typeInField(yearSelector, year)
+      typeInField(monthSelector, '08')
+      typeInField(dateSelector, '22')
+      typeInField(hourSelector, '13')
+      typeInField(minuteSelector, '41')
+      typeInField(secSelector, '51')
+      cy.get('[data-test="modal-edit-datetime-non-valid"]', { timeout: 10000 }).should('not.exist')
+      cy.get('[data-test="modal-edit-datetime-btn-default"]').should('not.be.disabled')
+    }
 
-      cy.then(() => { sessionStorage.clear() })
-      cy.reload()
-      // URL still carries ?details=true — sidebar is already open, do not toggle.
-      cy.get('[data-test="detailview-sidebar"]').should('be.visible')
-      cy.get('[data-test="dateTime"]').click()
-      cy.get('[data-test="modal-edit-datetime"]').should('be.visible')
-      cy.get(yearSelector).should('contain', originalYear)
-    })
+    function changeYearAndSubmit (year: string, aliasName: string) {
+      typeInField(yearSelector, year)
+      cy.get(yearSelector).should('have.text', year)
+      cy.get('[data-test="modal-edit-datetime-non-valid"]').should('not.exist')
+      cy.intercept('POST', '**/api/update').as(aliasName)
+      cy.get('[data-test="modal-edit-datetime-btn-default"]').should('not.be.disabled').click()
+      cy.wait(`@${aliasName}`)
+      waitUntilApiDateTimeYear(year)
+    }
+
+    // ── Step 1: set a complete datetime from scratch (file had no EXIF) ──────
+    openModal()
+    fillAllFields(baseYear)
+    cy.intercept('POST', '**/api/update').as('updateDatetime1')
+    cy.get('[data-test="modal-edit-datetime-btn-default"]').click()
+    cy.wait('@updateDatetime1')
+    waitUntilApiDateTimeYear(baseYear)
+
+    cy.then(() => { sessionStorage.clear() })
+    cy.reload()
+    cy.get('[data-test="detailview-sidebar"]').should('be.visible')
+
+    // ── Step 2: change year to changedYear, verify persistence ───────────────
+    openModal()
+    cy.get(yearSelector).should('have.text', baseYear)
+    changeYearAndSubmit(changedYear, 'updateDatetime2')
+
+    cy.then(() => { sessionStorage.clear() })
+    cy.reload()
+    cy.get('[data-test="detailview-sidebar"]').should('be.visible')
+
+    openModal()
+    cy.get(yearSelector).should('have.text', changedYear)
+
+    // ── Step 3: restore to baseYear ──────────────────────────────────────────
+    changeYearAndSubmit(baseYear, 'restoreDatetime')
+
+    cy.then(() => { sessionStorage.clear() })
+    cy.reload()
+    cy.get('[data-test="detailview-sidebar"]').should('be.visible')
+
+    openModal()
+    cy.get(yearSelector).should('have.text', baseYear)
   })
 })

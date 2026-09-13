@@ -7,7 +7,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -62,7 +64,7 @@ public sealed class OverlayImageTest
 	{
 		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
-			await overlayImage.ResizeOverlayImageThumbnails(null!, null!,
+			await overlayImage.ResizeOverlayImageThumbnails(null!, ThumbnailSize.Large, null!,
 				new AppSettingsPublishProfiles()));
 	}
 
@@ -80,7 +82,8 @@ public sealed class OverlayImageTest
 	{
 		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
-			await overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", "/out.jpg",
+			await overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", ThumbnailSize.Large,
+				"/out.jpg",
 				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
 	}
 
@@ -89,7 +92,8 @@ public sealed class OverlayImageTest
 	{
 		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
-			await overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out.jpg",
+			await overlayImage.ResizeOverlayImageThumbnails("test.jpg", ThumbnailSize.Large,
+				"/out.jpg",
 				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
 	}
 
@@ -133,7 +137,8 @@ public sealed class OverlayImageTest
 		var overlayImage =
 			new OverlayImage(_selectorStorage, _appSettings);
 
-		overlayImage.ResizeOverlayImageThumbnails("/test" /* no extension */, "/test.jpg",
+		overlayImage.ResizeOverlayImageThumbnails("/test" /* no extension */, ThumbnailSize.Large,
+			"/test.jpg",
 			new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100, OverlayMaxWidth = 1, Path = "/test.jpg"
@@ -165,12 +170,49 @@ public sealed class OverlayImageTest
 			new OverlayImage(_selectorStorage, _appSettings);
 
 		await overlayImage.ResizeOverlayImageThumbnails("/test" /* no extension */,
-			"/out_thumb.jpg",
+			ThumbnailSize.Large, "/out_thumb.jpg",
 			new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100, OverlayMaxWidth = 1, Path = "/test.jpg"
 			});
 
 		Assert.IsTrue(_storage.ExistFile("/out_thumb.jpg"));
+	}
+
+	[TestMethod]
+	public async Task ResizeOverlayImageThumbnails_ExtraLarge_Not_Found()
+	{
+		// ExtraLarge thumbnail name is hash@2000.ext — should NOT be confused with hash.ext
+		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
+		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
+			await overlayImage.ResizeOverlayImageThumbnails("/test", ThumbnailSize.ExtraLarge,
+				"/out_xl.jpg",
+				new AppSettingsPublishProfiles { SourceMaxWidth = 2000, OverlayMaxWidth = 1 }));
+	}
+
+	[TestMethod]
+	public async Task ResizeOverlayImageThumbnails_ExtraLarge_Done()
+	{
+		// Regression: passing the already-combined name caused a double .webp.webp extension.
+		// The method must receive a bare hash and the ThumbnailSize; it builds the name itself.
+		var extraLargeName = ThumbnailNameHelper.Combine("/test", ThumbnailSize.ExtraLarge,
+			_appSettings.ThumbnailImageFormat);
+		var storage = new FakeIStorage(["/"],
+			[extraLargeName, "/test.jpg"],
+			new List<byte[]>
+			{
+				CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray()
+			});
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var overlayImage = new OverlayImage(selectorStorage, _appSettings);
+
+		await overlayImage.ResizeOverlayImageThumbnails("/test", ThumbnailSize.ExtraLarge,
+			"/out_xl.jpg",
+			new AppSettingsPublishProfiles
+			{
+				SourceMaxWidth = 2000, OverlayMaxWidth = 1, Path = "/test.jpg"
+			});
+
+		Assert.IsTrue(storage.ExistFile("/out_xl.jpg"));
 	}
 }

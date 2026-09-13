@@ -39,6 +39,9 @@ class FileDownloadService: @unchecked Sendable {
     private var debounceItems: [String: DispatchWorkItem] = [:]
     // FSEvents stream watching tempFolder recursively
     private var streamRef: FSEventStreamRef?
+    // Polling fallback: scans remoteContexts every 2 s so atomic writes whose FSEvents
+    // destination event is dropped by the kernel are still caught.
+    private var pollingTimer: DispatchSourceTimer?
 
     init(
         fileLogger: DailyFileLogger,
@@ -66,6 +69,8 @@ class FileDownloadService: @unchecked Sendable {
             FSEventStreamRelease(stream)
         }
         watcherQueue.sync {
+            pollingTimer?.cancel()
+            pollingTimer = nil
             debounceItems.values.forEach { $0.cancel() }
             debounceItems.removeAll()
             remoteContexts.removeAll()
@@ -198,6 +203,31 @@ class FileDownloadService: @unchecked Sendable {
         streamRef = stream
         logger.info("Watching temp folder: \(watchPath)")
         fileLogger.info("Watching temp folder for changes", category: "FileDownloadService")
+        startPollingTimer()
+    }
+
+    private func startPollingTimer() {
+        guard pollingTimer == nil else { return }
+        let timer = DispatchSource.makeTimerSource(queue: watcherQueue)
+        // 2-second interval: catches atomic-write events that FSEvents drops entirely
+        // (e.g., when the rename source is in a different directory and the kernel
+        // omits the destination-side event). The debounce in scheduleUpload is
+        // idempotent, so files already handled by FSEvents are not double-uploaded.
+        timer.schedule(deadline: .now() + 2.0, repeating: 2.0, leeway: .milliseconds(500))
+        timer.setEventHandler { [weak self] in self?.pollWatchedFiles() }
+        timer.resume()
+        pollingTimer = timer
+    }
+
+    private func pollWatchedFiles() {
+        for (path, _) in remoteContexts {
+            let url = URL(fileURLWithPath: path)
+            guard let currentMtime = mtime(of: url),
+                  currentMtime != lastMtimes[path] else { continue }
+            lastMtimes[path] = currentMtime
+            logger.info("Poll detected change, scheduling upload: \(url.lastPathComponent)")
+            scheduleUpload(key: path, localURL: url)
+        }
     }
 
     func handleFSEvents(paths: [String], flags: [FSEventStreamEventFlags]) {
@@ -212,6 +242,19 @@ class FileDownloadService: @unchecked Sendable {
         // FSEvents always delivers canonical (resolved) paths; our keys must match.
         let tempPrefix = tempFolder.resolvingSymlinksInPath().path + "/"
 
+        // Pre-pass: collect every directory under tempPrefix that received any event.
+        // We check these against remoteContexts after the per-file loop as a fallback for
+        // atomic overwrites. An atomic rename (rename-over) sometimes delivers only the
+        // temp-source event, whose flags may be pure ItemRemoved — filtered by the per-file
+        // guards. Collecting dirs here (before any flag filtering) ensures the fallback runs
+        // even for those stripped events.
+        var affectedDirs = Set<String>()
+        for rawPath in paths {
+            let p = URL(fileURLWithPath: rawPath).resolvingSymlinksInPath().path
+            guard p.hasPrefix(tempPrefix) else { continue }
+            affectedDirs.insert(URL(fileURLWithPath: p).deletingLastPathComponent().path)
+        }
+
         for (rawPath, flag) in zip(paths, flags) {
             guard flag & isFile != 0 else { continue }
             // Skip pure deletions; allow atomic overwrites that set Removed alongside Renamed/Created.
@@ -223,10 +266,10 @@ class FileDownloadService: @unchecked Sendable {
             guard path.hasPrefix(tempPrefix) else { continue }
 
             let localURL = URL(fileURLWithPath: path)
+            let dirPath = localURL.deletingLastPathComponent().path
 
             // Register new file in a watched directory
             if remoteContexts[path] == nil {
-                let dirPath = localURL.deletingLastPathComponent().path
                 guard let dirCtx = dirContexts[dirPath] else { continue }
                 let remotePath = String(path.dropFirst(tempPrefix.count - 1))
                 remoteContexts[path] = (remotePath, dirCtx.baseUrl, dirCtx.cookieProvider)
@@ -240,9 +283,31 @@ class FileDownloadService: @unchecked Sendable {
             guard let currentMtime = mtime(of: localURL),
                   currentMtime != lastMtimes[path] else { continue }
 
+            // Update lastMtimes here (on watcherQueue) rather than after upload completion.
+            // Updating after completion races with the test retry loop's forceDistinctMtime:
+            // the async update can execute after the next attempt already changed the mtime,
+            // storing the new mtime into lastMtimes and causing that attempt's FSEvents check
+            // to falsely match and skip the upload.
+            lastMtimes[path] = currentMtime
             logger.info("File changed, scheduling upload: \(localURL.lastPathComponent)")
             fileLogger.info("File changed, scheduling upload: \(localURL.lastPathComponent)", category: "FileDownloadService")
             scheduleUpload(key: path, localURL: localURL)
+        }
+
+        // Fallback for atomic overwrites: the per-file loop may have missed the watched file
+        // because FSEvents only delivered the disappearing temp-source event (pure ItemRemoved,
+        // no ItemRenamed). Scan every watched file whose directory was touched and upload any
+        // whose mtime changed. Because lastMtimes is now set in the per-file loop above,
+        // files already handled there are naturally skipped here (currentMtime == lastMtimes).
+        for dir in affectedDirs {
+            for (watchedPath, _) in remoteContexts {
+                guard URL(fileURLWithPath: watchedPath).deletingLastPathComponent().path == dir else { continue }
+                let watchedURL = URL(fileURLWithPath: watchedPath)
+                guard let currentMtime = mtime(of: watchedURL),
+                      currentMtime != lastMtimes[watchedPath] else { continue }
+                lastMtimes[watchedPath] = currentMtime
+                scheduleUpload(key: watchedPath, localURL: watchedURL)
+            }
         }
     }
 
@@ -271,7 +336,6 @@ class FileDownloadService: @unchecked Sendable {
         let cookies = await ctx.cookieProvider()
         do {
             try await upload(localURL: localURL, remotePath: ctx.remotePath, baseUrl: ctx.baseUrl, cookies: cookies)
-            watcherQueue.async { self.lastMtimes[key] = self.mtime(of: localURL) }
         } catch {
             logger.error("Upload failed for \(localURL.lastPathComponent): \(error.localizedDescription)")
             fileLogger.info("Upload failed for \(localURL.lastPathComponent): \(error.localizedDescription)", category: "FileDownloadService")

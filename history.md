@@ -44,7 +44,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.5 - _(Unreleased)_ - 2026-?-? {#0.9.5}
 
-- nothing yet
+- [x] (Fixed) _App_ macOS/win: Mount watcher uses appsettings launchd / windows Service (PR #3339)
+- [x] (Fixed) _Back-end_ Publish with SourceMaxWidth 2000 single extension ExtraLarge (PR #3339)
+- [x] (Fixed) _App_ macOS: `<a download>` and zip-export links now open a Save dialog (PR #3339)
 
 ## version 0.9.4 - 2026-09-11 {#0.9.4}
 

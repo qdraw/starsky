@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
@@ -37,6 +38,7 @@ public class FakeIOverlayImage : IOverlayImage
 	}
 
 	public async Task<bool> ResizeOverlayImageThumbnails(string itemFileHash,
+		ThumbnailSize size,
 		string outputFullFilePath,
 		AppSettingsPublishProfiles profile)
 	{

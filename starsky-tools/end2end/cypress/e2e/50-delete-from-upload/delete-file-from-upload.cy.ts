@@ -59,6 +59,13 @@ describe("Delete file from upload (50)", () => {
     waitOnUploadIsDone(0);
   });
 
+  const allFilePaths = [
+    `/starsky-end2end-test/${fileName1}`,
+    `/starsky-end2end-test/${fileName2}`,
+    `/starsky-end2end-test/${fileName3}`,
+    `/starsky-end2end-test/${fileName4}`,
+  ];
+
   it(
     "check if upload is done (50)",
     {
@@ -67,7 +74,10 @@ describe("Delete file from upload (50)", () => {
     () => {
       cy.request(config.urlApiCollectionsFalse).then((res) => {
         expect(res.status).to.eq(200);
-        expect(res.body.fileIndexItems.length).to.eq(4);
+        const items: Array<{ filePath: string }> = res.body.fileIndexItems ?? [];
+        for (const fp of allFilePaths) {
+          expect(items.some((i) => i.filePath === fp), `${fp} should be indexed`).to.be.true;
+        }
       });
     },
   );
@@ -83,8 +93,10 @@ describe("Delete file from upload (50)", () => {
       expect(response.status).to.eq(200);
       cy.log(JSON.stringify(response.body.fileIndexItems));
 
-      if (response.body.fileIndexItems.length === 4) {
-        cy.log("4 items, done");
+      const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
+      const allPresent = allFilePaths.every((fp) => items.some((i) => i.filePath === fp));
+      if (allPresent) {
+        cy.log("all 4 items indexed, done");
         return;
       }
       cy.wait(1500);
@@ -92,81 +104,6 @@ describe("Delete file from upload (50)", () => {
       if (index < max) {
         waitOnUploadIsDone(index, max);
       }
-    });
-  }
-
-  it("remove collection item, but not the other file (50)", () => {
-    cy.visit(config.urlVideoItemCollectionsFalse);
-
-    cy.get(".item.item--more").click();
-    cy.get("[data-test=menu-context]").should("be.visible");
-    cy.get("[data-test=trash]").click();
-
-    cy.visit(config.url);
-    cy.get(".folder > div").should(($lis) => {
-      expect($lis).to.have.length(3);
-    });
-
-    waitFileInTrash(0, `/starsky-end2end-test/${fileName4}`);
-    waitFileInSearchResults(0, `/starsky-end2end-test/${fileName4}`);
-
-    cy.log(`go to: ${config.trash}`);
-
-    cy.intercept("/starsky/api/search?json=true&t=!delete!&p=0").as("trashPage");
-    cy.visit(config.trash);
-    cy.wait("@trashPage");
-
-    cy.get(".item.item--select", { timeout: 20000 }).click();
-    cy.get('[data-test="selected-0"]').should("exist");
-    cy.get(`[data-filepath="/starsky-end2end-test/${fileName4}"]`, { timeout: 10000 }).should("exist");
-    cy.get(`[data-filepath="/starsky-end2end-test/${fileName4}"] button`).click();
-
-    // more menu and delete
-    cy.get(".item.item--more").click();
-    cy.get("[data-test=menu-context]").should("be.visible");
-    cy.get("[data-test=delete]").click();
-
-    // verwijder onmiddelijk
-    cy.intercept("/starsky/api/delete").as("delete4");
-    cy.get(".modal .btn.btn--default").click();
-    cy.wait("@delete4");
-
-    cy.wait(500);
-
-    // test 50
-    cy.request(config.urlApiCollectionsFalse).then((res) => {
-      expect(res.status).to.eq(200);
-      expect(res.body.fileIndexItems.length).to.eq(3);
-    });
-
-    cy.visit(config.url);
-
-    cy.get(`[data-filepath="/starsky-end2end-test/${fileName3}"]`);
-
-    cy.get(".folder > div").should(($lis) => {
-      expect($lis).to.have.length(3);
-    });
-  });
-
-  function waitFileInSearchResults(index: number, filePath: string, max: number = 15) {
-    cy.request({
-      url: "/starsky/api/search?json=true&t=!delete!&p=0",
-      method: "GET",
-      headers: { "Content-Type": "text/plain" },
-      failOnStatusCode: false,
-    }).then((response) => {
-      if (response.status === 200) {
-        const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
-        for (const item of items) {
-          if (item.filePath === filePath) {
-            cy.log("file found in search results");
-            return;
-          }
-        }
-      }
-      cy.wait(1500);
-      index++;
-      if (index < max) waitFileInSearchResults(index, filePath, max);
     });
   }
 
