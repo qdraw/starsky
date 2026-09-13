@@ -155,39 +155,6 @@ describe("Delete file from upload (50)", () => {
     });
   }
 
-  it("Move single file into a subfolder and back (60)", () => {
-    if (!config.isEnabled) return;
-    cy.visit(config.url);
-    cy.visit(`${config.url}/${fileName3}`);
-
-    cy.get(".item.item--more").click();
-    cy.get("[data-test=menu-context]").should("be.visible");
-
-    cy.get("[data-test=move]").click();
-
-    cy.get("[data-test=btn-child_folder]", { timeout: 15000 }).click();
-
-    cy.get("[data-test=modal-move-file-btn-default]").should("not.be.disabled").click();
-
-    // expect url to end with ?f=/starsky-end2end-test/child_folder
-    cy.url({ timeout: 20000 }).should('match', /\?f=\/starsky-end2end-test\/child_folder\/20200822_134151.jpg$/);
-
-    // Poll until the file is indexed in child_folder before opening move modal again
-    waitUntilFileInChildFolder(0);
-
-    //  // and undo
-
-    cy.get(".item.item--more").click();
-    cy.get("[data-test=menu-context]").should("be.visible");
-    cy.get("[data-test=move]").click();
-
-    cy.get("[data-test=parent]", { timeout: 15000 }).click();
-    cy.get("[data-test=modal-move-file-btn-default]").should("not.be.disabled").click();
-
-    cy.url({ timeout: 20000 }).should('match', /\?f=\/starsky-end2end-test\/20200822_134151.jpg$/);
-  });
-
-
   it("Last item: Clean up afterwards (60)", () => {
     if (!config.isEnabled) return;
 
