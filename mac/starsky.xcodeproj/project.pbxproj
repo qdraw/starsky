@@ -74,6 +74,8 @@
 		A197D2E6CF48C7955BE4C7F4 /* SettingsPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07655E3EE2770129AD67DA87 /* SettingsPresenterTests.swift */; };
 		A234122D9762544F0D9EC952 /* FileWatcherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EEB3D3F4A7BDBEED593F95 /* FileWatcherService.swift */; };
 		A798D1ED44E9DAD18AB723A0 /* FileWatcherServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066BB49FDF5E95A8E40A5FA2 /* FileWatcherServiceProtocol.swift */; };
+		A8A0A840C8FDC2A9D7A7478F /* StorageFolderPickerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E86D100380D8BC04F82CE2 /* StorageFolderPickerHandler.swift */; };
+		AA5F8A54C787D6E5437A10DE /* StorageFolderPickerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E86D100380D8BC04F82CE2 /* StorageFolderPickerHandler.swift */; };
 		ABABCE907574E0BCC0EF2522 /* SettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2FAF9F0DB6D5AD35BE4E55 /* SettingsService.swift */; };
 		AC8B8EF6258EB5B57404CD8C /* UrlValidationResultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FD597500E536E705E06522 /* UrlValidationResultTests.swift */; };
 		B0ADB1B7009216B47DDE5718 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4EAD3D340CB0C7C84427212 /* Localizable.strings */; };
@@ -123,6 +125,7 @@
 		1595DFCCE586B6DD9B02AC5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1C97D9AD6BA360D21DF54556 /* RoutePersistenceServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePersistenceServiceTests.swift; sourceTree = "<group>"; };
 		1D1A09958ECF7CB2678EA7DD /* DesktopSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopSettingsTests.swift; sourceTree = "<group>"; };
+		1D953AE2903C497E65C3B812 /* starsky-mas.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "starsky-mas.entitlements"; sourceTree = "<group>"; };
 		1E770271ED2C2C7C1FDF78F9 /* WindowManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagerTests.swift; sourceTree = "<group>"; };
 		24B825F5B3A9E99B050667CE /* BackendServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendServiceProtocol.swift; sourceTree = "<group>"; };
 		24F91076EC3DD3B82B20ACD5 /* DownloadCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCoordinator.swift; sourceTree = "<group>"; };
@@ -157,6 +160,7 @@
 		8F869DD89AA979A8AF54755E /* runtime.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = runtime.entitlements; sourceTree = "<group>"; };
 		8F8C3308F3AE014E18479C4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendServiceTests.swift; sourceTree = "<group>"; };
+		96E86D100380D8BC04F82CE2 /* StorageFolderPickerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageFolderPickerHandler.swift; sourceTree = "<group>"; };
 		97B29EC047ED7E17B1E0563A /* starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9851583918F3426A017184E8 /* RuntimeModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeModeTests.swift; sourceTree = "<group>"; };
 		9F51DA46919A291FBFD8783F /* SilentWebViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilentWebViewTests.swift; sourceTree = "<group>"; };
@@ -300,6 +304,7 @@
 			children = (
 				1595DFCCE586B6DD9B02AC5E /* Info.plist */,
 				8F869DD89AA979A8AF54755E /* runtime.entitlements */,
+				1D953AE2903C497E65C3B812 /* starsky-mas.entitlements */,
 				45FCF2620A00BA536D9BA601 /* starsky.debug.entitlements */,
 				3241E30A98E45F4148C41D75 /* starsky.entitlements */,
 				554B5849A45556FFAA970085 /* WindowManager.swift */,
@@ -361,6 +366,7 @@
 				C73CD361EFF2B86D1744D0D3 /* RemoteUrlValidator.swift */,
 				32EF46D239525D609F48272D /* RoutePersistenceService.swift */,
 				DE2FAF9F0DB6D5AD35BE4E55 /* SettingsService.swift */,
+				96E86D100380D8BC04F82CE2 /* StorageFolderPickerHandler.swift */,
 				A9A194174E0CB13CE48986CA /* UpdateService.swift */,
 			);
 			path = Services;
@@ -560,7 +566,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "for ARCH in arm64 x64; do\n  RUNTIME_SRC=\"$SRCROOT/../starsky/osx-${ARCH}\"\n  RUNTIME_DST=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}\"\n  if [ -d \"$RUNTIME_SRC\" ]; then\n    rm -rf \"$RUNTIME_DST\"\n    mkdir -p \"$RUNTIME_DST\"\n    cp -R \"$RUNTIME_SRC/.\" \"$RUNTIME_DST/\"\n    find \"$RUNTIME_DST\" -name \".DS_Store\" -delete\n    find \"$RUNTIME_DST\" -type f | while read -r f; do\n      codesign_output=$(codesign --force --options runtime --entitlements \"$SRCROOT/starsky/runtime.entitlements\" --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>&1)\n      if [ $? -ne 0 ]; then\n        echo \"warning: codesign failed for $(basename \"$f\"): $codesign_output\"\n      fi\n    done\n  else\n    echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n  fi\ndone\n";
+			shellScript = "if [ \"${IS_MAS_BUILD}\" = \"YES\" ]; then\n  # MAS: copy .NET binary into the Login Item bundle\n  for ARCH in arm64 x64; do\n    RUNTIME_SRC=\"$SRCROOT/../starsky/osx-${ARCH}\"\n    LOGIN_ITEM_MACOS=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents/MacOS\"\n    if [ -d \"$RUNTIME_SRC\" ]; then\n      rm -rf \"$LOGIN_ITEM_MACOS\"\n      mkdir -p \"$LOGIN_ITEM_MACOS\"\n      cp -R \"$RUNTIME_SRC/.\" \"$LOGIN_ITEM_MACOS/\"\n      find \"$LOGIN_ITEM_MACOS\" -name \".DS_Store\" -delete\n      find \"$LOGIN_ITEM_MACOS\" -type f | while read -r f; do\n        codesign_output=$(codesign --force --options runtime --entitlements \"$SRCROOT/starsky-backend/starsky-backend.entitlements\" --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>&1)\n        if [ $? -ne 0 ]; then\n          echo \"warning: codesign failed for $(basename \"$f\"): $codesign_output\"\n        fi\n      done\n    else\n      echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n    fi\n  done\n  # Copy Info.plist into the Login Item bundle\n  LOGIN_ITEM_CONTENTS=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents\"\n  mkdir -p \"$LOGIN_ITEM_CONTENTS\"\n  cp \"$SRCROOT/starsky-backend/Info.plist\" \"$LOGIN_ITEM_CONTENTS/Info.plist\"\nelse\n  # Non-MAS: copy to runtime directories\n  for ARCH in arm64 x64; do\n    RUNTIME_SRC=\"$SRCROOT/../starsky/osx-${ARCH}\"\n    RUNTIME_DST=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}\"\n    if [ -d \"$RUNTIME_SRC\" ]; then\n      rm -rf \"$RUNTIME_DST\"\n      mkdir -p \"$RUNTIME_DST\"\n      cp -R \"$RUNTIME_SRC/.\" \"$RUNTIME_DST/\"\n      find \"$RUNTIME_DST\" -name \".DS_Store\" -delete\n      find \"$RUNTIME_DST\" -type f | while read -r f; do\n        codesign_output=$(codesign --force --options runtime --entitlements \"$SRCROOT/starsky/runtime.entitlements\" --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>&1)\n        if [ $? -ne 0 ]; then\n          echo \"warning: codesign failed for $(basename \"$f\"): $codesign_output\"\n        fi\n      done\n    else\n      echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n    fi\n  done\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -597,6 +603,7 @@
 				3D53FEA32BD5232EDF54E519 /* SettingsService.swift in Sources */,
 				67E1E3C6BCB8C839193CE5B5 /* SettingsWindowController.swift in Sources */,
 				B5740FA3AE389EDA4C3E42EF /* SplashWindowController.swift in Sources */,
+				AA5F8A54C787D6E5437A10DE /* StorageFolderPickerHandler.swift in Sources */,
 				3735D4F79BBB39132389EA5E /* UpdateService.swift in Sources */,
 				535F8BFA7322D17639E16EF3 /* UpdateWindowController.swift in Sources */,
 				6E662DDC3AF725A0EB0A7CF7 /* UrlValidationResult.swift in Sources */,
@@ -662,6 +669,7 @@
 				0A2B5A1F9B4930D1E2517AE4 /* SettingsWindowController.swift in Sources */,
 				C5488518F01646AB2D55FA35 /* SilentWebViewTests.swift in Sources */,
 				D2DC9D761B2B3C68FB4385CF /* SplashWindowController.swift in Sources */,
+				A8A0A840C8FDC2A9D7A7478F /* StorageFolderPickerHandler.swift in Sources */,
 				5A54A8C8CEA8383DCE53A6D6 /* UpdateService.swift in Sources */,
 				528B639F38E2E709539232C4 /* UpdateServiceTests.swift in Sources */,
 				69D50BFF898F0D3FE7FE8935 /* UpdateWindowController.swift in Sources */,
@@ -736,6 +744,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IS_MAS_BUILD = NO;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -761,6 +770,18 @@
 				SDKROOT = macosx;
 			};
 			name = Debug;
+		};
+		464C60EE173B21E4B985CB08 /* MAS */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = starskyTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
+				SDKROOT = macosx;
+			};
+			name = MAS;
 		};
 		57FBB4F517342C507D65DD9A /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -826,6 +847,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IS_MAS_BUILD = NO;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -875,6 +897,87 @@
 			};
 			name = Debug;
 		};
+		EDF48249A42BA2C0ACB984C3 /* MAS */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "starsky/starsky-mas.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = LHZ4426ABB;
+				INFOPLIST_FILE = starsky/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
+				PRODUCT_MODULE_NAME = Starsky;
+				PRODUCT_NAME = Starsky;
+				SDKROOT = macosx;
+				SPARKLE_PUBLIC_ED_KEY = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = MAS;
+			};
+			name = MAS;
+		};
+		FF1C743D5A34C19A874448A6 /* MAS */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "arm64 x86_64";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IS_MAS_BUILD = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CODE_SIGN_FLAGS = "--options runtime";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.10;
+			};
+			name = MAS;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -882,6 +985,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CF6EEC22B04BD6F35D823EF1 /* Debug */,
+				EDF48249A42BA2C0ACB984C3 /* MAS */,
 				9259D6F38CA13B6C2A0AE9C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -891,6 +995,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				27903FAD964C4FB710211F53 /* Debug */,
+				464C60EE173B21E4B985CB08 /* MAS */,
 				57FBB4F517342C507D65DD9A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -900,6 +1005,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8AD16C574A3274EC72AF8164 /* Debug */,
+				FF1C743D5A34C19A874448A6 /* MAS */,
 				0212C74170236C4F787122F1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;

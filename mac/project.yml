@@ -11,6 +11,11 @@ packages:
     url: https://github.com/sparkle-project/Sparkle
     from: 2.9.6
 
+configs:
+  Debug: debug
+  Release: release
+  MAS: release
+
 fileGroups:
   - ../history.md
 
@@ -25,9 +30,17 @@ settings:
       ONLY_ACTIVE_ARCH: NO
       ENABLE_HARDENED_RUNTIME: YES
       OTHER_CODE_SIGN_FLAGS: "--options runtime"
+      IS_MAS_BUILD: "NO"
+    MAS:
+      ARCHS: "arm64 x86_64"
+      ONLY_ACTIVE_ARCH: NO
+      ENABLE_HARDENED_RUNTIME: YES
+      OTHER_CODE_SIGN_FLAGS: "--options runtime"
+      IS_MAS_BUILD: "YES"
     Debug:
       ONLY_ACTIVE_ARCH: YES
       ENABLE_HARDENED_RUNTIME: NO
+      IS_MAS_BUILD: "NO"
 
 targets:
   starsky:
@@ -51,30 +64,61 @@ targets:
         LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
         SPARKLE_PUBLIC_ED_KEY: ""
       configs:
+        MAS:
+          CODE_SIGN_ENTITLEMENTS: starsky/starsky-mas.entitlements
+          CODE_SIGN_IDENTITY: "Apple Distribution"
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "MAS"
         Debug:
           CODE_SIGN_IDENTITY: "-"
           DEVELOPMENT_TEAM: ""
           CODE_SIGN_ENTITLEMENTS: starsky/starsky.debug.entitlements
     preBuildScripts:
       - script: |
-          for ARCH in arm64 x64; do
-            RUNTIME_SRC="$SRCROOT/../starsky/osx-${ARCH}"
-            RUNTIME_DST="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}"
-            if [ -d "$RUNTIME_SRC" ]; then
-              rm -rf "$RUNTIME_DST"
-              mkdir -p "$RUNTIME_DST"
-              cp -R "$RUNTIME_SRC/." "$RUNTIME_DST/"
-              find "$RUNTIME_DST" -name ".DS_Store" -delete
-              find "$RUNTIME_DST" -type f | while read -r f; do
-                codesign_output=$(codesign --force --options runtime --entitlements "$SRCROOT/starsky/runtime.entitlements" --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$f" 2>&1)
-                if [ $? -ne 0 ]; then
-                  echo "warning: codesign failed for $(basename "$f"): $codesign_output"
-                fi
-              done
-            else
-              echo "warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work"
-            fi
-          done
+          if [ "${IS_MAS_BUILD}" = "YES" ]; then
+            # MAS: copy .NET binary into the Login Item bundle
+            for ARCH in arm64 x64; do
+              RUNTIME_SRC="$SRCROOT/../starsky/osx-${ARCH}"
+              LOGIN_ITEM_MACOS="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents/MacOS"
+              if [ -d "$RUNTIME_SRC" ]; then
+                rm -rf "$LOGIN_ITEM_MACOS"
+                mkdir -p "$LOGIN_ITEM_MACOS"
+                cp -R "$RUNTIME_SRC/." "$LOGIN_ITEM_MACOS/"
+                find "$LOGIN_ITEM_MACOS" -name ".DS_Store" -delete
+                find "$LOGIN_ITEM_MACOS" -type f | while read -r f; do
+                  codesign_output=$(codesign --force --options runtime --entitlements "$SRCROOT/starsky-backend/starsky-backend.entitlements" --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$f" 2>&1)
+                  if [ $? -ne 0 ]; then
+                    echo "warning: codesign failed for $(basename "$f"): $codesign_output"
+                  fi
+                done
+              else
+                echo "warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work"
+              fi
+            done
+            # Copy Info.plist into the Login Item bundle
+            LOGIN_ITEM_CONTENTS="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents"
+            mkdir -p "$LOGIN_ITEM_CONTENTS"
+            cp "$SRCROOT/starsky-backend/Info.plist" "$LOGIN_ITEM_CONTENTS/Info.plist"
+          else
+            # Non-MAS: copy to runtime directories
+            for ARCH in arm64 x64; do
+              RUNTIME_SRC="$SRCROOT/../starsky/osx-${ARCH}"
+              RUNTIME_DST="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}"
+              if [ -d "$RUNTIME_SRC" ]; then
+                rm -rf "$RUNTIME_DST"
+                mkdir -p "$RUNTIME_DST"
+                cp -R "$RUNTIME_SRC/." "$RUNTIME_DST/"
+                find "$RUNTIME_DST" -name ".DS_Store" -delete
+                find "$RUNTIME_DST" -type f | while read -r f; do
+                  codesign_output=$(codesign --force --options runtime --entitlements "$SRCROOT/starsky/runtime.entitlements" --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$f" 2>&1)
+                  if [ $? -ne 0 ]; then
+                    echo "warning: codesign failed for $(basename "$f"): $codesign_output"
+                  fi
+                done
+              else
+                echo "warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work"
+              fi
+            done
+          fi
         name: Copy Starsky Runtime
         basedOnDependencyAnalysis: true
         inputFiles:

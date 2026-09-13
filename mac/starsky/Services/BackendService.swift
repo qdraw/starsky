@@ -1,9 +1,27 @@
 import Foundation
 import OSLog
+#if MAS
+import ServiceManagement
+#endif
+
+// MARK: - Startup config written by the main app, read by the backend login item.
+#if MAS
+struct BackendConfig: Codable {
+    let aspNetCoreUrls: String
+    let appSettingsPath: String
+    let appSettingsLocalPath: String
+    let databaseConnection: String
+    let tempFolder: String
+    let thumbnailTempFolder: String
+    let logsDirectory: String
+}
+#endif
 
 class BackendService: @unchecked Sendable {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "BackendService")
     private let fileLogger: DailyFileLogger
+
+    #if !MAS
     private var process: Process?
     private var isShuttingDown = false
     private var hasRestarted = false
@@ -17,12 +35,65 @@ class BackendService: @unchecked Sendable {
     var sigtermTimeout: TimeInterval = 5
     var sigintTimeout: TimeInterval = 2
     var restartDelay: TimeInterval = 2
+    #endif
 
-    init(fileLogger: DailyFileLogger, xattrPath: String = "/usr/bin/xattr", codesignPath: String = "/usr/bin/codesign") {
+    init(fileLogger: DailyFileLogger,
+         xattrPath: String = "/usr/bin/xattr",
+         codesignPath: String = "/usr/bin/codesign")
+    {
         self.fileLogger = fileLogger
+        #if !MAS
         self.xattrPath = xattrPath
         self.codesignPath = codesignPath
+        #endif
     }
+
+    #if MAS
+    private let loginItemIdentifier = "nl.qdraw.starsky.backend"
+    private var loginItem: SMAppService { .loginItem(identifier: loginItemIdentifier) }
+
+    var isRunning: Bool { loginItem.status == .enabled }
+
+    func start(port: Int) throws {
+        writeBackendConfig(port: port)
+        // Unregister any stale instance before registering fresh.
+        try? loginItem.unregister()
+        do {
+            try loginItem.register()
+            logger.info("Backend login item registered on port \(port)")
+            fileLogger.info("Backend login item registered on port \(port)", category: "BackendService")
+        } catch {
+            if loginItem.status == .requiresApproval {
+                throw BackendError.requiresUserApproval
+            }
+            throw BackendError.loginItemRegistrationFailed(error)
+        }
+    }
+
+    func stop() {
+        try? loginItem.unregister()
+        logger.info("Backend login item unregistered")
+        fileLogger.info("Backend login item unregistered", category: "BackendService")
+    }
+
+    func beginShutdown() { stop() }
+    func forceStop() { stop() }
+
+    private func writeBackendConfig(port: Int) {
+        let config = BackendConfig(
+            aspNetCoreUrls: "http://localhost:\(port)",
+            appSettingsPath: ApplicationPaths.appSettingsFile.path,
+            appSettingsLocalPath: ApplicationPaths.appSettingsLocalFile.path,
+            databaseConnection: "Data Source=\(ApplicationPaths.databaseFile.path)",
+            tempFolder: ApplicationPaths.tempFolder.path + "/",
+            thumbnailTempFolder: ApplicationPaths.thumbnailTempFolder.path + "/",
+            logsDirectory: ApplicationPaths.logsDirectory.path
+        )
+        guard let data = try? JSONEncoder().encode(config) else { return }
+        try? data.write(to: ApplicationPaths.backendConfigFile, options: .atomic)
+    }
+
+    #else
 
     var isRunning: Bool { process?.isRunning ?? false }
 
@@ -174,6 +245,8 @@ class BackendService: @unchecked Sendable {
         return env
     }
 
+    #endif
+
     deinit {
         stop()
     }
@@ -181,11 +254,21 @@ class BackendService: @unchecked Sendable {
 
 enum BackendError: LocalizedError {
     case executableNotFound
+    #if MAS
+    case requiresUserApproval
+    case loginItemRegistrationFailed(Error)
+    #endif
 
     var errorDescription: String? {
         switch self {
         case .executableNotFound:
             return "The Starsky backend executable was not found in the application bundle."
+        #if MAS
+        case .requiresUserApproval:
+            return "Starsky needs permission to run its background helper. Open System Settings → General → Login Items & Extensions and enable Starsky."
+        case .loginItemRegistrationFailed(let e):
+            return "Failed to register the Starsky backend: \(e.localizedDescription)"
+        #endif
         }
     }
 }

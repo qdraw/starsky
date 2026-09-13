@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.platform.Models;
 using starsky.project.web.Helpers;
@@ -16,6 +17,10 @@ public static class Program
 	                          "method should be used instead of the All extension")]
 	public static async Task Main(string[] args)
 	{
+		// Apply env vars from the macOS App Group container config when running as a
+		// sandboxed MAS Login Item. Must run before PortProgramHelper reads env vars.
+		MacSandboxConfig.TryApply();
+
 		var appSettingsPath = Path.Join(
 			new AppSettings().BaseDirectoryProject,
 			"appsettings.json");
@@ -24,6 +29,8 @@ public static class Program
 		var builder = CreateWebHostBuilder(args);
 		var startup = new Startup(args);
 		startup.ConfigureServices(builder.Services);
+		// Resolve and hold security-scoped bookmarks for MAS sandbox builds.
+		builder.Services.AddHostedService<BookmarkAccessService>();
 		builder.Host.UseWindowsService();
 
 		var app = builder.Build();
