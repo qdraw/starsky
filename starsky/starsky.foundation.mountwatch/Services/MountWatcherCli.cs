@@ -97,7 +97,14 @@ public class MountWatcherCli
 		_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 		_appSettings.ApplicationType = AppSettings.StarskyAppType.MountWatcher;
 
-		if ( ArgsHelper.NeedHelp(args) )
+		// For verbose mode, show help if no other arguments are provided
+		if ( !ArgsHelper.NeedHelp(args) && ArgsHelper.NeedVerbose(args) )
+		{
+			new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
+			ShowHelp();
+		}
+
+		if ( ArgsHelper.NeedHelp(args))
 		{
 			new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 			ShowHelp();
@@ -109,16 +116,16 @@ public class MountWatcherCli
 			var execPath = GetCurrentExecutablePath();
 			_logger.LogInformation($"Detected executable path: {execPath}");
 			var installResult = await _serviceInstaller.InstallAsync(execPath);
-			if ( installResult )
+			if ( !installResult )
 			{
-				// Unload any stale launchd registration before loading the new plist.
-				// This handles the case where a previous unload silently failed (e.g. during
-				// a Sparkle update), leaving the job registered even though the binary was gone.
-				await _serviceInstaller.StopAsync();
-				return await _serviceInstaller.StartAsync();
+				return false;
 			}
 
-			return false;
+			// Unload any stale launchd registration before loading the new plist.
+			// This handles the case where a previous unload silently failed (e.g. during
+			// a Sparkle update), leaving the job registered even though the binary was gone.
+			await _serviceInstaller.StopAsync();
+			return await _serviceInstaller.StartAsync();
 		}
 
 		if ( NeedUninstall(args) )
