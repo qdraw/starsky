@@ -496,20 +496,20 @@ done
 
 ### Publish (CLI)
 
-```bash
-cd mac && xcodegen generate
-xcodebuild archive \
-  -project starsky.xcodeproj \
-  -scheme starsky \
-  -configuration Release \
-  -archivePath ../build/starsky.xcarchive \
-  ARCHS="arm64 x86_64"
+Use `build-dmg.sh` from the repository root. The script runs `xcodegen generate`, builds the .NET backend (unless `--skip-backend`), archives, exports, and produces a DMG (Developer ID) or `.pkg` (MAS).
 
-xcodebuild -exportArchive \
-  -archivePath ../build/starsky.xcarchive \
-  -exportPath ../build/ \
-  -exportOptionsPlist ExportOptions.plist
+**Developer ID (direct download):**
+```bash
+./mac/build-dmg.sh --arch universal --team-id <TEAM_ID> --sign
 ```
+
+**Mac App Store:**
+```bash
+./mac/build-dmg.sh --mas --arch universal --team-id <TEAM_ID> \
+  --profile "Starsky Mac App Store"
+```
+
+See [§10 MAS build](#mas-build-mac-app-store) for the one-time provisioning profile setup.
 
 ---
 
@@ -549,6 +549,50 @@ xcrun stapler staple build/starsky.dmg
 ```
 
 `ExportOptions.plist` sets `signingStyle = manual`, `signingCertificate = Developer ID Application`.
+
+### MAS Build (Mac App Store) {#mas-build-mac-app-store}
+
+The `MAS` Xcode configuration enables the full App Sandbox, uses `SMAppService` to launch the backend as a login item, and signs with `Apple Distribution`.
+
+**One-time setup (per Apple account):**
+
+1. **Apple Distribution certificate** — download from [developer.apple.com → Certificates](https://developer.apple.com/account/resources/certificates/list) → "Apple Distribution" and install into Keychain Access.
+2. **Mac App Store provisioning profile** — in [developer.apple.com → Profiles](https://developer.apple.com/account/resources/profiles/add):
+   - Distribution → **Mac App Store Connect** → Continue
+   - App ID → `nl.qdraw.starsky` → Continue
+   - Certificate → select your Apple Distribution certificate → Continue
+   - Name → `Starsky Mac App Store` → Generate → Download
+   - Double-click the `.mobileprovision` to install it into Xcode.
+
+**Build command:**
+
+```bash
+./build-dmg.sh --mas --arch universal --team-id <TEAM_ID> \
+  --profile "Starsky Mac App Store"
+```
+
+The script produces `dist/starsky.pkg`. Upload it with Transporter or:
+
+```bash
+xcrun altool --upload-package dist/starsky.pkg \
+  --type macos \
+  --apple-id <APP_APPLE_ID> \
+  --bundle-version <VERSION> \
+  --bundle-short-version-string <VERSION> \
+  --bundle-id nl.qdraw.starsky \
+  --apiKey <API_KEY> --apiIssuer <ISSUER_ID>
+```
+
+**Key differences from Developer ID build:**
+
+| | Developer ID | MAS |
+|---|---|---|
+| Sandbox | No | Yes (`app-sandbox = true`) |
+| Backend launch | `Foundation.Process` | `SMAppService` login item |
+| Signing cert | Developer ID Application | Apple Distribution |
+| Output | `.dmg` | `.pkg` |
+| MountWatcher menu | Visible | Hidden (no-op in sandbox) |
+| Auto-updates | Sparkle 2 | App Store |
 
 ---
 

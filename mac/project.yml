@@ -64,12 +64,16 @@ targets:
         LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
         SPARKLE_PUBLIC_ED_KEY: ""
       configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
         MAS:
           CODE_SIGN_ENTITLEMENTS: starsky/starsky-mas.entitlements
           CODE_SIGN_IDENTITY: "Apple Distribution"
+          CODE_SIGN_STYLE: Automatic
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: "MAS"
         Debug:
           CODE_SIGN_IDENTITY: "-"
+          CODE_SIGN_STYLE: Manual
           DEVELOPMENT_TEAM: ""
           CODE_SIGN_ENTITLEMENTS: starsky/starsky.debug.entitlements
     preBuildScripts:

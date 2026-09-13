@@ -186,12 +186,12 @@ elif $SIGN; then
             ONLY_ACTIVE_ARCH="$ONLY_ACTIVE"
     else
         xcodebuild archive \
+            -allowProvisioningUpdates \
             -project "$MAC_DIR/starsky.xcodeproj" \
             -scheme starsky \
             -configuration "$XCODE_CONFIG" \
             -archivePath "$ARCHIVE_PATH" \
             DEVELOPMENT_TEAM="$TEAM_ID" \
-            CODE_SIGN_IDENTITY="$SIGN_IDENTITY" \
             CODE_SIGN_STYLE=Automatic \
             ARCHS="$ARCHS_VAL" \
             ONLY_ACTIVE_ARCH="$ONLY_ACTIVE"
@@ -285,6 +285,7 @@ EOF
 fi
 
 xcodebuild -exportArchive \
+    -allowProvisioningUpdates \
     -archivePath "$ARCHIVE_PATH" \
     -exportPath "$OUTPUT_DIR/" \
     -exportOptionsPlist "$EXPORT_PLIST"
