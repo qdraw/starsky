@@ -212,6 +212,12 @@ class FileDownloadService: @unchecked Sendable {
         // FSEvents always delivers canonical (resolved) paths; our keys must match.
         let tempPrefix = tempFolder.resolvingSymlinksInPath().path + "/"
 
+        // Directories whose watched files need an mtime check because a rename fired in them.
+        // Atomic overwrites (rename-over) sometimes only deliver an event for the temp source
+        // path; when that temp is already gone (mtime returns nil), we'd miss the upload.
+        // Collecting affected dirs and checking all remoteContexts entries in them is the fallback.
+        var renamedDirs = Set<String>()
+
         for (rawPath, flag) in zip(paths, flags) {
             guard flag & isFile != 0 else { continue }
             // Skip pure deletions; allow atomic overwrites that set Removed alongside Renamed/Created.
@@ -223,10 +229,14 @@ class FileDownloadService: @unchecked Sendable {
             guard path.hasPrefix(tempPrefix) else { continue }
 
             let localURL = URL(fileURLWithPath: path)
+            let dirPath = localURL.deletingLastPathComponent().path
+
+            if flag & UInt32(kFSEventStreamEventFlagItemRenamed) != 0 {
+                renamedDirs.insert(dirPath)
+            }
 
             // Register new file in a watched directory
             if remoteContexts[path] == nil {
-                let dirPath = localURL.deletingLastPathComponent().path
                 guard let dirCtx = dirContexts[dirPath] else { continue }
                 let remotePath = String(path.dropFirst(tempPrefix.count - 1))
                 remoteContexts[path] = (remotePath, dirCtx.baseUrl, dirCtx.cookieProvider)
@@ -243,6 +253,20 @@ class FileDownloadService: @unchecked Sendable {
             logger.info("File changed, scheduling upload: \(localURL.lastPathComponent)")
             fileLogger.info("File changed, scheduling upload: \(localURL.lastPathComponent)", category: "FileDownloadService")
             scheduleUpload(key: path, localURL: localURL)
+        }
+
+        // Fallback for atomic overwrites: FSEvents sometimes only delivers the rename-source
+        // event (the disappearing temp file). The temp is already gone so its mtime is nil and
+        // the per-path loop above skips it. Check every watched file in affected directories.
+        for dir in renamedDirs {
+            for (watchedPath, _) in remoteContexts {
+                guard URL(fileURLWithPath: watchedPath).deletingLastPathComponent().path == dir else { continue }
+                let watchedURL = URL(fileURLWithPath: watchedPath)
+                guard let currentMtime = mtime(of: watchedURL),
+                      currentMtime != lastMtimes[watchedPath] else { continue }
+                logger.info("Atomic overwrite detected via rename fallback, scheduling upload: \(watchedURL.lastPathComponent)")
+                scheduleUpload(key: watchedPath, localURL: watchedURL)
+            }
         }
     }
 
