@@ -29,6 +29,11 @@ public class SetupLoggingTest
 
 		var type = build.GetRequiredService<ILoggerProvider>();
 		Assert.AreEqual(typeof(OpenTelemetryLoggerProvider), type.GetType());
+
+		var logger = build.GetRequiredService<ILoggerFactory>()
+			.CreateLogger("System.Net.Http.HttpClient.OtlpMetricExporter.LogicalHandler");
+		Assert.IsFalse(logger.IsEnabled(LogLevel.Information));
+		Assert.IsTrue(logger.IsEnabled(LogLevel.Warning));
 	}
 
 	[TestMethod]
