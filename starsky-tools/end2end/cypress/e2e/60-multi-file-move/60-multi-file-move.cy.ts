@@ -135,7 +135,27 @@ describe("Delete file from upload (50)", () => {
      cy.url().should('match', /starsky-end2end-test&select=20200822_112430.jpg,20200822_111408.jpg$/);
   });
 
-    it("Move single file into a subfolder and back (60)", () => {
+    function waitUntilFileInChildFolder(index: number, max: number = 15) {
+    cy.request({
+      url: config.urlApiCollectionsFalseSubFolder,
+      method: "GET",
+      headers: { "Content-Type": "text/plain" },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
+      const childPath = `/starsky-end2end-test/child_folder/${fileName3}`;
+      if (items.some((i) => i.filePath === childPath)) {
+        cy.log("file indexed in child_folder, ready for undo");
+        return;
+      }
+      cy.wait(1000);
+      if (index + 1 < max) {
+        waitUntilFileInChildFolder(index + 1, max);
+      }
+    });
+  }
+
+  it("Move single file into a subfolder and back (60)", () => {
     if (!config.isEnabled) return;
     cy.visit(config.url);
     cy.visit(`${config.url}/${fileName3}`);
@@ -151,6 +171,9 @@ describe("Delete file from upload (50)", () => {
 
     // expect url to end with ?f=/starsky-end2end-test/child_folder
     cy.url({ timeout: 20000 }).should('match', /\?f=\/starsky-end2end-test\/child_folder\/20200822_134151.jpg$/);
+
+    // Poll until the file is indexed in child_folder before opening move modal again
+    waitUntilFileInChildFolder(0);
 
     //  // and undo
 
