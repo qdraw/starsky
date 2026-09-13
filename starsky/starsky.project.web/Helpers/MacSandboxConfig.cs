@@ -1,115 +1,64 @@
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.project.web.Helpers;
 
 /// <summary>
-/// Reads the startup config written by the macOS host app into the App Group container
-/// and applies it as environment variables before the ASP.NET host is built.
-/// Only active when running as a sandboxed MAS Login Item
-/// (indicated by the STARSKY_APP_GROUP environment variable set via LSEnvironment).
+/// Applies configuration when running as a sandboxed MAS Login Item.
+/// Derives all paths from the STARSKY_APP_GROUP environment variable (set via
+/// LSEnvironment in the login item's Info.plist) and writes them as environment
+/// variables before the ASP.NET host is built.
+/// Returns the appsettings.json path inside the App Group container so that
+/// callers can pass it to PortProgramHelper.
 /// </summary>
 public static class MacSandboxConfig
 {
 	private const string AppGroupEnvKey = "STARSKY_APP_GROUP";
-	private const string ConfigFileName = "backend-config.json";
 
 	/// <summary>
-	/// Reads backend-config.json from the App Group container and sets the
-	/// corresponding environment variables. Returns true when config was applied.
+	/// Sets backend environment variables from the App Group container when
+	/// STARSKY_APP_GROUP is present. Returns the appsettings.json path when
+	/// applied, or null when not running as a MAS login item.
 	/// </summary>
-	public static bool TryApply()
+	public static string? TryApply()
 	{
 		if ( !OperatingSystem.IsMacOS() )
 		{
-			return false;
+			return null;
 		}
 
 		var appGroup = Environment.GetEnvironmentVariable(AppGroupEnvKey);
 		if ( string.IsNullOrEmpty(appGroup) )
 		{
-			return false;
+			return null;
 		}
 
 		var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 		var groupContainer = Path.Combine(home, "Library", "Group Containers", appGroup);
-		var configPath = Path.Combine(groupContainer, ConfigFileName);
 
-		if ( !File.Exists(configPath) )
-		{
-			return false;
-		}
-
-		BackendConfig? config;
-		try
-		{
-			var json = File.ReadAllText(configPath);
-			config = JsonSerializer.Deserialize<BackendConfig>(json,
-				new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-		}
-		catch
-		{
-			return false;
-		}
-
-		if ( config is null )
-		{
-			return false;
-		}
-
-		ApplyConfig(config);
-		return true;
+		ApplyPaths(groupContainer);
+		return Path.Combine(groupContainer, "appsettings.json");
 	}
 
-	internal static void ApplyConfig(BackendConfig config)
+	internal static void ApplyPaths(string groupContainer)
 	{
-		SetIfNotEmpty("ASPNETCORE_URLS", config.AspNetCoreUrls);
-		SetIfNotEmpty("app__appsettingspath", config.AppSettingsPath);
-		SetIfNotEmpty("app__appsettingslocalpath", config.AppSettingsLocalPath);
-		SetIfNotEmpty("app__databaseConnection", config.DatabaseConnection);
-		SetIfNotEmpty("app__tempFolder", config.TempFolder);
-		SetIfNotEmpty("app__thumbnailTempFolder", config.ThumbnailTempFolder);
-		Environment.SetEnvironmentVariable("app__NoAccountLocalhost", "true");
-		Environment.SetEnvironmentVariable("app__UseLocalDesktop", "true");
-		Environment.SetEnvironmentVariable("app__AccountRegisterDefaultRole", "Administrator");
-		Environment.SetEnvironmentVariable("app__ThumbnailGenerationIntervalInMinutes", "300");
-		Environment.SetEnvironmentVariable("app__Verbose", "false");
+		Set("app__appsettingspath", Path.Combine(groupContainer, "appsettings.json"));
+		Set("app__appsettingslocalpath", Path.Combine(groupContainer, "appsettings.local.json"));
+		Set("app__databaseConnection", "Data Source=" + Path.Combine(groupContainer, "starsky.db"));
+		Set("app__tempFolder", Path.Combine(groupContainer, "tmp") + Path.DirectorySeparatorChar);
+		Set("app__thumbnailTempFolder", Path.Combine(groupContainer, "thumbnailTempFolder") + Path.DirectorySeparatorChar);
+		Set("app__NoAccountLocalhost", "true");
+		Set("app__UseLocalDesktop", "true");
+		Set("app__AccountRegisterDefaultRole", "Administrator");
+		Set("app__ThumbnailGenerationIntervalInMinutes", "300");
+		Set("app__Verbose", "false");
 	}
 
-	private static void SetIfNotEmpty(string key, string? value)
+	private static void Set(string key, string value)
 	{
-		if ( !string.IsNullOrEmpty(value) )
-		{
-			Environment.SetEnvironmentVariable(key, value);
-		}
+		Environment.SetEnvironmentVariable(key, value);
 	}
-}
-
-internal sealed class BackendConfig
-{
-	[JsonPropertyName("aspNetCoreUrls")]
-	public string? AspNetCoreUrls { get; set; }
-
-	[JsonPropertyName("appSettingsPath")]
-	public string? AppSettingsPath { get; set; }
-
-	[JsonPropertyName("appSettingsLocalPath")]
-	public string? AppSettingsLocalPath { get; set; }
-
-	[JsonPropertyName("databaseConnection")]
-	public string? DatabaseConnection { get; set; }
-
-	[JsonPropertyName("tempFolder")]
-	public string? TempFolder { get; set; }
-
-	[JsonPropertyName("thumbnailTempFolder")]
-	public string? ThumbnailTempFolder { get; set; }
-
-	[JsonPropertyName("logsDirectory")]
-	public string? LogsDirectory { get; set; }
 }

@@ -45,7 +45,6 @@ enum ApplicationPaths {
 
     #if MAS
     static let tempFolder: URL = sharedBase.appendingPathComponent("tmp", isDirectory: true)
-    static let backendConfigFile: URL = sharedBase.appendingPathComponent("backend-config.json")
     static let bookmarksDirectory: URL = sharedBase.appendingPathComponent("bookmarks", isDirectory: true)
     #else
     static let tempFolder: URL = caches.appendingPathComponent("tempFolder", isDirectory: true)

@@ -4,19 +4,6 @@ import OSLog
 import ServiceManagement
 #endif
 
-// MARK: - Startup config written by the main app, read by the backend login item.
-#if MAS
-struct BackendConfig: Codable {
-    let aspNetCoreUrls: String
-    let appSettingsPath: String
-    let appSettingsLocalPath: String
-    let databaseConnection: String
-    let tempFolder: String
-    let thumbnailTempFolder: String
-    let logsDirectory: String
-}
-#endif
-
 class BackendService: @unchecked Sendable {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "BackendService")
     private let fileLogger: DailyFileLogger
@@ -48,6 +35,8 @@ class BackendService: @unchecked Sendable {
         #endif
     }
 
+    // MARK: - MAS path (SMAppService login item)
+
     #if MAS
     private let loginItemIdentifier = "nl.qdraw.starsky.backend"
     private var loginItem: SMAppService { .loginItem(identifier: loginItemIdentifier) }
@@ -55,7 +44,7 @@ class BackendService: @unchecked Sendable {
     var isRunning: Bool { loginItem.status == .enabled }
 
     func start(port: Int) throws {
-        writeBackendConfig(port: port)
+        writePortToAppSettings(port: port)
         // Unregister any stale instance before registering fresh.
         try? loginItem.unregister()
         do {
@@ -79,19 +68,27 @@ class BackendService: @unchecked Sendable {
     func beginShutdown() { stop() }
     func forceStop() { stop() }
 
-    private func writeBackendConfig(port: Int) {
-        let config = BackendConfig(
-            aspNetCoreUrls: "http://localhost:\(port)",
-            appSettingsPath: ApplicationPaths.appSettingsFile.path,
-            appSettingsLocalPath: ApplicationPaths.appSettingsLocalFile.path,
-            databaseConnection: "Data Source=\(ApplicationPaths.databaseFile.path)",
-            tempFolder: ApplicationPaths.tempFolder.path + "/",
-            thumbnailTempFolder: ApplicationPaths.thumbnailTempFolder.path + "/",
-            logsDirectory: ApplicationPaths.logsDirectory.path
-        )
-        guard let data = try? JSONEncoder().encode(config) else { return }
-        try? data.write(to: ApplicationPaths.backendConfigFile, options: .atomic)
+    // Merges the Kestrel port into the App Group container's appsettings.json.
+    // The .NET backend reads this file on startup; PortProgramHelper detects
+    // the Kestrel endpoint and skips its own URL override logic.
+    private func writePortToAppSettings(port: Int) {
+        let file = ApplicationPaths.appSettingsFile
+        var root: [String: Any] = [:]
+        if let data = try? Data(contentsOf: file),
+           let existing = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            root = existing
+        }
+        var kestrel = root["Kestrel"] as? [String: Any] ?? [:]
+        var endpoints = kestrel["Endpoints"] as? [String: Any] ?? [:]
+        endpoints["Http"] = ["Url": "http://localhost:\(port)"]
+        kestrel["Endpoints"] = endpoints
+        root["Kestrel"] = kestrel
+        guard let data = try? JSONSerialization.data(
+            withJSONObject: root, options: [.prettyPrinted, .sortedKeys]) else { return }
+        try? data.write(to: file, options: .atomic)
     }
+
+    // MARK: - Non-MAS path (Foundation.Process)
 
     #else
 
@@ -100,6 +97,24 @@ class BackendService: @unchecked Sendable {
     func start(port: Int) throws {
         currentPort = port
         try launch(port: port)
+    }
+
+    // Returns the environment dictionary the backend process needs.
+    // Uses ApplicationPaths.* which resolves to the correct directory for this build.
+    static func buildEnvironment(port: Int) -> [String: String] {
+        var env = ProcessInfo.processInfo.environment
+        env["ASPNETCORE_URLS"] = "http://localhost:\(port)"
+        env["app__appsettingspath"] = ApplicationPaths.appSettingsFile.path
+        env["app__appsettingslocalpath"] = ApplicationPaths.appSettingsLocalFile.path
+        env["app__databaseConnection"] = "Data Source=\(ApplicationPaths.databaseFile.path)"
+        env["app__tempFolder"] = ApplicationPaths.tempFolder.path + "/"
+        env["app__thumbnailTempFolder"] = ApplicationPaths.thumbnailTempFolder.path + "/"
+        env["app__NoAccountLocalhost"] = "true"
+        env["app__UseLocalDesktop"] = "true"
+        env["app__AccountRegisterDefaultRole"] = "Administrator"
+        env["app__ThumbnailGenerationIntervalInMinutes"] = "300"
+        env["app__Verbose"] = "false"
+        return env
     }
 
     private func launch(port: Int) throws {
@@ -163,8 +178,7 @@ class BackendService: @unchecked Sendable {
         fileLogger.info("Backend stopped", category: "BackendService")
     }
 
-    // Marks shutdown intent and sends SIGTERM without waiting. Call this early in the
-    // termination path to give the backend time to flush; follow up with forceStop().
+    // Marks shutdown intent and sends SIGTERM without waiting.
     func beginShutdown() {
         isShuttingDown = true
         guard let proc = process, proc.isRunning else { return }
@@ -172,8 +186,7 @@ class BackendService: @unchecked Sendable {
         proc.terminate()
     }
 
-    // Sends SIGKILL immediately and clears the process reference. Call after a grace period
-    // to ensure the backend is dead before the parent process exits.
+    // Sends SIGKILL immediately and clears the process reference.
     func forceStop() {
         guard let proc = process else { return }
         if proc.isRunning {
@@ -223,26 +236,7 @@ class BackendService: @unchecked Sendable {
     }
 
     func quarantineDidClear(_: String) {
-        // Intentionally no-op by default: hook in tests (leave comment inside class)
-    }
-
-    static func buildEnvironment(port: Int) -> [String: String] {
-        var env = ProcessInfo.processInfo.environment
-        let appSupport = ApplicationPaths.appSupport.path
-        let caches = ApplicationPaths.caches.path
-
-        env["ASPNETCORE_URLS"] = "http://localhost:\(port)"
-        env["app__appsettingspath"] = "\(appSupport)/appsettings.json"
-        env["app__appsettingslocalpath"] = "\(appSupport)/appsettings.local.json"
-        env["app__databaseConnection"] = "Data Source=\(appSupport)/starsky.db"
-        env["app__tempFolder"] = "\(caches)/tempFolder/"
-        env["app__thumbnailTempFolder"] = "\(appSupport)/thumbnailTempFolder/"
-        env["app__NoAccountLocalhost"] = "true"
-        env["app__UseLocalDesktop"] = "true"
-        env["app__AccountRegisterDefaultRole"] = "Administrator"
-        env["app__ThumbnailGenerationIntervalInMinutes"] = "300"
-        env["app__Verbose"] = "false"
-        return env
+        // Intentionally no-op by default: hook in tests
     }
 
     #endif
