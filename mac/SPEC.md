@@ -556,11 +556,16 @@ The `MAS` Xcode configuration enables the full App Sandbox, uses `SMAppService` 
 
 **One-time setup (per Apple account):**
 
-1. **Apple Distribution certificate** — download from [developer.apple.com → Certificates](https://developer.apple.com/account/resources/certificates/list) → "Apple Distribution" and install into Keychain Access.
-2. **Mac App Store provisioning profile** — in [developer.apple.com → Profiles](https://developer.apple.com/account/resources/profiles/add):
-   - Distribution → **Mac App Store Connect** → Continue
+1. **Register the App ID** at [developer.apple.com → Identifiers → +](https://developer.apple.com/account/resources/identifiers/add/bundleId):
+   - Select **App IDs** → Continue → **App** → Continue
+   - Bundle ID: **Explicit** → `nl.qdraw.starsky`
+   - Enable capability: **App Groups** → Configure → add group `group.nl.qdraw.starsky`
+   - Continue → Register
+2. **Mac App Distribution certificate** — must exist before a provisioning profile can be created. In [developer.apple.com → Certificates → +](https://developer.apple.com/account/resources/certificates/add), select **Mac App Distribution** and follow the CSR steps to generate and download it. Double-click to install into Keychain Access.
+3. **Mac App Store provisioning profile** — in [developer.apple.com → Profiles → +](https://developer.apple.com/account/resources/profiles/add):
+   - Under **Distribution**, choose **Mac App Store Connect** → Continue
    - App ID → `nl.qdraw.starsky` → Continue
-   - Certificate → select your Apple Distribution certificate → Continue
+   - Certificate → select your **Mac App Distribution** certificate → Continue
    - Name → `Starsky Mac App Store` → Generate → Download
    - Double-click the `.mobileprovision` to install it into Xcode.
 

@@ -253,14 +253,20 @@ The `--mas` flag in `build-dmg.sh` switches to the `MAS` Xcode configuration (fu
 
 **One-time setup:**
 
-1. Install your **Apple Distribution** certificate from [developer.apple.com → Certificates](https://developer.apple.com/account/resources/certificates/list).
-2. Create a **Mac App Store provisioning profile** at [developer.apple.com → Profiles](https://developer.apple.com/account/resources/profiles/add):
-   - Choose **Distribution → Mac App Store Connect**
-   - App ID: `nl.qdraw.starsky`
-   - Select your Apple Distribution certificate
+1. **Register the App ID** at [developer.apple.com → Identifiers → +](https://developer.apple.com/account/resources/identifiers/add/bundleId):
+   - Select **App IDs** → Continue
+   - Select **App** → Continue
+   - Bundle ID: **Explicit** → `nl.qdraw.starsky`
+   - Enable capability: **App Groups** → Configure → add group `group.nl.qdraw.starsky`
+   - Continue → Register
+2. **Mac App Distribution certificate** — must exist before a provisioning profile can be created. In [developer.apple.com → Certificates → +](https://developer.apple.com/account/resources/certificates/add), select **Mac App Distribution** and follow the CSR steps to generate and download it. Double-click to install into Keychain Access.
+3. **Create a Mac App Store provisioning profile** at [developer.apple.com → Profiles → +](https://developer.apple.com/account/resources/profiles/add):
+   - Under **Distribution**, choose **Mac App Store Connect** → Continue
+   - Profile Type: Mac; App ID: `nl.qdraw.starsky` → Continue
+   - Select your Mac App Distribution certificate → Continue
    - Name it `Starsky Mac App Store` → Generate → Download
    - Double-click the `.mobileprovision` to install it into Xcode
-3. Register the app in [App Store Connect](https://appstoreconnect.apple.com) with bundle ID `nl.qdraw.starsky`.
+4. Register the app in [App Store Connect](https://appstoreconnect.apple.com) with bundle ID `nl.qdraw.starsky`.
 
 **Build:**
 
