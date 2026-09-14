@@ -53,9 +53,23 @@ function writeFile(to, content) {
 copyFileSync("history.md", "advanced-options/history.md");
 copyFileSync("starsky/telemetry.md", "advanced-options/starsky/telemetry.md");
 
-touchSync("advanced-options/__do_not_edit_history_md");
+writeFile(
+	"advanced-options/__do_not_edit_history_md",
+	"This file is auto-copied from the repository root by documentation/scripts/prestart.js.\n" +
+	"Do not edit it here — your changes will be overwritten the next time the docs site starts.\n" +
+	"\n" +
+	"Source files:\n" +
+	"  history.md           -> advanced-options/history.md\n" +
+	"  starsky/telemetry.md -> advanced-options/starsky/telemetry.md\n"
+);
 
-touchSync("advanced-options/starsky/__do_not_edit_this__folder");
+writeFile(
+	"advanced-options/starsky/__do_not_edit_this__folder",
+	"All files in this folder are auto-copied from starsky/ by documentation/scripts/prestart.js.\n" +
+	"Do not edit them here — your changes will be overwritten the next time the docs site starts.\n" +
+	"\n" +
+	"Source root: starsky/\n"
+);
 
 writeFile(
 	"advanced-options/starsky/_category_.json",
@@ -86,7 +100,15 @@ writeFile(
 	})
 );
 
-touchSync("advanced-options/thumbnail-generation/__do_not_edit_this__folder");
+writeFile(
+	"advanced-options/thumbnail-generation/__do_not_edit_this__folder",
+	"All files in this folder are auto-copied from starsky/starsky.foundation.thumbnailgeneration/ by documentation/scripts/prestart.js.\n" +
+	"Do not edit them here — your changes will be overwritten the next time the docs site starts.\n" +
+	"\n" +
+	"Source files:\n" +
+	"  starsky/starsky.foundation.thumbnailgeneration/readme.md                    -> advanced-options/thumbnail-generation/readme.md\n" +
+	"  starsky/starsky.foundation.thumbnailgeneration/raw-embedded-preview-extraction.md -> advanced-options/thumbnail-generation/raw-embedded-preview-extraction.md\n"
+);
 
 copyFileSync(
 	"starsky/starsky.foundation.thumbnailgeneration/raw-embedded-preview-extraction.md",
@@ -172,21 +194,46 @@ copyFileSync("mac/project.yml", "advanced-options/mac/project.yml");
 copyFileSync("mac/ExportOptions.plist", "advanced-options/mac/ExportOptions.plist");
 copyFileSync("mac/starsky/Info.plist", "advanced-options/mac/starsky/Info.plist");
 
-touchSync("advanced-options/mac/__do_not_edit_this__folder");
+writeFile(
+	"advanced-options/mac/__do_not_edit_this__folder",
+	"All files in this folder are auto-copied from mac/ by documentation/scripts/prestart.js.\n" +
+	"Do not edit them here — your changes will be overwritten the next time the docs site starts.\n" +
+	"\n" +
+	"Source files:\n" +
+	"  mac/readme.md          -> advanced-options/mac/readme.md\n" +
+	"  mac/SPEC.md            -> advanced-options/mac/SPEC.md\n" +
+	"  mac/secrets-setup.md   -> advanced-options/mac/secrets-setup.md\n" +
+	"  mac/project.yml        -> advanced-options/mac/project.yml\n" +
+	"  mac/starsky/Info.plist -> advanced-options/mac/starsky/Info.plist\n"
+);
 
 // PC client
 
 copyFileSync("windows/readme.md", "advanced-options/windows/readme.md");
 copyFileSync("windows/SPEC.md", "advanced-options/windows/SPEC.md");
 
-touchSync("advanced-options/windows/__do_not_edit_this__folder");
+writeFile(
+	"advanced-options/windows/__do_not_edit_this__folder",
+	"All files in this folder are auto-copied from windows/ by documentation/scripts/prestart.js.\n" +
+	"Do not edit them here — your changes will be overwritten the next time the docs site starts.\n" +
+	"\n" +
+	"Source files:\n" +
+	"  windows/readme.md -> advanced-options/windows/readme.md\n" +
+	"  windows/SPEC.md   -> advanced-options/windows/SPEC.md\n"
+);
 
 
 copyFileSync("starsky/starskytest/readme.md", "advanced-options/starsky/starskytest/readme.md");
 
 copyFileSync("starsky-tools/readme.md", "advanced-options/starsky-tools/readme.md");
 
-touchSync("advanced-options/starsky-tools/__do_not_edit_this__folder");
+writeFile(
+	"advanced-options/starsky-tools/__do_not_edit_this__folder",
+	"All files in this folder are auto-copied from starsky-tools/ by documentation/scripts/prestart.js.\n" +
+	"Do not edit them here — your changes will be overwritten the next time the docs site starts.\n" +
+	"\n" +
+	"Source root: starsky-tools/\n"
+);
 
 copyFileSync(
 	"starsky-tools/build-tools/readme.md",
@@ -223,7 +270,15 @@ copyFileSync(
 	"advanced-options/starsky-tools/slack-notification/readme.md"
 );
 
-touchSync("developer-guide/contributing/__do_not_edit_this__folder");
+writeFile(
+	"developer-guide/contributing/__do_not_edit_this__folder",
+	"All files in this folder are auto-copied from the repository root by documentation/scripts/prestart.js.\n" +
+	"Do not edit them here — your changes will be overwritten the next time the docs site starts.\n" +
+	"\n" +
+	"Source files:\n" +
+	"  CONTRIBUTING.md -> developer-guide/contributing/CONTRIBUTING.md\n" +
+	"  SECURITY.md     -> developer-guide/contributing/SECURITY.md\n"
+);
 
 writeFile(
 	"developer-guide/contributing/_category_.json",
