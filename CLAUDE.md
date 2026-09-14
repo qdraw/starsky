@@ -21,6 +21,12 @@ Starsky is a photo-management platform with a .NET/ASP.NET Core backend, a React
 | `windows/` | Windows desktop app |
 | `documentation/` | Docusaurus site; output goes to `documentation/docs` |
 
+> **Do not edit files inside `documentation/docs/` directly.**
+> Many subdirectories are auto-copied from their source locations by `documentation/scripts/prestart.js` every time the docs site starts.
+> Folders containing a `__do_not_edit_this__folder` marker are generated — edit the source files instead.
+> The marker file lists the exact source → destination mapping for that folder.
+> To change what text appears in a `__do_not_edit_this__folder` file, update the corresponding `writeFile(...)` call in `documentation/scripts/prestart.js`.
+
 ## Commands
 
 ### Full build (all projects + tests)
