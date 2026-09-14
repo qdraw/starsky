@@ -39,7 +39,7 @@ jobs:
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@5ac4a31b15f1c45ec652b8af78c2096c3a08368c
+        uses: docker/setup-buildx-action@f840b60a5b88c8a66f7f6e8a1db72196cd169b85
 
       - name: Inspect Docker Buildx ghcr.io/${{ github.repository }}-unstable-nightly
         run: |
