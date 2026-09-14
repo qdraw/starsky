@@ -163,7 +163,7 @@
 		8F8C3308F3AE014E18479C4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9248F5FF3749CE13D7710CC5 /* BackendServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendServiceTests.swift; sourceTree = "<group>"; };
 		96E86D100380D8BC04F82CE2 /* StorageFolderPickerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageFolderPickerHandler.swift; sourceTree = "<group>"; };
-		97B29EC047ED7E17B1E0563A /* starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		97B29EC047ED7E17B1E0563A /* Starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9851583918F3426A017184E8 /* RuntimeModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeModeTests.swift; sourceTree = "<group>"; };
 		9F51DA46919A291FBFD8783F /* SilentWebViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilentWebViewTests.swift; sourceTree = "<group>"; };
 		A1B288A8995FE028D4694CC1 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -405,7 +405,7 @@
 		E215F7E68D0EFC516B8D19BE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				97B29EC047ED7E17B1E0563A /* starsky.app */,
+				97B29EC047ED7E17B1E0563A /* Starsky.app */,
 				8180D19840C574AC4878E465 /* starskyTests.xctest */,
 			);
 			name = Products;
@@ -489,7 +489,7 @@
 				DF5D6D740321B8F421D7DC1C /* Sparkle */,
 			);
 			productName = starsky;
-			productReference = 97B29EC047ED7E17B1E0563A /* starsky.app */;
+			productReference = 97B29EC047ED7E17B1E0563A /* Starsky.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -500,8 +500,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 90E4DA2552B8332616FE1F69 /* Build configuration list for PBXProject "starsky" */;
 			developmentRegion = en;
@@ -570,7 +568,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${IS_MAS_BUILD}\" = \"YES\" ]; then\n  # MAS: copy .NET binary into the Login Item bundle\n  for ARCH in arm64 x64; do\n    RUNTIME_SRC=\"$SRCROOT/../starsky/osx-${ARCH}\"\n    LOGIN_ITEM_MACOS=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents/MacOS\"\n    if [ -d \"$RUNTIME_SRC\" ]; then\n      rm -rf \"$LOGIN_ITEM_MACOS\"\n      mkdir -p \"$LOGIN_ITEM_MACOS\"\n      cp -R \"$RUNTIME_SRC/.\" \"$LOGIN_ITEM_MACOS/\"\n      find \"$LOGIN_ITEM_MACOS\" -name \".DS_Store\" -delete\n      find \"$LOGIN_ITEM_MACOS\" -type f | while read -r f; do\n        codesign_output=$(codesign --force --options runtime --entitlements \"$SRCROOT/starsky-backend/starsky-backend.entitlements\" --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>&1)\n        if [ $? -ne 0 ]; then\n          echo \"warning: codesign failed for $(basename \"$f\"): $codesign_output\"\n        fi\n      done\n    else\n      echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n    fi\n  done\n  # Copy Info.plist into the Login Item bundle\n  LOGIN_ITEM_CONTENTS=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents\"\n  mkdir -p \"$LOGIN_ITEM_CONTENTS\"\n  cp \"$SRCROOT/starsky-backend/Info.plist\" \"$LOGIN_ITEM_CONTENTS/Info.plist\"\nelse\n  # Non-MAS: copy to runtime directories\n  for ARCH in arm64 x64; do\n    RUNTIME_SRC=\"$SRCROOT/../starsky/osx-${ARCH}\"\n    RUNTIME_DST=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}\"\n    if [ -d \"$RUNTIME_SRC\" ]; then\n      rm -rf \"$RUNTIME_DST\"\n      mkdir -p \"$RUNTIME_DST\"\n      cp -R \"$RUNTIME_SRC/.\" \"$RUNTIME_DST/\"\n      find \"$RUNTIME_DST\" -name \".DS_Store\" -delete\n      find \"$RUNTIME_DST\" -type f | while read -r f; do\n        codesign_output=$(codesign --force --options runtime --entitlements \"$SRCROOT/starsky/runtime.entitlements\" --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>&1)\n        if [ $? -ne 0 ]; then\n          echo \"warning: codesign failed for $(basename \"$f\"): $codesign_output\"\n        fi\n      done\n    else\n      echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n    fi\n  done\nfi\n";
+			shellScript = "if [ \"${IS_MAS_BUILD}\" = \"YES\" ]; then\n  # MAS: build universal login item bundle.\n  # Copy all files from arm64 first (arch-independent assets like DLLs\n  # come from there), then lipo-combine any Mach-O binaries with x64.\n  ARM64_SRC=\"$SRCROOT/../starsky/osx-arm64\"\n  X64_SRC=\"$SRCROOT/../starsky/osx-x64\"\n  LOGIN_ITEM_MACOS=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents/MacOS\"\n\n  rm -rf \"$LOGIN_ITEM_MACOS\"\n  mkdir -p \"$LOGIN_ITEM_MACOS\"\n\n  if [ -d \"$ARM64_SRC\" ]; then\n    cp -R \"$ARM64_SRC/.\" \"$LOGIN_ITEM_MACOS/\"\n    find \"$LOGIN_ITEM_MACOS\" -name \".DS_Store\" -delete\n\n    # Lipo-combine Mach-O files if x64 runtime is also present\n    if [ -d \"$X64_SRC\" ]; then\n      find \"$X64_SRC\" -type f | while read -r x64_file; do\n        rel=\"${x64_file#$X64_SRC/}\"\n        arm64_file=\"$ARM64_SRC/$rel\"\n        dest_file=\"$LOGIN_ITEM_MACOS/$rel\"\n        if [ -f \"$arm64_file\" ] && file \"$x64_file\" | grep -q \"Mach-O\"; then\n          lipo -create \"$arm64_file\" \"$x64_file\" -output \"$dest_file\"\n        fi\n      done\n    fi\n\n    # Sign leaf binaries (dylibs, executables) individually first\n    find \"$LOGIN_ITEM_MACOS\" -type f | while read -r f; do\n      if file \"$f\" | grep -q \"Mach-O\"; then\n        codesign_output=$(codesign --force --options runtime --entitlements \"$SRCROOT/starsky-backend/starsky-backend.entitlements\" --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>&1)\n        if [ $? -ne 0 ]; then\n          echo \"warning: codesign failed for $(basename \"$f\"): $codesign_output\"\n        fi\n      fi\n    done\n  else\n    echo \"warning: Starsky arm64 runtime not found at $ARM64_SRC — Local mode will not work\"\n  fi\n\n  # Copy Info.plist into the Login Item bundle with variable substitution\n  LOGIN_ITEM_CONTENTS=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents\"\n  mkdir -p \"$LOGIN_ITEM_CONTENTS\"\n  cp \"$SRCROOT/starsky-backend/Info.plist\" \"$LOGIN_ITEM_CONTENTS/Info.plist\"\n  /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $MARKETING_VERSION\" \"$LOGIN_ITEM_CONTENTS/Info.plist\"\n  /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $CURRENT_PROJECT_VERSION\" \"$LOGIN_ITEM_CONTENTS/Info.plist\"\n\n  # Sign the whole login item bundle last — this sets the bundle identifier\n  # (nl.qdraw.starsky.backend from Info.plist) in the code signature so\n  # _libsecinit_appsandbox can find it.\n  LOGIN_ITEM_APP=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app\"\n  codesign_output=$(codesign --force --options runtime --entitlements \"$SRCROOT/starsky-backend/starsky-backend.entitlements\" --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$LOGIN_ITEM_APP\" 2>&1)\n  if [ $? -ne 0 ]; then\n    echo \"warning: codesign of login item bundle failed: $codesign_output\"\n  fi\nelse\n  # Non-MAS: copy to runtime directories\n  for ARCH in arm64 x64; do\n    RUNTIME_SRC=\"$SRCROOT/../starsky/osx-${ARCH}\"\n    RUNTIME_DST=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/MacOS/runtime-starsky-osx-${ARCH}\"\n    if [ -d \"$RUNTIME_SRC\" ]; then\n      rm -rf \"$RUNTIME_DST\"\n      mkdir -p \"$RUNTIME_DST\"\n      cp -R \"$RUNTIME_SRC/.\" \"$RUNTIME_DST/\"\n      find \"$RUNTIME_DST\" -name \".DS_Store\" -delete\n      find \"$RUNTIME_DST\" -type f | while read -r f; do\n        codesign_output=$(codesign --force --options runtime --entitlements \"$SRCROOT/starsky/runtime.entitlements\" --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$f\" 2>&1)\n        if [ $? -ne 0 ]; then\n          echo \"warning: codesign failed for $(basename \"$f\"): $codesign_output\"\n        fi\n      done\n    else\n      echo \"warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work\"\n    fi\n  done\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -707,7 +705,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "arm64 x86_64";
+				ARCHS = (
+					arm64,
+					x86_64,
+				);
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -771,7 +772,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = starskyTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
 			};
@@ -783,7 +788,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = starskyTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
 			};
@@ -795,7 +804,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = starskyTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
 				SDKROOT = macosx;
 			};
@@ -872,15 +885,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = starsky/starsky.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = LHZ4426ABB;
 				INFOPLIST_FILE = starsky/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
 				PRODUCT_MODULE_NAME = Starsky;
 				PRODUCT_NAME = Starsky;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SPARKLE_PUBLIC_ED_KEY = "";
 			};
@@ -891,15 +908,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = starsky/starsky.debug.entitlements;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = LHZ4426ABB;
 				INFOPLIST_FILE = starsky/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
 				PRODUCT_MODULE_NAME = Starsky;
 				PRODUCT_NAME = Starsky;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SPARKLE_PUBLIC_ED_KEY = "";
 			};
@@ -915,10 +936,14 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = LHZ4426ABB;
 				INFOPLIST_FILE = starsky/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
 				PRODUCT_MODULE_NAME = Starsky;
 				PRODUCT_NAME = Starsky;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SPARKLE_PUBLIC_ED_KEY = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = MAS;
@@ -929,7 +954,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "arm64 x86_64";
+				ARCHS = (
+					arm64,
+					x86_64,
+				);
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";

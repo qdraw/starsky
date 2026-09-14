@@ -79,29 +79,60 @@ targets:
     preBuildScripts:
       - script: |
           if [ "${IS_MAS_BUILD}" = "YES" ]; then
-            # MAS: copy .NET binary into the Login Item bundle
-            for ARCH in arm64 x64; do
-              RUNTIME_SRC="$SRCROOT/../starsky/osx-${ARCH}"
-              LOGIN_ITEM_MACOS="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents/MacOS"
-              if [ -d "$RUNTIME_SRC" ]; then
-                rm -rf "$LOGIN_ITEM_MACOS"
-                mkdir -p "$LOGIN_ITEM_MACOS"
-                cp -R "$RUNTIME_SRC/." "$LOGIN_ITEM_MACOS/"
-                find "$LOGIN_ITEM_MACOS" -name ".DS_Store" -delete
-                find "$LOGIN_ITEM_MACOS" -type f | while read -r f; do
+            # MAS: build universal login item bundle.
+            # Copy all files from arm64 first (arch-independent assets like DLLs
+            # come from there), then lipo-combine any Mach-O binaries with x64.
+            ARM64_SRC="$SRCROOT/../starsky/osx-arm64"
+            X64_SRC="$SRCROOT/../starsky/osx-x64"
+            LOGIN_ITEM_MACOS="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents/MacOS"
+
+            rm -rf "$LOGIN_ITEM_MACOS"
+            mkdir -p "$LOGIN_ITEM_MACOS"
+
+            if [ -d "$ARM64_SRC" ]; then
+              cp -R "$ARM64_SRC/." "$LOGIN_ITEM_MACOS/"
+              find "$LOGIN_ITEM_MACOS" -name ".DS_Store" -delete
+
+              # Lipo-combine Mach-O files if x64 runtime is also present
+              if [ -d "$X64_SRC" ]; then
+                find "$X64_SRC" -type f | while read -r x64_file; do
+                  rel="${x64_file#$X64_SRC/}"
+                  arm64_file="$ARM64_SRC/$rel"
+                  dest_file="$LOGIN_ITEM_MACOS/$rel"
+                  if [ -f "$arm64_file" ] && file "$x64_file" | grep -q "Mach-O"; then
+                    lipo -create "$arm64_file" "$x64_file" -output "$dest_file"
+                  fi
+                done
+              fi
+
+              # Sign leaf binaries (dylibs, executables) individually first
+              find "$LOGIN_ITEM_MACOS" -type f | while read -r f; do
+                if file "$f" | grep -q "Mach-O"; then
                   codesign_output=$(codesign --force --options runtime --entitlements "$SRCROOT/starsky-backend/starsky-backend.entitlements" --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$f" 2>&1)
                   if [ $? -ne 0 ]; then
                     echo "warning: codesign failed for $(basename "$f"): $codesign_output"
                   fi
-                done
-              else
-                echo "warning: Starsky runtime not found at $RUNTIME_SRC — Local mode will not work"
-              fi
-            done
-            # Copy Info.plist into the Login Item bundle
+                fi
+              done
+            else
+              echo "warning: Starsky arm64 runtime not found at $ARM64_SRC — Local mode will not work"
+            fi
+
+            # Copy Info.plist into the Login Item bundle with variable substitution
             LOGIN_ITEM_CONTENTS="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app/Contents"
             mkdir -p "$LOGIN_ITEM_CONTENTS"
             cp "$SRCROOT/starsky-backend/Info.plist" "$LOGIN_ITEM_CONTENTS/Info.plist"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $MARKETING_VERSION" "$LOGIN_ITEM_CONTENTS/Info.plist"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $CURRENT_PROJECT_VERSION" "$LOGIN_ITEM_CONTENTS/Info.plist"
+
+            # Sign the whole login item bundle last — this sets the bundle identifier
+            # (nl.qdraw.starsky.backend from Info.plist) in the code signature so
+            # _libsecinit_appsandbox can find it.
+            LOGIN_ITEM_APP="$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app/Contents/Library/LoginItems/starsky-backend.app"
+            codesign_output=$(codesign --force --options runtime --entitlements "$SRCROOT/starsky-backend/starsky-backend.entitlements" --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$LOGIN_ITEM_APP" 2>&1)
+            if [ $? -ne 0 ]; then
+              echo "warning: codesign of login item bundle failed: $codesign_output"
+            fi
           else
             # Non-MAS: copy to runtime directories
             for ARCH in arm64 x64; do

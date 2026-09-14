@@ -8,13 +8,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var backendService: BackendService?
     private var splash: SplashWindowController?
     private var settingsWindowController: SettingsWindowController?
-    #if !MAS
     private var mountWatcherService: MountWatcherService?
     private var mountWatcherSubmenu: NSMenu?
     private var mountWatcherStatusItem: NSMenuItem?
     private var mountWatcherToggleItem: NSMenuItem?
     private var cachedMountWatcherStatus: MountWatcherStatus = .notInstalled
-    #endif
 
     func applicationDidFinishLaunching(_: Notification) {
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }

@@ -136,4 +136,3 @@ final class MountWatcherService: MountWatcherServiceProtocol, @unchecked Sendabl
         logger.info("MountWatcher stopSync completed")
     }
 }
-#endif
