@@ -29,8 +29,6 @@ Always start with a summary in bullets, then full response.
 
 When I ask to explain: explain from a functional point of view what the code does. Do not explain what the fields or the methods do, because the names should be self-explanatory. Then tell me what technical principles have been used. At the end note the design patterns used and the dependencies.
 
-Documentation output must be written to `documentation/docs` relative to the repository root.
-
 ## Desktop clients
 
 - Mac/Windows clients are thin shells; business logic belongs in the .NET backend.
@@ -38,3 +36,8 @@ Documentation output must be written to `documentation/docs` relative to the rep
 - `mac/` is a native Swift/AppKit client that hosts the web app in a `WKWebView`.
   Run `xcodegen generate` after adding or removing Swift files.
 - `windows/` is a native WPF client that hosts the web app in `WebView2`.
+
+## Documentation
+ > Documentation output must be written to `documentation/docs` relative to the repository root.
+ > Folders with `__do_not_edit_this__folder` are auto-copied from their source locations by `documentation/scripts/prestart.js` every time the docs site starts. 
+ > edit the source files instead.
