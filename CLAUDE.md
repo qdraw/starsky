@@ -139,3 +139,8 @@ The app expects the ASP.NET Core binary inside the app bundle at:
 - `starsky.app/Contents/MacOS/runtime-starsky-osx-x64/starsky` (Intel)
 
 These are copied at build time from `starsky/osx-arm64/` and `starsky/osx-x64/`. A build warning is emitted when they are missing; Local mode will not work without them.
+
+## Documentation
+ > Documentation output must be written to `documentation/docs` relative to the repository root.
+ > Folders with `__do_not_edit_this__folder` are auto-copied from their source locations by `documentation/scripts/prestart.js` every time the docs site starts. 
+ > edit the source files instead.

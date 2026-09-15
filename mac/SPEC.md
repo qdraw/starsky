@@ -61,11 +61,12 @@ The backend is configured entirely via environment variables:
 | Environment Variable | Value |
 |---|---|
 | `ASPNETCORE_URLS` | `http://localhost:{port}` |
-| `app__appsettingspath` | `~/Library/Application Support/starsky/appsettings.json` |
-| `app__appsettingslocalpath` | `~/Library/Application Support/starsky/appsettings.local.json` |
-| `app__databaseConnection` | `Data Source=~/Library/Application Support/starsky/starsky.db` |
-| `app__tempFolder` | `~/Library/Caches/starsky/tempFolder/` |
-| `app__thumbnailTempFolder` | `~/Library/Application Support/starsky/thumbnailTempFolder/` |
+| `STARSKY_APP_GROUP` | `group.nl.qdraw.starsky` |
+| `app__appsettingspath` | `~/Library/Group Containers/group.nl.qdraw.starsky/appsettings.json` |
+| `app__appsettingslocalpath` | `~/Library/Group Containers/group.nl.qdraw.starsky/appsettings.local.json` |
+| `app__databaseConnection` | `Data Source=~/Library/Group Containers/group.nl.qdraw.starsky/starsky.db` |
+| `app__tempFolder` | `~/Library/Group Containers/group.nl.qdraw.starsky/tmp/` |
+| `app__thumbnailTempFolder` | `~/Library/Group Containers/group.nl.qdraw.starsky/thumbnailTempFolder/` |
 | `app__NoAccountLocalhost` | `true` |
 | `app__UseLocalDesktop` | `true` |
 | `app__AccountRegisterDefaultRole` | `Administrator` |
@@ -283,7 +284,7 @@ Implementation: Use `Foundation` socket APIs — bind `SOCK_STREAM` to port 0, c
 
 ### 6.6 FileWatcherService
 
-Watches `~/Library/Caches/starsky/tempFolder/` for file changes using `DispatchSource.makeFileSystemObjectSource`.
+Watches `~/Library/Group Containers/group.nl.qdraw.starsky/tmp/` for file changes using `DispatchSource.makeFileSystemObjectSource`.
 
 | Behaviour | Detail |
 |---|---|
@@ -378,7 +379,7 @@ Dock-click (`applicationShouldHandleReopen`): if no windows open, call `openMain
 
 ### 6.11 DailyFileLogger
 
-Custom logger writing to date-stamped files: `~/Library/Application Support/starsky/logs/starsky-{yyyy-MM-dd}.log`
+Custom logger writing to date-stamped files: `~/Library/Group Containers/group.nl.qdraw.starsky/logs/starsky-{yyyy-MM-dd}.log`
 
 - Minimum level: `info`
 - Format: `yyyy-MM-dd HH:mm:ss [Level] Category: Message`
@@ -439,13 +440,16 @@ enum RuntimeMode: Int, Codable {
 
 | Path | Purpose |
 |---|---|
-| `~/Library/Application Support/starsky/settings.json` | Desktop app settings |
-| `~/Library/Application Support/starsky/appsettings.json` | Starsky backend config (Local mode) |
-| `~/Library/Application Support/starsky/appsettings.local.json` | Machine-specific backend overrides |
-| `~/Library/Application Support/starsky/starsky.db` | SQLite database (Local mode) |
-| `~/Library/Application Support/starsky/logs/starsky-{date}.log` | Daily log files |
-| `~/Library/Application Support/starsky/thumbnailTempFolder/` | Thumbnail cache |
-| `~/Library/Caches/starsky/tempFolder/` | Downloaded files |
+| `~/Library/Application Support/starsky/settings.json` | Desktop app settings (Swift only, not shared with backend) |
+| `~/Library/Group Containers/group.nl.qdraw.starsky/appsettings.json` | Starsky backend config (Local mode) |
+| `~/Library/Group Containers/group.nl.qdraw.starsky/appsettings.local.json` | Machine-specific backend overrides |
+| `~/Library/Group Containers/group.nl.qdraw.starsky/starsky.db` | SQLite database (Local mode) |
+| `~/Library/Group Containers/group.nl.qdraw.starsky/logs/starsky-{date}.log` | Daily log files |
+| `~/Library/Group Containers/group.nl.qdraw.starsky/thumbnailTempFolder/` | Thumbnail cache |
+| `~/Library/Group Containers/group.nl.qdraw.starsky/tmp/` | Temporary / downloaded files |
+| `~/Library/Group Containers/group.nl.qdraw.starsky/bookmarks/` | Security-scoped bookmarks for user-selected folders |
+
+> **Migration note:** From this version onward all backend data is stored in the App Group container on both direct-download and Mac App Store builds. Existing data in `~/Library/Application Support/starsky/` is moved automatically on first launch.
 | `<bundle>/Contents/MacOS/runtime-starsky-osx-arm64/starsky` | Bundled backend (Apple Silicon) |
 | `<bundle>/Contents/MacOS/runtime-starsky-osx-x64/starsky` | Bundled backend (Intel) |
 | `<bundle>/Contents/MacOS/runtime-starsky-osx-arm64/starskymountwatchercli` | MountWatcher CLI (Apple Silicon) |
@@ -492,20 +496,20 @@ done
 
 ### Publish (CLI)
 
-```bash
-cd mac && xcodegen generate
-xcodebuild archive \
-  -project starsky.xcodeproj \
-  -scheme starsky \
-  -configuration Release \
-  -archivePath ../build/starsky.xcarchive \
-  ARCHS="arm64 x86_64"
+Use `build-dmg.sh` from the repository root. The script runs `xcodegen generate`, builds the .NET backend (unless `--skip-backend`), archives, exports, and produces a DMG (Developer ID) or `.pkg` (MAS).
 
-xcodebuild -exportArchive \
-  -archivePath ../build/starsky.xcarchive \
-  -exportPath ../build/ \
-  -exportOptionsPlist ExportOptions.plist
+**Developer ID (direct download):**
+```bash
+./mac/build-dmg.sh --arch universal --team-id <TEAM_ID> --sign
 ```
+
+**Mac App Store:**
+```bash
+./mac/build-dmg.sh --mas --arch universal --team-id <TEAM_ID> \
+  --profile "Starsky Mac App Store"
+```
+
+See [§10 MAS build](#mas-build-mac-app-store) for the one-time provisioning profile setup.
 
 ---
 
@@ -545,6 +549,55 @@ xcrun stapler staple build/starsky.dmg
 ```
 
 `ExportOptions.plist` sets `signingStyle = manual`, `signingCertificate = Developer ID Application`.
+
+### MAS Build (Mac App Store) {#mas-build-mac-app-store}
+
+The `MAS` Xcode configuration enables the full App Sandbox, uses `SMAppService` to launch the backend as a login item, and signs with `Apple Distribution`.
+
+**One-time setup (per Apple account):**
+
+1. **Register the App ID** at [developer.apple.com → Identifiers → +](https://developer.apple.com/account/resources/identifiers/add/bundleId):
+   - Select **App IDs** → Continue → **App** → Continue
+   - Bundle ID: **Explicit** → `nl.qdraw.starsky`
+   - Enable capability: **App Groups** → Configure → add group `group.nl.qdraw.starsky`
+   - Continue → Register
+2. **Mac App Distribution certificate** — must exist before a provisioning profile can be created. In [developer.apple.com → Certificates → +](https://developer.apple.com/account/resources/certificates/add), select **Mac App Distribution** and follow the CSR steps to generate and download it. Double-click to install into Keychain Access.
+3. **Mac App Store provisioning profile** — in [developer.apple.com → Profiles → +](https://developer.apple.com/account/resources/profiles/add):
+   - Under **Distribution**, choose **Mac App Store Connect** → Continue
+   - App ID → `nl.qdraw.starsky` → Continue
+   - Certificate → select your **Mac App Distribution** certificate → Continue
+   - Name → `Starsky Mac App Store` → Generate → Download
+   - Double-click the `.mobileprovision` to install it into Xcode.
+
+**Build command:**
+
+```bash
+./build-dmg.sh --mas --arch universal --team-id <TEAM_ID> \
+  --profile "Starsky Mac App Store"
+```
+
+The script produces `dist/starsky.pkg`. Upload it with Transporter or:
+
+```bash
+xcrun altool --upload-package dist/starsky.pkg \
+  --type macos \
+  --apple-id <APP_APPLE_ID> \
+  --bundle-version <VERSION> \
+  --bundle-short-version-string <VERSION> \
+  --bundle-id nl.qdraw.starsky \
+  --apiKey <API_KEY> --apiIssuer <ISSUER_ID>
+```
+
+**Key differences from Developer ID build:**
+
+| | Developer ID | MAS |
+|---|---|---|
+| Sandbox | No | Yes (`app-sandbox = true`) |
+| Backend launch | `Foundation.Process` | `SMAppService` login item |
+| Signing cert | Developer ID Application | Apple Distribution |
+| Output | `.dmg` | `.pkg` |
+| MountWatcher menu | Visible | Hidden (no-op in sandbox) |
+| Auto-updates | Sparkle 2 | App Store |
 
 ---
 
