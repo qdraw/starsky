@@ -42,7 +42,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 > Within a version block the top are item is the newest
 
-## version 0.9.5 - _(Unreleased)_ - 2026-?-? {#0.9.5}
+## version 0.9.6 - _(Unreleased)_ - 2026-?-? {#0.9.6}
+
+- nothing yet
+
+## version 0.9.5 - 2026-09-16 {#0.9.5}
 
 - [x] (Changed) _MountWatcher Help dialog_ Additional configuration details (PR #3340)
 - [x] (Fixed) _RenameService_ Handle file are not found preventing potential null issues (PR #3340)
