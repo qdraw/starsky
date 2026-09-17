@@ -45,7 +45,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
       });
 
       // reset afterwards (when you refresh the state isn't cleared)
-      history.navigate(history.location.href, { replace: true });
+      history.navigate(history.location.search, { replace: true });
     }, 100);
   }, [history, history.location.state]);
 
@@ -76,7 +76,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   async function handleDropToFolder(targetFolderPath: string) {
     const { filePaths, folderPaths } = getDragSelection();
     await moveDragAndDropFiles(filePaths, folderPaths, targetFolderPath);
-    history.navigate(history.location.href, { replace: true });
+    history.navigate(history.location.search, { replace: true });
   }
 
   const items = props.fileIndexItems;
