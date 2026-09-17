@@ -51,6 +51,11 @@ public class FakeINotificationQuery : INotificationQuery
 
 	public Task<List<NotificationItem>> GetOlderThan(DateTime parsedDateTime)
 	{
+		if ( _exception != null )
+		{
+			throw _exception;
+		}
+
 		return Task.FromResult(FakeContent.Where(x => x.DateTime < parsedDateTime).ToList());
 	}
 
