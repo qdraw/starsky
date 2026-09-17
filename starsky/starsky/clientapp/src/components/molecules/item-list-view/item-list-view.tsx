@@ -3,6 +3,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
+import { IDragMoveData, moveDragAndDropFiles } from "../../../shared/move-file-helper";
 import { URLPath } from "../../../shared/url/url-path";
 import FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
@@ -57,8 +58,31 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
     );
   }
 
+  function getDragSelection(): IDragMoveData {
+    const selectedNames = new URLPath().getSelect(history.location.search) ?? [];
+    const filePaths: string[] = [];
+    const folderPaths: string[] = [];
+    for (const fileIndexItem of items) {
+      if (!selectedNames.includes(fileIndexItem.fileName)) continue;
+      if (fileIndexItem.isDirectory) {
+        folderPaths.push(fileIndexItem.filePath);
+      } else {
+        filePaths.push(fileIndexItem.filePath);
+      }
+    }
+    return { filePaths, folderPaths };
+  }
+
+  async function handleDropToFolder(targetFolderPath: string) {
+    const { filePaths, folderPaths } = getDragSelection();
+    await moveDragAndDropFiles(filePaths, folderPaths, targetFolderPath);
+    history.navigate(history.location.href, { replace: true });
+  }
+
   const items = props.fileIndexItems;
   if (!items) return <div className="folder">no content</div>;
+
+  const inSelectMode = !!new URLPath().StringToIUrl(history.location.search).select;
 
   return (
     <div className={props.iconList ? "folder" : "folder-flat"} ref={folderRef}>
@@ -75,6 +99,8 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
           className={props.iconList ? "list-image-box" : "list-flat-box"}
           key={item.fileName + item.lastEdited + item.colorClass}
           onSelectionCallback={onSelectionCallback}
+          onDragStart={inSelectMode ? getDragSelection : undefined}
+          onDropFiles={inSelectMode ? handleDropToFolder : undefined}
         >
           {props.iconList ? <ListImageChildItem {...item} /> : <FlatListItem item={item} />}
         </ListImageViewSelectContainer>

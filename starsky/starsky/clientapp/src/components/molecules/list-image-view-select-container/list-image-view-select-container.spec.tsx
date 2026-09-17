@@ -3,6 +3,7 @@ import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import { DRAG_MOVE_MIME } from "../../../shared/move-file-helper";
 import { Router } from "../../../router-app/router-app";
 import ListImageNormalSelectContainer from "./list-image-view-select-container";
 describe("ListImageTest", () => {
@@ -183,6 +184,115 @@ describe("ListImageTest", () => {
 
       // should normal toggle instead of shift action
       expect(globalThis.location.search).toBe("?select=");
+    });
+
+    describe("drag-and-drop", () => {
+      const dragPayload = { filePaths: ["/test.jpg"], folderPaths: [] };
+      const onDragStart = jest.fn(() => dragPayload);
+
+      function makeDragEvent(type: string, withData = false) {
+        const stored: Record<string, string> = {};
+        const setData = jest.fn((mime: string, val: string) => {
+          stored[mime] = val;
+        });
+        const event = Object.assign(new Event(type, { bubbles: true, cancelable: true }), {
+          dataTransfer: {
+            types: withData ? [DRAG_MOVE_MIME] : [],
+            getData: (mime: string) => stored[mime] ?? "",
+            setData,
+            dropEffect: "none",
+            effectAllowed: "none"
+          }
+        });
+        return { event, setData };
+      }
+
+      it("dragStart encodes selection data when onDragStart prop is provided", () => {
+        const item = { fileName: "test.jpg", filePath: "/test.jpg", status: IExifStatus.Ok } as IFileIndexItem;
+        const { container } = render(
+          <MemoryRouter>
+            <ListImageNormalSelectContainer item={item} onDragStart={onDragStart} />
+          </MemoryRouter>
+        );
+        const div = container.querySelector("[data-test='list-image-view-select-container']") as HTMLElement;
+        const { event, setData } = makeDragEvent("dragstart");
+        fireEvent(div, event);
+        expect(onDragStart).toHaveBeenCalled();
+        expect(setData).toHaveBeenCalledWith(DRAG_MOVE_MIME, JSON.stringify(dragPayload));
+      });
+
+      it("dragOver on a directory item with starsky-move data adds drag-over class", () => {
+        const item = {
+          fileName: "subfolder",
+          filePath: "/subfolder",
+          isDirectory: true,
+          status: IExifStatus.Ok
+        } as IFileIndexItem;
+        const onDropFiles = jest.fn();
+        const { container } = render(
+          <MemoryRouter>
+            <ListImageNormalSelectContainer item={item} onDragStart={onDragStart} onDropFiles={onDropFiles} />
+          </MemoryRouter>
+        );
+        const div = container.querySelector("[data-test='list-image-view-select-container']") as HTMLElement;
+        fireEvent(div, makeDragEvent("dragover", true).event);
+        expect(container.querySelector(".box-content--drag-over")).not.toBeNull();
+      });
+
+      it("dragLeave on a directory removes drag-over class", () => {
+        const item = {
+          fileName: "subfolder",
+          filePath: "/subfolder",
+          isDirectory: true,
+          status: IExifStatus.Ok
+        } as IFileIndexItem;
+        const onDropFiles = jest.fn();
+        const { container } = render(
+          <MemoryRouter>
+            <ListImageNormalSelectContainer item={item} onDragStart={onDragStart} onDropFiles={onDropFiles} />
+          </MemoryRouter>
+        );
+        const div = container.querySelector("[data-test='list-image-view-select-container']") as HTMLElement;
+        fireEvent(div, makeDragEvent("dragover", true).event);
+        fireEvent(div, makeDragEvent("dragleave").event);
+        expect(container.querySelector(".box-content--drag-over")).toBeNull();
+      });
+
+      it("drop on directory calls onDropFiles with target folder path", () => {
+        const item = {
+          fileName: "subfolder",
+          filePath: "/subfolder",
+          isDirectory: true,
+          status: IExifStatus.Ok
+        } as IFileIndexItem;
+        const onDropFiles = jest.fn();
+        const { container } = render(
+          <MemoryRouter>
+            <ListImageNormalSelectContainer item={item} onDragStart={onDragStart} onDropFiles={onDropFiles} />
+          </MemoryRouter>
+        );
+        const div = container.querySelector("[data-test='list-image-view-select-container']") as HTMLElement;
+        fireEvent(div, makeDragEvent("drop", true).event);
+        expect(onDropFiles).toHaveBeenCalledWith("/subfolder");
+      });
+
+      it("non-directory item does not trigger onDropFiles on drop", () => {
+        const item = {
+          fileName: "photo.jpg",
+          filePath: "/photo.jpg",
+          isDirectory: false,
+          status: IExifStatus.Ok
+        } as IFileIndexItem;
+        const onDropFiles = jest.fn();
+        const { container } = render(
+          <MemoryRouter>
+            <ListImageNormalSelectContainer item={item} onDragStart={onDragStart} onDropFiles={onDropFiles} />
+          </MemoryRouter>
+        );
+        const div = container.querySelector("[data-test='list-image-view-select-container']") as HTMLElement;
+        fireEvent(div, makeDragEvent("drop", true).event);
+        expect(onDropFiles).not.toHaveBeenCalled();
+      });
     });
   });
 });
