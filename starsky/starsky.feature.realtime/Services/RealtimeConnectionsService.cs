@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.injection;
@@ -38,6 +39,10 @@ public class RealtimeConnectionsService : IRealtimeConnectionsService
 		{
 			var messages = await _notificationQuery.GetOlderThan(DateTime.UtcNow.AddDays(-30));
 			await _notificationQuery.RemoveAsync(messages);
+		}
+		catch ( RetryLimitExceededException )
+		{
+			_logger.LogInformation("[CleanOldMessagesAsync] database unavailable, skipping cleanup");
 		}
 		catch ( Exception exception )
 		{

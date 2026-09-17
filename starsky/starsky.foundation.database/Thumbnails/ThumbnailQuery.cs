@@ -289,6 +289,15 @@ public class ThumbnailQuery : IThumbnailQuery
 				return;
 			}
 
+			// DB is under load; thumbnails are regenerable so skip and let the next sync retry
+			if ( mySqlException is { ErrorCode: MySqlErrorCode.CommandTimeoutExpired } )
+			{
+				_logger.LogInformation(
+					"[SaveChangesDuplicate] Command timeout, will retry on next sync: " +
+					$"{mySqlException.Message}");
+				return;
+			}
+
 			_logger.LogError(
 				$"[SaveChangesDuplicate] -- Failed next Throw -- T:{exception.GetType()} " +
 				$"M:{exception.Message} " +

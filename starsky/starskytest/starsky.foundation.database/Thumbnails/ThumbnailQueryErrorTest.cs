@@ -112,6 +112,28 @@ public class ThumbnailQueryErrorTest
 			await fakeQuery.AddThumbnailRangeAsync([new ThumbnailResultDataTransferModel("t")]));
 	}
 
+	[TestMethod]
+	public async Task AddThumbnailRangeAsync_CommandTimeout_ShouldLogWarningAndNotThrow()
+	{
+		IsCalledMySqlSaveDbExceptionContext = false;
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+
+		var webLogger = new FakeIWebLogger();
+		var fakeQuery = new ThumbnailQuery(
+			new MySqlSaveDbExceptionContext(options, "Command Timeout expired",
+				MySqlErrorCode.CommandTimeoutExpired),
+			null!, webLogger, new FakeMemoryCache()
+		);
+
+		await fakeQuery.AddThumbnailRangeAsync([new ThumbnailResultDataTransferModel("t")]);
+
+		Assert.IsTrue(webLogger.TrackedInformation.Exists(x =>
+			x.Item2?.StartsWith("[SaveChangesDuplicate] Command timeout") == true));
+		Assert.IsEmpty(webLogger.TrackedExceptions);
+	}
+
 	private sealed class UpdateEntryUpdateConcurrency : IUpdateEntry
 	{
 		public void SetOriginalValue(IProperty property, object? value)

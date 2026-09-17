@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.realtime.Services;
 using starsky.foundation.platform.Models;
@@ -39,5 +40,20 @@ public sealed class RealtimeConnectionsServiceTest
 		await service.CleanOldMessagesAsync();
 		// service has thrown an exception so the remove is ignored
 		Assert.HasCount(1, fakeINotificationQuery.FakeContent);
+	}
+
+	[TestMethod]
+	public async Task CleanOldMessagesAsync_RetryLimitExceeded_ShouldNotLogError()
+	{
+		var fakeIWebSocketConnectionsService = new FakeIWebSocketConnectionsService();
+		var retryException = new RetryLimitExceededException("retry limit", new Exception("db down"));
+		var fakeINotificationQuery = new FakeINotificationQuery(retryException);
+		var fakeLogger = new FakeIWebLogger();
+		var service = new RealtimeConnectionsService(fakeIWebSocketConnectionsService,
+			fakeINotificationQuery, fakeLogger);
+
+		await service.CleanOldMessagesAsync();
+
+		Assert.IsEmpty(fakeLogger.TrackedExceptions);
 	}
 }
