@@ -293,6 +293,41 @@ describe("ListImageTest", () => {
         fireEvent(div, makeDragEvent("drop", true).event);
         expect(onDropFiles).not.toHaveBeenCalled();
       });
+
+      it("dragOver without starsky-move MIME on directory is ignored", () => {
+        const item = {
+          fileName: "subfolder",
+          filePath: "/subfolder",
+          isDirectory: true,
+          status: IExifStatus.Ok
+        } as IFileIndexItem;
+        const onDropFiles = jest.fn();
+        const { container } = render(
+          <MemoryRouter>
+            <ListImageNormalSelectContainer item={item} onDragStart={onDragStart} onDropFiles={onDropFiles} />
+          </MemoryRouter>
+        );
+        const div = container.querySelector("[data-test='list-image-view-select-container']") as HTMLElement;
+        fireEvent(div, makeDragEvent("dragover", false).event);
+        expect(container.querySelector(".box-content--drag-over")).toBeNull();
+      });
+
+      it("directory without onDropFiles is not a drop target (no drag-over on dragOver)", () => {
+        const item = {
+          fileName: "subfolder",
+          filePath: "/subfolder",
+          isDirectory: true,
+          status: IExifStatus.Ok
+        } as IFileIndexItem;
+        const { container } = render(
+          <MemoryRouter>
+            <ListImageNormalSelectContainer item={item} onDragStart={onDragStart} />
+          </MemoryRouter>
+        );
+        const div = container.querySelector("[data-test='list-image-view-select-container']") as HTMLElement;
+        fireEvent(div, makeDragEvent("dragover", true).event);
+        expect(container.querySelector(".box-content--drag-over")).toBeNull();
+      });
     });
   });
 });

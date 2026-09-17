@@ -1,5 +1,7 @@
 import { fireEvent, screen } from "@testing-library/dom";
 import { render } from "@testing-library/react";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
+import * as useLocation from "../../../hooks/use-location/use-location";
 import * as MoveFileHelper from "../../../shared/move-file-helper";
 import * as Link from "../../atoms/link/link";
 import Breadcrumb from "./breadcrumbs";
@@ -58,6 +60,10 @@ describe("Breadcrumb", () => {
     const dragData = JSON.stringify({ filePaths: ["/photos/a.jpg"], folderPaths: [] });
     const MIME = MoveFileHelper.DRAG_MOVE_MIME;
 
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
     function makeDragEvent(type: string, data?: string) {
       return Object.assign(new Event(type, { bubbles: true, cancelable: true }), {
         dataTransfer: {
@@ -113,6 +119,61 @@ describe("Breadcrumb", () => {
       fireEvent(span, makeDragEvent("dragover"));
 
       expect(container.querySelector(".breadcrumb__item--drag-over")).toBeNull();
+    });
+
+    it("drop with no drag data does nothing", async () => {
+      const mockMove = jest.spyOn(MoveFileHelper, "moveDragAndDropFiles");
+      jest.spyOn(Link, "default").mockImplementation(() => <a></a>);
+      render(<Breadcrumb subPath="/photos/sub" breadcrumb={["/", "/photos"]} />);
+      const span = screen.queryAllByTestId("breadcrumb-span")[0];
+
+      fireEvent(span, makeDragEvent("drop"));
+
+      await new Promise((r) => setTimeout(r, 0));
+      expect(mockMove).not.toHaveBeenCalled();
+    });
+
+    it("drop with invalid JSON does nothing", async () => {
+      const mockMove = jest.spyOn(MoveFileHelper, "moveDragAndDropFiles");
+      jest.spyOn(Link, "default").mockImplementation(() => <a></a>);
+      render(<Breadcrumb subPath="/photos/sub" breadcrumb={["/", "/photos"]} />);
+      const span = screen.queryAllByTestId("breadcrumb-span")[0];
+
+      const badEvent = Object.assign(new Event("drop", { bubbles: true, cancelable: true }), {
+        dataTransfer: {
+          types: [MIME],
+          getData: (_: string) => "not-valid-json",
+          setData: jest.fn(),
+          dropEffect: "none",
+          effectAllowed: "none"
+        } as unknown as DataTransfer
+      });
+      fireEvent(span, badEvent);
+
+      await new Promise((r) => setTimeout(r, 0));
+      expect(mockMove).not.toHaveBeenCalled();
+    });
+
+    it("drop when move fails does not navigate", async () => {
+      jest.spyOn(MoveFileHelper, "moveDragAndDropFiles").mockResolvedValue(false);
+      jest.spyOn(Link, "default").mockImplementation(() => <a></a>);
+      const navigateMock = jest.fn();
+      jest.spyOn(useLocation, "default").mockImplementation(
+        () =>
+          ({
+            location: { search: "?f=/photos/sub", href: "http://localhost/?f=/photos/sub", state: undefined },
+            navigate: navigateMock
+          }) as unknown as IUseLocation
+      );
+
+      render(<Breadcrumb subPath="/photos/sub" breadcrumb={["/", "/photos"]} />);
+      const span = screen.queryAllByTestId("breadcrumb-span")[0];
+      fireEvent(span, makeDragEvent("drop", dragData));
+
+      await new Promise((r) => setTimeout(r, 0));
+      expect(navigateMock).not.toHaveBeenCalled();
+
+      jest.restoreAllMocks();
     });
   });
 });
