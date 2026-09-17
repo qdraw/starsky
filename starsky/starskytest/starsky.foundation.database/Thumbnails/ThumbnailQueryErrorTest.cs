@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
+using starsky.foundation.platform.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Thumbnails;
@@ -260,6 +262,49 @@ public class ThumbnailQueryErrorTest
 		public override Task AddRangeAsync(params object[] entities)
 		{
 			return Task.CompletedTask;
+		}
+	}
+
+	[TestMethod]
+	public async Task GetMissingThumbnailsBatchAsync_RetryLimitExceeded_ReturnsEmpty()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("GetMissingThumbnailsBatchAsync_RetryLimitExceeded")
+			.Options;
+		var dbContext = new ApplicationDbContext(options);
+		var webLogger = new FakeIWebLogger();
+		var query = new ThumbnailQueryRetryLimitSub(dbContext, webLogger);
+
+		var result = await query.GetMissingThumbnailsBatchAsync(0, 100);
+
+		Assert.IsEmpty(result);
+		Assert.IsTrue(webLogger.TrackedInformation.Exists(x =>
+			x.Item2?.Contains("database unavailable") == true));
+	}
+
+	private sealed class ThumbnailQueryRetryLimitSub(
+		ApplicationDbContext ctx,
+		IWebLogger logger)
+		: ThumbnailQuery(ctx, null!, logger, null)
+	{
+		protected override Task<List<ThumbnailItem>> GetMissingThumbnailsBatchInternalAsync(
+			ApplicationDbContext context, int pageNumber, int pageSize)
+		{
+			var mySqlEx = CreateMySqlExceptionWithInner();
+			throw new RetryLimitExceededException("simulated retry limit", mySqlEx);
+		}
+
+		private static MySqlException CreateMySqlExceptionWithInner()
+		{
+			var ctorList = typeof(MySqlException).GetConstructors(
+				BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+			var ctor = ctorList.FirstOrDefault(p =>
+				p.ToString() ==
+				"Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)");
+			return ( MySqlException ) ctor?.Invoke([
+				MySqlErrorCode.UnableToConnectToHost, "HY000",
+				"Unable to connect to any of the specified MySQL hosts.", new Exception()
+			])!;
 		}
 	}
 

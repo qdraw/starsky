@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Data.Sqlite;
@@ -101,9 +102,19 @@ public class ThumbnailQuery : IThumbnailQuery
 	public async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber,
 		int pageSize)
 	{
-		var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
-		return await retry.ExecuteWithRetryAsync(ctx =>
-			GetMissingThumbnailsBatchInternalAsync(ctx, pageNumber, pageSize));
+		try
+		{
+			var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
+			return await retry.ExecuteWithRetryAsync(ctx =>
+				GetMissingThumbnailsBatchInternalAsync(ctx, pageNumber, pageSize));
+		}
+		catch ( InvalidOperationException ex )
+			when ( ex.InnerException is RetryLimitExceededException )
+		{
+			_logger.LogInformation(
+				"[ThumbnailQuery] database unavailable, skipping thumbnail batch");
+			return [];
+		}
 	}
 
 	public bool IsRunningJob()
@@ -162,7 +173,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		return true;
 	}
 
-	private static async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchInternalAsync(
+	protected virtual async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchInternalAsync(
 		ApplicationDbContext context, int pageNumber,
 		int pageSize)
 	{
