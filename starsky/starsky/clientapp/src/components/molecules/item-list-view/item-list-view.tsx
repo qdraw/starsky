@@ -59,7 +59,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   }
 
   function getDragSelection(): IDragMoveData {
-    const selectedNames = new URLPath().getSelect(history.location.search) ?? [];
+    const selectedNames = new URLPath().getSelect(history.location.search);
     const filePaths: string[] = [];
     const folderPaths: string[] = [];
     for (const fileIndexItem of items) {

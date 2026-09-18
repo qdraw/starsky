@@ -221,6 +221,19 @@ describe("ListImageTest", () => {
         expect(setData).toHaveBeenCalledWith(DRAG_MOVE_MIME, JSON.stringify(dragPayload));
       });
 
+      it("dragStart without onDragStart prop does nothing", () => {
+        const item = { fileName: "test.jpg", filePath: "/test.jpg", status: IExifStatus.Ok } as IFileIndexItem;
+        const { container } = render(
+          <MemoryRouter>
+            <ListImageNormalSelectContainer item={item} />
+          </MemoryRouter>
+        );
+        const div = container.querySelector("[data-test='list-image-view-select-container']") as HTMLElement;
+        const { event, setData } = makeDragEvent("dragstart");
+        fireEvent(div, event);
+        expect(setData).not.toHaveBeenCalled();
+      });
+
       it("dragOver on a directory item with starsky-move data adds drag-over class", () => {
         const item = {
           fileName: "subfolder",

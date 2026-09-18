@@ -175,5 +175,49 @@ describe("Breadcrumb", () => {
 
       jest.restoreAllMocks();
     });
+
+    describe("current-page span (item === subPath)", () => {
+      it("dragOver on current span adds drag-over class", () => {
+        jest.spyOn(Link, "default").mockImplementation(() => <a></a>);
+        const { container } = render(
+          <Breadcrumb subPath="/photos" breadcrumb={["/", "/photos"]} />
+        );
+        const spans = screen.queryAllByTestId("breadcrumb-span");
+        const currentSpan = spans[spans.length - 1];
+
+        fireEvent(currentSpan, makeDragEvent("dragover", dragData));
+
+        expect(container.querySelector(".breadcrumb__item--drag-over")).not.toBeNull();
+      });
+
+      it("dragLeave on current span removes drag-over class", () => {
+        jest.spyOn(Link, "default").mockImplementation(() => <a></a>);
+        const { container } = render(
+          <Breadcrumb subPath="/photos" breadcrumb={["/", "/photos"]} />
+        );
+        const spans = screen.queryAllByTestId("breadcrumb-span");
+        const currentSpan = spans[spans.length - 1];
+
+        fireEvent(currentSpan, makeDragEvent("dragover", dragData));
+        fireEvent(currentSpan, makeDragEvent("dragleave"));
+
+        expect(container.querySelector(".breadcrumb__item--drag-over")).toBeNull();
+      });
+
+      it("drop on current span calls moveDragAndDropFiles with subPath as target", async () => {
+        const mockMove = jest
+          .spyOn(MoveFileHelper, "moveDragAndDropFiles")
+          .mockResolvedValue(true);
+        jest.spyOn(Link, "default").mockImplementation(() => <a></a>);
+        render(<Breadcrumb subPath="/photos" breadcrumb={["/", "/photos"]} />);
+        const spans = screen.queryAllByTestId("breadcrumb-span");
+        const currentSpan = spans[spans.length - 1];
+
+        fireEvent(currentSpan, makeDragEvent("drop", dragData));
+
+        await new Promise((r) => setTimeout(r, 0));
+        expect(mockMove).toHaveBeenCalledWith(["/photos/a.jpg"], [], "/photos");
+      });
+    });
   });
 });

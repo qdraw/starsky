@@ -149,6 +149,37 @@ describe("ItemListView", () => {
       component.unmount();
     });
 
+    it("scroll to state with filePath [item does not exist in DOM] skips scrollTo", () => {
+      const scrollTo = jest.spyOn(window, "scrollTo").mockReset().mockImplementationOnce(() => {});
+
+      const useLocationMock = {
+        location: {
+          state: {
+            filePath: "/nonexistent.jpg"
+          }
+        },
+        navigate: jest.fn()
+      } as unknown as IUseLocation;
+
+      jest.spyOn(useLocation, "default").mockImplementationOnce(() => useLocationMock);
+      jest.useFakeTimers();
+
+      const component = render(
+        <MemoryRouter>
+          <ItemListView iconList={true} fileIndexItems={exampleData} colorClassUsage={[]} />
+        </MemoryRouter>
+      );
+
+      act(() => {
+        jest.advanceTimersByTime(100);
+      });
+
+      expect(scrollTo).not.toHaveBeenCalled();
+
+      jest.clearAllTimers();
+      component.unmount();
+    });
+
     it("when clicking shift in selection mode", () => {
       const listImageChildItemSpy = jest.spyOn(ListImageChildItem, "default");
       Router.navigate("/?select=");

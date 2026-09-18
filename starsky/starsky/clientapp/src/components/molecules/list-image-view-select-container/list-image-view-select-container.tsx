@@ -85,8 +85,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
     function handleDrop(event: React.DragEvent) {
       event.preventDefault();
       setIsDragOver(false);
-      if (!onDropFiles) return;
-      onDropFiles(item.filePath);
+      onDropFiles?.(item.filePath);
     }
 
     const isDropTarget = item.isDirectory && !!onDropFiles;
