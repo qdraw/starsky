@@ -62,3 +62,9 @@
     display: none;
   }
 }
+
+.breadcrumb__item--drag-over a {
+  background-color: #455a64;
+  color: #fff;
+  outline: 2px dashed currentColor;
+}
