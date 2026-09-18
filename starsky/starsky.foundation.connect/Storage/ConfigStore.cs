@@ -4,15 +4,26 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
+using starsky.foundation.settings.Enums;
 
 namespace starsky.foundation.connect.Storage;
 
 /// <summary>
-/// Persists the Connect engine configuration (cert, folders, known devices)
-/// as a JSON file in the application data directory.
+/// Persists the Connect engine configuration (cert, folders, known devices).
+///
+/// The TLS certificate is kept in the <see cref="ApplicationDbContext"/> Settings table so
+/// it survives Docker container restarts and volume wipes. The JSON file on disk is a
+/// local cache: it is written on every save so the engine can start quickly without hitting
+/// the database, and it holds the folder/device list that is not in the Settings table.
 /// </summary>
 public sealed class ConfigStore
 {
+	private static readonly string DbCertKey =
+		Enum.GetName(SettingsType.ConnectCertificatePfxBase64)!;
+
 	private static readonly JsonSerializerOptions JsonOptions = new()
 	{
 		WriteIndented = true,
@@ -20,32 +31,90 @@ public sealed class ConfigStore
 	};
 
 	private readonly string _filePath;
+	private readonly ApplicationDbContext? _db;
 
-	public ConfigStore(string filePath)
+	public ConfigStore(string filePath, ApplicationDbContext? db = null)
 	{
 		_filePath = filePath;
+		_db = db;
 	}
 
-	public static ConfigStore Default()
+	public static ConfigStore Default(ApplicationDbContext? db = null)
 	{
 		var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 		var path = Path.Combine(appData, "starsky", "connect-config.json");
-		return new ConfigStore(path);
+		return new ConfigStore(path, db);
 	}
 
+	/// <summary>
+	/// Loads config. The certificate comes from the DB when available (Docker-safe);
+	/// folders and devices come from the JSON file.
+	/// </summary>
 	public async Task<ConnectConfig> LoadAsync()
 	{
-		if ( !File.Exists(_filePath) )
+		// Load the file first (folders, devices, and the cached cert).
+		ConnectConfig config;
+		if ( File.Exists(_filePath) )
 		{
-			return new ConnectConfig();
+			await using var stream = File.OpenRead(_filePath);
+			config = await JsonSerializer.DeserializeAsync<ConnectConfig>(stream, JsonOptions)
+			         ?? new ConnectConfig();
+		}
+		else
+		{
+			config = new ConnectConfig();
 		}
 
-		await using var stream = File.OpenRead(_filePath);
-		return await JsonSerializer.DeserializeAsync<ConnectConfig>(stream, JsonOptions)
-		       ?? new ConnectConfig();
+		// DB is authoritative for the cert. Override whatever the file had.
+		if ( _db is not null )
+		{
+			var row = await _db.Settings.AsNoTracking()
+				.FirstOrDefaultAsync(s => s.Key == DbCertKey);
+
+			if ( row is not null && !string.IsNullOrEmpty(row.Value) )
+			{
+				config.CertificatePfxBase64 = row.Value;
+
+				// Keep the file cache in sync so future cold starts are fast.
+				await WriteCacheAsync(config);
+			}
+		}
+
+		return config;
 	}
 
+	/// <summary>
+	/// Saves config. The certificate is written to the DB (survives Docker restarts)
+	/// and the full config is written to the JSON file as a local cache.
+	/// </summary>
 	public async Task SaveAsync(ConnectConfig config)
+	{
+		if ( _db is not null && !string.IsNullOrEmpty(config.CertificatePfxBase64) )
+		{
+			var existing = await _db.Settings
+				.FirstOrDefaultAsync(s => s.Key == DbCertKey);
+
+			if ( existing is null )
+			{
+				_db.Settings.Add(new SettingsItem
+				{
+					Key = DbCertKey,
+					Value = config.CertificatePfxBase64,
+				});
+			}
+			else
+			{
+				existing.Value = config.CertificatePfxBase64;
+				_db.Settings.Update(existing);
+			}
+
+			await _db.SaveChangesAsync();
+		}
+
+		await WriteCacheAsync(config);
+	}
+
+	private async Task WriteCacheAsync(ConnectConfig config)
 	{
 		var dir = Path.GetDirectoryName(_filePath);
 		if ( dir is not null )
@@ -62,7 +131,7 @@ public sealed class ConnectConfig
 {
 	public string DeviceName { get; set; } = Environment.MachineName;
 
-	/// <summary>PFX-encoded self-signed certificate (Base64). Generated on first run.</summary>
+	/// <summary>PFX-encoded self-signed certificate (Base64). Stored in the DB Settings table; cached here.</summary>
 	public string? CertificatePfxBase64 { get; set; }
 
 	public List<ConnectFolderConfig> Folders { get; set; } = [];
