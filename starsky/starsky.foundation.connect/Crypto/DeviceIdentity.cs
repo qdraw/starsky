@@ -40,10 +40,7 @@ public static class DeviceIdentity
 		var notBefore = DateTimeOffset.UtcNow.AddDays(-1);
 		var notAfter = notBefore.AddYears(20);
 
-		var cert = request.CreateSelfSigned(notBefore, notAfter);
-
-		// Return with private key on all platforms
-		return X509CertificateLoader.LoadPkcs12(cert.Export(X509ContentType.Pfx), password: null);
+		return request.CreateSelfSigned(notBefore, notAfter);
 	}
 
 	/// <summary>

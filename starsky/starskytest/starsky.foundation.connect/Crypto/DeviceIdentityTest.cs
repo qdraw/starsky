@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.connect.Crypto;
 
@@ -12,6 +13,21 @@ public sealed class DeviceIdentityTest
 		var cert = DeviceIdentity.GenerateCertificate();
 		Assert.IsNotNull(cert);
 		Assert.IsTrue(cert.HasPrivateKey, "Generated certificate must include a private key.");
+	}
+
+	[TestMethod]
+	public void GenerateCertificate_ExportedCertCanBeExported()
+	{
+		// Regression test for macOS Keychain issue where export fails
+		var cert = DeviceIdentity.GenerateCertificate();
+		
+		// Export the generated cert to PKCS12 - this is the real usage pattern
+		// We export it once and store as base64, never re-export
+		var pfxData = cert.Export(X509ContentType.Pfx);
+		Assert.IsNotNull(pfxData);
+		Assert.IsTrue(pfxData.Length > 0, "Generated cert should export to PKCS12 successfully.");
+		
+		cert.Dispose();
 	}
 
 	[TestMethod]
