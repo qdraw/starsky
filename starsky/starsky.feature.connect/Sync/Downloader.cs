@@ -47,11 +47,14 @@ public sealed class Downloader : IDisposable
 
 	/// <summary>
 	/// Downloads all blocks for a file from the given peer and writes them to BlockStore.
+	/// <paramref name="folderId"/> is used in the BEP Request message;
+	/// <paramref name="folderRoot"/> is the filesystem path used for temp file storage.
 	/// Returns true if all blocks were successfully received.
 	/// </summary>
 	public async Task<bool> DownloadFileAsync(
 		string deviceId,
-		string folder,
+		string folderId,
+		string folderRoot,
 		string name,
 		System.Collections.Generic.IReadOnlyList<BlockInfo> blocks,
 		CancellationToken ct = default)
@@ -61,7 +64,7 @@ public sealed class Downloader : IDisposable
 		{
 			var block = blocks[i];
 			var blockIndex = i;
-			tasks[i] = DownloadBlockAsync(deviceId, folder, name, block, blockIndex, ct);
+			tasks[i] = DownloadBlockAsync(deviceId, folderId, folderRoot, name, block, blockIndex, ct);
 		}
 
 		var results = await Task.WhenAll(tasks);
@@ -70,7 +73,8 @@ public sealed class Downloader : IDisposable
 
 	private async Task<bool> DownloadBlockAsync(
 		string deviceId,
-		string folder,
+		string folderId,
+		string folderRoot,
 		string name,
 		BlockInfo block,
 		int blockNo,
@@ -86,7 +90,7 @@ public sealed class Downloader : IDisposable
 			var request = new Request
 			{
 				Id = id,
-				Folder = folder,
+				Folder = folderId,
 				Name = name,
 				Offset = block.Offset,
 				Size = block.Size,
@@ -113,11 +117,11 @@ public sealed class Downloader : IDisposable
 			if ( response.Code != ErrorCode.NoError || response.Data.IsEmpty )
 			{
 				_logger.LogWarning("Block request failed: {Code} for {Folder}/{Name}@{Offset}.",
-					response.Code, folder, name, block.Offset);
+					response.Code, folderId, name, block.Offset);
 				return false;
 			}
 
-			await _blockStore.WriteBlockAsync(folder, name, block.Offset, response.Data.ToByteArray(), ct);
+			await _blockStore.WriteBlockAsync(folderRoot, name, block.Offset, response.Data.ToByteArray(), ct);
 			return true;
 		}
 		finally

@@ -253,17 +253,26 @@ public sealed class SyncEngine : IHostedService, IDisposable
 	private async Task SendClusterConfigAsync(string deviceId, CancellationToken ct)
 	{
 		var config = new ClusterConfig();
+		var peerIdBytes = GetDeviceIdBytes(deviceId);
 
 		foreach ( var folderId in _folderRoots.Keys )
 		{
 			var (indexId, maxSeq) = await _folderModel.GetFolderStateAsync(folderId, ct);
+			var (peerIndexId, peerMaxSeq) = await _folderModel.GetPeerStateAsync(folderId, peerIdBytes, ct);
 
 			var folder = new Folder { Id = folderId, Label = folderId };
+			// BEP spec: ClusterConfig must list all devices sharing the folder.
 			folder.Devices.Add(new Device
 			{
 				Id = ByteString.CopyFrom(_localDeviceIdBytes),
 				IndexId = ( ulong )indexId,
 				MaxSequence = maxSeq,
+			});
+			folder.Devices.Add(new Device
+			{
+				Id = ByteString.CopyFrom(peerIdBytes),
+				IndexId = ( ulong )peerIndexId,
+				MaxSequence = peerMaxSeq,
 			});
 			config.Folders.Add(folder);
 		}
@@ -303,25 +312,34 @@ public sealed class SyncEngine : IHostedService, IDisposable
 		IEnumerable<BepFileInfo> files,
 		CancellationToken ct)
 	{
+		if ( !_folderRoots.TryGetValue(folder, out var root) ) return;
+
 		foreach ( var fi in files )
 		{
 			if ( ct.IsCancellationRequested ) return;
 			if ( fi.Deleted || fi.Invalid || fi.Blocks.Count == 0 ) continue;
 
-			var ok = await _downloader.DownloadFileAsync(
-				deviceId, folder, fi.Name, fi.Blocks, ct);
-
-			if ( ok && _folderRoots.TryGetValue(folder, out var root) )
+			try
 			{
-				var destPath = Path.Combine(root, fi.Name.Replace('/', Path.DirectorySeparatorChar));
-				await _blockStore.AssembleFileAsync(folder, fi.Name, destPath, ct);
-				_blockStore.Forget(folder, fi.Name);
-				_logger.LogInformation("Downloaded and assembled {Folder}/{Name}.", folder, fi.Name);
+				// Pass root (filesystem path) to downloader so BlockStore temp files land in the right place.
+				var ok = await _downloader.DownloadFileAsync(deviceId, folder, root, fi.Name, fi.Blocks, ct);
 
-				if ( OnFileDownloaded is not null )
+				if ( ok )
 				{
-					await OnFileDownloaded(folder, fi.Name);
+					var destPath = Path.Combine(root, fi.Name.Replace('/', Path.DirectorySeparatorChar));
+					await _blockStore.AssembleFileAsync(root, fi.Name, destPath, ct);
+					_blockStore.Forget(root, fi.Name);
+					_logger.LogInformation("Downloaded and assembled {Folder}/{Name}.", folder, fi.Name);
+
+					if ( OnFileDownloaded is not null )
+					{
+						await OnFileDownloaded(folder, fi.Name);
+					}
 				}
+			}
+			catch ( Exception ex ) when ( ex is not OperationCanceledException )
+			{
+				_logger.LogError(ex, "Error downloading {Folder}/{Name}.", folder, fi.Name);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using System.Net.Http;
 using System.Net.Sockets;
@@ -44,6 +45,7 @@ public sealed class SyncEngineFileSyncIntegrationTest
 	private const string FolderId = "starskytest";
 
 	private string? _tempDir;
+	private string? _syncthingLogPath;
 	private Process? _syncthingProcess;
 	private SqliteConnection? _sqliteConn;
 	private ApplicationDbContext? _db;
@@ -102,10 +104,30 @@ public sealed class SyncEngineFileSyncIntegrationTest
 			onFileDownloaded: (_, _) => { fileDownloadedTcs.TrySetResult(); return Task.CompletedTask; });
 
 		await engine.StartAsync(cts.Token);
+		// Wrap OnPeerConnected so we can detect when the BEP Hello exchange completes
+		var connectionTcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+		var enginePeerCallback = cm.OnPeerConnected;
+		cm.OnPeerConnected = async (id, hello, ct2) =>
+		{
+			connectionTcs.TrySetResult();
+			if ( enginePeerCallback is not null ) await enginePeerCallback(id, hello, ct2);
+		};
+
 		await ConnectToPeerAsync(cm, localCert, testRsaKey, syncthingDeviceId, bepPort, cts.Token);
+
+		// Verify the BEP connection is established before waiting for sync
+		if ( await Task.WhenAny(connectionTcs.Task, Task.Delay(TimeSpan.FromSeconds(15))) != connectionTcs.Task )
+		{
+			await engine.StopAsync(CancellationToken.None); cts.Cancel(); cm.Dispose(); engine.Dispose();
+			testRsaKey.Dispose(); localCert.Dispose();
+			Assert.Fail("BEP Hello exchange did not complete within 15 s (connection not established).");
+		}
 
 		// Wait for the file to arrive
 		var done = await Task.WhenAny(fileDownloadedTcs.Task, Task.Delay(SyncTimeout));
+
+		// Check DB state before disposing (for diagnostics)
+		var hasIndexedFiles = _db!.ConnectFileMetas.Any();
 
 		await engine.StopAsync(CancellationToken.None);
 		cts.Cancel();
@@ -114,8 +136,13 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		testRsaKey.Dispose();
 		localCert.Dispose();
 
-		Assert.AreEqual(fileDownloadedTcs.Task, done,
-			"File was not downloaded within the timeout.");
+		if ( done != fileDownloadedTcs.Task )
+		{
+			Assert.Fail(
+				$"File was not downloaded within {SyncTimeout.TotalSeconds} s. " +
+				$"DB indexed files (Syncthing sent us Index)={hasIndexedFiles}. " +
+				$"Syncthing log (last 40 lines):\n{ReadSyncthingLog()}");
+		}
 
 		var destPath = Path.Combine(localDir, "receive-test.txt");
 		Assert.IsTrue(File.Exists(destPath), $"Expected downloaded file at {destPath}.");
@@ -168,7 +195,24 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		var (cm, engine) = BuildEngine(localCert, localDir, _db!, onFileDownloaded: null);
 
 		await engine.StartAsync(cts.Token);
+		// Wrap OnPeerConnected so we can detect when the BEP Hello exchange completes
+		var connectionTcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+		var enginePeerCallback = cm.OnPeerConnected;
+		cm.OnPeerConnected = async (id, hello, ct2) =>
+		{
+			connectionTcs.TrySetResult();
+			if ( enginePeerCallback is not null ) await enginePeerCallback(id, hello, ct2);
+		};
+
 		await ConnectToPeerAsync(cm, localCert, testRsaKey, syncthingDeviceId, bepPort, cts.Token);
+
+		// Verify the BEP connection is established before waiting for sync
+		if ( await Task.WhenAny(connectionTcs.Task, Task.Delay(TimeSpan.FromSeconds(15))) != connectionTcs.Task )
+		{
+			await engine.StopAsync(CancellationToken.None); cts.Cancel(); cm.Dispose(); engine.Dispose();
+			scanner.Dispose(); testRsaKey.Dispose(); localCert.Dispose();
+			Assert.Fail("BEP Hello exchange did not complete within 15 s (connection not established).");
+		}
 
 		// Poll for the file to appear in Syncthing's folder
 		var destPath = Path.Combine(syncDir, "send-test.txt");
@@ -178,6 +222,9 @@ public sealed class SyncEngineFileSyncIntegrationTest
 			await Task.Delay(500);
 		}
 
+		var fileArrived = File.Exists(destPath);
+		var log = ReadSyncthingLog();
+
 		await engine.StopAsync(CancellationToken.None);
 		cts.Cancel();
 		cm.Dispose();
@@ -186,8 +233,9 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		testRsaKey.Dispose();
 		localCert.Dispose();
 
-		Assert.IsTrue(File.Exists(destPath),
-			$"Expected Syncthing to have written the file at {destPath}.");
+		Assert.IsTrue(fileArrived,
+			$"Expected Syncthing to have written the file at {destPath} within {SyncTimeout.TotalSeconds} s. " +
+			$"Syncthing log (last 40 lines):\n{log}");
 		Assert.AreEqual(sendContent, File.ReadAllText(destPath));
 	}
 
@@ -562,8 +610,11 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		}
 	}
 
-	private static Process StartSyncthing(string syncthingPath, string homeDir)
+	private Process StartSyncthing(string syncthingPath, string homeDir)
 	{
+		_syncthingLogPath = Path.Combine(homeDir, "syncthing-test.log");
+		var logFile = new FileStream(_syncthingLogPath, FileMode.Create, FileAccess.Write, FileShare.Read);
+
 		var psi = new ProcessStartInfo(syncthingPath)
 		{
 			UseShellExecute = false,
@@ -573,7 +624,27 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		psi.ArgumentList.Add("serve");
 		psi.ArgumentList.Add("--home"); psi.ArgumentList.Add(homeDir);
 		psi.ArgumentList.Add("--no-browser");
-		return Process.Start(psi)!;
+		var proc = Process.Start(psi)!;
+
+		// Drain stdout/stderr to a log file so the OS pipe buffer never fills up
+		_ = proc.StandardOutput.BaseStream.CopyToAsync(logFile);
+		_ = proc.StandardError.BaseStream.CopyToAsync(logFile);
+		return proc;
+	}
+
+	private string ReadSyncthingLog(int tailLines = 40)
+	{
+		if ( _syncthingLogPath is null || !File.Exists(_syncthingLogPath) ) return "(no log)";
+		try
+		{
+			var lines = File.ReadAllLines(_syncthingLogPath);
+			var tail = lines.Length <= tailLines ? lines : lines[^tailLines..];
+			return string.Join('\n', tail);
+		}
+		catch
+		{
+			return "(log unavailable)";
+		}
 	}
 
 	private static async Task WaitForRestApiAsync(int guiPort, string apiKey)

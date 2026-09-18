@@ -113,6 +113,21 @@ public sealed class FolderModel
 	}
 
 	/// <summary>
+	/// Returns the last-known IndexId and MaxSequence for a remote peer, or (0,0) if unknown.
+	/// </summary>
+	public async Task<(long IndexId, long MaxSequence)> GetPeerStateAsync(
+		string folder,
+		byte[] deviceId,
+		CancellationToken ct = default)
+	{
+		var records = await _db.ConnectDeviceIndexes
+			.Where(d => d.Folder == folder)
+			.ToListAsync(ct);
+		var record = records.FirstOrDefault(d => d.DeviceId.SequenceEqual(deviceId));
+		return record is null ? (0L, 0L) : (record.IndexId, record.MaxSequence);
+	}
+
+	/// <summary>
 	/// Determines whether we need to send a full Index or a delta IndexUpdate
 	/// to the remote device, based on the IndexId and MaxSequence it advertised.
 	/// </summary>
