@@ -106,8 +106,12 @@ public sealed class BepFramingTest
 	[TestMethod]
 	public async Task WriteMessage_Index_WithCompression_RoundTrip()
 	{
+		// Use enough repetitive files so the payload exceeds 128 bytes and compresses well
 		var index = new BepIndex { Folder = "default" };
-		index.Files.Add(new BepFileInfo { Name = "photo.jpg", Size = 1024 });
+		for ( var i = 0; i < 20; i++ )
+		{
+			index.Files.Add(new BepFileInfo { Name = $"photos/image_{i:D4}.jpg", Size = 4096 * 1024 });
+		}
 
 		using var stream = new MemoryStream();
 		var writer = new BepWriter(stream);
@@ -121,8 +125,8 @@ public sealed class BepFramingTest
 		Assert.AreEqual(MessageCompression.Lz4, msg.Header.Compression);
 		var parsed = msg.ParseBody(BepIndex.Parser);
 		Assert.AreEqual("default", parsed.Folder);
-		Assert.AreEqual(1, parsed.Files.Count);
-		Assert.AreEqual("photo.jpg", parsed.Files[0].Name);
+		Assert.AreEqual(20, parsed.Files.Count);
+		Assert.AreEqual("photos/image_0000.jpg", parsed.Files[0].Name);
 	}
 
 	[TestMethod]

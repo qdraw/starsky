@@ -45,7 +45,9 @@ public sealed class TlsDialer
 			// Reference Syncthing uses "syncthing" as the SNI name
 			TargetHost = "syncthing",
 			ClientCertificates = new X509CertificateCollection { _localCert },
-			EnabledSslProtocols = SslProtocols.Tls13,
+			// macOS SecureTransport rejects Tls13-only and defaults None to TLS 1.0;
+			// use Tls12 | Tls13 so the runtime picks the highest mutual version.
+			EnabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
 			CertificateRevocationCheckMode = X509RevocationMode.NoCheck,
 			RemoteCertificateValidationCallback = ValidatePeerCertificate,
 		};

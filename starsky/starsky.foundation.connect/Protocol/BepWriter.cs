@@ -34,9 +34,16 @@ public sealed class BepWriter
 
 	/// <summary>
 	/// Writes the pre-authentication Hello frame.
+	/// The Timestamp field is set to the current UTC time if not already non-zero.
 	/// </summary>
 	public async Task WriteHelloAsync(Hello hello, CancellationToken ct = default)
 	{
+		if ( hello.Timestamp == 0 )
+		{
+			hello = hello.Clone();
+			hello.Timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+		}
+
 		var payload = hello.ToByteArray();
 
 		// magic (4) + length (2) + payload
@@ -62,13 +69,14 @@ public sealed class BepWriter
 		CancellationToken ct = default)
 	{
 		var body = message.ToByteArray();
-		var useCompression = compress && Array.IndexOf(CompressibleTypes, type) >= 0;
+		var canCompress = compress && Array.IndexOf(CompressibleTypes, type) >= 0;
 
-		var compression = useCompression ? MessageCompression.Lz4 : MessageCompression.None;
+		var bodyBytes = canCompress ? MaybeCompress(body) : body;
+		var actuallyCompressed = canCompress && !ReferenceEquals(bodyBytes, body);
+
+		var compression = actuallyCompressed ? MessageCompression.Lz4 : MessageCompression.None;
 		var header = new Header { Type = type, Compression = compression };
 		var headerBytes = header.ToByteArray();
-
-		var bodyBytes = useCompression ? Compression.Compress(body) : body;
 
 		// header length (2) + header + body length (4) + body
 		var frame = new byte[2 + headerBytes.Length + 4 + bodyBytes.Length];
@@ -81,5 +89,26 @@ public sealed class BepWriter
 
 		await _stream.WriteAsync(frame, ct);
 		await _stream.FlushAsync(ct);
+	}
+
+	/// <summary>
+	/// Compresses body if payload is > 128 bytes and LZ4 saves at least 3.125%.
+	/// Returns the original byte array by reference if compression was not beneficial.
+	/// </summary>
+	private static byte[] MaybeCompress(byte[] body)
+	{
+		if ( body.Length <= 128 )
+		{
+			return body;
+		}
+
+		var compressed = Compression.Compress(body);
+		// threshold: compressed output must be < 96.875% of original size
+		if ( compressed.Length >= body.Length * 0.96875 )
+		{
+			return body;
+		}
+
+		return compressed;
 	}
 }

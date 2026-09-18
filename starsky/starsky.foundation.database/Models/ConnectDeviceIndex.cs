@@ -18,6 +18,7 @@ public sealed class ConnectDeviceIndex
 	public string Folder { get; set; } = string.Empty;
 
 	/// <summary>Raw 32-byte device ID (SHA-256 of the peer's certificate).</summary>
+	[MaxLength(32)]
 	public byte[] DeviceId { get; set; } = [];
 
 	/// <summary>

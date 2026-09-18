@@ -56,9 +56,13 @@ public static class DeviceIdentity
 		var hash = SHA256.HashData(cert.RawData);
 		var b32 = Base32.Encode(hash); // 52 chars for 32 bytes
 
-		// Group into 8 groups of 7 chars (last char is Luhn checksum, first 6 are data)
+		// Luhnify: four 13-char chunks, each gets a Luhn checksum → 4 × 14 = 56 chars.
+		// Then chunkify into eight 7-char groups separated by hyphens.
+		var luhnified = string.Concat(Enumerable.Range(0, 4)
+			.Select(i => AppendLuhnChecksum(b32.Substring(i * 13, 13))));
+
 		var groups = Enumerable.Range(0, 8)
-			.Select(i => AppendLuhnChecksum(b32.Substring(i * 6, 6)));
+			.Select(i => luhnified.Substring(i * 7, 7));
 
 		return string.Join('-', groups);
 	}
@@ -97,10 +101,16 @@ public static class DeviceIdentity
 	}
 
 	/// <summary>
-	/// Parses the human-readable device ID (with hyphens) to the canonical 52-char base32 form.
+	/// Parses a human-supplied device ID to the canonical base32 form (no hyphens, uppercase).
+	/// Applies Syncthing typo corrections before validation: 0→O, 1→I, 8→B.
 	/// </summary>
 	public static string NormalizeDeviceId(string deviceId)
 	{
-		return deviceId.Replace("-", string.Empty, StringComparison.Ordinal).ToUpperInvariant();
+		return deviceId
+			.Replace("-", string.Empty, StringComparison.Ordinal)
+			.ToUpperInvariant()
+			.Replace('0', 'O')
+			.Replace('1', 'I')
+			.Replace('8', 'B');
 	}
 }

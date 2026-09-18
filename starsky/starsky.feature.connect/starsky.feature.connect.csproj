@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\starsky.foundation.connect\starsky.foundation.connect.csproj" />
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
         <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
     </ItemGroup>
 

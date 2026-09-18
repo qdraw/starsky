@@ -47,14 +47,15 @@ public static class Compression
 			throw new BepProtocolException("LZ4 data is too short to contain the length prefix.");
 		}
 
-		var uncompressedLength = ( int )BinaryPrimitives.ReadUInt32BigEndian(compressedWithPrefix);
+		var rawLength = BinaryPrimitives.ReadUInt32BigEndian(compressedWithPrefix);
 
-		if ( uncompressedLength > MaxMessageBytes )
+		if ( rawLength > MaxMessageBytes )
 		{
 			throw new BepProtocolException(
-				$"Declared uncompressed length ({uncompressedLength} bytes) exceeds the 500 MB limit.");
+				$"Declared uncompressed length ({rawLength} bytes) exceeds the 500 MB limit.");
 		}
 
+		var uncompressedLength = ( int )rawLength;
 		var output = new byte[uncompressedLength];
 		var decoded = LZ4Codec.Decode(
 			compressedWithPrefix[4..], output.AsSpan());

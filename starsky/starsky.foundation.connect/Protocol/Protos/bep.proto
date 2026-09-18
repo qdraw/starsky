@@ -8,6 +8,8 @@ message Hello {
     string device_name    = 1;
     string client_name    = 2;
     string client_version = 3;
+    int64  timestamp      = 4;  // Unix epoch seconds; must be non-zero
+    int32  num_connections = 5; // for multi-connection BEP
 }
 
 // ── Post-auth header ─────────────────────────────────────────────────────────
@@ -37,6 +39,7 @@ enum MessageCompression {
 
 message ClusterConfig {
     repeated Folder folders = 1;
+    bool            secondary = 2; // true on a secondary (multi-connection) BEP link
 }
 
 message Folder {
@@ -92,29 +95,49 @@ message IndexUpdate {
 }
 
 message FileInfo {
-    string           name           = 1;
-    FileInfoType     type           = 2;
-    int64            size           = 3;
-    uint32           permissions    = 4;
-    int64            modified_s     = 5;
-    int32            modified_ns    = 11;
-    uint64           modified_by    = 12;
-    bool             deleted        = 6;
-    bool             invalid        = 7;
-    bool             no_permissions = 8;
-    Vector           version        = 9;
-    int64            sequence       = 10;
-    int32            block_size     = 13;
-    repeated BlockInfo Blocks       = 16;
-    string           symlink_target = 17;
-    bytes            encrypted      = 18;
+    string           name                  = 1;
+    FileInfoType     type                  = 2;
+    int64            size                  = 3;
+    uint32           permissions           = 4;
+    int64            modified_s            = 5;
+    int32            modified_ns           = 11;
+    uint64           modified_by           = 12;
+    bool             deleted               = 6;
+    bool             invalid               = 7;
+    bool             no_permissions        = 8;
+    Vector           version               = 9;
+    int64            sequence              = 10;
+    int32            block_size            = 13;
+    repeated BlockInfo Blocks              = 16;
+    string           symlink_target        = 17;
+    bytes            blocks_hash           = 18; // SHA-256 of all block hashes concatenated
+    bytes            encrypted             = 19;
+    bytes            previous_blocks_hash  = 20; // for rolling-hash delta sync
+    PlatformData     platform              = 21; // Unix xattrs, Windows metadata
 }
 
 enum FileInfoType {
-    FILE      = 0;
-    DIRECTORY = 1;
-    SYMLINK   = 2;
-    INVALID   = 3;
+    FILE              = 0;
+    DIRECTORY         = 1;
+    SYMLINK_FILE      = 2; // deprecated; use SYMLINK
+    SYMLINK_DIRECTORY = 3; // deprecated; use SYMLINK
+    SYMLINK           = 4;
+}
+
+message PlatformData {
+    UnixData    unix    = 1;
+    WindowsData windows = 2;
+}
+
+message UnixData {
+    string owner_name = 1;
+    string group_name = 2;
+    uint32 owner_uid  = 3;
+    uint32 owner_gid  = 4;
+}
+
+message WindowsData {
+    // stub — Windows file attributes; fields to be added as needed
 }
 
 message BlockInfo {
@@ -189,6 +212,7 @@ message Close {
 // ── Local discovery ───────────────────────────────────────────────────────────
 
 message Announce {
-    bytes           id        = 1;
-    repeated string addresses = 2;
+    bytes           id          = 1;
+    repeated string addresses   = 2;
+    uint64          instance_id = 3; // random 64-bit value; peers detect restart when it changes
 }
