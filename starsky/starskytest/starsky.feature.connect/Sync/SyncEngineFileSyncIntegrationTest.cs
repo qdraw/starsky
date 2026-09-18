@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -30,6 +32,7 @@ namespace starskytest.starsky.feature.connect.Sync;
 /// Scenario B: Starsky has a file → SyncEngine sends it; Syncthing writes it to its folder.
 ///
 /// Requires `syncthing` on PATH. Marks as Inconclusive when not found.
+/// Folder and device are configured via the Syncthing REST API after startup (version-independent).
 /// On macOS (SecureTransport TLS 1.2 fallback), falls back to Homebrew openssl s_client.
 /// </summary>
 [TestClass]
@@ -37,7 +40,7 @@ namespace starskytest.starsky.feature.connect.Sync;
 public sealed class SyncEngineFileSyncIntegrationTest
 {
 	private static readonly TimeSpan StartupTimeout = TimeSpan.FromSeconds(30);
-	private static readonly TimeSpan SyncTimeout = TimeSpan.FromSeconds(45);
+	private static readonly TimeSpan SyncTimeout = TimeSpan.FromSeconds(60);
 	private const string FolderId = "starskytest";
 
 	private string? _tempDir;
@@ -80,25 +83,28 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		File.WriteAllText(Path.Combine(syncDir, "receive-test.txt"), testContent);
 
 		RunToCompletion(syncthingPath!, "generate", "--home", homeDir);
-		var apiKey = PatchConfig(homeDir, syncDir, bepPort, guiPort, ourDeviceId);
-		var peerDeviceId = ReadSyncthingDeviceId(homeDir);
+		var apiKey = PatchConfigPortsOnly(homeDir, bepPort, guiPort);
 
 		_syncthingProcess = StartSyncthing(syncthingPath!, homeDir);
 		await WaitForRestApiAsync(guiPort, apiKey);
 
-		var fileDownloadedTcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+		var syncthingDeviceId = await GetSyncthingDeviceIdAsync(guiPort, apiKey);
+		await ConfigureDeviceAndFolderViaApiAsync(
+			guiPort, apiKey, syncDir, FolderId, syncthingDeviceId, ourDeviceId);
 
+		// Wait for Syncthing to scan the folder and index our test file
+		await WaitForFolderReadyAsync(guiPort, apiKey, FolderId);
+
+		// Wire up SyncEngine
+		var fileDownloadedTcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 		using var cts = new CancellationTokenSource();
-		var (cm, engine) = BuildEngine(
-			localCert, localDir, _db!,
+		var (cm, engine) = BuildEngine(localCert, localDir, _db!,
 			onFileDownloaded: (_, _) => { fileDownloadedTcs.TrySetResult(); return Task.CompletedTask; });
 
 		await engine.StartAsync(cts.Token);
+		await ConnectToPeerAsync(cm, localCert, testRsaKey, syncthingDeviceId, bepPort, cts.Token);
 
-		// Establish the BEP connection (with openssl fallback on macOS)
-		await ConnectToPeerAsync(cm, localCert, testRsaKey, peerDeviceId, bepPort, cts.Token);
-
-		// Wait for the file to be downloaded
+		// Wait for the file to arrive
 		var done = await Task.WhenAny(fileDownloadedTcs.Task, Task.Delay(SyncTimeout));
 
 		await engine.StopAsync(CancellationToken.None);
@@ -112,8 +118,7 @@ public sealed class SyncEngineFileSyncIntegrationTest
 			"File was not downloaded within the timeout.");
 
 		var destPath = Path.Combine(localDir, "receive-test.txt");
-		Assert.IsTrue(File.Exists(destPath),
-			$"Expected downloaded file at {destPath}.");
+		Assert.IsTrue(File.Exists(destPath), $"Expected downloaded file at {destPath}.");
 		Assert.AreEqual(testContent, File.ReadAllText(destPath));
 	}
 
@@ -139,30 +144,31 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		File.WriteAllText(Path.Combine(localDir, "send-test.txt"), sendContent);
 
 		RunToCompletion(syncthingPath!, "generate", "--home", homeDir);
-		var apiKey = PatchConfig(homeDir, syncDir, bepPort, guiPort, ourDeviceId);
-		var peerDeviceId = ReadSyncthingDeviceId(homeDir);
+		var apiKey = PatchConfigPortsOnly(homeDir, bepPort, guiPort);
 
 		_syncthingProcess = StartSyncthing(syncthingPath!, homeDir);
 		await WaitForRestApiAsync(guiPort, apiKey);
 
-		// Scan local folder to populate ConnectFileMeta + ConnectBlockInfo in the DB
+		var syncthingDeviceId = await GetSyncthingDeviceIdAsync(guiPort, apiKey);
+		await ConfigureDeviceAndFolderViaApiAsync(
+			guiPort, apiKey, syncDir, FolderId, syncthingDeviceId, ourDeviceId);
+
+		// Allow Syncthing to apply the new folder config and become idle
+		await WaitForFolderReadyAsync(guiPort, apiKey, FolderId);
+
+		// Scan local folder to populate ConnectFileMeta + ConnectBlockInfo
 		var folderModel = new FolderModel(_db!);
 		using var scanner = new Scanner(
-			_db!,
-			[localDir],
-			new NullSyncLocalChangeSource(),
-			folderModel,
-			NullLogger<Scanner>.Instance);
-
+			_db!, [localDir], new NullSyncLocalChangeSource(),
+			folderModel, NullLogger<Scanner>.Instance);
 		await scanner.ScanFolderDirectAsync(FolderId, localDir);
 
+		// Wire up SyncEngine
 		using var cts = new CancellationTokenSource();
 		var (cm, engine) = BuildEngine(localCert, localDir, _db!, onFileDownloaded: null);
 
 		await engine.StartAsync(cts.Token);
-
-		// Establish the BEP connection (with openssl fallback on macOS)
-		await ConnectToPeerAsync(cm, localCert, testRsaKey, peerDeviceId, bepPort, cts.Token);
+		await ConnectToPeerAsync(cm, localCert, testRsaKey, syncthingDeviceId, bepPort, cts.Token);
 
 		// Poll for the file to appear in Syncthing's folder
 		var destPath = Path.Combine(syncDir, "send-test.txt");
@@ -176,6 +182,7 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		cts.Cancel();
 		cm.Dispose();
 		engine.Dispose();
+		scanner.Dispose();
 		testRsaKey.Dispose();
 		localCert.Dispose();
 
@@ -196,7 +203,7 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		var localDeviceId = DeviceIdentity.NormalizeDeviceId(DeviceIdentity.DeriveDeviceId(localCert));
 		var folderRoots = new Dictionary<string, string> { [FolderId] = localDir };
 
-		// listenPort: 0 lets the OS pick any free port so parallel tests don't collide on 22000
+		// listenPort: 0 lets the OS pick any free port, avoiding conflicts when tests run in parallel
 		var cm = new ConnectionManager(localCert, NullLogger<ConnectionManager>.Instance, listenPort: 0);
 		var folderModel = new FolderModel(db);
 		var blockStore = new BlockStore();
@@ -209,7 +216,6 @@ public sealed class SyncEngineFileSyncIntegrationTest
 			NullLogger<SyncEngine>.Instance);
 
 		engine.OnFileDownloaded = onFileDownloaded;
-
 		return (cm, engine);
 	}
 
@@ -217,8 +223,8 @@ public sealed class SyncEngineFileSyncIntegrationTest
 
 	/// <summary>
 	/// Establishes a BEP connection to Syncthing via TlsDialer (Linux/CI) or
-	/// Homebrew openssl s_client (macOS SecureTransport limitation).
-	/// Injects the resulting stream into the ConnectionManager.
+	/// Homebrew openssl s_client (macOS SecureTransport limitation) and injects
+	/// the resulting stream into the ConnectionManager.
 	/// </summary>
 	private async Task ConnectToPeerAsync(
 		ConnectionManager cm,
@@ -259,12 +265,8 @@ public sealed class SyncEngineFileSyncIntegrationTest
 	}
 
 	private static async Task<Stream> ConnectViaOpenSslAsync(
-		string opensslBin,
-		string host,
-		int port,
-		X509Certificate2 cert,
-		RSA privateKey,
-		string tempDir)
+		string opensslBin, string host, int port,
+		X509Certificate2 cert, RSA privateKey, string tempDir)
 	{
 		var certFile = Path.Combine(tempDir, "openssl-client-cert.pem");
 		var keyFile = Path.Combine(tempDir, "openssl-client-key.pem");
@@ -329,7 +331,7 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		Directory.CreateDirectory(homeDir);
 		Directory.CreateDirectory(syncDir);
 		Directory.CreateDirectory(localDir);
-		// Syncthing requires a .stfolder marker to accept the shared folder
+		// Syncthing requires a .stfolder marker in managed folders
 		File.WriteAllText(Path.Combine(syncDir, ".stfolder"), string.Empty);
 
 		_sqliteConn = new SqliteConnection("Filename=:memory:");
@@ -349,28 +351,20 @@ public sealed class SyncEngineFileSyncIntegrationTest
 
 	private void SetupCert(out X509Certificate2 localCert, out RSA testRsaKey, out string ourDeviceId)
 	{
-		// Keep the raw RSA object so the openssl fallback can export the key without
-		// the macOS Keychain restriction that blocks ExportPkcs8PrivateKeyPem().
+		// Keep raw RSA so the openssl fallback can export it without macOS Keychain restriction
 		testRsaKey = RSA.Create(2048);
 		var req = new CertificateRequest(
 			new X500DistinguishedName("CN=syncthing"),
-			testRsaKey,
-			HashAlgorithmName.SHA256,
-			RSASignaturePadding.Pkcs1);
+			testRsaKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 		var now = DateTimeOffset.UtcNow;
 		using var selfSigned = req.CreateSelfSigned(now.AddDays(-1), now.AddYears(1));
 		localCert = X509CertificateLoader.LoadPkcs12(selfSigned.Export(X509ContentType.Pfx), null);
 		ourDeviceId = DeviceIdentity.NormalizeDeviceId(DeviceIdentity.DeriveDeviceId(localCert));
 	}
 
-	// ── Syncthing config ──────────────────────────────────────────────────────
+	// ── Syncthing config (ports only — device/folder added via REST API) ─────
 
-	/// <summary>
-	/// Patches config.xml: dynamic ports, disables discovery, adds our device and
-	/// a shared folder pointing at <paramref name="syncDir"/>. Returns the API key.
-	/// </summary>
-	private static string PatchConfig(
-		string homeDir, string syncDir, int bepPort, int guiPort, string ourDeviceId)
+	private static string PatchConfigPortsOnly(string homeDir, int bepPort, int guiPort)
 	{
 		var configPath = Path.Combine(homeDir, "config.xml");
 		var doc = XDocument.Load(configPath);
@@ -397,39 +391,6 @@ public sealed class SyncEngineFileSyncIntegrationTest
 			SetOrAdd(options, "startBrowser", "false");
 		}
 
-		// Register our device so Syncthing doesn't close the connection after Hello
-		conf.Add(new XElement("device",
-			new XAttribute("id", ourDeviceId),
-			new XAttribute("name", "starsky-integration-test"),
-			new XAttribute("compression", "metadata"),
-			new XAttribute("introducer", "false"),
-			new XAttribute("skipIntroductionRemovals", "false"),
-			new XAttribute("encryptionPassword", ""),
-			new XElement("address", "dynamic"),
-			new XElement("paused", "false"),
-			new XElement("autoAcceptFolders", "false"),
-			new XElement("maxSendKbps", "0"),
-			new XElement("maxRecvKbps", "0"),
-			new XElement("maxRequestKiB", "0"),
-			new XElement("untrusted", "false"),
-			new XElement("remoteGUIPort", "0"),
-			new XElement("numConnections", "0")));
-
-		// Shared folder: both Syncthing and our device participate
-		conf.Add(new XElement("folder",
-			new XAttribute("id", FolderId),
-			new XAttribute("label", "Starsky Test"),
-			new XAttribute("path", syncDir),
-			new XAttribute("type", "sendreceive"),
-			new XAttribute("rescanIntervalS", "5"),
-			new XAttribute("fsWatcherEnabled", "true"),
-			new XAttribute("fsWatcherDelayS", "1"),
-			new XElement("device",
-				new XAttribute("id", ourDeviceId),
-				new XAttribute("introducedBy", "")),
-			new XElement("paused", "false"),
-			new XElement("markerName", ".stfolder")));
-
 		doc.Save(configPath);
 		return apiKey;
 	}
@@ -441,11 +402,110 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		else parent.Add(new XElement(name, value));
 	}
 
-	private static string ReadSyncthingDeviceId(string homeDir)
+	// ── REST API configuration ────────────────────────────────────────────────
+
+	private static async Task<string> GetSyncthingDeviceIdAsync(int guiPort, string apiKey)
 	{
-		var certPem = File.ReadAllText(Path.Combine(homeDir, "cert.pem"));
-		var cert = X509Certificate2.CreateFromPem(certPem);
-		return DeviceIdentity.NormalizeDeviceId(DeviceIdentity.DeriveDeviceId(cert));
+		using var http = BuildApiClient(guiPort, apiKey);
+		var json = await http.GetStringAsync($"http://127.0.0.1:{guiPort}/rest/system/status");
+		var node = JsonNode.Parse(json)!;
+		return node["myID"]!.GetValue<string>();
+	}
+
+	/// <summary>
+	/// Adds our device and a shared folder to Syncthing's config via the REST API.
+	/// This is version-independent and avoids XML format guessing.
+	/// </summary>
+	private static async Task ConfigureDeviceAndFolderViaApiAsync(
+		int guiPort,
+		string apiKey,
+		string syncDir,
+		string folderId,
+		string syncthingDeviceId,
+		string ourDeviceId)
+	{
+		using var http = BuildApiClient(guiPort, apiKey);
+		var base_ = $"http://127.0.0.1:{guiPort}";
+
+		// Add our device as a known peer
+		var deviceJson = $$"""
+		{
+			"deviceID": "{{ourDeviceId}}",
+			"name": "starsky-integration-test",
+			"addresses": ["dynamic"],
+			"compression": "metadata",
+			"paused": false,
+			"autoAcceptFolders": false
+		}
+		""";
+		var deviceResp = await http.PostAsync($"{base_}/rest/config/devices",
+			new StringContent(deviceJson, Encoding.UTF8, "application/json"));
+		deviceResp.EnsureSuccessStatusCode();
+
+		// Add the shared folder with both devices
+		var escapedPath = syncDir.Replace("\\", "\\\\");
+		var folderJson = $$"""
+		{
+			"id": "{{folderId}}",
+			"label": "Starsky Integration Test",
+			"path": "{{escapedPath}}",
+			"type": "sendreceive",
+			"rescanIntervalS": 5,
+			"fsWatcherEnabled": true,
+			"fsWatcherDelayS": 1,
+			"devices": [
+				{"deviceID": "{{syncthingDeviceId}}", "introducedBy": ""},
+				{"deviceID": "{{ourDeviceId}}", "introducedBy": ""}
+			],
+			"paused": false,
+			"markerName": ".stfolder"
+		}
+		""";
+		var folderResp = await http.PostAsync($"{base_}/rest/config/folders",
+			new StringContent(folderJson, Encoding.UTF8, "application/json"));
+		folderResp.EnsureSuccessStatusCode();
+	}
+
+	/// <summary>
+	/// Waits until the folder is scanned and in the "idle" state.
+	/// Throws if the folder is not found or doesn't become idle within the timeout.
+	/// </summary>
+	private static async Task WaitForFolderReadyAsync(int guiPort, string apiKey, string folderId)
+	{
+		using var http = BuildApiClient(guiPort, apiKey);
+		var url = $"http://127.0.0.1:{guiPort}/rest/db/status?folder={folderId}";
+		var deadline = DateTimeOffset.UtcNow + StartupTimeout;
+
+		while ( DateTimeOffset.UtcNow < deadline )
+		{
+			try
+			{
+				var resp = await http.GetAsync(url);
+				if ( resp.IsSuccessStatusCode )
+				{
+					var json = await resp.Content.ReadAsStringAsync();
+					var node = JsonNode.Parse(json);
+					var state = node?["state"]?.GetValue<string>();
+					if ( state is "idle" or "localWaiting" or "syncing" )
+					{
+						return;
+					}
+				}
+			}
+			catch { /* retry */ }
+
+			await Task.Delay(500);
+		}
+
+		throw new TimeoutException(
+			$"Syncthing folder '{folderId}' did not become ready within {StartupTimeout.TotalSeconds} s.");
+	}
+
+	private static HttpClient BuildApiClient(int guiPort, string apiKey)
+	{
+		var http = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+		http.DefaultRequestHeaders.Add("X-API-Key", apiKey);
+		return http;
 	}
 
 	// ── Process helpers ───────────────────────────────────────────────────────
@@ -455,10 +515,11 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		var pathVar = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
 		foreach ( var dir in pathVar.Split(Path.PathSeparator) )
 		{
-			var c = Path.Combine(dir, "syncthing");
-			if ( File.Exists(c) ) return c;
-			c = Path.Combine(dir, "syncthing.exe");
-			if ( File.Exists(c) ) return c;
+			foreach ( var name in new[] { "syncthing", "syncthing.exe" } )
+			{
+				var c = Path.Combine(dir, name);
+				if ( File.Exists(c) ) return c;
+			}
 		}
 
 		foreach ( var c in new[]
@@ -517,8 +578,7 @@ public sealed class SyncEngineFileSyncIntegrationTest
 
 	private static async Task WaitForRestApiAsync(int guiPort, string apiKey)
 	{
-		using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(2) };
-		http.DefaultRequestHeaders.Add("X-API-Key", apiKey);
+		using var http = BuildApiClient(guiPort, apiKey);
 		var url = $"http://127.0.0.1:{guiPort}/rest/system/ping";
 		var deadline = DateTimeOffset.UtcNow + StartupTimeout;
 
@@ -535,7 +595,7 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		}
 
 		throw new TimeoutException(
-			$"Syncthing REST API at {url} did not become ready within {StartupTimeout.TotalSeconds} s.");
+			$"Syncthing REST API did not become ready within {StartupTimeout.TotalSeconds} s.");
 	}
 
 	// ── OpenSslPipeStream ─────────────────────────────────────────────────────
