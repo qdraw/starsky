@@ -50,6 +50,11 @@ public sealed class ConnectFileMeta
 	public bool Invalid { get; set; }
 
 	/// <summary>
+	/// Unix permission bits (e.g. 0644). Zero when not set or not applicable.
+	/// </summary>
+	public int Permissions { get; set; }
+
+	/// <summary>
 	/// True when permission bits should not be synced.
 	/// </summary>
 	public bool NoPermissions { get; set; }

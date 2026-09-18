@@ -170,6 +170,19 @@ public sealed class Scanner : IHostedService, IDisposable
 		var blockSize = BlockSizing.SelectBlockSize(info.Length);
 		var blocks = await ComputeBlocksAsync(fullPath, blockSize, ct);
 
+		int permissions;
+		try
+		{
+			// UnixFileMode is only meaningful on non-Windows platforms
+			permissions = OperatingSystem.IsWindows()
+				? 0
+				: (int)File.GetUnixFileMode(fullPath) & 0x1FF; // mask to rwxrwxrwx bits
+		}
+		catch
+		{
+			permissions = 0;
+		}
+
 		// Upsert ConnectBlockInfo
 		var existing = _db.ConnectBlockInfos.Where(b => b.Folder == folderId && b.Name == relativePath);
 		_db.ConnectBlockInfos.RemoveRange(existing);
@@ -190,10 +203,18 @@ public sealed class Scanner : IHostedService, IDisposable
 		var meta = await _db.ConnectFileMetas
 			.FirstOrDefaultAsync(m => m.Folder == folderId && m.Name == relativePath, ct);
 
-		var folderMeta = await _db.ConnectFolderMetas.FindAsync([folderId], ct)
-		                 ?? new ConnectFolderMeta { Folder = folderId, IndexId = (long)((ulong)Random.Shared.NextInt64()) };
+		var folderMeta = await _db.ConnectFolderMetas.FindAsync([folderId], ct);
+		var isNewFolderMeta = folderMeta is null;
+		if ( isNewFolderMeta )
+		{
+			folderMeta = new ConnectFolderMeta
+			{
+				Folder = folderId,
+				IndexId = ( long )( ( ulong )Random.Shared.NextInt64() ),
+			};
+		}
 
-		folderMeta.Sequence++;
+		folderMeta!.Sequence++;
 
 		if ( meta is null )
 		{
@@ -202,18 +223,23 @@ public sealed class Scanner : IHostedService, IDisposable
 				Folder = folderId,
 				Name = relativePath,
 				BlockSize = blockSize,
+				Permissions = permissions,
 				Sequence = folderMeta.Sequence,
 			});
 		}
 		else
 		{
 			meta.BlockSize = blockSize;
+			meta.Permissions = permissions;
 			meta.Sequence = folderMeta.Sequence;
 			meta.Deleted = false;
-			_db.ConnectFileMetas.Update(meta);
 		}
 
-		_db.ConnectFolderMetas.Update(folderMeta);
+		if ( isNewFolderMeta )
+		{
+			_db.ConnectFolderMetas.Add(folderMeta);
+		}
+
 		await _db.SaveChangesAsync(ct);
 	}
 

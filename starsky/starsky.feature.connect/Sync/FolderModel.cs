@@ -259,6 +259,7 @@ public sealed class FolderModel
 			Version = fi.Version?.ToByteArray() ?? [],
 			Sequence = sequence,
 			BlockSize = fi.BlockSize == 0 ? 128 * 1024 : fi.BlockSize,
+			Permissions = ( int )fi.Permissions,
 			Deleted = fi.Deleted,
 			Invalid = fi.Invalid,
 			NoPermissions = fi.NoPermissions,
@@ -271,6 +272,7 @@ public sealed class FolderModel
 		meta.Version = fi.Version?.ToByteArray() ?? [];
 		meta.Sequence = sequence;
 		meta.BlockSize = fi.BlockSize == 0 ? 128 * 1024 : fi.BlockSize;
+		meta.Permissions = ( int )fi.Permissions;
 		meta.Deleted = fi.Deleted;
 		meta.Invalid = fi.Invalid;
 		meta.NoPermissions = fi.NoPermissions;

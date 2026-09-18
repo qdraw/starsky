@@ -328,6 +328,12 @@ public sealed class SyncEngine : IHostedService, IDisposable
 				{
 					var destPath = Path.Combine(root, fi.Name.Replace('/', Path.DirectorySeparatorChar));
 					await _blockStore.AssembleFileAsync(root, fi.Name, destPath, ct);
+					if ( !OperatingSystem.IsWindows() && fi.Permissions != 0 )
+					{
+						// Restore unix permission bits (rwxrwxrwx) sent by the peer.
+						// Skipped on Windows because UnixFileMode has no effect there.
+						File.SetUnixFileMode(destPath, ( UnixFileMode )( fi.Permissions & 0x1FF ));
+					}
 					_blockStore.Forget(root, fi.Name);
 					_logger.LogInformation("Downloaded and assembled {Folder}/{Name}.", folder, fi.Name);
 
@@ -387,6 +393,7 @@ public sealed class SyncEngine : IHostedService, IDisposable
 			Name = meta.Name,
 			Sequence = meta.Sequence,
 			BlockSize = meta.BlockSize,
+			Permissions = ( uint )meta.Permissions,
 			Deleted = meta.Deleted,
 			Invalid = meta.Invalid,
 			NoPermissions = meta.NoPermissions,
