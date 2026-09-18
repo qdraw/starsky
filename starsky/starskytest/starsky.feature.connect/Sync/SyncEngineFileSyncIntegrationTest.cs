@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.connect.Sync;
@@ -252,16 +253,17 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		var folderRoots = new Dictionary<string, string> { [FolderId] = localDir };
 
 		// listenPort: 0 lets the OS pick any free port, avoiding conflicts when tests run in parallel
-		var cm = new ConnectionManager(localCert, NullLogger<ConnectionManager>.Instance, listenPort: 0);
+		var logFactory = LoggerFactory.Create(b => b.AddConsole().SetMinimumLevel(LogLevel.Debug));
+		var cm = new ConnectionManager(localCert, logFactory.CreateLogger<ConnectionManager>(), listenPort: 0);
 		var folderModel = new FolderModel(db);
 		var blockStore = new BlockStore();
-		var downloader = new Downloader(cm, blockStore, NullLogger<Downloader>.Instance);
+		var downloader = new Downloader(cm, blockStore, logFactory.CreateLogger<Downloader>());
 		var resolver = new ConflictResolver();
 
 		var engine = new SyncEngine(
 			cm, folderModel, blockStore, downloader, resolver,
 			folderRoots, localDeviceIdBytes, localDeviceId,
-			NullLogger<SyncEngine>.Instance);
+			logFactory.CreateLogger<SyncEngine>());
 
 		engine.OnFileDownloaded = onFileDownloaded;
 		return (cm, engine);
@@ -283,7 +285,9 @@ public sealed class SyncEngineFileSyncIntegrationTest
 		CancellationToken ct)
 	{
 		var normalizedPeerId = DeviceIdentity.NormalizeDeviceId(peerDeviceId);
-		var peerDeviceIdBytes = Base32.Decode(normalizedPeerId[..52]);
+		// Strip Luhn check chars (every 14th char at positions 13, 27, 41, 55) to get 52 pure Base32 chars.
+		var base32Only = string.Concat(normalizedPeerId.Where((_, i) => i % 14 != 13).Take(52));
+		var peerDeviceIdBytes = Base32.Decode(base32Only);
 
 		Stream stream;
 		try

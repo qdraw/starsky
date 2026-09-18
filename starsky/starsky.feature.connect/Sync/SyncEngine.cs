@@ -414,8 +414,23 @@ public sealed class SyncEngine : IHostedService, IDisposable
 
 	private static byte[] GetDeviceIdBytes(string normalizedDeviceId)
 	{
-		// Decode the base32 normalized device ID back to raw bytes
-		return starsky.foundation.connect.Crypto.Base32.Decode(normalizedDeviceId[..52]);
+		// The 56-char normalized ID has Luhn check chars at positions 13, 27, 41, 55.
+		// Strip them to recover the 52 pure Base32 chars that encode the 32-byte hash.
+		return starsky.foundation.connect.Crypto.Base32.Decode(
+			StripLuhnChars(normalizedDeviceId));
+	}
+
+	private static string StripLuhnChars(string s)
+	{
+		// 56-char normalized form: 4 blocks of 14 chars (13 data + 1 Luhn at index 13, 27, 41, 55)
+		var buf = new System.Text.StringBuilder(52);
+		for ( var i = 0; i < s.Length && buf.Length < 52; i++ )
+		{
+			if ( i % 14 == 13 ) continue; // every 14th char is a Luhn checksum
+			buf.Append(s[i]);
+		}
+
+		return buf.ToString();
 	}
 
 	public void Dispose()

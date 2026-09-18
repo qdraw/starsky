@@ -45,10 +45,18 @@ public sealed class FolderModel
 
 		await _db.SaveChangesAsync(ct);
 
-		var folderMeta = await _db.ConnectFolderMetas.FindAsync([folder], ct)
-		                 ?? new ConnectFolderMeta { Folder = folder, IndexId = (long)((ulong)Random.Shared.NextInt64()) };
+		var folderMeta = await _db.ConnectFolderMetas.FindAsync([folder], ct);
+		var isNewFolder = folderMeta is null;
+		if ( isNewFolder )
+		{
+			folderMeta = new ConnectFolderMeta
+			{
+				Folder = folder,
+				IndexId = ( long )( ( ulong )Random.Shared.NextInt64() ),
+			};
+		}
 
-		var sequence = folderMeta.Sequence;
+		var sequence = folderMeta!.Sequence;
 		foreach ( var fi in files )
 		{
 			sequence++;
@@ -57,7 +65,11 @@ public sealed class FolderModel
 		}
 
 		folderMeta.Sequence = sequence;
-		_db.ConnectFolderMetas.Update(folderMeta);
+		if ( isNewFolder )
+		{
+			_db.ConnectFolderMetas.Add(folderMeta);
+		}
+
 		await _db.SaveChangesAsync(ct);
 		await tx.CommitAsync(ct);
 	}
@@ -70,10 +82,18 @@ public sealed class FolderModel
 		IEnumerable<FileInfo> files,
 		CancellationToken ct = default)
 	{
-		var folderMeta = await _db.ConnectFolderMetas.FindAsync([folder], ct)
-		                 ?? new ConnectFolderMeta { Folder = folder, IndexId = (long)((ulong)Random.Shared.NextInt64()) };
+		var folderMeta = await _db.ConnectFolderMetas.FindAsync([folder], ct);
+		var isNewFolder = folderMeta is null;
+		if ( isNewFolder )
+		{
+			folderMeta = new ConnectFolderMeta
+			{
+				Folder = folder,
+				IndexId = ( long )( ( ulong )Random.Shared.NextInt64() ),
+			};
+		}
 
-		var sequence = folderMeta.Sequence;
+		var sequence = folderMeta!.Sequence;
 		foreach ( var fi in files )
 		{
 			var existing = await _db.ConnectFileMetas
@@ -87,7 +107,6 @@ public sealed class FolderModel
 			else
 			{
 				UpdateMeta(existing, fi, sequence);
-				_db.ConnectFileMetas.Update(existing);
 			}
 
 			// Replace block info for this file
@@ -97,7 +116,11 @@ public sealed class FolderModel
 		}
 
 		folderMeta.Sequence = sequence;
-		_db.ConnectFolderMetas.Update(folderMeta);
+		if ( isNewFolder )
+		{
+			_db.ConnectFolderMetas.Add(folderMeta);
+		}
+
 		await _db.SaveChangesAsync(ct);
 	}
 
