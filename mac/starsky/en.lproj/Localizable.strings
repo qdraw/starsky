@@ -62,5 +62,5 @@
 "splash.status.starting" = "Starting\U2026";
 "splash.status.findingPort" = "Finding free port\U2026";
 "splash.status.startingBackend" = "Starting backend\U2026";
-"splash.status.waitingForBackend" = "Waiting for backend\U2026";
+"splash.status.waitingForBackend" = "Please wait, \nwe're waiting for a response from the system...\U2026";
 "splash.hint.clickToDismiss" = "Click to dismiss";
