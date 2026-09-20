@@ -125,8 +125,8 @@ describe("Download files (70)", () => {
     cy.wait(500);
 
     cy.get(".item.item--select").click();
-    cy.get(`[data-filepath="${filePath1}"] button`).click({ force: true });
-    cy.get(`[data-filepath="${filePath2}"] button`).click({ force: true });
+    cy.get(`[data-filepath="${filePath1}"] button`, { timeout: 15000 }).should("be.visible").click({ force: true });
+    cy.get(`[data-filepath="${filePath2}"] button`, { timeout: 15000 }).should("be.visible").click({ force: true });
 
     cy.get(".item.item--more").click();
     cy.get("[data-test=export]").click();
