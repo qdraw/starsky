@@ -250,4 +250,23 @@ public sealed class NotificationQueryTest
 			await _dbContext.Notifications.CountAsync(TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(0, countAsync);
 	}
+
+	[TestMethod]
+	public async Task RemoveOlderThanAsync_RemovesOldItems()
+	{
+		var cutoff = DateTime.UtcNow;
+		var epoch = ( ( DateTimeOffset ) cutoff.AddMinutes(-10) ).ToUnixTimeSeconds();
+		_dbContext.Notifications.Add(new NotificationItem
+		{
+			DateTime = cutoff.AddMinutes(-10), DateTimeEpoch = epoch
+		});
+		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+
+		var deleted = await _notificationQuery.RemoveOlderThanAsync(cutoff);
+		Assert.AreEqual(1, deleted);
+
+		var countAsync =
+			await _dbContext.Notifications.CountAsync(TestContext.CancellationTokenSource.Token);
+		Assert.AreEqual(0, countAsync);
+	}
 }

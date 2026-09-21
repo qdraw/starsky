@@ -384,7 +384,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		var fileHashService = new FileHash(_iStorage, _webLogger);
-		return ( await fileHashService.GetHashCodeAsync(path, updateModel.ImageFormat) ).Key;
+		return ( await fileHashService.GetHashCodeAsync(path, null) ).Key;
 	}
 
 	/// <summary>

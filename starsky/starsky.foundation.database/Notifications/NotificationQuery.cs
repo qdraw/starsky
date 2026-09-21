@@ -59,6 +59,12 @@ public sealed class NotificationQuery : INotificationQuery
 		await _context.SaveChangesAsync();
 	}
 
+	public Task<int> RemoveOlderThanAsync(DateTime olderThan)
+	{
+		var unixTime = ( ( DateTimeOffset ) olderThan ).ToUnixTimeSeconds();
+		return _context.Notifications.Where(x => x.DateTimeEpoch < unixTime).ExecuteDeleteAsync();
+	}
+
 	/// <summary>
 	///     Add notification to the database
 	/// </summary>

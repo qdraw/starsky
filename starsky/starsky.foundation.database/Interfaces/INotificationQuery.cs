@@ -12,4 +12,5 @@ public interface INotificationQuery
 	Task<List<NotificationItem>> GetNewerThan(DateTime parsedDateTime);
 	Task<List<NotificationItem>> GetOlderThan(DateTime parsedDateTime);
 	Task RemoveAsync(IEnumerable<NotificationItem> content);
+	Task<int> RemoveOlderThanAsync(DateTime olderThan);
 }
