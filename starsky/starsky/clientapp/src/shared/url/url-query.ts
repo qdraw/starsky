@@ -159,6 +159,18 @@ export class UrlQuery {
     return `${this.prefix}/api/account/permissions`;
   };
 
+  public UrlConnectConfig = (): string => {
+    return `${this.prefix}/api/connect/config`;
+  };
+
+  public UrlConnectDevice = (): string => {
+    return `${this.prefix}/api/connect/device`;
+  };
+
+  public UrlConnectDeviceDelete = (deviceId: string): string => {
+    return `${this.prefix}/api/connect/device/${encodeURIComponent(deviceId)}`;
+  };
+
   public KeyAccountPermissionAppSettingsWrite = (): string => {
     return "AppSettingsWrite";
   };
