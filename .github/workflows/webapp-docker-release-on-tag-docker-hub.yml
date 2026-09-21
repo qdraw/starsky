@@ -40,7 +40,7 @@ jobs:
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@f840b60a5b88c8a66f7f6e8a1db72196cd169b85
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
 
       - name: Inspect Docker Buildx
         run: |
