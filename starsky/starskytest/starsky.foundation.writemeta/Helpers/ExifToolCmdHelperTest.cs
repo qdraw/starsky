@@ -157,11 +157,12 @@ public sealed class ExifToolCmdHelperTest
 	}
 
 	[TestMethod]
-	public void ExifToolCommandLineArgs_AiMetadata_MissingConfig_LogsError()
+	public void ExifToolCommandLineArgs_AiMetadata_AppSettingsDirLacksConfig_FallsBackToBinaryDir()
 	{
+		// Simulate production: AppSettingsPath in user data dir (no exiftool.config there),
+		// exiftool.config is present only in the binary directory (BaseDirectoryProject).
 		var appSettings = new AppSettings
 		{
-			// Force config lookup to a non-existing directory
 			AppSettingsPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(),
 				"appsettings.patch.json")
 		};
@@ -179,9 +180,8 @@ public sealed class ExifToolCmdHelperTest
 
 		Assert.Contains("-json -overwrite_original", result);
 		Assert.Contains("-XMP-qdraw:SuggestedTags=\"test\"", result);
-		Assert.IsFalse(result.Contains("-config \"", StringComparison.Ordinal),
-			"Config should not be added when file does not exist");
-		Assert.Contains(
+		Assert.Contains("-config \"", result);
+		Assert.DoesNotContain(
 			p => ( p.Item2 ?? string.Empty ).Contains("[UpdateAiConfig] Missing ExifTool config:"),
 			logger.TrackedExceptions);
 	}
@@ -606,5 +606,59 @@ public sealed class ExifToolCmdHelperTest
 		Assert.IsNotNull(afterQueryResult);
 		Assert.AreEqual(result.Rename[0].NewFileHash, afterQueryResult.FileHash);
 		Assert.AreEqual("test", afterQueryResult.Reasons);
+	}
+
+	/// <summary>
+	///     Regression: when the parent file is a MOV/MP4 and BeforeFileHash is called for the
+	///     XMP sidecar, the parent's ImageFormat must NOT be forwarded to the hasher.
+	///     Forwarding mp4 caused the MP4 hasher to run on an XML file, log an error, and fall back.
+	/// </summary>
+	[TestMethod]
+	public async Task ExifToolCmdHelper_BeforeFileHash_XmpSidecarWithMp4Parent_NoMp4HasherError()
+	{
+		// Arrange
+		const string movPath = "/clip.mov";
+		const string xmpPath = "/clip.xmp";
+
+		var updateModel = new FileIndexItem
+		{
+			FilePath = movPath,
+			FileHash = "MOVHASH123456789012345678",
+			ImageFormat = ExtensionRolesHelper.ImageFormat.mp4,
+			Tags = "test"
+		};
+		var comparedNames = new List<string> { nameof(FileIndexItem.Tags).ToLowerInvariant() };
+
+		// XMP bytes that GetImageFormat detects as xmp (not mp4)
+		var xmpBytes = "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"></x:xmpmeta>"u8.ToArray();
+
+		var storage = new FakeIStorage(["/"],
+			[xmpPath],
+			new List<byte[]> { xmpBytes });
+
+		var fileHashService = new FileHash(storage, new FakeIWebLogger());
+		var xmpHash = ( await fileHashService.GetHashCodeAsync(xmpPath, null) ).Key;
+
+		var thumbnailQuery = new FakeIThumbnailQuery([
+			new ThumbnailItem { FileHash = xmpHash, ExtraLarge = false, Reasons = "xmptest" }
+		]);
+
+		var fakeExifTool = new FakeExifTool(storage, _appSettings);
+		var logger = new FakeIWebLogger();
+		var sut = new ExifToolCmdHelper(fakeExifTool, storage, storage,
+			new FakeReadMeta(), thumbnailQuery, logger, new AppSettings());
+
+		// Act – FilePath is the .mov, path is the .xmp sidecar
+		var result = await sut.UpdateAsync(updateModel, [xmpPath], comparedNames,
+			true, true, TestContext.CancellationToken);
+
+		// Assert – hash was computed without triggering the MP4 hasher error
+		Assert.IsNotNull(result);
+		Assert.IsFalse(
+			logger.TrackedExceptions.Exists(e =>
+				e.Item2 != null && e.Item2.Contains("MP4 hasher returned empty")),
+			"MP4 hasher must not be invoked for an XMP sidecar file");
+		Assert.HasCount(1, result.Rename);
+		Assert.AreEqual(26, result.Rename[0].NewFileHash.Length);
 	}
 }

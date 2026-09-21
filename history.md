@@ -44,9 +44,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.6 - _(Unreleased)_ - 2026-?-? {#0.9.6}
 
+- [x] (Fixed) _Back-end_ `NotificationQuery` splits oversized notifications chunks instead of dropping (PR #3367)
 - [x] (Added) _Front-end_ Drag 'n drop support for files in the archive (PR #3359)
 - [x] (Fixed) _Back-end_ `CommandTimeoutExpired` improvements (PR #3355)
-
+ 
 ## version 0.9.5 - 2026-09-16 {#0.9.5}
 
 - [x] (Changed) _MountWatcher Help dialog_ Additional configuration details (PR #3340)
