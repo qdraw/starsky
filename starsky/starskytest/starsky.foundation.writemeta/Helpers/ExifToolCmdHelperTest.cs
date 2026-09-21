@@ -157,11 +157,12 @@ public sealed class ExifToolCmdHelperTest
 	}
 
 	[TestMethod]
-	public void ExifToolCommandLineArgs_AiMetadata_MissingConfig_LogsError()
+	public void ExifToolCommandLineArgs_AiMetadata_AppSettingsDirLacksConfig_FallsBackToBinaryDir()
 	{
+		// Simulate production: AppSettingsPath in user data dir (no exiftool.config there),
+		// exiftool.config is present only in the binary directory (BaseDirectoryProject).
 		var appSettings = new AppSettings
 		{
-			// Force config lookup to a non-existing directory
 			AppSettingsPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(),
 				"appsettings.patch.json")
 		};
@@ -179,9 +180,8 @@ public sealed class ExifToolCmdHelperTest
 
 		Assert.Contains("-json -overwrite_original", result);
 		Assert.Contains("-XMP-qdraw:SuggestedTags=\"test\"", result);
-		Assert.IsFalse(result.Contains("-config \"", StringComparison.Ordinal),
-			"Config should not be added when file does not exist");
-		Assert.Contains(
+		Assert.Contains("-config \"", result);
+		Assert.DoesNotContain(
 			p => ( p.Item2 ?? string.Empty ).Contains("[UpdateAiConfig] Missing ExifTool config:"),
 			logger.TrackedExceptions);
 	}

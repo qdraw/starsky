@@ -152,11 +152,17 @@ public sealed class ExifToolCmdHelper
 	internal string GetConfigPath()
 	{
 		var appSettingsDirectory = Path.GetDirectoryName(_appSettings.AppSettingsPath);
-		var configBaseDirectory = string.IsNullOrWhiteSpace(appSettingsDirectory)
-			? _appSettings.BaseDirectoryProject
-			: appSettingsDirectory;
-		var configPath = Path.Combine(configBaseDirectory, ExifToolConfigFileName);
-		return configPath;
+		if ( !string.IsNullOrWhiteSpace(appSettingsDirectory) )
+		{
+			var appSettingsConfigPath = Path.Combine(appSettingsDirectory, ExifToolConfigFileName);
+			if ( File.Exists(appSettingsConfigPath) )
+			{
+				return appSettingsConfigPath;
+			}
+		}
+
+		// Fall back to the binary directory where exiftool.config is deployed
+		return Path.Combine(_appSettings.BaseDirectoryProject, ExifToolConfigFileName);
 	}
 
 	private string UpdateAiConfig(string command, List<string> comparedNames,
