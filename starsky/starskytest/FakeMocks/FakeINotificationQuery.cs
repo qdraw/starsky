@@ -44,6 +44,13 @@ public class FakeINotificationQuery : INotificationQuery
 		return AddNotification(stringMessage);
 	}
 
+	public Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<List<T>> content)
+	{
+		var stringMessage = JsonSerializer.Serialize(content,
+			DefaultJsonSerializer.CamelCaseNoEnters);
+		return AddNotification(stringMessage);
+	}
+
 	public Task<List<NotificationItem>> GetNewerThan(DateTime parsedDateTime)
 	{
 		return Task.FromResult(FakeContent.Where(x => x.DateTime > parsedDateTime).ToList());

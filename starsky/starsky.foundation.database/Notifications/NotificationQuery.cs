@@ -27,7 +27,7 @@ public sealed class NotificationQuery : INotificationQuery
 	/// <summary>
 	///     should be lower than MEDIUMTEXT: 5_000_000 is 5MB
 	/// </summary>
-	private const int MaxContentLength = 5_000_000;
+	internal const int MaxContentLength = 5_000_000;
 
 	private readonly ApplicationDbContext _context;
 	private readonly IWebLogger _logger;
@@ -76,6 +76,48 @@ public sealed class NotificationQuery : INotificationQuery
 		var stringMessage = JsonSerializer.Serialize(content,
 			DefaultJsonSerializer.CamelCaseNoEnters);
 		return AddNotification(stringMessage);
+	}
+
+	/// <summary>
+	///     Add notification to the database, splitting into chunks when content exceeds the size limit
+	/// </summary>
+	/// <param name="content">Content with a list payload</param>
+	/// <typeparam name="T">Item type inside the list</typeparam>
+	/// <returns>DatabaseItem of the last written chunk</returns>
+	public async Task<NotificationItem> AddNotification<T>(
+		ApiNotificationResponseModel<List<T>> content)
+	{
+		var stringMessage = JsonSerializer.Serialize(content,
+			DefaultJsonSerializer.CamelCaseNoEnters);
+
+		if ( stringMessage.Length <= MaxContentLength )
+		{
+			return await AddNotification(stringMessage);
+		}
+
+		var data = content.Data ?? [];
+		if ( data.Count <= 1 )
+		{
+			_logger.LogError($"[NotificationQuery]: {ErrorMessageContentToLong} " +
+			                 $"{stringMessage.Length} - First 3000 chars: {stringMessage[..3000]}" +
+			                 $" so skipping add notification");
+			return NewNotificationItem(string.Empty);
+		}
+
+		// Calculate how many equal chunks are needed so each fits within the limit,
+		// adding one extra chunk as a safety margin for JSON overhead.
+		var chunkCount = ( int ) Math.Ceiling(( double ) stringMessage.Length / MaxContentLength) + 1;
+		var chunkSize = ( int ) Math.Ceiling(( double ) data.Count / chunkCount);
+
+		var result = NewNotificationItem(string.Empty);
+		for ( var i = 0; i < data.Count; i += chunkSize )
+		{
+			var chunk = new ApiNotificationResponseModel<List<T>>(
+				data.Skip(i).Take(chunkSize).ToList(), content.Type);
+			result = await AddNotification(chunk);
+		}
+
+		return result;
 	}
 
 	/// <summary>
