@@ -298,6 +298,21 @@ public sealed class NotificationQueryTest
 	}
 
 	[TestMethod]
+	public async Task AddNotification_List_NullData_StoresEmptyDataNotification()
+	{
+		var scopeFactory = CreateIsolatedScope(nameof(AddNotification_List_NullData_StoresEmptyDataNotification));
+		var scope = scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		var sut = new NotificationQuery(dbContext, new FakeIWebLogger(), scopeFactory);
+
+		await sut.AddNotification(
+			new ApiNotificationResponseModel<List<string>>(null, ApiNotificationType.Welcome));
+
+		var count = await dbContext.Notifications.CountAsync(TestContext.CancellationTokenSource.Token);
+		Assert.AreEqual(1, count);
+	}
+
+	[TestMethod]
 	public async Task AddNotification_List_SmallContent_SingleNotification()
 	{
 		var scopeFactory = CreateIsolatedScope(nameof(AddNotification_List_SmallContent_SingleNotification));
@@ -353,6 +368,38 @@ public sealed class NotificationQueryTest
 			new ApiNotificationResponseModel<List<string>>(items, ApiNotificationType.Welcome));
 
 		Assert.AreEqual(string.Empty, result.Content);
+		Assert.Contains(log =>
+				log.Item2?.Contains(NotificationQuery.ErrorMessageContentToLong) == true,
+			logger.TrackedExceptions);
+	}
+
+	[TestMethod]
+	public async Task AddNotification_List_UnevenSizes_OversizedChunkLogsAndSmallChunksStored()
+	{
+		// Covers the recursive path: the chunk loop calls AddNotification<T> on each chunk;
+		// when a chunk holds a single item that is still too large, branch 2 fires for that chunk.
+		var scopeFactory = CreateIsolatedScope(nameof(AddNotification_List_UnevenSizes_OversizedChunkLogsAndSmallChunksStored));
+		var scope = scopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		var logger = new FakeIWebLogger();
+		var sut = new NotificationQuery(dbContext, logger, scopeFactory);
+
+		// Mix: several small items that fit individually + one item that is too large on its own
+		var smallItem = new string('s', 10);
+		var oversizedItem = new string('x', NotificationQuery.MaxContentLength + 1);
+		var items = new List<string>
+		{
+			smallItem, smallItem, smallItem, oversizedItem, smallItem, smallItem
+		};
+
+		await sut.AddNotification(
+			new ApiNotificationResponseModel<List<string>>(items, ApiNotificationType.Welcome));
+
+		// The small items should have been stored across one or more chunks
+		var count = await dbContext.Notifications.CountAsync(TestContext.CancellationTokenSource.Token);
+		Assert.IsGreaterThan(0, count, "Expected at least one notification for the small items");
+
+		// The oversized item chunk should have triggered a log error
 		Assert.Contains(log =>
 				log.Item2?.Contains(NotificationQuery.ErrorMessageContentToLong) == true,
 			logger.TrackedExceptions);
