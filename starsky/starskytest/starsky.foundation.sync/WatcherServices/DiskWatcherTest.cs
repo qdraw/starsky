@@ -231,6 +231,45 @@ public sealed class DiskWatcherTest
 	}
 
 	[TestMethod]
+	public void Watcher_Retry_DirectoryMissing_ReturnsFalse()
+	{
+		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper
+		{
+			Path = "/this-directory-does-not-exist-xyz"
+		};
+
+		var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+
+		var result = watcher.Retry(fakeIFileSystemWatcher, 1, 0);
+		watcher.Dispose();
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void ConfigureWatcher_NonPrimary_ErrorHandler_LogsMappedPathError()
+	{
+		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
+		var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+
+		var mappedWrapper = new FakeIFileSystemWatcherWrapper();
+		var configureWatcherMethod = typeof(DiskWatcher).GetMethod("ConfigureWatcher",
+			System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+		configureWatcherMethod.Invoke(watcher,
+			[mappedWrapper, "/mapped/path", false]);
+
+		mappedWrapper.TriggerOnError(new ErrorEventArgs(new Exception("mapped-boom")));
+
+		using var scope = _scopeFactory.CreateScope();
+		var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
+
+		watcher.Dispose();
+
+		Assert.IsTrue(logger!.TrackedExceptions.LastOrDefault().Item2?
+			.Contains("Error on mapped path"));
+	}
+
+	[TestMethod]
 	public void OnChanged_ShouldHitQueueProcessor()
 	{
 		// Arrange
