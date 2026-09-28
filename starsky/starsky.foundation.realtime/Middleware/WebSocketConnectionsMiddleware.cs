@@ -62,9 +62,18 @@ public sealed class WebSocketConnectionsMiddleware(RequestDelegate _,
 			await SendWelcomeMessageAsync(webSocketConnection, requestAborted);
 
 		_connectionsService.AddConnection(webSocketConnection);
-		await webSocketConnection.ReceiveMessagesUntilCloseAsync();
-		await CloseWebSocketIfNeededAsync(webSocketConnection, webSocket);
-		_connectionsService.RemoveConnection(webSocketConnection.Id);
+		try
+		{
+			await webSocketConnection.ReceiveMessagesUntilCloseAsync();
+			await CloseWebSocketIfNeededAsync(webSocketConnection, webSocket);
+		}
+		finally
+		{
+			// Guarantee cleanup even if an unexpected WebSocketError code or other
+			// exception propagates out of the receive loop above; otherwise the
+			// connection is leaked forever in the singleton _connections dictionary.
+			_connectionsService.RemoveConnection(webSocketConnection.Id);
+		}
 	}
 
 	private static async Task SendWelcomeMessageAsync(WebSocketConnection webSocketConnection,

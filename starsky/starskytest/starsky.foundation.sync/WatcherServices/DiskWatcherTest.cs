@@ -192,7 +192,10 @@ public sealed class DiskWatcherTest
 #endif
 	public void Watcher_Retry_Ok()
 	{
-		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
+		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper
+		{
+			Path = _createAnImage.BasePath
+		};
 
 		var watcher = new DiskWatcher(
 			fakeIFileSystemWatcher,
@@ -225,6 +228,45 @@ public sealed class DiskWatcherTest
 		var result = watcher.Retry(fakeIFileSystemWatcher, 1, 0);
 		watcher.Dispose();
 		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void Watcher_Retry_DirectoryMissing_ReturnsFalse()
+	{
+		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper
+		{
+			Path = "/this-directory-does-not-exist-xyz"
+		};
+
+		var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+
+		var result = watcher.Retry(fakeIFileSystemWatcher, 1, 0);
+		watcher.Dispose();
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void ConfigureWatcher_NonPrimary_ErrorHandler_LogsMappedPathError()
+	{
+		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
+		var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+
+		var mappedWrapper = new FakeIFileSystemWatcherWrapper();
+		var configureWatcherMethod = typeof(DiskWatcher).GetMethod("ConfigureWatcher",
+			System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+		configureWatcherMethod.Invoke(watcher,
+			[mappedWrapper, "/mapped/path", false]);
+
+		mappedWrapper.TriggerOnError(new ErrorEventArgs(new Exception("mapped-boom")));
+
+		using var scope = _scopeFactory.CreateScope();
+		var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
+
+		watcher.Dispose();
+
+		Assert.IsTrue(logger!.TrackedExceptions.LastOrDefault().Item2?
+			.Contains("Error on mapped path"));
 	}
 
 	[TestMethod]
@@ -453,5 +495,61 @@ public sealed class DiskWatcherTest
 		watcher.Dispose();
 
 		Assert.IsTrue(fakeIFileSystemWatcher.IsDisposed);
+	}
+
+	/// <summary>
+	///     Repro/regression test for the DiskWatcher memory leak: every error on the primary
+	///     watcher must reconfigure `_fileSystemWatcherWrapper` itself (so it keeps raising events)
+	///     instead of silently spawning an ever-growing, never-removed entry in `_additionalWatchers`.
+	/// </summary>
+	[TestMethod]
+#if DEBUG
+	[Timeout(5000, CooperativeCancellation = true)]
+#else
+		[Timeout(20000, CooperativeCancellation = true)]
+#endif
+	public void OnError_ReconfiguresPrimaryWatcher_WithoutLeakingAdditionalWatchers()
+	{
+		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
+		var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+		watcher.Watcher(_createAnImage.BasePath);
+
+		var additionalWatchersField = typeof(DiskWatcher)
+			.GetField("_additionalWatchers",
+				System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+		var primaryWrapperField = typeof(DiskWatcher)
+			.GetField("_fileSystemWatcherWrapper",
+				System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+
+		int AdditionalWatchersCount()
+		{
+			return ( ( System.Collections.IList ) additionalWatchersField.GetValue(watcher)! ).Count;
+		}
+
+		var additionalBefore = AdditionalWatchersCount();
+
+		// Simulate 3 separate error events on the primary watcher (e.g. a flaky network share)
+		for ( var i = 0; i < 3; i++ )
+		{
+			fakeIFileSystemWatcher.TriggerOnError(
+				new ErrorEventArgs(new InternalBufferOverflowException($"boom-{i}")));
+		}
+
+		var additionalAfter = AdditionalWatchersCount();
+		var primaryWrapperAfter =
+			( IFileSystemWatcherWrapper ) primaryWrapperField.GetValue(watcher)!;
+		// Read before Dispose(): Dispose() flips EnableRaisingEvents to false on this same object
+		var wasReArmedAfterRetry = primaryWrapperAfter.EnableRaisingEvents;
+
+		watcher.Dispose();
+
+		// No leaked watchers should accumulate in _additionalWatchers from primary-watcher errors
+		Assert.AreEqual(additionalBefore, additionalAfter,
+			"Each error on the primary watcher must not leak a new BufferingFileSystemWatcher " +
+			"into _additionalWatchers");
+
+		// The primary wrapper must actually be re-armed after a successful retry
+		Assert.IsTrue(wasReArmedAfterRetry,
+			"After a retry, the primary watcher must be reconfigured/re-armed, not left orphaned");
 	}
 }
