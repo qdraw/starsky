@@ -156,9 +156,17 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		{
 			try
 			{
-				// This will throw an error at the
-				// watcher.NotifyFilter line if it can't get the path.
-				Watcher(path);
+				if ( !Directory.Exists(path) )
+				{
+					throw new DirectoryNotFoundException(
+						$"[DiskWatcher] FAIL can't find directory: {path} so watcher is not started");
+				}
+
+				// Reconfigure the wrapper that was just swapped in above as the primary
+				// watcher. Do NOT call Watcher(path) here: since _primaryWatcherConfigured
+				// is already true, that would spawn yet another BufferingFileSystemWatcher
+				// into _additionalWatchers on every retry instead of re-arming this one.
+				ConfigureWatcher(_fileSystemWatcherWrapper, path, isPrimary: true);
 				if ( _fileSystemWatcherWrapper.EnableRaisingEvents )
 				{
 					_webLogger.LogInformation("[DiskWatcher] I'm Back!");
