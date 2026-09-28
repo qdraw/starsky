@@ -46,7 +46,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Fixed) _Back-end_ Improve WebSocketConnectionsMiddleware and DiskWatcher memory (PR #3369)
 - [x] (Fixed) _Back-end_ Notification splits oversized items chunks instead of dropping (PR #3367)
-- [x] (Added) _Front-end_ Drag 'n drop support for files in the archive (PR #3359)
+- [x] (Added) _Front-end_ Drag’n’drop support for files in the archive (PR #3359)
 - [x] (Fixed) _Back-end_ `CommandTimeoutExpired` improvements (PR #3355)
  
 ## version 0.9.5 - 2026-09-16 {#0.9.5}
