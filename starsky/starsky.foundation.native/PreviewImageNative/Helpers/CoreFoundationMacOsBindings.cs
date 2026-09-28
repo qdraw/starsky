@@ -34,9 +34,10 @@ public static class CoreFoundationMacOsBindings
 
 	internal static IntPtr CreateCFStringCreateWithCString(string filePath)
 	{
+		var cfStr = IntPtr.Zero;
 		try
 		{
-			var cfStr = CFStringCreateWithCString(IntPtr.Zero, filePath,
+			cfStr = CFStringCreateWithCString(IntPtr.Zero, filePath,
 				CfStringEncoding.kCFStringEncodingUTF8);
 			return CFURLCreateWithFileSystemPath(IntPtr.Zero,
 				cfStr, CFURLPathStyle.POSIX, false);
@@ -45,7 +46,19 @@ public static class CoreFoundationMacOsBindings
 		{
 			return IntPtr.Zero;
 		}
+		finally
+		{
+			// cfStr is only consumed (not retained) by CFURLCreateWithFileSystemPath, so we
+			// own it and must release it ourselves, or it leaks on every call.
+			if ( cfStr != IntPtr.Zero )
+			{
+				CFRelease(cfStr);
+			}
+		}
 	}
+
+	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+	private static extern void CFRelease(IntPtr cf);
 
 	internal enum CfStringEncoding : uint
 	{
