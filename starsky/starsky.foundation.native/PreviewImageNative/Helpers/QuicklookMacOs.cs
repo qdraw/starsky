@@ -31,39 +31,48 @@ public class QuicklookMacOs(IWebLogger logger)
 			return false;
 		}
 
-		if ( height <= 0 )
+		try
 		{
-			var sourceHeight = ImageIoMacOsBindings.GetSourceHeight(url);
-			height = ( int ) Math.Round(( double ) sourceHeight / width * width);
+			if ( height <= 0 )
+			{
+				var sourceHeight = ImageIoMacOsBindings.GetSourceHeight(url);
+				height = ( int ) Math.Round(( double ) sourceHeight / width * width);
+			}
+
+			// Define the thumbnail size
+			var size = new CGSize(width, height);
+
+			// Create options dictionary for QuickLook (currently empty)
+			var options = IntPtr.Zero;
+
+			// Generate the thumbnail (returns a CGImageRef, which is a pointer)
+			var thumbnailRef = QLThumbnailImageCreate(IntPtr.Zero, url, size, options);
+
+			if ( thumbnailRef != IntPtr.Zero )
+			{
+				// Handle the thumbnail (You could save or process the thumbnail here)
+				// QLThumbnailImageCreate follows Create rule: caller owns the returned CFType and must release it.
+				// Ensure we always release the thumbnailRef to avoid leaking CoreFoundation memory.
+				try
+				{
+					return SaveCGImageAsFile(thumbnailRef, outputPath);
+				}
+				finally
+				{
+					CFRelease(thumbnailRef);
+				}
+			}
+
+			logger.LogInformation("[QuicklookMacOs] Failed to generate thumbnail" +
+			                      $" for F: {filePath} O: {outputPath}");
+			return false;
 		}
-
-		// Define the thumbnail size
-		var size = new CGSize(width, height);
-
-		// Create options dictionary for QuickLook (currently empty)
-		var options = IntPtr.Zero;
-
-		// Generate the thumbnail (returns a CGImageRef, which is a pointer)
-		var thumbnailRef = QLThumbnailImageCreate(IntPtr.Zero, url, size, options);
-
-		if ( thumbnailRef != IntPtr.Zero )
+		finally
 		{
-			// Handle the thumbnail (You could save or process the thumbnail here)
-			// QLThumbnailImageCreate follows Create rule: caller owns the returned CFType and must release it.
-			// Ensure we always release the thumbnailRef to avoid leaking CoreFoundation memory.
-			try
-			{
-				return SaveCGImageAsFile(thumbnailRef, outputPath);
-			}
-			finally
-			{
-				CFRelease(thumbnailRef);
-			}
+			// url is owned by us (Create Rule via CreateCFStringCreateWithCString) and must
+			// be released, or it leaks a CFURL/CFString pair on every thumbnail generated.
+			CFRelease(url);
 		}
-
-		logger.LogInformation("[QuicklookMacOs] Failed to generate thumbnail" +
-		                      $" for F: {filePath} O: {outputPath}");
-		return false;
 	}
 
 	// Import the QuickLook framework

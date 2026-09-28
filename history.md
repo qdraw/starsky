@@ -44,6 +44,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.6 - _(Unreleased)_ - 2026-?-? {#0.9.6}
 
+- [x] (Fixed) _Back-end_ macOS CoreGraphics memory leak for thumbnail generation (PR #3370)
 - [x] (Fixed) _Back-end_ Improve WebSocketConnectionsMiddleware and DiskWatcher memory (PR #3369)
 - [x] (Fixed) _Back-end_ Notification splits oversized items chunks instead of dropping (PR #3367)
 - [x] (Added) _Front-end_ Drag’n’drop support for files in the archive (PR #3359)
