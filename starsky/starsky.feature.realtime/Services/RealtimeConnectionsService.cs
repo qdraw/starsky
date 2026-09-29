@@ -37,8 +37,7 @@ public class RealtimeConnectionsService : IRealtimeConnectionsService
 	{
 		try
 		{
-			var messages = await _notificationQuery.GetOlderThan(DateTime.UtcNow.AddDays(-30));
-			await _notificationQuery.RemoveAsync(messages);
+			await _notificationQuery.RemoveOlderThanAsync(DateTime.UtcNow.AddDays(-30));
 		}
 		catch ( RetryLimitExceededException )
 		{

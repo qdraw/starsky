@@ -119,4 +119,38 @@ public sealed class WebSocketConnectionsMiddlewareTest
 			return new WebSocketReceiveResult(0, WebSocketMessageType.Close, true);
 		}
 	}
+
+	/// <summary>
+	///     Repro/regression test for the WebSocketConnectionsService memory leak: only
+	///     WebSocketError.InvalidState (in GetMessage) and ConnectionClosedPrematurely (in
+	///     ReceiveMessagesUntilCloseAsync) are caught. Any other WebSocketError code propagates
+	///     past the middleware's RemoveConnection call and leaks the connection into the
+	///     singleton _connections dictionary forever.
+	/// </summary>
+	[TestMethod]
+	public async Task WebSocketConnection_UnhandledErrorCodeDuringReceive_LeaksConnection()
+	{
+		var httpContext = new FakeWebSocketHttpContext();
+		var socketManager = httpContext.WebSockets as FakeWebSocketManager;
+		Assert.IsNotNull(socketManager);
+		var fakeWebSocket = new FakeWebSocket { ReceiveAsyncErrorType = WebSocketError.Faulted };
+		socketManager.FakeWebSocket = fakeWebSocket;
+
+		var connectionsService = new WebSocketConnectionsService();
+		var middleware = new WebSocketConnectionsMiddleware(null!,
+			new WebSocketConnectionsOptions(), connectionsService, new FakeIWebLogger());
+
+		await Assert.ThrowsExactlyAsync<WebSocketException>(
+			() => middleware.Invoke(httpContext));
+
+		var connectionsField = typeof(WebSocketConnectionsService)
+			.GetField("_connections",
+				System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+		var connections =
+			( System.Collections.IDictionary ) connectionsField.GetValue(connectionsService)!;
+
+		Assert.IsEmpty(connections,
+			"An unhandled WebSocketError code during receive must not leak the connection " +
+			"into the singleton _connections dictionary");
+	}
 }

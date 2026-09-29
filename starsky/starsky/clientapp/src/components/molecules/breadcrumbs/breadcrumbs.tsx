@@ -1,5 +1,6 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import useLocation from "../../../hooks/use-location/use-location";
+import { DRAG_MOVE_MIME, IDragMoveData, moveDragAndDropFiles } from "../../../shared/move-file-helper";
 import { URLPath } from "../../../shared/url/url-path";
 import { UrlQuery } from "../../../shared/url/url-query";
 import Link from "../../atoms/link/link";
@@ -16,6 +17,35 @@ interface IBreadcrumbProps {
 const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
   // used for reading current location
   const history = useLocation();
+  const [dragOverItem, setDragOverItem] = useState<string | null>(null);
+
+  function handleDragOver(event: React.DragEvent, targetPath: string) {
+    if (!event.dataTransfer.types.includes(DRAG_MOVE_MIME)) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    setDragOverItem(targetPath);
+  }
+
+  function handleDragLeave() {
+    setDragOverItem(null);
+  }
+
+  async function handleDrop(event: React.DragEvent, targetPath: string) {
+    event.preventDefault();
+    setDragOverItem(null);
+    const raw = event.dataTransfer.getData(DRAG_MOVE_MIME);
+    if (!raw) return;
+    let data: IDragMoveData;
+    try {
+      data = JSON.parse(raw) as IDragMoveData;
+    } catch {
+      return;
+    }
+    const ok = await moveDragAndDropFiles(data.filePaths, data.folderPaths, targetPath);
+    if (ok) {
+      history.navigate(new UrlQuery().updateFilePathHash(history.location.search, targetPath));
+    }
+  }
 
   if (!props.subPath || !props.breadcrumb) return <div className="breadcrumb" />;
   return (
@@ -28,10 +58,19 @@ const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
           name = "Home";
         }
 
+        const isDragOver = dragOverItem === item;
+
         // For the home page
         if (item === props.subPath) {
           return (
-            <span key={item} data-test={"breadcrumb-span"}>
+            <span
+              key={item}
+              data-test={"breadcrumb-span"}
+              className={isDragOver ? "breadcrumb__item--drag-over" : undefined}
+              onDragOver={(e) => handleDragOver(e, item)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, item)}
+            >
               <Link to={new UrlQuery().updateFilePathHash(history.location.search, item)}>
                 {name}
               </Link>
@@ -40,7 +79,14 @@ const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
         }
 
         return (
-          <span key={item} data-test={"breadcrumb-span"}>
+          <span
+            key={item}
+            data-test={"breadcrumb-span"}
+            className={isDragOver ? "breadcrumb__item--drag-over" : undefined}
+            onDragOver={(e) => handleDragOver(e, item)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, item)}
+          >
             <Link to={new UrlQuery().updateFilePathHash(history.location.search, item)}>
               {name}
             </Link>{" "}

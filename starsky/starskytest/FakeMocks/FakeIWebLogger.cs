@@ -77,7 +77,14 @@ public class FakeIWebLogger : IWebLogger
 			TrackedExceptions.Add(( null, message! ));
 		}
 
-		Console.WriteLine(message!, args);
+		try
+		{
+			Console.WriteLine(message!, args);
+		}
+		catch ( FormatException e )
+		{
+			Console.WriteLine(e);
+		}
 	}
 
 	public void LogError(Exception exception, string message, params object[] args)

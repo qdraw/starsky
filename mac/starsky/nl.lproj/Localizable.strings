@@ -62,5 +62,5 @@
 "splash.status.starting" = "Opstarten\U2026";
 "splash.status.findingPort" = "Vrije poort zoeken\U2026";
 "splash.status.startingBackend" = "Backend starten\U2026";
-"splash.status.waitingForBackend" = "Wachten op backend\U2026";
+"splash.status.waitingForBackend" = "Even geduld, \nwe wachten op een reactie van het systeem...\U2026";
 "splash.hint.clickToDismiss" = "Klik om te sluiten";
