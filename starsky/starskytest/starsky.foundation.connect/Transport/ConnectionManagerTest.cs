@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.connect.Crypto;
+using starsky.foundation.connect.Discovery;
 using starsky.foundation.connect.Protocol.Generated;
 using starsky.foundation.connect.Transport;
 
@@ -111,5 +112,59 @@ public sealed class ConnectionManagerTest
 		manager.OnPeerConnected = (id, hello, ct) => Task.CompletedTask;
 		manager.OnMessageReceived = (id, msg, ct) => Task.CompletedTask;
 		manager.OnPeerDisconnected = (id, ex, ct) => Task.CompletedTask;
+	}
+
+	[TestMethod]
+	public void AddPeer_WithEmptyAddresses_RegistersForDiscovery()
+	{
+		using var manager = new ConnectionManager(_cert, NullLogger<ConnectionManager>.Instance, listenPort: 0);
+
+		// Empty addresses = rely on discovery; should not throw
+		manager.AddPeer("MFZWI3DBONSGYYY-BSMAQLD2LZA66ZW-7JKR4TER-MHUI3OF-EZ6F63P-GWIAZDR-NBJDSYZ-IQNQPAN", []);
+
+		Assert.AreEqual(0, manager.ConnectedDeviceIds.Count);
+	}
+
+	[TestMethod]
+	public async Task StartAsync_WithLocalDiscovery_StartsAndStopsDiscovery()
+	{
+		// LocalDiscovery binds to a real UDP socket; we verify Start+Stop does not throw.
+		// (The multicast join may silently fail in CI without a network interface; that is fine.)
+		int port;
+		using ( var tmp = new TcpListener(IPAddress.Loopback, 0) )
+		{
+			tmp.Start();
+			port = ( ( IPEndPoint )tmp.LocalEndpoint ).Port;
+			tmp.Stop();
+		}
+
+		var deviceIdBytes = DeviceIdentity.DeriveDeviceIdBytes(_cert);
+		var deviceId = DeviceIdentity.DeriveDeviceId(_cert);
+		var localDiscovery = new LocalDiscovery(deviceIdBytes, deviceId,
+			NullLogger<LocalDiscovery>.Instance);
+
+		using var manager = new ConnectionManager(_cert, NullLogger<ConnectionManager>.Instance,
+			listenPort: port, localDiscovery: localDiscovery);
+
+		await manager.StartAsync(CancellationToken.None);
+		await manager.StopAsync(CancellationToken.None);
+	}
+
+	[TestMethod]
+	public async Task StartAsync_WithNullDiscovery_DoesNotThrow()
+	{
+		int port;
+		using ( var tmp = new TcpListener(IPAddress.Loopback, 0) )
+		{
+			tmp.Start();
+			port = ( ( IPEndPoint )tmp.LocalEndpoint ).Port;
+			tmp.Stop();
+		}
+
+		using var manager = new ConnectionManager(_cert, NullLogger<ConnectionManager>.Instance,
+			listenPort: port, localDiscovery: null, globalDiscovery: null);
+
+		await manager.StartAsync(CancellationToken.None);
+		await manager.StopAsync(CancellationToken.None);
 	}
 }

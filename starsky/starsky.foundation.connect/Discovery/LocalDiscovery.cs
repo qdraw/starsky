@@ -60,8 +60,21 @@ public sealed class LocalDiscovery : IHostedService, IDisposable
 		_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 		_udpClient = new UdpClient();
 		_udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-		_udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, MulticastPort));
-		_udpClient.JoinMulticastGroup(IPAddress.Parse(MulticastGroup));
+
+		try
+		{
+			_udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, MulticastPort));
+			_udpClient.JoinMulticastGroup(IPAddress.Parse(MulticastGroup));
+		}
+		catch ( SocketException ex )
+		{
+			// Port already in use (another Syncthing / LocalDiscovery instance). Degrade gracefully:
+			// send loop will use a random port; receive loop is disabled.
+			_logger.LogWarning(ex, "Local discovery cannot bind UDP port {Port}; " +
+			                       "inbound announcements disabled, outbound-only mode.", MulticastPort);
+			_udpClient.Dispose();
+			_udpClient = new UdpClient(); // unbound — can still send, cannot receive
+		}
 
 		_ = Task.Run(() => SendLoopAsync(_cts.Token), _cts.Token);
 		_ = Task.Run(() => ReceiveLoopAsync(_cts.Token), _cts.Token);

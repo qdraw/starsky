@@ -11,6 +11,7 @@ using Google.Protobuf;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using starsky.foundation.connect.Crypto;
+using starsky.foundation.connect.Discovery;
 using starsky.foundation.connect.Protocol;
 using starsky.foundation.connect.Protocol.Generated;
 
@@ -20,6 +21,8 @@ namespace starsky.foundation.connect.Transport;
 /// Manages the lifecycle of BEP connections to multiple peers.
 /// Handles outbound dialing (with exponential reconnect backoff), inbound acceptance,
 /// and the per-connection keepalive / receive-timeout timers.
+/// Optionally uses <see cref="LocalDiscovery"/> and <see cref="GlobalDiscovery"/> to
+/// resolve peer addresses when none are configured statically.
 /// </summary>
 public sealed class ConnectionManager : IHostedService, IDisposable
 {
@@ -28,11 +31,20 @@ public sealed class ConnectionManager : IHostedService, IDisposable
 	private static readonly TimeSpan PingCheckInterval = TimeSpan.FromSeconds(45);
 	private static readonly TimeSpan MinReconnectDelay = TimeSpan.FromSeconds(5);
 	private static readonly TimeSpan MaxReconnectDelay = TimeSpan.FromMinutes(30);
+	private static readonly TimeSpan DiscoveryRefreshInterval = TimeSpan.FromSeconds(30);
 
 	private readonly X509Certificate2 _localCert;
 	private readonly ILogger<ConnectionManager> _logger;
+	private readonly LocalDiscovery? _localDiscovery;
+	private readonly GlobalDiscovery? _globalDiscovery;
 	private readonly ConcurrentDictionary<string, BepConnection> _connections = new();
+
+	// Maps normalized deviceId → current best addresses (updated by discovery).
 	private readonly ConcurrentDictionary<string, string[]> _outboundPeers = new();
+
+	// Live set passed to TlsListener so inbound auth picks up peers added after StartAsync.
+	private readonly HashSet<string> _allowedIds = new(StringComparer.OrdinalIgnoreCase);
+
 	private readonly CancellationTokenSource _cts = new();
 	private TlsListener? _listener;
 
@@ -56,11 +68,15 @@ public sealed class ConnectionManager : IHostedService, IDisposable
 	public ConnectionManager(
 		X509Certificate2 localCert,
 		ILogger<ConnectionManager> logger,
-		int listenPort = 22000)
+		int listenPort = 22000,
+		LocalDiscovery? localDiscovery = null,
+		GlobalDiscovery? globalDiscovery = null)
 	{
 		_localCert = localCert;
 		_logger = logger;
 		_listenPort = listenPort;
+		_localDiscovery = localDiscovery;
+		_globalDiscovery = globalDiscovery;
 	}
 
 	/// <summary>All currently connected device IDs (normalized, no hyphens).</summary>
@@ -68,12 +84,14 @@ public sealed class ConnectionManager : IHostedService, IDisposable
 
 	/// <summary>
 	/// Registers an outbound peer to connect to.
+	/// Pass an empty address array to rely solely on discovery to find this peer.
 	/// The manager dials on startup and reconnects with exponential backoff after disconnection.
 	/// </summary>
 	public void AddPeer(string deviceId, string[] addresses)
 	{
 		var normalized = DeviceIdentity.NormalizeDeviceId(deviceId);
 		_outboundPeers[normalized] = addresses;
+		lock ( _allowedIds ) { _allowedIds.Add(normalized); }
 	}
 
 	/// <summary>Sends a BEP message to a connected peer. No-ops if peer is not connected.</summary>
@@ -91,29 +109,55 @@ public sealed class ConnectionManager : IHostedService, IDisposable
 		}
 	}
 
-	public Task StartAsync(CancellationToken cancellationToken)
+	public async Task StartAsync(CancellationToken cancellationToken)
 	{
-		var allowedIds = new HashSet<string>(_outboundPeers.Keys, StringComparer.OrdinalIgnoreCase);
-		_listener = new TlsListener(_localCert, allowedIds,
+		// Seed the live allowed-IDs set from any peers already registered via AddPeer.
+		lock ( _allowedIds )
+		{
+			foreach ( var id in _outboundPeers.Keys )
+			{
+				_allowedIds.Add(id);
+			}
+		}
+
+		_listener = new TlsListener(_localCert, _allowedIds,
 			Microsoft.Extensions.Logging.Abstractions.NullLogger<TlsListener>.Instance, _listenPort);
 		_listener.Start();
 
-		_ = Task.Run(() => AcceptLoopAsync(_cts.Token), _cts.Token);
-		_ = Task.Run(() => KeepaliveLoopAsync(_cts.Token), _cts.Token);
-
-		foreach ( var (deviceId, addresses) in _outboundPeers )
+		if ( _localDiscovery is not null )
 		{
-			_ = Task.Run(() => OutboundLoopAsync(deviceId, addresses, _cts.Token), _cts.Token);
+			await _localDiscovery.StartAsync(cancellationToken);
 		}
 
-		return Task.CompletedTask;
+		if ( _globalDiscovery is not null )
+		{
+			await _globalDiscovery.StartAsync(cancellationToken);
+		}
+
+		_ = Task.Run(() => AcceptLoopAsync(_cts.Token), _cts.Token);
+		_ = Task.Run(() => KeepaliveLoopAsync(_cts.Token), _cts.Token);
+		_ = Task.Run(() => DiscoveryLoopAsync(_cts.Token), _cts.Token);
+
+		foreach ( var deviceId in _outboundPeers.Keys )
+		{
+			_ = Task.Run(() => OutboundLoopAsync(deviceId, _cts.Token), _cts.Token);
+		}
 	}
 
-	public Task StopAsync(CancellationToken cancellationToken)
+	public async Task StopAsync(CancellationToken cancellationToken)
 	{
 		_cts.Cancel();
 		_listener?.Stop();
-		return Task.CompletedTask;
+
+		if ( _localDiscovery is not null )
+		{
+			await _localDiscovery.StopAsync(cancellationToken);
+		}
+
+		if ( _globalDiscovery is not null )
+		{
+			await _globalDiscovery.StopAsync(cancellationToken);
+		}
 	}
 
 	// ── Internal loops ────────────────────────────────────────────────────────
@@ -155,7 +199,50 @@ public sealed class ConnectionManager : IHostedService, IDisposable
 		return Task.CompletedTask;
 	}
 
-	private async Task OutboundLoopAsync(string deviceId, string[] addresses, CancellationToken ct)
+	private async Task DiscoveryLoopAsync(CancellationToken ct)
+	{
+		if ( _localDiscovery is null && _globalDiscovery is null ) return;
+
+		while ( !ct.IsCancellationRequested )
+		{
+			try
+			{
+				await Task.Delay(DiscoveryRefreshInterval, ct);
+			}
+			catch ( OperationCanceledException ) { break; }
+
+			foreach ( var deviceId in _outboundPeers.Keys )
+			{
+				if ( _connections.ContainsKey(deviceId) ) continue;
+
+				var addresses = ResolveViaDiscovery(deviceId);
+				if ( addresses.Length == 0 ) addresses = await ResolveViaGlobalDiscoveryAsync(deviceId, ct);
+
+				if ( addresses.Length > 0 )
+				{
+					_outboundPeers[deviceId] = addresses;
+					_logger.LogDebug("Discovery updated addresses for {DeviceId}: {Addresses}.",
+						deviceId, string.Join(", ", addresses));
+				}
+			}
+		}
+	}
+
+	private string[] ResolveViaDiscovery(string deviceId) =>
+		_localDiscovery?.Lookup(deviceId) ?? [];
+
+	private async Task<string[]> ResolveViaGlobalDiscoveryAsync(string deviceId, CancellationToken ct)
+	{
+		if ( _globalDiscovery is null ) return [];
+		try { return await _globalDiscovery.LookupAsync(deviceId, ct); }
+		catch ( Exception ex ) when ( ex is not OperationCanceledException )
+		{
+			_logger.LogDebug(ex, "Global discovery lookup failed for {DeviceId}.", deviceId);
+			return [];
+		}
+	}
+
+	private async Task OutboundLoopAsync(string deviceId, CancellationToken ct)
 	{
 		var delay = MinReconnectDelay;
 		while ( !ct.IsCancellationRequested )
@@ -166,6 +253,15 @@ public sealed class ConnectionManager : IHostedService, IDisposable
 				continue;
 			}
 
+			// Read current best addresses from the dict (updated by discovery loop).
+			if ( !_outboundPeers.TryGetValue(deviceId, out var addresses) || addresses.Length == 0 )
+			{
+				// No addresses yet — wait for discovery to populate them.
+				await Task.Delay(delay, ct).ConfigureAwait(false);
+				continue;
+			}
+
+			var connected = false;
 			foreach ( var address in addresses )
 			{
 				if ( ct.IsCancellationRequested ) return;
@@ -177,6 +273,7 @@ public sealed class ConnectionManager : IHostedService, IDisposable
 					var ssl = await dialer.ConnectAsync(host, port, ct);
 					_ = Task.Run(() => HandshakeAndReadLoopAsync(ssl, knownDeviceId: deviceId, ct: ct), ct);
 					delay = MinReconnectDelay;
+					connected = true;
 					break;
 				}
 				catch ( Exception ex ) when ( ex is not OperationCanceledException )
@@ -185,8 +282,11 @@ public sealed class ConnectionManager : IHostedService, IDisposable
 				}
 			}
 
-			await Task.Delay(delay, ct).ConfigureAwait(false);
-			delay = delay * 2 < MaxReconnectDelay ? delay * 2 : MaxReconnectDelay;
+			if ( !connected )
+			{
+				await Task.Delay(delay, ct).ConfigureAwait(false);
+				delay = delay * 2 < MaxReconnectDelay ? delay * 2 : MaxReconnectDelay;
+			}
 		}
 	}
 
@@ -329,6 +429,8 @@ public sealed class ConnectionManager : IHostedService, IDisposable
 		_cts.Cancel();
 		_cts.Dispose();
 		_listener?.Dispose();
+		_localDiscovery?.Dispose();
+		_globalDiscovery?.Dispose();
 		foreach ( var conn in _connections.Values )
 		{
 			conn.Dispose();
