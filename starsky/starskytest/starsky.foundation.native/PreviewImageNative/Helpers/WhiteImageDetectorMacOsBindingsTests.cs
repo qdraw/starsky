@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -187,6 +188,9 @@ public class WhiteImageDetectorMacOsBindingsTests
 		malloc_zone_pressure_relief(IntPtr.Zero, UIntPtr.Zero);
 	}
 
+	[SuppressMessage("Interoperability",
+		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
+		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
 	[DllImport("/usr/lib/system/libsystem_malloc.dylib")]
 	private static extern UIntPtr malloc_zone_pressure_relief(IntPtr zone, UIntPtr goal);
 
