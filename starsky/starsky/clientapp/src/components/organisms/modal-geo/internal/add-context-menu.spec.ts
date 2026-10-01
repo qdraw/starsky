@@ -432,4 +432,33 @@ describe("AddContextMenu", () => {
     // There should still be only one menu
     expect(document.querySelectorAll(".leaflet-context-menu")).toHaveLength(1);
   });
+
+  it("should render a malicious street name as inert text", async () => {
+    const payload = "<img src=x onerror=alert(1)>";
+    (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue({
+      display_name: payload,
+      address: { road: payload }
+    });
+    (nominatimModule.GetStreetName as jest.Mock).mockReturnValue(payload);
+
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus: jest.fn()
+    });
+
+    map.fire("contextmenu", {
+      latlng: L.latLng(52.52, 13.405),
+      containerPoint: L.point(100, 100)
+    } as L.LeafletMouseEvent);
+
+    await waitFor(() => {
+      expect(document.querySelector(".leaflet-context-menu__street")).toBeTruthy();
+    });
+
+    const contextMenu = document.querySelector(".leaflet-context-menu");
+    expect(contextMenu?.querySelector("img")).toBeNull();
+    expect(document.querySelector(".leaflet-context-menu__street")?.textContent).toBe(payload);
+  });
 });

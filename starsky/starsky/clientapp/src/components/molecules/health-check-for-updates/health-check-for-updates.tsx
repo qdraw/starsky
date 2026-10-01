@@ -53,11 +53,12 @@ const HealthCheckForUpdates: FunctionComponent = () => {
 
   const MessageNewVersionUpdateToken = language.key(localization.MessageNewVersionUpdateToken);
 
-  const MessageNewVersionUpdateHtml = language.token(
-    MessageNewVersionUpdateToken,
-    ["{WhereToFindRelease}", "{otherInfo}"],
-    [WhereToFindRelease, releaseInfo.data as string]
-  );
+  // releaseInfo comes from an external service, so it is rendered as a text node
+  // and only the static localized template is allowed to contain markup
+  const [templateBefore, templateAfter = ""] = language
+    .token(MessageNewVersionUpdateToken, ["{WhereToFindRelease}"], [WhereToFindRelease])
+    .split("{otherInfo}", 2);
+  const otherInfo = typeof releaseInfo.data === "string" ? releaseInfo.data : "";
 
   return (
     <Notification
@@ -66,7 +67,11 @@ const HealthCheckForUpdates: FunctionComponent = () => {
       }}
       type={NotificationType.default}
     >
-      <div dangerouslySetInnerHTML={{ __html: MessageNewVersionUpdateHtml }}></div>
+      <div>
+        <span dangerouslySetInnerHTML={{ __html: templateBefore }}></span>
+        {otherInfo}
+        <span dangerouslySetInnerHTML={{ __html: templateAfter }}></span>
+      </div>
     </Notification>
   );
 };

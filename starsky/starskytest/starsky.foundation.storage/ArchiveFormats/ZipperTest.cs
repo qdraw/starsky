@@ -407,4 +407,131 @@ public sealed class ZipperTest
 		File.Delete(tempZip);
 		Assert.IsNull(result);
 	}
+
+	private static (string zipPath, string outFolder) CreateZipOnDisk(
+		params (string name, int size)[] entries)
+	{
+		var root = Path.Combine(Path.GetTempPath(), "starsky-zipper-" + Guid.NewGuid().ToString("N"));
+		Directory.CreateDirectory(root);
+		var zipPath = Path.Combine(root, "in.zip");
+		using ( var zip = ZipFile.Open(zipPath, ZipArchiveMode.Create) )
+		{
+			foreach ( var (name, size) in entries )
+			{
+				var entry = zip.CreateEntry(name);
+				using var stream = entry.Open();
+				// random data does not compress, so the ratio check is not triggered
+				var bytes = new byte[size];
+				new Random(1).NextBytes(bytes);
+				stream.Write(bytes, 0, bytes.Length);
+			}
+		}
+
+		return (zipPath, Path.Combine(root, "out"));
+	}
+
+	private static Zipper CreateLimited(long total = 1000, long entry = 100, int entries = 10,
+		int ratio = 200, long ratioMin = 1000)
+	{
+		return new Zipper(new FakeIWebLogger(), total, entry, entries, ratio, ratioMin);
+	}
+
+	[TestMethod]
+	public void ExtractZip_EntryTooLarge_ShouldStopAndReturnFalse()
+	{
+		var (zipPath, outFolder) = CreateZipOnDisk(("ok.bin", 50), ("big.bin", 500));
+		try
+		{
+			var result = CreateLimited().ExtractZip(zipPath, outFolder);
+
+			Assert.IsFalse(result);
+			Assert.IsTrue(File.Exists(Path.Combine(outFolder, "ok.bin")));
+			Assert.IsFalse(File.Exists(Path.Combine(outFolder, "big.bin")));
+		}
+		finally
+		{
+			Directory.Delete(Path.GetDirectoryName(zipPath)!, true);
+		}
+	}
+
+	[TestMethod]
+	public void ExtractZip_TotalTooLarge_ShouldReturnFalse()
+	{
+		var (zipPath, outFolder) =
+			CreateZipOnDisk(("a.bin", 90), ("b.bin", 90), ("c.bin", 90));
+		try
+		{
+			var result = CreateLimited(200).ExtractZip(zipPath, outFolder);
+
+			Assert.IsFalse(result);
+			Assert.IsFalse(File.Exists(Path.Combine(outFolder, "c.bin")));
+		}
+		finally
+		{
+			Directory.Delete(Path.GetDirectoryName(zipPath)!, true);
+		}
+	}
+
+	[TestMethod]
+	public void ExtractZip_TooManyEntries_ShouldReturnFalseAndExtractNothing()
+	{
+		var (zipPath, outFolder) =
+			CreateZipOnDisk(("a.bin", 1), ("b.bin", 1), ("c.bin", 1));
+		try
+		{
+			var result = CreateLimited(entries: 2).ExtractZip(zipPath, outFolder);
+
+			Assert.IsFalse(result);
+			Assert.IsFalse(Directory.Exists(outFolder));
+		}
+		finally
+		{
+			Directory.Delete(Path.GetDirectoryName(zipPath)!, true);
+		}
+	}
+
+	[TestMethod]
+	public void ExtractZip_CompressionRatioTooHigh_ShouldReturnFalse()
+	{
+		var root = Path.Combine(Path.GetTempPath(), "starsky-zipper-" + Guid.NewGuid().ToString("N"));
+		Directory.CreateDirectory(root);
+		var zipPath = Path.Combine(root, "in.zip");
+		try
+		{
+			using ( var zip = ZipFile.Open(zipPath, ZipArchiveMode.Create) )
+			{
+				var entry = zip.CreateEntry("zeros.bin", CompressionLevel.SmallestSize);
+				using var stream = entry.Open();
+				stream.Write(new byte[100_000], 0, 100_000); // compresses far beyond 200:1
+			}
+
+			var result = new Zipper(new FakeIWebLogger(), 1_000_000, 1_000_000, 10, 200, 1000)
+				.ExtractZip(zipPath, Path.Combine(root, "out"));
+
+			Assert.IsFalse(result);
+			Assert.IsFalse(File.Exists(Path.Combine(root, "out", "zeros.bin")));
+		}
+		finally
+		{
+			Directory.Delete(root, true);
+		}
+	}
+
+	[TestMethod]
+	public void ExtractZip_WithinLimits_ShouldExtract()
+	{
+		var (zipPath, outFolder) = CreateZipOnDisk(("a.bin", 50), ("sub/b.bin", 50));
+		try
+		{
+			var result = CreateLimited().ExtractZip(zipPath, outFolder);
+
+			Assert.IsTrue(result);
+			Assert.IsTrue(File.Exists(Path.Combine(outFolder, "a.bin")));
+			Assert.AreEqual(50, new FileInfo(Path.Combine(outFolder, "sub", "b.bin")).Length);
+		}
+		finally
+		{
+			Directory.Delete(Path.GetDirectoryName(zipPath)!, true);
+		}
+	}
 }

@@ -1,11 +1,14 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using starsky.foundation.geo.ReverseGeoCode.Interface;
+using starsky.Helpers;
 
 namespace starsky.Controllers;
 
 [AllowAnonymous]
+[EnableRateLimiting(RateLimitPolicies.Anonymous)]
 public sealed class GeoReverseLookupController(IReverseGeoCodeService reverseGeoCodeService)
 	: Controller
 {

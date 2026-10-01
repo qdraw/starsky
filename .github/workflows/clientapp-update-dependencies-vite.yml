@@ -9,6 +9,9 @@ on:
     paths:
     - '.github/workflows/clientapp-update-dependencies-vite.yml'
     
+permissions:
+  contents: read
+
 jobs:
   run:
     permissions:

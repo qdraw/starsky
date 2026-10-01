@@ -93,7 +93,11 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
       {storageFolder !== appSettings?.storageFolder && !storageFolderNotFound ? (
         <div className="warning-box" data-test="storage-changed">
           {MessageChangeNeedReSync}{" "}
-          <a target="_blank" href={new UrlQuery().DocsGettingStartedFirstSteps()} rel="noreferrer">
+          <a
+            target="_blank"
+            href={new UrlQuery().DocsGettingStartedFirstSteps()}
+            rel="noopener noreferrer"
+          >
             {MessageReadMoreHere}
           </a>
         </div>

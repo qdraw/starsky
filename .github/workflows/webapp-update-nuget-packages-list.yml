@@ -10,6 +10,9 @@ on:
       - '.github/workflows/webapp-update-nuget-packages-list.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs: 
   run:
     name: Update Nuget packages list

@@ -153,7 +153,11 @@ const PreferencesAppSettingsReadonlyFolders: React.FunctionComponent = () => {
       {changed ? (
         <div className="warning-box" data-test="readonly-folders-changed">
           {MessageChangeNeedReSync}{" "}
-          <a target="_blank" href={new UrlQuery().DocsGettingStartedFirstSteps()} rel="noreferrer">
+          <a
+            target="_blank"
+            href={new UrlQuery().DocsGettingStartedFirstSteps()}
+            rel="noopener noreferrer"
+          >
             {MessageReadMoreHere}
           </a>
         </div>

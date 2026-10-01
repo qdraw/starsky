@@ -312,7 +312,9 @@ public sealed class ThumbnailController : Controller
 			// remove from cache
 			_query.ResetItemByHash(f);
 
-			if ( string.IsNullOrEmpty(filePath) ||
+			// The caller-supplied filePath is only trusted for logged-in users,
+			// otherwise an anonymous request could point at any indexed file
+			if ( User.Identity?.IsAuthenticated != true || string.IsNullOrEmpty(filePath) ||
 			     await _query.GetObjectByFilePathAsync(filePath) == null )
 			{
 				SetExpiresResponseHeadersToZero();
@@ -334,6 +336,13 @@ public sealed class ThumbnailController : Controller
 			SetExpiresResponseHeadersToZero();
 			Response.StatusCode = 202; // A conflict, that the thumb is not generated yet
 			return Json("Thumbnail is not ready yet");
+		}
+
+		// Thumbnails are public (cached), the source file and generating jobs are not
+		if ( User.Identity?.IsAuthenticated != true )
+		{
+			SetExpiresResponseHeadersToZero();
+			return Unauthorized("Login is required to view the original");
 		}
 
 		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath) )

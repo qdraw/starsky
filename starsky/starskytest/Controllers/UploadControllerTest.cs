@@ -416,6 +416,31 @@ public sealed class UploadControllerTest
 	}
 
 	[TestMethod]
+	[DataRow("/not_a_sidecar.jpg")]
+	[DataRow("/not_a_sidecar.html")]
+	[DataRow("/not_a_sidecar.svg")]
+	public async Task UploadToFolderSidecarFile_ValidXmlButNotSidecarExtension_IsRejected(
+		string toPlaceSubPath)
+	{
+		var controller = new UploadController(_import, _appSettings,
+			new FakeSelectorStorage(_iStorage), _query,
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+		{
+			ControllerContext = RequestWithSidecar()
+		};
+		controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath;
+
+		var actionResult = await controller.UploadToFolderSidecarFile() as JsonResult;
+		var list = actionResult?.Value as List<string>;
+
+		Assert.IsNotNull(list);
+		Assert.IsEmpty(list);
+		Assert.AreEqual(415, controller.Response.StatusCode);
+		Assert.IsFalse(_iStorage.ExistFile(toPlaceSubPath));
+	}
+
+	[TestMethod]
 	public async Task UploadToFolderSidecarFile_UpdateMainItemWithSidecarRef()
 	{
 		// it should add a reference to the main item

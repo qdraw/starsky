@@ -20,7 +20,7 @@ internal static class RestrictedPath
 		// Linux / shared Unix
 		"/bin", "/boot", "/dev", "/etc", "/lib", "/lib64",
 		"/proc", "/root", "/run", "/sbin", "/sys", "/usr/bin",
-		"/usr/sbin",
+		"/usr/sbin", "/opt", "/var", "/tmp",
 		// macOS (canonical forms under /private)
 		"/System", "/Library",
 		"/private/etc", "/private/var", "/private/tmp",
@@ -31,6 +31,14 @@ internal static class RestrictedPath
 		@"C:\ProgramData",
 		@"C:\System Volume Information"
 	];
+
+	// Parent folders of user data: mapping the folder itself would expose every user or
+	// mount, but the sub folders (e.g. /home/user/pictures, /mnt/archive) are normal targets.
+	[SuppressMessage("Sonar",
+		"S1075: Refactor your code not to use hardcoded absolute paths or URIs",
+		Justification = "Check to not allow this as input for the storage folder mapping")]
+	private static readonly IReadOnlyList<string> RestrictedExactPaths =
+		["/home", "/Users", "/mnt", "/media", "/Volumes", @"C:\Users"];
 
 	internal static bool IsRestrictedPath(string physicalPath)
 	{
@@ -48,8 +56,9 @@ internal static class RestrictedPath
 			? StringComparison.OrdinalIgnoreCase
 			: StringComparison.Ordinal;
 
-		return RestrictedPaths.Any(restricted =>
-			canonical.Equals(restricted, comparison) ||
-			canonical.StartsWith(restricted + Path.DirectorySeparatorChar, comparison));
+		return RestrictedExactPaths.Any(restricted => canonical.Equals(restricted, comparison)) ||
+		       RestrictedPaths.Any(restricted =>
+			       canonical.Equals(restricted, comparison) ||
+			       canonical.StartsWith(restricted + Path.DirectorySeparatorChar, comparison));
 	}
 }
