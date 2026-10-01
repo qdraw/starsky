@@ -86,7 +86,8 @@ public sealed class Startup
 		new SetupDatabaseTypes(_appSettings, services).BuilderDb(foundationDatabaseName);
 		new SetupHealthCheck(_appSettings, services).BuilderHealth();
 		EfCoreMigrationsOnProject(services).ConfigureAwait(false);
-		services.SetupDataProtection();
+		services.SetupDataProtection(_appSettings.DataProtectionCertificatePath,
+			_appSettings.DataProtectionCertificatePassword);
 
 		// Enable Dual Authentication 
 		services

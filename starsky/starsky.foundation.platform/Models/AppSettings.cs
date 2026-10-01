@@ -506,6 +506,23 @@ public sealed class AppSettings
 
 
 	/// <summary>
+	///     Optional path to a PKCS#12 (.pfx) certificate. When set, new ASP.NET data protection keys
+	///     (used to sign the login cookie) are encrypted with it before they are stored in the
+	///     database. Existing keys stay readable and are replaced by encrypted ones on key rotation.
+	///     use env variable: app__DataProtectionCertificatePath
+	///     Not part of the settings file written by the settings API (JsonIgnore).
+	/// </summary>
+	[JsonIgnore]
+	public string? DataProtectionCertificatePath { get; set; }
+
+	/// <summary>
+	///     Password for the certificate in DataProtectionCertificatePath (can be empty)
+	///     use env variable: app__DataProtectionCertificatePassword
+	/// </summary>
+	[JsonIgnore]
+	public string? DataProtectionCertificatePassword { get; set; }
+
+	/// <summary>
 	///     Value for AccountRolesDefaultByEmailRegisterOverwrite
 	/// </summary>
 	private Dictionary<string, string>

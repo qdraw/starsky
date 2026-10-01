@@ -14,7 +14,6 @@ using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -314,7 +313,8 @@ public sealed class NoAccountMiddlewareTest
 				}
 			]
 		});
-		var beforeCredential = userManager.GetCredentialsByUserId(0).CloneViaJson();
+		// Secret is [JsonIgnore], so a JSON clone would lose it
+		var beforeSecret = userManager.GetCredentialsByUserId(0)?.Secret;
 
 		await userManager.SignUpAsync(string.Empty, "email", NoAccountMiddleware.Identifier,
 			"test");
@@ -330,12 +330,12 @@ public sealed class NoAccountMiddlewareTest
 
 		if ( iterationCountType == IterationCountType.Iterate100KSha256 )
 		{
-			Assert.AreEqual(beforeCredential?.Secret,
+			Assert.AreEqual(beforeSecret,
 				test.Credentials!.FirstOrDefault()!.Secret);
 		}
 		else
 		{
-			Assert.AreNotEqual(beforeCredential?.Secret,
+			Assert.AreNotEqual(beforeSecret,
 				test.Credentials!.FirstOrDefault()!.Secret);
 		}
 	}
