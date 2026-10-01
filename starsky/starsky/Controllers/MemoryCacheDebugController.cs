@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 
@@ -31,6 +32,14 @@ public sealed class MemoryCacheDebugController : Controller
 		foreach ( var key in _memoryCache.GetKeys<string>() )
 		{
 			_memoryCache.TryGetValue(key, out var data);
+
+			// UserManager caches the password hash and salt; never expose those, whatever the key is
+			if ( data is Credential )
+			{
+				result.Add(key, "[REDACTED] credential");
+				continue;
+			}
+
 			try
 			{
 				result.Add(key, JsonSerializer.Serialize(data));

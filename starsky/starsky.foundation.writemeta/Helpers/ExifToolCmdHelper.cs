@@ -212,7 +212,7 @@ public sealed class ExifToolCmdHelper
 			// EXIF:Artist
 			// IPTC:By-line
 			command +=
-				$" -Artist=\"{updateModel.Artist}\" -XMP-dc:Creator=\"{updateModel.Artist}\" ";
+				$" -Artist=\"{updateModel.Artist.QuotesCommandLineEscape()}\" -XMP-dc:Creator=\"{updateModel.Artist.QuotesCommandLineEscape()}\" ";
 		}
 
 		return command;
@@ -475,8 +475,8 @@ public sealed class ExifToolCmdHelper
 	{
 		if ( comparedNames.Contains(nameof(FileIndexItem.LocationCity).ToLowerInvariant()) )
 		{
-			command += " -City=\"" + updateModel.LocationCity
-			                       + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
+			command += " -City=\"" + updateModel.LocationCity.QuotesCommandLineEscape()
+			                       + "\" -xmp:City=\"" + updateModel.LocationCity.QuotesCommandLineEscape() + "\"";
 		}
 
 		return command;
@@ -498,8 +498,8 @@ public sealed class ExifToolCmdHelper
 	{
 		if ( comparedNames.Contains(nameof(FileIndexItem.LocationState).ToLowerInvariant()) )
 		{
-			command += " -State=\"" + updateModel.LocationState
-			                        + "\" -Province-State=\"" + updateModel.LocationState +
+			command += " -State=\"" + updateModel.LocationState.QuotesCommandLineEscape()
+			                        + "\" -Province-State=\"" + updateModel.LocationState.QuotesCommandLineEscape() +
 			                        "\"";
 		}
 
@@ -511,9 +511,9 @@ public sealed class ExifToolCmdHelper
 	{
 		if ( comparedNames.Contains(nameof(FileIndexItem.LocationCountry).ToLowerInvariant()) )
 		{
-			command += " -Country=\"" + updateModel.LocationCountry
+			command += " -Country=\"" + updateModel.LocationCountry.QuotesCommandLineEscape()
 			                          + "\" -Country-PrimaryLocationName=\"" +
-			                          updateModel.LocationCountry + "\"";
+			                          updateModel.LocationCountry.QuotesCommandLineEscape() + "\"";
 		}
 
 		return command;
@@ -525,9 +525,9 @@ public sealed class ExifToolCmdHelper
 		if ( comparedNames.Contains(
 			    nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()) )
 		{
-			command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode
+			command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode.QuotesCommandLineEscape()
 			                                              + "\" -XMP:CountryCode=\"" +
-			                                              updateModel.LocationCountryCode +
+			                                              updateModel.LocationCountryCode.QuotesCommandLineEscape() +
 			                                              "\"";
 		}
 
@@ -572,8 +572,8 @@ public sealed class ExifToolCmdHelper
 		{
 			// add space before
 			command +=
-				$" -Software=\"{updateModel.Software}\" -CreatorTool=\"{updateModel.Software}\" " +
-				$"-HistorySoftwareAgent=\"{updateModel.Software}\" " +
+				$" -Software=\"{updateModel.Software.QuotesCommandLineEscape()}\" -CreatorTool=\"{updateModel.Software.QuotesCommandLineEscape()}\" " +
+				$"-HistorySoftwareAgent=\"{updateModel.Software.QuotesCommandLineEscape()}\" " +
 				"-HistoryParameters=\"\" -PMVersion=\"\" ";
 		}
 		else
@@ -732,7 +732,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		command +=
-			$" -ExposureTime=\"{updateModel.ShutterSpeed}\" \"-xmp:ExposureTime={updateModel.ShutterSpeed}\" ";
+			$" -ExposureTime=\"{updateModel.ShutterSpeed.QuotesCommandLineEscape()}\" \"-xmp:ExposureTime={updateModel.ShutterSpeed.QuotesCommandLineEscape()}\" ";
 
 		return command;
 	}
@@ -746,22 +746,22 @@ public sealed class ExifToolCmdHelper
 			return command;
 		}
 
-		var make = updateModel.Make;
-		var model = updateModel.Model;
+		var make = updateModel.Make.QuotesCommandLineEscape();
+		var model = updateModel.Model.QuotesCommandLineEscape();
 		command += " -make=\"" + make + "\"" + " -model=\"" + model + "\"";
 
 		if ( !string.IsNullOrWhiteSpace(updateModel.LensModel) )
 		{
 			// add space before
 			command +=
-				$" -lensmodel=\"{updateModel.LensModel}\" -xmp:lensmodel=\"{updateModel.LensModel}\"";
+				$" -lensmodel=\"{updateModel.LensModel.QuotesCommandLineEscape()}\" -xmp:lensmodel=\"{updateModel.LensModel.QuotesCommandLineEscape()}\"";
 		}
 
 		if ( !string.IsNullOrWhiteSpace(updateModel.MakeCameraSerial) )
 		{
 			// add space before
 			command +=
-				$" -SerialNumber=\"{updateModel.MakeCameraSerial}\" -xmp:SerialNumber=\"{updateModel.MakeCameraSerial}\"";
+				$" -SerialNumber=\"{updateModel.MakeCameraSerial.QuotesCommandLineEscape()}\" -xmp:SerialNumber=\"{updateModel.MakeCameraSerial.QuotesCommandLineEscape()}\"";
 		}
 
 		return command;

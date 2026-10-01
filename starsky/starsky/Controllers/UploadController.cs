@@ -291,8 +291,18 @@ public sealed class UploadController : Controller
 				continue;
 			}
 
-			var tempFileStream = _iHostStorage.ReadStream(tempImportSinglePath);
 			var fileName = Path.GetFileName(tempImportSinglePath);
+
+			// Valid XML alone is not enough: the name comes from the client, so without this
+			// check an existing photo or other file could be overwritten with XML
+			if ( !ExtensionRolesHelper.IsExtensionSidecar(fileName) )
+			{
+				_logger.LogInformation($"[UploadToFolderSidecarFile] not a sidecar: {fileName}");
+				_iHostStorage.FileDelete(tempImportSinglePath);
+				continue;
+			}
+
+			var tempFileStream = _iHostStorage.ReadStream(tempImportSinglePath);
 
 			var subPath = PathHelper.AddSlash(parentDirectory) + fileName;
 			if ( parentDirectory == "/" )

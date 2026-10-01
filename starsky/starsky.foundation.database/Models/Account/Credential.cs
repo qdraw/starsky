@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace starsky.foundation.database.Models.Account;
 
 public class Credential
@@ -22,11 +24,13 @@ public class Credential
 	/// <summary>
 	///     Password
 	/// </summary>
+	[JsonIgnore]
 	public string? Secret { get; set; }
 
 	/// <summary>
 	///     Some hash
 	/// </summary>
+	[JsonIgnore]
 	public string? Extra { get; set; }
 
 	public User? User { get; set; }

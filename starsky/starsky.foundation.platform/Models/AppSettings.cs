@@ -1098,8 +1098,33 @@ public sealed class AppSettings
 			return canonical;
 		}
 
-		var filepath = StorageFolder + databaseFilePath;
-		return PathToFileReplacePathStyle(filepath);
+		var filepath = PathToFileReplacePathStyle(StorageFolder + databaseFilePath);
+		EnsureInsideStorageFolder(databaseFilePath, filepath);
+		return filepath;
+	}
+
+	/// <summary>
+	///     Same protection as the mapped roots: a subPath is user input (mkdir, rename,
+	///     upload target, import structure) and must not leave the storage folder via '..'
+	/// </summary>
+	private void EnsureInsideStorageFolder(string databaseFilePath, string filepath)
+	{
+		// only paths with a '..' can leave the root, so skip the canonicalisation otherwise
+		if ( !databaseFilePath.Contains("..", StringComparison.Ordinal) )
+		{
+			return;
+		}
+
+		var canonicalBase = Path.GetFullPath(StorageFolder)
+			.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+		var canonical = Path.GetFullPath(filepath);
+		if ( canonical != canonicalBase &&
+		     !canonical.StartsWith(canonicalBase + Path.DirectorySeparatorChar,
+			     StringComparison.OrdinalIgnoreCase) )
+		{
+			throw new UnauthorizedAccessException(
+				"Path traversal detected: resolved path is outside the storage folder.");
+		}
 	}
 
 	/// <summary>

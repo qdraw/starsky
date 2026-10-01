@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -23,12 +24,15 @@ public sealed class CheckIfAccountExistMiddleware(RequestDelegate next)
 
 	public async Task Invoke(HttpContext context)
 	{
-		var isApiCall = context.Request.Path.HasValue && (
-			context.Request.Path.Value.EndsWith("api/health/details") ||
-			context.Request.Path.Value.EndsWith("api/index") ||
-			context.Request.Path.Value.EndsWith("api/search") ||
-			context.Request.Path.Value.EndsWith("api/account/status") ||
-			context.Request.Path.Value.EndsWith("api/env/") );
+		// The cookie is valid for 60 days and has no server side session, so check on every API
+		// call that the user still exists. Sign-in/out calls are skipped to let a stale cookie
+		// be replaced by a new login.
+		var path = context.Request.Path.Value;
+		var isApiCall = !string.IsNullOrEmpty(path) &&
+		                path.Contains("api/", StringComparison.OrdinalIgnoreCase) &&
+		                !path.EndsWith("api/account/login", StringComparison.OrdinalIgnoreCase) &&
+		                !path.EndsWith("api/account/logout", StringComparison.OrdinalIgnoreCase) &&
+		                !path.EndsWith("api/account/register", StringComparison.OrdinalIgnoreCase);
 
 		if ( context.User.Identity?.IsAuthenticated == true && isApiCall )
 		{

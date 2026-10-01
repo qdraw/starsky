@@ -32,7 +32,10 @@ export class UrlQuery {
     const getReturnUrl = search.get("ReturnUrl");
 
     // add only prefix for default situation
-    if (!getReturnUrl) return `/${new URLPath().AddPrefixUrl("f=/")}`;
+    // an off-site ReturnUrl would make the login page an open redirect
+    if (!getReturnUrl || !IsRelativeUrl(getReturnUrl)) {
+      return `/${new URLPath().AddPrefixUrl("f=/")}`;
+    }
     return getReturnUrl;
   }
 
@@ -87,9 +90,12 @@ export class UrlQuery {
     if (!IsRelativeUrl(returnUrl)) {
       returnUrl = "/?f=/";
     }
+    // only escape characters that would break out of this query parameter,
+    // the rest of the (validated) relative url stays readable
+    const encodedReturnUrl = returnUrl.replace(/[&#%\s+]/g, (c) => encodeURIComponent(c));
     return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`
-      : `/account/logout?ReturnUrl=${returnUrl}`;
+      ? `${this.prefix}/account/logout?ReturnUrl=${encodedReturnUrl}`
+      : `/account/logout?ReturnUrl=${encodedReturnUrl}`;
   }
 
   public UrlLoginApi(): string {
@@ -422,7 +428,7 @@ export class UrlQuery {
 
   public UrlHealthReleaseInfo(v: string): string {
     if (!v) return `${this.prefix}/api/health/release-info`;
-    return `${this.prefix}/api/health/release-info?v=${v}`;
+    return `${this.prefix}/api/health/release-info?v=${encodeURIComponent(v)}`;
   }
 
   public UrlHealthCheckForUpdates(): string {

@@ -31,6 +31,32 @@ public class RestrictedPathTest
 
 	[TestMethod]
 	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void IsRestrictedPath_OptVarTmp_IncludingSubFolders_ReturnsTrue__UnixOnly()
+	{
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/opt"));
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/opt/starsky"));
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/var"));
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/var/lib/data"));
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/tmp"));
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/tmp/photos"));
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void IsRestrictedPath_UserDataRoots_OnlyTheRootItself_ReturnsTrue__UnixOnly()
+	{
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/home"));
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/home/"));
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/Users"));
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/mnt"));
+		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/mnt/../mnt"));
+		// sub folders stay allowed, these are the normal places for photos
+		Assert.IsFalse(RestrictedPath.IsRestrictedPath("/Users/someone/Pictures"));
+		Assert.IsFalse(RestrictedPath.IsRestrictedPath("/mnt/archive"));
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
 	public void IsRestrictedPath_MacOsPaths_ReturnsTrue__MacOnly()
 	{
 		Assert.IsTrue(RestrictedPath.IsRestrictedPath("/System"));

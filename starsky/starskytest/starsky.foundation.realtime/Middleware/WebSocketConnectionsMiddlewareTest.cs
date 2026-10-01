@@ -93,6 +93,37 @@ public sealed class WebSocketConnectionsMiddlewareTest
 	}
 
 	[TestMethod]
+	public async Task WebSocketConnection_NoAllowedOrigins_ForeignOriginIsForbidden()
+	{
+		var httpContext = new DefaultHttpContext
+		{
+			Request = { Host = new HostString("photos.example.test") }
+		};
+		httpContext.Request.Headers.Origin = "https://evil.example.test";
+
+		var middleware = new WebSocketConnectionsMiddleware(null!,
+			new WebSocketConnectionsOptions(),
+			new WebSocketConnectionsService(), new FakeIWebLogger());
+		await middleware.Invoke(httpContext);
+
+		Assert.AreEqual(403, httpContext.Response.StatusCode);
+	}
+
+	[TestMethod]
+	[DataRow("", "photos.example.test", true)]
+	[DataRow("https://photos.example.test", "photos.example.test", true)]
+	[DataRow("http://photos.example.test:4000", "photos.example.test", true)]
+	[DataRow("https://PHOTOS.example.test", "photos.example.test", true)]
+	[DataRow("https://evil.example.test", "photos.example.test", false)]
+	[DataRow("https://photos.example.test.evil.test", "photos.example.test", false)]
+	[DataRow("null", "photos.example.test", false)]
+	[DataRow("fake", "photos.example.test", false)]
+	public void IsSameHost_Cases(string origin, string requestHost, bool expected)
+	{
+		Assert.AreEqual(expected, WebSocketConnectionsMiddleware.IsSameHost(origin, requestHost));
+	}
+
+	[TestMethod]
 	public async Task WebSocketConnection_NoCloseStatus_DoesNotCloseOutput()
 	{
 		var httpContext = new FakeWebSocketHttpContext();
