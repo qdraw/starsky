@@ -44,9 +44,9 @@
   "RabbitMQ.Client 7.2.2",
   "Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.12",
   "Microsoft.Extensions.Hosting 10.0.12",
-  "MSTest.TestAdapter 4.4.0",
-  "MSTest.TestFramework 4.4.0",
+  "MSTest.TestAdapter 4.4.1",
+  "MSTest.TestFramework 4.4.1",
   "Verify.MSTest 32.0.1",
-  "Microsoft.Testing.Extensions.CodeCoverage 18.11.0",
-  "Microsoft.Testing.Extensions.TrxReport 2.4.0"
+  "Microsoft.Testing.Extensions.CodeCoverage 18.11.2",
+  "Microsoft.Testing.Extensions.TrxReport 2.5.0"
 ]
