@@ -119,6 +119,22 @@ You may re-enable telemetry if you'd like to re-join the program by running the 
 
 `app__EnablePackageTelemetry=true`
 
+## Crash reports
+
+Release builds can send a crash report when the application crashes with an unhandled exception.
+This is separate from the usage telemetry above and is enabled by default.
+
+- Only unhandled exceptions are sent. Normal logging, performance traces and breadcrumbs are not sent.
+- No personal data: no user name, IP address, machine name, request data or file paths
+  (paths in exception messages are replaced by `<path>`).
+- Debug builds and builds without a DSN never send anything.
+
+To opt out set the following env variable:
+
+`app__EnableCrashReports=false`
+
+To send the reports to your own Sentry compatible server use `app__Sentry__Dsn`.
+
 ## OpenTelemetry
 
 By default OpenTelemetry is disabled to collect telemetry data.

@@ -68,6 +68,8 @@ jobs:
           build-args: |
             TOOLS=true
             GitCommitHash=${{ github.sha }}
+          secrets: |
+            sentry_dsn=${{ secrets.STARSKY_SENTRY_DSN }}
           tags: |
             ghcr.io/${{ github.repository }}-unstable-nightly:latest
             ghcr.io/${{ github.repository }}-unstable-nightly:v${{ github.run_id }}
@@ -83,3 +85,5 @@ jobs:
           build-args: |
             TOOLS=true
             GitCommitHash=${{ github.sha }}
+          secrets: |
+            sentry_dsn=${{ secrets.STARSKY_SENTRY_DSN }}

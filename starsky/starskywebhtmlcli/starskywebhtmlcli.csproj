@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <ProjectGuid>{76d7bf62-9f1d-48f1-9035-dceb01de55c3}</ProjectGuid>
         <RuntimeFrameworkVersion>10.0.12</RuntimeFrameworkVersion>
-        <LangVersion>8.0</LangVersion>
+        <LangVersion>latest</LangVersion>
         <PreserveCompilationContext>true</PreserveCompilationContext>
         <DebugType>Full</DebugType>
         <Version>0.9.6</Version>

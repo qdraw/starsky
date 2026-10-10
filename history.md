@@ -44,7 +44,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.7 - _(Unreleased)_ - 2026-?-? {#0.9.7}
 
-- nothing yet
+- Added crash reports (Sentry) for unhandled exceptions, without personal data. Opt-out with `app__EnableCrashReports=false`, see [telemetry](starsky/telemetry.md)
 
 ## version 0.9.6 - 2026-09-29 {#0.9.6}
 

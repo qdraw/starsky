@@ -22,6 +22,7 @@
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.12" />
         <!--      instead of : Microsoft.AspNetCore.Http.Abstractions 2.2.0-->
+        <PackageReference Include="Sentry" Version="6.12.0"/>
         <PackageReference Include="OpenTelemetry" Version="1.18.0"/>
         <PackageReference Include="OpenTelemetry.Api" Version="1.18.0"/>
         <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.18.0"/>
@@ -29,6 +30,14 @@
         <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.18.0"/>
         <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.11"/>
         <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0"/>
+    </ItemGroup>
+
+    <!-- Release builds in CI pass the DSN via the SENTRY_DSN env var (GitHub secret) -->
+    <PropertyGroup>
+        <SentryDsn Condition="'$(SentryDsn)' == '' and '$(SENTRY_DSN)' != ''">$(SENTRY_DSN)</SentryDsn>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(SentryDsn)' != '' and '$(Configuration)' == 'Release'">
+        <AssemblyMetadata Include="SentryDsn" Value="$(SentryDsn)"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

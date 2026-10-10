@@ -37,6 +37,9 @@ jobs:
       - name: Build --no-unit-test linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
         shell: bash
         working-directory: ./starsky
+        env:
+          # embedded as assembly metadata in Release builds, see starsky.foundation.webtelemetry.csproj
+          SENTRY_DSN: ${{ secrets.STARSKY_SENTRY_DSN }}
         run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test --ready-to-run
 
       - name: Upload linux-arm as build artifact

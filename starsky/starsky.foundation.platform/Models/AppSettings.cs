@@ -769,6 +769,15 @@ public sealed class AppSettings
 
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 
+	/// <summary>
+	///     Send anonymous crash reports (unhandled exceptions only, no personal data)
+	///     Only active when a DSN is available
+	///     Disable with: app__EnableCrashReports=false
+	/// </summary>
+	public bool? EnableCrashReports { get; set; } = true;
+
+	public SentrySettings? Sentry { get; set; } = new();
+
 
 	public bool IsVerbose()
 	{
@@ -885,6 +894,11 @@ public sealed class AppSettings
 		}
 
 		ReplaceOpenTelemetryData(appSettings);
+		if ( !string.IsNullOrEmpty(appSettings.Sentry?.Dsn) )
+		{
+			appSettings.Sentry.Dsn = CloneToDisplaySecurityWarning;
+		}
+
 		ReplaceCloudImportData(appSettings);
 
 		Queue.RabbitMq.Password = CloneToDisplaySecurityWarning;
