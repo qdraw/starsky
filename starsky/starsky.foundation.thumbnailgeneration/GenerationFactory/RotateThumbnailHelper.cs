@@ -5,6 +5,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory;
@@ -12,7 +13,7 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory;
 public class RotateThumbnailHelper(
 	ISelectorStorage selectorStorage,
 	AppSettings appSettings,
-	IWebLogger logger)
+	IWebLogger logger) : IRotateThumbnailHelper
 {
 	private readonly IStorage
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
@@ -26,7 +27,7 @@ public class RotateThumbnailHelper(
 	/// <param name="width">to resize, default 1000</param>
 	/// <param name="height">to resize, default keep ratio (0)</param>
 	/// <returns>Is successful? // private feature</returns>
-	internal async Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
+	public async Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
 		int height = 0)
 	{
 		if ( !_thumbnailStorage.ExistFile(fileHash) )

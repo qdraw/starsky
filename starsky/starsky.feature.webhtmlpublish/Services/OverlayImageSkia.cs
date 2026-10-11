@@ -1,15 +1,12 @@
 using System.IO;
 using System.Threading.Tasks;
 using SkiaSharp;
-using starsky.feature.webhtmlpublish.Interfaces;
-using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 
 namespace starsky.feature.webhtmlpublish.Services;
 
-[Service(typeof(IOverlayImage), InjectionLifetime = InjectionLifetime.Scoped)]
 public class OverlayImageSkia(ISelectorStorage selectorStorage, AppSettings appSettings)
 	: OverlayImageBase(selectorStorage, appSettings)
 {

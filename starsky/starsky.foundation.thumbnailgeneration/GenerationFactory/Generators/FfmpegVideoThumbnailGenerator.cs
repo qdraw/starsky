@@ -7,7 +7,6 @@ using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Generators.Interfaces;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
@@ -44,7 +43,8 @@ public class FfmpegVideoThumbnailGenerator(
 				singleSubPath, fileHash, true, imageFormat, true, result.ErrorMessage!);
 		}
 
-		var service = new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);
+		var service = new ImageProviderFactory(selectorStorage, logger)
+			.CreateResizeThumbnailFromSourceImageHelper();
 		var generationResult = await service.ResizeThumbnailFromSourceImage(result.ResultPath,
 			result.ResultPathType,
 			ThumbnailNameHelper.GetSize(biggestThumbnailSize), fileHash,

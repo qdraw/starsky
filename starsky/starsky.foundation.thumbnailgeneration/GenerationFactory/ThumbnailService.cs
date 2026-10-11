@@ -137,7 +137,8 @@ public class ThumbnailService(
 	public Task<bool> RotateThumbnail(string fileHash, int orientation,
 		int width = 1000, int height = 0)
 	{
-		var service = new RotateThumbnailHelper(selectorStorage, appSettings, logger);
+		var service = new ImageProviderFactory(selectorStorage, logger)
+			.CreateRotateThumbnailHelper(appSettings);
 		return service.RotateThumbnail(fileHash, orientation,
 			width, height);
 	}

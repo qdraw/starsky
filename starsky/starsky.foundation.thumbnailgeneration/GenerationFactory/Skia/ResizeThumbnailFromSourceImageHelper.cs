@@ -6,6 +6,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
 
@@ -13,7 +14,7 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 
 internal class ResizeThumbnailFromSourceImageHelper(
 	ISelectorStorage selectorStorage,
-	IWebLogger logger)
+	IWebLogger logger) : IResizeThumbnailFromSourceImageHelper
 {
 	private readonly IStorage _storage =
 		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -39,7 +40,7 @@ internal class ResizeThumbnailFromSourceImageHelper(
 		};
 	}
 
-	internal async Task<GenerationResultModel> ResizeThumbnailFromSourceImage(string subPath,
+	public async Task<GenerationResultModel> ResizeThumbnailFromSourceImage(string subPath,
 		SelectorStorage.StorageServices? subPathType,
 		int width, string? thumbnailOutputHash,
 		ThumbnailImageFormat imageFormat)

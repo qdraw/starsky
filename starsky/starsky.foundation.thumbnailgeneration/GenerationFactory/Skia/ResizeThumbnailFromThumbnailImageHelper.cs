@@ -10,6 +10,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
 
@@ -17,12 +18,12 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 
 internal class ResizeThumbnailFromThumbnailImageHelper(
 	ISelectorStorage selectorStorage,
-	IWebLogger logger)
+	IWebLogger logger) : IResizeThumbnailFromThumbnailImageHelper
 {
 	private readonly IStorage _thumbnailStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
-	internal async Task<IEnumerable<GenerationResultModel>?>
+	public async Task<IEnumerable<GenerationResultModel>?>
 		ResizeThumbnailFromThumbnailImageLoop(
 			string singleSubPath, string fileHash, ThumbnailImageFormat imageFormat,
 			List<ThumbnailSize> thumbnailSizes,
@@ -50,7 +51,7 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 	/// <param name="imageFormat">jpg, or png</param>
 	/// <param name="subPathReference">for reference only</param>
 	/// <returns>Result model</returns>
-	internal async Task<GenerationResultModel> ResizeThumbnailFromThumbnailImage(
+	public async Task<GenerationResultModel> ResizeThumbnailFromThumbnailImage(
 		string fileHash, // source location
 		ThumbnailSize inputThumbnailSize,
 		int width, string? subPathReference, string thumbnailOutputHash,

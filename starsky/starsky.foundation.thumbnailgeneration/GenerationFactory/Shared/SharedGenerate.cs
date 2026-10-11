@@ -6,7 +6,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 using starsky.foundation.thumbnailgeneration.Models;
 
@@ -25,8 +25,9 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 	internal const string PrefixGenerateThumbnailErrorMessage =
 		"[SharedGenerate] ResizeThumbnailFromSourceImage failed for ";
 
-	private readonly ResizeThumbnailFromThumbnailImageHelper _resizeThumbnail =
-		new(selectorStorage, logger);
+	private readonly IResizeThumbnailFromThumbnailImageHelper _resizeThumbnail =
+		new ImageProviderFactory(selectorStorage, logger)
+			.CreateResizeThumbnailFromThumbnailImageHelper();
 
 	public async Task<IEnumerable<GenerationResultModel>> GenerateThumbnail(
 		ResizeThumbnailFromSourceImage resizeThumbnailFromSourceImage,

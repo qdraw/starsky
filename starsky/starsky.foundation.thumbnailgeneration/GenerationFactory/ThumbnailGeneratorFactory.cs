@@ -26,6 +26,9 @@ public class ThumbnailGeneratorFactory(
 	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator,
 	IEmbeddedRawThumbnailGenerator embeddedRawThumbnailGenerator) : IThumbnailGeneratorFactory
 {
+	private readonly IImageProviderFactory _imageProviderFactory =
+		new ImageProviderFactory(selectorStorage, logger);
+
 	public IThumbnailGenerator GetGenerator(string filePath)
 	{
 		if ( ExtensionRolesHelper.IsExtensionJpeg(filePath) )
@@ -34,7 +37,7 @@ public class ThumbnailGeneratorFactory(
 			[
 				embeddedRawThumbnailGenerator,
 				nativePreviewThumbnailGenerator,
-				new SkiaThumbnailGenerator(selectorStorage, logger)
+				_imageProviderFactory.CreateThumbnailGenerator()
 			], logger);
 		}
 
@@ -51,7 +54,7 @@ public class ThumbnailGeneratorFactory(
 			return new CompositeThumbnailGenerator(
 			[
 				nativePreviewThumbnailGenerator,
-				new SkiaThumbnailGenerator(selectorStorage, logger)
+				_imageProviderFactory.CreateThumbnailGenerator()
 			], logger);
 		}
 
