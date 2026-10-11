@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using starsky.feature.desktop.Interfaces;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.platform.Models;
@@ -38,11 +39,17 @@ public class AppSettingsFeaturesController : Controller
 #endif
 	public IActionResult FeaturesView()
 	{
+		var enabledExternalProviders = _appSettings.ExternalAuth?.GetEnabledProviders() ?? [];
+
 		var shortAppSettings = new EnvFeaturesViewModel
 		{
 			SystemTrashEnabled = _moveToTrashService.IsEnabled(),
 			UseLocalDesktop = _appSettings.UseLocalDesktop == true,
-			OpenEditorEnabled = _openEditorDesktopService.IsEnabled()
+			OpenEditorEnabled = _openEditorDesktopService.IsEnabled(),
+			ExternalAuthEnabled = enabledExternalProviders.Count != 0,
+			ExternalAuthProviders = enabledExternalProviders
+				.Select(p => string.IsNullOrWhiteSpace(p.Id) ? p.Provider : p.Id)
+				.ToList()
 		};
 
 		return Json(shortAppSettings);
