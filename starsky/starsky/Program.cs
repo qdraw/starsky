@@ -16,7 +16,11 @@ public static class Program
 	                          "method should be used instead of the All extension")]
 	public static async Task Main(string[] args)
 	{
-		var appSettingsPath = Path.Join(
+		// Apply env vars from the macOS App Group container when running as a
+		// sandboxed MAS Login Item. Returns the group-container appsettings.json path
+		// so PortProgramHelper reads the Kestrel port that the Swift app wrote there.
+		var masAppSettingsPath = MacSandboxConfig.TryApply();
+		var appSettingsPath = masAppSettingsPath ?? Path.Join(
 			new AppSettings().BaseDirectoryProject,
 			"appsettings.json");
 		await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(args, appSettingsPath);

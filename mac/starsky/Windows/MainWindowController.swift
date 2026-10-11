@@ -78,6 +78,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
     private var webView: WKWebView!
     private var titleObservation: NSKeyValueObservation?
     private var downloadCoordinator: DownloadCoordinator!
+    private var storageFolderPickerHandler: StorageFolderPickerHandler?
 
     init(options: MainWindowOptions) {
         self.options = options
@@ -144,6 +145,11 @@ class MainWindowController: NSWindowController, NSWindowDelegate, WKNavigationDe
         config.userContentController.addUserScript(suppressBeepScript)
 
         webView = SilentWebView(frame: .zero, configuration: config)
+
+        let picker = StorageFolderPickerHandler(webView: webView)
+        storageFolderPickerHandler = picker
+        config.userContentController.add(picker, name: "storageFolderPicker")
+
         webView.navigationDelegate = self
         webView.uiDelegate = self
         webView.translatesAutoresizingMaskIntoConstraints = false
