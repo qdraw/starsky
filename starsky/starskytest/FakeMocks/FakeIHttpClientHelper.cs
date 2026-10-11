@@ -65,12 +65,27 @@ public class FakeIHttpClientHelper : IHttpClientHelper
 			.FirstOrDefault(p => p.Key == sourceHttpUrl.ToString()).Value);
 	}
 
-	public Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
+	public async Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
 		HttpContent? httpContent,
 		AuthenticationHeaderValue? authenticationHeaderValue = null,
 		bool verbose = true)
 	{
-		UrlsCalled.Add(sourceHttpUrl);
-		return Task.FromResult(_inputDictionary.FirstOrDefault(p => p.Key == sourceHttpUrl).Value);
+		var lookupKey = sourceHttpUrl;
+		if ( httpContent != null )
+		{
+			var body = await httpContent.ReadAsStringAsync();
+			if ( !string.IsNullOrEmpty(body) )
+			{
+				lookupKey = $"{sourceHttpUrl}?{body}";
+			}
+		}
+
+		UrlsCalled.Add(lookupKey);
+		if ( _inputDictionary.TryGetValue(lookupKey, out var result) )
+		{
+			return result;
+		}
+
+		return _inputDictionary.TryGetValue(sourceHttpUrl, out var fallback) ? fallback : default;
 	}
 }

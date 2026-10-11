@@ -561,4 +561,8 @@ export class UrlQuery {
   public UrlGeoReverseNominatim(latitude: number, longitude: number): string {
     return `${this.prefix}/api/geo-reverse-nominatim?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`;
   }
+
+  public UrlGeoMapElements(latitude: number, longitude: number): string {
+    return `${this.prefix}/api/geo-map-elements?lat=${latitude}&lon=${longitude}`;
+  }
 }
