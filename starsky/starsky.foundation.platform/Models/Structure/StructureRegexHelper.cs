@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Models.Structure;
@@ -20,6 +21,8 @@ public static partial class StructureRegexHelper
 	public static bool StructureCheck(string? structure)
 	{
 		return !string.IsNullOrEmpty(structure) &&
-		       StructureRegex().IsMatch(structure);
+		       StructureRegex().IsMatch(structure) &&
+		       // a structure is a relative sub path, it should not climb out of the storage folder
+		       !structure.Split('/', '\\').Any(segment => segment.Trim() == "..");
 	}
 }

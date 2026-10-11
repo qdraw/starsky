@@ -141,6 +141,15 @@ machinename with your computer name in lowercase)_
 47. `Queue` - Configure background queues per queue name. Use `InMemory`, `Database` or `RabbitMq`.
     Existing queues stay `InMemory` by default. `Queue.Default` is the fallback,
     `Queue.Queues` contains per-queue overrides, and `Queue.RabbitMq` stores shared broker settings.
+48. `DataProtectionCertificatePath` - Optional path to a PKCS#12 (`.pfx`) certificate. When set, new
+    data protection keys (these sign the login cookie) are encrypted with it before they are stored in
+    the database, so reading the database alone is not enough to forge a login cookie. Existing keys
+    stay readable and are replaced by encrypted ones when the key rotates (every 90 days). The app
+    does not start when the file is missing or the password is wrong. This setting is never written
+    to the settings file by the settings API, set it with the environment variable
+    `app__DataProtectionCertificatePath` _(default empty, keys are stored unencrypted)_
+49. `DataProtectionCertificatePassword` - Password for the certificate above, can be empty. Use
+    the environment variable `app__DataProtectionCertificatePassword`
 
 ### Appsettings.json example
 

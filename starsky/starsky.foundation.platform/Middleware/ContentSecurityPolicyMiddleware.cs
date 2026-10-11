@@ -13,6 +13,16 @@ public sealed class ContentSecurityPolicyMiddleware
 		_next = next;
 	}
 
+	/// <summary>
+	///     Host name, IPv4 or bracketed IPv6 only (or empty); no spaces, semicolons or quotes
+	/// </summary>
+	internal static bool IsSafeCspHost(string? host)
+	{
+		return string.IsNullOrEmpty(host) || ( host.Length <= 255 &&
+		                                       host.All(c => char.IsAsciiLetterOrDigit(c) ||
+		                                                     c is '.' or '-' or ':' or '[' or ']') );
+	}
+
 	// IMyScopedService is injected into Invoke
 	public async Task Invoke(HttpContext httpContext)
 	{
@@ -21,16 +31,22 @@ public sealed class ContentSecurityPolicyMiddleware
 		if ( string.IsNullOrEmpty(httpContext.Response.Headers.ContentSecurityPolicy) )
 		{
 			// only needed for safari and old firefox
-			var socketUrl = httpContext.Request.Scheme == "http"
-				? $"ws://{httpContext.Request.Host.Host}"
-				: $"wss://{httpContext.Request.Host.Host}";
-
-			// For Safari localhost
+			// The Host header is client input and ends up in a header value: without this check
+			// a Host like "x; script-src *" adds directives (and can be cached by a proxy)
+			var socketUrl = string.Empty;
 			var socketUrlWithPort = string.Empty;
-			if ( httpContext.Request.Host.Port != null )
+			if ( IsSafeCspHost(httpContext.Request.Host.Host) )
 			{
-				socketUrlWithPort =
-					$"{socketUrl}:{httpContext.Request.Host.Port}";
+				socketUrl = httpContext.Request.Scheme == "http"
+					? $"ws://{httpContext.Request.Host.Host}"
+					: $"wss://{httpContext.Request.Host.Host}";
+
+				// For Safari localhost
+				if ( httpContext.Request.Host.Port != null )
+				{
+					socketUrlWithPort =
+						$"{socketUrl}:{httpContext.Request.Host.Port}";
+				}
 			}
 
 			// When change also update in Electron
@@ -96,7 +112,8 @@ public sealed class ContentSecurityPolicyMiddleware
 		if ( string.IsNullOrEmpty(httpContext.Response.Headers.XXSSProtection) )
 		{
 			httpContext.Response.Headers
-				.Append("X-Xss-Protection", "1; mode=block");
+				// the legacy XSS auditor is removed from browsers and was itself exploitable; CSP does the work
+				.Append("X-Xss-Protection", "0");
 		}
 
 		if ( string.IsNullOrEmpty(httpContext.Response.Headers.XContentTypeOptions) )

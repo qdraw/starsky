@@ -265,6 +265,12 @@ public class StructureService : IStructureService
 				currentChildFolderBuilder.Append(structureItem.Output);
 			}
 
+			// The structure is user input (import header); escaped dots (\.\.) end up here as '..'
+			if ( currentChildFolderBuilder.ToString().Trim('/').Trim() == ".." )
+			{
+				continue;
+			}
+
 			var parentFolderSubPath =
 				FilenamesHelper.GetParentPath(parentFolderBuilder.ToString());
 			var storage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);

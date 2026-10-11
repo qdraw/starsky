@@ -191,6 +191,21 @@ public sealed class ImportControllerTest
 	}
 
 	[TestMethod]
+	[DataRow("not a url")]
+	[DataRow("")]
+	public async Task FromUrl_InvalidUrl_ShouldReturnBadRequest(string url)
+	{
+		var importController = new ImportController(_import, _appSettings,
+			_bgTaskQueue, new FakeIHttpClientHelper(new FakeIStorage(), new()),
+			new FakeSelectorStorage(new FakeIStorage()),
+			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+
+		var result = await importController.FromUrl(url, "example.tiff", null!);
+
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
 	public async Task FromUrl_RequestFromWhiteListedDomain_NotFound()
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();

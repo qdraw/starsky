@@ -86,6 +86,40 @@ public sealed class ContentSecurityPolicyMiddlewareTest
 	}
 
 	[TestMethod]
+	[DataRow("x; script-src *")]
+	[DataRow("evil.test 'unsafe-inline'")]
+	[DataRow("a\"b.test")]
+	public async Task Invoke_UnsafeHostHeader_IsNotCopiedIntoCsp(string host)
+	{
+		var httpContext = new DefaultHttpContext
+		{
+			Request = { Scheme = "https", Host = new HostString(host) }
+		};
+
+		await new ContentSecurityPolicyMiddleware(_ => Task.CompletedTask).Invoke(httpContext);
+
+		var csp = httpContext.Response.Headers.ContentSecurityPolicy.ToString();
+		Assert.DoesNotContain("script-src *", csp);
+		Assert.DoesNotContain("unsafe-inline", csp);
+		Assert.DoesNotContain("evil.test", csp);
+		Assert.DoesNotContain("wss://", csp);
+		Assert.Contains("script-src 'self'", csp);
+	}
+
+	[TestMethod]
+	[DataRow("localhost", true)]
+	[DataRow("photos.example.test", true)]
+	[DataRow("[::1]", true)]
+	[DataRow("192.168.0.2", true)]
+	[DataRow("", true)]
+	[DataRow("a b", false)]
+	[DataRow("a;b", false)]
+	public void IsSafeCspHost_Cases(string host, bool expected)
+	{
+		Assert.AreEqual(expected, ContentSecurityPolicyMiddleware.IsSafeCspHost(host));
+	}
+
+	[TestMethod]
 	public async Task invoke_httpsTest_websockets_localhostWithNoPort()
 	{
 		// Arrange
@@ -127,7 +161,7 @@ public sealed class ContentSecurityPolicyMiddlewareTest
 
 		// X-Xss-Protection
 		var xssProtection = httpContext.Response.Headers.XXSSProtection.ToString();
-		Assert.AreEqual("1; mode=block", xssProtection);
+		Assert.AreEqual("0", xssProtection);
 
 		// X-Content-Type-Options
 		var contentTypeOptions = httpContext.Response.Headers.XContentTypeOptions.ToString();

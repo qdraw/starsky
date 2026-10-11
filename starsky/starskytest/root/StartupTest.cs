@@ -60,6 +60,9 @@ public sealed class StartupTest
 		serviceCollection.AddLogging();
 		serviceCollection.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
 
+		// the provider is built before ConfigureServices in this test, UseRateLimiter needs these at Configure
+		Startup.AddRateLimiting(serviceCollection);
+
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
 

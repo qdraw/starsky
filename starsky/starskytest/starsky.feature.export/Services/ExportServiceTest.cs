@@ -158,4 +158,42 @@ public class ExportServiceTest
 				["/test/not_found.jpg"], true);
 		Assert.IsNull(fileName.FirstOrDefault());
 	}
+
+	[TestMethod]
+	[DataRow("../outside")]
+	[DataRow("..\\outside")]
+	[DataRow("sub/../../outside")]
+	[DataRow("/outside")]
+	[DataRow("")]
+	public void StatusIsReady_NameWithPathCharacters_ShouldNotEscapeTempFolder(string name)
+	{
+		// zips outside the temp folder that should never be reachable
+		var storage = new FakeIStorage(["/tmp", "/tmp/export-temp"],
+			["/tmp/outside.zip", "/outside.zip", "/tmp/export-temp/sub/../../outside.zip"]);
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { TempFolder = "/tmp/export-temp" },
+			new FakeSelectorStorage(storage), new FakeIWebLogger(),
+			new FakeIThumbnailService());
+
+		var (status, path) = exportService.StatusIsReady(name);
+
+		Assert.IsNull(status);
+		Assert.IsNull(path);
+	}
+
+	[TestMethod]
+	public void StatusIsReady_GeneratedName_ShouldWork()
+	{
+		var storage = new FakeIStorage(["/tmp", "/tmp/export-temp"],
+			["/tmp/export-temp/TNA995920129.zip"]);
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { TempFolder = "/tmp/export-temp" },
+			new FakeSelectorStorage(storage), new FakeIWebLogger(),
+			new FakeIThumbnailService());
+
+		var (status, path) = exportService.StatusIsReady("TNA995920129");
+
+		Assert.IsFalse(status); // no .done file yet
+		Assert.IsNotNull(path);
+	}
 }

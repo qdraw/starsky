@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -381,6 +383,9 @@ public sealed class UserManager : IUserManager
 
 		if ( credential?.Extra == null )
 		{
+			// Do the same hashing work as for a known account, so the response time does not
+			// tell whether the identifier exists
+			Pbkdf2Hasher.ComputeHash(secret, UnknownIdentifierSalt, true, true);
 			return new ValidateResult(success: false,
 				error: ValidateResultError.CredentialNotFound);
 		}
@@ -403,7 +408,7 @@ public sealed class UserManager : IUserManager
 		var hashedPassword =
 			Pbkdf2Hasher.ComputeHash(secret, salt, iterationSecure, iterationSecure);
 
-		if ( credential.Secret == hashedPassword )
+		if ( IsSecretEqual(credential.Secret, hashedPassword) )
 		{
 			// to be removed in future releases
 			await TransformToNewIterationAsync(credential, salt, secret, credentialType);
@@ -412,6 +417,17 @@ public sealed class UserManager : IUserManager
 		}
 
 		return await SetLockIfFailedCountIsToHigh(credential.UserId);
+	}
+
+	private static readonly byte[] UnknownIdentifierSalt = new byte[16];
+
+	/// <summary>
+	///     Compare hashes without an early exit on the first different character
+	/// </summary>
+	internal static bool IsSecretEqual(string? storedHash, string computedHash)
+	{
+		return storedHash != null && CryptographicOperations.FixedTimeEquals(
+			Encoding.UTF8.GetBytes(storedHash), Encoding.UTF8.GetBytes(computedHash));
 	}
 
 	public async Task<bool> SignIn(HttpContext httpContext, User? user, bool isPersistent = false)

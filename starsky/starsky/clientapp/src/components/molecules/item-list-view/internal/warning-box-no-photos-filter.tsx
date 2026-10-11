@@ -55,7 +55,11 @@ export const WarningBoxNoPhotosFilter: React.FunctionComponent<IWarningBoxNoPhot
           data-test="list-view-no-photos-in-folder"
         >
           {MessageNewUserNoPhotosInFolder}{" "}
-          <a target="_blank" href={new UrlQuery().DocsGettingStartedFirstSteps()} rel="noreferrer">
+          <a
+            target="_blank"
+            href={new UrlQuery().DocsGettingStartedFirstSteps()}
+            rel="noopener noreferrer"
+          >
             {MessageReadMoreHere}.
           </a>{" "}
           {MessageNoPhotosInFolder}

@@ -10,6 +10,9 @@ on:
 
 name: end2end on ubuntu-ci
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Test
@@ -30,7 +33,10 @@ jobs:
       - name: github-artifacts-download
         shell: bash
         working-directory: ./starsky/starsky
-        run: bash github-artifacts-download.sh --output ${{ steps.create_temp_folder.outputs.folder_path }} --token ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OUTPUT_FOLDER: ${{ steps.create_temp_folder.outputs.folder_path }}
+        run: bash github-artifacts-download.sh --output "$OUTPUT_FOLDER" --token "$GH_TOKEN"
 
       - name: pm2-new-instance
         shell: bash

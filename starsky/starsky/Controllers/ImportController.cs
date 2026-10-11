@@ -129,6 +129,7 @@ public sealed class ImportController : Controller
 	[HttpPost("/api/import/fromUrl")]
 	[ProducesResponseType(typeof(List<ImportIndexItem>), 200)] // yes
 	[ProducesResponseType(typeof(List<ImportIndexItem>), 206)] // file already imported
+	[ProducesResponseType(400)] // bad request
 	[ProducesResponseType(404)] // url 404
 	[Produces("application/json")]
 	public async Task<IActionResult> FromUrl(string fileUrl, string? filename, string structure)
@@ -150,7 +151,13 @@ public sealed class ImportController : Controller
 
 		var tempImportFullPath = Path.Combine(_appSettings.TempFolder, filename);
 		var importSettings = new ImportSettingsModel(Request) { Structure = structure };
-		var isDownloaded = await _httpClientHelper.Download(fileUrl, tempImportFullPath);
+		if ( !Uri.TryCreate(fileUrl, UriKind.Absolute, out var fileUri) )
+		{
+			return BadRequest("'file url' is not a valid url");
+		}
+
+		var isDownloaded = await _httpClientHelper.Download(fileUri, tempImportFullPath,
+			restricted: true);
 		if ( !isDownloaded )
 		{
 			return NotFound("'file url' not found or domain not allowed " + fileUrl);

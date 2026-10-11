@@ -5,6 +5,9 @@ on:
     - cron: "0 0/12 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   sonar:
     runs-on: ubuntu-latest

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using starsky.feature.search.Interfaces;
 using starsky.Helpers;
 
@@ -67,6 +68,7 @@ public sealed class SearchSuggestController : Controller
 	[HttpGet("/api/suggest/inflate")]
 	[ProducesResponseType(200)] // ok
 	[AllowAnonymous]
+	[EnableRateLimiting(RateLimitPolicies.Anonymous)]
 	public async Task<IActionResult> Inflate()
 	{
 		await _suggest.Inflate();
