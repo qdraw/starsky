@@ -34,7 +34,7 @@ public class ThumbnailService(
 	: IThumbnailService
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
-		ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(e) ||
+		ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(e) ||
 		ExtensionRolesHelper.IsExtensionVideoSupported(e) ||
 		ExtensionRolesHelper.IsExtensionRawThumbnailSupported(e) || 
 		ExtensionRolesHelper.IsExtensionNativeSupported(e);

@@ -7,7 +7,6 @@ set -euo pipefail
 # List of binaries to download, zip, and hash
 VERSION="v4.1.1"
 BINARIES=(
-  "linux-arm|https://github.com/qdraw/mozjpeg-binaries/releases/download/$VERSION/linux-armhf|mozjpeg|mozjpeg-linux-arm.zip"
   "linux-arm64|https://github.com/qdraw/mozjpeg-binaries/releases/download/$VERSION/linux-arm64|mozjpeg|mozjpeg-linux-arm64.zip"
   "linux-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/$VERSION/linux-x64|mozjpeg|mozjpeg-linux-x64.zip"
   "osx-x64|https://github.com/qdraw/mozjpeg-binaries/releases/download/$VERSION/macos-x64|mozjpeg|mozjpeg-osx-x64.zip"  
@@ -19,7 +18,7 @@ BINARIES=(
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 BINARY_FOLDERNAME="mirror/mozjpeg"
 INDEX_FILE="index.json"
-CHECK_FILES=("mozjpeg-linux-x64.zip" "mozjpeg-linux-arm64.zip" "mozjpeg-linux-arm.zip" "mozjpeg-osx-x64.zip" "mozjpeg-osx-arm64.zip" "mozjpeg-win-x64.zip")
+CHECK_FILES=("mozjpeg-linux-x64.zip" "mozjpeg-linux-arm64.zip" "mozjpeg-osx-x64.zip" "mozjpeg-osx-arm64.zip" "mozjpeg-win-x64.zip")
 
 usage() {
   echo "Usage: $0 [--output <directory>] [--help]"

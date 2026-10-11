@@ -44,7 +44,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.7 - _(Unreleased)_ - 2026-?-? {#0.9.7}
 
-- nothing yet
+- [x] (Removed) _Back-end_ `linux-arm` (32 bits ARM, e.g. Raspberry Pi 32 bits and Docker `linux/arm/v7`) is no longer supported, use `linux-arm64`
+- [x] (Security) _Back-end_ Image resizing, thumbnails and the logo overlay of publish profiles use SkiaSharp; SixLabors.ImageSharp is removed (known vulnerabilities, paid licence)
 
 ## version 0.9.6 - 2026-09-29 {#0.9.6}
 

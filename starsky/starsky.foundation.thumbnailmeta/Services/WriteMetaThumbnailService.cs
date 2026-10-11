@@ -1,8 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
@@ -11,6 +10,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 using starsky.foundation.thumbnailmeta.Helpers;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.thumbnailmeta.Models;
@@ -46,27 +46,20 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 		{
 			using ( var thumbnailStream =
 			       new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count) )
-			using ( var smallImage = await Image.LoadAsync(thumbnailStream) )
+			using ( var smallImage = SkiaImageHelper.Decode(thumbnailStream) )
 			using ( var outputStream = new MemoryStream() )
 			{
-				var smallImageWidth = smallImage.Width;
-				var smallImageHeight = smallImage.Height;
+				var result = NewImageSize.NewImageSizeCalc(smallImage.Width,
+					smallImage.Height, sourceWidth, sourceHeight);
 
-				var result = NewImageSize.NewImageSizeCalc(smallImageWidth,
-					smallImageHeight, sourceWidth, sourceHeight);
-
-				smallImage.Mutate(i => i
-					.Resize(smallImageWidth, smallImageHeight, KnownResamplers.Lanczos3)
-					.Crop(new Rectangle(result.DestX, result.DestY, result.DestWidth,
-						result.DestHeight)));
+				using var cropped = SkiaImageHelper.Crop(smallImage, result.DestX,
+					result.DestY, result.DestWidth, result.DestHeight);
 
 				var larger = ( int ) Math.Round(result.DestWidth * 1.2, 0);
+				using var resized = SkiaImageHelper.Resize(cropped, larger, 0);
+				using var rotated = SkiaImageHelper.Rotate(resized, rotation.ToDegrees());
 
-				smallImage.Mutate(i => i.Resize(larger, 0, KnownResamplers.Lanczos3));
-
-				smallImage.Mutate(i => i.Rotate(rotation.ToDegrees()));
-
-				await SaveAsImage(smallImage, outputStream);
+				SaveAsImage(rotated, outputStream);
 
 				await _thumbnailStorage.WriteStreamAsync(outputStream,
 					ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta,
@@ -97,15 +90,15 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 		}
 	}
 
-	private async Task SaveAsImage(Image smallImage, MemoryStream outputStream)
+	private void SaveAsImage(SKBitmap image, MemoryStream outputStream)
 	{
 		if ( _appSettings.ThumbnailImageFormat == ThumbnailImageFormat.webp )
 		{
-			await smallImage.SaveAsWebpAsync(outputStream);
+			SkiaImageHelper.Encode(image, SKEncodedImageFormat.Webp, 75, outputStream);
 		}
 		else
 		{
-			await smallImage.SaveAsJpegAsync(outputStream);
+			SkiaImageHelper.Encode(image, SKEncodedImageFormat.Jpeg, 75, outputStream);
 		}
 	}
 }

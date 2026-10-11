@@ -7,12 +7,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 using starsky.foundation.thumbnailgeneration.Models;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 
 [TestClass]
 public class ResizeThumbnailFromThumbnailImageHelperTests
@@ -48,7 +48,7 @@ public class ResizeThumbnailFromThumbnailImageHelperTests
 
 		var result = await sut.ResizeThumbnailFromThumbnailImage(FileHash,
 			ThumbnailSize.Large, 1, null, FileHash,
-			true, ThumbnailImageFormat.jpg);
+			ThumbnailImageFormat.jpg);
 
 		Assert.IsFalse(result.Success);
 		Assert.IsFalse(result.IsNotFound);
@@ -61,7 +61,7 @@ public class ResizeThumbnailFromThumbnailImageHelperTests
 		var result = await _sut.ResizeThumbnailFromThumbnailImage(
 			FileHash, ThumbnailSize.Large, 4,
 			"subPath",
-			"thumbnailOutputHash", false,
+			"thumbnailOutputHash",
 			ThumbnailImageFormat.jpg);
 
 		Assert.IsTrue(result.Success);
@@ -77,7 +77,7 @@ public class ResizeThumbnailFromThumbnailImageHelperTests
 			"nonExistentFileHash", ThumbnailSize.Small,
 			100, "subPath",
 			"thumbnailOutputHash",
-			false, ThumbnailImageFormat.jpg);
+			ThumbnailImageFormat.jpg);
 
 		Assert.IsFalse(result.IsNotFound);
 		Assert.IsFalse(result.Success);
@@ -91,7 +91,7 @@ public class ResizeThumbnailFromThumbnailImageHelperTests
 			await _sut.ResizeThumbnailFromThumbnailImage(
 				"fileHash", ThumbnailSize.Small,
 				100, "subPath",
-				"", false,
+				"",
 				ThumbnailImageFormat.jpg));
 	}
 
@@ -102,7 +102,7 @@ public class ResizeThumbnailFromThumbnailImageHelperTests
 			await _sut.ResizeThumbnailFromThumbnailImage(
 				"fileHash", ThumbnailSize.Small,
 				100, "subPath",
-				"test", false,
+				"test",
 				ThumbnailImageFormat.unknown));
 	}
 

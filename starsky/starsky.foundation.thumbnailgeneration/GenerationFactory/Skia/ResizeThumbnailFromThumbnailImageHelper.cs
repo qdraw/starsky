@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
@@ -14,7 +13,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
 
-namespace starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 
 internal class ResizeThumbnailFromThumbnailImageHelper(
 	ISelectorStorage selectorStorage,
@@ -36,7 +35,7 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 					toGenerateSize,
 					ThumbnailNameHelper.GetSize(size),
 					singleSubPath, // used for reference only
-					fileHash, false, imageFormat),
+					fileHash, imageFormat),
 			thumbnailSizes.Count);
 		return results;
 	}
@@ -48,7 +47,6 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 	/// <param name="width">width in pixels</param>
 	/// <param name="inputThumbnailSize">thumbnail size</param>
 	/// <param name="thumbnailOutputHash">name of output file (DO NOT include size)</param>
-	/// <param name="removeExif">remove meta data</param>
 	/// <param name="imageFormat">jpg, or png</param>
 	/// <param name="subPathReference">for reference only</param>
 	/// <returns>Result model</returns>
@@ -56,7 +54,6 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 		string fileHash, // source location
 		ThumbnailSize inputThumbnailSize,
 		int width, string? subPathReference, string thumbnailOutputHash,
-		bool removeExif,
 		ThumbnailImageFormat imageFormat
 	)
 	{
@@ -99,11 +96,10 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 		{
 			// resize the image and save it to the output stream
 			using ( var inputStream = _thumbnailStorage.ReadStream(inputFileHashWithExtension) )
-			using ( var image = await Image.LoadAsync(inputStream) )
+			using ( var image = SkiaImageHelper.DecodeAutoOrient(inputStream) )
+			using ( var resized = SkiaImageHelper.ResizeLongSide(image, width) )
 			{
-				ImageSharpImageResizeHelper.ImageSharpImageResize(image, width, removeExif);
-				await SaveThumbnailImageFormatHelper.SaveThumbnailImageFormat(image, imageFormat,
-					outputStream);
+				SkiaImageHelper.Encode(resized, imageFormat, outputStream);
 
 				// only when a hash exists
 				var outputFileHashWithExtension =

@@ -17,7 +17,7 @@ async function getFiles(dir) {
 		dirent.name != "dist" &&
 		dirent.name != "node_modules" && dirent.name != "obj" && dirent.name != "bin" &&
 		dirent.name != "osx-x64" && dirent.name != "osx-x64" &&
-		dirent.name != "linux-arm64" && dirent.name != "linux-arm" && dirent.name != "linux-x64" &&
+		dirent.name != "linux-arm64" && dirent.name != "linux-x64" &&
 		dirent.name != "win-x64" && dirent.name != "win-x86" && dirent.name != "win-arm64" &&
 		dirent.name != "coverage" && dirent.name != "coverage-report" &&
 		!dirent.name.startsWith(".") ? getFiles(res) : res;

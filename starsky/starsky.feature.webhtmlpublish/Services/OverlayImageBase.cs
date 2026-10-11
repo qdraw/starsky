@@ -1,11 +1,7 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using starsky.feature.webhtmlpublish.Interfaces;
-using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Models;
@@ -15,19 +11,22 @@ using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.webhtmlpublish.Services;
 
-[Service(typeof(IOverlayImage), InjectionLifetime = InjectionLifetime.Scoped)]
-public class OverlayImage : IOverlayImage
+/// <summary>
+///     Storage, path and validation logic that is shared between the image providers,
+///     the providers only implement the pixel work
+/// </summary>
+public abstract class OverlayImageBase : IOverlayImage
 {
 	private readonly AppSettings _appSettings;
-	private readonly IStorage _hostFileSystem;
 	private readonly IStorage _iStorage;
 	private readonly IStorage _thumbnailStorage;
+	protected readonly IStorage HostFileSystem;
 
-	public OverlayImage(ISelectorStorage selectorStorage, AppSettings appSettings)
+	protected OverlayImageBase(ISelectorStorage selectorStorage, AppSettings appSettings)
 	{
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-		_hostFileSystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+		HostFileSystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_appSettings = appSettings;
 	}
 
@@ -66,12 +65,12 @@ public class OverlayImage : IOverlayImage
 			throw new FileNotFoundException("fileHash " + fileHashWithExtension);
 		}
 
-		if ( _hostFileSystem.ExistFile(outputFullFilePath) )
+		if ( HostFileSystem.ExistFile(outputFullFilePath) )
 		{
 			return Task.FromResult(false);
 		}
 
-		if ( !_hostFileSystem.ExistFile(profile.Path) )
+		if ( !HostFileSystem.ExistFile(profile.Path) )
 		{
 			throw new FileNotFoundException(
 				$"overlayImage is missing in profile.Path: {profile.Path}");
@@ -82,7 +81,7 @@ public class OverlayImage : IOverlayImage
 	}
 
 	/// <summary>
-	///     Read from _iStorage to _hostFileSystem
+	///     Read from _iStorage to HostFileSystem
 	/// </summary>
 	/// <param name="itemFilePath">input Image</param>
 	/// <param name="outputFullFilePath">location where to store</param>
@@ -102,12 +101,12 @@ public class OverlayImage : IOverlayImage
 			throw new FileNotFoundException("subPath " + itemFilePath);
 		}
 
-		if ( _hostFileSystem.ExistFile(outputFullFilePath) )
+		if ( HostFileSystem.ExistFile(outputFullFilePath) )
 		{
 			return Task.FromResult(false);
 		}
 
-		if ( !_hostFileSystem.ExistFile(profile.Path) )
+		if ( !HostFileSystem.ExistFile(profile.Path) )
 		{
 			throw new FileNotFoundException(
 				$"overlayImage is missing in profile.Path: {profile.Path}");
@@ -122,72 +121,41 @@ public class OverlayImage : IOverlayImage
 	/// <summary>
 	///     [Internal] Without checks if input is valid - Read from thumbnail storage
 	/// </summary>
-	/// <param name="fileHashWithExtension">input Image</param>
-	/// <param name="outputFullFilePath">location where to store</param>
-	/// <param name="profile">image profile that contains sizes</param>
 	private async Task<bool> ResizeOverlayImageThumbnailsInternal(
 		string fileHashWithExtension,
 		string outputFullFilePath, AppSettingsPublishProfiles profile)
 	{
 		using ( var sourceImageStream = _thumbnailStorage.ReadStream(fileHashWithExtension) )
-		using ( var sourceImage = await Image.LoadAsync(sourceImageStream) )
 		using ( var overlayImageStream =
-		       _hostFileSystem.ReadStream(profile.Path) ) // for example a logo
-		using ( var overlayImage = await Image.LoadAsync(overlayImageStream) )
-		using ( var outputStream = new MemoryStream() )
+		       HostFileSystem.ReadStream(profile.Path) ) // for example a logo
 		{
-			return await ResizeOverlayImageShared(sourceImage, overlayImage, outputStream,
-				profile,
-				outputFullFilePath);
+			return await ResizeOverlayImageShared(sourceImageStream, overlayImageStream,
+				profile, outputFullFilePath);
 		}
 	}
 
 	/// <summary>
-	///     [Internal] Without checks if input is valid - Read from _iStorage to _hostFileSystem
+	///     [Internal] Without checks if input is valid - Read from _iStorage to HostFileSystem
 	/// </summary>
-	/// <param name="itemFilePath">input Image</param>
-	/// <param name="outputFullFilePath">location where to store</param>
-	/// <param name="profile">image profile that contains sizes</param>
 	private async Task<bool> ResizeOverlayImageLargeInternal(string itemFilePath,
 		string outputFullFilePath, AppSettingsPublishProfiles profile)
 	{
 		using ( var sourceImageStream = _iStorage.ReadStream(itemFilePath) )
-		using ( var sourceImage = await Image.LoadAsync(sourceImageStream) )
-		using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path) )
-		using ( var overlayImage = await Image.LoadAsync(overlayImageStream) )
-		using ( var outputStream = new MemoryStream() )
+		using ( var overlayImageStream = HostFileSystem.ReadStream(profile.Path) )
 		{
-			return await ResizeOverlayImageShared(sourceImage, overlayImage, outputStream,
-				profile,
-				outputFullFilePath);
+			return await ResizeOverlayImageShared(sourceImageStream, overlayImageStream,
+				profile, outputFullFilePath);
 		}
 	}
 
-	[SuppressMessage("Performance",
-		"CA1859:Use concrete types when possible for improved performance")]
-	private async Task<bool> ResizeOverlayImageShared(Image sourceImage, Image overlayImage,
-		Stream outputStream, AppSettingsPublishProfiles profile, string outputSubPath)
-	{
-		sourceImage.Mutate(x => x.AutoOrient());
-
-		sourceImage.Mutate(x => x
-			.Resize(profile.SourceMaxWidth, 0, KnownResamplers.Lanczos3)
-		);
-
-		overlayImage.Mutate(x => x
-			.Resize(profile.OverlayMaxWidth, 0, KnownResamplers.Lanczos3)
-		);
-
-		var xPoint = sourceImage.Width - overlayImage.Width;
-		var yPoint = sourceImage.Height - overlayImage.Height;
-
-		sourceImage.Mutate(x => x.DrawImage(overlayImage,
-			new Point(xPoint, yPoint), 1F));
-
-		await sourceImage.SaveAsJpegAsync(outputStream);
-		outputStream.Seek(0, SeekOrigin.Begin);
-
-		await _hostFileSystem.WriteStreamAsync(outputStream, outputSubPath);
-		return true;
-	}
+	/// <summary>
+	///     Orient, resize to profile.SourceMaxWidth, draw the resized overlay (profile.OverlayMaxWidth)
+	///     at the bottom right, save as Jpeg to the host file system
+	/// </summary>
+	/// <param name="sourceImageStream">image to publish</param>
+	/// <param name="overlayImageStream">logo</param>
+	/// <param name="profile">image profile that contains sizes</param>
+	/// <param name="outputSubPath">location on the host file system</param>
+	protected abstract Task<bool> ResizeOverlayImageShared(Stream sourceImageStream,
+		Stream overlayImageStream, AppSettingsPublishProfiles profile, string outputSubPath);
 }

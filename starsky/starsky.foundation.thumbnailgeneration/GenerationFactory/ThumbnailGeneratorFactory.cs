@@ -34,7 +34,7 @@ public class ThumbnailGeneratorFactory(
 			[
 				embeddedRawThumbnailGenerator,
 				nativePreviewThumbnailGenerator,
-				new ImageSharpThumbnailGenerator(selectorStorage, logger)
+				new SkiaThumbnailGenerator(selectorStorage, logger)
 			], logger);
 		}
 
@@ -46,12 +46,12 @@ public class ThumbnailGeneratorFactory(
 			], logger);
 		}
 
-		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(filePath) )
+		if ( ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(filePath) )
 		{
 			return new CompositeThumbnailGenerator(
 			[
 				nativePreviewThumbnailGenerator,
-				new ImageSharpThumbnailGenerator(selectorStorage, logger)
+				new SkiaThumbnailGenerator(selectorStorage, logger)
 			], logger);
 		}
 

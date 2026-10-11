@@ -10,12 +10,12 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.
-	ImageSharp;
+	Skia;
 
 [TestClass]
 public class ResizeThumbnailFromSourceImageHelperTests
@@ -52,7 +52,6 @@ public class ResizeThumbnailFromSourceImageHelperTests
 		var testOutputPath = $"{testOutputHash}@{width}.{thumbnailImageFormat}";
 
 		// string subPath, int width, string outputHash = null,bool
-		// removeExif = false,ExtensionRolesHelper.ImageFormat
 		// imageFormat = ExtensionRolesHelper.ImageFormat.jpg
 		var sut = new ResizeThumbnailFromSourceImageHelper(
 			new FakeSelectorStorage(iStorage),
@@ -60,7 +59,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 
 		var model = await sut.ResizeThumbnailFromSourceImage(
 			newImage.FullFilePath, SelectorStorage.StorageServices.SubPath, width, testOutputHash,
-			true, thumbnailImageFormat);
+			thumbnailImageFormat);
 
 		var stream = iStorage.ReadStream(testOutputPath);
 		var meta = ImageMetadataReader.ReadMetadata(stream).ToList();
@@ -92,7 +91,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 
 		var result = await sut.ResizeThumbnailFromThumbnailImage(FileHash,
 			ThumbnailSize.Large, 1, null, FileHash,
-			true, ThumbnailImageFormat.jpg);
+			ThumbnailImageFormat.jpg);
 
 		Assert.IsFalse(result.Success);
 		Assert.IsFalse(result.IsNotFound);
@@ -108,7 +107,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	{
 		var result = await _sut.ResizeThumbnailFromSourceImage(
 			TestPath, services, 4, "thumbnailOutputHash",
-			false, ThumbnailImageFormat.jpg);
+			ThumbnailImageFormat.jpg);
 
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual("thumbnailOutputHash", result.FileHash);
@@ -123,7 +122,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 			TestPath,
 			SelectorStorage.StorageServices.HostFilesystem,
 			4, "thumbnailOutputHash",
-			false, ThumbnailImageFormat.jpg);
+			ThumbnailImageFormat.jpg);
 
 		Assert.AreEqual("host type is not supported yet", result.ErrorMessage);
 		Assert.IsFalse(result.Success);
@@ -136,7 +135,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 			TestPath,
 			null!, // should be null to trigger exception
 			4, "thumbnailOutputHash",
-			false, ThumbnailImageFormat.jpg);
+			ThumbnailImageFormat.jpg);
 
 		Assert.AreEqual("Value does not fall within the expected range. " +
 		                "(Parameter 'resultResultPathType')", result.ErrorMessage);
@@ -149,7 +148,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 		var result = await _sut.ResizeThumbnailFromSourceImage(
 			"non-existing-filepath", SelectorStorage.StorageServices.SubPath, 4,
 			"thumbnailOutputHash",
-			false, ThumbnailImageFormat.jpg);
+			ThumbnailImageFormat.jpg);
 
 		Assert.IsFalse(result.Success);
 		Assert.AreEqual("Image cannot be loaded", result.ErrorMessage);
@@ -161,7 +160,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 			await _sut.ResizeThumbnailFromSourceImage(
 				"non-existing-filepath", SelectorStorage.StorageServices.SubPath, 4, "",
-				false, ThumbnailImageFormat.jpg));
+				ThumbnailImageFormat.jpg));
 	}
 
 	[TestMethod]
@@ -171,6 +170,6 @@ public class ResizeThumbnailFromSourceImageHelperTests
 			await _sut.ResizeThumbnailFromSourceImage(
 				"non-existing-filepath", SelectorStorage.StorageServices.SubPath, 4,
 				"thumbnailOutputHash",
-				false, ThumbnailImageFormat.unknown));
+				ThumbnailImageFormat.unknown));
 	}
 }

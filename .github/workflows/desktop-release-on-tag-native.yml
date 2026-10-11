@@ -34,16 +34,10 @@ jobs:
         with:
           dotnet-version: 10.0.401
 
-      - name: Build --no-unit-test linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
+      - name: Build --no-unit-test linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test --ready-to-run
-
-      - name: Upload linux-arm as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: linux-arm
-          path: ./starsky/starsky-linux-arm.zip
+        run: bash build.sh --runtime "linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test --ready-to-run
 
       - name: Upload linux-arm64 as build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -476,12 +470,6 @@ jobs:
           name: starsky-mac-x64-desktop
           path: ./desktop-releases
 
-      - name: Download linux-arm as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
-        with:
-          name: linux-arm
-          path: ./starsky
-
       - name: Download linux-arm64 as build artifact
         uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
@@ -545,7 +533,6 @@ jobs:
             ./desktop-releases/starsky-win-x64-desktop.exe
             ./desktop-releases/*.nupkg
             ./desktop-releases/releases.win.json
-            ./starsky/starsky-linux-arm.zip
             ./starsky/starsky-linux-arm64.zip
             ./starsky/starsky-osx-x64.zip
             ./starsky/starsky-osx-arm64.zip
@@ -560,7 +547,6 @@ jobs:
             - starsky-win-x64-desktop.exe - __Starsky Desktop App for Windows 10 1809+ or Windows 11 (21H2) 22000+ (Intel 64 bits)__
 
             ## Server versions:
-            - starsky-linux-arm.zip - Starsky as Web Application (start from command line) only for Raspberry Pi's
             - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's
             - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *13.0* or newer
             - starsky-osx-arm64.zip - Starsky as Web Application (start from command line) only for Apple Silicon (newer then end of 2020) Mac OS *13* or newer

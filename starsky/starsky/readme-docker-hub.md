@@ -33,10 +33,8 @@ docker run -e PORT=12837 qdraw/starsky:latest
 ## Architecture
 - linux/amd64 or Intel 64 bits
 - linux/arm64 or Raspberry PI 64 bits
-- linux/arm/v7 or Raspberry PI 32 bits `*`
 
-`*` All Raspberry Pi's are supported. Except the: 'Raspberry Pi 1 (2014)'
-and 'Raspberry Pi Zero (W) (2017)' those two are arm/v6 and the app will not run on those machines
+32 bits Raspberry Pi (arm/v7 and arm/v6) are not supported
 
 ## Changelog
 All notable changes to this project will be documented in the following file:

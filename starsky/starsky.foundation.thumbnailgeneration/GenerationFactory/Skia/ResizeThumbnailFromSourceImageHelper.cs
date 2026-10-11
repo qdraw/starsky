@@ -1,9 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -11,10 +9,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
 
-[assembly:
-	InternalsVisibleTo(nameof(starsky.foundation.thumbnailgeneration.GenerationFactory.Generators))]
-
-namespace starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 
 internal class ResizeThumbnailFromSourceImageHelper(
 	ISelectorStorage selectorStorage,
@@ -47,7 +42,6 @@ internal class ResizeThumbnailFromSourceImageHelper(
 	internal async Task<GenerationResultModel> ResizeThumbnailFromSourceImage(string subPath,
 		SelectorStorage.StorageServices? subPathType,
 		int width, string? thumbnailOutputHash,
-		bool removeExif,
 		ThumbnailImageFormat imageFormat)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(thumbnailOutputHash);
@@ -77,11 +71,10 @@ internal class ResizeThumbnailFromSourceImageHelper(
 		{
 			// resize the image and save it to the output stream
 			using ( var inputStream = GetStorage(subPathType).ReadStream(subPath) )
-			using ( var image = await Image.LoadAsync(inputStream) )
+			using ( var image = SkiaImageHelper.DecodeAutoOrient(inputStream) )
+			using ( var resized = SkiaImageHelper.ResizeLongSide(image, width) )
 			{
-				ImageSharpImageResizeHelper.ImageSharpImageResize(image, width, removeExif);
-				await SaveThumbnailImageFormatHelper.SaveThumbnailImageFormat(image, imageFormat,
-					outputStream);
+				SkiaImageHelper.Encode(resized, imageFormat, outputStream);
 
 				await _thumbnailStorage.WriteStreamAsync(outputStream, fileHashWithExtension);
 				// Disposed in WriteStreamAsync

@@ -9,7 +9,7 @@ using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Interfaces;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
@@ -80,7 +80,7 @@ public class EmbeddedRawThumbnailGenerator(
 					previewPath,
 					SelectorStorage.StorageServices.Temporary,
 					ThumbnailNameHelper.GetSize(biggestThumbnailSize), fileHash,
-					false, imageFormat);
+					imageFormat);
 
 				return generationResult;
 			}

@@ -16,13 +16,13 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.webhtmlpublish.Services;
 
 [TestClass]
-public sealed class OverlayImageTest
+public sealed class OverlayImageSkiaTest
 {
 	private readonly AppSettings _appSettings;
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly FakeIStorage _storage;
 
-	public OverlayImageTest()
+	public OverlayImageSkiaTest()
 	{
 		_storage = new FakeIStorage(["/"],
 			["/test.jpg", "/test.webp"],
@@ -35,7 +35,7 @@ public sealed class OverlayImageTest
 	public void FilePathOverlayImage_Case()
 	{
 		var image =
-			new OverlayImage(_selectorStorage, _appSettings).FilePathOverlayImage("TesT.Jpg",
+			new OverlayImageSkia(_selectorStorage, _appSettings).FilePathOverlayImage("TesT.Jpg",
 				new AppSettingsPublishProfiles());
 		Assert.AreEqual("test.jpg", image);
 	}
@@ -44,7 +44,7 @@ public sealed class OverlayImageTest
 	public void FilePathOverlayImage_Append()
 	{
 		var image =
-			new OverlayImage(_selectorStorage, _appSettings).FilePathOverlayImage("Img.Jpg",
+			new OverlayImageSkia(_selectorStorage, _appSettings).FilePathOverlayImage("Img.Jpg",
 				new AppSettingsPublishProfiles { Append = "_test" });
 		Assert.AreEqual("img_test.jpg", image);
 	}
@@ -53,7 +53,7 @@ public sealed class OverlayImageTest
 	public void FilePathOverlayImage_outputParentFullFilePathFolder()
 	{
 		var image =
-			new OverlayImage(_selectorStorage, _appSettings).FilePathOverlayImage(
+			new OverlayImageSkia(_selectorStorage, _appSettings).FilePathOverlayImage(
 				string.Empty, "TesT.Jpg",
 				new AppSettingsPublishProfiles());
 		Assert.AreEqual(PathHelper.AddBackslash(string.Empty) + "test.jpg", image);
@@ -62,7 +62,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageThumbnails_null()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
+		var overlayImage = new OverlayImageSkia(_selectorStorage, _appSettings);
 		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 			await overlayImage.ResizeOverlayImageThumbnails(null!, ThumbnailSize.Large, null!,
 				new AppSettingsPublishProfiles()));
@@ -71,7 +71,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageLarge_null_exception()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
+		var overlayImage = new OverlayImageSkia(_selectorStorage, _appSettings);
 		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 			await overlayImage.ResizeOverlayImageLarge(null!, null!,
 				new AppSettingsPublishProfiles()));
@@ -80,7 +80,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageThumbnails_itemFileHash_Not_Found()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
+		var overlayImage = new OverlayImageSkia(_selectorStorage, _appSettings);
 		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
 			await overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", ThumbnailSize.Large,
 				"/out.jpg",
@@ -90,7 +90,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageThumbnails_overlay_image_missing()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
+		var overlayImage = new OverlayImageSkia(_selectorStorage, _appSettings);
 		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
 			await overlayImage.ResizeOverlayImageThumbnails("test.jpg", ThumbnailSize.Large,
 				"/out.jpg",
@@ -100,7 +100,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageLarge_File_Not_Found()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
+		var overlayImage = new OverlayImageSkia(_selectorStorage, _appSettings);
 		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
 			await overlayImage.ResizeOverlayImageLarge("non-exist.jpg", "/out.jpg",
 				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
@@ -109,7 +109,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageLarge_overlay_image_missing()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
+		var overlayImage = new OverlayImageSkia(_selectorStorage, _appSettings);
 		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
 			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out.jpg",
 				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
@@ -119,7 +119,7 @@ public sealed class OverlayImageTest
 	public async Task ResizeOverlayImageLarge_Ignore_If_Exist()
 	{
 		var overlayImage =
-			new OverlayImage(_selectorStorage, _appSettings);
+			new OverlayImageSkia(_selectorStorage, _appSettings);
 
 		await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/test.jpg",
 			new AppSettingsPublishProfiles
@@ -135,7 +135,7 @@ public sealed class OverlayImageTest
 	public void ResizeOverlayImageThumbnails_Ignore_If_Exist()
 	{
 		var overlayImage =
-			new OverlayImage(_selectorStorage, _appSettings);
+			new OverlayImageSkia(_selectorStorage, _appSettings);
 
 		overlayImage.ResizeOverlayImageThumbnails("/test" /* no extension */, ThumbnailSize.Large,
 			"/test.jpg",
@@ -152,7 +152,7 @@ public sealed class OverlayImageTest
 	public async Task ResizeOverlayImageLarge_Done()
 	{
 		var overlayImage =
-			new OverlayImage(_selectorStorage, _appSettings);
+			new OverlayImageSkia(_selectorStorage, _appSettings);
 
 		await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out_large.jpg",
 			new AppSettingsPublishProfiles
@@ -167,7 +167,7 @@ public sealed class OverlayImageTest
 	public async Task ResizeOverlayImageThumbnails_Done()
 	{
 		var overlayImage =
-			new OverlayImage(_selectorStorage, _appSettings);
+			new OverlayImageSkia(_selectorStorage, _appSettings);
 
 		await overlayImage.ResizeOverlayImageThumbnails("/test" /* no extension */,
 			ThumbnailSize.Large, "/out_thumb.jpg",
@@ -183,7 +183,7 @@ public sealed class OverlayImageTest
 	public async Task ResizeOverlayImageThumbnails_ExtraLarge_Not_Found()
 	{
 		// ExtraLarge thumbnail name is hash@2000.ext — should NOT be confused with hash.ext
-		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
+		var overlayImage = new OverlayImageSkia(_selectorStorage, _appSettings);
 		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
 			await overlayImage.ResizeOverlayImageThumbnails("/test", ThumbnailSize.ExtraLarge,
 				"/out_xl.jpg",
@@ -204,7 +204,7 @@ public sealed class OverlayImageTest
 				CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray()
 			});
 		var selectorStorage = new FakeSelectorStorage(storage);
-		var overlayImage = new OverlayImage(selectorStorage, _appSettings);
+		var overlayImage = new OverlayImageSkia(selectorStorage, _appSettings);
 
 		await overlayImage.ResizeOverlayImageThumbnails("/test", ThumbnailSize.ExtraLarge,
 			"/out_xl.jpg",
