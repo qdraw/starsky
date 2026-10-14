@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{3BCAE5B3-D6BE-4D54-879B-548350A1DB13}</ProjectGuid>
+        <Version>0.9.5</Version>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.foundation.connect\starsky.foundation.connect.csproj" />
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
+        <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+</Project>
