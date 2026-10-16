@@ -43,7 +43,7 @@ public class SentryBreadcrumbLoggerProviderTest
 
 			var message = breadcrumb.Message ?? string.Empty;
 			Assert.DoesNotContain("/Users/dion", message);
-			StringAssert.Contains(message, SetupSentry.PathPlaceholderPrefix);
+			Assert.Contains(SetupSentry.PathPlaceholderPrefix, message);
 		}
 	}
 }

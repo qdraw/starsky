@@ -14,7 +14,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers;
 
 [TestClass]
 [DoNotParallelize]
-public class SetupSentryTest
+public partial class SetupSentryTest
 {
 	private const string Dsn = "https://publickey@example.test/1";
 
@@ -84,7 +84,7 @@ public class SetupSentryTest
 
 		var result = SetupSentry.Scrub(sentryEvent);
 
-		var image = result.DebugImages?.First();
+		var image = result.DebugImages?[0];
 		Assert.IsNull(image?.DebugFile);
 		Assert.IsNull(image?.CodeFile);
 		// without the paths the debug id is still there for symbolication
@@ -111,7 +111,8 @@ public class SetupSentryTest
 						[
 							new SentryStackFrame
 							{
-								AbsolutePath = "/Users/dion/data/git/starsky/starsky/Program.cs",
+								AbsolutePath =
+									"/Users/dion/data/git/starsky/starsky/Program.cs",
 								FileName = "/Users/dion/data/git/starsky/starsky/Program.cs",
 								Function = "Main"
 							}
@@ -130,10 +131,10 @@ public class SetupSentryTest
 		Assert.IsNull(result.Request.Url);
 		Assert.IsNull(result.Contexts.Device.Name);
 		// the file type stays and the hash says which file it was without naming it
-		StringAssert.Matches(result.Message?.Formatted,
-			new Regex(@"^failed <path:[0-9a-f]{8}\.jpg>$"));
-		StringAssert.Matches(result.SentryExceptions?.First().Value,
-			new Regex(@"^Could not find <path:[0-9a-f]{8}\.jpg> or <path:[0-9a-f]{8}\.jpg>$"));
+		Assert.MatchesRegex(FailedPathRegex(),
+			result.Message?.Formatted);
+		Assert.MatchesRegex(CouldNotFindPathRegex(),
+			result.SentryExceptions?.First().Value);
 
 		var frame = result.SentryExceptions?.First().Stacktrace?.Frames[0];
 		Assert.IsNull(frame?.AbsolutePath);
@@ -158,7 +159,7 @@ public class SetupSentryTest
 	{
 		var result = SetupSentry.RemovePaths(input);
 
-		StringAssert.Matches(result, new Regex(@"^see <path:[0-9a-f]{8}\.jpg> now$"));
+		Assert.MatchesRegex(SeePathRegex(), result);
 	}
 
 	[TestMethod]
@@ -166,7 +167,7 @@ public class SetupSentryTest
 	{
 		var result = SetupSentry.RemovePaths("/Users/dion/photos/import");
 
-		StringAssert.Matches(result, new Regex(@"^<path:[0-9a-f]{8}>$"));
+		Assert.MatchesRegex(PathRegex(), result);
 	}
 
 	[TestMethod]
@@ -197,8 +198,8 @@ public class SetupSentryTest
 	[DataRow("/Users/mac/data/git/starsky/starsky/Program.cs", "starsky/Program.cs")]
 	[DataRow("starsky/Program.cs", "starsky/Program.cs")]
 	[DataRow("Program.cs", "Program.cs")]
-	[DataRow("/Users/dion/.nuget/packages/sentry/1.0/SentrySdk.cs", (string?)null)]
-	[DataRow("/Users/dion/Photos/holiday.jpg", (string?)null)]
+	[DataRow("/Users/dion/.nuget/packages/sentry/1.0/SentrySdk.cs", null)]
+	[DataRow("/Users/dion/Photos/holiday.jpg", null)]
 	public void NormalizeSourcePath(string? input, string? expected)
 	{
 		Assert.AreEqual(expected, SetupSentry.NormalizeSourcePath(input));
@@ -239,8 +240,8 @@ public class SetupSentryTest
 		Assert.IsNotNull(result);
 		Assert.AreEqual("starsky.foundation.import", result.Category);
 		Assert.AreEqual(BreadcrumbTypes.Info, result.Type);
-		StringAssert.Matches(result.Message,
-			new Regex(@"^importing <path:[0-9a-f]{8}\.jpg>$"));
+		Assert.MatchesRegex(ImportingRegex(),
+			result.Message);
 		// data holds structured values that can point at the files of the user
 		Assert.IsTrue(result.Data == null || result.Data.Count == 0);
 		// a timestamp of the line itself, the scrubbed copy should not fall back to a default
@@ -272,9 +273,9 @@ public class SetupSentryTest
 		var result = SetupSentry.ScrubAndLog(sentryEvent, webLogger);
 
 		Assert.HasCount(1, webLogger.TrackedInformation);
-		var message = webLogger.TrackedInformation[0].Item2;
-		StringAssert.Contains(message, result.EventId.ToString());
-		StringAssert.Contains(message, "System.InvalidOperationException");
+		var message = webLogger.TrackedInformation[0].Item2!;
+		Assert.Contains(result.EventId.ToString(), message);
+		Assert.Contains("System.InvalidOperationException", message);
 		// a user can paste this line in a bug report
 		Assert.DoesNotContain("/Users/dion", message);
 	}
@@ -302,10 +303,7 @@ public class SetupSentryTest
 	public void Init_Enabled_CapturesAndFlushes()
 	{
 		var transport = new FakeSentryTransport();
-		var appSettings = new AppSettings
-		{
-			Sentry = new SentrySettings { Dsn = Dsn }
-		};
+		var appSettings = new AppSettings { Sentry = new SentrySettings { Dsn = Dsn } };
 
 		using ( var result = SetupSentry.Init(appSettings, transport) )
 		{
@@ -333,4 +331,18 @@ public class SetupSentryTest
 
 		Assert.IsNull(caught);
 	}
+
+	[GeneratedRegex(@"^failed <path:[0-9a-f]{8}\.jpg>$")]
+	private static partial Regex FailedPathRegex();
+
+	[GeneratedRegex(@"^Could not find <path:[0-9a-f]{8}\.jpg> or <path:[0-9a-f]{8}\.jpg>$")]
+	private static partial Regex CouldNotFindPathRegex();
+
+	[GeneratedRegex(@"^see <path:[0-9a-f]{8}\.jpg> now$")]
+	private static partial Regex SeePathRegex();
+
+	[GeneratedRegex(@"^<path:[0-9a-f]{8}>$")]
+	private static partial Regex PathRegex();
+	[GeneratedRegex(@"^importing <path:[0-9a-f]{8}\.jpg>$")]
+	private static partial Regex ImportingRegex();
 }
