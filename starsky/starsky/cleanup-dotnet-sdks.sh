@@ -36,7 +36,8 @@ else
     echo "Downloading .NET uninstall tool..."
 
     RELEASE_JSON="$TMP_DIR/release.json"
-    curl -fsSL --retry 3 \
+    # --proto/--proto-redir keep -L from following a redirect down to plain http.
+    curl -fsSL --retry 3 --proto '=https' --proto-redir '=https' \
         https://api.github.com/repos/dotnet/cli-lab/releases/latest \
         -o "$RELEASE_JSON"
 
@@ -73,7 +74,9 @@ PY
     )"
 
     ARCHIVE="$TMP_DIR/uninstaller.tar.gz"
-    curl -fL --retry 3 "$ASSET_URL" -o "$ARCHIVE"
+    # ASSET_URL comes from the API response, so constrain it the same way.
+    curl -fL --retry 3 --proto '=https' --proto-redir '=https' \
+        "$ASSET_URL" -o "$ARCHIVE"
 
     mkdir "$TMP_DIR/tool"
     tar -xzf "$ARCHIVE" -C "$TMP_DIR/tool"
@@ -158,11 +161,10 @@ for sdk in "${SDK_LIST[@]}"; do
     else
         echo "REMOVE $sdk"
 
-        if [[ "$DRY_RUN" == "0" ]]; then
-            if ! "$UNINSTALL" remove --sdk "$sdk" --yes </dev/null; then
-                echo "Error: failed to remove SDK $sdk." >&2
-                FAILED_REMOVALS[${#FAILED_REMOVALS[@]}]="$sdk"
-            fi
+        if [[ "$DRY_RUN" == "0" ]] &&
+            ! "$UNINSTALL" remove --sdk "$sdk" --yes </dev/null; then
+            echo "Error: failed to remove SDK $sdk." >&2
+            FAILED_REMOVALS[${#FAILED_REMOVALS[@]}]="$sdk"
         fi
     fi
 done
