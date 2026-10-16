@@ -26,8 +26,7 @@ public class ThumbnailGeneratorFactory(
 	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator,
 	IEmbeddedRawThumbnailGenerator embeddedRawThumbnailGenerator) : IThumbnailGeneratorFactory
 {
-	private readonly IImageProviderFactory _imageProviderFactory =
-		new ImageProviderFactory(selectorStorage, logger);
+	private readonly ImageProviderFactory _imageProviderFactory = new(selectorStorage, logger);
 
 	public IThumbnailGenerator GetGenerator(string filePath)
 	{
