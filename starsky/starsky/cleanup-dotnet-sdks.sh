@@ -4,6 +4,10 @@ set -euo pipefail
 # Default to dry-run. Set DRY_RUN=0 to uninstall.
 DRY_RUN="${DRY_RUN:-1}"
 
+# Value for curl --proto and --proto-redir, so -L can not follow a redirect
+# down to plain http.
+HTTPS_ONLY="=https"
+
 TMP_DIR="$(mktemp -d /tmp/dotnet-cleanup.XXXXXX)"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
@@ -36,8 +40,7 @@ else
     echo "Downloading .NET uninstall tool..."
 
     RELEASE_JSON="$TMP_DIR/release.json"
-    # --proto/--proto-redir keep -L from following a redirect down to plain http.
-    curl -fsSL --retry 3 --proto '=https' --proto-redir '=https' \
+    curl -fsSL --retry 3 --proto "$HTTPS_ONLY" --proto-redir "$HTTPS_ONLY" \
         https://api.github.com/repos/dotnet/cli-lab/releases/latest \
         -o "$RELEASE_JSON"
 
@@ -75,7 +78,7 @@ PY
 
     ARCHIVE="$TMP_DIR/uninstaller.tar.gz"
     # ASSET_URL comes from the API response, so constrain it the same way.
-    curl -fL --retry 3 --proto '=https' --proto-redir '=https' \
+    curl -fL --retry 3 --proto "$HTTPS_ONLY" --proto-redir "$HTTPS_ONLY" \
         "$ASSET_URL" -o "$ARCHIVE"
 
     mkdir "$TMP_DIR/tool"
