@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SkiaSharp;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 using starskytest.FakeCreateAn;
@@ -195,6 +196,15 @@ public sealed class OverlayImagePublishTest
 	}
 
 	/// <summary>
+	///     The publish joins the output root and the profile folder with the platform separator
+	/// </summary>
+	/// <param name="relativePath">for example 1000/test_kl1k.jpg</param>
+	private static string OutputRootPath(string relativePath)
+	{
+		return PathHelper.AddBackslash("/") + relativePath;
+	}
+
+	/// <summary>
 	///     Run the real publish (GenerateJpeg) for the _default profile
 	/// </summary>
 	private static async Task<Dictionary<string, byte[]>> Publish(byte[] source)
@@ -235,12 +245,13 @@ public sealed class OverlayImagePublishTest
 				new List<FileIndexItem> { new("/test.jpg") }, "/", 1);
 			Assert.IsTrue(generated.Values.All(v => v));
 
-			var outputPath = "/" + profile.Folder + "test" + profile.Append + ".jpg";
+			var relativePath = profile.Folder + "test" + profile.Append + ".jpg";
+			var outputPath = OutputRootPath(relativePath);
 			Assert.IsTrue(storage.ExistFile(outputPath), outputPath);
 			using var stream = storage.ReadStream(outputPath);
 			using var memory = new MemoryStream();
 			await stream.CopyToAsync(memory);
-			result[outputPath] = memory.ToArray();
+			result[relativePath] = memory.ToArray();
 		}
 
 		return result;
@@ -254,14 +265,15 @@ public sealed class OverlayImagePublishTest
 		var published = await Publish(source);
 
 		Assert.HasCount(2, published);
-		Assert.IsTrue(published.ContainsKey("/1000/test_kl1k.jpg"));
-		Assert.IsTrue(published.ContainsKey("/500/test_kl.jpg"));
+		Assert.IsTrue(published.ContainsKey("1000/test_kl1k.jpg"));
+		Assert.IsTrue(published.ContainsKey("500/test_kl.jpg"));
 
 		foreach ( var (key, bytes) in published )
 		{
 			Assert.IsTrue(ImageCompare.IsJpeg(bytes), key);
 			using var image = ImageCompare.Decode(bytes);
-			Assert.AreEqual(key.Contains("/1000/") ? 1000 : 500, image.Width, key);
+			Assert.AreEqual(key.StartsWith("1000/", StringComparison.Ordinal) ? 1000 : 500,
+				image.Width, key);
 		}
 	}
 }

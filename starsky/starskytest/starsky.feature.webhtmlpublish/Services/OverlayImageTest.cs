@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Services;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starskytest.FakeCreateAn;
@@ -35,7 +36,8 @@ public sealed class OverlayImageTest
 	{
 		var path = Overlay(Storage()).FilePathOverlayImage("/output", "TesT.Jpg",
 			new AppSettingsPublishProfiles { Append = "_a" });
-		Assert.AreEqual("/output/test_a.jpg", path);
+		// the folder separator is platform specific, the profile suffix is not
+		Assert.AreEqual(PathHelper.AddBackslash("/output") + "test_a.jpg", path);
 	}
 
 	[TestMethod]
