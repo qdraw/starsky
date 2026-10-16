@@ -1,31 +1,50 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using Sentry;
 using Sentry.Extensibility;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.webtelemetry.Helpers;
 
 /// <summary>
-///     Crash reporting: only unhandled exceptions are sent, without personal data.
+///     Crash reporting: unhandled exceptions with scrubbed breadcrumbs, without personal data.
 ///     Does nothing when there is no DSN (Debug, forks, local builds) or when disabled.
 /// </summary>
 public static partial class SetupSentry
 {
 	internal const string AssemblyMetadataKey = "SentryDsn";
-	internal const string PathPlaceholder = "<path>";
+
+	/// <summary>
+	///     Paths in messages are replaced by this prefix, a short hash and the file extension
+	/// </summary>
+	internal const string PathPlaceholderPrefix = "<path:";
+
+	/// <summary>
+	///     Breadcrumbs show what the application was doing before a crash
+	/// </summary>
+	internal const int MaxBreadcrumbsCount = 30;
+
+	/// <summary>
+	///     Top level folders with source of this repository
+	/// </summary>
+	private static readonly string[] SourceRoots =
+		["starsky", "starsky-tools", "mac", "windows", "documentation"];
 
 	/// <summary>
 	///     Start crash reporting, dispose (or call Flush) before a short-lived process exits
 	/// </summary>
 	/// <returns>null when disabled</returns>
 	public static IDisposable? Init(AppSettings appSettings,
-		ITransport? transport = null)
+		ITransport? transport = null, IWebLogger? webLogger = null)
 	{
 		var options = CreateOptions(appSettings,
-			GetAssemblyDsn(typeof(SetupSentry).Assembly), transport);
+			GetAssemblyDsn(typeof(SetupSentry).Assembly), transport, webLogger);
 		return options == null ? null : SentrySdk.Init(options);
 	}
 
@@ -44,7 +63,7 @@ public static partial class SetupSentry
 	}
 
 	internal static SentryOptions? CreateOptions(AppSettings appSettings,
-		string? assemblyDsn, ITransport? transport = null)
+		string? assemblyDsn, ITransport? transport = null, IWebLogger? webLogger = null)
 	{
 		if ( appSettings.EnableCrashReports == false )
 		{
@@ -67,15 +86,15 @@ public static partial class SetupSentry
 			Environment = ( appSettings.Sentry ?? new SentrySettings() ).GetEnvironmentName(),
 			// Privacy: crashes only
 			SendDefaultPii = false,
-			MaxBreadcrumbs = 0,
+			MaxBreadcrumbs = MaxBreadcrumbsCount,
 			TracesSampleRate = 0,
 			AutoSessionTracking = false,
 			AttachStacktrace = false,
 			SendClientReports = false,
 			IsGlobalModeEnabled = true
 		};
-		options.SetBeforeSend((sentryEvent, _) => Scrub(sentryEvent));
-		options.SetBeforeBreadcrumb((_, _) => null);
+		options.SetBeforeSend((sentryEvent, _) => ScrubAndLog(sentryEvent, webLogger));
+		options.SetBeforeBreadcrumb((breadcrumb, _) => ScrubBreadcrumb(breadcrumb));
 		options.DefaultTags["app_type"] = appSettings.ApplicationType.ToString();
 		options.DefaultTags["commit"] = appSettings.AppVersionCommitHash;
 
@@ -85,6 +104,24 @@ public static partial class SetupSentry
 		}
 
 		return options;
+	}
+
+	/// <summary>
+	///     Scrub and write the crash report id to the local log. That id is the only thing a
+	///     user has to share, and the log line itself contains no personal data.
+	/// </summary>
+	internal static SentryEvent ScrubAndLog(SentryEvent sentryEvent, IWebLogger? webLogger)
+	{
+		var scrubbed = Scrub(sentryEvent);
+		if ( webLogger == null )
+		{
+			return scrubbed;
+		}
+
+		var exception = scrubbed.SentryExceptions?.FirstOrDefault();
+		webLogger.LogInformation(
+			$"crash report {scrubbed.EventId} {exception?.Type}: {exception?.Value}");
+		return scrubbed;
 	}
 
 	/// <summary>
@@ -108,8 +145,10 @@ public static partial class SetupSentry
 			exception.Mechanism?.Data.Clear();
 			foreach ( var frame in exception.Stacktrace?.Frames ?? [] )
 			{
+				// the file name points at the build machine, the part inside the repository
+				// points at the code
+				frame.FileName = NormalizeSourcePath(frame.FileName);
 				frame.AbsolutePath = null;
-				frame.FileName = null;
 				frame.ContextLine = null;
 				frame.PreContext.Clear();
 				frame.PostContext.Clear();
@@ -127,14 +166,99 @@ public static partial class SetupSentry
 		return sentryEvent;
 	}
 
+	/// <summary>
+	///     Breadcrumbs show what the application was doing. Requests and database queries are
+	///     dropped, they carry the urls, search terms and file paths of the user.
+	/// </summary>
+	internal static Breadcrumb? ScrubBreadcrumb(Breadcrumb? breadcrumb)
+	{
+		if ( breadcrumb == null )
+		{
+			return null;
+		}
+
+		if ( breadcrumb.Type == BreadcrumbTypes.Http || breadcrumb.Type == BreadcrumbTypes.Query )
+		{
+			return null;
+		}
+
+		// ASP.NET Core logs the url of every request, including its query string
+		if ( breadcrumb.Category?.StartsWith("Microsoft.AspNetCore",
+			    StringComparison.Ordinal) == true )
+		{
+			return null;
+		}
+
+		// breadcrumbs are read only, so a scrubbed copy is returned. Data holds structured
+		// values that can point at the files of the user, it is dropped instead of scrubbed
+		return new Breadcrumb(
+			RemovePaths(breadcrumb.Message) ?? string.Empty,
+			breadcrumb.Type ?? BreadcrumbTypes.Default,
+			category: breadcrumb.Category,
+			level: breadcrumb.Level);
+	}
+
+	/// <summary>
+	///     A stack trace file name is a path on the build machine (CI or a developer), never a
+	///     file of the user. Keep the part that points into the repository, drop the rest.
+	/// </summary>
+	internal static string? NormalizeSourcePath(string? fileName)
+	{
+		if ( string.IsNullOrWhiteSpace(fileName) )
+		{
+			return null;
+		}
+
+		var segments = fileName.Trim().Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+		if ( segments.Length == 0 )
+		{
+			return null;
+		}
+
+		// the last match, a build path repeats folder names (C:\a\starsky\starsky\...)
+		var start = Array.FindLastIndex(segments, segment => SourceRoots.Contains(segment));
+		if ( start >= 0 )
+		{
+			return string.Join('/', segments, start, segments.Length - start);
+		}
+
+		// without a directory the name says nothing about the machine
+		return segments.Length == 1 ? segments[0] : null;
+	}
+
 	internal static string? RemovePaths(string? text)
 	{
 		return text == null
 			? null
-			: PathRegex().Replace(text, PathPlaceholder);
+			: PathRegex().Replace(text, PathReplacement);
+	}
+
+	/// <summary>
+	///     The same path always gives the same hash, so two crashes on the same file stay one
+	///     report and another file makes a new one, without revealing which file it is
+	/// </summary>
+	private static string PathReplacement(Match match)
+	{
+		var path = match.Value;
+		var extension = Path.GetExtension(path);
+		if ( !ExtensionRegex().IsMatch(extension) )
+		{
+			extension = string.Empty;
+		}
+
+		return $"{PathPlaceholderPrefix}{ShortHash(path)}{extension}>";
+	}
+
+	internal static string ShortHash(string value)
+	{
+		return Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(value)))[..8];
 	}
 
 	// Windows (C:\Users\x\img.jpg), UNC and Unix absolute paths (/Users/x/img.jpg)
 	[GeneratedRegex(@"(?:[A-Za-z]:\\|\\\\|/)[^\s'""<>|:*?]*[\\/][^\s'""<>|:*?]*")]
 	private static partial Regex PathRegex();
+
+	// ".jpg" and not the rest of a user invented name (".my holiday photo")
+	[GeneratedRegex(@"^\.[a-zA-Z0-9]{1,6}$")]
+	private static partial Regex ExtensionRegex();
 }

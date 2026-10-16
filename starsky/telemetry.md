@@ -124,9 +124,18 @@ You may re-enable telemetry if you'd like to re-join the program by running the 
 Release builds can send a crash report when the application crashes with an unhandled exception.
 This is separate from the usage telemetry above and is enabled by default.
 
-- Only unhandled exceptions are sent. Normal logging, performance traces and breadcrumbs are not sent.
-- No personal data: no user name, IP address, machine name, request data or file paths
-  (paths in exception messages are replaced by `<path>`, file paths of loaded assemblies are removed).
+- Only unhandled exceptions are sent. There are no events for normal log lines, requests,
+  performance traces or sessions, so a run without a crash sends nothing at all.
+- The last log lines (information and above) are kept in memory and only leave the machine
+  as breadcrumbs of a crash report. Request urls and database queries are never included.
+- No personal data: no user name, IP address, machine name or request data.
+  Paths are replaced by `<path:hash.ext>`, a short hash of the full path plus the file
+  extension, so the same file stays recognizable without naming it. File paths of loaded
+  assemblies are removed.
+- A stack trace keeps the source file and line number, but only the part inside the
+  repository; the folders of the build machine are removed.
+- The crash report id is written to the local log, so a crash can be reported by sharing
+  only that id.
 - Debug builds and builds without a DSN never send anything.
 
 To opt out set the following env variable:

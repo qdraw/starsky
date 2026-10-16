@@ -76,7 +76,7 @@ public sealed class SetupSentryLiveTest
 			var unescaped = envelope
 				.Replace("\\u003C", "<", StringComparison.Ordinal)
 				.Replace("\\u003E", ">", StringComparison.Ordinal);
-			Assert.Contains(SetupSentry.PathPlaceholder, unescaped);
+			Assert.Contains(SetupSentry.PathPlaceholderPrefix, unescaped);
 
 			Assert.IsTrue(child.WaitForExit(60_000),
 				$"the child process did not crash{Environment.NewLine}{await DescribeChildAsync(child)}");
