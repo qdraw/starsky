@@ -126,7 +126,7 @@ This is separate from the usage telemetry above and is enabled by default.
 
 - Only unhandled exceptions are sent. Normal logging, performance traces and breadcrumbs are not sent.
 - No personal data: no user name, IP address, machine name, request data or file paths
-  (paths in exception messages are replaced by `<path>`).
+  (paths in exception messages are replaced by `<path>`, file paths of loaded assemblies are removed).
 - Debug builds and builds without a DSN never send anything.
 
 To opt out set the following env variable:

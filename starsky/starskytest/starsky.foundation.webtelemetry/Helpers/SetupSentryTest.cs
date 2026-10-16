@@ -65,6 +65,31 @@ public class SetupSentryTest
 	}
 
 	[TestMethod]
+	public void Scrub_RemovesDebugImagePaths()
+	{
+		var sentryEvent = new SentryEvent
+		{
+			DebugImages =
+			[
+				new DebugImage
+				{
+					DebugFile = "/Users/dion/app/starsky.pdb",
+					CodeFile = @"C:\Users\dion\app\starsky.dll",
+					DebugId = "32c2e2ca-7dd2-4e4e-ad34-3358be7c7713-9d786101"
+				}
+			]
+		};
+
+		var result = SetupSentry.Scrub(sentryEvent);
+
+		var image = result.DebugImages?.First();
+		Assert.IsNull(image?.DebugFile);
+		Assert.IsNull(image?.CodeFile);
+		// without the paths the debug id is still there for symbolication
+		Assert.AreEqual("32c2e2ca-7dd2-4e4e-ad34-3358be7c7713-9d786101", image?.DebugId);
+	}
+
+	[TestMethod]
 	public void Scrub_RemovesPersonalData()
 	{
 		var sentryEvent = new SentryEvent

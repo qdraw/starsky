@@ -117,6 +117,13 @@ public static partial class SetupSentry
 			}
 		}
 
+		// debug images point to the assembly on this machine, including the user name
+		foreach ( var image in sentryEvent.DebugImages ?? [] )
+		{
+			image.DebugFile = null;
+			image.CodeFile = null;
+		}
+
 		return sentryEvent;
 	}
 
