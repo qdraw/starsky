@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SixLabors.ImageSharp;
+using SkiaSharp;
 using starsky.foundation.native.PreviewImageNative.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn.CreateAnImageWithThumbnail;
@@ -100,8 +100,8 @@ public class QuicklookMacOsTests
 			Assert.IsTrue(result);
 			Assert.IsTrue(File.Exists(tempOutput));
 			Assert.IsGreaterThan(0, new FileInfo(tempOutput).Length);
-			// detect with imageSharp if the image is a valid image
-			using var image = Image.Load(tempOutput);
+			// detect with SkiaSharp if the image is a valid image
+			using var image = SKBitmap.Decode(tempOutput);
 			Assert.IsNotNull(image);
 			Assert.AreEqual(150, image.Width);
 			Assert.AreEqual(100, image.Height);

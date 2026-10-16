@@ -118,8 +118,7 @@ http://localhost:4000/account/register
 
 ## Build for Raspberry Pi (Raspbian/Linux ARM)
 
-From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no
-ARMv6). We use NET Core
+There is a .NET SDK available for 64 bits Raspberry Pi's (ARM64, so no ARMv6 or ARMv7). We use NET Core
 But in this guide we build it first on your laptop and copy to your Raspberry Pi. Use the following
 steps to setup:
 
@@ -138,16 +137,16 @@ git clone "https://github.com/qdraw/starsky.git"
 _Using bash_
 
 ```sh
-./build.sh --runtime "linux-arm"
+./build.sh --runtime "linux-arm64"
 ```
 
 _Using Powershell_
 
 ```powershell
-powershell -File build.ps1 -ScriptArgs '-runtime "linux-arm"'
+powershell -File build.ps1 -ScriptArgs '-runtime "linux-arm64"'
 ```
 
-4. Copy contents from the `linux-arm` folder to your Raspberry Pi
+4. Copy contents from the `linux-arm64` folder to your Raspberry Pi
 
 5. On the Raspi, install the dependency packages first. Those are required by .NET Core
 
@@ -243,7 +242,7 @@ It uses the following default parameters
 
 ```sh
 --name starsky
---runtime linux-arm
+--runtime linux-arm64
 ```
 
 #### pm2 `./pm2-new-instance.sh`

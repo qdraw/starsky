@@ -34,7 +34,7 @@ public class ThumbnailService(
 	: IThumbnailService
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
-		ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(e) ||
+		ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(e) ||
 		ExtensionRolesHelper.IsExtensionVideoSupported(e) ||
 		ExtensionRolesHelper.IsExtensionRawThumbnailSupported(e) || 
 		ExtensionRolesHelper.IsExtensionNativeSupported(e);
@@ -137,7 +137,8 @@ public class ThumbnailService(
 	public Task<bool> RotateThumbnail(string fileHash, int orientation,
 		int width = 1000, int height = 0)
 	{
-		var service = new RotateThumbnailHelper(selectorStorage, appSettings, logger);
+		var service = new ImageProviderFactory(selectorStorage, logger)
+			.CreateRotateThumbnailHelper(appSettings);
 		return service.RotateThumbnail(fileHash, orientation,
 			width, height);
 	}

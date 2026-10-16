@@ -49,9 +49,6 @@ if($runTime -eq '') {
         if(($uNameM -eq 'aarch64')) {
             $runTime = "linux-arm64"
         }
-        if(($uNameM -eq 'armv7l')) {
-            $runTime = "linux-arm"
-        }
         if(($uNameM -eq 'arm64') -and ($IsMacOs -eq $true)) {
             $runTime = "osx-arm64" # got gatekeeper errors
         }

@@ -14,11 +14,12 @@
     <ItemGroup>
         <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj"/>
         <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="MetadataExtractor" Version="2.9.3"/>
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+        <PackageReference Include="SkiaSharp" Version="4.153.1"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

@@ -26,6 +26,8 @@ public class ThumbnailGeneratorFactory(
 	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator,
 	IEmbeddedRawThumbnailGenerator embeddedRawThumbnailGenerator) : IThumbnailGeneratorFactory
 {
+	private readonly ImageProviderFactory _imageProviderFactory = new(selectorStorage, logger);
+
 	public IThumbnailGenerator GetGenerator(string filePath)
 	{
 		if ( ExtensionRolesHelper.IsExtensionJpeg(filePath) )
@@ -34,7 +36,7 @@ public class ThumbnailGeneratorFactory(
 			[
 				embeddedRawThumbnailGenerator,
 				nativePreviewThumbnailGenerator,
-				new ImageSharpThumbnailGenerator(selectorStorage, logger)
+				_imageProviderFactory.CreateThumbnailGenerator()
 			], logger);
 		}
 
@@ -46,12 +48,12 @@ public class ThumbnailGeneratorFactory(
 			], logger);
 		}
 
-		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(filePath) )
+		if ( ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(filePath) )
 		{
 			return new CompositeThumbnailGenerator(
 			[
 				nativePreviewThumbnailGenerator,
-				new ImageSharpThumbnailGenerator(selectorStorage, logger)
+				_imageProviderFactory.CreateThumbnailGenerator()
 			], logger);
 		}
 

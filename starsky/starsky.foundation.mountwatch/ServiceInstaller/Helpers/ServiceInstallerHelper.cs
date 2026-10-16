@@ -27,6 +27,8 @@ internal static class ServiceInstallerHelper
 		                <string>{executablePath}</string>
 		                <string>-v</string>
 		            </array>
+		            <key>WorkingDirectory</key>
+		            <string>{appSupport}</string>
 		            <key>RunAtLoad</key>
 		            <true/>
 		            <key>KeepAlive</key>

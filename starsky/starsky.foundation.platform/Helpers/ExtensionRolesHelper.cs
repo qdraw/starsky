@@ -304,13 +304,13 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	/// <summary>
 	///     Gets the extension thumb supported list.
-	///     ImageSharp => The IImageFormat interface, Jpeg, Png, Bmp, and Gif formats.
+	///     SkiaSharp => Jpeg, Png, Bmp, Gif and WebP formats.
 	///     Tiff based images are not supported by the thumbnail application
 	/// </summary>
 	/// <value>
 	///     The extension thumb supported list.
 	/// </value>
-	public static List<string> ExtensionImageSharpThumbnailSupportedList
+	public static List<string> ExtensionSkiaSharpThumbnailSupportedList
 	{
 		get
 		{
@@ -484,20 +484,20 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	}
 
 	/// <summary>
-	///     is this filename with extension a filetype that imageSharp can read/write
+	///     is this filename with extension a filetype that SkiaSharp can read/write
 	/// </summary>
 	/// <param name="filename">the name of the file with extenstion</param>
-	/// <returns>true, if imageSharp can write to this</returns>
-	public static bool IsExtensionImageSharpThumbnailSupported(string? filename)
+	/// <returns>true, if SkiaSharp can write to this</returns>
+	public static bool IsExtensionSkiaSharpThumbnailSupported(string? filename)
 	{
 		return IsExtensionForce(filename?.ToLowerInvariant(),
-			ExtensionImageSharpThumbnailSupportedList);
+			ExtensionSkiaSharpThumbnailSupportedList);
 	}
 
 	public static bool IsExtensionNativeSupported(string? filename)
 	{
 		List<string> nativeSupportList =
-			[..ExtensionImageSharpThumbnailSupportedList, ..ExtensionHeic];
+			[..ExtensionSkiaSharpThumbnailSupportedList, ..ExtensionHeic];
 		return IsExtensionForce(filename?.ToLowerInvariant(),
 			nativeSupportList);
 	}

@@ -245,7 +245,7 @@ public class SearchService : ISearch
 		foreach ( var group in grouped.Where(group => group.Count() > 1) )
 		{
 			result.AddRange(group.Where(item =>
-				ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(item.FileName)));
+				ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(item.FileName)));
 		}
 
 		result.AddRange(grouped.Where(group

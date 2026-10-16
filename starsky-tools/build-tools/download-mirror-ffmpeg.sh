@@ -9,7 +9,7 @@ OSX_ARM64_NAME="osx-arm64"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 BINARY_FOLDERNAME="mirror/ffmpeg"
 INDEX_FILE="index.json"
-CHECK_FILES=("ffmpeg-linux-64.zip" "ffmpeg-linux-arm-64.zip" "ffmpeg-linux-armhf-32.zip" "ffmpeg-macos-64.zip" "ffmpeg-win-64.zip" $OSX_ARM64_FILENAME)
+CHECK_FILES=("ffmpeg-linux-64.zip" "ffmpeg-linux-arm-64.zip" "ffmpeg-macos-64.zip" "ffmpeg-win-64.zip" $OSX_ARM64_FILENAME)
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -71,8 +71,6 @@ MAP_ARCHITECTURE_NAME () {
     echo "win-x64"
   elif [ "$1" == "linux-64" ]; then
     echo "linux-x64"
-  elif [ "$1" == "linux-armhf" ]; then
-    echo "linux-arm"
   elif [ "$1" == "osx-64" ]; then
     echo "osx-x64"
   else
@@ -103,8 +101,8 @@ for i in "${!ARCHITECTURES_ARRAY[@]}"; do
   # if ARCHITECTURE ends with ":{"ffmpeg replace it with "" remove quotes from the string
   ARCHITECTURE=$(echo $ARCHITECTURE | sed 's/:{"ffmpeg"//' | sed 's/"//g')
     
-  # skip if linux-armel or linux-32
-  if [ "$ARCHITECTURE" == "linux-32" ] || [ "$ARCHITECTURE" == "linux-armel" ]; then
+  # skip 32 bit linux (linux-32, linux-armel and linux-armhf)
+  if [ "$ARCHITECTURE" == "linux-32" ] || [ "$ARCHITECTURE" == "linux-armel" ] || [ "$ARCHITECTURE" == "linux-armhf" ]; then
     continue
   fi
     

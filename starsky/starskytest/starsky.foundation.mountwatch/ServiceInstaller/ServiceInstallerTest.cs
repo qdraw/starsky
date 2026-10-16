@@ -62,6 +62,15 @@ public sealed class ServiceInstallerTest
 	}
 
 	[TestMethod]
+	public void GenerateMacOsPlist_SetsWorkingDirectory()
+	{
+		// launchd defaults to "/", which makes the config file watcher watch the whole disk
+		var plist = ServiceInstallerHelper.GenerateMacOsPlist(
+			"/usr/local/bin/starskymountwatchercli", "nl.qdraw.mountwatcher");
+		Assert.Contains("<key>WorkingDirectory</key>", plist);
+	}
+
+	[TestMethod]
 	public void GenerateMacOsPlist_ContainsExecutablePath()
 	{
 		const string execPath = "/usr/local/bin/starskymountwatchercli";

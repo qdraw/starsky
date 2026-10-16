@@ -73,7 +73,7 @@ public sealed class FileHash
 	}
 
 	// Here are some tricks used to avoid that CalculateMd5Async keeps waiting forever.
-	// In some cases hashing a file keeps waiting forever (at least on linux-arm)
+	// In some cases hashing a file keeps waiting forever
 
 	private KeyValuePair<string, bool> _calcHashCode(string subPath
 		, ExtensionRolesHelper.ImageFormat? imageFormat,

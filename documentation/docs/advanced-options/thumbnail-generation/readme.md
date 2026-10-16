@@ -12,7 +12,7 @@ The thumbnail pipeline follows a few simple rules that make it robust and effici
 - Preflight: before doing work the pipeline checks which sizes already exist and which must be generated. This avoids unnecessary processing.
 - Largest-first: the pipeline generates the largest requested thumbnail from the best available source, then derives smaller sizes from that resulting image. This preserves quality and reduces repeated decoding of the original source.
 - Pluggable generators: each file type is handled by a specialized generator. Generators are implemented behind a common `IThumbnailGenerator` interface and the `ThumbnailGeneratorFactory` chooses which generator(s) to use for a given file.
-- Composite strategy: for some extensions (notably JPEGs) the factory will attempt multiple generators in order (embedded RAW preview → native preview → ImageSharp) so the best/fastest method is used.
+- Composite strategy: for some extensions (notably JPEGs) the factory will attempt multiple generators in order (embedded RAW preview → native preview → SkiaSharp) so the best/fastest method is used.
 - File-hash based output: generated thumbnails are stored/retrieved using a file-hash based naming scheme. The service resolves or requires a `fileHash` to operate and many helpers rely on that to find or stream thumbnails.
 - Error reporting and status: each target size produces a `GenerationResultModel` describing success, failure, warnings and messages; status updates are collected and persisted using the update-status service.
 
@@ -22,7 +22,7 @@ Key concepts
     - Supports: bulk generation, single file generation, streaming a single thumbnail, and rotating a thumbnail.
 - Generator factory (`GenerationFactory/ThumbnailGeneratorFactory.cs`)
     - Chooses a generator based on file extension and capabilities:
-        - ImageSharp generator (Image files supported by ImageSharp)
+        - SkiaSharp generator (Image files supported by SkiaSharp)
         - FfmpegVideo generator (video thumbnails)
         - Native preview generator (platform-specific extractors)
         - Embedded RAW preview extractor (pulls JPEG previews embedded in RAW containers)
@@ -44,8 +44,8 @@ Public API (high level)
 
 Implementation notes
 - Pluggable generators
-    - ImageSharp generator (`ImageSharpThumbnailGenerator`) uses ImageSharp to load and resize images.
-    - Ffmpeg video generator extracts a frame via the video pipeline (`starsky.foundation.video`) and then resizes it with the ImageSharp helpers.
+    - SkiaSharp generator (`SkiaThumbnailGenerator`) uses SkiaSharp to load and resize images.
+    - Ffmpeg video generator extracts a frame via the video pipeline (`starsky.foundation.video`) and then resizes it with the SkiaSharp helpers.
     - Native preview generator integrates with native preview extraction (via `starsky.foundation.native` / `IPreviewImageNativeService`) when available.
     - Embedded RAW preview extraction extracts embedded JPEG previews from RAW containers (see `raw-embedded-preview-extraction.md` for deep details).
 - Resizing flow
