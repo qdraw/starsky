@@ -42,6 +42,7 @@ internal static class Program
 
 		services.AddOpenTelemetryMonitoring(appSettings);
 		services.AddTelemetryLogging(appSettings);
+		using var crashReports = SetupSentry.Init(appSettings);
 
 		var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 

@@ -98,6 +98,24 @@ We do use lock files (`package-lock.json`), for:
 2. Reproducibility
 3. Performance
 
+### Crash reports
+
+Release builds can send a crash report on an unhandled exception, see [telemetry](starsky/telemetry.md).
+The DSN is baked in at build time from the `STARSKY_CRASH_REPORT_DSN` environment variable,
+as a Docker build secret it is named `crash_report_dsn`.
+
+The crash report tests are skipped by default, from `starsky/` run:
+
+```bash
+# a child process really crashes, the report is checked against a local test sink
+STARSKY_CRASH_REPORT_LIVE_TEST=1 dotnet run --project starskytest/starskytest.csproj \
+  -- --filter "FullyQualifiedName~SetupSentryLiveTest"
+
+# send one marked test crash to your own project
+STARSKY_CRASH_REPORT_DSN="https://publickey@example.test/1" dotnet run --project starskytest/starskytest.csproj \
+  -- --filter "FullyQualifiedName~Live_TestCrash_IsSentToConfiguredDsn"
+```
+
 ### Release
 
 While on `master`, with no uncommitted changes, run:

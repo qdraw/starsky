@@ -14,7 +14,8 @@
     "project-guid": "node project-guid.js",
     "nuget-package-list": "node nuget-package-list.js",
     "release-version-check": "node release-version-check.js",
-    "dotnet-sdk-version-update": "node dotnet-sdk-version-update.js"
+    "dotnet-sdk-version-update": "node dotnet-sdk-version-update.js",
+    "coverage-new-code": "node coverage-new-code.js"
   },
   "author": "",
   "license": "ISC"

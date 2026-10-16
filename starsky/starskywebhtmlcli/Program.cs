@@ -31,6 +31,7 @@ namespace starskywebhtmlcli
 
 			services.AddOpenTelemetryMonitoring(appSettings);
 			services.AddTelemetryLogging(appSettings);
+			using var crashReports = SetupSentry.Init(appSettings);
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();

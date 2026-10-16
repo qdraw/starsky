@@ -303,6 +303,29 @@ public sealed class AppSettingsTest
 
 
 	[TestMethod]
+	public void AppSettings_CloneToDisplay_hideSentryDsn()
+	{
+		var appSettings = new AppSettings
+		{
+			Sentry = new SentrySettings { Dsn = "https://publickey@example.test/1" }
+		};
+
+		var display = appSettings.CloneToDisplay();
+
+		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.Sentry?.Dsn);
+	}
+
+	[TestMethod]
+	public void AppSettings_CloneToDisplay_SentryDsnEmpty_StaysEmpty()
+	{
+		var display = new AppSettings { Sentry = null }.CloneToDisplay();
+
+		Assert.IsNull(display.Sentry);
+		Assert.IsTrue(display.EnableCrashReports);
+	}
+
+
+	[TestMethod]
 	public void AppSettings_CloneToDisplay_skip_Null_SecurityItems2_OpenTelemetrySettings()
 	{
 		var appSettings = new AppSettings

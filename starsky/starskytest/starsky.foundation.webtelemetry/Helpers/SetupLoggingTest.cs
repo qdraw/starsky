@@ -37,6 +37,18 @@ public class SetupLoggingTest
 	}
 
 	[TestMethod]
+	public void SentryBreadcrumbs_Registered()
+	{
+		IServiceCollection services = new ServiceCollection();
+		services.AddTelemetryLogging(new AppSettings());
+
+		var build = services.BuildServiceProvider();
+
+		var providers = build.GetServices<ILoggerProvider>();
+		Assert.Contains(p => p is SentryBreadcrumbLoggerProvider, providers);
+	}
+
+	[TestMethod]
 	public void GetTelemetryAttributes_ValidAppSettings_ReturnsExpectedAttributes()
 	{
 		// Arrange

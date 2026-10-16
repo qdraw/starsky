@@ -68,6 +68,8 @@ jobs:
           build-args: |
             TOOLS=true
             GitCommitHash=${{ github.sha }}
+          secrets: |
+            crash_report_dsn=${{ secrets.STARSKY_CRASH_REPORT_DSN }}
           tags: |
             ghcr.io/${{ github.repository }}-unstable-nightly:latest
             ghcr.io/${{ github.repository }}-unstable-nightly:v${{ github.run_id }}
@@ -83,3 +85,5 @@ jobs:
           build-args: |
             TOOLS=true
             GitCommitHash=${{ github.sha }}
+          secrets: |
+            crash_report_dsn=${{ secrets.STARSKY_CRASH_REPORT_DSN }}

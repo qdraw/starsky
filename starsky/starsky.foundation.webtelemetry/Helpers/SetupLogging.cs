@@ -34,6 +34,8 @@ public static class SetupLogging
 			logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
 
 			new AddEventLogger().AddEventLog(logging, appSettings.ApplicationType);
+			// log lines become crash report breadcrumbs, they are scrubbed in SetupSentry
+			logging.AddProvider(new SentryBreadcrumbLoggerProvider());
 
 			if ( string.IsNullOrEmpty(appSettings.OpenTelemetry?.LogsEndpoint) )
 			{
