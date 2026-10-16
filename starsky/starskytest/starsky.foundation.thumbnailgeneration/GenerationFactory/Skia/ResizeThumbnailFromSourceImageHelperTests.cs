@@ -143,6 +143,19 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	}
 
 	[TestMethod]
+	public async Task ResizeThumbnailFromSourceImage_UnknownStorageService()
+	{
+		var result = await _sut.ResizeThumbnailFromSourceImage(
+			TestPath,
+			( SelectorStorage.StorageServices ) 99, // not a storage location
+			4, "thumbnailOutputHash",
+			ThumbnailImageFormat.jpg);
+
+		Assert.IsFalse(result.Success);
+		Assert.Contains("resultResultPathType", result.ErrorMessage);
+	}
+
+	[TestMethod]
 	public async Task ResizeThumbnailFromSourceImage_FileNotFound()
 	{
 		var result = await _sut.ResizeThumbnailFromSourceImage(

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Helpers;
@@ -21,9 +20,7 @@ public sealed class AllowedTypesController : Controller
 	[Produces("application/json")]
 	public IActionResult AllowedTypesMimetypeSync()
 	{
-		var mimeTypes = ExtensionRolesHelper.ExtensionSyncSupportedList
-			.Select(MimeHelper.GetMimeType).ToHashSet();
-		return Json(mimeTypes);
+		return MimeTypesJson(ExtensionRolesHelper.ExtensionSyncSupportedList);
 	}
 
 
@@ -38,9 +35,7 @@ public sealed class AllowedTypesController : Controller
 	[Produces("application/json")]
 	public IActionResult AllowedTypesMimetypeSyncThumb()
 	{
-		var mimeTypes = ExtensionRolesHelper.ExtensionSkiaSharpThumbnailSupportedList
-			.Select(MimeHelper.GetMimeType).ToHashSet();
-		return Json(mimeTypes);
+		return MimeTypesJson(ExtensionRolesHelper.ExtensionSkiaSharpThumbnailSupportedList);
 	}
 
 	/// <summary>
@@ -69,5 +64,19 @@ public sealed class AllowedTypesController : Controller
 		}
 
 		return Json(result);
+	}
+
+	/// <summary>
+	///     Convert a list of extensions to a distinct list of mime types
+	/// </summary>
+	private IActionResult MimeTypesJson(List<string> extensions)
+	{
+		var mimeTypes = new HashSet<string>();
+		foreach ( var extension in extensions )
+		{
+			mimeTypes.Add(MimeHelper.GetMimeType(extension));
+		}
+
+		return Json(mimeTypes);
 	}
 }

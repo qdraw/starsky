@@ -41,11 +41,14 @@ public class SkiaImageHelperTests
 	}
 
 	[TestMethod]
-	public void Rotate_NotMultipleOf90_Throws()
+	[DataRow(45)]
+	[DataRow(200)]
+	[DataRow(360 + 45)]
+	public void Rotate_NotMultipleOf90_Throws(int degrees)
 	{
 		using var source = RedTopLeft(3, 4);
 		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
-			SkiaImageHelper.Rotate(source, 45));
+			SkiaImageHelper.Rotate(source, degrees));
 	}
 
 	[TestMethod]
@@ -127,6 +130,69 @@ public class SkiaImageHelperTests
 		using var result = SkiaImageHelper.DecodeAutoOrient(stream);
 		Assert.AreEqual(40, result.Width);
 		Assert.AreEqual(20, result.Height);
+	}
+
+	/// <summary>
+	///     The source is a 24x16 image with a red top left quadrant, the other quadrants are
+	///     blue. The redX and redY are in the middle of the red quadrant after the orientation
+	///     of the (EXIF) image is applied
+	/// </summary>
+	[TestMethod]
+	[DataRow(1, 24, 16, 6, 4)] // normal
+	[DataRow(2, 24, 16, 18, 4)] // mirrored horizontal
+	[DataRow(3, 24, 16, 18, 12)] // rotated 180 degrees
+	[DataRow(4, 24, 16, 6, 12)] // mirrored vertical
+	[DataRow(5, 16, 24, 4, 6)] // transposed
+	[DataRow(6, 16, 24, 12, 6)] // rotated 90 degrees clockwise
+	[DataRow(7, 16, 24, 12, 18)] // transverse
+	[DataRow(8, 16, 24, 4, 18)] // rotated 270 degrees clockwise
+	public void DecodeAutoOrient_ExifOrientation(int orientation, int expectedWidth,
+		int expectedHeight, int redX, int redY)
+	{
+		using var stream =
+			new MemoryStream(CreateAnImageWithExifOrientation.Jpeg(24, 16, orientation));
+		using var result = SkiaImageHelper.DecodeAutoOrient(stream);
+
+		Assert.AreEqual(expectedWidth, result.Width, "width");
+		Assert.AreEqual(expectedHeight, result.Height, "height");
+
+		AssertIsRed(result.GetPixel(redX, redY), $"{redX},{redY} should be red");
+		// the diagonal is always in one of the blue quadrants
+		var blueX = expectedWidth - 1 - redX;
+		var blueY = expectedHeight - 1 - redY;
+		AssertIsBlue(result.GetPixel(blueX, blueY), $"{blueX},{blueY} should be blue");
+	}
+
+	[TestMethod]
+	public void Decode_AjpegWithExifOrientation_DoesNotTransform()
+	{
+		using var stream = new MemoryStream(CreateAnImageWithExifOrientation.Jpeg(24, 16, 6));
+		using var result = SkiaImageHelper.Decode(stream);
+
+		Assert.AreEqual(24, result.Width);
+		Assert.AreEqual(16, result.Height);
+		AssertIsRed(result.GetPixel(6, 4), "the red quadrant should not be moved");
+	}
+
+	[TestMethod]
+	public void Encode_UnknownFormat_Throws()
+	{
+		using var source = RedTopLeft(20, 10);
+		using var output = new MemoryStream();
+		var exception = Assert.ThrowsExactly<InvalidOperationException>(() =>
+			SkiaImageHelper.Encode(source, ( SKEncodedImageFormat ) 999, 90, output));
+		Assert.AreEqual("Encode failed", exception.Message);
+	}
+
+	private static void AssertIsRed(SKColor color, string because)
+	{
+		Assert.IsGreaterThan(color.Blue, color.Red, because);
+		Assert.IsGreaterThan(color.Green, color.Red, because);
+	}
+
+	private static void AssertIsBlue(SKColor color, string because)
+	{
+		Assert.IsGreaterThan(color.Red, color.Blue, because);
 	}
 
 	[TestMethod]

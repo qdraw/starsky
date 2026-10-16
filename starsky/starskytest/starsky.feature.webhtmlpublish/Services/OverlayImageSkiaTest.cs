@@ -98,6 +98,23 @@ public sealed class OverlayImageSkiaTest
 	}
 
 	[TestMethod]
+	public async Task ResizeOverlayImageThumbnails_overlay_image_missing_thumbnail_exists()
+	{
+		// the thumbnail name is the same as the one that is created in the done test
+		var overlayImage = new OverlayImageSkia(_selectorStorage, _appSettings);
+
+		var exception = await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
+			await overlayImage.ResizeOverlayImageThumbnails("/test", ThumbnailSize.Large,
+				"/out_thumb_missing.jpg",
+				new AppSettingsPublishProfiles
+				{
+					SourceMaxWidth = 100, OverlayMaxWidth = 1, Path = "/not-existing.png"
+				}));
+
+		Assert.Contains("overlayImage is missing in profile.Path", exception.Message);
+	}
+
+	[TestMethod]
 	public async Task ResizeOverlayImageLarge_File_Not_Found()
 	{
 		var overlayImage = new OverlayImageSkia(_selectorStorage, _appSettings);
