@@ -20,8 +20,9 @@ public static class CreateAnImageWithExifOrientation
 			SKColorType.Rgba8888, SKAlphaType.Opaque));
 		bitmap.Erase(SKColors.Blue);
 		using ( var canvas = new SKCanvas(bitmap) )
-		using ( var red = new SKPaint { Color = SKColors.Red } )
+		using ( var red = new SKPaint() )
 		{
+			red.Color = SKColors.Red;
 			canvas.DrawRect(0, 0, width / 2f, height / 2f, red);
 		}
 
@@ -59,7 +60,7 @@ public static class CreateAnImageWithExifOrientation
 			0x00, 0x00, 0x00, 0x00 // no next IFD
 		];
 
-		byte[] exifPrefix = "Exif"u8.ToArray();
+		var exifPrefix = "Exif"u8.ToArray();
 		// the length includes the two length bytes, but not the marker itself
 		var length = 2 + exifPrefix.Length + 1 + 1 + tiffHeaderAndValue.Length;
 

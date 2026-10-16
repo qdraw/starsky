@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -143,6 +144,9 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	}
 
 	[TestMethod]
+	[SuppressMessage("Usage",
+		"CS8604: Possible null reference argument for parameter 'value' in 'void Assert.Contain",
+		Justification = "Null fallback")]
 	public async Task ResizeThumbnailFromSourceImage_UnknownStorageService()
 	{
 		var result = await _sut.ResizeThumbnailFromSourceImage(
@@ -152,7 +156,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 			ThumbnailImageFormat.jpg);
 
 		Assert.IsFalse(result.Success);
-		Assert.Contains("resultResultPathType", result.ErrorMessage);
+		Assert.Contains("resultResultPathType", result.ErrorMessage ?? string.Empty);
 	}
 
 	[TestMethod]

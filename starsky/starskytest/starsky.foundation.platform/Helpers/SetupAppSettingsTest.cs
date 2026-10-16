@@ -58,6 +58,8 @@ public sealed class SetupAppSettingsTest
 	public async Task SetLocalAppData_ShouldTakeDefault()
 	{
 		Environment.SetEnvironmentVariable("app__appsettingspath", null);
+		// the launch profile of the test project sets this value (and it is false in appsettings.json)
+		Environment.SetEnvironmentVariable("app__IsAccountRegisterOpen", null);
 
 		var builder = await SetupAppSettings.AppSettingsToBuilder();
 		var services = new ServiceCollection();

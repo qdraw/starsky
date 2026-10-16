@@ -69,7 +69,7 @@ public sealed class AllowedTypesController : Controller
 	/// <summary>
 	///     Convert a list of extensions to a distinct list of mime types
 	/// </summary>
-	private IActionResult MimeTypesJson(List<string> extensions)
+	private JsonResult MimeTypesJson(List<string> extensions)
 	{
 		var mimeTypes = new HashSet<string>();
 		foreach ( var extension in extensions )

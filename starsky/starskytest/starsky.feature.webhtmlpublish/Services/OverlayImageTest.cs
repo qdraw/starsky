@@ -18,7 +18,7 @@ public sealed class OverlayImageTest
 {
 	private readonly AppSettings _appSettings = new();
 
-	private FakeIStorage Storage()
+	private static FakeIStorage Storage()
 	{
 		return new FakeIStorage(["/"], ["/test.jpg", "/test.webp"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
