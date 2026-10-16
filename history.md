@@ -47,6 +47,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Removed) _Back-end_ `linux-arm` (32 bits ARM, e.g. Raspberry Pi 32 bits and Docker `linux/arm/v7`) is no longer supported, use `linux-arm64`
 - [x] (Security) _Back-end_ Image resizing, thumbnails and the logo overlay of publish profiles use SkiaSharp; SixLabors.ImageSharp is removed (known vulnerabilities, paid licence)
 - [x] (Changed) _Back-end_ Upgrade to .NET 10.0 - SDK 10.0.402 (Runtime: 10.0.13)
+- [x] (Fixed) _MountWatcher CLI_ macOS: the launchd agent starts in the app data folder instead of `/`, the default working directory made the appsettings file watcher scan the whole disk (high CPU and memory usage)
 
 ## version 0.9.6 - 2026-09-29 {#0.9.6}
 
