@@ -9,14 +9,10 @@ CURRENT_DIR=$(dirname "$0")
 OUTPUT_DIR=$CURRENT_DIR
 
 PM2NAME="starsky"
-RUNTIME="linux-arm"
+RUNTIME="linux-arm64"
 case $(uname -m) in
   "aarch64")
     RUNTIME="linux-arm64"
-    ;;
-
-  "armv7l")
-    RUNTIME="linux-arm"
     ;;
 
   "arm64")
@@ -47,8 +43,7 @@ for ((i = 1; i <= $#; i++ )); do
   if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
   then
       echo "--name pm2name"
-      echo "--runtime linux-arm"
-      echo "     (or:) --runtime linux-arm64"
+      echo "--runtime linux-arm64"
       echo "     (or:) --runtime osx-x64"
       echo "     (or:) --runtime osx-arm64"
       echo "     (or:) --runtime win-x64"

@@ -58,7 +58,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 				$"{FormatUnknownPrefix}{subPath}");
 		}
 
-		// eg. ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported
+		// eg. ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported
 		var extensionSupported = isExtensionSupportedDelegate(subPath);
 		var existsFile = _storage.ExistFile(subPath);
 		if ( !extensionSupported || !existsFile )

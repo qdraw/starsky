@@ -5,14 +5,10 @@ EXTERNALFOLDER=/opt/starsky/starsky
 CURRENTDIR=$(dirname "$0")
 PWDPREV=$(pwd)
 
-RUNTIME="linux-arm"
+RUNTIME="linux-arm64"
 case $(uname -m) in
   "aarch64")
     RUNTIME="linux-arm64"
-    ;;
-
-  "armv7l")
-    RUNTIME="linux-arm"
     ;;
 
   "x86_64")

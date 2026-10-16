@@ -9,7 +9,6 @@ using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Interfaces;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
@@ -75,12 +74,13 @@ public class EmbeddedRawThumbnailGenerator(
 			{
 				// Resize the extracted preview to requested thumbnail sizes
 				var resizeHelper =
-					new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);
+					new ImageProviderFactory(selectorStorage, logger)
+						.CreateResizeThumbnailFromSourceImageHelper();
 				var generationResult = await resizeHelper.ResizeThumbnailFromSourceImage(
 					previewPath,
 					SelectorStorage.StorageServices.Temporary,
 					ThumbnailNameHelper.GetSize(biggestThumbnailSize), fileHash,
-					false, imageFormat);
+					imageFormat);
 
 				return generationResult;
 			}

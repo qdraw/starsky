@@ -181,7 +181,7 @@ public sealed class ThumbnailController : Controller
 		var sourcePath = ( await _query.GetSubPathsByHashAsync(f) ).FirstOrDefaultWithFallback(f);
 
 		var isThumbnailSupported =
-			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath);
+			ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(sourcePath);
 		switch ( isThumbnailSupported )
 		{
 			case true when !string.IsNullOrEmpty(sourcePath):
@@ -336,7 +336,7 @@ public sealed class ThumbnailController : Controller
 			return Json("Thumbnail is not ready yet");
 		}
 
-		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath) )
+		if ( ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(sourcePath) )
 		{
 			var fs1 = _iStorage.ReadStream(sourcePath);
 
@@ -404,7 +404,7 @@ public sealed class ThumbnailController : Controller
 			sourcePath = filePath;
 		}
 
-		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath) )
+		if ( ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(sourcePath) )
 		{
 			var fs1 = _iStorage.ReadStream(sourcePath);
 

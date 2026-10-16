@@ -14,10 +14,10 @@ using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Interfaces;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 using starskytest.FakeCreateAn;
@@ -266,7 +266,7 @@ public sealed class ThumbnailServiceTests : VerifyBase
 			$"preview_{output}.jpg",
 			SelectorStorage.StorageServices.Temporary,
 			1000, output,
-			true, ThumbnailImageFormat.jpg);
+			ThumbnailImageFormat.jpg);
 
 		var stream = _selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail)
 			.ReadStream($"{output}.jpg");

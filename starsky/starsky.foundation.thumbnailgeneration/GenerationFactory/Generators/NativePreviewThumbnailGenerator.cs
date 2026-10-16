@@ -11,7 +11,6 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.NativePreview;
@@ -64,11 +63,12 @@ public class NativePreviewThumbnailGenerator(
 				singleSubPath, fileHash, true, imageFormat, result.ErrorLog, result.ErrorMessage);
 		}
 
-		var service = new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);
+		var service = new ImageProviderFactory(selectorStorage, logger)
+			.CreateResizeThumbnailFromSourceImageHelper();
 		var generationResult = await service.ResizeThumbnailFromSourceImage(result.ResultPath,
 			result.ResultPathType,
 			ThumbnailNameHelper.GetSize(biggestThumbnailSize), fileHash,
-			false, imageFormat);
+			imageFormat);
 
 		nativePreviewHelper.CleanTemporaryFile(result.ResultPath,
 			result.ResultPathType);

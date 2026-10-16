@@ -365,7 +365,6 @@ starsky-tools/build-tools/test/*
 
 **/osx-x64/*
 **/osx-arm64/*
-**/linux-arm/*
 **/linux-arm64/*
 **/linux-x64/*
 **/win7-x86/*
@@ -378,7 +377,6 @@ starsky-tools/build-tools/test/*
 starsky/output/*
 
 
-starsky-linux-arm.zip
 starsky-linux-arm64.zip
 
 starsky-osx-x64.zip
