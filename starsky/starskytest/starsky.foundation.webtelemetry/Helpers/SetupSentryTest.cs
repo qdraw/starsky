@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sentry;
@@ -55,6 +56,17 @@ public partial class SetupSentryTest
 	}
 
 	[TestMethod]
+	public void CreateOptions_WithoutSentrySettings_UsesTheEnvironmentName()
+	{
+		// config can turn the settings off by setting the section to null
+		var options = SetupSentry.CreateOptions(new AppSettings { Sentry = null }, Dsn);
+
+		Assert.IsNotNull(options);
+		Assert.AreEqual(Dsn, options.Dsn);
+		Assert.IsFalse(string.IsNullOrWhiteSpace(options.Environment));
+	}
+
+	[TestMethod]
 	public void CreateOptions_PrivacyOptions()
 	{
 		var options = SetupSentry.CreateOptions(new AppSettings(), Dsn);
@@ -89,6 +101,19 @@ public partial class SetupSentryTest
 		Assert.IsNull(image?.CodeFile);
 		// without the paths the debug id is still there for symbolication
 		Assert.AreEqual("32c2e2ca-7dd2-4e4e-ad34-3358be7c7713-9d786101", image?.DebugId);
+	}
+
+	[TestMethod]
+	public void Scrub_WithoutExceptions_ReturnsTheEvent()
+	{
+		// a report without an exception has nothing to scrub in the stack traces
+		var sentryEvent = new SentryEvent { SentryExceptions = null };
+
+		var result = SetupSentry.Scrub(sentryEvent);
+
+		Assert.AreSame(sentryEvent, result);
+		// the sdk gives an empty list back for an event without exceptions
+		Assert.IsEmpty(result.SentryExceptions!);
 	}
 
 	[TestMethod]
@@ -189,6 +214,11 @@ public partial class SetupSentryTest
 	}
 
 	[TestMethod]
+	[DataRow(null, null)]
+	[DataRow("", null)]
+	[DataRow("   ", null)]
+	[DataRow("///", null)]
+	[DataRow(@"\\", null)]
 	[DataRow("/Users/dion/data/git/starsky/starsky/Controllers/FooController.cs",
 		"starsky/Controllers/FooController.cs")]
 	[DataRow(@"C:\Users\dion\data\git\starsky\starsky\Controllers\FooController.cs",
@@ -255,6 +285,18 @@ public partial class SetupSentryTest
 	}
 
 	[TestMethod]
+	public void ScrubBreadcrumb_WithoutMessageTypeOrCategory_KeepsTheBreadcrumb()
+	{
+		// breadcrumbs of other libraries do not always set all fields
+		var result = SetupSentry.ScrubBreadcrumb(new Breadcrumb(null!, null!));
+
+		Assert.IsNotNull(result);
+		Assert.IsTrue(string.IsNullOrEmpty(result.Message));
+		Assert.AreEqual(BreadcrumbTypes.Default, result.Type);
+		Assert.IsNull(result.Category);
+	}
+
+	[TestMethod]
 	public void ScrubAndLog_WritesTheEventIdToTheLog()
 	{
 		var webLogger = new FakeIWebLogger();
@@ -281,6 +323,18 @@ public partial class SetupSentryTest
 	}
 
 	[TestMethod]
+	public void ScrubAndLog_WithoutException_StillWritesTheEventId()
+	{
+		var webLogger = new FakeIWebLogger();
+
+		var result = SetupSentry.ScrubAndLog(new SentryEvent(), webLogger);
+
+		// the id is the only thing a user has to share, also without an exception
+		Assert.HasCount(1, webLogger.TrackedInformation);
+		Assert.Contains(result.EventId.ToString(), webLogger.TrackedInformation[0].Item2!);
+	}
+
+	[TestMethod]
 	public void ScrubAndLog_WithoutLogger_DoesNotThrow()
 	{
 		Assert.IsNotNull(SetupSentry.ScrubAndLog(new SentryEvent(), null));
@@ -290,6 +344,27 @@ public partial class SetupSentryTest
 	public void GetAssemblyDsn_NotSet_ReturnsNull()
 	{
 		Assert.IsNull(SetupSentry.GetAssemblyDsn(Assembly.GetExecutingAssembly()));
+	}
+
+	[TestMethod]
+	public void GetAssemblyDsn_EmptyValue_ReturnsNull()
+	{
+		var assembly = CreateAssemblyWithMetadata(SetupSentry.AssemblyMetadataKey, null!);
+
+		Assert.IsNull(SetupSentry.GetAssemblyDsn(assembly));
+	}
+
+	[TestMethod]
+	[DataRow("OtherKey", "https://publickey@example.test/1", null)]
+	[DataRow(SetupSentry.AssemblyMetadataKey, "  https://publickey@example.test/1  ",
+		"https://publickey@example.test/1")]
+	[DataRow(SetupSentry.AssemblyMetadataKey, " ", "")]
+	public void GetAssemblyDsn_FromBuildMetadata(string key, string value, string? expected)
+	{
+		// the Dsn is baked into the assembly metadata by a Release build
+		var assembly = CreateAssemblyWithMetadata(key, value);
+
+		Assert.AreEqual(expected, SetupSentry.GetAssemblyDsn(assembly));
 	}
 
 	[TestMethod]
@@ -330,6 +405,22 @@ public partial class SetupSentryTest
 		}
 
 		Assert.IsNull(caught);
+	}
+
+	/// <summary>
+	///     A Release build writes the Dsn into the assembly metadata, this builds one
+	///     like that without touching the assembly of the test project itself
+	/// </summary>
+	private static AssemblyBuilder CreateAssemblyWithMetadata(string key, string value)
+	{
+		var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(
+			new AssemblyName("SetupSentryTest_" + Guid.NewGuid()), AssemblyBuilderAccess.Run);
+
+		var ctor = typeof(AssemblyMetadataAttribute).GetConstructor(
+			[typeof(string), typeof(string)])!;
+		assemblyBuilder.SetCustomAttribute(new CustomAttributeBuilder(ctor, [key, value]));
+
+		return assemblyBuilder;
 	}
 
 	[GeneratedRegex(@"^failed <path:[0-9a-f]{8}\.jpg>$")]
