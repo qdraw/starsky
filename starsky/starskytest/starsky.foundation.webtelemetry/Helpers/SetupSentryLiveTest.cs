@@ -112,7 +112,8 @@ public sealed class SetupSentryLiveTest
 		var configuration = await SetupAppSettings.AppSettingsToBuilder();
 		var appSettings = SetupAppSettings.ConfigurePoCoAppSettings(
 			new ServiceCollection(), configuration);
-		Assert.IsFalse(string.IsNullOrWhiteSpace(appSettings.Sentry?.Dsn), ChildDsnVariable + " is not set");
+		Assert.IsFalse(string.IsNullOrWhiteSpace(appSettings.Sentry?.Dsn),
+			ChildDsnVariable + " is not set");
 
 		using var crashReports = SetupSentry.Init(appSettings);
 		Assert.IsNotNull(crashReports, "crash reporting did not start");
@@ -139,7 +140,8 @@ public sealed class SetupSentryLiveTest
 		var dsn = Environment.GetEnvironmentVariable(RealDsnVariable);
 		if ( string.IsNullOrWhiteSpace(dsn) )
 		{
-			Assert.Inconclusive($"set {RealDsnVariable} to send one test crash report to your own project");
+			Assert.Inconclusive(
+				$"set {RealDsnVariable} to send one test crash report to your own project");
 			return;
 		}
 
@@ -188,7 +190,8 @@ public sealed class SetupSentryLiveTest
 		}
 
 		startInfo.ArgumentList.Add("--filter");
-		startInfo.ArgumentList.Add($"FullyQualifiedName~{nameof(LiveChild_UnhandledCrash_IsReportedToSink)}");
+		startInfo.ArgumentList.Add(
+			$"FullyQualifiedName~{nameof(LiveChild_UnhandledCrash_IsReportedToSink)}");
 		startInfo.Environment[ChildVariable] = "1";
 		startInfo.Environment[ChildDsnVariable] = dsn;
 
@@ -200,8 +203,9 @@ public sealed class SetupSentryLiveTest
 	{
 		var output = await child.StandardOutput.ReadToEndAsync();
 		var error = await child.StandardError.ReadToEndAsync();
-		return $"child exit code: {( child.HasExited ? child.ExitCode.ToString() : "still running" )}" +
-		       $"{Environment.NewLine}stdout: {output}{Environment.NewLine}stderr: {error}";
+		return
+			$"child exit code: {( child.HasExited ? child.ExitCode.ToString() : "still running" )}" +
+			$"{Environment.NewLine}stdout: {output}{Environment.NewLine}stderr: {error}";
 	}
 
 	/// <summary>
@@ -245,7 +249,7 @@ public sealed class SetupSentryLiveTest
 
 				await using var input = context.Request.InputStream;
 				var contentEncoding = context.Request.Headers["Content-Encoding"];
-				Stream body = contentEncoding?.Contains("gzip",
+				var body = contentEncoding?.Contains("gzip",
 					StringComparison.OrdinalIgnoreCase) == true
 					? new GZipStream(input, CompressionMode.Decompress)
 					: input;
@@ -269,7 +273,7 @@ public sealed class SetupSentryLiveTest
 		{
 			var probe = new TcpListener(IPAddress.Loopback, 0);
 			probe.Start();
-			var port = ( (IPEndPoint)probe.LocalEndpoint ).Port;
+			var port = ( ( IPEndPoint ) probe.LocalEndpoint ).Port;
 			probe.Stop();
 			return port;
 		}

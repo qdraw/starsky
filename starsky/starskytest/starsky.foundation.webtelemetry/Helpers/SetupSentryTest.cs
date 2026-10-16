@@ -320,6 +320,17 @@ public class SetupSentryTest
 	[TestMethod]
 	public void Flush_NotInitialized_DoesNotThrow()
 	{
-		SetupSentry.Flush();
+		// Flush is called on shutdown paths, so it must be safe before Init ran
+		Exception? caught = null;
+		try
+		{
+			SetupSentry.Flush();
+		}
+		catch ( Exception ex )
+		{
+			caught = ex;
+		}
+
+		Assert.IsNull(caught);
 	}
 }
