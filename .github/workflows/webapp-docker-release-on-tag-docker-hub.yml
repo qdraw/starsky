@@ -60,7 +60,7 @@ jobs:
           build-args: |
             GitCommitHash=${{ github.sha }}
           secrets: |
-            sentry_dsn=${{ secrets.STARSKY_SENTRY_DSN }}
+            crash_report_dsn=${{ secrets.STARSKY_CRASH_REPORT_DSN }}
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:latest
             ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:${{ steps.pushtags.outputs.tag }}

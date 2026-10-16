@@ -32,9 +32,9 @@
         <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0"/>
     </ItemGroup>
 
-    <!-- Release builds in CI pass the DSN via the SENTRY_DSN env var (GitHub secret) -->
+    <!-- Release builds in CI pass the DSN via the STARSKY_CRASH_REPORT_DSN env var (GitHub secret) -->
     <PropertyGroup>
-        <SentryDsn Condition="'$(SentryDsn)' == '' and '$(SENTRY_DSN)' != ''">$(SENTRY_DSN)</SentryDsn>
+        <SentryDsn Condition="'$(SentryDsn)' == '' and '$(STARSKY_CRASH_REPORT_DSN)' != ''">$(STARSKY_CRASH_REPORT_DSN)</SentryDsn>
     </PropertyGroup>
     <ItemGroup Condition="'$(SentryDsn)' != '' and '$(Configuration)' == 'Release'">
         <AssemblyMetadata Include="SentryDsn" Value="$(SentryDsn)"/>

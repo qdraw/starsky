@@ -44,7 +44,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.7 - _(Unreleased)_ - 2026-?-? {#0.9.7}
 
-- [x] (Added) Added crash reports (Sentry) for unhandled exceptions, without personal data. Opt-out with `app__EnableCrashReports=false`, see [telemetry](starsky/telemetry.md)
+- [x] (Added) Added crash reports (Sentry) for unhandled exceptions, without personal data. Opt-out with `app__EnableCrashReports=false`, see [telemetry](starsky/telemetry.md) (PR #3385)
 - [x] (Removed) _Back-end_ `linux-arm` (32 bits ARM, e.g. Raspberry Pi 32 bits and Docker `linux/arm/v7`) is no longer supported, use `linux-arm64`
 - [x] (Security) _Back-end_ Image resizing, thumbnails and the logo overlay of publish profiles use SkiaSharp; SixLabors.ImageSharp is removed (known vulnerabilities, paid licence)
 - [x] (Changed) _Back-end_ Upgrade to .NET 10.0 - SDK 10.0.402 (Runtime: 10.0.13)
