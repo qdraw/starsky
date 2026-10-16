@@ -34,7 +34,7 @@ public partial class Query // QueryCollections
 			// collections with no thumbnail-supported member (e.g. ARW+DNG) are not dropped.
 			var thumbnailItems = duplicateItems
 				.Where(item =>
-					ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(item.FileName))
+					ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(item.FileName))
 				.ToList();
 
 			if ( thumbnailItems.Count != 0 )

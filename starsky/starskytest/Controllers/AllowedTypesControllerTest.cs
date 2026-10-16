@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,6 +26,27 @@ public sealed class AllowedTypesControllerTest
 		var jsonResult = new AllowedTypesController().AllowedTypesMimetypeSyncThumb() as JsonResult;
 		var allowedApiResult = jsonResult?.Value as HashSet<string>;
 		Assert.IsTrue(allowedApiResult?.Contains("image/jpeg"));
+	}
+
+	/// <summary>
+	///     The list is built from the same extension list on every request, calling the endpoint
+	///     more than once should return the same result
+	/// </summary>
+	[TestMethod]
+	public void AllowedTypesController_MimetypeSyncThumb_CalledTwice()
+	{
+		var controller = new AllowedTypesController();
+
+		var first = controller.AllowedTypesMimetypeSyncThumb() as JsonResult;
+		var second = controller.AllowedTypesMimetypeSyncThumb() as JsonResult;
+
+		var firstList = first?.Value as HashSet<string>;
+		var secondList = second?.Value as HashSet<string>;
+
+		Assert.IsNotNull(firstList);
+		Assert.IsNotNull(secondList);
+		Assert.Contains("image/webp", firstList);
+		Assert.AreSequenceEqual(firstList.ToList(), secondList.ToList());
 	}
 
 	[TestMethod]

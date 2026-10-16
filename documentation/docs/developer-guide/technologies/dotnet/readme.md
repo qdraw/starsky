@@ -95,15 +95,11 @@ metadata properties and values, and to iterate over the metadata directory struc
 With MetadataExtractor, you can extract metadata information such as camera model and settings,
 image creation and modification dates, image descriptions, and much more.
 
-## ImageSharp
+## SkiaSharp
 
-ImageSharp is a fast, lightweight, and cross-platform library for image processing in C#.
-It provides a modern and flexible API for handling images and provides many common image processing
-operations, such as resizing, cropping, rotating, and filtering.
-ImageSharp supports a variety of image file formats, including JPEG, PNG, GIF, BMP, and others,
-and supports both GUI and console applications. The library is designed for high performance
-and is optimized for use with multithreaded processors. ImageSharp is easy to use and integrates
-well with other libraries, making it a popular choice for developing image-processing applications in C#.
+SkiaSharp (.NET bindings for Google's Skia) is used for image resizing, rotating, cropping,
+the logo overlay of publish profiles and thumbnail encoding (JPEG, PNG and WebP).
+Shared helpers are in `SkiaImageHelper` (`starsky.foundation.thumbnailgeneration`).
 
 ## RazorLight
 

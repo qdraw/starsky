@@ -1,20 +1,19 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory;
 
 public class RotateThumbnailHelper(
 	ISelectorStorage selectorStorage,
 	AppSettings appSettings,
-	IWebLogger logger)
+	IWebLogger logger) : IRotateThumbnailHelper
 {
 	private readonly IStorage
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
@@ -28,7 +27,7 @@ public class RotateThumbnailHelper(
 	/// <param name="width">to resize, default 1000</param>
 	/// <param name="height">to resize, default keep ratio (0)</param>
 	/// <returns>Is successful? // private feature</returns>
-	internal async Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
+	public async Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
 		int height = 0)
 	{
 		if ( !_thumbnailStorage.ExistFile(fileHash) )
@@ -37,27 +36,17 @@ public class RotateThumbnailHelper(
 		}
 
 		// the orientation is -1 or 1
-		var rotateMode = RotateMode.Rotate90;
-		if ( orientation == -1 )
-		{
-			rotateMode = RotateMode.Rotate270;
-		}
+		var degrees = orientation == -1 ? 270 : 90;
 
 		try
 		{
 			using ( var inputStream = _thumbnailStorage.ReadStream(fileHash) )
-			using ( var image = await Image.LoadAsync(inputStream) )
+			using ( var image = SkiaImageHelper.Decode(inputStream) )
+			using ( var resized = SkiaImageHelper.Resize(image, width, height) )
+			using ( var rotated = SkiaImageHelper.Rotate(resized, degrees) )
 			using ( var stream = new MemoryStream() )
 			{
-				image.Mutate(x => x
-					.Resize(width, height, KnownResamplers.Lanczos3)
-				);
-				image.Mutate(x => x
-					.Rotate(rotateMode));
-
-				// Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, MemoryStream outputStream
-				await SaveThumbnailImageFormatHelper.SaveThumbnailImageFormat(image,
-					appSettings.ThumbnailImageFormat, stream);
+				SkiaImageHelper.Encode(rotated, appSettings.ThumbnailImageFormat, stream);
 				await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
 			}
 		}

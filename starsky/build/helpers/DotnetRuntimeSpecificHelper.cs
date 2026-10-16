@@ -112,7 +112,7 @@ public static class DotnetRuntimeSpecificHelper
 	/// </summary>
 	/// <param name="solution">the solution file (sln)</param>
 	/// <param name="configuration">Config file</param>
-	/// <param name="runtime">which runtime e.g. linux-arm or osx-x64</param>
+	/// <param name="runtime">which runtime e.g. linux-arm64 or osx-x64</param>
 	/// <param name="isReadyToRunEnabled">Is Ready To Run Enabled</param>
 	public static void BuildNetCoreCommand(Solution solution, Configuration
 		configuration, string runtime, bool isReadyToRunEnabled)

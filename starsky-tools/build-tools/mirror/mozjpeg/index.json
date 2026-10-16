@@ -1,11 +1,6 @@
 {
     "binaries": [
         {
-            "architecture": "linux-arm",
-            "fileName": "mozjpeg-linux-arm.zip",
-            "sha256": "3f29a37d3c3c5d80aaf0c1f1dd3809b459a88c50994b2d44a587ee40c73e40f0"
-        },
-        {
             "architecture": "linux-arm64",
             "fileName": "mozjpeg-linux-arm64.zip",
             "sha256": "939afee119c30478dba79906ee270518e2a56c2ef1a031c666bcbd6ac3167722"

@@ -7,13 +7,13 @@ using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Generators.Interfaces;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Generators;
 
-public class ImageSharpThumbnailGenerator(
+public class SkiaThumbnailGenerator(
 	ISelectorStorage selectorStorage,
 	IWebLogger logger)
 	: IThumbnailGenerator
@@ -25,7 +25,7 @@ public class ImageSharpThumbnailGenerator(
 	{
 		return await new SharedGenerate(selectorStorage, logger).GenerateThumbnail(
 			ResizeThumbnailFromSourceImage,
-			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported, singleSubPath, fileHash,
+			ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported, singleSubPath, fileHash,
 			imageFormat, thumbnailSizes);
 	}
 
@@ -36,6 +36,6 @@ public class ImageSharpThumbnailGenerator(
 		var service = new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);
 		return await service.ResizeThumbnailFromSourceImage(singleSubPath,
 			SelectorStorage.StorageServices.SubPath,
-			ThumbnailNameHelper.GetSize(biggestThumbnailSize), fileHash, false, imageFormat);
+			ThumbnailNameHelper.GetSize(biggestThumbnailSize), fileHash, imageFormat);
 	}
 }

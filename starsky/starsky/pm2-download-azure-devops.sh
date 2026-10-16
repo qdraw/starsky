@@ -11,14 +11,10 @@
 
 # Filename: pm2-download-azure-devops.sh
 
-RUNTIME="linux-arm"
+RUNTIME="linux-arm64"
 case $(uname -m) in
   "aarch64")
     RUNTIME="linux-arm64"
-    ;;
-
-  "armv7l")
-    RUNTIME="linux-arm"
     ;;
 
   "arm64")
@@ -66,8 +62,7 @@ for ((i = 1; i <= $#; i++ )); do
   then
       echo "--branch master"
       echo "--token anything"
-      echo "--runtime linux-arm"
-      echo "     (or:) --runtime linux-arm64"
+      echo "--runtime linux-arm64"
       echo "     (or:) --runtime osx-x64"
       echo "     (or:) --runtime win-x64"
       echo "     (or as fallback:) --runtime "$RUNTIME

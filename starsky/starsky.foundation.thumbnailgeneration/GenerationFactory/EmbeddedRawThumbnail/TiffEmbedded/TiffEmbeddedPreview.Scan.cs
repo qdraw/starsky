@@ -16,7 +16,7 @@ public partial class TiffEmbeddedPreviewExtractor
 	/// <summary>
 	///     Returns true when the JPEG at <paramref name="offset" /> is lossless.
 	///     Canon CR2 stores lossless raw strips starting with FF D8 FF C4 (SOI + DHT, no DQT).
-	///     ImageSharp cannot decode these; they must be excluded from preview candidates.
+	///     SkiaSharp cannot decode these; they must be excluded from preview candidates.
 	/// </summary>
 	internal static bool IsLosslessJpegAtOffset(Stream input, uint offset)
 	{

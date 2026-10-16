@@ -31,7 +31,7 @@ public class QueryCollectionsTest
 	[TestMethod]
 	public void QueryCollections_StackCollections_NoThumbnailSupported_FallsBackToFirst()
 	{
-		// Both ARW and DNG are RAW — neither is IsExtensionImageSharpThumbnailSupported.
+		// Both ARW and DNG are RAW — neither is IsExtensionSkiaSharpThumbnailSupported.
 		// Previously the whole group was silently dropped; now the alphabetically first is kept.
 		var input = new List<FileIndexItem> { new("/test.arw"), new("/test.dng") };
 		var result = Query.StackCollections(input);

@@ -62,7 +62,7 @@ jobs:
         if: github.event_name != 'pull_request'
         with:
           context: ./starsky
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
@@ -80,7 +80,7 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           context: ./starsky
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           push: false
           build-args: |
             TOOLS=true
