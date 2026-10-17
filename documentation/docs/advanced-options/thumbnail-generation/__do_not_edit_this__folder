@@ -1,0 +1,6 @@
+All files in this folder are auto-copied from starsky/starsky.foundation.thumbnailgeneration/ by documentation/scripts/prestart.js.
+Do not edit them here — your changes will be overwritten the next time the docs site starts.
+
+Source files:
+  starsky/starsky.foundation.thumbnailgeneration/readme.md                    -> advanced-options/thumbnail-generation/readme.md
+  starsky/starsky.foundation.thumbnailgeneration/raw-embedded-preview-extraction.md -> advanced-options/thumbnail-generation/raw-embedded-preview-extraction.md

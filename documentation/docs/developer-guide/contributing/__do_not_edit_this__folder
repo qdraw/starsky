@@ -1,0 +1,6 @@
+All files in this folder are auto-copied from the repository root by documentation/scripts/prestart.js.
+Do not edit them here — your changes will be overwritten the next time the docs site starts.
+
+Source files:
+  CONTRIBUTING.md -> developer-guide/contributing/CONTRIBUTING.md
+  SECURITY.md     -> developer-guide/contributing/SECURITY.md
