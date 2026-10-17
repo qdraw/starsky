@@ -42,7 +42,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 > Within a version block the top are item is the newest
 
-## version 0.9.7 - _(Unreleased)_ - 2026-?-? {#0.9.7}
+## version 0.9.8 - _(Unreleased)_ - 2026-?-? {#0.9.8}
+
+- nothing yet
+
+## version 0.9.7 - 2026-10-17 {#0.9.7}
 
 - [x] (Added) Added crash reports (Sentry) for unhandled exceptions, without personal data. Only crashes are sent, log lines only travel along as breadcrumbs of a crash report. Opt-out with `app__EnableCrashReports=false`, see [telemetry](starsky/telemetry.md) (PR #3385)
 - [x] (Removed) _Back-end_ `linux-arm` (32 bits ARM, e.g. Raspberry Pi 32 bits and Docker `linux/arm/v7`) is no longer supported, use `linux-arm64`
