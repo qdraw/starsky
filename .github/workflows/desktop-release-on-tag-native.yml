@@ -89,13 +89,13 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Download osx-x64 as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: osx-x64
           path: ./starsky
 
       - name: Download osx-arm64 as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: osx-arm64
           path: ./starsky
@@ -185,7 +185,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Download osx-arm64 as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: osx-arm64
           path: ./starsky
@@ -271,7 +271,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Download osx-x64 as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: osx-x64
           path: ./starsky
@@ -357,7 +357,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Download starsky-win-x64 as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: win-x64
           path: ./starsky
@@ -444,55 +444,55 @@ jobs:
         run: mkdir -p starsky && mkdir -p desktop-releases
 
       - name: Download starsky-win-x64-desktop as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: starsky-win-x64-desktop
           path: ./desktop-releases
 
       - name: Download starsky-win-x64-velopack-feed as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: starsky-win-x64-velopack-feed
           path: ./desktop-releases
 
       - name: Download starsky-mac-universal-desktop as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: starsky-mac-universal-desktop
           path: ./desktop-releases
 
       - name: Download starsky-mac-arm64-desktop as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: starsky-mac-arm64-desktop
           path: ./desktop-releases
 
       - name: Download starsky-mac-x64-desktop as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: starsky-mac-x64-desktop
           path: ./desktop-releases
 
       - name: Download linux-arm64 as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: linux-arm64
           path: ./starsky
 
       - name: Download osx-x64 as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: osx-x64
           path: ./starsky
 
       - name: Download osx-arm64 as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: osx-arm64
           path: ./starsky
 
       - name: Download win-x64 as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: win-x64
           path: ./starsky
@@ -580,7 +580,7 @@ jobs:
       #     asset_content_type: application/zip
 
       - name: Download slack-notification as build artifact
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: starsky-tools-slack-notification
           path: ./starsky-tools-slack-notification
@@ -617,7 +617,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Download universal DMG
-        uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: starsky-mac-universal-desktop
           path: ./desktop-releases
