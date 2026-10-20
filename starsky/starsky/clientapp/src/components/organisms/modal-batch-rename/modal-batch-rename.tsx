@@ -146,8 +146,8 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
     );
   }
 
-  async function generatePreview() {
-    generatePreviewHelper(
+  function generatePreview() {
+    void generatePreviewHelper(
       pattern,
       setIsPreviewLoading,
       setError,
@@ -157,8 +157,8 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
     );
   }
 
-  async function executeBatchRename() {
-    executeBatchRenameHelper(
+  function executeBatchRename() {
+    void executeBatchRenameHelper(
       setError,
       preview,
       setIsLoading,

@@ -58,14 +58,14 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
 
     const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
-    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then(() => {
+    void FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then(() => {
       // do nothing with result
     });
   }
 
   function fetchGeoSyncStatus() {
     const parentFolder = props.parentFolder ?? "/";
-    FetchGet(new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))).then(
+    void FetchGet(new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))).then(
       (anyData: unknown) => {
         const containerData = anyData as {
           statusCode: number;
@@ -94,7 +94,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     bodyParams.set("f", parentFolder);
     setIsLoading(true);
 
-    FetchPost(new UrlQuery().UrlThumbnailGeneration(), bodyParams.toString()).then(() => {
+    void FetchPost(new UrlQuery().UrlThumbnailGeneration(), bodyParams.toString()).then(() => {
       setTimeout(() => {
         setIsLoading(false);
         props.handleExit();

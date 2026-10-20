@@ -37,7 +37,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   // To Get the rotation update
   const [translateRotation, setTranslateRotation] = useState(Orientation.Horizontal);
   useEffect(() => {
-    (async () => {
+    void (async () => {
       if (!props.orientation) return;
       const isAutomaticRotated = await DetectAutomaticRotation();
 

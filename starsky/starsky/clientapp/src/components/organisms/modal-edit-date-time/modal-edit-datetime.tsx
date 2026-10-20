@@ -97,7 +97,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) 
 
   function updateDateTime() {
     const datetime = getDates();
-    UpdateDateTime(isFormEnabled, props.subPath, datetime, props.handleExit);
+    void UpdateDateTime(isFormEnabled, props.subPath, datetime, props.handleExit);
   }
 
   return (

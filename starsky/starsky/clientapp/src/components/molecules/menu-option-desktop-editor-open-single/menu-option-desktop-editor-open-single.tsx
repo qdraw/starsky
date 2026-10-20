@@ -65,7 +65,7 @@ const MenuOptionDesktopEditorOpenSingle: React.FunctionComponent<IMenuOptionDesk
      * Open editor with keys
      */
     useHotKeys({ key: "e", ctrlKeyOrMetaKey: true }, () => {
-      OpenDesktopSingle(
+      void OpenDesktopSingle(
         subPath,
         collections,
         setIsError,

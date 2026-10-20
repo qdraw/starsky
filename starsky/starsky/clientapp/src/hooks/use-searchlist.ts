@@ -121,7 +121,7 @@ const useSearchList = (
 
   useEffect(() => {
     const abortController = new AbortController();
-    fetchContentUseSearchList(
+    void fetchContentUseSearchList(
       location,
       abortController,
       setArchive,

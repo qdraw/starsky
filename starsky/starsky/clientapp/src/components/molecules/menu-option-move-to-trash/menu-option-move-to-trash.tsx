@@ -70,7 +70,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
      * When pressing delete its moved to the trash
      */
     useHotKeys({ key: "Delete" }, () => {
-      moveToTrashSelection().then(() => {
+      void moveToTrashSelection().then(() => {
         // do nothing
       });
     });

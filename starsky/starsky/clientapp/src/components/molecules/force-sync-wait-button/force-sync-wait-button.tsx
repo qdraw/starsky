@@ -36,14 +36,14 @@ const ForceSyncWaitTime = 5000;
  * Helper to get new content in the current view
  * @param param0 where to fetch to, dispatch and callback to close
  */
-export async function ForceSyncRequestNewContent({
+export function ForceSyncRequestNewContent({
   historyLocationSearch,
   dispatch,
   callback,
   setIsLoading
 }: ForceSyncRequestNewContentPropTypes): Promise<void> {
   const url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl(historyLocationSearch));
-  FetchGet(url).then((connectionResult) => {
+  return FetchGet(url).then((connectionResult) => {
     if (connectionResult.statusCode !== 200) {
       console.log("request failed");
       console.error(connectionResult);
@@ -96,9 +96,9 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
     if (startCounter <= 0) return;
 
     let timeout: NodeJS.Timeout;
-    forceSync().then(() => {
+    void forceSync().then(() => {
       timeout = setTimeout(() => {
-        ForceSyncRequestNewContent({
+        void ForceSyncRequestNewContent({
           dispatch,
           historyLocationSearch,
           callback,

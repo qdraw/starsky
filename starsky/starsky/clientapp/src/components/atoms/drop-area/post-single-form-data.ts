@@ -60,7 +60,7 @@ export function PostSingleFormData(
 
   formData.append("file", inputFilesList[index]);
 
-  FetchPost(endpoint, formData, "post", { to: folderPath }).then((response) => {
+  void FetchPost(endpoint, formData, "post", { to: folderPath }).then((response) => {
     new ProcessResponse(endpoint).Run(
       response,
       folderPath,

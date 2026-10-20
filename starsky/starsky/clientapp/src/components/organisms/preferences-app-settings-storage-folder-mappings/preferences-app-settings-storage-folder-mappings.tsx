@@ -100,13 +100,13 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent = () 
   function handleSubPathBlur(id: number, value: string) {
     const updated = mappings.map((r) => (r.id === id ? { ...r, subPath: value } : r));
     setMappings(updated);
-    saveAll(updated);
+    void saveAll(updated);
   }
 
   function handlePhysicalPathBlur(id: number, value: string) {
     const updated = mappings.map((r) => (r.id === id ? { ...r, physicalPath: value } : r));
     setMappings(updated);
-    saveAll(updated);
+    void saveAll(updated);
   }
 
   function addRow() {
@@ -116,7 +116,7 @@ const PreferencesAppSettingsStorageFolderMappings: React.FunctionComponent = () 
   function removeRow(id: number) {
     const updated = mappings.filter((r) => r.id !== id);
     setMappings(updated);
-    saveAll(updated);
+    void saveAll(updated);
   }
 
   return (

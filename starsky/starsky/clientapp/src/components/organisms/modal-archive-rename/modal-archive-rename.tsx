@@ -119,7 +119,8 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
     // otherwise the new page loads before the index is updated and shows a 404.
     const newIndexUrl = new UrlQuery().UrlIndexServerApiPath(filePathAfterChange);
     for (let attempt = 0; attempt < 10; attempt++) {
-      const check = await FetchGet(newIndexUrl);
+      // sequential on purpose: each attempt depends on the previous one failing
+      const check = await FetchGet(newIndexUrl); // NOSONAR(S9382)
       if (check.statusCode !== 404) break;
       await new Promise((resolve) => setTimeout(resolve, 300));
     }
