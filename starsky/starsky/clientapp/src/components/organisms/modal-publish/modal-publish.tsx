@@ -98,7 +98,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     }
 
     setHasTriggeredFtpPublish(true);
-    publishToRemote(publishProfileName, itemName, setIsProcessing);
+    void publishToRemote(publishProfileName, itemName, setIsProcessing);
   }, [isProcessing, createZipKey, itemName, publishProfileName, hasTriggeredFtpPublish]);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
@@ -110,7 +110,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       return;
     }
 
-    FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName), CacheControl).then((result) => {
+    void FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName), CacheControl).then((result) => {
       if (result.statusCode !== 200) return;
 
       const resultData = result.data as boolean;

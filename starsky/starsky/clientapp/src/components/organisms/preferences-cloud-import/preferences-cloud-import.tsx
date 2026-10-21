@@ -86,7 +86,7 @@ const PreferencesCloudImport: React.FunctionComponent = () => {
 
   useEffect(() => {
     const interval = globalThis.setInterval(loadStatus, 10000);
-    loadStatus();
+    void loadStatus();
     return () => {
       globalThis.clearInterval(interval);
     };

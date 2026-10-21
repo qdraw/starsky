@@ -78,7 +78,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({ state, dispatch }
     new FileListCache().CacheCleanEverything();
 
     // to replace
-    FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then(() => {
+    void FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then(() => {
       dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
       ClearSearchCache(history.location.search);
       setIsLoading(false);

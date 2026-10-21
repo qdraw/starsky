@@ -133,7 +133,7 @@ const useFileList = (
 
   useEffect(() => {
     const abortController = new AbortController();
-    fetchUseFileListContentCache(
+    void fetchUseFileListContentCache(
       location,
       locationSearch,
       abortController,

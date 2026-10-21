@@ -90,7 +90,7 @@ const AccountRegister: FunctionComponent = () => {
   // readonly mode
   const [isFormEnabled, setIsFormEnabled] = React.useState(true);
   useEffect(() => {
-    FetchGet(new UrlQuery().UrlAccountRegisterStatus()).then((response) => {
+    void FetchGet(new UrlQuery().UrlAccountRegisterStatus()).then((response) => {
       setIsFormEnabled(response.statusCode !== 403);
       if (response.statusCode === 403) {
         setError(MessageRegistrationTurnedOff);
@@ -119,7 +119,7 @@ const AccountRegister: FunctionComponent = () => {
           onSubmit={(e) => {
             e.preventDefault();
             setError(null);
-            setUpAccountHandler();
+            void setUpAccountHandler();
           }}
         >
           <label htmlFor="email">{MessageUsername}</label>

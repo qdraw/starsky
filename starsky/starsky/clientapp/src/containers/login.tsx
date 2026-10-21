@@ -142,7 +142,7 @@ export const Login: React.FC<ILoginProps> = () => {
                 );
                 return;
               }
-              authHandler();
+              void authHandler();
             }}
           >
             <label htmlFor="email">{MessageUsername}</label>
