@@ -20,7 +20,10 @@ namespace starsky.foundation.readmeta.Helpers
 
 			var numerator = double.Parse(gpsAltitudeValues[0], CultureInfo.InvariantCulture);
 			var denominator = double.Parse(gpsAltitudeValues[1], CultureInfo.InvariantCulture);
-			return numerator / denominator;
+			var result = numerator / denominator;
+
+			// x/0 gives Infinity or NaN, which the database cannot store
+			return double.IsFinite(result) ? result : 0d;
 		}
 	}
 }

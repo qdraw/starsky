@@ -1274,7 +1274,7 @@ public sealed class ReadMetaExif
 		float.TryParse(focalLengthString, NumberStyles.Number,
 			CultureInfo.CurrentCulture, out var focalLength);
 
-		return Math.Round(focalLength, 5);
+		return float.IsFinite(focalLength) ? Math.Round(focalLength, 5) : 0d;
 	}
 
 
@@ -1311,7 +1311,7 @@ public sealed class ReadMetaExif
 		float.TryParse(apertureString, NumberStyles.Number, CultureInfo.CurrentCulture,
 			out var aperture);
 
-		return aperture;
+		return float.IsFinite(aperture) ? aperture : 0d;
 	}
 
 	/// <summary>

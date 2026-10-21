@@ -63,6 +63,23 @@ public sealed class XmpReadHelperTest
 		"</rdf:Description>\n\n </rdf:RDF>\n</x:xmpmeta>\n";
 
 	[TestMethod]
+	public void XmpReadHelperTest_GetData_ZeroDenominator_NoInfinityOrNaN()
+	{
+		// x/0 used to become Infinity, which MySQL rejects as "Unknown column 'Infinity'"
+		var input = Input
+			.Replace("exif:FNumber=\"9/1\"", "exif:FNumber=\"9/0\"")
+			.Replace("exif:FocalLength=\"28/1\"", "exif:FocalLength=\"0/0\"")
+			.Replace("exif:GPSAltitude=\"190/10\"", "exif:GPSAltitude=\"190/0\"");
+
+		var data = new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger())
+			.GetDataFromString(input);
+
+		Assert.IsTrue(double.IsFinite(data.Aperture), "Aperture");
+		Assert.IsTrue(double.IsFinite(data.FocalLength), "FocalLength");
+		Assert.IsTrue(double.IsFinite(data.LocationAltitude), "LocationAltitude");
+	}
+
+	[TestMethod]
 	public void XmpReadHelperTest_GetData_usingStringExample()
 	{
 		var data =
