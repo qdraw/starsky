@@ -579,6 +579,26 @@ public sealed class ExtensionRolesHelperTest
 	}
 
 	[TestMethod]
+	public void Files_GetImageFormat_gpx_LongXmlHeader_Test()
+	{
+		var bmBytes =
+			("\uFEFF<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n" +
+			 "<!-- exported by a tracker app, with a long comment before the root tag -->\r\n" +
+			 "<gpx creator=\"x\">")
+			.Select(c => ( byte ) c).Where(c => c < 128).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_xmlWithoutGpx_Test()
+	{
+		var bmBytes = "<?xml version=\"1.0\"?>\n<note>hi</note>"u8.ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+		Assert.AreNotEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+	}
+
+	[TestMethod]
 	public void Files_GetImageFormat_gpx_Test_60()
 	{
 		// the offset is 60 before the gpx tag

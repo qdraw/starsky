@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Interfaces;
 
@@ -951,23 +952,15 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	private static ImageFormat? GetImageFormatGpx(byte[] bytes)
 	{
-		var gpx = new byte[] { 60, 103, 112 }; // <gpx
-
-		if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(38).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(58).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
+		// The <gpx root tag follows an xml declaration (and optional comments) of varying
+		// length, so a fixed offset is not reliable; search the header instead
+		var header = Encoding.UTF8.GetString(bytes).TrimStart('\uFEFF', ' ', '\t', '\r', '\n');
+		if ( !header.StartsWith('<') )
 		{
-			return ImageFormat.gpx;
+			return null;
 		}
 
-		return null;
+		return header.Contains("<gpx", StringComparison.Ordinal) ? ImageFormat.gpx : null;
 	}
 
 	private static ImageFormat? GetImageFormatZip(IEnumerable<byte> bytes)
