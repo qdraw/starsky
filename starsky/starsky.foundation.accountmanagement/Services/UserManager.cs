@@ -385,7 +385,7 @@ public sealed class UserManager : IUserManager
 		{
 			// Do the same hashing work as for a known account, so the response time does not
 			// tell whether the identifier exists
-			Pbkdf2Hasher.ComputeHash(secret, UnknownIdentifierSalt, true, true);
+			Pbkdf2Hasher.ComputeHash(secret, UnknownIdentifierSalt);
 			return new ValidateResult(success: false,
 				error: ValidateResultError.CredentialNotFound);
 		}
