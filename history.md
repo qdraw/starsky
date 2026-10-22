@@ -44,6 +44,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.8 - _(Unreleased)_ - 2026-?-? {#0.9.8}
 
+- [x] (Fixed) _Back-end_ Publishing the same selection twice failed with `The process cannot access the file ... .zip` because a stale `.done` marker made the remote publish start while the new zip was still being written (PR #3412)
 - [x] (Fixed) _Back-end_ Import failed with `Unknown column 'Infinity'` when XMP/EXIF aperture or focal length had a zero denominator (PR #3409)
 
 ## version 0.9.7 - 2026-10-17 {#0.9.7}
