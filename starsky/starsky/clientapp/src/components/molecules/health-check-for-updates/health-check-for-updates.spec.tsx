@@ -177,6 +177,24 @@ describe("HealthCheckForUpdates", () => {
       (window as unknown as { isElectron: null }).isElectron = null;
     });
 
+    it("renders no release info when the response data is not a string", () => {
+      localStorage.removeItem(CheckForUpdatesLocalStorageName);
+      (window as unknown as { isElectron: boolean }).isElectron = false;
+      jest.restoreAllMocks();
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementation((url) =>
+          String(url).includes("release-info")
+            ? ({ statusCode: 200, data: { not: "a string" } } as IConnectionDefault)
+            : ({ statusCode: 202, data: "1.0" } as IConnectionDefault)
+        );
+
+      const component = render(<HealthCheckForUpdates />);
+
+      expect(document.body.textContent).not.toContain("[object Object]");
+      component.unmount();
+    });
+
     it("renders externally sourced release info as inert text", () => {
       localStorage.removeItem(CheckForUpdatesLocalStorageName);
       (window as unknown as { isElectron: boolean }).isElectron = false;

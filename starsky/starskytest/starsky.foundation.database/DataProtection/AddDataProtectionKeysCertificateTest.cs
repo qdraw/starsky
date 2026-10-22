@@ -101,6 +101,29 @@ public sealed class AddDataProtectionKeysCertificateTest
 		}
 	}
 
+	[TestMethod]
+	public void SetupDataProtection_CertificateWithoutPassword_EmptyPasswordIsAccepted()
+	{
+		using var rsa = RSA.Create(2048);
+		var request = new CertificateRequest("CN=starsky-unit-test", rsa,
+			HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+		using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-5),
+			DateTimeOffset.UtcNow.AddDays(1));
+		var path = Path.Combine(Path.GetTempPath(), $"starsky-dp-test-{Guid.NewGuid()}.pfx");
+		File.WriteAllBytes(path, certificate.Export(X509ContentType.Pfx));
+		try
+		{
+			var (protector, repository) = CreateProtector(path, string.Empty);
+
+			Assert.IsNotNull(protector.Protect([1, 2, 3]));
+			Assert.IsNotEmpty(repository.Stored);
+		}
+		finally
+		{
+			File.Delete(path);
+		}
+	}
+
 	private sealed class RecordingXmlRepository : IXmlRepository
 	{
 		public List<XElement> Stored { get; } = [];

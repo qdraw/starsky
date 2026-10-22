@@ -67,4 +67,35 @@ public sealed class RateLimitPoliciesTest
 			await app.StopAsync(TestContext.CancellationToken);
 		}
 	}
+
+	[TestMethod]
+	public async Task AnonymousPolicy_ExceedingTheLimit_Returns429()
+	{
+		var builder = WebApplication.CreateBuilder();
+		builder.WebHost.UseTestServer();
+		RateLimitPolicies.AddRateLimiting(builder.Services);
+		await using var app = builder.Build();
+		app.UseRouting();
+		app.UseRateLimiter();
+		app.MapGet("/limited", () => "ok").RequireRateLimiting(RateLimitPolicies.Anonymous);
+		await app.StartAsync(TestContext.CancellationToken);
+
+		try
+		{
+			using var client = app.GetTestClient();
+			var statusCodes = new List<int>();
+			for ( var i = 0; i < 61; i++ )
+			{
+				var response = await client.GetAsync("/limited", TestContext.CancellationToken);
+				statusCodes.Add(( int ) response.StatusCode);
+			}
+
+			Assert.IsTrue(statusCodes.Take(60).All(p => p == StatusCodes.Status200OK));
+			Assert.AreEqual(StatusCodes.Status429TooManyRequests, statusCodes[60]);
+		}
+		finally
+		{
+			await app.StopAsync(TestContext.CancellationToken);
+		}
+	}
 }

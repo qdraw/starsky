@@ -119,8 +119,9 @@ public sealed class StartupTest
 		// UseRateLimiter throws without the registered options, so this proves it is skipped
 		startup.Configure(applicationBuilder, env);
 
-		Assert.IsFalse(serviceCollection.Any(descriptor =>
-			descriptor.ServiceType.FullName?.Contains("RateLimiterOptions") == true));
+		Assert.DoesNotContain(
+			descriptor => descriptor.ServiceType.FullName?.Contains("RateLimiterOptions") == true,
+			serviceCollection);
 	}
 
 	[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Local")]

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -518,6 +519,106 @@ public sealed class HttpClientHelperTest
 
 		Assert.IsFalse(result);
 		Assert.IsEmpty(handler.LastRequestMessage);
+	}
+
+	[TestMethod]
+	public async Task Download_Restricted_RedirectWithoutLocation_ShouldReturnFalse()
+	{
+		var (helper, storage, handler) = CreateRestricted(_ =>
+			new HttpResponseMessage(System.Net.HttpStatusCode.Found));
+
+		var result = await helper.Download("https://qdraw.nl/a", "/out.bin", 0,
+			restricted: true);
+
+		Assert.IsFalse(result);
+		Assert.HasCount(1, handler.LastRequestMessage);
+		Assert.IsFalse(storage.ExistFile("/out.bin"));
+	}
+
+	[TestMethod]
+	public async Task Download_Restricted_RelativeRedirect_ShouldFollowOnSameHost()
+	{
+		var (helper, storage, handler) = CreateRestricted(request =>
+		{
+			if ( request.RequestUri!.AbsolutePath == "/a" )
+			{
+				var redirect = new HttpResponseMessage(System.Net.HttpStatusCode.Found);
+				redirect.Headers.Location = new Uri("/b", UriKind.Relative);
+				return redirect;
+			}
+
+			return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+			{
+				Content = new ByteArrayContent(new byte[10])
+			};
+		});
+
+		var result = await helper.Download("https://qdraw.nl/a", "/out.bin", 0,
+			restricted: true);
+
+		Assert.IsTrue(result);
+		Assert.AreEqual("https://qdraw.nl/b",
+			handler.LastRequestMessage[1].RequestUri!.ToString());
+		Assert.IsTrue(storage.ExistFile("/out.bin"));
+	}
+
+	[TestMethod]
+	public async Task Download_Restricted_NotFound_ShouldReturnFalse()
+	{
+		var (helper, storage, _) = CreateRestricted(_ =>
+			new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
+			{
+				Content = new ByteArrayContent(new byte[1])
+			});
+
+		var result = await helper.Download("https://qdraw.nl/a", "/out.bin", 0,
+			restricted: true);
+
+		Assert.IsFalse(result);
+		Assert.IsFalse(storage.ExistFile("/out.bin"));
+	}
+
+	private static Stream CreateLimitedReadStream(Stream inner, long limit)
+	{
+		var type = typeof(HttpClientHelper).GetNestedType("LimitedReadStream",
+			System.Reflection.BindingFlags.NonPublic)!;
+		return ( Stream ) Activator.CreateInstance(type, inner, limit)!;
+	}
+
+	[TestMethod]
+	public async Task LimitedReadStream_ReadsWithinLimit_AllOverloads()
+	{
+		await using var stream = CreateLimitedReadStream(new MemoryStream(new byte[30]), 30);
+		var buffer = new byte[10];
+
+		Assert.AreEqual(10, stream.Read(buffer, 0, 10));
+		Assert.AreEqual(10, await stream.ReadAsync(buffer, 0, 10, CancellationToken.None));
+		Assert.AreEqual(10, await stream.ReadAsync(buffer.AsMemory(), CancellationToken.None));
+		stream.Flush();
+	}
+
+	[TestMethod]
+	public async Task LimitedReadStream_OverLimit_Throws()
+	{
+		await using var stream = CreateLimitedReadStream(new MemoryStream(new byte[30]), 5);
+
+		Assert.Throws<IOException>(() => stream.Read(new byte[10], 0, 10));
+	}
+
+	[TestMethod]
+	public async Task LimitedReadStream_UnsupportedMembers_Throw()
+	{
+		await using var stream = CreateLimitedReadStream(new MemoryStream(), 5);
+
+		Assert.IsTrue(stream.CanRead);
+		Assert.IsFalse(stream.CanSeek);
+		Assert.IsFalse(stream.CanWrite);
+		Assert.Throws<NotSupportedException>(() => _ = stream.Length);
+		Assert.Throws<NotSupportedException>(() => _ = stream.Position);
+		Assert.Throws<NotSupportedException>(() => stream.Position = 1);
+		Assert.Throws<NotSupportedException>(() => stream.Seek(0, SeekOrigin.Begin));
+		Assert.Throws<NotSupportedException>(() => stream.SetLength(1));
+		Assert.Throws<NotSupportedException>(() => stream.Write(new byte[1], 0, 1));
 	}
 
 	/// <summary>

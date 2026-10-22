@@ -33,4 +33,18 @@ public sealed class AppSettingsPathTraversalTest
 		Assert.StartsWith(canonicalRoot, Path.GetFullPath(result),
 			$"'{databasePath}' resolved to '{Path.GetFullPath(result)}', outside '{canonicalRoot}'");
 	}
+
+	[TestMethod]
+	[DataRow("/sub/../inside.jpg")]
+	[DataRow("/sub/..")]
+	public void DatabasePathToFilePath_DotDotThatStaysInsideStorage_IsAllowed(
+		string databasePath)
+	{
+		var root = Path.Combine(Path.GetTempPath(), "starsky-traversal-test", "storage");
+		var appSettings = new AppSettings { StorageFolder = root };
+
+		var result = appSettings.DatabasePathToFilePath(databasePath);
+
+		Assert.IsNotNull(result);
+	}
 }

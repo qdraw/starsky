@@ -534,4 +534,62 @@ public sealed class ZipperTest
 			Directory.Delete(Path.GetDirectoryName(zipPath)!, true);
 		}
 	}
+
+	[TestMethod]
+	public void CopyStreamWithLimits_WithinLimits_CopiesAll()
+	{
+		using var source = new MemoryStream(new byte[100]);
+		using var target = new MemoryStream();
+
+		var result = CreateLimited().CopyStreamWithLimits(source, target, 200, 100,
+			out var written);
+
+		Assert.IsTrue(result);
+		Assert.AreEqual(100, written);
+		Assert.AreEqual(100, target.Length);
+	}
+
+	[TestMethod]
+	public void CopyStreamWithLimits_MoreThanMaxBytes_ReturnsFalse()
+	{
+		using var source = new MemoryStream(new byte[100]);
+		using var target = new MemoryStream();
+
+		var result = CreateLimited().CopyStreamWithLimits(source, target, 50, 100,
+			out _);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void CopyStreamWithLimits_RatioTooHigh_ReturnsFalse()
+	{
+		// 5000 bytes out of 10 compressed bytes = 500:1, limit is 200:1 above 1000 bytes
+		using var source = new MemoryStream(new byte[5000]);
+		using var target = new MemoryStream();
+
+		var result = CreateLimited().CopyStreamWithLimits(source, target, 1_000_000, 10,
+			out _);
+
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void ExtractZip_EntryOutsideExtractionFolder_IsSkipped()
+	{
+		var (zipPath, outFolder) = CreateZipOnDisk(("../outside.bin", 10), ("inside.bin", 10));
+		try
+		{
+			var result = CreateLimited().ExtractZip(zipPath, outFolder);
+
+			Assert.IsTrue(result);
+			Assert.IsFalse(File.Exists(Path.Combine(Path.GetDirectoryName(outFolder)!,
+				"outside.bin")));
+			Assert.IsTrue(File.Exists(Path.Combine(outFolder, "inside.bin")));
+		}
+		finally
+		{
+			Directory.Delete(Path.GetDirectoryName(zipPath)!, true);
+		}
+	}
 }

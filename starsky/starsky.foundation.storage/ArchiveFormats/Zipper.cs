@@ -66,6 +66,32 @@ public sealed class Zipper : IZipper
 	}
 
 	/// <summary>
+	///     Copy and stop as soon as the size or compression ratio limit is passed, so a lying
+	///     header can not bypass the limits
+	/// </summary>
+	/// <returns>false when a limit is exceeded</returns>
+	internal bool CopyStreamWithLimits(Stream source, Stream target, long maxBytes,
+		long compressedLength, out long written)
+	{
+		written = 0;
+		var buffer = new byte[81920];
+		int read;
+		while ( ( read = source.Read(buffer, 0, buffer.Length) ) > 0 )
+		{
+			written += read;
+			if ( written > maxBytes || ( written >= _ratioMinBytes &&
+			                             written > compressedLength * _maxCompressionRatio ) )
+			{
+				return false;
+			}
+
+			target.Write(buffer, 0, read);
+		}
+
+		return true;
+	}
+
+	/// <summary>
 	///     Copy with limits, does not trust the header length
 	/// </summary>
 	/// <returns>bytes written or null when a limit is exceeded</returns>
@@ -73,26 +99,13 @@ public sealed class Zipper : IZipper
 		long totalSoFar)
 	{
 		var maxForThisEntry = Math.Min(_maxEntryBytes, _maxTotalBytes - totalSoFar);
-		long written = 0;
-		var buffer = new byte[81920];
-		var exceeded = false;
+		long written;
+		bool exceeded;
 		using ( var source = entry.Open() )
 		using ( var target = new FileStream(destinationPath, FileMode.Create, FileAccess.Write) )
 		{
-			int read;
-			while ( ( read = source.Read(buffer, 0, buffer.Length) ) > 0 )
-			{
-				written += read;
-				if ( written > maxForThisEntry ||
-				     ( written >= _ratioMinBytes &&
-				       written > entry.CompressedLength * _maxCompressionRatio ) )
-				{
-					exceeded = true;
-					break;
-				}
-
-				target.Write(buffer, 0, read);
-			}
+			exceeded = !CopyStreamWithLimits(source, target, maxForThisEntry,
+				entry.CompressedLength, out written);
 		}
 
 		if ( !exceeded )

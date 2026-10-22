@@ -37,4 +37,9 @@ describe("isRelativeUrl function", () => {
     expect(IsRelativeUrl("/starsky/?f=/a/b.jpg")).toBe(true);
     expect(IsRelativeUrl("/search?t=a:b")).toBe(true);
   });
+
+  it("should return false for a value that is not a string", () => {
+    expect(IsRelativeUrl(undefined as unknown as string)).toBe(false);
+    expect(IsRelativeUrl(null as unknown as string)).toBe(false);
+  });
 });

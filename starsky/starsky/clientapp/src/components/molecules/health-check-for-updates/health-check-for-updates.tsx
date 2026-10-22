@@ -55,9 +55,10 @@ const HealthCheckForUpdates: FunctionComponent = () => {
 
   // releaseInfo comes from an external service, so it is rendered as a text node
   // and only the static localized template is allowed to contain markup
-  const [templateBefore, templateAfter = ""] = language
+  const [templateBefore, ...templateRest] = language
     .token(MessageNewVersionUpdateToken, ["{WhereToFindRelease}"], [WhereToFindRelease])
     .split("{otherInfo}", 2);
+  const templateAfter = templateRest.join("");
   const otherInfo = typeof releaseInfo.data === "string" ? releaseInfo.data : "";
 
   return (
