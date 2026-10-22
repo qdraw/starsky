@@ -28,7 +28,8 @@ describe('DetailView (from upload) (40)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
     cy.get(flow.content)
-    cy.get('.folder > div').should(($lis) => {
+    // other suites can leave folders or videos in this folder, so only look at the images
+    cy.get('.folder > div[data-filepath$=".jpg"]').should(($lis) => {
       expect($lis).to.have.length(3)
       expect($lis.eq(0)).to.contain(fileName2)
       expect($lis.eq(1)).to.contain(fileName1)
