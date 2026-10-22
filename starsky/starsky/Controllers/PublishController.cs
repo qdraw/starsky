@@ -176,5 +176,12 @@ public sealed class PublishController : Controller
 		{
 			_hostStorage.FileDelete(location + ".zip");
 		}
+
+		// A stale .done marker makes the status endpoint report 'ready' while the new zip
+		// is still being written, which triggers the remote publish too early
+		if ( _hostStorage.ExistFile(location + ".done") )
+		{
+			_hostStorage.FileDelete(location + ".done");
+		}
 	}
 }

@@ -231,7 +231,7 @@ public sealed class PublishControllerTest
 			new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage(
 			[Path.DirectorySeparatorChar + "test"],
-			[Path.DirectorySeparatorChar + "test.zip"]);
+			[Path.DirectorySeparatorChar + "test.zip", Path.DirectorySeparatorChar + "test.done"]);
 
 		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
 			new FakeIMetaInfo([new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
@@ -245,6 +245,7 @@ public sealed class PublishControllerTest
 		Assert.AreEqual("test", result);
 		Assert.IsFalse(storage.ExistFolder(Path.DirectorySeparatorChar + "test"));
 		Assert.IsFalse(storage.ExistFile(Path.DirectorySeparatorChar + "test.zip"));
+		Assert.IsFalse(storage.ExistFile(Path.DirectorySeparatorChar + "test.done"));
 	}
 
 	[TestMethod]
