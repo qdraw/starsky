@@ -66,11 +66,9 @@ export function AddContextMenu({
     contextMenu.style.top = `${containerPoint.y}px`;
 
     // Add loading message
-    contextMenu.innerHTML = `
-      <div class="leaflet-context-menu__loading">
-        ${language.key(localization.MessageLoadingAddress)}
-      </div>
-    `;
+    contextMenu.replaceChildren(
+      createDiv("leaflet-context-menu__loading", language.key(localization.MessageLoadingAddress))
+    );
 
     mapContainer.appendChild(contextMenu);
 
@@ -79,36 +77,46 @@ export function AddContextMenu({
     streetName = addressData ? GetStreetName(addressData.address) : "";
 
     // Update menu with data
-    contextMenu.innerHTML = `
-      <div class="leaflet-context-menu__section-title leaflet-context-menu__section-title--bottom">
-        ${language.key(localization.MessageCoordinates)}
-      </div>
-      <div class="leaflet-context-menu__coords" data-action="copy-coordinates">
-        ${currentLat.toFixed(6)}, ${currentLng.toFixed(6)}
-      </div>
-      <div class="context-menu-item" data-action="copy-coordinates" title="${language.key(localization.MessageClickToCopy)}">
-        📋 ${language.key(localization.MessageCopyCoordinates)}
-      </div>
-      ${
-        streetName
-          ? `
-        <div class="leaflet-context-menu__section-title leaflet-context-menu__section-title--top">
-          ${language.key(localization.MessageStreetName)}
-        </div>
-        <div class="leaflet-context-menu__street" data-action="copy-street">
-          ${streetName}
-        </div>
-        <div class="context-menu-item" data-action="copy-street" title="${language.key(localization.MessageClickToCopy)}">
-          📋 ${language.key(localization.MessageCopyStreetName)}
-        </div>
-      `
-          : `
-        <div class="leaflet-context-menu__no-street">
-          ${language.key(localization.MessageNoStreetFound)}
-        </div>
-      `
-      }
-    `;
+    // textContent/title are used because streetName comes from OpenStreetMap, which anyone can edit
+    const coordinatesText = `${currentLat.toFixed(6)}, ${currentLng.toFixed(6)}`;
+    const clickToCopy = language.key(localization.MessageClickToCopy);
+    const children: HTMLElement[] = [
+      createDiv(
+        "leaflet-context-menu__section-title leaflet-context-menu__section-title--bottom",
+        language.key(localization.MessageCoordinates)
+      ),
+      createDiv("leaflet-context-menu__coords", coordinatesText, "copy-coordinates"),
+      createDiv(
+        "context-menu-item",
+        `📋 ${language.key(localization.MessageCopyCoordinates)}`,
+        "copy-coordinates",
+        clickToCopy
+      )
+    ];
+
+    if (streetName) {
+      children.push(
+        createDiv(
+          "leaflet-context-menu__section-title leaflet-context-menu__section-title--top",
+          language.key(localization.MessageStreetName)
+        ),
+        createDiv("leaflet-context-menu__street", streetName, "copy-street"),
+        createDiv(
+          "context-menu-item",
+          `📋 ${language.key(localization.MessageCopyStreetName)}`,
+          "copy-street",
+          clickToCopy
+        )
+      );
+    } else {
+      children.push(
+        createDiv(
+          "leaflet-context-menu__no-street",
+          language.key(localization.MessageNoStreetFound)
+        )
+      );
+    }
+    contextMenu.replaceChildren(...children);
 
     // Add click handlers
     contextMenu.querySelectorAll('[data-action="copy-coordinates"]').forEach((el) => {
@@ -143,6 +151,20 @@ export function AddContextMenu({
 
   map.on("click", closeContextMenu);
   map.on("movestart", closeContextMenu);
+}
+
+function createDiv(
+  className: string,
+  text: string,
+  action?: string,
+  title?: string
+): HTMLDivElement {
+  const div = document.createElement("div");
+  div.className = className;
+  div.textContent = text;
+  if (action) div.dataset.action = action;
+  if (title) div.title = title;
+  return div;
 }
 
 // Copy to clipboard helper

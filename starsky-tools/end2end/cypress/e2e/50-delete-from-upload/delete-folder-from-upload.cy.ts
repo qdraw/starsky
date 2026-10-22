@@ -78,7 +78,9 @@ describe('Delete folder from upload (50)', () => {
     } as RequestOptions).then((response) => {
       expect(response.status).to.eq(200)
       cy.log(JSON.stringify(response.body))
-      expect(response.body.fileIndexItems).to.have.length(0)
+      // the search matches on a part of the path, so only look at this exact folder
+      const items = response.body.fileIndexItems as { filePath: string }[]
+      expect(items.filter((item) => item.filePath === config.mkdirPath)).to.have.length(0)
     })
   })
 })

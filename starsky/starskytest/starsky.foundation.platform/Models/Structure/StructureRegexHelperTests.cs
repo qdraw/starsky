@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Models.Structure;
@@ -71,5 +72,14 @@ public class AppSettingsStructureModelTests
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.IsInstanceOfType(result, typeof(AppSettingsStructureModel));
+	}
+
+	[TestMethod]
+	public void StructureCheck_ParentSegmentAfterManyFolders_IsRejected()
+	{
+		// Split with a char as second argument would be read as a max count, and miss the ".."
+		var structure = string.Concat(Enumerable.Repeat("/a", 100)) + "/../b.jpg";
+
+		Assert.IsFalse(StructureRegexHelper.StructureCheck(structure));
 	}
 }

@@ -44,6 +44,7 @@
   "OpenTelemetry.Instrumentation.Runtime 1.18.0",
   "RabbitMQ.Client 7.2.2",
   "Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.13",
+  "Microsoft.AspNetCore.TestHost 10.0.13",
   "Microsoft.Extensions.Hosting 10.0.13",
   "MSTest.TestAdapter 4.4.1",
   "MSTest.TestFramework 4.4.1",

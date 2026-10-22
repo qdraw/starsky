@@ -1,5 +1,6 @@
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
+import { ensureFolderWithImages } from '../helpers/create-directory-helper.cy'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
@@ -15,15 +16,8 @@ describe('Archive (from upload) (21)', () => {
 
     cy.sendAuthenticationHeader()
 
-    // check if folder /starsky-end2end-test is here
-    cy.request({
-      url: config.urlMkdir,
-      failOnStatusCode: true,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    })
+    // check if folder /starsky-end2end-test and its images are here, create them if not
+    ensureFolderWithImages(config)
   })
 
   it('Check if folder is there (21)', () => {

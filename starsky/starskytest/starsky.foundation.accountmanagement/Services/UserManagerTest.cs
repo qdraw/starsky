@@ -41,6 +41,17 @@ public sealed class UserManagerTest
 	public TestContext TestContext { get; set; }
 
 	[TestMethod]
+	[DataRow("abc", "abc", true)]
+	[DataRow("abc", "abd", false)]
+	[DataRow("abc", "abcd", false)]
+	[DataRow("", "abc", false)]
+	[DataRow(null, "abc", false)]
+	public void IsSecretEqual_ComparesHashes(string? stored, string computed, bool expected)
+	{
+		Assert.AreEqual(expected, UserManager.IsSecretEqual(stored, computed));
+	}
+
+	[TestMethod]
 	public async Task ValidateAsync_CredentialType_NotFound()
 	{
 		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),

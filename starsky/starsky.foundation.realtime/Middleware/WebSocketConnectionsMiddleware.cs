@@ -1,5 +1,6 @@
 using System;
 using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Helpers;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.realtime.Model;
+
+[assembly: InternalsVisibleTo("starskytest")]
 #pragma warning disable CS9113 // Parameter is unread.
 
 namespace starsky.foundation.realtime.Middleware;
@@ -111,8 +114,28 @@ public sealed class WebSocketConnectionsMiddleware(RequestDelegate _,
 
 	private bool ValidateOrigin(HttpContext context)
 	{
-		return _options.AllowedOrigins == null || _options.AllowedOrigins.Count == 0 ||
-		       _options.AllowedOrigins.Contains(context.Request.Headers.Origin
-			       .ToString());
+		var origin = context.Request.Headers.Origin.ToString();
+		if ( _options.AllowedOrigins is { Count: > 0 } )
+		{
+			return _options.AllowedOrigins.Contains(origin);
+		}
+
+		return IsSameHost(origin, context.Request.Host.Host);
+	}
+
+	/// <summary>
+	///     Without a configured list: browsers always send an Origin on a websocket handshake,
+	///     so it must be the host that is serving this page. Other clients send none.
+	///     Only the host is compared (not scheme/port) to keep working behind a reverse proxy.
+	/// </summary>
+	internal static bool IsSameHost(string origin, string requestHost)
+	{
+		if ( string.IsNullOrEmpty(origin) )
+		{
+			return true;
+		}
+
+		return Uri.TryCreate(origin, UriKind.Absolute, out var originUri) &&
+		       string.Equals(originUri.Host, requestHost, StringComparison.OrdinalIgnoreCase);
 	}
 }

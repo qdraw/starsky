@@ -9,6 +9,9 @@ on:
     paths:
       - 'mac/**'
 
+permissions:
+  contents: read
+
 concurrency:
   group: desktop-macos-${{ github.ref }}
   cancel-in-progress: true

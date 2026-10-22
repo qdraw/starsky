@@ -13,6 +13,69 @@ public sealed class ContentSecurityPolicyMiddleware
 		_next = next;
 	}
 
+	/// <summary>
+	///     Host name, IPv4 or bracketed IPv6 only (or empty); no spaces, semicolons or quotes
+	/// </summary>
+	internal static bool IsSafeCspHost(string? host)
+	{
+		return string.IsNullOrEmpty(host) || ( host.Length <= 255 &&
+		                                       host.All(c => char.IsAsciiLetterOrDigit(c) ||
+		                                                     c is '.' or '-' or ':' or '[' or ']') );
+	}
+
+	private static string BuildCspHeader(HttpContext httpContext)
+	{
+		// only needed for safari and old firefox
+		// The Host header is client input and ends up in a header value: without this check
+		// a Host like "x; script-src *" adds directives (and can be cached by a proxy)
+		var socketUrl = string.Empty;
+		var socketUrlWithPort = string.Empty;
+		if ( IsSafeCspHost(httpContext.Request.Host.Host) )
+		{
+			socketUrl = httpContext.Request.Scheme == "http"
+				? $"ws://{httpContext.Request.Host.Host}"
+				: $"wss://{httpContext.Request.Host.Host}";
+
+			// For Safari localhost
+			if ( httpContext.Request.Host.Port != null )
+			{
+				socketUrlWithPort =
+					$"{socketUrl}:{httpContext.Request.Host.Port}";
+			}
+		}
+
+		// When change also update in Electron
+		var cspHeader =
+			"default-src 'none'; img-src 'self' " +
+			"https://a.tile.openstreetmap.org/ " +
+			"https://b.tile.openstreetmap.org/ " +
+			"https://c.tile.openstreetmap.org/ " +
+			"https://a.tile.openstreetmap.fr/ " +
+			"https://b.tile.openstreetmap.fr/ " +
+			"https://c.tile.openstreetmap.fr/ " +
+			"; script-src 'self'; " +
+			$"connect-src 'self' {socketUrl} {socketUrlWithPort};" +
+			"style-src 'self'; " +
+			"font-src 'self'; " +
+			"frame-ancestors 'none'; " +
+			"base-uri 'none'; " +
+			"form-action 'self'; " +
+			"object-src 'none'; " +
+			"media-src 'self'; " +
+			"frame-src 'none'; " +
+			"manifest-src 'self'; " +
+			"block-all-mixed-content; ";
+
+		// Currently not supported in Firefox and Safari (Edge user agent also includes the word Chrome)
+		if ( httpContext.Request.Headers.UserAgent.Contains("Chrome") ||
+		     httpContext.Request.Headers.UserAgent.Contains("csp-evaluator") )
+		{
+			cspHeader += "require-trusted-types-for 'script'; ";
+		}
+
+		return cspHeader;
+	}
+
 	// IMyScopedService is injected into Invoke
 	public async Task Invoke(HttpContext httpContext)
 	{
@@ -20,47 +83,7 @@ public sealed class ContentSecurityPolicyMiddleware
 		// so Adding a Header that already exist give an Error 500			
 		if ( string.IsNullOrEmpty(httpContext.Response.Headers.ContentSecurityPolicy) )
 		{
-			// only needed for safari and old firefox
-			var socketUrl = httpContext.Request.Scheme == "http"
-				? $"ws://{httpContext.Request.Host.Host}"
-				: $"wss://{httpContext.Request.Host.Host}";
-
-			// For Safari localhost
-			var socketUrlWithPort = string.Empty;
-			if ( httpContext.Request.Host.Port != null )
-			{
-				socketUrlWithPort =
-					$"{socketUrl}:{httpContext.Request.Host.Port}";
-			}
-
-			// When change also update in Electron
-			var cspHeader =
-				"default-src 'none'; img-src 'self' " +
-				"https://a.tile.openstreetmap.org/ " +
-				"https://b.tile.openstreetmap.org/ " +
-				"https://c.tile.openstreetmap.org/ " +
-				"https://a.tile.openstreetmap.fr/ " +
-				"https://b.tile.openstreetmap.fr/ " +
-				"https://c.tile.openstreetmap.fr/ " +
-				"; script-src 'self'; " +
-				$"connect-src 'self' {socketUrl} {socketUrlWithPort};" +
-				"style-src 'self'; " +
-				"font-src 'self'; " +
-				"frame-ancestors 'none'; " +
-				"base-uri 'none'; " +
-				"form-action 'self'; " +
-				"object-src 'none'; " +
-				"media-src 'self'; " +
-				"frame-src 'none'; " +
-				"manifest-src 'self'; " +
-				"block-all-mixed-content; ";
-
-			// Currently not supported in Firefox and Safari (Edge user agent also includes the word Chrome)
-			if ( httpContext.Request.Headers.UserAgent.Contains("Chrome") ||
-			     httpContext.Request.Headers.UserAgent.Contains("csp-evaluator") )
-			{
-				cspHeader += "require-trusted-types-for 'script'; ";
-			}
+			var cspHeader = BuildCspHeader(httpContext);
 
 			// When change also update in Electron
 			httpContext.Response.Headers
@@ -96,7 +119,8 @@ public sealed class ContentSecurityPolicyMiddleware
 		if ( string.IsNullOrEmpty(httpContext.Response.Headers.XXSSProtection) )
 		{
 			httpContext.Response.Headers
-				.Append("X-Xss-Protection", "1; mode=block");
+				// the legacy XSS auditor is removed from browsers and was itself exploitable; CSP does the work
+				.Append("X-Xss-Protection", "0");
 		}
 
 		if ( string.IsNullOrEmpty(httpContext.Response.Headers.XContentTypeOptions) )

@@ -32,7 +32,8 @@ public class FakeWebSocketHttpContext : HttpContext
 	public override IDictionary<object, object?> Items { get; set; } =
 		new Dictionary<object, object?>();
 
-	public override HttpRequest? Request { get; }
+	// production never has a null request, the middleware reads the Origin and Host headers
+	public override HttpRequest? Request { get; } = new DefaultHttpContext().Request;
 	public override CancellationToken RequestAborted { get; set; }
 	public override IServiceProvider? RequestServices { get; set; }
 	public override HttpResponse? Response { get; }

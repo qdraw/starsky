@@ -23,6 +23,24 @@ describe('DetailView metadata editing (45)', () => {
     })
   })
 
+  // The datetime test leaves a different date in the index. Other suites sort on that date
+  // (e.g. search, newest first), so put the date of the sample image back.
+  after('restore the date of the sample image (45)', () => {
+    if (!config.isEnabled) return
+    cy.sendAuthenticationHeader()
+    cy.request({
+      method: 'POST',
+      url: '/starsky/api/update',
+      form: true,
+      body: {
+        f: `/starsky-end2end-test/${fileName}`,
+        datetime: '2020-08-22T13:41:51'
+      },
+      failOnStatusCode: false
+    })
+    waitUntilApiValue('dateTime', '2020-08-22T13:41:51')
+  })
+
   // ── helpers ──────────────────────────────────────────────────────────────
 
   // Open the file in detail view with the labels sidebar visible.

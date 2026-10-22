@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.platform.Models;
@@ -143,6 +144,7 @@ public sealed class AccountController(
 #endif
 	[Produces("application/json")]
 	[AllowAnonymous]
+	[EnableRateLimiting(RateLimitPolicies.Login)]
 	public async Task<IActionResult> LoginPost(LoginViewModel model)
 	{
 		if ( !ModelState.IsValid )
@@ -276,6 +278,7 @@ public sealed class AccountController(
 	[Produces("application/json")]
 	[AllowAnonymous]
 	[ValidateAntiForgeryToken]
+	[EnableRateLimiting(RateLimitPolicies.Login)]
 	public async Task<IActionResult> Register(RegisterViewModel model)
 	{
 		if ( await IsAccountRegisterClosed(User.Identity?.IsAuthenticated == true) )

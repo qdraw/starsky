@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -157,5 +158,63 @@ public class ExportServiceTest
 			await exportService.FilePathToFileNameAsync(
 				["/test/not_found.jpg"], true);
 		Assert.IsNull(fileName.FirstOrDefault());
+	}
+
+	[TestMethod]
+	[DataRow("../outside")]
+	[DataRow("..\\outside")]
+	[DataRow("sub/../../outside")]
+	[DataRow("/outside")]
+	[DataRow("")]
+	public void StatusIsReady_NameWithPathCharacters_ShouldNotEscapeTempFolder(string name)
+	{
+		// zips outside the temp folder that should never be reachable
+		var storage = new FakeIStorage(["/tmp", "/tmp/export-temp"],
+			["/tmp/outside.zip", "/outside.zip", "/tmp/export-temp/sub/../../outside.zip"]);
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { TempFolder = "/tmp/export-temp" },
+			new FakeSelectorStorage(storage), new FakeIWebLogger(),
+			new FakeIThumbnailService());
+
+		var (status, path) = exportService.StatusIsReady(name);
+
+		Assert.IsNull(status);
+		Assert.IsNull(path);
+	}
+
+	[TestMethod]
+	public void StatusIsReady_GeneratedName_ShouldWork()
+	{
+		// the service builds the path with Path.Combine, so the separator is platform specific
+		var storage = new FakeIStorage(["/tmp", "/tmp/export-temp"],
+			[Path.Combine("/tmp/export-temp", "TNA995920129") + ".zip"]);
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { TempFolder = "/tmp/export-temp" },
+			new FakeSelectorStorage(storage), new FakeIWebLogger(),
+			new FakeIThumbnailService());
+
+		var (status, path) = exportService.StatusIsReady("TNA995920129");
+
+		Assert.IsFalse(status); // no .done file yet
+		Assert.IsNotNull(path);
+	}
+
+	[TestMethod]
+	[DataRow("../outside")]
+	[DataRow("a/b")]
+	[DataRow("")]
+	public async Task CreateZip_InvalidZipName_ShouldNotWriteAnything(string name)
+	{
+		var storage = new FakeIStorage(["/tmp", "/tmp/export-temp"]);
+		var logger = new FakeIWebLogger();
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { TempFolder = "/tmp/export-temp" },
+			new FakeSelectorStorage(storage), logger, new FakeIThumbnailService());
+
+		await exportService.CreateZip([new FileIndexItem("/test.jpg")], false, name);
+
+		Assert.IsFalse(storage.ExistFile("/tmp/export-temp/" + name + ".done"));
+		Assert.Contains(item => item.Item2?.Contains("invalid zip name") == true,
+			logger.TrackedExceptions);
 	}
 }

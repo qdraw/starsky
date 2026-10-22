@@ -148,7 +148,7 @@ describe("Delete file from upload (50)", () => {
     cy.get("[data-test=trash]").click();
     cy.wait("@trash1");
 
-    cy.get(".folder > div", { timeout: 10000 }).should(($lis) => {
+    cy.get('.folder > div[data-filepath$=".jpg"]', { timeout: 10000 }).should(($lis) => {
       expect($lis).to.have.length(2);
     });
 
@@ -234,7 +234,7 @@ describe("Delete file from upload (50)", () => {
     cy.get("[data-test=trash]").click();
     cy.wait("@trash2");
 
-    cy.get(".folder > div", { timeout: 10000 }).should(($lis) => {
+    cy.get('.folder > div[data-filepath$=".jpg"]', { timeout: 10000 }).should(($lis) => {
       expect($lis).to.have.length(2);
     });
 
@@ -259,7 +259,7 @@ describe("Delete file from upload (50)", () => {
 
     cy.visit(config.url);
 
-    cy.get(".folder > div").should(($lis) => {
+    cy.get('.folder > div[data-filepath$=".jpg"]').should(($lis) => {
       expect($lis).to.have.length(2);
     });
   });

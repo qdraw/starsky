@@ -84,7 +84,8 @@ public sealed class Startup
 		new SetupDatabaseTypes(_appSettings, services).BuilderDb(foundationDatabaseName);
 		new SetupHealthCheck(_appSettings, services).BuilderHealth();
 		EfCoreMigrationsOnProject(services).ConfigureAwait(false);
-		services.SetupDataProtection();
+		services.SetupDataProtection(_appSettings.DataProtectionCertificatePath,
+			_appSettings.DataProtectionCertificatePassword);
 
 		// Enable Dual Authentication 
 		services
@@ -134,6 +135,11 @@ public sealed class Startup
 				options.HeaderName = "X-XSRF-TOKEN";
 			}
 		);
+
+		if ( _appSettings.UseRateLimiting != false )
+		{
+			RateLimitPolicies.AddRateLimiting(services);
+		}
 
 		// to add support for swagger
 		new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(services);
@@ -252,6 +258,12 @@ public sealed class Startup
 		app.UsePathBase(PathHelper.PrefixDbSlash("starsky"));
 
 		app.UseRouting();
+
+		// after routing: the policies are attached to endpoints with [EnableRateLimiting]
+		if ( _appSettings?.UseRateLimiting != false )
+		{
+			app.UseRateLimiter();
+		}
 
 		new SwaggerSetupHelper(_appSettings!).Add02AppUseSwaggerAndUi(app);
 

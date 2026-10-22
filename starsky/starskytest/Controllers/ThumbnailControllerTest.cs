@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -51,6 +52,20 @@ public sealed class ThumbnailControllerTest
 			new FakeIServiceScopeFactory(), new FakeIWebLogger(), memoryCache);
 	}
 
+	/// <summary>
+	///     The original file and manual jobs need a logged-in user, thumbnails do not
+	/// </summary>
+	private static DefaultHttpContext CreateHttpContext(bool authenticated = true)
+	{
+		return new DefaultHttpContext
+		{
+			User = authenticated
+				? new ClaimsPrincipal(new ClaimsIdentity(
+					[new Claim(ClaimTypes.Name, "test")], "TestAuth"))
+				: new ClaimsPrincipal()
+		};
+	}
+
 	private static ThumbnailController CreateSut(IStorage storage, IQuery query,
 		FakeISmallThumbnailBackgroundJobService? bgService = null)
 	{
@@ -58,7 +73,7 @@ public sealed class ThumbnailControllerTest
 		var sut = new ThumbnailController(query, new FakeSelectorStorage(storage),
 			new AppSettings(), new FakeIWebLogger(), bgService,
 			new FakeIManualThumbnailGenerationService());
-		sut.ControllerContext.HttpContext = new DefaultHttpContext();
+		sut.ControllerContext.HttpContext = CreateHttpContext();
 		return sut;
 	}
 
@@ -67,7 +82,7 @@ public sealed class ThumbnailControllerTest
 		var sut = new ThumbnailController(query, selectorStorage,
 			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
 			new FakeIManualThumbnailGenerationService());
-		sut.ControllerContext.HttpContext = new DefaultHttpContext();
+		sut.ControllerContext.HttpContext = CreateHttpContext();
 		return sut;
 	}
 
@@ -135,7 +150,7 @@ public sealed class ThumbnailControllerTest
 		var controller = new ThumbnailController(_query, new FakeSelectorStorage(storage),
 			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
 			new FakeIManualThumbnailGenerationService());
-		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext = CreateHttpContext();
 
 		var actionResult = await controller.Thumbnail("hash-corrupt-image", "/test2.jpg",
 			false, true) as NoContentResult;
@@ -158,7 +173,7 @@ public sealed class ThumbnailControllerTest
 			new ThumbnailController(_query, new FakeSelectorStorage(), new AppSettings(),
 				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
 				new FakeIManualThumbnailGenerationService());
-		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext = CreateHttpContext();
 		var actionResult =
 			await controller.Thumbnail("404filehash", null, false,
 				true) as NotFoundObjectResult;
@@ -199,7 +214,7 @@ public sealed class ThumbnailControllerTest
 			new ThumbnailController(_query, new FakeSelectorStorage(storage), new AppSettings(),
 				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
 				new FakeIManualThumbnailGenerationService());
-		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext = CreateHttpContext();
 
 		var actionResult =
 			await controller.Thumbnail(createAnImage.FileHash!, null,
@@ -218,7 +233,7 @@ public sealed class ThumbnailControllerTest
 			new ThumbnailController(_query, new FakeSelectorStorage(), new AppSettings(),
 				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
 				new FakeIManualThumbnailGenerationService());
-		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext = CreateHttpContext();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 		var result = await controller.Thumbnail("Invalid");
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
@@ -242,7 +257,7 @@ public sealed class ThumbnailControllerTest
 			new ThumbnailController(_query, new FakeSelectorStorage(storage), new AppSettings(),
 				new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
 				new FakeIManualThumbnailGenerationService());
-		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext = CreateHttpContext();
 
 		var actionResult =
 			await controller.Thumbnail(createAnImage.FileHash!,
@@ -270,7 +285,7 @@ public sealed class ThumbnailControllerTest
 		await InsertSearchData();
 		var storage = ArrangeStorage();
 		var sut = CreateSut(storage, _query);
-		sut.ControllerContext.HttpContext = new DefaultHttpContext();
+		sut.ControllerContext.HttpContext = CreateHttpContext();
 		var actionResult =
 			await sut.Thumbnail("any", "/test.jpg", true) as FileStreamResult;
 
@@ -308,7 +323,7 @@ public sealed class ThumbnailControllerTest
 			new FakeISmallThumbnailBackgroundJobService(),
 			new FakeIManualThumbnailGenerationService());
 
-		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext = CreateHttpContext();
 		var actionResult =
 			await controller.Thumbnail("not_on_disk_hash",
 					"/not_on_disk.jpg", true) as
@@ -342,7 +357,7 @@ public sealed class ThumbnailControllerTest
 		var controller = new ThumbnailController(query, new FakeSelectorStorage(storage),
 			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
 			manual);
-		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext = CreateHttpContext();
 
 		// Act
 		var actionResult = await controller.Thumbnail("hash1", null, true) as JsonResult;
@@ -373,7 +388,7 @@ public sealed class ThumbnailControllerTest
 		var storage = ArrangeStorage();
 		var sut = CreateSut(storage, _query);
 
-		sut.ControllerContext.HttpContext = new DefaultHttpContext();
+		sut.ControllerContext.HttpContext = CreateHttpContext();
 
 		var actionResult =
 			await sut.Thumbnail(createAnImage.FileHash!,
@@ -388,6 +403,50 @@ public sealed class ThumbnailControllerTest
 		Assert.AreEqual("image/jpeg", thumbnailAnswer);
 
 		await actionResult.FileStream.DisposeAsync(); // for windows
+	}
+
+	[TestMethod]
+	public async Task Thumbnail_Anonymous_SingleItemOriginal_IsUnauthorized()
+	{
+		var createAnImage = await InsertSearchData();
+		var sut = CreateSut(ArrangeStorage(), _query);
+		sut.ControllerContext.HttpContext = CreateHttpContext(false);
+
+		var actionResult =
+			await sut.Thumbnail(createAnImage.FileHash!, null, true) as UnauthorizedObjectResult;
+
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(401, actionResult.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task Thumbnail_Anonymous_UnknownHash_FilePathFallbackIsIgnored()
+	{
+		await InsertSearchData();
+		var sut = CreateSut(ArrangeStorage(), _query);
+		sut.ControllerContext.HttpContext = CreateHttpContext(false);
+
+		// an indexed path that is not behind this hash must not be served
+		var actionResult =
+			await sut.Thumbnail("any", "/test.jpg", true) as NotFoundObjectResult;
+
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(404, actionResult.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task Thumbnail_Anonymous_RawFile_DoesNotTriggerManualJob()
+	{
+		var query = new FakeIQuery([new FileIndexItem("/test.dng") { FileHash = "hash1" }]);
+		var manual = new FakeIManualThumbnailGenerationService();
+		var sut = new ThumbnailController(query, new FakeSelectorStorage(ArrangeStorage()),
+			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
+			manual);
+		sut.ControllerContext.HttpContext = CreateHttpContext(false);
+
+		await sut.Thumbnail("hash1", null, true);
+
+		Assert.IsFalse(manual.WasCreateJobCalled);
 	}
 
 	[TestMethod]
@@ -559,7 +618,7 @@ public sealed class ThumbnailControllerTest
 		var controller = new ThumbnailController(query, new FakeSelectorStorage(storage),
 			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService(),
 			manual);
-		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ControllerContext.HttpContext = CreateHttpContext();
 
 		// Act: call with a filePath that is raw (.dng exists in ArrangeStorage)
 		await controller.ByZoomFactorAsync("test_dng", 1, "/test.dng");
@@ -767,7 +826,7 @@ public sealed class ThumbnailControllerTest
 	{
 		var sut = CreateSut(new FakeSelectorStorage(), _query);
 
-		sut.ControllerContext.HttpContext = new DefaultHttpContext();
+		sut.ControllerContext.HttpContext = CreateHttpContext();
 		sut.ModelState.AddModelError("Key", "ErrorMessage");
 		var result = sut.ThumbnailSmallOrTinyMeta("Invalid");
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);

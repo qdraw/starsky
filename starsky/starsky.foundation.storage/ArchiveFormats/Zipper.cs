@@ -17,13 +17,169 @@ namespace starsky.foundation.storage.ArchiveFormats;
 [Service(typeof(IZipper), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class Zipper : IZipper
 {
+	// Limits protect against zip bombs; the entry headers can lie so the
+	// limits are also enforced while copying
+	internal const long DefaultMaxTotalBytes = 2L * 1024 * 1024 * 1024;
+	internal const long DefaultMaxEntryBytes = 1024L * 1024 * 1024;
+	internal const int DefaultMaxEntries = 10_000;
+	internal const int DefaultMaxCompressionRatio = 200;
+
+	/// <summary>
+	///     Tiny entries (e.g. blank text files) can compress extremely well without being a threat
+	/// </summary>
+	internal const long DefaultRatioMinBytes = 1024L * 1024;
+
 	private readonly StorageHostFullPathFilesystem _hostStorage;
 	private readonly IWebLogger _logger;
+	private readonly int _maxCompressionRatio;
+	private readonly long _maxEntryBytes;
+	private readonly int _maxEntries;
+	private readonly long _maxTotalBytes;
+	private readonly long _ratioMinBytes;
 
-	public Zipper(IWebLogger logger)
+	public Zipper(IWebLogger logger) : this(logger, DefaultMaxTotalBytes, DefaultMaxEntryBytes,
+		DefaultMaxEntries, DefaultMaxCompressionRatio, DefaultRatioMinBytes)
+	{
+	}
+
+	internal Zipper(IWebLogger logger, long maxTotalBytes, long maxEntryBytes, int maxEntries,
+		int maxCompressionRatio, long ratioMinBytes)
 	{
 		_logger = logger;
 		_hostStorage = new StorageHostFullPathFilesystem(logger);
+		_maxTotalBytes = maxTotalBytes;
+		_maxEntryBytes = maxEntryBytes;
+		_maxEntries = maxEntries;
+		_maxCompressionRatio = maxCompressionRatio;
+		_ratioMinBytes = ratioMinBytes;
+	}
+
+	private bool HeaderExceedsLimits(ZipArchiveEntry entry, long totalSoFar)
+	{
+		if ( entry.Length > _maxEntryBytes || totalSoFar + entry.Length > _maxTotalBytes )
+		{
+			return true;
+		}
+
+		return entry.Length >= _ratioMinBytes &&
+		       entry.Length > entry.CompressedLength * _maxCompressionRatio;
+	}
+
+	/// <summary>
+	///     Copy and stop as soon as the size or compression ratio limit is passed, so a lying
+	///     header can not bypass the limits
+	/// </summary>
+	/// <returns>false when a limit is exceeded</returns>
+	internal bool CopyStreamWithLimits(Stream source, Stream target, long maxBytes,
+		long compressedLength, out long written)
+	{
+		written = 0;
+		var buffer = new byte[81920];
+		int read;
+		while ( ( read = source.Read(buffer, 0, buffer.Length) ) > 0 )
+		{
+			written += read;
+			if ( written > maxBytes || ( written >= _ratioMinBytes &&
+			                             written > compressedLength * _maxCompressionRatio ) )
+			{
+				return false;
+			}
+
+			target.Write(buffer, 0, read);
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	///     Copy with limits, does not trust the header length
+	/// </summary>
+	/// <returns>bytes written</returns>
+	/// <exception cref="InvalidDataException">a limit is exceeded, the partial file is removed</exception>
+	internal long CopyEntryWithLimits(ZipArchiveEntry entry, string destinationPath,
+		long totalSoFar)
+	{
+		var maxForThisEntry = Math.Min(_maxEntryBytes, _maxTotalBytes - totalSoFar);
+		long written;
+		bool exceeded;
+		using ( var source = entry.Open() )
+		using ( var target = new FileStream(destinationPath, FileMode.Create, FileAccess.Write) )
+		{
+			exceeded = !CopyStreamWithLimits(source, target, maxForThisEntry,
+				entry.CompressedLength, out written);
+		}
+
+		if ( exceeded )
+		{
+			File.Delete(destinationPath);
+			throw new InvalidDataException("Size limit exceeded while extracting");
+		}
+
+		File.SetLastWriteTime(destinationPath, entry.LastWriteTime.DateTime);
+		return written;
+	}
+
+	private bool LimitExceeded(string zipInputFullPath)
+	{
+		_logger.LogError($"[Zipper] Size limit exceeded: {zipInputFullPath}");
+		return false;
+	}
+
+	/// <summary>
+	///     Extract one entry, entries outside the extraction folder are skipped
+	/// </summary>
+	/// <returns>false when extraction must stop (limit exceeded or IO error)</returns>
+	private bool TryExtractEntry(ZipArchiveEntry entry, string storeZipFolderFullPath,
+		string zipInputFullPath, ref long totalBytes)
+	{
+		// Gets the full path to ensure that relative segments are removed.
+		var destinationPath =
+			Path.GetFullPath(Path.Combine(storeZipFolderFullPath, entry.FullName));
+
+		// Ordinal match is safest, case-sensitive volumes can be mounted within volumes that
+		// are case-insensitive.
+		if ( !destinationPath.StartsWith(storeZipFolderFullPath, StringComparison.Ordinal) )
+		{
+			return true;
+		}
+
+		// Folders inside zips give sometimes issues
+		if ( entry.FullName.EndsWith('/') )
+		{
+			if ( !_hostStorage.ExistFolder(destinationPath) )
+			{
+				_hostStorage.CreateDirectory(destinationPath);
+			}
+
+			return true;
+		}
+
+		if ( HeaderExceedsLimits(entry, totalBytes) )
+		{
+			return LimitExceeded(zipInputFullPath);
+		}
+
+		try
+		{
+			long written;
+			try
+			{
+				written = CopyEntryWithLimits(entry, destinationPath, totalBytes);
+			}
+			catch ( DirectoryNotFoundException )
+			{
+				Directory.GetParent(destinationPath)!.Create();
+				written = CopyEntryWithLimits(entry, destinationPath, totalBytes);
+			}
+
+			totalBytes += written;
+			return true;
+		}
+		catch ( IOException exception )
+		{
+			_logger.LogError($"[Zipper] IOException: {zipInputFullPath}", exception);
+			return false;
+		}
 	}
 
 	/// <summary>
@@ -56,43 +212,18 @@ public sealed class Zipper : IZipper
 		try
 		{
 			using var archive = ZipFile.OpenRead(zipInputFullPath);
+			if ( archive.Entries.Count > _maxEntries )
+			{
+				_logger.LogError($"[Zipper] Too many entries: {zipInputFullPath}");
+				return false;
+			}
+
+			long totalBytes = 0;
 			foreach ( var entry in archive.Entries )
 			{
-				// Gets the full path to ensure that relative segments are removed.
-				var destinationPath =
-					Path.GetFullPath(Path.Combine(storeZipFolderFullPath, entry.FullName));
-
-				// Ordinal match is safest, case-sensitive volumes can be mounted within volumes that
-				// are case-insensitive.
-				if ( !destinationPath.StartsWith(storeZipFolderFullPath,
-					    StringComparison.Ordinal) )
+				if ( !TryExtractEntry(entry, storeZipFolderFullPath, zipInputFullPath,
+					    ref totalBytes) )
 				{
-					continue;
-				}
-
-				// Folders inside zips give sometimes issues
-				if ( entry.FullName.EndsWith('/') )
-				{
-					if ( !_hostStorage.ExistFolder(destinationPath) )
-					{
-						_hostStorage.CreateDirectory(destinationPath);
-					}
-
-					continue;
-				}
-
-				try
-				{
-					entry.ExtractToFile(destinationPath, true);
-				}
-				catch ( DirectoryNotFoundException )
-				{
-					Directory.GetParent(destinationPath)!.Create();
-					entry.ExtractToFile(destinationPath, true);
-				}
-				catch ( IOException exception )
-				{
-					_logger.LogError($"[Zipper] IOException: {zipInputFullPath}", exception);
 					return false;
 				}
 			}

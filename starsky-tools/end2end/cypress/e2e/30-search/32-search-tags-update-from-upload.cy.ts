@@ -1,5 +1,6 @@
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
+import { ensureFolderWithImages } from '../helpers/create-directory-helper.cy'
 const config = configFile[envFolder][envName]
 
 describe('Search -from upload - update tags (32)', () => {
@@ -35,6 +36,13 @@ describe('Search -from upload - update tags (32)', () => {
     cy.resetStorage()
 
     cy.sendAuthenticationHeader()
+
+    // the test folder and its images come from the upload spec, which may not have run yet
+    ensureFolderWithImages({
+      ...config,
+      mkdirPath: '/starsky-end2end-test',
+      urlMkdir: '/api/index/?f=/starsky-end2end-test'
+    })
 
     // clean cache before running
     clearSearchCaches()

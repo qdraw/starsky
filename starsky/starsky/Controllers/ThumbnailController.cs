@@ -304,6 +304,8 @@ public sealed class ThumbnailController : Controller
 			return ReturnThumbnailResult(f, json, altSize);
 		}
 
+		var isAuthenticated = HttpContext.User.Identity?.IsAuthenticated == true;
+
 		// Cached view of item
 		// Need to check again for recently moved files
 		var sourcePath = ( await _query.GetSubPathsByHashAsync(f) ).FirstOrDefaultWithFallback(f);
@@ -312,7 +314,9 @@ public sealed class ThumbnailController : Controller
 			// remove from cache
 			_query.ResetItemByHash(f);
 
-			if ( string.IsNullOrEmpty(filePath) ||
+			// the path fallback is only for logged-in users; the endpoint is anonymous,
+			// so otherwise any indexed path could be requested through an unknown hash
+			if ( !isAuthenticated || string.IsNullOrEmpty(filePath) ||
 			     await _query.GetObjectByFilePathAsync(filePath) == null )
 			{
 				SetExpiresResponseHeadersToZero();
@@ -334,6 +338,12 @@ public sealed class ThumbnailController : Controller
 			SetExpiresResponseHeadersToZero();
 			Response.StatusCode = 202; // A conflict, that the thumb is not generated yet
 			return Json("Thumbnail is not ready yet");
+		}
+
+		// thumbnails are public, the original file and manual jobs are not
+		if ( !isAuthenticated )
+		{
+			return Unauthorized("Login required to view the original");
 		}
 
 		if ( ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(sourcePath) )

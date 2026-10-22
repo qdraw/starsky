@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using starsky.feature.health.UpdateCheck.Interfaces;
 using starsky.feature.health.UpdateCheck.Models;
 using starsky.Helpers;
@@ -10,6 +11,7 @@ using starsky.Helpers;
 namespace starsky.Controllers;
 
 [AllowAnonymous]
+[EnableRateLimiting(RateLimitPolicies.Anonymous)]
 public sealed class HealthCheckForUpdatesController : Controller
 {
 	private readonly ICheckForUpdates _checkForUpdates;

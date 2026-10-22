@@ -506,6 +506,31 @@ public sealed class AppSettings
 
 
 	/// <summary>
+	///     Limit the requests per client IP on the endpoints that work without a login
+	///     (login, register, health check for updates, geo lookup, search suggest).
+	///     Turn off when a reverse proxy already does this.
+	///     use env variable: app__UseRateLimiting
+	/// </summary>
+	public bool? UseRateLimiting { get; set; } = true;
+
+	/// <summary>
+	///     Optional path to a PKCS#12 (.pfx) certificate. When set, new ASP.NET data protection keys
+	///     (used to sign the login cookie) are encrypted with it before they are stored in the
+	///     database. Existing keys stay readable and are replaced by encrypted ones on key rotation.
+	///     use env variable: app__DataProtectionCertificatePath
+	///     Not part of the settings file written by the settings API (JsonIgnore).
+	/// </summary>
+	[JsonIgnore]
+	public string? DataProtectionCertificatePath { get; set; }
+
+	/// <summary>
+	///     Password for the certificate in DataProtectionCertificatePath (can be empty)
+	///     use env variable: app__DataProtectionCertificatePassword
+	/// </summary>
+	[JsonIgnore]
+	public string? DataProtectionCertificatePassword { get; set; }
+
+	/// <summary>
 	///     Value for AccountRolesDefaultByEmailRegisterOverwrite
 	/// </summary>
 	private Dictionary<string, string>
@@ -1112,8 +1137,33 @@ public sealed class AppSettings
 			return canonical;
 		}
 
-		var filepath = StorageFolder + databaseFilePath;
-		return PathToFileReplacePathStyle(filepath);
+		var filepath = PathToFileReplacePathStyle(StorageFolder + databaseFilePath);
+		EnsureInsideStorageFolder(databaseFilePath, filepath);
+		return filepath;
+	}
+
+	/// <summary>
+	///     Same protection as the mapped roots: a subPath is user input (mkdir, rename,
+	///     upload target, import structure) and must not leave the storage folder via '..'
+	/// </summary>
+	private void EnsureInsideStorageFolder(string databaseFilePath, string filepath)
+	{
+		// only paths with a '..' can leave the root, so skip the canonicalisation otherwise
+		if ( !databaseFilePath.Contains("..", StringComparison.Ordinal) )
+		{
+			return;
+		}
+
+		var canonicalBase = Path.GetFullPath(StorageFolder)
+			.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+		var canonical = Path.GetFullPath(filepath);
+		if ( canonical != canonicalBase &&
+		     !canonical.StartsWith(canonicalBase + Path.DirectorySeparatorChar,
+			     StringComparison.OrdinalIgnoreCase) )
+		{
+			throw new UnauthorizedAccessException(
+				"Path traversal detected: resolved path is outside the storage folder.");
+		}
 	}
 
 	/// <summary>
