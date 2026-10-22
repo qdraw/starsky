@@ -171,7 +171,7 @@ export function AddContextMenu({
         event.preventDefault();
         event.stopPropagation();
         const target = event.currentTarget as HTMLElement;
-        const copyText = target.getAttribute("data-copy-text") || "";
+        const copyText = target.dataset.copyText || "";
         if (!copyText) {
           return;
         }

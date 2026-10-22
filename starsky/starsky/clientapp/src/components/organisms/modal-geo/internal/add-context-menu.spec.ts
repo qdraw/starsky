@@ -531,6 +531,79 @@ describe("AddContextMenu", () => {
     });
   });
 
+  it("should render empty messages when map elements could not be fetched", async () => {
+    (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(null);
+    (mapElementsModule.FetchMapElementsFromOsm as jest.Mock).mockResolvedValue(null);
+
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus: jest.fn()
+    });
+
+    map.fire("contextmenu", {
+      latlng: L.latLng(52.52, 13.405),
+      containerPoint: L.point(100, 100)
+    } as L.LeafletMouseEvent);
+
+    await waitFor(() => {
+      expect(document.querySelectorAll(".leaflet-context-menu__no-osm-items")).toHaveLength(2);
+    });
+
+    const contextMenu = document.querySelector(".leaflet-context-menu");
+    expect(contextMenu?.textContent).toContain("No nearby objects");
+    expect(contextMenu?.textContent).toContain("No enclosing objects");
+  });
+
+  it("should fall back between label and copy text and ignore empty map elements", async () => {
+    (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue(null);
+    (mapElementsModule.FetchMapElementsFromOsm as jest.Mock).mockResolvedValue({
+      nearbyObjects: [
+        null,
+        { label: "OnlyLabel" },
+        { copyText: "OnlyCopy" },
+        { description: "no label or copy text" }
+      ],
+      enclosingObjects: []
+    });
+
+    const setNotificationStatus = jest.fn();
+    AddContextMenu({
+      map,
+      language: language as unknown as Language,
+      localization,
+      setNotificationStatus
+    });
+
+    map.fire("contextmenu", {
+      latlng: L.latLng(52.52, 13.405),
+      containerPoint: L.point(100, 100)
+    } as L.LeafletMouseEvent);
+
+    await waitFor(() => {
+      expect(document.querySelectorAll('[data-action="copy-osm-item"]')).toHaveLength(3);
+    });
+
+    const items = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-action="copy-osm-item"]')
+    );
+    expect(items[0].dataset.copyText).toBe("OnlyLabel");
+    expect(items[0].querySelector(".leaflet-context-menu__osm-item-description")).toBeNull();
+    expect(items[1].dataset.copyText).toBe("OnlyCopy");
+    expect(items[1].querySelector(".leaflet-context-menu__osm-item-label")?.textContent).toBe(
+      "OnlyCopy"
+    );
+
+    // item without any text does not copy or notify
+    (navigator.clipboard.writeText as jest.Mock).mockClear();
+    items[2].click();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(navigator.clipboard.writeText).not.toHaveBeenCalled();
+    expect(setNotificationStatus).not.toHaveBeenCalled();
+  });
+
   it("should render a malicious street name as inert text", async () => {
     const payload = "<img src=x onerror=alert(1)>";
     (nominatimModule.FetchAddressFromNominatim as jest.Mock).mockResolvedValue({

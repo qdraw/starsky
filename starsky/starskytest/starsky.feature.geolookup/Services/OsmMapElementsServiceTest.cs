@@ -34,8 +34,8 @@ public class OsmMapElementsServiceTest
 		var result = await service.LookupAsync(52.52, 13.405);
 
 		Assert.IsNull(result.Error);
-		Assert.AreEqual(2, result.NearbyObjects.Count);
-		Assert.AreEqual(1, result.EnclosingObjects.Count);
+		Assert.HasCount(2, result.NearbyObjects);
+		Assert.HasCount(1, result.EnclosingObjects);
 		Assert.AreEqual("Block B", result.NearbyObjects[0].Label);
 		Assert.AreEqual("Cafe Central", result.NearbyObjects[1].Label);
 		Assert.AreEqual("Amsterdam", result.EnclosingObjects[0].Label);
@@ -81,8 +81,8 @@ public class OsmMapElementsServiceTest
 		var result = await service.LookupAsync(52.52, 13.405);
 
 		Assert.IsNull(result.Error);
-		Assert.AreEqual(0, result.NearbyObjects.Count);
-		Assert.AreEqual(0, result.EnclosingObjects.Count);
+		Assert.IsEmpty(result.NearbyObjects);
+		Assert.IsEmpty(result.EnclosingObjects);
 	}
 
 	[TestMethod]
@@ -128,11 +128,11 @@ public class OsmMapElementsServiceTest
 		var result = await service.LookupAsync(52.37430, 4.90879);
 
 		Assert.IsNull(result.Error);
-		Assert.AreEqual(1, result.NearbyObjects.Count);
-		Assert.AreEqual(1, result.EnclosingObjects.Count);
+		Assert.HasCount(1, result.NearbyObjects);
+		Assert.HasCount(1, result.EnclosingObjects);
 		Assert.AreEqual("Damrak", result.NearbyObjects[0].Label);
 		Assert.AreEqual("Amsterdam", result.EnclosingObjects[0].Label);
-		CollectionAssert.AreEqual(
+		Assert.AreSequenceEqual(
 			new[] { preferredNearby, preferredEnclosing, fallbackNearby, fallbackEnclosing },
 			fakeHttp.UrlsCalled);
 	}
@@ -170,7 +170,7 @@ public class OsmMapElementsServiceTest
 		var service = new OsmMapElementsService(fakeHttp);
 		var result = await service.LookupAsync(lat, lon);
 
-		Assert.AreEqual(3, result.EnclosingObjects.Count);
+		Assert.HasCount(3, result.EnclosingObjects);
 		Assert.AreEqual("Oosterdok", result.EnclosingObjects[0].Label);
 		Assert.AreEqual("Amsterdam", result.EnclosingObjects[1].Label);
 		Assert.AreEqual("Nederland", result.EnclosingObjects[2].Label);
@@ -204,7 +204,7 @@ public class OsmMapElementsServiceTest
 		var service = new OsmMapElementsService(fakeHttp);
 		var result = await service.LookupAsync(lat, lon);
 
-		Assert.AreEqual(2, result.NearbyObjects.Count);
+		Assert.HasCount(2, result.NearbyObjects);
 		Assert.AreEqual("Oosterdok", result.NearbyObjects[0].Label);
 		Assert.AreEqual("Some Building", result.NearbyObjects[1].Label);
 	}
@@ -240,12 +240,77 @@ public class OsmMapElementsServiceTest
 		var result = await service.LookupAsync(lat, lon);
 
 		Assert.IsNull(result.Error);
-		Assert.AreEqual(1, result.NearbyObjects.Count);
+		Assert.HasCount(1, result.NearbyObjects);
 		Assert.AreEqual("Oosterdok", result.NearbyObjects[0].Label);
 		Assert.AreEqual("waterway", result.NearbyObjects[0].Category);
 		Assert.AreEqual("canal", result.NearbyObjects[0].Type);
-		Assert.AreEqual(1, result.EnclosingObjects.Count);
+		Assert.HasCount(1, result.EnclosingObjects);
 		Assert.AreEqual("Oosterdokseiland", result.EnclosingObjects[0].Label);
+	}
+
+	[TestMethod]
+	public async Task LookupAsync_ElementsWithoutNameOrCoordinates_UseFallbackLabelsAndNoDistance()
+	{
+		const string nearbyJson = "{\"elements\":[" +
+		                          "{\"type\":\"way\",\"id\":5,\"tags\":{\"foo\":\"bar\"}}," +
+		                          "{\"type\":\"node\",\"id\":6,\"lat\":52.52,\"lon\":13.405,\"tags\":{\"highway\":\"residential\"}}," +
+		                          "{\"type\":\"way\",\"id\":7,\"tags\":{\"name\":\"Way\"}}," +
+		                          "{\"type\":\"node\",\"id\":8,\"tags\":{}}]}";
+		var nearbyUrl = BuildNearbyUrl("overpass-api.de/api/interpreter", 52.52, 13.405);
+		var enclosingUrl = BuildEnclosingUrl("overpass-api.de/api/interpreter", 52.52, 13.405);
+		var fakeHttp = new FakeIHttpClientHelper(null!, new Dictionary<string, KeyValuePair<bool, string>>
+		{
+			{ nearbyUrl, new KeyValuePair<bool, string>(true, nearbyJson) },
+			{ enclosingUrl, new KeyValuePair<bool, string>(true, "{\"elements\":[]}") }
+		});
+
+		var result = await new OsmMapElementsService(fakeHttp).LookupAsync(52.52, 13.405);
+
+		Assert.IsNull(result.Error);
+		Assert.HasCount(3, result.NearbyObjects);
+
+		var noName = result.NearbyObjects.Single(p => p.Id == "way/5");
+		Assert.AreEqual("OSM way 5", noName.Label);
+		Assert.AreEqual("Way", noName.Description);
+		Assert.AreEqual("OSM way 5 (Way)", noName.CopyText);
+		Assert.IsNull(noName.DistanceMeters);
+
+		var typeLabel = result.NearbyObjects.Single(p => p.Id == "node/6");
+		Assert.AreEqual("Residential", typeLabel.Label);
+		Assert.AreEqual("Highway: Residential", typeLabel.Description);
+		Assert.AreEqual("Residential (Highway: Residential)", typeLabel.CopyText);
+		Assert.AreEqual(0, typeLabel.DistanceMeters);
+
+		var sameAsDescription = result.NearbyObjects.Single(p => p.Id == "way/7");
+		Assert.AreEqual("Way", sameAsDescription.CopyText);
+	}
+
+	[TestMethod]
+	public async Task LookupAsync_RemarkIsKept_WhenOtherRequestsFailToParse()
+	{
+		var nearbyUrl = BuildNearbyUrl("overpass-api.de/api/interpreter", 52.52, 13.405);
+		var fakeHttp = new FakeIHttpClientHelper(null!, new Dictionary<string, KeyValuePair<bool, string>>
+		{
+			{ nearbyUrl, new KeyValuePair<bool, string>(true, "{\"remark\":\"runtime error: Query timed out\"}") }
+		});
+
+		var result = await new OsmMapElementsService(fakeHttp).LookupAsync(52.52, 13.405);
+
+		Assert.AreEqual("runtime error: Query timed out", result.Error);
+	}
+
+	[TestMethod]
+	public async Task LookupAsync_RemarkReplacesParseError()
+	{
+		var enclosingUrl = BuildEnclosingUrl("overpass-api.de/api/interpreter", 52.52, 13.405);
+		var fakeHttp = new FakeIHttpClientHelper(null!, new Dictionary<string, KeyValuePair<bool, string>>
+		{
+			{ enclosingUrl, new KeyValuePair<bool, string>(true, "{\"remark\":\"rate limited\"}") }
+		});
+
+		var result = await new OsmMapElementsService(fakeHttp).LookupAsync(52.52, 13.405);
+
+		Assert.AreEqual("rate limited", result.Error);
 	}
 
 	private static string BuildNearbyUrl(string baseUrl, double latitude, double longitude)

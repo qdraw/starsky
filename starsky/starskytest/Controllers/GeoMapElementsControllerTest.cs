@@ -54,7 +54,7 @@ public class GeoMapElementsControllerTest
 		var controller = new GeoMapElementsController(new FakeIOsmMapElementsService());
 		controller.ModelState.AddModelError("lat", "Required");
 		var result = await controller.GeoMapElements(0, 0);
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]

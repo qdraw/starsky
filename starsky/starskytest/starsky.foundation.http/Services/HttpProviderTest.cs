@@ -117,4 +117,36 @@ public sealed class HttpProviderTest
 		Assert.AreEqual("test-token",
 			fakeHttpMessageHandler.LastRequestMessage[0].Headers.Authorization?.Parameter);
 	}
+
+	[TestMethod]
+	public async Task PostAsync_WithUserAgent_ShouldSendUserAgentHeader()
+	{
+		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+		var httpClient = new HttpClient(fakeHttpMessageHandler);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
+
+		var result = await httpProvider.PostAsync(
+			"http://test", new StringContent(string.Empty), null, "Starsky-App");
+
+		Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+		var userAgent = string.Join(" ",
+			fakeHttpMessageHandler.LastRequestMessage[0].Headers.UserAgent.Select(p => p.ToString()));
+		Assert.Contains("Starsky-App", userAgent);
+	}
+
+	[TestMethod]
+	public async Task PostAsync_WithoutUserAgent_ShouldNotSendUserAgentHeader()
+	{
+		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+		var httpClient = new HttpClient(fakeHttpMessageHandler);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
+
+		var result = await httpProvider.PostAsync(
+			"http://test", new StringContent(string.Empty));
+
+		Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+		var userAgent = string.Join(" ",
+			fakeHttpMessageHandler.LastRequestMessage[0].Headers.UserAgent.Select(p => p.ToString()));
+		Assert.IsFalse(userAgent.Contains("Starsky-App", StringComparison.Ordinal));
+	}
 }
