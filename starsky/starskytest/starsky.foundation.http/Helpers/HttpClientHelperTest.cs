@@ -543,15 +543,19 @@ public sealed class HttpClientHelperTest
 	}
 
 	[TestMethod]
-	public async Task Download_DropboxUserContent_IsNoLongerAllowed()
+	public async Task Download_DropboxUserContent_IsAllowed()
 	{
-		var (helper, _, handler) = CreateRestricted(_ =>
-			new HttpResponseMessage(System.Net.HttpStatusCode.OK));
+		var (helper, storage, _) = CreateRestricted(_ =>
+			new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+			{
+				Content = new ByteArrayContent(new byte[10])
+			});
 
-		var result = await helper.Download("https://dl.dropboxusercontent.com/a", "/out.bin", 0);
+		var result = await helper.Download("https://dl.dropboxusercontent.com/a", "/out.bin", 0,
+			restricted: true);
 
-		Assert.IsFalse(result);
-		Assert.IsEmpty(handler.LastRequestMessage);
+		Assert.IsTrue(result);
+		Assert.IsTrue(storage.ExistFile("/out.bin"));
 	}
 
 	[TestMethod]

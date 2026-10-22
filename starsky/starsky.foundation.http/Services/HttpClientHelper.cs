@@ -28,6 +28,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 	/// </summary>
 	private readonly List<string> _allowedDomains =
 	[
+		"dl.dropboxusercontent.com",
 		"qdraw.nl", // < used by test and dependencies
 		"media.qdraw.nl", // < used by demo
 		"locker.ifttt.com",

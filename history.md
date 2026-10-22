@@ -44,6 +44,17 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.8 - _(Unreleased)_ - 2026-?-? {#0.9.8}
 
+- [x] (Security) _Back-end_ Rate limiting per client IP on the endpoints that work without a login (login, register, check for updates, geo lookup and search suggest). Turn off with `app__UseRateLimiting=false` when a reverse proxy already does this, see [readme](starsky/starsky/readme.md) (PR #3375)
+- [x] (Security) _Back-end_ Optional encryption of the data protection keys (these sign the login cookie) with a certificate, set `app__DataProtectionCertificatePath` and `app__DataProtectionCertificatePassword`, see [readme](starsky/starsky/readme.md) (PR #3375)
+- [x] (Security) _Back-end_ Downloads from a user supplied url (import from url) check the allowed domain on every redirect and are limited in size (SSRF) (PR #3375)
+- [x] (Security) _Back-end_ Unzipping is limited in total size, size per file, number of files and compression ratio (zip bombs) (PR #3375)
+- [x] (Security) _Back-end_ Paths with `..` can not leave the storage folder (mkdir, rename, upload target and import structure), and a few more system folders can not be used as storage folder mapping (PR #3375)
+- [x] (Security) _Back-end_ The original image and the file path fallback of the thumbnail endpoint, and manual thumbnail jobs, need a login. Thumbnails stay public (PR #3375)
+- [x] (Security) _Back-end_ Accounts that are deleted can no longer use their login cookie on any api call, the password check takes the same time for unknown accounts and compares in constant time (PR #3375)
+- [x] (Security) _Back-end_ Upload of an xml sidecar file only accepts sidecar file names, so an existing photo can not be overwritten; the zip name of an export is validated (PR #3375)
+- [x] (Security) _Back-end_ Header injection via the `Host` header in the Content Security Policy, websocket connections without a configured origin list must come from the same host, and backslashes in front of a quote can no longer add ExifTool switches (PR #3375)
+- [x] (Security) _Front-end_ Release info from the update check is shown as text instead of html, and relative url checks reject `//host`, backslash and `javascript:` urls (PR #3375)
+- [x] (Fixed) _End2end_ The Cypress tests no longer depend on the order in which the specs run: missing test folder and images are created, counts are checked per file instead of per folder, and the changed date of the sample image is restored (PR #3375)
 - [x] (Fixed) _Back-end_ Publishing the same selection twice failed with `The process cannot access the file ... .zip` because a stale `.done` marker made the remote publish start while the new zip was still being written (PR #3412)
 - [x] (Fixed) _Back-end_ Import failed with `Unknown column 'Infinity'` when XMP/EXIF aperture or focal length had a zero denominator (PR #3409)
 
