@@ -43,37 +43,37 @@ jobs:
         run: bash build.sh --runtime "linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test --ready-to-run
 
       - name: Upload linux-arm64 as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: linux-arm64
           path: ./starsky/starsky-linux-arm64.zip
 
       - name: Upload win-x64 as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: win-x64
           path: ./starsky/starsky-win-x64.zip
 
       - name: Upload linux-x64 as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: linux-x64
           path: ./starsky/starsky-linux-x64.zip
 
       - name: Upload osx-x64 as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: osx-x64
           path: ./starsky/starsky-osx-x64.zip
 
       - name: Upload osx-arm64 as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: osx-arm64
           path: ./starsky/starsky-osx-arm64.zip
 
       - name: Upload slack-notification as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: starsky-tools-slack-notification
           path: ./starsky-tools/slack-notification
@@ -169,7 +169,7 @@ jobs:
             "${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}"
 
       - name: Upload starsky-mac-universal-desktop as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: starsky-mac-universal-desktop
           path: build/starsky-mac-universal-desktop.dmg
@@ -255,7 +255,7 @@ jobs:
             "${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}"
 
       - name: Upload starsky-mac-arm64-desktop as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: starsky-mac-arm64-desktop
           path: build/starsky-mac-arm64-desktop.dmg
@@ -341,7 +341,7 @@ jobs:
             "${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}"
 
       - name: Upload starsky-mac-x64-desktop as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: starsky-mac-x64-desktop
           path: build/starsky-mac-x64-desktop.dmg
@@ -416,13 +416,13 @@ jobs:
           Move-Item $setup.FullName ./velopack-releases/starsky-win-x64-desktop.exe
 
       - name: Upload starsky-win-x64-desktop as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: starsky-win-x64-desktop
           path: ./velopack-releases/starsky-win-x64-desktop.exe
 
       - name: Upload Velopack feed as build artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: starsky-win-x64-velopack-feed
           path: |
@@ -647,7 +647,7 @@ jobs:
 
       - name: Upload appcast as workflow artifact
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: Starsky.Desktop.appcast.xml
           path: Starsky.Desktop.appcast.xml
