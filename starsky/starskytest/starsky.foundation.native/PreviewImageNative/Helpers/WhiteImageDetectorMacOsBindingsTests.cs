@@ -1,12 +1,10 @@
 using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.PreviewImageNative.Helpers;
 using starskytest.FakeCreateAn;
-using starskytest.FakeCreateAn.CreateAnImageA6700PreviewRawJpeg;
 using starskytest.FakeCreateAn.CreateAnImageWhiteJpeg;
 
 namespace starskytest.starsky.foundation.native.PreviewImageNative.Helpers;
