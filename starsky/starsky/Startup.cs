@@ -5,7 +5,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -138,7 +137,10 @@ public sealed class Startup
 			}
 		);
 
-		AddRateLimiting(services);
+		if ( _appSettings.UseRateLimiting != false )
+		{
+			RateLimitPolicies.AddRateLimiting(services);
+		}
 
 		// to add support for swagger
 		new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(services);
@@ -230,37 +232,6 @@ public sealed class Startup
 	/// </summary>
 	/// <param name="app">ApplicationBuilder</param>
 	/// <param name="env">Hosting Env</param>
-	/// <summary>
-	///     Per client IP limits for the endpoints that work without a login, the policies are used
-	///     with [EnableRateLimiting]. Client IP is the forwarded one when behind a trusted proxy.
-	/// </summary>
-	internal static void AddRateLimiting(IServiceCollection services)
-	{
-		services.AddRateLimiter(options =>
-		{
-			options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-			options.AddPolicy(RateLimitPolicies.Anonymous, context =>
-				RateLimitPartition.GetFixedWindowLimiter(ClientKey(context),
-					_ => FixedWindow(60)));
-			options.AddPolicy(RateLimitPolicies.Login, context =>
-				RateLimitPartition.GetFixedWindowLimiter(ClientKey(context),
-					_ => FixedWindow(30)));
-		});
-	}
-
-	private static string ClientKey(HttpContext context)
-	{
-		return context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-	}
-
-	private static FixedWindowRateLimiterOptions FixedWindow(int permitLimit)
-	{
-		return new FixedWindowRateLimiterOptions
-		{
-			PermitLimit = permitLimit, Window = TimeSpan.FromMinutes(1), QueueLimit = 0
-		};
-	}
-
 	public void Configure(IApplicationBuilder app, IHostEnvironment env)
 	{
 		TimeApplicationRunning.SetRunningTime(app, DateTime.UtcNow);
@@ -290,7 +261,10 @@ public sealed class Startup
 		app.UseRouting();
 
 		// after routing: the policies are attached to endpoints with [EnableRateLimiting]
-		app.UseRateLimiter();
+		if ( _appSettings?.UseRateLimiting != false )
+		{
+			app.UseRateLimiter();
+		}
 
 		new SwaggerSetupHelper(_appSettings!).Add02AppUseSwaggerAndUi(app);
 

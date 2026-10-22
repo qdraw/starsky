@@ -44,7 +44,7 @@ public sealed class RateLimitPoliciesTest
 	{
 		var builder = WebApplication.CreateBuilder();
 		builder.WebHost.UseTestServer();
-		Startup.AddRateLimiting(builder.Services);
+		RateLimitPolicies.AddRateLimiting(builder.Services);
 		await using var app = builder.Build();
 		app.UseRouting();
 		app.UseRateLimiter();

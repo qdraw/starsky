@@ -150,6 +150,10 @@ machinename with your computer name in lowercase)_
     `app__DataProtectionCertificatePath` _(default empty, keys are stored unencrypted)_
 49. `DataProtectionCertificatePassword` - Password for the certificate above, can be empty. Use
     the environment variable `app__DataProtectionCertificatePassword`
+50. `UseRateLimiting` - Limit the requests per client IP on the endpoints that work without a login
+    (login, register, health check for updates, geo lookup, search suggest). Turn off when a
+    reverse proxy already does this. Use the environment variable `app__UseRateLimiting`
+    _(default true)_
 
 ### Appsettings.json example
 

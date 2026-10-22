@@ -506,6 +506,14 @@ public sealed class AppSettings
 
 
 	/// <summary>
+	///     Limit the requests per client IP on the endpoints that work without a login
+	///     (login, register, health check for updates, geo lookup, search suggest).
+	///     Turn off when a reverse proxy already does this.
+	///     use env variable: app__UseRateLimiting
+	/// </summary>
+	public bool? UseRateLimiting { get; set; } = true;
+
+	/// <summary>
 	///     Optional path to a PKCS#12 (.pfx) certificate. When set, new ASP.NET data protection keys
 	///     (used to sign the login cookie) are encrypted with it before they are stored in the
 	///     database. Existing keys stay readable and are replaced by encrypted ones on key rotation.
