@@ -2499,6 +2499,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "404": {
             "description": "the file url is not found or the domain is not whitelisted"
           }
@@ -4743,6 +4746,10 @@
           },
           "accountRegisterDefaultRole": {
             "$ref": "#/components/schemas/AppAccountRoles"
+          },
+          "useRateLimiting": {
+            "type": "boolean",
+            "nullable": true
           },
           "accountRolesByEmailRegisterOverwrite": {
             "type": "object",
