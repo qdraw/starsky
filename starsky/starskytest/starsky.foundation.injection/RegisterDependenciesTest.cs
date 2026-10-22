@@ -29,7 +29,7 @@ public sealed class RegisterDependenciesTest
 	{
 		var createHandler = factory.GetType().GetMethod("CreateHandler",
 			BindingFlags.Public | BindingFlags.Instance)!;
-		HttpMessageHandler? current = ( HttpMessageHandler ) createHandler.Invoke(factory, [name])!;
+		var current = ( HttpMessageHandler ) createHandler.Invoke(factory, [name])!;
 		while ( current is DelegatingHandler delegating )
 		{
 			current = delegating.InnerHandler;

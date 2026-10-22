@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -586,6 +587,8 @@ public sealed class HttpClientHelperTest
 	}
 
 	[TestMethod]
+	[SuppressMessage("Performance", "CA1835:Prefer the memory-based overloads",
+		Justification = "the array overload of the stream is the member under test")]
 	public async Task LimitedReadStream_ReadsWithinLimit_AllOverloads()
 	{
 		await using var stream = CreateLimitedReadStream(new MemoryStream(new byte[30]), 30);
