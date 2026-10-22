@@ -2,10 +2,12 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -209,6 +211,36 @@ public sealed class HttpClientHelperTest
 			new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
 		var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
 		Assert.IsFalse(output.Key);
+	}
+
+	[TestMethod]
+	public async Task ReadString_HttpClientHelper_NullResponse_ReturnsFalse()
+	{
+		var httpClientHelper = new HttpClientHelper(new NullResponseHttpProvider(),
+			null, new FakeIWebLogger());
+
+		var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
+
+		Assert.IsFalse(output.Key);
+		Assert.AreEqual(string.Empty, output.Value);
+	}
+
+	/// <summary>
+	///     Provider that returns no response at all
+	/// </summary>
+	private sealed class NullResponseHttpProvider : IHttpProvider
+	{
+		public Task<HttpResponseMessage> GetAsync(string requestUri, string? userAgent = null,
+			bool followRedirects = true)
+		{
+			return Task.FromResult<HttpResponseMessage>(null!);
+		}
+
+		public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content,
+			AuthenticationHeaderValue? authenticationHeaderValue)
+		{
+			return Task.FromResult<HttpResponseMessage>(null!);
+		}
 	}
 
 	[TestMethod]
