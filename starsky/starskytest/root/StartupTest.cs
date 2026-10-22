@@ -92,7 +92,7 @@ public sealed class StartupTest
 	{
 		var serviceCollection = new ServiceCollection();
 		serviceCollection.AddRouting();
-		serviceCollection.AddSingleton(new AppSettings { UseRateLimiting = false });
+		serviceCollection.AddSingleton<AppSettings, AppSettings>();
 		serviceCollection.AddSingleton<IWebHostEnvironment, FakeIWebHostEnvironment>();
 		serviceCollection.AddSwaggerGen();
 		serviceCollection.AddSingleton<IWebLogger, FakeIWebLogger>();
@@ -113,7 +113,7 @@ public sealed class StartupTest
 		IHostEnvironment env =
 			new HostingEnvironment { EnvironmentName = Environments.Development };
 
-		var startup = new Startup();
+		var startup = new Startup(["--app:UseRateLimiting=false"]);
 		startup.ConfigureServices(serviceCollection);
 
 		// UseRateLimiter throws without the registered options, so this proves it is skipped
